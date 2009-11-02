@@ -38,7 +38,7 @@ void SyncPacket::AlliancePacket::changeAlliance(Alliance *alliance, int8_t type)
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x01);
+	packet.add<int8_t>(Sync::Alliance::ChangeAlliance);
 	packet.add<uint8_t>(type);
 	packet.add<int32_t>(type == 1 ? alliance->getId() : 0);
 	packet.add<uint8_t>(alliance->getSize());
@@ -58,7 +58,7 @@ void SyncPacket::AlliancePacket::changeGuild(Alliance *alliance, Guild *guild) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x04);
+	packet.add<int8_t>(Sync::Alliance::ChangeGuild);
 	packet.add<int32_t>(alliance == 0 ? 0 : alliance->getId());
 	packet.add<int32_t>(guild->getId());
 	packet.add<int32_t>(guild->m_players.size());
@@ -76,7 +76,7 @@ void SyncPacket::AlliancePacket::changeLeader(Alliance *alliance, Player *oldLea
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x02);
+	packet.add<int8_t>(Sync::Alliance::ChangeLeader);
 
 	packet.add<int32_t>(alliance->getId());
 	packet.add<int32_t>(oldLeader->getId());
@@ -88,7 +88,7 @@ void SyncPacket::AlliancePacket::changePlayerRank(Alliance *alliance, Player *pl
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x05);
+	packet.add<int8_t>(Sync::Alliance::ChangeRank);
 
 	packet.add<int32_t>(alliance->getId());
 	packet.add<int32_t>(player->getId());
@@ -100,7 +100,7 @@ void SyncPacket::AlliancePacket::changeCapacity(Alliance *alliance) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x03);
+	packet.add<int8_t>(Sync::Alliance::ChangeCapacity);
 
 	packet.add<int32_t>(alliance->getId());
 	packet.add<int32_t>(alliance->getCapacity());
@@ -111,7 +111,7 @@ void SyncPacket::GuildPacket::updatePlayers(Guild *guild, bool remove) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x08);
+	packet.add<int8_t>(Sync::Guild::ChangePlayerGuildName);
 
 	if (remove) {
 		packet.addString("");
@@ -135,17 +135,15 @@ void SyncPacket::GuildPacket::updatePlayer(Guild *guild, Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x08);
+	packet.add<int8_t>(Sync::Guild::ChangePlayerGuildName);
 
 	if (guild == 0) { // Expel/leave
-		packet.addString("");
-		packet.add<int32_t>(0);
+		packet.add<int32_t>(-1);
 		packet.add<int32_t>(1);
 		packet.add<int32_t>(player->getId());
 		packet.add<uint8_t>(5);
 	}
 	else {
-		packet.addString(guild->getName());
 		packet.add<int32_t>(guild->getId());
 		packet.add<int32_t>(1);
 		packet.add<int32_t>(player->getId());
@@ -159,7 +157,7 @@ void SyncPacket::GuildPacket::updatePlayerRank(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x05);
+	packet.add<int8_t>(Sync::Guild::ChangePlayer);
 
 	packet.add<int32_t>(player->getId());
 	packet.add<uint8_t>(player->getGuildRank());
@@ -172,7 +170,7 @@ void SyncPacket::GuildPacket::updatePlayerMesos(Player *player, int32_t amount) 
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x06);
+	packet.add<int8_t>(Sync::Guild::ChangePlayerMoney);
 
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(amount);
@@ -184,7 +182,7 @@ void SyncPacket::GuildPacket::updateEmblem(Guild *guild) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x02);
+	packet.add<int8_t>(Sync::Guild::ChangeEmblem);
 
 	GuildLogo logo = guild->getLogo();
 	packet.add<int32_t>(guild->getId());
@@ -204,7 +202,7 @@ void SyncPacket::GuildPacket::updateCapacity(Guild *guild) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x07);
+	packet.add<int8_t>(Sync::Guild::ChangeCapacity);
 
 	packet.add<int32_t>(guild->getId());
 	packet.add<int32_t>(guild->getCapacity());
@@ -216,7 +214,7 @@ void SyncPacket::GuildPacket::loadGuild(int32_t guildid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x09);
+	packet.add<int8_t>(Sync::Guild::Load);
 
 	packet.add<int32_t>(guildid);
 
@@ -227,7 +225,7 @@ void SyncPacket::GuildPacket::unloadGuild(int32_t guildid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x01);
+	packet.add<int8_t>(Sync::Guild::Unload);
 
 	packet.add<int32_t>(guildid);
 
@@ -239,7 +237,7 @@ void SyncPacket::GuildPacket::removePlayer(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x03);
+	packet.add<int8_t>(Sync::Guild::RemovePlayer);
 
 	packet.add<int32_t>(player->getId());
 
@@ -250,7 +248,7 @@ void SyncPacket::GuildPacket::addPlayer(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x04);
+	packet.add<int8_t>(Sync::Guild::AddPlayer);
 
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuild()->getId());
@@ -647,7 +645,7 @@ void SyncPacket::PlayerPacket::sendGuilds(WorldServerAcceptConnection *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
-	packet.add<int8_t>(0x0a);
+	packet.add<int8_t>(Sync::Guild::ChannelConnect);
 	PlayerDataProvider::Instance()->getChannelConnectPacketGuild(packet);
 	player->getSession()->send(packet);
 }
@@ -656,7 +654,7 @@ void SyncPacket::PlayerPacket::sendAlliances(WorldServerAcceptConnection *player
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
-	packet.add<int8_t>(0x06);
+	packet.add<int8_t>(Sync::Alliance::ChannelConnect);
 	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
 	player->getSession()->send(packet);
 }

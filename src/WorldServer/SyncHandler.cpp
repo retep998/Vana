@@ -53,17 +53,17 @@ void SyncHandler::handleAlliancePacket(PacketReader &packet) {
 	int8_t option = packet.get<int8_t>();
 	int32_t allianceid = packet.get<int32_t>();
 	switch (option) {
-		case 0x02: sendAllianceInfo(packet.get<int32_t>(), allianceid); break;
-		case 0x03: sendTitleUpdate(allianceid, packet); break;
-		case 0x04: sendNoticeUpdate(allianceid, packet); break;
-		case 0x05: sendInvite(allianceid, packet); break;
-		case 0x06: sendDenyPacket(packet); break;
-		case 0x07: sendChangeGuild(allianceid, packet); break;
-		case 0x08: sendChangeLeader(allianceid, packet); break;
-		case 0x09: sendPlayerChangeRank(allianceid, packet); break;
-		case 0x0a: handleAllianceCreation(packet); break;
-		case 0x0b: sendIncreaseCapacity(allianceid, packet.get<int32_t>()); break;
-		case 0x0c: sendAllianceDisband(allianceid, packet.get<int32_t>()); break;
+		case Sync::Alliance::InviteDenied: sendDenyPacket(packet); break;
+		case Sync::Alliance::GetInfo: sendAllianceInfo(packet.get<int32_t>(), allianceid); break;
+		case Sync::Alliance::ChangeTitles: sendTitleUpdate(allianceid, packet); break;
+		case Sync::Alliance::ChangeNotice: sendNoticeUpdate(allianceid, packet); break;
+		case Sync::Alliance::Invite: sendInvite(allianceid, packet); break;
+		case Sync::Alliance::ChangeGuild: sendChangeGuild(allianceid, packet); break;
+		case Sync::Alliance::ChangeLeader: sendChangeLeader(allianceid, packet); break;
+		case Sync::Alliance::ChangeRank: sendPlayerChangeRank(allianceid, packet); break;
+		case Sync::Alliance::Create: handleAllianceCreation(packet); break;
+		case Sync::Alliance::ChangeCapacity: sendIncreaseCapacity(allianceid, packet.get<int32_t>()); break;
+		case Sync::Alliance::Disband: sendAllianceDisband(allianceid, packet.get<int32_t>()); break;
 	}
 }
 
@@ -89,13 +89,10 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 	// There we go, create an alliance...
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO alliances (id, leader, worldid, name, notice, rank4title, rank5title) VALUES (NULL, "
+	query << "INSERT INTO alliances (id, leader, worldid, name) VALUES (NULL, "
 		<< party->getLeader() << ", "
 		<< static_cast<int16_t>(WorldServer::Instance()->getWorldId()) << ", "
-		<< mysqlpp::quote << alliancename << ", "
-		<< mysqlpp::quote << "" << ", "
-		<< mysqlpp::quote << "" << ", "
-		<< mysqlpp::quote << "" << ");";
+		<< mysqlpp::quote << alliancename << ");";
 
 	if (!query.exec()) {
 		std::cout << "\a Warning! " << player->getName() << " has created " << alliancename << " but it failed! " << query.error() << std::endl;
@@ -122,13 +119,13 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 					iter2->second->setAllianceRank(2);
 				else // The other members
 					iter2->second->setAllianceRank(3);
-				query << "UPDATE characters SET alliance = " << allianceid << ", "
+				query << "UPDATE characters SET allianceid = " << allianceid << ", "
 					<< "alliancerank = " <<	static_cast<int16_t>(iter2->second->getAllianceRank()) << " WHERE id = " << iter2->second->getId() << " LIMIT 1";
 				query.exec();
 			}
 
 			playerGuild->setAlliance(alliance);
-			query << "UPDATE guilds SET alliance = " << allianceid << " WHERE id = " << iter->second->getGuild()->getId() << " LIMIT 1";
+			query << "UPDATE guilds SET allianceid = " << allianceid << " WHERE id = " << iter->second->getGuild()->getId() << " LIMIT 1";
 			query.exec();
 			alliance->addGuild(playerGuild);
 		}
@@ -216,8 +213,6 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 			query << "UPDATE guilds SET allianceid = " << allianceid << " WHERE id = " << guild->getId(); // Update the guild in the database
 			query.exec();
 
-			SyncPacket::AlliancePacket::changeGuild(alliance, guild);
-
 			for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
 				if (iter->second->getGuildRank() == 1)
 					iter->second->setAllianceRank(2);
@@ -225,7 +220,9 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 					iter->second->setAllianceRank(static_cast<uint8_t>(lowestAllianceRank));
 
 				iter->second->setAlliance(alliance);
+				AlliancePacket::sendAllianceInfo(alliance, iter->second);
 			}
+			SyncPacket::AlliancePacket::changeGuild(alliance, guild);
 
 			AlliancePacket::sendInviteAccepted(alliance, guild);
 		}
@@ -233,12 +230,12 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 	else {
 		guild->setAlliance(0);
 
-		SyncPacket::AlliancePacket::changeGuild(0, guild);
-
 		for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
 			iter->second->setAllianceRank(5);
 			iter->second->setAlliance(0);
 		}
+
+		SyncPacket::AlliancePacket::changeGuild(0, guild);
 
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE guildid = " << guild->getId();
@@ -286,7 +283,7 @@ void SyncHandler::sendTitleUpdate(int32_t allianceid, PacketReader &packet) {
 		return;
 
 	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
-		alliance->setTitle(i - 1, packet.getString());
+		alliance->setTitle(i, packet.getString());
 
 	alliance->save();
 
@@ -355,8 +352,6 @@ void SyncHandler::sendAllianceDisband(int32_t allianceid, int32_t playerid) {
 		player->getGuild() == 0 || player->getAllianceRank() != 1 || 
 		player->getAlliance() != alliance || alliance->getLeaderId() != playerid) 
 		return;
-
-	// Todo: update the characters and guilds so the alliance gets deleted!
 
 	unordered_map<int32_t, Guild *> guilds = alliance->getGuilds();
 	unordered_map<int32_t, Guild *>::iterator iter;
@@ -428,14 +423,27 @@ void SyncHandler::sendDenyPacket(PacketReader &packet) {
 	if (denier == 0 || denier->getGuild() == 0 || denier->getGuildRank() != 1) 
 		return;
 
+	packet.get<int8_t>(); // Type, to be handled....
+	/* Types:
+		0x14: Doesn't accept alliance invites. (in the game options window)
+		0x16: Denied alliance invite.
+	*/
+	string allianceLeaderName = packet.getString();
+	string deniedGuildName = packet.getString();
+
 	Guild *dguild = denier->getGuild();
-	if (!dguild->getInvited()) 
+	if (!dguild->getInvited() || dguild->getName() != deniedGuildName) 
 		return;
 
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(dguild->getInvitedId());
 	if (alliance == 0)
 		return;
 
+	Player *allianceLeader = PlayerDataProvider::Instance()->getPlayer(alliance->getLeaderId());
+	if (allianceLeader == 0 || allianceLeader->getName() != allianceLeaderName)
+		return;
+
+	dguild->removeInvite();
 	AlliancePacket::sendInviteDenied(alliance, dguild);
 }
 
@@ -660,16 +668,17 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 	int32_t option = packet.get<int8_t>();
 	int32_t guildid = packet.get<int32_t>();
 	switch (option) {
-		case 0x01: sendGuildInvite(guildid, packet); break; // Invite a player
-		case 0x02: { // Expel a player or leave
+		case Sync::Guild::Invite: sendGuildInvite(guildid, packet); break;
+		case Sync::Guild::ExpelOrLeave: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>(), true);
 			if (player == 0)
 				return;
 			string name = packet.getString();
-			sendDeletePlayer(guildid, player->getId(), name, (packet.get<int8_t>() == 1));
+			bool expelled = packet.getBool();
+			sendDeletePlayer(guildid, player->getId(), name, expelled);
 			break;
 		}
-		case 0x03: { // Accept invite
+		case Sync::Guild::AcceptInvite: {
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 			if (player == 0)
@@ -694,9 +703,9 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			sendNewPlayer(inviteGuildId, playerid, false);
 			break;
 		}
-		case 0x04: sendUpdateOfTitles(guildid, packet); break; // Change the titles
-		case 0x05: sendGuildNotice(guildid, packet); break; // Change the notice
-		case 0x06: { // Change someones rank
+		case Sync::Guild::ChangeTitles: sendUpdateOfTitles(guildid, packet); break;
+		case Sync::Guild::ChangeNotice: sendGuildNotice(guildid, packet); break;
+		case Sync::Guild::ChangeRanks: {
 			int32_t playerid = packet.get<int32_t>();
 			int32_t victimid = packet.get<int32_t>();
 			uint8_t rank = packet.get<uint8_t>();
@@ -728,7 +737,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			GuildPacket::sendRankUpdate(guild, victim);
 			break;
 		}
-		case 0x07: { // Add guild capacity
+		case Sync::Guild::ChangeCapacity: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 			if (guild == 0) 
 				return;
@@ -754,7 +763,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			SyncPacket::GuildPacket::updateCapacity(guild);
 			break;
 		}
-		case 0x08: { // Disband a guild
+		case Sync::Guild::Disband: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 			if (guild == 0)
 				return;
@@ -789,7 +798,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			deleteQuery.exec();
 			break;
 		}
-		case 0x09: { // Invite Denied
+		case Sync::Guild::DenyInvite: {
 			uint8_t result = packet.get<uint8_t>();
 			Player *inviter = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			Player *invitee = PlayerDataProvider::Instance()->getPlayer(packet.getString());
@@ -802,7 +811,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			GuildPacket::sendGuildDenyResult(inviter, invitee, result);
 			break;
 		}
-		case 0x0a: { // Add or remove guild points
+		case Sync::Guild::ChangePoints: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 			if (guild == 0) 
 				return;
@@ -812,7 +821,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			GuildPacket::sendGuildPointsUpdate(guild);
 			break;
 		}
-		case 0x0b: { // Change emblem
+		case Sync::Guild::ChangeEmblem: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 			if (guild == 0) 
 				return;
@@ -835,7 +844,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			SyncPacket::GuildPacket::updateEmblem(guild);
 			break;
 		}
-		case 0x0c: { // Send guild rank board
+		case Sync::Guild::GetRankBoard: {
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 			if (player == 0)
@@ -843,20 +852,8 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			GuildPacket::sendGuildRankBoard(player, packet.get<int32_t>());
 			break;
 		}
-		case 0x0d: handleGuildCreation(packet); break; // Guild contract check/creation
-		case 0x0e: { // Remove a character from the guild (Loginserver -> Worldserver packet)
-			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>(), true);
-			if (player == 0)
-				return;
-
-			Guild *guild = player->getGuild();
-			if (guild == 0)
-				return;
-
-			SyncPacket::GuildPacket::updatePlayer(0, player);
-			GuildPacket::sendPlayerUpdate(guild, player, 1);
-		}
-		case 0x0f: { // Remove emblem, intentional fallthrough?
+		case Sync::Guild::Create: handleGuildCreation(packet); break;
+		case Sync::Guild::RemoveEmblem: { // intentional fallthrough?
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 			if (player == 0 || player->getGuildRank() != 1) 
@@ -878,7 +875,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 
 void SyncHandler::handleLoginServerPacket(LoginServerConnection *player, PacketReader &packet) {
 	int32_t charid = packet.get<int32_t>();
-	Player *character = PlayerDataProvider::Instance()->getPlayer(charid);
+	Player *character = PlayerDataProvider::Instance()->getPlayer(charid, true);
 	if (character == 0)
 		return;
 	Guild *guild = character->getGuild();
@@ -887,7 +884,8 @@ void SyncHandler::handleLoginServerPacket(LoginServerConnection *player, PacketR
 	
 	guild->removePlayer(character);
 
-	GuildPacket::sendPlayerUpdate(guild, character, 1);
+	GuildPacket::sendPlayerUpdate(guild, character, 1, false);
+	// Todo: Remove the player from the worldserver...
 }
 
 void SyncHandler::loadGuild(int32_t id) {
@@ -896,7 +894,7 @@ void SyncHandler::loadGuild(int32_t id) {
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if ((int32_t) res.num_rows() == 0) {
-		std::cout << "\aAlert! Can't load a guild! Guild ID: " << id << " >_>" << std::endl;
+		std::cout << "\aAlert! Can't load a guild! Guild ID: " << id << std::endl;
 		return;
 	}
 	
@@ -934,19 +932,21 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 	if (party->members.size() < 2) 
 		return;
 
-	if (option == 1) { // Check the guildname and send the contract around
+	if (option == 1) {
 		if (!party->isLeader(playerid)) 
 			return;
 		string guildname = packet.getString();
+
 		if (player->getLevel() <= 10) {
 			GuildPacket::sendPlayerGuildMessage(player, 0x23);
-			return;
 		}
-		if (PlayerDataProvider::Instance()->getGuild(guildname) != 0) {
+		else if (PlayerDataProvider::Instance()->getGuild(guildname) != 0) {
 			GuildPacket::sendPlayerGuildMessage(player, 0x1c);
 		}
 		else {
 			party->setGuildName(guildname);
+			party->setGuildContract(0);
+			party->setVoters(0);
 			for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++)
 				GuildPacket::sendGuildContract(iter->second, party->isLeader(iter->second->getId()), iter->second->getParty()->getId(), player->getName(), guildname);
 		}
@@ -1311,11 +1311,8 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 		GuildPacket::sendGuildInfo(p->getGuild(), p);
 		if (oldJob == -1) // Didn't come online till now...
 			GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
-		if (allianceid != 0) {
-			AlliancePacket::sendAllianceInfo(p->getAlliance(), p);
-			if (oldJob == -1) 
-				AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
-		}
+		if (allianceid != 0 && oldJob == -1) 
+			AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
 	}
 }
 

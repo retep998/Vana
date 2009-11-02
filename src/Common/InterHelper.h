@@ -44,6 +44,7 @@ namespace Sync {
 			Alliance
 		};
 	}
+
 	namespace Player {
 		enum SyncModes {
 			Connect,
@@ -58,6 +59,7 @@ namespace Sync {
 			UpdateMap
 		};
 	}
+
 	namespace Party {
 		enum SyncModes {
 			Disband,
@@ -65,6 +67,51 @@ namespace Sync {
 			SwitchLeader,
 			RemoveMember,
 			AddMember
+		};
+	}
+
+	namespace Alliance {
+		enum Alliance {
+			Create,
+			Disband,
+			Invite,
+			InviteDenied,
+			GetInfo,
+			ChangeTitles,
+			ChangeNotice,
+			ChangeGuild,
+			ChangeLeader,
+			ChangeRank,
+			ChangeCapacity,
+			ChangeAlliance,
+			ChannelConnect
+		};
+	}
+
+	namespace Guild {
+		enum Guild {
+			Create,
+			Disband,
+			Invite,
+			AcceptInvite,
+			DenyInvite,
+			ExpelOrLeave,
+			ChangeTitles,
+			ChangeNotice,
+			ChangeRanks,
+			ChangeCapacity,
+			ChangePoints,
+			ChangeEmblem,
+			GetRankBoard,
+			AddPlayer,
+			ChangePlayer,
+			ChangePlayerMoney,
+			ChangePlayerGuildName,
+			RemovePlayer,
+			RemoveEmblem,
+			Load,
+			Unload,
+			ChannelConnect
 		};
 	}
 }

@@ -108,7 +108,7 @@ void PlayerDataProvider::addGuild(int32_t id, const string &name, const GuildLog
 
 void PlayerDataProvider::loadGuild(int32_t id) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT name, logo, logocolor, logobg, logobgcolor, capacity, alliance FROM guilds WHERE id = " << id << " LIMIT 1";
+	query << "SELECT name, logo, logocolor, logobg, logobgcolor, capacity, allianceid FROM guilds WHERE id = " << id << " LIMIT 1";
 	mysqlpp::UseQueryResult res = query.use();
 
 	MYSQL_ROW guildRow = res.fetch_raw_row();
