@@ -26,7 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void SyncPacket::updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_UPDATE_LEVEL);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::UpdateLevel);
 	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(level);
 	player->getSession()->send(packet);
@@ -35,7 +36,8 @@ void SyncPacket::updateLevel(WorldServerConnection *player, int32_t playerid, in
 void SyncPacket::updateJob(WorldServerConnection *player, int32_t playerid, int32_t job) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_UPDATE_JOB);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::UpdateJob);
 	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(job);
 	player->getSession()->send(packet);
@@ -44,7 +46,8 @@ void SyncPacket::updateJob(WorldServerConnection *player, int32_t playerid, int3
 void SyncPacket::updateMap(WorldServerConnection *player, int32_t playerid, int32_t map) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_UPDATE_MAP);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::UpdateMap);
 	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(map);
 	player->getSession()->send(packet);
@@ -53,7 +56,7 @@ void SyncPacket::updateMap(WorldServerConnection *player, int32_t playerid, int3
 void SyncPacket::partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_SYNC_OPERATION);
+	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(playerid);
 	if (target != 0) {
@@ -65,7 +68,7 @@ void SyncPacket::partyOperation(WorldServerConnection *player, int8_t type, int3
 void SyncPacket::partyInvite(WorldServerConnection *player, int32_t playerid, const string &invitee) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_SYNC_OPERATION);
+	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(playerid);
 	packet.addString(invitee);
@@ -75,7 +78,8 @@ void SyncPacket::partyInvite(WorldServerConnection *player, int32_t playerid, co
 void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_PLAYER_CHANGE_CHANNEL);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
 	packet.add<int16_t>(channel);
 
@@ -90,7 +94,8 @@ void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info
 void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_REGISTER_PLAYER);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::Connect);
 	packet.add<uint32_t>(ip);
 	packet.add<int32_t>(playerid);
 	packet.addString(name);
@@ -107,7 +112,8 @@ void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int3
 void SyncPacket::removePlayer(WorldServerConnection *player, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_REMOVE_PLAYER);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::Disconnect);
 	packet.add<int32_t>(playerid);
 	player->getSession()->send(packet);
 }
@@ -115,7 +121,8 @@ void SyncPacket::removePlayer(WorldServerConnection *player, int32_t playerid) {
 void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int16_t>(IMSG_TRANSFER_PLAYER_PACKET);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerid);
 	player->getSession()->send(packet);
 }

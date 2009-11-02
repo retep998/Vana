@@ -41,14 +41,14 @@ namespace GuildPacket{
 	void guildInvite(int32_t guildid, int32_t playerid, const string &name);
 	void guildInviteAccepted(int32_t playerid);
 	void removeGuildPlayer(int32_t guildid, int32_t playerid, string name, bool expelled = false);
-	void sendNewGuildRankTitles(int32_t guildid, PacketReader &packet);
+	void sendNewGuildRankTitles(int32_t guildid, PacketReader &pack);
 	void changeRankOfPlayer(int32_t guildid, int32_t playerid, int32_t victimid, uint8_t newrank);
 	void changeGuildNotice(int32_t guildid, const string &notice);
 	void guildDisband(int32_t guildid);
 	void sendIncreaseCapacity(int32_t guildid, int32_t playerid);
 	void sendRemoveEmblem(int32_t guildid, int32_t playerid);
 	void addGuildPoint(int32_t guildid, int32_t amount = 1);
-	void sendEmblemChangeInfo(int32_t guildid, int32_t playerid, PacketReader &packet);
+	void sendEmblemChangeInfo(int32_t guildid, int32_t playerid, PacketReader &pack);
 	void displayGuildRankBoard(int32_t playerid, int32_t npcid);
 	void displayGuildDeny(PacketReader &pack);
 }

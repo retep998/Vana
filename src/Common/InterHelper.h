@@ -33,11 +33,33 @@ namespace PartyActions {
 }
 
 namespace Sync {
-	enum Sync {
-		ChannelStart = 0x7F
-	};
+	namespace SyncTypes {
+		enum SyncTypes {
+			ChannelStart,
+			Player,
+			Party,
+			Buddy,
+			Guild,
+			GuildBbs,
+			Alliance
+		};
+	}
+	namespace Player {
+		enum SyncModes {
+			Connect,
+			Disconnect,
+			ChangeChannelRequest,
+			ChangeChannelGo,
+			PacketTransfer,
+			RemovePacketTransfer,
+			NewConnectable,
+			UpdateLevel,
+			UpdateJob,
+			UpdateMap
+		};
+	}
 	namespace Party {
-		enum PartySync {
+		enum SyncModes {
 			Disband,
 			Create,
 			SwitchLeader,

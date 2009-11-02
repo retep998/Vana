@@ -40,18 +40,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.h"
 
 void SyncHandler::handle(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	switch (packet.get<int16_t>()) {
-		case IMSG_PLAYER_CHANGE_CHANNEL: playerChangeChannel(connection, packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET: handleChangeChannel(connection, packet); break;
-		case IMSG_REGISTER_PLAYER: playerConnect(connection->getChannel(), packet); break;
-		case IMSG_REMOVE_PLAYER: playerDisconnect(connection->getChannel(), packet); break;
-		case IMSG_UPDATE_LEVEL: updateLevel(packet); break;
-		case IMSG_UPDATE_JOB: updateJob(packet); break;
-		case IMSG_UPDATE_MAP: updateMap(packet); break;
-		case IMSG_GUILD_OPERATION: handleGuildPacket(packet); break;
-		case IMSG_SYNC_OPERATION: partyOperation(packet); break;
-		case IMSG_BBS: handleBbsPacket(packet); break;
-		case IMSG_ALLIANCE: handleAlliancePacket(packet); break;
+	switch (packet.get<int8_t>()) {
+		case Sync::SyncTypes::GuildBbs: handleBbsPacket(packet); break;
+		case Sync::SyncTypes::Player: handlePlayerPacket(connection, packet); break;
+		case Sync::SyncTypes::Guild: handleGuildPacket(packet); break;
+		case Sync::SyncTypes::Party: partyOperation(packet); break;
+		case Sync::SyncTypes::Alliance: handleAlliancePacket(packet); break;
 	}
 }
 
@@ -665,14 +659,14 @@ void SyncHandler::handleDeleteReply(PacketReader &packet) {
 void SyncHandler::handleGuildPacket(PacketReader &packet) {
 	int32_t option = packet.get<int8_t>();
 	int32_t guildid = packet.get<int32_t>();
-	switch(option) {
+	switch (option) {
 		case 0x01: sendGuildInvite(guildid, packet); break; // Invite a player
 		case 0x02: { // Expel a player or leave
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>(), true);
 			if (player == 0)
 				return;
 			string name = packet.getString();
-			sendDeletePlayer(guildid, player->getId(), name, (packet.get<int8_t>() == 1 ? true : false));
+			sendDeletePlayer(guildid, player->getId(), name, (packet.get<int8_t>() == 1));
 			break;
 		}
 		case 0x03: { // Accept invite
@@ -1267,6 +1261,18 @@ void SyncHandler::invitePlayer(int32_t playerid, const string &invitee) {
 	}
 	else {
 		SyncPacket::PartyPacket::partyError(pplayer->getChannel(), playerid, 0x12);
+	}
+}
+
+void SyncHandler::handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Player::ChangeChannelRequest: playerChangeChannel(connection, packet); break;
+		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, packet); break;
+		case Sync::Player::Connect: playerConnect(connection->getChannel(), packet); break;
+		case Sync::Player::Disconnect: playerDisconnect(connection->getChannel(), packet); break;
+		case Sync::Player::UpdateLevel: updateLevel(packet); break;
+		case Sync::Player::UpdateJob: updateJob(packet); break;
+		case Sync::Player::UpdateMap: updateMap(packet); break;
 	}
 }
 

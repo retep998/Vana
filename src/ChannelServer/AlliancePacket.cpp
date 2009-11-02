@@ -20,13 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "GuildPacket.h"
 #include "InterHeader.h"
+#include "InterHelper.h"
 #include "Maps.h"
 #include "PacketCreator.h"
-#include "PlayerPacket.h"
 #include "PacketReader.h"
-#include "PlayersPacket.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerPacket.h"
+#include "PlayersPacket.h"
 #include "SendHeader.h"
 #include "WorldServerConnection.h"
 
@@ -68,48 +69,48 @@ void AlliancePacket::handlePacket(Player *player, PacketReader &packet) {
 	}
 }
 
-void AlliancePacket::handleDenyPacket(Player *player, PacketReader &packet) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x01);
-	pack.add<int32_t>(0);
-	pack.add<int32_t>(player->getId());
-	pack.addBuffer(packet);
-	ChannelServer::Instance()->sendToWorld(pack);
+void AlliancePacket::handleDenyPacket(Player *player, PacketReader &pack) {
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x01);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(player->getId());
+	packet.addBuffer(pack);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void AlliancePacket::sendShowInfo(int32_t allianceid, int32_t playerid) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
 	packet.add<int8_t>(0x02);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void AlliancePacket::sendChangeTitles(int32_t allianceid, int32_t playerid, PacketReader &packet) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x03);
-	pack.add<int32_t>(allianceid);
-	pack.add<int32_t>(playerid);
-	pack.addBuffer(packet);
-	ChannelServer::Instance()->sendToWorld(pack);
+void AlliancePacket::sendChangeTitles(int32_t allianceid, int32_t playerid, PacketReader &pack) {
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x03);
+	packet.add<int32_t>(allianceid);
+	packet.add<int32_t>(playerid);
+	packet.addBuffer(pack);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void AlliancePacket::sendChangeNotice(int32_t allianceid, int32_t playerid, PacketReader &packet) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x04);
-	pack.add<int32_t>(allianceid);
-	pack.add<int32_t>(playerid);
-	pack.addString(packet.getString());
-	ChannelServer::Instance()->sendToWorld(pack);
+void AlliancePacket::sendChangeNotice(int32_t allianceid, int32_t playerid, PacketReader &pack) {
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x04);
+	packet.add<int32_t>(allianceid);
+	packet.add<int32_t>(playerid);
+	packet.addString(pack.getString());
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void AlliancePacket::sendInvitation(int32_t allianceid, int32_t playerid, const string &guildname) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
 	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
@@ -119,7 +120,7 @@ void AlliancePacket::sendInvitation(int32_t allianceid, int32_t playerid, const 
 
 void AlliancePacket::sendChangeGuild(int32_t allianceid, int32_t playerid, int32_t guildid, uint8_t option) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
 	packet.add<int8_t>(0x07);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(guildid);
@@ -130,7 +131,7 @@ void AlliancePacket::sendChangeGuild(int32_t allianceid, int32_t playerid, int32
 
 void AlliancePacket::sendChangeLeader(int32_t allianceid, int32_t playerid, int32_t victim) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_ALLIANCE);
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
 	packet.add<int8_t>(0x08);
 	packet.add<int32_t>(allianceid);
 	packet.add<int32_t>(playerid);
@@ -138,41 +139,41 @@ void AlliancePacket::sendChangeLeader(int32_t allianceid, int32_t playerid, int3
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void AlliancePacket::sendChangeRank(int32_t allianceid, int32_t playerid, PacketReader &packet) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x09);
-	pack.add<int32_t>(allianceid);
-	pack.add<int32_t>(playerid);
-	pack.add<int32_t>(packet.get<int32_t>());
-	pack.add<uint8_t>(packet.get<uint8_t>());
-	ChannelServer::Instance()->sendToWorld(pack);
+void AlliancePacket::sendChangeRank(int32_t allianceid, int32_t playerid, PacketReader &pack) {
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x09);
+	packet.add<int32_t>(allianceid);
+	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(pack.get<int32_t>());
+	packet.add<uint8_t>(pack.get<uint8_t>());
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void AlliancePacket::sendCreateAlliance(int32_t playerid, string alliancename) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x0a);
-	pack.add<int32_t>(0);
-	pack.add<int32_t>(playerid);
-	pack.addString(alliancename);
-	ChannelServer::Instance()->sendToWorld(pack);
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x0a);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(playerid);
+	packet.addString(alliancename);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void AlliancePacket::increaseAllianceCapacity(int32_t allianceid, int32_t playerid) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x0b);
-	pack.add<int32_t>(allianceid);
-	pack.add<int32_t>(playerid);
-	ChannelServer::Instance()->sendToWorld(pack);
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x0b);
+	packet.add<int32_t>(allianceid);
+	packet.add<int32_t>(playerid);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void AlliancePacket::sendDisbandAlliance(int32_t allianceid, int32_t playerid) {
-	PacketCreator pack;
-	pack.add<int16_t>(IMSG_ALLIANCE);
-	pack.add<int8_t>(0x0c);
-	pack.add<int32_t>(allianceid);
-	pack.add<int32_t>(playerid);
-	ChannelServer::Instance()->sendToWorld(pack);
+	PacketCreator packet;
+	packet.add<int8_t>(Sync::SyncTypes::Alliance);
+	packet.add<int8_t>(0x0c);
+	packet.add<int32_t>(allianceid);
+	packet.add<int32_t>(playerid);
+	ChannelServer::Instance()->sendToWorld(packet);
 }

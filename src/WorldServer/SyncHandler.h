@@ -79,7 +79,8 @@ namespace SyncHandler {
 	void expelPlayer(int32_t playerid, int32_t target);
 	void silentUpdate(int32_t playerid);
 	void logInLogOut(int32_t playerid);
-	// Stuff
+	// Player
+	void handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void playerConnect(uint16_t channel, PacketReader &packet);
 	void playerDisconnect(uint16_t channel, PacketReader &packet);
 	void playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);

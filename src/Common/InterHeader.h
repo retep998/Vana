@@ -26,49 +26,39 @@ enum AnyConnection {
 enum LoginWorld {
 	IMSG_WORLD_CONNECT = 0x1000,
 	IMSG_REGISTER_CHANNEL,
-	IMSG_NEW_PLAYER,
 	IMSG_UPDATE_CHANNEL_POP,
-	IMSG_REMOVE_CHANNEL
+	IMSG_REMOVE_CHANNEL,
+	IMSG_NEW_PLAYER,
+	IMSG_GUILD_OPERATION
 };
 
 enum LoginChannel {
-	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000 // Login <--> Channel to get World server info
+	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000, // Get World server info
+	IMSG_CALCULATE_RANKING
 };
 
 enum WorldChannel {
 	IMSG_CHANNEL_CONNECT = 0x3000,
-	IMSG_PLAYER_CHANGE_CHANNEL,
 	IMSG_TO_PLAYERS, // Pass the content of the packet to player of all channel servers
-	IMSG_REGISTER_PLAYER,
-	IMSG_REMOVE_PLAYER,
 	IMSG_FIND, // "/find" command
 	IMSG_WHISPER,
 	IMSG_SCROLLING_HEADER,
-	IMSG_NEW_CONNECTABLE,
-	IMSG_SYNC_OPERATION,
-	IMSG_SYNC,
-	IMSG_UPDATE_LEVEL,
-	IMSG_UPDATE_JOB,
-	IMSG_UPDATE_MAP,
 	IMSG_FORWARD_TO,
 	IMSG_GROUP_CHAT,
 	IMSG_SET_RATES,
 	IMSG_TO_LOGIN, // Channel servers send this to ask the world server to send something to login server
-	IMSG_CALCULATE_RANKING,
-	IMSG_TRANSFER_PLAYER_PACKET,
-	IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT,
 	IMSG_TO_WORLDS, // For sending a packet to all worlds via the loginserver
 	IMSG_TO_CHANNELS, // For sending a packet from a channel to all channels via the WorldServer
 	IMSG_REFRESH_DATA, // For reloading MCDB
-	IMSG_GUILD_OPERATION,
-	IMSG_BBS,
-	IMSG_ALLIANCE
+	IMSG_SYNC
 };
 
 enum ConnectionTypes {
 	InterLoginServer,
 	InterWorldServer,
-	InterChannelServer
+	InterChannelServer,
+	InterCashServer,
+	InterMtsServer
 };
 
 #endif

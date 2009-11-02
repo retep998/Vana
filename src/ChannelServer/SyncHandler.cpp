@@ -31,15 +31,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.h"
 
 void SyncHandler::handle(PacketReader &packet) {
-	switch (packet.get<int16_t>()) {
-		case IMSG_SYNC: handleDataSync(packet); break;
-		case IMSG_SYNC_OPERATION: handlePartyResponse(packet); break;
-		case IMSG_GUILD_OPERATION: guildPacketHandlerWorld(packet); break;
-		case IMSG_ALLIANCE: alliancePacketHandlerWorld(packet); break;
-		case IMSG_NEW_CONNECTABLE: newConnectable(packet); break;
-		case IMSG_PLAYER_CHANGE_CHANNEL: playerChangeChannel(packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
-		case IMSG_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
+	switch (packet.get<int8_t>()) {
+		case Sync::SyncTypes::ChannelStart: handleDataSync(packet); break;
+		case Sync::SyncTypes::Party: handlePartyResponse(packet); break;
+		case Sync::SyncTypes::Guild: guildPacketHandlerWorld(packet); break;
+		case Sync::SyncTypes::Alliance: alliancePacketHandlerWorld(packet); break;
+		case Sync::SyncTypes::Player: handlePlayerSync(packet); break;
+	}
+}
+
+void SyncHandler::handlePlayerSync(PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Player::NewConnectable: newConnectable(packet); break;
+		case Sync::Player::ChangeChannelGo: playerChangeChannel(packet); break;
+		case Sync::Player::PacketTransfer: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
+		case Sync::Player::RemovePacketTransfer: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
 	}
 }
 
@@ -220,61 +226,66 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 }
 
 void SyncHandler::handleDataSync(PacketReader &packet) {
-	int8_t type = packet.get<int8_t>();
-	switch (type) {
-		case Sync::ChannelStart:
+	switch (packet.get<int8_t>()) {
+		case Sync::SyncTypes::ChannelStart:
 			handleChannelStart(packet);
 			break;
-		case Sync::Party::Disband:
-			disbandParty(packet);
-			break;
-		case Sync::Party::Create: {
-			int32_t partyid = packet.get<int32_t>();
-			int32_t leaderid = packet.get<int32_t>();
-			Party *party = new Party(partyid);
-			Player *leader = PlayerDataProvider::Instance()->getPlayer(leaderid);
-			if (leader == 0) {
-				party->addMember(leaderid);
-			}
-			else {
-				party->addMember(leader);
-			}
-			party->setLeader(leaderid, true);
-			PlayerDataProvider::Instance()->addParty(party);
-			break;
-		}
-		case Sync::Party::SwitchLeader: {
-			int32_t partyid = packet.get<int32_t>();
-			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
-				int32_t newleader = packet.get<int32_t>();
-				party->setLeader(newleader);
-			}
-			break;
-		}
-		case Sync::Party::RemoveMember: {
-			int32_t partyid = packet.get<int32_t>();
-			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
-				int32_t playerid = packet.get<int32_t>();
-				Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (member == 0) {
-					party->deleteMember(playerid);
+		case Sync::SyncTypes::Party: {
+			int8_t type = packet.get<int8_t>();
+			switch (type) {
+				case Sync::Party::Disband:
+					disbandParty(packet);
+					break;
+				case Sync::Party::Create: {
+					int32_t partyid = packet.get<int32_t>();
+					int32_t leaderid = packet.get<int32_t>();
+					Party *party = new Party(partyid);
+					Player *leader = PlayerDataProvider::Instance()->getPlayer(leaderid);
+					if (leader == 0) {
+						party->addMember(leaderid);
+					}
+					else {
+						party->addMember(leader);
+					}
+					party->setLeader(leaderid, true);
+					PlayerDataProvider::Instance()->addParty(party);
+					break;
 				}
-				else {
-					party->deleteMember(member);
+				case Sync::Party::SwitchLeader: {
+					int32_t partyid = packet.get<int32_t>();
+					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
+						int32_t newleader = packet.get<int32_t>();
+						party->setLeader(newleader);
+					}
+					break;
 				}
-			}
-			break;
-		}
-		case Sync::Party::AddMember: {
-			int32_t partyid = packet.get<int32_t>();
-			if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
-				int32_t playerid = packet.get<int32_t>();
-				Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (member == 0) {
-					party->addMember(playerid);
+				case Sync::Party::RemoveMember: {
+					int32_t partyid = packet.get<int32_t>();
+					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
+						int32_t playerid = packet.get<int32_t>();
+						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
+						if (member == 0) {
+							party->deleteMember(playerid);
+						}
+						else {
+							party->deleteMember(member);
+						}
+					}
+					break;
 				}
-				else {
-					party->addMember(member);
+				case Sync::Party::AddMember: {
+					int32_t partyid = packet.get<int32_t>();
+					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
+						int32_t playerid = packet.get<int32_t>();
+						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
+						if (member == 0) {
+							party->addMember(playerid);
+						}
+						else {
+							party->addMember(member);
+						}
+					}
+					break;
 				}
 			}
 			break;

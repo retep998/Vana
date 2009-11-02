@@ -32,12 +32,12 @@ namespace AlliancePacket {
 	void handlePacket(Player *player, PacketReader &packet);
 	void handleDenyPacket(Player *player, PacketReader &packet);
 	void sendShowInfo(int32_t allianceid, int32_t playerid);
-	void sendChangeTitles(int32_t allianceid, int32_t playerid, PacketReader &packet);
-	void sendChangeNotice(int32_t allianceid, int32_t playerid, PacketReader &packet);
+	void sendChangeTitles(int32_t allianceid, int32_t playerid, PacketReader &pack);
+	void sendChangeNotice(int32_t allianceid, int32_t playerid, PacketReader &pack);
 	void sendInvitation(int32_t allianceid, int32_t playerid, const string &guildname);
 	void sendChangeGuild(int32_t allianceid, int32_t playerid, int32_t guildid, uint8_t option);
 	void sendChangeLeader(int32_t allianceid, int32_t playerid, int32_t victim);
-	void sendChangeRank(int32_t allianceid, int32_t playerid, PacketReader &packet);
+	void sendChangeRank(int32_t allianceid, int32_t playerid, PacketReader &pack);
 	void sendCreateAlliance(int32_t playerid, string alliancename);
 	void increaseAllianceCapacity(int32_t alliance, int32_t playerid);
 	void sendDisbandAlliance(int32_t alliance, int32_t playerid);
