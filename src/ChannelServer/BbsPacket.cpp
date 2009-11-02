@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "BbsPacket.h"
 #include "ChannelServer.h"
 #include "Database.h"
+#include "InterHeader.h"
+#include "InterHelper.h"
 #include "PacketReader.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "InterHeader.h"
 #include "SendHeader.h"
 #include "WorldServerConnection.h"
 
 void BbsPacket::handleBbsPacket(Player *player, PacketReader &packet) {
-	switch(packet.get<int8_t>()) {
+	switch (packet.get<int8_t>()) {
 		case 0x00: newThread(player, packet); break;
 		case 0x01: deleteThread(player, packet); break;
 		case 0x02: sendThreadList((int16_t) packet.get<int32_t>(), player); break;
@@ -39,7 +39,8 @@ void BbsPacket::handleBbsPacket(Player *player, PacketReader &packet) {
 
 void BbsPacket::newThread(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x01);
 	packet.add<int32_t>(player->getGuildId());
 	packet.add<int32_t>(player->getId());
@@ -57,7 +58,8 @@ void BbsPacket::newThread(Player *player, PacketReader &pack) {
 
 void BbsPacket::deleteThread(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x02);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -67,7 +69,8 @@ void BbsPacket::deleteThread(Player *player, PacketReader &pack) {
 
 void BbsPacket::newReply(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x03);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -78,7 +81,8 @@ void BbsPacket::newReply(Player *player, PacketReader &pack) {
 
 void BbsPacket::deleteReply(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -89,7 +93,8 @@ void BbsPacket::deleteReply(Player *player, PacketReader &pack) {
 
 void BbsPacket::sendThreadList(int16_t beginId, Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
@@ -99,7 +104,8 @@ void BbsPacket::sendThreadList(int16_t beginId, Player *player) {
 
 void BbsPacket::showThread(int32_t id, Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_BBS);
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::GuildBbs);
 	packet.add<int8_t>(0x06);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuildId());
