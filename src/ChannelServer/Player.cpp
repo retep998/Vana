@@ -114,7 +114,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
-			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
+			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
 		Maps::getMap(map)->removePlayer(this);
 		PlayerDataProvider::Instance()->removePlayer(this);
@@ -240,22 +240,6 @@ void Player::playerConnect(PacketReader &packet) {
 	alliancerank = static_cast<uint8_t>(res[0]["alliancerank"]);
 	allianceid = res[0]["allianceid"];
 
-	if (isGm() || isAdmin()) {
-		map = Maps::GmMap;
-		map_pos = -1;
-	}
-	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
-		map = Maps::getMap(map)->getInfo()->forcedReturn;
-		map_pos = -1;
-	}
-	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
-		map = Maps::getMap(map)->getInfo()->rm;
-		map_pos = -1;
-	}
-	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
-	m_stance = 0;
-	m_foothold = 0;
-
 	// Stats
 	stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
 		static_cast<int16_t>(res[0]["job"]),
@@ -293,7 +277,8 @@ void Player::playerConnect(PacketReader &packet) {
 	summons.reset(new PlayerSummons(this));
 
 	// Packet transferring on channel switch
-	if (PlayerDataProvider::Instance()->checkPlayer(id)) {
+	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
+	if (checked) {
 		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
 
 		setConnectionTime(pack.get<int64_t>());
@@ -332,6 +317,26 @@ void Player::playerConnect(PacketReader &packet) {
 	skillMacros.load(id);
 
 	stats->checkHpMp(); // Adjust down HP or MP if necessary
+
+	if (isGm() || isAdmin()) {
+		if (!checked) {
+			map = Maps::GmMap;
+			map_pos = -1;
+		}
+	}
+	else {
+		if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
+			map = Maps::getMap(map)->getInfo()->forcedReturn;
+			map_pos = -1;
+		}
+		else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
+			map = Maps::getMap(map)->getInfo()->rm;
+			map_pos = -1;
+		}
+	}
+	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
+	m_stance = 0;
+	m_foothold = 0;
 
 	PlayerPacket::connectData(this);
 
