@@ -15,9 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef PLAYERMONSTERBOOK_H
-#define PLAYERMONSTERBOOK_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -63,5 +61,3 @@ private:
 	Player *m_player;
 	unordered_map<int32_t, MonsterCard> m_cards;
 };
-
-#endif

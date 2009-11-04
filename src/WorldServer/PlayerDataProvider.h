@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERDATAPROVIDER_H
-#define PLAYERDATAPROVIDER_H
+#pragma once
 
 #include "GameObjects.h"
 #include "Types.h"
@@ -93,5 +92,3 @@ private:
 	unordered_map<int32_t, Alliance *> m_alliances;
 	unordered_map<int32_t, Party *> m_parties;
 };
-
-#endif

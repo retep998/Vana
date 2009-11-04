@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUFFDATA_H
-#define BUFFDATA_H
+#pragma once
 
 #include "GameConstants.h"
 #include "Types.h"
@@ -92,5 +91,3 @@ private:
 	unordered_map<int32_t, SkillInfo> skillsinfo;
 	unordered_map<uint8_t, MobAilmentInfo> mobskillsinfo;
 };
-
-#endif

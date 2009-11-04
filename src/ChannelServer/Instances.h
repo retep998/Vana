@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INSTANCES_H
-#define INSTANCES_H
+#pragma once
 
 #include "Instance.h"
 #include "Types.h"
@@ -45,5 +44,3 @@ private:
 
 	unordered_map<string, Instance *> m_instances; // Index of instances by name
 };
-
-#endif

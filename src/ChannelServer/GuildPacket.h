@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef GUILDPACKET_H
-#define GUILDPACKET_H
+#pragma once
 
 #include "Player.h"
 #include "Types.h"
@@ -52,5 +51,3 @@ namespace GuildPacket{
 	void displayGuildRankBoard(int32_t playerid, int32_t npcid);
 	void displayGuildDeny(PacketReader &pack);
 }
-
-#endif

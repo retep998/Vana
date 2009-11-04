@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef EVENTDATAPROVIDER_H
-#define EVENTDATAPROVIDER_H
+#pragma once
 
 #include "Timer/Container.h"
 #include "Types.h"
@@ -54,5 +53,3 @@ private:
 	boost::scoped_ptr<Timer::Container> m_timers;
 	boost::scoped_ptr<Variables> m_variables;
 };
-
-#endif

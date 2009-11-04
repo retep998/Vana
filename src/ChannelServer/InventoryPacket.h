@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INVENTORYPACKET_H
-#define INVENTORYPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <vector>
@@ -57,5 +56,3 @@ namespace InventoryPacket {
 	void sendChalkboardUpdate(Player *player, const string &msg = "");
 	void blankUpdate(Player *player);
 };
-
-#endif

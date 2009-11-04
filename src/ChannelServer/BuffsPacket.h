@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUFFSPACKET_H
-#define BUFFSPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -36,5 +35,3 @@ namespace BuffsPacket {
 	void useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid);
 	void useHomingBeacon(Player *player, int32_t skillid, ActiveBuff &pskill, int32_t mapmobid);
 };
-
-#endif

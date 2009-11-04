@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMER_TIME_H
-#define TIMER_TIME_H
+#pragma once
 
 #include <ctime>
 #include "../TimeUtilities.h"
@@ -48,5 +47,3 @@ clock_t Time::nthSecondOfHour(uint16_t second) {
 }
 
 }
-
-#endif

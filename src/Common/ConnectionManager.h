@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CONNECTIONMANAGER_H
-#define CONNECTIONMANAGER_H
+#pragma once
 
 #include "MapleServerClient.h"
 #include "MapleServer.h"
@@ -61,5 +60,3 @@ private:
 	std::list<MapleServerPtr> m_servers;
 	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };
-
-#endif

@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INVENTORY_H
-#define INVENTORY_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -37,5 +36,3 @@ namespace Inventory {
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 	bool showShop(Player *player, int32_t shopid);
 };
-
-#endif

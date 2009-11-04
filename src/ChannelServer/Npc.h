@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef NPCS_H
-#define NPCS_H
+#pragma once
 
 #include "LuaNpc.h"
 #include "Pos.h"
@@ -119,5 +118,3 @@ namespace NPCDialogs {
 	const uint8_t style = 0x07;
 	const uint8_t acceptDecline = 0x0c;
 };
-
-#endif

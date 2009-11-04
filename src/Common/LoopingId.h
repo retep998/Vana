@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOOPINGID_H
-#define LOOPINGID_H
+#pragma once
 
 #include "Types.h"
 #include <limits>
@@ -49,5 +48,3 @@ inline int32_t LoopingId::next() {
 inline void LoopingId::reset() {
 	current = minimum;
 }
-
-#endif

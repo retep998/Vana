@@ -15,13 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef IP_H
-#define IP_H
+#pragma once
 
 #include "Types.h"
 #include <vector>
 
 typedef std::vector<uint32_t> IpArray;
 typedef std::vector<IpArray> IpMatrix;
-
-#endif
