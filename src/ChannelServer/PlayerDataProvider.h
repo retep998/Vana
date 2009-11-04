@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERDATAPROVIDER_H
-#define PLAYERDATAPROVIDER_H
+#pragma once
 
 #include "GameObjects.h"
 #include "Types.h"
@@ -115,5 +114,3 @@ private:
 	unordered_map<string, Player *> m_players_names; // Index of players by name
 	unordered_map<string, Guild *> m_guilds_names;
 };
-
-#endif

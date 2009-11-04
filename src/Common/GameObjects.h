@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef GAMEOBJECTS_H
-#define GAMEOBJECTS_H
+#pragma once
 
 #include "GameConstants.h"
 #include "Types.h"
@@ -95,5 +94,3 @@ struct GuildLogo {
 };
 
 typedef boost::array<string, GuildsAndAlliances::RankQuantity> GuildRanks;
-
-#endif

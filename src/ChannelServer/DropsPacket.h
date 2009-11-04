@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef DROPPACKET_H
-#define DROPPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -36,5 +35,3 @@ namespace DropsPacket {
 	void pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
 	void pickupDropSpecial(Player *player, int32_t id);
 };
-
-#endif

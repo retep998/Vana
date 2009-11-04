@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SCRIPTDATA_H
-#define SCRIPTDATA_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -58,5 +57,3 @@ private:
 	unordered_map<int32_t, string> itemscripts;
 	unordered_map<int16_t, unordered_map<int8_t, string> > questscripts;
 };
-
-#endif

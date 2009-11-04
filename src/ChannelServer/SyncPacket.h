@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SYNCPACKET_H
-#define SYNCPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -37,5 +36,3 @@ namespace SyncPacket {
 	void updateJob(WorldServerConnection *player, int32_t playerid, int32_t job);
 	void updateMap(WorldServerConnection *player, int32_t playerid, int32_t map);
 }
-
-#endif

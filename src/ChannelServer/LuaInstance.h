@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LUAINSTANCE_H
-#define LUAINSTANCE_H
+#pragma once
 
 #include "Instance.h"
 #include "LuaScriptable.h"
@@ -44,5 +43,3 @@ namespace LuaExports {
 	int setPlayerInstance(lua_State *luaVm);
 	int createInstanceInstance(lua_State *luaVm);
 }
-
-#endif

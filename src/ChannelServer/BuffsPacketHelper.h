@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUFFSPACKETHELPER_H
-#define BUFFSPACKETHELPER_H
+#pragma once
 
 #include "GameConstants.h"
 #include "Types.h"
@@ -27,5 +26,3 @@ class PacketCreator;
 namespace BuffsPacketHelper {
 	void addBytes(PacketCreator &packet, const boost::array<uint8_t, BuffBytes::ByteQuantity> &bytes);
 }
-
-#endif

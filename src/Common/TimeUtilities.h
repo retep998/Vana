@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef TIMEUTILITIES_H
-#define TIMEUTILITIES_H
+#pragma once
 
 #include "Types.h"
 #include <ctime>
@@ -42,5 +41,3 @@ namespace TimeUtilities {
 	int32_t getTimeZoneOffset();
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
 }
-
-#endif

@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SKILLSPACKET_H
-#define SKILLSPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -35,5 +34,3 @@ namespace SkillsPacket {
 	void sendCooldown(Player *player, int32_t skillid, int16_t time);
 	void showBerserk(Player *player, uint8_t level, bool on);
 };
-
-#endif

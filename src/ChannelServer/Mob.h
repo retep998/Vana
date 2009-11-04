@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MOB_H
-#define MOB_H
+#pragma once
 
 #include "MobDataProvider.h"
 #include "MovableLife.h"
@@ -175,5 +174,3 @@ private:
 	void spawnDeathMobs(Map *map);
 	void updateSpawnLinks();
 };
-
-#endif

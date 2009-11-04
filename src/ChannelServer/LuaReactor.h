@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LUAREACTOR_H
-#define LUAREACTOR_H
+#pragma once
 
 #include "LuaScriptable.h"
 #include <string>
@@ -52,5 +51,3 @@ namespace LuaExports {
 	int spawnMobReactor(lua_State *luaVm);
 	int spawnZakum(lua_State *luaVm);
 };
-
-#endif

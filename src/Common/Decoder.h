@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef DECODER_H
-#define DECODER_H
+#pragma once
 
 #include "Types.h"
 #include "MapleEncryption.h"
@@ -48,5 +47,3 @@ inline
 int32_t Decoder::getLength(unsigned char *header) {
 	return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100));
 }
-
-#endif

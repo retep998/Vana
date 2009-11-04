@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
 #include "LoopingId.h"
 #include "MapDataProvider.h"
@@ -210,5 +209,3 @@ private:
 	unordered_map<int32_t, Mist *> m_poison_mists;
 	unordered_map<int32_t, Mist *> m_mists;
 };
-
-#endif

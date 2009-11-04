@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUFFS_H
-#define BUFFS_H
+#pragma once
 
 #include "Types.h"
 #include "BuffDataProvider.h"
@@ -79,5 +78,3 @@ namespace Buffs {
 	int16_t getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level);
 	int32_t parseMountInfo(Player *player, int32_t skillid, uint8_t level);
 };
-
-#endif

@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LUASCRIPTABLE_H
-#define LUASCRIPTABLE_H
+#pragma once
 
 extern "C" {
 	#include "lua.h"
@@ -325,5 +324,3 @@ namespace LuaExports {
 	int getAllianceCapacity(lua_State *luaVm);
 	int increaseAllianceCapacity(lua_State *luaVm);
 };
-
-#endif

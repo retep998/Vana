@@ -15,9 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef GUILDBBS_H
-#define GUILDBBS_H
+#pragma once
 
 #include "Types.h"
 #include "Guild.h"
@@ -110,5 +108,3 @@ private:
 	int32_t lastid;
 	BbsThread *notice;
 };
-
-#endif

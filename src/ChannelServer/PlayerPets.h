@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERPETS_H
-#define PLAYERPETS_H
+#pragma once
 
 #include <boost/tr1/unordered_map.hpp>
 
@@ -43,5 +42,3 @@ private:
 	unordered_map<int8_t, int32_t> m_summoned;
 	Player *m_player;
 };
-
-#endif

@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#pragma once
 
 #define MAPLE_VERSION 75
 #define MAPLE_LOCALE 0x08 // 0x08 = global, 0x09 = European, etc. etc.

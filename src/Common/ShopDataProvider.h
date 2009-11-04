@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SHOPDATA_H
-#define SHOPDATA_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -68,5 +67,3 @@ private:
 	unordered_map<int32_t, ShopInfo> shops;
 	unordered_map<int8_t, map<int32_t, double> > rechargecosts;
 };
-
-#endif
