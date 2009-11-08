@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <string>
@@ -45,8 +46,8 @@ struct MobSkillInfo {
 	int16_t effectAfter;
 };
 
-struct MobInfo {
-	MobInfo() :
+struct MobInfoRaw {
+	MobInfoRaw() :
 		boss(false),
 		canfreeze(false),
 		canpoison(false),
@@ -112,6 +113,7 @@ struct MobInfo {
 	double traction;
 	vector<int32_t> summon;
 };
+typedef std::tr1::shared_ptr<MobInfoRaw> MobInfo;
 
 class MobDataProvider : boost::noncopyable {
 public:
@@ -123,7 +125,7 @@ public:
 	void loadData();
 
 	bool mobExists(int32_t mobid) { return mobinfo.find(mobid) != mobinfo.end(); }
-	MobInfo * getMobInfo(int32_t mobid) { return &mobinfo[mobid]; }
+	MobInfo getMobInfo(int32_t mobid) { return mobinfo[mobid]; }
 	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t index);
 	MobSkillInfo * getMobSkill(int32_t mobid, uint8_t index);
 	uint8_t getSkillCount(int32_t mobid);

@@ -119,7 +119,7 @@ namespace Functors {
 			else if (cmp == "cannot_damage_player") mob->candamage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
 		}
-		MobInfo *mob;
+		MobInfo mob;
 	};
 }
 
@@ -144,50 +144,50 @@ void MobDataProvider::loadMobs() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mob = MobInfo();
-		MobDataFlags whoo = {&mob};
+		mob.reset(new MobInfoRaw());
+		MobDataFlags whoo = {mob};
 		runFlags(row[Flags], whoo);
 
 		mobid = atoi(row[MobId]);
-		mob.level = atoi(row[Level]);
-		mob.hp = atoi(row[Hp]);
-		mob.mp = atoi(row[Mp]);
-		mob.hprecovery = atoi(row[HpRecovery]);
-		mob.mprecovery = atoi(row[MpRecovery]);
-		mob.selfdestruction = atoi(row[SelfDestruct]);
-		mob.exp = atoi(row[Exp]);
-		mob.link = atoi(row[Link]);
-		mob.buff = atoi(row[DeathBuff]);
-		mob.removeafter = atoi(row[DeathAfter]);
-		mob.hpcolor = atoi(row[HpBar]);
-		mob.hpbgcolor = atoi(row[HpBarBg]);
-		mob.cp = atoi(row[CarnivalPoints]);
-		mob.avo = atoi(row[Avoidability]);
-		mob.acc = atoi(row[Accuracy]);
-		mob.speed = atoi(row[Speed]);
-		mob.chasespeed = atoi(row[ChaseSpeed]);
-		mob.watk = atoi(row[PhysicalAtt]);
-		mob.wdef = atoi(row[PhysicalDef]);
-		mob.matk = atoi(row[MagicAtt]);
-		mob.mdef = atoi(row[MagicDef]);
-		mob.traction = atof(row[Traction]);
-		mob.damageskill = atoi(row[DamageSkill]);
-		mob.damagemob = atoi(row[DamageMob]);
-		mob.knockback = atoi(row[Knockback]);
-		mob.summontype = atoi(row[SummonType]);
-		mob.fixeddamage = atoi(row[FixedDamage]);
+		mob->level = atoi(row[Level]);
+		mob->hp = atoi(row[Hp]);
+		mob->mp = atoi(row[Mp]);
+		mob->hprecovery = atoi(row[HpRecovery]);
+		mob->mprecovery = atoi(row[MpRecovery]);
+		mob->selfdestruction = atoi(row[SelfDestruct]);
+		mob->exp = atoi(row[Exp]);
+		mob->link = atoi(row[Link]);
+		mob->buff = atoi(row[DeathBuff]);
+		mob->removeafter = atoi(row[DeathAfter]);
+		mob->hpcolor = atoi(row[HpBar]);
+		mob->hpbgcolor = atoi(row[HpBarBg]);
+		mob->cp = atoi(row[CarnivalPoints]);
+		mob->avo = atoi(row[Avoidability]);
+		mob->acc = atoi(row[Accuracy]);
+		mob->speed = atoi(row[Speed]);
+		mob->chasespeed = atoi(row[ChaseSpeed]);
+		mob->watk = atoi(row[PhysicalAtt]);
+		mob->wdef = atoi(row[PhysicalDef]);
+		mob->matk = atoi(row[MagicAtt]);
+		mob->mdef = atoi(row[MagicDef]);
+		mob->traction = atof(row[Traction]);
+		mob->damageskill = atoi(row[DamageSkill]);
+		mob->damagemob = atoi(row[DamageMob]);
+		mob->knockback = atoi(row[Knockback]);
+		mob->summontype = atoi(row[SummonType]);
+		mob->fixeddamage = atoi(row[FixedDamage]);
 
-		mob.iceattr = getElemModifier(row[IceMod]);
-		mob.fireattr = getElemModifier(row[FireMod]);
-		mob.poisonattr = getElemModifier(row[PoisonMod]);
-		mob.lightningattr = getElemModifier(row[LightningMod]);
-		mob.holyattr = getElemModifier(row[HolyMod]);
-		mob.nonelemattr = getElemModifier(row[NonElementalMod]);
+		mob->iceattr = getElemModifier(row[IceMod]);
+		mob->fireattr = getElemModifier(row[FireMod]);
+		mob->poisonattr = getElemModifier(row[PoisonMod]);
+		mob->lightningattr = getElemModifier(row[LightningMod]);
+		mob->holyattr = getElemModifier(row[HolyMod]);
+		mob->nonelemattr = getElemModifier(row[NonElementalMod]);
 
-		mob.canfreeze = (!mob.boss && mob.iceattr != MobElements::Immune && mob.iceattr != MobElements::Strong);
-		mob.canpoison = (!mob.boss && mob.poisonattr != MobElements::Immune && mob.poisonattr != MobElements::Strong);
+		mob->canfreeze = (!mob->boss && mob->iceattr != MobElements::Immune && mob->iceattr != MobElements::Strong);
+		mob->canpoison = (!mob->boss && mob->poisonattr != MobElements::Immune && mob->poisonattr != MobElements::Strong);
 
-		mob.skillcount = getSkillCount(mobid); // Relies on skills being loaded first
+		mob->skillcount = getSkillCount(mobid); // Relies on skills being loaded first
 		mobinfo[mobid] = mob;
 	}
 }
@@ -207,7 +207,7 @@ void MobDataProvider::loadSummons() {
 		mobid = atoi(row[MobId]);
 		summonid = atoi(row[SummonId]);
 
-		mobinfo[mobid].summon.push_back(summonid);
+		mobinfo[mobid]->summon.push_back(summonid);
 	}
 }
 
