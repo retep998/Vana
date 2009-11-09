@@ -69,8 +69,6 @@ void EquipDataProvider::loadEquips() {
 	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
-	int64_t bits;
-	int64_t ibit;
 	EquipInfo equip;
 
 	using namespace Functors;
