@@ -126,13 +126,7 @@ void EquipDataProvider::loadEquips() {
 		equip.poisondamage = atoi(row[PoisonDamage]);
 		equip.elementaldefault = atoi(row[ElementalDefault]);
 		equip.traction = atof(row[Traction]);
-
-		bits = atoli(row[EquipSlots]);
-		for (ibit = 1; ibit <= bits; ibit <<= 1) {
-			if (bits & ibit) {
-				equip.validslots |= ibit;
-			}
-		}
+		equip.validslots = atoli(row[EquipSlots]);
 
 		equips[id] = equip;
 	}
