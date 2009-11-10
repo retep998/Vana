@@ -18,28 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <string>
 
-using std::tr1::unordered_map;
+using std::string;
 
-class PacketCreator;
-class Pet;
 class Player;
+class PacketReader;
 
-class PlayerPets {
-public:
-	PlayerPets(Player *player) : m_player(player) { }
-
-	void save();
-	void petInfoPacket(PacketCreator &packet);
-
-	Pet * getPet(int32_t petid);
-	Pet * getSummoned(int8_t index);
-
-	void addPet(Pet *pet);
-	void setSummoned(int8_t index, int32_t petid);
-private:
-	unordered_map<int32_t, Pet *> m_playerpets;
-	unordered_map<int8_t, int32_t> m_summoned;
-	Player *m_player;
+namespace PetHandler {
+	void showPets(Player *player);
+	void handleChat(Player *player, PacketReader &packet);
+	void handleFeed(Player *player, PacketReader &packet);
+	void handleMovement(Player *player, PacketReader &packet);
+	void handleSummon(Player *player, PacketReader &packet);
+	void handleCommand(Player *player, PacketReader &packet);
+	void changeName(Player *player, const string &name);
 };

@@ -268,7 +268,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Pets.cpp"
+					RelativePath=".\src\ChannelServer\Pet.cpp"
 					>
 				</File>
 				<File
@@ -608,6 +608,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PetHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.cpp"
 					>
 				</File>
@@ -698,7 +702,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Pets.h"
+					RelativePath=".\src\ChannelServer\Pet.h"
 					>
 				</File>
 				<File
@@ -1031,6 +1035,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PartyHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PetHandler.h"
 					>
 				</File>
 				<File

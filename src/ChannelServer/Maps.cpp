@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapObjects.h"
 #include "MapPacket.h"
 #include "PacketReader.h"
-#include "Pets.h"
+#include "PetHandler.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
@@ -143,7 +143,7 @@ void Maps::addPlayer(Player *player, int32_t mapid) {
 	PlayerDataProvider::Instance()->addPlayer(player);
 	getMap(mapid)->addPlayer(player);
 	getMap(mapid)->showObjects(player);
-	Pets::showPets(player);
+	PetHandler::showPets(player);
 	Summons::showSummon(player);
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client

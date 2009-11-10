@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Pets.h"
+#include "PetsPacket.h"
 #include "GameConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
-#include "PetsPacket.h"
-#include "Player.h"
 #include "PacketReader.h"
+#include "Pet.h"
+#include "Player.h"
 #include "SendHeader.h"
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
