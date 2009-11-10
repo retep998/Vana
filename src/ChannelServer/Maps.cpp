@@ -64,7 +64,13 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			}
 		}
 		else {
-			string message = "This portal '" + portal->script + "' is currently unavailable.";
+			string message;
+			if (player->isGm()) {
+				message = "This portal '" + portal->script + "' is currently unavailable.";
+			}
+			else {
+				message = "This portal is currently unavailable.";
+			}
 			PlayerPacket::showMessage(player, message, 5);
 			MapPacket::portalBlocked(player);
 		}
@@ -89,8 +95,8 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	int32_t opcode = packet.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
-			if (player->getStats()->getHp() == 0) { // else, hacking
-				packet.getString(); // Useless here.
+			if (player->getStats()->getHp() == 0) {
+				packet.getString(); // Useless
 				packet.skipBytes(1); // Useless
 				bool wheel = packet.getBool();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
