@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.h"
 #include "MovableLife.h"
 #include "Pos.h"
 #include "Types.h"
@@ -27,26 +26,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::tr1::unordered_map;
 
-class Pet;
 class Player;
-class PacketReader;
 struct Item;
-
-namespace Pets {
-	extern int16_t exps[Stats::PetLevels - 1];
-	void showPets(Player *player);
-	void handleChat(Player *player, PacketReader &packet);
-	void handleFeed(Player *player, PacketReader &packet);
-	void handleMovement(Player *player, PacketReader &packet);
-	void handleSummon(Player *player, PacketReader &packet);
-	void handleCommand(Player *player, PacketReader &packet);
-	void changeName(Player *player, const string &name);
-};
 
 class Pet : public MovableLife {
 public:
 	Pet(Player *player, Item *item);
-	Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot);
+	Pet(Player *player, Item *item, int8_t index, const string &name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot);
 
 	void setIndex(int8_t index) { this->index = index; }
 	void setInventorySlot(int8_t slot) { this->inventorySlot = slot; }
