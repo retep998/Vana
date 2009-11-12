@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace MapleEncryption {
 	extern uint8_t values[256];
-	extern uint8_t x[4];
 	void nextIv(unsigned char *vector);
 	void mapleDecrypt(unsigned char *buf, int32_t size);
 	void mapleEncrypt(unsigned char *buf, int32_t size);
