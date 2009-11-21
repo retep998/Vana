@@ -40,19 +40,21 @@ void ScriptDataProvider::loadData() {
 
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM scripts");
 	mysqlpp::UseQueryResult res = query.use();
+	int8_t modifier;
 	int32_t objectid;
 	string script;
 	string scripttype;
 
 	enum ScriptData {
 		ScriptType = 0,
-		State, ObjectId, Script
+		Modifier, ObjectId, Script
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		objectid = atoi(row[ObjectId]);
 		scripttype = row[ScriptType];
 		script = row[Script];
+		modifier = atoi(row[Modifier]);
 
 		if (scripttype == "npc") npcscripts[objectid] = script;
 		else if (scripttype == "reactor") reactorscripts[objectid] = script;
@@ -60,8 +62,7 @@ void ScriptDataProvider::loadData() {
 		else if (scripttype == "map_first_enter") firstmapentryscripts[objectid] = script;
 		else if (scripttype == "item") itemscripts[objectid] = script;
 		else if (scripttype == "quest") {
-			int8_t state = atoi(row[State]);
-			questscripts[static_cast<int16_t>(objectid)][state] = script;
+			questscripts[static_cast<int16_t>(objectid)][modifier] = script;
 		}
 	}
 
