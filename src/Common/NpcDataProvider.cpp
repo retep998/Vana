@@ -31,6 +31,7 @@ namespace Functors {
 	struct FlagFunctor {
 		void operator()(const string &cmp) {
 			if (cmp == "maple_tv") npc->isMapleTv = true;
+			else if (cmp == "is_guild_rank") npc->isGuildRank = true;
 		}
 		NpcData *npc;
 	};

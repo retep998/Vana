@@ -111,8 +111,8 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		Flags, ShuffleName, Bgm, MinLevel, TimeLimit,
 		RegenRate, Traction, LTX, LTY, RBX,
 		RBY, ReturnMap, ForcedReturn, FieldType, Unused,
-		DecHp, Dps, ProtectItem, MobRate, Link,
-		FieldLimit
+		DecHp, Dps, ProtectItem, ShipKind, MobRate,
+		Link, FieldLimit
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
@@ -141,6 +141,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		mapinfo->minLevel = atoi(row[MinLevel]);
 		mapinfo->timeLimit = atoi(row[TimeLimit]);
 		mapinfo->protectItem = atoi(row[ProtectItem]);
+		mapinfo->shipKind = atoi(row[ShipKind]);
 
 		map = new Map(mapinfo, mapid);
 	}
