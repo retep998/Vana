@@ -2084,7 +2084,7 @@ int LuaExports::disbandGuild(lua_State *luaVm) {
 }
 
 int LuaExports::displayGuildRankBoard(lua_State *luaVm) {
-	GuildPacket::displayGuildRankBoard(getPlayer(luaVm)->getId(), lua_tointeger(luaVm, -1));
+	NpcHandler::showGuildRank(getPlayer(luaVm), lua_tointeger(luaVm, -1));
 	return 0;
 }
 
@@ -2135,6 +2135,7 @@ int LuaExports::getAllianceCapacity(lua_State *luaVm) {
 		lua_pushnumber(luaVm, 2);
 	return 1;
 }
+
 int LuaExports::disbandAlliance(lua_State *luaVm) {
 	AlliancePacket::sendDisbandAlliance(getPlayer(luaVm)->getAllianceId(), getPlayer(luaVm)->getId());
 	return 0;
