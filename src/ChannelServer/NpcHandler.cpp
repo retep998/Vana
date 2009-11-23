@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcHandler.h"
+#include "GuildPacket.h"
 #include "Inventory.h"
 #include "Map.h"
 #include "Maps.h"
@@ -41,16 +42,21 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (NPC::hasScript(npcs.id, 0, false)) {
+	if (player->getNPC() == 0 && NPC::hasScript(npcs.id, 0, false)) {
 		NPC *npc = new NPC(npcs.id, player, npcs.pos);
 		npc->run();
 		return;
 	}
-	if (NpcHandler::showShop(player, npcs.id)) {
-		return;
-	}
-	if (NpcHandler::showStorage(player, npcs.id)) {
-		return;
+	else if (player->getShop() == 0) {
+		if (NpcHandler::showShop(player, npcs.id)) {
+			return;
+		}
+		if (NpcHandler::showStorage(player, npcs.id)) {
+			return;
+		}
+		if (NpcHandler::showGuildRank(player, npcs.id)) {
+			return;
+		}
 	}
 }
 
@@ -150,6 +156,15 @@ bool NpcHandler::showStorage(Player *player, int32_t npcid) {
 	if (NpcDataProvider::Instance()->getStorageCost(npcid)) {
 		player->setShop(npcid);
 		StoragePacket::showStorage(player, npcid);
+		return true;
+	}
+	return false;
+}
+
+bool NpcHandler::showGuildRank(Player *player, int32_t npcid) {
+	if (NpcDataProvider::Instance()->isGuildRank(npcid)) {
+		GuildPacket::displayGuildRankBoard(player->getId(), npcid);
+		return true;
 	}
 	return false;
 }
