@@ -71,7 +71,7 @@ namespace Functors {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
@@ -98,8 +98,9 @@ void ItemDataProvider::loadItems() {
 		item.minlevel = atoi(row[MinLevel]);
 		item.maxlevel = atoi(row[MaxLevel]);
 		item.exp = atoi(row[Experience]);
-		item.name = row[Name];
-
+		if (row[Name]) {
+			item.name = row[Name];
+		}
 		items[id] = item;
 	}
 }
