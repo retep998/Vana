@@ -33,13 +33,14 @@ namespace MapPacket {
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec);
-	void showTimer(int32_t mapid, int32_t sec); // Show Timer like in PQ
-	void showTimer(Player *player, int32_t sec); // Show Timer like in PQ
+	void showTimer(int32_t mapid, int32_t sec); // Show timer like in PQs
+	void showTimer(Player *player, int32_t sec); // Show Timer like in PQs
 	void forceMapEquip(Player *player);
-	void setMusic(int32_t mapid, const string &musicname); // Set map music
-	void sendSound(int32_t mapid, const string &soundname); // Send sound - clear/wrong/etc
-	void sendEvent(int32_t mapid, const string &eventname); // Send event - clear/wrong/etc
-	void sendEffect(int32_t mapid, const string &effectname); // Send effect - gate/etc
+	void playMusic(int32_t mapid, const string &music); // Set map music
+	void playMusic(Player *player, const string &music); // Set map music
+	void sendSound(int32_t mapid, const string &sound); // Send sound - clear/wrong/etc
+	void sendEvent(int32_t mapid, const string &id); // Send event - clear/wrong/etc
+	void sendEffect(int32_t mapid, const string &effect); // Send effect - gate/etc
 	void playPortalSoundEffect(Player *player);
 	void showEventInstructions(int32_t mapid);
 	void showMist(Player *player, Mist *mist);
