@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_41_0/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_39_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_41_0/lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,7 +110,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/"
+				AdditionalIncludeDirectories="$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_41_0/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -131,7 +131,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_39_0/lib"
+				AdditionalLibraryDirectories="$(ProgramFiles)/boost/boost_1_41_0/lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -414,7 +414,7 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			UniqueIdentifier="{94195380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
 				RelativePath=".\src\Common\GameConstants.h"
