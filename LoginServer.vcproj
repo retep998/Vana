@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="LoginServer"
-	ProjectGUID="{B7FA2720-4A56-49D7-986E-FF358C418C72}"
+	ProjectGUID="{B7FA2720-4A56-49D7-986E-FF358C398C72}"
 	RootNamespace="LoginServer"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
@@ -286,7 +286,7 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{94195380-89BD-4b04-88EB-625FBE52EBFB}"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
 				RelativePath=".\src\LoginServer\PrecompiledHeader.h"
