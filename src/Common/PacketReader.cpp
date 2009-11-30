@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketReader.h"
 #include "Pos.h"
+#include <stdexcept>
 
 PacketReader::PacketReader() : m_length(0), m_pos(0) { }
 PacketReader::PacketReader(unsigned char *buffer, size_t length) : m_buffer(buffer), m_length(length), m_pos(0) { }
@@ -30,10 +31,13 @@ int16_t PacketReader::getHeader() {
 }
 
 string PacketReader::getString() {
-	return getString(get<int16_t>());
+	return getString(get<uint16_t>());
 }
 
 string PacketReader::getString(size_t len) {
+	if (len > getBufferLength()) {
+		throw std::range_error("Packet string longer than buffer allows");
+	}
 	string s((char *) m_buffer + m_pos, len);
 	m_pos += len;
 	return s;

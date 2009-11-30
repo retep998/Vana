@@ -37,7 +37,7 @@ public:
 	template<typename T>
 	vector<T> getVector();
 	void skipBytes(int32_t len);
-	int16_t getHeader(); // Basically getShort that always read at start
+	int16_t getHeader(); // Basically getShort that always reads at the start
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer();
@@ -53,6 +53,9 @@ private:
 
 template<typename T>
 T PacketReader::get() {
+	if (sizeof(T) > getBufferLength()) {
+		throw std::range_error("Packet data longer than buffer allows");
+	}
 	T val = (*(T *)(m_buffer + m_pos));
 	m_pos += sizeof(T);
 	return val;
