@@ -52,6 +52,7 @@ public:
 	int8_t getId() const { return m_id; }
 	int8_t getRibbon() const { return m_config.ribbon; }
 	uint16_t getPort() const { return m_port; }
+	uint16_t getRandomChannel() const;
 	size_t getMaxChannels() const { return m_config.maxChannels; }
 	int32_t getPlayerLoad() const { return m_playerLoad; }
 	int32_t getMaxPlayerLoad() const { return m_config.maxPlayerLoad; }

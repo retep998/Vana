@@ -111,6 +111,9 @@ bool ValidCharDataProvider::isForbiddenName(const string &cmp) {
 }
 
 bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, bool cygnus) {
+	if (gender != Gender::Male && gender != Gender::Female) {
+		return false;
+	}
 	bool valid = isValidItem(hair, gender, cygnus, ValidItemType::Hair);
 	if (valid) valid = isValidItem(haircolor, gender, cygnus, ValidItemType::HairColor);
 	if (valid) valid = isValidItem(eyes, gender, cygnus, ValidItemType::Face);

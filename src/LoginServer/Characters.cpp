@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.h"
 #include "PacketReader.h"
 #include "Player.h"
-#include "Randomizer.h"
 #include "ValidCharDataProvider.h"
 #include "World.h"
 #include "Worlds.h"
@@ -93,7 +92,7 @@ void Characters::showAllCharacters(Player *player) {
 	typedef unordered_map<uint8_t, vector<Character> > CharsMap;
 
 	CharsMap chars;
-	uint32_t charsNum = 0; // I want to reference this later
+	uint32_t charsNum = 0;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		uint8_t worldid = res[i]["world_id"];
 		if (!Worlds::Instance()->getWorld(worldid)->isConnected()) {
@@ -203,7 +202,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	int32_t weapon = packet.get<int32_t>();
 	int8_t gender = packet.get<int8_t>();
 
-	if (gender != Gender::Female && gender != Gender::Male) {
+	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, haircolor, eyes, skin, top, bottom, shoes, weapon)) {
 		// Hacking
 		player->getSession()->disconnect();
 		return;
@@ -213,12 +212,6 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	uint16_t dex = 5;
 	uint16_t intt = 4;
 	uint16_t luk = 4;
-
-	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, haircolor, eyes, skin, top, bottom, shoes, weapon)) {
-		// Hacking
-		player->getSession()->disconnect();
-		return;
-	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
@@ -272,22 +265,22 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 		// hacking
 		return;
 	}
+	enum DeletionConstants {
+		Success = 0x00,
+		IncorrectBirthday = 0x12,
+		NoGuildMaster = 0x16,
+		NoProposingChumps = 0x18,
+		NoWorldTransfers = 0x1A
+	};
 
-	uint8_t result = 0x0; // Result of the deletion
-	/* Results:
-	00 = Deletion sucess
-	12 = "The 8-digit birthday code you have entered is incorrect. Please try again."
-	16 = "Cannot delete Guild Master Character. Please disband your guild before deleting."
-	18 = "Characters in the process of marriage or engagement can not be deleted."
-	1a = "You cannot delete a character that is currently going through the transfer." in popup box :S
-	*/
+	uint8_t result = Success;
 
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT guildid, guildrank, world_id FROM characters WHERE id = " << id << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if ((int32_t) res[0]["guildrank"] == 1) {
-		result = 0x16;
+		result = NoGuildMaster;
 	}
 	else if (data == player->getCharDeletePassword()) {
 		if ((int32_t) res[0]["guildid"] != 0) {
@@ -336,11 +329,9 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 
 		query << "DELETE FROM mounts WHERE charid = " << id;
 		query.exec();
-
-		result = 0x0;
 	}
 	else {
-		result = 0x12;
+		result = IncorrectBirthday;
 	}
 
 	LoginPacket::deleteCharacter(player, id, result);
@@ -368,7 +359,7 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 	player->setWorld(worldid);
 
 	// Take the player to a random channel
-	uint16_t channel = static_cast<uint16_t>(Randomizer::Instance()->randInt(Worlds::Instance()->getWorld(worldid)->getMaxChannels() - 1));
+	uint16_t channel = Worlds::Instance()->getWorld(worldid)->getRandomChannel();
 	player->setChannel(channel);
 
 	connectGame(player, id);
@@ -379,7 +370,7 @@ bool Characters::ownerCheck(Player *player, int32_t id) {
 	query << "SELECT true FROM characters WHERE id = " << id << " AND userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
 
-	return ((res.num_rows() == 1) ? true : false);
+	return (res.num_rows() == 1);
 }
 
 bool Characters::nameIllegal(Player *player, const string &name) {
