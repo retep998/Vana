@@ -262,7 +262,6 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 		Pos playerpos = player->getPos();
 		Map *map = Maps::getMap(mapid);
 
-		// This map has no dimensions, we have to make a custom position mover
 		Pos floor = map->findFloor(playerpos);
 		if (floor.y == playerpos.y) { // There are no footholds below the player
 			int8_t count = player->getFallCounter();

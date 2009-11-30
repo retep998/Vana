@@ -23,24 +23,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "RecvHeader.h"
 #include "Worlds.h"
+#include <stdexcept>
 
 void Player::realHandleRequest(PacketReader &packet) {
-	switch (packet.get<int16_t>()) {
-		case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
-		case CMSG_PLAYER_LIST: Worlds::Instance()->channelSelect(this, packet); break;
-		case CMSG_WORLD_STATUS: Worlds::Instance()->selectWorld(this, packet); break;
-		case CMSG_PIN: Login::handleLogin(this, packet); break;
-		case CMSG_WORLD_LIST:
-		case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
-		case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
-		case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
-		case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
-		case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
-		case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
-		case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
-		case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
-		case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
-		case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
+	try {
+		switch (packet.get<int16_t>()) {
+			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
+			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
+			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
+			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
+			case CMSG_PIN: Login::handleLogin(this, packet); break;
+			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
+			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
+			case CMSG_PLAYER_LIST: Worlds::Instance()->channelSelect(this, packet); break;
+			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
+			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
+			case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
+			case CMSG_WORLD_LIST:
+			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
+			case CMSG_WORLD_STATUS: Worlds::Instance()->selectWorld(this, packet); break;
+		}
+	}
+	catch (std::range_error) {
+		// Packet data didn't match the packet length somewhere
+		// This isn't always evidence of tampering with packets
+		// We may not process the structure properly
+		getSession()->disconnect();
 	}
 }
 
