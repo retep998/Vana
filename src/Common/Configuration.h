@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+struct MajorBoss {
+	int16_t attempts;
+	vector<int8_t> channels;
+};
+
 struct Configuration {
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
-	int16_t pianusAttempts;
-	int16_t papAttempts;
-	int16_t zakumAttempts;
-	int16_t horntailAttempts;
-	int16_t pinkbeanAttempts;
 	int16_t maxStats;
 	int32_t expRate;
 	int32_t questExpRate;
@@ -43,9 +43,9 @@ struct Configuration {
 	string eventMsg;
 	string scrollingHeader;
 	string name;
-	vector<int8_t> pianusChannels;
-	vector<int8_t> papChannels;
-	vector<int8_t> zakumChannels;
-	vector<int8_t> horntailChannels;
-	vector<int8_t> pinkbeanChannels;
+	MajorBoss pianus;
+	MajorBoss pap;
+	MajorBoss zakum;
+	MajorBoss horntail;
+	MajorBoss pinkbean;
 };

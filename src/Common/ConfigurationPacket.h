@@ -20,8 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketCreator;
 class PacketReader;
 struct Configuration;
+struct MajorBoss;
 
 namespace ConfigurationPacket {
 	void addConfig(Configuration &config, PacketCreator &packet);
 	Configuration getConfig(PacketReader &packet);
+
+	void addMajorBoss(MajorBoss &boss, PacketCreator &packet);
+	MajorBoss getMajorBoss(PacketReader &packet);
 }
