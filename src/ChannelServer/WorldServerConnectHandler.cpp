@@ -70,11 +70,11 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		Configuration conf = ConfigurationPacket::getConfig(packet);
 
 		ChannelServer::Instance()->setConfig(conf);
-		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianusChannels, chid));
-		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(conf.papChannels, chid));
-		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(conf.zakumChannels, chid));
-		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntailChannels, chid));
-		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbeanChannels, chid));
+		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianus.channels, chid));
+		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(conf.pap.channels, chid));
+		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(conf.zakum.channels, chid));
+		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntail.channels, chid));
+		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbean.channels, chid));
 
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
