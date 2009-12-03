@@ -43,10 +43,10 @@ end
 
 function getEntryCount(boss, maxentries)
 	if maxentries == -1 then
-		return 0;
+		return 32767;
 	end
 	if maxentries == 0 then
-		return 32767;
+		return 0;
 	end
 
 	time = getTime();

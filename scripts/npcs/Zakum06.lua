@@ -23,14 +23,17 @@ if getMap() == 280030000 then
 	-- Zakum's Altar
 	x = getMaxZakumBattles();
 	addText("Are you sure you want to leave this place? ");
-	addText("You are entitled to enter the Zakum Altar up to " .. x .. " " .. timeString(x) .. " a day, and by leaving right now, you may ");
-	y = getEntryCount("Zakum", x);
-	if y < x then
-		addText("only re-enter this shrine " .. x - y .. " more " .. timeString(x - y));
-	else
-		addText("not re-enter this shrine");
+
+	if x ~= -1 then
+		addText("You are entitled to enter the Zakum Altar up to " .. x .. " " .. timeString(x) .. " a day, and by leaving right now, you may ");
+		y = getEntryCount("Zakum", x);
+		if y < x then
+			addText("only re-enter this shrine " .. x - y .. " more " .. timeString(x - y));
+		else
+			addText("not re-enter this shrine");
+		end
+		addText(" for the rest of the day.");
 	end
-	addText(" for the rest of the day.");
 
 	yes = askYesNo();
     

@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Hikari (warps to M/F Locker Room)
 
-
 addText("Would you like to enter the bathhouse? That'll be 300 mesos for you. And don't take the towels!");
 yes = askYesNo();
 
