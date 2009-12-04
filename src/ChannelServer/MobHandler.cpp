@@ -59,9 +59,14 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	Mob *taker = map->getMob(mobto);
 	if (dealer != 0 && taker != 0 && taker->isFriendly()) {
 		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
-		taker->applyDamage(playerid, damage);
+		int32_t mobId = taker->getMobId();
+		int32_t mapMobId =  taker->getId();
+		int32_t mobHp = (damage > taker->getHp() ? 0 : taker->getHp() - damage);
+		int32_t maxHp = taker->getMaxHp();
+
+		taker->applyDamage(playerid, damage); // applyDamage can and will delete the Mob *
 		if (map->getInstance() != 0) {
-			map->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMaxHp());
+			map->getInstance()->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
 	}
 }
