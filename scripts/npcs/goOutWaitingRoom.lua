@@ -21,12 +21,22 @@ addText("Do you want to leave the waiting room? You can, but the ticket is NOT r
 yes = askYesNo();
 
 if yes == 1 then
-	if getMap() == 200000152 then
-		setMap(200000100, "sp");
-	elseif getMap() == 240000111 then
-		setMap(240000100, "sp");
-	elseif getMap() == 260000110 then
-		setMap(260000100, "sp");
+	m = getMap();
+	toMap = 0;
+
+	if m == 101000301 then toMap = 101000300;
+	elseif m == 200000112 then toMap = 200000100;
+	elseif m == 200000122 then toMap = 200000100;
+	elseif m == 200000132 then toMap = 200000100;
+	elseif m == 200000152 then toMap = 200000100;
+	elseif m == 220000110 then toMap = 220000100;
+	elseif m == 240000111 then toMap = 240000100;
+	elseif m == 260000110 then toMap = 260000100;
+	else consoleOutput("Unsupported goOutWaitingRoom map: " .. m);
+	end
+
+	if toMap ~= 0 then
+		setMap(toMap, "sp");
 	end
 else
 	addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
