@@ -141,7 +141,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 
 bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) {
 	switch (message) {
-		case PlayerChangeMap:
+		case FriendlyMobHit:
 			lua_getglobal(luaVm, "friendlyHit");
 			lua_pushinteger(luaVm, parameter1);
 			lua_pushinteger(luaVm, parameter2);
