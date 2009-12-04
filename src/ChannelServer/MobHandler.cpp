@@ -54,11 +54,15 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	int32_t mobto = packet.get<int32_t>();
 
-	Mob *dealer = Maps::getMap(player->getMap())->getMob(mobfrom);
-	Mob *taker = Maps::getMap(player->getMap())->getMob(mobto);
+	Map *map = Maps::getMap(player->getMap());
+	Mob *dealer = map->getMob(mobfrom);
+	Mob *taker = map->getMob(mobto);
 	if (dealer != 0 && taker != 0 && taker->isFriendly()) {
 		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
 		taker->applyDamage(playerid, damage);
+		if (map->getInstance() != 0) {
+			map->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMaxHp());
+		}
 	}
 }
 
@@ -71,14 +75,11 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Facing direction
 	packet.skipBytes(4); // Some type of pos, damage display, I think
 
-	Mob *damager = Maps::getMap(player->getMap())->getMob(mobfrom);
-	Mob *taker = Maps::getMap(player->getMap())->getMob(mobto);
+	Map *map = Maps::getMap(player->getMap());
+	Mob *damager = map->getMob(mobfrom);
+	Mob *taker = map->getMob(mobto);
 	if (damager != 0 && taker != 0) {
 		taker->applyDamage(playerid, damage);
-		Map *m = Maps::getMap(player->getMap());
-		if (m->getInstance() != 0) {
-			m->getInstance()->sendMessage(FriendlyMobHit, taker->getMobId(), taker->getId(), taker->getMapId(), taker->getHp(), taker->getMaxHp());
-		}
 	}
 }
 
