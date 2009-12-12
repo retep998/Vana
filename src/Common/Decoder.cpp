@@ -83,7 +83,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 
 void Decoder::createHeader(unsigned char *header, int16_t size) {
 	int16_t a = ivSend[3] * 0x100 + ivSend[2];
-	a = a ^ -(MAPLE_VERSION + 1);
+	a = a ^ -(MapleVersion::Version + 1);
 	int16_t b = a ^ size; 
 	header[0] = a % 0x100;
 	header[1] = (a - header[0]) / 0x100;
@@ -100,11 +100,11 @@ PacketCreator Decoder::getConnectPacket(string unknown) {
 
 	PacketCreator packet;
 	packet.add<int16_t>(0); // Packet len, this will be added later in the packet
-	packet.add<int16_t>(MAPLE_VERSION);
+	packet.add<int16_t>(MapleVersion::Version);
 	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
 	packet.add<int32_t>(*(int32_t*) ivRecv);
 	packet.add<int32_t>(*(int32_t*) ivSend);
-	packet.add<int8_t>(MAPLE_LOCALE);
+	packet.add<int8_t>(MapleVersion::Locale);
 
 	packet.set<int16_t>(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 

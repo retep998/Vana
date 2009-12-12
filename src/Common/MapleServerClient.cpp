@@ -89,10 +89,10 @@ void MapleServerClient::readConnectPacket() {
 	PacketReader packet(m_buffer.get(), packetLen);
 
 	int16_t version = packet.get<int16_t>(); // Maple version
-	if (version != MAPLE_VERSION) {
+	if (version != MapleVersion::Version) {
 		std::cout << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
 		std::cout << "Expected version: " << version << std::endl;
-		std::cout << "Local version: " << MAPLE_VERSION << std::endl;
+		std::cout << "Local version: " << MapleVersion::Version << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(5);

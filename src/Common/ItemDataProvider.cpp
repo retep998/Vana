@@ -80,9 +80,9 @@ void ItemDataProvider::loadItems() {
 
 	enum ItemData {
 		ItemId = 0,
-		ItemPrice, SlotMax, MaxAtOnce, MinLevel, MaxLevel,
-		Experience, Mesos, StateChange, MakerLevel, Npc,
-		Flags, Name
+		Inventory, ItemPrice, SlotMax, MaxAtOnce, MinLevel,
+		MaxLevel, Experience, Mesos, StateChange, MakerLevel,
+		Npc, Flags, Name
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
