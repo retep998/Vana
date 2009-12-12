@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "RecvHeader.h"
 #include "Worlds.h"
+#include <iostream>
 #include <stdexcept>
 
 void Player::realHandleRequest(PacketReader &packet) {
@@ -31,6 +32,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
+			case CMSG_CLIENT_ERROR: std::cout << packet.getString(); break;
 			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
