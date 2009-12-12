@@ -40,7 +40,7 @@ void SkillDataProvider::loadData() {
 void SkillDataProvider::loadPlayerSkills() {
 	maxlevels.clear();
 	skills.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_player_data");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_player_level_data");
 	mysqlpp::UseQueryResult res = query.use();
 	SkillLevelInfo level;
 	int32_t skillid;
@@ -149,7 +149,7 @@ void SkillDataProvider::loadMobSummons() {
 
 	enum MobSummons {
 		SkillLevel = 0,
-		Index, MobId
+		MobId
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

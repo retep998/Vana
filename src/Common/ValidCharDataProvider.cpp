@@ -38,7 +38,7 @@ void ValidCharDataProvider::loadData() {
 
 void ValidCharDataProvider::loadForbiddenNames() {
 	forbiddennames.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_forbidden_names ORDER BY name ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_forbidden_names");
 	mysqlpp::UseQueryResult res = query.use();
 	string name;
 

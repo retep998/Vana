@@ -61,7 +61,7 @@ void MobDataProvider::loadAttacks() {
 	enum AttackData {
 		MobId = 0,
 		AttackId, MpCons, MpBurn, Disease, Level,
-		Flags
+		AttackType, Element, Flags
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
@@ -137,10 +137,10 @@ void MobDataProvider::loadMobs() {
 		Level, Flags, Hp, Mp, HpRecovery,
 		MpRecovery, SelfDestruct, Exp, Link, SummonType,
 		Knockback, FixedDamage, DeathBuff, DeathAfter, Traction,
-		DamageSkill, DamageMob, HpBar, HpBarBg, CarnivalPoints,
-		PhysicalAtt, PhysicalDef, MagicAtt, MagicDef, Accuracy,
-		Avoidability, Speed, ChaseSpeed, IceMod, FireMod,
-		PoisonMod, LightningMod, HolyMod, NonElementalMod
+		DamageSkill, DamageMob, DropPeriod, HpBar, HpBarBg,
+		CarnivalPoints, PhysicalAtt, PhysicalDef, MagicAtt, MagicDef,
+		Accuracy, Avoidability, Speed, ChaseSpeed, IceMod,
+		FireMod, PoisonMod, LightningMod, HolyMod, NonElementalMod
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

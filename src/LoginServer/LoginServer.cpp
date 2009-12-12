@@ -34,8 +34,10 @@ void LoginServer::listen() {
 
 void LoginServer::loadData() {
 	Initializing::checkSchemaVersion(true);
+	Initializing::checkMcdbVersion();
 	Initializing::setUsersOffline(1);
 	Initializing::loadData();
+
 	RankingCalculator::setTimer();
 	displayLaunchTime();
 }

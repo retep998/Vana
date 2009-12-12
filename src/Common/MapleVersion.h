@@ -17,5 +17,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#define MAPLE_VERSION 75
-#define MAPLE_LOCALE 0x08 // 0x08 = global, 0x09 = European, etc. etc.
+#include "Types.h"
+#include <string>
+
+#define MAPLE_VERSION 75 // Kept in for VersionConstants.cpp
+// Use ONLY for version-specific code purposes
+// Incidentally, your locale may have vastly different version-specific code
+
+namespace Locales {
+	const int8_t Japan = 0x03;
+	const int8_t GlobalTest = 0x05;
+	const int8_t Sea = 0x07;
+	const int8_t Thailand = 0x07;
+	const int8_t Global = 0x08;
+	const int8_t Europe = 0x09;
+	const int8_t Brazil = 0x09;
+}
+
+namespace MapleVersion {
+	const int16_t Version = MAPLE_VERSION;
+	const int8_t Locale = Locales::Global;
+	const std::string LocaleString = "global"; // Used for MCDB verification
+	const bool TestServer = false;
+}
