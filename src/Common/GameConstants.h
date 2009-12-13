@@ -450,7 +450,11 @@ namespace Jobs {
 			BlazeWizard = 12,
 			WindArcher = 13,
 			NightWalker = 14,
-			ThunderBreaker = 15
+			ThunderBreaker = 15,
+
+			Legend = 20,
+			Aran = 21,
+			Evan = 22
 		};
 	}
 	namespace JobIds {
@@ -531,7 +535,17 @@ namespace Jobs {
 			ThunderBreaker1 = 1500,
 			ThunderBreaker2 = 1510,
 			ThunderBreaker3 = 1511,
-			ThunderBreaker4 = 1512
+			ThunderBreaker4 = 1512,
+
+			Legend = 2000,
+			Aran1 = 2100,
+			Aran2 = 2110,
+			Aran3 = 2111,
+			Aran4 = 2112,
+			Evan1 = 2200,
+			Evan2 = 2210,
+			Evan3 = 2211,
+			Evan4 = 2212
 		};
 	}
 	namespace All {
