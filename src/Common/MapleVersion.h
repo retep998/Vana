@@ -25,13 +25,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Incidentally, your locale may have vastly different version-specific code
 
 namespace Locales {
+	const int8_t Korea = 0x01;
 	const int8_t Japan = 0x03;
-	const int8_t GlobalTest = 0x05;
+	const int8_t China = 0x05;
 	const int8_t Sea = 0x07;
 	const int8_t Thailand = 0x07;
 	const int8_t Global = 0x08;
 	const int8_t Europe = 0x09;
 	const int8_t Brazil = 0x09;
+	const int8_t Taiwan = 0x3C;
+
+	const int8_t ChinaTest = 0x04;
+	const int8_t GlobalTest = 0x05;
+	const int8_t TaiwanTest = 0x06;
 }
 
 namespace MapleVersion {
