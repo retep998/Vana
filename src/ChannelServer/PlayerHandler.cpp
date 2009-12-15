@@ -748,7 +748,6 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	}
 }
 
-#include "DisplayPacket.h"
 Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t skillType) {
 	Attack attack;
 	int8_t targets = 0;
