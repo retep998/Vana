@@ -126,6 +126,58 @@ struct MorphData {
 	bool superman;
 };
 
+namespace SkillTypes {
+	enum {
+		Melee,
+		Ranged,
+		Magic,
+		Summon
+	};
+}
+
+struct Attack {
+	typedef unordered_map<int32_t, vector<int32_t> >::const_iterator iterator;
+	typedef vector<int32_t>::const_iterator diterator;
+
+	Attack() :
+		isMesoExplosion(false),
+		isChargeSkill(false),
+		isPiercingArrow(false),
+		isShadowMeso(false),
+		isHeal(false),
+		charge(0),
+		starPos(-1),
+		cashStarPos(-1),
+		starId(0),
+		skillLevel(0),
+		totalDamage(0)
+		{ }
+
+	bool isMesoExplosion;
+	bool isShadowMeso;
+	bool isChargeSkill;
+	bool isPiercingArrow;
+	bool isHeal;
+	int8_t targets;
+	int8_t hits;
+	uint8_t display;
+	uint8_t weaponSpeed;
+	uint8_t animation;
+	uint8_t weaponClass;
+	uint8_t skillLevel;
+	int16_t starPos;
+	int16_t cashStarPos;
+	int32_t skillId;
+	int32_t summonId;
+	int32_t charge;
+	int32_t ticks;
+	int32_t starId;
+	int64_t totalDamage;
+	Pos projectilePos;
+	Pos playerPos;
+	unordered_map<int32_t, vector<int32_t> > damages;
+};
+
 class SkillDataProvider : boost::noncopyable {
 public:
 	static SkillDataProvider * Instance() {
