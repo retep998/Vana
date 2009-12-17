@@ -34,10 +34,14 @@ namespace Locales {
 	const int8_t Europe = 0x09;
 	const int8_t Brazil = 0x09;
 	const int8_t Taiwan = 0x3C;
+	const int8_t Vietnam = 0x00; // Unk
 
+	const int8_t KoreaTest = 0x02;
 	const int8_t ChinaTest = 0x04;
 	const int8_t GlobalTest = 0x05;
 	const int8_t TaiwanTest = 0x06;
+	const int8_t EuropeTest = 0x00; // Unk
+	const int8_t JapanTest = 0x00; // Unk
 }
 
 namespace MapleVersion {
