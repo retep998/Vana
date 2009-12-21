@@ -41,8 +41,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	player->getRandStream()->connectData(packet); // Seeding RNG
 
-	packet.add<int32_t>(-1);
-	packet.add<int32_t>(-1);
+	packet.add<int64_t>(-1);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 13);
 	packet.add<int8_t>(player->getGender());
@@ -64,7 +63,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
-	packet.add<int8_t>(player->getBuddyListSize());
+	packet.add<uint8_t>(player->getBuddyListSize());
 
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns

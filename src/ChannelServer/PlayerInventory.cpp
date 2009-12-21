@@ -449,19 +449,20 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 
 	// Go through equips
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	ItemInventory::iterator iter;
+	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first < 0 && iter->first > -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first < -100) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first > 0) {
 			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
 		}

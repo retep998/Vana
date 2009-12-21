@@ -100,7 +100,7 @@ void PlayerMonsterBook::connectData(PacketCreator &packet) {
 	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::Instance()->getCardId(getCover()) : 0);
 	packet.add<int8_t>(0);
 	
-	packet.add<int16_t>((int16_t) m_cards.size());
+	packet.add<uint16_t>(m_cards.size());
 	for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); iter++) {
 		packet.add<int16_t>(GameLogicUtilities::getCardShortId(iter->second.id));
 		packet.add<int8_t>(iter->second.level);
