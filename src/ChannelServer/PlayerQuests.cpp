@@ -415,13 +415,13 @@ bool PlayerQuests::isQuestComplete(int16_t questid) {
 }
 
 void PlayerQuests::connectData(PacketCreator &packet) {
-	packet.add<int16_t>(m_quests.size()); // Active quests
+	packet.add<uint16_t>(m_quests.size()); // Active quests
 	for (map<int16_t, ActiveQuest>::iterator iter = m_quests.begin(); iter != m_quests.end(); iter++) {
 		packet.add<int16_t>(iter->first);
 		packet.addString(iter->second.getQuestData());
 	}
 
-	packet.add<int16_t>(m_completed.size()); // Completed quests
+	packet.add<uint16_t>(m_completed.size()); // Completed quests
 	for (map<int16_t, int64_t>::iterator iter = m_completed.begin(); iter != m_completed.end(); iter++) {
 		packet.add<int16_t>(iter->first);
 		packet.add<int64_t>(iter->second);
