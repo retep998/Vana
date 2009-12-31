@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2009 Vana Development Team and Biscuit
+Copyright (C) 2008-2010 Vana Development Team and Biscuit
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
