@@ -62,7 +62,7 @@ namespace ValidItemType {
 class ValidCharDataProvider : boost::noncopyable {
 public:
 	static ValidCharDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ValidCharDataProvider();
 		return singleton;
 	}

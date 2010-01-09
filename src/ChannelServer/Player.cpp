@@ -76,9 +76,9 @@ trade_id(0),
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
-npc(0),
-party(0),
-instance(0)
+npc(nullptr),
+party(nullptr),
+instance(nullptr)
 {
 }
 
@@ -88,15 +88,15 @@ Player::~Player() {
 			TradeHandler::cancelTrade(this);
 		}
 		int32_t isleader = 0;
-		if (getParty() != 0) {
-			getParty()->setMember(getId(), 0);
-			isleader = getParty()->isLeader(getId()) ? 1 : 0;
+		if (Party *p = getParty()) {
+			p->setMember(getId(), nullptr);
+			isleader = p->isLeader(getId()) ? 1 : 0;
 		}
-		if (getInstance() != 0) {
-			getInstance()->removePlayer(getId());
-			getInstance()->sendMessage(PlayerDisconnect, getId(), isleader);
+		if (Instance *i = getInstance()) {
+			i->removePlayer(getId());
+			i->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
-		if (getNPC() != 0) {
+		if (getNPC() != nullptr) {
 			delete getNPC();
 		}
 		if (getMapChair() != 0) {
@@ -107,8 +107,8 @@ Player::~Player() {
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
-		PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos());
-		if (closest != 0) {
+
+		if (PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos())) {
 			map_pos = closest->id;
 		}
 		if (save_on_dc) {
@@ -381,16 +381,16 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	Map *oldmap = Maps::getMap(map);
 	Map *newmap = Maps::getMap(mapid);
 
-	if (portal == 0)
+	if (portal == nullptr)
 		portal = newmap->getSpawnPoint();
 
 	if (!instance) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
-		int32_t ispartyleader = (getParty() != 0 ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
-		if (oldmap->getInstance() != 0) {
-			oldmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
+		if (Instance *ii = oldmap->getInstance()) {
+			ii->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 		}
-		if (newmap->getInstance() != 0) {
-			newmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		if (Instance *ee = newmap->getInstance()) {
+			ee->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 		}
 	}
 
@@ -408,10 +408,10 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		}
 	}
 
-	if (getSummons()->getPuppet() != 0) { // Puppets and non-moving summons don't go with you
+	if (getSummons()->getPuppet() != nullptr) { // Puppets and non-moving summons don't go with you
 		Summons::removeSummon(this, true, true, false, 0);
 	}
-	if (getSummons()->getSummon() != 0 && getSummons()->getSummon()->getType() == 0) {
+	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == 0) {
 		Summons::removeSummon(this, false, true, false, 0);
 	}
 	if (getActiveBuffs()->hasMarkedMonster()) {

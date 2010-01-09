@@ -36,40 +36,40 @@ void Party::addMember(Player *player) {
 }
 
 void Party::addMember(int32_t id) {
-	members[id] = 0;
+	members[id] = nullptr;
 }
 
 void Party::deleteMember(Player *player) {
 	members.erase(player->getId());
-	player->setParty(0);
-	if (getInstance() != 0) {
-		getInstance()->sendMessage(PartyRemoveMember, getId(), player->getId());
+	player->setParty(nullptr);
+	if (Instance *i = getInstance()) {
+		i->sendMessage(PartyRemoveMember, getId(), player->getId());
 	}
 }
 
 void Party::deleteMember(int32_t id) {
-	if (getInstance() != 0) {
-		getInstance()->sendMessage(PartyRemoveMember, getId(), id);
+	if (Instance *i = getInstance()) {
+		i->sendMessage(PartyRemoveMember, getId(), id);
 	}
 	members.erase(id);
 }
 
 void Party::disband() {
-	if (getInstance() != 0) {
-		getInstance()->sendMessage(PartyDisband, getId());
-		setInstance(0);
+	if (Instance *i = getInstance()) {
+		i->sendMessage(PartyDisband, getId());
+		setInstance(nullptr);
 	}
 	map<int32_t, Player *, std::greater<int32_t> > temp = members;
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = temp.begin(); iter != temp.end(); iter++) {
-		if (iter->second != 0) {
-			iter->second->setParty(0);
+		if (iter->second != nullptr) {
+			iter->second->setParty(nullptr);
 			members.erase(iter->first);
 		}
 	}
 }
 
 Player * Party::getMemberByIndex(uint8_t index) { 
-	Player *p = 0;
+	Player *p = nullptr;
 	if (index <= members.size()) {
 		int8_t f = 0;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
@@ -94,7 +94,7 @@ vector<int32_t> Party::getAllPlayerIds() {
 vector<Player *> Party::getPartyMembers(int32_t mapid) {
 	vector<Player *> players;
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			if (mapid == -1 || iter->second->getMap() == mapid) {
 				players.push_back(iter->second);
 			}
@@ -110,7 +110,7 @@ void Party::setMember(int32_t playerid, Player *player) {
 void Party::showHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
-		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
+		if (m_player != nullptr && m_player != player && m_player->getMap() == player->getMap())
 			PlayerPacket::showHpBar(player, m_player);
 	}
 }
@@ -118,7 +118,7 @@ void Party::showHpBar(Player *player) {
 void Party::receiveHpBar(Player *player) {
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
-		if (m_player != 0 && m_player != player && m_player->getMap() == player->getMap())
+		if (m_player != nullptr && m_player != player && m_player->getMap() == player->getMap())
 			PlayerPacket::showHpBar(m_player, player);
 	}
 }
@@ -127,7 +127,7 @@ int8_t Party::getMemberCountOnMap(int32_t mapid) {
 	int8_t count = 0;
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
-		if (m_player != 0 && m_player->getMap() == mapid)
+		if (m_player != nullptr && m_player->getMap() == mapid)
 			count++;
 	}
 	return count;
@@ -137,7 +137,7 @@ bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
 	bool is = true;
 	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
 		Player *m_player = iter->second;
-		if (m_player != 0) {
+		if (m_player != nullptr) {
 			if (m_player->getStats()->getLevel() < lowbound || m_player->getStats()->getLevel() > highbound) {
 				is = false;
 				break;
@@ -149,13 +149,12 @@ bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
 
 void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 	if (Maps::getMap(mapid)) {
-		PortalInfo *portal = 0;
+		PortalInfo *portal = nullptr;
 		if (portalname != "") { // Optional portal parameter
 			portal = Maps::getMap(mapid)->getPortal(portalname);
 		}
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-			Player *m_player = iter->second;
-			if (m_player != 0) {
+			if (Player *m_player = iter->second) {
 				m_player->setMap(mapid, portal);
 			}
 		}
@@ -170,8 +169,7 @@ bool Party::checkFootholds(int8_t membercount, const vector<vector<int16_t> > &f
 	for (size_t m = 0; m < footholds.size(); m++) {
 		footholdhasplayer[m] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-			Player *m_player = iter->second;
-			if (m_player != 0) {
+			if (Player *m_player = iter->second) {
 				for (size_t k = 0; k < footholds[m].size(); k++) {
 					if (m_player->getFh() == footholds[m][k]) {
 						if (footholdhasplayer[m]) {
@@ -203,8 +201,7 @@ bool Party::verifyFootholds(const vector<vector<int16_t> > &footholds) {
 	for (size_t m = 0; m < footholds.size(); m++) {
 		footholdhasplayer[m] = false;
 		for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
-			Player *m_player = iter->second;
-			if (m_player != 0) {
+			if (Player *m_player = iter->second) {
 				for (size_t k = 0; k < footholds[m].size(); k++) {
 					if (m_player->getFh() == footholds[m][k]) {
 						if (footholdhasplayer[m]) {

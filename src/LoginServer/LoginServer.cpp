@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include <boost/format.hpp>
 
-LoginServer * LoginServer::singleton = 0;
+LoginServer * LoginServer::singleton = nullptr;
 
 void LoginServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), "0");

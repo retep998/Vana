@@ -31,3 +31,11 @@ typedef boost::int64_t int64_t;
 typedef boost::uint64_t uint64_t;
 typedef boost::intmax_t intmax_t;
 typedef boost::uintmax_t uintmax_t;
+
+// Take out this ugliness when C++0x is widely supported, find other instances of "C++0x" and remove
+#include <boost/config.hpp>
+#if _MSC_VER < 1600 || defined BOOST_NO_NULLPTR
+// VS2010 beta 2 (version 1600) supports nullptr, Boost 1.41 doesn't have this info
+# define nullptr 0
+// Yes, this is evil, deal with it
+#endif

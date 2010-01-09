@@ -42,7 +42,7 @@ void SkillMacros::save(int32_t charid) {
 	int8_t max = getMax(); 
 	for (int8_t i = 0; i <= max; i++) {
 		SkillMacro *macro = getSkillMacro(i);
-		if (macro != 0) {
+		if (macro != nullptr) {
 			query << "(" << charid << ", "
 				<< (int16_t) i << ", "
 				<< mysqlpp::quote << macro->name << ", "

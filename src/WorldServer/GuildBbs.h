@@ -74,7 +74,7 @@ public:
 	int16_t getIcon() const { return icon; }
 	string getTitle() const { return title; }
 	string getContent() const { return content; }
-	BbsReply * getReply(int32_t replyid) { return (m_replies.find(replyid) == m_replies.end() ? 0 : m_replies[replyid]); }
+	BbsReply * getReply(int32_t replyid) { return (m_replies.find(replyid) == m_replies.end() ? nullptr : m_replies[replyid]); }
 	map<int32_t, BbsReply *> m_replies;
 
 private:
@@ -89,7 +89,7 @@ private:
 
 class GuildBbs {
 public:
-	GuildBbs(Guild *guild) : guild(guild), lastid(-1), notice(0) { load(); }
+	GuildBbs(Guild *guild) : guild(guild), lastid(-1), notice(nullptr) { load(); }
 	~GuildBbs();
 	void load();
 	void save();

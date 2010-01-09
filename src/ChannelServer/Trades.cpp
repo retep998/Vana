@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-Trades * Trades::singleton = 0;
+Trades * Trades::singleton = nullptr;
 
 Trades::Trades() : ids(0), container(new Timer::Container) {
 
@@ -44,12 +44,12 @@ void Trades::removeTrade(int32_t id) {
 		stopTimeout(id);
 
 	Player *p = trades[id]->getSender();
-	if (p != 0) {
+	if (p != nullptr) {
 		p->setTrading(false);
 		p->setTradeId(0);
 	}
 	p = trades[id]->getReceiver();
-	if (p != 0) {
+	if (p != nullptr) {
 		p->setTrading(false);
 		p->setTradeId(0);
 	}
@@ -57,7 +57,7 @@ void Trades::removeTrade(int32_t id) {
 }
 
 ActiveTrade * Trades::getTrade(int32_t id) {
-	return (trades.find(id) != trades.end() ? trades[id].get() : 0);
+	return (trades.find(id) != trades.end() ? trades[id].get() : nullptr);
 }
 
 int32_t Trades::checkTimer(int32_t id) {

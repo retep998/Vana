@@ -49,7 +49,7 @@ pos(Pos(0, 0))
 }
 
 NPC::~NPC() {
-	player->setNPC(0);
+	player->setNPC(nullptr);
 }
 
 void NPC::initData(Player *p, int32_t id) {
@@ -192,7 +192,7 @@ void NPC::sendStyle(int32_t styles[], int8_t size) {
 
 void NPC::proceedBack() {
 	if (state == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 

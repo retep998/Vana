@@ -92,7 +92,7 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 
 void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 	slot = abs(slot);
-	if (equip != 0) {
+	if (equip != nullptr) {
 		equipStats[slot].Id = equip->id;
 		equipStats[slot].Hp = equip->ihp;
 		equipStats[slot].Mp = equip->imp;
@@ -220,12 +220,12 @@ void PlayerStats::damageHp(uint16_t dhp) {
 }
 
 void PlayerStats::modifiedHp() {
-	if (player->getParty())
-		player->getParty()->showHpBar(player);
+	if (Party *p = player->getParty())
+		p->showHpBar(player);
 	player->getActiveBuffs()->checkBerserk();
 	if (hp == 0) {
-		if (player->getInstance() != 0) {
-			player->getInstance()->sendMessage(PlayerDeath, player->getId());
+		if (Instance *i = player->getInstance()) {
+			i->sendMessage(PlayerDeath, player->getId());
 		}
 		loseExp();
 		Summons::removeSummon(player, false, true, false, 2);
@@ -513,7 +513,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.get<int32_t>();
 	if (getAp() == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 	LevelsPacket::statOK(player);

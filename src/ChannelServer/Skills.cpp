@@ -44,11 +44,11 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 	int32_t skillid = packet.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillid)) {
 		if (player->getStats()->getSp() == 0) {
-			// hacking
+			// Hacking
 			return;
 		}
 		if (!player->isGm() && !GameLogicUtilities::skillMatchesJob(skillid, player->getStats()->getJob())) {
-			// hacking
+			// Hacking
 			return;
 		}
 	}
@@ -203,12 +203,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			int8_t affected = packet.get<int8_t>();
 			player->getActiveBuffs()->useDispel();
 			Party *party = player->getParty();
-			if (party != 0) {
+			if (party != nullptr) {
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
-					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
 						if (Randomizer::Instance()->randShort(99) < skill->prop) {
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true);
@@ -269,15 +269,16 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior: {
 			Party *party = player->getParty();
-			if (skillid == Jobs::Buccaneer::TimeLeap)
+			if (skillid == Jobs::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();
-			if (party != 0) {
+			}
+			if (party != nullptr) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
-					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
 						Buffs::addBuff(cmem, skillid, level, addedinfo);
@@ -298,7 +299,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player) { // ???
+				if (target != nullptr && target != player) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::addBuff(target, skillid, level, addedinfo);
@@ -311,7 +312,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player && target->getStats()->getHp() > 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() > 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					target->getStats()->setHp(target->getStats()->getMHp());
@@ -326,7 +327,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player && target->getStats()->getHp() <= 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					target->getStats()->setHp(target->getStats()->getMHp());

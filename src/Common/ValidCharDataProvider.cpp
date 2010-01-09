@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-ValidCharDataProvider * ValidCharDataProvider::singleton = 0;
+ValidCharDataProvider * ValidCharDataProvider::singleton = nullptr;
 
 void ValidCharDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Char Info... ";
@@ -128,7 +128,7 @@ bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_
 bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, bool cygnus, int8_t type) {
 	ValidItems *items = getItems(gender, cygnus);
 
-	if (items == 0)
+	if (items == nullptr)
 		return false;
 
 	bool valid = false;
@@ -155,7 +155,7 @@ bool ValidCharDataProvider::iterateTest(int32_t id, vector<int32_t> *test) {
 }
 
 ValidItems * ValidCharDataProvider::getItems(int8_t gender, bool cygnus) {
-	ValidItems *vec = 0;
+	ValidItems *vec = nullptr;
 	if (gender == Gender::Male) {
 		if (!cygnus) vec = &regmale;
 		else vec = &cygnusmale;

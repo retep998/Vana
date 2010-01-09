@@ -35,7 +35,7 @@ class WorldServerAcceptConnection;
 class Channels {
 public:
 	static Channels * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Channels;
 		return singleton;
 	}

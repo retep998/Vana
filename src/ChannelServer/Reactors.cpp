@@ -71,9 +71,9 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
-	if (reactor != 0 && reactor->isAlive()) {
+	if (reactor != nullptr && reactor->isAlive()) {
 		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
-		if (data == 0) {
+		if (data == nullptr) {
 			// Not sure how this would happen, but whatever
 			return;
 		}
@@ -112,7 +112,7 @@ void Reactors::touchReactor(Player *player, PacketReader &packet) {
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
-	if (reactor != 0 && reactor->isAlive()) {
+	if (reactor != nullptr && reactor->isAlive()) {
 		int8_t newstate = reactor->getState() + (istouching ? 1 : -1);
 		ReactorPacket::triggerReactor(reactor);
 		reactor->setState(newstate, true);
@@ -139,7 +139,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 	for (size_t i = 0; i < map->getNumReactors(); i++) {
 		reactor = map->getReactor(i);
 		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
-		if (data == 0) {
+		if (data == nullptr) {
 			// Not sure how this would happen, but whatever
 			continue;
 		}

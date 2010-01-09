@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/algorithm/string.hpp>
 #include <cstring>
 
-PlayerDataProvider * PlayerDataProvider::singleton = 0;
+PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 // Stored packets
 void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
@@ -67,12 +67,12 @@ void PlayerDataProvider::removePlayer(Player *player) {
 }
 
 Player * PlayerDataProvider::getPlayer(int32_t id) {
-	return (m_players.find(id) == m_players.end()) ? 0 : m_players[id];
+	return (m_players.find(id) == m_players.end()) ? nullptr : m_players[id];
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name) {
 	string upCaseName = boost::to_upper_copy(name);
-	return (m_players_names.find(upCaseName) == m_players_names.end()) ? 0 : m_players_names[upCaseName];
+	return (m_players_names.find(upCaseName) == m_players_names.end()) ? nullptr : m_players_names[upCaseName];
 }
 
 void PlayerDataProvider::run(function<void (Player *)> func) {
@@ -94,11 +94,11 @@ void PlayerDataProvider::addGuild(int32_t id, Guild *gi) {
 }
 
 Guild * PlayerDataProvider::getGuild(int32_t id) {
-	return (m_guilds.find(id) == m_guilds.end() ? 0 : m_guilds[id]);
+	return (m_guilds.find(id) == m_guilds.end() ? nullptr : m_guilds[id]);
 }
 
 Guild * PlayerDataProvider::getGuild(const string &name) {
-	return (m_guilds_names.find(name) == m_guilds_names.end() ? 0 : m_guilds_names[name]);
+	return (m_guilds_names.find(name) == m_guilds_names.end() ? nullptr : m_guilds_names[name]);
 }
 
 void PlayerDataProvider::addGuild(int32_t id, const string &name, const GuildLogo &logo, int32_t capacity, int32_t allianceid) {
@@ -145,7 +145,7 @@ void PlayerDataProvider::addAlliance(int32_t id, Alliance * alliance) {
 }
 
 Alliance * PlayerDataProvider::getAlliance(int32_t id) {
-	return (m_alliances.find(id) == m_alliances.end() ? 0 : m_alliances[id]);
+	return (m_alliances.find(id) == m_alliances.end() ? nullptr : m_alliances[id]);
 }
 
 void PlayerDataProvider::addAlliance(int32_t id, const string &name, int32_t capacity) {
@@ -174,7 +174,7 @@ void PlayerDataProvider::unloadAlliance(int32_t id) {
 
 // Parties
 Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) == m_parties.end() ? 0 : m_parties[id]);
+	return (m_parties.find(id) == m_parties.end() ? nullptr : m_parties[id]);
 }
 
 void PlayerDataProvider::addParty(Party *party) {

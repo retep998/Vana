@@ -139,7 +139,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	int8_t act = packet.get<int8_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	PetInteractInfo *action = ItemDataProvider::Instance()->getInteraction(pet->getItemId(), act);
-	if (action == 0)
+	if (action == nullptr)
 		return;
 	bool success = (Randomizer::Instance()->randInt(100) < action->prob);
 	if (success) {

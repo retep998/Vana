@@ -125,7 +125,7 @@ uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillid) {
 
 SkillLevelInfo * PlayerSkills::getSkillInfo(int32_t skillid) {
 	if (playerskills.find(skillid) == playerskills.end())
-		return 0;
+		return nullptr;
 	return SkillDataProvider::Instance()->getSkill(skillid, playerskills[skillid].level);
 }
 
@@ -415,8 +415,9 @@ void PlayerSkills::addCooldown(int32_t skillid, int16_t time) {
 }
 
 void PlayerSkills::removeCooldown(int32_t skillid) {
-	if (cooldowns.find(skillid) != cooldowns.end())
+	if (cooldowns.find(skillid) != cooldowns.end()) {
 		cooldowns.erase(skillid);
+	}
 }
 
 void PlayerSkills::removeAllCooldowns() {
@@ -434,8 +435,9 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); ++iter) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
-		if (GameLogicUtilities::isFourthJobSkill(iter->first))
-			packet.add<int32_t>(iter->second.maxlevel); // Max Level for 4th job skills
+		if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
+			packet.add<int32_t>(iter->second.maxlevel); // Max level for 4th job skills
+		}
 	}
 	// Cooldowns
 	packet.add<uint16_t>(cooldowns.size());

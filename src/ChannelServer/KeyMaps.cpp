@@ -78,7 +78,7 @@ void KeyMaps::save(int32_t charid) {
 	query << "REPLACE INTO keymap VALUES ";
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMap *keymap = getKeyMap(i);
-		if (keymap != 0) {
+		if (keymap != nullptr) {
 			query << "(" << charid << ", "
 				<< i << ", "
 				<< (int32_t) keymap->type << ", "

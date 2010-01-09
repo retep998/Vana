@@ -81,7 +81,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 		case Sync::Guild::ChangeEmblem: GuildPacket::handleEmblemChange(packet); break;
 		case Sync::Guild::RemovePlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if (player == 0) 
+			if (player == nullptr) 
 				return;
 
 			player->setGuildId(0);
@@ -90,7 +90,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 		}
 		case Sync::Guild::AddPlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if (player == 0) 
+			if (player == nullptr) 
 				return;
 
 			player->setGuildId(packet.get<int32_t>());
@@ -101,7 +101,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangePlayer: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if (player == 0) 
+			if (player == nullptr) 
 				return;
 
 			player->setGuildRank(packet.get<uint8_t>());
@@ -110,7 +110,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangePlayerMoney: {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if (player == 0) 
+			if (player == nullptr) 
 				return;
 
 			Quests::giveMesos(player, packet.get<int32_t>());
@@ -118,7 +118,7 @@ void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangeCapacity: {
 			Guild *gi = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
-			if (gi == 0) 
+			if (gi == nullptr) 
 				return;
 			gi->capacity = packet.get<int32_t>();
 			break;
@@ -176,11 +176,11 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 			int32_t allianceid = packet.get<int32_t>();
 			Player *to = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
 			Player *from = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if ((to != 0 && to->getAllianceId() != allianceid) || (from != 0 && from->getAllianceId() != allianceid)) 
+			if ((to != nullptr && to->getAllianceId() != allianceid) || (from != nullptr && from->getAllianceId() != allianceid)) 
 				return;
-			if (to != 0) 
+			if (to != nullptr) 
 				to->setAllianceRank(2);
-			if (from != 0) 
+			if (from != nullptr) 
 				from->setAllianceRank(1);
 			break;
 		}
@@ -209,7 +209,7 @@ void SyncHandler::alliancePacketHandlerWorld(PacketReader &packet) {
 		case Sync::Alliance::ChangeRank: { // Changing the rank of someone
 			int32_t allianceid = packet.get<int32_t>();
 			Player *victim = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-			if (victim != 0 || victim->getAllianceId() != allianceid || victim->getGuildId() == 0) 
+			if (victim != nullptr || victim->getAllianceId() != allianceid || victim->getGuildId() == 0) 
 				return;
 			victim->setAllianceRank(packet.get<uint8_t>());
 			break;
@@ -242,7 +242,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					int32_t leaderid = packet.get<int32_t>();
 					Party *party = new Party(partyid);
 					Player *leader = PlayerDataProvider::Instance()->getPlayer(leaderid);
-					if (leader == 0) {
+					if (leader == nullptr) {
 						party->addMember(leaderid);
 					}
 					else {
@@ -265,7 +265,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 						int32_t playerid = packet.get<int32_t>();
 						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-						if (member == 0) {
+						if (member == nullptr) {
 							party->deleteMember(playerid);
 						}
 						else {
@@ -279,7 +279,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 						int32_t playerid = packet.get<int32_t>();
 						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-						if (member == 0) {
+						if (member == nullptr) {
 							party->addMember(playerid);
 						}
 						else {
@@ -324,7 +324,7 @@ void SyncHandler::handlePartyResponse(PacketReader &packet) {
 	int32_t partyid = packet.get<int32_t>();
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
-	if (player == 0 || party == 0)
+	if (player == nullptr || party == nullptr)
 		return;
 	switch (type) {
 		case PartyActions::Leave: // Leave / Disband

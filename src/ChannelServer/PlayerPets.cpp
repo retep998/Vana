@@ -30,7 +30,7 @@ void PlayerPets::addPet(Pet *pet) {
 }
 
 Pet * PlayerPets::getPet(int32_t petid) {
-	return m_playerpets.find(petid) != m_playerpets.end() ? m_playerpets[petid] : 0;
+	return m_playerpets.find(petid) != m_playerpets.end() ? m_playerpets[petid] : nullptr;
 }
 
 void PlayerPets::setSummoned(int8_t index, int32_t petid) {
@@ -38,7 +38,7 @@ void PlayerPets::setSummoned(int8_t index, int32_t petid) {
 }
 
 Pet * PlayerPets::getSummoned(int8_t index) {
-	return m_summoned[index] > 0 ? m_playerpets[m_summoned[index]] : 0;
+	return m_summoned[index] > 0 ? m_playerpets[m_summoned[index]] : nullptr;
 }
 
 void PlayerPets::save() {
@@ -67,7 +67,7 @@ void PlayerPets::petInfoPacket(PacketCreator &packet) {
 			packet.add<int8_t>(pet->getFullness());
 			packet.add<int16_t>(0);
 			it = m_player->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)));
-			packet.add<int32_t>(it != 0 ? it->id : 0);
+			packet.add<int32_t>(it != nullptr ? it->id : 0);
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob

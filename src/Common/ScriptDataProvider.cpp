@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using FileUtilities::fileExists;
 using Initializing::outputWidth;
 
-ScriptDataProvider * ScriptDataProvider::singleton = 0;
+ScriptDataProvider * ScriptDataProvider::singleton = nullptr;
 
 void ScriptDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Scripts... ";

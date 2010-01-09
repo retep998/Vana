@@ -44,7 +44,7 @@ struct ShopInfo {
 class ShopDataProvider : boost::noncopyable {
 public:
 	static ShopDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ShopDataProvider();
 		return singleton;
 	}

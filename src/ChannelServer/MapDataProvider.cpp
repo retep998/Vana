@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using StringUtilities::runFlags;
 
-MapDataProvider * MapDataProvider::singleton = 0;
+MapDataProvider * MapDataProvider::singleton = nullptr;
 
 MapDataProvider::MapDataProvider() {
 	loadData();
@@ -35,7 +35,7 @@ Map * MapDataProvider::getMap(int32_t mapid) {
 		return maps[mapid];
 	}
 	else {
-		Map *map = 0;
+		Map *map = nullptr;
 		loadMap(mapid, map);
 		return map;
 	}
@@ -147,7 +147,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 	}
 
 	maps[mapid] = map;
-	if (map == 0) // Map does not exist, so no need to run the rest of the code
+	if (map == nullptr) // Map does not exist, so no need to run the rest of the code
 		return -1;
 	return (link == 0 ? mapid : link);
 }
@@ -269,7 +269,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		else if (type == "reactor") {
 			reactor = ReactorSpawnInfo();
 			reactor.setSpawnInfo(life);
-			reactor.name = (row[Name] != 0 ? row[Name] : "");
+			reactor.name = (row[Name] != nullptr ? row[Name] : "");
 
 			map->addReactorSpawn(reactor);
 		}

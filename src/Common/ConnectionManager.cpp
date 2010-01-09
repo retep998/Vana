@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <boost/bind.hpp>
 
-ConnectionManager * ConnectionManager::singleton = 0;
+ConnectionManager * ConnectionManager::singleton = nullptr;
 
 ConnectionManager::ConnectionManager() :
 m_clients(new SessionManager),

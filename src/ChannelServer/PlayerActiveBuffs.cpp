@@ -220,7 +220,7 @@ void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
 
 SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillid) {
 	uint8_t level = getActiveSkillLevel(skillid);
-	return (level != 0 ? SkillDataProvider::Instance()->getSkill(skillid, level) : 0);
+	return (level != 0 ? SkillDataProvider::Instance()->getSkill(skillid, level) : nullptr);
 }
 
 // Buff addition/removal

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.h"
 #include <string>
 
-WorldServer * WorldServer::singleton = 0;
+WorldServer * WorldServer::singleton = nullptr;
 
 void WorldServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory());

@@ -27,5 +27,5 @@ namespace Fame {
 	int32_t canFame(Player *player, int32_t to);
 	void addFameLog(int32_t from, int32_t to);
 	bool getLastFameLog(int32_t from);
-	bool getLastFameSPLog(int32_t from, int32_t to);
+	bool getLastFameSpLog(int32_t from, int32_t to);
 };

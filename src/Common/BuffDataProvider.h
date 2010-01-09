@@ -73,7 +73,7 @@ struct MobAilmentInfo {
 class BuffDataProvider {
 public:
 	static BuffDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new BuffDataProvider;
 		return singleton;
 	}
@@ -83,7 +83,7 @@ public:
 	bool isBuff(int32_t skillid) { return (skillsinfo.find(skillid) != skillsinfo.end()); }
 	bool isDebuff(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end()); }
 	SkillInfo * getSkillInfo(int32_t skillid) { return &skillsinfo[skillid]; }
-	MobAilmentInfo * getMobSkillInfo(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end() ? &mobskillsinfo[skillid] : 0); }
+	MobAilmentInfo * getMobSkillInfo(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end() ? &mobskillsinfo[skillid] : nullptr); }
 private:
 	BuffDataProvider() { }
 	static BuffDataProvider *singleton;

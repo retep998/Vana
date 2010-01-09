@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mysql++.h"
 #pragma warning(pop)
 
+#include "Types.h" // For nullptr, remove when C++0x comes out
 #include <boost/thread/tss.hpp> // thread_specific_ptr
 
 class Database {
@@ -43,14 +44,14 @@ private:
 
 inline
 mysqlpp::Connection & Database::getCharDB() {
-	if (chardb.get() == 0)
+	if (chardb.get() == nullptr)
 		connectCharDB();
 	return *chardb.get();
 }
 
 inline
 mysqlpp::Connection & Database::getDataDB() {
-	if (datadb.get() == 0)
+	if (datadb.get() == nullptr)
 		connectDataDB();
 	return *datadb.get();
 }

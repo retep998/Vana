@@ -24,18 +24,14 @@ int32_t Container::checkTimer(const Id &id) {
 	if (m_timers.find(id) != m_timers.end()) {
 		return (int32_t)(m_timers[id]->getTimeLeft() / 1000);
 	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
 int64_t Container::checkTimer(const Id &id, bool msec) {
 	if (m_timers.find(id) != m_timers.end()) {
 		return m_timers[id]->getTimeLeft();
 	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
 void Container::registerTimer(Timer *timer) {

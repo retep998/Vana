@@ -96,7 +96,7 @@ struct Respawnable {
 };
 
 struct SeatInfo {
-	SeatInfo() : occupant(0) { }
+	SeatInfo() : occupant(nullptr) { }
 
 	Pos pos;
 	Player *occupant;

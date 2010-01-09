@@ -237,11 +237,11 @@ void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoadi
 
 Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
 	if (!GameLogicUtilities::isValidInventory(inv))
-		return 0;
+		return nullptr;
 	inv -= 1;
 	if (m_items[inv].find(slot) != m_items[inv].end())
 		return m_items[inv][slot];
-	return 0;
+	return nullptr;
 }
 
 void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
@@ -251,7 +251,7 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 			m_itemamounts[m_items[inv][slot]->id] -= m_items[inv][slot]->amount;
 		if (slot < 0) {
 			addEquipped(slot, 0);
-			m_player->getStats()->setEquip(slot, 0);
+			m_player->getStats()->setEquip(slot, nullptr);
 		}
 		delete m_items[inv][slot];
 		m_items[inv].erase(slot);
@@ -260,11 +260,11 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 
 void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 	inv -= 1;
-	if (item == 0) {
+	if (item == nullptr) {
 		m_items[inv].erase(slot);
 		if (slot < 0) {
 			addEquipped(slot, 0);
-			m_player->getStats()->setEquip(slot, 0);
+			m_player->getStats()->setEquip(slot, nullptr);
 		}
 	}
 	else {
@@ -363,8 +363,9 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canSt
 int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 	int16_t openslots = 0;
 	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
-		if (getItem(inv, i) == 0)
+		if (getItem(inv, i) == nullptr) {
 			openslots++;
+		}
 	}
 	return openslots;
 }
@@ -372,7 +373,7 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 int32_t PlayerInventory::doShadowStars() {
 	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); s++) {
 		Item *item = getItem(Inventories::UseInventory, s);
-		if (item == 0)
+		if (item == nullptr)
 			continue;
 		if (GameLogicUtilities::isStar(item->id) && item->amount >= 200) {
 			Inventory::takeItemSlot(m_player, Inventories::UseInventory, s, 200);
@@ -473,7 +474,7 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
-			if (item == 0)
+			if (item == nullptr)
 				continue;
 			if (item->petid == 0) {
 				PlayerPacketHelper::addItemInfo(packet, s, item);

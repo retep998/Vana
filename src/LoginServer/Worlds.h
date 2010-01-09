@@ -37,7 +37,7 @@ class World;
 class Worlds : public boost::noncopyable {
 public:
 	static Worlds * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Worlds;
 		return singleton;
 	}

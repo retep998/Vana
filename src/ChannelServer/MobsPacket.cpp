@@ -33,7 +33,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 
 	packet.addPos(mob->getPos());
 
-	int8_t bitfield = (owner != 0 ? 0x08 : 0x02) | mob->getFacingDirection();
+	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | mob->getFacingDirection();
 	if (mob->canFly()) {
 		bitfield |= 0x04;
 	}
@@ -43,7 +43,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
 
-	if (owner != 0) {
+	if (owner != nullptr) {
 		packet.add<int8_t>(summoneffect != 0 ? summoneffect : -3);
 		packet.add<int32_t>(owner->getId());
 	}
@@ -52,7 +52,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	}
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
-	if (show && player != 0) {
+	if (show && player != nullptr) {
 		player->getSession()->send(packet);
 	}
 	else {
@@ -84,10 +84,10 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.add<int8_t>(spawn ? -2 : -1);
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
-	if (player != 0) {
+	if (player != nullptr) {
 		player->getSession()->send(packet);
 	}
-	else if (display != 0) {
+	else if (display != nullptr) {
 		display->getSession()->send(packet);
 	}
 	else {
@@ -100,7 +100,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	packet.add<int16_t>(SMSG_MOB_CONTROL);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(mob->getId());
-	if (player != 0) {
+	if (player != nullptr) {
 		player->getSession()->send(packet);
 	}
 	else {

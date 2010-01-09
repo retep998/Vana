@@ -72,7 +72,7 @@ void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 
 void Summons::removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer) {
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
-	if (summon != 0) {
+	if (summon != nullptr) {
 		SummonsPacket::removeSummon(player, summon, animated);
 		if (!packetOnly) {
 			string name = getSummonName(summon->getSummonId());
@@ -103,7 +103,7 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.get<int32_t>();
 	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
-	if (summon == 0)
+	if (summon == nullptr)
 		// Up to no good, lag, or something else
 		return;
 	Pos startPos = summon->getPos(); // Original gangsta

@@ -37,7 +37,7 @@ struct ValidLook {
 class BeautyDataProvider : boost::noncopyable {
 public:
 	static BeautyDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new BeautyDataProvider();
 		return singleton;
 	}

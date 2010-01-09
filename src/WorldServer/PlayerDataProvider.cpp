@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using Initializing::outputWidth;
 
-PlayerDataProvider * PlayerDataProvider::singleton = 0;
+PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 void PlayerDataProvider::loadData() {
 	int16_t worldid = WorldServer::Instance()->getWorldId();
@@ -79,7 +79,7 @@ void PlayerDataProvider::loadGuilds(int16_t worldId) {
 			ranks,
 			all);
 
-		if (all != 0) 
+		if (all != nullptr) 
 			all->addGuild(getGuild(guild));
 	}
 
@@ -125,7 +125,7 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	for (int32_t i = 0; i < (int32_t) res.num_rows(); i++) {
 		guildid = res[i]["guildid"];
 		guild = getGuild(guildid);
-		if (guildid != 0 && guild == 0) {
+		if (guildid != 0 && guild == nullptr) {
 			std::cout << (string) res[i]["name"] << " has an invalid guild ID (guild doesn't exist). Please check this! ";
 			continue;
 		}
@@ -156,12 +156,12 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 		m_players[player->getId()] = player;
 	}
 	if (online) {
-		if (player->getParty() != 0) {
+		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(player->getId());
 		}
-		if (player->getGuild() != 0) {
+		if (player->getGuild() != nullptr) {
 			GuildPacket::sendPlayerUpdate(player->getGuild(), player, 3, false);
-			if (player->getAlliance() != 0)
+			if (player->getAlliance() != nullptr)
 				AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 2);
 		}
 		Channels::Instance()->increasePopulation(player->getChannel());
@@ -172,12 +172,12 @@ void PlayerDataProvider::remove(int32_t id, int16_t channel) {
 	Player *player = m_players[id];
 	if (channel == -1 || player->getChannel() == channel) {
 		player->setOnline(false);
-		if (player->getParty() != 0) {
+		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(id);
 		}
-		if (player->getGuild() != 0) {
+		if (player->getGuild() != nullptr) {
 			GuildPacket::sendPlayerUpdate(player->getGuild(), player, 3, false);
-			if (player->getAlliance() != 0)
+			if (player->getAlliance() != nullptr)
 				AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 2);
 		}
 		Channels::Instance()->decreasePopulation(channel);
@@ -185,7 +185,7 @@ void PlayerDataProvider::remove(int32_t id, int16_t channel) {
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) {
-	Player *player;
+	Player *player = nullptr;
 	bool found = false;
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		if ((iter->second->isOnline() || includeOffline) && StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {
@@ -211,7 +211,7 @@ Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 		if (player->isOnline() || includeOffline)
 			return player;
 	}
-	return 0;
+	return nullptr;
 }
 
 void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
@@ -229,8 +229,9 @@ void PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelid) {
 }
 
 void PlayerDataProvider::removePendingPlayer(int32_t id) {
-	if (m_channelSwitches.find(id) != m_channelSwitches.end())
+	if (m_channelSwitches.find(id) != m_channelSwitches.end()) {
 		m_channelSwitches.erase(id);
+	}
 }
 
 int16_t PlayerDataProvider::removePendingPlayerEarly(int32_t id) {
@@ -254,16 +255,16 @@ Guild * PlayerDataProvider::addGuild(Guild *guild) {
 }
 
 Guild * PlayerDataProvider::getGuild(const string &name) {
-	return (m_guildsName.find(name) == m_guildsName.end() ? 0 : m_guildsName[name]);
+	return (m_guildsName.find(name) == m_guildsName.end() ? nullptr : m_guildsName[name]);
 }
 
 Guild * PlayerDataProvider::getGuild(int32_t id) {
-	return (m_guilds.find(id) == m_guilds.end() ? 0 : m_guilds[id]);
+	return (m_guilds.find(id) == m_guilds.end() ? nullptr : m_guilds[id]);
 }
 
 void PlayerDataProvider::createGuild(const string &name, const string &notice, int32_t id, int32_t leaderid, int32_t capacity, int32_t gp, const GuildLogo &logo, const GuildRanks &ranks, Alliance *alliance) {
 	Guild *guild = getGuild(id);
-	if (guild == 0) {
+	if (guild == nullptr) {
 		guild = new Guild(name, notice, id, leaderid, capacity, gp, logo, ranks, alliance);
 		addGuild(guild);
 	}
@@ -278,9 +279,9 @@ void PlayerDataProvider::createGuild(const string &name, const string &notice, i
 
 void PlayerDataProvider::removeGuild(Guild *guild) {
 	for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
-		iter->second->setGuild(0);
+		iter->second->setGuild(nullptr);
 		iter->second->setGuildRank(5);
-		iter->second->setAlliance(0);
+		iter->second->setAlliance(nullptr);
 		iter->second->setAllianceRank(5);
 	}
 
@@ -309,7 +310,7 @@ void PlayerDataProvider::getChannelConnectPacketGuild(PacketCreator &packet) {
 
 // Alliances
 Alliance * PlayerDataProvider::getAlliance(int32_t id) {
-	return (m_alliances.find(id) == m_alliances.end() ? 0 : m_alliances[id]);
+	return (m_alliances.find(id) == m_alliances.end() ? nullptr : m_alliances[id]);
 }
 
 void PlayerDataProvider::removeAlliance(int32_t id) {
@@ -318,8 +319,8 @@ void PlayerDataProvider::removeAlliance(int32_t id) {
 }
 
 void PlayerDataProvider::addAlliance(int32_t id, const string &name, const string &notice, const GuildRanks &ranks, int32_t capacity, int32_t leader) {
-	Alliance * alliance = getAlliance(id);
-	if (alliance == 0) {
+	Alliance *alliance = getAlliance(id);
+	if (alliance == nullptr) {
 		alliance = new Alliance(id, name, notice, ranks, capacity, leader);
 		m_alliances[id] = alliance;
 	}
@@ -358,7 +359,7 @@ void PlayerDataProvider::removeParty(int32_t id) {
 }
 
 Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) != m_parties.end() ? m_parties[id] : 0);
+	return (m_parties.find(id) != m_parties.end() ? m_parties[id] : nullptr);
 }
 
 unordered_map<int32_t, Party *> PlayerDataProvider::getParties() {

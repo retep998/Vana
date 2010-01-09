@@ -25,7 +25,7 @@ using std::string;
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-DropDataProvider * DropDataProvider::singleton = 0;
+DropDataProvider * DropDataProvider::singleton = nullptr;
 
 void DropDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";

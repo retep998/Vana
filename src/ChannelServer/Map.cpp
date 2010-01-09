@@ -52,7 +52,7 @@ Map::Map(MapInfoPtr info, int32_t id) :
 m_info(info),
 m_id(id),
 m_objectids(1000),
-m_instance(0),
+m_instance(nullptr),
 m_timer(0),
 m_timerstart(0),
 m_timemob(0),
@@ -162,7 +162,7 @@ void Map::addPlayer(Player *player) {
 	if (m_timer > 0) {
 		MapPacket::showTimer(player, m_timer - static_cast<int32_t>(time(0) - m_timerstart));
 	}
-	else if (m_instance != 0 && m_instance->showTimer() && m_instance->checkInstanceTimer() > 0) {
+	else if (m_instance != nullptr && m_instance->showTimer() && m_instance->checkInstanceTimer() > 0) {
 		MapPacket::showTimer(player, m_instance->checkInstanceTimer());
 	}
 	if (m_ship) {
@@ -211,7 +211,7 @@ void Map::removePlayer(Player *player) {
 void Map::dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		Player *dispelee = m_players[i];
-		if (dispelee != 0 && GameLogicUtilities::isInBox(origin, lt, rb, dispelee->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
+		if (dispelee != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, dispelee->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
 			dispelee->getActiveBuffs()->dispelBuffs();
 		}
 	}
@@ -221,7 +221,7 @@ void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t pr
 	int16_t done = 0;
 	for (size_t i = 0; i < m_players.size(); i++) {
 		Player *toy = m_players[i];
-		if (toy != 0) {
+		if (toy != nullptr) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
 				toy->getActiveBuffs()->addDebuff(status, level);
 				done++;
@@ -235,7 +235,7 @@ void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t pr
 void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
 	int16_t done = 0;
 	string message = "";
-	PortalInfo *p = 0;
+	PortalInfo *p = nullptr;
 	int32_t field = getInfo()->rm;
 	if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mobid)) {
 		field = ban->field;
@@ -246,7 +246,7 @@ void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Po
 	}
 	for (size_t i = 0; i < m_players.size(); i++) {
 		Player *toy = m_players[i];
-		if (toy != 0) {
+		if (toy != nullptr) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
 				if (message != "") {
 					PlayerPacket::showMessage(toy, message, 6);
@@ -364,7 +364,7 @@ int16_t Map::getFhAtPosition(const Pos &pos) {
 
 // Portals
 PortalInfo * Map::getPortal(const string &name) {
-	return m_portals.find(name) != m_portals.end() ? &m_portals[name] : 0;
+	return m_portals.find(name) != m_portals.end() ? &m_portals[name] : nullptr;
 }
 
 PortalInfo * Map::getSpawnPoint(int8_t pid) {
@@ -412,7 +412,7 @@ int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int
 		mob->setOwner(owner);
 		owner->addSpawn(id, mob);
 	}
-	MobsPacket::spawnMob(0, mob, summoneffect, owner, (owner == 0));
+	MobsPacket::spawnMob(0, mob, summoneffect, owner, (owner == nullptr));
 	updateMobControl(mob, true);
 	return id;
 }
@@ -438,19 +438,19 @@ int32_t Map::spawnShell(int32_t mobid, const Pos &pos, int16_t fh) {
 
 Mob * Map::getMob(int32_t id, bool isMapId) {
 	if (isMapId)
-		return (m_mobs.find(id) != m_mobs.end() ? m_mobs[id] : 0);
+		return (m_mobs.find(id) != m_mobs.end() ? m_mobs[id] : nullptr);
 
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
-		if (iter->second != 0 && iter->second->getMobId() == id) {
+		if (iter->second != nullptr && iter->second->getMobId() == id) {
 			return iter->second;
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 void Map::updateMobControl(Player *player) {
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
-		if (iter->second != 0 && iter->second->getControl() == player) {
+		if (iter->second != nullptr && iter->second->getControl() == player) {
 			updateMobControl(iter->second);
 		}
 	}
@@ -458,7 +458,7 @@ void Map::updateMobControl(Player *player) {
 
 void Map::updateMobControl(Mob *mob, bool spawn, Player *display) {
 	int32_t maxpos = 200000;
-	Player *p = 0;
+	Player *p = nullptr;
 	if (mob->getControlStatus() != Mobs::ControlStatus::ControlNone) {
 		for (size_t j = 0; j < m_players.size(); j++) {
 			Player *test = m_players[j];
@@ -496,9 +496,9 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
 	int32_t mobskilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
-				if (playerkill && player != 0) {
+				if (playerkill && player != nullptr) {
 					if (iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
 						iter->second->applyDamage(player->getId(), iter->second->getHp());
 					}
@@ -517,7 +517,7 @@ int32_t Map::countMobs(int32_t mobid) {
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
 	int32_t mobcount = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
 				mobcount++;
 			}
@@ -529,7 +529,7 @@ int32_t Map::countMobs(int32_t mobid) {
 void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb) {
 	unordered_map<int32_t, Mob *> mobmap = m_mobs;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-		if (iter->second != 0 && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+		if (iter->second != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
 			iter->second->skillHeal(hp, mp);
 		}
 	}
@@ -538,7 +538,7 @@ void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, con
 void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb) {
 	unordered_map<int32_t, Mob *> mobmap = m_mobs;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
-		if (iter->second != 0 && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
+		if (iter->second != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
 			iter->second->addStatus(0, statuses);
 		}
 	}
@@ -546,7 +546,7 @@ void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos 
 
 void Map::spawnZakum(const Pos &pos, int16_t fh) {
 	int32_t pid = 0;
-	Mob *p = 0;
+	Mob *p = nullptr;
 	Mob *body = getMob(spawnShell(Mobs::ZakumBody1, pos, fh));
 	int32_t parts[8] = {
 		Mobs::ZakumArm1, Mobs::ZakumArm2, Mobs::ZakumArm3,
@@ -591,7 +591,7 @@ void Map::removeDrop(int32_t id) {
 
 Drop * Map::getDrop(int32_t id) {
 	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
-	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : 0);
+	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : nullptr);
 }
 
 void Map::clearDrops(bool showPacket) { // Clear all drops
@@ -606,7 +606,7 @@ void Map::clearDrops(bool showPacket) { // Clear all drops
 bool Map::seatOccupied(int16_t id) {
 	bool occupied = true;
 	if (m_seats.find(id) != m_seats.end()) {
-		occupied = (m_seats[id].occupant != 0);
+		occupied = (m_seats[id].occupant != nullptr);
 	}
 	return occupied;
 }
@@ -637,7 +637,7 @@ Mist * Map::getMist(int32_t id) {
 	if (m_mists.find(id) != m_mists.end()) {
 		return m_mists[id];
 	}
-	return (m_poison_mists.find(id) != m_poison_mists.end() ? m_poison_mists[id] : 0);
+	return (m_poison_mists.find(id) != m_poison_mists.end() ? m_poison_mists[id] : nullptr);
 }
 
 void Map::removeMist(Mist *mist) {
@@ -729,13 +729,13 @@ void Map::checkMists() {
 		return;
 	}
 
-	Mob *mob = 0;
-	Mist *mist = 0;
+	Mob *mob = nullptr;
+	Mist *mist = nullptr;
 	unordered_map<int32_t, Mist *>::iterator miter;
 
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); ++iter) {
 		mob = iter->second;
-		if (mob == 0 || mob->hasStatus(StatusEffects::Mob::Poison) || mob->getHp() == 1)
+		if (mob == nullptr || mob->hasStatus(StatusEffects::Mob::Poison) || mob->getHp() == 1)
 			continue;
 		for (miter = m_poison_mists.begin(); miter != m_poison_mists.end(); ++miter) {
 			mist = miter->second;
@@ -753,7 +753,7 @@ void Map::clearDrops(clock_t time) { // Clear drops based on how long they have 
 	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			if (iter->second->getDropped() < time) {
 				iter->second->removeDrop();
 			}
@@ -841,12 +841,12 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	// Mobs
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			if (iter->second->getControlStatus() == Mobs::ControlStatus::ControlNone) {
 				updateMobControl(iter->second, true, player);
 			}
 			else {
-				MobsPacket::spawnMob(player, iter->second, 0, 0, false, true);
+				MobsPacket::spawnMob(player, iter->second, 0, nullptr, false, true);
 				updateMobControl(iter->second);
 			}
 		}
@@ -855,21 +855,21 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	{
 		boost::recursive_mutex::scoped_lock l(m_drops_mutex);
 		for (unordered_map<int32_t, Drop *>::iterator iter = m_drops.begin(); iter != m_drops.end(); iter++) {
-			if (iter->second != 0) {
+			if (iter->second != nullptr) {
 				iter->second->showDrop(player);
 			}
 		}
 	}
 	// Mists
 	for (unordered_map<int32_t, Mist *>::iterator iter = m_mists.begin(); iter != m_mists.end(); iter++) {
-		if (iter->second != 0) {
+		if (iter->second != nullptr) {
 			MapPacket::showMist(player, iter->second);
 		}
 	}
 
-	if (player->getParty()) {
-		player->getParty()->showHpBar(player);
-		player->getParty()->receiveHpBar(player);
+	if (Party *p = player->getParty()) {
+		p->showHpBar(player);
+		p->receiveHpBar(player);
 	}
 
 	if (getInfo()->clock) {

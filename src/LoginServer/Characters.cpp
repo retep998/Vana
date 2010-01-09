@@ -262,7 +262,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 
 	if (!ownerCheck(player, id)) {
-		// hacking
+		// Hacking
 		return;
 	}
 	enum DeletionConstants {
@@ -339,7 +339,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 
 void Characters::connectGame(Player *player, int32_t charid) {
 	if (!ownerCheck(player, charid)) {
-		// hacking
+		// Hacking
 		return;
 	}
 

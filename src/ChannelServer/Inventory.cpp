@@ -34,7 +34,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	int16_t freeslot = 0;
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
-		if (olditem != 0) {
+		if (olditem != nullptr) {
 			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxSlot(item->id)) {
 				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxSlot(item->id)) {
 					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->id) - olditem->amount;
@@ -96,7 +96,7 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 		amount = 0;
 	}
 
-	Item *item = 0;
+	Item *item = nullptr;
 	if (GameLogicUtilities::isEquip(itemid)) {
 		item = new Item(itemid, false);
 		if (GameLogicUtilities::isMount(itemid))
@@ -115,7 +115,7 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 	int8_t inv = GameLogicUtilities::getInventory(itemid);
 	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
-		if (item == 0)
+		if (item == nullptr)
 			continue;
 		if (item->id == itemid) {
 			if (item->amount >= howmany) {
@@ -141,7 +141,7 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 
 void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) {
 	Item *item = player->getInventory()->getItem(inv, slot);
-	if (item == 0 || item->amount - amount < 0)
+	if (item == nullptr || item->amount - amount < 0)
 		return;
 
 	item->amount -= amount;
@@ -158,7 +158,7 @@ void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 void Inventory::useItem(Player *player, int32_t itemid) {
 	ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(itemid);
 
-	if (item == 0) {
+	if (item == nullptr) {
 		// No reason not to check
 		return;
 	}

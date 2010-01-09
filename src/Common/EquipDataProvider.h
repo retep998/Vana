@@ -66,7 +66,7 @@ struct EquipInfo {
 class EquipDataProvider {
 public:
 	static EquipDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new EquipDataProvider;
 		return singleton;
 	}

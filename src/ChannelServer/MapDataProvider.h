@@ -92,7 +92,7 @@ typedef shared_ptr<MapInfo> MapInfoPtr;
 class MapDataProvider : boost::noncopyable {
 public:
 	static MapDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new MapDataProvider();
 		return singleton;
 	}
