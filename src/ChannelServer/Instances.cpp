@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instances.h"
 #include <boost/algorithm/string.hpp>
 
-Instances * Instances::singleton = 0;
+Instances * Instances::singleton = nullptr;
 
 void Instances::addInstance(Instance *instance) {
 	m_instances[boost::to_upper_copy(instance->getName())] = instance;
@@ -30,7 +30,7 @@ void Instances::removeInstance(Instance *instance) {
 
 Instance * Instances::getInstance(const string &name) {
 	string upCaseName = boost::to_upper_copy(name);
-	return (m_instances.find(upCaseName) == m_instances.end()) ? 0 : m_instances[upCaseName];
+	return (m_instances.find(upCaseName) == m_instances.end()) ? nullptr : m_instances[upCaseName];
 }
 
 bool Instances::isInstance(const string &name) {

@@ -28,7 +28,7 @@ typedef unordered_map<int32_t, int64_t> ConnectableMap;
 class Connectable : boost::noncopyable {
 public:
 	static Connectable * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Connectable;
 		return singleton;
 	}

@@ -35,9 +35,7 @@ int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	if (l1 == l2) {
 		return 0;
 	}
-	else {
-		return (l1 < l2) ? -1 : 1;
-	}
+	return (l1 < l2) ? -1 : 1;
 }
 
 void StringUtilities::runFlags(const string &flags, function<void (string)> func) {

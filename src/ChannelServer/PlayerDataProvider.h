@@ -63,7 +63,7 @@ struct Alliance {
 class PlayerDataProvider : boost::noncopyable {
 public:
 	static PlayerDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new PlayerDataProvider;
 		return singleton;
 	}

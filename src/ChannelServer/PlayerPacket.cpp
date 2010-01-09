@@ -93,7 +93,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	packet.add<int8_t>(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
-		if (keyMap != 0) {
+		if (keyMap != nullptr) {
 			packet.add<int8_t>(keyMap->type);
 			packet.add<int32_t>(keyMap->action);
 		}
@@ -111,7 +111,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	packet.add<int8_t>(macros->getMax() + 1);
 	for (int8_t i = 0; i <= macros->getMax();  i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
-		if (macro != 0) {
+		if (macro != nullptr) {
 			packet.addString(macro->name);
 			packet.addBool(macro->shout);
 			packet.add<int32_t>(macro->skill1);

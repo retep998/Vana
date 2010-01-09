@@ -59,14 +59,14 @@ void SyncPacket::AlliancePacket::changeGuild(Alliance *alliance, Guild *guild) {
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Alliance);
 	packet.add<int8_t>(Sync::Alliance::ChangeGuild);
-	packet.add<int32_t>(alliance == 0 ? 0 : alliance->getId());
+	packet.add<int32_t>(alliance == nullptr ? 0 : alliance->getId());
 	packet.add<int32_t>(guild->getId());
 	packet.add<int32_t>(guild->m_players.size());
 
 	unordered_map<int32_t, Player *>::iterator iter;
 	for (iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
 		packet.add<int32_t>(iter->second->getId());
-		packet.add<uint8_t>(alliance == 0 ? 5 : iter->second->getAllianceRank());
+		packet.add<uint8_t>(alliance == nullptr ? 5 : iter->second->getAllianceRank());
 	}
 
 	Channels::Instance()->sendToAll(packet);
@@ -137,7 +137,7 @@ void SyncPacket::GuildPacket::updatePlayer(Guild *guild, Player *player) {
 	packet.add<int8_t>(Sync::SyncTypes::Guild);
 	packet.add<int8_t>(Sync::Guild::ChangePlayerGuildName);
 
-	if (guild == 0) { // Expel/leave
+	if (guild == nullptr) { // Expel/leave
 		packet.add<int32_t>(-1);
 		packet.add<int32_t>(1);
 		packet.add<int32_t>(player->getId());
@@ -253,7 +253,7 @@ void SyncPacket::GuildPacket::addPlayer(Player *player) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getGuild()->getId());
 	packet.add<uint8_t>(player->getGuildRank());
-	packet.add<int32_t>(player->getAlliance() == 0 ? 0 : player->getAlliance()->getId());
+	packet.add<int32_t>(player->getAlliance() == nullptr ? 0 : player->getAlliance()->getId());
 	packet.add<uint8_t>(player->getAllianceRank());
 
 	Channels::Instance()->sendToAll(packet);
@@ -275,8 +275,8 @@ void SyncPacket::BbsPacket::sendThreadList(uint16_t channel, Guild *guild, int32
 	packet.add<int8_t>(0x06);
 	
 	BbsThread *notice = bbs->getNotice();
-	packet.addBool(notice != 0);
-	if (notice != 0) {
+	packet.addBool(notice != nullptr);
+	if (notice != nullptr) {
 		packet.add<int32_t>(notice->getListId());
 		packet.add<int32_t>(notice->getUserId());
 		packet.addString(notice->getTitle());

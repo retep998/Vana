@@ -134,7 +134,7 @@ void GuildPacket::handleDenyPacket(Player *player, PacketReader &packet) {
 int8_t GuildPacket::checkGuildExist(string name) {
 	if (name.length() < 3 || name.length() > 12)
 		return 2;
-	return ((PlayerDataProvider::Instance()->getGuild(name) != 0) ? 1 : 0);
+	return ((PlayerDataProvider::Instance()->getGuild(name) != nullptr) ? 1 : 0);
 }
 
 void GuildPacket::sendCreateGuildWindow(Player * player) {
@@ -289,7 +289,7 @@ void GuildPacket::sendRemoveEmblem(int32_t guildid, int32_t playerid) {
 
 void GuildPacket::handleEmblemChange(PacketReader &packet) {
 	Guild *gi = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
-	if (gi == 0) 
+	if (gi == nullptr) 
 		return;
 
 	GuildLogo logo;
@@ -304,7 +304,7 @@ void GuildPacket::handleEmblemChange(PacketReader &packet) {
 
 	for (int32_t i = 0; i < playersToChange; i++) {
 		Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-		if (player == 0)
+		if (player == nullptr)
 			continue;
 		PacketCreator pack;
 		pack.add<int16_t>(SMSG_GUILD_EMBLEM);
@@ -326,7 +326,7 @@ void GuildPacket::handleNameChange(PacketReader &packet) {
 
 	for (int32_t i = 0; i < playersToChange; i++) {
 		Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-		if (player == 0)
+		if (player == nullptr)
 			continue;
 		player->setGuildId(guildid);
 		player->setGuildRank(packet.get<uint8_t>());

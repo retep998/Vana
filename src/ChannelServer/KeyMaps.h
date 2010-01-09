@@ -63,9 +63,7 @@ inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int32_t pos) {
 	if (keyMaps.find(pos) != keyMaps.end()) {
 		return keyMaps[pos].get();
 	}
-	else {
-		return 0;
-	}
+	return nullptr;
 }
 
 inline int32_t KeyMaps::getMax() {

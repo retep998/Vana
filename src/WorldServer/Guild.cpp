@@ -37,7 +37,7 @@ m_invited(false)
 };
 
 void Guild::addPlayer(Player *player) {
-	if (player == 0) 
+	if (player == nullptr) 
 		return;
 
 	m_players[player->getId()] = player;
@@ -77,7 +77,7 @@ void Guild::removeInvite() {
 }
 
 void Guild::removePlayer(Player *player) {
-	if (player == 0) 
+	if (player == nullptr) 
 		return;
 	if (m_players.find(player->getId()) == m_players.end())
 		return;

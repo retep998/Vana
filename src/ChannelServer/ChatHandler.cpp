@@ -689,8 +689,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						else {
 							if (args == "all") {
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									Player *killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 									if (killpsa != player) {
 										killpsa->getStats()->setHp(0);
 									}
@@ -698,8 +697,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 							else if (args == "gm") {
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									Player *killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 									if (killpsa != player) {
 										if (killpsa->isGm()) {
 											killpsa->getStats()->setHp(0);
@@ -709,8 +707,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 							else if (args == "players") {
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									Player *killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 									if (killpsa != player) {
 										if (!killpsa->isGm()) {
 											killpsa->getStats()->setHp(0);
@@ -767,7 +764,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								}
 								else if (type == 200) {
 									int32_t mapid = getMap(matches[2], player);
-									if (Maps::getMap(mapid) != 0) {
+									if (Maps::getMap(mapid) != nullptr) {
 										string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
 										PlayerPacket::showMessage(player, message, 6);
 									}
@@ -1057,7 +1054,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							player->getStats()->setSp(atoi(args.c_str()));
 						break;
 					case CmdKillNpc:
-						player->setNPC(0);
+						player->setNPC(nullptr);
 						break;
 					case CmdHorntail:
 						Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
@@ -1172,7 +1169,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						if (args.length() != 0) {
 							int32_t mobid = atoi(args.c_str());
 							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-							if (mob != 0) {
+							if (mob != nullptr) {
 								message = "Mob ";
 								message += boost::lexical_cast<string>(mobid);
 								message += " HP: ";
@@ -1191,7 +1188,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						if (args.length() != 0) {
 							int32_t mobid = atoi(args.c_str());
 							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-							if (mob != 0) {
+							if (mob != nullptr) {
 								mob->applyDamage(player->getId(), mob->getHp());
 							}
 						}

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class LoginServer : public AbstractServer, boost::noncopyable {
 public:
 	static LoginServer * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new LoginServer;
 		return singleton;
 	}

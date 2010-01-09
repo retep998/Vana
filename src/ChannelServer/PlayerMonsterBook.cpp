@@ -128,7 +128,7 @@ void PlayerMonsterBook::infoData(PacketCreator &packet) {
 }
 
 MonsterCard * PlayerMonsterBook::getCard(int32_t cardid) {
-	return (m_cards.find(cardid) != m_cards.end() ? &m_cards[cardid] : 0);
+	return (m_cards.find(cardid) != m_cards.end() ? &m_cards[cardid] : nullptr);
 }
 
 bool PlayerMonsterBook::isFull(int32_t cardid) {

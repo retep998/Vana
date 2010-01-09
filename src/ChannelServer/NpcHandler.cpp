@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 
 void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
-	if (player->getNPC() != 0) {
+	if (player->getNPC() != nullptr) {
 		return;
 	}
 
@@ -42,12 +42,12 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (player->getNPC() == 0 && NPC::hasScript(npcs.id, 0, false)) {
+	if (player->getNPC() == nullptr && NPC::hasScript(npcs.id, 0, false)) {
 		NPC *npc = new NPC(npcs.id, player, npcs.pos);
 		npc->run();
 		return;
 	}
-	else if (player->getShop() == 0) {
+	else if (player->getShop() == nullptr) {
 		if (NpcHandler::showShop(player, npcs.id)) {
 			return;
 		}
@@ -61,7 +61,7 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 }
 
 void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid) {
-	if (player->getNPC() != 0) {
+	if (player->getNPC() != nullptr) {
 		return;
 	}
 
@@ -71,13 +71,13 @@ void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16
 
 void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 	NPC *npc = player->getNPC();
-	if (npc == 0) {
+	if (npc == nullptr) {
 		return;
 	}
 
 	int8_t type = packet.get<int8_t>();
 	if (type != npc->getSentDialog()) {
-		// hacking
+		// Hacking
 		return;
 	}
 

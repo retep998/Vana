@@ -38,7 +38,7 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	packet.add<int16_t>(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0c);
 
-	if (alliance == 0) {
+	if (alliance == nullptr) {
 		packet.addBool(false);
 
 		Channels::Instance()->sendToChannel(requestee->getChannel(), packet);

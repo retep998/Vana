@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-MapleTvs * MapleTvs::singleton = 0;
+MapleTvs * MapleTvs::singleton = nullptr;
 
 MapleTvs::MapleTvs() :
 m_timers(new Timer::Container),
@@ -41,7 +41,7 @@ void MapleTvs::addMap(Map *map) {
 
 void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {
 	MapleTvMessage message;
-	message.hasreceiver = (receiver != 0);
+	message.hasreceiver = (receiver != nullptr);
 	message.megaphoneid = megaphoneid;
 	message.senderid = sender->getId();
 	message.time = time;
@@ -53,7 +53,7 @@ void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, c
 	message.msg5 = msg5;
 	PlayerPacketHelper::addPlayerDisplay(message.senddisplay, sender); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
 	message.sendname = sender->getName();
-	if (receiver != 0) {
+	if (receiver != nullptr) {
 		PlayerPacketHelper::addPlayerDisplay(message.recvdisplay, receiver);
 		message.recvname = receiver->getName();
 	}

@@ -44,7 +44,7 @@ public:
 	Item * getItem(int8_t slot) const {
 		if (slot < (int8_t) items.size())
 			return items[slot];
-		return 0;
+		return nullptr;
 	}
 
 	void load();

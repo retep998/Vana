@@ -49,7 +49,7 @@ public:
 	uint8_t getLowestRank();
 	string getTitle(uint8_t rank) const { return m_titles[rank - 1]; }
 	unordered_map<int32_t, Guild *> getGuilds() { return m_guilds; }
-	Guild * getGuild(int32_t guildid) { return m_guilds.find(guildid) != m_guilds.end() ? m_guilds[guildid] : 0; }
+	Guild * getGuild(int32_t guildid) { return m_guilds.find(guildid) != m_guilds.end() ? m_guilds[guildid] : nullptr; }
 	uint8_t getSize() const { return m_guilds.size(); }
 private:
 	int32_t m_id;

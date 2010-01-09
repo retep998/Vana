@@ -34,7 +34,7 @@ namespace Timer {
 class Trades : boost::noncopyable {
 public:
 	static Trades * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Trades;
 		return singleton;
 	}

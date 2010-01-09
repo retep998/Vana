@@ -42,7 +42,7 @@ void GuildPacket::sendGuildInfo(Guild *guild, Player *requestee, bool isNew) {
 	packet.add<int8_t>(isNew ? 0x20 : 0x1a);
 
 	if (!isNew) {
-		if (guild == 0) {
+		if (guild == nullptr) {
 			packet.addBool(false);
 
 			Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
@@ -306,7 +306,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	// Initializing the leader
 	Player *leader = PlayerDataProvider::Instance()->getPlayer(guild->getLeader(), true);
 
-	if (leader == 0)
+	if (leader == nullptr)
 		std::cout << "Leader not found in the server. Leaderid: " << guild->getLeader() << std::endl;
 
 	packet.add<int32_t>(guild->getId());
@@ -317,7 +317,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	
 	packet.add<int8_t>(guild->m_players.size());
 
-	if (leader != 0)
+	if (leader != nullptr)
 		packet.add<int32_t>(leader->getId());
 
 	for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
@@ -326,7 +326,7 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	}
 
 	// Adding the information of the players
-	if (leader != 0) {
+	if (leader != nullptr) {
 		packet.addString(leader->getName(), 13);
 		packet.add<int32_t>(leader->getJob());
 		packet.add<int32_t>(leader->isOnline() ? leader->getLevel() : -1); // FIXME
@@ -357,14 +357,14 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	packet.add<uint8_t>(logo.color);
 	packet.addString(guild->getNotice());
 	packet.add<int32_t>(guild->getGuildPoints());
-	packet.add<int32_t>(guild->getAlliance() == 0 ? 0 : guild->getAlliance()->getId());
+	packet.add<int32_t>(guild->getAlliance() == nullptr ? 0 : guild->getAlliance()->getId());
 }
 
 void GuildPacket::sendToGuild(PacketCreator &packet, Guild *guild, Player *player) {
 	unordered_map<int32_t, Player *> players = guild->m_players;
 	unordered_map<int32_t, Player *>::iterator iter;
 	for (iter = players.begin(); iter != players.end(); iter++) {
-		if ((player != 0 && iter->second == player) || !iter->second->isOnline()) 
+		if ((player != nullptr && iter->second == player) || !iter->second->isOnline()) 
 			continue;
 		PacketCreator pack;
 		pack.add<int16_t>(IMSG_FORWARD_TO);

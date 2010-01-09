@@ -52,10 +52,10 @@ Instance::~Instance() {
 	// Maps
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *map = m_maps[i];
-		map->setInstance(0);
+		map->setInstance(nullptr);
 		map->setMusic("default");
 		map->clearDrops(false);
-		map->killMobs(0, 0, false, false);
+		map->killMobs(nullptr, 0, false, false);
 		map->killReactors(false);
 		if (m_reset_on_destroy) { // Reset all mobs/reactors
 			map->respawn();
@@ -65,16 +65,15 @@ Instance::~Instance() {
 
 	// Parties
 	for (size_t k = 0; k < m_parties.size(); k++) {
-		Party *p = m_parties[k];
-		if (p != 0) {
-			p->setInstance(0);
+		if (Party *p = m_parties[k]) {
+			p->setInstance(nullptr);
 		}
 	}
 	m_parties.clear();
 
 	// Players
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->setInstance(0);
+		iter->second->setInstance(nullptr);
 	}
 	m_players.clear();
 	Instances::InstancePtr()->removeInstance(this);
@@ -110,7 +109,7 @@ bool Instance::isBanned(const string &name) {
 }
 
 void Instance::addPlayer(Player *player) {
-	if (player != 0) {
+	if (player != nullptr) {
 		m_players[player->getId()] = player;
 		player->setInstance(this);
 	}
@@ -118,7 +117,7 @@ void Instance::addPlayer(Player *player) {
 
 void Instance::removePlayer(Player *player) {
 	removePlayer(player->getId());
-	player->setInstance(0);
+	player->setInstance(nullptr);
 }
 
 void Instance::removePlayer(int32_t id) {
@@ -197,7 +196,7 @@ void Instance::addMap(int32_t mapid) {
 }
 
 Map * Instance::getMap(int32_t mapid) {
-	Map *map = 0;
+	Map *map = nullptr;
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *tmap = m_maps[i];
 		if (tmap->getId() == mapid) {

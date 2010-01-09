@@ -122,8 +122,8 @@ void Mob::initMob() {
 	taunteffect = 100;
 
 	Map *map = Maps::getMap(mapid);
-	Instance *instance = map->getInstance();
-	if (instance != 0) {
+
+	if (Instance *instance = map->getInstance()) {
 		instance->sendMessage(MobSpawn, mobid, id, mapid);
 	}
 
@@ -158,7 +158,7 @@ void Mob::naturalHealHp(int32_t amount) {
 		}
 		setHp(hp);
 		totalhealth += sponge;
-		if (getSponge() != 0) {
+		if (getSponge() != nullptr) {
 			getSponge()->setHp(getSponge()->getHp() + sponge);
 		}
 	}
@@ -196,7 +196,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 		else if (info->friendly) {
 			MobsPacket::damageFriendlyMob(this, damage);
 		}
-		else if (player != 0) {
+		else if (player != nullptr) {
 			MobsPacket::showHp(player, id, percent);
 		}
 
@@ -218,7 +218,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 				case Mobs::ZakumArm6:
 				case Mobs::ZakumArm7:
 				case Mobs::ZakumArm8:
-					if (getOwner() != 0 && getOwner()->getSpawnCount() == 1) {
+					if (getOwner() != nullptr && getOwner()->getSpawnCount() == 1) {
 						// Last linked arm died
 						int8_t cstatus = Mobs::ControlStatus::ControlNormal;
 						getOwner()->setControlStatus(cstatus);
@@ -227,7 +227,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			}
 			die(player);
 		}
-		if (sponge != 0) {
+		if (sponge != nullptr) {
 			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
@@ -396,7 +396,7 @@ void Mob::setControl(Player *control, bool spawn, Player *display) {
 	/*if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
-	if (control != 0)
+	if (control != nullptr)
 		MobsPacket::requestControl(control, this, spawn);
 	else if (getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		MobsPacket::requestControl(control, this, spawn, display);
@@ -404,7 +404,7 @@ void Mob::setControl(Player *control, bool spawn, Player *display) {
 }
 
 void Mob::endControl() {
-	if (control != 0 && control->getMap() == getMapId())
+	if (control != nullptr && control->getMap() == getMapId())
 		MobsPacket::endControlMob(control, this);
 }
 
@@ -430,9 +430,9 @@ void Mob::die(Player *player, bool fromexplosion) {
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
 	DropHandler::doDrops(highestdamager, mapid, getLevel(), mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
-	if (player != 0) {
+	if (player != nullptr) {
 		Party *party = player->getParty();
-		if (party != 0) {
+		if (party != nullptr) {
 			vector<Player *> members = party->getPartyMembers(mapid);
 			for (size_t memsize = 0; memsize < members.size(); memsize++) {
 				members[memsize]->getQuests()->updateQuestMob(mobid);
@@ -447,8 +447,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 		map->buffPlayers(getDeathBuff());
 	}
 
-	Instance *instance = map->getInstance();
-	if (instance != 0) {
+	if (Instance *instance = map->getInstance()) {
 		instance->sendMessage(MobDeath, mobid, id, mapid);
 	}
 	map->removeMob(id, spawnid);
@@ -464,8 +463,7 @@ void Mob::die(bool showpacket) {
 	if (showpacket) {
 		endControl();
 		MobsPacket::dieMob(this);
-		Instance *instance = Maps::getMap(mapid)->getInstance();
-		if (instance != 0) {
+		if (Instance *instance = Maps::getMap(mapid)->getInstance()) {
 			instance->sendMessage(MobDeath, mobid, id);
 		}
 	}
@@ -479,23 +477,23 @@ int32_t Mob::giveExp(Player *killer) {
 
 	if (damages.size()) { // Don't really want to bother with construction of the iterators and stuff if we won't use them
 		unordered_map<int32_t, PartyExp> parties;
-		Player *damager = 0;
+		Player *damager = nullptr;
 		uint8_t damagerlevel = 0;
-		Party *damagerparty = 0;
+		Party *damagerparty = nullptr;
 		for (unordered_map<int32_t, uint64_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
 			if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
 				highestdamager = iter->first;
 				highestdamage = iter->second;
 			}
 			damager = PlayerDataProvider::Instance()->getPlayer(iter->first);
-			if (damager == 0 || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
+			if (damager == nullptr || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 
 			damagerlevel = damager->getStats()->getLevel();
 			damagerparty = damager->getParty();
 
 			uint32_t exp = static_cast<uint32_t>(getExp() * ((8 * iter->second / totalhealth) + (damager == killer ? 2 : 0)) / 10);
-			if (damagerparty != 0) {
+			if (damagerparty != nullptr) {
 				int32_t pid = damagerparty->getId();
 				if (parties.find(pid) != parties.end()) {
 					parties[pid].totalexp += exp;
@@ -574,7 +572,7 @@ void Mob::spawnDeathMobs(Map *map) {
 			htsponge->addSpawn(parts[m], f);
 		}
 	}
-	else if (getSponge() != 0) { // More special Horntail logic to keep units linked
+	else if (getSponge() != nullptr) { // More special Horntail logic to keep units linked
 		getSponge()->removeSpawn(getId());
 		for (size_t i = 0; i < info->summon.size(); i++) {
 			int32_t ident = map->spawnMob(info->summon[i], m_pos, getFh(), this);
@@ -592,10 +590,10 @@ void Mob::spawnDeathMobs(Map *map) {
 void Mob::updateSpawnLinks() {
 	if (spawns.size() > 0) {
 		for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
-			spawniter->second->setOwner(0);
+			spawniter->second->setOwner(nullptr);
 		}
 	}
-	if (getOwner() != 0) {
+	if (getOwner() != nullptr) {
 		owner->removeSpawn(getId());
 	}
 }
@@ -616,7 +614,7 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	}
 	totalhealth += amount;
 
-	if (getSponge() != 0) {
+	if (getSponge() != nullptr) {
 		basehealhp = getSponge()->getHp() + amount;
 		if (basehealhp < 0 || basehealhp > getSponge()->getMaxHp()) {
 			basehealhp = getSponge()->getMaxHp();

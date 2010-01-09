@@ -120,7 +120,7 @@ void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	ppacket.addBuffer(packet);
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (player != 0) {
+	if (player != nullptr) {
 		player->getSession()->send(ppacket);
 	}
 }

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Randomizer.h"
 
-Randomizer * Randomizer::singleton = 0;
+Randomizer * Randomizer::singleton = nullptr;
 
 uint32_t Randomizer::randInt(uint32_t max) {
 	return mtrand.randInt(max);

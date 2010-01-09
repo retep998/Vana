@@ -25,7 +25,7 @@ using std::string;
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-ReactorDataProvider * ReactorDataProvider::singleton = 0;
+ReactorDataProvider * ReactorDataProvider::singleton = nullptr;
 
 void ReactorDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Reactors... ";
@@ -155,5 +155,5 @@ ReactorData * ReactorDataProvider::getReactorData(int32_t reactorid, bool respec
 		}
 		return retval;
 	}
-	return 0;
+	return nullptr;
 }

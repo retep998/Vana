@@ -118,7 +118,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 		if (totals[i] > 0) {
 			int8_t incrementor = 0;
 			for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); g++) {
-				if (target->getInventory()->getItem(i + 1, g) == 0)
+				if (target->getInventory()->getItem(i + 1, g) == nullptr)
 					incrementor++;
 				if (incrementor >= totals[i])
 					break;
@@ -161,11 +161,11 @@ void ActiveTrade::returnTrade() {
 	TradeInfo *recv = getReceiverTrade();
 	Player *one = getSender();
 	Player *two = getReceiver();
-	if (one != 0) {
+	if (one != nullptr) {
 		giveItems(one, send);
 		giveMesos(one, send);
 	}
-	if (two != 0) {
+	if (two != nullptr) {
 		giveItems(two, recv);
 		giveMesos(two, recv);
 	}

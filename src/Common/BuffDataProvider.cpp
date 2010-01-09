@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using Initializing::outputWidth;
 
-BuffDataProvider * BuffDataProvider::singleton = 0;
+BuffDataProvider * BuffDataProvider::singleton = nullptr;
 
 void BuffDataProvider::loadData() {
 	using namespace BuffBytes;

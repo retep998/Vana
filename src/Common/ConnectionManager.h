@@ -36,7 +36,7 @@ class MapleServer;
 class ConnectionManager : private boost::noncopyable {
 public:
 	static ConnectionManager * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ConnectionManager;
 		return singleton;
 	}

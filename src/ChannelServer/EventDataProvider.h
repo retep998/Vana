@@ -34,7 +34,7 @@ namespace Timer {
 class EventDataProvider : boost::noncopyable {
 public:
 	static EventDataProvider * InstancePtr() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new EventDataProvider;
 		return singleton;
 	}

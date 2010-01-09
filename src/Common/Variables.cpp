@@ -18,8 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Variables.h"
 
 void Variables::deleteVariable(const string &name) {
-	if (m_variables.find(name) != m_variables.end())
+	if (m_variables.find(name) != m_variables.end()) {
 		m_variables.erase(name);
+	}
 }
 
 void Variables::setVariable(const string &name, const string &val) {

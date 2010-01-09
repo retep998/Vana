@@ -58,7 +58,7 @@ struct MapleTvMessage {
 class MapleTvs : boost::noncopyable {
 public:
 	static MapleTvs * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new MapleTvs;
 		return singleton;
 	}

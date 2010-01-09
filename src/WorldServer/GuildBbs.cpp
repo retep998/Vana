@@ -72,7 +72,7 @@ void GuildBbs::save() {
 			<< iter->second->getListId() << ")";
 		iter->second->saveReplies();
 	}
-	if (notice != 0) {
+	if (notice != nullptr) {
 		if (firstrun) {
 			query << "INSERT INTO guild_bbs_threads VALUES (";
 			firstrun = false;
@@ -106,7 +106,7 @@ void GuildBbs::addThread(BbsThread *thread) {
 void GuildBbs::removeThread(int32_t id) {
 	if (id == 0) {
 		delete notice;
-		notice = 0; // If we don't do this it will crash the server :/
+		notice = nullptr; // If we don't do this it will crash the server :/
 	}
 	else {
 		delete m_threads[id];
@@ -118,12 +118,13 @@ void GuildBbs::removeThread(int32_t id) {
 BbsThread * GuildBbs::getThread(int32_t threadid) {
 	if (threadid == 0)
 		return notice;
-	return m_threads.find(threadid) != m_threads.end() ? m_threads[threadid] : 0;
+	return m_threads.find(threadid) != m_threads.end() ? m_threads[threadid] : nullptr;
 }
 
 void BbsThread::addReply(BbsReply *reply) {
-	if (reply != 0)
+	if (reply != nullptr) {
 		m_replies[reply->getId()] = reply;
+	}
 }
 
 void BbsThread::loadReplies() {

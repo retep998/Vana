@@ -28,8 +28,9 @@ void Fame::handleFame(Player *player, PacketReader &packet) {
 	if (player->getId() > 0) {
 		if (player->getId() != playerid) {
 			int32_t checkResult = canFame(player, playerid);
-			if (checkResult >= 1 && checkResult <= 4)
+			if (checkResult != 0) {
 				FamePacket::sendError(player, checkResult);
+			}
 			else {
 				Player *famee = PlayerDataProvider::Instance()->getPlayer(playerid);
 				int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
@@ -53,7 +54,7 @@ int32_t Fame::canFame(Player *player, int32_t to) {
 		return 2;
 	if (getLastFameLog(from))
 		return 3;
-	if (getLastFameSPLog(from, to))
+	if (getLastFameSpLog(from, to))
 		return 4;
 	return 0;
 }
@@ -68,18 +69,18 @@ void Fame::addFameLog(int32_t from, int32_t to) {
 
 bool Fame::getLastFameLog(int32_t from) { // Last fame from that char
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
+	query << "SELECT `time` FROM `fame_log` WHERE `from` = " << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())
-		return (res.num_rows() == 0) ? false : true;
+		return (res.num_rows() != 0);
 	return false;
 }
 
-bool Fame::getLastFameSPLog(int32_t from, int32_t to) {
+bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << from << " AND `to`=" << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
+	query << "SELECT `time` FROM `fame_log` WHERE `from` = " << from << " AND `to`=" << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())
-		return (res.num_rows() == 0) ? false : true;
+		return (res.num_rows() != 0);
 	return false;
 }

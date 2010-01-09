@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include <iostream>
 
-Worlds * Worlds::singleton = 0;
+Worlds * Worlds::singleton = nullptr;
 
 void Worlds::showWorld(Player *player) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
@@ -94,7 +94,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 }
 
 int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
-	World *world = 0;
+	World *world = nullptr;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (!iter->second->isConnected()) {
 			player->setWorldId(iter->first);
@@ -105,7 +105,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
 		}
 	}
 	
-	if (world != 0) {
+	if (world != nullptr) {
 		LoginServerAcceptPacket::connect(player, world);
 		std::cout << "Assigned world " << (int32_t) world->getId() << " to World Server." << std::endl;
 		return world->getId();
@@ -177,5 +177,5 @@ void Worlds::calculatePlayerLoad(World *world) {
 }
 
 World * Worlds::getWorld(uint8_t id) {
-	return worlds.find(id) == worlds.end() ? 0 : worlds[id];
+	return worlds.find(id) == worlds.end() ? nullptr : worlds[id];
 }
