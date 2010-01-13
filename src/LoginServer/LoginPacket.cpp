@@ -117,7 +117,8 @@ void LoginPacket::showWorld(Player *player, World *world) {
 		}
 
 		packet.add<int8_t>(world->getId());
-		packet.add<uint16_t>(i);
+		packet.add<uint8_t>(i);
+		packet.add<uint8_t>(0); // Some sort of state O.o
 	}
 	packet.add<int16_t>(0); // Amount of messages
 	// packet.addPos(); // Pos of message

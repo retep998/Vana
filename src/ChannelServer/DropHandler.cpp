@@ -164,7 +164,8 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::playerLoot(Player *player, PacketReader &packet) {
-	packet.skipBytes(9);
+	packet.skipBytes(5);
+	packet.skipBytes(4); // Player pos
 	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid);

@@ -243,3 +243,13 @@ void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	packet.add<int8_t>(death);
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
+
+void MobsPacket::showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &pos) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.add<int8_t>(0x00);
+	packet.add<int8_t>(summonEffect);
+	packet.add<int32_t>(pos.x);
+	packet.add<int32_t>(pos.y);
+	Maps::getMap(mapid)->sendPacket(packet);
+}

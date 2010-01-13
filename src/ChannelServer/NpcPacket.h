@@ -30,4 +30,6 @@ namespace NpcPacket {
 	void showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
 	void controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
 	void animateNpc(Player *player, PacketReader &pack);
+	void showNpcEffect(Player *player, int32_t index, bool show = false);
+	void showNpcEffect(int32_t mapid, int32_t index, bool show = false);
 };
