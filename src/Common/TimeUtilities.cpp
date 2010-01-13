@@ -116,7 +116,7 @@ int32_t TimeUtilities::getWeek(time_t ctime) {
 	return result;
 }
 
-bool TimeUtilities::getDST(time_t ctime) {
+bool TimeUtilities::isDst(time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	return (timeinfo->tm_isdst > 0);
 }

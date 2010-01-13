@@ -49,8 +49,7 @@ if getJob() == 0 then
 			setJob(200);
 			giveItem(1372043, 1); 
 			mpinc = 100 + getRandomNumber(50); 
-			setRMMP(getRMMP() + mpinc); 
-			setMMP(getMMP() + mpinc); 
+			setMaxMP(getRealMaxMP() + mpinc); 
 			setSTR(4); -- Stat reset
 			setDEX(4);
 			setINT(20);
@@ -261,8 +260,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slot
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Fire and Poison#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -304,8 +302,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Ice and Lightning#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -348,8 +345,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright, you're a #bCleric#k from here on out. Clerics blow life into every living organism here ");
 						addText("with their undying faith in God. Never stop working on your faith...then one day, I'll help you ");
 						addText("become much more powerful...");

@@ -278,34 +278,6 @@ namespace MobElements {
 	};
 }
 
-namespace FieldLimitBits {
-	enum Limit {
-		Jump = 0x01,
-		MovementSkills = 0x02,
-		SummoningBag = 0x04,
-		MysticDoor = 0x08,
-		ChannelSwitch = 0x10,
-		RegularExpLoss = 0x20,
-		VipRock = 0x40,
-		Minigames = 0x80,
-		NoClue1 = 0x100, // APQ and a couple quest maps have this
-		Mount = 0x200,
-		NoClue2 = 0x400, // Monster carnival?
-		NoClue3 = 0x800, // Monster carnival?
-		PotionUse = 0x1000,
-		NoClue4 = 0x2000, // No notes
-		Unused = 0x4000,
-		NoClue5 = 0x8000, // Ariant colosseum-related?
-		NoClue6 = 0x10000, // No notes
-		DropDown = 0x20000,
-		NoClue7 = 0x40000, // Seems to .. disable Rush if 0x2 is set
-		NoClue8 = 0x80000,
-		Unused2 = 0x100000,
-		Unused3 = 0x200000,
-		Chalkboard = 0x400000
-	};
-}
-
 namespace StatusEffects {
 	namespace Mob {
 		const uint8_t MaxVenomCount = 3;

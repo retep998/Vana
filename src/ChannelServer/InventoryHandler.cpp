@@ -484,7 +484,7 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 	}
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	int32_t map = info->moveTo;
-	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getInfo()->rm : map);
+	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getReturnMap() : map);
 }
 
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
@@ -847,15 +847,15 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 		}
 	}
 	if (targetmapid != -1) {
-		MapInfo *destination = Maps::getMap(targetmapid)->getInfo();
-		MapInfo *origin = Maps::getMap(player->getMap())->getInfo();
-		if ((destination->fieldLimit & FieldLimitBits::VipRock) != 0) {
+		Map *destination = Maps::getMap(targetmapid);
+		Map *origin = Maps::getMap(player->getMap());
+		if (!destination->canVip()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
-		else if ((origin->fieldLimit & FieldLimitBits::VipRock) != 0) {
+		else if (!origin->canVip()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
-		else if (type == 0 && destination->continent != origin->continent) {
+		else if (type == 0 && destination->getContinent() != origin->getContinent()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
 		else {

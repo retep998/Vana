@@ -122,7 +122,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
 	switch (skillid) {
 		case Jobs::Brawler::MpRecovery: {
-			int16_t modhp = player->getStats()->getMHp() * skill->x / 100;
+			int16_t modhp = player->getStats()->getMaxHp() * skill->x / 100;
 			int16_t healmp = modhp * skill->y / 100;
 			player->getStats()->modifyHp(-modhp);
 			player->getStats()->modifyMp(healmp);
@@ -233,7 +233,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint16_t healrate = skill->hpP;
 			if (healrate > 100)
 				healrate = 100;
-			player->getStats()->modifyHp(healrate * player->getStats()->getMHp() / 100);
+			player->getStats()->modifyHp(healrate * player->getStats()->getMaxHp() / 100);
 			break;
 		}
 		case Jobs::Fighter::Rage:
@@ -315,8 +315,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				if (target != nullptr && target != player && target->getStats()->getHp() > 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
-					target->getStats()->setHp(target->getStats()->getMHp());
-					target->getStats()->setMp(target->getStats()->getMMp());
+					target->getStats()->setHp(target->getStats()->getMaxHp());
+					target->getStats()->setMp(target->getStats()->getMaxMp());
 					target->getActiveBuffs()->useDispel();
 				}
 			}
@@ -330,7 +330,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
-					target->getStats()->setHp(target->getStats()->getMHp());
+					target->getStats()->setHp(target->getStats()->getMaxHp());
 				}
 			}
 			break;
@@ -428,7 +428,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
-	if (player->getStats()->getHp() < player->getStats()->getMHp() && player->getStats()->getHp() > 0) {
+	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		player->getStats()->modifyHp(value);
 		SkillsPacket::healHP(player, value);
 	}

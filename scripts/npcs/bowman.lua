@@ -51,10 +51,8 @@ if getJob() == 0 then
 			giveItem(2060000, 6000); -- Arrow for Bow
 			hpinc = 100 + getRandomNumber(50); -- Extra HP Given
 			mpinc = 25 + getRandomNumber(25); -- Extra MP Given
-			setMHP(getMHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setRMHP(getRMHP() + hpinc);
-			setMMP(getMMP() + mpinc); -- Set MP to current MP plus full amount of hp increase
-			setRMMP(getRMMP() + mpinc);
+			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMP(getRealMaxMP() + mpinc); -- Set MP to current MP plus full amount of hp increase
 			setSTR(4); -- Stat reset
 			setDEX(25);
 			setINT(4);
@@ -252,11 +250,9 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
-						setMHP(getMHP() + newhp); -- Add to current HP
-						setRMHP(getRMHP() + newhp);
+						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright, you're the #bHunter#k from here on out. Hunters are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");
@@ -300,11 +296,9 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
-						setMHP(getMHP() + newhp); -- Add to current HP
-						setRMHP(getRMHP() + newhp);
+						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright, you're the #bCrossbowman#k from here on out. Crossbowman are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");

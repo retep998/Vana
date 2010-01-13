@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class NPC;
+class Npc;
 
-class LuaNPC : public LuaScriptable {
+class LuaNpc : public LuaScriptable {
 public:
-	LuaNPC(const string &filename, int32_t playerid);
+	LuaNpc(const string &filename, int32_t playerid);
 	
 	bool run();
 	bool proceedNext();
@@ -41,7 +41,7 @@ protected:
 };
 
 namespace LuaExports {
-	NPC * getNPC(lua_State *luaVm);
+	Npc * getNpc(lua_State *luaVm);
 
 	// NPC exports
 
@@ -54,9 +54,9 @@ namespace LuaExports {
 	// NPC interaction
 	int addText(lua_State *luaVm);
 	int sendBackNext(lua_State *luaVm);
-	int sendBackOK(lua_State *luaVm);
+	int sendBackOk(lua_State *luaVm);
 	int sendNext(lua_State *luaVm);
-	int sendOK(lua_State *luaVm);
+	int sendOk(lua_State *luaVm);
 	int askAcceptDecline(lua_State *luaVm);
 	int askChoice(lua_State *luaVm);
 	int askNumber(lua_State *luaVm);

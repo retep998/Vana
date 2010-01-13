@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractConnection.h"
 #include "MovableLife.h"
+#include "Npc.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
@@ -45,7 +46,6 @@ using std::vector;
 using std::tr1::unordered_set;
 
 class Instance;
-class NPC;
 class PacketReader;
 class Party;
 struct PortalInfo;
@@ -53,7 +53,6 @@ struct PortalInfo;
 class Player : public AbstractConnection, public MovableLife {
 public:
 	Player();
-
 	~Player();
 
 	void realHandleRequest(PacketReader &packet);
@@ -74,13 +73,13 @@ public:
 	void setAllianceId(int32_t id) { allianceid = id; }
 	void setAllianceRank(uint8_t rank) { alliancerank = rank; }
 	void setShop(int32_t shopid) { shop = shopid; }
-	void setNPC(NPC *npc) { this->npc = npc; }
-	void setParty(Party *party) { this->party = party; }
-	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
+	void setInstance(Instance *instance) { this->instance = instance; }
+	void setNpc(Npc *npc) { this->npc.reset(npc); }
+	void setParty(Party *party) { this->party = party; }
 
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
@@ -109,16 +108,15 @@ public:
 	uint8_t getGuildRank() const { return guildrank; }
 	int32_t getAllianceId() const { return allianceid; }
 	uint8_t getAllianceRank() const { return alliancerank; }
-	NPC * getNPC() const { return npc; }
-	Party * getParty() const { return party; }
-	Instance * getInstance() const { return instance; }
 	bool isGm() const { return gm_level > 0; }
 	bool isAdmin() const { return admin; }
 	bool isTrading() const { return trade_state; }
+	bool hasGmEquip() const;
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
-	bool hasGmEquip();
-
+	Instance * getInstance() const { return instance; }
+	Npc * getNpc() const { return npc.get(); }
+	Party * getParty() const { return party; }
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
 	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
@@ -149,12 +147,18 @@ private:
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 
+	bool trade_state;
+	bool save_on_dc;
+	bool is_connect;
+	bool admin;
 	int8_t world_id;
 	int8_t map_pos;
 	int8_t gender;
 	int8_t skin;
 	int8_t fall_counter;
 	uint8_t buddylist_size;
+	uint8_t guildrank;
+	uint8_t alliancerank;
 	int16_t mapchair;
 	int32_t id;
 	int32_t user_id;
@@ -166,24 +170,18 @@ private:
 	int32_t chair;
 	int32_t gm_level;
 	int32_t trade_id;
-	int64_t online_time;
-	bool trade_state;
 	int32_t guildid;
-	uint8_t guildrank;
 	int32_t allianceid;
-	uint8_t alliancerank;
-	bool save_on_dc;
-	bool is_connect;
-	bool admin;
+	int64_t online_time;
 	string chalkboard;
 	string name;
-	NPC *npc;
-	Instance *instance;
-	Party *party;
 	unordered_set<int8_t> used_portals;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
+	Party *party;
+	Instance *instance;
+	scoped_ptr<Npc> npc;
 	scoped_ptr<PlayerActiveBuffs> activeBuffs;
 	scoped_ptr<PlayerBuddyList> buddyList;
 	scoped_ptr<PlayerInventory> inv;

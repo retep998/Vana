@@ -38,7 +38,7 @@ elseif reaction == 1 then
 	addText("Oh, and one more thing! It's obvious, but you can't create a new Guild Union if you are already a member of another one!");
 	sendBackNext();
 elseif reaction == 2 then
-	if getAllianceId() ~= 0 then
+	if getAllianceID() ~= 0 then
 		addText("You cannot form a Guild Union if you are already affiliated with a different Union.");
 		sendNext();
 	elseif getPartyID() == 0 then

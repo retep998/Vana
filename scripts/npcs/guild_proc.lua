@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Guild Creation NPC
 
-if getGuildId() == 0 then
+if getGuildID() == 0 then
 	addText("Hey ... are you interested in GUILDS by any chance?");
 	sendNext();
 
@@ -65,7 +65,7 @@ if getGuildId() == 0 then
 				success = true;
 				for i = 1, #ids do
 					if setPlayer(ids[i]) then
-						if getGuildId() ~= 0 then
+						if getGuildID() ~= 0 then
 							success = false;
 						end
 						revertPlayer();

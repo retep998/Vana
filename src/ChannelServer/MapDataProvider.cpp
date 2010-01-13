@@ -26,6 +26,22 @@ using StringUtilities::runFlags;
 
 MapDataProvider * MapDataProvider::singleton = nullptr;
 
+FieldLimit::FieldLimit() :
+jump(false),
+movementSkills(false),
+summoningBag(false),
+mysticDoor(false),
+channelSwitching(false),
+regularExpLoss(false),
+vipRock(false),
+minigames(false),
+mount(false),
+potionUse(false),
+dropDown(false),
+chalkboard(false)
+{
+}
+
 MapDataProvider::MapDataProvider() {
 	loadData();
 }
@@ -96,6 +112,23 @@ namespace Functors {
 		}
 		MapInfoPtr map;
 	};
+	struct FieldLimitFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "jump") limitations->jump = true;
+			else if (cmp == "movement_skills") limitations->movementSkills = true;
+			else if (cmp == "summoning_bag") limitations->summoningBag = true;
+			else if (cmp == "mystic_door") limitations->mysticDoor = true;
+			else if (cmp == "channel_switching") limitations->channelSwitching = true;
+			else if (cmp == "regular_exp_loss") limitations->regularExpLoss = true;
+			else if (cmp == "vip_rock") limitations->vipRock = true;
+			else if (cmp == "minigames") limitations->minigames = true;
+			else if (cmp == "mount") limitations->mount = true;
+			else if (cmp == "potion_use") limitations->potionUse = true;
+			else if (cmp == "drop_down") limitations->dropDown = true;
+			else if (cmp == "chalkboard") limitations->chalkboard = true;
+		}
+		FieldLimit *limitations;
+	};
 }
 
 int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
@@ -121,14 +154,15 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		mapinfo->link = link;
 
 		FieldTypeFlags f = {mapinfo};
+		FieldLimitFlags limits = {&mapinfo->limitations};
 		MapFlags whoo = {mapinfo};
 		runFlags(row[FieldType], f);
+		runFlags(row[FieldLimit], limits);
 		runFlags(row[Flags], whoo);
 
 		mapinfo->continent = getContinent(mapid);
 		mapinfo->rm = atoi(row[ReturnMap]);
 		mapinfo->forcedReturn = atoi(row[ForcedReturn]);
-		mapinfo->fieldLimit = atoi(row[FieldLimit]);
 		mapinfo->spawnRate = atof(row[MobRate]);
 		mapinfo->defaultMusic = row[Bgm];
 		mapinfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
