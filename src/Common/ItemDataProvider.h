@@ -167,6 +167,7 @@ struct ItemInfo {
 	int32_t maxobtainable;
 	int32_t exp;
 	int32_t npc;
+	int32_t mesos;
 	bool timelimited;
 	bool nosale;
 	bool karmascissors;
@@ -214,6 +215,7 @@ public:
 	bool isTradeable(int32_t itemid) { return (!(items[itemid].notrade || items[itemid].quest)); }
 	bool isCash(int32_t itemid) { return items[itemid].cash; }
 	int32_t getPrice(int32_t itemid) { return (itemExists(itemid) ? items[itemid].price : 0); }
+	int32_t getMesoBonus(int32_t itemid) { return (itemExists(itemid) ? items[itemid].mesos : 0); }
 	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
 	int32_t getHunger(int32_t itemid) {return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
 	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
