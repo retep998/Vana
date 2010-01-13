@@ -58,14 +58,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MESSENGER 0x67 // Also known as avatar megaphone
 #define SMSG_MACRO_LIST 0x71
 #define SMSG_CHANGE_MAP 0x72
+#define SMSG_PORTAL_BLOCKED 0x77
 #define SMSG_CHANNEL_BLOCKED 0x78 // For messages like 'This server is unavailable'
 #define SMSG_MAP_FORCE_EQUIPMENT 0x79 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
 #define SMSG_MESSAGE_GROUP 0x7a // Groups like party, buddies and guild
 #define SMSG_COMMAND 0x7b // Respond to / commands i.e. "/find"
 #define SMSG_MAP_EFFECT 0x7e // Change Music/Boss HP Bars
+#define SMSG_CASH_SONG 0x83 // Used for cash items only, plays a song... :D
 #define SMSG_GM 0x84 // Hide, other miscellaneous junk
 #define SMSG_EVENT_INSTRUCTION 0x86 // GM event instructions - Ola Ola, etc.
 #define SMSG_TIMER 0x87 // For places with clock i.e. ship station
+#define SMSG_GM_WARNING 0x8c // Shows a popup with the message from a GM/an Admin
 #define SMSG_TIMER_OFF 0x8e // Makes timer disappear from map
 #define SMSG_MAP_SPAWN_PLAYER 0x91
 #define SMSG_MAP_REMOVE_PLAYER 0x92
@@ -120,6 +123,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_NPC_SHOW 0xe3
 #define SMSG_NPC_CONTROL 0xe5
 #define SMSG_NPC_ANIMATE 0xe6
+#define SMSG_NPC_SHOW_EFFECT 0xe7
 #define SMSG_DROP_ITEM 0xee
 #define SMSG_DROP_PICKUP 0xef
 #define SMSG_MIST_SPAWN 0xf3

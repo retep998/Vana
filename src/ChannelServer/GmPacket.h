@@ -31,4 +31,6 @@ namespace GmPacket {
 	void warning(Player *player, bool succeed);
 	void block(Player *player);
 	void invalidCharacterName(Player *player);
+	void hiredMerchantPlace(Player *player, int8_t channel);
+	void hiredMerchantPlace(Player *player, int32_t mapid);
 };
