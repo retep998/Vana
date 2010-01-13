@@ -73,10 +73,10 @@ public:
 	void damageMp(uint16_t dmp);
 	void setHp(int16_t hp, bool is = true); // Only use setHp/Mp if you're going to do checking, they fall easily to datatype issues
 	void setMp(int16_t mp, bool is = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
-	void setMHp(int16_t mhp);
-	void setMMp(int16_t mmp);
-	void modifyMHp(int16_t mod);
-	void modifyMMp(int16_t mod);
+	void setMaxHp(int16_t mhp);
+	void setMaxMp(int16_t mmp);
+	void modifyMaxHp(int16_t mod);
+	void modifyMaxMp(int16_t mod);
 	void setHyperBody(int16_t modx, int16_t mody);
 	void setHpMpAp(uint16_t ap) { hpmp_ap = ap; }
 	void setExp(int32_t exp);
@@ -125,9 +125,9 @@ public:
 	int16_t getInt(bool withbonus = false);
 	int16_t getLuk(bool withbonus = false);
 	int16_t getHp() const { return hp; }
-	int16_t getMHp(bool withoutbonus = false);
+	int16_t getMaxHp(bool withoutbonus = false);
 	int16_t getMp() const { return mp; }
-	int16_t getMMp(bool withoutbonus = false);
+	int16_t getMaxMp(bool withoutbonus = false);
 private:
 	Player *player;
 	uint8_t level;

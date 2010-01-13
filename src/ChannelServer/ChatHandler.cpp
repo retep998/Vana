@@ -820,7 +820,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdNpc: {
 						if (args.length() != 0) {
 							int32_t npcid = atoi(args.c_str());
-							NPC *npc = new NPC(npcid, player);
+							Npc *npc = new Npc(npcid, player);
 							npc->run();
 						}
 						else {
@@ -873,8 +873,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdMaxStats:
 						player->getStats()->setFame(Stats::MaxFame);
-						player->getStats()->setMHp(Stats::MaxMaxHp);
-						player->getStats()->setMMp(Stats::MaxMaxMp);
+						player->getStats()->setMaxHp(Stats::MaxMaxHp);
+						player->getStats()->setMaxMp(Stats::MaxMaxMp);
 						player->getStats()->setStr(32767);
 						player->getStats()->setDex(32767);
 						player->getStats()->setInt(32767);
@@ -899,17 +899,17 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdHp:
 						if (args.length() != 0) {
 							uint16_t amount = atoi(args.c_str());
-							player->getStats()->setMHp(amount);
+							player->getStats()->setMaxHp(amount);
 							if (player->getStats()->getHp() > amount)
-								player->getStats()->setHp(player->getStats()->getMHp());
+								player->getStats()->setHp(player->getStats()->getMaxHp());
 						}
 						break;
 					case CmdMp:
 						if (args.length() != 0) {
 							uint16_t amount = atoi(args.c_str());
-							player->getStats()->setMMp(amount);
+							player->getStats()->setMaxMp(amount);
 							if (player->getStats()->getMp() > amount)
-								player->getStats()->setMp(player->getStats()->getMMp());
+								player->getStats()->setMp(player->getStats()->getMaxMp());
 						}
 						break;
 					case CmdFame:
@@ -1054,14 +1054,14 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							player->getStats()->setSp(atoi(args.c_str()));
 						break;
 					case CmdKillNpc:
-						player->setNPC(nullptr);
+						player->setNpc(nullptr);
 						break;
 					case CmdHorntail:
 						Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
 						break;
 					case CmdHeal:
-						player->getStats()->setHp(player->getStats()->getMHp());
-						player->getStats()->setMp(player->getStats()->getMMp());
+						player->getStats()->setHp(player->getStats()->getMaxHp());
+						player->getStats()->setMp(player->getStats()->getMaxMp());
 						break;
 					case CmdMesos:
 						if (args.length() != 0)
@@ -1205,7 +1205,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 int32_t ChatHandler::getMap(const string &query, Player *player) {
 	int32_t mapid = -1;
 	if (query == "here") mapid = player->getMap();
-	else if (query == "town") mapid = Maps::getMap(player->getMap())->getInfo()->rm;
+	else if (query == "town") mapid = Maps::getMap(player->getMap())->getReturnMap();
 	else if (query == "southperry") mapid = 60000;
 	else if (query == "amherst") mapid = 1010000;
 	else if (query == "gm") mapid = 180000000;

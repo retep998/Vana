@@ -472,8 +472,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Marauder::EnergyDrain:
 		case Jobs::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillid)->x / 100);
-			if (hpRecover > player->getStats()->getMHp())
-				player->getStats()->setHp(player->getStats()->getMHp());
+			if (hpRecover > player->getStats()->getMaxHp())
+				player->getStats()->setHp(player->getStats()->getMaxHp());
 			else
 				player->getStats()->modifyHp((int16_t) hpRecover);
 			break;
@@ -492,7 +492,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		case Jobs::DragonKnight::DragonRoar: {
 			int16_t x_value = SkillDataProvider::Instance()->getSkill(skillid, level)->x;
-			uint16_t reduction = (player->getStats()->getMHp() / 100) * x_value;
+			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * x_value;
 			if (reduction < player->getStats()->getHp()) {
 				player->getStats()->damageHp(reduction);
 			}
@@ -601,10 +601,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * drain_x / 100);
 			if (hpRecover > mhp)
 				hpRecover = mhp;
-			if (hpRecover > (player->getStats()->getMHp() / 2))
-				hpRecover = player->getStats()->getMHp() / 2;
-			if (hpRecover > player->getStats()->getMHp())
-				player->getStats()->setHp(player->getStats()->getMHp());
+			if (hpRecover > (player->getStats()->getMaxHp() / 2))
+				hpRecover = player->getStats()->getMaxHp() / 2;
+			if (hpRecover > player->getStats()->getMaxHp())
+				player->getStats()->setHp(player->getStats()->getMaxHp());
 			else
 				player->getStats()->modifyHp((int16_t) hpRecover);
 			break;

@@ -207,7 +207,7 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	packet.add<int16_t>(SMSG_PARTY_HP_DISPLAY);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getStats()->getHp());
-	packet.add<int32_t>(player->getStats()->getMHp());
+	packet.add<int32_t>(player->getStats()->getMaxHp());
 	target->getSession()->send(packet);
 }
 

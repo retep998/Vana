@@ -53,10 +53,8 @@ if getJob() == 0 then
 			giveItem(2070015, 3); -- Special subis
 			hpinc = 100 + getRandomNumber(50); -- Generate a random number from 0-50 to add to the base hp increase
 			mpinc = 25 + getRandomNumber(25); -- Generate a random number from 0-25 to add to the base mp increase
-			setMHP(getMHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setRMHP(getRMHP() + hpinc);
-			setMMP(getMMP() + mpinc); -- Set MP to current MP plus full amount of mp increase
-			setRMMP(getRMMP() + mpinc);
+			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMP(getRealMaxMP() + mpinc); -- Set MP to current MP plus full amount of mp increase
 			setSTR(4); -- Stat reset
 			setDEX(25);
 			setINT(4);
@@ -255,11 +253,9 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated 
-						setMHP(getMHP() + newhp); -- Add to current HP
-						setRMHP(getRMHP() + newhp);
+						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright, from here on out you are the #bAssassin#k. Assassins revel in shadows and darkness, waiting until ");
 						addText("the right time comes for them to stick a dagger through the enemy's heart, suddenly and swiftly...please ");
 						addText("keep training. I'll make you even more powerful than you are right now!");
@@ -301,11 +297,9 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
-						setMHP(getMHP() + newhp); -- Add to current HP 
-						setRMHP(getRMHP() + newhp);
+						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP 
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculared
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright from here on out, you're the #bBandit#k. Bandits have quick hands and quicker feet to ");
 						addText("dominate the enemies. Please keep training. I'll make you even more powerful than you are right now.");
 						sendNext();

@@ -96,9 +96,6 @@ Player::~Player() {
 			i->removePlayer(getId());
 			i->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
-		if (getNPC() != nullptr) {
-			delete getNPC();
-		}
 		if (getMapChair() != 0) {
 			Maps::getMap(getMap())->playerSeated(getMapChair(), 0);
 		}
@@ -107,7 +104,6 @@ Player::~Player() {
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
-
 		if (PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos())) {
 			map_pos = closest->id;
 		}
@@ -335,12 +331,12 @@ void Player::playerConnect(PacketReader &packet) {
 		}
 	}
 	else {
-		if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
-			map = Maps::getMap(map)->getInfo()->forcedReturn;
+		if (Maps::getMap(map)->getForcedReturn() != Maps::NoMap) {
+			map = Maps::getMap(map)->getForcedReturn();
 			map_pos = -1;
 		}
 		else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
-			map = Maps::getMap(map)->getInfo()->rm;
+			map = Maps::getMap(map)->getReturnMap();
 			map_pos = -1;
 		}
 	}
@@ -417,7 +413,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
-	if (!getChalkboard().empty() && (newmap->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
+	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
 		setChalkboard("");
 	}
 	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
@@ -529,9 +525,9 @@ void Player::saveStats() {
 		<< "`int` = " << stats->getInt() << ","
 		<< "luk = " << stats->getLuk() << ","
 		<< "chp = " << stats->getHp() << ","
-		<< "mhp = " << stats->getMHp(true) << ","
+		<< "mhp = " << stats->getMaxHp(true) << ","
 		<< "cmp = " << stats->getMp() << ","
-		<< "mmp = " << stats->getMMp(true) << ","
+		<< "mmp = " << stats->getMaxMp(true) << ","
 		<< "hpmp_ap = " << stats->getHpMpAp() << ","
 		<< "ap = " << stats->getAp() << ","
 		<< "sp = " << stats->getSp() << ","
@@ -586,7 +582,7 @@ void Player::setLevelDate() {
 }
 
 void Player::acceptDeath(bool wheel) {
-	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
+	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getReturnMap() : map);
 	if (wheel) {
 		tomap = this->getMap();
 	}
@@ -595,7 +591,7 @@ void Player::acceptDeath(bool wheel) {
 	setMap(tomap);
 }
 
-bool Player::hasGmEquip() {
+bool Player::hasGmEquip() const {
 	if (getInventory()->getEquippedId(EquipSlots::Helm) == Items::GmHat)
 		return true;
 	if (getInventory()->getEquippedId(EquipSlots::Top) == Items::GmTop)

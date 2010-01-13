@@ -65,7 +65,7 @@ m_timers(new Timer::Container)
 		getTimers(), 0, 10 * 1000);
 }
 
-// Map Info
+// Map info
 void Map::setMusic(const string &musicname) {
 	m_music = (musicname == "default" ? getInfo()->defaultMusic : musicname);
 	MapPacket::playMusic(getId(), m_music);
@@ -150,7 +150,7 @@ void Map::addTimeMob(TimeMobPtr info) {
 // Players
 void Map::addPlayer(Player *player) {
 	m_players.push_back(player);
-	if (getInfo()->forceMapEquip) {
+	if (forceMapEquip()) {
 		MapPacket::forceMapEquip(player);
 	}
 	if (!player->getActiveBuffs()->isUsingHide()) {
@@ -162,8 +162,10 @@ void Map::addPlayer(Player *player) {
 	if (m_timer > 0) {
 		MapPacket::showTimer(player, m_timer - static_cast<int32_t>(time(0) - m_timerstart));
 	}
-	else if (m_instance != nullptr && m_instance->showTimer() && m_instance->checkInstanceTimer() > 0) {
-		MapPacket::showTimer(player, m_instance->checkInstanceTimer());
+	else if (Instance *i = getInstance()) {
+		if (i->showTimer() && i->checkInstanceTimer() > 0) {
+			MapPacket::showTimer(player, m_instance->checkInstanceTimer());
+		}
 	}
 	if (m_ship) {
 		// Boat packet, need to change this section slightly...
@@ -236,7 +238,7 @@ void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Po
 	int16_t done = 0;
 	string message = "";
 	PortalInfo *p = nullptr;
-	int32_t field = getInfo()->rm;
+	int32_t field = getReturnMap();
 	if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mobid)) {
 		field = ban->field;
 		message = ban->message;
@@ -326,10 +328,12 @@ Pos Map::findFloor(const Pos &pos) {
 }
 
 Pos Map::findRandomPos() {
-	int16_t min_x = (getInfo()->lt.x != 0 ? getInfo()->lt.x : 0x8000);
-	int16_t max_x = (getInfo()->rb.x != 0 ? getInfo()->rb.x : 0x7FFF);
-	int16_t min_y = (getInfo()->lt.y != 0 ? getInfo()->lt.y : 0x8000);
-	int16_t max_y = (getInfo()->rb.y != 0 ? getInfo()->rb.y : 0x7FFF);
+	const Pos &lt = getMapLeftTop();
+	const Pos &rb = getMapRightBottom();
+	int16_t min_x = (lt.x != 0 ? lt.x : 0x8000);
+	int16_t max_x = (rb.x != 0 ? rb.x : 0x7FFF);
+	int16_t min_y = (lt.y != 0 ? lt.y : 0x8000);
+	int16_t max_y = (rb.y != 0 ? rb.y : 0x7FFF);
 	int16_t posx = 0;
 	int16_t posy = 0;
 	int16_t tempx = 0;
@@ -809,7 +813,7 @@ void Map::setMapTimer(int32_t t) {
 
 void Map::showObjects(Player *player) { // Show all Map Objects
 	// Music
-	if (getMusic() != getInfo()->defaultMusic)
+	if (getMusic() != getDefaultMusic())
 		MapPacket::playMusic(player, getMusic());
 
 	// MapleTV messengers
@@ -830,15 +834,18 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()
 		}
 	}
+
 	// NPCs
 	for (size_t i = 0; i < m_npc_spawns.size(); i++) {
 		NpcPacket::showNpc(player, m_npc_spawns[i], i + Map::NpcStart);
 	}
+
 	// Reactors
 	for (size_t i = 0; i < m_reactors.size(); i++) {
 		if (m_reactors[i]->isAlive())
 			ReactorPacket::showReactor(player, m_reactors[i]);
 	}
+
 	// Mobs
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
 		if (iter->second != nullptr) {
@@ -851,6 +858,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			}
 		}
 	}
+
 	// Drops
 	{
 		boost::recursive_mutex::scoped_lock l(m_drops_mutex);
@@ -860,6 +868,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 			}
 		}
 	}
+
 	// Mists
 	for (unordered_map<int32_t, Mist *>::iterator iter = m_mists.begin(); iter != m_mists.end(); iter++) {
 		if (iter->second != nullptr) {
@@ -872,7 +881,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		p->receiveHpBar(player);
 	}
 
-	if (getInfo()->clock) {
+	if (hasClock()) {
 		time_t rawtime;
 		time(&rawtime);
 		struct tm *timeinfo = localtime(&rawtime);

@@ -314,7 +314,7 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 		int32_t skillid = Jobs::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
 		if (level > 0) {
-			int16_t r_hp = m_player->getStats()->getMHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
+			int16_t r_hp = m_player->getStats()->getMaxHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
 			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails

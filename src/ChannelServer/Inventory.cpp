@@ -178,9 +178,9 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 	else
 		player->getStats()->setMp(player->getStats()->getMp(), true);
 	if (item->hpr != 0)
-		player->getStats()->modifyHp(item->hpr * (zombie ? (player->getStats()->getMHp() / 2) : player->getStats()->getMHp()) / 100);
+		player->getStats()->modifyHp(item->hpr * (zombie ? (player->getStats()->getMaxHp() / 2) : player->getStats()->getMaxHp()) / 100);
 	if (item->mpr != 0)
-		player->getStats()->modifyMp(item->mpr * player->getStats()->getMMp() / 100);
+		player->getStats()->modifyMp(item->mpr * player->getStats()->getMaxMp() / 100);
 	if (item->ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
 

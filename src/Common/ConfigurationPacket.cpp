@@ -64,7 +64,7 @@ Configuration ConfigurationPacket::getConfig(PacketReader &packet) {
 	return conf;
 }
 
-void ConfigurationPacket::addMajorBoss(MajorBoss &boss, PacketCreator &packet) {
+void ConfigurationPacket::addMajorBoss(const MajorBoss &boss, PacketCreator &packet) {
 	packet.add<int16_t>(boss.attempts);
 	packet.addVector(boss.channels);
 }
