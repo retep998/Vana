@@ -98,6 +98,7 @@ void ItemDataProvider::loadItems() {
 		item.minlevel = atoi(row[MinLevel]);
 		item.maxlevel = atoi(row[MaxLevel]);
 		item.exp = atoi(row[Experience]);
+		item.mesos = atoi(row[Mesos]);
 		if (row[Name]) {
 			item.name = row[Name];
 		}

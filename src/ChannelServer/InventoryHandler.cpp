@@ -675,7 +675,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				packet.get<int32_t>(); // Ticks
+				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
 				
 				if (itemid == Items::Megassenger) {
@@ -694,8 +694,8 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
-			packet.get<int32_t>(); // Ticks
-			MapleTvs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
+			packet.skipBytes(4); // Ticks
+			MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
 			
 			if (itemid == Items::StarMegassenger) {
 				InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -716,7 +716,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				packet.get<int32_t>(); // Ticks
+				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
 				if (itemid == Items::HeartMegassenger) {
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -725,30 +725,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Items::BronzeSackOfMesos: {
-			int32_t mesos = 1000000;
-			if (!player->getInventory()->modifyMesos(mesos)) {
-				InventoryPacket::sendMesobagFailed(player);
-			}
-			else {
-				InventoryPacket::sendMesobagSucceed(player, mesos);
-				used = true;
-			}
-			break;
-		}
-		case Items::SilverSackOfMesos: {
-			int32_t mesos = 5000000;
-			if (!player->getInventory()->modifyMesos(mesos)) {
-				InventoryPacket::sendMesobagFailed(player);
-			}
-			else {
-				InventoryPacket::sendMesobagSucceed(player, mesos);
-				used = true;
-			}
-			break;
-		}
+		case Items::BronzeSackOfMesos:
+		case Items::SilverSackOfMesos:
 		case Items::GoldSackOfMesos: {
-			int32_t mesos = 10000000;
+			int32_t mesos = ItemDataProvider::Instance()->getMesoBonus(itemid);
 			if (!player->getInventory()->modifyMesos(mesos)) {
 				InventoryPacket::sendMesobagFailed(player);
 			}
