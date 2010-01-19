@@ -230,7 +230,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Cleric::Heal: { // Heal
-			uint16_t healrate = skill->hpP;
+			uint16_t healrate = skill->hpProp;
 			if (healrate > 100)
 				healrate = 100;
 			player->getStats()->modifyHp(healrate * player->getStats()->getMaxHp() / 100);
@@ -362,7 +362,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	int16_t cooltime = skill->cooltime;
 	int16_t mpuse = skill->mp;
 	int16_t hpuse = skill->hp;
-	int16_t moneycon = skill->moneycon;
+	int16_t moneycon = skill->moneyConsume;
 	int32_t item = skill->item;
 	if (mpuse > 0) {
 		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) { // Reduced MP usage for Concentration
@@ -382,7 +382,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillid, uint8_t level, boo
 	if (hpuse > 0)
 		player->getStats()->modifyHp(-hpuse);
 	if (item > 0)
-		Inventory::takeItem(player, item, skill->itemcount);
+		Inventory::takeItem(player, item, skill->itemCount);
 	if (cooltime > 0 && skillid != Jobs::Corsair::Battleship)
 		startCooldown(player, skillid, cooltime);
 	if (moneycon > 0) {
@@ -418,13 +418,19 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 		applySkillCosts(player, skillid, level);
 	}
 	uint16_t hits = 1;
-	if (skillid != Jobs::All::RegularAttack && SkillDataProvider::Instance()->getSkill(skillid, level)->bulletcon > 0)
-		hits = SkillDataProvider::Instance()->getSkill(skillid, level)->bulletcon;
-	if (player->getActiveBuffs()->hasShadowPartner())
+	if (skillid != Jobs::All::RegularAttack) {
+		uint16_t bullets = SkillDataProvider::Instance()->getSkill(skillid, level)->bulletConsume;
+		if (bullets > 0) {
+			hits = bullets;
+		}
+	}
+	if (player->getActiveBuffs()->hasShadowPartner()) {
 		hits *= 2;
-	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()))
+	}
+	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow())) {
 		// If they don't have Shadow Stars or Soul Arrow, take the items
 		Inventory::takeItemSlot(player, Inventories::UseInventory, pos, hits);
+	}
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {

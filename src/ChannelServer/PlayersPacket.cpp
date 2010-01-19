@@ -78,8 +78,8 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			packet.add<int8_t>(hit);
 			packet.add<int8_t>(pgmr.reduction);
 			if (pgmr.reduction > 0) {
-				packet.addBool(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
-				packet.add<int32_t>(pgmr.mapmobid);
+				packet.addBool(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
+				packet.add<int32_t>(pgmr.mapMobId);
 				packet.add<int8_t>(6);
 				packet.addPos(pgmr.pos);
 			}

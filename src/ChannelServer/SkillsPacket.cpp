@@ -124,10 +124,10 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SPECIAL_SKILL);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(info.skillid);
+	packet.add<int32_t>(info.skillId);
 	packet.add<int8_t>(info.level);
 	packet.add<int8_t>(info.direction);
-	packet.add<int8_t>(info.w_speed);
+	packet.add<int8_t>(info.weaponSpeed);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -137,7 +137,7 @@ void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info)
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SPECIAL_SKILL_END);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(info.skillid);
+	packet.add<int32_t>(info.skillId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 

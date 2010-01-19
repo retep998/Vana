@@ -29,10 +29,7 @@ void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t t
 	packet.add<int32_t>(playerid);
 	packet.add<int8_t>(type);
 	packet.addString(chat);
-	packet.add<int8_t>(receivers.size());
-	for (size_t i = 0; i < receivers.size(); i++) {
-		packet.add<int32_t>(receivers[i]);
-	}
+	packet.addVector(receivers);
 
 	player->getSession()->send(packet);
 }

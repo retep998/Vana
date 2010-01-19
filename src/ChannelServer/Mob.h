@@ -92,8 +92,8 @@ public:
 	int8_t getControlStatus() const { return controlstatus; }
 	int8_t getVenomCount() const { return venomcount; }
 	int8_t getFacingDirection() const { return facingdirection; }
-	int8_t getHpBarColor() const { return info->hpcolor; }
-	int8_t getHpBarBgColor() const { return info->hpbgcolor; }
+	int8_t getHpBarColor() const { return info->hpColor; }
+	int8_t getHpBarBgColor() const { return info->hpBackgroundColor; }
 	int16_t getOriginFh() const { return originfh; }
 	uint16_t getLevel() const { return info->level; }
 	int32_t getWeaponReflection();
@@ -111,18 +111,18 @@ public:
 	int32_t getDeathBuff() const { return info->buff; }
 	int32_t getExp() const { return info->exp; }
 	int32_t getCounter() { return ++counter; }
-	int32_t getSelfDestructHp() const { return info->selfdestruction; }
+	int32_t getSelfDestructHp() const { return info->selfDestruction; }
 	int32_t getTauntEffect() const { return taunteffect; }
 	time_t getLastSkillUse(uint8_t skill) { return (skilluse.find(skill) != skilluse.end() ? skilluse[skill] : 0); }
 	bool isBoss() const { return info->boss; }
-	bool canFreeze() const { return info->canfreeze; }
-	bool canPoison() const { return info->canpoison; }
+	bool canFreeze() const { return info->canFreeze; }
+	bool canPoison() const { return info->canPoison; }
 	bool canFly() const { return info->flying; }
 	bool isFriendly() const { return info->friendly; }
 	bool isUndead() const { return info->undead; }
 	bool hasLink() const { return info->link != 0; }
-	bool hasExplosiveDrop() const { return info->explosivereward; }
-	bool hasFfaDrop() const { return info->publicreward; }
+	bool hasExplosiveDrop() const { return info->explosiveReward; }
+	bool hasFfaDrop() const { return info->publicReward; }
 	bool hasImmunity() const;
 	bool hasReflect() const;
 	bool hasWeaponReflect() const;
@@ -132,7 +132,7 @@ public:
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return sponge; }
 	const MobInfo getInfo() const { return info; }
-	uint8_t getSkillCount() const { return info->skillcount; }
+	uint8_t getSkillCount() const { return info->skillCount; }
 	int16_t getSpawnCount() const { return static_cast<int16_t>(spawns.size()); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
 

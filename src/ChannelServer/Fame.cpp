@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void Fame::handleFame(Player *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
-	uint8_t type = (uint8_t) packet.get<int32_t>();
+	uint8_t type = packet.get<uint8_t>();
 	if (player->getId() > 0) {
 		if (player->getId() != playerid) {
 			int32_t checkResult = canFame(player, playerid);

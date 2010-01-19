@@ -34,12 +34,14 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, Pa
 	int32_t playerid = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
 	string message = packet.getString();
-	uint8_t receivers = packet.get<int8_t>();
+	vector<int32_t> receivers = packet.getVector<int32_t>();
 	string sender = PlayerDataProvider::Instance()->getPlayer(playerid)->getName();
-	for (size_t i = 0; i < receivers; i++) {
-		int32_t receiver = packet.get<int32_t>();
-		uint16_t channel = PlayerDataProvider::Instance()->getPlayer(receiver)->getChannel();
-		WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
+	for (size_t i = 0; i < receivers.size(); i++) {
+		int32_t receiver = receivers[i];
+		if (Player *p = PlayerDataProvider::Instance()->getPlayer(receiver)) {
+			uint16_t channel = p->getChannel();
+			WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
+		}
 	}	
 }
 

@@ -163,7 +163,7 @@ bool NpcHandler::showStorage(Player *player, int32_t npcid) {
 
 bool NpcHandler::showGuildRank(Player *player, int32_t npcid) {
 	if (NpcDataProvider::Instance()->isGuildRank(npcid)) {
-		//GuildPacket::displayGuildRankBoard(player->getId(), npcid);
+		GuildPacket::displayGuildRankBoard(player->getId(), npcid);
 		return true;
 	}
 	return false;

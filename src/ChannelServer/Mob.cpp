@@ -131,20 +131,20 @@ void Mob::initMob() {
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
 
-	if (info->hprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hprecovery),
+	if (info->hpRecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info->mprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealMp, this, info->mprecovery),
+	if (info->mpRecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealMp, this, info->mpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info->removeafter > 0) {
+	if (info->removeAfter > 0) {
 		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
-			map->getTimers(), Timer::Time::fromNow(info->removeafter * 1000));
+			map->getTimers(), Timer::Time::fromNow(info->removeAfter * 1000));
 	}
 }
 
@@ -187,7 +187,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	
 		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
-		if (info->hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+		if (info->hpColor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHp(this);
 		}
 		else if (info->boss) { // Minibosses
@@ -651,7 +651,7 @@ void Mob::doCrashSkill(int32_t skillid) {
 
 void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 	if ((mpeatercount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
-		mp->onlyonce = true;
+		mp->used = true;
 		int32_t emp = getMaxMp() * mp->x / 100;
 
 		if (emp > getMp())
@@ -662,7 +662,7 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 			emp = 30000;
 		player->getStats()->modifyMp(static_cast<int16_t>(emp));
 
-		SkillsPacket::showSkillEffect(player, mp->id);
+		SkillsPacket::showSkillEffect(player, mp->skillId);
 		mpeatercount++;
 	}
 }

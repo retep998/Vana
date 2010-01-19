@@ -53,7 +53,7 @@ void SkillDataProvider::loadPlayerSkills() {
 		Mastery, OptionalItem, Item, ItemCount, BulletCon,
 		MoneyCon, X, Y, Speed, Jump,
 		Str, Watk, Wdef, Matk, Mdef,
-		Acc, Avoid, HpP, MpP, Prop,
+		Acc, Avoid, HpProp, MpProp, Prop,
 		Morph, LTX, LTY, RBX, RBY,
 		Cooldown
 	};
@@ -62,33 +62,33 @@ void SkillDataProvider::loadPlayerSkills() {
 		skillid = atoi(row[SkillId]);
 		skilllevel = atoi(row[Level]);
 
-		level.mobcount = atoi(row[MobCount]);
-		level.hitcount = atoi(row[HitCount]);
+		level.mobCount = atoi(row[MobCount]);
+		level.hitCount = atoi(row[HitCount]);
 		level.time = atoi(row[Time]);
 		level.range = atoi(row[Range]);
 		level.mp = atoi(row[Mp]);
 		level.hp = atoi(row[Hp]);
 		level.damage = atoi(row[Damage]);
-		level.fixeddamage = atoi(row[FixedDamage]);
-		level.criticaldamage = atoi(row[CriticalDamage]);
+		level.fixedDamage = atoi(row[FixedDamage]);
+		level.criticalDamage = atoi(row[CriticalDamage]);
 		level.item = atoi(row[Item]);
-		level.optionalitem = atoi(row[OptionalItem]);
-		level.itemcount = atoi(row[ItemCount]);
-		level.bulletcon = atoi(row[BulletCon]);
-		level.moneycon = atoi(row[MoneyCon]);
+		level.optionalItem = atoi(row[OptionalItem]);
+		level.itemCount = atoi(row[ItemCount]);
+		level.bulletConsume = atoi(row[BulletCon]);
+		level.moneyConsume = atoi(row[MoneyCon]);
 		level.x = atoi(row[X]);
 		level.y = atoi(row[Y]);
 		level.speed = atoi(row[Speed]);
 		level.jump = atoi(row[Jump]);
 		level.str = atoi(row[Str]);
-		level.watk = atoi(row[Watk]);
-		level.wdef = atoi(row[Wdef]);
-		level.matk = atoi(row[Matk]);
-		level.mdef = atoi(row[Mdef]);
+		level.wAtk = atoi(row[Watk]);
+		level.wDef = atoi(row[Wdef]);
+		level.mAtk = atoi(row[Matk]);
+		level.mDef = atoi(row[Mdef]);
 		level.acc = atoi(row[Acc]);
 		level.avo = atoi(row[Avoid]);
-		level.hpP = atoi(row[HpP]);
-		level.mpP = atoi(row[MpP]);
+		level.hpProp = atoi(row[HpProp]);
+		level.mpProp = atoi(row[MpProp]);
 		level.prop = atoi(row[Prop]);
 		level.morph = atoi(row[Morph]);
 		level.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
@@ -135,7 +135,7 @@ void SkillDataProvider::loadMobSkills() {
 		moblevel.rb.y = atoi(row[RBY]);
 		moblevel.hp = atoi(row[Hp]);
 		moblevel.limit = atoi(row[Limit]);
-		moblevel.summoneffect = atoi(row[SummonEffect]);
+		moblevel.summonEffect = atoi(row[SummonEffect]);
 
 		mobskills[skillid][level] = moblevel;
 	}
