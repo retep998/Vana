@@ -86,22 +86,21 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			disease = attack->disease;
 			level = attack->level;
-			mpburn = attack->mpburn;
-			deadlyattack = attack->deadlyattack;
+			mpburn = attack->mpBurn;
+			deadlyattack = attack->deadlyAttack;
 		}
 		hit = packet.get<int8_t>(); // Knock direction
 		pgmr.reduction = packet.get<int8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
-			if (!packet.getBool())
-				pgmr.isphysical = false;
-			pgmr.mapmobid = packet.get<int32_t>();
+			pgmr.isPhysical = packet.getBool();
+			pgmr.mapMobId = packet.get<int32_t>();
 			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			packet.skipBytes(4); // Mob position garbage
 			pgmr.pos.x = packet.get<int16_t>();
 			pgmr.pos.y = packet.get<int16_t>();
 			pgmr.damage = damage;
-			if (pgmr.isphysical) // Only Power Guard decreases damage
+			if (pgmr.isPhysical) // Only Power Guard decreases damage
 				damage = (damage - (damage * pgmr.reduction / 100)); 
 			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 		}
@@ -289,10 +288,10 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Jobs::ILArchMage::BigBang:
 		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
-			info.skillid = skillid;
+			info.skillId = skillid;
 			info.level = packet.get<int8_t>();
 			info.direction = packet.get<int8_t>();
-			info.w_speed = packet.get<int8_t>();
+			info.weaponSpeed = packet.get<int8_t>();
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
@@ -537,9 +536,9 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		case Jobs::Corsair::RapidFire:
 			if (player->getSpecialSkill() == 0) {
 				SpecialSkillInfo info;
-				info.skillid = skillid;
+				info.skillId = skillid;
 				info.direction = attack.animation;
-				info.w_speed = attack.weaponSpeed;
+				info.weaponSpeed = attack.weaponSpeed;
 				info.level = level;
 				player->setSpecialSkill(info);
 				SkillsPacket::showSpecialSkill(player, info);
@@ -570,6 +569,9 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			if (firsthit == 0) {
 				firsthit = damage;
 			}
+			if (mob == nullptr) {
+				continue;
+			}
 			mhp = mob->getMaxHp();
 			if (skillid == Jobs::Ranger::MortalBlow || skillid == Jobs::Sniper::MortalBlow) {
 				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillid);
@@ -599,14 +601,15 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		case Jobs::Assassin::Drain: { // Drain
 			int16_t drain_x = player->getSkills()->getSkillInfo(skillid)->x;
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * drain_x / 100);
+			int16_t playerMaxHp = player->getStats()->getMaxHp();
 			if (hpRecover > mhp)
 				hpRecover = mhp;
-			if (hpRecover > (player->getStats()->getMaxHp() / 2))
-				hpRecover = player->getStats()->getMaxHp() / 2;
-			if (hpRecover > player->getStats()->getMaxHp())
-				player->getStats()->setHp(player->getStats()->getMaxHp());
+			if (hpRecover > (playerMaxHp / 2))
+				hpRecover = playerMaxHp / 2;
+			if (hpRecover > playerMaxHp)
+				player->getStats()->setHp(playerMaxHp);
 			else
-				player->getStats()->modifyHp((int16_t) hpRecover);
+				player->getStats()->modifyHp(static_cast<int16_t>(hpRecover));
 			break;
 		}
 		case Jobs::DawnWarrior::SoulBlade:
@@ -625,10 +628,10 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	uint8_t level = attack.skillLevel;
 
 	MpEaterInfo eater;
-	eater.id = player->getSkills()->getMpEater();
-	eater.level = player->getSkills()->getSkillLevel(eater.id);
+	eater.skillId = player->getSkills()->getMpEater();
+	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
 	if (eater.level > 0) {
-		SkillLevelInfo *eaaat = SkillDataProvider::Instance()->getSkill(eater.id, eater.level);
+		SkillLevelInfo *eaaat = SkillDataProvider::Instance()->getSkill(eater.skillId, eater.level);
 		eater.prop = eaaat->prop;
 		eater.x = eaaat->x;
 	}
@@ -656,7 +659,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			if (damage != 0) {
 				connectedhits++;
 				targettotal += damage;
-				if (eater.level != 0 && !eater.onlyonce) { // MP Eater
+				if (eater.level != 0 && !eater.used) { // MP Eater
 					mob->mpEat(player, &eater);
 				}
 			}

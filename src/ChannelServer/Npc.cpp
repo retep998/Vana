@@ -48,10 +48,6 @@ pos(Pos(0, 0))
 	initScript(player, npcid, script);
 }
 
-Npc::~Npc() {
-	player->setNpc(nullptr);
-}
-
 void Npc::initData(Player *p, int32_t id) {
 	player = p;
 	npcid = id;
@@ -103,7 +99,7 @@ bool Npc::checkEnd() {
 			Npc *npc = new Npc(nextnpc, player, script);
 			npc->run();
 		}
-		delete this;
+		player->setNpc(nullptr); // The resetting of the scoped_ptr will delete the npc...
 		return true;
 	}
 

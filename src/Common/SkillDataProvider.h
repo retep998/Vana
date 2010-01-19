@@ -30,70 +30,70 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct SkillLevelInfo {
-	int8_t mobcount;
-	int8_t hitcount;
+	int8_t mobCount;
+	int8_t hitCount;
 	int8_t mastery;
-	uint8_t criticaldamage;
+	uint8_t criticalDamage;
 	int16_t mp;
 	int16_t hp;
-	int16_t itemcount;
-	int16_t bulletcon;
-	int16_t moneycon;
+	int16_t itemCount;
+	int16_t bulletConsume;
+	int16_t moneyConsume;
 	int16_t x;
 	int16_t y;
 	int16_t speed;
 	int16_t jump;
 	int16_t str;
-	int16_t watk;
-	int16_t wdef;
-	int16_t matk;
-	int16_t mdef;
+	int16_t wAtk;
+	int16_t wDef;
+	int16_t mAtk;
+	int16_t mDef;
 	int16_t acc;
 	int16_t avo;
 	int16_t cooltime;
 	int16_t morph;
 	int16_t damage;
 	int16_t range;
-	uint16_t hpP;
-	uint16_t mpP;
+	uint16_t hpProp;
+	uint16_t mpProp;
 	uint16_t prop;
-	int32_t fixeddamage;
+	int32_t fixedDamage;
 	int32_t item;
 	int32_t time;
-	int32_t optionalitem;
+	int32_t optionalItem;
 	Pos lt;
 	Pos rb;
 };
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
-	SpecialSkillInfo() : level(0), w_speed(0), direction(0),  skillid(0) { }
+	SpecialSkillInfo() : level(0), weaponSpeed(0), direction(0),  skillId(0) { }
 	uint8_t level;
-	uint8_t w_speed;
+	uint8_t weaponSpeed;
 	uint8_t direction;
-	int32_t skillid;
+	int32_t skillId;
 };
 
 struct ReturnDamageInfo { // Power Guard/Mana Reflection
-	ReturnDamageInfo() : reduction(0), damage(0), mapmobid(0), isphysical(true), pos(0,0) { }
+	ReturnDamageInfo() : reduction(0), damage(0), mapMobId(0), isPhysical(true), pos(0,0) { }
 	uint8_t reduction;
 	int32_t damage;
-	int32_t mapmobid;
-	bool isphysical;
+	int32_t mapMobId;
+	bool isPhysical;
 	Pos pos;
 };
 
 struct MpEaterInfo { // MP Eater
-	MpEaterInfo() : id(0), level(0), x(0), prop(0), onlyonce(false) { }
-	int32_t id;
+	MpEaterInfo() : skillId(0), level(0), x(0), prop(0), used(false) { }
+	int32_t skillId;
 	uint8_t level;
 	int16_t x;
 	uint16_t prop;
-	bool onlyonce;
+	bool used;
 };
 
 struct MobSkillLevelInfo {
-	int8_t summoneffect;
+	int8_t summonEffect;
 	uint8_t mp;
 	uint8_t hp;
 	uint8_t count;

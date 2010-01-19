@@ -31,10 +31,10 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 		case SkillY: rvalue = skill->y; break;
 		case SkillSpeed: rvalue = skill->speed; break;
 		case SkillJump: rvalue = skill->jump; break;
-		case SkillWatk: rvalue = skill->watk; break;
-		case SkillWdef: rvalue = skill->wdef; break;
-		case SkillMatk: rvalue = skill->matk; break;
-		case SkillMdef: rvalue = skill->mdef; break;
+		case SkillWatk: rvalue = skill->wAtk; break;
+		case SkillWdef: rvalue = skill->wDef; break;
+		case SkillMatk: rvalue = skill->mAtk; break;
+		case SkillMdef: rvalue = skill->mDef; break;
 		case SkillAcc: rvalue = skill->acc; break;
 		case SkillAvo: rvalue = skill->avo; break;
 		case SkillProp: rvalue = skill->prop; break;

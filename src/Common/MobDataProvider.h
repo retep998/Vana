@@ -29,19 +29,21 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct MobAttackInfo {
-	MobAttackInfo() : id(0), level(0), disease(0), mpconsume(0), mpburn(0), mobid(-1), deadlyattack(false) { }
+	MobAttackInfo() : id(0), level(0), disease(0), mpConsume(0), mpBurn(0),
+		//mobId(-1),
+		deadlyAttack(false) { }
 	int8_t id;
 	uint8_t level;
 	uint8_t disease;
-	uint8_t mpconsume;
-	uint16_t mpburn;
-	int32_t mobid;
-	bool deadlyattack;
+	uint8_t mpConsume;
+	uint16_t mpBurn;
+	//int32_t mobId;
+	bool deadlyAttack;
 };
 
 struct MobSkillInfo {
-	MobSkillInfo() : skillid(0), level(0), effectAfter(0) { }
-	uint8_t skillid;
+	MobSkillInfo() : skillId(0), level(0), effectAfter(0) { }
+	uint8_t skillId;
 	uint8_t level;
 	int16_t effectAfter;
 };
@@ -49,67 +51,67 @@ struct MobSkillInfo {
 struct MobInfoRaw {
 	MobInfoRaw() :
 		boss(false),
-		canfreeze(false),
-		canpoison(false),
+		canFreeze(false),
+		canPoison(false),
 		undead(false),
 		flying(false),
 		friendly(false),
-		publicreward(false),
-		explosivereward(false),
+		publicReward(false),
+		explosiveReward(false),
 		invincible(false),
-		onlynormalattacks(false),
-		keepcorpse(false),
-		autoaggro(false),
+		onlyNormalAttacks(false),
+		keepCorpse(false),
+		autoAggro(false),
 		damageable(true),
-		candamage(true)
+		canDamage(true)
 		{ }
-	int8_t cp;
-	int8_t iceattr;
-	int8_t fireattr;
-	int8_t poisonattr;
-	int8_t lightningattr;
-	int8_t holyattr;
-	int8_t nonelemattr;
-	int8_t hpcolor;
-	int8_t hpbgcolor;
-	uint8_t skillcount;
-	int16_t watk;
-	int16_t wdef;
-	int16_t matk;
-	int16_t mdef;
+	int8_t carnivalPoints;
+	int8_t iceAttr;
+	int8_t fireAttr;
+	int8_t poisonAttr;
+	int8_t lightningAttr;
+	int8_t holyAttr;
+	int8_t nonElemAttr;
+	int8_t hpColor;
+	int8_t hpBackgroundColor;
+	uint8_t skillCount;
+	int16_t wAtk;
+	int16_t wDef;
+	int16_t mAtk;
+	int16_t mDef;
 	int16_t acc;
 	int16_t avo;
 	int16_t speed;
-	int16_t chasespeed;
-	int16_t summontype;
+	int16_t chaseSpeed;
+	int16_t summonType;
 	uint16_t level;
-	int32_t selfdestruction;
+	int32_t selfDestruction;
 	int32_t buff;
 	int32_t link;
-	int32_t removeafter;
+	int32_t removeAfter;
 	int32_t knockback;
-	int32_t fixeddamage;
-	int32_t damageskill;
-	int32_t damagemob;
+	int32_t fixedDamage;
+	int32_t damageSkill;
+	int32_t damageMob;
 	uint32_t hp;
 	uint32_t mp;
 	uint32_t exp;
-	uint32_t hprecovery;
-	uint32_t mprecovery;
+	uint32_t hpRecovery;
+	uint32_t mpRecovery;
 	bool boss;
-	bool canfreeze;
-	bool canpoison;
+	bool canFreeze;
+	bool canPoison;
 	bool undead;
 	bool flying;
 	bool friendly;
-	bool publicreward;
-	bool explosivereward;
+	bool publicReward;
+	bool explosiveReward;
 	bool invincible;
 	bool damageable;
-	bool candamage;
-	bool autoaggro;
-	bool keepcorpse;
-	bool onlynormalattacks;
+	bool canDamage;
+	bool autoAggro;
+	bool keepCorpse;
+	bool onlyNormalAttacks;
 	double traction;
 	vector<int32_t> summon;
 };

@@ -116,7 +116,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				bool stop = false;
 				uint8_t rand = (uint8_t)Randomizer::Instance()->randInt(size - 1);
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
-				realskill = info->skillid;
+				realskill = info->skillId;
  				level = info->level;
 				MobSkillLevelInfo *mobskill = SkillDataProvider::Instance()->getMobSkill(realskill, level);
 				switch (realskill) {
@@ -303,7 +303,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 						floor.y = mobpos.y;
 					}
 				}
-				map->spawnMob(spawnid, floor, 0, mob, skillinfo->summoneffect);
+				map->spawnMob(spawnid, floor, 0, mob, skillinfo->summonEffect);
 				d++;
 			}
 			break;
@@ -370,7 +370,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 
 					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
 					int32_t part2 = player->getStats()->getDex(true) * 2;
-					int16_t vatk = venom->matk;
+					int16_t vatk = venom->mAtk;
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
 					

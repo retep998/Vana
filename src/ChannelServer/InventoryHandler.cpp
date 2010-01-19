@@ -265,7 +265,7 @@ void InventoryHandler::useShop(Player *player, PacketReader &packet) {
 			break;
 		}
 		case 3: // Close shop
-			player->setShop(0);
+			player->setShop(nullptr);
 			break;
 	}
 }
