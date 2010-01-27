@@ -27,7 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-Pet::Pet(Player *player, Item *item) : player(player), itemid(item->id), index(-1), name(ItemDataProvider::Instance()->getItemName(itemid)), level(1), fullness(100), closeness(0) {
+Pet::Pet(Player *player, Item *item) :
+player(player), itemid(item->id),
+index(-1),
+name(ItemDataProvider::Instance()->getItemName(itemid)),
+level(1),
+fullness(100),
+closeness(0)
+{
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();

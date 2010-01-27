@@ -71,7 +71,7 @@ namespace Functors {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
