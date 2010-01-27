@@ -37,8 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "ShopDataProvider.h"
 #include "WorldServerConnectPacket.h"
-#include <boost/tr1/regex.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/tr1/regex.hpp>
 #include <vector>
 
 using std::tr1::cmatch;
@@ -52,7 +52,7 @@ unordered_map<string, ChatCommand> ChatHandler::commandlist;
 struct MeFunctor {
 	void operator() (Player *gmplayer) {
 		if (gmplayer->isGm()) {
-			PlayerPacket::showMessage(gmplayer, msg, 6);
+			PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
 		}
 	}
 	string msg;
@@ -150,7 +150,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["dorankings"] = command.addToMap();
 
 	command.command = CmdGlobalMessage;
-	command.syntax = "<${notice | popup | event | purple}> <$message string>";
+	command.syntax = "<${notice | box | red | blue}> <$message string>";
 	command.notes.push_back("Displays a message to every channel on every world.");
 	commandlist["globalmessage"] = command.addToMap();
 #pragma endregion
@@ -188,7 +188,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["cleardrops"] = command.addToMap();
 
 	command.command = CmdWorldMessage;
-	command.syntax = "<${notice | popup | event | purple}> <$message string>";
+	command.syntax = "<${notice | box | red | blue}> <$message string>";
 	command.notes.push_back("Displays a message to every channel on the current world.");
 	commandlist["worldmessage"] = command.addToMap();
 #pragma endregion
@@ -214,11 +214,12 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("Warps you to a desired map.");
 	command.notes.push_back("Valid map strings:");
 	command.notes.push_back("southperry | amherst");
-	command.notes.push_back("gm | fm | happyville | town | here");
+	command.notes.push_back("gm | fm | happyville | town | dunes | here");
 	command.notes.push_back("showa | armory | shrine | singapore | quay");
 	command.notes.push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
-	command.notes.push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
-	command.notes.push_back("ludi | ereve | kft | aqua | omega | altair");
+	command.notes.push_back("3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
+	command.notes.push_back("orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
+	command.notes.push_back("ludi | ereve | kft | aqua | omega | altaire | rien");
 	command.notes.push_back("mansion | nlc | amoria | crimsonwood");
 	command.notes.push_back("Valid boss map strings:");
 	command.notes.push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
@@ -420,13 +421,13 @@ void ChatHandler::initializeCommands() {
 
 void ChatHandler::showSyntax(Player *player, const string &command, bool fromHelp) {
 	if (commandlist.find(command) != commandlist.end()) {
-		ChatCommand *cmd = &commandlist[command];
-		string msg = "Usage: !" + command + " " + cmd->syntax;
-		PlayerPacket::showMessage(player, msg, 6);
+		ChatCommand &cmd = commandlist[command];
+		string msg = "Usage: !" + command + " " + cmd.syntax;
+		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 		if (fromHelp) {
-			PlayerPacket::showMessage(player, "Notes: " + cmd->notes[0], 6);
-			for (size_t i = 1; i < cmd->notes.size(); i++) {
-				PlayerPacket::showMessage(player, cmd->notes[i], 6);
+			PlayerPacket::showMessage(player, "Notes: " + cmd.notes[0], PlayerPacket::NoticeTypes::Blue);
+			for (size_t i = 1; i < cmd.notes.size(); i++) {
+				PlayerPacket::showMessage(player, cmd.notes[i], PlayerPacket::NoticeTypes::Blue);
 			}
 		}
 	}
@@ -434,16 +435,18 @@ void ChatHandler::showSyntax(Player *player, const string &command, bool fromHel
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	string message = packet.getString();
-	bool bubbleOnly = packet.getBool(); // Skill Macros only display chat bubbles
+	bool bubbleOnly = packet.getBool(); // Skill macros only display chat bubbles
 
-	if (!ChatHandler::handleCommand(player, message)) { // Returns false if there was no command handled
+	if (!ChatHandler::handleCommand(player, message)) {
 		PlayersPacket::showChat(player, message, bubbleOnly);
 	}
 }
 
 bool ChatHandler::handleCommand(Player *player, const string &message) {
-	if (player->isAdmin() && message[0] == '/') // for preventing command 'printing' for Admins
+	if (player->isAdmin() && message[0] == '/') {
+		// Prevent command printing for Admins
 		return true;
+	}
 
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
@@ -453,22 +456,22 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		cmatch matches; // Regular expressions match for such commands
 
 		if (commandlist.find(command) == commandlist.end()) {
-			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", 6);
+			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
-			ChatCommand *cmd = &commandlist[command];
-			if (player->getGmLevel() < cmd->level) { // GM level for the command
-				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
+			ChatCommand &cmd = commandlist[command];
+			if (player->getGmLevel() < cmd.level) { // GM level for the command
+				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
-				switch (cmd->command) { // CMD constant associated with command
+				switch (cmd.command) { // CMD constant associated with command
 					case CmdHelp: {
 						if (args.length() != 0) {
 							if (commandlist.find(args) != commandlist.end()) {
 								showSyntax(player, args, true);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Requested command \"" + args + "\" does not exist.", 6);
+								PlayerPacket::showMessage(player, "Requested command \"" + args + "\" does not exist.", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
@@ -483,14 +486,14 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									msg += iter->first + " ";
 								}
 							}
-							PlayerPacket::showMessage(player, msg, 6);
+							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
 					}
 					case CmdHeader:
 						WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldConnection(), args);
 						break;
-					case CmdBan: {
+					case CmdBan:
 						re = "(\\w+) ?(\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
@@ -506,14 +509,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							accbanquery.exec();
 
 							string banmsg = targetname + " has been banned" + getBanString(reason);
-							PlayersPacket::showMessage(banmsg, 0);
+							PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdIpBan: {
+					case CmdIpBan:
 						re = "(\\w+) ?(\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
@@ -530,15 +532,14 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								accipbanquery.exec();
 
 								string banmsg = targetname + " has been IP banned" + getBanString(reason);
-								PlayersPacket::showMessage(banmsg, 0);
+								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
 							}
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdTempBan: {
+					case CmdTempBan:
 						re = "(\\w+) (\\d+) (\\d+)";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
@@ -549,33 +550,29 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							string length = matches[3];
 							int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
-							// Ban account
 							mysqlpp::Query accbanquery = Database::getCharDB().query();
 							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
 							accbanquery.exec();
 
 							string banmsg = targetname + " has been banned" + getBanString(reason);
-							PlayersPacket::showMessage(banmsg, 0);
+							PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdUnban: {
+					case CmdUnban:
 						if (args.length() != 0) {
-							// Unban account
 							mysqlpp::Query accbanquery = Database::getCharDB().query();
 							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
 							accbanquery.exec();
 
-							PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
+							PlayerPacket::showMessage(player, string(args) + " has been unbanned.", PlayerPacket::NoticeTypes::Blue);
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
 					case CmdShutdown:
 						ChannelServer::Instance()->shutdown();
 						break;
@@ -608,7 +605,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							showSyntax(player, command);
 						}
 						break;
-					case CmdAddNpc: {
+					case CmdAddNpc:
 						if (args.length() != 0) {
 							NpcSpawnInfo npc;
 							npc.id = atoi(args.c_str());
@@ -622,8 +619,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdMe: {
+					case CmdMe:
 						if (args.length() != 0) {
 							string msg = player->getName() + " : " + args;
 							MeFunctor func = {msg};
@@ -633,17 +629,19 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							showSyntax(player, command);
 						}
 						break;
-					}
 					case CmdKick:
 						if (args.length() != 0) {
 							if (Player *target = PlayerDataProvider::Instance()->getPlayer(args)) {
-								if (player->getGmLevel() > target->getGmLevel())
+								if (player->getGmLevel() > target->getGmLevel()) {
 									target->getSession()->disconnect();
-								else
-									PlayerPacket::showMessage(player, "Player outranks you.", 6);
+								}
+								else {
+									PlayerPacket::showMessage(player, "Player outranks you.", PlayerPacket::NoticeTypes::Blue);
+								}
 							}
-							else
-								PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
+							else {
+								PlayerPacket::showMessage(player, "Invalid player or player is offline.", PlayerPacket::NoticeTypes::Blue);
+							}
 						}
 						else {
 							showSyntax(player, command);
@@ -673,7 +671,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							PlayerDataProvider::Instance()->run(func);
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid Map ID", 6);
+							PlayerPacket::showMessage(player, "Invalid Map ID", PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
 					}
@@ -684,8 +682,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						Maps::getMap(player->getMap())->clearDrops();
 						break;
 					case CmdKill:
-						if (player->getGmLevel() == 1)
+						if (player->getGmLevel() == 1) {
 							player->getStats()->setHp(0);
+						}
 						else {
 							if (args == "all") {
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
@@ -753,12 +752,12 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									res = query.store();
 
 									if (res.num_rows() == 0) {
-										PlayerPacket::showMessage(player, "No results", 6);
+										PlayerPacket::showMessage(player, "No results", PlayerPacket::NoticeTypes::Blue);
 									}
 									else {
 										for (size_t i = 0; i < res.num_rows(); i++) {
 											string msg = (string) res[i][0] + " : " + (string) res[i][1];
-											PlayerPacket::showMessage(player, msg, 6);
+											PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 										}
 									}
 								}
@@ -766,10 +765,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									int32_t mapid = getMap(matches[2], player);
 									if (Maps::getMap(mapid) != nullptr) {
 										string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
-										PlayerPacket::showMessage(player, message, 6);
+										PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 									}
 									else {
-										PlayerPacket::showMessage(player, "Invalid map", 6);
+										PlayerPacket::showMessage(player, "Invalid map", PlayerPacket::NoticeTypes::Blue);
 									}
 								}
 								else if (type > 200) {
@@ -782,18 +781,18 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									res = query.store();
 
 									if (res.num_rows() == 0) {
-										PlayerPacket::showMessage(player, "No results", 6);
+										PlayerPacket::showMessage(player, "No results", PlayerPacket::NoticeTypes::Blue);
 									}
 									else {
 										for (size_t i = 0; i < res.num_rows(); i++) {
 											string msg = (string) res[i][1] + " (" + (string) res[i][0] + "): " + (string) res[i][2];
-											PlayerPacket::showMessage(player, msg, 6);
+											PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 										}
 									}
 								}
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", 6);
+								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
@@ -808,12 +807,12 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->setMap(mapid);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Map ID", 6);
+								PlayerPacket::showMessage(player, "Invalid Map ID", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
 							string msg = "Current Map: " + boost::lexical_cast<string>(player->getMap());
-							PlayerPacket::showMessage(player, msg, 6);
+							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
 					}
@@ -839,7 +838,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->getSkills()->addSkillLevel(skillid, count);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Skill ID", 6);
+								PlayerPacket::showMessage(player, "Invalid Skill ID", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
@@ -859,7 +858,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								}
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Mob ID", 6);
+								PlayerPacket::showMessage(player, "Invalid Mob ID", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
@@ -868,8 +867,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					}
 					case CmdNotice:
-						if (args.length() != 0)
-							PlayersPacket::showMessage(args, 0);
+						if (args.length() != 0) {
+							PlayerPacket::showMessageChannel(args, PlayerPacket::NoticeTypes::Notice);
+						}
 						break;
 					case CmdMaxStats:
 						player->getStats()->setFame(Stats::MaxFame);
@@ -881,60 +881,66 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						player->getStats()->setLuk(32767);
 						break;
 					case CmdStr:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setStr(atoi(args.c_str()));
+						}
 						break;
 					case CmdDex:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setDex(atoi(args.c_str()));
+						}
 						break;
 					case CmdLuk:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setLuk(atoi(args.c_str()));
+						}
 						break;
 					case CmdInt:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setInt(atoi(args.c_str()));
+						}
 						break;
 					case CmdHp:
 						if (args.length() != 0) {
 							uint16_t amount = atoi(args.c_str());
 							player->getStats()->setMaxHp(amount);
-							if (player->getStats()->getHp() > amount)
+							if (player->getStats()->getHp() > amount) {
 								player->getStats()->setHp(player->getStats()->getMaxHp());
+							}
 						}
 						break;
 					case CmdMp:
 						if (args.length() != 0) {
 							uint16_t amount = atoi(args.c_str());
 							player->getStats()->setMaxMp(amount);
-							if (player->getStats()->getMp() > amount)
+							if (player->getStats()->getMp() > amount) {
 								player->getStats()->setMp(player->getStats()->getMaxMp());
+							}
 						}
 						break;
 					case CmdFame:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setFame(atoi(args.c_str()));
+						}
 						break;
-					case CmdReload: {
+					case CmdReload:
 						if (args.length() != 0) {
 							if (args == "items" || args == "drops" || args == "shops" ||
 								args == "mobs" || args == "beauty" || args == "scripts" ||
 								args == "skills" || args == "reactors" || args == "pets" ||
 								args == "quests" || args == "all") {
 								WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
-								PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
+								PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", PlayerPacket::NoticeTypes::Blue);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid reload type", 6);
+								PlayerPacket::showMessage(player, "Invalid reload type", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdShop: {
+					case CmdShop:
 						if (args.length() != 0) {
 							int32_t shopid = -1;
 							if (args == "gear") shopid = 9999999;
@@ -955,14 +961,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							showSyntax(player, command);
 						}
 						break;
-					}
 					case CmdPos: {
 						Pos p = player->getPos();
 						string msg = "(FH, X, Y): (";
 						msg += boost::lexical_cast<string>(player->getFh()) + ", ";
 						msg += boost::lexical_cast<string>(p.x) + ", ";
 						msg += boost::lexical_cast<string>(p.y) + ")";
-						PlayerPacket::showMessage(player, msg, 6);
+						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						break;
 					}
 					case CmdItem: {
@@ -975,7 +980,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								Inventory::addNewItem(player, itemid, count);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Item ID", 6);
+								PlayerPacket::showMessage(player, "Invalid Item ID", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
@@ -984,8 +989,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					}
 					case CmdLevel:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setLevel(atoi(args.c_str()));
+						}
 						break;
 					case CmdJob: {
 						if (args.length() != 0) {
@@ -1036,22 +1042,25 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							else if (args == "sgm") job = 910;
 							else job = atoi(args.c_str());
 
-							if (job >= 0)
+							if (job >= 0) {
 								player->getStats()->setJob(job);
+							}
 						}
 						else {
 							string msg = "Current Job: " + boost::lexical_cast<string>(player->getStats()->getJob());
-							PlayerPacket::showMessage(player, msg, 6);
+							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
 					}
 					case CmdAp:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setAp(atoi(args.c_str()));
+						}
 						break;
 					case CmdSp:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getStats()->setSp(atoi(args.c_str()));
+						}
 						break;
 					case CmdKillNpc:
 						player->setNpc(nullptr);
@@ -1064,15 +1073,16 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						player->getStats()->setMp(player->getStats()->getMaxMp());
 						break;
 					case CmdMesos:
-						if (args.length() != 0)
+						if (args.length() != 0) {
 							player->getInventory()->setMesos(atoi(args.c_str()));
+						}
 						break;
 					case CmdRelog:
 						player->changeChannel((int8_t)ChannelServer::Instance()->getChannel());
 						break;
 					case CmdSave:
 						player->saveAll();
-						PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
+						PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Red);
 						break;
 					case CmdWarpTo:
 						Player *warptoee;
@@ -1097,50 +1107,38 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdRankingCalc:
 						WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
-						PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
+						PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", PlayerPacket::NoticeTypes::Red);
 						break;
-					case CmdWorldMessage: {
+					case CmdWorldMessage:
 						re = "(\\w+) (.+)";
 						if (regex_match(args.c_str(), matches, re)) {
-							int8_t type = -1;
-							if (matches[1] == "notice") type = 0;
-							else if (matches[1] == "popup") type = 1;
-							else if (matches[1] == "event") type = 5;
-							else if (matches[1] == "purple") type = 6;
-
+							int8_t type = getMessageType((string) matches[1]);
 							if (type != -1) {
-								WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+								PlayerPacket::showMessageWorld((string) matches[2], type);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
-					case CmdGlobalMessage: {
+					case CmdGlobalMessage:
 						re = "(\\w+) (.+)";
 						if (regex_match(args.c_str(), matches, re)) {
-							int8_t type = -1;
-							if (matches[1] == "notice") type = 0;
-							else if (matches[1] == "popup") type = 1;
-							else if (matches[1] == "event") type = 5;
-							else if (matches[1] == "purple") type = 6;
-
+							int8_t type = getMessageType((string) matches[1]);
 							if (type != -1) {
-								WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+								PlayerPacket::showMessageGlobal((string) matches[2], type);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
-					}
 					case CmdListMobs: {
 						string message = "No mobs on the current map.";
 						if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
@@ -1156,11 +1154,11 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								message += "/";
 								message += boost::lexical_cast<string>(iter->second->getMaxHp());
 								message += ")";
-								PlayerPacket::showMessage(player, message, 6);
+								PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, message, 5);
+							PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
 						}
 						break;
 					}
@@ -1181,10 +1179,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								message += "%)";
 							}
 						}
-						PlayerPacket::showMessage(player, message, 5);
+						PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
 						break;
 					}
-					case CmdKillMob: {
+					case CmdKillMob:
 						if (args.length() != 0) {
 							int32_t mobid = atoi(args.c_str());
 							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
@@ -1193,7 +1191,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						break;
-					}
 				}
 			}
 		}
@@ -1208,9 +1205,15 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 	else if (query == "town") mapid = Maps::getMap(player->getMap())->getReturnMap();
 	else if (query == "southperry") mapid = 60000;
 	else if (query == "amherst") mapid = 1010000;
-	else if (query == "gm") mapid = 180000000;
+	else if (query == "gm") mapid = Maps::GmMap;
 	else if (query == "fm") mapid = 910000000;
 	else if (query == "4th") mapid = 240010501;
+	else if (query == "3rd") mapid = 211000001;
+	else if (query == "grendel") mapid = 101000003;
+	else if (query == "athena") mapid = 100000201;
+	else if (query == "darklord") mapid = 103000003;
+	else if (query == "danceswb") mapid = 102000003;
+	else if (query == "kyrin") mapid = 120000101;
 	else if (query == "showa") mapid = 801000000;
 	else if (query == "armory") mapid = 801040004;
 	else if (query == "shrine") mapid = 800000000;
@@ -1245,7 +1248,9 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 	else if (query == "quay") mapid = 541000000;
 	else if (query == "magatia") mapid = 261000000;
 	else if (query == "temple") mapid = 270000000;
-	else if (query == "altair") mapid = 300000000;
+	else if (query == "altaire") mapid = 300000000;
+	else if (query == "rien") mapid = 140000000;
+	else if (query == "dunes") mapid = 926010000;
 	// Boss maps
 	else if (query == "ergoth") mapid = 990000900;
 	else if (query == "pap") mapid = 220080001;
@@ -1294,14 +1299,19 @@ string ChatHandler::getBanString(int8_t reason) {
 	return banmsg;
 }
 
+int8_t ChatHandler::getMessageType(const string &query) {
+	int8_t ret = -1;
+	if (query == "notice") ret = 0;
+	else if (query == "box") ret = 1;
+	else if (query == "red") ret = 5;
+	else if (query == "blue") ret = 6;
+	return ret;
+}
+
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
-	vector<int32_t> receivers;
 	int8_t type = packet.get<int8_t>();
 	uint8_t amount = packet.get<uint8_t>();
-
-	for (uint8_t i = 0; i < amount; i++) {
-		receivers.push_back(packet.get<int32_t>());
-	}
+	vector<int32_t> receivers = packet.getVector<int32_t>(amount);
 	string chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {

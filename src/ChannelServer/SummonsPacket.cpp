@@ -37,10 +37,12 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int8_t>(summon->getType()); // Movement type
 	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())); // Attack or not
 	packet.addBool(!animated);
-	if (toplayer != nullptr)
+	if (toplayer != nullptr) {
 		toplayer->getSession()->send(packet);
-	else
+	}
+	else {
 		Maps::getMap(player->getMap())->sendPacket(packet);
+	}
 }
 
 void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen) {

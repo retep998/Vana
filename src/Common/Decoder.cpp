@@ -48,8 +48,9 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 			ofbEncryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
 		pos += 1460 - first * 4;
-		if (first == 1)
+		if (first) {
 			first = 0;
+		}
 	}
 } 
  
@@ -73,8 +74,9 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 			ofbDecryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
 		pos += 1460 - first * 4;
-		if (first == 1)
+		if (first) {
 			first = 0;
+		}
 	}
 	
 	MapleEncryption::nextIv(ivRecv); 
@@ -91,7 +93,7 @@ void Decoder::createHeader(unsigned char *header, int16_t size) {
 	header[3] = (b - header[2]) / 0x100;
 }
 
-PacketCreator Decoder::getConnectPacket(string unknown) {
+PacketCreator Decoder::getConnectPacket(const string &unknown) {
 	(*(int32_t*)ivRecv) = Randomizer::Instance()->randInt();
 	(*(int32_t*)ivSend) = Randomizer::Instance()->randInt();
 	// Use the setter to prepare the IV
@@ -101,7 +103,7 @@ PacketCreator Decoder::getConnectPacket(string unknown) {
 	PacketCreator packet;
 	packet.add<int16_t>(0); // Packet len, this will be added later in the packet
 	packet.add<int16_t>(MapleVersion::Version);
-	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
+	packet.addString(unknown); // The official login server sends a "0", the channel server sends nothing
 	packet.add<int32_t>(*(int32_t*) ivRecv);
 	packet.add<int32_t>(*(int32_t*) ivSend);
 	packet.add<int8_t>(MapleVersion::Locale);

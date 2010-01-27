@@ -22,6 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace FamePacket {
+	namespace Errors {
+		enum Errors {
+			IncorrectUser = 0x01,
+			LevelUnder15 = 0x02,
+			AlreadyFamedToday = 0x03,
+			FamedThisMonth = 0x04
+		};
+	}
 	void sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame);
 	void sendError(Player *player, int32_t reason);
 };

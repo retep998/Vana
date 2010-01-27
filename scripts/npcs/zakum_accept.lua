@@ -136,7 +136,7 @@ else
 
 					banInstancePlayer(name);
 					if setPlayer(name) then
-						showMessage("The leader of the squad has entered you in the squad's Suspended List.", 5);
+						showMessage("The leader of the squad has entered you in the squad's Suspended List.", m_red);
 						revertPlayer();
 					end
 				end
@@ -199,7 +199,7 @@ else
 				else
 					addPlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has joined the expedition squad.", 5);
+						showMessage(getName() .. " has joined the expedition squad.", m_red);
 						revertPlayer();
 					end
 					addText("You have been enrolled in the Zakum Expedition Squad.");
@@ -208,7 +208,7 @@ else
 				if isPlayerSignedUp(getName()) then
 					removePlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has withdrawn from the squad.", 5);
+						showMessage(getName() .. " has withdrawn from the squad.", m_red);
 						revertPlayer();
 					end
 					addText("You have formally withdrawn from the squad.");

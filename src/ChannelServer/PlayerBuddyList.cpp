@@ -32,43 +32,59 @@ PlayerBuddyList::PlayerBuddyList(Player *player) : player(player) {
 }
 
 uint8_t PlayerBuddyList::add(const string &name) {
-	if (buddies.size() >= player->getBuddyListSize()) { // Buddy list full
-		return 0x0b;
+	if (buddies.size() >= player->getBuddyListSize()) {
+		// Buddy list full
+		return BuddyListPacket::Errors::BuddyListFull;
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT c.id, c.name, u.gm, c.buddylist_size AS buddylist_limit,(SELECT COUNT(b.id) FROM buddylist b WHERE b.charid = c.id ) AS buddylist_size FROM characters c INNER JOIN users u ON c.userid = u.id WHERE c.name = " << mysqlpp::quote << name;
+
+	query << "SELECT "
+		<< "c.id, c.name, u.gm, c.buddylist_size AS buddylist_limit, "
+		<< "(SELECT COUNT(b.id) FROM buddylist b WHERE b.charid = c.id) AS buddylist_size "
+		<< "FROM characters c "
+		<< "INNER JOIN users u ON c.userid = u.id "
+		<< "WHERE c.name = " << mysqlpp::quote << name;
+
 	mysqlpp::StoreQueryResult res = query.store();
 
-	if (res.size() == 0) { // Name does not exist
-		return 0x0f;
+	if (res.size() == 0) {
+		// Name does not exist
+		return BuddyListPacket::Errors::UserDoesNotExist;
 	}
 
-	if ((int32_t) res[0][2] > 0 && !player->isGm()) { // GM cannot be in buddy list unless the player is a GM
-		return 0x0e;
+	if ((int32_t) res[0][2] > 0 && !player->isGm()) {
+		// GM cannot be in buddy list unless the player is a GM
+		return BuddyListPacket::Errors::NoGms;
 	}
 
-	if ((uint32_t) res[0][4] >= (uint32_t) res[0][3]) { // Opposite-end buddy list full
-		return 0x0c;
+	if ((uint32_t) res[0][4] >= (uint32_t) res[0][3]) {
+		// Opposite-end buddy list full
+		return BuddyListPacket::Errors::TargetListFull;
 	}
 
 	int32_t charid = res[0][0];
 
-	if (buddies.find(charid) != buddies.end()) { // Already in buddy list
-		return 0x0d;
+	if (buddies.find(charid) != buddies.end()) {
+		// Already in buddy list
+		return BuddyListPacket::Errors::AlreadyInList;
 	}
 
 	query << "INSERT INTO buddylist (charid, buddy_charid, name) VALUES (" << player->getId() << ", " << charid << ", " << mysqlpp::quote << res[0][1] << ")";
 	mysqlpp::SimpleResult res2 = query.execute();
-	
-	query << "SELECT buddylist.id, buddylist.buddy_charid, buddylist.name AS name_cache, characters.name FROM buddylist LEFT JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.id = " << res2.insert_id();
+
+	query << "SELECT "
+		<< "b.id, b.buddy_charid, b.name AS name_cache, c.name FROM buddylist b "
+		<< "LEFT JOIN characters c ON b.buddy_charid = c.id "
+		<< "WHERE b.id = " << res2.insert_id();
+
 	res = query.store();
 
 	add(res[0]);
 
-	BuddyListPacket::update(player, BuddyListPacket::add);
+	BuddyListPacket::update(player, BuddyListPacket::ActionTypes::Add);
 
-	return 0;
+	return BuddyListPacket::Errors::None;
 }
 
 void PlayerBuddyList::remove(int32_t charid) {
@@ -84,7 +100,7 @@ void PlayerBuddyList::remove(int32_t charid) {
 	buddies.erase(charid);
 	buddies_order.erase(std::remove(buddies_order.begin(), buddies_order.end(), charid));
 
-	BuddyListPacket::update(player, BuddyListPacket::remove);
+	BuddyListPacket::update(player, BuddyListPacket::ActionTypes::Remove);
 }
 
 void PlayerBuddyList::add(const mysqlpp::Row &row) {
@@ -99,7 +115,7 @@ void PlayerBuddyList::add(const mysqlpp::Row &row) {
 
 	BuddyPtr buddy(new Buddy);
 	buddy->charid = charid;
-	
+
 	// Note that the cache is for displaying the character name when the
 	// character in question is deleted.
 	if (row["name"].is_null()) {

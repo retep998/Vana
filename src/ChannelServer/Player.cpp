@@ -97,7 +97,7 @@ Player::~Player() {
 			i->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
 		if (getMapChair() != 0) {
-			Maps::getMap(getMap())->playerSeated(getMapChair(), 0);
+			Maps::getMap(getMap())->playerSeated(getMapChair(), nullptr);
 		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
@@ -133,7 +133,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
 			case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
 			case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
-			case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, 0x02); break;
+			case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
 			case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
 			case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
 			case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
@@ -159,7 +159,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
 			case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
 			case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
-			case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, 0x03); break;
+			case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
 			case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
 			case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 			case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
@@ -183,20 +183,20 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_REACTOR_TOUCH: Reactors::touchReactor(this, packet); break;
 			case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
 			case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
-			case CMSG_SHOP: InventoryHandler::useShop(this, packet); break;
+			case CMSG_SHOP: NpcHandler::useShop(this, packet); break;
 			case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
 			case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, packet); break;
 			case CMSG_SKILL_USE: Skills::useSkill(this, packet); break;
 			case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, packet); break;
 			case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
 			case CMSG_STAT_ADDITION: stats->addStat(packet); break;
-			case CMSG_STORAGE: InventoryHandler::useStorage(this, packet); break;
+			case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
 			case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
 			case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
 			case CMSG_SUMMON_DAMAGE: Summons::damageSummon(this, packet); break;
 			case CMSG_SUMMON_MOVEMENT: Summons::moveSummon(this, packet); break;
 			case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, packet); break;
-			case CMSG_TELEPORT_ROCK_USE: packet.skipBytes(5); InventoryHandler::handleRockTeleport(this, packet.get<int8_t>(), Items::SpecialTeleportRock, packet); break;
+			case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
 			case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
 			case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
 		}
@@ -220,7 +220,12 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT characters.*, users.gm, users.admin FROM characters LEFT JOIN users on characters.userid = users.id WHERE characters.id = " << id;
+
+	query << "SELECT "
+		<< "c.*, u.gm, u.admin FROM characters c "
+		<< "LEFT JOIN users u ON c.userid = u.id "
+		<< "WHERE c.id = " << id;
+
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.empty()) {
@@ -358,7 +363,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	PlayerPacket::showKeys(this, &keyMaps);
 
-	BuddyListPacket::update(this, BuddyListPacket::add);
+	BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add);
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
@@ -405,10 +410,10 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	}
 
 	if (getSummons()->getPuppet() != nullptr) { // Puppets and non-moving summons don't go with you
-		Summons::removeSummon(this, true, true, false, 0);
+		Summons::removeSummon(this, true, true, false, SummonMessages::None);
 	}
 	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == 0) {
-		Summons::removeSummon(this, false, true, false, 0);
+		Summons::removeSummon(this, false, true, false, SummonMessages::None);
 	}
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
@@ -440,10 +445,16 @@ void Player::changeKey(PacketReader &packet) {
 	int32_t mode = packet.get<int32_t>();
 	int32_t howmany = packet.get<int32_t>();
 
-	if (howmany == 0)
-		return;
+	enum KeyModes {
+		ChangeKeys = 0x00,
+		AutoHpPotion = 0x01,
+		AutoMpPotion = 0x02
+	};
 
-	if (mode == 0) {
+	if (mode == ChangeKeys) {
+		if (howmany == 0)
+			return;
+
 		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 		for (int32_t i = 0; i < howmany; i++) {
 			int32_t pos = packet.get<int32_t>();
@@ -455,13 +466,13 @@ void Player::changeKey(PacketReader &packet) {
 		// Update to MySQL
 		keyMaps.save(this->id);
 	}
-	else if (mode == 1) {
-		// Update auto-HP potion
+	else if (mode == AutoHpPotion) {
+		// For these two modes,
+		// howmany = potion ID, deallocate on 0, I imagine
 	}
-	else if (mode == 2) {
-		// Update auto-MP potion
+	else if (mode == AutoMpPotion) {
+
 	}
-	// howmany = potion ID for the above, deallocate on 0, I imagine
 }
 
 void Player::changeSkillMacros(PacketReader &packet) {

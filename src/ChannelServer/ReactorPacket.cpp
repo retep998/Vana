@@ -46,7 +46,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 }
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_REACTOR_TRIGGER);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
@@ -56,7 +56,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 }
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_REACTOR_DESPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());

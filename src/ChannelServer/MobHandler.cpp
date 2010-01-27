@@ -58,7 +58,9 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	Mob *dealer = map->getMob(mobfrom);
 	Mob *taker = map->getMob(mobto);
 	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
-		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
+		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10;
+		// Temp for now until I figure out something more effective
+		// TODO: Fix formula
 		int32_t mobId = taker->getMobId();
 		int32_t mapMobId =  taker->getId();
 		int32_t mobHp = (damage > taker->getHp() ? 0 : taker->getHp() - damage);

@@ -19,11 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PlayerStatus {
 	enum PlayerStatus {
-		NotLoggedIn,
-		SetPin,
+		LoggedIn = 0x00,
+		SetPin = 0x01,
+		CheckPin = 0x04,
+		SetGender = 0x0A,
+		PinSelect = 0x0B,
 		AskPin,
-		CheckPin,
-		SetGender,
-		LoggedIn
+		NotLoggedIn
 	};
 }

@@ -21,14 +21,14 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 
 if isQuestActive(6110) then
 	if getPartyID() == 0 then
-		showMessage("You don't have a  party. You can challenge with party.", 5);
+		showMessage("You don't have a  party. You can challenge with party.", m_red);
 	elseif isPartyLeader() then
 		members = getAllPartyPlayerIDs();
 		if #members ~= 2 then
-			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", 5);
+			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", m_red);
 		else
 			if not isPartyInLevelRange(120, 200) then
-				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", 5);
+				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", m_red);
 			else
 				memberctr = 0
 				mapid = getMap();
@@ -42,7 +42,7 @@ if isQuestActive(6110) then
 					end
 				end
 				if memberctr ~= 2 then
-					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", 5);
+					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", m_red);
 				else
 					if not isInstance("rush4th") then
 						createInstance("rush4th", 20 * 60, true);
@@ -53,14 +53,14 @@ if isQuestActive(6110) then
 						playPortalSE();
 						warpParty(910500100);
 					else
-						showMessage("Other parties are challenging on quest clear now. Try again later.", 5);
+						showMessage("Other parties are challenging on quest clear now. Try again later.", m_red);
 					end
 				end
 			end
 		end
 	else
-		showMessage("Party leader consisting of two Warriors can decide to enter.", 5);
+		showMessage("Party leader consisting of two Warriors can decide to enter.", m_red);
 	end
 else
-	showMessage("You can't enter sealed place.", 5);
+	showMessage("You can't enter sealed place.", m_red);
 end

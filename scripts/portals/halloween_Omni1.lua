@@ -17,4 +17,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Fireplace in Haunted Mansion
 
-showMessage("It seems to be locked.", 5);
+showMessage("It seems to be locked.", m_red);

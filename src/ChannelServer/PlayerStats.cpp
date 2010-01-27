@@ -83,10 +83,12 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 	if (hbx > 0 && hby > 0)
 		setHyperBody(hbx, hby);
 	if (!isLoading) { // Adjust current HP/MP down if necessary
-		if (getHp() > getMaxHp())
+		if (getHp() > getMaxHp()) {
 			setHp(getHp());
-		if (getMp() > getMaxMp())
+		}
+		if (getMp() > getMaxMp()) {
 			setMp(getMp());
+		}
 	}
 }
 
@@ -101,9 +103,9 @@ void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 		equipStats[slot].Int = equip->iint;
 		equipStats[slot].Luk = equip->iluk;
 	}
-	else
+	else {
 		equipStats.erase(slot);
-
+	}
 	updateBonuses(true, isLoading);
 }
 
@@ -171,13 +173,14 @@ int16_t PlayerStats::getLuk(bool withbonus) {
 	return luk;
 }
 
-// Data Modification
+// Data modification
 void PlayerStats::checkHpMp() {
-	if (this->hp > getMaxHp())
+	if (this->hp > getMaxHp()) {
 		this->hp = getMaxHp();
-
-	if (this->mp > getMaxMp())
+	}
+	if (this->mp > getMaxMp()) {
 		this->mp = getMaxMp();
+	}
 }
 
 void PlayerStats::setLevel(uint8_t level) {
@@ -188,26 +191,34 @@ void PlayerStats::setLevel(uint8_t level) {
 }
 
 void PlayerStats::setHp(int16_t shp, bool is) {
-	if (shp < 0)
+	if (shp < 0) {
 		hp = 0;
-	else if (shp > getMaxHp())
+	}
+	else if (shp > getMaxHp()) {
 		hp = getMaxHp();
-	else
+	}
+	else {
 		hp = shp;
-	if (is)
+	}
+	if (is) {
 		PlayerPacket::updateStatShort(player, Stats::Hp, hp);
+	}
 	modifiedHp();
 }
 
 void PlayerStats::modifyHp(int16_t nhp, bool is) {
-	if ((hp + nhp) < 0)
+	if ((hp + nhp) < 0) {
 		hp = 0;
-	else if ((hp + nhp) > getMaxHp())
+	}
+	else if ((hp + nhp) > getMaxHp()) {
 		hp = getMaxHp();
-	else
+	}
+	else {
 		hp = (hp + nhp);
-	if (is)
+	}
+	if (is) {
 		PlayerPacket::updateStatShort(player, Stats::Hp, hp);
+	}
 	modifiedHp();
 }
 
@@ -218,38 +229,45 @@ void PlayerStats::damageHp(uint16_t dhp) {
 }
 
 void PlayerStats::modifiedHp() {
-	if (Party *p = player->getParty())
+	if (Party *p = player->getParty()) {
 		p->showHpBar(player);
+	}
 	player->getActiveBuffs()->checkBerserk();
 	if (hp == 0) {
 		if (Instance *i = player->getInstance()) {
 			i->sendMessage(PlayerDeath, player->getId());
 		}
 		loseExp();
-		Summons::removeSummon(player, false, true, false, 2);
+		Summons::removeSummon(player, false, true, false, SummonMessages::Disappearing);
 	}
 }
 
 void PlayerStats::setMp(int16_t smp, bool is) {
 	if (!player->getActiveBuffs()->hasInfinity()) {
-		if (smp < 0)
+		if (smp < 0) {
 			mp = 0;
-		else if (smp > getMaxMp())
+		}
+		else if (smp > getMaxMp()) {
 			mp = getMaxMp();
-		else
+		}
+		else {
 			mp = smp;
+		}
 	}
 	PlayerPacket::updateStatShort(player, Stats::Mp, mp, is);
 }
 
 void PlayerStats::modifyMp(int16_t nmp, bool is) {
 	if (!player->getActiveBuffs()->hasInfinity()) {
-		if ((mp + nmp) < 0)
+		if ((mp + nmp) < 0) {
 			mp = 0;
-		else if ((mp + nmp) > getMaxMp())
+		}
+		else if ((mp + nmp) > getMaxMp()) {
 			mp = getMaxMp();
-		else
+		}
+		else {
 			mp = (mp + nmp);
+		}
 	}
 	PlayerPacket::updateStatShort(player, Stats::Mp, mp, is);
 }
@@ -501,7 +519,7 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 				message += "! Congratulate ";
 				message += player->getName();
 				message += " on such an amazing achievement!";
-				PlayersPacket::showMessageWorld(message, 6);
+				PlayerPacket::showMessageWorld(message, PlayerPacket::NoticeTypes::Blue);
 			}
 		}
 	}
@@ -530,7 +548,7 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 		int32_t value = packet.get<int32_t>();
 
 		if (value < 0 || getAp() < value) {
-			//hacking
+			// Hacking
 			return;
 		}
 

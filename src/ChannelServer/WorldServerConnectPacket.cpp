@@ -79,33 +79,6 @@ void WorldServerConnectPacket::toWorlds(WorldServerConnection *player, PacketCre
 	player->getSession()->send(pack);
 }
 
-void WorldServerConnectPacket::worldMessage(WorldServerConnection *player, const string &message, int8_t type) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TO_CHANNELS);
-	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE); 
-	packet.add<int8_t>(type);
-	packet.addString(message);
-	if (type == 6)
-		packet.add<int32_t>(0);
-	player->getSession()->send(packet);
-}
-
-void WorldServerConnectPacket::globalMessage(WorldServerConnection *player, const string &message, int8_t type) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TO_LOGIN);
-	packet.add<int16_t>(IMSG_TO_WORLDS);
-	packet.add<int16_t>(IMSG_TO_CHANNELS);
-	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE); 
-	packet.add<int8_t>(type);
-	packet.addString(message);
-	if (type == 6)
-		packet.add<int32_t>(0);
-	
-	player->getSession()->send(packet);
-}
-
 void WorldServerConnectPacket::reloadMcdb(WorldServerConnection *player, const string &type) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_REFRESH_DATA);

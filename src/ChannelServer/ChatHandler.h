@@ -50,6 +50,7 @@ namespace ChatHandler {
 	void showSyntax(Player *player, const string &command, bool fromHelp = false);
 	void handleChat(Player *player, PacketReader &packet);
 	bool handleCommand(Player *player, const string &message);
+	int8_t getMessageType(const string &query);
 	int32_t getMap(const string &query, Player *player);
 	string getBanString(int8_t reason);
 	void handleGroupChat(Player *player, PacketReader &packet);

@@ -29,15 +29,12 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct MobAttackInfo {
-	MobAttackInfo() : id(0), level(0), disease(0), mpConsume(0), mpBurn(0),
-		//mobId(-1),
-		deadlyAttack(false) { }
+	MobAttackInfo() : id(0), level(0), disease(0), mpConsume(0), mpBurn(0), deadlyAttack(false) { }
 	int8_t id;
 	uint8_t level;
 	uint8_t disease;
 	uint8_t mpConsume;
 	uint16_t mpBurn;
-	//int32_t mobId;
 	bool deadlyAttack;
 };
 

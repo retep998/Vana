@@ -204,8 +204,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	Summons::removeSummon(player, true, false, false, 0);
-	Summons::removeSummon(player, false, false, true, 0);
+	Summons::removeSummon(player, true, false, false, SummonMessages::None);
+	Summons::removeSummon(player, false, false, true, SummonMessages::None);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
 }
@@ -251,7 +251,7 @@ void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Po
 		if (toy != nullptr) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
 				if (message != "") {
-					PlayerPacket::showMessage(toy, message, 6);
+					PlayerPacket::showMessage(toy, message, PlayerPacket::NoticeTypes::Blue);
 				}
 				toy->setMap(field, p);
 				done++;
@@ -781,15 +781,15 @@ void Map::timeMob(bool firstLoad) {
 	if (firstLoad) {
 		if (chour >= tm->startHour && chour < tm->endHour) {
 			Pos p = findRandomPos();
-			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), 0, 0);
-			showMessage(tm->message, 6);
+			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
+			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}
 	}
 	else {
 		if (chour == tm->startHour) {
 			Pos p = findRandomPos();
-			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), 0, 0);
-			showMessage(tm->message, 6);
+			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
+			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}
 		else if (chour == tm->endHour && m_timemob != 0) {
 			Mob *m = getMob(m_timemob);
@@ -898,6 +898,7 @@ void Map::sendPacket(PacketCreator &packet, Player *player) {
 }
 
 void Map::showMessage(const string &message, int8_t type) {
-	for (size_t i = 0; i < m_players.size(); i++)
+	for (size_t i = 0; i < m_players.size(); i++) {
 		PlayerPacket::showMessage(m_players[i], message, type);
+	}
 }

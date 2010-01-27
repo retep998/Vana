@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
-#include "Maps.h"
 #include "MapleTvs.h"
+#include "Maps.h"
 #include "NpcDataProvider.h"
 #include "PacketReader.h"
 #include "Pet.h"
@@ -70,8 +70,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		drop->setTradeable(istradeable);
 
 		drop->doDrop(player->getPos());
-		if (istradeable) // Drop is deleted otherwise, avoid like plague
+		if (istradeable) {
+			// Drop is deleted otherwise, avoid like plague
 			Reactors::checkDrop(player, drop);
+		}
 	}
 	else {
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
@@ -192,153 +194,6 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	}
 	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);
-	}
-}
-
-void InventoryHandler::useShop(Player *player, PacketReader &packet) {
-	if (player->getShop() == nullptr) {
-		// Hacking
-		return;
-	}
-	int8_t type = packet.get<int8_t>();
-	switch (type) {
-		case 0: { // Buy
-			uint16_t itemindex = packet.get<uint16_t>();
-			packet.skipBytes(4); // Item ID, no reason to trust this
-			uint16_t quantity = packet.get<uint16_t>();
-			packet.skipBytes(4); // Price, don't want to trust this
-			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
-			int32_t itemid = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
-			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
-			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxslot
-			int32_t totalprice = quantity * price;
-			if (price == 0 || totalamount > ItemDataProvider::Instance()->getMaxSlot(itemid) || player->getInventory()->getMesos() < totalprice) {
-				// Hacking
-				return;
-			}
-			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, static_cast<int16_t>(totalamount), true);
-			if (haveslot) {
-				Inventory::addNewItem(player, itemid, static_cast<int16_t>(totalamount));
-				player->getInventory()->modifyMesos(-totalprice);
-			}
-			InventoryPacket::bought(player, haveslot ? 0 : 3);
-			break;
-		}
-		case 1: { // Sell
-			int16_t slot = packet.get<int16_t>();
-			int32_t itemid = packet.get<int32_t>();
-			int16_t amount = packet.get<int16_t>();
-			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == nullptr || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->amount)) {
-				InventoryPacket::bought(player, 1); // Hacking
-				return;
-			}
-			int32_t price = ItemDataProvider::Instance()->getPrice(itemid);
-
-			player->getInventory()->modifyMesos(price * amount);
-			if (GameLogicUtilities::isRechargeable(itemid))
-				Inventory::takeItemSlot(player, inv, slot, item->amount, true);
-			else
-				Inventory::takeItemSlot(player, inv, slot, amount, true);
-			InventoryPacket::bought(player, 0);
-			break;
-		}
-		case 2: { // Recharge
-			int16_t slot = packet.get<int16_t>();
-			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-			if (item == nullptr || GameLogicUtilities::isRechargeable(item->id) == false) {
-				// Hacking
-				return;
-			}
-			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
-			if (GameLogicUtilities::isRechargeable(item->id))
-				maxslot += player->getSkills()->getRechargeableBonus();
-
-			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
-			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
-				player->getInventory()->modifyMesos(modifiedmesos);
-				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxslot, 0, 0);
-				item->amount = maxslot;
-				InventoryPacket::bought(player, 0);
-			}
-			break;
-		}
-		case 3: // Close shop
-			player->setShop(nullptr);
-			break;
-	}
-}
-
-void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
-	if (player->getShop() == nullptr) {
-		// Hacking
-		return;
-	}
-	int8_t type = packet.get<int8_t>();
-	int32_t cost = NpcDataProvider::Instance()->getStorageCost(player->getShop());
-	if (cost == 0) {
-		// Hacking
-		return;
-	}
-	switch (type) {
-		case 4: { // Take item out
-			int8_t inv = packet.get<int8_t>(); // Inventory, as in equip, use, etc
-			int8_t slot = packet.get<int8_t>(); // Slot within the inventory
-			Item *item = player->getStorage()->getItem(slot);
-			if (item == nullptr) {
-				// Hacking
-				return;
-			}
-			Inventory::addItem(player, new Item(item));
-			player->getStorage()->takeItem(slot);
-			StoragePacket::takeItem(player, inv);
-			break;
-		}
-		case 5: { // Store item
-			int16_t slot = packet.get<int16_t>();
-			int32_t itemid = packet.get<int32_t>();
-			int16_t amount = packet.get<int16_t>();
-			if (player->getInventory()->getMesos() < cost) {
-				StoragePacket::noMesos(player); // We don't have enough mesos to store this item
-				return;
-			}
-			if (player->getStorage()->isFull()) { // Storage is full, so tell the player and abort the mission.
-				StoragePacket::storageFull(player);
-				return;
-			}
-			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == nullptr) {
-				// Hacking
-				return;
-			}
-			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
-				amount = 1;
-			else if (amount <= 0 || amount > item->amount) {
-				// Hacking
-				return;
-			}
-			player->getStorage()->addItem((inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
-			// For equips or rechargeable items (stars/bullets) we create a
-			// new object for storage with the inventory object, and allow
-			// the one in the inventory to go bye bye.
-			// Else: For items we just create a new item based on the ID and amount.
-			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->amount : amount, true);
-			player->getInventory()->modifyMesos(-cost);
-			StoragePacket::addItem(player, inv);
-			break;
-		}
-		case 7: { // Take out/store mesos
-			int32_t mesos = packet.get<int32_t>(); // Amount of mesos to remove. Deposits are negative, and withdrawls are positive.
-			bool success = player->getInventory()->modifyMesos(mesos);
-			if (success)
-				player->getStorage()->changeMesos(mesos);
-			break;
-		}
-		case 8:
-			player->setShop(0);
-			break;
 	}
 }
 
@@ -507,8 +362,9 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	ItemDataProvider::Instance()->scrollItem(item->id, equip, succeed, cursed, wscroll);
 
 	if (succeed != -1) {
-		if (wscroll)
+		if (wscroll) {
 			Inventory::takeItem(player, Items::WhiteScroll, 1);
+		}
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed) {
@@ -522,8 +378,9 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		InventoryPacket::updatePlayer(player);
 	}
 	else {
-		if (legendary_spirit)
+		if (legendary_spirit) {
 			InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
+		}
 		InventoryPacket::blankUpdate(player);
 	}
 }
@@ -543,7 +400,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::TeleportRock:
 		case Items::TeleportCoke:
 		case Items::VipRock: // Only occurs when you actually try to move somewhere
-			used = handleRockTeleport(player, (itemid == Items::VipRock ? 1 : 0), itemid, packet);
+			used = handleRockTeleport(player, itemid, packet);
 			break;
 		case Items::FirstJobSpReset:
 		case Items::SecondJobSpReset:
@@ -766,12 +623,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			used = true;
 			break;
 		}
-		case Items::CongratulatorySong: {
+		case Items::CongratulatorySong:
 			InventoryPacket::playCashSong(player->getMap(), itemid, player->getName());
 			used = true;
-			break;
-		}
-		default:
 			break;
 	}
 	if (used) {
@@ -793,37 +647,65 @@ void InventoryHandler::useItemEffect(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::handleRockFunctions(Player *player, PacketReader &packet) {
-	uint8_t mode = packet.get<int8_t>();
-	uint8_t type = packet.get<int8_t>();
-	if (mode == 0) { // Remove
+	int8_t mode = packet.get<int8_t>();
+	int8_t type = packet.get<int8_t>();
+
+	enum Modes {
+		Remove = 0x00,
+		Add = 0x01
+	};
+
+	if (mode == Remove) {
 		int32_t map = packet.get<int32_t>();
 		player->getInventory()->delRockMap(map, type);
 	}
-	else if (mode == 1) { // Add
+	else if (mode == Add) {
 		int32_t map = player->getMap();
-		player->getInventory()->addRockMap(map, type);
+		Map *m = Maps::getMap(map);
+		if (m->canVip() && m->getContinent() != 0) {
+			player->getInventory()->addRockMap(map, type);
+		}
+		else {
+			// Hacking, the client doesn't allow this to occur
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotSaveMap, type);
+		}
 	}
 }
 
-bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t itemid, PacketReader &packet) {
+bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemid, PacketReader &packet) {
+	if (itemid == Items::SpecialTeleportRock) {
+		packet.skipBytes(5);
+	}
+
+	int8_t type = InventoryPacket::RockTypes::Regular;
+	switch (itemid) {
+		case Items::VipRock: type = InventoryPacket::RockTypes::Vip; break;
+		case Items::SpecialTeleportRock: type = packet.get<int8_t>(); break;
+	}
 	bool used = false;
-	uint8_t mode = packet.get<uint8_t>();
+	int8_t mode = packet.get<int8_t>();
 	int32_t targetmapid = -1;
-	if (mode == 0) { // Preset map
+
+	enum Modes {
+		PresetMap = 0x00,
+		Ign = 0x01
+	};
+
+	if (mode == PresetMap) {
 		targetmapid = packet.get<int32_t>();
 		if (!player->getInventory()->ensureRockDestination(targetmapid)) {
 			// Hacking
 			return false;
 		}
 	}
-	else if (mode == 1) { // IGN
+	else if (mode == Ign) {
 		string tname = packet.getString();
 		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
 		if (target != nullptr && target != player) {
 			targetmapid = target->getMap();
 		}
 		else if (target == nullptr) {
-			InventoryPacket::sendRockError(player, 0x06, type);
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::DifficultToLocate, type);
 		}
 		else if (target == player) {
 			// Hacking
@@ -834,13 +716,19 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 		Map *destination = Maps::getMap(targetmapid);
 		Map *origin = Maps::getMap(player->getMap());
 		if (!destination->canVip()) {
-			InventoryPacket::sendRockError(player, 0x08, type);
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
 		}
 		else if (!origin->canVip()) {
-			InventoryPacket::sendRockError(player, 0x08, type);
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
 		}
-		else if (type == 0 && destination->getContinent() != origin->getContinent()) {
-			InventoryPacket::sendRockError(player, 0x08, type);
+		else if (player->getMap() == targetmapid) {
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::AlreadyThere, type);
+		}
+		else if (type == InventoryPacket::RockTypes::Regular && destination->getContinent() != origin->getContinent()) {
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
+		}
+		else if (player->getStats()->getLevel() < 7 && origin->getContinent() == 0 && destination->getContinent() != 0) {
+			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::NoobsCannotLeaveMapleIsland, type);
 		}
 		else {
 			player->setMap(targetmapid);

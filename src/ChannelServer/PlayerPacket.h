@@ -22,11 +22,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class Player;
 class KeyMaps;
+class PacketCreator;
+class Player;
 class SkillMacros;
 
 namespace PlayerPacket {
+	namespace BlockMessages {
+		enum Messages {
+			CannotGo = 0x01,
+			NoCashShop = 0x02,
+			MtsUnavailable = 0x03,
+			MtsUserLimit = 0x04,
+			LevelTooLow = 0x05
+		};
+	}
+	namespace NoticeTypes {
+		enum Types {
+			Notice = 0x00,
+			Box = 0x01,
+			Red = 0x05,
+			Blue = 0x06
+		};
+	}
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void showSkillMacros(Player *player, SkillMacros *macros);
@@ -35,8 +53,12 @@ namespace PlayerPacket {
 	void updateStatChar(Player *player, int32_t id, int8_t value, bool is = false);
 	void changeChannel(Player *player, uint32_t ip, int16_t port);
 	void showMessage(Player *player, const string &msg, int8_t type);
+	void showMessageChannel(const string &msg, int8_t type);
+	void showMessageWorld(const string &msg, int8_t type);
+	void showMessageGlobal(const string &msg, int8_t type);
+	void showMessagePacket(PacketCreator &packet, const string &msg, int8_t type);
 	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
 	void sendSound(Player *player, const string &soundname);
 	void showHpBar(Player *player, Player *target);
-	void sendBlockedMessage(Player *player, uint8_t type);
+	void sendBlockedMessage(Player *player, int8_t type);
 };

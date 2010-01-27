@@ -54,8 +54,8 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
-		case PlayerStatus::SetGender: packet.add<int8_t>(0x0a); break; // Gender Select
-		case PlayerStatus::SetPin: packet.add<int8_t>(0x0b); break; // Pin Select
+		case PlayerStatus::SetGender: packet.add<int8_t>(PlayerStatus::SetGender); break;
+		case PlayerStatus::SetPin: packet.add<int8_t>(PlayerStatus::PinSelect); break;
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
@@ -130,18 +130,13 @@ void LoginPacket::showWorld(Player *player, World *world) {
 void LoginPacket::worldEnd(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_WORLD_LIST);
-	packet.add<uint8_t>(0xFF);
+	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showChannels(Player *player, int8_t status) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_WORLD_STATUS);
-	/*	Byte/short types:
-		0x00 = no message
-		0x01 = "Since There Are Many Concurrent Users in This World, You May Encounter Some Difficulties During the Game Play."
-		0x02 = "The Concurrent Users in This World Have Reached the Max. Please Try Again Later."
-	*/
 	packet.add<int16_t>(status);
 	player->getSession()->send(packet);
 }
