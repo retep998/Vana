@@ -57,10 +57,12 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, uin
 			packet.add<uint8_t>(direction);
 			break;
 	}
-	if (self)
+	if (self) {
 		player->getSession()->send(packet);
-	else
+	}
+	else {
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
+	}
 }
 
 void SkillsPacket::healHP(Player *player, int16_t hp) {
