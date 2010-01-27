@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/format.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/lexical_cast.hpp> 
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_array.hpp>
@@ -43,9 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tokenizer.hpp>
 #include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
-#include <boost/tr1/regex.hpp>
 #include <boost/tr1/unordered_map.hpp>
-#include <boost/tr1/unordered_set.hpp>
 #include <boost/utility.hpp>
 #include <cmath>
 #include <cstdlib>
@@ -60,7 +57,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 #include <map>
 #include <queue>
-#include <set>
 #include <sstream>
 #include <string>
 #include <utility>
