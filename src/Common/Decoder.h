@@ -33,7 +33,7 @@ public:
 	static int32_t getLength(unsigned char *header);
 	void createHeader(unsigned char *header, int16_t size);
 
-	PacketCreator getConnectPacket(string unknown = "");
+	PacketCreator getConnectPacket(const string &unknown = "");
 
 	void setIvRecv(unsigned char *iv) { MapleEncryption::setIv(ivRecv, iv); }
 	void setIvSend(unsigned char *iv) { MapleEncryption::setIv(ivSend, iv); }

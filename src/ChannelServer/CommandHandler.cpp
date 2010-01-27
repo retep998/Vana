@@ -35,31 +35,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+namespace CommandOpcodes {
+	enum Opcodes {
+		FindPlayer = 0x05,
+		Whisper = 0x06
+	};
+}
+
+namespace AdminOpcodes {
+	enum Opcodes {
+		DestroyFirstItem = 0x01,
+		GiveExp = 0x02,
+		Ban = 0x03,
+		Block = 0x04,
+		ShowMessageMap = 0x11,
+		Warn = 0x1D
+	};
+	/*
+		Opcode syntax:
+		DestroyFirstItem = /d (inv)
+		GiveExp = /exp (amount)
+		Ban = /ban (character name)
+		Block = /block (character name) (duration) (sort)
+		Warn = /w (character name) (message)
+	*/
+}
+
 void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
-	uint8_t type = packet.get<int8_t>();
+	int8_t type = packet.get<int8_t>();
 	string name = packet.getString();
 
-	string chat;
-	if (type == 0x06) {
-		chat = packet.getString();
-	}
-
 	Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
-	if (receiver) {
-		if (type == 0x05) {
-			PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
-		}
-		else if (type == 0x06) {
-			PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
-			PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
-		}
-	}	
-	else { // Let's connect to the world server to see if the player is on any other channel
-		if (type == 0x05) {
-			WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
-		}
-		else if (type == 0x06) {
-			WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name, chat);
+	// If this player doesn't exist, connect to the world server to see if they're on any other channel
+	switch (type) {
+		case CommandOpcodes::FindPlayer:
+			if (receiver) {
+				PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+			}
+			else {
+				WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
+			}
+			break;
+		case CommandOpcodes::Whisper: {
+			string chat = packet.getString();
+			if (receiver) {
+				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
+				PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
+			}
+			else {
+				WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name, chat);
+			}
+			break;
 		}
 	}
 }
@@ -70,14 +96,14 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		player->addWarning();
 		return;
 	}
-
 	int8_t type = packet.get<int8_t>();
+
 	switch (type) {
-		case 0x01: { // /d (inv)
-			// Destroys the FIRST item found in the inventory
+		case AdminOpcodes::DestroyFirstItem: {
 			int8_t inv = packet.get<int8_t>();
-			if (!GameLogicUtilities::isValidInventory(inv))
+			if (!GameLogicUtilities::isValidInventory(inv)) {
 				return;
+			}
 			uint8_t slots = player->getInventory()->getMaxSlots(inv);
 			for (int8_t i = 0; i < slots; i++) {
 				if (Item *item = player->getInventory()->getItem(inv, i)) {
@@ -85,14 +111,14 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 					break;
 				}
 			}
+			break;
 		}
-		break;
-		case 0x02: { // /exp (amount)
+		case AdminOpcodes::GiveExp: {
 			int32_t amount = packet.get<int32_t>();
 			player->getStats()->giveExp(amount);
+			break;
 		}
-		break;
-		case 0x03: { // /ban (character name)
+		case AdminOpcodes::Ban: {
 			string victim = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				receiver->getSession()->disconnect();
@@ -100,10 +126,9 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			else {
 				GmPacket::invalidCharacterName(player);
 			}
+			break;
 		}
-		break;
-		case 0x04: { // /block (character name) (duration) (sort)
-			// Pops up the GM Tool too when used!
+		case AdminOpcodes::Block: {
 			string victim = packet.getString();
 			int8_t reason = packet.get<int8_t>();
 			int32_t length = packet.get<int32_t>();
@@ -118,40 +143,27 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 
 				GmPacket::block(player);
 				string banmsg = victim + " has been banned" + ChatHandler::getBanString(reason);
-				PlayersPacket::showMessage(banmsg, 0);
+				PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
 			}
 			else {
-				GmPacket::invalidCharacterName(player); // Invalid character name
+				GmPacket::invalidCharacterName(player);
 			}
+			break;
 		}
-		break;
-		case 0x11: PlayerPacket::showMessage(player, Maps::getMap(player->getMap())->getPlayerNames(), 0); break;
-		case 0x1D: { // /w (character name) (message)
+		case AdminOpcodes::ShowMessageMap:
+			PlayerPacket::showMessage(player, Maps::getMap(player->getMap())->getPlayerNames(), PlayerPacket::NoticeTypes::Notice);
+			break;
+		case AdminOpcodes::Warn: {
 			string victim = packet.getString();
 			string message = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
-				PlayerPacket::showMessage(receiver, message, 1);
+				PlayerPacket::showMessage(receiver, message, PlayerPacket::NoticeTypes::Box);
 				GmPacket::warning(player, true);
 			}
 			else {
 				GmPacket::warning(player, false);
 			}
+			break;
 		}
-		break;
-		default: {
-			std::cout << "Unknown type of Admin command: 0x" << std::hex << static_cast<uint16_t>(type) << ", sent by " << player->getName() << std::endl; 
-			packet.reset(2);
-			size_t length = packet.getBufferLength();
-			std::cout << "Packet data: " << std::endl;
-			for (size_t i = 0; i < length; i++) {
-				std::cout << std::setw(2) 
-					<< std::setfill('0') << std::internal
-					<< std::hex << static_cast<uint16_t>(packet.get<uint8_t>()) 
-					<< " ";
-			}
-			std::cout << std::endl;
-		}
-		break;
 	}
-
 }

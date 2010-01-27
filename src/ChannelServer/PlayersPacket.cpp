@@ -16,10 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
-#include "ChannelServer.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "InterHeader.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -30,8 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_MOVEMENT);
 	packet.add<int32_t>(player->getId());
@@ -41,8 +40,9 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 }
 
 void PlayersPacket::faceExpression(Player *player, int32_t face) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_EMOTE);
 	packet.add<int32_t>(player->getId());
@@ -60,15 +60,19 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, const ReturnDamageInfo &pgmr) {
-	if (player->getActiveBuffs()->isUsingHide())
+void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t nodamageskill, const ReturnDamageInfo &pgmr) {
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
+	const int8_t BumpDamage = -1;
+	const int8_t MapDamage = -2;
+
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_DAMAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(type);
 	switch (type) {
-		case 0xFE:
+		case MapDamage:
 			packet.add<int32_t>(dmg);
 			packet.add<int32_t>(dmg);
 			break;
@@ -91,29 +95,6 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			break;
 	}
 	Maps::getMap(player->getMap())->sendPacket(packet);
-}
-
-void PlayersPacket::showMessage(const string &msg, int8_t type) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESSAGE); 
-	packet.add<int8_t>(type);
-	packet.addString(msg);
-	if (type == 6) {
-		packet.add<int32_t>(0);
-	}
-	PlayerDataProvider::Instance()->sendPacket(packet);
-}
-
-void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(type);
-	packet.addString(msg);
-	if (type == 6) {
-		packet.add<int32_t>(0);
-	}
-	ChannelServer::Instance()->sendToWorld(packet);
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
@@ -157,13 +138,13 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 	target->getSession()->send(packet);
 }
 
-void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool is_channel) {
+void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool isChannel) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_COMMAND);
 	if (map != -1) {
 		packet.add<int8_t>(0x09);
 		packet.addString(name);
-		packet.add<int8_t>(is_channel ? 0x03 : 0x01);
+		packet.add<int8_t>(isChannel ? 0x03 : 0x01);
 		packet.add<int32_t>(map);
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);

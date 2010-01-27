@@ -109,11 +109,13 @@ private:
 };
 
 namespace NpcDialogs {
-	const uint8_t Normal = 0x00;
-	const uint8_t YesNo = 0x01;
-	const uint8_t GetText = 0x02;
-	const uint8_t GetNumber = 0x03;
-	const uint8_t Simple = 0x04;
-	const uint8_t Style = 0x07;
-	const uint8_t AcceptDecline = 0x0c;
+	enum DialogOptions {
+		Normal = 0x00,
+		YesNo = 0x01,
+		GetText = 0x02,
+		GetNumber = 0x03,
+		Simple = 0x04,
+		Style = 0x07,
+		AcceptDecline = 0x0c
+	};
 };

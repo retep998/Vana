@@ -34,11 +34,12 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.addPos(mob->getPos());
 
 	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | mob->getFacingDirection();
+	// 0x02 - ???
 	if (mob->canFly()) {
 		bitfield |= 0x04;
 	}
 
-	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+	packet.add<int8_t>(bitfield);
 
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
@@ -73,11 +74,12 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.addPos(mob->getPos());
 
 	int8_t bitfield = 0x02 | mob->getFacingDirection();
+	// 0x02 = ???
 	if (mob->canFly()) {
 		bitfield |= 0x04;
 	}
 
-	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+	packet.add<int8_t>(bitfield);
 
 	packet.add<int16_t>(mob->getFh());
 	packet.add<int16_t>(mob->getOriginFh());
@@ -190,11 +192,11 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 
 	packet.add<int16_t>(delay);
 	
-	int8_t buffcount = info.size();
+	uint8_t buffcount = info.size();
 	if (reflection.size() > 0) {
 		buffcount /= 2; // This gives 2 buffs per reflection but it's really one buff
 	}
-	packet.add<int8_t>(buffcount);
+	packet.add<uint8_t>(buffcount);
 
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
@@ -249,7 +251,6 @@ void MobsPacket::showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(summonEffect);
-	packet.add<int32_t>(pos.x);
-	packet.add<int32_t>(pos.y);
+	packet.addPos(pos, true);
 	Maps::getMap(mapid)->sendPacket(packet);
 }

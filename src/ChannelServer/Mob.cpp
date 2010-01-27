@@ -110,9 +110,9 @@ void Mob::initMob() {
 
 	totalhealth = hp;
 
-	owner = 0; // Pointers
-	sponge = 0;
-	control = 0;
+	owner = nullptr; // Pointers
+	sponge = nullptr;
+	control = nullptr;
 
 	webplayerid = 0; // Skill stuff
 	weblevel = 0;
@@ -174,23 +174,28 @@ void Mob::naturalHealMp(int32_t amount) {
 }
 
 void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
-	if (damage < 0)
+	if (damage < 0) {
 		damage = 0;
-	if (damage > hp)
+	}
+	if (damage > hp) {
 		damage = hp - poison; // Keep HP from hitting 0 for poison and from going below 0
+	}
 
 	damages[playerid] += damage;
 	hp -= damage;
 
-	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
+	if (!poison) {
+		// HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	
 		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
-		if (info->hpColor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+		if (info->hpColor > 0) {
+			// Boss HP bars - damage sponges aren't bosses in the data
 			MobsPacket::showBossHp(this);
 		}
-		else if (info->boss) { // Minibosses
+		else if (info->boss) {
+			// Minibosses
 			MobsPacket::showHp(mapid, id, percent);
 		}
 		else if (info->friendly) {
@@ -228,7 +233,8 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 			die(player);
 		}
 		if (sponge != nullptr) {
-			sponge->applyDamage(playerid, damage, false); // Apply damage after you can be sure that all the units are linked and ready
+			sponge->applyDamage(playerid, damage, false);
+			// Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
 	// TODO: Fix this, for some reason, it causes issues within the timer container
@@ -239,9 +245,10 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 void Mob::applyWebDamage() {
 	int32_t webdamage = getMaxHp() / (50 - weblevel);
-	if (webdamage > hp)
-		webdamage = hp - 1; // Keep HP from hitting 0
-
+	if (webdamage > hp) {
+		// Keep HP from hitting 0
+		webdamage = hp - 1;
+	}
 	if (webdamage != 0) {
 		damages[webplayerid] += webdamage;
 		hp -= webdamage;
@@ -258,8 +265,9 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 		switch (cstatus) {
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
-				if (alreadyhas)
+				if (alreadyhas) {
 					continue;
+				}
 				break;
 			case StatusEffects::Mob::ShadowWeb:
 				webplayerid = playerid;
@@ -267,8 +275,12 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 				Maps::getMap(mapid)->addWebbedMob(this);
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
-				if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
-					taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
+				switch (statusinfo[i].skillid) {
+					case Jobs::NightLord::Taunt:
+					case Jobs::Shadower::Taunt:
+						taunteffect = (100 - statusinfo[i].val) + 100;
+						// Value passed as 100 - x, so 100 - value will = x
+						break;
 				}
 				break;
 			case StatusEffects::Mob::VenomousWeapon:
@@ -289,7 +301,8 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 		switch (cstatus) {
 			case StatusEffects::Mob::Poison:
 			case StatusEffects::Mob::VenomousWeapon:
-			case StatusEffects::Mob::NinjaAmbush: // Damage timer for poison(s)
+			case StatusEffects::Mob::NinjaAmbush:
+				// Damage timer for poison(s)
 				new Timer::Timer(bind(&Mob::applyDamage, this, playerid, statusinfo[i].val, true),
 					Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
 					getTimers(), 0, 1000);
@@ -339,13 +352,18 @@ void Mob::removeStatus(int32_t status, bool fromTimer) {
 				Maps::getMap(mapid)->removeWebbedMob(getId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
-				if (stat->skillid == Jobs::NightLord::Taunt || stat->skillid == Jobs::Shadower::Taunt) {
-					taunteffect = 100;
+				switch (stat->skillid) {
+					case Jobs::NightLord::Taunt:
+					case Jobs::Shadower::Taunt:
+						taunteffect = 100;
+						break;
 				}
 				break;
 			case StatusEffects::Mob::VenomousWeapon:
 				setVenomCount(0);
-			case StatusEffects::Mob::Poison: // Stop poison damage timer
+				// Intentional fallthrough
+			case StatusEffects::Mob::Poison:
+				// Stop poison damage timer
 				getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
 				break;
 		}
@@ -396,16 +414,18 @@ void Mob::setControl(Player *control, bool spawn, Player *display) {
 	/*if (this->control != 0)
 		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
-	if (control != nullptr)
+	if (control != nullptr) {
 		MobsPacket::requestControl(control, this, spawn);
+	}
 	else if (getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		MobsPacket::requestControl(control, this, spawn, display);
 	}
 }
 
 void Mob::endControl() {
-	if (control != nullptr && control->getMap() == getMapId())
+	if (control != nullptr && control->getMap() == getMapId()) {
 		MobsPacket::endControlMob(control, this);
+	}
 }
 
 void Mob::die(Player *player, bool fromexplosion) {
@@ -456,7 +476,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 }
 
 void Mob::explode() {
-	die(0, true);
+	die(nullptr, true);
 }
 
 void Mob::die(bool showpacket) {
@@ -637,15 +657,9 @@ void Mob::dispelBuffs() {
 
 void Mob::doCrashSkill(int32_t skillid) {
 	switch (skillid) {
-		case Jobs::Crusader::ArmorCrash:
-			removeStatus(StatusEffects::Mob::Wdef);
-			break;
-		case Jobs::WhiteKnight::MagicCrash:
-			removeStatus(StatusEffects::Mob::Matk);
-			break;
-		case Jobs::DragonKnight::PowerCrash:
-			removeStatus(StatusEffects::Mob::Watk);
-			break;
+		case Jobs::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
+		case Jobs::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
+		case Jobs::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
 	}
 }
 
@@ -654,12 +668,14 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 		mp->used = true;
 		int32_t emp = getMaxMp() * mp->x / 100;
 
-		if (emp > getMp())
+		if (emp > getMp()) {
 			emp = getMp();
+		}
 		setMp(getMp() - emp);
 
-		if (emp > 30000)
+		if (emp > 30000) {
 			emp = 30000;
+		}
 		player->getStats()->modifyMp(static_cast<int16_t>(emp));
 
 		SkillsPacket::showSkillEffect(player, mp->skillId);
@@ -668,8 +684,8 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 }
 
 void Mob::setControlStatus(int8_t newstat) {
-	MobsPacket::endControlMob(0, this);
-	MobsPacket::spawnMob(0, this, 0, 0);
+	MobsPacket::endControlMob(nullptr, this);
+	MobsPacket::spawnMob(nullptr, this, 0, nullptr);
 	controlstatus = newstat;
 	Maps::getMap(getMapId())->updateMobControl(this);
 }

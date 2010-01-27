@@ -124,8 +124,10 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
 			pet->modifyFullness(Stats::PetFeedFullness, false);
-			if (Randomizer::Instance()->randInt(99) < 60) // 60% chance for feed to add closeness
+			if (Randomizer::Instance()->randInt(99) < 60) {
+				// 60% chance for feed to add closeness
 				pet->addCloseness(1);
+			}
 		}
 	}
 	else {

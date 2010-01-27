@@ -52,6 +52,7 @@ protected:
 
 namespace LuaExports {
 	Player * getPlayer(lua_State *luaVm);
+	Player * getPlayerDeduced(int parameter, lua_State *luaVm);
 	Instance * getInstance(lua_State *luaVm);
 
 	// Global exports

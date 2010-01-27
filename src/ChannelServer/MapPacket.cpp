@@ -288,7 +288,7 @@ void MapPacket::sendSound(int32_t mapid, const string &sound) {
 	// Cokeplay/Failed = Lose
 	// Coconut/Victory = Victory
 	// Coconut/Failed = Lose 
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
 	packet.addString(sound);
@@ -302,7 +302,7 @@ void MapPacket::sendEvent(int32_t mapid, const string &id) {
 	// quest/carnival/lose = Lose
 	// event/coconut/victory = Victory
 	// event/coconut/lose = Lose
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x03);
 	packet.addString(id);
@@ -311,7 +311,7 @@ void MapPacket::sendEvent(int32_t mapid, const string &id) {
 
 void MapPacket::sendEffect(int32_t mapid, const string &effect) {
 	// gate = KerningPQ Door
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x02);
 	packet.addString(effect);
@@ -319,7 +319,7 @@ void MapPacket::sendEffect(int32_t mapid, const string &effect) {
 }
 
 void MapPacket::showEventInstructions(int32_t mapid) {
-	PacketCreator packet = PacketCreator();
+	PacketCreator packet;
 	packet.add<int16_t>(SMSG_EVENT_INSTRUCTION);
 	packet.add<int8_t>(0x00);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -334,12 +334,8 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(0);
-	Pos lt = mist->getLt();
-	Pos rb = mist->getRb();
-	packet.add<int32_t>(lt.x);
-	packet.add<int32_t>(lt.y);
-	packet.add<int32_t>(rb.x);
-	packet.add<int32_t>(rb.y);
+	packet.addPos(mist->getLt(), true);
+	packet.addPos(mist->getRb(), true);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
@@ -353,12 +349,8 @@ void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(mist->getDelay());
-	Pos lt = mist->getLt();
-	Pos rb = mist->getRb();
-	packet.add<int32_t>(lt.x);
-	packet.add<int32_t>(lt.y);
-	packet.add<int32_t>(rb.x);
-	packet.add<int32_t>(rb.y);
+	packet.addPos(mist->getLt(), true);
+	packet.addPos(mist->getRb(), true);
 	packet.add<int32_t>(0);
 	Maps::getMap(mapid)->sendPacket(packet);
 }

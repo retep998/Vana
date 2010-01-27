@@ -38,6 +38,14 @@ namespace Summons {
 	int32_t loopId();
 };
 
+namespace SummonMessages {
+	enum Messages {
+		None = 0x00,
+		OutOfTime = 0x01,
+		Disappearing = 0x02
+	};
+}
+
 class Summon : public MovableLife {
 public:
 	Summon() { }

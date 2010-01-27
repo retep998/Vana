@@ -59,10 +59,10 @@ void SyncHandler::playerChangeChannel(PacketReader &packet) {
 		return;
 	}
 	if (ip == 0) {
-		PlayerPacket::sendBlockedMessage(ccPlayer, 0x01);
+		PlayerPacket::sendBlockedMessage(ccPlayer, PlayerPacket::BlockMessages::CannotGo);
 	}
 	else {
-		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
+		ccPlayer->setOnline(false); // Set online to 0 BEFORE CC packet is sent to player
 		PlayerPacket::changeChannel(ccPlayer, ip, port);
 		ccPlayer->saveAll(true);
 		ccPlayer->setSaveOnDc(false);

@@ -35,11 +35,11 @@ void GuildPacket::handlePacket(Player *player, PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case 0x02: { // Create Guild
 			if (player->getGuildId() != 0) {
-				PlayerPacket::showMessage(player, "You can't create a guild while you are in one.", 1);
+				PlayerPacket::showMessage(player, "You can't create a guild while you are in one.", PlayerPacket::NoticeTypes::Box);
 				return;
 			}
 			if (player->getInventory()->getMesos() < 5000000) {
-				PlayerPacket::showMessage(player, "You have not enough mesos to create a guild. You need 5,000,000 mesos (5 million) to create a guild.", 1);
+				PlayerPacket::showMessage(player, "You have not enough mesos to create a guild. You need 5,000,000 mesos (5 million) to create a guild.", PlayerPacket::NoticeTypes::Box);
 				return;
 			}
 			PacketCreator pack;

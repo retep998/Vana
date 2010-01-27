@@ -27,8 +27,9 @@ using std::tr1::function;
 namespace StringUtilities {
 	int32_t noCaseCompare(const string &s1, const string &s2);
 	void runFlags(const string &flags, function<void (string)> func);
-	int64_t atoli(char *str); // ASCII to long int
+	int64_t atoli(const char *str); // ASCII to long int
 	bool atob(const char *str); // ASCII to bool
+	time_t atot(const char *str); // ASCII to time_t
 }
 
 inline

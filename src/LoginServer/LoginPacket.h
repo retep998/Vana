@@ -29,6 +29,21 @@ class World;
 struct Character;
 
 namespace LoginPacket {
+	namespace Errors {
+		enum Errors {
+			InvalidPin = 0x02,
+			InvalidPassword = 0x04,
+			InvalidUsername = 0x05,
+			AlreadyLoggedIn = 0x07
+		};
+	}
+	namespace WorldMessages {
+		enum Messages {
+			Normal = 0x00,
+			HeavyLoad = 0x01,
+			MaxLoad = 0x02
+		};
+	}
 	void loginError(Player *player, int16_t errorid);
 	void loginBan(Player *player, int8_t reason, int32_t expire);
 	void loginProcess(Player *player, int8_t id);

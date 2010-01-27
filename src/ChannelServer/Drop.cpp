@@ -34,7 +34,7 @@ mesos(mesos),
 dropped(std::numeric_limits<int32_t>::max()),
 playerid(0),
 playerdrop(playerdrop),
-type(0),
+type(Drop::Normal),
 tradeable(true),
 pos(pos)
 {
@@ -49,7 +49,7 @@ mesos(0),
 dropped(std::numeric_limits<int32_t>::max()),
 playerid(0),
 playerdrop(playerdrop),
-type(0),
+type(Drop::Normal),
 tradeable(true),
 pos(pos),
 item(item)
@@ -69,37 +69,42 @@ void Drop::doDrop(const Pos &origin) {
 	setDropped(TimeUtilities::getTickCount());
 	if (!isQuest()) {
 		if (!isTradeable()) {
-			DropsPacket::showDrop(0, this, 3, false, origin);
+			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DisappearDuringDrop, false, origin);
 			this->removeDrop(false);
 		}
-		else
-			DropsPacket::showDrop(0, this, 1, true, origin);
+		else {
+			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DropAnimation, true, origin);
+		}
 	}
 	else if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
 		if (player->getMap() == this->mapid) {
-			DropsPacket::showDrop(player, this, 1, true, origin);
+			DropsPacket::showDrop(player, this, DropsPacket::DropTypes::DropAnimation, true, origin);
 		}
 	}
 }
 
 void Drop::showDrop(Player *player) {
-	if (isQuest() && player->getId() != playerid)
+	if (isQuest() && player->getId() != playerid) {
 		return;
-	DropsPacket::showDrop(player, this, 2, false, Pos());
+	}
+	DropsPacket::showDrop(player, this, DropsPacket::DropTypes::ShowExisting, false, Pos());
 }
 
 void Drop::takeDrop(Player *player, int32_t petid) {
 	Maps::getMap(mapid)->removeDrop(this->id);
-	if (petid == 0)
+	if (petid == 0) {
 		DropsPacket::takeDrop(player, this);
-	else
+	}
+	else {
 		DropsPacket::takeDrop(player, this, player->getPets()->getPet(petid)->getIndex());
+	}
 	delete this;
 }
 
 void Drop::removeDrop(bool showPacket) {
 	Maps::getMap(this->mapid)->removeDrop(this->id);
-	if (showPacket)
+	if (showPacket) {
 		DropsPacket::removeDrop(this);
+	}
 	delete this;
 }

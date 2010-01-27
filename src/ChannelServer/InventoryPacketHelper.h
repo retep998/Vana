@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2010 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,12 +14,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
--- Manon portal
+*/
+#pragma once
 
-if getNumPlayers(240020401) < 6 then
-	playPortalSE();
-	setMap(240020401, "out00");
-else
-	showMessage("You may not enter Manon's Forest.", m_red);
-end
+#include "Types.h"
+#include <vector>
+
+using std::vector;
+
+class PacketCreator;
+
+namespace InventoryPacketHelper {
+	void fillRockPacket(PacketCreator &packet, const vector<int32_t> &vec, size_t maxSize);
+}

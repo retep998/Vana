@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, bool full) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MONSTER_BOOK_ADD);
-	packet.add<int8_t>(full ? 0x00 : 0x01);
+	packet.addBool(!full);
 	packet.add<int32_t>(cardid);
 	packet.add<int32_t>(level);
 	player->getSession()->send(packet);

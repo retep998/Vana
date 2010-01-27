@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if isQuestActive(6153) then
 	if getItemAmount(4031471) > 0 then
-		showMessage("Sayram already has shield.", 5);
+		showMessage("Sayram already has shield.", m_red);
 	else
 		if getItemAmount(4031475) > 0 then
 			if not isInstance("berserk4th") then
@@ -28,12 +28,12 @@ if isQuestActive(6153) then
 				playPortalSE();
 				setMap(910500200, "in00");
 			else
-				showMessage("Other character is on the quest currently. Please try again later.", 5);
+				showMessage("Other character is on the quest currently. Please try again later.", m_red);
 			end
 		else
-			showMessage("To enter, you need a key to Forgotten Shrine.", 5);
+			showMessage("To enter, you need a key to Forgotten Shrine.", m_red);
 		end
 	end
 else
-	showMessage("You can't enter sealed place.", 5);
+	showMessage("You can't enter sealed place.", m_red);
 end

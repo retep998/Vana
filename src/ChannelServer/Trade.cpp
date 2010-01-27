@@ -26,106 +26,114 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VersionConstants.h"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
-sender(new TradeInfo()),
-receiver(new TradeInfo()),
-id(id)
+m_sender(new TradeInfo()),
+m_receiver(new TradeInfo()),
+m_id(id)
 {
 	sender->setTrading(true);
 	receiver->setTrading(false);
 	sender->setTradeId(id);
 	receiver->setTradeId(id);
-	senderid = sender->getId();
-	receiverid = receiver->getId();
+	m_senderId = sender->getId();
+	m_receiverId = receiver->getId();
 }
 
 bool ActiveTrade::bothCanTrade() {
-	TradeInfo *send = getSenderTrade();
-	TradeInfo *recv = getReceiverTrade();
-	Player *one = getSender();
-	Player *two = getReceiver();
-
-	int32_t comparison = recv->mesos + one->getInventory()->getMesos();
-	if (comparison < 0) {// Determine if sender can receive all the mesos
+	if (!canTrade(getSender(), getReceiverTrade())) {
 		return false;
 	}
-	if (recv->count > 0 && !canTrade(one, recv)) { // And all the items
+	if (!canTrade(getReceiver(), getSenderTrade())) {
 		return false;
 	}
-
-	comparison = send->mesos + two->getInventory()->getMesos();
-	if (comparison < 0) { // Determine if receiver can receive all the mesos
-		return false;
-	}
-	if (send->count > 0 && !canTrade(two, send)) { // And all the items
-		return false;
-	}
-
 	return true;
 }
 
 bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 	bool yes = true;
-	boost::array<int8_t, Inventories::InventoryCount> totals = {0};
-	unordered_map<int32_t, int16_t> added;
-	for (int8_t i = 0; i < TradeInfo::TradeSize; i++) {
-		// Create item structure to determine needed slots among stackable items
-		// Also, determine needed slots for nonstackables
-		if (unit->slot[i]) {
-			Item *check = unit->items[i];
-			int32_t itemid = check->id;
-			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) // Equips and rechargeables always take 1 slot, no need to clutter unordered map
-				totals[inv - 1]++;
-			else {
-				if (added.find(itemid) != added.end()) // Already initialized this item
-					added[itemid] += check->amount;
-				else
-					added[itemid] = check->amount;
+	int32_t cmesos = unit->mesos + target->getInventory()->getMesos();
+	if (cmesos < 0) {
+		yes = false;
+	}
+	if (yes && unit->count > 0) {
+		boost::array<int8_t, Inventories::InventoryCount> totals = {0};
+		unordered_map<int32_t, int16_t> added;
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
+			// Create item structure to determine needed slots among stackable items
+			// Also, determine needed slots for nonstackables
+			if (unit->slot[i]) {
+				Item *check = unit->items[i];
+				int32_t itemid = check->id;
+				int8_t inv = GameLogicUtilities::getInventory(itemid);
+				if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) {
+					// Equips and rechargeables always take 1 slot, no need to clutter unordered map
+					totals[inv - 1]++;
+				}
+				else {
+					if (added.find(itemid) != added.end()) {
+						// Already initialized this item
+						added[itemid] += check->amount;
+					}
+					else {
+						added[itemid] = check->amount;
+					}
+				}
 			}
 		}
-	}
-	for (int8_t i = 0; i < TradeInfo::TradeSize; i++) { // Determine precisely how many slots are needed for stackables
-		if (unit->slot[i]) {
-			Item *check = unit->items[i];
-			int32_t itemid = check->id;
-			int8_t inv = GameLogicUtilities::getInventory(itemid);
-			if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemid)) { // Already did these
-				if (added.find(itemid) == added.end()) // Already did this item
-					continue;
-				int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
-				int32_t current_amount = target->getInventory()->getItemAmount(itemid);
-				int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
-				int32_t item_sum = last_slot + added[itemid];
-				bool needslots = false;
-				if (last_slot > 0) { // Items in the last slot, potential for needing slots
-					if (item_sum > maxslot)
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
+			// Determine precisely how many slots are needed for stackables
+			if (unit->slot[i]) {
+				Item *check = unit->items[i];
+				int32_t itemid = check->id;
+				int8_t inv = GameLogicUtilities::getInventory(itemid);
+				if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemid)) {
+					// Already did these
+					if (added.find(itemid) == added.end()) {
+						// Already did this item
+						continue;
+					}
+					int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
+					int32_t current_amount = target->getInventory()->getItemAmount(itemid);
+					int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
+					int32_t item_sum = last_slot + added[itemid];
+					bool needslots = false;
+					if (last_slot > 0) {
+						// Items in the last slot, potential for needing slots
+						if (item_sum > maxslot) {
+							needslots = true;
+						}
+					}
+					else {
+						// Full in the last slot, for sure need all slots
 						needslots = true;
+					}
+					if (needslots) {
+						uint8_t numslots = (uint8_t)(item_sum / maxslot);
+						uint8_t remainder = (uint8_t)(item_sum % maxslot);
+						if (remainder > 0) {
+							totals[inv - 1]++;
+						}
+						totals[inv - 1] += numslots;
+					}
+					added.erase(itemid);
 				}
-				else // Full in the last slot, for sure need all slots
-					needslots = true;
-				if (needslots) {
-					uint8_t numslots = (uint8_t)(item_sum / maxslot);
-					uint8_t remainder = (uint8_t)(item_sum % maxslot);
-					if (remainder > 0)
-						totals[inv - 1]++;
-					totals[inv - 1] += numslots;
-				}
-				added.erase(itemid);
 			}
 		}
-	}
-	for (int8_t i = 0; i < Inventories::InventoryCount; i++) { // Determine if needed slots are available
-		if (totals[i] > 0) {
-			int8_t incrementor = 0;
-			for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); g++) {
-				if (target->getInventory()->getItem(i + 1, g) == nullptr)
-					incrementor++;
-				if (incrementor >= totals[i])
+		for (uint8_t i = 0; i < Inventories::InventoryCount; i++) {
+			// Determine if needed slots are available
+			if (totals[i] > 0) {
+				int8_t incrementor = 0;
+				for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); g++) {
+					if (target->getInventory()->getItem(i + 1, g) == nullptr) {
+						incrementor++;
+					}
+					if (incrementor >= totals[i]) {
+						break;
+					}
+				}
+				if (incrementor < totals[i]) {
+					yes = false;
 					break;
-			}
-			if (incrementor < totals[i]) {
-				yes = false;
-				break;
+				}
 			}
 		}
 	}
@@ -135,7 +143,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 
 void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 	if (info->count > 0) {
-		for (int8_t i = 0; i < TradeInfo::TradeSize; i++) {
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
 				Inventory::addItem(player, new Item(item));
@@ -196,7 +204,7 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 	return unit->mesos;
 }
 
-Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
+Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
 	if (amount == item->amount || inventory == Inventories::EquipInventory) {
 		holder->getInventory()->setItem(inventory, inventoryslot, 0);
@@ -211,16 +219,16 @@ Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t 
 	}
 	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;
-	int8_t index = tradeslot - 1;
+	uint8_t index = tradeslot - 1;
 	unit->items[index] = use;
 	unit->slot[index] = true;
 	return use;
 }
 
 Player * ActiveTrade::getSender() {
-	return PlayerDataProvider::Instance()->getPlayer(senderid);
+	return PlayerDataProvider::Instance()->getPlayer(m_senderId);
 }
 
 Player * ActiveTrade::getReceiver() {
-	return PlayerDataProvider::Instance()->getPlayer(receiverid);
+	return PlayerDataProvider::Instance()->getPlayer(m_receiverId);
 }

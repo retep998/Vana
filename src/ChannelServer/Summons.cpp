@@ -61,7 +61,7 @@ int32_t Summons::loopId() {
 void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 	Summon *summon = new Summon(loopId(), skillid, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillid);
-	removeSummon(player, puppet, true, false, 0);
+	removeSummon(player, puppet, true, false, SummonMessages::None);
 	Pos sumpos = player->getPos();
 	if (puppet)
 		sumpos = Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->isFacingRight() ? 1 : -1)), player->getPos().y));
@@ -77,10 +77,12 @@ void Summons::removeSummon(Player *player, bool puppet, bool animated, bool pack
 		if (!packetOnly) {
 			string name = getSummonName(summon->getSummonId());
 			player->getSummons()->removeSummon(puppet, fromTimer);
+			string msg = name;
 			switch (showMessage) {
-				case 1: PlayerPacket::showMessage(player, name + " has run out of time and will disappear.", 5); break;
-				case 2: PlayerPacket::showMessage(player, name + " is disappearing.", 5); break;
+				case SummonMessages::OutOfTime: msg += " has run out of time and will disappear."; break;
+				case SummonMessages::Disappearing: msg += " is disappearing."; break;
 			}
+			PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Red);
 		}
 	}
 }
@@ -103,9 +105,11 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.get<int32_t>();
 	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	Summon *summon = player->getSummons()->getSummon(summonid);
-	if (summon == nullptr)
+	if (summon == nullptr) {
 		// Up to no good, lag, or something else
 		return;
+	}
+
 	Pos startPos = summon->getPos(); // Original gangsta
 	MovementHandler::parseMovement(summon, packet);
 	packet.reset(10);
@@ -121,8 +125,9 @@ void Summons::damageSummon(Player *player, PacketReader &packet) {
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);
 		//SummonsPacket::damageSummon(player, summonid, notsure, damage, mobid); // TODO: Find out if this packet even sends anymore
-		if (summon->getHP() <= 0)
-			removeSummon(player, true, true, false, false, true);
+		if (summon->getHP() <= 0) {
+			removeSummon(player, true, true, false, SummonMessages::None, true);
+		}
 	}
 }
 

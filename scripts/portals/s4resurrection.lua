@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if isQuestActive(6132) then
 	if getItemAmount(4161017) > 0 then
-		showMessage("You can't enter as you already have Caron's Note.", 5);
+		showMessage("You can't enter as you already have Caron's Note.", m_red);
 	else
 		if not isInstance("resurrectionMix4th") then
 			createInstance("resurrectionMix4th", 5 * 60, true);
@@ -27,9 +27,9 @@ if isQuestActive(6132) then
 			playPortalSE();
 			setMap(923000100);
 		else
-			showMessage("You feel someone is out there in the cold cave.", 5);
+			showMessage("You feel someone is out there in the cold cave.", m_red);
 		end
 	end
 else
-	showMessage("You can't enter because of cold energy from the cave.", 5);
+	showMessage("You can't enter because of cold energy from the cave.", m_red);
 end

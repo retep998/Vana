@@ -407,6 +407,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\src\ChannelServer\InventoryPacketHelper.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\src\ChannelServer\PlayerPacketHelper.cpp"
 						>
 					</File>
@@ -826,6 +830,10 @@
 					>
 					<File
 						RelativePath=".\src\ChannelServer\BuffsPacketHelper.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\ChannelServer\InventoryPacketHelper.h"
 						>
 					</File>
 					<File
