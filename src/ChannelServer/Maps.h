@@ -18,21 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Map.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <string>
+#include "Types.h"
 
-using std::string;
-using std::tr1::unordered_map;
-
-class Player;
 class PacketReader;
+class Player;
+struct PortalInfo;
 
 namespace Maps {
-	extern int32_t mistids;
 	Map * getMap(int32_t mapid);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);
 	void addPlayer(Player *player, int32_t mapid);
-	int32_t getMistId();
 };

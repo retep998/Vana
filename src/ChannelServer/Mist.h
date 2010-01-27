@@ -31,6 +31,7 @@ public:
 	Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillid, uint8_t level, bool ispoison = false);
 	Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillid, uint8_t level);
 
+	void setId(int32_t id) { m_id = id; }
 	uint8_t getSkillLevel() const { return m_level; }
 	int16_t getTime() const { return m_time; }
 	int16_t getDelay() const { return m_delay; }
