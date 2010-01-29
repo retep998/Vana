@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
-#include "inventoryPacketHelper.h"
+#include "InventoryPacketHelper.h"
 #include "ItemDataProvider.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
