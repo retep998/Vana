@@ -44,8 +44,9 @@ public boost::enable_shared_from_this<MapleSession>
 public:
 	MapleSession(boost::asio::io_service &io_service,
 				SessionManagerPtr sessionManager,
-				AbstractConnection *player, bool isServer,
-				string connectPacketUnknown = "");
+				AbstractConnection *player,
+				bool isServer,
+				const string &patchLocation = "");
 
 	tcp::socket & getSocket() { return m_socket; }
 
@@ -58,12 +59,9 @@ public:
 	void send(const PacketCreator &packet, bool encrypt = true);
 protected:
 	void start_read_header();
-	void handle_write(const boost::system::error_code &error,
-		size_t bytes_transferred);
-	void handle_read_header(const boost::system::error_code &error,
-		size_t bytes_transferred);
-	void handle_read_body(const boost::system::error_code &error,
-		size_t bytes_transferred);
+	void handle_write(const boost::system::error_code &error, size_t bytes_transferred);
+	void handle_read_header(const boost::system::error_code &error, size_t bytes_transferred);
+	void handle_read_body(const boost::system::error_code &error, size_t bytes_transferred);
 
 	static const size_t connectHeaderLen = 2;
 	static const size_t headerLen = 4;
@@ -73,12 +71,12 @@ protected:
 	Decoder m_decoder;
 	std::tr1::shared_ptr<AbstractConnection> m_player;
 	shared_array<unsigned char> m_buffer;
-	bool m_is_server;
-	string m_connect_packet_unknown;
+	bool m_isServer;
+	string m_patchLocation;
 
 	// Packet sending
-	shared_array<unsigned char> m_send_packet;
-	boost::mutex m_send_mutex;
+	shared_array<unsigned char> m_sendPacket;
+	boost::mutex m_sendMutex;
 };
 
 typedef boost::shared_ptr<MapleSession> MapleSessionPtr;

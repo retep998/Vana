@@ -17,26 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/tr1/memory.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-
-class SessionManager;
-typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
-
-class AbstractSession {
-public:
-	virtual ~AbstractSession() { }
-	
-	AbstractSession(SessionManagerPtr sessionManager) :
-		m_sessionManager(sessionManager) { }
-	virtual void start() = 0;
-	virtual void handle_start() = 0;
-	virtual void stop() = 0;
-	virtual void disconnect() = 0;
-	virtual void handle_stop() = 0;
-protected:
-	SessionManagerPtr m_sessionManager;
-};
-
-typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;
+namespace ExitCodes {
+	enum {
+		Ok = 0,
+		ConfigError = 1,
+		ConfigFileMissing = 2,
+		McdbError = 3,
+		McdbIncompatible = 4,
+		InfoDatabaseError = 5,
+		ServerVersionMismatch = 6,
+		ServerConnectionError = 7
+	};
+}

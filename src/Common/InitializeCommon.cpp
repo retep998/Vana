@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "DatabaseMigration.h"
 #include "Database.h"
+#include "ExitCodes.h"
 #include "MapleVersion.h"
 #include <cstdio>
 #include <iostream>
@@ -33,7 +34,7 @@ void Initializing::checkMcdbVersion() {
 		cout << "ERROR: mcdb_info is empty." << endl;
 		cout << "Press enter to quit ...";
 		getchar();
-		exit(4);
+		exit(ExitCodes::McdbError);
 	}
 
 	int32_t version = (int32_t) res[0]["version"];
@@ -48,7 +49,7 @@ void Initializing::checkMcdbVersion() {
 		cout << "MCDB: " << version << "." << subversion << endl;
 		cout << "Press enter to quit ...";
 		getchar();
-		exit(4);
+		exit(ExitCodes::McdbIncompatible);
 	}
 	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
 		cout << "ERROR: Your MCDB is designed for different locale." << endl;
@@ -56,7 +57,7 @@ void Initializing::checkMcdbVersion() {
 		cout << "MCDB: " << makeLocale(mapleLocale, testServer) << endl;
 		cout << "Press enter to quit ...";
 		getchar();
-		exit(4);
+		exit(ExitCodes::McdbIncompatible);
 	}
 	if (mapleVersion != MapleVersion::Version) {
 		cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << endl;
@@ -83,7 +84,7 @@ void Initializing::checkSchemaVersion(bool update) {
 		cout << "ERROR: Wrong version of database, please run Login Server to update." << endl;
 		cout << "Press enter to quit ...";
 		getchar();
-		exit(4);
+		exit(ExitCodes::InfoDatabaseError);
 	}
 	else if (!succeed) {
 		// Failed, but we can update it

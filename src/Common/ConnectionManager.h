@@ -41,7 +41,7 @@ public:
 		return singleton;
 	}
 
-	void accept(uint16_t port, AbstractConnectionFactory *apf, string ivUnknown = "");
+	void accept(uint16_t port, AbstractConnectionFactory *apf, const string &patchLocation = "");
 	void connect(uint32_t server, uint16_t port, AbstractConnection *player);
 	void stop();
 
@@ -55,7 +55,7 @@ private:
 	static ConnectionManager *singleton;
 
 	boost::scoped_ptr<boost::thread> m_thread;
-	boost::asio::io_service m_io_service;
+	boost::asio::io_service m_ioService;
 	SessionManagerPtr m_clients;
 	std::list<MapleServerPtr> m_servers;
 	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service

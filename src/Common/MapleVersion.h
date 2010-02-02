@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
+using std::string;
+
 #define MAPLE_VERSION 75 // Kept in for VersionConstants.cpp
 // Use ONLY for version-specific code purposes
 // Incidentally, your locale may have vastly different version-specific code
@@ -44,9 +46,32 @@ namespace Locales {
 	const int8_t JapanTest = 0x00; // Unk
 }
 
+namespace PatchLocations {
+	const string None = "";
+	const string Global = "0";
+	const string Korea = ""; // Unk
+	const string Japan = ""; // Unk
+	const string China = ""; // Unk
+	const string Sea = ""; // Unk
+	const string Thailand = ""; // Unk
+	const string Europe = ""; // Unk
+	const string Brazil = ""; // Unk
+	const string Taiwan = ""; // Unk
+	const string Vietnam = ""; // Unk
+
+	const string GlobalTest = "0";
+	const string KoreaTest = ""; // Unk
+	const string ChinaTest = ""; // Unk
+	const string TaiwanTest = ""; // Unk
+	const string EuropeTest = ""; // Unk
+	const string JapanTest = ""; // Unk
+}
+
 namespace MapleVersion {
 	const int16_t Version = MAPLE_VERSION;
 	const int8_t Locale = Locales::Global;
-	const std::string LocaleString = "global"; // Used for MCDB verification
+	const string LocaleString = "global"; // Used for MCDB verification
 	const bool TestServer = false;
+
+	const string PatchLocation = PatchLocations::Global;
 }

@@ -23,31 +23,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 MapleServer::MapleServer(boost::asio::io_service &io_service,
 						 const tcp::endpoint &endpoint,
 						 AbstractConnectionFactory *apf,
-						 string connectPacketUnknown) :
+						 const string &patchLocation) :
 m_acceptor(io_service, endpoint),
 m_apf(apf),
-m_session_manager(new SessionManager),
-m_connect_packet_unknown(connectPacketUnknown)
+m_sessionManager(new SessionManager),
+m_patchLocation(patchLocation)
 {
 	start_accept();
 }
 
 void MapleServer::stop() {
 	m_acceptor.close();
-	m_session_manager->stopAll();
+	m_sessionManager->stopAll();
 }
 
 void MapleServer::start_accept() {
 	MapleSessionPtr new_session(new MapleSession(m_acceptor.io_service(),
-		m_session_manager, m_apf->createConnection(), true, m_connect_packet_unknown));
+		m_sessionManager, m_apf->createConnection(), true, m_patchLocation));
 
     m_acceptor.async_accept(new_session->getSocket(),
 		boost::bind(&MapleServer::handle_accept, this, new_session,
 			boost::asio::placeholders::error));
 }
 
-void MapleServer::handle_accept(MapleSessionPtr new_session,
-		const boost::system::error_code &error) {
+void MapleServer::handle_accept(MapleSessionPtr new_session, const boost::system::error_code &error) {
 	if (!error) {
 		new_session->start();
 		start_accept();

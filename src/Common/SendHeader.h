@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#define IV_NO_PATCH_LOCATION 0x0d
+#define IV_PATCH_LOCATION 0x0e
+
 #define SMSG_AUTHENTICATION 0x00
 #define SMSG_WORLD_STATUS 0x03
 #define SMSG_ACCOUNT_GENDER_DONE 0x04

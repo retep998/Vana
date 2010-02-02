@@ -41,7 +41,7 @@ public:
 	vector<T> getVector(size_t size);
 
 	void skipBytes(int32_t len);
-	int16_t getHeader(); // Basically getShort that always reads at the start
+	int16_t getHeader(); // Basically get<int16_t> that always reads at the start
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer();

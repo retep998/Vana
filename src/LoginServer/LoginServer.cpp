@@ -17,9 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
 #include "Configuration.h"
+#include "ConnectionManager.h"
 #include "InitializeCommon.h"
 #include "InitializeLogin.h"
-#include "ConnectionManager.h"
+#include "MapleVersion.h"
 #include "RankingCalculator.h"
 #include "World.h"
 #include "Worlds.h"
@@ -28,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LoginServer * LoginServer::singleton = nullptr;
 
 void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), "0");
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), MapleVersion::PatchLocation);
 	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory());
 }
 
