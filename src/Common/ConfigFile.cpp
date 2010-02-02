@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConfigFile.h"
+#include "ExitCodes.h"
 #include "FileUtilities.h"
 #include "IpUtilities.h"
 #include <iostream>
@@ -27,12 +28,11 @@ ConfigFile::ConfigFile(const string &filename) {
 ConfigFile::ConfigFile() { }
 
 void ConfigFile::loadFile(const string &filename) {
-	// Check for file existence first
 	if (!FileUtilities::fileExists(filename)) {
 		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
-		exit(1);
+		exit(ExitCodes::ConfigFileMissing);
 	}
 
 	luaVm = lua_open();
@@ -79,7 +79,7 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 			std::cerr << "ERROR: external_ip configuration is malformed!" << std::endl;
 			std::cout << "Press enter to quit ...";
 			getchar();
-			exit(1);
+			exit(ExitCodes::ConfigError);
 		}
 
 		matrix.push_back(arr);

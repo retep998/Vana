@@ -18,13 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigration.h"
 #include "DatabaseMigrationRunner.h"
 #include "Database.h"
-#include <iostream>
+#include "ExitCodes.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp> 
+#include <iostream>
 
 namespace fs = boost::filesystem;
 
-DatabaseMigration::DatabaseMigration(bool update) : m_sql_version(0), m_update(update) {
+DatabaseMigration::DatabaseMigration(bool update) :
+m_sql_version(0),
+m_update(update)
+{
 	loadDatabaseInfo();
 	loadSQLFiles();
 }
@@ -81,7 +85,7 @@ void DatabaseMigration::loadSQLFiles() {
 		std::cout << "SQL files not found: " << full_path.native_file_string() << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
-		exit(1);
+		exit(ExitCodes::InfoDatabaseError);
 	}
 
 	fs::directory_iterator end_iter;
