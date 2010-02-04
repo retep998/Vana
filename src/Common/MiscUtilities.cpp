@@ -25,12 +25,24 @@ string MiscUtilities::hashPassword(const string &password, const string &salt) {
 	string salted = salt + password;
 	string digest;
 
-	CryptoPP::SHA1 hash;
+	if (salt.length() == 5) {
+		// LEGACY
+		// TODO: EVENTUALLY REMOVE
+		CryptoPP::SHA1 hash;
 
-	CryptoPP::StringSource(salted, true,
-		new CryptoPP::HashFilter(hash,
-			new CryptoPP::HexEncoder(
-				new CryptoPP::StringSink(digest))));
+		CryptoPP::StringSource(salted, true,
+			new CryptoPP::HashFilter(hash,
+				new CryptoPP::HexEncoder(
+					new CryptoPP::StringSink(digest))));
+	}
+	else {
+		CryptoPP::SHA512 hash;
+
+		CryptoPP::StringSource(salted, true,
+			new CryptoPP::HashFilter(hash,
+				new CryptoPP::HexEncoder(
+					new CryptoPP::StringSink(digest))));
+	}
 
 	return digest;
 }
