@@ -165,7 +165,7 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 }
 
 void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = attack.targets + attack.hits;
+	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillid = attack.skillId;
 	bool mesoexplosion = attack.isMesoExplosion;
 	if (mesoexplosion) {
@@ -176,17 +176,17 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<int16_t>(SMSG_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
-	packet.add<int8_t>(attack.skillLevel);
+	packet.add<uint8_t>(attack.skillLevel);
 	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
-	} 
+	}
 
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
 
 	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	packet.add<uint8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
 	packet.add<int32_t>(0);
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
@@ -203,7 +203,7 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 }
 
 void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = attack.targets + attack.hits;
+	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillid = attack.skillId;
 
 	PacketCreator packet;
@@ -219,7 +219,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	packet.add<uint8_t>(attack.weaponSpeed);
 
 	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<int8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	packet.add<uint8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
 	// Bug in global:
 	// The colored swoosh does not display as it should
 
@@ -246,20 +246,20 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 }
 
 void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = attack.targets + attack.hits;
+	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillid = attack.skillId;
 
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_ATTACK_MAGIC);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
-	packet.add<int8_t>(attack.skillLevel);
+	packet.add<uint8_t>(attack.skillLevel);
 	packet.add<int32_t>(skillid);
 
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
-	packet.add<int8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
+	packet.add<uint8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
 
 	packet.add<int32_t>(0); // No clue
 
@@ -279,7 +279,7 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 
 void PlayersPacket::useEnergyChargeAttack(Player *player, PacketReader &pack) {
 	pack.skipBytes(1);
-	uint8_t tbyte = pack.get<int8_t>();
+	int8_t tbyte = pack.get<int8_t>();
 	int8_t targets = tbyte / 0x10;
 	int8_t hits = tbyte % 0x10;
 	// Not sure about this packet at the moment, will finish later
