@@ -510,14 +510,22 @@ namespace Jobs {
 			ThunderBreaker4 = 1512,
 
 			Legend = 2000,
+
 			Aran1 = 2100,
 			Aran2 = 2110,
 			Aran3 = 2111,
 			Aran4 = 2112,
+
 			Evan1 = 2200,
 			Evan2 = 2210,
 			Evan3 = 2211,
-			Evan4 = 2212
+			Evan4 = 2212,
+			Evan5 = 2213,
+			Evan6 = 2214,
+			Evan7 = 2215,
+			Evan8 = 2216,
+			Evan9 = 2217,
+			Evan10 = 2218
 		};
 	}
 	namespace All {
@@ -527,7 +535,7 @@ namespace Jobs {
 	}
 	namespace Beginner {
 		enum Skills {
-			BlessingOfTheFairty = 12,
+			BlessingOfTheFairy = 12,
 			EchoOfHero = 1005,
 			FollowTheLead = 8,
 			MonsterRider = 1004,
@@ -1069,6 +1077,7 @@ namespace Items {
 		WhiteScroll = 2340000,
 
 		// Etc.
+		LudibriumMedal = 4031172,
 		BeginnersGuidebook = 4161001,
 
 		// Cash
@@ -1115,6 +1124,7 @@ namespace Mobs {
 	enum {
 		HighDarkstar = 8500003,
 		LowDarkstar = 8500004,
+
 		ZakumBody1 = 8800000,
 		ZakumArm1 = 8800003,
 		ZakumArm2 = 8800004,
@@ -1124,6 +1134,7 @@ namespace Mobs {
 		ZakumArm6 = 8800008,
 		ZakumArm7 = 8800009,
 		ZakumArm8 = 8800010,
+
 		HorntailHeadA = 8810002,
 		HorntailHeadB = 8810003,
 		HorntailHeadC = 8810004,
@@ -1141,7 +1152,36 @@ namespace Mobs {
 		DeadHorntailLegs = 8810016,
 		DeadHorntailTail = 8810017,
 		HorntailSponge = 8810018,
-		SummonHorntail = 8810026
+		SummonHorntail = 8810026,
+
+		DocilePinkBean = 8820000,
+		PinkBean = 8820001,
+		Ariel = 8820002,
+		SolomonTheWise1 = 8820003,
+		RexTheWise1 = 8820004,
+		Hugin1 = 8820005,
+		Munin1 = 8820006,
+		MiniBean = 8820007,
+		SummonPinkBean = 8820008,
+		SummonPinkBeanPhase1 = 8820009,
+		PinkBeanSponge1 = 8820010,
+		PinkBeanSponge2 = 8820011,
+		PinkBeanSponge3 = 8820012,
+		PinkBeanSponge4 = 8820013,
+		PinkBeanSponge5 = 8820014,
+		SolomonTheWise2 = 8820015,
+		RexTheWise2 = 8820016,
+		Hugin2 = 8820017,
+		Munin2 = 8820018,
+		InactiveAriel = 8820019,
+		InactiveSolomonTheWise1 = 8820020,
+		InactiveRexTheWise1 = 8820021,
+		InactiveHugin1 = 8820022,
+		InactiveMunin1 = 8820023,
+		InactiveSolomonTheWise2 = 8820024,
+		InactiveRexTheWise2 = 8820025,
+		InactiveHugin2 = 8820026,
+		InactiveMunin2 = 8820027
 	};
 	namespace ControlStatus {
 		enum {
