@@ -220,6 +220,12 @@ namespace Functors {
 				quest->addReward(start, *reward, Jobs::JobIds::Evan2);
 				quest->addReward(start, *reward, Jobs::JobIds::Evan3);
 				quest->addReward(start, *reward, Jobs::JobIds::Evan4);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan5);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan6);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan7);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan8);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan9);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan10);
 			}
 		}
 		Quest *quest;
