@@ -82,5 +82,6 @@ namespace InventoryPacket {
 	void sendHammerUpdate(Player *player);
 	void sendChalkboardUpdate(Player *player, const string &msg = "");
 	void playCashSong(int32_t map, int32_t itemid, const string &playername);
+	void sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect);
 	void blankUpdate(Player *player);
 };

@@ -82,6 +82,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_TELEPORT_ROCK 0x65
 #define CMSG_QUEST_OBTAIN 0x6a
 #define CMSG_MACRO_LIST 0x6d
+#define CMSG_USE_REWARD_ITEM 0x6f
 #define CMSG_MESSAGE_GROUP 0x75 // Party, buddy and guild chat
 #define CMSG_COMMAND 0x76 // / commands like "/find"
 #define CMSG_PLAYER_ROOM 0x79 // Trades, player shops, minigames, etc.

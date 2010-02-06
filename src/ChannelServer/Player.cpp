@@ -199,6 +199,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
 			case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
 			case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
+			case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
 		}
 	}
 	catch (std::range_error) {
