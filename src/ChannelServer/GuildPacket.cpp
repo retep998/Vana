@@ -137,14 +137,14 @@ int8_t GuildPacket::checkGuildExist(string name) {
 	return ((PlayerDataProvider::Instance()->getGuild(name) != nullptr) ? 1 : 0);
 }
 
-void GuildPacket::sendCreateGuildWindow(Player * player) {
+void GuildPacket::sendCreateGuildWindow(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_GUILD);
 	packet.add<int8_t>(0x01);
 	player->getSession()->send(packet);
 }
 
-void GuildPacket::sendChangeGuildEmblem(Player * player) {
+void GuildPacket::sendChangeGuildEmblem(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_GUILD);
 	packet.add<int8_t>(0x11);

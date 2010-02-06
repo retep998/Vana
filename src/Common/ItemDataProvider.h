@@ -196,6 +196,13 @@ struct PetInteractInfo {
 	int16_t increase;
 };
 
+struct ItemRewardInfo {
+	int32_t rewardid;
+	uint16_t prob;
+	int16_t quantity;
+	string effect;
+};
+
 class ItemDataProvider {
 public:
 	static ItemDataProvider * Instance() {
@@ -219,6 +226,7 @@ public:
 	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
 	int32_t getHunger(int32_t itemid) {return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
 	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
+	ItemRewardInfo * getRandomReward(int32_t itemid);
 
 	void scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
 	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : nullptr); }
@@ -238,6 +246,7 @@ private:
 	void loadMonsterCardData();
 	void loadItemSkills();
 	void loadSummonBags();
+	void loadItemRewards();
 	void loadPets();
 	void loadPetInteractions();
 
@@ -249,6 +258,7 @@ private:
 	unordered_map<int32_t, ConsumeInfo> consumes;
 	unordered_map<int32_t, vector<SummonBag> > mobs;
 	unordered_map<int32_t, vector<Skillbook> > skills;
+	unordered_map<int32_t, vector<ItemRewardInfo> > itemRewards;
 	unordered_map<int32_t, PetInfo> petsInfo;
 	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
 	card_map cards; // Left, cardid; right, mobid

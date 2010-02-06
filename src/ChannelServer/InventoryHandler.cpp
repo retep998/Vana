@@ -757,3 +757,26 @@ void InventoryHandler::handleHammerTime(Player *player) {
 	InventoryPacket::sendHulkSmash(player, hammerslot, item);
 	player->getInventory()->setHammerSlot(-1);
 }
+
+void InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) {
+	int16_t slot = packet.get<int16_t>();
+	int32_t itemid = packet.get<int32_t>();
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (item == nullptr || item->id != itemid) {
+		// Hacking or hacking failure
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+		return;
+	}
+
+	ItemRewardInfo *reward = ItemDataProvider::Instance()->getRandomReward(itemid);
+	if (reward == nullptr) {
+		// Hacking or no information in the database
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+		return;
+	}
+
+	Inventory::takeItem(player, itemid, 1);
+	Item *rewardItem = new Item(reward->rewardid, reward->quantity);
+	Inventory::addItem(player, rewardItem, true);
+	InventoryPacket::sendRewardItemAnimation(player, itemid, reward->effect);
+}

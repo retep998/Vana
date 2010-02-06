@@ -140,7 +140,7 @@ bool PlayerDataProvider::hasEmblem(int32_t id) {
 }
 
 // Alliances
-void PlayerDataProvider::addAlliance(int32_t id, Alliance * alliance) {
+void PlayerDataProvider::addAlliance(int32_t id, Alliance *alliance) {
 	m_alliances[id] = alliance;
 }
 
