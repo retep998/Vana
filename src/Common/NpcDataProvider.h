@@ -42,6 +42,7 @@ public:
 	int32_t getStorageCost(int32_t npc) { return m_data[npc].storageCost; }
 	bool isMapleTv(int32_t npc) { return m_data[npc].isMapleTv; }
 	bool isGuildRank(int32_t npc) { return m_data[npc].isGuildRank; }
+	bool isValidNpcId(int32_t npc) { return (m_data.find(npc) != m_data.end()); }
 private:
 	NpcDataProvider() {}
 	static NpcDataProvider *singleton;
