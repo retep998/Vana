@@ -64,6 +64,8 @@ void ScriptDataProvider::loadData() {
 		else if (scripttype == "quest") {
 			questscripts[static_cast<int16_t>(objectid)][modifier] = script;
 		}
+
+		scripts[script] = objectid;
 	}
 
 	std::cout << "DONE" << std::endl;

@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
 #include "Reactors.h"
+#include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
 
@@ -779,4 +780,45 @@ void InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) {
 	Item *rewardItem = new Item(reward->rewardid, reward->quantity);
 	Inventory::addItem(player, rewardItem, true);
 	InventoryPacket::sendRewardItemAnimation(player, itemid, reward->effect);
+}
+
+void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
+	if (player->getNpc() != nullptr || player->getShop() != 0 || player->getTradeId() != 0) {
+		// Player is busy :O! Hack
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+		return;
+	}
+
+	packet.skipBytes(4); // Ticks
+	int16_t slot = packet.get<int16_t>();
+	int32_t itemid = packet.get<int32_t>();
+
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (item == nullptr || item->id != itemid) {
+		// Hacking or hacking failure
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+		return;
+	}
+
+	string scriptName = ScriptDataProvider::Instance()->getItemScript(itemid);
+	if (scriptName == "") {
+		// Hacking or no script for item found.
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+		return;
+	}
+
+	int32_t npcid = ItemDataProvider::Instance()->getItemNpc(itemid);
+
+	// Lets run the NPC!
+	Npc *npc = new Npc(npcid, player, scriptName);
+	if (!npc->checkEnd()) {
+		// NPC is running/script found!
+		// Delete the item used.
+		Inventory::takeItem(player, itemid, 1);
+		npc->run();
+	}
+	else {
+		// NPC didn't ran/no script found O.o! Lets unstuck the player.
+		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
+	}
 }

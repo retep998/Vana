@@ -200,6 +200,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
 			case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
 			case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
+			case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
 		}
 	}
 	catch (std::range_error) {
