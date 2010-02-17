@@ -402,7 +402,7 @@
 				Name="Data Structures"
 				>
 				<File
-					RelativePath=".\src\Common\GameObjects.cpp"
+					RelativePath=".\src\Common\Item.cpp"
 					>
 				</File>
 				<File
@@ -701,6 +701,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\Ip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Item.h"
 					>
 				</File>
 				<File

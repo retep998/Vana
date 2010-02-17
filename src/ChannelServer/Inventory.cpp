@@ -30,20 +30,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 
 int16_t Inventory::addItem(Player *player, Item *item, bool is) {
-	int8_t inv = GameLogicUtilities::getInventory(item->id);
+	int8_t inv = GameLogicUtilities::getInventory(item->getId());
 	int16_t freeslot = 0;
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
 		if (olditem != nullptr) {
-			if (!GameLogicUtilities::isRechargeable(item->id) && !GameLogicUtilities::isEquip(item->id) && !GameLogicUtilities::isPet(item->id) && olditem->id == item->id && olditem->amount < ItemDataProvider::Instance()->getMaxSlot(item->id)) {
-				if (item->amount + olditem->amount > ItemDataProvider::Instance()->getMaxSlot(item->id)) {
-					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->id) - olditem->amount;
-					item->amount -= amount;
-					olditem->amount = ItemDataProvider::Instance()->getMaxSlot(item->id);
+			if (!GameLogicUtilities::isRechargeable(item->getId()) && !GameLogicUtilities::isEquip(item->getId()) && !GameLogicUtilities::isPet(item->getId()) && olditem->getId() == item->getId() && olditem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
+				if (item->getAmount() + olditem->getAmount() > ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
+					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->getId()) - olditem->getAmount();
+					item->decAmount(amount);
+					olditem->setAmount(ItemDataProvider::Instance()->getMaxSlot(item->getId()));
 					InventoryPacket::addItem(player, inv, s, olditem, is);
 				}
 				else {
-					item->amount += olditem->amount;
+					item->incAmount(olditem->getAmount());
 					player->getInventory()->deleteItem(inv, s);
 					player->getInventory()->addItem(inv, s, item);
 					InventoryPacket::addItem(player, inv, s, item, is);
@@ -53,14 +53,15 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 		else if (!freeslot) {
 			freeslot = s;
-			if (GameLogicUtilities::isRechargeable(item->id) || GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isPet(item->id))
+			if (GameLogicUtilities::isRechargeable(item->getId()) || GameLogicUtilities::isEquip(item->getId()) || GameLogicUtilities::isPet(item->getId())) {
 				break;
+			}
 		}
 	}
 	if (freeslot != 0) {
 		player->getInventory()->addItem(inv, freeslot, item);
 		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
-		if (GameLogicUtilities::isPet(item->id)) {
+		if (GameLogicUtilities::isPet(item->getId())) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
 			pet->setInventorySlot((int8_t) freeslot);
@@ -69,7 +70,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 		return 0;
 	}
 	else {
-		return item->amount;
+		return item->getAmount();
 	}
 }
 
@@ -96,11 +97,12 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 		amount = 0;
 	}
 
-	Item *item = nullptr;
+	Item *item;
 	if (GameLogicUtilities::isEquip(itemid)) {
 		item = new Item(itemid, false);
-		if (GameLogicUtilities::isMount(itemid))
+		if (GameLogicUtilities::isMount(itemid)) {
 			player->getMounts()->addMount(itemid);
+		}
 	}
 	else {
 		item = new Item(itemid, thisamount);
@@ -117,21 +119,21 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 		Item *item = player->getInventory()->getItem(inv, i);
 		if (item == nullptr)
 			continue;
-		if (item->id == itemid) {
-			if (item->amount >= howmany) {
-				item->amount -= howmany;
-				if (item->amount == 0 && !GameLogicUtilities::isRechargeable(item->id)) {
+		if (item->getId() == itemid) {
+			if (item->getAmount() >= howmany) {
+				item->decAmount(howmany);
+				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
 					InventoryPacket::moveItem(player, inv, i, 0);
 					player->getInventory()->deleteItem(inv, i);
 				}
 				else {
-					InventoryPacket::updateItemAmounts(player, inv, i, item->amount, 0, 0);
+					InventoryPacket::updateItemAmounts(player, inv, i, item->getAmount(), 0, 0);
 				}
 				break;
 			}
-			else if (!GameLogicUtilities::isRechargeable(item->id)) {
-				howmany -= item->amount;
-				item->amount = 0;
+			else if (!GameLogicUtilities::isRechargeable(item->getId())) {
+				howmany -= item->getAmount();
+				item->setAmount(0);
 				InventoryPacket::moveItem(player, inv, i, 0);
 				player->getInventory()->deleteItem(inv, i);
 			}
@@ -141,17 +143,17 @@ void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
 
 void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) {
 	Item *item = player->getInventory()->getItem(inv, slot);
-	if (item == nullptr || item->amount - amount < 0)
+	if (item == nullptr || item->getAmount() - amount < 0)
 		return;
 
-	item->amount -= amount;
-	if ((item->amount == 0 && !GameLogicUtilities::isRechargeable(item->id)) || (takeStar && GameLogicUtilities::isRechargeable(item->id))) {
+	item->decAmount(amount);
+	if ((item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) || (takeStar && GameLogicUtilities::isRechargeable(item->getId()))) {
 		InventoryPacket::moveItem(player, inv, slot, 0);
 		player->getInventory()->deleteItem(inv, slot);
 	}
 	else {
-		player->getInventory()->changeItemAmount(item->id, -amount);
-		InventoryPacket::updateItemAmounts(player, inv, slot, item->amount, 0, 0);
+		player->getInventory()->changeItemAmount(item->getId(), -amount);
+		InventoryPacket::updateItemAmounts(player, inv, slot, item->getAmount(), 0, 0);
 	}
 }
 

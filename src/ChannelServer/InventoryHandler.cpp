@@ -45,29 +45,32 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	if (slot2 == 0) {
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
-		if (item == nullptr)
+		if (item == nullptr) {
 			return;
-		if (GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isRechargeable(item->id))
-			amount = item->amount;
-		else if (amount <= 0 || amount > item->amount) {
+		}
+
+		if (GameLogicUtilities::isEquip(item->getId()) || GameLogicUtilities::isRechargeable(item->getId())) {
+			amount = item->getAmount();
+		}
+		else if (amount <= 0 || amount > item->getAmount()) {
 			// Hacking
 			return;
 		}
-		Item droppeditem = Item(item);
-		droppeditem.amount = amount;
-		if (item->amount == amount) {
+		Item droppeditem(item);
+		droppeditem.setAmount(amount);
+		if (item->getAmount() == amount) {
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			player->getInventory()->deleteItem(inv, slot1);
 		}
 		else {
-			item->amount -= amount;
-			player->getInventory()->changeItemAmount(item->id, -amount);
-			InventoryPacket::updateItemAmounts(player, inv, slot1, item->amount, 0, 0);
+			item->decAmount(amount);
+			player->getInventory()->changeItemAmount(item->getId(), -amount);
+			InventoryPacket::updateItemAmounts(player, inv, slot1, item->getAmount(), 0, 0);
 		}
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 
-		bool istradeable = ItemDataProvider::Instance()->isTradeable(droppeditem.id);
+		bool istradeable = ItemDataProvider::Instance()->isTradeable(droppeditem.getId());
 		drop->setTradeable(istradeable);
 
 		drop->doDrop(player->getPos());
@@ -85,24 +88,24 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		if (item2 != nullptr && !GameLogicUtilities::isRechargeable(item1->id) && !GameLogicUtilities::isEquip(item1->id) && !GameLogicUtilities::isPet(item1->id) && item1->id == item2->id) {
-			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxSlot(item1->id)) {
-				item2->amount += item1->amount;
+		if (item2 != nullptr && !GameLogicUtilities::isRechargeable(item1->getId()) && !GameLogicUtilities::isEquip(item1->getId()) && !GameLogicUtilities::isPet(item1->getId()) && item1->getId() == item2->getId()) {
+			if (item1->getAmount() + item2->getAmount() <= ItemDataProvider::Instance()->getMaxSlot(item1->getId())) {
+				item2->incAmount(item1->getAmount());
 				player->getInventory()->deleteItem(inv, slot1, false);
-				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->amount, 0, 0);
+				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->getAmount(), 0, 0);
 				InventoryPacket::moveItem(player, inv, slot1, 0);
 			}
 			else {
-				item1->amount -= (ItemDataProvider::Instance()->getMaxSlot(item1->id) - item2->amount);
-				item2->amount = ItemDataProvider::Instance()->getMaxSlot(item2->id);
-				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->amount, slot2, item2->amount);
+				item1->decAmount(ItemDataProvider::Instance()->getMaxSlot(item1->getId()) - item2->getAmount());
+				item2->setAmount(ItemDataProvider::Instance()->getMaxSlot(item2->getId()));
+				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->getAmount(), slot2, item2->getAmount());
 			}
 		}
 		else {
 			if (slot2 < 0) {
-				bool iscash = ItemDataProvider::Instance()->isCash(item1->id);
+				bool iscash = ItemDataProvider::Instance()->isCash(item1->getId());
 				uint8_t desiredslot = -(slot2 + (iscash ? 100 : 0));
-				if (!EquipDataProvider::Instance()->validSlot(item1->id, desiredslot)) {
+				if (!EquipDataProvider::Instance()->validSlot(item1->getId(), desiredslot)) {
 					// Hacking
 					return;
 				}
@@ -113,13 +116,13 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 				bool top = -slot2 == EquipSlots::Top;
 				bool bottom = -slot2 == EquipSlots::Bottom;
 
-				if (weapon && GameLogicUtilities::is2hWeapon(item1->id) && player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) {
+				if (weapon && GameLogicUtilities::is2hWeapon(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) {
 					oldslot = -EquipSlots::Shield;
 				}
 				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 					oldslot = -EquipSlots::Weapon;
 				}
-				else if (top && GameLogicUtilities::isOverall(item1->id) && player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0) {
+				else if (top && GameLogicUtilities::isOverall(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0) {
 					oldslot = -EquipSlots::Bottom;
 				}
 				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedId(EquipSlots::Top))) {
@@ -181,10 +184,12 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			}
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
-			if (item1->petid > 0)
-				player->getPets()->getPet(item1->petid)->setInventorySlot((int8_t) slot2);
-			if (item2 != nullptr && item2->petid > 0)
-				player->getPets()->getPet(item2->petid)->setInventorySlot((int8_t) slot1);
+			if (item1->getPetId() > 0) {
+				player->getPets()->getPet(item1->getPetId())->setInventorySlot((int8_t) slot2);
+			}
+			if (item2 != nullptr && item2->getPetId() > 0) {
+				player->getPets()->getPet(item2->getPetId())->setInventorySlot((int8_t) slot1);
+			}
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
 	}
@@ -221,7 +226,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 
 	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (it == nullptr || it->id != itemid) {
+	if (it == nullptr || it->getId() != itemid) {
 		// Hacking
 		return;
 	}
@@ -306,7 +311,7 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	}
 
 	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (inventoryitem == nullptr || inventoryitem->id != itemid) {
+	if (inventoryitem == nullptr || inventoryitem->getId() != itemid) {
 		// Hacking
 		return;
 	}
@@ -329,7 +334,7 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 
 	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (it == nullptr|| it->id != itemid) {
+	if (it == nullptr|| it->getId() != itemid) {
 		// Hacking
 		return;
 	}
@@ -348,7 +353,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int16_t eslot = packet.get<int16_t>();
 	bool wscroll = (packet.get<int16_t>() == 2);
-	bool legendary_spirit = packet.getBool();
+	bool legendarySpirit = packet.getBool();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
@@ -357,17 +362,17 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t itemid = item->id;
+	int32_t itemid = item->getId();
 	int8_t succeed = -1;
 	bool cursed = false;
-	ItemDataProvider::Instance()->scrollItem(item->id, equip, succeed, cursed, wscroll);
+	ItemDataProvider::Instance()->scrollItem(itemid, equip, succeed, cursed, wscroll);
 
 	if (succeed != -1) {
 		if (wscroll) {
 			Inventory::takeItem(player, Items::WhiteScroll, 1);
 		}
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
-		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
+		InventoryPacket::useScroll(player, succeed, cursed, legendarySpirit);
 		if (!cursed) {
 			player->getStats()->setEquip(eslot, equip);
 			InventoryPacket::addNewItem(player, Inventories::EquipInventory, eslot, equip, true);
@@ -379,8 +384,8 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 		InventoryPacket::updatePlayer(player);
 	}
 	else {
-		if (legendary_spirit) {
-			InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
+		if (legendarySpirit) {
+			InventoryPacket::useScroll(player, succeed, cursed, legendarySpirit);
 		}
 		InventoryPacket::blankUpdate(player);
 	}
@@ -499,7 +504,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					// Hacking or failure, dunno
 					return;
 				}
-				item->name = player->getName();
+				item->setName(player->getName());
 				InventoryPacket::addNewItem(player, Inventories::EquipInventory, slot, item, true);
 				used = true;
 			}
@@ -514,7 +519,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					// Hacking or failure, dunno
 					return;
 				}
-				item->flags |= FlagLock;
+				item->setLock(true);
 				InventoryPacket::addNewItem(player, inventory, slot, item, true);
 				used = true;
 			}
@@ -613,13 +618,13 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			int8_t inventory = (int8_t) packet.get<int32_t>(); // How pointless...
 			int16_t slot = (int16_t) packet.get<int32_t>();
 			Item *f = player->getInventory()->getItem(inventory, slot);
-			if (f == nullptr || f->hammers == 2) {
+			if (f == nullptr || f->getHammers() == Items::MaxHammers) {
 				// Hacking, probably
 				return;
 			}
-			f->hammers++;
-			f->slots++;
-			InventoryPacket::sendHammerSlots(player, f->hammers);
+			f->incHammers();
+			f->incSlots();
+			InventoryPacket::sendHammerSlots(player, f->getHammers());
 			player->getInventory()->setHammerSlot(slot);
 			used = true;
 			break;
@@ -763,7 +768,7 @@ void InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (item == nullptr || item->id != itemid) {
+	if (item == nullptr || item->getId() != itemid) {
 		// Hacking or hacking failure
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
 		return;
@@ -794,7 +799,7 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (item == nullptr || item->id != itemid) {
+	if (item == nullptr || item->getId() != itemid) {
 		// Hacking or hacking failure
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
 		return;

@@ -527,60 +527,47 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 
 	ScrollInfo *iteminfo = &scrolls[scrollid];
 	if (iteminfo->randstat) {
-		if (equip->slots > 0) {
+		if (equip->getSlots() > 0) {
 			succeed = 0;
 			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-				// Add stats
-				int8_t n = -1; // Default - Decrease stats
+				int8_t n = -1;
 				if (Randomizer::Instance()->randShort(99) < 50U) {
-					// Increase
+					// Increase stats
 					n = 1;
 				}
-				// Gives/takes 0-5 stats on every stat on the item
-				if (equip->istr > 0)
-					equip->istr += Randomizer::Instance()->randShort(5) * n;
-				if (equip->idex > 0)
-					equip->idex += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iint > 0)
-					equip->iint += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iluk > 0)
-					equip->iluk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iavo > 0)
-					equip->iavo += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iacc > 0)
-					equip->iacc += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ihand > 0)
-					equip->ihand += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ijump > 0)
-					equip->ijump += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ispeed > 0)
-					equip->ispeed += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imatk > 0)
-					equip->imatk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iwatk > 0)
-					equip->iwatk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imdef > 0)
-					equip->imdef += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iwdef > 0)
-					equip->iwdef += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ihp > 0)
-					equip->ihp += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imp > 0)
-					equip->imp += Randomizer::Instance()->randShort(5) * n;
-				equip->scrolls++;
-				equip->slots--;
+
+				// Gives/takes stats on every stat on the item
+				equip->addStr(getStatVariance(n), true);
+				equip->addDex(getStatVariance(n), true);
+				equip->addInt(getStatVariance(n), true);
+				equip->addLuk(getStatVariance(n), true);
+				equip->addHp(getStatVariance(n), true);
+				equip->addMp(getStatVariance(n), true);
+				equip->addWatk(getStatVariance(n), true);
+				equip->addMatk(getStatVariance(n), true);
+				equip->addWdef(getStatVariance(n), true);
+				equip->addMdef(getStatVariance(n), true);
+				equip->addAvoid(getStatVariance(n), true);
+				equip->addAccuracy(getStatVariance(n), true);
+				equip->addHands(getStatVariance(n), true);
+				equip->addJump(getStatVariance(n), true);
+				equip->addSpeed(getStatVariance(n), true);
+
+				equip->incScrolls();
+				equip->decSlots();
 				succeed = 1;
 			}
-			else if (!wscroll)
-				equip->slots--;
+			else if (!wscroll) {
+				equip->decSlots();
+			}
 		}
 	}
 	else if (iteminfo->recover) {
-		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->id) + static_cast<int8_t>(equip->hammers);
-		if ((maxslots - equip->scrolls) > equip->slots) {
+		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
+		if ((maxslots - equip->getScrolls()) > equip->getSlots()) {
 			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
 				// Give back a slot
-				equip->slots++;
+				equip->incSlots();
 				succeed = 1;
 			}
 			else {
@@ -593,7 +580,7 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 	}
 	else if (iteminfo->preventslip) {
 		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-			equip->flags |= FlagSpikes;
+			equip->setPreventSlip(true);
 			succeed = 1;
 		}
 		else {
@@ -602,7 +589,7 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 	}
 	else if (iteminfo->warmsupport) {
 		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-			equip->flags |= FlagCold;
+			equip->setWarmSupport(true);
 			succeed = 1;
 		}
 		else {
@@ -610,30 +597,30 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 		}
 	}
 	else {
-		if (GameLogicUtilities::itemTypeToScrollType(equip->id) != GameLogicUtilities::getScrollType(scrollid)) {
+		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollid)) {
 			// Hacking, equip slot different from the scroll slot
 			return;
 		}
-		if (equip->slots > 0) {
+		if (equip->getSlots() > 0) {
 			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
 				succeed = 1;
-				equip->istr += iteminfo->istr;
-				equip->idex += iteminfo->idex;
-				equip->iint += iteminfo->iint;
-				equip->iluk += iteminfo->iluk;
-				equip->ihp += iteminfo->ihp;
-				equip->imp += iteminfo->imp;
-				equip->iwatk += iteminfo->iwatk;
-				equip->imatk += iteminfo->imatk;
-				equip->iwdef += iteminfo->iwdef;
-				equip->imdef += iteminfo->imdef;
-				equip->iacc += iteminfo->iacc;
-				equip->iavo += iteminfo->iavo;
-				equip->ihand += iteminfo->ihand;
-				equip->ijump += iteminfo->ijump;
-				equip->ispeed += iteminfo->ispeed;
-				equip->scrolls++;
-				equip->slots--;
+				equip->addStr(iteminfo->istr);
+				equip->addDex(iteminfo->idex);
+				equip->addInt(iteminfo->iint);
+				equip->addLuk(iteminfo->iluk);
+				equip->addHp(iteminfo->ihp);
+				equip->addMp(iteminfo->imp);
+				equip->addWatk(iteminfo->iwatk);
+				equip->addMatk(iteminfo->imatk);
+				equip->addWdef(iteminfo->iwdef);
+				equip->addMdef(iteminfo->imdef);
+				equip->addAccuracy(iteminfo->iacc);
+				equip->addAvoid(iteminfo->iavo);
+				equip->addHands(iteminfo->ihand);
+				equip->addJump(iteminfo->ijump);
+				equip->addSpeed(iteminfo->ispeed);
+				equip->incScrolls();
+				equip->decSlots();
 			}
 			else {
 				succeed = 0;
@@ -641,9 +628,15 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 					cursed = true;
 				}
 				else if (!wscroll) {
-					equip->slots--;
+					equip->decSlots();
 				}
 			}
 		}
 	}
+}
+
+int16_t ItemDataProvider::getStatVariance(int8_t mod) {
+	int16_t s = Randomizer::Instance()->randShort(Items::StatVariance::RandScroll);
+	s *= mod;
+	return s;
 }

@@ -27,7 +27,8 @@ using boost::bimap;
 using std::tr1::unordered_map;
 using std::vector;
 using std::string;
-struct Item;
+
+class Item;
 
 struct SummonBag {
 	int32_t mobid;
@@ -250,6 +251,7 @@ private:
 	void loadItemRewards();
 	void loadPets();
 	void loadPetInteractions();
+	int16_t getStatVariance(int8_t mod);
 
 	typedef bimap<int32_t, int32_t> card_map;
 	typedef card_map::value_type card_info;

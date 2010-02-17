@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class Item;
 class Player;
-struct Item;
 
 namespace TradesPacket {
 	namespace Messages {

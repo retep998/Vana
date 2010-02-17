@@ -18,90 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-
-// Enumerations
-enum ItemTypes {
-	ArmorHelm = 100,
-	ArmorFace = 101,
-	ArmorEye = 102,
-	ArmorEarring = 103,
-	ArmorTop = 104,
-	ArmorOverall = 105,
-	ArmorBottom = 106,
-	ArmorShoe = 107,
-	ArmorGlove = 108,
-	ArmorShield = 109,
-	ArmorCape = 110,
-	ArmorRing = 111,
-	ArmorPendant = 112,
-	Medal = 114,
-	Weapon1hSword = 130,
-	Weapon1hAxe = 131,
-	Weapon1hMace = 132,
-	WeaponDagger = 133,
-	WeaponWand = 137,
-	WeaponStaff = 138,
-	Weapon2hSword = 140,
-	Weapon2hAxe = 141,
-	Weapon2hMace = 142,
-	WeaponSpear = 143,
-	WeaponPolearm = 144,
-	WeaponBow = 145,
-	WeaponCrossbow = 146,
-	WeaponClaw = 147,
-	WeaponKnuckle = 148,
-	WeaponGun = 149,
-	Mount = 190,
-	ItemArrow = 206,
-	ItemStar = 207,
-	ItemBullet = 233,
-	ItemMonsterCard = 238
-};
-
-namespace ScrollTypes {
-	enum ScrollTypes {
-		Helm = 0,
-		Face = 100,
-		Eye = 200,
-		Earring = 300,
-		Topwear = 400,
-		Overall = 500,
-		Bottomwear = 600,
-		Shoes = 700,
-		Gloves = 800,
-		Shield = 900,
-		Cape = 1000,
-		Ring = 1100,
-		Pendant = 1200,
-		OneHandedSword = 3000,
-		OneHandedAxe = 3100,
-		OneHandedMace = 3200,
-		Dagger = 3300,
-		Wand = 3700,
-		Staff = 3800,
-		TwoHandedSword = 4000,
-		TwoHandedAxe = 4100,
-		TwoHandedMace = 4200,
-		Spear = 4300,
-		Polearm = 4400,
-		Bow = 4500,
-		Crossbow = 4600,
-		Claw = 4700,
-		Knuckle = 4800,
-		Gun = 4900,
-		PetEquip = 8000,
-		CleanSlate = 9000,
-		Chaos = 9100
-	};
-}
-
-enum ItemFlags {
-	FlagLock = 0x01,
-	FlagSpikes = 0x02,
-	FlagCold = 0x04,
-	FlagTradeAvailable = 0x08,
-	FlagKarmaScissors = 0x10
-};
+#include <limits>
 
 enum Act {
 	ActHeal,
@@ -125,6 +42,12 @@ enum SkillValues {
 	SkillMorph,
 	SkillLv
 };
+
+namespace Characters {
+	const int8_t MaxNameSize = 12;
+	const int8_t MinNameSize = 4;
+	const int32_t DefaultCharacterSlots = 3;
+}
 
 namespace Gender {
 	enum {
@@ -1062,6 +985,130 @@ namespace Jobs {
 
 namespace Items {
 	const int64_t NoExpiration = 150842304000000000LL;
+	const int32_t MaxHammers = 2;
+
+	namespace Types {
+		enum ItemTypes {
+			ArmorHelm = 100,
+			ArmorFace = 101,
+			ArmorEye = 102,
+			ArmorEarring = 103,
+			ArmorTop = 104,
+			ArmorOverall = 105,
+			ArmorBottom = 106,
+			ArmorShoe = 107,
+			ArmorGlove = 108,
+			ArmorShield = 109,
+			ArmorCape = 110,
+			ArmorRing = 111,
+			ArmorPendant = 112,
+			Medal = 114,
+			Weapon1hSword = 130,
+			Weapon1hAxe = 131,
+			Weapon1hMace = 132,
+			WeaponDagger = 133,
+			WeaponWand = 137,
+			WeaponStaff = 138,
+			Weapon2hSword = 140,
+			Weapon2hAxe = 141,
+			Weapon2hMace = 142,
+			WeaponSpear = 143,
+			WeaponPolearm = 144,
+			WeaponBow = 145,
+			WeaponCrossbow = 146,
+			WeaponClaw = 147,
+			WeaponKnuckle = 148,
+			WeaponGun = 149,
+			Mount = 190,
+			ItemArrow = 206,
+			ItemStar = 207,
+			ItemBullet = 233,
+			ItemMonsterCard = 238
+		};
+	}
+
+	namespace ScrollTypes {
+		enum ScrollTypes {
+			Helm = 0,
+			Face = 100,
+			Eye = 200,
+			Earring = 300,
+			Topwear = 400,
+			Overall = 500,
+			Bottomwear = 600,
+			Shoes = 700,
+			Gloves = 800,
+			Shield = 900,
+			Cape = 1000,
+			Ring = 1100,
+			Pendant = 1200,
+			OneHandedSword = 3000,
+			OneHandedAxe = 3100,
+			OneHandedMace = 3200,
+			Dagger = 3300,
+			Wand = 3700,
+			Staff = 3800,
+			TwoHandedSword = 4000,
+			TwoHandedAxe = 4100,
+			TwoHandedMace = 4200,
+			Spear = 4300,
+			Polearm = 4400,
+			Bow = 4500,
+			Crossbow = 4600,
+			Claw = 4700,
+			Knuckle = 4800,
+			Gun = 4900,
+			PetEquip = 8000,
+			CleanSlate = 9000,
+			Chaos = 9100
+		};
+	}
+
+	namespace Flags {
+		enum ItemFlags {
+			Lock = 0x01,
+			Spikes = 0x02,
+			ColdProtection = 0x04,
+			TradeUnavailable = 0x08,
+			KarmaScissors = 0x10
+		};
+	}
+
+	namespace StatVariance {
+		const uint16_t Str = 2;
+		const uint16_t Dex = 2;
+		const uint16_t Int = 2;
+		const uint16_t Luk = 2;
+		const uint16_t Hp = 10;
+		const uint16_t Mp = 10;
+		const uint16_t Watk = 10;
+		const uint16_t Wdef = 10;
+		const uint16_t Matk = 10;
+		const uint16_t Mdef = 10;
+		const uint16_t Acc = 2;
+		const uint16_t Avoid = 2;
+		const uint16_t Hands = 4;
+		const uint16_t Speed = 4;
+		const uint16_t Jump = 2;
+		const uint16_t RandScroll = 5;
+	}
+	namespace MaxStats {
+		const int16_t Str = std::numeric_limits<int16_t>::max();
+		const int16_t Dex = std::numeric_limits<int16_t>::max();
+		const int16_t Int = std::numeric_limits<int16_t>::max();
+		const int16_t Luk = std::numeric_limits<int16_t>::max();
+		const int16_t Hp = std::numeric_limits<int16_t>::max();
+		const int16_t Mp = std::numeric_limits<int16_t>::max();
+		const int16_t Watk = 1999;
+		const int16_t Wdef = 255;
+		const int16_t Matk = 1999;
+		const int16_t Mdef = 255;
+		const int16_t Acc = 103;
+		const int16_t Avoid = 103;
+		const int16_t Hands = std::numeric_limits<int16_t>::max();
+		const int16_t Speed = 40;
+		const int16_t Jump = 23;
+	}
 	enum {
 		// Equip
 		GmHat = 1002140,

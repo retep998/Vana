@@ -28,7 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 Pet::Pet(Player *player, Item *item) :
-player(player), itemid(item->id),
+player(player),
+itemid(item->getId()),
 index(-1),
 name(ItemDataProvider::Instance()->getItemName(itemid)),
 level(1),
@@ -39,13 +40,13 @@ closeness(0)
 	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	this->id = (int32_t) res.insert_id();
-	item->petid = this->id;
+	item->setPetId(this->id);
 }
 
 Pet::Pet(Player *player, Item *item, int8_t index, const string &name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
 player(player),
-id(item->petid),
-itemid(item->id),
+id(item->getPetId()),
+itemid(item->getId()),
 index(index),
 name(name),
 level(level),
@@ -54,8 +55,9 @@ closeness(closeness),
 inventorySlot(inventorySlot)
 {
 	if (isSummoned()) {
-		if (index == 1)
+		if (index == 1) {
 			startTimer();
+		}
 		player->getPets()->setSummoned(index, id);
 	}
 }

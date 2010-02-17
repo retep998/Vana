@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::tr1::unordered_map;
 
+class Item;
 class Player;
-struct Item;
 
 class Pet : public MovableLife {
 public:

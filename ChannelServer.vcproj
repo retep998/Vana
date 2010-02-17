@@ -634,14 +634,6 @@
 				Name="ChannelServer"
 				>
 				<File
-					RelativePath=".\src\ChannelServer\AlliancePacket.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\BbsPacket.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\ChannelServer\Buffs.h"
 					>
 				</File>
@@ -659,10 +651,6 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Fame.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ChannelServer\GuildPacket.h"
 					>
 				</File>
 				<File
@@ -742,6 +730,14 @@
 				Name="Packets"
 				>
 				<File
+					RelativePath=".\src\ChannelServer\AlliancePacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\BbsPacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\BuddyListPacket.h"
 					>
 				</File>
@@ -759,6 +755,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\GmPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\GuildPacket.h"
 					>
 				</File>
 				<File
