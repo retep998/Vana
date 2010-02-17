@@ -850,12 +850,12 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			}
 			else if (csStar > 0) {
 				if (Item *item = player->getInventory()->getItem(Inventories::CashInventory, csStar)) {
-					attack.starId = item->id;
+					attack.starId = item->getId();
 				}
 			}
 			else if (starSlot > 0) {
 				if (Item *item = player->getInventory()->getItem(Inventories::UseInventory, starSlot)) {
-					attack.starId = item->id;
+					attack.starId = item->getId();
 				}
 			}
 		}

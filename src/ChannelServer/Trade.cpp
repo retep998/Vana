@@ -62,7 +62,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			// Also, determine needed slots for nonstackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
-				int32_t itemid = check->id;
+				int32_t itemid = check->getId();
 				int8_t inv = GameLogicUtilities::getInventory(itemid);
 				if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) {
 					// Equips and rechargeables always take 1 slot, no need to clutter unordered map
@@ -71,10 +71,10 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 				else {
 					if (added.find(itemid) != added.end()) {
 						// Already initialized this item
-						added[itemid] += check->amount;
+						added[itemid] += check->getAmount();
 					}
 					else {
-						added[itemid] = check->amount;
+						added[itemid] = check->getAmount();
 					}
 				}
 			}
@@ -83,7 +83,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			// Determine precisely how many slots are needed for stackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
-				int32_t itemid = check->id;
+				int32_t itemid = check->getId();
 				int8_t inv = GameLogicUtilities::getInventory(itemid);
 				if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemid)) {
 					// Already did these
@@ -206,16 +206,16 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 
 Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
-	if (amount == item->amount || inventory == Inventories::EquipInventory) {
-		holder->getInventory()->setItem(inventory, inventoryslot, 0);
+	if (amount == item->getAmount() || inventory == Inventories::EquipInventory) {
+		holder->getInventory()->setItem(inventory, inventoryslot, nullptr);
 		InventoryPacket::moveItem(holder, inventory, inventoryslot, 0);
 		holder->getInventory()->deleteItem(inventory, inventoryslot);
 	}
 	else {
-		item->amount -= amount;
-		holder->getInventory()->changeItemAmount(item->id, item->amount);
-		InventoryPacket::updateItemAmounts(holder, inventory, inventoryslot, item->amount, 0, 0);
-		use->amount = amount;
+		item->decAmount(amount);
+		holder->getInventory()->changeItemAmount(item->getId(), item->getAmount());
+		InventoryPacket::updateItemAmounts(holder, inventory, inventoryslot, item->getAmount(), 0, 0);
+		use->setAmount(amount);
 	}
 	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;

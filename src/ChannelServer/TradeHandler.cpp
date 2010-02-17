@@ -148,12 +148,12 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						// Hacking
 						return;
 					}
-					if (GameLogicUtilities::isRechargeable(item->id)) {
-						amount = item->amount;
+					if (GameLogicUtilities::isRechargeable(item->getId())) {
+						amount = item->getAmount();
 					}
-					else if (amount > item->amount || amount < 0) {
+					else if (amount > item->getAmount() || amount < 0) {
 						// Hacking
-						amount = item->amount;
+						amount = item->getAmount();
 					}
 					Item *use = trade->addItem(player, mod, item, addslot, slot, inventory, amount);
 					TradesPacket::sendAddItem(one, (isreceiver ? TradeSlots::Two : TradeSlots::One), addslot, use);

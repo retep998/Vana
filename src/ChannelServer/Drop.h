@@ -30,7 +30,7 @@ public:
 
 	void setQuest(int16_t questid) { this->questid = questid; }
 	void setTradeable(bool istrade) { tradeable = istrade; }
-	void setItemAmount(int16_t amount) { this->item.amount = amount; }
+	void setItemAmount(int16_t amount) { this->item.setAmount(amount); }
 	void setId(int32_t id) { this->id = id; }
 	void setTime(int32_t time) { this->time = time; }
 	void setDropped(int32_t time) { dropped = time; }

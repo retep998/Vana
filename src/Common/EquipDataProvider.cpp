@@ -132,42 +132,52 @@ void EquipDataProvider::loadEquips() {
 }
 
 void EquipDataProvider::setEquipStats(Item *equip, bool random) {
-	EquipInfo *ei = getEquipInfo(equip->id);
-	equip->slots = ei->slots;
+	EquipInfo *ei = getEquipInfo(equip->getId());
+	equip->setSlots(ei->slots);
 	if (!random) {
-		equip->istr = ei->istr;
-		equip->idex = ei->idex;
-		equip->iint = ei->iint;
-		equip->iluk = ei->iluk;
-		equip->ihp = ei->ihp;
-		equip->imp = ei->imp;
-		equip->iwatk = ei->iwatk;
-		equip->imatk = ei->imatk;
-		equip->iwdef = ei->iwdef;
-		equip->imdef = ei->imdef;
-		equip->iacc = ei->iacc;
-		equip->iavo = ei->iavo;
-		equip->ihand = ei->ihand;
-		equip->ijump = ei->ijump;
-		equip->ispeed = ei->ispeed;
+		equip->setStr(ei->istr);
+		equip->setDex(ei->idex);
+		equip->setInt(ei->iint);
+		equip->setLuk(ei->iluk);
+		equip->setHp(ei->ihp);
+		equip->setMp(ei->imp);
+		equip->setWatk(ei->iwatk);
+		equip->setMatk(ei->imatk);
+		equip->setWdef(ei->iwdef);
+		equip->setMdef(ei->imdef);
+		equip->setAccuracy(ei->iacc);
+		equip->setAvoid(ei->iavo);
+		equip->setHands(ei->ihand);
+		equip->setJump(ei->ijump);
+		equip->setSpeed(ei->ispeed);
 	}
 	else {
-		equip->istr = ei->istr > 0 ? ei->istr + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->idex = ei->idex > 0 ? ei->idex + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->iint = ei->iint > 0 ? ei->iint + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->iluk = ei->iluk > 0 ? ei->iluk + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->ihp = ei->ihp > 0 ? ei->ihp + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->imp = ei->imp > 0 ? ei->imp + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->iwatk = ei->iwatk > 0 ? ei->iwatk + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->imatk = ei->imatk > 0 ? ei->imatk + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->iwdef = ei->iwdef > 0 ? ei->iwdef + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->imdef = ei->imdef > 0 ? ei->imdef + Randomizer::Instance()->randShort(10) - 5 : 0;
-		equip->iacc = ei->iacc > 0 ? ei->iacc + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->iavo = ei->iavo > 0 ? ei->iavo + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->ihand = ei->ihand > 0 ? ei->ihand + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->ijump = ei->ijump > 0 ? ei->ijump + Randomizer::Instance()->randShort(2) - 1 : 0;
-		equip->ispeed = ei->ispeed > 0 ? ei->ispeed + Randomizer::Instance()->randShort(2) - 1 : 0;
+		equip->setStr(getRandomStat(ei->istr, Items::StatVariance::Str));
+		equip->setDex(getRandomStat(ei->idex, Items::StatVariance::Dex));
+		equip->setInt(getRandomStat(ei->iint, Items::StatVariance::Int));
+		equip->setLuk(getRandomStat(ei->iluk, Items::StatVariance::Luk));
+		equip->setHp(getRandomStat(ei->ihp, Items::StatVariance::Hp));
+		equip->setMp(getRandomStat(ei->imp, Items::StatVariance::Mp));
+		equip->setWatk(getRandomStat(ei->iwatk, Items::StatVariance::Watk));
+		equip->setMatk(getRandomStat(ei->imatk, Items::StatVariance::Matk));
+		equip->setWdef(getRandomStat(ei->iwdef, Items::StatVariance::Wdef));
+		equip->setMdef(getRandomStat(ei->imdef, Items::StatVariance::Mdef));
+		equip->setAccuracy(getRandomStat(ei->iacc, Items::StatVariance::Acc));
+		equip->setAvoid(getRandomStat(ei->iavo, Items::StatVariance::Avoid));
+		equip->setHands(getRandomStat(ei->ihand, Items::StatVariance::Hands));
+		equip->setJump(getRandomStat(ei->ijump, Items::StatVariance::Jump));
+		equip->setSpeed(getRandomStat(ei->ispeed, Items::StatVariance::Speed));
 	}
+}
+
+int16_t EquipDataProvider::getRandomStat(int16_t equipAmount, uint16_t variance) {
+	return (equipAmount > 0 ? equipAmount + getStatVariance(variance) : 0);
+}
+
+int16_t EquipDataProvider::getStatVariance(uint16_t amount) {
+	int16_t s = Randomizer::Instance()->randShort(amount);
+	s -= (amount / 2);
+	return s;
 }
 
 bool EquipDataProvider::canEquip(int32_t itemid, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) {
