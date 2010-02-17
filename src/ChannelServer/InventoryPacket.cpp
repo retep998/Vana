@@ -194,7 +194,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
-	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
 	packet.addBool(whisper);
 	if (item == nullptr) {
 		packet.add<int8_t>(0);

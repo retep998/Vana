@@ -74,8 +74,8 @@ public:
 	void setAllianceRank(uint8_t rank) { alliancerank = rank; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setChair(int32_t chair) { this->chair = chair; }
-	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
+	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setNpc(Npc *npc) { this->npc.reset(npc); }
@@ -88,6 +88,7 @@ public:
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
 	int16_t getMapChair() const { return mapchair; }
+	uint16_t getPortalCount(bool initialPacket = false);
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
 	int32_t getEyes() const { return eyes; }
@@ -160,6 +161,7 @@ private:
 	uint8_t guildrank;
 	uint8_t alliancerank;
 	int16_t mapchair;
+	uint16_t m_portalCount;
 	int32_t id;
 	int32_t user_id;
 	int32_t eyes;
