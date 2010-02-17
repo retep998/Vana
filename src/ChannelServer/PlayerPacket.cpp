@@ -37,9 +37,7 @@ void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(0);
+	packet.add<uint32_t>(player->getPortalCount(true));
 
 	player->getRandStream()->connectData(packet); // Seeding RNG
 

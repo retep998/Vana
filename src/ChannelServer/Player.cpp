@@ -64,6 +64,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
 #include <boost/array.hpp>
+#include <limits>
 #include <stdexcept>
 
 Player::Player() :
@@ -73,6 +74,7 @@ item_effect(0),
 chair(0),
 mapchair(0),
 trade_id(0),
+m_portalCount(std::numeric_limits<uint8_t>::max() + 1), // For the first packet
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
@@ -619,4 +621,12 @@ bool Player::hasGmEquip() const {
 void Player::setBuddyListSize(uint8_t size) {
 	buddylist_size = size;
 	BuddyListPacket::showSize(this);
+}
+
+uint16_t Player::getPortalCount(bool initialPacket) {
+	uint16_t ret = m_portalCount++;
+	if (m_portalCount > std::numeric_limits<uint8_t>::max()) {
+		m_portalCount = (initialPacket ? 2 : 1);
+	}
+	return ret;
 }

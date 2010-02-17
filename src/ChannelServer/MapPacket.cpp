@@ -205,8 +205,8 @@ void MapPacket::removePlayer(Player *player) {
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
-	packet.add<int32_t>(0x00); // Number of portals that the player has traveled through
+	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<uint32_t>(player->getPortalCount());
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
 	packet.add<int16_t>(player->getStats()->getHp());
