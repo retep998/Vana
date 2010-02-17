@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\LoginServer">
+      <UniqueIdentifier>{f482bfc6-1023-42e8-aab3-4cf832afb883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets">
+      <UniqueIdentifier>{5da92791-89e0-4591-bfda-c00bc059eb08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets\Helpers">
+      <UniqueIdentifier>{38cbea3e-0c83-4955-b1b2-3621b2cb2d30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server">
+      <UniqueIdentifier>{7fa9a9d7-9f92-4d22-9fcc-37803b7f65cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Loading">
+      <UniqueIdentifier>{837be4e8-c060-47df-8502-5b84f76fa8d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Packets">
+      <UniqueIdentifier>{e41095bd-7cd4-430b-a5f2-2de6a16ab358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets\Helpers">
+      <UniqueIdentifier>{328da3d8-789c-4053-99ba-e9b6db85b31e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\LoginServer">
+      <UniqueIdentifier>{22576dea-8916-415c-b521-3ec5bd6c38df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database Loading">
+      <UniqueIdentifier>{4f5657e3-5aef-4179-9225-c697b589b929}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server">
+      <UniqueIdentifier>{35182c37-6578-4f20-acf5-2b696c7c30ef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\LoginServer\main_login.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\Characters.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\Login.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServer.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\Player.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\RankingCalculator.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\World.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\Worlds.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginPacketHelper.cpp">
+      <Filter>Source Files\Packets\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptConnection.cpp">
+      <Filter>Source Files\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp">
+      <Filter>Source Files\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp">
+      <Filter>Source Files\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\InitializeLogin.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\LoginServer\PrecompiledHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginPacket.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginPacketHelper.h">
+      <Filter>Header Files\Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Channel.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Characters.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Login.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServer.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Player.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\PlayerStatus.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\RankingCalculator.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\World.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Worlds.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\InitializeLogin.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h">
+      <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h">
+      <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
+      <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

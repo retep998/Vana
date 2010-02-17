@@ -59,7 +59,7 @@ void SyncPacket::partyOperation(WorldServerConnection *player, int8_t type, int3
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(playerid);
-	if (target != nullptr) {
+	if (target != 0) {
 		packet.add<int32_t>(target);
 	}
 	player->getSession()->send(packet);

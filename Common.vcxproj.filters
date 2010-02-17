@@ -1,0 +1,431 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Database Loading">
+      <UniqueIdentifier>{234d9384-4205-4b98-9f24-086cba40a2f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Loading\MCDB">
+      <UniqueIdentifier>{fb59e998-8da9-4412-bdc8-1ac02eac87ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Manager">
+      <UniqueIdentifier>{b0003acc-c77d-4266-a645-a36efd37f568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets">
+      <UniqueIdentifier>{c936eff6-999a-4aaf-a7e0-2890bf2f9c17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets\Inter-Server">
+      <UniqueIdentifier>{2b9d95f2-9c44-45f5-9950-cae9cca8641a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{0c106147-7a54-4249-8d59-f02458a22d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Connection">
+      <UniqueIdentifier>{11aacb98-7d6f-4be0-b2c7-159a7d2554ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder">
+      <UniqueIdentifier>{fe351bdd-aec5-4dd8-baf0-58d826f5fc49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timer">
+      <UniqueIdentifier>{c3f36505-292a-4f35-b38e-01cf7fffb387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Abstracts">
+      <UniqueIdentifier>{1f451ca6-2310-4715-9825-372f8e6a8fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Migration">
+      <UniqueIdentifier>{53779b6c-2b05-400b-ab15-88f20351c065}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server">
+      <UniqueIdentifier>{5e73d764-d08d-432a-ba3e-d3e66a524f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data Structures">
+      <UniqueIdentifier>{b17fa549-f730-4240-9f83-167e17f9676e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Database Loading">
+      <UniqueIdentifier>{f2c31c46-3472-4a76-9c19-4dc588e46572}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database Loading\MCDB">
+      <UniqueIdentifier>{8b0291a9-9316-4220-b7c4-deb36d32dd90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database Manager">
+      <UniqueIdentifier>{fd07c5b2-9669-4e30-999e-17e48dc29f22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets">
+      <UniqueIdentifier>{93a93695-c14d-4a19-b2af-0f50a0dcc661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets\Headers">
+      <UniqueIdentifier>{4e31b3d0-0bff-456d-9f95-970c91643a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets\Inter-Server">
+      <UniqueIdentifier>{40299260-94a8-433d-b43e-53a3280f100b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{32738edb-2522-4269-82ec-31300c9e1b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Connection">
+      <UniqueIdentifier>{fad913c4-42d5-4ebf-b0cd-6c916b719e18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decoder">
+      <UniqueIdentifier>{1d6477dd-ee5e-4186-9c89-72d95bd50023}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Timer">
+      <UniqueIdentifier>{e7dbeb11-b0aa-4a3e-bfca-f7dcea70f5e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Abstracts">
+      <UniqueIdentifier>{0d6ec2ff-5037-49b5-b139-1eb1bf28f299}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server">
+      <UniqueIdentifier>{26275413-6a2f-46c7-8689-8aa030bb171e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Data Structures">
+      <UniqueIdentifier>{2a99377c-58a0-4958-944a-474862a1f498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database Migration">
+      <UniqueIdentifier>{2672117d-b35f-4fab-a5ba-ecd4c16885e4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Common\PrecompiledHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BuffDataProvider.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\InitializeCommon.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\BeautyDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\DropDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\EquipDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ItemDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MobDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\NpcDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\QuestDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ReactorDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ScriptDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ShopDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SkillDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConfigFile.cpp">
+      <Filter>Source Files\Database Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Database.cpp">
+      <Filter>Source Files\Database Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PacketCreator.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PacketReader.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PingPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AuthenticationPacket.cpp">
+      <Filter>Source Files\Packets\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConfigurationPacket.cpp">
+      <Filter>Source Files\Packets\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\FileUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\IpUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MiscUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Randomizer.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\StringUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TimeUtilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConnectionManager.cpp">
+      <Filter>Source Files\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MapleServer.cpp">
+      <Filter>Source Files\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MapleServerClient.cpp">
+      <Filter>Source Files\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MapleSession.cpp">
+      <Filter>Source Files\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SessionManager.cpp">
+      <Filter>Source Files\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Decoder.cpp">
+      <Filter>Source Files\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MapleEncryption.cpp">
+      <Filter>Source Files\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Timer\Container.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Timer\Id.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Timer\Thread.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Timer\Timer.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractConnection.cpp">
+      <Filter>Source Files\Abstracts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractServer.cpp">
+      <Filter>Source Files\Abstracts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\DatabaseMigration.cpp">
+      <Filter>Source Files\Database Migration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\DatabaseMigrationRunner.cpp">
+      <Filter>Source Files\Database Migration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ServerConnection.cpp">
+      <Filter>Source Files\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Item.cpp">
+      <Filter>Source Files\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Variables.cpp">
+      <Filter>Source Files\Data Structures</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Common\ExitCodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GameConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PrecompiledHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BuffDataProvider.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InitializeCommon.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BeautyDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DropDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EquipDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\NpcDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ReactorDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ScriptDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ShopDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ValidCharDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConfigFile.h">
+      <Filter>Header Files\Database Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Database.h">
+      <Filter>Header Files\Database Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketCreator.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketReader.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PingPacket.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterHeader.h">
+      <Filter>Header Files\Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\RecvHeader.h">
+      <Filter>Header Files\Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SendHeader.h">
+      <Filter>Header Files\Packets\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AuthenticationPacket.h">
+      <Filter>Header Files\Packets\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConfigurationPacket.h">
+      <Filter>Header Files\Packets\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterHelper.h">
+      <Filter>Header Files\Packets\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FileUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GameLogicUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IpUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LoopingId.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MiscUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Randomizer.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\StringUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimeUtilities.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConnectionManager.h">
+      <Filter>Header Files\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleServer.h">
+      <Filter>Header Files\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleServerClient.h">
+      <Filter>Header Files\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleSession.h">
+      <Filter>Header Files\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SessionManager.h">
+      <Filter>Header Files\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Decoder.h">
+      <Filter>Header Files\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleEncryption.h">
+      <Filter>Header Files\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Container.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Id.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Thread.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Time.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Timer.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer\Types.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractConnection.h">
+      <Filter>Header Files\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractServer.h">
+      <Filter>Header Files\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractSession.h">
+      <Filter>Header Files\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Rates.h">
+      <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ServerConnection.h">
+      <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Configuration.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GameObjects.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Ip.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Item.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapObjects.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Pos.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Variables.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DatabaseMigration.h">
+      <Filter>Header Files\Database Migration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DatabaseMigrationRunner.h">
+      <Filter>Header Files\Database Migration</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
