@@ -64,7 +64,7 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 		npc->run();
 		return;
 	}
-	else if (player->getShop() == nullptr) {
+	else if (player->getShop() == 0) {
 		if (NpcHandler::showShop(player, npcs.id)) {
 			return;
 		}
@@ -159,7 +159,7 @@ void NpcHandler::handleNpcAnimation(Player *player, PacketReader &packet) {
 }
 
 void NpcHandler::useShop(Player *player, PacketReader &packet) {
-	if (player->getShop() == nullptr) {
+	if (player->getShop() == 0) {
 		// Hacking
 		return;
 	}
