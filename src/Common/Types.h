@@ -41,3 +41,13 @@ typedef boost::uintmax_t uintmax_t;
 #elif defined BOOST_NO_NULLPTR && _MSC_VER != 1600
 # define nullptr 0
 #endif
+
+namespace ServerTypes {
+	enum ServerTypes {
+		Login = 1, // Started at 1 so it's easy to do logging
+		World,
+		Channel,
+		Cash,
+		Mts
+	};
+}

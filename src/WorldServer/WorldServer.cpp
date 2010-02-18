@@ -22,9 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include "Types.h"
 #include "WorldServerAcceptPacket.h"
-#include <string>
+#include <boost/lexical_cast.hpp>
 
 WorldServer * WorldServer::singleton = nullptr;
+
+WorldServer::WorldServer() :
+m_worldId(-1)
+{
+	setServerType(ServerTypes::World);
+}
 
 void WorldServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory());
@@ -36,7 +42,7 @@ void WorldServer::loadData() {
 
 	m_loginConnection = new LoginServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, getLoginConnection());
-	getLoginConnection()->sendAuth(inter_password, external_ip);
+	getLoginConnection()->sendAuth(getInterPassword(), getExternalIp());
 }
 
 void WorldServer::loadConfig() {
@@ -45,6 +51,22 @@ void WorldServer::loadConfig() {
 	m_loginPort = config.getShort("login_inter_port");
 
 	m_port = -1; // Will get from login server later
+}
+
+void WorldServer::loadLogConfig() {
+	ConfigFile conf("conf/logger.lua", false);
+	initializeLoggingConstants(conf);
+	conf.execute();
+
+	bool enabled = conf.getBool("log_worlds");
+	if (enabled) {
+		LogConfig log = conf.getLogConfig("world");
+		createLogger(log);
+	}
+}
+
+string WorldServer::makeLogIdentifier() {
+	return "World " + boost::lexical_cast<string>(static_cast<int16_t>(getWorldId()));
 }
 
 void WorldServer::setScrollingHeader(const string &message) {

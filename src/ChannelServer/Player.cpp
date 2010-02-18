@@ -125,7 +125,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 	try {
 		switch (packet.get<int16_t>()) {
 			case CMSG_ALLIANCE: AlliancePacket::handlePacket(this, packet); break;
-			case CMSG_ALLIANCE_DENIED: AlliancePacket::handleDenyPacket(this, packet); break;		
+			case CMSG_ALLIANCE_DENIED: AlliancePacket::handleDenyPacket(this, packet); break;
 			case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
 			case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
 			case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
@@ -209,6 +209,19 @@ void Player::realHandleRequest(PacketReader &packet) {
 		// Packet data didn't match the packet length somewhere
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
+
+		std::stringstream x;
+		packet.reset();
+		unsigned char *y = packet.getBuffer();
+		size_t z = packet.getBufferLength();
+		size_t i = 0;
+		x << "Player ID: " << getId() << "; Packet: ";
+		while (i < z) {
+			x << std::hex << std::setw(2) << std::setfill('0') << (int16_t) y[i] << " ";
+			i++;
+		}
+
+		ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}
 }

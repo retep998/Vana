@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+class AbstractServer;
 class PacketReader;
 
 class AbstractServerConnection : public AbstractConnection {
@@ -42,7 +43,7 @@ private:
 class AbstractServerAcceptConnection : public AbstractConnection {
 public:
 	AbstractServerAcceptConnection() : m_is_authenticated(false) { m_is_server = true; }
-	bool processAuth(PacketReader &packet, const string &pass);
+	bool processAuth(AbstractServer *server, PacketReader &packet, const string &pass);
 	virtual void authenticated(int8_t type) = 0;
 
 	bool isAuthenticated() const { return m_is_authenticated; }

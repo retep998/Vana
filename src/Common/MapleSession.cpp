@@ -47,8 +47,6 @@ void MapleSession::handle_start() {
 	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_isServer) {
-		std::cout << "Accepted connection from " << IpUtilities::ipToString(m_player->getIp()) << std::endl;
-
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
 		send(connectPacket, false);
 	}
@@ -153,4 +151,8 @@ void MapleSession::handle_read_body(const boost::system::error_code &error, size
 	else {
 		disconnect();
 	}
+}
+
+uint32_t MapleSession::getIp() const {
+	return m_player->getIp();
 }

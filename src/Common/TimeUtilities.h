@@ -29,15 +29,17 @@ namespace TimeUtilities {
 	int32_t tickToTick32(int64_t tick);
 	int32_t getDate(time_t ctime = time(0));
 	int32_t getMonth(time_t ctime = time(0));
-	int32_t getYear(time_t ctime = time(0));
-	int32_t getHour(time_t ctime = time(0));
+	int32_t getYear(bool twoDigit, time_t ctime = time(0));
+	int32_t getHour(bool nonMilitary, time_t ctime = time(0));
 	int32_t getMinute(time_t ctime = time(0));
 	int32_t getSecond(time_t ctime = time(0));
 	int32_t getDay(time_t ctime = time(0));
 	int32_t getWeek(time_t ctime = time(0));
 	int32_t getNearestMinuteMark(int32_t interval, time_t ctime = time(0));
-	string getDayString(time_t ctime = time(0));
+	string getDayString(bool shortened, time_t ctime = time(0));
+	string getMonthString(bool shortened, time_t ctime = time(0));
 	bool isDst(time_t ctime = time(0));
+	string getTimeZone();
 	int32_t getTimeZoneOffset();
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
 }

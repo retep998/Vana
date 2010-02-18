@@ -49,7 +49,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
-	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";	
+	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";
 	mysqlpp::StoreQueryResult resIp = query.store();
 
 	bool valid = true;
@@ -97,7 +97,8 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
-		std::cout << username << " logged in." << std::endl;
+		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
+
 		player->setUserId(res[0]["id"]);
 		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null()) {

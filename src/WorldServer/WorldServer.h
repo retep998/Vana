@@ -38,7 +38,9 @@ public:
 	}
 	void loadData();
 	void loadConfig();
+	void loadLogConfig();
 	void listen();
+	string makeLogIdentifier();
 
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(uint16_t port) { m_port = port; }
@@ -53,7 +55,7 @@ public:
 	Configuration & getConfig() { return m_config; }
 	LoginServerConnection * getLoginConnection() const { return m_loginConnection; }
 private:
-	WorldServer() : m_worldId(-1) { }
+	WorldServer();
 	static WorldServer *singleton;
 
 	int8_t m_worldId;

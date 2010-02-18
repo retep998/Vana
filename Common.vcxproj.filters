@@ -90,6 +90,12 @@
     <Filter Include="Header Files\Database Migration">
       <UniqueIdentifier>{2672117d-b35f-4fab-a5ba-ecd4c16885e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Loggers">
+      <UniqueIdentifier>{d279436e-a4a8-4fe1-ac53-967b4beeb206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Loggers">
+      <UniqueIdentifier>{e4e82301-f6d0-4624-ab9f-a8ac9221dc24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -229,6 +235,21 @@
     </ClCompile>
     <ClCompile Include="src\Common\Variables.cpp">
       <Filter>Source Files\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SqlLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConsoleLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\FileLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Logger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\LogReplacements.cpp">
+      <Filter>Source Files\Loggers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +447,21 @@
     </ClInclude>
     <ClInclude Include="src\Common\DatabaseMigrationRunner.h">
       <Filter>Header Files\Database Migration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConsoleLogger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FileLogger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Logger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LogReplacements.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SqlLogger.h">
+      <Filter>Header Files\Loggers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

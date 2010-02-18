@@ -95,7 +95,9 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 		<< mysqlpp::quote << alliancename << ");";
 
 	if (!query.exec()) {
-		std::cout << "\a Warning! " << player->getName() << " has created " << alliancename << " but it failed! " << query.error() << std::endl;
+		std::stringstream x;
+		x << player->getName() << " has created " << alliancename << " but it failed! Error: " << query.error();
+		WorldServer::Instance()->log(LogTypes::Error, x.str());
 		return;
 	}
 
@@ -140,7 +142,9 @@ void SyncHandler::loadAlliance(int32_t allianceid) {
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if ((int32_t) res.num_rows() == 0) {
-		std::cout << "Can't load alliance! Alliance ID " << allianceid << std::endl;
+		std::stringstream x;
+		x << "Can't load alliance! Alliance ID " << allianceid;
+		WorldServer::Instance()->log(LogTypes::Error, x.str());
 		return;
 	}
 
@@ -491,7 +495,8 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 	GuildBbs *bbs = guild->getBbs();
 
 	if (guildid != player->getGuild()->getId()) {
-		std::cout << player->getName() << " wants to post a new thread without being in the guild!" << std::endl;
+		std::stringstream x;
+		x << player->getName() << " wants to post a new thread without being in the guild";
 		return;
 	}
 
@@ -894,7 +899,9 @@ void SyncHandler::loadGuild(int32_t id) {
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if ((int32_t) res.num_rows() == 0) {
-		std::cout << "\aAlert! Can't load a guild! Guild ID: " << id << std::endl;
+		std::stringstream x;
+		x << "Alert! Can't load a guild! Guild ID: " << id;
+		WorldServer::Instance()->log(LogTypes::Error, x.str());
 		return;
 	}
 	
@@ -970,8 +977,10 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 					<< party->getLeader() << ")";
 
 				if (!query.exec()) {
-					std::cout << "/a[ALERT] The server cant create a guild! MySQL error: " << query.error() << std::endl;
-					Player *leader = PlayerDataProvider::Instance()->getPlayer(party->getLeader());
+					std::stringstream x;
+					x << "The server can't create a guild! MySQL error: " << query.error();
+					WorldServer::Instance()->log(LogTypes::Error, x.str());
+
 					GuildPacket::sendPlayerMessage(leader, 1, "Sorry, but something went wrong on the server. You didn't lose money and there was no guild created.");
 					party->clearGuild();
 					return;
@@ -980,7 +989,10 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 				int32_t gid = static_cast<int32_t>(query.insert_id());
 
 				if (gid == 0) {
-					std::cout << "/a[ALERT] The server can't load a guild! MySQL error: " << query.error() << std::endl;
+					std::stringstream x;
+					x << "The server can't load a guild! MySQL error: " << query.error();
+					WorldServer::Instance()->log(LogTypes::Error, x.str());
+
 					GuildPacket::sendPlayerMessage(leader, 1, "Sorry, but something went wrong on the server. You didn't lose money and there was no guild created.");
 					party->clearGuild();
 					return;
@@ -991,7 +1003,9 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 				Guild *guild = PlayerDataProvider::Instance()->getGuild(gid);
 
 				if (guild == nullptr) {
-					std::cout << "\aSyncHandler::handleGuildCreation(): The code cannot load the guild. Please check if the guild was inserted into the database. Guildid: " << gid << std::endl;
+					std::stringstream x;
+					x << "SyncHandler::handleGuildCreation: The code cannot load the guild. Please check if the guild was inserted into the database. Guild ID: " << gid;
+					WorldServer::Instance()->log(LogTypes::Error, x.str());
 					return;
 				}
 
@@ -1086,7 +1100,7 @@ void SyncHandler::sendUpdateOfTitles(int32_t guildid, PacketReader &packet) {
 		guild->setTitle(i, packet.getString());
 
 	guild->save();
-	GuildPacket::sendTitlesUpdate(guild);	
+	GuildPacket::sendTitlesUpdate(guild);
 }
 
 void SyncHandler::sendGuildInvite(int32_t guildid, PacketReader &packet) {

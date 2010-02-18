@@ -104,7 +104,7 @@ void DropsPacket::dropNotAvailableForPickup(Player *player) {
 	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-2);
-	player->getSession()->send(packet);	
+	player->getSession()->send(packet);
 }
 
 void DropsPacket::cantGetAnymoreItems(Player *player) {
@@ -112,7 +112,7 @@ void DropsPacket::cantGetAnymoreItems(Player *player) {
 	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-1);
-	player->getSession()->send(packet);	
+	player->getSession()->send(packet);
 }
 
 void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
@@ -133,7 +133,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 		packet.add<int32_t>(0);
 	}
 
-	player->getSession()->send(packet);	
+	player->getSession()->send(packet);
 }
 
 void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
@@ -143,5 +143,5 @@ void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int32_t>(id);
-	player->getSession()->send(packet);	
+	player->getSession()->send(packet);
 }

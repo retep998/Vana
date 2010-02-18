@@ -126,7 +126,9 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 		guildid = res[i]["guildid"];
 		guild = getGuild(guildid);
 		if (guildid != 0 && guild == nullptr) {
-			std::cout << (string) res[i]["name"] << " has an invalid guild ID (guild doesn't exist). Please check this! ";
+			std::stringstream x;
+			x << (string) res[i]["name"] << " has an invalid guild ID (guild doesn't exist)";
+			WorldServer::Instance()->log(LogTypes::Warning, x.str());
 			continue;
 		}
 

@@ -31,18 +31,26 @@ extern "C" {
 using std::string;
 using std::vector;
 
+struct LogConfig;
+
 class ConfigFile {
 public:
-	ConfigFile(const string &filename);
+	ConfigFile(const string &filename, bool executeFile = true);
 	ConfigFile();
 	void loadFile(const string &filename);
-	bool keyExist(const string &value);
+	bool keyExists(const string &value);
+	void execute();
+	void setVariable(const string &name, const string &value);
+	void setVariable(const string &name, int32_t value);
 	int32_t getInt(const string &value);
 	int16_t getShort(const string &value);
 	string getString(const string &value);
 	IpMatrix getIpMatrix(const string &value);
 	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
 	bool getBool(const string &value);
+	LogConfig getLogConfig(const string &server);
 private:
-	lua_State *luaVm;
+	lua_State * getLuaState() const { return m_luaVm; }
+	lua_State *m_luaVm;
+	string m_file;
 };

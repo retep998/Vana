@@ -306,23 +306,26 @@ void GuildPacket::addGuildInformation(PacketCreator &packet, Guild *guild) {
 	// Initializing the leader
 	Player *leader = PlayerDataProvider::Instance()->getPlayer(guild->getLeader(), true);
 
-	if (leader == nullptr)
-		std::cout << "Leader not found in the server. Leaderid: " << guild->getLeader() << std::endl;
-
+	if (leader == nullptr) {
+		std::cout << "Leader not found in the server. Leader ID: " << guild->getLeader() << std::endl;
+	}
 	packet.add<int32_t>(guild->getId());
 	packet.addString(guild->getName());
 
-	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++) 
+	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++) {
 		packet.addString(guild->getTitle(i));
-	
-	packet.add<int8_t>(guild->m_players.size());
+	}
 
-	if (leader != nullptr)
+	packet.add<uint8_t>(guild->m_players.size());
+
+	if (leader != nullptr) {
 		packet.add<int32_t>(leader->getId());
+	}
 
 	for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++) {
-		if (iter->second->getId() != guild->getLeader())
+		if (iter->second->getId() != guild->getLeader()) {
 			packet.add<int32_t>(iter->second->getId());
+		}
 	}
 
 	// Adding the information of the players
@@ -364,8 +367,9 @@ void GuildPacket::sendToGuild(PacketCreator &packet, Guild *guild, Player *playe
 	unordered_map<int32_t, Player *> players = guild->m_players;
 	unordered_map<int32_t, Player *>::iterator iter;
 	for (iter = players.begin(); iter != players.end(); iter++) {
-		if ((player != nullptr && iter->second == player) || !iter->second->isOnline()) 
+		if ((player != nullptr && iter->second == player) || !iter->second->isOnline()) {
 			continue;
+		}
 		PacketCreator pack;
 		pack.add<int16_t>(IMSG_FORWARD_TO);
 		pack.add<int32_t>(iter->second->getId());

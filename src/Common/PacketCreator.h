@@ -56,6 +56,7 @@ private:
 	static const size_t bufferLen = 1000; // Initial buffer length
 
 	unsigned char * getBuffer(size_t pos, size_t len);
+	unsigned char getHexByte(unsigned char input);
 
 	size_t m_pos;
 	shared_array<unsigned char> m_packet;

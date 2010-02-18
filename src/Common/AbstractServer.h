@@ -18,12 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.h"
+#include "Logger.h"
 #include "Types.h"
+#include <boost/scoped_ptr.hpp>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
+
+class ConfigFile;
+struct LogConfig;
 
 class AbstractServer {
 public:
@@ -32,17 +37,30 @@ public:
 	void initialize();
 	virtual void listen() = 0;
 	virtual void loadConfig() = 0;
+	virtual void loadLogConfig() = 0;
 	virtual void loadData() = 0;
+	virtual string makeLogIdentifier() = 0;
 	virtual void shutdown();
-	
-	clock_t getStartTime() const { return startTime; }
-	string getInterPassword() const { return inter_password; }
+
 	void displayLaunchTime() const;
+	void initializeLoggingConstants(ConfigFile &conf) const;
+	void createLogger(const LogConfig &conf);
+	void setListening(bool toListen) { m_toListen = toListen; }
+	void setServerType(int16_t type) { m_serverType = type; }
+	void log(LogTypes::LogTypes type, const string &message);
+	bool isListening() const { return m_toListen; }
+	int16_t getServerType() const { return m_serverType; }
+	clock_t getStartTime() const { return m_startTime; }
+	IpMatrix getExternalIp() const { return m_externalIp; }
+	string getInterPassword() const { return m_interPassword; }
+	Logger * getLogger() const { return m_logger.get(); }
 protected:
 	AbstractServer();
 
-	clock_t startTime;
-	bool to_listen;
-	string inter_password;
-	IpMatrix external_ip;
+	int16_t m_serverType;
+	clock_t m_startTime;
+	bool m_toListen;
+	string m_interPassword;
+	IpMatrix m_externalIp;
+	boost::scoped_ptr<Logger> m_logger;
 };
