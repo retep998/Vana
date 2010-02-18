@@ -1,11 +1,11 @@
--- Use the pin system?
+-- Use the PIN system?
 pin = true;
 
 -- What port should the login server run on?
 port = 8484;
 
--- What port should the login server accept inter-server connection?
+-- What port should the login server accept inter-server connections on?
 inter_port = 8485;
 
--- How many invalid login should the server handles before disconnecting the player? (0 to turn off this feature)
+-- How many invalid logins should the server handle before disconnecting the player? (0 to turn off this feature)
 invalid_login_threshold = 5;

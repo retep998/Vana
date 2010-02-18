@@ -24,19 +24,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RankingCalculator.h"
 #include "World.h"
 #include "Worlds.h"
-#include <iostream>
+#include <boost/lexical_cast.hpp>
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (worldId != -1) {
 		World *world = Worlds::Instance()->getWorld(worldId);
 		world->setConnected(false);
 		world->clearChannels(); // Remove the channels (they will automaticly disconnect)
-		std::cout << "World " << (int32_t) worldId << " disconnected." << std::endl;
+
+		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(worldId)));
 	}
 }
 
 void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
-	if (!processAuth(packet, LoginServer::Instance()->getInterPassword())) return;
+	if (!processAuth(LoginServer::Instance(), packet, LoginServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
@@ -48,13 +49,8 @@ void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 
 void LoginServerAcceptConnection::authenticated(int8_t type) {
 	switch (type) {
-		case InterWorldServer:
-			Worlds::Instance()->addWorldServer(this);
-			break;
-		case InterChannelServer:
-			Worlds::Instance()->addChannelServer(this);
-			break;
-		default:
-			getSession()->disconnect();
+		case ServerTypes::World: Worlds::Instance()->addWorldServer(this); break;
+		case ServerTypes::Channel: Worlds::Instance()->addChannelServer(this); break;
+		default: getSession()->disconnect();
 	}
 }

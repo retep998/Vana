@@ -28,6 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoginServer * LoginServer::singleton = nullptr;
 
+LoginServer::LoginServer()
+{
+	setServerType(ServerTypes::Login);
+}
+
 void LoginServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), MapleVersion::PatchLocation);
 	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory());
@@ -49,9 +54,25 @@ void LoginServer::loadConfig() {
 	m_port = config.getShort("port");
 	m_interPort = config.getShort("inter_port");
 	m_maxInvalidLogins = config.getInt("invalid_login_threshold");
-	to_listen = true;
+	setListening(true);
 
 	loadWorlds();
+}
+
+void LoginServer::loadLogConfig() {
+	ConfigFile conf("conf/logger.lua", false);
+	initializeLoggingConstants(conf);
+	conf.execute();
+
+	bool enabled = conf.getBool("log_login");
+	if (enabled) {
+		LogConfig log = conf.getLogConfig("login");
+		createLogger(log);
+	}
+}
+
+string LoginServer::makeLogIdentifier() {
+	return ""; // Login needs no special identifier; there's only one
 }
 
 void LoginServer::loadWorlds() {
@@ -62,7 +83,7 @@ void LoginServer::loadWorlds() {
 	size_t i = 0;
 	while (1) {
 		formatter % i % "name";
-		if (!config.keyExist(formatter.str()))
+		if (!config.keyExists(formatter.str()))
 			break; // No more worlds
 
 		World *world = new World();

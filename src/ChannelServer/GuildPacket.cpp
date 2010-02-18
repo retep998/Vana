@@ -313,7 +313,7 @@ void GuildPacket::handleEmblemChange(PacketReader &packet) {
 		pack.add<uint8_t>(logo.backgroundColor);
 		pack.add<int16_t>(logo.logo);
 		pack.add<uint8_t>(logo.color);
-		Maps::getMap(player->getMap())->sendPacket(pack, player);	
+		Maps::getMap(player->getMap())->sendPacket(pack, player);
 	}
 }
 

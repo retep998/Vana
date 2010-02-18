@@ -57,6 +57,7 @@ public:
 	void handle_stop();
 	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
 	void send(const PacketCreator &packet, bool encrypt = true);
+	uint32_t getIp() const;
 protected:
 	void start_read_header();
 	void handle_write(const boost::system::error_code &error, size_t bytes_transferred);

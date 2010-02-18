@@ -81,6 +81,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Common\ConsoleLogger.cpp" />
+    <ClCompile Include="src\Common\FileLogger.cpp" />
+    <ClCompile Include="src\Common\Logger.cpp" />
+    <ClCompile Include="src\Common\LogReplacements.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -98,6 +102,7 @@
     <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
+    <ClCompile Include="src\Common\SqlLogger.cpp" />
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
     <ClCompile Include="src\Common\ConfigFile.cpp" />
     <ClCompile Include="src\Common\Database.cpp" />
@@ -132,10 +137,15 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\ConsoleLogger.h" />
     <ClInclude Include="src\Common\ExitCodes.h" />
+    <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\Logger.h" />
+    <ClInclude Include="src\Common\LogReplacements.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
+    <ClInclude Include="src\Common\SqlLogger.h" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\BuffDataProvider.h" />
     <ClInclude Include="src\Common\InitializeCommon.h" />

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-//Inter-server communication does not separate send and recv because the server does both
+// Inter-server communication does not separate send and recv because the server does both
 enum AnyConnection {
 	IMSG_PASSWORD = 0xff
 };
@@ -32,7 +32,7 @@ enum LoginWorld {
 };
 
 enum LoginChannel {
-	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000, // Get World server info
+	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000, // Get world server info
 	IMSG_CALCULATE_RANKING
 };
 
@@ -50,12 +50,4 @@ enum WorldChannel {
 	IMSG_TO_CHANNELS, // For sending a packet from a channel to all channels via the WorldServer
 	IMSG_REFRESH_DATA, // For reloading MCDB
 	IMSG_SYNC
-};
-
-enum ConnectionTypes {
-	InterLoginServer,
-	InterWorldServer,
-	InterChannelServer,
-	InterCashServer,
-	InterMtsServer
 };

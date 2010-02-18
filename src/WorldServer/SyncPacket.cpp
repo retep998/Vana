@@ -418,7 +418,7 @@ void SyncPacket::PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t
 			packet.add<int8_t>(0x01);
 			packet.add<int8_t>(type == PartyActions::Leave ? 0x00 : 0x01);
 			packet.addString(PlayerDataProvider::Instance()->getPlayer(target, true)->getName());
-			break;	
+			break;
 		case PartyActions::SilentUpdate:
 		case PartyActions::LogInOrOut:
 			packet.add<int8_t>(0x07);

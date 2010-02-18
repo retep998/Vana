@@ -410,6 +410,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Loggers"
+				>
+				<File
+					RelativePath=".\src\Common\ConsoleLogger.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\FileLogger.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Logger.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\LogReplacements.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\SqlLogger.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -729,6 +753,30 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\DatabaseMigrationRunner.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Loggers"
+				>
+				<File
+					RelativePath=".\src\Common\ConsoleLogger.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\FileLogger.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\Logger.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\LogReplacements.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\SqlLogger.h"
 					>
 				</File>
 			</Filter>

@@ -16,13 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConfigFile.h"
+#include "Configuration.h"
 #include "ExitCodes.h"
 #include "FileUtilities.h"
 #include "IpUtilities.h"
 #include <iostream>
 
-ConfigFile::ConfigFile(const string &filename) {
+ConfigFile::ConfigFile(const string &filename, bool executeFile) {
 	loadFile(filename);
+	if (executeFile) {
+		execute();
+	}
 }
 
 ConfigFile::ConfigFile() { }
@@ -35,20 +39,33 @@ void ConfigFile::loadFile(const string &filename) {
 		exit(ExitCodes::ConfigFileMissing);
 	}
 
-	luaVm = lua_open();
-	luaopen_base(luaVm);
-
-	luaL_dofile(luaVm, filename.c_str());
+	m_file = filename;
+	m_luaVm = lua_open();
+	luaopen_base(getLuaState());
 }
 
-bool ConfigFile::keyExist(const string &value) {
-	lua_getglobal(luaVm, value.c_str());
-	return !lua_isnil(luaVm, -1);
+void ConfigFile::execute() {
+	luaL_dofile(getLuaState(), m_file.c_str());
+}
+
+bool ConfigFile::keyExists(const string &value) {
+	lua_getglobal(getLuaState(), value.c_str());
+	return !lua_isnil(getLuaState(), -1);
+}
+
+void ConfigFile::setVariable(const string &name, const string &value) {
+	lua_pushstring(getLuaState(), value.c_str());
+	lua_setglobal(getLuaState(), name.c_str());
+}
+
+void ConfigFile::setVariable(const string &name, int32_t value) {
+	lua_pushinteger(getLuaState(), value);
+	lua_setglobal(getLuaState(), name.c_str());
 }
 
 int32_t ConfigFile::getInt(const string &value) {
-	lua_getglobal(luaVm, value.c_str());
-	return lua_tointeger(luaVm, -1);
+	lua_getglobal(getLuaState(), value.c_str());
+	return lua_tointeger(getLuaState(), -1);
 }
 
 int16_t ConfigFile::getShort(const string &value) {
@@ -56,23 +73,23 @@ int16_t ConfigFile::getShort(const string &value) {
 }
 
 string ConfigFile::getString(const string &value) {
-	lua_getglobal(luaVm, value.c_str());
-	return string(lua_tostring(luaVm, -1));
+	lua_getglobal(getLuaState(), value.c_str());
+	return string(lua_tostring(getLuaState(), -1));
 }
 
 IpMatrix ConfigFile::getIpMatrix(const string &value) {
 	IpMatrix matrix;
 	
-	lua_getglobal(luaVm, value.c_str());
-	lua_pushnil(luaVm);
-	while (lua_next(luaVm, -2)) {
+	lua_getglobal(getLuaState(), value.c_str());
+	lua_pushnil(getLuaState());
+	while (lua_next(getLuaState(), -2)) {
 		IpArray arr;
 		arr.reserve(2);
 
-		lua_pushnil(luaVm);
-		while (lua_next(luaVm, -2)) {
-			arr.push_back(IpUtilities::stringToIp(lua_tostring(luaVm, -1)));
-			lua_pop(luaVm, 1);
+		lua_pushnil(getLuaState());
+		while (lua_next(getLuaState(), -2)) {
+			arr.push_back(IpUtilities::stringToIp(lua_tostring(getLuaState(), -1)));
+			lua_pop(getLuaState(), 1);
 		}
 
 		if (arr.size() != 2) {
@@ -84,7 +101,7 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 
 		matrix.push_back(arr);
 
-		lua_pop(luaVm, 1);
+		lua_pop(getLuaState(), 1);
 	}
 
 	return matrix;
@@ -93,11 +110,11 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChannels) {
 	vector<int8_t> channels;
 
-	lua_getglobal(luaVm, value.c_str());
-	lua_pushnil(luaVm);
-	while (lua_next(luaVm, -2)) {
-		channels.push_back(lua_tointeger(luaVm, -1));
-		lua_pop(luaVm, 1);
+	lua_getglobal(getLuaState(), value.c_str());
+	lua_pushnil(getLuaState());
+	while (lua_next(getLuaState(), -2)) {
+		channels.push_back(lua_tointeger(getLuaState(), -1));
+		lua_pop(getLuaState(), 1);
 	}
 
 	if (channels.size() == 1 && channels[0] == -1) {
@@ -110,6 +127,17 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 }
 
 bool ConfigFile::getBool(const string &value) {
-	lua_getglobal(luaVm, value.c_str());
-	return (lua_toboolean(luaVm, -1) != 0);
+	lua_getglobal(getLuaState(), value.c_str());
+	return (lua_toboolean(getLuaState(), -1) != 0);
+}
+
+LogConfig ConfigFile::getLogConfig(const string &server) {
+	LogConfig x;
+	string t = server + "_log_";
+	x.destination = getInt(t + "destination");
+	x.bufferSize = getInt(t + "buffer_size");
+	x.format = getString(t + "format");
+	x.file = getString(t + "file");
+	x.timeFormat = getString("log_time_format");
+	return x;
 }
