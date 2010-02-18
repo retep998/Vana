@@ -32,7 +32,7 @@ log_time_format = "%MM/%DD/%YY %MI:%HH:%SS";
 -- %WW = AM/PM
 -- %QQ = A/P
 -- %zz = timezone (+0600, -0800, 0000)
-- All replacement identifiers are case-sensitive
+-- All replacement identifiers are case-sensitive
 
 -- Logging options
 -- *_log_destination: the place you wish to log to; options are LOG_NONE, LOG_FILE, LOG_SQL, and LOG_CONSOLE
