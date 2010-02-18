@@ -62,7 +62,7 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
-	setVariable("playerid", playerid); // Pushing ID for reference from static functions
+	setVariable("_playerid", playerid); // Pushing ID for reference from static functions
 	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
 	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
 	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
@@ -70,7 +70,7 @@ void LuaScriptable::initialize() {
 
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player != nullptr && player->getInstance() != nullptr)
-		setVariable("instancename", player->getInstance()->getName());
+		setVariable("_instancename", player->getInstance()->getName());
 
 	// Miscellanous
 	lua_register(luaVm, "consoleOutput", &LuaExports::consoleOutput);
@@ -383,7 +383,7 @@ void LuaScriptable::printError(const string &error) {
 
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "playerid");
+	lua_getglobal(luaVm, "_playerid");
 	return PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 }
 
@@ -399,7 +399,7 @@ Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
 }
 
 Instance * LuaExports::getInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "instancename");
+	lua_getglobal(luaVm, "_instancename");
 	return Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 }
 
@@ -1789,7 +1789,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	}
 
 	lua_pushstring(luaVm, name.c_str());
-	lua_setglobal(luaVm, "instancename");
+	lua_setglobal(luaVm, "_instancename");
 	return 0;
 }
 
@@ -1965,19 +1965,19 @@ int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
 }
 
 int LuaExports::revertInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "oldinstancename");
-	lua_setglobal(luaVm, "instancename");
+	lua_getglobal(luaVm, "_oldinstancename");
+	lua_setglobal(luaVm, "_instancename");
 	return 0;
 }
 
 int LuaExports::setInstance(lua_State *luaVm) {
 	Instance *instance = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 	if (instance != nullptr) {
-		lua_getglobal(luaVm, "instancename");
-		lua_setglobal(luaVm, "oldinstancename");
+		lua_getglobal(luaVm, "_instancename");
+		lua_setglobal(luaVm, "_oldinstancename");
 
 		lua_pushstring(luaVm, instance->getName().c_str());
-		lua_setglobal(luaVm, "instancename");
+		lua_setglobal(luaVm, "_instancename");
 	}
 	lua_pushboolean(luaVm, instance != nullptr);
 	return 1;
