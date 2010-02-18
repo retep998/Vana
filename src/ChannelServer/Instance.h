@@ -50,7 +50,7 @@ struct TimerAction {
 
 class Instance {
 public:
-	Instance(const string &name, int32_t map, int32_t playerid, int32_t time, int32_t persistent, bool showtimer);
+	Instance(const string &name, int32_t map, int32_t playerId, int32_t time, int32_t persistent, bool showTimer, bool appLaunch = false);
 	~Instance();
 
 	string getName() const { return m_name; }
