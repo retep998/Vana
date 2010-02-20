@@ -42,18 +42,20 @@ void SqlLogger::log(LogTypes::LogTypes type, const string &identifier, const str
 }
 
 void SqlLogger::flush() {
-	mysqlpp::Query query = Database::getCharDB().query("INSERT INTO logs VALUES ");
-	for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
-		if (iter != m_buffer.begin()) {
-			query << ",";
+	if (m_buffer.size() > 0) {
+		mysqlpp::Query query = Database::getCharDB().query("INSERT INTO logs VALUES ");
+		for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
+			if (iter != m_buffer.begin()) {
+				query << ",";
+			}
+			query << "(DEFAULT, "
+				<< mysqlpp::quote << mysqlpp::DateTime(iter->time) << ","
+				<< getServerType() << ","
+				<< iter->type << ","
+				<< mysqlpp::quote << iter->identifier << ","
+				<< mysqlpp::quote << iter->message << ")";
 		}
-		query << "(DEFAULT, "
-			<< mysqlpp::quote << mysqlpp::DateTime(iter->time) << ","
-			<< getServerType() << ","
-			<< iter->type << ","
-			<< mysqlpp::quote << iter->identifier << ","
-			<< mysqlpp::quote << iter->message << ")";
+		query.exec();
+		m_buffer.clear();
 	}
-	query.exec();
-	m_buffer.clear();
 }
