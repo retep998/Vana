@@ -39,7 +39,9 @@ public:
 	ConfigFile();
 	void loadFile(const string &filename);
 	bool keyExists(const string &value);
-	void execute();
+	bool execute();
+	void handleError();
+	void printError(const string &error);
 	void setVariable(const string &name, const string &value);
 	void setVariable(const string &name, int32_t value);
 	int32_t getInt(const string &value);

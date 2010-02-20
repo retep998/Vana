@@ -44,8 +44,20 @@ void ConfigFile::loadFile(const string &filename) {
 	luaopen_base(getLuaState());
 }
 
-void ConfigFile::execute() {
-	luaL_dofile(getLuaState(), m_file.c_str());
+bool ConfigFile::execute() {
+	if (luaL_dofile(getLuaState(), m_file.c_str())) {
+		handleError();
+		return false;
+	}
+	return true;
+}
+
+void ConfigFile::handleError() {
+	printError(lua_tostring(getLuaState(), -1));
+}
+
+void ConfigFile::printError(const string &error) {
+	std::cout << error << std::endl;
 }
 
 bool ConfigFile::keyExists(const string &value) {
