@@ -31,6 +31,10 @@ ConfigFile::ConfigFile(const string &filename, bool executeFile) {
 
 ConfigFile::ConfigFile() { }
 
+ConfigFile::~ConfigFile() {
+	lua_close(getLuaState());
+}
+
 void ConfigFile::loadFile(const string &filename) {
 	if (!FileUtilities::fileExists(filename)) {
 		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
@@ -62,7 +66,9 @@ void ConfigFile::printError(const string &error) {
 
 bool ConfigFile::keyExists(const string &value) {
 	lua_getglobal(getLuaState(), value.c_str());
-	return !lua_isnil(getLuaState(), -1);
+	bool ret = !lua_isnil(getLuaState(), -1);
+	lua_pop(getLuaState(), 1);
+	return ret;
 }
 
 void ConfigFile::setVariable(const string &name, const string &value) {
@@ -77,7 +83,9 @@ void ConfigFile::setVariable(const string &name, int32_t value) {
 
 int32_t ConfigFile::getInt(const string &value) {
 	lua_getglobal(getLuaState(), value.c_str());
-	return lua_tointeger(getLuaState(), -1);
+	int32_t val = lua_tointeger(getLuaState(), -1);
+	lua_pop(getLuaState(), 1);
+	return val;
 }
 
 int16_t ConfigFile::getShort(const string &value) {
@@ -86,12 +94,14 @@ int16_t ConfigFile::getShort(const string &value) {
 
 string ConfigFile::getString(const string &value) {
 	lua_getglobal(getLuaState(), value.c_str());
-	return string(lua_tostring(getLuaState(), -1));
+	string x = lua_tostring(getLuaState(), -1);
+	lua_pop(getLuaState(), 1);
+	return x;
 }
 
 IpMatrix ConfigFile::getIpMatrix(const string &value) {
 	IpMatrix matrix;
-	
+
 	lua_getglobal(getLuaState(), value.c_str());
 	lua_pushnil(getLuaState());
 	while (lua_next(getLuaState(), -2)) {
@@ -116,6 +126,8 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 		lua_pop(getLuaState(), 1);
 	}
 
+	lua_pop(getLuaState(), 1);
+
 	return matrix;
 }
 
@@ -129,6 +141,8 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 		lua_pop(getLuaState(), 1);
 	}
 
+	lua_pop(getLuaState(), 1);
+
 	if (channels.size() == 1 && channels[0] == -1) {
 		channels.clear();
 		for (size_t i = 1; i <= maxChannels; i++) {
@@ -140,7 +154,9 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 
 bool ConfigFile::getBool(const string &value) {
 	lua_getglobal(getLuaState(), value.c_str());
-	return (lua_toboolean(getLuaState(), -1) != 0);
+	bool ret = (lua_toboolean(getLuaState(), -1) != 0);
+	lua_pop(getLuaState(), 1);
+	return ret;
 }
 
 LogConfig ConfigFile::getLogConfig(const string &server) {
