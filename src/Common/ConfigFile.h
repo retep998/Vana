@@ -37,6 +37,7 @@ class ConfigFile {
 public:
 	ConfigFile(const string &filename, bool executeFile = true);
 	ConfigFile();
+	~ConfigFile();
 	void loadFile(const string &filename);
 	bool keyExists(const string &value);
 	bool execute();

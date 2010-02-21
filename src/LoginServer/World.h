@@ -35,7 +35,7 @@ class LoginServerAcceptConnection;
 
 class World {
 public:
-	World() : m_connected(false), m_playerLoad(0) { }
+	World() : m_connected(false), m_playerLoad(0), m_connection(nullptr) { }
 
 	void setConnected(bool connected) { m_connected = connected; }
 	void setId(int8_t id) { m_id = id; }
