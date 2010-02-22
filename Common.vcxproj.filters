@@ -96,6 +96,12 @@
     <Filter Include="Source Files\Loggers">
       <UniqueIdentifier>{e4e82301-f6d0-4624-ab9f-a8ac9221dc24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Loggers\Combo">
+      <UniqueIdentifier>{58704933-ce79-414f-b561-742800bb19bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Loggers\Combo">
+      <UniqueIdentifier>{470ae257-4913-4743-b09d-664595387b6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -250,6 +256,18 @@
     </ClCompile>
     <ClCompile Include="src\Common\LogReplacements.cpp">
       <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Combo Loggers\ConsoleFileLogger.cpp">
+      <Filter>Source Files\Loggers\Combo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp">
+      <Filter>Source Files\Loggers\Combo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp">
+      <Filter>Source Files\Loggers\Combo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp">
+      <Filter>Source Files\Loggers\Combo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -462,6 +480,18 @@
     </ClInclude>
     <ClInclude Include="src\Common\SqlLogger.h">
       <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h">
+      <Filter>Header Files\Loggers\Combo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.h">
+      <Filter>Header Files\Loggers\Combo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h">
+      <Filter>Header Files\Loggers\Combo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Combo Loggers\SqlFileLogger.h">
+      <Filter>Header Files\Loggers\Combo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

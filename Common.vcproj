@@ -433,6 +433,26 @@
 					RelativePath=".\src\Common\SqlLogger.cpp"
 					>
 				</File>
+				<Filter
+					Name="Combo"
+					>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleFileLogger.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleSqlLogger.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\SqlFileLogger.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -779,6 +799,26 @@
 					RelativePath=".\src\Common\SqlLogger.h"
 					>
 				</File>
+				<Filter
+					Name="Combo"
+					>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleFileLogger.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleSqlFileLogger.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\ConsoleSqlLogger.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\Combo Loggers\SqlFileLogger.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>
