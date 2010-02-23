@@ -6,7 +6,7 @@ log_cash = false; -- These servers don't exist
 log_mts = false;
 
 -- The format that %t expands to
-log_time_format = "%MM/%DD/%YY %MI:%HH:%SS";
+log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 
 -- The following replacements are supported:
 -- %yy = short year (99, 00, 10)
