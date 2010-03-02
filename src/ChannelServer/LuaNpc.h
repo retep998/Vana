@@ -58,11 +58,13 @@ namespace LuaExports {
 	int sendNext(lua_State *luaVm);
 	int sendOk(lua_State *luaVm);
 	int askAcceptDecline(lua_State *luaVm);
+	int askAcceptDeclineNoExit(lua_State *luaVm);
 	int askChoice(lua_State *luaVm);
 	int askNumber(lua_State *luaVm);
 	int askStyle(lua_State *luaVm);
 	int askText(lua_State *luaVm);
 	int askYesNo(lua_State *luaVm);
+	int askQuiz(lua_State *luaVm);
 
 	// Quest
 	int addQuest(lua_State *luaVm);

@@ -71,12 +71,12 @@ end
 
 function partyQuestClear()
 	showMapEvent("quest/party/clear");
-	playSoundMap("Party1/Clear");
+	playFieldSound("Party1/Clear", getMap());
 end
 
 function partyQuestWrong()
 	showMapEvent("quest/party/wrong_kor");
-	playSoundMap("Party1/Failed");
+	playFieldSound("Party1/Failed", getMap());
 end
 
 function giveAllPartyMembersEXP(exp, mapid)

@@ -223,14 +223,6 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::sendSound(Player *player, const string &soundname) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x04);
-	packet.addString(soundname);
-	player->getSession()->send(packet);
-}
-
 void PlayerPacket::showHpBar(Player *player, Player *target) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY_HP_DISPLAY);

@@ -265,59 +265,6 @@ void MapPacket::forceMapEquip(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::playMusic(int32_t mapid, const string &music) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x06);
-	packet.addString(music);
-	Maps::getMap(mapid)->sendPacket(packet);
-}
-
-void MapPacket::playMusic(Player *player, const string &music) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x06);
-	packet.addString(music);
-	player->getSession()->send(packet);
-}
-
-void MapPacket::sendSound(int32_t mapid, const string &sound) {
-	// Party1/Clear = Clear
-	// Party1/Failed = Wrong
-	// Cokeplay/Victory = Victory
-	// Cokeplay/Failed = Lose
-	// Coconut/Victory = Victory
-	// Coconut/Failed = Lose 
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x04);
-	packet.addString(sound);
-	Maps::getMap(mapid)->sendPacket(packet);
-}
-
-void MapPacket::sendEvent(int32_t mapid, const string &id) {
-	// quest/party/clear = Clear
-	// quest/party/wrong_kor = Wrong
-	// quest/carnival/win = Win
-	// quest/carnival/lose = Lose
-	// event/coconut/victory = Victory
-	// event/coconut/lose = Lose
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x03);
-	packet.addString(id);
-	Maps::getMap(mapid)->sendPacket(packet);
-}
-
-void MapPacket::sendEffect(int32_t mapid, const string &effect) {
-	// gate = KerningPQ Door
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x02);
-	packet.addString(effect);
-	Maps::getMap(mapid)->sendPacket(packet);
-}
-
 void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_EVENT_INSTRUCTION);
@@ -360,13 +307,6 @@ void MapPacket::removeMist(int32_t mapid, int32_t id) {
 	packet.add<int16_t>(SMSG_MIST_DESPAWN);
 	packet.add<int32_t>(id);
 	Maps::getMap(mapid)->sendPacket(packet);
-}
-
-void MapPacket::playPortalSoundEffect(Player *player) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x07);
-	player->getSession()->send(packet);
 }
 
 void MapPacket::instantWarp(Player *player, int8_t pid) {

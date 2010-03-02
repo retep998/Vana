@@ -178,7 +178,6 @@ namespace LuaExports {
 	int isActiveSkill(lua_State *luaVm);
 	int isGm(lua_State *luaVm);
 	int isOnline(lua_State *luaVm);
-	int playSoundPlayer(lua_State *luaVm);
 	int revertPlayer(lua_State *luaVm);
 	int setAp(lua_State *luaVm);
 	int setDex(lua_State *luaVm);
@@ -200,6 +199,13 @@ namespace LuaExports {
 	int showInstructionBubble(lua_State *luaVm);
 	int showMessage(lua_State *luaVm);
 
+	// Effects
+	int playFieldSound(lua_State *luaVm);
+	int playMinigameSound(lua_State *luaVm);
+	int setMusic(lua_State *luaVm);
+	int showMapEffect(lua_State *luaVm);
+	int showMapEvent(lua_State *luaVm);
+
 	// Map
 	int clearDrops(lua_State *luaVm);
 	int clearMobs(lua_State *luaVm);
@@ -208,12 +214,8 @@ namespace LuaExports {
 	int getNumPlayers(lua_State *luaVm);
 	int getReactorState(lua_State *luaVm);
 	int killMobs(lua_State *luaVm);
-	int playSoundMap(lua_State *luaVm);
 	int setMapSpawn(lua_State *luaVm);
-	int setMusic(lua_State *luaVm);
 	int setReactorState(lua_State *luaVm);
-	int showMapEffect(lua_State *luaVm);
-	int showMapEvent(lua_State *luaVm);
 	int showMapMessage(lua_State *luaVm);
 	int showMapTimer(lua_State *luaVm);
 	int spawnMob(lua_State *luaVm);

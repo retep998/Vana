@@ -43,11 +43,13 @@ LuaNpc::LuaNpc(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "sendNext", &LuaExports::sendNext);
 	lua_register(luaVm, "sendOK", &LuaExports::sendOk);
 	lua_register(luaVm, "askAcceptDecline", &LuaExports::askAcceptDecline);
+	lua_register(luaVm, "askAcceptDeclineNoExit", &LuaExports::askAcceptDeclineNoExit);
 	lua_register(luaVm, "askChoice", &LuaExports::askChoice);
 	lua_register(luaVm, "askNumber", &LuaExports::askNumber);
 	lua_register(luaVm, "askStyle", &LuaExports::askStyle);
 	lua_register(luaVm, "askText", &LuaExports::askText);
 	lua_register(luaVm, "askYesNo", &LuaExports::askYesNo);
+	lua_register(luaVm, "askQuiz", &LuaExports::askQuiz);
 
 	// Quest
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
@@ -164,6 +166,11 @@ int LuaExports::askAcceptDecline(lua_State *luaVm) {
 	return lua_yield(luaVm, 1);
 }
 
+int LuaExports::askAcceptDeclineNoExit(lua_State *luaVm) {
+	getNpc(luaVm)->sendAcceptDeclineNoExit();
+	return lua_yield(luaVm, 1);
+}
+
 int LuaExports::askChoice(lua_State *luaVm) {
 	getNpc(luaVm)->sendSimple();
 	return lua_yield(luaVm, 1);
@@ -182,8 +189,9 @@ int LuaExports::askStyle(lua_State *luaVm) {
 		styles.push_back(lua_tointeger(luaVm, -1));
 		lua_pop(luaVm, 1);
 	}
-	if (styles.size() > 0)
+	if (styles.size() > 0) {
 		getNpc(luaVm)->sendStyle(&styles[0], styles.size());
+	}
 	return lua_yield(luaVm, 1);
 }
 
@@ -200,6 +208,11 @@ int LuaExports::askText(lua_State *luaVm) {
 
 int LuaExports::askYesNo(lua_State *luaVm) {
 	getNpc(luaVm)->sendYesNo();
+	return lua_yield(luaVm, 1);
+}
+
+int LuaExports::askQuiz(lua_State *luaVm) {
+	getNpc(luaVm)->sendQuiz(lua_tointeger(luaVm, -5), lua_tointeger(luaVm, -4), lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
 	return lua_yield(luaVm, 1);
 }
 

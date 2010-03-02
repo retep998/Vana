@@ -98,6 +98,12 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 		return;
 	}
 
+	if (type == NpcDialogs::Quiz) {
+		npc->proceedText(packet.getString());
+		npc->checkEnd();
+		return;
+	}
+
 	int8_t what = packet.get<int8_t>();
 
 	switch (type) {
@@ -110,6 +116,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 			break;
 		case NpcDialogs::YesNo:
 		case NpcDialogs::AcceptDecline:
+		case NpcDialogs::AcceptDeclineNoExit:
 			switch (what) {
 				case 0: npc->proceedSelection(0); break;
 				case 1:	npc->proceedSelection(1); break;
