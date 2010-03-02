@@ -112,6 +112,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MESOBAG_FAILURE 0xc0 // If the mesobag has failed?
 #define SMSG_QUEST_UPDATE 0xc1
 #define SMSG_BUBBLE 0xc4
+#define SMSG_SOUND 0xc6
 #define SMSG_SKILL_COOLDOWN 0xce // Skill cooldown
 #define SMSG_MOB_SHOW 0xd0
 #define SMSG_MOB_DEATH 0xd1

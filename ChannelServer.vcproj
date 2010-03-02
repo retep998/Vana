@@ -324,6 +324,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\EffectPacket.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\FamePacket.cpp"
 					>
 				</File>
@@ -747,6 +751,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\DropsPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\EffectPacket.h"
 					>
 				</File>
 				<File
