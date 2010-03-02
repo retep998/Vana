@@ -47,6 +47,12 @@ namespace SummonMessages {
 
 class Summon : public MovableLife {
 public:
+	enum MovementPatterns {
+		Static = 0,
+		Follow = 1,
+		Flying = 3
+	};
+
 	Summon() { }
 	Summon(int32_t id, int32_t summonid, uint8_t level);
 
@@ -57,12 +63,6 @@ public:
 	int32_t getHP() { return hp; }
 	void doDamage(int32_t damage) { hp -= damage; }
 private:
-	enum MovementPatterns {
-		Static = 0,
-		Follow = 1,
-		Flying = 3
-	};
-
 	int32_t id;
 	int32_t summonid;
 	uint8_t level;

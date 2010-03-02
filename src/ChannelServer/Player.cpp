@@ -402,7 +402,8 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (portal == nullptr)
 		portal = newmap->getSpawnPoint();
 
-	if (!instance) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
+	if (!instance) {
+		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
 		if (Instance *ii = oldmap->getInstance()) {
 			ii->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
@@ -426,12 +427,14 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		}
 	}
 
-	if (getSummons()->getPuppet() != nullptr) { // Puppets and non-moving summons don't go with you
-		Summons::removeSummon(this, true, true, false, SummonMessages::None);
+	// Puppets and non-moving summons don't go with you
+	if (getSummons()->getPuppet() != nullptr) {
+		Summons::removeSummon(this, true, false, SummonMessages::None);
 	}
-	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == 0) {
-		Summons::removeSummon(this, false, true, false, SummonMessages::None);
+	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == Summon::Static) {
+		Summons::removeSummon(this, false, false, SummonMessages::None);
 	}
+
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}

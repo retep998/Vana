@@ -278,7 +278,7 @@ void Map::addReactor(Reactor *reactor) {
 }
 
 Reactor * Map::getReactor(uint32_t id) const {
-	return (id < m_reactors.size() ? m_reactors[id] : 0);
+	return (id < m_reactors.size() ? m_reactors[id] : nullptr);
 }
 
 size_t Map::getNumReactors() const {
@@ -418,7 +418,7 @@ int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int
 		mob->setOwner(owner);
 		owner->addSpawn(id, mob);
 	}
-	MobsPacket::spawnMob(0, mob, summoneffect, owner, (owner == nullptr));
+	MobsPacket::spawnMob(nullptr, mob, summoneffect, owner, (owner == nullptr));
 	updateMobControl(mob, true);
 	return id;
 }
@@ -428,7 +428,7 @@ int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 
 	Mob *mob = new Mob(id, getId(), info.id, info.pos, spawnid, info.facesRight, info.foothold);
 	m_mobs[id] = mob;
-	MobsPacket::spawnMob(0, mob, 0, 0, true);
+	MobsPacket::spawnMob(nullptr, mob, 0, nullptr, true);
 	updateMobControl(mob, true);
 	return id;
 }

@@ -238,7 +238,7 @@ void PlayerStats::modifiedHp() {
 			i->sendMessage(PlayerDeath, player->getId());
 		}
 		loseExp();
-		Summons::removeSummon(player, false, true, false, SummonMessages::Disappearing);
+		Summons::removeSummon(player, false, false, SummonMessages::Disappearing);
 	}
 }
 
