@@ -93,9 +93,11 @@ void Characters::showAllCharacters(Player *player) {
 
 	CharsMap chars;
 	uint32_t charsNum = 0;
+	World *world;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		uint8_t worldid = res[i]["world_id"];
-		if (!Worlds::Instance()->getWorld(worldid)->isConnected()) {
+		world = Worlds::Instance()->getWorld(worldid);
+		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
 			continue;
 		}
@@ -180,6 +182,10 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 }
 
 void Characters::createCharacter(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
 	Character charc;
 	string name = packet.getString();
 	if (name.size() > Characters::MaxNameSize || name.size() < Characters::MinNameSize) {
@@ -258,6 +264,10 @@ namespace Functors {
 }
 
 void Characters::deleteCharacter(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
 	int32_t data = packet.get<int32_t>();
 	int32_t id = packet.get<int32_t>();
 
@@ -348,12 +358,20 @@ void Characters::connectGame(Player *player, int32_t charid) {
 }
 
 void Characters::connectGame(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
 	int32_t id = packet.get<int32_t>();
 
 	connectGame(player, id);
 }
 
 void Characters::connectGameWorld(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
 	int32_t id = packet.get<int32_t>();
 	int8_t worldid = (int8_t) packet.get<int32_t>();
 	player->setWorld(worldid);
