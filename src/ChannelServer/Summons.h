@@ -29,20 +29,19 @@ class LoopingId;
 namespace Summons {
 	extern LoopingId summonids;
 	void useSummon(Player *player, int32_t skillid, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer = false);
+	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
 	void showSummon(Player *player);
 	void showSummons(Player *ofplayer, Player *toplayer);
 	void moveSummon(Player *Player, PacketReader &packet);
 	void damageSummon(Player *player, PacketReader &packet);
-	string getSummonName(int32_t summonid);
 	int32_t loopId();
 };
 
 namespace SummonMessages {
 	enum Messages {
-		None = 0x00,
-		OutOfTime = 0x01,
-		Disappearing = 0x02
+		OutOfTime = 0x00,
+		Disappearing = 0x03,
+		None = 0x04
 	};
 }
 
@@ -58,6 +57,12 @@ public:
 	int32_t getHP() { return hp; }
 	void doDamage(int32_t damage) { hp -= damage; }
 private:
+	enum MovementPatterns {
+		Static = 0,
+		Follow = 1,
+		Flying = 3
+	};
+
 	int32_t id;
 	int32_t summonid;
 	uint8_t level;

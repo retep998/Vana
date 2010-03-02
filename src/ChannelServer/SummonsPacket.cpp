@@ -55,12 +55,12 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startP
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SummonsPacket::removeSummon(Player *player, Summon *summon, bool animated) {
+void SummonsPacket::removeSummon(Player *player, Summon *summon, int8_t message) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SUMMON_DESPAWN);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
-	packet.add<int8_t>(animated ? 4 : 1); // ?
+	packet.add<int8_t>(message);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
