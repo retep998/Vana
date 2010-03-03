@@ -421,6 +421,16 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	setStance(0);
 	setFh(0);
 	setFallCounter(0);
+
+	// Prevent chair Denial of Service
+	if (getMapChair() != 0) {
+		oldmap->playerSeated(getMapChair(), nullptr);
+		setMapChair(0);
+	}
+	if (getChair() != 0) {
+		setChair(0);
+	}
+
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);
@@ -448,7 +458,8 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 
 string Player::getMedalName() {
 	string ret;
-	if (int32_t itemid = getInventory()->getEquippedId(EquipSlots::Medal)) { // Check if there's an item at that slot
+	if (int32_t itemid = getInventory()->getEquippedId(EquipSlots::Medal)) {
+		// Check if there's an item at that slot
 		ret = "<";
 		ret += ItemDataProvider::Instance()->getItemName(itemid);
 		ret += "> ";
