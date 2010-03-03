@@ -116,32 +116,36 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Players... ";
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM characters WHERE world_id = " << worldId << " ORDER BY guildrank ASC";
-	mysqlpp::StoreQueryResult res = query.store();
+	query << "SELECT id, `name`, guildid, guildrank, allianceid, alliancerank FROM characters WHERE world_id = " << worldId << " AND guildid <> 0 ORDER BY guildrank ASC";
+	mysqlpp::UseQueryResult res = query.use();
 	Player *p;
 	int32_t guildid;
 	Guild *guild;
 
-	for (int32_t i = 0; i < (int32_t) res.num_rows(); i++) {
-		guildid = res[i]["guildid"];
+	enum TableColumns {
+		Id, Name, GuildId, GuildRank, AllianceId, AllianceRank
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		guildid = atoi(row[GuildId]);
 		guild = getGuild(guildid);
 		if (guildid != 0 && guild == nullptr) {
 			std::stringstream x;
-			x << (string) res[i]["name"] << " has an invalid guild ID (guild doesn't exist)";
+			x << (string) row[Name] << " has an invalid guild ID (guild doesn't exist)";
 			WorldServer::Instance()->log(LogTypes::Warning, x.str());
 			continue;
 		}
 
-		p = new Player(res[i]["id"]);
-		p->setName(static_cast<string>(res[i]["name"]));
+		p = new Player(atoi(row[Id]));
+		p->setName(static_cast<string>(row[Name]));
 		p->setJob(-1);
 		p->setLevel(-1);
 		p->setMap(-1);
 		p->setChannel(0);
 		p->setGuild(guild);
-		p->setGuildRank(static_cast<uint8_t>(res[i]["guildrank"]));
-		p->setAlliance(getAlliance(res[i]["allianceid"]));
-		p->setAllianceRank(static_cast<uint8_t>(res[i]["alliancerank"]));
+		p->setGuildRank(static_cast<uint8_t>(atoi(row[GuildRank])));
+		p->setAlliance(getAlliance(atoi(row[AllianceId])));
+		p->setAllianceRank(static_cast<uint8_t>(atoi(row[AllianceRank])));
 
 		registerPlayer(p, false);
 		if (guildid != 0) {
