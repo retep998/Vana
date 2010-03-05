@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
-#include "Reactors.h"
+#include "ReactorHandler.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
@@ -76,7 +76,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		drop->doDrop(player->getPos());
 		if (istradeable) {
 			// Drop is deleted otherwise, avoid like plague
-			Reactors::checkDrop(player, drop);
+			ReactorHandler::checkDrop(player, drop);
 		}
 	}
 	else {

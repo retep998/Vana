@@ -119,7 +119,8 @@
     <ClCompile Include="src\ChannelServer\Party.cpp" />
     <ClCompile Include="src\ChannelServer\Pet.cpp" />
     <ClCompile Include="src\ChannelServer\Quests.cpp" />
-    <ClCompile Include="src\ChannelServer\Reactors.cpp" />
+    <ClCompile Include="src\ChannelServer\Reactor.cpp" />
+    <ClCompile Include="src\ChannelServer\ReactorHandler.cpp" />
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp" />
     <ClCompile Include="src\ChannelServer\Skills.cpp" />
     <ClCompile Include="src\ChannelServer\Summons.cpp" />
@@ -215,7 +216,8 @@
     <ClInclude Include="src\ChannelServer\Party.h" />
     <ClInclude Include="src\ChannelServer\Pet.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
-    <ClInclude Include="src\ChannelServer\Reactors.h" />
+    <ClInclude Include="src\ChannelServer\Reactor.h" />
+    <ClInclude Include="src\ChannelServer\ReactorHandler.h" />
     <ClInclude Include="src\ChannelServer\SkillMacros.h" />
     <ClInclude Include="src\ChannelServer\Skills.h" />
     <ClInclude Include="src\ChannelServer\Summons.h" />

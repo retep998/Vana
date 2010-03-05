@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Quests.h"
 #include "ReactorPacket.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include <string>
 
 LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) :

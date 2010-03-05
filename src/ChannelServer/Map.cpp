@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Randomizer.h"
 #include "ReactorPacket.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -61,7 +61,8 @@ m_spawnmobs(-1),
 m_music(info->defaultMusic),
 m_timers(new Timer::Container)
 {
-	new Timer::Timer(bind(&Map::runTimer, this), // Dynamic loading, start the map timer once the object is created
+	// Dynamic loading, start the map timer once the object is created
+	new Timer::Timer(bind(&Map::runTimer, this),
 		Timer::Id(Timer::Types::MapTimer, id, 0),
 		getTimers(), 0, 10 * 1000);
 }

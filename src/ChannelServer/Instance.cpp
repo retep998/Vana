@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Party.h"
 #include "Player.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "Timer/Container.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"

@@ -28,21 +28,21 @@ using std::vector;
 
 struct ReactorStateInfo {
 	ReactorStateInfo() : type(0) { }
-	int8_t nextstate;
+	int8_t nextState;
 	int16_t type;
-	int16_t itemquantity;
-	int32_t itemid;
+	int16_t itemQuantity;
+	int32_t itemId;
 	int32_t timeout;
 	Pos lt;
 	Pos rb;
-	vector<int32_t> triggerskills;
+	vector<int32_t> triggerSkills;
 };
 
 struct ReactorData {
-	ReactorData() : removeinfieldset(false), activatebytouch(false) { }
-	bool removeinfieldset;
-	bool activatebytouch;
-	int8_t maxstates;
+	ReactorData() : removeInFieldSet(false), activateByTouch(false) { }
+	bool removeInFieldSet;
+	bool activateByTouch;
+	int8_t maxStates;
 	int32_t link;
 	unordered_map<int8_t, vector<ReactorStateInfo> > states;
 };
@@ -56,7 +56,7 @@ public:
 	}
 	void loadData();
 
-	ReactorData * getReactorData(int32_t reactorid, bool respectLink = false);
+	ReactorData * getReactorData(int32_t reactorId, bool respectLink = false);
 private:
 	ReactorDataProvider() {}
 	static ReactorDataProvider *singleton;
@@ -65,5 +65,5 @@ private:
 	void loadStates();
 	void loadTriggerSkills();
 
-	unordered_map<int32_t, ReactorData> reactorinfo;
+	unordered_map<int32_t, ReactorData> m_reactorInfo;
 };

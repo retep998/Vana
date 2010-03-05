@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Quests.h"
 #include "Randomizer.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"

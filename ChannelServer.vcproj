@@ -276,7 +276,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Reactors.cpp"
+					RelativePath=".\src\ChannelServer\Reactor.cpp"
 					>
 				</File>
 				<File
@@ -624,6 +624,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\ReactorHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\TradeHandler.cpp"
 					>
 				</File>
@@ -706,7 +710,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\ChannelServer\Reactors.h"
+					RelativePath=".\src\ChannelServer\Reactor.h"
 					>
 				</File>
 				<File
@@ -1059,6 +1063,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\ReactorHandler.h"
 					>
 				</File>
 				<File

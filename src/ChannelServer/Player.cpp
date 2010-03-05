@@ -53,7 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
 #include "Quests.h"
-#include "Reactors.h"
+#include "ReactorHandler.h"
 #include "RecvHeader.h"
 #include "ServerPacket.h"
 #include "SkillMacros.h"
@@ -181,8 +181,8 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
 			case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
 			case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
-			case CMSG_REACTOR_HIT: Reactors::hitReactor(this, packet); break;
-			case CMSG_REACTOR_TOUCH: Reactors::touchReactor(this, packet); break;
+			case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
+			case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
 			case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
 			case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
 			case CMSG_SHOP: NpcHandler::useShop(this, packet); break;

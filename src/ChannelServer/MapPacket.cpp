@@ -223,7 +223,7 @@ void MapPacket::portalBlocked(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec) {
+void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_TIMER);
 	packet.add<int8_t>(0x01);
