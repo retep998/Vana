@@ -353,7 +353,7 @@ void Characters::connectGame(Player *player, int32_t charid) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid);
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid, player->getIp());
 	LoginPacket::connectIp(player, charid);
 }
 

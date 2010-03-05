@@ -51,12 +51,13 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	uint16_t channel = packet.get<int16_t>();
 	int32_t playerid = packet.get<int32_t>();
+	uint32_t playerip = packet.get<uint32_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		if (PlayerDataProvider::Instance()->getPlayer(playerid) == nullptr) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			SyncPacket::PlayerPacket::newConnectable(channel, playerid);
+			SyncPacket::PlayerPacket::newConnectable(channel, playerid, playerip);
 		}
 	}
 }

@@ -19,17 +19,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <ctime>
 
+using TimeUtilities::getTickCount;
+
 Connectable * Connectable::singleton = nullptr;
 
-void Connectable::newPlayer(int32_t id) {
-	map[id] = TimeUtilities::getTickCount();
+void Connectable::newPlayer(int32_t id, uint32_t ip) {
+	ConnectingPlayer player;
+	player.connectIp = ip;
+	player.connectTime = getTickCount();
+	m_map[id] = player;
 }
 
-bool Connectable::checkPlayer(int32_t id) {
-	if (map[id]) {
-		if (TimeUtilities::getTickCount() - map[id] < 5000)
-			return true;
-		map.erase(id);
+bool Connectable::checkPlayer(int32_t id, uint32_t ip) {
+	bool correct = false;
+	if (m_map.find(id) != m_map.end()) {
+		ConnectingPlayer &t = m_map[id];
+		if (t.connectIp == ip && (getTickCount() - t.connectTime) < MaxMilliseconds) {
+			correct = true;
+		}
+		m_map.erase(id);
 	}
-	return false;
+	return correct;
 }

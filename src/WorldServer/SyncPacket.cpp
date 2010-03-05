@@ -530,12 +530,13 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	}
 }
 
-void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerid) {
+void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerid, uint32_t playerip) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::NewConnectable);
 	packet.add<int32_t>(playerid);
+	packet.add<uint32_t>(playerip);
 
 	Channels::Instance()->sendToChannel(channel, packet);
 }
