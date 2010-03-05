@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class Mist;
-class Player;
 class PacketCreator;
+class Player;
 
 namespace MapPacket {
 	PacketCreator playerPacket(Player *player);
@@ -32,7 +32,7 @@ namespace MapPacket {
 	void removePlayer(Player *player);
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
-	void showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec);
+	void showClock(Player *player, int8_t hour, int8_t min, int8_t sec);
 	void showTimer(int32_t mapid, int32_t sec); // Show timer like in PQs
 	void showTimer(Player *player, int32_t sec); // Show Timer like in PQs
 	void forceMapEquip(Player *player);
