@@ -1108,7 +1108,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						MapPacket::showEventInstructions(player->getMap());
 						break;
 					case CmdStorage:
-						NpcHandler::showStorage(player, 9900000);
+						NpcHandler::showStorage(player, 1012009);
 						break;
 					case CmdRankingCalc:
 						WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
