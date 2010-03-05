@@ -236,14 +236,18 @@ void ChatHandler::initializeCommands() {
 	command.syntax = "<${jobstring} | #jobid>";
 	command.notes.push_back("Sets your job.");
 	command.notes.push_back("Valid job strings:");
-	command.notes.push_back("beginner");
-	command.notes.push_back("warrior - fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
-	command.notes.push_back("magician - fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
-	command.notes.push_back("bowman - hunter | ranger | bm | xbowman | sniper | marksman");
-	command.notes.push_back("thief - sin | hermit | nl | dit | cb | shadower");
-	command.notes.push_back("pirate - brawler | marauder | buccaneer | gunslinger | outlaw | corsair");
-	command.notes.push_back("gm");
-	command.notes.push_back("sgm");
+	command.notes.push_back("beginner | noblesse");
+	command.notes.push_back("warrior | fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
+	command.notes.push_back("magician | fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
+	command.notes.push_back("bowman | hunter | ranger | bm | xbowman | sniper | marksman");
+	command.notes.push_back("thief | sin | hermit | nl | dit | cb | shadower");
+	command.notes.push_back("pirate | brawler | marauder | buccaneer | gunslinger | outlaw | corsair");
+	command.notes.push_back("gm | sgm");
+	command.notes.push_back("dawn1 | dawn2 | dawn3 | dawn4");
+	command.notes.push_back("blaze1 | blaze2 | blaze3 | blaze4");
+	command.notes.push_back("wind1 | wind2 | wind3 | wind4");
+	command.notes.push_back("night1 | night2 | night3 | night4");
+	command.notes.push_back("thunder1 | thunder2 | thunder3 | thunder4");
 	commandlist["job"] = command.addToMap();
 
 	command.command = CmdLevel;
@@ -1000,53 +1004,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdJob: {
 						if (args.length() != 0) {
-							int16_t job = -1;
-							if (args == "beginner") job = 0;
-							else if (args == "warrior") job = 100;
-							else if (args == "fighter") job = 110;
-							else if (args == "sader") job = 111;
-							else if (args == "hero") job = 112;
-							else if (args == "page") job = 120;
-							else if (args == "wk") job = 121;
-							else if (args == "paladin") job = 122;
-							else if (args == "spearman") job = 130;
-							else if (args == "dk") job  = 131;
-							else if (args == "drk") job = 132;
-							else if (args == "magician") job = 200;
-							else if (args == "fpwiz") job = 210;
-							else if (args == "fpmage") job = 211;
-							else if (args == "fparch") job = 212;
-							else if (args == "ilwiz") job = 220;
-							else if (args == "ilmage") job = 221;
-							else if (args == "ilarch") job = 222;
-							else if (args == "cleric") job = 230;
-							else if (args == "priest") job = 231;
-							else if (args == "bishop") job = 232;
-							else if (args == "bowman") job = 300;
-							else if (args == "hunter") job = 310;
-							else if (args == "ranger") job = 311;
-							else if (args == "bm") job = 312;
-							else if (args == "xbowman") job = 320;
-							else if (args == "sniper") job = 321;
-							else if (args == "marksman") job = 322;
-							else if (args == "thief") job = 400;
-							else if (args == "sin") job = 410;
-							else if (args == "hermit") job = 411;
-							else if (args == "nl") job = 412;
-							else if (args == "dit") job = 420;
-							else if (args == "cb") job = 421;
-							else if (args == "shadower") job = 422;
-							else if (args == "pirate") job = 500;
-							else if (args == "brawler") job = 510;
-							else if (args == "marauder") job = 511;
-							else if (args == "buccaneer") job = 512;
-							else if (args == "gunslinger") job = 520;
-							else if (args == "outlaw") job = 521;
-							else if (args == "corsair") job = 522;
-							else if (args == "gm") job = 900;
-							else if (args == "sgm") job = 910;
-							else job = atoi(args.c_str());
-
+							int16_t job = getJob(args);
 							if (job >= 0) {
 								player->getStats()->setJob(job);
 							}
@@ -1295,6 +1253,77 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 		if (strlen(endptr) != 0) mapid = -1;
 	}
 	return mapid;
+}
+
+int16_t ChatHandler::getJob(const string &query) {
+	int16_t job = -1;
+	if (query == "beginner") job = Jobs::JobIds::Beginner;
+	else if (query == "warrior") job = Jobs::JobIds::Swordsman;
+	else if (query == "fighter") job = Jobs::JobIds::Fighter;
+	else if (query == "sader") job = Jobs::JobIds::Crusader;
+	else if (query == "hero") job = Jobs::JobIds::Hero;
+	else if (query == "page") job = Jobs::JobIds::Page;
+	else if (query == "wk") job = Jobs::JobIds::WhiteKnight;
+	else if (query == "paladin") job = Jobs::JobIds::Paladin;
+	else if (query == "spearman") job = Jobs::JobIds::Spearman;
+	else if (query == "dk") job  = Jobs::JobIds::DragonKnight;
+	else if (query == "drk") job = Jobs::JobIds::DarkKnight;
+	else if (query == "magician") job = Jobs::JobIds::Magician;
+	else if (query == "fpwiz") job = Jobs::JobIds::FPWizard;
+	else if (query == "fpmage") job = Jobs::JobIds::FPMage;
+	else if (query == "fparch") job = Jobs::JobIds::FPArchMage;
+	else if (query == "ilwiz") job = Jobs::JobIds::ILWizard;
+	else if (query == "ilmage") job = Jobs::JobIds::ILMage;
+	else if (query == "ilarch") job = Jobs::JobIds::ILArchMage;
+	else if (query == "cleric") job = Jobs::JobIds::Cleric;
+	else if (query == "priest") job = Jobs::JobIds::Priest;
+	else if (query == "bishop") job = Jobs::JobIds::Bishop;
+	else if (query == "bowman") job = Jobs::JobIds::Archer;
+	else if (query == "hunter") job = Jobs::JobIds::Hunter;
+	else if (query == "ranger") job = Jobs::JobIds::Ranger;
+	else if (query == "bm") job = Jobs::JobIds::Bowmaster;
+	else if (query == "xbowman") job = Jobs::JobIds::Crossbowman;
+	else if (query == "sniper") job = Jobs::JobIds::Sniper;
+	else if (query == "marksman") job = Jobs::JobIds::Marksman;
+	else if (query == "thief") job = Jobs::JobIds::Rogue;
+	else if (query == "sin") job = Jobs::JobIds::Assassin;
+	else if (query == "hermit") job = Jobs::JobIds::Hermit;
+	else if (query == "nl") job = Jobs::JobIds::NightLord;
+	else if (query == "dit") job = Jobs::JobIds::Bandit;
+	else if (query == "cb") job = Jobs::JobIds::ChiefBandit;
+	else if (query == "shadower") job = Jobs::JobIds::Shadower;
+	else if (query == "pirate") job = Jobs::JobIds::Pirate;
+	else if (query == "brawler") job = Jobs::JobIds::Brawler;
+	else if (query == "marauder") job = Jobs::JobIds::Marauder;
+	else if (query == "buccaneer") job = Jobs::JobIds::Buccaneer;
+	else if (query == "gunslinger") job = Jobs::JobIds::Gunslinger;
+	else if (query == "outlaw") job = Jobs::JobIds::Outlaw;
+	else if (query == "corsair") job = Jobs::JobIds::Corsair;
+	else if (query == "gm") job = Jobs::JobIds::Gm;
+	else if (query == "sgm") job = Jobs::JobIds::SuperGm;
+	else if (query == "noblesse") job = Jobs::JobIds::Noblesse;
+	else if (query == "dawn1") job = Jobs::JobIds::DawnWarrior1;
+	else if (query == "dawn2") job = Jobs::JobIds::DawnWarrior2;
+	else if (query == "dawn3") job = Jobs::JobIds::DawnWarrior3;
+	else if (query == "dawn4") job = Jobs::JobIds::DawnWarrior4;
+	else if (query == "blaze1") job = Jobs::JobIds::BlazeWizard1;
+	else if (query == "blaze2") job = Jobs::JobIds::BlazeWizard2;
+	else if (query == "blaze3") job = Jobs::JobIds::BlazeWizard3;
+	else if (query == "blaze4") job = Jobs::JobIds::BlazeWizard4;
+	else if (query == "wind1") job = Jobs::JobIds::WindArcher1;
+	else if (query == "wind2") job = Jobs::JobIds::WindArcher2;
+	else if (query == "wind3") job = Jobs::JobIds::WindArcher3;
+	else if (query == "wind4") job = Jobs::JobIds::WindArcher4;
+	else if (query == "night1") job = Jobs::JobIds::NightWalker1;
+	else if (query == "night2") job = Jobs::JobIds::NightWalker2;
+	else if (query == "night3") job = Jobs::JobIds::NightWalker3;
+	else if (query == "night4") job = Jobs::JobIds::NightWalker4;
+	else if (query == "thunder1") job = Jobs::JobIds::ThunderBreaker1;
+	else if (query == "thunder2") job = Jobs::JobIds::ThunderBreaker2;
+	else if (query == "thunder3") job = Jobs::JobIds::ThunderBreaker3;
+	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
+	else job = atoi(query.c_str());
+	return job;
 }
 
 string ChatHandler::getBanString(int8_t reason) {

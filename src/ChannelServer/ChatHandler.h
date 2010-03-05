@@ -52,6 +52,7 @@ namespace ChatHandler {
 	bool handleCommand(Player *player, const string &message);
 	int8_t getMessageType(const string &query);
 	int32_t getMap(const string &query, Player *player);
+	int16_t getJob(const string &query);
 	string getBanString(int8_t reason);
 	void handleGroupChat(Player *player, PacketReader &packet);
 };
