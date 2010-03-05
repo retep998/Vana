@@ -29,6 +29,6 @@ namespace LoginServerAcceptPacket {
 	void connect(LoginServerAcceptConnection *player, World *world);
 	void noMoreWorld(LoginServerAcceptConnection *player);
 	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port);
-	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid);
+	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid, uint32_t charip);
 	void removeCharacter(LoginServerAcceptConnection *player, int32_t charid);
 };

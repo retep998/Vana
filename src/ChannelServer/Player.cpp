@@ -123,86 +123,94 @@ Player::~Player() {
 
 void Player::realHandleRequest(PacketReader &packet) {
 	try {
-		switch (packet.get<int16_t>()) {
-			case CMSG_ALLIANCE: AlliancePacket::handlePacket(this, packet); break;
-			case CMSG_ALLIANCE_DENIED: AlliancePacket::handleDenyPacket(this, packet); break;
-			case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
-			case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
-			case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
-			case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, packet); break;
-			case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
-			case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
-			case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
-			case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
-			case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
-			case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
-			case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
-			case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
-			case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
-			case CMSG_COMMAND: CommandHandler::handleCommand(this, packet); break;
-			case CMSG_DROP_MESOS: DropHandler::dropMesos(this, packet); break;
-			case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, packet); break;
-			case CMSG_FAME: Fame::handleFame(this, packet); break;
-			case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, packet); break;
-			case CMSG_GUILD: GuildPacket::handlePacket(this, packet); break;
-			case CMSG_GUILD_DENIED: GuildPacket::handleDenyPacket(this, packet); break;
-			case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
-			case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
-			case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-			case CMSG_ITEM_LOOT: DropHandler::playerLoot(this, packet); break;
-			case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, packet); break;
-			case CMSG_ITEM_USE: InventoryHandler::useItem(this, packet); break;
-			case CMSG_KEYMAP: changeKey(packet); break;
-			case CMSG_MACRO_LIST: changeSkillMacros(packet); break;
-			case CMSG_MAP_CHANGE: Maps::usePortal(this, packet); break;
-			case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(this, packet); break;
-			case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(this, packet); break;
-			case CMSG_MOB_CONTROL: MobHandler::monsterControl(this, packet); break;
-			case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
-			case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
-			case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
-			case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
-			case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
-			case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
-			case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
-			case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
-			case CMSG_PARTY: PartyHandler::handleRequest(this, packet); break;
-			case CMSG_PET_CHAT: PetHandler::handleChat(this, packet); break;
-			case CMSG_PET_COMMAND: PetHandler::handleCommand(this, packet); break;
-			case CMSG_PET_FOOD_USE: PetHandler::handleFeed(this, packet); break;
-			case CMSG_PET_LOOT: DropHandler::petLoot(this, packet); break;
-			case CMSG_PET_MOVEMENT: PetHandler::handleMovement(this, packet); break;
-			case CMSG_PET_SUMMON: PetHandler::handleSummon(this, packet); break;
-			case CMSG_PLAYER_CHAT: ChatHandler::handleChat(this, packet); break;
-			case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(this, packet); break;
-			case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(this, packet); break;
-			case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
-			case CMSG_PLAYER_LOAD: playerConnect(packet); break;
-			case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
-			case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
-			case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
-			case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
-			case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
-			case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-			case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
-			case CMSG_SHOP: NpcHandler::useShop(this, packet); break;
-			case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
-			case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, packet); break;
-			case CMSG_SKILL_USE: Skills::useSkill(this, packet); break;
-			case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, packet); break;
-			case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
-			case CMSG_STAT_ADDITION: stats->addStat(packet); break;
-			case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
-			case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
-			case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
-			case CMSG_SUMMON_DAMAGE: Summons::damageSummon(this, packet); break;
-			case CMSG_SUMMON_MOVEMENT: Summons::moveSummon(this, packet); break;
-			case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, packet); break;
-			case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
-			case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
-			case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
-			case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
-			case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+		int16_t header = packet.get<int16_t>();
+		if (!is_connect) {
+			// We don't want to accept any other packet than the one for loading the character
+			if (header == CMSG_PLAYER_LOAD) {
+				playerConnect(packet);
+			}
+		}
+		else {
+			switch (header) {
+				case CMSG_ALLIANCE: AlliancePacket::handlePacket(this, packet); break;
+				case CMSG_ALLIANCE_DENIED: AlliancePacket::handleDenyPacket(this, packet); break;
+				case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
+				case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
+				case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
+				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, packet); break;
+				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
+				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
+				case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
+				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
+				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
+				case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
+				case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
+				case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
+				case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
+				case CMSG_COMMAND: CommandHandler::handleCommand(this, packet); break;
+				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, packet); break;
+				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, packet); break;
+				case CMSG_FAME: Fame::handleFame(this, packet); break;
+				case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, packet); break;
+				case CMSG_GUILD: GuildPacket::handlePacket(this, packet); break;
+				case CMSG_GUILD_DENIED: GuildPacket::handleDenyPacket(this, packet); break;
+				case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
+				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
+				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
+				case CMSG_ITEM_LOOT: DropHandler::playerLoot(this, packet); break;
+				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, packet); break;
+				case CMSG_ITEM_USE: InventoryHandler::useItem(this, packet); break;
+				case CMSG_KEYMAP: changeKey(packet); break;
+				case CMSG_MACRO_LIST: changeSkillMacros(packet); break;
+				case CMSG_MAP_CHANGE: Maps::usePortal(this, packet); break;
+				case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(this, packet); break;
+				case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(this, packet); break;
+				case CMSG_MOB_CONTROL: MobHandler::monsterControl(this, packet); break;
+				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
+				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
+				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
+				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
+				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
+				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
+				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
+				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
+				case CMSG_PARTY: PartyHandler::handleRequest(this, packet); break;
+				case CMSG_PET_CHAT: PetHandler::handleChat(this, packet); break;
+				case CMSG_PET_COMMAND: PetHandler::handleCommand(this, packet); break;
+				case CMSG_PET_FOOD_USE: PetHandler::handleFeed(this, packet); break;
+				case CMSG_PET_LOOT: DropHandler::petLoot(this, packet); break;
+				case CMSG_PET_MOVEMENT: PetHandler::handleMovement(this, packet); break;
+				case CMSG_PET_SUMMON: PetHandler::handleSummon(this, packet); break;
+				case CMSG_PLAYER_CHAT: ChatHandler::handleChat(this, packet); break;
+				case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(this, packet); break;
+				case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(this, packet); break;
+				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
+				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
+				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
+				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
+				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
+				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
+				case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
+				case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
+				case CMSG_SHOP: NpcHandler::useShop(this, packet); break;
+				case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
+				case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, packet); break;
+				case CMSG_SKILL_USE: Skills::useSkill(this, packet); break;
+				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, packet); break;
+				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
+				case CMSG_STAT_ADDITION: stats->addStat(packet); break;
+				case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
+				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
+				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
+				case CMSG_SUMMON_DAMAGE: Summons::damageSummon(this, packet); break;
+				case CMSG_SUMMON_MOVEMENT: Summons::moveSummon(this, packet); break;
+				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, packet); break;
+				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
+				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
+				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
+				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
+				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+			}
 		}
 	}
 	catch (std::range_error) {
@@ -228,7 +236,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	if (!Connectable::Instance()->checkPlayer(id)) {
+	if (!Connectable::Instance()->checkPlayer(id, getIp())) {
 		// Hacking
 		getSession()->disconnect();
 		return;

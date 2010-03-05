@@ -70,7 +70,9 @@ void SyncHandler::playerChangeChannel(PacketReader &packet) {
 }
 
 void SyncHandler::newConnectable(PacketReader &packet) {
-	Connectable::Instance()->newPlayer(packet.get<int32_t>());
+	int32_t playerid = packet.get<int32_t>();
+	uint32_t playerip = packet.get<uint32_t>();
+	Connectable::Instance()->newPlayer(playerid, playerip);
 }
 
 

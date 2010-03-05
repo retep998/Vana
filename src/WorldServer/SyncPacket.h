@@ -68,7 +68,7 @@ namespace SyncPacket {
 		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
 		void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
 		void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);
-		void newConnectable(uint16_t channel, int32_t playerid);
+		void newConnectable(uint16_t channel, int32_t playerid, uint32_t playerip);
 		void sendParties(WorldServerAcceptConnection *player);
 		void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
 		void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
