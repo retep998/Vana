@@ -840,7 +840,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\d+) ?(-{0,1}\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							int32_t skillid = atoi(string(matches[1]).c_str());
-							if (SkillDataProvider::Instance()->isSkill(skillid)) { // Don't allow skills that do not exist to be added
+							if (SkillDataProvider::Instance()->isSkill(skillid)) {
+								// Don't allow skills that do not exist to be added
 								string countstring = matches[2];
 								uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 
