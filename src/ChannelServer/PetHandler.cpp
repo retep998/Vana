@@ -150,6 +150,27 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	PetsPacket::showAnimation(player, pet, act, success);
 }
 
+void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
+	int32_t petid = packet.get<int32_t>();
+	packet.skipBytes(5);
+	packet.skipBytes(4); // Ticks
+	int16_t slot = packet.get<int16_t>();
+	int32_t itemid = packet.get<int32_t>();
+	Pet *pet = player->getPets()->getPet(petid);
+	if (pet == nullptr || !pet->isSummoned()) {
+		// Hacking
+		return;
+	}
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (item == nullptr || item->getId() != itemid) {
+		// Hacking
+		return;
+	}
+
+	Inventory::useItem(player, itemid);
+	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
+}
+
 void PetHandler::changeName(Player *player, const string &name) {
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);

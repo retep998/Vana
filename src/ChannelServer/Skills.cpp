@@ -142,6 +142,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Crusader::ArmorCrash:
 		case Jobs::WhiteKnight::MagicCrash:
 		case Jobs::DragonKnight::PowerCrash: {
+			packet.skipBytes(4); // Might be CRC too O.o?
 			int8_t mobs = packet.get<int8_t>();
 			for (int8_t k = 0; k < mobs; k++) {
 				int32_t mapmobid = packet.get<int32_t>();
