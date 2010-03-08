@@ -907,3 +907,16 @@ void Map::showMessage(const string &message, int8_t type) {
 		PlayerPacket::showMessage(m_players[i], message, type);
 	}
 }
+
+bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemid, const string &message) {
+	Timer::Id timerId(Timer::Types::WeatherTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
+	if (getTimers()->checkTimer(timerId) != 0) {
+		// Hacking
+		return false;
+	}
+
+	MapPacket::changeWeather(getId(), adminWeather, itemid, message);
+	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
+		timerId, getTimers(), Timer::Time::fromNow(time * 1000));
+	return true;
+}

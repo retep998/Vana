@@ -67,6 +67,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MESSAGE_GROUP 0x7a // Groups like party, buddies and guild
 #define SMSG_COMMAND 0x7b // Respond to / commands i.e. "/find"
 #define SMSG_MAP_EFFECT 0x7e // Change Music/Boss HP Bars
+#define SMSG_MAP_WEATHER_EFFECT 0x82 // Used by weather NX items
 #define SMSG_CASH_SONG 0x83 // Used for cash items only, plays a song... :D
 #define SMSG_GM 0x84 // Hide, other miscellaneous junk
 #define SMSG_EVENT_INSTRUCTION 0x86 // GM event instructions - Ola Ola, etc.
