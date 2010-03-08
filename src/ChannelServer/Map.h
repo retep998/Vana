@@ -178,6 +178,9 @@ public:
 	// Instance
 	void setInstance(Instance *instance) { m_instance = instance; }
 	Instance * getInstance() const { return m_instance; }
+
+	// Weather cash item
+	bool createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemid, const string &message);
 private:
 	int32_t getMistId() { return m_mistids.next(); }
 	static const uint32_t NpcStart = 100;

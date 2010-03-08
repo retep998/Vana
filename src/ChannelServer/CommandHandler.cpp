@@ -49,6 +49,7 @@ namespace AdminOpcodes {
 		Ban = 0x03,
 		Block = 0x04,
 		ShowMessageMap = 0x11,
+		Snow = 0x1C,
 		Warn = 0x1D
 	};
 	/*
@@ -58,6 +59,7 @@ namespace AdminOpcodes {
 		Ban = /ban (character name)
 		Block = /block (character name) (duration) (sort)
 		Warn = /w (character name) (message)
+		Snow = /snow (time in seconds, minimum: 30, maximum: 600)
 	*/
 }
 
@@ -152,6 +154,9 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		}
 		case AdminOpcodes::ShowMessageMap:
 			PlayerPacket::showMessage(player, Maps::getMap(player->getMap())->getPlayerNames(), PlayerPacket::NoticeTypes::Notice);
+			break;
+		case AdminOpcodes::Snow:
+			Maps::getMap(player->getMap())->createWeather(player, true, packet.get<int32_t>(), Items::SnowySnow, "");
 			break;
 		case AdminOpcodes::Warn: {
 			string victim = packet.getString();

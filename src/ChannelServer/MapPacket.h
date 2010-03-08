@@ -41,4 +41,5 @@ namespace MapPacket {
 	void spawnMist(int32_t mapid, Mist *mist);
 	void removeMist(int32_t mapid, int32_t id);
 	void instantWarp(Player *player, int8_t pid);
+	void changeWeather(int32_t mapid, bool adminWeather, int32_t itemid = 0, const string &message = "");
 };

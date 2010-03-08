@@ -316,3 +316,15 @@ void MapPacket::instantWarp(Player *player, int8_t pid) {
 	packet.add<int8_t>(pid);
 	player->getSession()->send(packet);
 }
+
+void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemid, const string &message) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_MAP_WEATHER_EFFECT);
+	packet.addBool(adminWeather);
+	packet.add<int32_t>(itemid);
+	if (itemid != 0 && !adminWeather) {
+		// Admin weathers doesn't have a message
+		packet.addString(message);
+	}
+	Maps::getMap(mapid)->sendPacket(packet);
+}
