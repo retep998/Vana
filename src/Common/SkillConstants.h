@@ -138,7 +138,8 @@ namespace MobSkills {
 		WeaponDefenseUpAoe = 112,
 		MagicDefenseUp = 103,
 		MagicDefenseUpAoe = 113,
-		Heal = 114,
+		HealAoe = 114,
+		SpeedUpAoe = 115,
 		Seal = 120,
 		Darkness = 121,
 		Weakness = 122,
@@ -154,6 +155,7 @@ namespace MobSkills {
 		Zombify = 133,
 		WeaponImmunity = 140,
 		MagicImmunity = 141,
+		ArmorSkill = 142,
 		WeaponDamageReflect = 143,
 		MagicDamageReflect = 144, 
 		AnyDamageReflect = 145,
@@ -164,7 +166,7 @@ namespace MobSkills {
 		McAccuracyUp = 154,
 		McAvoidUp = 155,
 		McSpeedUp = 156,
-		NoClue = 157, // Not found anywhere that I know of
+		McSeal = 157, // Not actually used in Monster Carnival
 		Summon = 200
 	};
 }

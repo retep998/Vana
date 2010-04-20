@@ -215,7 +215,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 		case MobSkills::MagicDefenseUp:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo->x, skillid, level, skillinfo->time));
 			break;
-		case MobSkills::Heal:
+		case MobSkills::HealAoe:
 			map->healMobs(skillinfo->x, skillinfo->y, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::Seal:
@@ -368,8 +368,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vskill = player->getSkills()->getVenomousWeapon();
-					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
-					SkillLevelInfo *venom = SkillDataProvider::Instance()->getSkill(vskill, vlevel);
+					SkillLevelInfo *venom =  player->getSkills()->getSkillInfo(vskill);
 
 					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
 					int32_t part2 = player->getStats()->getDex(true) * 2;
