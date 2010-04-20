@@ -15,31 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Player.h"
-#include "MapConstants.h"
+#pragma once
 
-Player::Player() {
-	initialize();
-}
-
-Player::Player(int32_t id) : id(id) {
-	initialize();
-}
-
-void Player::initialize() {
-	online = false;
-	cashShop = false;
-	guildRank = 0;
-	allianceRank = 0;
-	level = 0;
-	channel = -1;
-	job = -1;
-	map = Maps::NoMap;
-	inviteGuild = 0;
-	ip = 0;
-	onlineTime = 0;
-	inviteTime = 0;
-	party = 0;
-	guild = 0;
-	alliance = 0;
+namespace Maps {
+	enum {
+		GmMap = 180000000,
+		OriginOfClockTower = 220080001,
+		SorcerersRoom = 270020211,
+		NoMap = 999999999
+	};
 }

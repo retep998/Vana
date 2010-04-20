@@ -465,10 +465,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Common\GameConstants.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Common\MapleVersion.h"
 				>
 			</File>
@@ -819,6 +815,30 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Game Constants"
+				>
+				<File
+					RelativePath=".\src\Common\GameConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\ItemConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MapConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\MobConstants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\SkillConstants.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>
