@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <ctime>
 #include <map>
@@ -34,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::map;
 using std::string;
 using std::vector;
+using std::tr1::function;
 using std::tr1::unordered_map;
 
 class Drop;
@@ -112,10 +114,8 @@ public:
 	Player * getPlayer(uint32_t index) const;
 	string getPlayerNames();
 	void removePlayer(Player *player);
-	void dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
-	void statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb);
-	void sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb);
 	void buffPlayers(int32_t buffid);
+	void runFunctionPlayers(function<void (Player *)> successFunc, const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count = 0);
 
 	// NPCs
 	void removeNpc(uint32_t index);

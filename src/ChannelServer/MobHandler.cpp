@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerPacket.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
@@ -189,7 +190,35 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 
+namespace Functors {
+	struct StatusPlayers {
+		void operator() (Player *player) {
+			player->getActiveBuffs()->addDebuff(skill, level);
+		}
+		uint8_t skill;
+		uint8_t level;
+	};
+	struct BanishPlayers {
+		void operator() (Player *player) {
+			if (message != "") {
+				PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+			}
+			player->setMap(field, portal);
+		}
+		string message;
+		int32_t field;
+		PortalInfo *portal;
+	};
+	struct DispelPlayers {
+		void operator() (Player *player) {
+			player->getActiveBuffs()->dispelBuffs();
+		}
+	};
+}
+
 void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSkillLevelInfo *skillinfo) {
+	using namespace Functors;
+
 	Pos mobpos = mob->getPos();
 	Map *map = Maps::getMap(mob->getMapId());
 	vector<StatusInfo> statuses;
@@ -227,15 +256,31 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 		case MobSkills::Slow:
 		case MobSkills::Seduce:
 		case MobSkills::CrazySkull:
-		case MobSkills::Zombify:
-			map->statusPlayers(skillid, level, skillinfo->count, skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
+		case MobSkills::Zombify: {
+			StatusPlayers func = {skillid, level};
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
 			break;
-		case MobSkills::Dispel:
-			map->dispelPlayers(skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
+		}
+		case MobSkills::Dispel: {
+			DispelPlayers func;
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop);
 			break;
-		case MobSkills::SendToTown:
-			map->sendPlayersToTown(mob->getMobId(), skillinfo->prop, skillinfo->count, mobpos, skillinfo->lt, skillinfo->rb);
+		}
+		case MobSkills::SendToTown: {
+			int32_t field = map->getReturnMap();
+			PortalInfo *portal = nullptr;
+			string message = "";
+			if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mob->getMobId())) {
+				field = ban->field;
+				message = ban->message;
+				if (ban->portal != "" && ban->portal != "sp") {
+					portal = Maps::getMap(field)->getPortal(ban->portal);
+				}
+			}
+			BanishPlayers func = {message, field, portal};
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
 			break;
+		}
 		case MobSkills::PoisonMist:
 			new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillid, level);
 			break;
