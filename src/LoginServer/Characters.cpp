@@ -208,7 +208,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	int32_t weapon = packet.get<int32_t>();
 	int8_t gender = packet.get<int8_t>();
 
-	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, haircolor, eyes, skin, top, bottom, shoes, weapon)) {
+	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, haircolor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
 		player->getSession()->disconnect();
 		return;

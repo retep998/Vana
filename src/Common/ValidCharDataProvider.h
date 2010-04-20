@@ -59,6 +59,15 @@ namespace ValidItemType {
 	};
 }
 
+struct ClassValidItems {
+	void clear() {
+		male.clear();
+		female.clear();
+	}
+	ValidItems male;
+	ValidItems female;
+};
+
 class ValidCharDataProvider : boost::noncopyable {
 public:
 	static ValidCharDataProvider * Instance() {
@@ -69,8 +78,10 @@ public:
 	void loadData();
 
 	bool isForbiddenName(const string &cmp);
-	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, bool cygnus = false);
-	bool isValidItem(int32_t id, int8_t gender, bool cygnus, int8_t type);
+	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer);
+
+	const static int8_t Adventurer = 1;
+	const static int8_t Cygnus = 2;
 private:
 	ValidCharDataProvider() {}
 	static ValidCharDataProvider *singleton;
@@ -78,12 +89,11 @@ private:
 	void loadForbiddenNames();
 	void loadCreationItems();
 
+	bool isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type);
 	bool iterateTest(int32_t id, vector<int32_t> *test);
-	ValidItems * getItems(int8_t gender, bool cygnus);
+	ValidItems * getItems(int8_t gender, int8_t classId);
 
-	vector<string> forbiddennames;
-	ValidItems regmale;
-	ValidItems regfemale;
-	ValidItems cygnusmale;
-	ValidItems cygnusfemale;
+	vector<string> m_forbiddenNames;
+	ClassValidItems m_adventurer;
+	ClassValidItems m_cygnus;
 };
