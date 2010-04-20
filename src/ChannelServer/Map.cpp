@@ -230,7 +230,9 @@ void Map::runFunctionPlayers(function<void (Player *)> successFunc, const Pos &o
 void Map::buffPlayers(int32_t buffid) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (Player *toy = m_players[i]) {
-			Inventory::useItem(toy, buffid);
+			if (toy->getStats()->getHp() > 0) {
+				Inventory::useItem(toy, buffid);
+			}
 		}
 	}
 }
