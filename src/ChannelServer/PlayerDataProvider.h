@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameObjects.h"
 #include "Types.h"
-#include <boost/tr1/functional.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 #include <string>

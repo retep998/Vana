@@ -212,55 +212,18 @@ void Map::removePlayer(Player *player) {
 	updateMobControl(player);
 }
 
-void Map::dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
-	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *dispelee = m_players[i];
-		if (dispelee != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, dispelee->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-			dispelee->getActiveBuffs()->dispelBuffs();
-		}
-	}
-}
-
-void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
+void Map::runFunctionPlayers(function<void (Player *)> successFunc, const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count) {
 	int16_t done = 0;
 	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *toy = m_players[i];
-		if (toy != nullptr) {
+		if (Player *toy = m_players[i]) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-				toy->getActiveBuffs()->addDebuff(status, level);
+				successFunc(toy);
 				done++;
 			}
 		}
-		if (count > 0 && done == count)
+		if (count > 0 && done == count) {
 			break;
-	}
-}
-
-void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
-	int16_t done = 0;
-	string message = "";
-	PortalInfo *p = nullptr;
-	int32_t field = getReturnMap();
-	if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mobid)) {
-		field = ban->field;
-		message = ban->message;
-		if (ban->portal != "" && ban->portal != "sp") {
-			p = Maps::getMap(field)->getPortal(ban->portal);
 		}
-	}
-	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *toy = m_players[i];
-		if (toy != nullptr) {
-			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-				if (message != "") {
-					PlayerPacket::showMessage(toy, message, PlayerPacket::NoticeTypes::Blue);
-				}
-				toy->setMap(field, p);
-				done++;
-			}
-		}
-		if (count > 0 && done == count)
-			break;
 	}
 }
 
@@ -601,7 +564,7 @@ Drop * Map::getDrop(int32_t id) {
 	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : nullptr);
 }
 
-void Map::clearDrops(bool showPacket) { // Clear all drops
+void Map::clearDrops(bool showPacket) {
 	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
