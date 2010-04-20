@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mist.h"
 #include "Mob.h"
+#include "MobConstants.h"
 #include "MobsPacket.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"

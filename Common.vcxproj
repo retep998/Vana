@@ -151,10 +151,14 @@
     <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\ItemConstants.h" />
     <ClInclude Include="src\Common\Logger.h" />
     <ClInclude Include="src\Common\LogReplacements.h" />
+    <ClInclude Include="src\Common\MapConstants.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
+    <ClInclude Include="src\Common\MobConstants.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
+    <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\BuffDataProvider.h" />

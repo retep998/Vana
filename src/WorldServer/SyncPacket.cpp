@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GuildPacket.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
+#include "MapConstants.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Party.h"
