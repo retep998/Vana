@@ -64,7 +64,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp_d.lib;lua_d.lib;cryptlib_d.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <SubSystem>Console</SubSystem>
@@ -88,7 +88,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp.lib;lua.lib;cryptlib.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
