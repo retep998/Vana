@@ -95,7 +95,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.y = origin.y;
 
 //			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-//				Need something to keep drops inside the map here		
+//				Need something to keep drops inside the map here
 //			}
 
 			if (!i->ismesos) {
