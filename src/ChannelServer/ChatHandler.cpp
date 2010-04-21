@@ -1397,10 +1397,10 @@ string ChatHandler::getBanString(int8_t reason) {
 
 int8_t ChatHandler::getMessageType(const string &query) {
 	int8_t ret = -1;
-	if (query == "notice") ret = 0;
-	else if (query == "box") ret = 1;
-	else if (query == "red") ret = 5;
-	else if (query == "blue") ret = 6;
+	if (query == "notice") ret = PlayerPacket::NoticeTypes::Notice;
+	else if (query == "box") ret = PlayerPacket::NoticeTypes::Box;
+	else if (query == "red") ret = PlayerPacket::NoticeTypes::Red;
+	else if (query == "blue") ret = PlayerPacket::NoticeTypes::Blue;
 	return ret;
 }
 
