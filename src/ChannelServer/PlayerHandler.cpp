@@ -89,7 +89,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			mpburn = attack->mpBurn;
 			deadlyattack = attack->deadlyAttack;
 		}
-		hit = packet.get<int8_t>(); // Knock direction
+		hit = packet.get<uint8_t>(); // Knock direction
 		pgmr.reduction = packet.get<uint8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
@@ -305,9 +305,9 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
 			info.skillId = skillid;
-			info.level = packet.get<int8_t>();
-			info.direction = packet.get<int8_t>();
-			info.weaponSpeed = packet.get<int8_t>();
+			info.level = packet.get<uint8_t>();
+			info.direction = packet.get<uint8_t>();
+			info.weaponSpeed = packet.get<uint8_t>();
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 			break;

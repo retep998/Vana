@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 
+namespace Parties {
+	const int8_t MaxMembers = 6;
+}
+
 namespace Characters {
 	const int8_t MaxNameSize = 12;
 	const int8_t MinNameSize = 4;
