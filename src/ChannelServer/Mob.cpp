@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
+#include "SkillConstants.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "Timer/Time.h"
@@ -44,8 +45,17 @@ level(0),
 reflection(0),
 time(time)
 {
-	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
-		this->time += Randomizer::Instance()->randInt(time);
+	switch (val) {
+		case StatusEffects::Mob::Freeze:
+			if (skillid == Jobs::FPArchMage::Paralyze) {
+				break;
+			}
+		case StatusEffects::Mob::Stun:
+			this->time = time + 1 + Randomizer::Instance()->randInt(time * 2); // The 1 accounts for the skill cast time
+			if (skillid == Jobs::ILArchMage::Blizzard) {
+				time += 2; // Account for skill cast time, ideally we'd like to remove both these additions with MCDB suport for cast times
+			}
+			break;
 	}
 }
 
