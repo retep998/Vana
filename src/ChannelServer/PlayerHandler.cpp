@@ -475,8 +475,13 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
 				int32_t objId = packet.get<int32_t>();
-				packet.skipBytes(1); // Boolean for hit a monster
+				packet.skipBytes(1); // Some value
 				if (Drop *drop = Maps::getMap(map)->getDrop(objId)) {
+					if (!drop->isMesos()) {
+						// Hacking
+						player->addWarning();
+						return;
+					}
 					DropsPacket::explodeDrop(drop);
 					Maps::getMap(map)->removeDrop(drop->getId());
 					delete drop;
@@ -872,7 +877,6 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			packet.skipBytes(2); // Distance
 		}
 		else {
-			packet.skipBytes(1);
 			hits = packet.get<int8_t>(); // Hits for Meso Explosion
 		}
 		for (int8_t k = 0; k < hits; k++) {
