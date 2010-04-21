@@ -7,7 +7,7 @@ add_executable(ChannelServer ${CHANNEL_SRC} ${CHANNEL_HEADERS})
 
 target_link_libraries(ChannelServer
 	Common	
-	${MYSQL_LIBRARIES}	
+	${MYSQL_LIBRARIES}
 	${MYSQL++_LIBRARIES}
 	${LUA_LIBRARIES}
 	${CRYPTO++_LIBRARIES}

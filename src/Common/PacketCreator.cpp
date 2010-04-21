@@ -92,7 +92,7 @@ void PacketCreator::addString(const string &str, size_t len) {
 
 void PacketCreator::addString(const string &str) {
 	size_t len = str.size();
-	add<int16_t>(len);
+	add<uint16_t>(len);
 	addString(str, str.size());
 }
 

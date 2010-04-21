@@ -1097,8 +1097,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Red);
 						break;
 					case CmdWarpTo:
-						Player *warptoee;
-						if (warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
+						if (Player *warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
 							player->setMap(warptoee->getMap());
 						}
 						break;
