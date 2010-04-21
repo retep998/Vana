@@ -632,7 +632,9 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	if (getMobId() == Mobs::HorntailSponge)
 		return;
 
-	int32_t amount = Randomizer::Instance()->randInt(healrange) + (basehealhp - (healrange / 2));
+	int32_t min = (basehealhp - (healrange / 2));
+	int32_t max = (basehealhp + (healrange / 2));
+	int32_t amount = Randomizer::Instance()->randInt(max, min);
 	int32_t original = amount;
 
 	if (hp + amount > getMaxHp()) {

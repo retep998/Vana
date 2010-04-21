@@ -77,7 +77,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
-		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount - i->minamount) + i->minamount);
+		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount, i->minamount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
 		if (isSteal) {
