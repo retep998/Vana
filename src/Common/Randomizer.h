@@ -40,10 +40,10 @@ public:
 		return singleton;
 	}
 
-	uint32_t randInt(uint32_t max);
 	uint32_t randInt();
-	uint16_t randShort(uint16_t max);
-	uint8_t randChar(uint8_t max);
+	uint32_t randInt(uint32_t max, uint32_t min = 0);
+	uint16_t randShort(uint16_t max, uint16_t min = 0);
+	uint8_t randChar(uint8_t max, uint8_t min = 0);
 	double rand();
 	string generateSalt(size_t length);
 private:

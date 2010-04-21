@@ -321,8 +321,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
-			int16_t range = maximum - minimum;
-			player->getStats()->modifyHp(Randomizer::Instance()->randShort(range) + minimum);
+			player->getStats()->modifyHp(Randomizer::Instance()->randShort(maximum, minimum));
 			break;
 		}
 	}

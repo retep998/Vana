@@ -118,7 +118,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			bool used = false;
 			if (size) {
 				bool stop = false;
-				uint8_t rand = (uint8_t)Randomizer::Instance()->randInt(size - 1);
+				uint8_t rand = Randomizer::Instance()->randChar(size - 1);
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realskill = info->skillId;
  				level = info->level;
@@ -320,27 +320,24 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 				minx = mobpos.x + skillinfo->lt.x;
 				maxx = mobpos.x + skillinfo->rb.x;
 			}
-			int16_t rangex = maxx - minx;
-			int16_t rangey = maxy - miny;
-			if (rangex < 0)
-				rangex *= -1;
-			if (rangey < 0)
-				rangey *= -1;
 			for (size_t summonsize = 0; summonsize < skillinfo->summons.size(); summonsize++) {
 				int32_t spawnid = skillinfo->summons[summonsize];
-				int16_t mobx = Randomizer::Instance()->randShort(rangex) + minx;
-				int16_t moby = Randomizer::Instance()->randShort(rangey) + miny;
+				int16_t mobx = Randomizer::Instance()->randShort(maxx, minx);
+				int16_t moby = Randomizer::Instance()->randShort(maxy, miny);
 				Pos floor;
-				if (mob->getMapId() == Maps::OriginOfClockTower) { // Papulatus' map
-					if (spawnid == Mobs::HighDarkstar) { // Keep High Darkstars high
+				if (mob->getMapId() == Maps::OriginOfClockTower) {
+					// Papulatus' map
+					if (spawnid == Mobs::HighDarkstar) {
+						// Keep High Darkstars high
 						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo->lt, skillinfo->rb, floor)) {
 							// Mobs spawn on the ground, we need them up top
-							mobx = Randomizer::Instance()->randShort(rangex) + minx;
+							mobx = Randomizer::Instance()->randShort(maxx, minx);
 							moby = -590;
 							floor = map->findFloor(Pos(mobx, moby));
 						}
 					}
-					else if (spawnid == Mobs::LowDarkstar) { // Keep Low Darkstars low
+					else if (spawnid == Mobs::LowDarkstar) {
+						// Keep Low Darkstars low
 						floor = map->findFloor(Pos(mobx, mobpos.y));
 					}
 				}
@@ -421,7 +418,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
 					
-					damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
+					damage = Randomizer::Instance()->randInt(maxdamage, mindamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
 						success = (Randomizer::Instance()->randInt(99) < venom->prop);

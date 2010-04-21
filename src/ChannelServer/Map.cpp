@@ -309,8 +309,8 @@ Pos Map::findRandomPos() {
 	Pos pos(0, 0);
 	Pos tpos;
 	while (pos.x == 0 && pos.y == 0) {
-		tempx = Randomizer::Instance()->randShort(max_x - min_x) + min_x;
-		tempy = Randomizer::Instance()->randShort(max_y - min_y) + min_y;
+		tempx = Randomizer::Instance()->randShort(max_x, min_x);
+		tempy = Randomizer::Instance()->randShort(max_y, min_y);
 		tpos.x = tempx;
 		tpos.y = tempy;
 		tpos = findFloor(tpos);
@@ -451,7 +451,7 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (m_mobs.find(id) != m_mobs.end()) {
 		if (spawnid >= 0 && m_mob_spawns[spawnid].time != -1) {
 			// Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100;
+			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
 			// Randomly spawn between 1x and 2x the spawn time
 			spawnTime += TimeUtilities::getTickCount();
 			m_mob_respawns.push_back(Respawnable(spawnid, spawnTime));
