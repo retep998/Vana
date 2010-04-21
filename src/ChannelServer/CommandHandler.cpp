@@ -48,6 +48,7 @@ namespace AdminOpcodes {
 		GiveExp = 0x02,
 		Ban = 0x03,
 		Block = 0x04,
+		VarSetGet = 0x09,
 		ShowMessageMap = 0x11,
 		Snow = 0x1C,
 		Warn = 0x1D
@@ -58,6 +59,8 @@ namespace AdminOpcodes {
 		GiveExp = /exp (amount)
 		Ban = /ban (character name)
 		Block = /block (character name) (duration) (sort)
+		VarSetGet = /varset (charactername) (variable name) (variable value)
+					/varget (charactername) (variable name)
 		Warn = /w (character name) (message)
 		Snow = /snow (time in seconds, minimum: 30, maximum: 600)
 	*/
@@ -158,6 +161,28 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		case AdminOpcodes::Snow:
 			Maps::getMap(player->getMap())->createWeather(player, true, packet.get<int32_t>(), Items::SnowySnow, "");
 			break;
+		case AdminOpcodes::VarSetGet: {
+			int8_t type = packet.get<int8_t>();
+			string PlayerName = packet.getString();
+			string answer = "* ";
+			if (Player *victim = PlayerDataProvider::Instance()->getPlayer(PlayerName)) {
+				string VariableName = packet.getString();
+				if (type == 0x0a) {
+					string VariableValue = packet.getString();
+					victim->getVariables()->setVariable(VariableName, VariableValue);
+					answer += "Variable '" + VariableName + "' for " + PlayerName + " set to: " + VariableValue;
+				}
+				else {
+					answer += "Variable value for variable '" + VariableName + "' from player " + PlayerName + ": " + victim->getVariables()->getVariable(VariableName);
+				}
+				PlayerPacket::showMessage(player, answer, PlayerPacket::NoticeTypes::Blue);
+			}
+			else {
+				answer += "Couldn't find " + PlayerName + ".";
+				PlayerPacket::showMessage(player, answer, PlayerPacket::NoticeTypes::Red);
+			}
+			break;
+		}
 		case AdminOpcodes::Warn: {
 			string victim = packet.getString();
 			string message = packet.getString();
