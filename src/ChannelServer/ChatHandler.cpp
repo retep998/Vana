@@ -50,24 +50,41 @@ using ChatHandler::ChatCommand;
 
 unordered_map<string, ChatCommand> ChatHandler::commandlist;
 
-struct MeFunctor {
-	void operator() (Player *gmplayer) {
-		if (gmplayer->isGm()) {
-			PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
+namespace Functors {
+	struct MeFunctor {
+		void operator() (Player *gmplayer) {
+			if (gmplayer->isGm()) {
+				PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
+			}
 		}
-	}
-	string msg;
-};
+		string msg;
+	};
 
-struct WarpFunctor {
-	void operator() (Player *warpee) {
-		if (warpee->getMap() != mapid) {
-			warpee->setMap(mapid);
+	struct WarpFunctor {
+		void operator() (Player *warpee) {
+			if (warpee->getMap() != mapid) {
+				warpee->setMap(mapid);
+			}
 		}
-	}
-	int32_t mapid;
-	Player *player;
-};
+		int32_t mapid;
+		Player *player;
+	};
+
+	struct NameFunctor {
+		void operator() (Player *player) {
+			if (*i < max) {
+				if (*i != 0) {
+					*names = *names + ", ";
+				}
+				*names = *names + player->getName();
+				*i++;
+			}
+		}
+		int32_t max;
+		int32_t *i;
+		string *names;
+	};
+}
 
 void ChatHandler::initializeCommands() {
 	// Set up commands and appropriate GM levels
@@ -410,6 +427,15 @@ void ChatHandler::initializeCommands() {
 	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
 	command.notes.push_back("Reloads data from the database.");
 	commandlist["reload"] = command.addToMap();
+
+	command.command = CmdCc;
+	command.syntax = "<#channel>";
+	command.notes.push_back("Allows you to change channels on any map.");
+	commandlist["cc"] = command.addToMap();
+
+	command.command = CmdOnline;
+	command.notes.push_back("Allows you to see up to 100 players on the current channel.");
+	commandlist["online"] = command.addToMap();
 #pragma endregion
 
 	// No GM level needed
@@ -453,6 +479,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 }
 
 bool ChatHandler::handleCommand(Player *player, const string &message) {
+	using namespace Functors;
+
 	if (player->isAdmin() && message[0] == '/') {
 		// Prevent command printing for Admins
 		return true;
@@ -470,11 +498,30 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		}
 		else {
 			ChatCommand &cmd = commandlist[command];
-			if (player->getGmLevel() < cmd.level) { // GM level for the command
+			if (player->getGmLevel() < cmd.level) {
 				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
-				switch (cmd.command) { // CMD constant associated with command
+				switch (cmd.command) {
+					case CmdCc:
+						re = "(\\d+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							string targetChannel = matches[1];
+							int8_t channel = atoi(targetChannel.c_str()) - 1;
+							player->changeChannel(channel);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdOnline: {
+						string igns = "IGNs: ";
+						int32_t i = 0;
+						NameFunctor func = {100, &i, &igns}; // Max of 100, may decide to change this in the future
+						PlayerDataProvider::Instance()->run(func);
+						PlayerPacket::showMessage(player, igns, PlayerPacket::NoticeTypes::Blue);
+						break;
+					}
 					case CmdHelp: {
 						if (args.length() != 0) {
 							if (commandlist.find(args) != commandlist.end()) {
