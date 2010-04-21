@@ -19,7 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/jobFunctions.lua");
 
-if getJob() == 0 then
+if isQuestActive(6141) then
+	addText("Would you like to go to the training ground?");
+	yes = askYesNo();
+	if yes == 0 then
+		addText("Let me know when you want to enter.");
+		sendOK();
+	else
+		if not isInstance("ninjaAmbush") then
+			createInstance("ninjaAmbush", 5 * 60, true);
+			addInstancePlayer(getID());
+			setMap(910300000);
+		else
+			addText("Someone is already inside. Try again later.");
+			sendOK();
+		end
+	end
+elseif getJob() == 0 then
 	addText("Want to be a thief? There are some standards to meet, because we can't just accept ");
 	addText("EVERYONE in ... #bYour level should be at least 10#k. ");
 	addText("Let's see...");
