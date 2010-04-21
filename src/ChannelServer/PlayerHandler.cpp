@@ -296,11 +296,11 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	int32_t skillid = packet.get<int32_t>();
 	switch (skillid) {
-		case Jobs::Hero::MonsterMagnet: // Monster Magnet x3
+		case Jobs::Hero::MonsterMagnet:
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet:
-		case Jobs::Marksman::PiercingArrow: // Pierce
-		case Jobs::FPArchMage::BigBang: // Big Bang x3
+		case Jobs::Marksman::PiercingArrow:
+		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
 		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
@@ -312,7 +312,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
-		case Jobs::ChiefBandit::Chakra: { // Chakra
+		case Jobs::ChiefBandit::Chakra: {
 			int16_t dex = player->getStats()->getDex(true);
 			int16_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillid)->y;
