@@ -112,7 +112,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
 	int32_t skillid = packet.get<int32_t>();
 	int16_t addedinfo = 0;
-	uint8_t level = packet.get<int8_t>();
+	uint8_t level = packet.get<uint8_t>();
 	uint8_t type = 0;
 	uint8_t direction = 0;
 	if (level == 0 || player->getSkills()->getSkillLevel(skillid) != level) {
