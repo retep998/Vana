@@ -79,7 +79,7 @@ void PlayerDataProvider::loadGuilds(int16_t worldId) {
 			ranks,
 			all);
 
-		if (all != nullptr) 
+		if (all != nullptr)
 			all->addGuild(getGuild(guild));
 	}
 

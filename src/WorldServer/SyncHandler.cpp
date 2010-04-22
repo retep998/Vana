@@ -72,7 +72,7 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 	string alliancename = packet.getString();
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (player == nullptr|| player->getParty() == nullptr || player->getGuild() == nullptr || 
-		player->getAlliance() != nullptr || player->getGuildRank() != 1) 
+		player->getAlliance() != nullptr || player->getGuildRank() != 1)
 		return;
 
 	Party *party = player->getParty();
@@ -110,7 +110,7 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 		Guild *playerGuild = iter->second->getGuild();
 		if (playerGuild != nullptr) {
 			for (unordered_map<int32_t, Player *>::iterator iter2 = playerGuild->m_players.begin(); iter2 != playerGuild->m_players.end(); iter2++) {
-				if (iter2->second->getAlliance() != nullptr || iter2->second->getGuild() == nullptr) 
+				if (iter2->second->getAlliance() != nullptr || iter2->second->getGuild() == nullptr)
 					continue;
 
 				iter2->second->setAlliance(alliance);
@@ -171,7 +171,7 @@ void SyncHandler::sendAllianceInfo(int32_t playerid, int32_t allianceid) {
 	if (alliance == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (player == nullptr) 
+	if (player == nullptr)
 		return;
 	AlliancePacket::sendAllianceInfo(alliance, player);
 }
@@ -195,7 +195,7 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 
-	if (alliance == nullptr || (guild == nullptr && option == 0) || player == nullptr || (option != 0 && player->getAlliance() != alliance)) 
+	if (alliance == nullptr || (guild == nullptr && option == 0) || player == nullptr || (option != 0 && player->getAlliance() != alliance))
 		return;
 
 	if (option == 0) {
@@ -255,10 +255,10 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 
 void SyncHandler::sendNoticeUpdate(int32_t allianceid, PacketReader &packet) {
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(allianceid);
-	if (alliance == nullptr) 
+	if (alliance == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-	if (player == nullptr || player->getAllianceRank() > 2 || player->getGuild() == nullptr) 
+	if (player == nullptr || player->getAllianceRank() > 2 || player->getGuild() == nullptr)
 		return;
 
 	alliance->setNotice(packet.getString());
@@ -269,10 +269,10 @@ void SyncHandler::sendNoticeUpdate(int32_t allianceid, PacketReader &packet) {
 
 void SyncHandler::sendPlayerUpdate(int32_t allianceid, int32_t playerid) {
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(allianceid);
-	if (alliance == nullptr) 
+	if (alliance == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (player == nullptr || player->getAlliance() == nullptr || player->getGuild() == nullptr) 
+	if (player == nullptr || player->getAlliance() == nullptr || player->getGuild() == nullptr)
 		return;
 	
 	AlliancePacket::sendUpdatePlayer(alliance, player, 1);
@@ -280,10 +280,10 @@ void SyncHandler::sendPlayerUpdate(int32_t allianceid, int32_t playerid) {
 
 void SyncHandler::sendTitleUpdate(int32_t allianceid, PacketReader &packet) {
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(allianceid);
-	if (alliance == nullptr) 
+	if (alliance == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-	if (player == nullptr || player->getAllianceRank() > 1 || player->getGuild() == nullptr) 
+	if (player == nullptr || player->getAllianceRank() > 1 || player->getGuild() == nullptr)
 		return;
 
 	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
@@ -302,14 +302,14 @@ void SyncHandler::sendPlayerChangeRank(int32_t allianceid, PacketReader &packet)
 	Player *changer = PlayerDataProvider::Instance()->getPlayer(changerid);
 	Player *victim = PlayerDataProvider::Instance()->getPlayer(victimid, true);
 
-	if (alliance == nullptr || changer == nullptr || victim == nullptr) 
+	if (alliance == nullptr || changer == nullptr || victim == nullptr)
 		return;
 
 	if (changer->getAllianceRank() > 2 || changer->getGuild() == nullptr || changer->getAlliance() == nullptr || 
-		changer->getAlliance() != alliance) 
+		changer->getAlliance() != alliance)
 		return;
 	if (victim->getAllianceRank() == 1 || victim->getGuild() == nullptr || victim->getAlliance() == nullptr || 
-		victim->getAlliance() != alliance) 
+		victim->getAlliance() != alliance)
 		return;
 
 	// Client sends a zero for increasing the rank, and an one for decreasing the rank....
@@ -334,12 +334,12 @@ void SyncHandler::sendInvite(int32_t allianceid, PacketReader &packet) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildname);
 	Player *inviter = PlayerDataProvider::Instance()->getPlayer(playerid);
 
-	if (alliance == nullptr || guild == nullptr || guild->getLeader() == inviter->getId()) 
+	if (alliance == nullptr || guild == nullptr || guild->getLeader() == inviter->getId())
 		return;
 
 	Player *invitee = PlayerDataProvider::Instance()->getPlayer(guild->getLeader());
 	if (invitee == nullptr || inviter == nullptr || inviter->getAllianceRank() > 1 || 
-		inviter->getGuild() == nullptr || inviter->getAlliance() == nullptr || invitee->getGuild() == nullptr) 
+		inviter->getGuild() == nullptr || inviter->getAlliance() == nullptr || invitee->getGuild() == nullptr)
 		return;
 
 	if (!guild->getInvited()) {
@@ -354,7 +354,7 @@ void SyncHandler::sendAllianceDisband(int32_t allianceid, int32_t playerid) {
 
 	if (alliance == nullptr || player == nullptr || player->getAlliance() == nullptr || 
 		player->getGuild() == nullptr || player->getAllianceRank() != 1 || 
-		player->getAlliance() != alliance || alliance->getLeaderId() != playerid) 
+		player->getAlliance() != alliance || alliance->getLeaderId() != playerid)
 		return;
 
 	unordered_map<int32_t, Guild *> guilds = alliance->getGuilds();
@@ -392,7 +392,7 @@ void SyncHandler::sendChangeLeader(int32_t allianceid, PacketReader &packet) {
 
 	if (alliance == nullptr || player == nullptr || victim == nullptr || 
 		player->getAlliance() != alliance || victim->getAlliance() != alliance || 
-		player->getAllianceRank() != 1 || victim->getAllianceRank() != 2) 
+		player->getAllianceRank() != 1 || victim->getAllianceRank() != 2)
 		return;
 
 	player->setAllianceRank(2);
@@ -410,7 +410,7 @@ void SyncHandler::sendIncreaseCapacity(int32_t allianceid, int32_t playerid) {
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 
 	if (alliance == nullptr || player == nullptr || player->getAlliance() != alliance || 
-		player->getAllianceRank() != 1) 
+		player->getAllianceRank() != 1)
 		return;
 
 	alliance->setCapacity(alliance->getCapacity() + 1);
@@ -424,7 +424,7 @@ void SyncHandler::sendIncreaseCapacity(int32_t allianceid, int32_t playerid) {
 
 void SyncHandler::sendDenyPacket(PacketReader &packet) {
 	Player *denier = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>());
-	if (denier == nullptr || denier->getGuild() == nullptr || denier->getGuildRank() != 1) 
+	if (denier == nullptr || denier->getGuild() == nullptr || denier->getGuildRank() != 1)
 		return;
 
 	packet.get<int8_t>(); // Type, to be handled....
@@ -436,7 +436,7 @@ void SyncHandler::sendDenyPacket(PacketReader &packet) {
 	string deniedGuildName = packet.getString();
 
 	Guild *dguild = denier->getGuild();
-	if (!dguild->getInvited() || dguild->getName() != deniedGuildName) 
+	if (!dguild->getInvited() || dguild->getName() != deniedGuildName)
 		return;
 
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(dguild->getInvitedId());
@@ -502,7 +502,7 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 
 	int32_t threadid = -1;
 	bool isEdit = packet.getBool();
-	if (isEdit) 
+	if (isEdit)
 		threadid = packet.get<int32_t>();
 	bool isNotice = packet.getBool();
 	if (isNotice && !isEdit)
@@ -554,7 +554,7 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 void SyncHandler::handleShowThread(int32_t playerid, int32_t threadid) {
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = player->getGuild();
-	if (player == nullptr || guild == nullptr) 
+	if (player == nullptr || guild == nullptr)
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
@@ -571,7 +571,7 @@ void SyncHandler::handleShowThread(PacketReader &pack) {
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr) 
+	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr)
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
@@ -588,13 +588,13 @@ void SyncHandler::handleDeleteThread(PacketReader &packet) {
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = player->getGuild();
-	if (player == nullptr || guild == nullptr || player->getGuild()->getId() != guildid) 
+	if (player == nullptr || guild == nullptr || player->getGuild()->getId() != guildid)
 		return;
 
 	GuildBbs *bbs = guild->getBbs();
 
 	BbsThread *thread = bbs->getThread(threadid);
-	if (thread == nullptr || (thread->getUserId() != playerid && player->getGuildRank() < 2)) 
+	if (thread == nullptr || (thread->getUserId() != playerid && player->getGuildRank() < 2))
 		return;
 
 	bbs->removeThread(threadid);
@@ -608,7 +608,7 @@ void SyncHandler::handleShowThreadList(PacketReader &pack) {
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr) 
+	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr)
 		return;
 
 	SyncPacket::BbsPacket::sendThreadList(player->getChannel(), guild, playerid, page);
@@ -622,11 +622,11 @@ void SyncHandler::handleNewReply(PacketReader &packet) {
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr) 
+	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr)
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
-	if (thread == nullptr) 
+	if (thread == nullptr)
 		return;
 
 	thread->saveReplies();
@@ -651,11 +651,11 @@ void SyncHandler::handleDeleteReply(PacketReader &packet) {
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr) 
+	if (player == nullptr || player->getGuild() == nullptr || guild == nullptr)
 		return;
 
 	BbsThread *thread = guild->getBbs()->getThread(threadid);
-	if (thread == nullptr) 
+	if (thread == nullptr)
 		return;
 
 	BbsReply *reply = thread->getReply(replyid);
@@ -697,7 +697,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 				return;
 			}
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(inviteGuildId);
-			if (guild == nullptr) 
+			if (guild == nullptr)
 				return;
 			player->setGuildInviteId(0);
 			player->setGuildInviteTime(0);
@@ -715,7 +715,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			int32_t victimid = packet.get<int32_t>();
 			uint8_t rank = packet.get<uint8_t>();
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-			if (guild == nullptr) 
+			if (guild == nullptr)
 				return;
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid); // Don't allow offline players..
 			Player *victim = PlayerDataProvider::Instance()->getPlayer(victimid, true);
@@ -744,7 +744,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangeCapacity: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-			if (guild == nullptr) 
+			if (guild == nullptr)
 				return;
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
@@ -807,7 +807,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			uint8_t result = packet.get<uint8_t>();
 			Player *inviter = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			Player *invitee = PlayerDataProvider::Instance()->getPlayer(packet.getString());
-			if (invitee == nullptr || inviter == nullptr || !invitee->isInvitedToGuild()) 
+			if (invitee == nullptr || inviter == nullptr || !invitee->isInvitedToGuild())
 				return;
 
 			invitee->setGuildInviteId(0);
@@ -818,7 +818,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangePoints: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-			if (guild == nullptr) 
+			if (guild == nullptr)
 				return;
 			guild->setGuildPoints(guild->getGuildPoints() + packet.get<int32_t>());
 			guild->save();
@@ -828,11 +828,11 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 		}
 		case Sync::Guild::ChangeEmblem: {
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-			if (guild == nullptr) 
+			if (guild == nullptr)
 				return;
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-			if (player == nullptr || player->getGuildRank() != 1 || player->getGuild() == nullptr) 
+			if (player == nullptr || player->getGuildRank() != 1 || player->getGuild() == nullptr)
 				return;
 
 			GuildLogo logo;
@@ -861,10 +861,10 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 		case Sync::Guild::RemoveEmblem: { // intentional fallthrough?
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-			if (player == nullptr || player->getGuildRank() != 1) 
+			if (player == nullptr || player->getGuildRank() != 1)
 				return;
 			Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-			if (guild == nullptr || guild != player->getGuild()) 
+			if (guild == nullptr || guild != player->getGuild())
 				return;
 
 			guild->setLogo(GuildLogo());
@@ -933,14 +933,14 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 	int8_t option = packet.get<int8_t>();
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (player == nullptr || player->getParty() == nullptr || player->getGuild() != nullptr) 
+	if (player == nullptr || player->getParty() == nullptr || player->getGuild() != nullptr)
 		return;
 	Party *party = player->getParty();
-	if (party->members.size() < 2) 
+	if (party->members.size() < 2)
 		return;
 
 	if (option == 1) {
-		if (!party->isLeader(playerid)) 
+		if (!party->isLeader(playerid))
 			return;
 		string guildname = packet.getString();
 
@@ -960,7 +960,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 	}
 	else if (option == 2) {
 		int32_t partyid = packet.get<int32_t>();
-		if (player->getParty()->getId() != partyid) 
+		if (player->getParty()->getId() != partyid)
 			return;
 		int8_t result = packet.get<int8_t>();
 		int8_t guildcontract = party->getGuildContract() + result;
@@ -1036,7 +1036,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 
 void SyncHandler::sendNewPlayer(int32_t guildid, int32_t pid, bool newGuild) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (guild == nullptr) 
+	if (guild == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(pid, true);
 	
@@ -1059,7 +1059,7 @@ void SyncHandler::sendNewPlayer(int32_t guildid, int32_t pid, bool newGuild) {
 
 void SyncHandler::sendGuildNotice(int32_t guildid, PacketReader &packet) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (guild == nullptr) 
+	if (guild == nullptr)
 		return;
 
 	guild->setNotice(packet.getString());
@@ -1069,7 +1069,7 @@ void SyncHandler::sendGuildNotice(int32_t guildid, PacketReader &packet) {
 
 void SyncHandler::sendDeletePlayer(int32_t guildid, int32_t pid, const string &name, bool expelled) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (guild == nullptr) 
+	if (guild == nullptr)
 		return;
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(pid, true);
@@ -1093,7 +1093,7 @@ void SyncHandler::sendDeletePlayer(int32_t guildid, int32_t pid, const string &n
 
 void SyncHandler::sendUpdateOfTitles(int32_t guildid, PacketReader &packet) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
-	if (guild == nullptr) 
+	if (guild == nullptr)
 		return;
 	
 	for (uint8_t i = 1; i <= 5; i++)
@@ -1108,7 +1108,7 @@ void SyncHandler::sendGuildInvite(int32_t guildid, PacketReader &packet) {
 	string name = packet.getString();
 	Player *inviter = PlayerDataProvider::Instance()->getPlayer(inviterid);
 	Player *invitee = PlayerDataProvider::Instance()->getPlayer(name);
-	if (inviter == nullptr || invitee == nullptr || inviter->getGuild()->getId() != guildid) 
+	if (inviter == nullptr || invitee == nullptr || inviter->getGuild()->getId() != guildid)
 		return;
 
 	if (difftime(invitee->getGuildInviteTime(), time(0)) >= 300) {
@@ -1325,7 +1325,7 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 		GuildPacket::sendGuildInfo(p->getGuild(), p);
 		if (oldJob == -1) // Didn't come online till now...
 			GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
-		if (allianceid != 0 && oldJob == -1) 
+		if (allianceid != 0 && oldJob == -1)
 			AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
 	}
 }

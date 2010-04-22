@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma warning(disable : 4800)
 #pragma warning(disable : 4996)
 #include "MersenneTwister.h"
-#pragma warning(pop) 
+#pragma warning(pop)
 
 #include "Types.h"
 #include <string>
