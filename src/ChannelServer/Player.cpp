@@ -600,7 +600,7 @@ void Player::saveStats() {
 		<< "guildrank = " << static_cast<int16_t>(guildrank) << ","
 		<< "allianceid = " << allianceid << ","
 		<< "alliancerank = " << static_cast<int16_t>(alliancerank) << ","
-		<< "monsterbookcover = " << getMonsterBook()->getCover() 
+		<< "monsterbookcover = " << getMonsterBook()->getCover()
 		<< " WHERE id = " << id;
 	query.exec();
 }
