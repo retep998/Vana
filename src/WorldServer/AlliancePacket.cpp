@@ -262,7 +262,7 @@ void AlliancePacket::sendToAlliance(PacketCreator &packet, Alliance *alliance, P
 
 	for (iter = guilds.begin(); iter != guilds.end(); iter++) {
 		for (iter2 = iter->second->m_players.begin(); iter2 != iter->second->m_players.end(); iter2++) {
-			if (!iter2->second->isOnline() || iter2->second == skipped) 
+			if (!iter2->second->isOnline() || iter2->second == skipped)
 				continue;
 
 			pack.set<int32_t>(iter2->second->getId(), 2);
