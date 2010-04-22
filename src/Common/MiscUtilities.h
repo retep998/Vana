@@ -37,6 +37,6 @@ namespace MiscUtilities {
 
 	template<class T>
 	struct DeleterPairAssoc {
-		void operator()(T pair) { delete pair.second; } 
+		void operator()(T pair) { delete pair.second; }
 	};
 };

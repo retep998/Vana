@@ -179,7 +179,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 					}
 				}
 			}
-			if (!used) { 
+			if (!used) {
 				realskill = 0;
 				level = 0;
 			}

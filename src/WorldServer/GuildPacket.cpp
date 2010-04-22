@@ -269,7 +269,7 @@ void GuildPacket::sendPlayerMessage(Player *player, uint8_t sort, const string &
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.add<int16_t>(SMSG_NOTE); 
+	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<uint8_t>(sort);
 	packet.addString(message);
 

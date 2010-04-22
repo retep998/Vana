@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_specialcount(0),  m_normalcount(0), m_level(1) { 
-	load(); 
+PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_specialcount(0),  m_normalcount(0), m_level(1) {
+	load();
 }
 
 void PlayerMonsterBook::load() {

@@ -61,7 +61,7 @@ void MapleEncryption::nextIv(unsigned char *vector) {
 		a += values[vector[i]];
 		x[3] = a;
 		
-		c = x[0] + x[1] * 0x100 + x[2] * 0x10000 + x[3] * 0x1000000; 
+		c = x[0] + x[1] * 0x100 + x[2] * 0x10000 + x[3] * 0x1000000;
 		d = c;
 		c = c >> 0x1D;
 		d = d << 0x03;
@@ -91,7 +91,7 @@ uint8_t MapleEncryption::ror(uint8_t val, int32_t num) {
 	int32_t lowbit;
 	for (int32_t i = 0; i < num; i++) {
 		lowbit = ((val & 1) ? 1 : 0);
-		val >>= 1; 
+		val >>= 1;
 		val |= (lowbit << 7);
 	}
 	return val;

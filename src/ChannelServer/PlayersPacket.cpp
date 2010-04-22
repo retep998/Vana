@@ -149,7 +149,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
 	}
-	else {	
+	else {
 		packet.add<int8_t>(0x0A);
 		packet.addString(name);
 		packet.add<int8_t>(is);

@@ -42,7 +42,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, Pa
 			uint16_t channel = p->getChannel();
 			WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
 		}
-	}	
+	}
 }
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {

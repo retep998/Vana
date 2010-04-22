@@ -491,7 +491,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	// Add party member's channels to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->isOnline()) {
-			packet.add<int32_t>(iter->second->getChannel()); 
+			packet.add<int32_t>(iter->second->getChannel());
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -506,7 +506,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	// Add party member's maps to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->getChannel() == tochan) {
-			packet.add<int32_t>(iter->second->getMap()); 
+			packet.add<int32_t>(iter->second->getMap());
 		}
 		else {
 			packet.add<int32_t>(-2);
