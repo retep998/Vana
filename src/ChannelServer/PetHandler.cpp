@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "ItemConstants.h"
 #include "ItemDataProvider.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"

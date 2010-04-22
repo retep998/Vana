@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetsPacket.h"
 #include "GameConstants.h"
+#include "ItemConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"

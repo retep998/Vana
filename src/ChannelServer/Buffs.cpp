@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "BuffDataProvider.h"
 #include "BuffsPacket.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Player.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 
 int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {

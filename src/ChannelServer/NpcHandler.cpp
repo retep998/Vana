@@ -219,7 +219,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 		case ShopOpcodes::Recharge: {
 			int16_t slot = packet.get<int16_t>();
 			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-			if (item == nullptr || GameLogicUtilities::isRechargeable(item->getId()) == false) {
+			if (item == nullptr || !GameLogicUtilities::isRechargeable(item->getId())) {
 				// Hacking
 				return;
 			}
@@ -287,14 +287,14 @@ void NpcHandler::useStorage(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid)) {
+			if (!GameLogicUtilities::isStackable(itemid)) {
 				amount = 1;
 			}
 			else if (amount <= 0 || amount > item->getAmount()) {
 				// Hacking
 				return;
 			}
-			player->getStorage()->addItem((inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
+			player->getStorage()->addItem(GameLogicUtilities::isStackable(itemid) ? new Item(itemid, amount) : new Item(item));
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.

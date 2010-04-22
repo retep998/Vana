@@ -16,12 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summons.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "LoopingId.h"
 #include "Maps.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "SummonsPacket.h"
 

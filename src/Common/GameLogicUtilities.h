@@ -37,6 +37,7 @@ namespace GameLogicUtilities {
 	inline bool isRechargeable(int32_t itemid) { return (isBullet(itemid) || isStar(itemid)); }
 	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == Inventories::EquipInventory); }
 	inline bool isPet(int32_t itemid) {	return ((itemid / 100 * 100) == 5000000); }
+	inline bool isStackable(int32_t itemid) { return !(isRechargeable(itemid) || isEquip(itemid) || isPet(itemid)); }
 	inline bool isOverall(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorOverall); }
 	inline bool isTop(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorTop); }
 	inline bool isBottom(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorBottom); }
