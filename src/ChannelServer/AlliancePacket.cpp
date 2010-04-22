@@ -44,7 +44,7 @@ void AlliancePacket::handlePacket(Player *player, PacketReader &packet) {
 		case 0x04: { // Invite accepted
 				int32_t guildid = packet.get<int32_t>();
 				string guildname = packet.getString();
-				if (player->getAllianceId() != 0 || player->getGuildRank() != 1 || player->getGuildId() == 0) 
+				if (player->getAllianceId() != 0 || player->getGuildRank() != 1 || player->getGuildId() == 0)
 					return;
 				sendChangeGuild(guildid, player->getId(), player->getGuildId(), 0);
 				break;
@@ -52,7 +52,7 @@ void AlliancePacket::handlePacket(Player *player, PacketReader &packet) {
 		case 0x06: { // Expel Guild
 				int32_t guildid = packet.get<int32_t>();
 				int32_t allianceid = packet.get<int32_t>();
-				if (player->getAllianceId() == 0 || player->getAllianceRank() != 1 || player->getAllianceId() != allianceid) 
+				if (player->getAllianceId() == 0 || player->getAllianceRank() != 1 || player->getAllianceId() != allianceid)
 					return;
 				sendChangeGuild(allianceid, player->getId(), guildid, 1);
 				break;

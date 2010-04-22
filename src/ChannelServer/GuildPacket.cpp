@@ -289,7 +289,7 @@ void GuildPacket::sendRemoveEmblem(int32_t guildid, int32_t playerid) {
 
 void GuildPacket::handleEmblemChange(PacketReader &packet) {
 	Guild *gi = PlayerDataProvider::Instance()->getGuild(packet.get<int32_t>());
-	if (gi == nullptr) 
+	if (gi == nullptr)
 		return;
 
 	GuildLogo logo;
