@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ShopDataProvider.h"
 #include "Database.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"

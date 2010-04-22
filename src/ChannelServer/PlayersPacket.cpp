@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "MapleSession.h"
 #include "Maps.h"
@@ -26,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "SendHeader.h"
+#include "SkillConstants.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
 	if (player->getActiveBuffs()->isUsingHide()) {

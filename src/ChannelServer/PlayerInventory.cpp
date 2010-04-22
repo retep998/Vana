@@ -359,8 +359,9 @@ bool PlayerInventory::isEquippedItem(int32_t itemid) {
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t required = 0;
 	int8_t inv = GameLogicUtilities::getInventory(itemid);
-	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid))
-		required = amount; // These aren't stackable
+	if (!GameLogicUtilities::isStackable(itemid)) {
+		required = amount;
+	}
 	else {
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
 		uint16_t existing = getItemAmount(itemid) % maxslot;

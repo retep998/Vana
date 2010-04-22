@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.h"
 #include "Buffs.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Inventory.h"
@@ -30,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
