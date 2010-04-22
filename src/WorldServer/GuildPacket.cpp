@@ -284,7 +284,7 @@ void GuildPacket::sendGuildRankBoard(Player *player, int32_t npcid) {
 	packet.add<int16_t>(SMSG_GUILD);
 	packet.add<int8_t>(0x49);
 	packet.add<int32_t>(npcid);
-	
+
 	mysqlpp::Query query = Database::getCharDB().query("SELECT name, points, logo, logobg, logocolor, logobgcolor FROM guilds ORDER BY points DESC LIMIT 50");
 	mysqlpp::StoreQueryResult res = query.store();
 

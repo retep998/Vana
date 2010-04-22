@@ -635,7 +635,7 @@ void BuffDataProvider::loadData() {
 	map.useval = false;
 	skillsinfo[Jobs::Hermit::ShadowPartner].map.push_back(map);
 	skillsinfo[Jobs::NightWalker::ShadowPartner].map.push_back(map);
-	
+
 	// Combo Attack
 	buff.type = 0x20;
 	buff.byte = Byte3;
@@ -912,7 +912,7 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 			//case 3: // Specific item range (itemid / 10000) increase
 		}
 	}
-	
+
 	if (bytes.size()) {
 		Buff buff;
 		BuffInfo player;

@@ -76,7 +76,7 @@ string Initializing::makeLocale(string locale, bool testServer) {
 
 void Initializing::checkSchemaVersion(bool update) {
 	DatabaseMigration dbMigration(update);
-	
+
 	bool succeed = dbMigration.checkVersion();
 
 	if (!succeed && !update) {
@@ -89,7 +89,7 @@ void Initializing::checkSchemaVersion(bool update) {
 	else if (!succeed) {
 		// Failed, but we can update it
 		cout << std::setw(outputWidth) <<  "Updating database...";
-		
+
 		dbMigration.update();
 
 		cout << "DONE" << endl;

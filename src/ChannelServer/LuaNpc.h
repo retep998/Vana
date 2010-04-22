@@ -27,7 +27,7 @@ class Npc;
 class LuaNpc : public LuaScriptable {
 public:
 	LuaNpc(const string &filename, int32_t playerid);
-	
+
 	bool run();
 	bool proceedNext();
 	bool proceedSelection(uint8_t selected);

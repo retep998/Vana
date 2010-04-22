@@ -95,7 +95,7 @@ void ReactorDataProvider::loadStates() {
 	ReactorStateInfo revent;
 	int32_t id;
 	int8_t state;
-	
+
 	using namespace Functors;
 
 	enum ReactorEvent {

@@ -132,6 +132,6 @@ private:
 	unordered_map<int32_t, Map *> maps;
 	continent_map continents;
 	boost::mutex loadmap_mutex;
-	
+
 	void loadMap(int32_t mapid, Map *&map);
 };

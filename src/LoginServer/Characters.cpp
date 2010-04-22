@@ -297,7 +297,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 			Functors::CharDeleteFunctor func = {id, (int32_t) res[0]["world_id"]};
 			Worlds::Instance()->runFunction(func);
 		}
-		
+
 		query << "DELETE FROM characters WHERE id = " << id;
 		query.exec();
 

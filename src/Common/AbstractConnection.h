@@ -30,7 +30,7 @@ class AbstractConnection {
 public:
 	AbstractConnection();
 	virtual ~AbstractConnection() { }
-	
+
 	virtual void realHandleRequest(PacketReader &packet) = 0;
 	void handleRequest(PacketReader &packet);
 	void setTimer();

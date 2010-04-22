@@ -48,9 +48,9 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	packet.addBool(true);
 
 	addAllianceInfo(packet, alliance);
-	
+
 	Channels::Instance()->sendToChannel(requestee->getChannel(), packet);
-	
+
 	packet = PacketCreator();
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
@@ -193,7 +193,7 @@ void AlliancePacket::sendUpdateNotice(Alliance *alliance) {
 
 	packet.add<int32_t>(alliance->getId());
 	packet.addString(alliance->getNotice());
-	
+
 	sendToAlliance(packet, alliance);
 }
 
@@ -224,7 +224,7 @@ void AlliancePacket::addAllianceInfo(PacketCreator &packet, Alliance *alliance) 
 
 	packet.add<int32_t>(alliance->getId());
 	packet.addString(alliance->getName());
-	
+
 	for (uint8_t i = 1; i <= GuildsAndAlliances::RankQuantity; i++)
 		packet.addString(alliance->getTitle(i));
 
@@ -243,7 +243,7 @@ void AlliancePacket::addGuildsInfo(PacketCreator &packet, Alliance *alliance, bo
 
 	if (addSize)
 		packet.add<int32_t>(alliance->getSize());
-	
+
 	for (iter = guilds.begin(); iter != guilds.end(); iter++) {
 		GuildPacket::addGuildInformation(packet, iter->second);
 	}
@@ -266,7 +266,7 @@ void AlliancePacket::sendToAlliance(PacketCreator &packet, Alliance *alliance, P
 				continue;
 
 			pack.set<int32_t>(iter2->second->getId(), 2);
-			
+
 			if (Channel *channel = Channels::Instance()->getChannel(iter2->second->getChannel())) {
 				channel->getConnection()->getSession()->send(pack);
 			}

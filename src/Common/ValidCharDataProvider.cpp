@@ -32,7 +32,7 @@ void ValidCharDataProvider::loadData() {
 
 	loadForbiddenNames();
 	loadCreationItems();
-	
+
 	std::cout << "DONE" << std::endl;
 }
 

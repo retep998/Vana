@@ -83,7 +83,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	}
 	packet.skipBytes(1);
 	int8_t channel = packet.get<int8_t>();
-	
+
 	LoginPacket::channelSelect(player);
 	if (Channel *chan = worlds[player->getWorld()]->getChannel(channel)) {
 		player->setChannel(channel);
@@ -105,7 +105,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
 			break;
 		}
 	}
-	
+
 	if (world != nullptr) {
 		LoginServerAcceptPacket::connect(player, world);
 

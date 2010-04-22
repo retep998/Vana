@@ -178,7 +178,7 @@ struct ItemInfo {
 	bool quest;
 	bool cash;
 };
-	
+
 struct PetInfo {
 	PetInfo() : norevive(false), nostoreincashshop(false), autoreact(false) { }
 	bool norevive;

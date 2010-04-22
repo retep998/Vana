@@ -36,7 +36,7 @@ void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
 	size_t psize = packet.getBufferLength();
 	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
 	memcpy(buf, packet.getBuffer(), psize);
-	
+
 	m_packets[playerid].reset(new PacketReader(buf, psize));
 	SyncPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
 }

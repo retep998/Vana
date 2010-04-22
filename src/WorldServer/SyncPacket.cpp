@@ -192,7 +192,7 @@ void SyncPacket::GuildPacket::updateEmblem(Guild *guild) {
 	packet.add<int16_t>(logo.background);
 	packet.add<uint8_t>(logo.backgroundColor);
 	packet.add<int32_t>(guild->m_players.size());
-	
+
 	for (unordered_map<int32_t, Player *>::iterator iter = guild->m_players.begin(); iter != guild->m_players.end(); iter++)
 		packet.add<int32_t>(iter->second->getId());
 
@@ -271,10 +271,10 @@ void SyncPacket::BbsPacket::sendThreadList(uint16_t channel, Guild *guild, int32
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	
+
 	packet.add<int16_t>(SMSG_BBS);
 	packet.add<int8_t>(0x06);
-	
+
 	BbsThread *notice = bbs->getNotice();
 	packet.addBool(notice != nullptr);
 	if (notice != nullptr) {
@@ -321,7 +321,7 @@ void SyncPacket::BbsPacket::sendThreadData(uint16_t channel, BbsThread *thread, 
 	packet.add<int32_t>(thread->getIcon());
 
 	packet.add<int32_t>(thread->m_replies.size());
-		
+
 	for (map<int32_t, BbsReply *>::iterator iter = thread->m_replies.begin(); iter != thread->m_replies.end(); iter++) {
 		packet.add<int32_t>(iter->second->getId());
 		packet.add<int32_t>(iter->second->getUserId());
@@ -463,7 +463,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
-	
+
 	// Add party member's names to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addString(iter->second->getName(), 13);
@@ -500,7 +500,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(-2);
 	}
-	
+
 	packet.add<int32_t>(party->getLeader());
 
 	// Add party member's maps to packet

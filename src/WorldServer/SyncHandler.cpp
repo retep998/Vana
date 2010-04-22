@@ -85,7 +85,7 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 			return;
 		}
 	}
-	
+
 	// There we go, create an alliance...
 
 	mysqlpp::Query query = Database::getCharDB().query();
@@ -102,7 +102,7 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 	}
 
 	int32_t allianceid = static_cast<int32_t>(query.insert_id());
-	
+
 	loadAlliance(allianceid);
 	Alliance *alliance = PlayerDataProvider::Instance()->getAlliance(allianceid);
 
@@ -201,7 +201,7 @@ void SyncHandler::sendChangeGuild(int32_t allianceid, PacketReader &packet) {
 	if (option == 0) {
 		if (guild->getInvited() && guild->getInvitedId() == alliance->getId()) {
 			alliance->addGuild(guild); // add the guild before sending the packet
-			
+
 			guild->removeInvite();
 			guild->setAlliance(alliance);
 
@@ -274,7 +274,7 @@ void SyncHandler::sendPlayerUpdate(int32_t allianceid, int32_t playerid) {
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (player == nullptr || player->getAlliance() == nullptr || player->getGuild() == nullptr)
 		return;
-	
+
 	AlliancePacket::sendUpdatePlayer(alliance, player, 1);
 }
 
@@ -378,7 +378,7 @@ void SyncHandler::sendAllianceDisband(int32_t allianceid, int32_t playerid) {
 
 	query << "DELETE FROM alliances WHERE id = " << allianceid; // Update the guild in the database
 	query.exec();
-	
+
 	AlliancePacket::sendDeleteAlliance(alliance);
 	SyncPacket::AlliancePacket::changeAlliance(alliance, 0);
 
@@ -516,7 +516,7 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 	string title = packet.getString();
 	string text = packet.getString();
 	int16_t icon = (int16_t) packet.get<int32_t>();
-	
+
 	if (!isEdit) {
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "INSERT INTO guild_bbs_threads (user, guild, time, icon, title, content, listid) VALUES ("
@@ -543,7 +543,7 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 		thread->setIcon(icon);
 		thread->setTitle(title);
 		thread->setContent(text);
-		
+
 		bbs->save();
 		bbs->load();
 
@@ -869,7 +869,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 
 			guild->setLogo(GuildLogo());
 			guild->save();
-			
+
 			SyncPacket::GuildPacket::updatePlayerMesos(player, -1000000);
 			GuildPacket::sendEmblemUpdate(guild);
 			SyncPacket::GuildPacket::updateEmblem(guild);
@@ -886,7 +886,7 @@ void SyncHandler::handleLoginServerPacket(LoginServerConnection *player, PacketR
 	Guild *guild = character->getGuild();
 	if (guild == nullptr)
 		return;
-	
+
 	guild->removePlayer(character);
 
 	GuildPacket::sendPlayerUpdate(guild, character, 1, false);
@@ -904,7 +904,7 @@ void SyncHandler::loadGuild(int32_t id) {
 		WorldServer::Instance()->log(LogTypes::Error, x.str());
 		return;
 	}
-	
+
 	GuildLogo logo;
 	GuildRanks ranks;
 	logo.logo = static_cast<int16_t>(res[0]["logo"]);
@@ -1039,7 +1039,7 @@ void SyncHandler::sendNewPlayer(int32_t guildid, int32_t pid, bool newGuild) {
 	if (guild == nullptr)
 		return;
 	Player *player = PlayerDataProvider::Instance()->getPlayer(pid, true);
-	
+
 	guild->addPlayer(player);
 
 	mysqlpp::Query update = Database::getCharDB().query();
@@ -1050,7 +1050,7 @@ void SyncHandler::sendNewPlayer(int32_t guildid, int32_t pid, bool newGuild) {
 		<< "alliancerank = " << static_cast<int16_t>(player->getAllianceRank())
 		<< " WHERE ID = " << pid;
 	update.exec();
-	
+
 	SyncPacket::GuildPacket::addPlayer(player);
 	GuildPacket::sendPlayerUpdate(guild, player, 0);
 	GuildPacket::sendGuildInfo(guild, player, newGuild);
@@ -1095,7 +1095,7 @@ void SyncHandler::sendUpdateOfTitles(int32_t guildid, PacketReader &packet) {
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 	if (guild == nullptr)
 		return;
-	
+
 	for (uint8_t i = 1; i <= 5; i++)
 		guild->setTitle(i, packet.getString());
 
@@ -1301,7 +1301,7 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	uint8_t guildrank = packet.get<uint8_t>();
 	int32_t allianceid = packet.get<int32_t>();
 	uint8_t alliancerank = packet.get<uint8_t>();
-	
+
 	Player *p = PlayerDataProvider::Instance()->getPlayer(id, true);
 	if (p == nullptr) {
 		p = new Player(id);

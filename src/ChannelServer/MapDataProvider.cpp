@@ -231,7 +231,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		portal = PortalInfo();
-		
+
 		PortalFlags whoo = {&portal};
 		runFlags(row[Flags], whoo);
 

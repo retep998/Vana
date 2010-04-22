@@ -33,7 +33,7 @@ struct LogConfig;
 class AbstractServer {
 public:
 	virtual ~AbstractServer() { }
-	
+
 	void initialize();
 	virtual void listen() = 0;
 	virtual void loadConfig() = 0;

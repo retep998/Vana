@@ -63,7 +63,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 		packet.add<int16_t>(0);
 		packet.add<int8_t>(0);
 	}
-	
+
 	packet.add<int32_t>(0);
 	packet.add<uint8_t>(0xf8);
 	packet.add<int8_t>(3);

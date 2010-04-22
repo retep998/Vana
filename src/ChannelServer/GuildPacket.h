@@ -29,7 +29,7 @@ class PacketReader;
 namespace GuildPacket{
 	void sendCreateGuildWindow(Player *player);
 	void sendChangeGuildEmblem(Player *player);
-	
+
 	void handlePacket(Player *player, PacketReader &packet);
 	void handleDenyPacket(Player *player, PacketReader &packet);
 	int8_t checkGuildExist(string name);

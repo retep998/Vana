@@ -49,7 +49,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 				player->addUsedPortal(portal->id);
 			}
 		}
-		
+
 		string filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists

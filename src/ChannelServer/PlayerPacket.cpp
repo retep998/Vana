@@ -82,7 +82,7 @@ void PlayerPacket::connectData(Player *player) {
 	// for every pquest: int16_t questid, string questdata
 
 	packet.add<int16_t>(0);
-	
+
 	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }

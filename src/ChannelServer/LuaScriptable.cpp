@@ -1919,7 +1919,7 @@ int LuaExports::markForDelete(lua_State *luaVm) {
 
 int LuaExports::moveAllPlayers(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;
-	
+
 	int32_t mapid = lua_tointeger(luaVm, 1);
 
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
@@ -1933,7 +1933,7 @@ int LuaExports::moveAllPlayers(lua_State *luaVm) {
 
 int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;
-	
+
 	int32_t mapid = lua_tointeger(luaVm, 1);
 
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
