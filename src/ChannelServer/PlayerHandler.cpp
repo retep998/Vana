@@ -101,7 +101,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
 				// Only Power Guard decreases damage
-				damage = (damage - (damage * pgmr.reduction / 100)); 
+				damage = (damage - (damage * pgmr.reduction / 100));
 			}
 			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 		}

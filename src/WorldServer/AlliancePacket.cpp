@@ -143,7 +143,7 @@ void AlliancePacket::sendDeleteAlliance(Alliance *alliance) {
 	sendToAlliance(packet, alliance);
 }
 
-void AlliancePacket::sendUpdateLeader(Alliance *alliance, Player *oldLeader) { 
+void AlliancePacket::sendUpdateLeader(Alliance *alliance, Player *oldLeader) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x19);

@@ -97,9 +97,9 @@ void DatabaseMigration::loadSQLFiles() {
 			continue;
 		}
 
-		string version_str = filename; 
-		version_str.erase(version_str.find_first_of("_")); 
-		size_t version = boost::lexical_cast<size_t>(version_str); 
+		string version_str = filename;
+		version_str.erase(version_str.find_first_of("_"));
+		size_t version = boost::lexical_cast<size_t>(version_str);
 
 		if (m_sql_version < version) {
 			m_sql_version = version;

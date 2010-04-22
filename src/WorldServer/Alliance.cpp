@@ -30,7 +30,7 @@ m_leader(leader)
 {
 }
 
-void Alliance::addGuild(Guild *guild) { 
+void Alliance::addGuild(Guild *guild) {
 	m_guilds[guild->getId()] = guild;
 }
 

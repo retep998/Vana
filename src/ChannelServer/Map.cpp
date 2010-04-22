@@ -269,7 +269,7 @@ void Map::killReactors(bool showpacket) {
 			if (showpacket) {
 				ReactorPacket::destroyReactor(r);
 			}
-			removeReactor(makeReactorId(r->getId())); 
+			removeReactor(makeReactorId(r->getId()));
 		}
 	}
 }

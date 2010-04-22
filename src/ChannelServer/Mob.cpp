@@ -582,7 +582,7 @@ int32_t Mob::giveExp(Player *killer) {
 	return highestdamager;
 }
 
-void Mob::spawnDeathMobs(Map *map) { 
+void Mob::spawnDeathMobs(Map *map) {
 	if (getMobId() == Mobs::SummonHorntail) { // Special Horntail logic to keep Horntail units linked
 		int32_t spongeid = 0;
 		vector<int32_t> parts;

@@ -39,7 +39,7 @@ void SkillMacros::load(int32_t charid) {
 void SkillMacros::save(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "REPLACE INTO skillmacros VALUES ";
-	int8_t max = getMax(); 
+	int8_t max = getMax();
 	for (int8_t i = 0; i <= max; i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != nullptr) {

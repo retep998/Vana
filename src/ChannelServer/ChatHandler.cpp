@@ -143,7 +143,7 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("Stops the current ChannelServer.");
 	commandlist["shutdown"] = command.addToMap();
 
-	command.command = CmdPacket; 
+	command.command = CmdPacket;
 	command.syntax = "<$hexbytes>";
 	command.notes.push_back("Sends a specific packet to yourself. Should only be used for testing.");
 	commandlist["packet"] = command.addToMap();

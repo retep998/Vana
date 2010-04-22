@@ -285,7 +285,7 @@ void QuestDataProvider::loadRewards() {
 
 		rwa.id = atoi(row[ObjectId]);
 		rwa.count = atoi(row[Count]);
-		rwa.masterlevel = atoi(row[MasterLevel]); 
+		rwa.masterlevel = atoi(row[MasterLevel]);
 		rwa.gender = GameLogicUtilities::getGenderId(row[Gender]);
 		rwa.prop = atoi(row[Prop]);
 

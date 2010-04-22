@@ -66,7 +66,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 	}
 
 	int32_t npcid = packet.get<int32_t>();
-	if (act == 0) {	
+	if (act == 0) {
 		// Absolutely no idea what this does
 		int32_t item = packet.get<int32_t>();
 		QuestsPacket::giveItem(player, item, (int16_t) npcid);
