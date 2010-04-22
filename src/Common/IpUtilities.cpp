@@ -46,7 +46,7 @@ uint32_t IpUtilities::matchIpSubnet(uint32_t ip, const IpMatrix &ipMatrix, uint3
 		const IpArray &ipArray = *iter;
 		uint32_t serverIp = ipArray[0];
 		uint32_t subnet = ipArray[1];
-		
+
 		if ((ip & subnet) == (serverIp & subnet)) {
 			ret = serverIp;
 			break;

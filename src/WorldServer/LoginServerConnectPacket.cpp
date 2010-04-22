@@ -41,7 +41,7 @@ void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t populat
 	packet.add<int16_t>(IMSG_UPDATE_CHANNEL_POP);
 	packet.add<int32_t>(channel);
 	packet.add<int32_t>(population);
-	
+
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
 

@@ -41,7 +41,7 @@ namespace GuildPacket {
 	void sendPlayerUpdate(Guild *guild, Player *player, uint8_t type, bool toSelf = true);
 	void sendGuildDisband(Guild *guild);
 	void sendGuildContract(Player *player, bool isLeader, int32_t partyId = 0, const string &creator = "", const string &guildName = "");
-	
+
 	void sendGuildDenyResult(Player *inviter, Player *invitee, uint8_t result);
 	void sendPlayerGuildMessage(Player *player, uint8_t type);
 	void sendPlayerMessage(Player *player, uint8_t sort, const string &message);

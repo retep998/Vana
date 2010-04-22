@@ -57,7 +57,7 @@ public:
 	content(content),
 	listid(listid) { loadReplies(); }
 	~BbsThread() { m_replies.clear(); }
-	
+
 	void addReply(BbsReply *reply);
 	void loadReplies();
 	void saveReplies();

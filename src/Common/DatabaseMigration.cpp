@@ -104,7 +104,7 @@ void DatabaseMigration::loadSQLFiles() {
 		if (m_sql_version < version) {
 			m_sql_version = version;
 		}
-		
+
 		if (m_update) { // Only record the SQL files if we're going to update the database
 			m_sql_files[version] = filestring;
 		}

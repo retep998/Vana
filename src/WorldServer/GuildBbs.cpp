@@ -42,7 +42,7 @@ void GuildBbs::load() {
 			(string) res[i][5], 
 			(string) res[i][6]);
 		addThread(thread);
-		
+
 		if (listid > lastid)
 			lastid = listid;
 	}

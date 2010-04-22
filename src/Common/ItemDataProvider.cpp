@@ -76,7 +76,7 @@ void ItemDataProvider::loadItems() {
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
-	
+
 	using namespace Functors;
 
 	enum ItemData {

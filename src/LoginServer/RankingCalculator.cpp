@@ -61,7 +61,7 @@ void RankingCalculator::all() {
 
 void RankingCalculator::overall() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	
+
 	// Set the variables we're going to use later
 	query << "SET @rank := @real_rank := 0, @level := @exp := -1";
 	query.exec();
@@ -97,7 +97,7 @@ namespace Functors {
 	struct RankingFunctor {
 		bool operator()(World *world) {
 			mysqlpp::Query query = Database::getCharDB().query();
-	
+
 			query << "SET @rank := @real_rank := 0, @level := @exp := -1";
 			query.exec();
 
@@ -177,7 +177,7 @@ void RankingCalculator::job() {
 
 void RankingCalculator::fame() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	
+
 	// Set the variables we're going to use later
 	query << "SET @rank := 0";
 	query.exec();

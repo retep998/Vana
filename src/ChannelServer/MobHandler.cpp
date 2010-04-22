@@ -417,7 +417,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					int16_t vatk = venom->mAtk;
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
-					
+
 					damage = Randomizer::Instance()->randInt(maxdamage, mindamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {

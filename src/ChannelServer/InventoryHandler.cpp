@@ -550,7 +550,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					string msg5 = packet.getString();
 					packet.skipBytes(4); // Ticks
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
-					
+
 					if (itemid == Items::Megassenger) {
 						InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
 					}
@@ -569,7 +569,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg5 = packet.getString();
 				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
-				
+
 				if (itemid == Items::StarMegassenger) {
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
 				}
