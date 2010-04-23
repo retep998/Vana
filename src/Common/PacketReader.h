@@ -48,6 +48,7 @@ public:
 	Pos getPos();
 	bool getBool();
 	size_t getBufferLength();
+	size_t getBufferSize() const { return m_length; }
 	PacketReader & reset(int32_t len = 0);
 private:
 	unsigned char *m_buffer;
@@ -83,4 +84,3 @@ vector<T> PacketReader::getVector(size_t size) {
 	}
 	return vec;
 }
-
