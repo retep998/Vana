@@ -734,7 +734,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	packet.skipBytes(14); // ???
 	int32_t damage = packet.get<int32_t>();
 	mob->applyDamage(player->getId(), damage);
-	packet.skipBytes(8); // End of packet	
+	packet.skipBytes(8); // End of packet
 }
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
