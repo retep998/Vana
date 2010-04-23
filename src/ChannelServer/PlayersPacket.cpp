@@ -125,6 +125,9 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	getinfo->getInventory()->wishListPacket(packet);
 	getinfo->getMonsterBook()->infoData(packet);
 
+	packet.add<int32_t>(getinfo->getInventory()->getEquippedId(EquipSlots::Medal));
+	packet.add<int16_t>(0); // medals
+
 	player->getSession()->send(packet);
 }
 
@@ -176,11 +179,13 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<int16_t>(SMSG_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.skillLevel);
 	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
 	}
 
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
@@ -210,10 +215,13 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	packet.add<int16_t>(SMSG_ATTACK_RANGED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.skillLevel);
 	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
 	}
+
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
@@ -253,9 +261,11 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	packet.add<int16_t>(SMSG_ATTACK_MAGIC);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.skillLevel);
 	packet.add<int32_t>(skillid);
 
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
@@ -277,22 +287,35 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void PlayersPacket::useEnergyChargeAttack(Player *player, PacketReader &pack) {
-	pack.skipBytes(1);
-	int8_t tbyte = pack.get<int8_t>();
-	int8_t targets = tbyte / 0x10;
-	int8_t hits = tbyte % 0x10;
-	// Not sure about this packet at the moment, will finish later
+void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) {
+	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
+	int32_t skillid = attack.skillId;
 
-	//PacketCreator packet;
-	//packet.add<int16_t>(SMSG_ATTACK_ENERGYCHARGE);
-	//packet.add<int32_t>(player->getId());
-	//packet.add<int8_t>(tbyte);
-	//packet.add<int8_t>(1);
-	//int32_t skillid = pack.get<int32_t>();
-	//packet.add<int32_t>(skillid);
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_ATTACK_ENERGY_CHARGE);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
+	packet.add<uint8_t>(attack.skillLevel);
+	packet.add<int32_t>(skillid);
 
-	//Maps::getMap(player->getMap())->sendPacket(packet, player);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
+	packet.add<uint8_t>(attack.display);
+	packet.add<uint8_t>(attack.animation);
+	packet.add<uint8_t>(attack.weaponSpeed);
+	packet.add<uint8_t>(0);
+
+	packet.add<int32_t>(0); // No clue
+
+	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+		packet.add<int32_t>(i->first);
+		packet.add<int8_t>(0x06);
+		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+			packet.add<int32_t>(*j);
+		}
+	}
+
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {

@@ -57,6 +57,7 @@ class PlayerActiveBuffs {
 public:
 	PlayerActiveBuffs(Player *player) :
 		m_player(player),
+		m_arancombo(0),
 		m_combo(0),
 		m_energycharge(0),
 		m_activecharge(0),
@@ -65,7 +66,8 @@ public:
 		m_battleshiphp(0),
 		m_debuffmask(0),
 		m_markedmonster(0),
-		m_berserk(false)
+		m_berserk(false),
+		m_usingarancombo(false)
 		{ }
 
 	// Buff handling
@@ -107,6 +109,13 @@ public:
 	void setCombo(uint8_t combo, bool sendPacket);
 	void addCombo();
 	uint8_t getCombo() const { return m_combo; }
+
+	// Aran combo attack
+	void setAranCombo(int32_t combo, bool sendPacket);
+	void addAranCombo();
+	void setUsingAranCombo(bool val) { m_usingarancombo = val; }
+	int32_t getAranCombo() const { return m_arancombo; }
+	bool isUsingAranCombo() const { return m_usingarancombo; }
 
 	// Berserk
 	bool getBerserk() const { return m_berserk; }
@@ -189,9 +198,11 @@ private:
 	int32_t m_pickpocketcounter;
 	int32_t m_battleshiphp;
 	int32_t m_markedmonster;
+	int32_t m_arancombo;
 	uint32_t m_timeseed;
 	uint32_t m_debuffmask;
 	bool m_berserk;
+	bool m_usingarancombo;
 	list<int32_t> m_buffs;
 	ActiveBuffsByType m_activebuffsbytype;
 	MapEntryBuffs m_mapbuffs;

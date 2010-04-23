@@ -40,5 +40,5 @@ namespace PlayersPacket {
 	void useRangedAttack(Player *player, const Attack &attack);
 	void useSpellAttack(Player *player, const Attack &attack);
 	void useSummonAttack(Player *player, const Attack &attack);
-	void useEnergyChargeAttack(Player *player, PacketReader &pack);
+	void useEnergyChargeAttack(Player *player, const Attack &attack);
 };

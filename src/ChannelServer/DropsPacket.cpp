@@ -120,17 +120,15 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 	packet.add<int16_t>(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.addBool(isMesos);
-	packet.add<int32_t>(id);
 
 	if (isMesos)  {
+		packet.add<int8_t>(0);
+		packet.add<int32_t>(id);
 		packet.add<int16_t>(cafeBonus);
 	}
-	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory) {
-		packet.add<int16_t>(static_cast<int16_t>(amount));
-	}
-	if (!isMesos) {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
+	else {
+		packet.add<int32_t>(id);
+		packet.add<int32_t>(amount);
 	}
 
 	player->getSession()->send(packet);

@@ -50,8 +50,8 @@ void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 void LoginPacket::loginConnect(Player *player, const string &username) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_AUTHENTICATION);
-	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+	packet.add<int32_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
 		case PlayerStatus::SetGender: packet.add<int8_t>(PlayerStatus::SetGender); break;
@@ -59,14 +59,16 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
 	packet.addString(username);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
 	packet.add<int8_t>(player->getQuietBanReason());
 	packet.add<int64_t>(player->getQuietBanTime());
 	packet.add<int64_t>(player->getCreationTime());
 	packet.add<int32_t>(0);
+	packet.add<int8_t>(0); //0 = PIN | 1 = don't use PIN
+	packet.add<int8_t>(2);//!player->getPic().empty()); //0 = register PIC | 1 = PIC | 2 = no PIC (old char select packet)
 	player->getSession()->send(packet);
 }
 
@@ -157,6 +159,7 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
+	packet.addBool(!player->getPic().empty()); // PIC
 	packet.add<int32_t>(maxchars);
 	player->getSession()->send(packet);
 }

@@ -198,6 +198,18 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 		return;
 	}
 
+	int32_t type = packet.get<int32_t>();
+	int16_t startJob = 0;
+	int32_t startMap = 0;
+	if (type == 0x00) {
+		startJob = 1000;
+		startMap = 0;
+	}
+	else if (type == 0x02) {
+		startJob = 2000;
+		startMap = 0;
+	}
+
 	int32_t eyes = packet.get<int32_t>();
 	int32_t hair = packet.get<int32_t>();
 	int32_t haircolor = packet.get<int32_t>();
@@ -220,7 +232,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	uint16_t luk = 4;
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) VALUES ("
+	query << "INSERT INTO characters (name, userid, world_id, eyes, hair, skin, gender, str, dex, `int`, luk, job, map) VALUES ("
 			<< mysqlpp::quote << name << ","
 			<< player->getUserId() << ","
 			<< (int32_t) player->getWorld() << ","
@@ -231,7 +243,9 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 			<< str << ","
 			<< dex << ","
 			<< intt << ","
-			<< luk << ")";
+			<< luk << ","
+			<< startJob << ","
+			<< startMap << ")";
 
 	mysqlpp::SimpleResult res = query.execute();
 	int32_t id = (int32_t) res.insert_id();
@@ -268,7 +282,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	int32_t data = packet.get<int32_t>();
+	string PIC = packet.getString();
 	int32_t id = packet.get<int32_t>();
 
 	if (!ownerCheck(player, id)) {
@@ -292,7 +306,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	if ((int32_t) res[0]["guildrank"] == 1) {
 		result = NoGuildMaster;
 	}
-	else if (data == player->getCharDeletePassword()) {
+	else if (PIC == player->getPic()) {
 		if ((int32_t) res[0]["guildid"] != 0) {
 			Functors::CharDeleteFunctor func = {id, (int32_t) res[0]["world_id"]};
 			Worlds::Instance()->runFunction(func);
@@ -362,7 +376,19 @@ void Characters::connectGame(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
+	packet.skipBytes(1); // IDK
 	int32_t id = packet.get<int32_t>();
+	string MacAddr1 = packet.getString();
+	string MacAddr2 = packet.getString();
+	string PIC = packet.getString();
+
+	if (player->getPic() == "") {
+		mysqlpp::Query query = Database::getCharDB().query();
+		query << "UPDATE users SET pic = " << mysqlpp::quote << PIC << " WHERE id = " << player->getUserId();
+		query.exec();
+
+		player->setPic(PIC);
+	}
 
 	connectGame(player, id);
 }
@@ -381,6 +407,20 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 	player->setChannel(channel);
 
 	connectGame(player, id);
+}
+
+void Characters::checkPic(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
+
+	string PIC = packet.getString();
+	int32_t characterId = packet.get<int32_t>();
+	string MAC = packet.getString();
+	string MAC_without_dashes = packet.getString();
+
+	connectGame(player, characterId);
 }
 
 bool Characters::ownerCheck(Player *player, int32_t id) {

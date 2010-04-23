@@ -70,8 +70,7 @@ namespace StatusEffects {
 	namespace Mob {
 		const uint8_t MaxVenomCount = 3;
 
-		enum MobStatus {
-			// Groups of 5 for easier counting
+		enum MobStatus { // Groups of 5 for easier counting
 			Watk = 0x01,
 			Wdef = 0x02,
 			Matk = 0x04,
@@ -97,7 +96,7 @@ namespace StatusEffects {
 			MagicImmunity = 0x80000,
 
 			NoClue2 = 0x100000,
-			NoClue3 = 0x200000,
+			BodyPressure = 0x200000,
 			NinjaAmbush = 0x400000,
 			NoClue4 = 0x800000,
 			VenomousWeapon = 0x1000000,
@@ -138,8 +137,7 @@ namespace MobSkills {
 		WeaponDefenseUpAoe = 112,
 		MagicDefenseUp = 103,
 		MagicDefenseUpAoe = 113,
-		HealAoe = 114,
-		SpeedUpAoe = 115,
+		Heal = 114,
 		Seal = 120,
 		Darkness = 121,
 		Weakness = 122,
@@ -155,7 +153,6 @@ namespace MobSkills {
 		Zombify = 133,
 		WeaponImmunity = 140,
 		MagicImmunity = 141,
-		ArmorSkill = 142,
 		WeaponDamageReflect = 143,
 		MagicDamageReflect = 144, 
 		AnyDamageReflect = 145,
@@ -166,11 +163,36 @@ namespace MobSkills {
 		McAccuracyUp = 154,
 		McAvoidUp = 155,
 		McSpeedUp = 156,
-		McSeal = 157, // Not actually used in Monster Carnival
+		NoClue = 157, // Not found anywhere that I know of
 		Summon = 200
 	};
 }
 
+namespace EquipSlots {
+	enum {
+		Helm = 1,
+		Face = 2,
+		Eye = 3,
+		Earring = 4,
+		Top = 5,
+		Bottom = 6,
+		Shoe = 7,
+		Glove = 8,
+		Cape = 9,
+		Shield = 10,
+		Weapon = 11,
+		CoupleRing = 12,
+		LabelRing = 13,
+		CoupleRing2 = 14, // ????
+		QuoteRing = 15,
+		Pendant = 17,
+		Mount = 18,
+		Saddle = 19,
+		Medal = 49
+	};
+}
+
+// Skills and jobs so there are fewer magic numbers
 namespace Jobs {
 	namespace JobTracks {
 		enum Tracks {
@@ -822,6 +844,52 @@ namespace Jobs {
 			Spark = 15111006,
 			SpeedInfusion = 15111005,
 			Transformation = 15111002
+		};
+	}
+	namespace Aran1 {
+		enum Skills {
+			ComboAbility = 21000000,
+			DoubleSwing = 2100002,
+			CombatStep = 21001001,
+			PolearmBooster = 21001003
+		};
+	}
+	namespace Aran2 {
+		enum Skills {
+			PolearmMastery = 21100000,
+			TripleSwing = 21100001,
+			FinalCharge = 21100002,
+			ComboSmash = 21100004,
+			ComboDrain = 21100005,
+			BodyPressure = 21101003
+		};
+	}
+	namespace Aran3 {
+		enum Skills {
+			ComboCritical = 21110000,
+			FullSwing = 21110002,
+			FinalCross = 21110003,
+			ComboPenril = 21110004,
+			RollingSpin = 21110006,
+			HiddenFullSwingDoubleSwing = 21110007,
+			HiddenFullSwingTripleSwing = 21110008,
+			SmartKnockback = 21111001,
+			SnowCharge = 21111005
+		};
+	}
+	namespace Aran4 {
+		enum Skills {
+			HighMastery = 21120001,
+			OverSwing = 21120002,
+			HighDefense = 21120004,
+			FinalBlow = 21120005,
+			ComboTempest = 21120006,
+			ComboBarrier = 21120007,
+			HiddenOverSwingDoubleSwing = 21120009,
+			HiddenOverSwingTripleSwing = 21120010,
+			MapleWarrior = 21121000,
+			FreezeStanding = 21121003,
+			HerosWill = 21121008
 		};
 	}
 }

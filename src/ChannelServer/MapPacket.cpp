@@ -38,6 +38,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
 	packet.add<int16_t>(SMSG_MAP_SPAWN_PLAYER);
 	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(player->getStats()->getLevel()); // Level O.o, added in V.80+
 	packet.addString(player->getName());
 	if (player->getGuildId() > 0) {
 		if (Guild *gi = PlayerDataProvider::Instance()->getGuild(player->getGuildId())) {
@@ -65,9 +66,9 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	}
 
 	packet.add<int32_t>(0);
-	packet.add<uint8_t>(0xf8);
-	packet.add<int8_t>(3);
 	packet.add<int16_t>(0);
+	packet.add<uint8_t>(0xfc);
+	packet.add<int8_t>(1);
 	{
 		using namespace BuffBytes;
 		packet.add<uint8_t>(enter.types[Byte5]);
@@ -115,38 +116,38 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850); // Unknown
+	packet.add<int32_t>(330301441); // Unknown, seems to be a value that is different for every character (random)
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 
 	packet.add<int32_t>(enter.mountid); // No point to having an if, these are 0 when not in use
 	packet.add<int32_t>(enter.mountskill);
 
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
+	packet.add<int32_t>(330301441);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int16_t>(player->getStats()->getJob());
@@ -172,21 +173,19 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int32_t>(pet->getFh());
 		}
 	}
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
+	
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
+
 	packet.addBool(!player->getChalkboard().empty());
 	packet.addString(player->getChalkboard());
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	packet.add<int64_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);	
 	return packet;
 }
 
@@ -207,6 +206,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.add<int16_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
 	packet.add<uint32_t>(player->getPortalCount());
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
 	packet.add<int16_t>(player->getStats()->getHp());
@@ -319,7 +319,7 @@ void MapPacket::instantWarp(Player *player, int8_t pid) {
 
 void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemid, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_WEATHER_EFFECT);
+	//packet.add<int16_t>(SMSG_MAP_WEATHER_EFFECT);
 	packet.addBool(adminWeather);
 	packet.add<int32_t>(itemid);
 	if (itemid != 0 && !adminWeather) {

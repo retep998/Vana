@@ -470,27 +470,31 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++)
 		packet.add<int8_t>(getMaxSlots(i));
 
+	packet.add<int64_t>(94354848000000000LL);
+
 	// Go through equips
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
 	ItemInventory::iterator iter;
 	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first < 0 && iter->first > -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
 	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first < -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
 	for (iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
+
+	packet.add<int16_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
 	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {

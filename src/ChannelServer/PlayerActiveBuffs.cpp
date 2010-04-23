@@ -309,6 +309,20 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 	}
 }
 
+void PlayerActiveBuffs::setAranCombo(int32_t combo, bool sendPacket) {
+	m_arancombo = combo;
+	if (sendPacket) {
+		SkillsPacket::showComboCount(m_player, m_arancombo);
+	}
+}
+
+void PlayerActiveBuffs::addAranCombo() {
+	if (m_usingarancombo) {
+		m_arancombo++;
+		SkillsPacket::showComboCount(m_player, m_arancombo);
+	}
+}
+
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
 		int32_t skillid = Jobs::DarkKnight::Berserk;

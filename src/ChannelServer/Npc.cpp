@@ -122,6 +122,7 @@ PacketCreator Npc::npcPacket(int8_t type, bool addText) {
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(npcid);
 	packet.add<int8_t>(type);
+	packet.add<int8_t>(0x00);
 
 	if (addText) {
 		packet.addString(text);

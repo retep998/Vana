@@ -64,6 +64,7 @@ struct Character {
 };
 
 namespace Characters {
+	void checkPic(Player *player, PacketReader &packet);
 	void connectGame(Player *player, int32_t charid);
 	void connectGame(Player *player, PacketReader &packet);
 	void connectGameWorld(Player *player, PacketReader &packet); // From "view all character"

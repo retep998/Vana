@@ -91,14 +91,9 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(2);
-	packet.add<int8_t>(3);
-	packet.add<int8_t>(5);
-	packet.add<int8_t>(pet->getInventorySlot());
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(5);
-	packet.add<int8_t>(pet->getInventorySlot());
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(1);
+	packet.add<int8_t>(Inventories::CashInventory);
+	packet.add<int16_t>(pet->getInventorySlot());
 	addInfo(packet, pet);
 	player->getSession()->send(packet);
 }
@@ -171,8 +166,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(3);
 	packet.add<int32_t>(pet->getItemId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(pet->getId());
-	packet.add<int32_t>(0);
+	packet.add<int64_t>(pet->getId());
 	packet.add<int64_t>(Items::NoExpiration);
 	packet.addString(pet->getName(), 13);
 	packet.add<int8_t>(pet->getLevel());
@@ -181,4 +175,5 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int64_t>(0LL);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0); // Time to expire (for trial pet)
+	packet.add<int16_t>(0);
 }

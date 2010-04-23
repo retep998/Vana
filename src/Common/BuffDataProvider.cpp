@@ -61,6 +61,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::WindArcher::BowBooster].player.push_back(player);
 	skillsinfo[Jobs::NightWalker::ClawBooster].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::KnucklerBooster].player.push_back(player);
+	skillsinfo[Jobs::Aran1::PolearmBooster].player.push_back(player);
 
 	// Speed Infusion
 	buff.type = 0x80;
@@ -87,6 +88,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Shadower::MapleWarrior].player.push_back(player);
 	skillsinfo[Jobs::Buccaneer::MapleWarrior].player.push_back(player);
 	skillsinfo[Jobs::Corsair::MapleWarrior].player.push_back(player);
+	skillsinfo[Jobs::Aran4::MapleWarrior].player.push_back(player);
 
 	// Magic Guard
 	buff.type = 0x02;
@@ -345,6 +347,13 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Bishop::HolyShield].player.push_back(player);
+
+	// Aran's Body Pressure
+	buff.type = 0x80;
+	buff.byte = Byte9;
+	buff.value = SkillX;
+	player.buff = buff;
+	skillsinfo[Jobs::Aran2::BodyPressure].player.push_back(player);
 	// End regular buffs
 
 	// Begin map buffs

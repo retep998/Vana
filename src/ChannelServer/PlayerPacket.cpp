@@ -42,18 +42,23 @@ void PlayerPacket::connectData(Player *player) {
 	player->getRandStream()->connectData(packet); // Seeding RNG
 
 	packet.add<int64_t>(-1);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 13);
 	packet.add<int8_t>(player->getGender());
 	packet.add<int8_t>(player->getSkin());
 	packet.add<int32_t>(player->getEyes());
 	packet.add<int32_t>(player->getHair());
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
+		if (Pet *pet = player->getPets()->getSummoned(i)) {
+			packet.add<int64_t>(pet->getCashId() == 0 ? pet->getId() : pet->getCashId());
+		}
+		else {
+			packet.add<int64_t>(0);
+		}
+	}
+
 	player->getStats()->connectData(packet); // Stats
 
 	packet.add<int32_t>(0); // Gachapon EXP
@@ -64,6 +69,9 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
 	packet.add<uint8_t>(player->getBuddyListSize());
+
+	packet.addBool(false); // BoF
+	// packet.addString("BOFNAME");
 
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns

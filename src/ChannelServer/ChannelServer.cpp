@@ -38,7 +38,7 @@ m_channel(-1)
 }
 
 void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory());
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), "2");
 	Initializing::setUsersOffline(getOnlineId());
 }
 

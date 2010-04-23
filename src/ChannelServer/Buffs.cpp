@@ -343,6 +343,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::WindArcher::BowBooster:
 		case Jobs::NightWalker::ClawBooster:
 		case Jobs::ThunderBreaker::KnucklerBooster:
+		case Jobs::Aran1::PolearmBooster:
 			player->getActiveBuffs()->setBooster(skillid); // Makes switching equips MUCH easier
 			break;
 		case Jobs::WhiteKnight::BwFireCharge:
@@ -369,6 +370,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::Shadower::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior:
+		case Jobs::Aran4::MapleWarrior:
 			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
 			break;
 	}

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
 		if (shortSlot)
-			packet.add<int16_t>(slot);
+			packet.add<int16_t>(abs(slot));
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;

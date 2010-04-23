@@ -38,6 +38,10 @@ using TimeUtilities::tickToTick32;
 using TimeUtilities::timeToTick;
 
 void Login::loginUser(Player *player, PacketReader &packet) {
+	if (player->getStatus() == PlayerStatus::LoggedIn) {
+		// Hacking
+		return;
+	}
 	string username = packet.getString();
 	string password = packet.getString();
 	string ip = IpUtilities::ipToString(player->getIp());
@@ -47,7 +51,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin, pic FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";
 	mysqlpp::StoreQueryResult resIp = query.store();
@@ -139,6 +143,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		player->setCreationTime(timeToTick(atot(res[0]["creation_date"])));
 		player->setCharDeletePassword(res[0]["char_delete_password"]);
 		player->setAdmin(StringUtilities::atob(res[0]["admin"]));
+		player->setPic(res[0]["pic"].c_str());
 
 		LoginPacket::loginConnect(player, username);
 	}
@@ -184,6 +189,7 @@ void Login::handleLogin(Player *player, PacketReader &packet) {
 		player->setOnline(true);
 	}
 }
+
 void Login::checkPin(Player *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		// Hacking

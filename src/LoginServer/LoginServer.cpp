@@ -165,4 +165,5 @@ void LoginServer::loadWorlds() {
 		Worlds::Instance()->addWorld(world);
 		i++;
 	}
+	std::cout << (int32_t)i << std::endl;
 }

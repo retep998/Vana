@@ -29,6 +29,10 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addPos(mob->getPos());
@@ -68,6 +72,9 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
@@ -172,6 +179,9 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MOB_STATUS_ADDITION);
 	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(0); // Unk, added in V.80+
+	packet.add<int32_t>(0); // Unk, added in V.80+
+	packet.add<int32_t>(0); // Unk, added in V.80+
 	packet.add<int32_t>(statusmask);
 
 	for (size_t i = 0; i < info.size(); i++) {
@@ -190,7 +200,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 		packet.add<int32_t>(reflection[i]);
 	}
 
-	packet.add<int16_t>(delay);
+	packet.add<int32_t>(delay);
 
 	uint8_t buffcount = info.size();
 	if (reflection.size() > 0) {
@@ -205,6 +215,9 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MOB_STATUS_REMOVE);
 	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(0); // Unk, added in V.80+
+	packet.add<int32_t>(0); // Unk, added in V.80+
+	packet.add<int32_t>(0); // Unk, added in V.80+
 	packet.add<int32_t>(status);
 	packet.add<int8_t>(1);
 	Maps::getMap(mob->getMapId())->sendPacket(packet);

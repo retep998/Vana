@@ -419,6 +419,7 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); ++iter) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
+		packet.add<int64_t>(Items::NoExpiration);
 		if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
 			packet.add<int32_t>(iter->second.maxlevel); // Max level for 4th job skills
 		}

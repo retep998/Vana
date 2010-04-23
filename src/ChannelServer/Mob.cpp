@@ -138,8 +138,11 @@ void Mob::initMob() {
 	}
 
 	status = StatusEffects::Mob::Empty;
+	status += StatusEffects::Mob::NoClue7;
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
+	StatusInfo noclue7 = StatusInfo(StatusEffects::Mob::NoClue7, 0, 0, 0);
+	statuses[noclue7.status] = noclue7;
 
 	if (info->hpRecovery > 0) {
 		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hpRecovery),
@@ -337,14 +340,16 @@ void Mob::statusPacket(PacketCreator &packet) {
 		// Val/skillid pairs must be ordered in the packet by status value ascending, this is done for us by std::map
 		if (iter->first != StatusEffects::Mob::Empty) {
 			packet.add<int16_t>(static_cast<int16_t>(iter->second.val));
-			if (iter->second.skillid >= 0) {
-				packet.add<int32_t>(iter->second.skillid);
+			if (iter->first != StatusEffects::Mob::NoClue7) {
+				if (iter->second.skillid >= 0) {
+					packet.add<int32_t>(iter->second.skillid);
+				}
+				else {
+					packet.add<int16_t>(iter->second.mobskill);
+					packet.add<int16_t>(iter->second.level);
+				}
+				packet.add<int16_t>(1);
 			}
-			else {
-				packet.add<int16_t>(iter->second.mobskill);
-				packet.add<int16_t>(iter->second.level);
-			}
-			packet.add<int16_t>(1);
 		}
 		else {
 			packet.add<int32_t>(0);

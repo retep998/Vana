@@ -106,6 +106,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realskill = 0;
 	uint8_t level = 0;
+	packet.skipBytes(8); // Unknown bytes added in V.80+
 	Pos projectiletarget = packet.getPos();
 	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
 	Pos spot = packet.getPos();

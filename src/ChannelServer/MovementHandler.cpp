@@ -37,64 +37,50 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 			case 16: // Wings
 				packet.skipBytes(7);
 				break;
-			case 17: // Part of Wings, the falling, I believe
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(6);
-				break;
-			case 12: // Horntail knockback
-				packet.skipBytes(7);
-				break;
 			case 14:
-				packet.skipBytes(9);
+				packet.skipBytes(6);
+				stance = packet.get<int8_t>();
+				foothold = packet.get<int16_t>();
 				break;
 			case 0: // Normal up/down/left/right movement
 			case 5:
+			case 15: // Jump down
+			case 17:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
-				packet.skipBytes(4);
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
+				packet.skipBytes(6);
+				if (type != 15) {
+					stance = packet.get<int8_t>();
+					foothold = packet.get<int16_t>();
+				}
 				break;
 			case 1: // Jumping
 			case 2: // Jumping/knockback?
 			case 6: // Flash Jump
+			case 12: // Horntail knockback
 			case 13: // Recoil Shot
+			case 20: // Unknown, seems to be a part from the Aran skill(s)
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
 				foothold = packet.get<int16_t>();
-				break;
-			case 15: // Jump down
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				packet.skipBytes(6);
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
-				break;
-			case 11: // Chair
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
 				break;
 			case 3:
 			case 4: // Teleport
 			case 7: // Assaulter
 			case 8: // Assassinate
 			case 9: // Rush
+			case 11: // Chair
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
-				packet.skipBytes(4);
+				packet.skipBytes(2);
+				foothold = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
 				break;
 			default:
-				std::cout << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;
+				stance = packet.get<int8_t>();
+				foothold = packet.get<int16_t>();
+				//std::cout << "New type of movement: " << (int16_t) type << std::endl;
 				break;
 		}
 	}

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-#define MAPLE_VERSION 75 // Kept in for VersionConstants.cpp
+#define MAPLE_VERSION 83 // Kept in for VersionConstants.cpp
 // Use ONLY for version-specific code purposes
 // Incidentally, your locale may have vastly different version-specific code
 
@@ -48,7 +48,7 @@ namespace Locales {
 
 namespace PatchLocations {
 	const string None = "";
-	const string Global = "0";
+	const string Global = "1";
 	const string Korea = ""; // Unk
 	const string Japan = ""; // Unk
 	const string China = ""; // Unk

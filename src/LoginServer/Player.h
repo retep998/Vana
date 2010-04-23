@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractConnection.h"
+#include "LoginServer.h"
+#include "IpUtilities.h"
 #include "PlayerStatus.h"
 #include "Types.h"
 
@@ -25,8 +27,7 @@ class PacketReader;
 
 class Player : public AbstractConnection {
 public:
-	Player() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0), quiet_ban_reason(0) { }
-
+	Player();
 	~Player();
 
 	void realHandleRequest(PacketReader &packet);
@@ -42,6 +43,7 @@ public:
 	void setQuietBanReason(int8_t reason) { quiet_ban_reason = reason; }
 	void setQuietBanTime(int64_t t) { quiet_ban_time = t; }
 	void setCreationTime(int64_t t) { user_creation = t; }
+	void setPic(string pic) { this->pic = pic; }
 
 	int8_t getGender() const { return gender; }
 	int8_t getWorld() const { return world; }
@@ -54,6 +56,7 @@ public:
 	int8_t getQuietBanReason() const { return quiet_ban_reason; }
 	int64_t getQuietBanTime() const { return quiet_ban_time; }
 	int64_t getCreationTime() const { return user_creation; }
+	string getPic() const { return pic; }
 
 	int32_t addInvalidLogin() {	return ++invalid_logins; }
 	void setOnline(bool online);
@@ -70,6 +73,7 @@ private:
 	int64_t user_creation;
 	bool admin;
 	bool checked_pin;
+	string pic;
 	PlayerStatus::PlayerStatus status;
 };
 

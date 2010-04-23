@@ -27,14 +27,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+Player::Player() : status(PlayerStatus::NotLoggedIn), 
+invalid_logins(0), 
+quiet_ban_time(0), 
+quiet_ban_reason(0) 
+{
+}
+
 void Player::realHandleRequest(PacketReader &packet) {
 	try {
 		switch (packet.get<int16_t>()) {
+			case 0x23: LoginServer::Instance()->log(LogTypes::Info, "Connection from " + IpUtilities::ipToString(getSession()->getIp())); break;
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
 			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
-			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
+			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this); break;
+			case CMSG_PIC: Characters::checkPic(this, packet); break;
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
 			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;

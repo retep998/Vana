@@ -33,4 +33,5 @@ namespace SkillsPacket {
 	void showMagnetSuccess(Player *player, int32_t mapmobid, uint8_t success); // New packet in .56
 	void sendCooldown(Player *player, int32_t skillid, int16_t time);
 	void showBerserk(Player *player, uint8_t level, bool on);
+	void showComboCount(Player *player, int32_t combo);
 };

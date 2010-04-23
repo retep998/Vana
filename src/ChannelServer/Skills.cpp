@@ -63,6 +63,10 @@ void Skills::cancelSkill(Player *player, PacketReader &packet) {
 
 void Skills::stopSkill(Player *player, int32_t skillid, bool fromTimer) {
 	switch (skillid) {
+		case Jobs::Aran1::ComboAbility:
+			player->getActiveBuffs()->setAranCombo(0, false);
+			player->getActiveBuffs()->setUsingAranCombo(false);
+			break;
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::WindArcher::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
@@ -197,6 +201,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Shadower::HerosWill:
 		case Jobs::Bowmaster::HerosWill:
 		case Jobs::Marksman::HerosWill:
+		case Jobs::Aran4::HerosWill:
 		case Jobs::Buccaneer::PiratesRage:
 		case Jobs::Corsair::SpeedInfusion:
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
@@ -269,7 +274,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::NightLord::MapleWarrior:
 		case Jobs::Shadower::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior: {
+		case Jobs::Corsair::MapleWarrior: 
+		case Jobs::Aran4::MapleWarrior: {
 			Party *party = player->getParty();
 			if (skillid == Jobs::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();

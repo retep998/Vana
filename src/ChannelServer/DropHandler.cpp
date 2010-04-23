@@ -175,8 +175,11 @@ void DropHandler::playerLoot(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(13);
+	int32_t petid = packet.get<int32_t>(); // It's actually int64_t
+	packet.skipBytes(4); // The other part of the ID
+	packet.skipBytes(4); // Ticks
+	packet.skipBytes(1); // Unknown
+	packet.skipBytes(4); // Player pos
 	int32_t dropid = packet.get<int32_t>();
 
 	lootItem(player, dropid, petid);
@@ -246,7 +249,7 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		}
 		if (playerrate == 100) {
 			if (player->getInventory()->modifyMesos(mesos, true)) {
-				DropsPacket::pickupDrop(player, drop->getObjectId(), 0, true);
+				DropsPacket::pickupDrop(player, mesos, 0, true);
 			}
 			else {
 				DropsPacket::dontTake(player);

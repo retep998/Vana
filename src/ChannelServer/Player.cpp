@@ -147,6 +147,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
 				case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
 				case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
+				case CMSG_COMBO_COUNTER_UP: getActiveBuffs()->addAranCombo(); break;
 				case CMSG_COMMAND: CommandHandler::handleCommand(this, packet); break;
 				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, packet); break;
 				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, packet); break;

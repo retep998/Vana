@@ -97,6 +97,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
 	// Rankings
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(charc.w_rank);

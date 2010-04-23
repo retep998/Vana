@@ -32,6 +32,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillid, const PlayerSkillIn
 	packet.add<int32_t>(skillid);
 	packet.add<int32_t>(skillinfo.level); // Level
 	packet.add<int32_t>(skillinfo.maxlevel); // Master Level
+	packet.add<int64_t>(150842304000000000LL); // New in V.83+ (Expiration of some sort.)
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
@@ -183,4 +184,11 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(level);
 	packet.addBool(on);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void SkillsPacket::showComboCount(Player *player, int32_t combo) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_COMBO_COUNTER);
+	packet.add<int32_t>(combo);
+	player->getSession()->send(packet);
 }
