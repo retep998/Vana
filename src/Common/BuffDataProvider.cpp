@@ -546,7 +546,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Marauder::EnergyCharge].map.push_back(map);
 	skillsinfo[Jobs::ThunderBreaker::EnergyCharge].map.push_back(map);
 
-	// Oak Barrel 
+	// Oak Barrel
 	buff.type = 0x02;
 	buff.byte = Byte5;
 	buff.value = SkillMorph;

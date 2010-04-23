@@ -90,7 +90,7 @@ void ChatHandler::initializeCommands() {
 	// Set up commands and appropriate GM levels
 	ChatCommand command;
 
-	// Notes: 
+	// Notes:
 	// Don't add syntax to things that have no parameters
 	// Every command needs at least one line of notes that describes what the command does
 
