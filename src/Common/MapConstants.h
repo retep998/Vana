@@ -19,9 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Maps {
 	enum {
+		AdventurerStartMap = 0,
+		NoblesseStartMap = 130030000,
 		GmMap = 180000000,
 		OriginOfClockTower = 220080001,
 		SorcerersRoom = 270020211,
+		LegendStartMap = 914000000,
 		NoMap = 999999999
 	};
 }

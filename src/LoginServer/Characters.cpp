@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptPacket.h"
+#include "MapConstants.h"
 #include "PacketReader.h"
 #include "Player.h"
 #include "ValidCharDataProvider.h"
@@ -200,16 +201,16 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 
 	int32_t type = packet.get<int32_t>();
 	int8_t classId = ValidCharDataProvider::Adventurer;
-	int16_t startJob = 0;
-	int32_t startMap = 0;
+	int16_t startJob = Jobs::JobIds::Beginner;
+	int32_t startMap = Maps::AdventurerStartMap;
 	if (type == 0x00) {
-		startJob = 1000;
-		startMap = 0;
+		startJob = Jobs::JobIds::Noblesse;
+		startMap = Maps::NoblesseStartMap;
 		classId = ValidCharDataProvider::Cygnus;
 	}
 	else if (type == 0x02) {
-		startJob = 2000;
-		startMap = 0;
+		startJob = Jobs::JobIds::Legend;
+		startMap = Maps::LegendStartMap;
 		classId = ValidCharDataProvider::Aran;
 	}
 

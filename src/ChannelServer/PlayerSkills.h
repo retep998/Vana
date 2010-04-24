@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <string>
 
 using std::tr1::unordered_map;
+using std::string;
 
 class Player;
 class PacketCreator;
@@ -34,7 +36,7 @@ struct PlayerSkillInfo {
 
 class PlayerSkills {
 public:
-	PlayerSkills(Player *player) : player(player) { load(); }
+	PlayerSkills(Player *player) : player(player), bofCharname("") { load(); }
 
 	void load();
 	void save(bool savecooldowns = false);
@@ -66,6 +68,8 @@ public:
 	int32_t getAchilles();
 	int32_t getNoDamageSkill();
 	int16_t getRechargeableBonus();
+	
+	string getBoFName() const { return bofCharname; }
 
 	void addCooldown(int32_t skillid, int16_t time);
 	void removeCooldown(int32_t skillid);
@@ -74,4 +78,5 @@ private:
 	unordered_map<int32_t, PlayerSkillInfo> playerskills;
 	unordered_map<int32_t, int16_t> cooldowns;
 	Player *player;
+	string bofCharname;
 };

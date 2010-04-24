@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Randomizer.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -46,6 +47,39 @@ void PlayerSkills::load() {
 		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
 		Skills::startCooldown(player, skillid, timeleft, true);
 		cooldowns[skillid] = timeleft;
+	}
+
+	
+	// Blessing of the Fairy info
+	query << "SELECT name, level FROM characters WHERE userid = " << player->getUserId();
+	res = query.store();
+
+	if (res.size() > 1) {
+		string tempName;
+		size_t charI;
+
+		for (size_t i = 0; i < res.size(); i++) {
+			res[i]["name"].to_string(tempName);
+
+			if (tempName == player->getName()) {
+				if (i == 0) {
+					// Get last character.
+					charI = res.size() - 1;
+				}
+				else if (i == res.size() - 1) {
+					// Get last character.
+					charI = 0;
+				}
+				else {
+					charI = i + 1;
+				}
+				res[charI]["name"].to_string(bofCharname);
+				int16_t charLevel = static_cast<int16_t>(res[charI]["level"]);
+				// BoF level = charLevel / 10
+				addSkillLevel(Jobs::Beginner::BlessingOfTheFairy, (charLevel / 10), false);
+				break;
+			}
+		}
 	}
 }
 

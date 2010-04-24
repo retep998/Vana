@@ -65,8 +65,13 @@ void PlayerPacket::connectData(Player *player) {
 
 	packet.add<uint8_t>(player->getBuddyListSize());
 
-	packet.addBool(false); // BoF
-	// packet.addString("BOFNAME");
+	if (!player->getSkills()->getBoFName().empty()) {
+		packet.addBool(true);
+		packet.addString(player->getSkills()->getBoFName());
+	}
+	else {
+		packet.addBool(false);
+	}
 
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
