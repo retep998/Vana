@@ -80,8 +80,11 @@ public:
 	bool isForbiddenName(const string &cmp);
 	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer);
 
-	const static int8_t Adventurer = 1;
-	const static int8_t Cygnus = 2;
+	enum ClassIDs {
+		Adventurer,
+		Cygnus,
+		Aran
+	};
 private:
 	ValidCharDataProvider() {}
 	static ValidCharDataProvider *singleton;
@@ -96,4 +99,5 @@ private:
 	vector<string> m_forbiddenNames;
 	ClassValidItems m_adventurer;
 	ClassValidItems m_cygnus;
+	ClassValidItems m_aran;
 };

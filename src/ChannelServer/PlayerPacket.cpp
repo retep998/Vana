@@ -50,14 +50,9 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getEyes());
 	packet.add<int32_t>(player->getHair());
 
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			packet.add<int64_t>(pet->getCashId() == 0 ? pet->getId() : pet->getCashId());
-		}
-		else {
-			packet.add<int64_t>(0);
-		}
-	}
+	packet.add<int64_t>(0); // Pet ID's (Used in the cashshop window)
+	packet.add<int64_t>(0);
+	packet.add<int64_t>(0);
 
 	player->getStats()->connectData(packet); // Stats
 

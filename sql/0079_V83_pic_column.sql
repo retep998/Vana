@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD COLUMN `pic` VARCHAR(19) NULL AFTER `salt`;

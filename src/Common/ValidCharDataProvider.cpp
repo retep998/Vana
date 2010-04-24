@@ -97,6 +97,9 @@ void ValidCharDataProvider::loadCreationItems() {
 		else if (className == "cygnus") {
 			classId = Cygnus;
 		}
+		else if (className == "aran") {
+			classId = Aran;
+		}
 		objectid = atoi(row[ObjectId]);
 		items = getItems(gender, classId);
 
@@ -166,12 +169,14 @@ ValidItems * ValidCharDataProvider::getItems(int8_t gender, int8_t classId) {
 		switch (classId) {
 			case Adventurer: vec = &m_adventurer.male; break;
 			case Cygnus: vec = &m_cygnus.male; break;
+			case Aran: vec = &m_aran.male; break;
 		}
 	}
 	else if (gender == Gender::Female) {
 		switch (classId) {
 			case Adventurer: vec = &m_adventurer.female; break;
 			case Cygnus: vec = &m_cygnus.female; break;
+			case Aran: vec = &m_aran.female; break;
 		}
 	}
 	return vec;
