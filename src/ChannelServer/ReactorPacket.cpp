@@ -31,6 +31,7 @@ void ReactorPacket::spawnReactor(Reactor *reactor) {
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.add<int8_t>(0);
+	packet.addString(""); // New in V.80+
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
 
@@ -42,6 +43,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
 	packet.add<int8_t>(0);
+	packet.addString(""); // New in V.80+
 	player->getSession()->send(packet);
 }
 

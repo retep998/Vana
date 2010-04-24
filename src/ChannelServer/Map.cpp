@@ -811,10 +811,10 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 
 	// Reactors
-	/*for (size_t i = 0; i < m_reactors.size(); i++) {
+	for (size_t i = 0; i < m_reactors.size(); i++) {
 		if (m_reactors[i]->isAlive())
 			ReactorPacket::showReactor(player, m_reactors[i]);
-	}*/
+	}
 
 	// Mobs
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
