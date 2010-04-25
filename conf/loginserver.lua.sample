@@ -1,6 +1,9 @@
 -- Use the PIN system?
 pin = true;
 
+-- Use the PIC system?
+pic = true;
+
 -- What port should the login server run on?
 port = 8484;
 

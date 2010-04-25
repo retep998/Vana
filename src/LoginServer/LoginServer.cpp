@@ -51,6 +51,7 @@ void LoginServer::loadData() {
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
 	m_pinEnabled = config.getBool("pin");
+	m_picEnabled = config.getBool("pic");
 	m_port = config.getShort("port");
 	m_interPort = config.getShort("inter_port");
 	m_maxInvalidLogins = config.getInt("invalid_login_threshold");

@@ -324,6 +324,7 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(attack.summonId);
 	packet.add<int8_t>(attack.animation);
+	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<int8_t>(attack.targets);
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);

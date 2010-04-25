@@ -44,6 +44,13 @@ namespace LoginPacket {
 			MaxLoad = 0x02
 		};
 	}
+	namespace PicTypes {
+		enum Types {
+			CreatePic = 0x00,
+			UsePic = 0x01,
+			NoPic = 0x02
+		};
+	}
 	void loginError(Player *player, int16_t errorid);
 	void loginBan(Player *player, int8_t reason, int32_t expire);
 	void loginProcess(Player *player, int8_t id);

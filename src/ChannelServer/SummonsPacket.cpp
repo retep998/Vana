@@ -29,6 +29,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
 	packet.add<int32_t>(summon->getSummonId());
+	packet.add<int8_t>(10); // Unknown, added in V.80+
 	packet.add<int8_t>(summon->getLevel());
 	packet.addPos(summon->getPos());
 	packet.add<int8_t>(4); // ?

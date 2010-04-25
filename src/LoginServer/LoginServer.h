@@ -42,12 +42,15 @@ public:
 
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
+	bool getPicEnabled() const { return m_picEnabled; }
+	void setPicEnabled(bool enabled) { m_picEnabled = enabled; }
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
 private:
 	LoginServer();
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
+	bool m_picEnabled;
 	int16_t m_port;
 	int16_t m_interPort;
 	int32_t m_maxInvalidLogins;

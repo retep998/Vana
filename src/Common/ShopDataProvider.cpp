@@ -148,23 +148,22 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 	ShopInfo &info = shops[id];
 	int8_t rechargetier = info.rechargetier;
 	map<int32_t, double> &rechargables = rechargecosts[rechargetier];
-	int16_t shopcount = info.items.size() + rechargables.size();
-	unordered_map<int32_t, bool> idsdone;
 
 	packet.add<int16_t>(SMSG_SHOP);
 	packet.add<int32_t>(info.npc);
-	packet.add<int16_t>(0); // To be set later
+	packet.add<int16_t>(info.items.size()); // To be set later
 
 	// Items
 	for (size_t i = 0; i < info.items.size(); i++) {
 		ShopItemInfo &item = info.items[i];
 		packet.add<int32_t>(item.itemid);
 		packet.add<int32_t>(item.price);
+		packet.add<int32_t>(0); // Perfect pitches
+		packet.add<int32_t>(0); // Days usable
+		packet.add<int32_t>(0); // Unknown
 		if (GameLogicUtilities::isRechargeable(item.itemid)) {
-			idsdone[item.itemid] = true;
 			double cost = 0.0;
 			if (rechargetier != 0) {
-				shopcount--;
 				if (rechargables.find(item.itemid) != rechargables.end()) {
 					cost = rechargables[item.itemid];
 				}
@@ -180,18 +179,6 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 		}
 		packet.add<int16_t>(maxslot);
 	}
-
-	// Rechargables
-	for (map<int32_t, double>::iterator iter = rechargables.begin(); iter != rechargables.end(); ++iter) {
-		if (idsdone.find(iter->first) == idsdone.end()) {
-			packet.add<int32_t>(iter->first);
-			packet.add<int32_t>(0);
-			packet.add<double>(iter->second);
-			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + rechargeablebonus);
-		}
-	}
-
-	packet.set<int16_t>(shopcount, 6);
 }
 
 int32_t ShopDataProvider::getPrice(int32_t shopid, uint16_t shopindex) {

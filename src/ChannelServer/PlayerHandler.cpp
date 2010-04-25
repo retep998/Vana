@@ -884,6 +884,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		attack.animation = packet.get<uint8_t>();
 		targets = packet.get<int8_t>();
 		hits = 1;
+		packet.skipBytes(8); // Unknown
 	}
 
 	if (skillType == SkillTypes::Ranged) {
@@ -915,6 +916,9 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 
 	for (int8_t i = 0; i < targets; i++) {
 		int32_t mapmobid = packet.get<int32_t>();
+		if (skillType == SkillTypes::Summon) {
+			packet.skipBytes(4); // MobID???
+		}
 		packet.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
 		packet.skipBytes(8); // Mob pos, damage pos
 		if (!mesoExplosion) {
@@ -933,7 +937,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		}
 	}
 
-	if (skillType == SkillTypes::Ranged || skillType == SkillTypes::Summon) {
+	if (skillType == SkillTypes::Ranged) {
 		attack.projectilePos = packet.getPos();
 	}
 	attack.playerPos = packet.getPos();

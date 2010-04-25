@@ -104,7 +104,9 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
 
 		player->setUserId(res[0]["id"]);
-		if (LoginServer::Instance()->getPinEnabled()) {
+		player->setPic(res[0]["pic"].c_str());
+
+		if (LoginServer::Instance()->getPinEnabled() && (player->getPic().empty() && LoginServer::Instance()->getPicEnabled())) {
 			if (res[0]["pin"].is_null()) {
 				player->setPin(-1);
 			}
@@ -143,7 +145,6 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		player->setCreationTime(timeToTick(atot(res[0]["creation_date"])));
 		player->setCharDeletePassword(res[0]["char_delete_password"]);
 		player->setAdmin(StringUtilities::atob(res[0]["admin"]));
-		player->setPic(res[0]["pic"].c_str());
 
 		LoginPacket::loginConnect(player, username);
 	}
@@ -196,7 +197,7 @@ void Login::checkPin(Player *player, PacketReader &packet) {
 		return;
 	}
 	int8_t act = packet.get<int8_t>();
-	packet.skipBytes(5);
+	packet.skipBytes(1);
 
 	if (act == 0x00) {
 		player->setStatus(PlayerStatus::AskPin);
