@@ -184,6 +184,7 @@ void Login::handleLogin(Player *player, PacketReader &packet) {
 		player->setOnline(true);
 	}
 }
+
 void Login::checkPin(Player *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		// Hacking

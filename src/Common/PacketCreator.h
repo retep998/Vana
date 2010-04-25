@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/shared_array.hpp>
 #include <cstring>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -52,8 +53,10 @@ public:
 
 	const unsigned char * getBuffer() const;
 	size_t getSize() const;
+	string toString() const;
 private:
 	static const size_t bufferLen = 1000; // Initial buffer length
+	friend std::ostream & operator <<(std::ostream &out, const PacketCreator &packet);
 
 	unsigned char * getBuffer(size_t pos, size_t len);
 	unsigned char getHexByte(unsigned char input);
@@ -96,4 +99,10 @@ void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
 inline
 size_t PacketCreator::getSize() const {
 	return m_pos;
+}
+
+inline
+std::ostream & operator <<(std::ostream &out, const PacketCreator &packet) {
+	out << packet.toString();
+	return out;
 }
