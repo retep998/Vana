@@ -109,3 +109,20 @@ unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
 
 	return m_packet.get() + pos;
 }
+
+string PacketCreator::toString() const {
+	string ret;
+	if (getSize() > 0) {
+		std::stringstream out;
+		const unsigned char *p = getBuffer();
+		size_t buflen = getSize() - 1;
+		for (size_t i = 0; i <= buflen; i++) {
+			out << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<int16_t>(p[i]);
+			if (i < buflen) {
+				out << " ";
+			}
+		}
+		ret = out.str();
+	}
+	return ret;
+}

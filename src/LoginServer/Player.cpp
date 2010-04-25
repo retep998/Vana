@@ -53,17 +53,9 @@ void Player::realHandleRequest(PacketReader &packet) {
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
-		std::stringstream x;
 		packet.reset();
-		unsigned char *y = packet.getBuffer();
-		size_t z = packet.getBufferLength();
-		size_t i = 0;
-		x << "User ID: " << getUserId() << "; Packet: ";
-		while (i < z) {
-			x << std::hex << std::setw(2) << std::setfill('0') << (int16_t) y[i] << " ";
-			i++;
-		}
-
+		std::stringstream x;
+		x << "User ID: " << getUserId() << "; Packet: " << packet;
 		LoginServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}

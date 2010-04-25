@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -27,6 +28,8 @@ using std::string;
 using std::vector;
 
 struct Pos;
+
+typedef int16_t header_t;
 
 class PacketReader {
 public:
@@ -41,16 +44,19 @@ public:
 	vector<T> getVector(size_t size);
 
 	void skipBytes(int32_t len);
-	int16_t getHeader(); // Basically get<int16_t> that always reads at the start
+	header_t getHeader(); // Basically a get that always reads at the start
 	string getString();
 	string getString(size_t len);
-	unsigned char * getBuffer();
+	unsigned char * getBuffer() const;
 	Pos getPos();
 	bool getBool();
-	size_t getBufferLength();
-	size_t getBufferSize() const { return m_length; }
+	size_t getBufferLength() const;
+	size_t getSize() const { return m_length; }
 	PacketReader & reset(int32_t len = 0);
+	string toString() const;
 private:
+	friend std::ostream & operator <<(std::ostream &out, const PacketReader &packet);
+
 	unsigned char *m_buffer;
 	size_t m_length;
 	size_t m_pos;
@@ -83,4 +89,10 @@ vector<T> PacketReader::getVector(size_t size) {
 		vec.push_back(get<T>());
 	}
 	return vec;
+}
+
+inline
+std::ostream & operator <<(std::ostream &out, const PacketReader &packet) {
+	out << packet.toString();
+	return out;
 }
