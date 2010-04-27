@@ -222,6 +222,7 @@ public:
 	bool summonBagExists(int32_t itemid) { return (mobs.find(itemid) != mobs.end()); }
 	bool isTradeable(int32_t itemid) { return (!(items[itemid].notrade || items[itemid].quest)); }
 	bool isCash(int32_t itemid) { return items[itemid].cash; }
+	bool isQuest(int32_t itemid) { return items[itemid].quest; }
 	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
 	int32_t getPrice(int32_t itemid) { return (itemExists(itemid) ? items[itemid].price : 0); }
 	int32_t getMesoBonus(int32_t itemid) { return (itemExists(itemid) ? items[itemid].mesos : 0); }
