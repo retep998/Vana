@@ -17,8 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
 #include "MapleSession.h"
-#include "PingPacket.h"
 #include "PacketReader.h"
+#include "PingPacket.h"
+#include "RecvHeader.h"
 #include "SendHeader.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -28,17 +29,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 AbstractConnection::AbstractConnection() :
-m_is_server(false),
-m_is_pinged(false),
+m_isServer(false),
+m_isPinged(false),
+m_latency(InitialPing),
 m_timers(new Timer::Container)
 {
 }
 
 void AbstractConnection::handleRequest(PacketReader &packet) {
 	try {
-		m_is_pinged = false;
-		if (m_is_server && packet.getHeader() == SMSG_PING) {
-			PingPacket::pong(this);
+		switch (packet.getHeader()) {
+			case SMSG_PING:
+				if (m_isServer) {
+					PingPacket::pong(this);
+				}
+				break;
+			case CMSG_PONG:
+				m_isPinged = false;
+				m_latency = (clock() - m_lastPing) / 2; // This is for the trip to and from, so latency is half
+				break;
 		}
 		realHandleRequest(packet);
 	}
@@ -50,15 +59,17 @@ void AbstractConnection::handleRequest(PacketReader &packet) {
 void AbstractConnection::setTimer() {
 	new Timer::Timer(bind(&AbstractConnection::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), Timer::Time::fromNow(60000), 15000); // Set the initial ping to 1 minutes for some people with slow computers
+		getTimers(), Timer::Time::fromNow(InitialPing), PingTime);
 }
 
 void AbstractConnection::ping() {
-	if (m_is_pinged) { // We have a timeout now
+	if (m_isPinged) {
+		// We have a timeout now
 		getSession()->disconnect();
 		return;
 	}
-	m_is_pinged = true;
+	m_isPinged = true;
+	m_lastPing = clock();
 	PingPacket::ping(this);
 }
 

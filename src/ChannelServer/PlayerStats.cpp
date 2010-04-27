@@ -122,7 +122,12 @@ void PlayerStats::connectData(PacketCreator &packet) {
 	packet.add<int16_t>(getMp());
 	packet.add<int16_t>(getMaxMp(true));
 	packet.add<int16_t>(getAp());
-	packet.add<int16_t>(getSp());
+	if (GameLogicUtilities::getJobTrack(getJob()) != Jobs::JobTracks::Evan) {
+		packet.add<int16_t>(getSp());
+	}
+	else {
+		packet.add<int8_t>(static_cast<int8_t>(getSp())); // Todo: better Evan support
+	}
 	packet.add<int32_t>(getExp());
 	packet.add<int16_t>(getFame());
 }

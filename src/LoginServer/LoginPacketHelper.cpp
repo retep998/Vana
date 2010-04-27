@@ -17,22 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginPacketHelper.h"
 #include "Characters.h"
+#include "GameLogicUtilities.h"
 #include "ItemConstants.h"
+#include "SkillConstants.h"
 #include "PacketCreator.h"
 
-void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc) {
+void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc, bool vacWindow) {
 	packet.add<int32_t>(charc.id);
 	packet.addString(charc.name, 13);
 	packet.add<int8_t>(charc.gender);
 	packet.add<int8_t>(charc.skin);
 	packet.add<int32_t>(charc.eyes);
 	packet.add<int32_t>(charc.hair);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	packet.add<int64_t>(0); // Pet cash ID's (only used in the cashshop window)
+	packet.add<int64_t>(0);
+	packet.add<int64_t>(0);
 	packet.add<int8_t>(charc.level);
 	packet.add<int16_t>(charc.job);
 	packet.add<int16_t>(charc.str);
@@ -44,18 +43,26 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.add<int16_t>(charc.mp);
 	packet.add<int16_t>(charc.mmp);
 	packet.add<int16_t>(charc.ap);
-	packet.add<int16_t>(charc.sp);
+	if (GameLogicUtilities::getJobTrack(charc.job) != Jobs::JobTracks::Evan) {
+		packet.add<int16_t>(charc.sp);
+	}
+	else {
+		packet.add<int8_t>(static_cast<int8_t>(charc.sp));
+	}
 	packet.add<int32_t>(charc.exp);
 	packet.add<int16_t>(charc.fame);
-	packet.add<int32_t>(0); // Unknown int32 added in .62
+	packet.add<int32_t>(0); // Gachapon EXP
 	packet.add<int32_t>(charc.map);
 	packet.add<int8_t>(charc.pos);
 	packet.add<int32_t>(0); // Unknown int32 added in .62
+
+	// Actually PlayerPacketHelper::addPlayerDisplay() :P
 	packet.add<int8_t>(charc.gender);
 	packet.add<int8_t>(charc.skin);
 	packet.add<int32_t>(charc.eyes);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(charc.hair);
+
 	int32_t equips[Inventories::EquippedSlots][2] = {0};
 	for (int16_t i = 0; i < (int16_t) charc.equips.size(); i++) {
 		int16_t slot = -charc.equips[i].slot;
@@ -74,6 +81,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 			equips[slot][0] = charc.equips[i].id;
 		}
 	}
+
 	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Shown items
 		if (equips[i][0] > 0) {
 			packet.add<int8_t>(i);
@@ -94,10 +102,14 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	}
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(equips[EquipSlots::Weapon][0]); // Cash weapon
+
+	packet.add<int32_t>(0); // Pet ID's
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(0);
+	
+	if (!vacWindow) {
+		packet.add<int8_t>(0); // Not used in the View all Characters window O.o
+	}
 	// Rankings
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(charc.w_rank);

@@ -376,14 +376,27 @@ void Characters::connectGame(Player *player, int32_t charid) {
 }
 
 void Characters::connectGame(Player *player, PacketReader &packet) {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+	if (player->getStatus() != PlayerStatus::LoggedIn || (LoginServer::Instance()->getPicEnabled() && player->getPic().empty())) {
+		// Hacking
+		return;
+	}
+	int32_t id = packet.get<int32_t>();
+	// Todo: Store MAC addresses for MAC ban.
+	packet.getString(); // MAC Address with dashes '-'
+	packet.getString(); // MAC Address without dashes
+
+	connectGame(player, id);
+}
+
+void Characters::connectGamePic(Player *player, PacketReader &packet) {
+	if (player->getStatus() != PlayerStatus::LoggedIn || !LoginServer::Instance()->getPicEnabled()) {
 		// Hacking
 		return;
 	}
 	packet.skipBytes(1); // IDK
 	int32_t id = packet.get<int32_t>();
-	string MacAddr1 = packet.getString();
-	string MacAddr2 = packet.getString();
+	packet.getString(); // MAC Address with dashes '-'
+	packet.getString(); // MAC Address without dashes
 	string PIC = packet.getString();
 
 	if (player->getPic() == "") {

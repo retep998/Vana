@@ -27,7 +27,10 @@ void PacketReader::skipBytes(int32_t len) {
 }
 
 int16_t PacketReader::getHeader() {
-	return (*(int16_t *)(m_buffer));
+	if (getSize() < sizeof(header_t)) {
+		throw std::range_error("Packet data longer than buffer allows");
+	}
+	return (*(header_t *)(m_buffer));
 }
 
 string PacketReader::getString() {
@@ -43,12 +46,12 @@ string PacketReader::getString(size_t len) {
 	return s;
 }
 
-unsigned char * PacketReader::getBuffer() {
+unsigned char * PacketReader::getBuffer() const {
 	return m_buffer + m_pos;
 }
 
-size_t PacketReader::getBufferLength() {
-	return m_length - m_pos;
+size_t PacketReader::getBufferLength() const {
+	return getSize() - m_pos;
 }
 
 PacketReader & PacketReader::reset(int32_t len) {
@@ -56,10 +59,27 @@ PacketReader & PacketReader::reset(int32_t len) {
 		m_pos = len;
 	}
 	else {
-		m_pos = m_length + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
+		m_pos = getSize() + len; // In this case, len is negative here so we take the total length and plus (minus) it by len
 	}
 
 	return *this;
+}
+
+string PacketReader::toString() const {
+	string ret;
+	if (getBufferLength() > 0) {
+		std::stringstream out;
+		unsigned char *p = getBuffer();
+		size_t buflen = getBufferLength() - 1;
+		for (size_t i = 0; i <= buflen; i++) {
+			out << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<int16_t>(p[i]);
+			if (i < buflen) {
+				out << " ";
+			}
+		}
+		ret = out.str();
+	}
+	return ret;
 }
 
 Pos PacketReader::getPos() {

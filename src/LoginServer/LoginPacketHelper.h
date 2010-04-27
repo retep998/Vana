@@ -21,5 +21,5 @@ class PacketCreator;
 struct Character;
 
 namespace LoginPacketHelper {
-	void addCharacter(PacketCreator &packet, const Character &charc);
+	void addCharacter(PacketCreator &packet, const Character &charc, bool vacWindow = false);
 }

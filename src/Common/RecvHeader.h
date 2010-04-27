@@ -27,15 +27,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_WORLD_LIST 0x0b
 #define CMSG_PLAYER_GLOBAL_LIST 0x0d
 #define CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT 0x0e
+#define CMSG_CHANNEL_CONNECT 0x13 // When PIC is disabled
 #define CMSG_PLAYER_LOAD 0x14
 #define CMSG_PLAYER_NAME_CHECK 0x15
 #define CMSG_PLAYER_CREATE 0x16
 #define CMSG_PLAYER_DELETE 0x17
 #define CMSG_PONG 0x18
 #define CMSG_PIC 0x1e
-#define CMSG_CHANNEL_CONNECT 0x1D
+#define CMSG_CHANNEL_CONNECT_PIC 0x1D
 #define CMSG_CLIENT_ERROR 0x21
-#define CMSG_LOGIN_RETURN 0xFFF1d
+#define CMSG_CLIENT_LOADED 0x23
+#define CMSG_LOGIN_RETURN 0xFFF1d // Doesn't seem to be used anymore
 #define CMSG_MAP_CHANGE 0x26
 #define CMSG_CHANNEL_CHANGE 0x27
 #define CMSG_CASH_SHOP 0x28
@@ -88,15 +90,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_MESSAGE_GROUP 0x76 // Party, buddy and guild chat
 #define CMSG_COMMAND 0x77 // / commands like "/find"
 #define CMSG_PLAYER_ROOM 0x7a // Trades, player shops, minigames, etc.
-#define CMSG_PARTY 0x7b
-#define CMSG_GUILD 0x7d
-#define CMSG_GUILD_DENIED 0x7e
-#define CMSG_ADMIN_COMMAND 0x7f
-#define CMSG_ADMIN_COMMAND_LOG 0x80 // '/(command) (parameters)'
-#define CMSG_BUDDY 0x81
-#define CMSG_KEYMAP 0x86
-#define CMSG_ALLIANCE 0x8e
-#define CMSG_ALLIANCE_DENIED 0x8f
+#define CMSG_PARTY 0x7c
+#define CMSG_GUILD 0x7e
+#define CMSG_GUILD_DENIED 0x7f
+#define CMSG_ADMIN_COMMAND 0x80
+#define CMSG_ADMIN_COMMAND_LOG 0x81 // '/(command) (parameters)'
+#define CMSG_BUDDY 0x82
+#define CMSG_KEYMAP 0x87
+#define CMSG_ALLIANCE 0x8f
+#define CMSG_ALLIANCE_DENIED 0x90
 #define CMSG_BBS 0x9b
 #define CMSG_MTS 0x9c
 #define CMSG_COMBO_COUNTER_UP 0xa3
@@ -118,4 +120,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_REACTOR_HIT 0xcd
 #define CMSG_REACTOR_TOUCH 0xce
 #define CMSG_ADMIN_MESSENGER 0xf5
-#define CMSG_HAMMER 0x102
+#define CMSG_HAMMER 0x104

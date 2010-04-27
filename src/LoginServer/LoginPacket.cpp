@@ -59,10 +59,10 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
 	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
 	packet.addString(username);
-	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
 	packet.add<int8_t>(player->getQuietBanReason());
 	packet.add<int64_t>(player->getQuietBanTime());
 	packet.add<int64_t>(player->getCreationTime());
@@ -170,7 +170,12 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.addBool(!player->getPic().empty()); // PIC
+	if (LoginServer::Instance()->getPicEnabled()) {
+		packet.add<int8_t>(player->getPic().empty() ? PicTypes::CreatePic : PicTypes::UsePic);
+	}
+	else {
+		packet.add<int8_t>(PicTypes::NoPic);
+	}
 	packet.add<int32_t>(maxchars);
 	player->getSession()->send(packet);
 }
@@ -206,7 +211,7 @@ void LoginPacket::showCharactersWorld(Player *player, uint8_t worldid, const vec
 	packet.add<uint8_t>(worldid);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
-		LoginPacketHelper::addCharacter(packet, chars[i]);
+		LoginPacketHelper::addCharacter(packet, chars[i], true);
 	}
 	player->getSession()->send(packet);
 }

@@ -41,12 +41,19 @@ public:
 	uint32_t getIp() const { return m_ip; }
 	void setIp(uint32_t ip) { m_ip = ip; }
 	Timer::Container * getTimers() const { return m_timers.get(); }
+	uint32_t getLatency() const { return static_cast<uint32_t>(m_latency); }
+
+	// Times in milliseconds
+	const static uint32_t InitialPing = 60000; // Shouldn't be modified much; client launching may be slow
+	const static uint32_t PingTime = 15000; // Lower values (~15000) give better latency approximation but will disconnect quicker during lag
 protected:
 	MapleSession *m_session;
 	uint32_t m_ip;
-	bool m_is_server;
+	bool m_isServer;
 private:
-	bool m_is_pinged;
+	bool m_isPinged;
+	clock_t m_latency;
+	clock_t m_lastPing;
 	boost::scoped_ptr<Timer::Container> m_timers;
 };
 

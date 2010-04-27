@@ -33,9 +33,9 @@ void AbstractServerConnection::sendAuth(const string &pass, IpMatrix &extIp) {
 bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet, const string &pass) {
 	if (packet.get<int16_t>() == IMSG_PASSWORD) {
 		if (packet.getString() == pass) {
-			m_is_authenticated = true;
+			m_isAuthenticated = true;
 
-			IpUtilities::extractExternalIp(packet, m_external_ip);
+			IpUtilities::extractExternalIp(packet, m_externalIp);
 
 			int8_t type = packet.get<int8_t>();
 			setType(type);
@@ -47,7 +47,7 @@ bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketR
 			return false;
 		}
 	}
-	else if (m_is_authenticated == false) {
+	else if (!m_isAuthenticated) {
 		// Trying to do something while unauthenticated? DC!
 		getSession()->disconnect();
 		return false;
