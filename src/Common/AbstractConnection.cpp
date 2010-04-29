@@ -38,7 +38,7 @@ m_timers(new Timer::Container)
 
 void AbstractConnection::handleRequest(PacketReader &packet) {
 	try {
-		switch (packet.getHeader()) {
+		switch (packet.getHeader(false)) {
 			case SMSG_PING:
 				if (m_isServer) {
 					PingPacket::pong(this);

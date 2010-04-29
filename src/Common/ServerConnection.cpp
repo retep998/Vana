@@ -31,7 +31,7 @@ void AbstractServerConnection::sendAuth(const string &pass, IpMatrix &extIp) {
 }
 
 bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet, const string &pass) {
-	if (packet.get<int16_t>() == IMSG_PASSWORD) {
+	if (packet.getHeader() == IMSG_PASSWORD) {
 		if (packet.getString() == pass) {
 			m_isAuthenticated = true;
 
