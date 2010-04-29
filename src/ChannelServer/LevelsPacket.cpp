@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(3);
 	packet.addBool(white);
 	packet.add<int32_t>(exp);
@@ -39,7 +39,7 @@ void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat)
 
 void LevelsPacket::levelUp(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_SHOW);
+	packet.addHeader(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -47,7 +47,7 @@ void LevelsPacket::levelUp(Player *player) {
 
 void LevelsPacket::statOK(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
@@ -55,7 +55,7 @@ void LevelsPacket::statOK(Player *player) {
 
 void LevelsPacket::jobChange(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_SHOW);
+	packet.addHeader(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(8);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);

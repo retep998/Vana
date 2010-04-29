@@ -78,6 +78,10 @@ unsigned char PacketCreator::getHexByte(unsigned char input) {
 	return input;
 }
 
+void PacketCreator::addHeader(header_t value) {
+	add<header_t>(value);
+}
+
 void PacketCreator::addString(const string &str, size_t len) {
 	size_t slen = str.size();
 	if (len < slen) {

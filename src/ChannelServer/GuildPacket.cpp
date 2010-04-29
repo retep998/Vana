@@ -139,14 +139,14 @@ int8_t GuildPacket::checkGuildExist(string name) {
 
 void GuildPacket::sendCreateGuildWindow(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x01);
 	player->getSession()->send(packet);
 }
 
 void GuildPacket::sendChangeGuildEmblem(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x11);
 	player->getSession()->send(packet);
 }
@@ -307,7 +307,7 @@ void GuildPacket::handleEmblemChange(PacketReader &packet) {
 		if (player == nullptr)
 			continue;
 		PacketCreator pack;
-		pack.add<int16_t>(SMSG_GUILD_EMBLEM);
+		pack.addHeader(SMSG_GUILD_EMBLEM);
 		pack.add<int32_t>(player->getId());
 		pack.add<int16_t>(logo.background);
 		pack.add<uint8_t>(logo.backgroundColor);
@@ -332,14 +332,14 @@ void GuildPacket::handleNameChange(PacketReader &packet) {
 		player->setGuildRank(packet.get<uint8_t>());
 
 		PacketCreator pack;
-		pack.add<int16_t>(SMSG_GUILD_NAME);
+		pack.addHeader(SMSG_GUILD_NAME);
 		pack.add<int32_t>(player->getId());
 		pack.addString(name);
 		Maps::getMap(player->getMap())->sendPacket(pack, player);
 		if (guildid != -1 && PlayerDataProvider::Instance()->hasEmblem(guildid)) {
 			logo = guild->logo;
 			PacketCreator pack = PacketCreator();
-			pack.add<int16_t>(SMSG_GUILD_EMBLEM);
+			pack.addHeader(SMSG_GUILD_EMBLEM);
 			pack.add<int32_t>(player->getId());
 			pack.add<int16_t>(logo.background);
 			pack.add<uint8_t>(logo.backgroundColor);

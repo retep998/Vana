@@ -37,7 +37,7 @@ LoginServerConnection::~LoginServerConnection() {
 }
 
 void LoginServerConnection::realHandleRequest(PacketReader &packet) {
-	switch (packet.get<int16_t>()) {
+	switch (packet.getHeader()) {
 		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
