@@ -36,7 +36,7 @@ quiet_ban_reason(0)
 
 void Player::realHandleRequest(PacketReader &packet) {
 	try {
-		switch (packet.get<int16_t>()) {
+		switch (packet.getHeader()) {
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;

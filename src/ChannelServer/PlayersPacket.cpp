@@ -32,7 +32,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_MOVEMENT);
+	packet.addHeader(SMSG_PLAYER_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(0);
 	packet.addBuffer(buf, size);
@@ -44,7 +44,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_EMOTE);
+	packet.addHeader(SMSG_EMOTE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(face);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -52,7 +52,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 
 void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_CHAT);
+	packet.addHeader(SMSG_PLAYER_CHAT);
 	packet.add<int32_t>(player->getId());
 	packet.addBool(player->isGm());
 	packet.addString(msg);
@@ -68,7 +68,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 	const int8_t MapDamage = -2;
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_DAMAGE);
+	packet.addHeader(SMSG_PLAYER_DAMAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(type);
 	switch (type) {
@@ -99,7 +99,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 
 void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_INFO);
+	packet.addHeader(SMSG_PLAYER_INFO);
 	packet.add<int32_t>(getinfo->getId());
 	packet.add<int8_t>(getinfo->getStats()->getLevel());
 	packet.add<int16_t>(getinfo->getStats()->getJob());
@@ -133,7 +133,7 @@ void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
 
 void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_COMMAND);
+	packet.addHeader(SMSG_COMMAND);
 	packet.add<int8_t>(0x12);
 	packet.addString(whisperer_name);
 	packet.add<int16_t>(channel);
@@ -143,7 +143,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, 
 
 void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool isChannel) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_COMMAND);
+	packet.addHeader(SMSG_COMMAND);
 	if (map != -1) {
 		packet.add<int8_t>(0x09);
 		packet.addString(name);
@@ -176,7 +176,7 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	}
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ATTACK_MELEE);
+	packet.addHeader(SMSG_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(0); // Unknown, added in V.80+
@@ -212,7 +212,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	int32_t skillid = attack.skillId;
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ATTACK_RANGED);
+	packet.addHeader(SMSG_ATTACK_RANGED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(0); // Unknown, added in V.80+
@@ -258,7 +258,7 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	int32_t skillid = attack.skillId;
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ATTACK_MAGIC);
+	packet.addHeader(SMSG_ATTACK_MAGIC);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(0); // Unknown, added in V.80+
@@ -292,7 +292,7 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 	int32_t skillid = attack.skillId;
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ATTACK_ENERGY_CHARGE);
+	packet.addHeader(SMSG_ATTACK_ENERGY_CHARGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(0); // Unknown, added in V.80+
@@ -320,7 +320,7 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 
 void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SUMMON_ATTACK);
+	packet.addHeader(SMSG_SUMMON_ATTACK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(attack.summonId);
 	packet.add<int8_t>(attack.animation);

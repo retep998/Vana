@@ -38,7 +38,7 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 
 void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(LoginServer::Instance(), packet, LoginServer::Instance()->getInterPassword())) return;
-	switch (packet.get<int16_t>()) {
+	switch (packet.getHeader()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;

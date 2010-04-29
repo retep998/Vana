@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #include "PingPacket.h"
 #include "AbstractConnection.h"
 #include "MapleSession.h"
@@ -25,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PingPacket::ping(AbstractConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PING);
+	packet.addHeader(SMSG_PING);
 	player->getSession()->send(packet);
 }
 
 void PingPacket::pong(AbstractConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(CMSG_PONG);
+	packet.addHeader(CMSG_PONG);
 	player->getSession()->send(packet);
 }

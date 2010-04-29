@@ -186,8 +186,10 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			}
 		}
 	}
+	size_t pos = 0;
+	pos += packet.getBufferLength();
 	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMp(), realskill, level);
-	packet.reset(19);
+	packet.reset(pos);
 	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 

@@ -123,7 +123,7 @@ Player::~Player() {
 
 void Player::realHandleRequest(PacketReader &packet) {
 	try {
-		int16_t header = packet.get<int16_t>();
+		header_t header = packet.getHeader();
 		if (!is_connect) {
 			// We don't want to accept any other packet than the one for loading the character
 			if (header == CMSG_PLAYER_LOAD) {

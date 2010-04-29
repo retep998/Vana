@@ -35,7 +35,7 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0c);
 
 	if (alliance == nullptr) {
@@ -55,7 +55,7 @@ void AlliancePacket::sendAllianceInfo(Alliance *alliance, Player *requestee) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0D);
 
 	addGuildsInfo(packet, alliance);
@@ -68,7 +68,7 @@ void AlliancePacket::sendInvite(Alliance *alliance, Player *inviter, Player *inv
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(invitee->getId());
 
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x03);
 
 	packet.add<int32_t>(inviter->getGuild()->getId());
@@ -80,7 +80,7 @@ void AlliancePacket::sendInvite(Alliance *alliance, Player *inviter, Player *inv
 
 void AlliancePacket::sendInviteAccepted(Alliance *alliance, Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x12);
 
 	addAllianceInfo(packet, alliance);
@@ -99,7 +99,7 @@ void AlliancePacket::sendInviteDenied(Alliance *alliance, Guild *guild) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(leader->getId());
 
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0x09);
 
 	packet.addString(guild->getName() + " Guild has rejected the Guild Union invitation.");
@@ -109,7 +109,7 @@ void AlliancePacket::sendInviteDenied(Alliance *alliance, Guild *guild) {
 
 void AlliancePacket::sendGuildLeft(Alliance *alliance, Guild *guild, bool expelled) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x10);
 
 	addAllianceInfo(packet, alliance);
@@ -124,7 +124,7 @@ void AlliancePacket::sendGuildLeft(Alliance *alliance, Guild *guild, bool expell
 
 void AlliancePacket::sendNewAlliance(Alliance *alliance) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x0f);
 
 	addAllianceInfo(packet, alliance);
@@ -135,7 +135,7 @@ void AlliancePacket::sendNewAlliance(Alliance *alliance) {
 
 void AlliancePacket::sendDeleteAlliance(Alliance *alliance) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x1d);
 
 	packet.add<int32_t>(alliance->getId());
@@ -145,7 +145,7 @@ void AlliancePacket::sendDeleteAlliance(Alliance *alliance) {
 
 void AlliancePacket::sendUpdateLeader(Alliance *alliance, Player *oldLeader) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x19);
 
 	packet.add<int32_t>(alliance->getId());
@@ -157,7 +157,7 @@ void AlliancePacket::sendUpdateLeader(Alliance *alliance, Player *oldLeader) {
 
 void AlliancePacket::sendUpdatePlayer(Alliance *alliance, Player *player, uint8_t option) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 
 	if (option == 0) {
 		packet.add<int8_t>(0x1b);
@@ -188,7 +188,7 @@ void AlliancePacket::sendUpdatePlayer(Alliance *alliance, Player *player, uint8_
 
 void AlliancePacket::sendUpdateNotice(Alliance *alliance) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x1c);
 
 	packet.add<int32_t>(alliance->getId());
@@ -199,7 +199,7 @@ void AlliancePacket::sendUpdateNotice(Alliance *alliance) {
 
 void AlliancePacket::sendUpdateCapacity(Alliance *alliance) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x17);
 
 	addAllianceInfo(packet, alliance);
@@ -209,7 +209,7 @@ void AlliancePacket::sendUpdateCapacity(Alliance *alliance) {
 
 void AlliancePacket::sendUpdateTitles(Alliance *alliance) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ALLIANCE);
+	packet.addHeader(SMSG_ALLIANCE);
 	packet.add<int8_t>(0x1a);
 
 	packet.add<int32_t>(alliance->getId());

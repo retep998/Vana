@@ -35,7 +35,7 @@ using std::tr1::unordered_map;
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHANGE_MAP);
+	packet.addHeader(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
 	packet.add<uint32_t>(player->getPortalCount(true));
 
@@ -97,7 +97,7 @@ void PlayerPacket::connectData(Player *player) {
 
 void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_KEYMAP);
+	packet.addHeader(SMSG_KEYMAP);
 	packet.add<int8_t>(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
@@ -115,7 +115,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 
 void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MACRO_LIST);
+	packet.addHeader(SMSG_MACRO_LIST);
 	packet.add<int8_t>(macros->getMax() + 1);
 	for (int8_t i = 0; i <= macros->getMax(); i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
@@ -140,7 +140,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 
 void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(value);
@@ -149,7 +149,7 @@ void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool
 
 void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int16_t>(value);
@@ -158,7 +158,7 @@ void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bo
 
 void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.addBool(is);
 	packet.add<int32_t>(id);
 	packet.add<int8_t>(value);
@@ -167,7 +167,7 @@ void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool
 
 void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHANNEL_CHANGE);
+	packet.addHeader(SMSG_CHANNEL_CHANGE);
 	packet.add<int8_t>(1);
 	packet.add<uint32_t>(htonl(ip)); // MapleStory accepts IP addresses in big-endian
 	packet.add<int16_t>(port);
@@ -205,7 +205,7 @@ void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
 }
 
 void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, int8_t type) {
-	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == NoticeTypes::Blue) {
@@ -222,7 +222,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	}
 
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_BUBBLE);
+	packet.addHeader(SMSG_BUBBLE);
 	packet.addString(msg);
 	packet.add<int16_t>(width);
 	packet.add<int16_t>(height);
@@ -233,7 +233,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 
 void PlayerPacket::showHpBar(Player *player, Player *target) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY_HP_DISPLAY);
+	packet.addHeader(SMSG_PARTY_HP_DISPLAY);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getStats()->getHp());
 	packet.add<int32_t>(player->getStats()->getMaxHp());
@@ -242,7 +242,7 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 
 void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHANNEL_BLOCKED);
+	packet.addHeader(SMSG_CHANNEL_BLOCKED);
 	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }

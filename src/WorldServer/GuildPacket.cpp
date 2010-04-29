@@ -38,7 +38,7 @@ void GuildPacket::sendGuildInfo(Guild *guild, Player *requestee, bool isNew) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(requestee->getId());
 
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(isNew ? 0x20 : 0x1a);
 
 	if (!isNew) {
@@ -61,7 +61,7 @@ void GuildPacket::sendInvite(Player *inviter, Player *invitee) {
 	pack.add<int16_t>(IMSG_FORWARD_TO);
 	pack.add<int32_t>(invitee->getId());
 
-	pack.add<int16_t>(SMSG_GUILD);
+	pack.addHeader(SMSG_GUILD);
 	pack.add<int8_t>(0x05);
 	pack.add<int32_t>(inviter->getGuild()->getId());
 	pack.addString(inviter->getName());
@@ -71,7 +71,7 @@ void GuildPacket::sendInvite(Player *inviter, Player *invitee) {
 
 void GuildPacket::sendCapacityUpdate(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x3a);
 
 	packet.add<int32_t>(guild->getId());
@@ -82,7 +82,7 @@ void GuildPacket::sendCapacityUpdate(Guild *guild) {
 
 void GuildPacket::sendEmblemUpdate(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x42);
 
 	GuildLogo logo = guild->getLogo();
@@ -97,7 +97,7 @@ void GuildPacket::sendEmblemUpdate(Guild *guild) {
 
 void GuildPacket::sendGuildPointsUpdate(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x48);
 
 	packet.add<int32_t>(guild->getId());
@@ -106,7 +106,7 @@ void GuildPacket::sendGuildPointsUpdate(Guild *guild) {
 	sendToGuild(packet, guild);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0x06);
 
 	packet.add<int32_t>(guild->getGuildPoints());
@@ -116,7 +116,7 @@ void GuildPacket::sendGuildPointsUpdate(Guild *guild) {
 
 void GuildPacket::sendTitlesUpdate(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x3e);
 
 	packet.add<int32_t>(guild->getId());
@@ -128,7 +128,7 @@ void GuildPacket::sendTitlesUpdate(Guild *guild) {
 
 void GuildPacket::sendNoticeUpdate(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x44);
 
 	packet.add<int32_t>(guild->getId());
@@ -139,7 +139,7 @@ void GuildPacket::sendNoticeUpdate(Guild *guild) {
 
 void GuildPacket::sendRankUpdate(Guild *guild, Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x40);
 
 	packet.add<int32_t>(guild->getId());
@@ -151,7 +151,7 @@ void GuildPacket::sendRankUpdate(Guild *guild, Player *player) {
 
 void GuildPacket::sendPlayerStatUpdate(Guild *guild, Player *player, bool levelMessage, bool isFromLogon) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x3c);
 
 	packet.add<int32_t>(guild->getId());
@@ -163,7 +163,7 @@ void GuildPacket::sendPlayerStatUpdate(Guild *guild, Player *player, bool levelM
 
 	if (levelMessage) {
 		packet = PacketCreator();
-		packet.add<int16_t>(SMSG_PLAYER_LEVEL_UPDATE);
+		packet.addHeader(SMSG_PLAYER_LEVEL_UPDATE);
 		packet.add<int8_t>(0x02); // 1 = family, 2 = guild
 		packet.add<int32_t>(player->getLevel());
 		packet.addString(player->getName());
@@ -180,7 +180,7 @@ void GuildPacket::sendPlayerUpdate(Guild *guild, Player *player, uint8_t type, b
 		3 = Log in/log out
 	*/
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 
 	if (type == 0) {
 		packet.add<int8_t>(0x27);
@@ -215,7 +215,7 @@ void GuildPacket::sendPlayerUpdate(Guild *guild, Player *player, uint8_t type, b
 
 void GuildPacket::sendGuildDisband(Guild *guild) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x32);
 
 	packet.add<int32_t>(guild->getId());
@@ -229,7 +229,7 @@ void GuildPacket::sendGuildContract(Player *player, bool isLeader, int32_t party
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 
 	packet.add<int8_t>(0x03);
 	if (!isLeader) {
@@ -245,7 +245,7 @@ void GuildPacket::sendGuildDenyResult(Player *inviter, Player *invitee, uint8_t 
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(inviter->getId());
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 
 	packet.add<uint8_t>(result);
 	packet.addString(invitee->getName());
@@ -258,7 +258,7 @@ void GuildPacket::sendPlayerGuildMessage(Player *player, uint8_t type) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<uint8_t>(type);
 
 	Channels::Instance()->sendToChannel(player->getChannel(), packet);
@@ -269,7 +269,7 @@ void GuildPacket::sendPlayerMessage(Player *player, uint8_t sort, const string &
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<uint8_t>(sort);
 	packet.addString(message);
 
@@ -281,7 +281,7 @@ void GuildPacket::sendGuildRankBoard(Player *player, int32_t npcid) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.add<int16_t>(SMSG_GUILD);
+	packet.addHeader(SMSG_GUILD);
 	packet.add<int8_t>(0x49);
 	packet.add<int32_t>(npcid);
 

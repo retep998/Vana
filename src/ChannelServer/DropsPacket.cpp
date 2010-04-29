@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_DROP_ITEM);
+	packet.addHeader(SMSG_DROP_ITEM);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(drop->getId());
 	packet.addBool(drop->isMesos());
@@ -59,7 +59,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 
 void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_DROP_PICKUP);
+	packet.addHeader(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int32_t>(player->getId());
@@ -77,14 +77,14 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 
 void DropsPacket::dontTake(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int16_t>(1);
 	player->getSession()->send(packet);
 }
 
 void DropsPacket::removeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_DROP_PICKUP);
+	packet.addHeader(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(drop->getId());
 	Maps::getMap(drop->getMap())->sendPacket(packet);
@@ -92,7 +92,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 
 void DropsPacket::explodeDrop(Drop *drop) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_DROP_PICKUP);
+	packet.addHeader(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int16_t>(655);
@@ -101,7 +101,7 @@ void DropsPacket::explodeDrop(Drop *drop) {
 
 void DropsPacket::dropNotAvailableForPickup(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-2);
 	player->getSession()->send(packet);
@@ -109,7 +109,7 @@ void DropsPacket::dropNotAvailableForPickup(Player *player) {
 
 void DropsPacket::cantGetAnymoreItems(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
@@ -117,7 +117,7 @@ void DropsPacket::cantGetAnymoreItems(Player *player) {
 
 void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.addBool(isMesos);
 
@@ -137,7 +137,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
 	// This packet is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int32_t>(id);

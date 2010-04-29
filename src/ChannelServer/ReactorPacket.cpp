@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void ReactorPacket::spawnReactor(Reactor *reactor) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_REACTOR_SPAWN);
+	packet.addHeader(SMSG_REACTOR_SPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
@@ -37,7 +37,7 @@ void ReactorPacket::spawnReactor(Reactor *reactor) {
 
 void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_REACTOR_SPAWN);
+	packet.addHeader(SMSG_REACTOR_SPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
@@ -49,7 +49,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 
 void ReactorPacket::triggerReactor(Reactor *reactor) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_REACTOR_TRIGGER);
+	packet.addHeader(SMSG_REACTOR_TRIGGER);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());
@@ -59,7 +59,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 
 void ReactorPacket::destroyReactor(Reactor *reactor) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_REACTOR_DESPAWN);
+	packet.addHeader(SMSG_REACTOR_DESPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addPos(reactor->getPos());

@@ -149,7 +149,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 	int8_t rechargetier = info.rechargetier;
 	map<int32_t, double> &rechargables = rechargecosts[rechargetier];
 
-	packet.add<int16_t>(SMSG_SHOP);
+	packet.addHeader(SMSG_SHOP);
 	packet.add<int32_t>(info.npc);
 	packet.add<int16_t>(info.items.size()); // To be set later
 
