@@ -30,7 +30,7 @@ using std::vector;
 
 void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(1);
@@ -50,7 +50,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 
 void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(quest.id);
 	packet.add<int8_t>(1);
@@ -83,7 +83,7 @@ void QuestsPacket::questExpire(Player *player, int16_t questid) {
 
 void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(2);
@@ -112,7 +112,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 
 void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(questid);
 	packet.add<int8_t>(0);
@@ -131,7 +131,7 @@ void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
 
 void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(5);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);
@@ -139,7 +139,7 @@ void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 
 void QuestsPacket::giveFame(Player *player, int32_t amount) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);
