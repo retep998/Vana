@@ -176,7 +176,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.addHeader(SMSG_MESSENGER);
+	packet.addHeader(SMSG_AVATAR_MEGAPHONE);
 	packet.add<int32_t>(itemid);
 	packet.addString(player->getName());
 	packet.addString(msg);

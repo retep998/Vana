@@ -101,7 +101,7 @@ void DropsPacket::explodeDrop(Drop *drop) {
 
 void DropsPacket::dropNotAvailableForPickup(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-2);
 	player->getSession()->send(packet);
@@ -109,7 +109,7 @@ void DropsPacket::dropNotAvailableForPickup(Player *player) {
 
 void DropsPacket::cantGetAnymoreItems(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
@@ -117,7 +117,7 @@ void DropsPacket::cantGetAnymoreItems(Player *player) {
 
 void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0);
 	packet.addBool(isMesos);
 	packet.add<int32_t>(id);
@@ -139,7 +139,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
 	// This packet is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int32_t>(id);

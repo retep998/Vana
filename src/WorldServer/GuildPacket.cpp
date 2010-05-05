@@ -106,7 +106,7 @@ void GuildPacket::sendGuildPointsUpdate(Guild *guild) {
 	sendToGuild(packet, guild);
 
 	packet = PacketCreator();
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0x06);
 
 	packet.add<int32_t>(guild->getGuildPoints());
@@ -269,7 +269,7 @@ void GuildPacket::sendPlayerMessage(Player *player, uint8_t sort, const string &
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(player->getId());
 
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<uint8_t>(sort);
 	packet.addString(message);
 
