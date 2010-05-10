@@ -81,6 +81,8 @@ void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
 }
 
 void Summons::removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer) {
+	// Maybe we don't need the packetOnly thing...? We don't use it anyway...
+
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
 	if (summon != nullptr) {
 		SummonsPacket::removeSummon(player, summon, showMessage);
@@ -113,7 +115,7 @@ void Summons::moveSummon(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 
 	Summon *summon = player->getSummons()->getSummon(summonid);
-	if (summon == nullptr) {
+	if (summon == nullptr || summon->getType() == Summon::Static) {
 		// Up to no good, lag, or something else
 		return;
 	}

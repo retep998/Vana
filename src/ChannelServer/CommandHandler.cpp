@@ -16,20 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CommandHandler.h"
+#include "Buffs.h"
 #include "ChatHandler.h"
 #include "ChannelServer.h"
 #include "Database.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Inventory.h"
+#include "Map.h"
+#include "MapPacket.h"
+#include "Maps.h"
+#include "MobDataProvider.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerInventory.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "PacketReader.h"
-#include "Map.h"
-#include "Maps.h"
+#include "Skills.h"
 #include "WorldServerConnectPacket.h"
 #include <string>
 
@@ -44,14 +48,20 @@ namespace CommandOpcodes {
 
 namespace AdminOpcodes {
 	enum Opcodes {
+		CreateItem = 0x00,
 		DestroyFirstItem = 0x01,
 		GiveExp = 0x02,
 		Ban = 0x03,
 		Block = 0x04,
 		VarSetGet = 0x09,
+		Hide = 0x10,
 		ShowMessageMap = 0x11,
-		Snow = 0x1C,
-		Warn = 0x1D
+		Send = 0x12,
+		Summon = 0x17,
+		Snow = 0x1c,
+		Warn = 0x1d,
+		Log = 0x1e,
+		SetObjState = 0x22
 	};
 	/*
 		Opcode syntax:
@@ -59,6 +69,10 @@ namespace AdminOpcodes {
 		GiveExp = /exp (amount)
 		Ban = /ban (character name)
 		Block = /block (character name) (duration) (sort)
+		Hide = /h (0 = off, 1 = on)
+		Log = /log (character name) (0 = off, 1 = on)
+		Send = /send (character name) (mapid)
+		Summon = /summon (mobid) (amount)
 		VarSetGet = /varset (charactername) (variable name) (variable value)
 					/varget (charactername) (variable name)
 		Warn = /w (character name) (message)
@@ -104,6 +118,49 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 
 	switch (type) {
+		case AdminOpcodes::Hide: {
+			bool hide = packet.getBool();
+			if (hide) {
+				MapPacket::removePlayer(player);
+				GmPacket::beginHide(player);
+				Buffs::addBuff(player, Jobs::SuperGm::Hide, player->getSkills()->getSkillLevel(Jobs::SuperGm::Hide), 0);
+			}
+			else {
+				Skills::stopSkill(player, Jobs::SuperGm::Hide);
+			}
+			break;
+		}
+		case AdminOpcodes::Send: {
+			string name = packet.getString();
+			int32_t mapid = packet.get<int32_t>();
+
+			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(name)) {
+				receiver->setMap(mapid);
+			}
+			else {
+				GmPacket::invalidCharacterName(player);
+			}
+
+			break;
+		}
+		case AdminOpcodes::Summon: {
+			int32_t mobid = packet.get<int32_t>();
+			int32_t count = packet.get<int32_t>();
+			if (MobDataProvider::Instance()->mobExists(mobid)) {
+				for (int32_t i = 0; i < count && i < 100; i++) {
+					Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+				}
+			}
+			else {
+				PlayerPacket::showMessage(player, "Invalid Mob ID", PlayerPacket::NoticeTypes::Blue);
+			}
+			break;
+		}
+		case AdminOpcodes::CreateItem: {
+			int32_t itemid = packet.get<int32_t>();
+			Inventory::addNewItem(player, itemid, 1);
+			break;
+		}
 		case AdminOpcodes::DestroyFirstItem: {
 			int8_t inv = packet.get<int8_t>();
 			if (!GameLogicUtilities::isValidInventory(inv)) {
@@ -164,22 +221,16 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = packet.get<int8_t>();
 			string PlayerName = packet.getString();
-			string answer = "* ";
 			if (Player *victim = PlayerDataProvider::Instance()->getPlayer(PlayerName)) {
 				string VariableName = packet.getString();
 				if (type == 0x0a) {
 					string VariableValue = packet.getString();
 					victim->getVariables()->setVariable(VariableName, VariableValue);
-					answer += "Variable '" + VariableName + "' for " + PlayerName + " set to: " + VariableValue;
 				}
-				else {
-					answer += "Variable value for variable '" + VariableName + "' from player " + PlayerName + ": " + victim->getVariables()->getVariable(VariableName);
-				}
-				PlayerPacket::showMessage(player, answer, PlayerPacket::NoticeTypes::Blue);
+				GmPacket::setGetVarResult(player, PlayerName, VariableName, victim->getVariables()->getVariable(VariableName));
 			}
 			else {
-				answer += "Couldn't find " + PlayerName + ".";
-				PlayerPacket::showMessage(player, answer, PlayerPacket::NoticeTypes::Red);
+				GmPacket::invalidCharacterName(player);
 			}
 			break;
 		}

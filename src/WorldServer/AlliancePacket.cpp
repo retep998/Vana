@@ -99,7 +99,7 @@ void AlliancePacket::sendInviteDenied(Alliance *alliance, Guild *guild) {
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(leader->getId());
 
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(0x09);
 
 	packet.addString(guild->getName() + " Guild has rejected the Guild Union invitation.");

@@ -69,7 +69,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillid, uint8_t level, uin
 void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_THEATRICS);
-	packet.add<int8_t>(0xA);
+	packet.add<int8_t>(0x0A);
 	packet.add<int16_t>(hp);
 	player->getSession()->send(packet);
 }

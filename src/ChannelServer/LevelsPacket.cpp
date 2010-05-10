@@ -24,16 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_NOTE);
+	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(3);
 	packet.addBool(white);
 	packet.add<int32_t>(exp);
-	packet.add<int32_t>(inChat);
+	packet.addBool(inChat);
 	packet.add<int32_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	if (inChat)
+	if (inChat) {
 		packet.add<int8_t>(0);
+	}
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+
 	player->getSession()->send(packet);
 }
 
