@@ -39,7 +39,9 @@ void Container::registerTimer(Timer *timer) {
 }
 
 void Container::removeTimer(const Id &id) {
-	m_timers.erase(id);
+	if (m_timers.find(id) != m_timers.end()) {
+		m_timers.erase(id);
+	}
 }
 
 }

@@ -57,7 +57,8 @@ namespace PlayerPacket {
 	void showMessageWorld(const string &msg, int8_t type);
 	void showMessageGlobal(const string &msg, int8_t type);
 	void showMessagePacket(PacketCreator &packet, const string &msg, int8_t type);
-	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t height = 5);
+	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
 	void showHpBar(Player *player, Player *target);
 	void sendBlockedMessage(Player *player, int8_t type);
+	void sendYellowMessage(Player *player, const string &msg);
 };
