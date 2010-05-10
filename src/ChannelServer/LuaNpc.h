@@ -65,6 +65,7 @@ namespace LuaExports {
 	int askText(lua_State *luaVm);
 	int askYesNo(lua_State *luaVm);
 	int askQuiz(lua_State *luaVm);
+	int askQuestion(lua_State *luaVm);
 
 	// Quest
 	int addQuest(lua_State *luaVm);
