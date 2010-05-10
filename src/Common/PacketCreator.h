@@ -41,6 +41,7 @@ public:
 	void set(T value, size_t pos);
 	template <typename T>
 	void addVector(const vector<T> &vec);
+	void addHeader(header_t value);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(const Pos &pos); // Positions

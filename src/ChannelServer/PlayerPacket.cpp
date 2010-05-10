@@ -213,7 +213,7 @@ void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, i
 	}
 }
 
-void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t width, int16_t height) {
+void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
 	if (width == -1) {
 		width = msg.size() * 10;
 		if (width < 40) {
@@ -225,8 +225,13 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	packet.addHeader(SMSG_BUBBLE);
 	packet.addString(msg);
 	packet.add<int16_t>(width);
-	packet.add<int16_t>(height);
-	packet.add<int8_t>(1);
+	packet.add<int16_t>(time);
+	packet.addBool(!isStatic);
+
+	if (isStatic) {
+		packet.add<int32_t>(x);
+		packet.add<int32_t>(y);
+	}
 
 	player->getSession()->send(packet);
 }
@@ -244,5 +249,13 @@ void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANNEL_BLOCKED);
 	packet.add<int8_t>(type);
+	player->getSession()->send(packet);
+}
+
+void PlayerPacket::sendYellowMessage(Player *player, const string &msg) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_YELLOW_MESSAGE);
+	packet.addBool(true);
+	packet.addString(msg);
 	player->getSession()->send(packet);
 }

@@ -29,8 +29,6 @@ using std::vector;
 
 struct Pos;
 
-typedef int16_t header_t;
-
 class PacketReader {
 public:
 	PacketReader();
@@ -44,7 +42,7 @@ public:
 	vector<T> getVector(size_t size);
 
 	void skipBytes(int32_t len);
-	header_t getHeader(); // Basically a get that always reads at the start
+	header_t getHeader(bool advanceBuffer = true);
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer() const;

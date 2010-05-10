@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_AUTHENTICATION 0x00
 #define SMSG_WORLD_STATUS 0x03
 #define SMSG_ACCOUNT_GENDER_DONE 0x04
+#define SMSG_MESSAGE_TRY_AGAIN 0x05 // Shows a popup with "Try again!" :P
 #define SMSG_PIN 0x06
 #define SMSG_PIN_ASSIGNED 0x07
 #define SMSG_PLAYER_GLOBAL_LIST 0x08
@@ -94,6 +95,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_SPOUSE_CHAT 0x88 // Some weird colored chat... Sources say Spouse chat.
 #define SMSG_MESSAGE_CANNOT_USE 0x89 // "You can't use it here in this map." Note: it needs a byte after it of '0'.
 #define SMSG_MAP_EFFECT 0x8A // Change Music/Boss HP Bars
+#define SMSG_MAP_WEATHER_EFFECT 0x8E // Used by weather NX items
 #define SMSG_CASH_SONG 0x8F // Used for cash items only, plays a song... :D
 #define SMSG_GM 0x90 // Hide, other miscellaneous junk
 #define SMSG_OX_QUIZ_QUESTION 0x91 // Shows the OX quiz question (with a timer)

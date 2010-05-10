@@ -80,7 +80,7 @@ public:
 	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
 	void run(function<void (Player *)> func);
-	void sendPacket(PacketCreator &packet);
+	void sendPacket(PacketCreator &packet, int32_t minGmLevel = 0);
 
 	// Guilds
 	void addGuild(int32_t id, const string &name, const GuildLogo &logo, int32_t capacity, int32_t allianceid);
