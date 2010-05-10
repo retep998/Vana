@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Inventory.h"
+#include "Map.h"
+#include "MapPacket.h"
+#include "Maps.h"
+#include "MobDataProvider.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerInventory.h"
@@ -30,10 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "PacketReader.h"
 #include "Skills.h"
-#include "Map.h"
-#include "MapPacket.h"
-#include "Maps.h"
-#include "MobDataProvider.h"
 #include "WorldServerConnectPacket.h"
 #include <string>
 
