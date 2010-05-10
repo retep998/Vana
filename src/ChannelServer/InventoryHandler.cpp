@@ -211,6 +211,13 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
+
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (item == nullptr || item->getId() != itemid) {
+		// Hacking
+		return;
+	}
+
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	Inventory::useItem(player, itemid);
 }
