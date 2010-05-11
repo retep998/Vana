@@ -54,8 +54,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_ANTI_MACRO 0x28
 #define SMSG_REPORT_MORE 0x2a // More report shit >_>
 #define SMSG_QUEST_COMPLETED 0x2e
-#define SMSG_PLAYER_STORE_MESSAGE 0x2f // For store messages
-#define SMSG_SKILLBOOK 0x30 // Skillbooks
+#define SMSG_PLAYER_STORE_MESSAGE 0x2f
+#define SMSG_SKILLBOOK 0x30
 #define SMSG_REPORT_USER 0x34
 #define SMSG_REACHED_TRADE_MESOS_LIMIT 0x36 // "Players that are Level 15 and below may only trade 1 million mesos per day. You have reached the limit today, please try again tomorrow"
 #define SMSG_BBS 0x38
@@ -86,6 +86,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_NAME_CANCELLATION_REQUEST_NOT_REQUESTED 0x70 // 1 thing, 1 whole header
 #define SMSG_MACRO_LIST 0x71
 #define SMSG_CHANGE_MAP 0x72
+#define SMSG_CONNECT_CASHSHOP 0x74
 #define SMSG_PORTAL_BLOCKED 0x77
 #define SMSG_CHANNEL_BLOCKED 0x78 // For messages like 'This server is unavailable'
 #define SMSG_MAP_FORCE_EQUIPMENT 0x79 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
@@ -179,6 +180,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MESSENGER_ROOM 0x117 // Chatroom / Maple Messenger
 #define SMSG_PLAYER_ROOM 0x118 // Trades, player shops, minigames
 #define SMSG_PACKAGE_DELIVERY 0x120 // Duey :D
+#define SMSG_CASHSHOP_NX 0x122
+#define SMSG_CASHSHOP_OPERATION 0x123
 #define SMSG_KEYMAP 0x12a
 #define SMSG_MAPLETV_ON 0x130
 #define SMSG_MAPLETV_OFF 0x131

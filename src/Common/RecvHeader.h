@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_WORLD_LIST 0x0b
 #define CMSG_PLAYER_GLOBAL_LIST 0x0d
 #define CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT 0x0e
+#define CMSG_REQUEST_NAME_CHANGE 0x10
+#define CMSG_REQUEST_CHARACTER_TRANSFER 0x12
 #define CMSG_CHANNEL_CONNECT 0x13
 #define CMSG_PLAYER_LOAD 0x14
 #define CMSG_PLAYER_NAME_CHECK 0x15
@@ -93,6 +95,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ADMIN_COMMAND 0x7e
 #define CMSG_ADMIN_COMMAND_LOG 0x7f // '/(command) (parameters)'
 #define CMSG_BUDDY 0x80
+#define CMSG_SEND_NOTE 0x81
 #define CMSG_KEYMAP 0x85
 #define CMSG_ALLIANCE 0x8d
 #define CMSG_ALLIANCE_DENIED 0x8e
@@ -115,5 +118,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ITEM_LOOT 0xc0
 #define CMSG_REACTOR_HIT 0xc3
 #define CMSG_REACTOR_TOUCH 0xc4
+#define CMSG_CASHSHOP_CHECK_CASH 0xda
+#define CMSG_CASHSHOP_REDEEM_COUPON 0xdc
+#define CMSG_CASHSHOP_OPERATION 0xdb
 #define CMSG_ADMIN_MESSENGER 0xeb
 #define CMSG_HAMMER 0xf8
