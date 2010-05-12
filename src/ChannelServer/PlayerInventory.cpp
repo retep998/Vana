@@ -550,5 +550,7 @@ void PlayerInventory::checkExpiredItems() {
 			}
 		}
 	}
-	InventoryPacket::sendItemExpired(m_player, &expiredItemIds);
+	if (expiredItemIds.size() > 0) {
+		InventoryPacket::sendItemExpired(m_player, &expiredItemIds);
+	}
 }
