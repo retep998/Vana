@@ -143,6 +143,8 @@ public:
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath(bool wheel);
+	void changeServer(bool cashShop);
+	void handlePong();
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);

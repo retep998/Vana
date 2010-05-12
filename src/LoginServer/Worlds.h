@@ -52,6 +52,7 @@ public:
 
 	int8_t addWorldServer(LoginServerAcceptConnection *player); // Inter-server
 	int8_t addChannelServer(LoginServerAcceptConnection *player); // Inter-server
+	int8_t addCashServer(LoginServerAcceptConnection *player); // Inter-server
 
 	World * getWorld(uint8_t id);
 private:

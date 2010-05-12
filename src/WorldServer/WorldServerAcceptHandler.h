@@ -27,4 +27,5 @@ namespace WorldServerAcceptHandler {
 	void groupChat(WorldServerAcceptConnection *player, PacketReader &packet);
 	void sendToChannels(PacketReader &packet);
 	void sendToLogin(PacketReader &packet);
+	void sendToCashServer(PacketReader &packet);
 }

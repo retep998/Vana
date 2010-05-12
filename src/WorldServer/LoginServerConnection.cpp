@@ -42,5 +42,6 @@ void LoginServerConnection::realHandleRequest(PacketReader &packet) {
 		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
 		case IMSG_GUILD_OPERATION: SyncHandler::handleLoginServerPacket(this, packet); break;
+		case IMSG_TO_CASH_SERVER: WorldServerAcceptHandler::sendToCashServer(packet); break;
 	}
 }

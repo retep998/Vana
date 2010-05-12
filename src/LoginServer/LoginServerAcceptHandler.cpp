@@ -61,3 +61,13 @@ void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *player, Pac
 	pack.addBuffer(packet);
 	Worlds::Instance()->toWorlds(pack);
 }
+
+void LoginServerAcceptHandler::registerCashServer(LoginServerAcceptConnection *player, PacketReader &packet) {
+	Worlds::Instance()->getWorld(player->getWorldId())->setCashServerConnected(true);
+	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(static_cast<int16_t>(player->getWorldId())) + "; Cash server");
+}
+
+void LoginServerAcceptHandler::removeCashServer(LoginServerAcceptConnection *player, PacketReader &packet) {
+	Worlds::Instance()->getWorld(player->getWorldId())->setCashServerConnected(false);
+	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(static_cast<int16_t>(player->getWorldId())) + "; Cash server");
+}

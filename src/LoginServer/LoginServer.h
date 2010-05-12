@@ -43,6 +43,7 @@ public:
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
+	int16_t getCashServerPort() const { return m_cashPort; }
 private:
 	LoginServer();
 	static LoginServer *singleton;
@@ -50,5 +51,6 @@ private:
 	bool m_pinEnabled;
 	int16_t m_port;
 	int16_t m_interPort;
+	int16_t m_cashPort;
 	int32_t m_maxInvalidLogins;
 };

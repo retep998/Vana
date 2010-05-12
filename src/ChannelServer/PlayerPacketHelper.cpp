@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Pet.h"
 #include "Player.h"
+#include "TimeUtilities.h"
 #include <cmath>
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
@@ -37,8 +38,14 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	bool equip = GameLogicUtilities::isEquip(item->getId());
 	packet.add<int8_t>(equip ? 1 : 2);
 	packet.add<int32_t>(item->getId());
-	packet.add<int8_t>(0);
-	packet.add<int64_t>(Items::NoExpiration);
+	if (item->getCashId() != 0) {
+		packet.add<int8_t>(1);
+		packet.add<int64_t>(item->getCashId());
+	}
+	else {
+		packet.add<int8_t>(0);
+	}
+	packet.add<int64_t>(TimeUtilities::timeToTick(item->getExpirationTime()));
 	if (equip) {
 		packet.add<int8_t>(item->getSlots());
 		packet.add<int8_t>(item->getScrolls());
@@ -59,12 +66,18 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int16_t>(item->getJump());
 		packet.addString(item->getName()); // Owner string
 		packet.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
-		packet.add<int8_t>(0);
-		packet.add<int8_t>(0); // Item level
-		packet.add<int16_t>(0);
-		packet.add<int16_t>(0); // Item EXP of.. some sort
-		packet.add<int32_t>(item->getHammers()); // Vicious' Hammer
-		packet.add<int64_t>(-1);
+		if (item->getCashId() != 0) {
+			packet.addBytes("91174826F700"); // Always the same for cash equip.
+			packet.add<int32_t>(0);
+		}
+		else {
+			packet.add<int8_t>(0);
+			packet.add<int8_t>(0); // Item level
+			packet.add<int16_t>(0);
+			packet.add<int16_t>(0); // Item EXP of.. some sort
+			packet.add<int32_t>(item->getHammers()); // Vicious' Hammer
+			packet.add<int64_t>(-1);
+		}
 		packet.addBytes("0040E0FD3B374F01"); // Always the same?
 		packet.add<int32_t>(-1);
 	}

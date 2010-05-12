@@ -278,7 +278,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Channel"
+					Name="Others"
 					>
 					<File
 						RelativePath=".\src\WorldServer\AlliancePacket.cpp"

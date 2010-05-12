@@ -24,4 +24,6 @@ namespace LoginServerConnectPacket {
 	void registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, int16_t port);
 	void updateChannelPop(int32_t channel, int32_t population);
 	void removeChannel(int32_t channel);
+	void registerCashServer();
+	void removeCashServer();
 };

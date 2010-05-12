@@ -91,6 +91,23 @@ void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info
 	player->getSession()->send(packet);
 }
 
+void SyncPacket::playerChangeServer(WorldServerConnection *player, Player *info, bool cashShop) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::ChangeServerRequest);
+	packet.add<int32_t>(info->getId());
+	packet.addBool(true);
+	packet.addBool(cashShop);
+
+	packet.add<int64_t>(info->getConnectionTime());
+
+	info->getActiveBuffs()->getBuffTransferPacket(packet);
+	info->getSummons()->getSummonTransferPacket(packet);
+
+	player->getSession()->send(packet);
+}
+
 void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
@@ -118,11 +135,15 @@ void SyncPacket::removePlayer(WorldServerConnection *player, int32_t playerid) {
 	player->getSession()->send(packet);
 }
 
-void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid) {
+void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid, bool fromCashOrMts) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
+	packet.add<int8_t>(fromCashOrMts ? Sync::Player::ChangeServerGo : Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerid);
+	if (fromCashOrMts) {
+		packet.addBool(false);
+		packet.addBool(false);
+	}
 	player->getSession()->send(packet);
 }

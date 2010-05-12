@@ -424,7 +424,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["killmob"] = command.addToMap();
 
 	command.command = CmdReload;
-	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
+	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills, cashshop}>";
 	command.notes.push_back("Reloads data from the database.");
 	commandlist["reload"] = command.addToMap();
 
@@ -803,7 +803,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 										query << "SELECT objectid, `label` FROM strings WHERE objectid = " << matches[2];
 									}
 									else {
-										query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND label LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+										query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND label LIKE '%" + (string) matches[2] + "%'";
 									}
 
 									res = query.store();
@@ -830,7 +830,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								}
 								else if (type > 200) {
 									if (type == 300) {
-										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE '%" + (string) matches[2] + "%'";
 									}
 									else if (type == 400) {
 										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
@@ -989,6 +989,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								args == "quests" || args == "all") {
 								WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
 								PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", PlayerPacket::NoticeTypes::Blue);
+							}
+							else if (args == "cashshop") {
+								WorldServerConnectPacket::reloadCashServers(ChannelServer::Instance()->getWorldConnection());
+								PlayerPacket::showMessage(player, "Reloading message sent to all cash servers.", PlayerPacket::NoticeTypes::Blue);
 							}
 							else {
 								PlayerPacket::showMessage(player, "Invalid reload type", PlayerPacket::NoticeTypes::Blue);

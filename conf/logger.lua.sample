@@ -2,8 +2,8 @@
 log_channels = true;
 log_worlds = true;
 log_login = true;
-log_cash = false; -- These servers don't exist
-log_mts = false;
+log_cash = true;
+log_mts = false; -- This server doesn't exist
 
 -- The format that %t expands to
 log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
@@ -71,9 +71,9 @@ channel_log_format = "[%e (%t)] %id - %msg";
 channel_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- Cash logging
-cash_log_destination = LOG_SQL;
+cash_log_destination = LOG_CONSOLE;
 cash_log_buffer_size = 40;
-cash_log_format = "%msg";
+cash_log_format = "[%e (%t)] %id - %msg";
 cash_log_file = "logs/%orig/%YY%MM%DD.log";
 
 -- MTS logging

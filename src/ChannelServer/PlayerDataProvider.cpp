@@ -32,13 +32,14 @@ PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 // Stored packets
 void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
+	bool fromCashOrMts = packet.getBool();
 
 	size_t psize = packet.getBufferLength();
 	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
 	memcpy(buf, packet.getBuffer(), psize);
 
 	m_packets[playerid].reset(new PacketReader(buf, psize));
-	SyncPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
+	SyncPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid, fromCashOrMts);
 }
 
 void PlayerDataProvider::removePacket(int32_t id) {

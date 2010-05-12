@@ -402,6 +402,10 @@
 				Name="Data Structures"
 				>
 				<File
+					RelativePath=".\src\Common\CashItem.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Item.cpp"
 					>
 				</File>
@@ -731,6 +735,10 @@
 			<Filter
 				Name="Data Structures"
 				>
+				<File
+					RelativePath=".\src\Common\CashItem.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\Configuration.h"
 					>

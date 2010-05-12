@@ -25,4 +25,6 @@ namespace LoginServerAcceptHandler {
 	void updateChannelPop(LoginServerAcceptConnection *player, PacketReader &packet);
 	void removeChannel(LoginServerAcceptConnection *player, PacketReader &packet);
 	void toWorlds(LoginServerAcceptConnection *player, PacketReader &packet);
+	void registerCashServer(LoginServerAcceptConnection *player, PacketReader &packet);
+	void removeCashServer(LoginServerAcceptConnection *player, PacketReader &packet);
 }

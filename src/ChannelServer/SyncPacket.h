@@ -27,7 +27,8 @@ class WorldServerConnection;
 
 namespace SyncPacket {
 	void playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel);
-	void playerBuffsTransferred(WorldServerConnection *player, int32_t playerid);
+	void playerChangeServer(WorldServerConnection *player, Player *info, bool cashShop);
+	void playerBuffsTransferred(WorldServerConnection *player, int32_t playerid, bool fromCashOrMts);
 	void registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank);
 	void removePlayer(WorldServerConnection *player, int32_t playerid);
 	void partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target = 0);

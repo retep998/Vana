@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.h"
 #include "Channels.h"
 #include "InterHeader.h"
+#include "IpUtilities.h"
 #include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
 #include "MiscUtilities.h"
@@ -43,6 +44,15 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 
 			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + boost::lexical_cast<string>(channel));
 		}
+		else if (getType() == ServerTypes::Cash) {
+			if (WorldServer::Instance()->isConnected()) {
+				LoginServerConnectPacket::removeCashServer();
+			}
+			
+			WorldServer::Instance()->setCashServerConnected(false);
+			WorldServer::Instance()->setCashServer(nullptr);
+			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Cash server");
+		}
 	}
 }
 
@@ -61,8 +71,8 @@ void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 }
 
 void WorldServerAcceptConnection::authenticated(int8_t type) {
-	channel = Channels::Instance()->getAvailableChannel();
 	if (type == ServerTypes::Channel) {
+		channel = Channels::Instance()->getAvailableChannel();
 		if (channel != -1) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
@@ -78,8 +88,28 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);
-			std::cout << "Error: No more channels to assign." << std::endl;
+			WorldServer::Instance()->log(LogTypes::Info, "No more channels to assign.");
 			getSession()->disconnect();
 		}
+	}
+	else if (type == ServerTypes::Cash) {
+		if (!WorldServer::Instance()->isCashServerConnected()) {
+			uint16_t port = WorldServer::Instance()->getCashPort();
+			WorldServer::Instance()->setCashServer(this);
+			WorldServer::Instance()->setCashServerConnected(true);
+
+			WorldServerAcceptPacket::connectCashServer(this, port, true);
+			LoginServerConnectPacket::registerCashServer();
+			WorldServer::Instance()->log(LogTypes::ServerConnect, "Cash server");
+		}
+		else {
+			WorldServerAcceptPacket::connectCashServer(this, -1, false);
+			WorldServer::Instance()->log(LogTypes::Info, "Cash server already assigned.");
+			getSession()->disconnect();
+		}
+	}
+	else {
+		WorldServer::Instance()->log(LogTypes::Warning, "Unknown server tried to connect. IP: " + IpUtilities::ipToString(getIp()));
+		getSession()->disconnect();
 	}
 }

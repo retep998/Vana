@@ -33,6 +33,7 @@ struct Configuration {
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
 	int16_t maxStats;
+	uint16_t cashPort;
 	int32_t expRate;
 	int32_t questExpRate;
 	int32_t mesoRate;

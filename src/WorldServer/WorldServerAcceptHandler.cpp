@@ -50,8 +50,12 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *player, P
 	string findee_name = packet.getString();
 
 	Player *findee = PlayerDataProvider::Instance()->getPlayer(findee_name);
-
-	WorldServerAcceptPacket::findPlayer(player, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
+	if (findee->isInCashShop()) {
+		WorldServerAcceptPacket::findPlayer(player, finder, -2, findee_name);		
+	}
+	else {
+		WorldServerAcceptPacket::findPlayer(player, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
+	}
 }
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
@@ -84,4 +88,12 @@ void WorldServerAcceptHandler::sendToLogin(PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(pack);
+}
+
+void WorldServerAcceptHandler::sendToCashServer(PacketReader &packet) {
+	if (WorldServer::Instance()->isCashServerConnected()) {
+		PacketCreator pack;
+		pack.addBuffer(packet);
+		WorldServer::Instance()->getCashConnection()->getSession()->send(pack);
+	}
 }

@@ -50,6 +50,10 @@ namespace Sync {
 			Disconnect,
 			ChangeChannelRequest,
 			ChangeChannelGo,
+			ChangeServerRequest,
+			ChangeServerGo,
+			CannotChangeServer,
+			DisconnectPlayer,
 			PacketTransfer,
 			RemovePacketTransfer,
 			NewConnectable,
@@ -57,6 +61,15 @@ namespace Sync {
 			UpdateJob,
 			UpdateMap
 		};
+		namespace BlockMessages {
+			enum Messages {
+				CannotGo = 0x01,
+				NoCashShop = 0x02,
+				MtsUnavailable = 0x03,
+				MtsUserLimit = 0x04,
+				LevelTooLow = 0x05
+			};
+		}
 	}
 
 	namespace Party {
