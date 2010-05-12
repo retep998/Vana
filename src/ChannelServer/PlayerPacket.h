@@ -28,15 +28,6 @@ class Player;
 class SkillMacros;
 
 namespace PlayerPacket {
-	namespace BlockMessages {
-		enum Messages {
-			CannotGo = 0x01,
-			NoCashShop = 0x02,
-			MtsUnavailable = 0x03,
-			MtsUserLimit = 0x04,
-			LevelTooLow = 0x05
-		};
-	}
 	namespace NoticeTypes {
 		enum Types {
 			Notice = 0x00,

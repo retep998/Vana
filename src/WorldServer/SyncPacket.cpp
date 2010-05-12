@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "SendHeader.h"
 #include "TimeUtilities.h"
+#include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
 
 void SyncPacket::AlliancePacket::changeAlliance(Alliance *alliance, int8_t type) {
@@ -542,14 +543,57 @@ void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerid
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer) {
+void SyncPacket::PlayerPacket::newConnectableCashServer(int32_t playerid, uint32_t playerip) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::NewConnectable);
+	packet.add<int32_t>(playerid);
+	packet.add<uint32_t>(playerip);
+
+	WorldServer::Instance()->getCashConnection()->getSession()->send(packet);
+}
+
+void SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(uint16_t channel, int32_t playerid, int8_t reason) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::CannotChangeServer);
+	packet.add<int32_t>(playerid);
+	packet.add<int8_t>(reason);
+
+	Channels::Instance()->sendToChannel(channel, packet);
+}
+
+void SyncPacket::PlayerPacket::sendPlayerDisconnectServer(WorldServerAcceptConnection *player, int32_t playerid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::Disconnect);
+	packet.add<int32_t>(playerid);
+
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::PlayerPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer, bool fromCashOrMts) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::PacketTransfer);
+	packet.add<int32_t>(playerid);
+	packet.addBool(fromCashOrMts);
+	packet.addBuffer(buffer);
+	Channels::Instance()->sendToChannel(channel, packet);
+}
+
+void SyncPacket::PlayerPacket::sendPacketToCashServerForHolding(int32_t playerid, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::PacketTransfer);
 	packet.add<int32_t>(playerid);
 	packet.addBuffer(buffer);
-	Channels::Instance()->sendToChannel(channel, packet);
+	WorldServer::Instance()->getCashConnection()->getSession()->send(packet);
 }
 
 void SyncPacket::PlayerPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerid) {

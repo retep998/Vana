@@ -1282,6 +1282,8 @@ void SyncHandler::handlePlayerPacket(WorldServerAcceptConnection *connection, Pa
 	switch (packet.get<int8_t>()) {
 		case Sync::Player::ChangeChannelRequest: playerChangeChannel(connection, packet); break;
 		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, packet); break;
+		case Sync::Player::ChangeServerRequest: playerChangeServer(connection, packet); break;
+		case Sync::Player::ChangeServerGo: handleChangeServer(connection, packet); break;
 		case Sync::Player::Connect: playerConnect(connection->getChannel(), packet); break;
 		case Sync::Player::Disconnect: playerDisconnect(connection->getChannel(), packet); break;
 		case Sync::Player::UpdateLevel: updateLevel(packet); break;
@@ -1318,8 +1320,17 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	p->setGuildRank(guildrank);
 	p->setAlliance(PlayerDataProvider::Instance()->getAlliance(allianceid));
 	p->setAllianceRank(alliancerank);
-	p->setChannel(channel);
 	p->setOnline(true);
+	if (!p->isInCashShop()) { // Else it would reset the channel...
+		p->setChannel(channel);
+		if (guildid != 0) {
+			GuildPacket::sendGuildInfo(p->getGuild(), p);
+			if (oldJob == -1) // Didn't come online till now...
+				GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
+			if (allianceid != 0 && oldJob == -1) 
+				AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
+		}
+	}
 	PlayerDataProvider::Instance()->registerPlayer(p);
 	if (guildid != 0) {
 		GuildPacket::sendGuildInfo(p->getGuild(), p);
@@ -1356,11 +1367,88 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *player, Packe
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
+		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet, false);
 		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
 	}
 	else { // Channel doesn't exist (offline)
-		SyncPacket::PlayerPacket::playerChangeChannel(player, playerid, 0, -1);
+		Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
+		SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::CannotGo);
+	}
+}
+
+void SyncHandler::playerChangeServer(WorldServerAcceptConnection *player, PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid, true);
+	bool connect = packet.getBool();
+	Channel *chan = Channels::Instance()->getChannel(gamePlayer->getChannel());
+	if (connect) {
+		bool cashShop = packet.getBool();
+		if (cashShop) {
+			if (WorldServer::Instance()->isCashServerConnected()) {
+				SyncPacket::PlayerPacket::sendPacketToCashServerForHolding(playerid, packet);
+			}
+			else {
+				SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::NoCashShop);
+			}
+		}
+		else { 
+			// TODO: MTS handling
+			SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::MtsUnavailable);
+		}
+	}
+	else {
+		if (chan) {
+			SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet, true);
+			PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
+		}
+		else {
+			SyncPacket::PlayerPacket::sendPlayerDisconnectServer(WorldServer::Instance()->getCashConnection(), playerid);
+			std::stringstream str;
+			str << "Player couldn't get back into its channel. Disconnected. (Channel: ";
+			str << gamePlayer->getChannel();
+			str << ")";
+			WorldServer::Instance()->log(LogTypes::Error, str.str());
+		}
+	}
+}
+
+void SyncHandler::handleChangeServer(WorldServerAcceptConnection *player, PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	bool connect = packet.getBool(); // If true: it connects to the server, otherwise it disconnects/goes back to the channel.
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid, true);
+	if (gamePlayer) {
+		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
+		WorldServerAcceptConnection *cash = WorldServer::Instance()->getCashConnection();
+		if (connect) {
+			bool cashShop = packet.getBool();
+			if (cashShop) {
+				if (WorldServer::Instance()->isCashServerConnected()) {
+					gamePlayer->setCashShop(true);
+					SyncPacket::PlayerPacket::newConnectableCashServer(playerid, gamePlayer->getIp());
+					uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), cash->getExternalIp(), cash->getIp());
+					SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, WorldServer::Instance()->getCashPort());
+				}
+				else {
+					// I don't know what should happen... TODO!
+					SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::NoCashShop);
+				}
+			}
+			else {
+				SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::MtsUnavailable);
+			}
+		}
+		else {
+			if (curchan) {
+				gamePlayer->setCashShop(false);
+				SyncPacket::PlayerPacket::newConnectable(curchan->getId(), playerid, gamePlayer->getIp());
+				uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), curchan->getExternalIps(), curchan->getIp());
+				SyncPacket::PlayerPacket::playerChangeChannel(cash, playerid, chanIp, curchan->getPort());
+			}
+			else {
+				// I don't know what should happen... TODO!
+				//SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(cash, playerid, Sync::Player::BlockMessages::CannotGo);
+			}
+		}
 	}
 }
 
@@ -1377,7 +1465,7 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, Packe
 			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
 		}
 		else {
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
+			SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::CannotGo);
 		}
 		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
 	}
@@ -1400,7 +1488,7 @@ void SyncHandler::updateJob(PacketReader &packet) {
 void SyncHandler::updateLevel(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
-	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
+	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id, true);
 	plyr->setLevel(level);
 	if (plyr->getParty() != nullptr) {
 		SyncHandler::silentUpdate(id);

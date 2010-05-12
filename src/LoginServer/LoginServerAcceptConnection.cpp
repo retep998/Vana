@@ -31,7 +31,7 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 		World *world = Worlds::Instance()->getWorld(worldId);
 		world->setConnected(false);
 		world->clearChannels(); // Remove the channels (they will automaticly disconnect)
-
+		world->setCashServerConnected(false);
 		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(worldId)));
 	}
 }
@@ -44,6 +44,8 @@ void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLDS: LoginServerAcceptHandler::toWorlds(this, packet); break;
+		case IMSG_REMOVE_CASH_SERVER: LoginServerAcceptHandler::removeCashServer(this, packet); break;
+		case IMSG_REGISTER_CASH_SERVER: LoginServerAcceptHandler::registerCashServer(this, packet); break;
 	}
 }
 
@@ -51,6 +53,7 @@ void LoginServerAcceptConnection::authenticated(int8_t type) {
 	switch (type) {
 		case ServerTypes::World: Worlds::Instance()->addWorldServer(this); break;
 		case ServerTypes::Channel: Worlds::Instance()->addChannelServer(this); break;
+		case ServerTypes::Cash: Worlds::Instance()->addCashServer(this); break;
 		default: getSession()->disconnect();
 	}
 }

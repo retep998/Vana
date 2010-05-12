@@ -38,6 +38,8 @@ public:
 	void setJob(int16_t jobId) { job = jobId; }
 	void setLevel(uint8_t level) { this->level = level; }
 	void setName(const string &newName) { name = newName; }
+	void setCashShop(bool state) { cashShop = state; }
+	bool isInCashShop() const { return cashShop; }
 	bool isOnline() const { return online; }
 	uint8_t getLevel() const { return level; }
 	int16_t getChannel() const { return channel; }

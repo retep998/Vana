@@ -53,6 +53,7 @@ void LoginServer::loadConfig() {
 	m_pinEnabled = config.getBool("pin");
 	m_port = config.getShort("port");
 	m_interPort = config.getShort("inter_port");
+	m_cashPort = config.getShort("cash_port");
 	m_maxInvalidLogins = config.getInt("invalid_login_threshold");
 	setListening(true);
 
@@ -81,7 +82,8 @@ void LoginServer::loadWorlds() {
 	MajorBoss boss;
 	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
-	while (1) {
+
+	while (true) {
 		formatter % i % "name";
 		if (!config.keyExists(formatter.str()))
 			break; // No more worlds
@@ -160,6 +162,8 @@ void LoginServer::loadWorlds() {
 		formatter % i % "pinkbean_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.pinkbean = boss;
+
+		conf.cashPort = m_cashPort + world->getId();
 
 		world->setConfiguration(conf);
 		Worlds::Instance()->addWorld(world);

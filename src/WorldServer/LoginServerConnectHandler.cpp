@@ -37,6 +37,8 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 		Configuration conf = ConfigurationPacket::getConfig(packet);
 		WorldServer::Instance()->setConfig(conf);
 
+		WorldServer::Instance()->setCashServerPort(packet.get<uint16_t>());
+
 		WorldServer::Instance()->listen();
 		Initializing::worldEstablished();
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropDataProvider.h"
 #include "GuildPacket.h"
 #include "ItemDataProvider.h"
+#include "InterHeader.h"
 #include "MapDataProvider.h"
 #include "MapleSession.h"
 #include "MiscUtilities.h"
@@ -46,7 +47,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) {
 	int8_t worldid = packet.get<int8_t>();
-	if (worldid != -1) {
+	int8_t type = packet.get<int8_t>();
+	if (worldid != -1 && type == InterChannelServer) {
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet.get<uint32_t>());
 		ChannelServer::Instance()->setWorldPort(packet.get<uint16_t>());
@@ -92,12 +94,7 @@ void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	int16_t channel = packet.get<int16_t>();
 	string name = packet.getString();
 	int8_t is = packet.get<int8_t>();
-	if (channel == -1) {
-		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, -1, is);
-	}
-	else {
-		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, channel, is, 1);
-	}
+	PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, channel, is);
 }
 
 void WorldServerConnectHandler::whisperPlayer(PacketReader &packet) {

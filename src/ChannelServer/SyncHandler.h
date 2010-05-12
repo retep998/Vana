@@ -34,5 +34,6 @@ namespace SyncHandler {
 	void handlePlayerSync(PacketReader &packet);
 	void playerChangeChannel(PacketReader &packet);
 	void newConnectable(PacketReader &packet);
+	void cannotGo(PacketReader &packet);
 	void disbandParty(PacketReader &packet);
 };

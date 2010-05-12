@@ -89,7 +89,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	switch (type) {
 		case CommandOpcodes::FindPlayer:
 			if (receiver) {
-				PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+				PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap(), 0, true);
 			}
 			else {
 				WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);

@@ -59,6 +59,15 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 	player->getSession()->send(packet);
 }
 
+void WorldServerAcceptPacket::connectCashServer(WorldServerAcceptConnection *player, uint16_t port, bool assigned) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_CASH_SERVER_CONNECT);
+	packet.addBool(assigned);
+	packet.add<uint16_t>(port);
+
+	player->getSession()->send(packet);
+}
+
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FIND);

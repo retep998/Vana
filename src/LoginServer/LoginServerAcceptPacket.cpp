@@ -33,6 +33,7 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World
 	packet.add<uint16_t>(world->getPort());
 
 	ConfigurationPacket::addConfig(world->getConfig(), packet);
+	packet.add<uint16_t>(world->getConfig().cashPort);
 
 	player->getSession()->send(packet);
 }
@@ -44,10 +45,11 @@ void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port) {
+void LoginServerAcceptPacket::connectServer(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port, int8_t type) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldid);
+	packet.add<int8_t>(type);
 	packet.add<uint32_t>(ip);
 	packet.add<uint16_t>(port);
 	player->getSession()->send(packet);

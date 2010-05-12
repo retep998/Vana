@@ -52,3 +52,17 @@ void LoginServerConnectPacket::removeChannel(int32_t channel) {
 
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
+
+void LoginServerConnectPacket::registerCashServer() {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_REGISTER_CASH_SERVER);
+
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+}
+
+void LoginServerConnectPacket::removeCashServer() {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_REMOVE_CASH_SERVER);
+
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+}

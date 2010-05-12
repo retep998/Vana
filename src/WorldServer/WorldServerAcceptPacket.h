@@ -27,6 +27,7 @@ class PacketReader;
 
 namespace WorldServerAcceptPacket {
 	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port);
+	void connectCashServer(WorldServerAcceptConnection *player, uint16_t port, bool assigned);
 	void findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
 	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
 	void scrollingHeader(const string &message);

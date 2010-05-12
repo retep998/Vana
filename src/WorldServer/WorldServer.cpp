@@ -27,7 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServer * WorldServer::singleton = nullptr;
 
 WorldServer::WorldServer() :
-m_worldId(-1)
+m_worldId(-1),
+m_cashServerConnection(nullptr),
+m_cashConnected(false) 
 {
 	setServerType(ServerTypes::World);
 }
@@ -51,6 +53,7 @@ void WorldServer::loadConfig() {
 	m_loginPort = config.getShort("login_inter_port");
 
 	m_port = -1; // Will get from login server later
+	m_cashPort = -1; // Will get from login server later
 }
 
 void WorldServer::loadLogConfig() {

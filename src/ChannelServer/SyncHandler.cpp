@@ -46,6 +46,7 @@ void SyncHandler::handlePlayerSync(PacketReader &packet) {
 		case Sync::Player::ChangeChannelGo: playerChangeChannel(packet); break;
 		case Sync::Player::PacketTransfer: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
 		case Sync::Player::RemovePacketTransfer: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
+		case Sync::Player::CannotChangeServer: cannotGo(packet); break;
 	}
 }
 
@@ -56,10 +57,11 @@ void SyncHandler::playerChangeChannel(PacketReader &packet) {
 
 	Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
+
 		return;
 	}
 	if (ip == 0) {
-		PlayerPacket::sendBlockedMessage(ccPlayer, PlayerPacket::BlockMessages::CannotGo);
+		PlayerPacket::sendBlockedMessage(ccPlayer, Sync::Player::BlockMessages::CannotGo);
 	}
 	else {
 		ccPlayer->setOnline(false); // Set online to 0 BEFORE CC packet is sent to player
@@ -73,6 +75,12 @@ void SyncHandler::newConnectable(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	uint32_t playerip = packet.get<uint32_t>();
 	Connectable::Instance()->newPlayer(playerid, playerip);
+}
+
+void SyncHandler::cannotGo(PacketReader &packet) {
+	if (Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {	
+		PlayerPacket::sendBlockedMessage(ccPlayer, packet.get<int8_t>());
+	}
 }
 
 

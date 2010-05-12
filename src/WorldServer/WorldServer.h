@@ -42,26 +42,35 @@ public:
 	void listen();
 	string makeLogIdentifier();
 
+	void setCashServerPort(uint16_t port) { m_cashPort = port; }
+	void setCashServer(WorldServerAcceptConnection *connection) { m_cashServerConnection = connection; }
+	void setCashServerConnected(bool state) { m_cashConnected = state; }
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(uint16_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
 	void setConfig(const Configuration &config) { m_config = config; }
 
+	bool isCashServerConnected() const { return m_cashConnected; }
 	bool isConnected() const { return (m_worldId != -1); }
 	int8_t getWorldId() const { return m_worldId; }
 	uint16_t getInterPort() const { return m_port; }
+	uint16_t getCashPort() const { return m_cashPort; }
 	size_t getMaxChannels() const { return m_config.maxChannels; }
 	string getScrollingHeader() { return m_config.scrollingHeader.c_str(); }
 	Configuration & getConfig() { return m_config; }
 	LoginServerConnection * getLoginConnection() const { return m_loginConnection; }
+	WorldServerAcceptConnection * getCashConnection() const { return m_cashServerConnection; }
 private:
 	WorldServer();
 	static WorldServer *singleton;
 
+	bool m_cashConnected;
 	int8_t m_worldId;
 	uint16_t m_loginPort;
 	uint16_t m_port;
+	uint16_t m_cashPort;
 	uint32_t m_loginIp;
 	Configuration m_config;
 	LoginServerConnection *m_loginConnection;
+	WorldServerAcceptConnection *m_cashServerConnection;
 };

@@ -161,7 +161,7 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 	if (m_players.find(player->getId()) == m_players.end()) {
 		m_players[player->getId()] = player;
 	}
-	if (online) {
+	if (online && !player->isInCashShop()) {
 		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(player->getId());
 		}

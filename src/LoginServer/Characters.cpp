@@ -339,6 +339,12 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 
 		query << "DELETE FROM mounts WHERE charid = " << id;
 		query.exec();
+
+		query << "DELETE FROM character_wishlist WHERE charid = " << id;
+		query.exec();
+
+		query << "DELETE FROM character_cashshop_gifs WHERE charid = " << id;
+		query.exec();
 	}
 	else {
 		result = IncorrectBirthday;

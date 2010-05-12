@@ -144,9 +144,21 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 	if (map != -1) {
 		packet.add<int8_t>(0x09);
 		packet.addString(name);
-		packet.add<int8_t>(isChannel ? 0x03 : 0x01);
-		packet.add<int32_t>(map);
-		packet.add<int32_t>(0);
+		if (map == -2) {
+			// Player is in the cashshop
+			packet.add<int8_t>(0x02);
+		}
+		else if (isChannel) {
+			// Player is in the same channel
+			packet.add<int8_t>(0x01);
+			packet.add<int32_t>(map);
+			packet.add<int32_t>(0);
+		}
+		else {
+			// Player is in an other channel
+			packet.add<int8_t>(0x03);
+			packet.add<int32_t>(map);
+		}
 		packet.add<int32_t>(0);
 	}
 	else {

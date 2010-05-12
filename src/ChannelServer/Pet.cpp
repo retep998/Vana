@@ -55,7 +55,7 @@ closeness(closeness),
 inventorySlot(inventorySlot)
 {
 	if (isSummoned()) {
-		if (index == 1) {
+		if (index != 0) {
 			startTimer();
 		}
 		player->getPets()->setSummoned(index, id);

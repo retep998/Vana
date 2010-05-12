@@ -144,7 +144,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
 				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
 				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
-				case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
+				case CMSG_CASH_SHOP: changeServer(true); break;
 				case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
 				case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
 				case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
@@ -170,7 +170,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
 				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
-				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
+				case CMSG_MTS: changeServer(false); break;;
 				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
@@ -189,6 +189,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
 				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
+				case CMSG_PONG: handlePong(); break;
 				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
 				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
 				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
@@ -656,10 +657,19 @@ void Player::setBuddyListSize(uint8_t size) {
 	BuddyListPacket::showSize(this);
 }
 
+void Player::changeServer(bool cashShop) {
+	SyncPacket::playerChangeServer(ChannelServer::Instance()->getWorldConnection(), this, cashShop);
+}
+
 uint16_t Player::getPortalCount(bool initialPacket) {
 	uint16_t ret = m_portalCount++;
 	if (m_portalCount > std::numeric_limits<uint8_t>::max()) {
 		m_portalCount = (initialPacket ? 2 : 1);
 	}
 	return ret;
+}
+
+void Player::handlePong() {
+	// Handle all things like expiring of quests and such
+	getInventory()->checkExpiredItems();
 }

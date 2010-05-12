@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include "Channel.h"
 #include "Characters.h"
+#include "InterHeader.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
@@ -134,14 +135,39 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
 		}
 	}
 
+	if (worldid != -1) {
+		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
+		LoginServerAcceptPacket::connectServer(player, worldid, worldIp, port, InterChannelServer);
+	}
+	else {
+		LoginServerAcceptPacket::connectServer(player, worldid, 0, 0, InterChannelServer);
+		std::cout << "Error: No more channels to assign." << std::endl;
+	}
+	player->getSession()->disconnect();
+	return worldid;
+}
+
+int8_t Worlds::addCashServer(LoginServerAcceptConnection *player) {
+	int8_t worldid = -1;
+	uint16_t port;
+	AbstractServerAcceptConnection *worldPlayer;
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (!iter->second->isCashServerConnected() && iter->second->isConnected()) {
+			worldid = iter->second->getId();
+			port = iter->second->getPort();
+			worldPlayer = iter->second->getConnection();
+			iter->second->setCashServerConnected(true);
+			break;
+		}
+	}
 
 	if (worldid != -1) {
 		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
-		LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
+		LoginServerAcceptPacket::connectServer(player, worldid, worldIp, port, InterCashServer);
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(player, worldid, 0, 0);
-		std::cout << "Error: No more channels to assign." << std::endl;
+		LoginServerAcceptPacket::connectServer(player, worldid, 0, 0, InterCashServer);
+		std::cout << "Error: No more cash servers to assign." << std::endl;
 	}
 	player->getSession()->disconnect();
 	return worldid;
