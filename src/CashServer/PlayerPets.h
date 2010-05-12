@@ -32,6 +32,7 @@ public:
 
 	void save();
 	void petInfoPacket(PacketCreator &packet);
+	void petConnectData(PacketCreator &packet);
 
 	Pet * getPet(int32_t petid);
 	Pet * getSummoned(int8_t index);

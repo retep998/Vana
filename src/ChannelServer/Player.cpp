@@ -75,13 +75,14 @@ item_effect(0),
 chair(0),
 mapchair(0),
 trade_id(0),
-m_portalCount(std::numeric_limits<uint8_t>::max() + 1), // For the first packet
+m_portalCount(0),
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
 npc(nullptr),
 party(nullptr),
-instance(nullptr)
+instance(nullptr),
+tickCount(-1)
 {
 }
 
@@ -657,19 +658,33 @@ void Player::setBuddyListSize(uint8_t size) {
 	BuddyListPacket::showSize(this);
 }
 
-void Player::changeServer(bool cashShop) {
-	SyncPacket::playerChangeServer(ChannelServer::Instance()->getWorldConnection(), this, cashShop);
+uint8_t Player::getPortalCount(bool add) {
+	if (add) {
+		m_portalCount++;
+	}
+	return m_portalCount;
 }
 
-uint16_t Player::getPortalCount(bool initialPacket) {
-	uint16_t ret = m_portalCount++;
-	if (m_portalCount > std::numeric_limits<uint8_t>::max()) {
-		m_portalCount = (initialPacket ? 2 : 1);
-	}
-	return ret;
+void Player::changeServer(bool cashShop) {
+	SyncPacket::playerChangeServer(ChannelServer::Instance()->getWorldConnection(), this, cashShop);
 }
 
 void Player::handlePong() {
 	// Handle all things like expiring of quests and such
 	getInventory()->checkExpiredItems();
+}
+bool Player::updateTickCount(int32_t newValue) {
+	int32_t diff = newValue - tickCount;
+	if (tickCount != -1 && diff < 100) {
+		if (getActiveBuffs()->hasShadowPartner() && getActiveBuffs()->getBooster() != 0) {
+			// Damn you, rebirth servers >:( Having Shadow Partner and a booster makes the difference too low...
+			return true;
+		}
+		addWarning();
+		return false;
+	}
+	else {
+		tickCount = newValue;
+		return true;
+	}
 }

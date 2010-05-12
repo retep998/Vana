@@ -40,7 +40,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void Skills::addSkill(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int32_t skillid = packet.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillid)) {
 		if (player->getStats()->getSp() == 0) {
@@ -109,7 +112,10 @@ const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affe
 }
 
 void Skills::useSkill(Player *player, PacketReader &packet) {
-	packet.skipBytes(4); // Ticks
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int32_t skillid = packet.get<int32_t>();
 	int16_t addedinfo = 0;
 	uint8_t level = packet.get<uint8_t>();

@@ -150,7 +150,8 @@ struct Attack {
 		cashStarPos(-1),
 		starId(0),
 		skillLevel(0),
-		totalDamage(0)
+		totalDamage(0),
+		portals(0)
 		{ }
 
 	bool isMesoExplosion;
@@ -165,6 +166,7 @@ struct Attack {
 	uint8_t animation;
 	uint8_t weaponClass;
 	uint8_t skillLevel;
+	uint8_t portals;
 	int16_t starPos;
 	int16_t cashStarPos;
 	int32_t skillId;

@@ -49,7 +49,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
-	packet.skipBytes(4); // Ticks
+	packet.skipBytes(4); // Tickcount, why would you abuse this (difference is too low too)
+
 	int8_t type = packet.get<int8_t>();
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet.get<int32_t>();
@@ -246,7 +247,10 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 }
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	if (Player *info = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
 		PlayersPacket::showInfo(player, info, packet.getBool());
 	}
@@ -254,6 +258,7 @@ void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
+
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
 	if (player->getStats()->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
@@ -265,6 +270,10 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
+	if (packet.get<int8_t>() != player->getPortalCount(false)) {
+		// Portal count didn't match. Ignore.
+		return;
+	}
 	packet.reset(11);
 	MovementHandler::parseMovement(player, packet);
 	packet.reset(11);
@@ -386,6 +395,10 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Melee);
+	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	PlayersPacket::useMeleeAttack(player, attack);
 	int8_t damagedtargets = 0;
 	int32_t skillid = attack.skillId;
@@ -549,6 +562,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Ranged);
+	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	PlayersPacket::useRangedAttack(player, attack);
 	int32_t skillid = attack.skillId;
 	uint8_t level = attack.skillLevel;
@@ -649,6 +666,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Magic);
+	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	PlayersPacket::useSpellAttack(player, attack);
 
 	int32_t skillid = attack.skillId;
@@ -739,6 +760,10 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Summon);
+	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
@@ -786,7 +811,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	bool shadowMeso = false;
 
 	if (skillType != SkillTypes::Summon) {
-		packet.skipBytes(1); // Portals entered
+		attack.portals = packet.get<uint8_t>();
 		uint8_t tbyte = packet.get<uint8_t>();
 		skillid = packet.get<int32_t>();
 		targets = tbyte / 0x10;

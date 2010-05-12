@@ -38,7 +38,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 
 void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
@@ -204,7 +207,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useItem(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 	if (player->getStats()->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
@@ -228,7 +234,10 @@ void InventoryHandler::cancelItem(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 
@@ -308,7 +317,10 @@ void InventoryHandler::handleChair(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 
@@ -336,7 +348,10 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 
@@ -356,7 +371,10 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int16_t eslot = packet.get<int16_t>();
 	bool wscroll = (packet.get<int16_t>() == 2);
@@ -411,7 +429,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemid) == Items::Types::WeatherCash) {
 		string message = packet.getString();
-		packet.skipBytes(4); // Ticks
+		if (!player->updateTickCount(packet.get<int32_t>())) {
+			// Tickcount was the same or less than 100 of the difference.
+			return;
+		}
 		if (message.length() <= 35) {
 			Map *map = Maps::getMap(player->getMap());
 			message = player->getName() + " 's message : " + message;
@@ -555,7 +576,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					string msg3 = packet.getString();
 					string msg4 = packet.getString();
 					string msg5 = packet.getString();
-					packet.skipBytes(4); // Ticks
+					if (!player->updateTickCount(packet.get<int32_t>())) {
+						// Tickcount was the same or less than 100 of the difference.
+						return;
+					}
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
 
 					if (itemid == Items::Megassenger) {
@@ -574,7 +598,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				packet.skipBytes(4); // Ticks
+				if (!player->updateTickCount(packet.get<int32_t>())) {
+					// Tickcount was the same or less than 100 of the difference.
+					return;
+				}
 				MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
 
 				if (itemid == Items::StarMegassenger) {
@@ -596,7 +623,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					string msg3 = packet.getString();
 					string msg4 = packet.getString();
 					string msg5 = packet.getString();
-					packet.skipBytes(4); // Ticks
+					if (!player->updateTickCount(packet.get<int32_t>())) {
+						// Tickcount was the same or less than 100 of the difference.
+						return;
+					}
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
 					if (itemid == Items::HeartMegassenger) {
 						InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -812,7 +842,10 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	packet.skipBytes(4); // Ticks
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 

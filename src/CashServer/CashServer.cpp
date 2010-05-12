@@ -62,7 +62,7 @@ void CashServer::loadLogConfig() {
 }
 
 string CashServer::makeLogIdentifier() {
-	return "World: " + boost::lexical_cast<string>(getWorld()) + "; Cash server";
+	return "World: " + boost::lexical_cast<string>(static_cast<int16_t>(getWorld())) + "; Cash server";
 }
 
 void CashServer::connectWorld() {
