@@ -48,9 +48,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getEyes());
 	packet.add<int32_t>(player->getHair());
 
-	packet.add<int64_t>(0);
-	packet.add<int64_t>(0);
-	packet.add<int64_t>(0);
+	player->getPets()->petConnectData(packet);
 
 	player->getStats()->connectData(packet); // Stats
 

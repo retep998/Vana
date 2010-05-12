@@ -72,3 +72,14 @@ void PlayerPets::petInfoPacket(PacketCreator &packet) {
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob
 }
+
+void PlayerPets::petConnectData(PacketCreator &packet) {
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
+		if (Pet *pet = getSummoned(i)) {
+			packet.add<int64_t>(pet->getCashId() != 0 ? pet->getCashId() : pet->getId());
+		}
+		else {
+			packet.add<int64_t>(0);
+		}
+	}
+}
