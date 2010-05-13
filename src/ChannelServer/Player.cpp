@@ -551,7 +551,7 @@ bool Player::addWarning() {
 	int32_t t = TimeUtilities::getTickCount();
 	// Deleting old warnings
 	for (size_t i = 0; i < warnings.size(); i++) {
-		if (warnings[i] + 300000 < t) {
+		if (warnings[i] + 30000 < t) {
 			warnings.erase(warnings.begin() + i);
 			i--;
 		}
@@ -672,14 +672,20 @@ void Player::changeServer(bool cashShop) {
 void Player::handlePong() {
 	// Handle all things like expiring of quests and such
 	getInventory()->checkExpiredItems();
+
+	int32_t t = TimeUtilities::getTickCount();
+	// Deleting old warnings
+	for (size_t i = 0; i < warnings.size(); i++) {
+		if (warnings[i] + 30000 < t) {
+			warnings.erase(warnings.begin() + i);
+			i--;
+		}
+	}
 }
+
 bool Player::updateTickCount(int32_t newValue) {
 	int32_t diff = newValue - tickCount;
 	if (tickCount != -1 && diff < 100) {
-		if (getActiveBuffs()->hasShadowPartner() && getActiveBuffs()->getBooster() != 0) {
-			// Damn you, rebirth servers >:( Having Shadow Partner and a booster makes the difference too low...
-			return true;
-		}
 		addWarning();
 		return false;
 	}
