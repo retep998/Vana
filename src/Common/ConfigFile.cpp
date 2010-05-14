@@ -82,10 +82,20 @@ void ConfigFile::setVariable(const string &name, int32_t value) {
 }
 
 int32_t ConfigFile::getInt(const string &value) {
-	lua_getglobal(getLuaState(), value.c_str());
-	int32_t val = lua_tointeger(getLuaState(), -1);
-	lua_pop(getLuaState(), 1);
-	return val;
+	if (!keyExists(value)) {
+		std::cout << "ERROR: Couldn't get an integer from config file."<< std::endl;
+		std::cout << "File: " << m_file << std::endl;
+		std::cout << "Value: " << value << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
+		exit(ExitCodes::ConfigError);
+	}
+	else {
+		lua_getglobal(getLuaState(), value.c_str());
+		int32_t val = lua_tointeger(getLuaState(), -1);
+		lua_pop(getLuaState(), 1);
+		return val;
+	}
 }
 
 int16_t ConfigFile::getShort(const string &value) {
@@ -93,10 +103,20 @@ int16_t ConfigFile::getShort(const string &value) {
 }
 
 string ConfigFile::getString(const string &value) {
-	lua_getglobal(getLuaState(), value.c_str());
-	string x = lua_tostring(getLuaState(), -1);
-	lua_pop(getLuaState(), 1);
-	return x;
+	if (!keyExists(value)) {
+		std::cout << "ERROR: Couldn't get a string from config file." << std::endl;
+		std::cout << "File: " << m_file << std::endl;
+		std::cout << "Value: " << value << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
+		exit(ExitCodes::ConfigError);
+	}
+	else {
+		lua_getglobal(getLuaState(), value.c_str());
+		string x = lua_tostring(getLuaState(), -1);
+		lua_pop(getLuaState(), 1);
+		return x;
+	}
 }
 
 IpMatrix ConfigFile::getIpMatrix(const string &value) {
@@ -153,10 +173,20 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 }
 
 bool ConfigFile::getBool(const string &value) {
-	lua_getglobal(getLuaState(), value.c_str());
-	bool ret = (lua_toboolean(getLuaState(), -1) != 0);
-	lua_pop(getLuaState(), 1);
-	return ret;
+	if (!keyExists(value)) {
+		std::cout << "ERROR: Couldn't get a boolean from config file." << std::endl;
+		std::cout << "File: " << m_file << std::endl;
+		std::cout << "Value: " << value << std::endl;
+		std::cout << "Press enter to quit ...";
+		getchar();
+		exit(ExitCodes::ConfigError);
+	}
+	else {
+		lua_getglobal(getLuaState(), value.c_str());
+		bool ret = (lua_toboolean(getLuaState(), -1) != 0);
+		lua_pop(getLuaState(), 1);
+		return ret;
+	}
 }
 
 LogConfig ConfigFile::getLogConfig(const string &server) {
