@@ -44,6 +44,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		// Tickcount was the same or less than 100 of the difference.
 		return;
 	}
+
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
@@ -186,6 +187,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 						InventoryPacket::moveItem(player, inv, oldslot, freeslot);
 					}
 				}
+			}
+			else if (slot1 < 0 && item2 != nullptr && !ItemDataProvider::Instance()->isCash(item2->getId())) {
+				// Client tries to switch a cash item with a regular item
+				return;
 			}
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
