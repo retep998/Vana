@@ -684,8 +684,10 @@ void Player::handlePong() {
 }
 
 bool Player::updateTickCount(int32_t newValue) {
+	/*
 	int32_t diff = newValue - tickCount;
 	if (tickCount != -1 && diff < 100) {
+		std::cout << "Warning: Player: " << getName() << ", Dif: " << diff << std::endl;
 		addWarning();
 		return false;
 	}
@@ -693,4 +695,6 @@ bool Player::updateTickCount(int32_t newValue) {
 		tickCount = newValue;
 		return true;
 	}
+	*/
+	return true;
 }

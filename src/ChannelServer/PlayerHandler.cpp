@@ -760,7 +760,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Summon);
-	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {
+	if (!player->updateTickCount(attack.ticks)) {
 		// Tickcount was the same or less than 100 of the difference.
 		return;
 	}
@@ -914,7 +914,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		}
 	}
 
-	if (skillType == SkillTypes::Ranged || skillType == SkillTypes::Summon) {
+	if (skillType == SkillTypes::Ranged) {
 		attack.projectilePos = packet.getPos();
 	}
 	attack.playerPos = packet.getPos();
