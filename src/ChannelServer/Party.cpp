@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "Instance.h"
 #include "InstanceMessageConstants.h"
+#include "MapPacket.h"
 #include "Maps.h"
 #include "Player.h"
 #include "PlayerPacket.h"
@@ -33,6 +34,24 @@ void Party::setLeader(int32_t playerid, bool firstload) {
 void Party::addMember(Player *player) {
 	members[player->getId()] = player;
 	player->setParty(this);
+
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *cmp = iter->second;
+		if (cmp != 0 && player != nullptr) {
+			if (cmp->getDoor() != nullptr) {
+				Door *ddoor = cmp->getDoor();
+				if (player->getMap() == ddoor->getTownId() || player->getMap() == ddoor->getSourceId()) {
+					MapPacket::showDoor(player, ddoor, (player->getMap() == ddoor->getTownId()));
+				}
+			}
+			if (player->getDoor() != nullptr) {
+				Door *pdoor = player->getDoor();
+				if (cmp->getMap() == pdoor->getTownId() || cmp->getMap() == pdoor->getSourceId()) {
+					MapPacket::showDoor(cmp, pdoor, (player->getMap() == pdoor->getTownId()));
+				}
+			}
+		}
+	}
 }
 
 void Party::addMember(int32_t id) {
@@ -42,6 +61,25 @@ void Party::addMember(int32_t id) {
 void Party::deleteMember(Player *player) {
 	members.erase(player->getId());
 	player->setParty(nullptr);
+
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *cmp = iter->second;
+		if (cmp != 0 && player != nullptr) {
+			if (cmp->getDoor() != nullptr) {
+				Door *ddoor = cmp->getDoor();
+				if (player->getMap() == ddoor->getTownId() || player->getMap() == ddoor->getSourceId()) {
+					MapPacket::showDoorDisappear(player, ddoor);
+				}
+			}
+			if (player->getDoor() != nullptr) {
+				Door *pdoor = player->getDoor();
+				if (cmp->getMap() == pdoor->getTownId() || cmp->getMap() == pdoor->getSourceId()) {
+					MapPacket::showDoorDisappear(player, pdoor);
+				}
+			}
+		}
+	}
+
 	if (Instance *i = getInstance()) {
 		i->sendMessage(PartyRemoveMember, getId(), player->getId());
 	}
@@ -157,6 +195,15 @@ void Party::warpAllMembers(int32_t mapid, const string &portalname) {
 			if (Player *m_player = iter->second) {
 				m_player->setMap(mapid, portal);
 			}
+		}
+	}
+}
+
+void Party::sendPacket(PacketCreator &packet, int32_t mapid) {
+	for (map<int32_t, Player *, std::greater<int32_t> >::iterator iter = members.begin(); iter != members.end(); iter++) {
+		Player *m_player = iter->second;
+		if (m_player != nullptr && (mapid != -1 ? m_player->getMap() == mapid : true)) {
+			m_player->getSession()->send(packet);
 		}
 	}
 }

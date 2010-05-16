@@ -40,7 +40,8 @@ namespace Sync {
 			Buddy,
 			Guild,
 			GuildBbs,
-			Alliance
+			Alliance,
+			Data
 		};
 	}
 

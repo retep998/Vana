@@ -64,6 +64,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_BUDDY 0x3c
 #define SMSG_GUILD 0x3e
 #define SMSG_ALLIANCE 0x3f
+#define SMSG_PORTAL_ACTION 0x40
 #define SMSG_MESSAGE 0x41
 #define SMSG_OWL_OF_MINERVA 0x43
 #define SMSG_WEDDING_PROPOSAL_WHISHLIST 0x45 // Holds both whishlist and proposal
@@ -104,8 +105,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_TIMER 0x87 // For places with clock i.e. ship station
 #define SMSG_GM_WARNING 0x8c // Shows a popup with the message from a GM/an Admin
 #define SMSG_TIMER_OFF 0x8e // Makes timer disappear from map
-#define SMSG_MAP_SPAWN_PLAYER 0x91
-#define SMSG_MAP_REMOVE_PLAYER 0x92
+#define SMSG_MAP_PLAYER_SPAWN 0x91
+#define SMSG_MAP_PLAYER_DESPAWN 0x92
 #define SMSG_PLAYER_CHAT 0x93
 #define SMSG_CHALKBOARD 0x95
 #define SMSG_SCROLL_USE 0x98

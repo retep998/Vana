@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "LoopingId.h"
+#include "Door.h"
 #include "MapDataProvider.h"
 #include "MapObjects.h"
 #include "Mob.h"
@@ -31,20 +32,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 
 using std::map;
+using std::pair;
 using std::string;
 using std::vector;
 using std::tr1::function;
 using std::tr1::unordered_map;
 
 class Drop;
+class Door;
 class Instance;
 class Mist;
 class Mob;
 class PacketCreator;
 class Player;
 class Reactor;
+
 namespace Timer {
 	class Container;
 };
@@ -106,7 +111,10 @@ public:
 	// Portals
 	PortalInfo * getPortal(const string &name);
 	PortalInfo * getSpawnPoint(int8_t pid = -1);
+	pair<int32_t, PortalInfo> getOpenDoorIndexAndPoint();
 	PortalInfo * getNearestSpawnPoint(const Pos &pos);
+	void addDoor(Door *door);
+	void removeDoor(int32_t index, Door *door);
 
 	// Players
 	void addPlayer(Player *player);
@@ -168,7 +176,7 @@ public:
 	void setMapTimer(int32_t t);
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
-	// Show all map objects
+	// Map objects
 	void showObjects(Player *player);
 
 	// Packet stuff
@@ -214,6 +222,8 @@ private:
 	unordered_map<string, PortalInfo> m_portals;
 	unordered_map<int8_t, PortalInfo> m_spawn_points;
 	unordered_map<string, Pos> m_reactor_positions;
+	vector<pair<PortalInfo, bool>> m_door_points;
+	unordered_map<int32_t, Door *> m_doors;
 
 	// Shorter-lived objects
 	vector<Player *> m_players;

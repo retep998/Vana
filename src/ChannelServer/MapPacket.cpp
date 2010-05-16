@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Buffs.h"
 #include "ChannelServer.h"
+#include "Door.h"
 #include "Inventory.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "Mist.h"
+#include "Party.h"
 #include "PacketCreator.h"
 #include "Pet.h"
 #include "Player.h"
@@ -36,7 +38,7 @@ using std::tr1::unordered_map;
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
-	packet.addHeader(SMSG_MAP_SPAWN_PLAYER);
+	packet.addHeader(SMSG_MAP_PLAYER_SPAWN);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
 	if (player->getGuildId() > 0) {
@@ -197,7 +199,7 @@ void MapPacket::showPlayer(Player *player) {
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MAP_REMOVE_PLAYER);
+	packet.addHeader(SMSG_MAP_PLAYER_DESPAWN);
 	packet.add<int32_t>(player->getId());
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -337,4 +339,79 @@ void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemid, 
 		packet.addString(message);
 	}
 	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void MapPacket::spawnDoor(Door *door) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MYSTIC_DOOR_SPAWN);
+	packet.addBool(false);
+	packet.add<int32_t>(door->getId());
+	packet.addPos(door->getPos());
+	door->getSource()->sendPacket(packet);
+
+	packet = PacketCreator();
+	packet.addHeader(SMSG_MYSTIC_DOOR_SPAWN);
+	packet.addBool(true);
+	packet.add<int32_t>(door->getId());
+	packet.addPos(door->getPortal()->pos);
+
+	if (Party *p = door->getOwner()->getParty()) {
+		p->sendPacket(packet, door->getTownId());
+	}
+}
+
+
+void MapPacket::showDoor(Player *player, Door *door, bool istown) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MYSTIC_DOOR_SPAWN);
+	packet.add<int8_t>(1); // Already open
+	packet.add<int32_t>(door->getId());
+	packet.addPos(istown ? door->getPortal()->pos : door->getPos());
+	player->getSession()->send(packet);
+}
+
+void MapPacket::showDoorDisappear(Player *player, Door *door) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MYSTIC_DOOR_DESPAWN);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(door->getId());
+	player->getSession()->send(packet);
+}
+
+void MapPacket::removeDoor(Door *door, bool displace) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MYSTIC_DOOR_DESPAWN);
+	packet.addBool(displace);
+	packet.add<int32_t>(door->getId());
+
+	door->getSource()->sendPacket(packet);
+
+	if (Party *p = door->getOwner()->getParty()) {
+		p->sendPacket(packet, door->getTownId());
+	}
+}
+
+void MapPacket::spawnPortal(int32_t source, int32_t destination, const Pos &srcpos, const Pos &dstpos) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_PORTAL_ACTION);
+	packet.add<int32_t>(destination);
+	packet.add<int32_t>(source);
+	packet.addPos(srcpos);
+	Maps::getMap(source)->sendPacket(packet);
+
+	packet = PacketCreator();
+	packet.addHeader(SMSG_PORTAL_ACTION);
+	packet.add<int32_t>(source);
+	packet.add<int32_t>(destination);
+	packet.addPos(dstpos);
+	Maps::getMap(destination)->sendPacket(packet);
+}
+
+void MapPacket::removePortal(int32_t source, int32_t destination) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_PORTAL_ACTION);
+	packet.add<int32_t>(Maps::NoMap);
+	packet.add<int32_t>(Maps::NoMap);
+	Maps::getMap(source)->sendPacket(packet);
+	Maps::getMap(destination)->sendPacket(packet);
 }

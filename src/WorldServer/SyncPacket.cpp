@@ -338,9 +338,9 @@ void SyncPacket::PartyPacket::giveLeader(uint16_t channel, int32_t playerid, int
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.addHeader(SMSG_PARTY);
-	packet.add<int8_t>(0x1A);
+	packet.add<int8_t>(0x1b);
 	packet.add<int32_t>(target);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
@@ -641,6 +641,7 @@ void SyncPacket::PlayerPacket::sendParties(WorldServerAcceptConnection *player) 
 void SyncPacket::PlayerPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Data);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(Sync::Party::RemoveMember);
 	packet.add<int32_t>(partyid);
@@ -651,6 +652,7 @@ void SyncPacket::PlayerPacket::sendRemovePartyPlayer(int32_t playerid, int32_t p
 void SyncPacket::PlayerPacket::sendAddPartyPlayer(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Data);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(Sync::Party::AddMember);
 	packet.add<int32_t>(partyid);
@@ -661,6 +663,7 @@ void SyncPacket::PlayerPacket::sendAddPartyPlayer(int32_t playerid, int32_t part
 void SyncPacket::PlayerPacket::sendSwitchPartyLeader(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Data);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(Sync::Party::SwitchLeader);
 	packet.add<int32_t>(partyid);
@@ -671,6 +674,7 @@ void SyncPacket::PlayerPacket::sendSwitchPartyLeader(int32_t playerid, int32_t p
 void SyncPacket::PlayerPacket::sendCreateParty(int32_t playerid, int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Data);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(Sync::Party::Create);
 	packet.add<int32_t>(partyid);
@@ -681,6 +685,7 @@ void SyncPacket::PlayerPacket::sendCreateParty(int32_t playerid, int32_t partyid
 void SyncPacket::PlayerPacket::sendDisbandParty(int32_t partyid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Data);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(Sync::Party::Disband);
 	packet.add<int32_t>(partyid);
