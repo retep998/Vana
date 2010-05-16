@@ -54,7 +54,7 @@ public:
 
 	bool isConnected() const { return m_connected; }
 	int8_t getWorld() const { return m_world; }
-	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100; }
+	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + 50; }
 	int32_t getMaxChars() const { return m_config.maxChars; }
 	string getScrollingHeader() const { return m_config.scrollingHeader; }
 	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
