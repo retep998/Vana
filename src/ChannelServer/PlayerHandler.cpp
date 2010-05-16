@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.h"
+#include "Door.h"
 #include "Drop.h"
 #include "DropHandler.h"
 #include "DropsPacket.h"
@@ -44,6 +45,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 using std::tr1::bind;
+
+void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
+	int32_t doorid = packet.get<int32_t>();
+	bool totown = !packet.getBool();
+	Player *doorholder = PlayerDataProvider::Instance()->getPlayer(doorid);
+	if (doorholder == nullptr || (doorholder->getParty() != player->getParty() && doorholder != player)) {
+		// Hacking or lag
+		return;
+	}
+	doorholder->getDoor()->warp(player, totown);
+}
 
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t BumpDamage = -1;

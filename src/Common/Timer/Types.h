@@ -23,6 +23,7 @@ struct Types {
 	enum {
 		BuffTimer,
 		CoolTimer,
+		DoorTimer,
 		InstanceTimer,
 		MapleTvTimer,
 		MapTimer,

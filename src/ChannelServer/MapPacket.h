@@ -22,9 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class Door;
 class Mist;
 class PacketCreator;
 class Player;
+struct Pos;
 
 namespace MapPacket {
 	PacketCreator playerPacket(Player *player);
@@ -42,4 +44,10 @@ namespace MapPacket {
 	void removeMist(int32_t mapid, int32_t id);
 	void instantWarp(Player *player, int8_t pid);
 	void changeWeather(int32_t mapid, bool adminWeather, int32_t itemid = 0, const string &message = "");
+	void spawnDoor(Door *door);
+	void showDoor(Player *player, Door *door, bool istown);
+	void showDoorDisappear(Player *player, Door *door);
+	void removeDoor(Door *door, bool displace);
+	void spawnPortal(int32_t source, int32_t destination, const Pos &srcpos, const Pos &dstpos);
+	void removePortal(int32_t source, int32_t destination);
 };

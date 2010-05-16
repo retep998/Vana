@@ -46,7 +46,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
+#include <utility>
 
+using std::make_pair;
 using std::tr1::bind;
 
 Map::Map(MapInfoPtr info, int32_t id) :
@@ -130,7 +132,7 @@ void Map::addPortal(const PortalInfo &portal) {
 		m_spawn_points[portal.id] = portal;
 	}
 	else if (portal.name == "tp") {
-		// Mystic Door portals
+		m_door_points.push_back(make_pair(portal, false));
 	}
 	else {
 		m_portals[portal.name] = portal;
@@ -344,6 +346,23 @@ PortalInfo * Map::getSpawnPoint(int8_t pid) {
 	return &m_spawn_points[id];
 }
 
+pair<int32_t, PortalInfo> Map::getOpenDoorIndexAndPoint() {
+	PortalInfo garbage;
+	pair<int32_t, PortalInfo> portal = make_pair(-1, garbage);
+	pair<PortalInfo, bool> cur;
+	for (size_t i = 0; i < m_door_points.size(); i++) {
+		cur = m_door_points[i];
+		if (!cur.second) {
+			portal.first = i;
+			portal.second = cur.first;
+			cur.second = true;
+			m_door_points[i] = cur;
+			break;
+		}
+	}
+	return portal;
+}
+
 PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 	int8_t id = -1;
 	int32_t distance = 200000;
@@ -355,6 +374,16 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 		}
 	}
 	return getSpawnPoint(id);
+}
+
+void Map::addDoor(Door *door) {
+	m_doors[door->getId()] = door;
+}
+
+void Map::removeDoor(boost::int32_t index, Door *door) {
+	if (index != -1)
+		m_door_points[index].second = false;
+	m_doors.erase(door->getId());
 }
 
 // NPCs
@@ -843,6 +872,15 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	for (unordered_map<int32_t, Mist *>::iterator iter = m_mists.begin(); iter != m_mists.end(); iter++) {
 		if (iter->second != nullptr) {
 			MapPacket::showMist(player, iter->second);
+		}
+	}
+
+	// Mystic doors
+	Door *door = nullptr;
+	for (unordered_map<int32_t, Door *>::iterator iter = m_doors.begin(); iter != m_doors.end(); iter++) {
+		door = iter->second;
+		if (door->getOwner() == player || (player->getParty() != 0 && door->getOwner()->getParty() == player->getParty())) {
+			MapPacket::showDoor(player, door, (this == door->getTown()));
 		}
 	}
 
