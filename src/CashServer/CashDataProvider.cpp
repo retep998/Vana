@@ -18,11 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CashDataProvider.h"
 #include "CashServer.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "InitializeCashServer.h"
 #include "InitializeCommon.h"
-#include "StringUtilities.h"
-#include "GameConstants.h"
 #include "ItemConstants.h"
+#include "ItemDataProvider.h"
+#include "StringUtilities.h"
 
 using Initializing::outputWidth;
 
@@ -126,6 +127,13 @@ void CashDataProvider::loadCouponItems() {
 		if (!couponExists(row[Serial])) {
 			std::stringstream str;
 			str << "Coupon '" << row[Serial] << "' doesn't exist for coupon item reward.";
+			CashServer::Instance()->log(LogTypes::Warning, str.str());
+			continue;
+		}
+
+		if (!ItemDataProvider::Instance()->itemExists(atoi(row[ItemId]))) {
+			std::stringstream str;
+			str << "Coupon '" << row[Serial] << "' has an invalid item id as reward: " << atoi(row[ItemId]) << ". Ignoring.";
 			CashServer::Instance()->log(LogTypes::Warning, str.str());
 			continue;
 		}
