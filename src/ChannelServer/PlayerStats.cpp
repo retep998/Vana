@@ -41,24 +41,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-PlayerStats::PlayerStats(Player *player,
-	uint8_t level,
-	int16_t job,
-	int16_t fame,
-	int16_t str,
-	int16_t dex,
-	int16_t intt,
-	int16_t luk,
-	int16_t ap,
-	uint16_t hpmp_ap,
-	int16_t sp,
-	int16_t hp,
-	int16_t mhp,
-	int16_t mp,
-	int16_t mmp,
-	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hbx(0), hby(0), mw(0) {
-		if (this->hp == 0)
-			this->hp = 50;
+PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpmp_ap, int16_t sp, int16_t hp, int16_t mhp, int16_t mp, int16_t mmp, int32_t exp) : 
+player(player), 
+level(level), 
+job(job), 
+fame(fame), 
+str(str), 
+dex(dex), 
+intt(intt), 
+luk(luk), 
+watt(0),
+wdef(0),
+matt(intt),
+mdef(intt),
+avo((luk / 2) + (dex / 4)),
+jump(100),
+speed(100),
+ap(ap), 
+hpmp_ap(hpmp_ap), 
+sp(sp), 
+hp(hp), 
+mhp(mhp), 
+mp(mp), 
+mmp(mmp), 
+exp(exp), 
+hbx(0), 
+hby(0), 
+mw(0) 
+{
+	if (this->hp == 0)
+		this->hp = 50;
 }
 
 // Equip stat bonus handling
@@ -76,12 +88,22 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 				equipBonuses.Dex += iter->second.Dex;
 				equipBonuses.Int += iter->second.Int;
 				equipBonuses.Luk += iter->second.Luk;
+				equipBonuses.Watt += iter->second.Watt;
+				equipBonuses.Wdef += iter->second.Wdef;
+				equipBonuses.Matt += iter->second.Matt;
+				equipBonuses.Mdef += iter->second.Mdef;
+				equipBonuses.Acc += iter->second.Acc;
+				equipBonuses.Avo += iter->second.Avo;
+				equipBonuses.Speed += iter->second.Speed;
+				equipBonuses.Jump += iter->second.Jump;
+				equipBonuses.Hands += iter->second.Hands;
 			}
 		}
 	}
 
 	if (hbx > 0 && hby > 0)
 		setHyperBody(hbx, hby);
+
 	if (!isLoading) { // Adjust current HP/MP down if necessary
 		if (getHp() > getMaxHp()) {
 			setHp(getHp());
@@ -90,6 +112,8 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 			setMp(getMp());
 		}
 	}
+
+	calculateOtherStats();
 }
 
 void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
@@ -102,6 +126,15 @@ void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 		equipStats[slot].Dex = equip->getDex();
 		equipStats[slot].Int = equip->getInt();
 		equipStats[slot].Luk = equip->getLuk();
+		equipStats[slot].Acc = equip->getAccuracy();
+		equipStats[slot].Avo = equip->getAvoid();
+		equipStats[slot].Speed = equip->getSpeed();
+		equipStats[slot].Hands = equip->getHands();
+		equipStats[slot].Jump = equip->getJump();
+		equipStats[slot].Watt = equip->getWatk();
+		equipStats[slot].Wdef = equip->getWdef();
+		equipStats[slot].Matt = equip->getMatk();
+		equipStats[slot].Mdef = equip->getMdef();
 	}
 	else {
 		equipStats.erase(slot);
@@ -171,6 +204,69 @@ int16_t PlayerStats::getLuk(bool withbonus) {
 		return ((luk + buffBonuses.Luk + equipBonuses.Luk) > SHRT_MAX ? SHRT_MAX : (luk + buffBonuses.Luk + equipBonuses.Luk));
 
 	return luk;
+}
+
+int16_t PlayerStats::getWeaponAttack(bool withbonus) {
+	if (withbonus)
+		return ((watt + buffBonuses.Watt + equipBonuses.Watt) > SHRT_MAX ? SHRT_MAX : (watt + buffBonuses.Watt + equipBonuses.Watt));
+
+	return watt;
+}
+
+int16_t PlayerStats::getWeaponDefence(bool withbonus) {
+	if (withbonus)
+		return ((wdef + buffBonuses.Wdef + equipBonuses.Wdef) > SHRT_MAX ? SHRT_MAX : (wdef + buffBonuses.Wdef + equipBonuses.Wdef));
+
+	return wdef;
+}
+
+int16_t PlayerStats::getMagicAttack(bool withbonus) {
+	if (withbonus)
+		return ((matt + buffBonuses.Matt + equipBonuses.Matt) > SHRT_MAX ? SHRT_MAX : (matt + buffBonuses.Matt + equipBonuses.Matt));
+
+	return matt;
+}
+
+int16_t PlayerStats::getMagicDefence(bool withbonus) {
+	if (withbonus)
+		return ((mdef + buffBonuses.Mdef + equipBonuses.Mdef) > SHRT_MAX ? SHRT_MAX : (mdef + buffBonuses.Mdef + equipBonuses.Mdef));
+
+	return mdef;
+}
+
+int16_t PlayerStats::getAccuracy(bool withbonus) {
+	if (withbonus)
+		return ((acc + buffBonuses.Acc + equipBonuses.Acc) > SHRT_MAX ? SHRT_MAX : (acc + buffBonuses.Acc + equipBonuses.Acc));
+
+	return acc;
+}
+
+int16_t PlayerStats::getAvoidability(bool withbonus) {
+	if (withbonus)
+		return ((avo + buffBonuses.Avo + equipBonuses.Avo) > SHRT_MAX ? SHRT_MAX : (avo + buffBonuses.Avo + equipBonuses.Avo));
+
+	return avo;
+}
+
+int16_t PlayerStats::getHands(bool withbonus) {
+	if (withbonus)
+		return ((hands + buffBonuses.Hands + equipBonuses.Hands) > SHRT_MAX ? SHRT_MAX : (hands + buffBonuses.Hands + equipBonuses.Hands));
+
+	return hands;
+}
+
+int16_t PlayerStats::getSpeed(bool withbonus) {
+	if (withbonus)
+		return ((speed + buffBonuses.Speed + equipBonuses.Speed) > SHRT_MAX ? SHRT_MAX : (speed + buffBonuses.Speed + equipBonuses.Speed));
+
+	return speed;
+}
+
+int16_t PlayerStats::getJump(bool withbonus) {
+	if (withbonus)
+		return ((jump + buffBonuses.Jump + equipBonuses.Jump) > SHRT_MAX ? SHRT_MAX : (jump + buffBonuses.Jump + equipBonuses.Jump));
+
+	return jump;
 }
 
 // Data modification
@@ -304,16 +400,19 @@ void PlayerStats::setStr(int16_t str) {
 
 void PlayerStats::setDex(int16_t dex) {
 	this->dex = dex;
+	calculateOtherStats();
 	PlayerPacket::updateStatShort(player, Stats::Dex, dex);
 }
 
 void PlayerStats::setInt(int16_t intt) {
 	this->intt = intt;
+	calculateOtherStats();
 	PlayerPacket::updateStatShort(player, Stats::Int, intt);
 }
 
 void PlayerStats::setLuk(int16_t luk) {
 	this->luk = luk;
+	calculateOtherStats();
 	PlayerPacket::updateStatShort(player, Stats::Luk, luk);
 }
 
@@ -415,6 +514,27 @@ void PlayerStats::loseExp() {
 		exp -= static_cast<int32_t>(static_cast<int64_t>(getExp(getLevel())) * exploss / 100);
 		setExp(exp);
 	}
+}
+
+void PlayerStats::calculateOtherStats() {
+	avo = (getLuk(true) / 2) + (getDex(true) / 4);
+	matt = getInt(true);
+	mdef = getInt(true);
+
+	int16_t jTrack = GameLogicUtilities::getJobTrack(job, true);
+	int16_t accMod1 = 0;
+	int16_t accMod2 = 0;
+	if (jTrack == Jobs::JobTracks::Bowman || jTrack == Jobs::JobTracks::Thief) {
+		accMod1 = static_cast<int16_t>(getLuk(true) * 0.3);
+		accMod2 = static_cast<int16_t>(getDex(true) * 0.6);
+	}
+	else {
+		accMod1 = static_cast<int16_t>(getLuk(true) * 0.5);
+		accMod2 = static_cast<int16_t>(getDex(true) * 0.8);
+	}
+
+	acc = accMod1 + accMod2;
+	hands = getDex(true) + getLuk(true) + getInt(true);
 }
 
 // Level Related Functions
