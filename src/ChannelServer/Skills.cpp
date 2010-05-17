@@ -262,7 +262,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
 					int16_t chp = cmem->getStats()->getHp();
-					if (chp < cmem->getStats()->getMaxHp()) {
+					if (chp != 0 && chp < cmem->getStats()->getMaxHp()) {
 						cmem->getStats()->modifyHp(heal);
 						if (player != cmem) {
 							expIncreasement += 20 * (cmem->getStats()->getHp() - chp) / (8 * cmem->getStats()->getLevel() + 190);
