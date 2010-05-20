@@ -190,7 +190,8 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (item == nullptr || item->getId() != itemid) {
+	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
+	if (item == nullptr || item->getId() != itemid || ((info->hp != 0 || info->mp != 0) && player->getStats()->getHp() == 0)) {
 		// Hacking
 		return;
 	}
