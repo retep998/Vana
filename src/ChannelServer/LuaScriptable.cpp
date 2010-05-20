@@ -500,8 +500,8 @@ int LuaExports::getHorntailChannels(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -537,8 +537,8 @@ int LuaExports::getPapChannels(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -549,8 +549,8 @@ int LuaExports::getPianusChannels(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -561,8 +561,8 @@ int LuaExports::getPinkBeanChannels(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -573,8 +573,8 @@ int LuaExports::getZakumChannels(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, channels[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -637,8 +637,8 @@ int LuaExports::getAllFaces(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, ids[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -649,8 +649,8 @@ int LuaExports::getAllHair(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, ids[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -661,8 +661,8 @@ int LuaExports::getAllSkins(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, ids[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;
@@ -1818,8 +1818,8 @@ int LuaExports::getAllInstancePlayerIds(lua_State *luaVm) {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
-	    lua_pushinteger(luaVm, i + 1);
-	    lua_pushinteger(luaVm, ids[i]);
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
 	}
 	return 1;

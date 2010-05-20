@@ -254,7 +254,7 @@ void ChatHandler::initializeCommands() {
 	command.syntax = "<${jobstring} | #jobid>";
 	command.notes.push_back("Sets your job.");
 	command.notes.push_back("Valid job strings:");
-	command.notes.push_back("beginner | noblesse");
+	command.notes.push_back("beginner | noblesse | legend");
 	command.notes.push_back("warrior | fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
 	command.notes.push_back("magician | fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
 	command.notes.push_back("bowman | hunter | ranger | bm | xbowman | sniper | marksman");
@@ -266,6 +266,8 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("wind1 | wind2 | wind3 | wind4");
 	command.notes.push_back("night1 | night2 | night3 | night4");
 	command.notes.push_back("thunder1 | thunder2 | thunder3 | thunder4");
+	command.notes.push_back("aran1 | aran2 | aran3 | aran4");
+	command.notes.push_back("evan1 | evan2 | evan3 | evan4 | evan5 | evan6 | evan7 | evan8 | evan9 | evan10");
 	commandlist["job"] = command.addToMap();
 
 	command.command = CmdLevel;
@@ -1370,6 +1372,21 @@ int16_t ChatHandler::getJob(const string &query) {
 	else if (query == "thunder2") job = Jobs::JobIds::ThunderBreaker2;
 	else if (query == "thunder3") job = Jobs::JobIds::ThunderBreaker3;
 	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
+	else if (query == "legend") job = Jobs::JobIds::Legend;
+	else if (query == "aran1") job = Jobs::JobIds::Aran1;
+	else if (query == "aran2") job = Jobs::JobIds::Aran2;
+	else if (query == "aran3") job = Jobs::JobIds::Aran3;
+	else if (query == "aran4") job = Jobs::JobIds::Aran4;
+	else if (query == "evan1") job = Jobs::JobIds::Evan1;
+	else if (query == "evan2") job = Jobs::JobIds::Evan2;
+	else if (query == "evan3") job = Jobs::JobIds::Evan3;
+	else if (query == "evan4") job = Jobs::JobIds::Evan4;
+	else if (query == "evan5") job = Jobs::JobIds::Evan5;
+	else if (query == "evan6") job = Jobs::JobIds::Evan6;
+	else if (query == "evan7") job = Jobs::JobIds::Evan7;
+	else if (query == "evan8") job = Jobs::JobIds::Evan8;
+	else if (query == "evan9") job = Jobs::JobIds::Evan9;
+	else if (query == "evan10") job = Jobs::JobIds::Evan10;
 	else job = atoi(query.c_str());
 	return job;
 }

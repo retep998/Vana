@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryHandler.h"
+#include "ChannelServer.h"
 #include "Drop.h"
 #include "EquipDataProvider.h"
 #include "GameLogicUtilities.h"
@@ -25,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "MapleTvs.h"
 #include "Maps.h"
+#include "MobDataProvider.h"
 #include "NpcDataProvider.h"
 #include "PacketReader.h"
 #include "Pet.h"
@@ -182,6 +184,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 					}
 				}
 			}
+			else if (slot1 < 0 && item2 != nullptr && !ItemDataProvider::Instance()->isCash(item2->getId())) {
+				// Client tries to switch a cash item with a regular item
+				return;
+			}
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
 			if (item1->getPetId() > 0) {
@@ -330,7 +336,14 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item->size(); i++) {
 		s = (*item)[i];
 		if (Randomizer::Instance()->randInt(99) < s.chance) {
-			Maps::getMap(player->getMap())->spawnMob(s.mobid, player->getPos());
+			if (MobDataProvider::Instance()->mobExists(s.mobid)) {
+				Maps::getMap(player->getMap())->spawnMob(s.mobid, player->getPos());
+			}
+			else {
+				std::stringstream x;
+				x << "[SUMMON BAG] Summon bag tries to summon mob without info. ID: " << itemid << ", MobID: " << s.mobid;
+				ChannelServer::Instance()->log(LogTypes::Warning, x.str());
+			}
 		}
 	}
 }
@@ -465,7 +478,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::DiabloMessenger:
 			case Items::Cloud9Messenger:
-			case Items::LoveholicMessenger: {
+			case Items::LoveholicMessenger: 
+			case Items::CuteTigerMessenger:
+			case Items::RoaringTigerMessenger:{
 				string msg = packet.getString();
 				string msg2 = packet.getString();
 				string msg3 = packet.getString();

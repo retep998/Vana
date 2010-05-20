@@ -50,6 +50,7 @@ void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 void LoginPacket::loginConnect(Player *player, const string &username) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_AUTHENTICATION);
+	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {

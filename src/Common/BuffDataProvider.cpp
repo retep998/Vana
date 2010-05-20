@@ -300,6 +300,8 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	skillsinfo[Jobs::Beginner::EchoOfHero].player.push_back(player);
+	skillsinfo[Jobs::Noblesse::EchoOfHero].player.push_back(player);
+	skillsinfo[Jobs::Legend::EchoOfHero].player.push_back(player);
 
 	// Power Stance
 	buff.type = 0x10;
@@ -309,6 +311,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Hero::PowerStance].player.push_back(player);
 	skillsinfo[Jobs::Paladin::PowerStance].player.push_back(player);
 	skillsinfo[Jobs::DarkKnight::PowerStance].player.push_back(player);
+	skillsinfo[Jobs::Aran4::FreezeStanding].player.push_back(player);
 
 	// Mana Reflection
 	buff.type = 0x40;
@@ -366,10 +369,12 @@ void BuffDataProvider::loadData() {
 	player.hasmapentry = true;
 	skillsinfo[Jobs::Beginner::NimbleFeet].player.push_back(player);
 	skillsinfo[Jobs::Noblesse::NimbleFeet].player.push_back(player);
+	skillsinfo[Jobs::Legend::NimbleFeet].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
 	skillsinfo[Jobs::Noblesse::NimbleFeet].map.push_back(map);
+	skillsinfo[Jobs::Legend::NimbleFeet].map.push_back(map);
 
 	// Shadow Stars
 	buff.type = 0x01;
@@ -401,6 +406,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
 	skillsinfo[Jobs::DawnWarrior::SoulCharge].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::LightningCharge].player.push_back(player);
+	skillsinfo[Jobs::Aran3::SnowCharge].player.push_back(player);
 	buff.type = 0x40;
 	buff.byte = Byte3;
 	buff.value = SkillMatk;
@@ -417,6 +423,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].player.push_back(player);
 	skillsinfo[Jobs::DawnWarrior::SoulCharge].player.push_back(player);
 	skillsinfo[Jobs::ThunderBreaker::LightningCharge].player.push_back(player);
+	skillsinfo[Jobs::Aran3::SnowCharge].player.push_back(player);
 	map.buff = buff;
 	map.useval = true;
 	skillsinfo[Jobs::WhiteKnight::BwFireCharge].map.push_back(map);
@@ -429,6 +436,7 @@ void BuffDataProvider::loadData() {
 	skillsinfo[Jobs::Paladin::SwordHolyCharge].map.push_back(map);
 	skillsinfo[Jobs::DawnWarrior::SoulCharge].map.push_back(map);
 	skillsinfo[Jobs::ThunderBreaker::LightningCharge].map.push_back(map);
+	skillsinfo[Jobs::Aran3::SnowCharge].map.push_back(map);
 
 	// Wind Walk
 	buff.type = 0x80;
@@ -671,10 +679,12 @@ void BuffDataProvider::loadData() {
 	player.hasmapval = true;
 	skillsinfo[Jobs::Beginner::MonsterRider].player.push_back(player);
 	skillsinfo[Jobs::Noblesse::MonsterRider].player.push_back(player);
+	skillsinfo[Jobs::Legend::MonsterRider].player.push_back(player);
 	buff.type = 0x40;
 	map.buff = buff;
 	skillsinfo[Jobs::Beginner::MonsterRider].map.push_back(map);
 	skillsinfo[Jobs::Noblesse::MonsterRider].map.push_back(map);
+	skillsinfo[Jobs::Legend::MonsterRider].map.push_back(map);
 
 	// Battleship
 	buff.type = 0x40;
@@ -715,6 +725,7 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	skillsinfo[Jobs::Beginner::Recovery].player.push_back(player);
 	skillsinfo[Jobs::Noblesse::Recovery].player.push_back(player);
+	skillsinfo[Jobs::Legend::Recovery].player.push_back(player);
 	act.type = ActHeal;
 	act.time = 4900;
 	act.value = SkillX;

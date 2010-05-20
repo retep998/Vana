@@ -61,6 +61,7 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 	switch (skillid) {
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Noblesse::MonsterRider:
+		case Jobs::Legend::MonsterRider:
 			mountid = player->getInventory()->getEquippedId(EquipSlots::Mount);
 			break;
 		case Jobs::Corsair::Battleship:
@@ -301,6 +302,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			break;
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Noblesse::MonsterRider:
+		case Jobs::Legend::MonsterRider:
 		case Jobs::Corsair::Battleship:
 			if (mountid == 0) {
 				// Hacking
@@ -356,6 +358,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::Paladin::SwordHolyCharge:
 		case Jobs::DawnWarrior::SoulCharge:
 		case Jobs::ThunderBreaker::LightningCharge:
+		case Jobs::Aran3::SnowCharge:
 			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
 			break;
 		case Jobs::Hero::MapleWarrior:
@@ -441,8 +444,10 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	switch (skill) {
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Noblesse::MonsterRider:
+		case Jobs::Legend::MonsterRider:
 		case Jobs::Corsair::Battleship:
 			playerbuffs->setMountInfo(0, 0);
+			break;
 		case Jobs::Crusader::ComboAttack:
 		case Jobs::DawnWarrior::ComboAttack:
 			playerbuffs->setCombo(0, false);
@@ -488,6 +493,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Paladin::SwordHolyCharge:
 		case Jobs::DawnWarrior::SoulCharge:
 		case Jobs::ThunderBreaker::LightningCharge:
+		case Jobs::Aran3::SnowCharge:
 			playerbuffs->setCharge(0);
 			break;
 		case Jobs::Outlaw::HomingBeacon:

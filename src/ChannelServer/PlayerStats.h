@@ -33,9 +33,18 @@ struct BonusSet {
 		Str,
 		Dex,
 		Int,
-		Luk;
+		Luk,
+		Watt,
+		Wdef,
+		Matt,
+		Mdef,
+		Acc,
+		Avo,
+		Speed,
+		Hands,
+		Jump;
 
-	BonusSet() : Hp(0), Mp(0), Str(0), Dex(0), Int(0), Luk(0) {}
+	BonusSet() : Hp(0), Mp(0), Str(0), Dex(0), Int(0), Luk(0), Watt(0), Wdef(0), Matt(0), Mdef(0), Acc(0), Speed(0), Hands(0), Jump(0) {}
 };
 
 struct EquipBonus : public BonusSet {
@@ -92,6 +101,8 @@ public:
 	void setMapleWarrior(int16_t modx);
 	void loseExp();
 
+	void calculateOtherStats();
+
 	void setEquip(int16_t slot, Item *equip, bool isLoading = false);
 
 	// Level Related Functions
@@ -128,6 +139,16 @@ public:
 	int16_t getMaxHp(bool withoutbonus = false);
 	int16_t getMp() const { return mp; }
 	int16_t getMaxMp(bool withoutbonus = false);
+
+	int16_t getWeaponAttack(bool withbonus = true);
+	int16_t getWeaponDefence(bool withbonus = true);
+	int16_t getMagicAttack(bool withbonus = true);
+	int16_t getMagicDefence(bool withbonus = true);
+	int16_t getAccuracy(bool withbonus = true);
+	int16_t getAvoidability(bool withbonus = true);
+	int16_t getHands(bool withbonus = true);
+	int16_t getSpeed(bool withbonus = true);
+	int16_t getJump(bool withbonus = true);
 private:
 	Player *player;
 	uint8_t level;
@@ -146,6 +167,16 @@ private:
 	int16_t dex;
 	int16_t intt;
 	int16_t luk;
+
+	int16_t watt; // Actually "weapon" or "power", because bms says "PAD" for this and "PDD" for wdef
+	int16_t wdef; // Weapon defence
+	int16_t matt; // Magic (attack)
+	int16_t mdef; // Magic defence
+	int16_t acc; // Accuracy
+	int16_t avo; // Avoidability
+	int16_t hands; // No idea, BMS says Craft actually >_>. Might have something to do with crafting items....?
+	int16_t speed;
+	int16_t jump;
 
 	EquipBonuses equipStats;
 	BonusSet equipBonuses;

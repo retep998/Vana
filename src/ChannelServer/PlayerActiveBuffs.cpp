@@ -426,7 +426,7 @@ bool PlayerActiveBuffs::hasBuff(int32_t skillid) {
 }
 
 bool PlayerActiveBuffs::hasIceCharge() const {
-	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge);
+	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge || m_activecharge == Jobs::Aran3::SnowCharge);
 }
 
 bool PlayerActiveBuffs::hasInfinity() {
@@ -529,6 +529,8 @@ int32_t PlayerActiveBuffs::getPowerStance() {
 		skillid = Jobs::Marauder::EnergyCharge;
 	else if (hasBuff(Jobs::ThunderBreaker::EnergyCharge))
 		skillid = Jobs::ThunderBreaker::EnergyCharge;
+	else if (hasBuff(Jobs::Aran4::FreezeStanding))
+		skillid = Jobs::Aran4::FreezeStanding;
 	return skillid;
 }
 

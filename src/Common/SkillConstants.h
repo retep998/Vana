@@ -824,10 +824,20 @@ namespace Jobs {
 			Transformation = 15111002
 		};
 	}
+	namespace Legend {
+		enum Skills {
+			BlessingOfTheFairy = 20000012,
+			EchoOfHero = 20001005,
+			Maker = 20001007,
+			MonsterRider = 20001004,
+			NimbleFeet = 20001002,
+			Recovery = 20001001
+		};
+	}
 	namespace Aran1 {
 		enum Skills {
 			ComboAbility = 21000000,
-			DoubleSwing = 2100002,
+			DoubleSwing = 21000002,
 			CombatStep = 21001001,
 			PolearmBooster = 21001003
 		};

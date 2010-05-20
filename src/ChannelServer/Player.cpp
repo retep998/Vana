@@ -255,7 +255,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	res[0]["name"].to_string(name);
 	user_id		= res[0]["userid"];
-	map		    = res[0]["map"];
+	map			= res[0]["map"];
 	gm_level	= res[0]["gm"];
 	admin		= StringUtilities::atob(res[0]["admin"]);
 	eyes		= res[0]["eyes"];

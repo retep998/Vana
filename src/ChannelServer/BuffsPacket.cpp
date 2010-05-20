@@ -230,17 +230,23 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
+	int16_t castedtime = static_cast<int16_t>(time);
 	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(mountid);
-	packet.add<int32_t>(skillid);
-	packet.add<int32_t>(0); // Server tick value
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.add<int16_t>(pskill.vals[i]);
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(mountid);
+		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(castedtime);
+	}
 	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0); // Number of times you've been buffed total
+	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -252,12 +258,16 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
 
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(mountid);
-	packet.add<int32_t>(skillid);
-	packet.add<int32_t>(0);
+	for (size_t i = 0; i < pskill.vals.size(); i++) {
+		packet.add<int16_t>(pskill.vals[i]);
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(mountid);
+		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(castedtime);
+	}
 	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
