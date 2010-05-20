@@ -99,17 +99,9 @@ void Player::realHandleRequest(PacketReader &packet) {
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
-		std::stringstream x;
 		packet.reset();
-		unsigned char *y = packet.getBuffer();
-		size_t z = packet.getBufferLength();
-		size_t i = 0;
-		x << "Player ID: " << getId() << "; Packet: ";
-		while (i < z) {
-			x << std::hex << std::setw(2) << std::setfill('0') << (int16_t) y[i] << " ";
-			i++;
-		}
-
+		std::stringstream x;
+		x << "Player ID: " << getId() << "; Packet: " << packet;
 		CashServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}
@@ -143,7 +135,7 @@ void Player::playerConnect(PacketReader &packet) {
 	res[0]["name"].to_string(name);
 	res[0]["username"].to_string(userName);
 	user_id		= res[0]["userid"];
-	map		    = res[0]["map"];
+	map			= res[0]["map"];
 	gm_level	= res[0]["gm"];
 	admin		= StringUtilities::atob(res[0]["admin"]);
 	eyes		= res[0]["eyes"];
