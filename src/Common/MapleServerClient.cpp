@@ -44,7 +44,7 @@ void MapleServerClient::start_connect() {
 	// Synchronously connect and process the connect packet
 
 	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
-    boost::system::error_code error;
+	boost::system::error_code error;
 	m_socket.connect(endpoint, error);
 
 	if (!error) {
