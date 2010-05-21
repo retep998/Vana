@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <cctype>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
