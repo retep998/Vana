@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "ServerPacket.h"
 #include "WorldServerConnection.h"
+#include <boost/lexical_cast.hpp>
 
 CashServer * CashServer::singleton = nullptr;
 
@@ -46,7 +47,9 @@ void CashServer::loadData() {
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
-	loginPlayer->sendAuth(getInterPassword(), getExternalIp());
+	string interPassword = getInterPassword();
+	IpMatrix externalIp = getExternalIp();
+	loginPlayer->sendAuth(interPassword, externalIp);
 }
 
 void CashServer::loadLogConfig() {
@@ -68,7 +71,9 @@ string CashServer::makeLogIdentifier() {
 void CashServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, getWorldConnection());
-	getWorldConnection()->sendAuth(getInterPassword(), getExternalIp());
+	string interPassword = getInterPassword();
+	IpMatrix externalIp = getExternalIp();
+	getWorldConnection()->sendAuth(interPassword, externalIp);
 }
 
 void CashServer::loadConfig() {

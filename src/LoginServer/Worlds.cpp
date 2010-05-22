@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PlayerStatus.h"
 #include "World.h"
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 Worlds * Worlds::singleton = nullptr;

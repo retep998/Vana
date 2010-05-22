@@ -222,7 +222,7 @@ private:
 	unordered_map<string, PortalInfo> m_portals;
 	unordered_map<int8_t, PortalInfo> m_spawn_points;
 	unordered_map<string, Pos> m_reactor_positions;
-	vector<pair<PortalInfo, bool>> m_door_points;
+	vector<pair<PortalInfo, bool> > m_door_points;
 	unordered_map<int32_t, Door *> m_doors;
 
 	// Shorter-lived objects
