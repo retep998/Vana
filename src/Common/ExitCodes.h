@@ -26,7 +26,9 @@ namespace ExitCodes {
 		McdbIncompatible = 4,
 		InfoDatabaseError = 5,
 		ServerVersionMismatch = 6,
-		ServerConnectionError = 7
+		ServerConnectionError = 7,
+		UnhandledExceptionHandled = 8,
+		UnhandledExceptionStillUnhandled = 9
 	};
 	// Comments for easy searching
 	// exit(0) exit(1) exit(2) exit(3) exit(4)

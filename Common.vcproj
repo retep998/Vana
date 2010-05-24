@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			ManagedExtensions="0"
 			>
 			<Tool
@@ -87,7 +87,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -285,6 +285,10 @@
 			<Filter
 				Name="Utilities"
 				>
+				<File
+					RelativePath=".\src\Common\ExceptionReport.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\FileUtilities.cpp"
 					>
@@ -608,6 +612,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\Common\ExceptionReport.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\FileUtilities.h"
 					>
 				</File>
@@ -628,6 +636,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\ProcessorInfo.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
@@ -637,6 +649,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\TimeUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\WindowsVersion.h"
 					>
 				</File>
 			</Filter>

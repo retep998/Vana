@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "ConnectionManager.h"
+#ifdef _WIN32
+#include "ExceptionReport.h"
+#endif
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -42,6 +45,9 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 
 int main() {
 	try {
+#ifdef _WIN32
+		CExceptionReport exr = CExceptionReport();
+#endif
 		WorldServer *server = WorldServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();
 
