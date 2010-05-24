@@ -317,6 +317,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Packet transferring on channel switch
 	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
+
 	if (checked) {
 		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
 
