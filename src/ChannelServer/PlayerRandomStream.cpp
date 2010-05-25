@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 PlayerRandStream::PlayerRandStream(Player *p) :
 m_player(p)
 {
+	uint32_t seed = 1170746341 * Randomizer::Instance()->randInt() - 755606699;
+	reset(seed, seed, seed);
 }
 
 void PlayerRandStream::reset(uint32_t seed1, uint32_t seed2, uint32_t seed3) {
@@ -35,14 +37,15 @@ uint32_t PlayerRandStream::next() {
 	m_seed1 = ((m_seed1 & 0xFFFFFFFE) << 12) ^ (((m_seed1 << 13) ^ m_seed1) >> 19);
 	m_seed2 = ((m_seed2 & 0xFFFFFFF8) << 4) ^ (((m_seed2 << 2) ^ m_seed2) >> 25);
 	m_seed3 = ((m_seed3 & 0xFFFFFFF0) << 17) ^ (((m_seed3 << 3) ^ m_seed3) >> 11);
+
 	return (m_seed1 ^ m_seed2 ^ m_seed3);
 }
 
 void PlayerRandStream::connectData(PacketCreator &packet) {
 	// Depending on how this works, may need to simply send m_seed1/etc. after reset call
-	uint32_t s1 = Randomizer::Instance()->randInt();
-	uint32_t s2 = Randomizer::Instance()->randInt();
-	uint32_t s3 = Randomizer::Instance()->randInt();
+	uint32_t s1 = next();
+	uint32_t s2 = next();
+	uint32_t s3 = next();
 
 	reset(s1, s2, s3);
 

@@ -94,3 +94,11 @@ void WorldServerConnectPacket::reloadCashServers(WorldServerConnection *player) 
 	packet.add<int16_t>(IMSG_REFRESH_DATA);
 	player->getSession()->send(packet);
 }
+
+void WorldServerConnectPacket::loadPlayerNpc(WorldServerConnection *player, int32_t id) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_CHANNELS);
+	packet.add<int16_t>(IMSG_LOAD_PLAYER_NPC);
+	packet.add<int32_t>(id);
+	player->getSession()->send(packet);
+}

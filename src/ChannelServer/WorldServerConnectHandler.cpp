@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropDataProvider.h"
 #include "GuildPacket.h"
 #include "ItemDataProvider.h"
+#include "InitializeChannel.h"
 #include "InterHeader.h"
 #include "MapDataProvider.h"
 #include "MapleSession.h"
@@ -32,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerNpcDataProvider.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "QuestDataProvider.h"
@@ -78,6 +80,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntail.channels, chid));
 		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbean.channels, chid));
 
+		Initializing::channelEstablished();
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 

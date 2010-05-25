@@ -44,6 +44,7 @@ namespace MapPacket {
 	void removeMist(int32_t mapid, int32_t id);
 	void instantWarp(Player *player, int8_t pid);
 	void changeWeather(int32_t mapid, bool adminWeather, int32_t itemid = 0, const string &message = "");
+	void changeWeatherPlayer(Player *player, bool adminWeather, int32_t itemid = 0, const string &message = "");
 	void spawnDoor(Door *door);
 	void showDoor(Player *player, Door *door, bool istown);
 	void showDoorDisappear(Player *player, Door *door);

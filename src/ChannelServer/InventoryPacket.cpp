@@ -352,6 +352,14 @@ void InventoryPacket::playCashSong(int32_t map, int32_t itemid, const string &pl
 	Maps::getMap(map)->sendPacket(packet);
 }
 
+void InventoryPacket::playCashSongPlayer(Player *player, int32_t itemid, const string &playername) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_CASH_SONG);
+	packet.add<int32_t>(itemid);
+	packet.addString(playername);
+	player->getSession()->send(packet);
+}
+
 void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_THEATRICS);

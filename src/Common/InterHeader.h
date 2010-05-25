@@ -52,7 +52,8 @@ enum WorldChannel {
 	IMSG_TO_CHANNELS, // For sending a packet from a channel to all channels via the WorldServer
 	IMSG_TO_CASH_SERVER, // For sending a packet from a channel to the cash server
 	IMSG_REFRESH_DATA, // For reloading MCDB
-	IMSG_SYNC
+	IMSG_SYNC,
+	IMSG_LOAD_PLAYER_NPC
 };
 
 enum WorldCashServer {

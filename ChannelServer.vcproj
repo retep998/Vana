@@ -276,6 +276,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerNpc.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Quests.cpp"
 					>
 				</File>
@@ -433,6 +437,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpcDataProvider.cpp"
 					>
 				</File>
 			</Filter>
@@ -714,6 +722,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\PlayerNpc.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Quests.h"
 					>
 				</File>
@@ -871,6 +883,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpcDataProvider.h"
 					>
 				</File>
 			</Filter>

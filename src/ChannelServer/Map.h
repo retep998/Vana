@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapDataProvider.h"
 #include "MapObjects.h"
 #include "Mob.h"
+#include "PlayerNpc.h"
 #include "Pos.h"
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
@@ -131,6 +132,7 @@ public:
 	NpcSpawnInfo getNpc(uint32_t id) const;
 
 	// Mobs
+	void spawnNewMobs(bool fromInit);
 	void addWebbedMob(Mob *mob);
 	void removeWebbedMob(int32_t id);
 	void removeMob(int32_t id, int32_t spawnid);
@@ -187,8 +189,11 @@ public:
 	void setInstance(Instance *instance) { m_instance = instance; }
 	Instance * getInstance() const { return m_instance; }
 
-	// Weather cash item
+	// Cash items
 	bool createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemid, const string &message);
+	bool playJukebox(Player *player, int32_t itemid, int32_t time);
+	void setWeather(bool adminWeather, int32_t itemid, const string &message); // For the timer...
+	void setJukebox(int32_t itemid, const string &user);
 private:
 	int32_t getMistId() { return m_mistids.next(); }
 	static const uint32_t NpcStart = 100;
@@ -201,12 +206,17 @@ private:
 
 	// Data
 	bool m_ship;
+	bool m_weatherAdmin;
 	int32_t m_id;
 	int32_t m_timer;
 	int32_t m_timemob;
 	int32_t m_spawnmobs;
+	int32_t m_weatherItemid;
+	int32_t m_jukeboxItemid;
 	time_t m_timerstart;
 	string m_music;
+	string m_weatherMessage;
+	string m_jukeboxPlayer;
 	Instance *m_instance;
 	LoopingId m_objectids;
 	LoopingId m_mistids;

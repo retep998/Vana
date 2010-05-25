@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
+#include "PlayerNpcDataProvider.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "Randomizer.h"
@@ -641,6 +642,9 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 				message += player->getName();
 				message += " on such an amazing achievement!";
 				PlayerPacket::showMessageWorld(message, PlayerPacket::NoticeTypes::Blue);
+
+				// Make a player NPC
+				PlayerNpcDataProvider::Instance()->makePlayerNpc(player);
 			}
 		}
 	}

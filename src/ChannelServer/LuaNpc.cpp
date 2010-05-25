@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NpcHandler.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerNpc.h"
+#include "PlayerNpcDataProvider.h"
 #include "Quests.h"
 #include "ScriptDataProvider.h"
 #include "StoragePacket.h"
@@ -35,6 +37,11 @@ LuaNpc::LuaNpc(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
 	lua_register(luaVm, "getNPCID", &LuaExports::getNpcId);
 	lua_register(luaVm, "runNPC", &LuaExports::npcRunNpc);
+
+	// Imitating NPC's (Player NPC's)
+	lua_register(luaVm, "getPlayerNpcName", &LuaExports::getPlayerNpcName);
+	lua_register(luaVm, "getPlayerNpcLevel", &LuaExports::getPlayerNpcLevel);
+	lua_register(luaVm, "makeNewImitation", &LuaExports::makeNewImitation);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);
@@ -133,6 +140,27 @@ int LuaExports::npcRunNpc(lua_State *luaVm) {
 		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
 	}
 	getNpc(luaVm)->setEndScript(npcid, script);
+	return 0;
+}
+
+// Imitating NPC's (Player NPC's)
+int LuaExports::getPlayerNpcName(lua_State *luaVm) {
+	PlayerNpc *pNpc = PlayerNpcDataProvider::Instance()->getPlayerNpc(getNpc(luaVm)->getNpcId());
+	lua_pushstring(luaVm, pNpc == nullptr ? "" : pNpc->getName().c_str());
+	return 1;
+}
+
+int LuaExports::getPlayerNpcLevel(lua_State *luaVm) {
+	PlayerNpc *pNpc = PlayerNpcDataProvider::Instance()->getPlayerNpc(getNpc(luaVm)->getNpcId());
+	lua_pushinteger(luaVm, pNpc == nullptr ? -1 : pNpc->getLevel());
+	return 1;
+}
+
+int LuaExports::makeNewImitation(lua_State *luaVm) {
+	PlayerNpc *pNpc = PlayerNpcDataProvider::Instance()->getPlayerNpc(getNpc(luaVm)->getNpcId());
+	if (pNpc != nullptr) {
+		pNpc->renewData(getPlayer(luaVm));
+	}
 	return 0;
 }
 

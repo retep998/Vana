@@ -263,6 +263,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getTimeZoneOffset", &LuaExports::getTimeZoneOffset);
 	lua_register(luaVm, "getWeek", &LuaExports::getWeek);
 	lua_register(luaVm, "getYear", &LuaExports::getYear);
+	lua_register(luaVm, "getTickCount", &LuaExports::getTickCount);
+	lua_register(luaVm, "getSecondsSinceEpoch", &LuaExports::getSecondsSinceEpoch);
 	lua_register(luaVm, "isDST", &LuaExports::isDst);
 
 	// Rates
@@ -1600,6 +1602,16 @@ int LuaExports::getWeek(lua_State *luaVm) {
 
 int LuaExports::getYear(lua_State *luaVm) {
 	lua_pushinteger(luaVm, TimeUtilities::getYear(false));
+	return 1;
+}
+
+int LuaExports::getTickCount(lua_State *luaVm) {
+	lua_pushinteger(luaVm, TimeUtilities::getTickCount());
+	return 1;
+}
+
+int LuaExports::getSecondsSinceEpoch(lua_State *luaVm) {
+	lua_pushinteger(luaVm, (int32_t)time(0));
 	return 1;
 }
 
