@@ -368,6 +368,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\NotePacket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\NotePacket.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\NpcPacket.cpp"
 					>
 				</File>
@@ -521,6 +529,14 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\PlayerInventory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMiscellaneous.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerMiscellaneous.h"
 					>
 				</File>
 				<File

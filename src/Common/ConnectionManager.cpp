@@ -15,8 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractConnection.h"
 #include "ConnectionManager.h"
+#include "AbstractConnection.h"
+#include "AbstractTelnetConnection.h"
 #include <algorithm>
 #include <boost/bind.hpp>
 
@@ -31,6 +32,11 @@ m_work(new boost::asio::io_service::work(m_ioService))
 void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, const string &patchLocation) {
 	tcp::endpoint endpoint(tcp::v4(), port);
 	m_servers.push_back(MapleServerPtr(new MapleServer(m_ioService, endpoint, apf, patchLocation)));
+}
+
+void ConnectionManager::accept(uint16_t port, AbstractTelnetConnectionFactory *atpf) {
+	tcp::endpoint endpoint(tcp::v4(), port);
+	m_telnetServers.push_back(TelnetServerPtr(new TelnetServer(m_ioService, endpoint, atpf)));
 }
 
 void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractConnection *player) {
@@ -58,6 +64,9 @@ void ConnectionManager::handle_run() {
 void ConnectionManager::handle_stop() {
 	std::for_each(m_servers.begin(), m_servers.end(),
 		boost::bind(&MapleServer::stop, _1));
+
+	std::for_each(m_telnetServers.begin(), m_telnetServers.end(),
+		boost::bind(&TelnetServer::stop, _1));
 
 	m_clients->stopAll();
 
