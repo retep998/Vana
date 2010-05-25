@@ -26,7 +26,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -97,8 +97,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChannelServer\Door.cpp" />
     <ClCompile Include="src\ChannelServer\EffectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
+    <ClCompile Include="src\ChannelServer\PlayerNpc.cpp" />
+    <ClCompile Include="src\ChannelServer\PlayerNpcDataProvider.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -201,6 +204,7 @@
     <ClInclude Include="src\ChannelServer\Buffs.h" />
     <ClInclude Include="src\ChannelServer\ChannelServer.h" />
     <ClInclude Include="src\ChannelServer\Connectable.h" />
+    <ClInclude Include="src\ChannelServer\Door.h" />
     <ClInclude Include="src\ChannelServer\Drop.h" />
     <ClInclude Include="src\ChannelServer\EffectPacket.h" />
     <ClInclude Include="src\ChannelServer\Fame.h" />
@@ -215,6 +219,8 @@
     <ClInclude Include="src\ChannelServer\Npc.h" />
     <ClInclude Include="src\ChannelServer\Party.h" />
     <ClInclude Include="src\ChannelServer\Pet.h" />
+    <ClInclude Include="src\ChannelServer\PlayerNpc.h" />
+    <ClInclude Include="src\ChannelServer\PlayerNpcDataProvider.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
     <ClInclude Include="src\ChannelServer\Reactor.h" />
     <ClInclude Include="src\ChannelServer\ReactorHandler.h" />

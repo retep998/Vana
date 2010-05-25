@@ -32,11 +32,11 @@ hair(hair)
 {
 	loadEquips();
 
-	// Set name
+	// Set name (done for name changes)
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT name FROM characters WHERE ID = " << characterId;
 	mysqlpp::StoreQueryResult res = query.store();
-	name = res[0][0];
+	res[0][0].to_string(name);
 }
 
 void PlayerNpc::loadEquips() {
