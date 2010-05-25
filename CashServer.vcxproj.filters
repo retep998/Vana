@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\CashServer">
+      <UniqueIdentifier>{8c21c735-bc3a-48bb-9b62-0cb67a923f15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets">
+      <UniqueIdentifier>{9c4c76d1-b6f6-4743-be7e-e96a446a2107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Packets\Helpers">
+      <UniqueIdentifier>{54824935-be64-456d-b778-29a8b60f0dc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Loading">
+      <UniqueIdentifier>{b637448c-77f1-4824-bcd0-4e257f8ae624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server">
+      <UniqueIdentifier>{1a241328-1369-47b7-8340-6c84e727350f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server\Sync">
+      <UniqueIdentifier>{60490998-1555-424f-a2de-30d3856fe0f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server\World">
+      <UniqueIdentifier>{6181a4f6-aec7-4462-9196-5ab0099e0b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Player">
+      <UniqueIdentifier>{d0d61ad8-ac8a-4f98-8cd8-f904bd5e6543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Constants">
+      <UniqueIdentifier>{8f99ae02-691b-4bf3-9091-4b7bb6624c7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handlers">
+      <UniqueIdentifier>{9a1f6379-c4c4-45b0-90ce-7731257abfaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CashServer">
+      <UniqueIdentifier>{ad23e03f-fff4-4ff4-a9f6-ec88b43dff8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets">
+      <UniqueIdentifier>{206173d9-d1ae-4c9a-9a3e-9587171e48a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Packets\Helpers">
+      <UniqueIdentifier>{3017ecb9-1fd8-42fe-bba7-c02b20650097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Database Loading">
+      <UniqueIdentifier>{d0953a95-a6f8-435c-903f-9a7c1cf7bf87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server">
+      <UniqueIdentifier>{ec31ad96-fb97-446a-b6de-dc42d20ebb31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server\Sync">
+      <UniqueIdentifier>{53184363-4f3b-47e4-bd14-844fca2384a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server\World">
+      <UniqueIdentifier>{9820f7fb-07d1-48bb-a6a6-d75ad8e545cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Player">
+      <UniqueIdentifier>{a1ed4b13-f27d-4356-9692-39d2d8b55f01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Constants">
+      <UniqueIdentifier>{1a2f5f1a-da29-4caf-81cb-afb04574f85d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handlers">
+      <UniqueIdentifier>{232575a7-82c0-4e23-b103-9edb08f3719c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CashServer\main_cash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PrecompiledHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Buffs.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\CashServer.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Connectable.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Inventory.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\KeyMaps.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Pet.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Quests.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\SkillMacros.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Skills.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Summons.cpp">
+      <Filter>Source Files\CashServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PetsPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\ServerPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\InventoryPacketHelper.cpp">
+      <Filter>Source Files\Packets\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerPacketHelper.cpp">
+      <Filter>Source Files\Packets\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\CashDataProvider.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\InitializeCashServer.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\SyncHandler.cpp">
+      <Filter>Source Files\Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\SyncPacket.cpp">
+      <Filter>Source Files\Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\WorldServerConnectHandler.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\WorldServerConnection.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\WorldServerConnectPacket.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Player.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerActiveBuffs.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerBuddyList.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerDataProvider.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerInventory.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerMonsterBook.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerMounts.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerPets.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerQuests.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerRandomStream.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerSkills.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerStats.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerStorage.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerSummons.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerVariables.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\VersionConstants.cpp">
+      <Filter>Source Files\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\PlayerHandler.cpp">
+      <Filter>Source Files\Handlers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\CashServer\Buffs.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\CashServer.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Connectable.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Inventory.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\KeyMaps.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\MovableLife.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Pet.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Quests.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\SkillMacros.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Skills.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Summons.h">
+      <Filter>Header Files\CashServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PetsPacket.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerPacket.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\ServerPacket.h">
+      <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\InventoryPacketHelper.h">
+      <Filter>Header Files\Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerPacketHelper.h">
+      <Filter>Header Files\Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\CashDataProvider.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\InitializeCashServer.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\SyncHandler.h">
+      <Filter>Header Files\Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\SyncPacket.h">
+      <Filter>Header Files\Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\WorldServerConnectHandler.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\WorldServerConnection.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\WorldServerConnectPacket.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\Player.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerActiveBuffs.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerBuddyList.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerDataProvider.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerInventory.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerMonsterBook.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerMounts.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerPets.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerQuests.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerRandomStream.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerSkills.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerStats.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerStorage.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerSummons.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerVariables.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\VersionConstants.h">
+      <Filter>Header Files\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CashServer\PlayerHandler.h">
+      <Filter>Header Files\Handlers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

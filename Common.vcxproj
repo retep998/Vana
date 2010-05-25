@@ -23,9 +23,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -88,6 +88,7 @@
     <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
+    <ClCompile Include="src\Common\ExceptionReport.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
     <ClCompile Include="src\Common\LogReplacements.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h" />
     <ClInclude Include="src\Common\Combo Loggers\SqlFileLogger.h" />
     <ClInclude Include="src\Common\ConsoleLogger.h" />
+    <ClInclude Include="src\Common\ExceptionReport.h" />
     <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
@@ -158,6 +160,7 @@
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\MobConstants.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
+    <ClInclude Include="src\Common\ProcessorInfo.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
     <ClInclude Include="src\Common\Types.h" />
@@ -221,6 +224,7 @@
     <ClInclude Include="src\Common\Variables.h" />
     <ClInclude Include="src\Common\DatabaseMigration.h" />
     <ClInclude Include="src\Common\DatabaseMigrationRunner.h" />
+    <ClInclude Include="src\Common\WindowsVersion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

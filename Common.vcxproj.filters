@@ -272,6 +272,9 @@
     <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp">
       <Filter>Source Files\Loggers\Combo</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\ExceptionReport.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\ExitCodes.h">
@@ -507,6 +510,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\MobConstants.h">
       <Filter>Header Files\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ExceptionReport.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ProcessorInfo.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\WindowsVersion.h">
+      <Filter>Header Files\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
