@@ -121,7 +121,6 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 					return;
 				}
 				Item *remove = nullptr;
-				Item *removeCash = nullptr;
 				int16_t oldslot = 0;
 				bool weapon = -slot2 == EquipSlots::Weapon;
 				bool shield = -slot2 == EquipSlots::Shield;
