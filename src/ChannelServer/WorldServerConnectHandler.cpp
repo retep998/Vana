@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
-#include "PlayerNpcDataProvider.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
 #include "QuestDataProvider.h"

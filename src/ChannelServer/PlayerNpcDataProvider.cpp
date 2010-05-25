@@ -167,7 +167,7 @@ int32_t PlayerNpcDataProvider::calculateNextNpcId(int16_t job) {
 		case Jobs::JobTracks::Warrior: npcId = getNextNpcId(PlayerNpcs::WarriorRankNpcStart, PlayerNpcs::MaxPlayerNpcsAdventurer); break;
 		case Jobs::JobTracks::Magician: npcId = getNextNpcId(PlayerNpcs::MagicianRankNpcStart, PlayerNpcs::MaxPlayerNpcsAdventurer); break;
 		case Jobs::JobTracks::Bowman: npcId = getNextNpcId(PlayerNpcs::BowmanRankNpcStart, PlayerNpcs::MaxPlayerNpcsAdventurer); break;
-		case Jobs::JobTracks::Thief: npcId = getNextNpcId(PlayerNpcs::TheifRankNpcStart, PlayerNpcs::MaxPlayerNpcsAdventurer); break;
+		case Jobs::JobTracks::Thief: npcId = getNextNpcId(PlayerNpcs::ThiefRankNpcStart, PlayerNpcs::MaxPlayerNpcsAdventurer); break;
 	}
 
 	if (npcId == 0 && GameLogicUtilities::isCygnusJob(job)) {
