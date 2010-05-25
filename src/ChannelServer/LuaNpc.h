@@ -50,6 +50,9 @@ namespace LuaExports {
 	int getDistanceNpc(lua_State *luaVm);
 	int getNpcId(lua_State *luaVm);
 	int npcRunNpc(lua_State *luaVm);
+	int getPlayerNpcName(lua_State *luaVm);
+	int getPlayerNpcLevel(lua_State *luaVm);
+	int makeNewImitation(lua_State *luaVm);
 
 	// NPC interaction
 	int addText(lua_State *luaVm);

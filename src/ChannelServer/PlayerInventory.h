@@ -78,6 +78,8 @@ public:
 	void addWishListItem(int32_t itemid);
 
 	void checkExpiredItems();
+
+	boost::array<boost::array<int32_t, 2>, Inventories::EquippedSlots> getEquippedData() { return m_equipped; }
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 

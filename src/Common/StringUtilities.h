@@ -30,6 +30,7 @@ namespace StringUtilities {
 	int64_t atoli(const char *str); // ASCII to long int
 	bool atob(const char *str); // ASCII to bool
 	time_t atot(const char *str); // ASCII to time_t
+	bool hasEnding(const string &fullString, const string &ending);
 }
 
 inline

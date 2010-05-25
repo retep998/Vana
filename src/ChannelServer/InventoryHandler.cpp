@@ -62,6 +62,11 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			// Hacking
 			return;
 		}
+		else if (ItemDataProvider::Instance()->isCash(item->getId())) {
+			// Hacks or modded client.
+			return;
+		}
+
 		Item droppeditem(item);
 		droppeditem.setAmount(amount);
 		if (item->getAmount() == amount) {
@@ -116,6 +121,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 					return;
 				}
 				Item *remove = nullptr;
+				Item *removeCash = nullptr;
 				int16_t oldslot = 0;
 				bool weapon = -slot2 == EquipSlots::Weapon;
 				bool shield = -slot2 == EquipSlots::Shield;
@@ -161,9 +167,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 						else if (bottom) {
 							swapslot = -EquipSlots::Top;
 						}
-						player->getInventory()->setItem(inv, swapslot, 0);
+						player->getInventory()->setItem(inv, swapslot, nullptr);
 						player->getInventory()->setItem(inv, slot1, remove);
 						player->getInventory()->setItem(inv, slot2, item1);
+
 						InventoryPacket::moveItem(player, inv, slot1, slot2);
 						InventoryPacket::moveItem(player, inv, swapslot, slot1);
 						InventoryPacket::updatePlayer(player);
@@ -183,7 +190,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 							}
 						}
 						player->getInventory()->setItem(inv, freeslot, remove);
-						player->getInventory()->setItem(inv, oldslot, 0);
+						player->getInventory()->setItem(inv, oldslot, nullptr);
 						InventoryPacket::moveItem(player, inv, oldslot, freeslot);
 					}
 				}
@@ -192,6 +199,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 				// Client tries to switch a cash item with a regular item
 				return;
 			}
+
 			player->getInventory()->setItem(inv, slot1, item2);
 			player->getInventory()->setItem(inv, slot2, item1);
 			if (item1->getPetId() > 0) {
@@ -691,8 +699,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::CongratulatorySong:
-				InventoryPacket::playCashSong(player->getMap(), itemid, player->getName());
-				used = true;
+				if (!player->updateTickCount(packet.get<int32_t>())) {
+					// Tickcount was the same or less than 100 of the difference.
+					return;
+				}
+				used = Maps::getMap(player->getMap())->playJukebox(player, itemid, 60 * 5); // 5 minutes is enough!
 				break;
 		}
 	}

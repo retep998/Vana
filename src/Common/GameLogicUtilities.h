@@ -91,4 +91,8 @@ namespace GameLogicUtilities {
 	inline int8_t getPartyMember4(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember5(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember6(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
+
+	// NPC
+	// Temp solution for checking if an NPC is an imitator...
+	inline bool isImitatorNpcId(int32_t id) { return (id >= 9901000); } // Every NPC ID that is above or equal to is an imitator.
 };

@@ -341,6 +341,18 @@ void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemid, 
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
+void MapPacket::changeWeatherPlayer(Player *player, bool adminWeather, int32_t itemid, const string &message) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MAP_WEATHER_EFFECT);
+	packet.addBool(adminWeather);
+	packet.add<int32_t>(itemid);
+	if (itemid != 0 && !adminWeather) {
+		// Admin weathers doesn't have a message
+		packet.addString(message);
+	}
+	player->getSession()->send(packet);
+}
+
 void MapPacket::spawnDoor(Door *door) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MYSTIC_DOOR_SPAWN);

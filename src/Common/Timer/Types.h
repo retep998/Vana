@@ -40,7 +40,8 @@ struct Types {
 		SkillActTimer,
 		SpongeCleanupTimer,
 		TradeTimer,
-		WeatherTimer
+		WeatherTimer,
+		JukeboxTimer
 	};
 };
 

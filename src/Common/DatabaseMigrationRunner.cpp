@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Database.h"
 #include "DatabaseMigrationRunner.h"
+#include "StringUtilities.h"
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
@@ -27,47 +28,62 @@ DatabaseMigration::Runner::Runner(const string &filename) : m_filename(filename)
 
 void DatabaseMigration::Runner::run() {
 	mysqlpp::Query query = Database::getCharDB().query();
-
+	std::stringstream x;
 	for (size_t i = 0; i < m_queries.size(); i++) {
-		query << m_queries[i];
-
-		if (!query.exec()) {
-			std::cout << "\nERROR: " << Database::getCharDB().error() << std::endl;
+		try {
+			query.exec(m_queries[i]);
+		}
+		catch (mysqlpp::BadQuery &ex) {
+			std::cout << std::endl;
+			std::cout << "ERROR: " << std::endl;
+			std::cout << ex.what() << " (" << ex.errnum() << ")" << std::endl;
 			std::cout << "File: " << m_filename << std::endl;
-			// TODO: Handle the error
+			getchar();
 		}
 	}
+
 }
 
 void DatabaseMigration::Runner::loadFile() {
 	m_filestream.open(m_filename.c_str());
 
-	string content;
 	// Read whole file
 	{
+		bool bulk = false;
+		std::stringstream bulkQuery;
 		std::ostringstream contentStream;
 		while (!m_filestream.eof()) {
 			string line;
 			std::getline(m_filestream, line);
-			contentStream << line << std::endl;
-		}
-
-		content = contentStream.str();
-	}
-
-	// Parse each SQL statement
-	{
-		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-		typedef boost::char_separator<char> separator;
-
-		separator sep(";");
-		tokenizer tokens(content, sep);
-
-		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
-			string query = boost::trim_copy(*iter);
-
-			if (query.size() > 0) {
-				m_queries.push_back(*iter);
+			if (line == "/* START BULK QUERY */") {
+				// Starting of a bulk query (which has ;'s in it, just ignore them)
+				bulk = true;
+				// Reset the bulk query buffer
+				bulkQuery.str("");
+			}
+			else if (line == "/* END BULK QUERY */") {
+				// Ending of a bulk query
+				bulk = false;
+				m_queries.push_back(bulkQuery.str());
+			}
+			else if (bulk) {
+				// Store data of a bulk query
+				bulkQuery << line << std::endl;
+			}
+			else if (StringUtilities::hasEnding(line, ";")) {
+				// Adding non-bulk queries into the m_queries vector
+				if (!contentStream.str().empty()) {
+					line = contentStream.str() + line;
+				}
+				m_queries.push_back(line);
+				// Reset content stream
+				contentStream.str("");
+			}
+			else {
+				// Waiting till a ';' is found
+				if (!line.empty()) {
+					contentStream << line << std::endl;
+				}
 			}
 		}
 	}
