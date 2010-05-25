@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleServerClient.h"
 #include "MapleServer.h"
 #include "SessionManager.h"
+#include "TelnetServer.h"
 #include "Types.h"
 #include <list>
 #include <boost/tr1/memory.hpp>
@@ -31,7 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class AbstractConnectionFactory;
+class AbstractTelnetConnectionFactory;
 class MapleServer;
+class TelnetServer;
 
 class ConnectionManager : private boost::noncopyable {
 public:
@@ -42,6 +45,7 @@ public:
 	}
 
 	void accept(uint16_t port, AbstractConnectionFactory *apf, const string &patchLocation = "");
+	void accept(uint16_t port, AbstractTelnetConnectionFactory *atpf);
 	void connect(uint32_t server, uint16_t port, AbstractConnection *player);
 	void stop();
 
@@ -58,5 +62,6 @@ private:
 	boost::asio::io_service m_ioService;
 	SessionManagerPtr m_clients;
 	std::list<MapleServerPtr> m_servers;
+	std::list<TelnetServerPtr> m_telnetServers;
 	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };
