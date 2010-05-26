@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ChannelServer"
 	ProjectGUID="{F07865A8-3A41-48D8-809C-056CC906A50B}"
 	RootNamespace="ChannelServer"
@@ -224,6 +224,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Door.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Drop.cpp"
 					>
 				</File>
@@ -269,6 +273,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Pet.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpc.cpp"
 					>
 				</File>
 				<File
@@ -429,6 +437,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpcDataProvider.cpp"
 					>
 				</File>
 			</Filter>
@@ -654,6 +666,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\ChannelServer\Door.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\ChannelServer\Drop.h"
 					>
 				</File>
@@ -703,6 +719,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\Pet.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpc.h"
 					>
 				</File>
 				<File
@@ -863,6 +883,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ChannelServer\MapDataProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelServer\PlayerNpcDataProvider.h"
 					>
 				</File>
 			</Filter>

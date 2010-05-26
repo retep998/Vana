@@ -26,7 +26,6 @@ struct Pos;
 namespace DropHandler {
 	void doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false);
 	void dropMesos(Player *player, PacketReader &packet);
-	void playerLoot(Player *player, PacketReader &packet);
 	void petLoot(Player *player, PacketReader &packet);
-	void lootItem(Player *player, int32_t dropid, int32_t petid = 0);
+	void lootItem(Player *player, PacketReader &packet, int32_t petid = 0);
 };

@@ -49,5 +49,6 @@ enum WorldChannel {
 	IMSG_TO_WORLDS, // For sending a packet to all worlds via the loginserver
 	IMSG_TO_CHANNELS, // For sending a packet from a channel to all channels via the WorldServer
 	IMSG_REFRESH_DATA, // For reloading MCDB
-	IMSG_SYNC
+	IMSG_SYNC,
+	IMSG_LOAD_PLAYER_NPC
 };

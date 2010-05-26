@@ -64,3 +64,17 @@ int64_t StringUtilities::atoli(const char *str) {
 time_t StringUtilities::atot(const char *ref) {
 	return (time_t) mysqlpp::DateTime(ref);
 }
+
+bool StringUtilities::hasEnding(const string &fullString, const string &ending) {
+	uint32_t lastMatchPos = fullString.rfind(ending); // Find the last occurrence of ending
+	bool isEnding = lastMatchPos != string::npos; // Make sure it's found at least once
+
+	// If the string was found, make sure that any characters that follow it are the ones we're trying to ignore
+	for (uint32_t i = lastMatchPos + ending.length(); (i < fullString.length()) && isEnding; i++) {
+		if ((fullString[i] != '\n') && (fullString[i] != '\r')) {
+			isEnding = false;
+		}
+	}
+
+	return isEnding;
+}

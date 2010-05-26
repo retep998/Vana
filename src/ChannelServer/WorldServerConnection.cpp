@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
+#include "PlayerNpcDataProvider.h"
 #include "SyncHandler.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
@@ -47,6 +48,7 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 		case IMSG_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case IMSG_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
+		case IMSG_LOAD_PLAYER_NPC: PlayerNpcDataProvider::Instance()->loadPlayerNpc(packet.get<int32_t>()); break;
 
 		case IMSG_SYNC: SyncHandler::handle(packet); break;
 	}

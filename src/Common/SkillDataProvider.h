@@ -131,8 +131,8 @@ namespace SkillTypes {
 		Melee,
 		Ranged,
 		Magic,
-		EnergyCharge,
-		Summon
+		Summon,
+		EnergyCharge
 	};
 }
 

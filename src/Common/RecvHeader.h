@@ -98,6 +98,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ADMIN_COMMAND 0x80
 #define CMSG_ADMIN_COMMAND_LOG 0x81 // '/(command) (parameters)'
 #define CMSG_BUDDY 0x82
+#define CMSG_SEND_NOTE 0x83
+#define CMSG_MYSTIC_DOOR_ENTRY 0x85
 #define CMSG_KEYMAP 0x87
 #define CMSG_ALLIANCE 0x8f
 #define CMSG_ALLIANCE_DENIED 0x90

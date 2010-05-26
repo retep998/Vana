@@ -81,12 +81,19 @@ is_connect(false),
 npc(nullptr),
 party(nullptr),
 instance(nullptr),
-tickCount(-1)
+tickCount(-1),
+door(nullptr)
 {
 }
 
 Player::~Player() {
 	if (is_connect) {
+		Maps::getMap(map)->removePlayer(this);
+		is_connect = false; // Do not accept packets anymore (we don't get them anyway).
+
+		if (Door *door = getDoor()) {
+			door->closeDoor();
+		}
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
@@ -117,7 +124,6 @@ Player::~Player() {
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
 			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
-		Maps::getMap(map)->removePlayer(this);
 		PlayerDataProvider::Instance()->removePlayer(this);
 	}
 }
@@ -159,7 +165,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
 				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
 				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-				case CMSG_ITEM_LOOT: DropHandler::playerLoot(this, packet); break;
+				case CMSG_ITEM_LOOT: DropHandler::lootItem(this, packet); break;
 				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, packet); break;
 				case CMSG_ITEM_USE: InventoryHandler::useItem(this, packet); break;
 				case CMSG_KEYMAP: changeKey(packet); break;
@@ -173,6 +179,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
 				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
 				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
+				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
 				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
@@ -394,11 +401,76 @@ void Player::playerConnect(PacketReader &packet) {
 	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel(), guildid, guildrank, allianceid, alliancerank);
 }
 
+void Player::setMap(int32_t mapid, int8_t pointid, const Pos &spawnpoint, int16_t fh) {
+	if (!Maps::getMap(mapid)) {
+		MapPacket::portalBlocked(this);
+		return;
+	}
+
+	Map *oldmap = Maps::getMap(map);
+	Map *newmap = Maps::getMap(mapid);
+
+	if (!instance) {
+		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
+		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
+		if (Instance *ii = oldmap->getInstance()) {
+			ii->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		}
+		if (Instance *ee = newmap->getInstance()) {
+			ee->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		}
+	}
+
+	oldmap->removePlayer(this);
+	map = mapid;
+	map_pos = pointid;
+	used_portals.clear();
+	setPos(spawnpoint);
+	setStance(0);
+	setFh(fh);
+	setFallCounter(0);
+
+	// Prevent chair Denial of Service
+	if (getMapChair() != 0) {
+		oldmap->playerSeated(getMapChair(), nullptr);
+		setMapChair(0);
+	}
+	if (getChair() != 0) {
+		setChair(0);
+	}
+
+	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
+		if (Pet *pet = getPets()->getSummoned(i)) {
+			pet->setPos(spawnpoint);
+		}
+	}
+
+	// Puppets and non-moving summons don't go with you
+	if (getSummons()->getPuppet() != nullptr) {
+		Summons::removeSummon(this, true, false, SummonMessages::None);
+	}
+	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == Summon::Static) {
+		Summons::removeSummon(this, false, false, SummonMessages::None);
+	}
+
+	if (getActiveBuffs()->hasMarkedMonster()) {
+		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
+	}
+	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
+		setChalkboard("");
+	}
+
+	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
+	MapPacket::changeMap(this);
+	Maps::addPlayer(this, mapid);
+}
+
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (!Maps::getMap(mapid)) {
 		MapPacket::portalBlocked(this);
 		return;
 	}
+
 	Map *oldmap = Maps::getMap(map);
 	Map *newmap = Maps::getMap(mapid);
 
@@ -454,6 +526,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
 		setChalkboard("");
 	}
+
 	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);

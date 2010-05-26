@@ -212,6 +212,15 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Corsair::SpeedInfusion:
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 			break;
+		case Jobs::Priest::MysticDoor: {
+			if (Door *door = player->getDoor()) {
+				door->closeDoor(true);
+			}
+			int16_t x = packet.get<int16_t>();
+			int16_t y = packet.get<int16_t>();
+			new Door(player, Pos(x, y), SkillDataProvider::Instance()->getSkill(skillid, level)->time);
+			break;
+		}
 		case Jobs::Priest::Dispel: {
 			int8_t affected = packet.get<int8_t>();
 			player->getActiveBuffs()->useDispel();

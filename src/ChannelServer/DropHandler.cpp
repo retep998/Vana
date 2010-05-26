@@ -169,30 +169,25 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void DropHandler::playerLoot(Player *player, PacketReader &packet) {
-	packet.skipBytes(5);
-	packet.skipBytes(4); // Player pos
-	int32_t dropid = packet.get<int32_t>();
-
-	lootItem(player, dropid);
-}
-
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>(); // It's actually int64_t
-	packet.skipBytes(4); // The other part of the ID
-	packet.skipBytes(4); // Ticks
-	packet.skipBytes(1); // Unknown
-	packet.skipBytes(4); // Player pos
-	int32_t dropid = packet.get<int32_t>();
+	int32_t petid = packet.get<int32_t>();
+	packet.skipBytes(4);
 
-	lootItem(player, dropid, petid);
+	lootItem(player, packet, petid);
 }
 
-void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
+void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) {
+	packet.skipBytes(5);
+	Pos playerPos = packet.getPos();
+	int32_t dropid = packet.get<int32_t>();
 	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
 
 	if (drop == nullptr) {
 		DropsPacket::dontTake(player);
+		return;
+	}
+	else if (playerPos - player->getPos() > 100) {
+		// Hacking
 		return;
 	}
 	else if (drop->getPos() - player->getPos() > 300) {

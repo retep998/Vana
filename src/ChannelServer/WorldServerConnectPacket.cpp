@@ -85,3 +85,11 @@ void WorldServerConnectPacket::reloadMcdb(WorldServerConnection *player, const s
 	packet.addString(type);
 	toChannels(player, packet);
 }
+
+void WorldServerConnectPacket::loadPlayerNpc(WorldServerConnection *player, int32_t id) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_CHANNELS);
+	packet.add<int16_t>(IMSG_LOAD_PLAYER_NPC);
+	packet.add<int32_t>(id);
+	player->getSession()->send(packet);
+}

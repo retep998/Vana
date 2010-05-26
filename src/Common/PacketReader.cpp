@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketReader.h"
 #include "Pos.h"
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 PacketReader::PacketReader() : m_length(0), m_pos(0) { }

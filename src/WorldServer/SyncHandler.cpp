@@ -1165,8 +1165,8 @@ void SyncHandler::createParty(int32_t playerid) {
 	PlayerDataProvider::Instance()->addParty(party);
 	pplayer->setParty(party);
 
-	SyncPacket::PartyPacket::createParty(pplayer->getChannel(), playerid);
 	SyncPacket::PlayerPacket::sendCreateParty(pplayer->getId(), pplayer->getParty()->getId());
+	SyncPacket::PartyPacket::createParty(pplayer->getChannel(), playerid);
 }
 
 void SyncHandler::giveLeader(int32_t playerid, int32_t target, bool is) {

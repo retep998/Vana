@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
 #include "NpcDataProvider.h"
+#include "PlayerNpcDataProvider.h"
 #include "QuestDataProvider.h"
 #include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
@@ -57,4 +58,8 @@ void Initializing::initializeChat() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Commands... ";
 	ChatHandler::initializeCommands();
 	std::cout << "DONE" << std::endl;
+}
+
+void Initializing::channelEstablished() {
+	PlayerNpcDataProvider::Instance()->loadData();
 }

@@ -191,6 +191,8 @@ void Npc::sendQuestion(const string &question, const string &clue, int32_t minCh
 	packet.add<int32_t>(maxCharacters);
 	packet.add<int32_t>(time);
 	player->getSession()->send(packet);
+
+	text = "";
 }
 
 void Npc::sendGetText(int16_t min, int16_t max) {

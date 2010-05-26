@@ -37,6 +37,7 @@ void SyncHandler::handle(PacketReader &packet) {
 		case Sync::SyncTypes::Guild: guildPacketHandlerWorld(packet); break;
 		case Sync::SyncTypes::Alliance: alliancePacketHandlerWorld(packet); break;
 		case Sync::SyncTypes::Player: handlePlayerSync(packet); break;
+		case Sync::SyncTypes::Data: handleDataSync(packet); break;
 	}
 }
 

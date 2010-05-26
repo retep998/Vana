@@ -333,6 +333,18 @@
 					RelativePath=".\src\Common\SessionManager.cpp"
 					>
 				</File>
+				<Filter
+					Name="Telnet"
+					>
+					<File
+						RelativePath=".\src\Common\TelnetServer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\TelnetSession.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Decoder"
@@ -375,6 +387,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\AbstractServer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractTelnetConnection.cpp"
 					>
 				</File>
 			</Filter>
@@ -659,6 +675,18 @@
 					RelativePath=".\src\Common\SessionManager.h"
 					>
 				</File>
+				<Filter
+					Name="Telnet"
+					>
+					<File
+						RelativePath=".\src\Common\TelnetServer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\Common\TelnetSession.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Decoder"
@@ -713,6 +741,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\AbstractSession.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\AbstractTelnetConnection.h"
 					>
 				</File>
 			</Filter>

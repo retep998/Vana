@@ -247,6 +247,8 @@ namespace LuaExports {
 	int getTimeZoneOffset(lua_State *luaVm);
 	int getWeek(lua_State *luaVm);
 	int getYear(lua_State *luaVm);
+	int getTickCount(lua_State *luaVm);
+	int getSecondsSinceEpoch(lua_State *luaVm);
 	int isDst(lua_State *luaVm);
 
 	// Rates

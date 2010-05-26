@@ -64,6 +64,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_BUDDY 0x3F
 #define SMSG_GUILD 0x41
 #define SMSG_ALLIANCE 0x42
+#define SMSG_PORTAL_ACTION 0x43
 #define SMSG_MESSAGE 0x44
 #define SMSG_OWL_OF_MINERVA 0x46
 #define SMSG_WEDDING_PROPOSAL_WHISHLIST 0x48 // Holds both whishlist and proposal
@@ -104,8 +105,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_TIMER 0x93 // For places with clock i.e. ship station
 #define SMSG_GM_WARNING 0x98 // Shows a popup with the message from a GM/an Admin
 #define SMSG_TIMER_OFF 0x9A // Makes timer disappear from map
-#define SMSG_MAP_SPAWN_PLAYER 0xA0
-#define SMSG_MAP_REMOVE_PLAYER 0xA1
+#define SMSG_MAP_PLAYER_SPAWN 0xA0
+#define SMSG_MAP_PLAYER_DESPAWN 0xA1
 #define SMSG_PLAYER_CHAT 0xA2
 #define SMSG_CHALKBOARD 0xA4
 #define SMSG_SCROLL_USE 0xA7
@@ -136,8 +137,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_3RD_PARTY_SKILL 0xC7 // From other player
 #define SMSG_3RD_PARTY_BUFF_END 0xC8 // From other player
 #define SMSG_PARTY_HP_DISPLAY 0xC9
-#define SMSG_GUILD_NAME 0xCa // Updates guildname from character :D
-#define SMSG_GUILD_EMBLEM 0xCb // Updates guildemblem from character :D
+#define SMSG_GUILD_NAME 0xCA // Updates guildname from character :D
+#define SMSG_GUILD_EMBLEM 0xCB // Updates guildemblem from character :D
+#define SMSG_PIRATE_BOMB 0xCC // Drops the bomb of the pirate skill at pos 0,0. The client disconnects right after it landed...
 #define SMSG_CHAIR 0xCD
 #define SMSG_THEATRICS 0xCE // Gain item notice in chat
 #define SMSG_MAP_TELEPORT 0xcf // Instantaneous transfer
@@ -183,7 +185,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PACKAGE_DELIVERY 0x13C // Duey :D
 #define SMSG_CASHSHOP_NX 0x13E
 #define SMSG_CASHSHOP_OPERATION 0x13F
+#define SMSG_CASHSHOP_NAMECHANGE_RESULT 0x141
 #define SMSG_KEYMAP 0x14F
 #define SMSG_MAPLETV_ON 0x155
 #define SMSG_MAPLETV_OFF 0x156
-#define SMSG_HAMMER 0x162F
+#define SMSG_HAMMER 0x162

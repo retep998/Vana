@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GmPacket.h"
 #include "Instance.h"
 #include "Inventory.h"
+#include "InventoryPacket.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "MapleTvs.h"
@@ -37,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerNpcDataProvider.h"
 #include "PlayerPacket.h"
 #include "Randomizer.h"
 #include "ReactorPacket.h"
@@ -46,7 +48,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include <ctime>
 #include <functional>
+#include <utility>
 
+using std::make_pair;
 using std::tr1::bind;
 
 Map::Map(MapInfoPtr info, int32_t id) :
@@ -59,7 +63,9 @@ m_timerstart(0),
 m_timemob(0),
 m_spawnmobs(-1),
 m_music(info->defaultMusic),
-m_timers(new Timer::Container)
+m_timers(new Timer::Container),
+m_weatherItemid(0),
+m_jukeboxItemid(0)
 {
 	// Dynamic loading, start the map timer once the object is created
 	new Timer::Timer(bind(&Map::runTimer, this),
@@ -130,7 +136,7 @@ void Map::addPortal(const PortalInfo &portal) {
 		m_spawn_points[portal.id] = portal;
 	}
 	else if (portal.name == "tp") {
-		// Mystic Door portals
+		m_door_points.push_back(make_pair(portal, false));
 	}
 	else {
 		m_portals[portal.name] = portal;
@@ -344,6 +350,23 @@ PortalInfo * Map::getSpawnPoint(int8_t pid) {
 	return &m_spawn_points[id];
 }
 
+pair<int32_t, PortalInfo> Map::getOpenDoorIndexAndPoint() {
+	PortalInfo garbage;
+	pair<int32_t, PortalInfo> portal = make_pair(-1, garbage);
+	pair<PortalInfo, bool> cur;
+	for (size_t i = 0; i < m_door_points.size(); i++) {
+		cur = m_door_points[i];
+		if (!cur.second) {
+			portal.first = i;
+			portal.second = cur.first;
+			cur.second = true;
+			m_door_points[i] = cur;
+			break;
+		}
+	}
+	return portal;
+}
+
 PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 	int8_t id = -1;
 	int32_t distance = 200000;
@@ -355,6 +378,16 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 		}
 	}
 	return getSpawnPoint(id);
+}
+
+void Map::addDoor(Door *door) {
+	m_doors[door->getId()] = door;
+}
+
+void Map::removeDoor(boost::int32_t index, Door *door) {
+	if (index != -1)
+		m_door_points[index].second = false;
+	m_doors.erase(door->getId());
 }
 
 // NPCs
@@ -471,7 +504,7 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 		if (iter->second != nullptr) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
 				if (playerkill && player != nullptr) {
-					if (iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
+					if (iter->second != nullptr && iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
 						iter->second->applyDamage(player->getId(), iter->second->getHp());
 					}
 				}
@@ -810,6 +843,9 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		NpcPacket::showNpc(player, m_npc_spawns[i], i + Map::NpcStart);
 	}
 
+	// Player NPCs
+	PlayerNpcDataProvider::Instance()->makePacket(m_npc_spawns, player);
+
 	// Reactors
 	for (size_t i = 0; i < m_reactors.size(); i++) {
 		if (m_reactors[i]->isAlive())
@@ -846,6 +882,15 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		}
 	}
 
+	// Mystic doors
+	Door *door = nullptr;
+	for (unordered_map<int32_t, Door *>::iterator iter = m_doors.begin(); iter != m_doors.end(); iter++) {
+		door = iter->second;
+		if (door->getOwner() == player || (player->getParty() != 0 && door->getOwner()->getParty() == player->getParty())) {
+			MapPacket::showDoor(player, door, (this == door->getTown()));
+		}
+	}
+
 	if (Party *p = player->getParty()) {
 		p->showHpBar(player);
 		p->receiveHpBar(player);
@@ -856,6 +901,14 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 		time(&rawtime);
 		struct tm *timeinfo = localtime(&rawtime);
 		MapPacket::showClock(player, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	}
+
+	if (m_weatherItemid != 0) {
+		MapPacket::changeWeatherPlayer(player, m_weatherAdmin, m_weatherItemid, m_weatherMessage);
+	}
+
+	if (m_jukeboxItemid != 0) {
+		InventoryPacket::playCashSongPlayer(player, m_jukeboxItemid, m_jukeboxPlayer);
 	}
 }
 
@@ -875,13 +928,42 @@ void Map::showMessage(const string &message, int8_t type) {
 
 bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemid, const string &message) {
 	Timer::Id timerId(Timer::Types::WeatherTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
-	if (getTimers()->checkTimer(timerId) != 0) {
+	if (itemid != 0 && getTimers()->checkTimer(timerId) != 0) {
 		// Hacking
 		return false;
 	}
 
-	MapPacket::changeWeather(getId(), adminWeather, itemid, message);
-	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
-		timerId, getTimers(), Timer::Time::fromNow(time * 1000));
+	setWeather(adminWeather, itemid, message);
+	new Timer::Timer(bind(&Map::setWeather, this, false, 0, ""), timerId, getTimers(), Timer::Time::fromNow(time));
 	return true;
+}
+
+bool Map::playJukebox(Player *player, int32_t itemid, int32_t time) {
+	Timer::Id timerId(Timer::Types::JukeboxTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
+	if (m_jukeboxItemid != 0 && getTimers()->checkTimer(timerId) != 0) {
+		// Someone plays the jukebox already.
+		return false;
+	}
+
+	setJukebox(itemid, player->getName());
+	new Timer::Timer(bind(&Map::setJukebox, this, itemid, ""), timerId, getTimers(), Timer::Time::fromNow(time * 1000));
+	return true;
+}
+
+void Map::setWeather(bool adminWeather, int32_t itemid, const string &message) {
+	m_weatherItemid = itemid;
+	m_weatherMessage = message;
+	m_weatherAdmin = adminWeather;
+
+	MapPacket::changeWeather(getId(), adminWeather, itemid, message);
+}
+
+void Map::setJukebox(int32_t itemid, const string &user) {
+	m_jukeboxItemid = itemid;
+	m_jukeboxPlayer = user;
+
+	if (itemid != 0) {
+		// There's actually no way to stop the damn song other than rejoining the map.
+		InventoryPacket::playCashSong(getId(), itemid, user);
+	}
 }

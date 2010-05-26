@@ -27,6 +27,7 @@ using std::string;
 using std::vector;
 
 class Instance;
+class PacketCreator;
 class Player;
 
 class Party {
@@ -43,6 +44,8 @@ public:
 	void receiveHpBar(Player *player);
 	void setInstance(Instance *inst) { instance = inst; }
 	void warpAllMembers(int32_t mapid, const string &portalname = "");
+	void sendPacket(PacketCreator &packet, int32_t mapid = -1);
+
 	Player * getMember(int32_t id) { return (members.find(id) != members.end() ? members[id] : nullptr); }
 	Player * getMemberByIndex(uint8_t index);
 	Player * getLeader() { return members[leaderid]; }
@@ -53,6 +56,7 @@ public:
 	int32_t getId() const { return partyid; }
 	int8_t getMembersCount() const { return members.size(); }
 	int8_t getMemberCountOnMap(int32_t mapid);
+
 	bool isLeader(int32_t playerid) const { return playerid == leaderid; }
 	bool isWithinLevelRange(uint8_t lowbound, uint8_t highbound);
 	bool checkFootholds(int8_t membercount, const vector<vector<int16_t> > &footholds); // Determines if the players are properly arranged (e.g. 3 people on 3 different barrels in Kerning PQ)

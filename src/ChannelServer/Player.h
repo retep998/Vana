@@ -45,6 +45,7 @@ using std::string;
 using std::vector;
 using std::tr1::unordered_set;
 
+class Door;
 class Instance;
 class PacketReader;
 class Party;
@@ -64,6 +65,7 @@ public:
 	void setMapChair(int16_t s) { mapchair = s; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
+	void setMap(int32_t mapid, int8_t pointid, const Pos &spawnpoint, int16_t fh = 0);
 	void setMap(int32_t mapid, PortalInfo *portal = 0, bool instance = false);
 	void setBuddyListSize(uint8_t size);
 	void setConnectionTime(int64_t newtime) { online_time = newtime; }
@@ -77,6 +79,7 @@ public:
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
 	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
+	void setDoor(Door *door) { this->door = door; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setNpc(Npc *npc) { this->npc.reset(npc); }
 	void setParty(Party *party) { this->party = party; }
@@ -115,6 +118,7 @@ public:
 	bool hasGmEquip() const;
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
+	Door * getDoor() const { return door; }
 	Instance * getInstance() const { return instance; }
 	Npc * getNpc() const { return npc.get(); }
 	Party * getParty() const { return party; }
@@ -183,6 +187,7 @@ private:
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
+	Door *door;
 	Party *party;
 	Instance *instance;
 	scoped_ptr<Npc> npc;

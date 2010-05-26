@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Types.h"
+
 namespace Maps {
 	enum {
 		AdventurerStartMap = 0,
@@ -26,5 +28,18 @@ namespace Maps {
 		SorcerersRoom = 270020211,
 		LegendStartMap = 914000000,
 		NoMap = 999999999
+	};
+}
+
+namespace PlayerNpcs {
+	const int8_t MaxPlayerNpcsAdventurer = 20;
+	const int8_t MaxPlayerNpcsKoc = 52; // 3 Floors!
+	enum {
+		WarriorRankNpcStart = 9901000,
+		MagicianRankNpcStart = 9901100,
+		BowmanRankNpcStart = 9901200,
+		ThiefRankNpcStart = 9901300,
+		// Pirates doesn't have Player NPC's
+		KoCRankNpcStart = 9901500
 	};
 }
