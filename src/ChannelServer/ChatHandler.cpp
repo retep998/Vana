@@ -439,7 +439,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["online"] = command.addToMap();
 
 	command.command = CmdLag;
-	command.synax = "<$player>";
+	command.syntax = "<$player>";
 	command.notes.push_back("Allows you to view the lag of any player.");
 	commandlist["lag"] = command.addToMap();
 #pragma endregion
@@ -522,7 +522,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdLag:
 						re = "(\\w+)";
-						if regex_match(args.c_str(), matches, re)) {
+						if (regex_match(args.c_str(), matches, re)) {
 							string target = matches[1];
 							string message;
 							if (Player *p = PlayerDataProvider::Instance()->getPlayer(target)) {
