@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/regex.hpp>
 #include <vector>
 
+using boost::lexical_cast;
 using std::tr1::cmatch;
 using std::tr1::regex;
 using std::tr1::regex_match;
@@ -436,6 +437,11 @@ void ChatHandler::initializeCommands() {
 	command.command = CmdOnline;
 	command.notes.push_back("Allows you to see up to 100 players on the current channel.");
 	commandlist["online"] = command.addToMap();
+
+	command.command = CmdLag;
+	command.synax = "<$player>";
+	command.notes.push_back("Allows you to view the lag of any player.");
+	commandlist["lag"] = command.addToMap();
 #pragma endregion
 
 	// No GM level needed
@@ -514,6 +520,23 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							showSyntax(player, command);
 						}
 						break;
+					case CmdLag:
+						re = "(\\w+)";
+						if regex_match(args.c_str(), matches, re)) {
+							string target = matches[1];
+							string message;
+							if (Player *p = PlayerDataProvider::Instance()->getPlayer(target)) {
+								message = p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency()) + "ms";
+							}
+							else {
+								message = "Player not found.";
+							}
+							PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
 					case CmdOnline: {
 						string igns = "IGNs: ";
 						int32_t i = 0;
@@ -554,9 +577,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+) ?(\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
-							if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname))
+							if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname)) {
 								target->getSession()->disconnect();
-
+							}
 							string reasonstring = matches[2];
 							int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
@@ -821,7 +844,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								else if (type == 200) {
 									int32_t mapid = getMap(matches[2], player);
 									if (Maps::getMap(mapid) != nullptr) {
-										string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
+										string message = lexical_cast<string>(mapid) + " : " + lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
 										PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 									}
 									else {
@@ -868,7 +891,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						else {
-							string msg = "Current Map: " + boost::lexical_cast<string>(player->getMap());
+							string msg = "Current Map: " + lexical_cast<string>(player->getMap());
 							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
@@ -1026,9 +1049,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdPos: {
 						Pos p = player->getPos();
 						string msg = "(FH, X, Y): (";
-						msg += boost::lexical_cast<string>(player->getFh()) + ", ";
-						msg += boost::lexical_cast<string>(p.x) + ", ";
-						msg += boost::lexical_cast<string>(p.y) + ")";
+						msg += lexical_cast<string>(player->getFh()) + ", ";
+						msg += lexical_cast<string>(p.x) + ", ";
+						msg += lexical_cast<string>(p.y) + ")";
 						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						break;
 					}
@@ -1063,7 +1086,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						else {
-							string msg = "Current Job: " + boost::lexical_cast<string>(player->getStats()->getJob());
+							string msg = "Current Job: " + lexical_cast<string>(player->getStats()->getJob());
 							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
@@ -1161,13 +1184,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							mobmap mobs = Maps::getMap(player->getMap())->getMobs();
 							for (mobmap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 								message = "Mob ";
-								message += boost::lexical_cast<string>(iter->first);
+								message += lexical_cast<string>(iter->first);
 								message += " (ID: ";
-								message += boost::lexical_cast<string>(iter->second->getMobId());
+								message += lexical_cast<string>(iter->second->getMobId());
 								message += ", HP: ";
-								message += boost::lexical_cast<string>(iter->second->getHp());
+								message += lexical_cast<string>(iter->second->getHp());
 								message += "/";
-								message += boost::lexical_cast<string>(iter->second->getMaxHp());
+								message += lexical_cast<string>(iter->second->getMaxHp());
 								message += ")";
 								PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 							}
@@ -1184,13 +1207,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 							if (mob != nullptr) {
 								message = "Mob ";
-								message += boost::lexical_cast<string>(mobid);
+								message += lexical_cast<string>(mobid);
 								message += " HP: ";
-								message += boost::lexical_cast<string>(mob->getHp());
+								message += lexical_cast<string>(mob->getHp());
 								message += "/";
-								message += boost::lexical_cast<string>(mob->getMaxHp());
+								message += lexical_cast<string>(mob->getMaxHp());
 								message += " (";
-								message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
+								message += lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
 								message += "%)";
 							}
 						}
