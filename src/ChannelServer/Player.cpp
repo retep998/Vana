@@ -165,7 +165,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
 				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
 				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-				case CMSG_ITEM_LOOT: DropHandler::playerLoot(this, packet); break;
+				case CMSG_ITEM_LOOT: DropHandler::lootItem(this, packet); break;
 				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, packet); break;
 				case CMSG_ITEM_USE: InventoryHandler::useItem(this, packet); break;
 				case CMSG_KEYMAP: changeKey(packet); break;
