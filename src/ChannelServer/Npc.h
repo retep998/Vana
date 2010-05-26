@@ -51,6 +51,7 @@ public:
 	void sendAcceptDecline();
 	void sendAcceptDeclineNoExit();
 	void sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time);
+	void sendQuestion(const string &question, const string &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time);
 	void sendGetText(int16_t min, int16_t max);
 	void sendGetNumber(int32_t def, int32_t min, int32_t max);
 	void sendStyle(int32_t styles[], uint8_t size);
@@ -117,6 +118,7 @@ namespace NpcDialogs {
 		GetText = 0x02,
 		GetNumber = 0x03,
 		Simple = 0x04,
+		Question = 0x05, 
 		Quiz = 0x06,
 		Style = 0x07,
 		AcceptDecline = 0x0C,

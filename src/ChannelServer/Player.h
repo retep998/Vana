@@ -86,9 +86,9 @@ public:
 	int8_t getSkin() const { return skin; }
 	int8_t getMappos() const { return map_pos; }
 	int8_t getFallCounter() const { return fall_counter; }
+	uint8_t getPortalCount(bool add = true);
 	uint8_t getBuddyListSize() const { return buddylist_size; }
 	int16_t getMapChair() const { return mapchair; }
-	uint16_t getPortalCount(bool initialPacket = false);
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
 	int32_t getEyes() const { return eyes; }
@@ -143,6 +143,7 @@ public:
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath(bool wheel);
+	bool updateTickCount(int32_t newValue);
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
@@ -157,11 +158,11 @@ private:
 	int8_t gender;
 	int8_t skin;
 	int8_t fall_counter;
+	uint8_t m_portalCount;
 	uint8_t buddylist_size;
 	uint8_t guildrank;
 	uint8_t alliancerank;
 	int16_t mapchair;
-	uint16_t m_portalCount;
 	int32_t id;
 	int32_t user_id;
 	int32_t eyes;
@@ -174,6 +175,7 @@ private:
 	int32_t trade_id;
 	int32_t guildid;
 	int32_t allianceid;
+	int32_t tickCount;
 	int64_t online_time;
 	string chalkboard;
 	string name;

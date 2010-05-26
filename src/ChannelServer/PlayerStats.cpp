@@ -650,7 +650,10 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 }
 
 void PlayerStats::addStat(PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	int32_t type = packet.get<int32_t>();
 	if (getAp() == 0) {
 		// Hacking
@@ -661,7 +664,10 @@ void PlayerStats::addStat(PacketReader &packet) {
 }
 
 void PlayerStats::addStatMulti(PacketReader &packet) {
-	packet.skipBytes(4);
+	if (!player->updateTickCount(packet.get<int32_t>())) {
+		// Tickcount was the same or less than 100 of the difference.
+		return;
+	}
 	uint32_t amount = packet.get<uint32_t>();
 
 	LevelsPacket::statOK(player);

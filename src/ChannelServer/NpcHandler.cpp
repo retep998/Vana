@@ -98,7 +98,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	if (type == NpcDialogs::Quiz) {
+	if (type == NpcDialogs::Quiz || type == NpcDialogs::Question) {
 		npc->proceedText(packet.getString());
 		npc->checkEnd();
 		return;

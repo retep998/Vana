@@ -36,8 +36,11 @@ using std::tr1::unordered_map;
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannel()); // Channel
-	packet.add<uint32_t>(player->getPortalCount(true));
+	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<uint8_t>(player->getPortalCount());
+	packet.addBool(true); // It's a connect packet.
+	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+	// See the changeMap packet for the structure
 
 	player->getRandStream()->connectData(packet); // Seeding RNG
 

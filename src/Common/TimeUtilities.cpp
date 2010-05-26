@@ -199,7 +199,7 @@ uint32_t TimeUtilities::getTickCount() {
 
 	// Note:
 	// CLOCKS_PER_SEC is always 1,000,000
-	// CLK_TCK is the real vlaue (deprecated)
+	// CLK_TCK is the real value (deprecated)
 	// sysconf(_SC_CLK_TCK) is the current way of getting CLK_TCK
 	uint32_t clkTck = sysconf(_SC_CLK_TCK);
 

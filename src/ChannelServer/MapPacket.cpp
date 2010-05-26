@@ -205,7 +205,17 @@ void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
-	packet.add<uint32_t>(player->getPortalCount());
+	packet.add<uint8_t>(player->getPortalCount());
+	packet.addBool(false); // It's not a connect packet.
+	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+	/*
+	// Structure
+	packet.addString( Message title );
+	for (size_t i = 0; i < amount; i++) {
+		packet.addString( Line );
+	}
+	*/
+
 	packet.add<int8_t>(0); // Unknown, added in V.80+
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
