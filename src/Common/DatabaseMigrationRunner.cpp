@@ -59,6 +59,7 @@ void DatabaseMigration::Runner::loadFile() {
 				// Starting of a bulk query (which has ;'s in it, just ignore them)
 				bulk = true;
 				// Reset the bulk query buffer
+				bulkQuery.clear();
 				bulkQuery.str("");
 			}
 			else if (line == "/* END BULK QUERY */") {
@@ -77,6 +78,7 @@ void DatabaseMigration::Runner::loadFile() {
 				}
 				m_queries.push_back(line);
 				// Reset content stream
+				contentStream.clear();
 				contentStream.str("");
 			}
 			else {
@@ -85,6 +87,16 @@ void DatabaseMigration::Runner::loadFile() {
 					contentStream << line << std::endl;
 				}
 			}
+		}
+
+		if (!contentStream.str().empty()) {
+			// For queries without an ending ;
+			m_queries.push_back(contentStream.str());
+		}
+		if (bulk && !bulkQuery.str().empty()) {
+			// Someone forgot to end a bulk query!
+			std::cout << "Warning: Bulk query wasn't ended. File: " << m_filename << std::endl;
+			m_queries.push_back(bulkQuery.str());
 		}
 	}
 }
