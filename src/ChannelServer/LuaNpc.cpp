@@ -227,11 +227,20 @@ int LuaExports::askStyle(lua_State *luaVm) {
 int LuaExports::askText(lua_State *luaVm) {
 	int16_t min = 0;
 	int16_t max = 0;
-	if (lua_isnumber(luaVm, -2) && lua_isnumber(luaVm, -1)) {
-		min = lua_tointeger(luaVm, -2);
-		max = lua_tointeger(luaVm, -1);
+	string def = "";
+	if (lua_isnumber(luaVm, -3) && lua_isnumber(luaVm, -2)) {
+		min = lua_tointeger(luaVm, -3);
+		max = lua_tointeger(luaVm, -2);
+		if (lua_isstring(luaVm, -1)) {
+			def = lua_tostring(luaVm, -1);
+		}
 	}
-	getNpc(luaVm)->sendGetText(min, max);
+	else {
+		if (lua_isstring(luaVm, -1)) {
+			def = lua_tostring(luaVm, -1);
+		}
+	}
+	getNpc(luaVm)->sendGetText(min, max, def);
 	return lua_yield(luaVm, 1);
 }
 
