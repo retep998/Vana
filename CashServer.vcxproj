@@ -20,6 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -39,11 +40,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)_VC100\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)_VC100\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)_VC100\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)_VC100\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -69,7 +70,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp_d.lib;lua_d.lib;cryptlib_d.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <SubSystem>Console</SubSystem>
@@ -93,7 +94,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp.lib;lua.lib;cryptlib.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

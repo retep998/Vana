@@ -17,9 +17,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -84,6 +84,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\AbstractTelnetConnection.cpp" />
+    <ClCompile Include="src\Common\CashItem.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleFileLogger.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\AbstractTelnetConnection.h" />
+    <ClInclude Include="src\Common\CashItem.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h" />

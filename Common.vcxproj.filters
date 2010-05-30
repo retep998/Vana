@@ -290,6 +290,9 @@
     <ClCompile Include="src\Common\AbstractTelnetConnection.cpp">
       <Filter>Source Files\Abstracts</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\CashItem.cpp">
+      <Filter>Source Files\Data Structures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\ExitCodes.h">
@@ -543,6 +546,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\AbstractTelnetConnection.h">
       <Filter>Header Files\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CashItem.h">
+      <Filter>Header Files\Data Structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
