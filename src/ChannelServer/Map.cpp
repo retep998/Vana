@@ -484,7 +484,7 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (m_mobs.find(id) != m_mobs.end()) {
 		if (spawnid >= 0 && m_mob_spawns[spawnid].time != -1) {
 			// Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
+			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(200, 100) / 100);
 			// Randomly spawn between 1x and 2x the spawn time
 			spawnTime += TimeUtilities::getTickCount();
 			m_mob_respawns.push_back(Respawnable(spawnid, spawnTime));
@@ -504,7 +504,7 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 		if (iter->second != nullptr) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
 				if (playerkill && player != nullptr) {
-					if (iter->second != nullptr && iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
+					if (iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
 						iter->second->applyDamage(player->getId(), iter->second->getHp());
 					}
 				}

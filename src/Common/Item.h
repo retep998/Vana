@@ -87,7 +87,7 @@ public:
 	void setLock(bool lock);
 	void setKarma(bool karma);
 	void setCashId(int64_t id) { m_cashId = id; }
-	void setExpirationTime(int64_t exp) { m_expiration = exp; }
+	void setExpirationTime(time_t time) { m_expiration = time; }
 	void addStr(int16_t strength, bool onlyIfExists = false);
 	void addDex(int16_t dexterity, bool onlyIfExists = false);
 	void addInt(int16_t intelligence, bool onlyIfExists = false);
@@ -138,6 +138,6 @@ private:
 	int32_t m_hammers;
 	int32_t m_petId;
 	int64_t m_cashId;
-	int64_t m_expiration;
+	time_t m_expiration;
 	string m_name;
 };

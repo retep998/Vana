@@ -90,6 +90,7 @@ namespace EquipSlots {
 }
 
 namespace Items {
+	const time_t NoExpirationTime = 3439753200; // NoExpiration value for time()
 	const int64_t NoExpiration = 150842304000000000LL;
 	const int32_t MaxHammers = 2;
 	const int32_t WeatherTime = 30;

@@ -52,7 +52,7 @@ m_jump(0),
 m_speed(0),
 m_petId(0),
 m_cashId(0),
-m_expiration(Items::NoExpiration)
+m_expiration(Items::NoExpirationTime)
 {
 }
 
@@ -64,7 +64,7 @@ m_hammers(0),
 m_flags(0),
 m_petId(0),
 m_cashId(0),
-m_expiration(Items::NoExpiration)
+m_expiration(Items::NoExpirationTime)
 {
 	EquipDataProvider::Instance()->setEquipStats(this, random);
 }
