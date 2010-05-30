@@ -329,7 +329,7 @@ int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 
 int16_t PlayerInventory::getSlotByCashId(int8_t inv, int64_t cashid) {
 	if (!GameLogicUtilities::isValidInventory(inv)) {
-		return nullptr;
+		return -1;
 	}
 	inv -= 1;
 	for (int16_t i = 0; i < getMaxSlots(inv + 1); i++) {
