@@ -206,7 +206,10 @@ int LuaExports::askChoice(lua_State *luaVm) {
 }
 
 int LuaExports::askNumber(lua_State *luaVm) {
-	getNpc(luaVm)->sendGetNumber(lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	int32_t def = lua_tointeger(luaVm, -3);
+	int32_t min = lua_tointeger(luaVm, -2);
+	int32_t max = lua_tointeger(luaVm, -1);
+	getNpc(luaVm)->sendGetNumber(def, min, max);
 	return lua_yield(luaVm, 1);
 }
 
@@ -250,12 +253,24 @@ int LuaExports::askYesNo(lua_State *luaVm) {
 }
 
 int LuaExports::askQuiz(lua_State *luaVm) {
-	getNpc(luaVm)->sendQuiz(lua_tointeger(luaVm, -5), lua_tointeger(luaVm, -4), lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	int8_t type = lua_tointeger(luaVm, -5);
+	int32_t objectId = lua_tointeger(luaVm, -4);
+	int32_t correct = lua_tointeger(luaVm, -3);
+	int32_t questions = lua_tointeger(luaVm, -2);
+	int32_t time = lua_tointeger(luaVm, -1);
+
+	getNpc(luaVm)->sendQuiz(type, objectId, correct, questions, time);
 	return lua_yield(luaVm, 1);
 }
 
 int LuaExports::askQuestion(lua_State *luaVm) {
-	getNpc(luaVm)->sendQuestion(lua_tostring(luaVm, -5), lua_tostring(luaVm, -4), lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	string question = lua_tostring(luaVm, -5);
+	string clue = lua_tostring(luaVm, -4);
+	int32_t minChars = lua_tointeger(luaVm, -3);
+	int32_t maxChars = lua_tointeger(luaVm, -2);
+	int32_t time = lua_tointeger(luaVm, -1);
+
+	getNpc(luaVm)->sendQuestion(question, clue, minChars, maxChars, time);
 	return lua_yield(luaVm, 1);
 }
 
