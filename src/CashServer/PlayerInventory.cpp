@@ -517,7 +517,7 @@ void PlayerInventory::checkExpiredItems() {
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
-			if (item == nullptr || item->getExpirationTime() == -1)
+			if (item == nullptr || item->getExpirationTime() == Items::NoExpiration)
 				continue;
 
 			if (item->getExpirationTime() <= time(0)) {

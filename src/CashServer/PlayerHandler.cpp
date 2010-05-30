@@ -265,7 +265,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 			else {
 				vector<CashItemInfo> *items = CashDataProvider::Instance()->getPackageItems(info->itemid);
 				for (size_t i = 0; i < items->size(); i++) {
-					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::addDaysToTime(items->at(i).expiration_days) : Items::NoExpirationTime;
+					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(items->at(i).expiration_days)) : Items::NoExpiration;
 					charExist << "INSERT INTO storage_cash VALUES (NULL, "
 						<< atoi(row["userid"]) << ", "
 						<< (int16_t) atoi(row["world_id"]) << ", "
@@ -273,7 +273,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 						<< items->at(i).quantity << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< 0 << ", "
-						<< mysqlpp::quote << (string)mysqlpp::DateTime(expirationTime) << ")";
+						<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
 					charExist.exec();
 
 					charExist << "INSERT INTO character_cashshop_gifts VALUES ("
@@ -293,7 +293,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 				PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
 			}
 			else {
-				expirationTime = info->expiration_days != 0 ? TimeUtilities::addDaysToTime(info->expiration_days) : Items::NoExpirationTime;
+				expirationTime = info->expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(info->expiration_days)) : Items::NoExpiration;
 				charExist << "INSERT INTO storage_cash VALUES (NULL, "
 					<< atoi(row["userid"]) << ", "
 					<< (int16_t) atoi(row["world_id"]) << ", "
@@ -301,7 +301,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 					<< info->quantity << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< 0 << ", "
-					<< mysqlpp::quote << (string)mysqlpp::DateTime(expirationTime) << ")";
+					<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
 				charExist.exec();
 
 				charExist << "INSERT INTO character_cashshop_gifts VALUES ("

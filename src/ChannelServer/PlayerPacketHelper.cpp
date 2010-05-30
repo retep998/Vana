@@ -45,7 +45,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	else {
 		packet.add<int8_t>(0);
 	}
-	packet.add<int64_t>(TimeUtilities::timeToTick(item->getExpirationTime()));
+	packet.add<int64_t>(item->getExpirationTime());
 	if (equip) {
 		packet.add<int8_t>(item->getSlots());
 		packet.add<int8_t>(item->getScrolls());

@@ -38,6 +38,7 @@ namespace TimeUtilities {
 	int32_t getNearestMinuteMark(int32_t interval, time_t ctime = time(0));
 	string getDayString(bool shortened, time_t ctime = time(0));
 	string getMonthString(bool shortened, time_t ctime = time(0));
+	time_t tickToTime(int64_t time);
 	time_t addDaysToTime(int16_t days);
 	bool isDst(time_t ctime = time(0));
 	string getTimeZone();
