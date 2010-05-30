@@ -199,6 +199,7 @@ int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 
 time_t TimeUtilities::tickToTime(int64_t time) {
 	int64_t tconv = (time - EPOCH_DIFF) / RATE_DIFF;
+	tconv -= getTimeZoneOffset();
 	return (time_t)tconv;
 }
 

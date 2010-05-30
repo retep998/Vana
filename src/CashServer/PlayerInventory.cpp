@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerPacketHelper.h"
+#include "TimeUtilities.h"
 
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
 m_maxslots(maxslots),
@@ -98,7 +99,7 @@ void PlayerInventory::load() {
 		item->setFlags(static_cast<int16_t>(row[Flags]));
 		item->setHammers(row[Hammers]);
 		item->setCashId(row[CashId]);
-		item->setExpirationTime(mysqlpp::DateTime(row[ExpirationTime]));
+		item->setExpirationTime(TimeUtilities::timeToTick(mysqlpp::DateTime(row[ExpirationTime])));
 		row[Name].to_string(temp);
 		item->setName(temp);
 
@@ -186,7 +187,7 @@ void PlayerInventory::save() {
 				<< item->getPetId() << ","
 				<< mysqlpp::quote << item->getName() << ","
 				<< item->getCashId() << ","
-				<< mysqlpp::quote << mysqlpp::DateTime(time_t(item->getExpirationTime())) << ")";
+				<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(item->getExpirationTime())) << ")";
 		}
 	}
 	if (!firstrun)
@@ -520,7 +521,7 @@ void PlayerInventory::checkExpiredItems() {
 			if (item == nullptr || item->getExpirationTime() == Items::NoExpiration)
 				continue;
 
-			if (item->getExpirationTime() <= time(0)) {
+			if (TimeUtilities::tickToTime(item->getExpirationTime()) <= time(0)) {
 				PlayerPacket::sendItemExpired(m_player, item->getCashId());
 				Inventory::takeItemSlot(m_player, i, s, item->getAmount());
 			}

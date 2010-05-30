@@ -478,7 +478,7 @@ void PlayerHandler::handleRedeemCoupon(Player *player, PacketReader &packet) {
 				item->setPetId(0);
 				if (coupon->items[i].expiration_days != 0) {
 					// Only set the expiration time when the expiration days is higher than 0.
-					item->setExpirationTime(TimeUtilities::addDaysToTime(coupon->items[i].expiration_days));
+					item->setExpirationTime(TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(coupon->items[i].expiration_days)));
 				}
 				player->getStorage()->addCashItem(item);
 				rewardedItems.push_back(item);
@@ -538,7 +538,7 @@ bool PlayerHandler::buyCashItem(Player *player, CashItemInfo *info, int8_t mode,
 	item->setName(giftee);
 	if (info->expiration_days != 0) {
 		// Only set the expiration time when the expiration days is higher than 0.
-		item->setExpirationTime(TimeUtilities::addDaysToTime(info->expiration_days));
+		item->setExpirationTime(TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(info->expiration_days)));
 	}
 	player->getStorage()->addCashItem(item);
 	if (giftee.empty()) {
@@ -569,7 +569,7 @@ bool PlayerHandler::buyCashItemPackage(Player *player, CashItemInfo *info, int8_
 	item->setName(giftee);
 	if (info->expiration_days != 0) {
 		// Only set the expiration time when the expiration days is higher than 0.
-		item->setExpirationTime(TimeUtilities::addDaysToTime(info->expiration_days));
+		item->setExpirationTime(TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(info->expiration_days)));
 	}
 	player->getStorage()->addCashItem(item);
 	if (!giftee.empty()) {
