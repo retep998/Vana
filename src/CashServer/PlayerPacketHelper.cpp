@@ -119,7 +119,7 @@ void PlayerPacketHelper::addCashItemInfo(PacketCreator &packet, CashItem *item) 
 	packet.add<int32_t>(0); 
 	packet.add<int16_t>(item->getAmount());
 	packet.addString(item->getName(), 13);
-	packet.add<int64_t>(TimeUtilities::timeToTick(item->getExpirationTime()));
+	packet.add<int64_t>(item->getExpirationTime());
 	packet.add<int64_t>(0);
 }
 

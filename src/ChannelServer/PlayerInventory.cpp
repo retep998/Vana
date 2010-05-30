@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerPacketHelper.h"
+#include "TimeUtilities.h"
 
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
 m_maxslots(maxslots),
@@ -100,7 +101,7 @@ void PlayerInventory::load() {
 		item->setFlags(static_cast<int16_t>(row[Flags]));
 		item->setHammers(row[Hammers]);
 		item->setCashId(row[CashId]);
-		item->setExpirationTime((time_t)mysqlpp::DateTime(row[ExpirationTime]));
+		item->setExpirationTime(TimeUtilities::timeToTick(mysqlpp::DateTime(row[ExpirationTime])));
 		row[Name].to_string(temp);
 		item->setName(temp);
 
@@ -188,7 +189,7 @@ void PlayerInventory::save() {
 				<< item->getPetId() << ","
 				<< mysqlpp::quote << item->getName() << ","
 				<< item->getCashId() << ","
-				<< mysqlpp::quote << (string)mysqlpp::DateTime(item->getExpirationTime()) << ")";
+				<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(item->getExpirationTime())) << ")";
 		}
 	}
 	if (!firstrun) {
@@ -541,7 +542,7 @@ void PlayerInventory::checkExpiredItems() {
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
-			if (item == nullptr || item->getExpirationTime() == Items::NoExpirationTime)
+			if (item == nullptr || item->getExpirationTime() == Items::NoExpiration)
 				continue;
 
 			if (item->getExpirationTime() <= time(0)) {

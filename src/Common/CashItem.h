@@ -33,7 +33,7 @@ public:
 	void setUserId(int32_t id) { m_userId = id; }
 	void setItemId(int32_t id) { m_itemId = id; }
 	void setPetId(int32_t id) { m_petId = id; }
-	void setExpirationTime(time_t exp) { m_expiration = exp; }
+	void setExpirationTime(int64_t exp) { m_expiration = exp; }
 	void setId(int64_t id) { m_id = id; }
 	void setName(string name) { m_name = name; }
 
@@ -42,7 +42,7 @@ public:
 	int32_t getUserId() const { return m_userId; }
 	int32_t getPetId() const { return m_petId; }
 	int64_t getId() const { return m_id; }
-	time_t getExpirationTime() { return m_expiration; }
+	int64_t getExpirationTime() { return m_expiration; }
 	string getName() const { return m_name; }
 private:
 	int16_t m_amount;
@@ -50,6 +50,6 @@ private:
 	int32_t m_userId;
 	int32_t m_petId;
 	int64_t m_id;
-	time_t m_expiration;
+	int64_t m_expiration;
 	string m_name;
 };
