@@ -100,7 +100,7 @@ void PlayerInventory::load() {
 		item->setFlags(static_cast<int16_t>(row[Flags]));
 		item->setHammers(row[Hammers]);
 		item->setCashId(row[CashId]);
-		item->setExpirationTime(mysqlpp::DateTime(row[ExpirationTime]));
+		item->setExpirationTime((time_t)mysqlpp::DateTime(row[ExpirationTime]));
 		row[Name].to_string(temp);
 		item->setName(temp);
 
@@ -188,7 +188,7 @@ void PlayerInventory::save() {
 				<< item->getPetId() << ","
 				<< mysqlpp::quote << item->getName() << ","
 				<< item->getCashId() << ","
-				<< mysqlpp::quote << mysqlpp::DateTime(time_t(item->getExpirationTime())) << ")";
+				<< mysqlpp::quote << (string)mysqlpp::DateTime(item->getExpirationTime()) << ")";
 		}
 	}
 	if (!firstrun) {
@@ -541,7 +541,7 @@ void PlayerInventory::checkExpiredItems() {
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
-			if (item == nullptr || item->getExpirationTime() == -1)
+			if (item == nullptr || item->getExpirationTime() == Items::NoExpirationTime)
 				continue;
 
 			if (item->getExpirationTime() <= time(0)) {

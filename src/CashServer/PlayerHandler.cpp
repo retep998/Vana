@@ -256,7 +256,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 			PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
 			return;
 		}
-		int64_t expirationTime;
+		time_t expirationTime;
 		if (CashDataProvider::Instance()->packageExists(info->itemid)) {
 			if ((item != nullptr && item->showUp && item->discountPrice > 0 && !takeCash(player, BuyModes::NxPrepaid, item->discountPrice)) || !takeCash(player, BuyModes::NxPrepaid, info->price)) {
 				PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
@@ -265,7 +265,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 			else {
 				vector<CashItemInfo> *items = CashDataProvider::Instance()->getPackageItems(info->itemid);
 				for (size_t i = 0; i < items->size(); i++) {
-					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::addDaysToTime(items->at(i).expiration_days) : Items::NoExpiration;
+					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::addDaysToTime(items->at(i).expiration_days) : Items::NoExpirationTime;
 					charExist << "INSERT INTO storage_cash VALUES (NULL, "
 						<< atoi(row["userid"]) << ", "
 						<< (int16_t) atoi(row["world_id"]) << ", "
@@ -273,7 +273,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 						<< items->at(i).quantity << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< 0 << ", "
-						<< mysqlpp::quote << mysqlpp::DateTime(time_t(expirationTime)) << ")";
+						<< mysqlpp::quote << (string)mysqlpp::DateTime(expirationTime) << ")";
 					charExist.exec();
 
 					charExist << "INSERT INTO character_cashshop_gifts VALUES ("
@@ -293,7 +293,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 				PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
 			}
 			else {
-				expirationTime = info->expiration_days != 0 ? TimeUtilities::addDaysToTime(info->expiration_days) : Items::NoExpiration;
+				expirationTime = info->expiration_days != 0 ? TimeUtilities::addDaysToTime(info->expiration_days) : Items::NoExpirationTime;
 				charExist << "INSERT INTO storage_cash VALUES (NULL, "
 					<< atoi(row["userid"]) << ", "
 					<< (int16_t) atoi(row["world_id"]) << ", "
@@ -301,7 +301,7 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 					<< info->quantity << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< 0 << ", "
-					<< mysqlpp::quote << mysqlpp::DateTime(time_t(expirationTime)) << ")";
+					<< mysqlpp::quote << (string)mysqlpp::DateTime(expirationTime) << ")";
 				charExist.exec();
 
 				charExist << "INSERT INTO character_cashshop_gifts VALUES ("
