@@ -83,6 +83,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Common\AbstractTelnetConnection.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleFileLogger.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp" />
     <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp" />
@@ -110,6 +111,8 @@
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
     <ClCompile Include="src\Common\SqlLogger.cpp" />
+    <ClCompile Include="src\Common\TelnetServer.cpp" />
+    <ClCompile Include="src\Common\TelnetSession.cpp" />
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
     <ClCompile Include="src\Common\ConfigFile.cpp" />
     <ClCompile Include="src\Common\Database.cpp" />
@@ -144,6 +147,7 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\AbstractTelnetConnection.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.h" />
     <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h" />
@@ -163,6 +167,8 @@
     <ClInclude Include="src\Common\ProcessorInfo.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
+    <ClInclude Include="src\Common\TelnetServer.h" />
+    <ClInclude Include="src\Common\TelnetSession.h" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\BuffDataProvider.h" />
     <ClInclude Include="src\Common\InitializeCommon.h" />

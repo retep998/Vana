@@ -105,6 +105,12 @@
     <Filter Include="Header Files\Game Constants">
       <UniqueIdentifier>{103fd2dd-b2d0-489c-86bf-98e44524a4de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Connection\Telnet">
+      <UniqueIdentifier>{acc768c0-d8b0-46dc-aa96-0fbbc259b742}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Connection\Telnet">
+      <UniqueIdentifier>{628f8cdd-2c83-42ad-bfe3-999be292425a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -274,6 +280,15 @@
     </ClCompile>
     <ClCompile Include="src\Common\ExceptionReport.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TelnetServer.cpp">
+      <Filter>Source Files\Connection\Telnet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TelnetSession.cpp">
+      <Filter>Source Files\Connection\Telnet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractTelnetConnection.cpp">
+      <Filter>Source Files\Abstracts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -519,6 +534,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\WindowsVersion.h">
       <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TelnetSession.h">
+      <Filter>Header Files\Connection\Telnet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TelnetServer.h">
+      <Filter>Header Files\Connection\Telnet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractTelnetConnection.h">
+      <Filter>Header Files\Abstracts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
