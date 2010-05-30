@@ -545,7 +545,7 @@ void PlayerInventory::checkExpiredItems() {
 			if (item == nullptr || item->getExpirationTime() == Items::NoExpiration)
 				continue;
 
-			if (item->getExpirationTime() <= time(0)) {
+			if (TimeUtilities::tickToTime(item->getExpirationTime()) <= time(0)) {
 				expiredItemIds.push_back(item->getId());
 				Inventory::takeItemSlot(m_player, i, s, item->getAmount());
 			}
