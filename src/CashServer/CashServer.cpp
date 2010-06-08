@@ -79,7 +79,7 @@ void CashServer::connectWorld() {
 void CashServer::loadConfig() {
 	ConfigFile config("conf/cashserver.lua");
 	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
-	m_loginPort = config.getShort("login_inter_port");
+	m_loginPort = config.getUnsignedShort("login_inter_port");
 
 	 // Will get from world server
 	m_world = -1;

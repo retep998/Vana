@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/functional.hpp>
 #include <boost/utility.hpp>
 #include <map>
+#include <string>
 
 using std::map;
 using std::tr1::function;
+using std::string;
 
 class Channel;
 class LoginServerAcceptConnection;
@@ -49,12 +51,14 @@ public:
 	void addWorld(World *world);
 	void calculatePlayerLoad(World *world);
 	void runFunction(function<bool (World *)> func);
-
-	int8_t addWorldServer(LoginServerAcceptConnection *player); // Inter-server
-	int8_t addChannelServer(LoginServerAcceptConnection *player); // Inter-server
-	int8_t addCashServer(LoginServerAcceptConnection *player); // Inter-server
+	void setEventMessages(const string &message);
 
 	World * getWorld(uint8_t id);
+
+	// Inter-server
+	int8_t addWorldServer(LoginServerAcceptConnection *player);
+	int8_t addChannelServer(LoginServerAcceptConnection *player);
+	int8_t addCashServer(LoginServerAcceptConnection *player);
 private:
 	Worlds() {};
 	static Worlds *singleton;

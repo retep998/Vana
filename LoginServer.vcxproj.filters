@@ -86,6 +86,9 @@
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp">
       <Filter>Source Files\Database Loading</Filter>
     </ClCompile>
+    <ClCompile Include="src\LoginServer\TelnetPlayer.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LoginServer\PrecompiledHeader.h">
@@ -135,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
       <Filter>Header Files\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\TelnetPlayer.h">
+      <Filter>Header Files\LoginServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

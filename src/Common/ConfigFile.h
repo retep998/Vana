@@ -47,6 +47,7 @@ public:
 	void setVariable(const string &name, int32_t value);
 	int32_t getInt(const string &value);
 	int16_t getShort(const string &value);
+	uint16_t getUnsignedShort(const string &value);
 	string getString(const string &value);
 	IpMatrix getIpMatrix(const string &value);
 	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);

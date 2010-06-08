@@ -68,7 +68,7 @@ namespace SyncPacket {
 		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer, bool fromCashOrMts);
 		void sendPacketToCashServerForHolding(int32_t playerid, PacketReader &buffer);
 		void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
-		void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port);
+		void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, uint16_t port);
 		void newConnectable(uint16_t channel, int32_t playerid, uint32_t playerip);
 		void newConnectableCashServer(int32_t playerid, uint32_t playerip);
 		void sendCannotChangeServerToPlayer(uint16_t channel, int32_t playerid, int8_t reason);

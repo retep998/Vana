@@ -234,6 +234,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\LoginServer\TelnetPlayer.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\LoginServer\World.cpp"
 					>
 				</File>
@@ -337,6 +341,10 @@
 				</File>
 				<File
 					RelativePath=".\src\LoginServer\RankingCalculator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\LoginServer\TelnetPlayer.h"
 					>
 				</File>
 				<File

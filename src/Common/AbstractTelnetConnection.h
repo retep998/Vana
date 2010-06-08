@@ -27,6 +27,7 @@ class AbstractTelnetConnection {
 public:
 	virtual ~AbstractTelnetConnection() { }
 
+	virtual void sendConnectedMessage() = 0;
 	virtual void realHandleRequest(const string &data) = 0;
 	void handleRequest(const string &data);
 

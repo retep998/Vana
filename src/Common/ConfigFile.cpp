@@ -102,6 +102,11 @@ int16_t ConfigFile::getShort(const string &value) {
 	return static_cast<int16_t>(getInt(value));
 }
 
+uint16_t ConfigFile::getUnsignedShort(const string &value) {
+	// For ports, as their range lies between 0 and 65,535 and not between -32,768 and 32,767.
+	return static_cast<uint16_t>(getInt(value));
+}
+
 string ConfigFile::getString(const string &value) {
 	if (!keyExists(value)) {
 		std::cout << "ERROR: Couldn't get a string from config file." << std::endl;

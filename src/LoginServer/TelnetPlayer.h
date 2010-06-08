@@ -15,23 +15,32 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractTelnetConnection.h"
-#include "TelnetSession.h"
-#include <iostream>
+#pragma once
 
-void AbstractTelnetConnection::handleRequest(const string &data) {
-	try {
-		if (data == "exit" || data == "bye") {
-			m_session->disconnect();
-		}
-		else {
-			realHandleRequest(data);
-		}
+#include "AbstractTelnetConnection.h"
+#include "Types.h"
+#include <string>
+
+using std::string;
+
+class TelnetPlayer : public AbstractTelnetConnection {
+public:
+	TelnetPlayer() : m_loggedOn(false), m_gotUsername(false), m_gotPass(false) { }
+	~TelnetPlayer();
+	void sendConnectedMessage();
+	bool checkIpBanned();
+	bool handleLoginRequest(const string &password);
+	void realHandleRequest(const string &data);
+private:
+	bool m_loggedOn;
+	bool m_gotUsername;
+	bool m_gotPass;
+	string m_username;
+};
+
+class TelnetPlayerFactory : public AbstractTelnetConnectionFactory {
+public:
+	AbstractTelnetConnection * createConnection() {
+		return new TelnetPlayer();
 	}
-	catch (std::exception &e) {
-		std::cout << "ERROR: " << e.what() << std::endl;
-	}
-}
-void AbstractTelnetConnection::setSession(TelnetSession *val) {
-	m_session = val;
-}
+};
