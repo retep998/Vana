@@ -200,6 +200,43 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 				getSession()->send("Syntax: disconnectworld (worldid)");
 			}
 		}
+		else if (command == "onlinelist") {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "SELECT characters.name, users.online FROM characters LEFT JOIN users ON users.id = characters.userid WHERE users.online <> 0 AND characters.online <> 0";
+			mysqlpp::StoreQueryResult res = query.store();
+
+			if (res.empty()) {
+				getSession()->send("There are no characters online at the moment.");
+			}
+			else {
+				std::stringstream x;
+				x << "List of online characters:" << "\r\n";
+				x << "+--------------+----------+----------------+\r\n";
+				x << "| " << std::setw(12) << std::left << "Name" << " | ";
+				x << std::setw(8) << std::left << "World ID" << " | ";
+				x << std::setw(14) << std::left << "Channel" << " |\r\n";
+				x << "+--------------+----------+----------------+\r\n";
+
+				string name;
+				for (size_t i = 0; i < res.num_rows(); i++) {
+					int16_t onlineid = atoi(res[i][1]) - 20000;
+					int16_t world = onlineid / 100;
+					int16_t channel = onlineid % 100;
+					x << "| " << std::setw(12) << std::left << res[i][0].c_str() << " | ";
+					x << std::setw(8) << std::left << world << " | ";
+					x << std::setw(14) << std::left;
+					if (channel == 50) {
+						x << "Cashshop";
+					}
+					else {
+						x << channel;
+					}
+					x << " |\r\n";
+				}
+				x << "+--------------+----------+----------------+\r\n";
+				getSession()->send(x.str());
+			}
+		}
 		else if (command == "banlist") {
 			mysqlpp::Query query = Database::getCharDB().query();
 			query << "SELECT username, ban_expire, ban_reason FROM users WHERE ban_expire > NOW()";
@@ -211,15 +248,40 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 			else {
 				std::stringstream x;
 				x << "Current banlist:" << "\r\n";
-				x << std::setw(12) << std::left << "Username" << " | ";
+				x << "+--------------+---------------------+------------+\r\n";
+				x << "| " << std::setw(12) << std::left << "Username" << " | ";
 				x << std::setw(19) << std::left << "Ban expire" << " | ";
-				x << "Ban reason" << "\r\n";
+				x << "Ban reason" << " |\r\n";
+				x << "+--------------+---------------------+------------+\r\n";
 
 				string name;
 				for (size_t i = 0; i < res.num_rows(); i++) {
-					x << std::setw(12) << std::left << res[i][0].c_str() << " | ";
+					x << "| " << std::setw(12) << std::left << res[i][0].c_str() << " | ";
 					x << std::setw(19) << std::left << mysqlpp::DateTime(res[i][1]).str() << " | ";
-					x << MiscUtilities::getBanReason((int8_t)res[i][2]) << "\r\n";
+					x << std::setw(10) << (int16_t)res[i][2] << " |\r\n";
+				}
+				x << "+--------------+---------------------+------------+\r\n";
+				getSession()->send(x.str());
+			}
+		}
+		else if (command == "ipbanlist") {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "SELECT id, ip FROM ipbans";
+			mysqlpp::StoreQueryResult res = query.store();
+
+			if (res.empty()) {
+				getSession()->send("No IPs are banned at the moment.");
+			}
+			else {
+				std::stringstream x;
+				x << "Current banlist:" << "\r\n";
+				x << std::setw(5) << std::left << "ID" << " | ";
+				x << "IP" << "\r\n";
+
+				string name;
+				for (size_t i = 0; i < res.num_rows(); i++) {
+					x << std::setw(5) << std::left << atoi(res[i][0]) << " | ";
+					x << res[i][1].c_str() << "\r\n";
 				}
 				getSession()->send(x.str());
 			}
@@ -339,7 +401,9 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 			getSession()->send("seteventmessage (world id) {message} - Set the event message of a world. If the message argument is not set, the event message will be removed.");
 			getSession()->send("geteventmessage (world id) - Shows you the event message of a world.");
 			getSession()->send("disconnectworld (world id) - Disconnects a world from the loginserver.");
+			getSession()->send("onlinelist - Displays a list of online characters, including world ID and channel.");
 			getSession()->send("banlist - Shows a list of banned accounts, including ban expire and reason.");
+			getSession()->send("ipbanlist - Shows a list of banned IP addresses.");
 			getSession()->send("banuser (username) (reason) {time in days} - Bans a user. The {time in days} argument is optional and if it is not set, it will perm ban the account.");
 			getSession()->send("unbanuser (username) - Unbans a user.");
 			getSession()->send("bancharacter (charname) (reason) {time in days} - Bans a character. The {time in days} argument is optional and if it is not set, it will perm ban the character.");
