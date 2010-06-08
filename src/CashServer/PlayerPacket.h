@@ -50,7 +50,7 @@ namespace PlayerPacket {
 		};
 	}
 	void connectData(Player *player);
-	void changeChannel(Player *player, uint32_t ip, int16_t port);
+	void changeChannel(Player *player, uint32_t ip, uint16_t port);
 	void disconnectPlayer(Player *player);
 	void sendBlockedMessage(Player *player, int8_t type);
 	void showNX(Player *player, bool update = false);

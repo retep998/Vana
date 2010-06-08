@@ -13,3 +13,12 @@ cash_port = 8000;
 
 -- How many invalid logins should the server handle before disconnecting the player? (0 to turn off this feature)
 invalid_login_threshold = 5;
+
+-- Accept telnet connections at all?
+telnet_enabled = true;
+
+-- What port should be used to accept telnet connections? (to remote control the server)
+telnet_port = 8486;
+
+-- What is the password for the LoginServer telnet server?
+telnet_password = "changeme";

@@ -43,14 +43,18 @@ public:
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
-	int16_t getCashServerPort() const { return m_cashPort; }
+	uint16_t getCashServerPort() const { return m_cashPort; }
+	string getTelnetPassword() const { return m_telnetPassword; }
 private:
 	LoginServer();
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
-	int16_t m_port;
-	int16_t m_interPort;
-	int16_t m_cashPort;
+	bool m_telnetEnabled;
+	uint16_t m_port;
+	uint16_t m_interPort;
+	uint16_t m_cashPort;
+	uint16_t m_telnetPort;
 	int32_t m_maxInvalidLogins;
+	string m_telnetPassword;
 };

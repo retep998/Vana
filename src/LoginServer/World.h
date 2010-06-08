@@ -44,6 +44,7 @@ public:
 	void setPlayerLoad(int32_t load) { m_playerLoad = load; }
 	void setConnection(LoginServerAcceptConnection *connection) { m_connection = connection; }
 	void setConfiguration(Configuration &config) { m_config = config; }
+	void setEventMessage(const string &message) { m_config.eventMsg = message; }
 	void runChannelFunction(function<void (Channel *)> func);
 	void clearChannels() { m_channels.clear(); }
 	void removeChannel(int32_t id) { m_channels.erase(id); }

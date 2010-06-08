@@ -42,7 +42,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	string password = packet.getString();
 	string ip = IpUtilities::ipToString(player->getIp());
 
-	if (username.size() > 15 || password.size() > 15) {
+	if (username.size() < 4 || username.size() > 15 || password.size() < 4 || password.size() > 15) {
 		return;
 	}
 

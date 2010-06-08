@@ -605,14 +605,14 @@ void SyncPacket::PlayerPacket::sendHeldPacketRemoval(uint16_t channel, int32_t p
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, int16_t port) {
+void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerid);
 	packet.add<uint32_t>(ip);
-	packet.add<int16_t>(port);
+	packet.add<uint16_t>(port);
 	player->getSession()->send(packet);
 }
 

@@ -52,7 +52,7 @@ void WorldServer::loadData() {
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
-	m_loginPort = config.getShort("login_inter_port");
+	m_loginPort = config.getUnsignedShort("login_inter_port");
 
 	m_port = -1; // Will get from login server later
 	m_cashPort = -1; // Will get from login server later

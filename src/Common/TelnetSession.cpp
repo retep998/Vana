@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TelnetSession.h"
 #include "AbstractTelnetConnection.h"
+#include "Database.h"
 #include "IpUtilities.h"
 #include "SessionManager.h"
 #include <boost/bind.hpp>
@@ -38,9 +39,22 @@ void TelnetSession::start() {
 void TelnetSession::handle_start() {
 	m_player->setSession(this);
 	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
-	m_inputStream.clear();
-	send("Welcome to the telnet server.\r\n");
-	start_read();
+
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT * FROM ipbans WHERE ip = " << mysqlpp::quote << IpUtilities::ipToString(getIp());
+	mysqlpp::StoreQueryResult store = query.store();
+
+	if (store.num_rows() != 0) {
+		send("THIS IP IS BANNED.");
+		disconnect();
+	}
+	else {
+		m_inputStream.clear();
+		m_inputStream.str("");
+		m_inputStreamSize = 0;
+		m_player->sendConnectedMessage();
+		start_read();
+	}
 }
 
 void TelnetSession::stop() {
@@ -71,8 +85,22 @@ void TelnetSession::send(const unsigned char *buf, int32_t len) {
 		boost::asio::placeholders::bytes_transferred));
 }
 
-void TelnetSession::send(const string &data) {
-	return send(reinterpret_cast<const unsigned char*>(data.c_str()), data.length());
+void TelnetSession::send(const string &data, bool newline, bool starttext) {
+	std::string x;
+	if (starttext) {
+		x += "Server> ";
+	}
+	x += data;
+	if (newline) {
+		x += "\r\n";
+	}
+	send(reinterpret_cast<const unsigned char*>(x.c_str()), x.length());
+}
+
+void TelnetSession::send() {
+	std::string x;
+	x = "\r\n";
+	send(reinterpret_cast<const unsigned char*>(x.c_str()), x.length());
 }
 
 void TelnetSession::start_read() {
@@ -95,17 +123,38 @@ void TelnetSession::handle_write(const boost::system::error_code &error, size_t 
 
 void TelnetSession::handle_read(const boost::system::error_code &error, size_t bytes_transferred) {
 	if (!error) {
-		if (m_buffer[0] == 0x0A || m_buffer[0] == 0x10) {
-			// Windows sends: 0A 0D
-			// Mac sends: 0A 00
-			// Linux sends: 0D 00
-			if (!m_inputStream.str().empty()) {
-				m_player->handleRequest(m_inputStream.str());
+		if (m_buffer[0] == 0x08) {
+			// Deleting a character.
+			if (m_inputStreamSize > 0) {
+				string data = m_inputStream.str();
+				data = data.substr(0, m_inputStreamSize - 1);
+				m_inputStream.clear();
+				m_inputStream.str("");
+				m_inputStream << data;
+				m_inputStreamSize--;
 			}
+		}
+		else if (m_buffer[0] == 0x0A || m_buffer[0] == 0x10) {
+			// Windows sends: 0A 0D (\r\n)
+			// Mac sends: 0A 00 (\r)
+			// Linux sends: 0D 00 (\n)
+			string data = m_inputStream.str();
+			if (!data.empty()) {
+				m_player->handleRequest(data);
+			}
+			m_inputStream.clear();
 			m_inputStream.str("");
+			m_inputStreamSize = 0;
+		}
+		else if (m_inputStreamSize >= maxBufferLen) {
+			disconnect();
+			return;
 		}
 		else {
-			m_inputStream << m_buffer[0];
+			if ((m_buffer[0] >= 0x20 && m_buffer[0] <= 0x7e) || (m_buffer[0] >= 0x80 && m_buffer[0] <= 0xa5)) {
+				++m_inputStreamSize;
+				m_inputStream << m_buffer[0];
+			}
 		}
 		start_read();
 	}
