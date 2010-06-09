@@ -35,20 +35,23 @@ class LoginServerAcceptConnection;
 
 class World {
 public:
-	World() : m_connected(false), m_playerLoad(0), m_connection(nullptr) { }
+	World() : m_connected(false), m_playerLoad(0), m_connection(nullptr), m_cashConnected(false) { }
 
 	void setConnected(bool connected) { m_connected = connected; }
+	void setCashServerConnected(bool connected) { m_cashConnected = connected; }
 	void setId(int8_t id) { m_id = id; }
 	void setPort(uint16_t port) { m_port = port; }
 	void setPlayerLoad(int32_t load) { m_playerLoad = load; }
 	void setConnection(LoginServerAcceptConnection *connection) { m_connection = connection; }
 	void setConfiguration(Configuration &config) { m_config = config; }
+	void setEventMessage(const string &message) { m_config.eventMsg = message; }
 	void runChannelFunction(function<void (Channel *)> func);
 	void clearChannels() { m_channels.clear(); }
 	void removeChannel(int32_t id) { m_channels.erase(id); }
 	void addChannel(int32_t id, Channel *channel) { m_channels[id].reset(channel); }
 
 	bool isConnected() const { return m_connected; }
+	bool isCashServerConnected() const { return m_cashConnected; }
 	int8_t getId() const { return m_id; }
 	int8_t getRibbon() const { return m_config.ribbon; }
 	uint16_t getPort() const { return m_port; }
@@ -66,6 +69,7 @@ private:
 	typedef std::tr1::unordered_map<int32_t, boost::shared_ptr<Channel> > ChannelMap;
 
 	bool m_connected;
+	bool m_cashConnected;
 	int8_t m_id;
 	uint16_t m_port;
 	int32_t m_playerLoad;

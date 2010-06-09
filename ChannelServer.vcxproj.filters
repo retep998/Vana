@@ -371,6 +371,15 @@
     <ClCompile Include="src\ChannelServer\Reactor.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\PlayerNpcDataProvider.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\PlayerNpc.cpp">
+      <Filter>Source Files\ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\Door.cpp">
+      <Filter>Source Files\ChannelServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -662,6 +671,15 @@
       <Filter>Header Files\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Reactor.h">
+      <Filter>Header Files\ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PlayerNpc.h">
+      <Filter>Header Files\ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PlayerNpcDataProvider.h">
+      <Filter>Header Files\Database Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\Door.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>

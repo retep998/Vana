@@ -33,6 +33,7 @@ public:
 	bool hasWarmSupport() const;
 	bool hasSlipPrevention() const;
 	bool hasLock() const;
+	bool hasKarma() const;
 	int8_t getSlots() const { return m_slots; }
 	int8_t getScrolls() const { return m_scrolls; }
 	int16_t getStr() const { return m_str; }
@@ -55,6 +56,8 @@ public:
 	int32_t getId() const { return m_id; }
 	int32_t getHammers() const { return m_hammers; }
 	int32_t getPetId() const { return m_petId; }
+	int64_t getCashId() const { return m_cashId; }
+	int64_t getExpirationTime() const { return m_expiration; }
 	const string & getName() const { return m_name; }
 
 	void setSlots(int8_t slots) { m_slots = slots; }
@@ -82,6 +85,9 @@ public:
 	void setPreventSlip(bool prevent);
 	void setWarmSupport(bool warm);
 	void setLock(bool lock);
+	void setKarma(bool karma);
+	void setCashId(int64_t id) { m_cashId = id; }
+	void setExpirationTime(int64_t time) { m_expiration = time; }
 	void addStr(int16_t strength, bool onlyIfExists = false);
 	void addDex(int16_t dexterity, bool onlyIfExists = false);
 	void addInt(int16_t intelligence, bool onlyIfExists = false);
@@ -131,5 +137,7 @@ private:
 	int32_t m_id;
 	int32_t m_hammers;
 	int32_t m_petId;
+	int64_t m_cashId;
+	int64_t m_expiration;
 	string m_name;
 };

@@ -39,6 +39,27 @@ namespace Gender {
 
 namespace GuildsAndAlliances {
 	const int32_t RankQuantity = 5;
+	const int32_t InvitationAliveTime = 300; // Amount of seconds the invitation is 'alive'
+	const int32_t GuildMaxCapacacity = 100;
+
+	// Alliance costs
+	const int32_t AllianceCreationCost = 5000000;
+	const int32_t AllianceCapacityIncreasementCost = 1000000;
+
+	// Guild costs
+	const int32_t GuildCreationCost = 1500000;
+	const int32_t GuildDisbandCost = 200000;
+	const int32_t GuildChangeEmblemCost = 5000000;
+	const int32_t GuildRemoveEmblemCost = 1000000;
+	const int32_t GuildCapacityIncreasementCost = 500000;
+
+	namespace GuildIncreaseCapacityCostMultiplier {
+		enum {
+			FifteenSlots = 3,
+			TwentySlots = 5,
+			TwentyFiveOrMoreSlots = 7
+		};
+	}
 }
 
 namespace Stats {

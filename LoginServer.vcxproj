@@ -20,13 +20,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -109,6 +109,7 @@
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
     <ClCompile Include="src\LoginServer\Player.cpp" />
     <ClCompile Include="src\LoginServer\RankingCalculator.cpp" />
+    <ClCompile Include="src\LoginServer\TelnetPlayer.cpp" />
     <ClCompile Include="src\LoginServer\World.cpp" />
     <ClCompile Include="src\LoginServer\Worlds.cpp" />
     <ClCompile Include="src\LoginServer\LoginPacket.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="src\LoginServer\Player.h" />
     <ClInclude Include="src\LoginServer\PlayerStatus.h" />
     <ClInclude Include="src\LoginServer\RankingCalculator.h" />
+    <ClInclude Include="src\LoginServer\TelnetPlayer.h" />
     <ClInclude Include="src\LoginServer\World.h" />
     <ClInclude Include="src\LoginServer\Worlds.h" />
     <ClInclude Include="src\LoginServer\InitializeLogin.h" />

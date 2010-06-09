@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7DC4A971-62A0-4FCD-ADB3-653F21CACFF4}</ProjectGuid>
+    <RootNamespace>CashServer</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)_VC100\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)_VC100\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)_VC100\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)_VC100\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_41_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp_d.lib;lua_d.lib;cryptlib_d.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_41_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;mysqlpp.lib;lua.lib;cryptlib.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC100/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(SystemDrive)/MySQL++/lib;$(ProgramFiles)/boost/boost_1_41_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CashServer\main_cash.cpp" />
+    <ClCompile Include="src\CashServer\PrecompiledHeader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\CashServer\Buffs.cpp" />
+    <ClCompile Include="src\CashServer\CashServer.cpp" />
+    <ClCompile Include="src\CashServer\Connectable.cpp" />
+    <ClCompile Include="src\CashServer\Inventory.cpp" />
+    <ClCompile Include="src\CashServer\KeyMaps.cpp" />
+    <ClCompile Include="src\CashServer\Pet.cpp" />
+    <ClCompile Include="src\CashServer\Quests.cpp" />
+    <ClCompile Include="src\CashServer\SkillMacros.cpp" />
+    <ClCompile Include="src\CashServer\Skills.cpp" />
+    <ClCompile Include="src\CashServer\Summons.cpp" />
+    <ClCompile Include="src\CashServer\PetsPacket.cpp" />
+    <ClCompile Include="src\CashServer\PlayerPacket.cpp" />
+    <ClCompile Include="src\CashServer\ServerPacket.cpp" />
+    <ClCompile Include="src\CashServer\InventoryPacketHelper.cpp" />
+    <ClCompile Include="src\CashServer\PlayerPacketHelper.cpp" />
+    <ClCompile Include="src\CashServer\CashDataProvider.cpp" />
+    <ClCompile Include="src\CashServer\InitializeCashServer.cpp" />
+    <ClCompile Include="src\CashServer\SyncHandler.cpp" />
+    <ClCompile Include="src\CashServer\SyncPacket.cpp" />
+    <ClCompile Include="src\CashServer\WorldServerConnectHandler.cpp" />
+    <ClCompile Include="src\CashServer\WorldServerConnection.cpp" />
+    <ClCompile Include="src\CashServer\WorldServerConnectPacket.cpp" />
+    <ClCompile Include="src\CashServer\Player.cpp" />
+    <ClCompile Include="src\CashServer\PlayerActiveBuffs.cpp" />
+    <ClCompile Include="src\CashServer\PlayerBuddyList.cpp" />
+    <ClCompile Include="src\CashServer\PlayerDataProvider.cpp" />
+    <ClCompile Include="src\CashServer\PlayerInventory.cpp" />
+    <ClCompile Include="src\CashServer\PlayerMonsterBook.cpp" />
+    <ClCompile Include="src\CashServer\PlayerMounts.cpp" />
+    <ClCompile Include="src\CashServer\PlayerPets.cpp" />
+    <ClCompile Include="src\CashServer\PlayerQuests.cpp" />
+    <ClCompile Include="src\CashServer\PlayerRandomStream.cpp" />
+    <ClCompile Include="src\CashServer\PlayerSkills.cpp" />
+    <ClCompile Include="src\CashServer\PlayerStats.cpp" />
+    <ClCompile Include="src\CashServer\PlayerStorage.cpp" />
+    <ClCompile Include="src\CashServer\PlayerSummons.cpp" />
+    <ClCompile Include="src\CashServer\PlayerVariables.cpp" />
+    <ClCompile Include="src\CashServer\VersionConstants.cpp" />
+    <ClCompile Include="src\CashServer\PlayerHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\CashServer\Buffs.h" />
+    <ClInclude Include="src\CashServer\CashServer.h" />
+    <ClInclude Include="src\CashServer\Connectable.h" />
+    <ClInclude Include="src\CashServer\Inventory.h" />
+    <ClInclude Include="src\CashServer\KeyMaps.h" />
+    <ClInclude Include="src\CashServer\MovableLife.h" />
+    <ClInclude Include="src\CashServer\Pet.h" />
+    <ClInclude Include="src\CashServer\Quests.h" />
+    <ClInclude Include="src\CashServer\SkillMacros.h" />
+    <ClInclude Include="src\CashServer\Skills.h" />
+    <ClInclude Include="src\CashServer\Summons.h" />
+    <ClInclude Include="src\CashServer\PetsPacket.h" />
+    <ClInclude Include="src\CashServer\PlayerPacket.h" />
+    <ClInclude Include="src\CashServer\ServerPacket.h" />
+    <ClInclude Include="src\CashServer\InventoryPacketHelper.h" />
+    <ClInclude Include="src\CashServer\PlayerPacketHelper.h" />
+    <ClInclude Include="src\CashServer\CashDataProvider.h" />
+    <ClInclude Include="src\CashServer\InitializeCashServer.h" />
+    <ClInclude Include="src\CashServer\SyncHandler.h" />
+    <ClInclude Include="src\CashServer\SyncPacket.h" />
+    <ClInclude Include="src\CashServer\WorldServerConnectHandler.h" />
+    <ClInclude Include="src\CashServer\WorldServerConnection.h" />
+    <ClInclude Include="src\CashServer\WorldServerConnectPacket.h" />
+    <ClInclude Include="src\CashServer\Player.h" />
+    <ClInclude Include="src\CashServer\PlayerActiveBuffs.h" />
+    <ClInclude Include="src\CashServer\PlayerBuddyList.h" />
+    <ClInclude Include="src\CashServer\PlayerDataProvider.h" />
+    <ClInclude Include="src\CashServer\PlayerInventory.h" />
+    <ClInclude Include="src\CashServer\PlayerMonsterBook.h" />
+    <ClInclude Include="src\CashServer\PlayerMounts.h" />
+    <ClInclude Include="src\CashServer\PlayerPets.h" />
+    <ClInclude Include="src\CashServer\PlayerQuests.h" />
+    <ClInclude Include="src\CashServer\PlayerRandomStream.h" />
+    <ClInclude Include="src\CashServer\PlayerSkills.h" />
+    <ClInclude Include="src\CashServer\PlayerStats.h" />
+    <ClInclude Include="src\CashServer\PlayerStorage.h" />
+    <ClInclude Include="src\CashServer\PlayerSummons.h" />
+    <ClInclude Include="src\CashServer\PlayerVariables.h" />
+    <ClInclude Include="src\CashServer\VersionConstants.h" />
+    <ClInclude Include="src\CashServer\PlayerHandler.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
+#define EPOCH_DIFF 0x019DB1DED53E8000LL /* 116444736000000000 nsecs */
+#define RATE_DIFF 10000000 /* 100 nsecs */
+
 int64_t TimeUtilities::getServerTime() {
 	return timeToTick(time(0));
 }
@@ -28,23 +31,29 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 		return -1;
 	struct tm *timeinfo;
 	timeinfo = localtime(&time);
-	uint64_t ticks = 0;
+	if (timeinfo == nullptr) {
+		// Couldn't parse the time, so just return the time given.
+		return time;
+	}
+	else {
+		uint64_t ticks = 0;
 
-	// Calculate leap days
-	int32_t leapdays = 0;
-	int32_t years = timeinfo->tm_year + 299;
-	leapdays += (years/100)*24; // 24 more days for each 100 years
-	leapdays += (years/400); // and one more day for each 400 years
-	leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
+		// Calculate leap days
+		int32_t leapdays = 0;
+		int32_t years = timeinfo->tm_year + 299;
+		leapdays += (years/100)*24; // 24 more days for each 100 years
+		leapdays += (years/400); // and one more day for each 400 years
+		leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
 
-	ticks += (timeinfo->tm_sec * 1);
-	ticks += (timeinfo->tm_min * 60);
-	ticks += (timeinfo->tm_hour * 3600);
-	ticks += (((int64_t) timeinfo->tm_yday + leapdays) * 86400);
-	ticks += (int64_t) years * 86400 * 365; // Exluding leap years
+		ticks += (timeinfo->tm_sec * 1);
+		ticks += (timeinfo->tm_min * 60);
+		ticks += (timeinfo->tm_hour * 3600);
+		ticks += (((int64_t) timeinfo->tm_yday + leapdays) * 86400);
+		ticks += (int64_t) years * 86400 * 365; // Exluding leap years
 
-	ticks *= 10000000; // Convert to 100-nanoseconds
-	return ticks;
+		ticks *= 10000000; // Convert to 100-nanoseconds
+		return ticks;
+	}
 }
 
 int32_t TimeUtilities::tickToTick32(int64_t tick) {
@@ -186,6 +195,19 @@ int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	int32_t result = (((timeinfo->tm_min / interval) + 1) * interval * 60);
 	return result;
+}
+
+time_t TimeUtilities::tickToTime(int64_t time) {
+	int64_t tconv = (time - EPOCH_DIFF) / RATE_DIFF;
+	tconv -= getTimeZoneOffset();
+	return (time_t)tconv;
+}
+
+time_t TimeUtilities::addDaysToTime(int16_t days) {
+	time_t now = time(NULL);
+	struct tm* tm = localtime(&now);
+	tm->tm_mday += days;
+	return mktime(tm);
 }
 
 #ifdef WIN32

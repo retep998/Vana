@@ -376,7 +376,7 @@ void MapPacket::spawnDoor(Door *door) {
 void MapPacket::showDoor(Player *player, Door *door, bool istown) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MYSTIC_DOOR_SPAWN);
-	packet.add<int8_t>(1); // Already open
+	packet.addBool(true); // Already open
 	packet.add<int32_t>(door->getId());
 	packet.addPos(istown ? door->getPortal()->pos : door->getPos());
 	player->getSession()->send(packet);
@@ -385,7 +385,7 @@ void MapPacket::showDoor(Player *player, Door *door, bool istown) {
 void MapPacket::showDoorDisappear(Player *player, Door *door) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MYSTIC_DOOR_DESPAWN);
-	packet.add<int8_t>(0);
+	packet.addBool(false);
 	packet.add<int32_t>(door->getId());
 	player->getSession()->send(packet);
 }

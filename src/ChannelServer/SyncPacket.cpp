@@ -23,23 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "WorldServerConnection.h"
 
-void SyncPacket::updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level) {
+void SyncPacket::updateLevel(WorldServerConnection *player, int32_t playerid, uint8_t level) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdateLevel);
 	packet.add<int32_t>(playerid);
-	packet.add<int32_t>(level);
+	packet.add<uint8_t>(level);
 	player->getSession()->send(packet);
 }
 
-void SyncPacket::updateJob(WorldServerConnection *player, int32_t playerid, int32_t job) {
+void SyncPacket::updateJob(WorldServerConnection *player, int32_t playerid, int16_t job) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdateJob);
 	packet.add<int32_t>(playerid);
-	packet.add<int32_t>(job);
+	packet.add<int16_t>(job);
 	player->getSession()->send(packet);
 }
 
@@ -91,7 +91,24 @@ void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info
 	player->getSession()->send(packet);
 }
 
-void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank) {
+void SyncPacket::playerChangeServer(WorldServerConnection *player, Player *info, bool cashShop) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::ChangeServerRequest);
+	packet.add<int32_t>(info->getId());
+	packet.addBool(true);
+	packet.addBool(cashShop);
+
+	packet.add<int64_t>(info->getConnectionTime());
+
+	info->getActiveBuffs()->getBuffTransferPacket(packet);
+	info->getSummons()->getSummonTransferPacket(packet);
+
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int16_t job, uint8_t level, int32_t guildid, uint8_t guildrank, int32_t allianceid, uint8_t alliancerank) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
@@ -100,8 +117,8 @@ void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int3
 	packet.add<int32_t>(playerid);
 	packet.addString(name);
 	packet.add<int32_t>(map);
-	packet.add<int32_t>(job);
-	packet.add<int32_t>(level);
+	packet.add<int16_t>(job);
+	packet.add<uint8_t>(level);
 	packet.add<int32_t>(guildid);
 	packet.add<uint8_t>(guildrank);
 	packet.add<int32_t>(allianceid);
@@ -118,11 +135,15 @@ void SyncPacket::removePlayer(WorldServerConnection *player, int32_t playerid) {
 	player->getSession()->send(packet);
 }
 
-void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid) {
+void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid, bool fromCashOrMts) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
+	packet.add<int8_t>(fromCashOrMts ? Sync::Player::ChangeServerGo : Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerid);
+	if (fromCashOrMts) {
+		packet.addBool(false);
+		packet.addBool(false);
+	}
 	player->getSession()->send(packet);
 }

@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GuildPacket.h"
+#include "IpUtilities.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "InventoryHandler.h"
@@ -150,7 +151,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_BBS: BbsPacket::handleBbsPacket(this, packet); break;
 				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
 				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
-				case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
+				case CMSG_CASH_SHOP: changeServer(true); break;
 				case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
 				case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
 				case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
@@ -177,7 +178,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
 				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
-				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
+				case CMSG_MTS: changeServer(false); break;;
 				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
 				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
@@ -197,6 +198,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
 				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
 				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
+				case CMSG_PONG: handlePong(); break;
 				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
 				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
 				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
@@ -316,6 +318,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Packet transferring on channel switch
 	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
+
 	if (checked) {
 		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
 
@@ -395,6 +398,10 @@ void Player::playerConnect(PacketReader &packet) {
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
 	Maps::addPlayer(this, map);
+
+	std::stringstream x;
+	x << getName() << " (" << getId() << ") connected from " << IpUtilities::ipToString(getIp());
+	ChannelServer::Instance()->log(LogTypes::Info, x.str());
 
 	setOnline(true);
 	is_connect = true;
@@ -726,6 +733,10 @@ void Player::setBuddyListSize(uint8_t size) {
 	BuddyListPacket::showSize(this);
 }
 
+void Player::changeServer(bool cashShop) {
+	SyncPacket::playerChangeServer(ChannelServer::Instance()->getWorldConnection(), this, cashShop);
+}
+
 uint8_t Player::getPortalCount(bool add) {
 	if (add) {
 		m_portalCount++;
@@ -747,4 +758,9 @@ bool Player::updateTickCount(int32_t newValue) {
 	}
 	*/
 	return true;
+}
+
+void Player::handlePong() {
+	// Handle all things like expiring of quests and such
+	getInventory()->checkExpiredItems();
 }

@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "Configuration.h"
 #include "ConnectionManager.h"
+#include "ExitCodes.h"
 #include "InitializeCommon.h"
 #include "InitializeLogin.h"
 #include "MapleVersion.h"
 #include "RankingCalculator.h"
+#include "TelnetPlayer.h"
 #include "World.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
@@ -36,6 +38,9 @@ LoginServer::LoginServer()
 void LoginServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), MapleVersion::PatchLocation);
 	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory());
+	if (m_telnetEnabled) {
+		ConnectionManager::Instance()->accept(m_telnetPort, new TelnetPlayerFactory());
+	}
 }
 
 void LoginServer::loadData() {
@@ -52,9 +57,22 @@ void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
 	m_pinEnabled = config.getBool("pin");
 	m_picEnabled = config.getBool("pic");
-	m_port = config.getShort("port");
-	m_interPort = config.getShort("inter_port");
+	m_port = config.getUnsignedShort("port");
+	m_interPort = config.getUnsignedShort("inter_port");
+	m_cashPort = config.getUnsignedShort("cash_port");
 	m_maxInvalidLogins = config.getInt("invalid_login_threshold");
+	m_telnetEnabled = config.getBool("telnet_enabled");
+	if (m_telnetEnabled) {
+		m_telnetPassword = config.getString("telnet_password");
+		m_telnetPort = config.getUnsignedShort("telnet_port");
+
+		if (m_telnetPassword == "changeme") {
+			std::cerr << "ERROR: telnet_password is not changed." << std::endl;
+			std::cout << "Press enter to quit ...";
+			getchar();
+			exit(ExitCodes::ConfigError);
+		}
+	}
 	setListening(true);
 
 	loadWorlds();
@@ -82,7 +100,8 @@ void LoginServer::loadWorlds() {
 	MajorBoss boss;
 	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
-	while (1) {
+
+	while (true) {
 		formatter % i % "name";
 		if (!config.keyExists(formatter.str()))
 			break; // No more worlds
@@ -161,6 +180,8 @@ void LoginServer::loadWorlds() {
 		formatter % i % "pinkbean_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.pinkbean = boss;
+
+		conf.cashPort = m_cashPort + world->getId();
 
 		world->setConfiguration(conf);
 		Worlds::Instance()->addWorld(world);

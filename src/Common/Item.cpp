@@ -50,7 +50,9 @@ m_avo(0),
 m_hands(0),
 m_jump(0),
 m_speed(0),
-m_petId(0)
+m_petId(0),
+m_cashId(0),
+m_expiration(Items::NoExpiration)
 {
 }
 
@@ -60,7 +62,9 @@ m_amount(1),
 m_scrolls(0),
 m_hammers(0),
 m_flags(0),
-m_petId(0)
+m_petId(0),
+m_cashId(0),
+m_expiration(Items::NoExpiration)
 {
 	EquipDataProvider::Instance()->setEquipStats(this, random);
 }
@@ -88,7 +92,9 @@ Item::Item(Item *item) {
 	m_speed = item->getSpeed();
 	m_petId = item->getPetId();
 	m_name = item->getName();
+	m_cashId = item->getCashId();
 	m_flags = item->getFlags();
+	m_expiration = item->getExpirationTime();
 }
 
 bool Item::hasSlipPrevention() const {
@@ -101,6 +107,10 @@ bool Item::hasWarmSupport() const {
 
 bool Item::hasLock() const {
 	return testFlags(Items::Flags::Lock);
+}
+
+bool Item::hasKarma() const {
+	return testFlags(Items::Flags::KarmaScissors);
 }
 
 bool Item::testFlags(int16_t flags) const {
@@ -117,6 +127,10 @@ void Item::setWarmSupport(bool warm) {
 
 void Item::setLock(bool lock) {
 	modifyFlags(lock, Items::Flags::Lock);
+}
+
+void Item::setKarma(bool karma) {
+	modifyFlags(karma, Items::Flags::KarmaScissors);
 }
 
 void Item::modifyFlags(bool add, int16_t flags) {

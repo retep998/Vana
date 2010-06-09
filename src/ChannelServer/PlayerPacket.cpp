@@ -168,12 +168,12 @@ void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
+void PlayerPacket::changeChannel(Player *player, uint32_t ip, uint16_t port) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANNEL_CHANGE);
-	packet.add<int8_t>(1);
+	packet.addBool(true);
 	packet.add<uint32_t>(htonl(ip)); // MapleStory accepts IP addresses in big-endian
-	packet.add<int16_t>(port);
+	packet.add<uint16_t>(port);
 	player->getSession()->send(packet);
 }
 

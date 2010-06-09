@@ -54,7 +54,9 @@ void ChannelServer::loadData() {
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
-	loginPlayer->sendAuth(getInterPassword(), getExternalIp());
+	string interPassword = getInterPassword();
+	IpMatrix externalIp = getExternalIp();
+	loginPlayer->sendAuth(interPassword, externalIp);
 }
 
 void ChannelServer::loadLogConfig() {
@@ -76,13 +78,15 @@ string ChannelServer::makeLogIdentifier() {
 void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, getWorldConnection());
-	getWorldConnection()->sendAuth(getInterPassword(), getExternalIp());
+	string interPassword = getInterPassword();
+	IpMatrix externalIp = getExternalIp();
+	getWorldConnection()->sendAuth(interPassword, externalIp);
 }
 
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
 	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
-	m_loginPort = config.getShort("login_inter_port");
+	m_loginPort = config.getUnsignedShort("login_inter_port");
 
 	 // Will get from world server
 	m_world = -1;

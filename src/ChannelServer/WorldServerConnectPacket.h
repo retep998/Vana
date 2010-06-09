@@ -37,5 +37,6 @@ namespace WorldServerConnectPacket {
 	void toChannels(WorldServerConnection *player, PacketCreator &packet);
 	void toWorlds(WorldServerConnection *player, PacketCreator &packet);
 	void reloadMcdb(WorldServerConnection *player, const string &type);
+	void reloadCashServers(WorldServerConnection *player);
 	void loadPlayerNpc(WorldServerConnection *player, int32_t id);
 };

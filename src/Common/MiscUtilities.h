@@ -28,6 +28,7 @@ using std::vector;
 namespace MiscUtilities {
 	string hashPassword(const string &password, const string &salt);
 	bool isBossChannel(const vector<int8_t> &vec, int8_t channelid);
+	string getBanReason(int8_t reason);
 
 	// The following methods are used for deleting (freeing) pointers in an array
 	template<class T>

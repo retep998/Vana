@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "WorldServer.h"
 
-void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, int16_t port) {
+void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
@@ -32,7 +32,7 @@ void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, con
 	packet.add<uint32_t>(extIp.size());
 	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
 
-	packet.add<int16_t>(port);
+	packet.add<uint16_t>(port);
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
 
@@ -49,6 +49,20 @@ void LoginServerConnectPacket::removeChannel(int32_t channel) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_REMOVE_CHANNEL);
 	packet.add<int32_t>(channel);
+
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+}
+
+void LoginServerConnectPacket::registerCashServer() {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_REGISTER_CASH_SERVER);
+
+	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+}
+
+void LoginServerConnectPacket::removeCashServer() {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_REMOVE_CASH_SERVER);
 
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }

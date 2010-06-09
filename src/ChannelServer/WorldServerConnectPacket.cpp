@@ -86,6 +86,15 @@ void WorldServerConnectPacket::reloadMcdb(WorldServerConnection *player, const s
 	toChannels(player, packet);
 }
 
+void WorldServerConnectPacket::reloadCashServers(WorldServerConnection *player) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_LOGIN);
+	packet.add<int16_t>(IMSG_TO_WORLDS);
+	packet.add<int16_t>(IMSG_TO_CASH_SERVER);
+	packet.add<int16_t>(IMSG_REFRESH_DATA);
+	player->getSession()->send(packet);
+}
+
 void WorldServerConnectPacket::loadPlayerNpc(WorldServerConnection *player, int32_t id) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_CHANNELS);

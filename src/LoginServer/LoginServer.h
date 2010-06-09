@@ -45,13 +45,19 @@ public:
 	bool getPicEnabled() const { return m_picEnabled; }
 	void setPicEnabled(bool enabled) { m_picEnabled = enabled; }
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
+	uint16_t getCashServerPort() const { return m_cashPort; }
+	string getTelnetPassword() const { return m_telnetPassword; }
 private:
 	LoginServer();
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
 	bool m_picEnabled;
-	int16_t m_port;
-	int16_t m_interPort;
+	bool m_telnetEnabled;
+	uint16_t m_port;
+	uint16_t m_interPort;
+	uint16_t m_cashPort;
+	uint16_t m_telnetPort;
 	int32_t m_maxInvalidLogins;
+	string m_telnetPassword;
 };

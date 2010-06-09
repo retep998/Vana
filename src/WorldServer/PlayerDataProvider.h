@@ -44,7 +44,7 @@ public:
 
 	// Player info
 	void registerPlayer(Player *player, bool online = true);
-	void remove(int32_t id, int16_t channel = -1);
+	void removePlayer(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
 	Player * getPlayer(const string &name, bool includeOffline = false);
 	Player * getPlayer(int32_t id, bool includeOffline = false);

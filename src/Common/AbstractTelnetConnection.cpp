@@ -24,7 +24,9 @@ void AbstractTelnetConnection::handleRequest(const string &data) {
 		if (data == "exit" || data == "bye") {
 			m_session->disconnect();
 		}
-		realHandleRequest(data);
+		else {
+			realHandleRequest(data);
+		}
 	}
 	catch (std::exception &e) {
 		std::cout << "ERROR: " << e.what() << std::endl;

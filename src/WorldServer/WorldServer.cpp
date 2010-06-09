@@ -27,7 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServer * WorldServer::singleton = nullptr;
 
 WorldServer::WorldServer() :
-m_worldId(-1)
+m_worldId(-1),
+m_cashServerConnection(nullptr),
+m_cashConnected(false) 
 {
 	setServerType(ServerTypes::World);
 }
@@ -42,15 +44,18 @@ void WorldServer::loadData() {
 
 	m_loginConnection = new LoginServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, getLoginConnection());
-	getLoginConnection()->sendAuth(getInterPassword(), getExternalIp());
+	string interPassword = getInterPassword();
+	IpMatrix externalIp = getExternalIp();
+	getLoginConnection()->sendAuth(interPassword, externalIp);
 }
 
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
 	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
-	m_loginPort = config.getShort("login_inter_port");
+	m_loginPort = config.getUnsignedShort("login_inter_port");
 
 	m_port = -1; // Will get from login server later
+	m_cashPort = -1; // Will get from login server later
 }
 
 void WorldServer::loadLogConfig() {

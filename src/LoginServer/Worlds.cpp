@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include "Channel.h"
 #include "Characters.h"
+#include "InterHeader.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
@@ -29,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PlayerStatus.h"
 #include "World.h"
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 Worlds * Worlds::singleton = nullptr;
@@ -134,14 +136,39 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
 		}
 	}
 
+	if (worldid != -1) {
+		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
+		LoginServerAcceptPacket::connectServer(player, worldid, worldIp, port, InterChannelServer);
+	}
+	else {
+		LoginServerAcceptPacket::connectServer(player, worldid, 0, 0, InterChannelServer);
+		std::cout << "Error: No more channels to assign." << std::endl;
+	}
+	player->getSession()->disconnect();
+	return worldid;
+}
+
+int8_t Worlds::addCashServer(LoginServerAcceptConnection *player) {
+	int8_t worldid = -1;
+	uint16_t port;
+	AbstractServerAcceptConnection *worldPlayer;
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (!iter->second->isCashServerConnected() && iter->second->isConnected()) {
+			worldid = iter->second->getId();
+			port = iter->second->getPort();
+			worldPlayer = iter->second->getConnection();
+			iter->second->setCashServerConnected(true);
+			break;
+		}
+	}
 
 	if (worldid != -1) {
 		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
-		LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
+		LoginServerAcceptPacket::connectServer(player, worldid, worldIp, port, InterCashServer);
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(player, worldid, 0, 0);
-		std::cout << "Error: No more channels to assign." << std::endl;
+		LoginServerAcceptPacket::connectServer(player, worldid, 0, 0, InterCashServer);
+		std::cout << "Error: No more cash servers to assign." << std::endl;
 	}
 	player->getSession()->disconnect();
 	return worldid;
@@ -180,4 +207,10 @@ void Worlds::calculatePlayerLoad(World *world) {
 
 World * Worlds::getWorld(uint8_t id) {
 	return worlds.find(id) == worlds.end() ? nullptr : worlds[id];
+}
+
+void Worlds::setEventMessages(const string &message) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		iter->second->setEventMessage(message);
+	}
 }

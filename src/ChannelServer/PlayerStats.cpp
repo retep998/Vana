@@ -288,6 +288,7 @@ void PlayerStats::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(player, Stats::Level, level);
 	LevelsPacket::levelUp(player);
+	player->saveAll();
 	SyncPacket::updateLevel(ChannelServer::Instance()->getWorldConnection(), player->getId(), level);
 }
 

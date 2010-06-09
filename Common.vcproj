@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-874"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Common"
 	ProjectGUID="{CFFE2EE8-4188-4E42-B76C-8005041C2877}"
 	RootNamespace="Common"
@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			ManagedExtensions="0"
 			>
 			<Tool
@@ -87,7 +87,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)\$(ProjectName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -286,6 +286,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\Common\ExceptionReport.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\FileUtilities.cpp"
 					>
 				</File>
@@ -417,6 +421,10 @@
 			<Filter
 				Name="Data Structures"
 				>
+				<File
+					RelativePath=".\src\Common\CashItem.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\Item.cpp"
 					>
@@ -620,6 +628,10 @@
 				Name="Utilities"
 				>
 				<File
+					RelativePath=".\src\Common\ExceptionReport.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\FileUtilities.h"
 					>
 				</File>
@@ -640,6 +652,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\Common\ProcessorInfo.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\Common\Randomizer.h"
 					>
 				</File>
@@ -649,6 +665,10 @@
 				</File>
 				<File
 					RelativePath=".\src\Common\TimeUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Common\WindowsVersion.h"
 					>
 				</File>
 			</Filter>
@@ -763,6 +783,10 @@
 			<Filter
 				Name="Data Structures"
 				>
+				<File
+					RelativePath=".\src\Common\CashItem.h"
+					>
+				</File>
 				<File
 					RelativePath=".\src\Common\Configuration.h"
 					>

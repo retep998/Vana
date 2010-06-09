@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.h"
 #include "Channels.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "GameObjects.h"
 #include "Guild.h"
 #include "GuildPacket.h"
@@ -71,8 +72,7 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	string alliancename = packet.getString();
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (player == nullptr|| player->getParty() == nullptr || player->getGuild() == nullptr || 
-		player->getAlliance() != nullptr || player->getGuildRank() != 1)
+	if (player == nullptr|| player->getParty() == nullptr || player->getGuild() == nullptr || player->getAlliance() != nullptr || player->getGuildRank() != 1)
 		return;
 
 	Party *party = player->getParty();
@@ -85,8 +85,6 @@ void SyncHandler::handleAllianceCreation(PacketReader &packet) {
 			return;
 		}
 	}
-
-	// There we go, create an alliance...
 
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO alliances (id, leader, worldid, name) VALUES (NULL, "
@@ -312,12 +310,11 @@ void SyncHandler::sendPlayerChangeRank(int32_t allianceid, PacketReader &packet)
 		victim->getAlliance() != alliance)
 		return;
 
-	// Client sends a zero for increasing the rank, and an one for decreasing the rank....
-	uint8_t option = packet.get<uint8_t>();
+	bool DecreaseRank = packet.getBool();
 
-	if (option == 1 && victim->getAllianceRank() > 2)
+	if (DecreaseRank && victim->getAllianceRank() > 2)
 		victim->setAllianceRank(victim->getAllianceRank() - 1);
-	else if (option == 0 && victim->getAllianceRank() > 2 && victim->getAllianceRank() < 5)
+	else if (!DecreaseRank && victim->getAllianceRank() > 2 && victim->getAllianceRank() < 5)
 		victim->setAllianceRank(victim->getAllianceRank() + 1);
 	else
 		return;
@@ -373,10 +370,10 @@ void SyncHandler::sendAllianceDisband(int32_t allianceid, int32_t playerid) {
 	query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE allianceid = " << allianceid;
 	query.exec();
 
-	query << "UPDATE guilds SET allianceid = 0 WHERE allianceid = " << allianceid; // Update the guild in the database
+	query << "UPDATE guilds SET allianceid = 0 WHERE allianceid = " << allianceid;
 	query.exec();
 
-	query << "DELETE FROM alliances WHERE id = " << allianceid; // Update the guild in the database
+	query << "DELETE FROM alliances WHERE id = " << allianceid;
 	query.exec();
 
 	AlliancePacket::sendDeleteAlliance(alliance);
@@ -416,7 +413,7 @@ void SyncHandler::sendIncreaseCapacity(int32_t allianceid, int32_t playerid) {
 	alliance->setCapacity(alliance->getCapacity() + 1);
 	alliance->save();
 
-	SyncPacket::GuildPacket::updatePlayerMesos(player, -1000000);
+	SyncPacket::GuildPacket::updatePlayerMesos(player, -GuildsAndAlliances::AllianceCapacityIncreasementCost);
 
 	AlliancePacket::sendUpdateCapacity(alliance);
 	SyncPacket::AlliancePacket::changeCapacity(alliance);
@@ -466,7 +463,7 @@ void SyncHandler::removeGuild(Guild *guild) {
 	query << "UPDATE characters SET allianceid = 0, alliancerank = 5 WHERE guildid = " << guild->getId();
 	query.exec();
 
-	query << "UPDATE guilds SET allianceid = 0 WHERE id = " << guild->getId(); // Update the guild in the database
+	query << "UPDATE guilds SET allianceid = 0 WHERE id = " << guild->getId();
 	query.exec();
 
 	alliance->removeGuild(guild);
@@ -489,14 +486,15 @@ void SyncHandler::handleNewThread(PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	Guild *guild = PlayerDataProvider::Instance()->getGuild(guildid);
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (guild == nullptr || player == nullptr)
+	if (guild == nullptr || player == nullptr || player->getGuild() == nullptr)
 		return;
 
 	GuildBbs *bbs = guild->getBbs();
 
 	if (guildid != player->getGuild()->getId()) {
 		std::stringstream x;
-		x << player->getName() << " wants to post a new thread without being in the guild";
+		x << "Player tries to create a thread in a guild BBS without being IN the guild. PlayerID: " << playerid << ", GuildID: " << guildid << std::endl;
+		WorldServer::Instance()->log(LogTypes::Warning, x.str());
 		return;
 	}
 
@@ -689,8 +687,8 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			if (player == nullptr)
 				return;
 			int32_t inviteGuildId = player->getGuildInviteId();
-			if (!player->isInvitedToGuild() || difftime(player->getGuildInviteTime(), time(0)) >= 300) {
-				if (difftime(player->getGuildInviteTime(), time(0)) >= 300) {
+			if (!player->isInvitedToGuild() || difftime(player->getGuildInviteTime(), time(0)) >= GuildsAndAlliances::InvitationAliveTime) {
+				if (difftime(player->getGuildInviteTime(), time(0)) >= GuildsAndAlliances::InvitationAliveTime) {
 					player->setGuildInviteTime(0);
 					player->setGuildInviteId(0);
 				}
@@ -748,17 +746,17 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 				return;
 			int32_t playerid = packet.get<int32_t>();
 			Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
-			if (player == nullptr || guild->getCapacity() == 100)
+			if (player == nullptr || guild->getCapacity() == GuildsAndAlliances::GuildMaxCapacacity)
 				return;
 
-			int32_t cost = 500000;
+			int32_t cost = GuildsAndAlliances::GuildCapacityIncreasementCost;
 
 			if (guild->getCapacity() == 15)
-				cost *= 3;
+				cost *= GuildsAndAlliances::GuildIncreaseCapacityCostMultiplier::FifteenSlots;
 			else if (guild->getCapacity() == 20)
-				cost *= 5;
+				cost *= GuildsAndAlliances::GuildIncreaseCapacityCostMultiplier::TwentySlots;
 			else if (guild->getCapacity() >= 25)
-				cost *= 7;
+				cost *= GuildsAndAlliances::GuildIncreaseCapacityCostMultiplier::TwentyFiveOrMoreSlots;
 
 			guild->setCapacity(guild->getCapacity() + 5);
 			guild->save();
@@ -775,7 +773,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			Player *player = PlayerDataProvider::Instance()->getPlayer(guild->getLeader());
 			if (player == nullptr)
 				return;
-			SyncPacket::GuildPacket::updatePlayerMesos(player, -200000);
+			SyncPacket::GuildPacket::updatePlayerMesos(player, -GuildsAndAlliances::GuildDisbandCost);
 
 			if (guild->getAlliance() != nullptr)
 				SyncHandler::removeGuild(guild);
@@ -844,7 +842,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			guild->setLogo(logo);
 			guild->save();
 
-			SyncPacket::GuildPacket::updatePlayerMesos(player, -5000000);
+			SyncPacket::GuildPacket::updatePlayerMesos(player, -GuildsAndAlliances::GuildChangeEmblemCost);
 			GuildPacket::sendEmblemUpdate(guild);
 			SyncPacket::GuildPacket::updateEmblem(guild);
 			break;
@@ -870,7 +868,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 			guild->setLogo(GuildLogo());
 			guild->save();
 
-			SyncPacket::GuildPacket::updatePlayerMesos(player, -1000000);
+			SyncPacket::GuildPacket::updatePlayerMesos(player, -GuildsAndAlliances::GuildRemoveEmblemCost);
 			GuildPacket::sendEmblemUpdate(guild);
 			SyncPacket::GuildPacket::updateEmblem(guild);
 			break;
@@ -881,7 +879,7 @@ void SyncHandler::handleGuildPacket(PacketReader &packet) {
 void SyncHandler::handleLoginServerPacket(LoginServerConnection *player, PacketReader &packet) {
 	int32_t charid = packet.get<int32_t>();
 	Player *character = PlayerDataProvider::Instance()->getPlayer(charid, true);
-	if (character == nullptr)
+	if (character == nullptr || character->isOnline())
 		return;
 	Guild *guild = character->getGuild();
 	if (guild == nullptr)
@@ -890,7 +888,7 @@ void SyncHandler::handleLoginServerPacket(LoginServerConnection *player, PacketR
 	guild->removePlayer(character);
 
 	GuildPacket::sendPlayerUpdate(guild, character, 1, false);
-	// Todo: Remove the player from the worldserver...
+	PlayerDataProvider::Instance()->removePlayer(charid);
 }
 
 void SyncHandler::loadGuild(int32_t id) {
@@ -900,7 +898,7 @@ void SyncHandler::loadGuild(int32_t id) {
 
 	if ((int32_t) res.num_rows() == 0) {
 		std::stringstream x;
-		x << "Alert! Can't load a guild! Guild ID: " << id;
+		x << "Unable to load guild! Guildid: " << id;
 		WorldServer::Instance()->log(LogTypes::Error, x.str());
 		return;
 	}
@@ -990,7 +988,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 
 				if (gid == 0) {
 					std::stringstream x;
-					x << "The server can't load a guild! MySQL error: " << query.error();
+					x << "Guild creation failed! MySQL error: " << query.error();
 					WorldServer::Instance()->log(LogTypes::Error, x.str());
 
 					GuildPacket::sendPlayerMessage(leader, 1, "Sorry, but something went wrong on the server. You didn't lose money and there was no guild created.");
@@ -1004,7 +1002,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 
 				if (guild == nullptr) {
 					std::stringstream x;
-					x << "SyncHandler::handleGuildCreation: The code cannot load the guild. Please check if the guild was inserted into the database. Guild ID: " << gid;
+					x << "SyncHandler::handleGuildCreation: Unable to load the guild. Please check if the guild was created. Guild ID: " << gid;
 					WorldServer::Instance()->log(LogTypes::Error, x.str());
 					return;
 				}
@@ -1022,7 +1020,7 @@ void SyncHandler::handleGuildCreation(PacketReader &packet) {
 				}
 
 				SyncPacket::GuildPacket::updatePlayers(guild, false);
-				SyncPacket::GuildPacket::updatePlayerMesos(leader, -1500000);
+				SyncPacket::GuildPacket::updatePlayerMesos(leader, -GuildsAndAlliances::GuildCreationCost);
 			}
 			else {
 				// Sorry guys, I need this packet...
@@ -1111,7 +1109,7 @@ void SyncHandler::sendGuildInvite(int32_t guildid, PacketReader &packet) {
 	if (inviter == nullptr || invitee == nullptr || inviter->getGuild()->getId() != guildid)
 		return;
 
-	if (difftime(invitee->getGuildInviteTime(), time(0)) >= 300) {
+	if (difftime(invitee->getGuildInviteTime(), time(0)) >= GuildsAndAlliances::InvitationAliveTime) {
 		invitee->setGuildInviteTime(0);
 		invitee->setGuildInviteId(0);
 	}
@@ -1159,6 +1157,7 @@ void SyncHandler::createParty(int32_t playerid) {
 		// Hacking
 		return;
 	}
+
 	Party *party = new Party(PlayerDataProvider::Instance()->getPartyId());
 	party->addMember(pplayer);
 	party->setLeader(pplayer->getId());
@@ -1175,13 +1174,16 @@ void SyncHandler::giveLeader(int32_t playerid, int32_t target, bool is) {
 		// Hacking
 		return;
 	}
+
 	Party *party = pplayer->getParty();
 	party->setLeader(target);
+
 	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->isOnline()) {
 			SyncPacket::PartyPacket::giveLeader(iter->second->getChannel(), iter->second->getId(), target, is);
 		}
 	}
+
 	SyncPacket::PlayerPacket::sendSwitchPartyLeader(target, pplayer->getParty()->getId());
 }
 
@@ -1192,6 +1194,7 @@ void SyncHandler::expelPlayer(int32_t playerid, int32_t target) {
 		// Hacking
 		return;
 	}
+
 	Party *party = pplayer->getParty();
 	party->deleteMember(target);
 	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
@@ -1202,6 +1205,7 @@ void SyncHandler::expelPlayer(int32_t playerid, int32_t target) {
 	if (tplayer != nullptr) {
 		SyncPacket::PartyPacket::updateParty(tplayer->getChannel(), PartyActions::Expel, target, target);
 	}
+
 	SyncPacket::PlayerPacket::sendRemovePartyPlayer(target, pplayer->getParty()->getId());
 	PlayerDataProvider::Instance()->getPlayer(target, true)->setParty(nullptr);
 }
@@ -1212,6 +1216,7 @@ void SyncHandler::leaveParty(int32_t playerid) {
 		// Hacking
 		return;
 	}
+
 	Party *party = pplayer->getParty();
 	if (party->isLeader(playerid)) {
 		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
@@ -1242,6 +1247,7 @@ void SyncHandler::joinParty(int32_t playerid, int32_t partyid) {
 		// Hacking
 		return;
 	}
+
 	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
 	if (party->members.size() == 6) {
 		SyncPacket::PartyPacket::partyError(pplayer->getChannel(), playerid, 0x11);
@@ -1264,6 +1270,7 @@ void SyncHandler::invitePlayer(int32_t playerid, const string &invitee) {
 		// Hacking
 		return;
 	}
+
 	Player *invited = PlayerDataProvider::Instance()->getPlayer(invitee);
 	if (invited->isOnline() && invited->getChannel() == pplayer->getChannel()) {
 		if (invited->getParty() != nullptr) {
@@ -1282,6 +1289,8 @@ void SyncHandler::handlePlayerPacket(WorldServerAcceptConnection *connection, Pa
 	switch (packet.get<int8_t>()) {
 		case Sync::Player::ChangeChannelRequest: playerChangeChannel(connection, packet); break;
 		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, packet); break;
+		case Sync::Player::ChangeServerRequest: playerChangeServer(connection, packet); break;
+		case Sync::Player::ChangeServerGo: handleChangeServer(connection, packet); break;
 		case Sync::Player::Connect: playerConnect(connection->getChannel(), packet); break;
 		case Sync::Player::Disconnect: playerDisconnect(connection->getChannel(), packet); break;
 		case Sync::Player::UpdateLevel: updateLevel(packet); break;
@@ -1295,8 +1304,8 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	string name = packet.getString();
 	int32_t map = packet.get<int32_t>();
-	int16_t job = static_cast<int16_t>(packet.get<int32_t>());
-	uint8_t level = static_cast<uint8_t>(packet.get<int32_t>());
+	int16_t job = packet.get<int16_t>();
+	uint8_t level = packet.get<uint8_t>();
 	int32_t guildid = packet.get<int32_t>();
 	uint8_t guildrank = packet.get<uint8_t>();
 	int32_t allianceid = packet.get<int32_t>();
@@ -1318,21 +1327,28 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	p->setGuildRank(guildrank);
 	p->setAlliance(PlayerDataProvider::Instance()->getAlliance(allianceid));
 	p->setAllianceRank(alliancerank);
-	p->setChannel(channel);
 	p->setOnline(true);
-	PlayerDataProvider::Instance()->registerPlayer(p);
-	if (guildid != 0) {
-		GuildPacket::sendGuildInfo(p->getGuild(), p);
-		if (oldJob == -1) // Didn't come online till now...
-			GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
-		if (allianceid != 0 && oldJob == -1)
-			AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
+
+	if (!p->isInCashShop()) {
+		p->setChannel(channel);
+		if (guildid != 0) {
+			GuildPacket::sendGuildInfo(p->getGuild(), p);
+			if (oldJob == -1) {
+				// Didn't come online till now...
+				// Fun fact: GMS updates this when the PONG packet is received.
+				GuildPacket::sendPlayerStatUpdate(p->getGuild(), p, false, true);
+			}
+			if (allianceid != 0 && oldJob == -1) {
+				AlliancePacket::sendUpdatePlayer(p->getAlliance(), p, 1);
+			}
+		}
 	}
+	PlayerDataProvider::Instance()->registerPlayer(p);
 }
 
 void SyncHandler::playerDisconnect(uint16_t channel, PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	PlayerDataProvider::Instance()->remove(id, channel);
+	PlayerDataProvider::Instance()->removePlayer(id, channel);
 	int16_t chan = PlayerDataProvider::Instance()->removePendingPlayerEarly(id);
 	if (chan != -1) {
 		SyncPacket::PlayerPacket::sendHeldPacketRemoval(chan, id);
@@ -1356,11 +1372,86 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *player, Packe
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
+		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet, false);
 		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
 	}
-	else { // Channel doesn't exist (offline)
-		SyncPacket::PlayerPacket::playerChangeChannel(player, playerid, 0, -1);
+	else {
+		// Channel doesn't exist (offline)
+		Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
+		SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::CannotGo);
+	}
+}
+
+void SyncHandler::playerChangeServer(WorldServerAcceptConnection *player, PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid, true);
+	bool connect = packet.getBool();
+	Channel *chan = Channels::Instance()->getChannel(gamePlayer->getChannel());
+	if (connect) {
+		bool cashShop = packet.getBool();
+		if (cashShop) {
+			if (WorldServer::Instance()->isCashServerConnected()) {
+				SyncPacket::PlayerPacket::sendPacketToCashServerForHolding(playerid, packet);
+			}
+			else {
+				SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::NoCashShop);
+			}
+		}
+		else {
+			// TODO: MTS handling
+			SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::MtsUnavailable);
+		}
+	}
+	else {
+		if (chan) {
+			SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet, true);
+			PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
+		}
+		else {
+			SyncPacket::PlayerPacket::sendPlayerDisconnectServer(WorldServer::Instance()->getCashConnection(), playerid);
+			std::stringstream str;
+			str << "Player couldn't get back into its channel. Disconnected. (Channel: " << gamePlayer->getChannel() << ")";
+			WorldServer::Instance()->log(LogTypes::Error, str.str());
+		}
+	}
+}
+
+void SyncHandler::handleChangeServer(WorldServerAcceptConnection *player, PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	bool connect = packet.getBool(); // If true: it connects to the server, otherwise it disconnects/goes back to the channel.
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid, true);
+	if (gamePlayer) {
+		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
+		WorldServerAcceptConnection *cash = WorldServer::Instance()->getCashConnection();
+		if (connect) {
+			bool cashShop = packet.getBool();
+			if (cashShop) {
+				if (WorldServer::Instance()->isCashServerConnected()) {
+					gamePlayer->setCashShop(true);
+					SyncPacket::PlayerPacket::newConnectableCashServer(playerid, gamePlayer->getIp());
+					uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), cash->getExternalIp(), cash->getIp());
+					SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, WorldServer::Instance()->getCashPort());
+				}
+				else {
+					SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::NoCashShop);
+				}
+			}
+			else {
+				SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::MtsUnavailable);
+			}
+		}
+		else {
+			if (curchan) {
+				gamePlayer->setCashShop(false);
+				SyncPacket::PlayerPacket::newConnectable(curchan->getId(), playerid, gamePlayer->getIp());
+				uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), curchan->getExternalIps(), curchan->getIp());
+				SyncPacket::PlayerPacket::playerChangeChannel(cash, playerid, chanIp, curchan->getPort());
+			}
+			else {
+				//SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(cash, playerid, Sync::Player::BlockMessages::CannotGo);
+			}
+		}
+		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
 	}
 }
 
@@ -1377,7 +1468,7 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, Packe
 			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
 		}
 		else {
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
+			SyncPacket::PlayerPacket::sendCannotChangeServerToPlayer(gamePlayer->getChannel(), playerid, Sync::Player::BlockMessages::CannotGo);
 		}
 		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
 	}
@@ -1386,28 +1477,32 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, Packe
 void SyncHandler::updateJob(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	int16_t job = packet.get<int16_t>();
-	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
-	plyr->setJob(job);
-	if (plyr->getParty() != nullptr) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(id);
+	player->setJob(job);
+	if (player->getParty() != nullptr) {
 		SyncHandler::silentUpdate(id);
 	}
-	if (plyr->getGuild() != nullptr) {
-		Guild *guild = plyr->getGuild();
-		GuildPacket::sendPlayerStatUpdate(guild, plyr, false);
+	if (player->getGuild() != nullptr) {
+		GuildPacket::sendPlayerStatUpdate(player->getGuild(), player, false);
+	}
+	if (player->getAlliance() != nullptr) {
+		AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 1);
 	}
 }
 
 void SyncHandler::updateLevel(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
-	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
-	plyr->setLevel(level);
-	if (plyr->getParty() != nullptr) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(id, true);
+	player->setLevel(level);
+	if (player->getParty() != nullptr) {
 		SyncHandler::silentUpdate(id);
 	}
-	if (plyr->getGuild() != nullptr) {
-		Guild *guild = plyr->getGuild();
-		GuildPacket::sendPlayerStatUpdate(guild, plyr, true);
+	if (player->getGuild() != nullptr) {
+		GuildPacket::sendPlayerStatUpdate(player->getGuild(), player, true);
+	}
+	if (player->getAlliance() != nullptr) {
+		AlliancePacket::sendUpdatePlayer(player->getAlliance(), player, 1);
 	}
 }
 

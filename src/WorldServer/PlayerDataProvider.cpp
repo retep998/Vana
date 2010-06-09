@@ -161,7 +161,7 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 	if (m_players.find(player->getId()) == m_players.end()) {
 		m_players[player->getId()] = player;
 	}
-	if (online) {
+	if (online && !player->isInCashShop()) {
 		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(player->getId());
 		}
@@ -174,7 +174,7 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 	}
 }
 
-void PlayerDataProvider::remove(int32_t id, int16_t channel) {
+void PlayerDataProvider::removePlayer(int32_t id, int16_t channel) {
 	Player *player = m_players[id];
 	if (channel == -1 || player->getChannel() == channel) {
 		player->setOnline(false);

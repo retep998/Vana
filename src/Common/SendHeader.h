@@ -88,7 +88,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_NAME_CANCELLATION_REQUEST_NOT_REQUESTED 0x78 // 1 thing, 1 whole header
 #define SMSG_MACRO_LIST 0x7C
 #define SMSG_CHANGE_MAP 0x7D
-#define SMSG_ENTER_CASHSHOP 0x7F
+#define SMSG_CONNECT_CASHSHOP 0x7F
 #define SMSG_PORTAL_BLOCKED 0x83
 #define SMSG_CHANNEL_BLOCKED 0x84 // For messages like 'This server is unavailable'
 #define SMSG_MAP_FORCE_EQUIPMENT 0x85 // Wear apple suit on training maps

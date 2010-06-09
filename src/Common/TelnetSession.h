@@ -54,7 +54,8 @@ public:
 	void disconnect();
 	void handle_stop();
 	void send(const unsigned char *buf, int32_t len);
-	void send(const string &data);
+	void send(const string &data, bool newline = true, bool starttext = true);
+	void send();
 	uint32_t getIp() const;
 protected:
 	void start_read();
@@ -67,6 +68,7 @@ protected:
 	Decoder m_decoder;
 	std::tr1::shared_ptr<AbstractTelnetConnection> m_player;
 	std::stringstream m_inputStream;
+	size_t m_inputStreamSize;
 	shared_array<unsigned char> m_buffer;
 
 	// Packet sending

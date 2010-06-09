@@ -147,6 +147,8 @@ public:
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath(bool wheel);
+	void changeServer(bool cashShop);
+	void handlePong();
 	bool updateTickCount(int32_t newValue);
 private:
 	void playerConnect(PacketReader &packet);
