@@ -77,7 +77,7 @@ void PlayerStorage::addCashItem(CashItem *item) {
 			<< item->getAmount() << ", "
 			<< mysqlpp::quote << item->getName() << ", "
 			<< item->getPetId() << ", "
-			<< mysqlpp::quote << mysqlpp::DateTime(TimeUtilities::tickToTime(item->getExpirationTime())) << ")";
+			<< item->getExpirationTime() << ")";
 		query.exec();
 		item->setId(static_cast<int32_t>(query.insert_id()));
 	}
@@ -180,7 +180,7 @@ void PlayerStorage::load() {
 		item->setId(row[0]);
 		item->setItemId(row[1]);
 		item->setAmount(row[2]);
-		item->setExpirationTime(TimeUtilities::timeToTick(mysqlpp::DateTime(row[3])));
+		item->setExpirationTime(row[3]);
 		row[4].to_string(temp);
 		item->setName(temp);
 		item->setUserId(row[5]);
@@ -300,7 +300,7 @@ void PlayerStorage::save() {
 			<< iter->second->getAmount() << ", "
 			<< mysqlpp::quote << iter->second->getName() << ", "
 			<< iter->second->getPetId() << ", "
-			<< mysqlpp::quote << mysqlpp::DateTime(TimeUtilities::tickToTime(iter->second->getExpirationTime())) << ")";
+			<< iter->second->getExpirationTime() << ")";
 	}
 	if (!firstrun)
 		query.exec();
@@ -320,7 +320,7 @@ void PlayerStorage::checkExpiredItems() {
 	vector<int64_t> expiredItems;
 	for (size_t i = 0; i < cashStorage.size(); i++) {
 		item = cashStorage[i];
-		if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && TimeUtilities::tickToTime(item->getExpirationTime()) <= time(0)) {
+		if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= TimeUtilities::getServerTime()) {
 			PlayerPacket::sendItemExpired(player, item->getId());
 			expiredItems.push_back(item->getId());
 		}
