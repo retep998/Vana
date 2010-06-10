@@ -205,9 +205,9 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 		return;
 	}
 	
-	mysqlpp::Query charExist = Database::getCharDB().query();
-	charExist << "SELECT world_id, userid, id, `name` FROM characters WHERE name = " << mysqlpp::quote << to << " LIMIT 1";
-	mysqlpp::StoreQueryResult res = charExist.store();
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT world_id, userid, id, `name` FROM characters WHERE name = " << mysqlpp::quote << to << " LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() == 0) {
 		PlayerPacket::showFailure(player, ErrorMessages::CheckRecipientName);
 		return;
@@ -266,23 +266,23 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 				vector<CashItemInfo> *items = CashDataProvider::Instance()->getPackageItems(info->itemid);
 				for (size_t i = 0; i < items->size(); i++) {
 					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(items->at(i).expiration_days)) : Items::NoExpiration;
-					charExist << "INSERT INTO storage_cash VALUES (NULL, "
+					query << "INSERT INTO storage_cash VALUES (NULL, "
 						<< atoi(row["userid"]) << ", "
 						<< (int16_t) atoi(row["world_id"]) << ", "
 						<< items->at(i).itemid << ", "
 						<< items->at(i).quantity << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< 0 << ", "
-						<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
-					charExist.exec();
+						<< expirationTime << ")";
+					query.exec();
 
-					charExist << "INSERT INTO character_cashshop_gifts VALUES ("
+					query << "INSERT INTO character_cashshop_gifts VALUES ("
 						<< atoi(row["id"]) << ", "
-						<< charExist.insert_id() << ", "
+						<< query.insert_id() << ", "
 						<< items->at(i).itemid << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< mysqlpp::quote << message << ")";
-					charExist.exec();
+					query.exec();
 				}
 				CashDataProvider::Instance()->logBoughtItem(player->getUserId(), player->getId(), serial);
 				WorldServerConnectPacket::reloadBestItems(CashServer::Instance()->getWorldConnection());
@@ -294,23 +294,23 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 			}
 			else {
 				expirationTime = info->expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(info->expiration_days)) : Items::NoExpiration;
-				charExist << "INSERT INTO storage_cash VALUES (NULL, "
+				query << "INSERT INTO storage_cash VALUES (NULL, "
 					<< atoi(row["userid"]) << ", "
 					<< (int16_t) atoi(row["world_id"]) << ", "
 					<< info->itemid << ", "
 					<< info->quantity << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< 0 << ", "
-					<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
-				charExist.exec();
+					<< expirationTime << ")";
+				query.exec();
 
-				charExist << "INSERT INTO character_cashshop_gifts VALUES ("
+				query << "INSERT INTO character_cashshop_gifts VALUES ("
 					<< atoi(row["id"]) << ", "
-					<< charExist.insert_id() << ", "
+					<< query.insert_id() << ", "
 					<< info->itemid << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< mysqlpp::quote << message << ")";
-				charExist.exec();
+				query.exec();
 
 				CashDataProvider::Instance()->logBoughtItem(player->getUserId(), player->getId(), serial);
 				WorldServerConnectPacket::reloadBestItems(CashServer::Instance()->getWorldConnection());
