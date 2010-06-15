@@ -569,16 +569,27 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				}
 				break;
 			}
-			case Items::ItemLock: {
+			case Items::ItemLock: 
+			case Items::ScissorsOfKarma: {
 				int8_t inventory = (int8_t) packet.get<int32_t>();
 				int16_t slot = (int16_t) packet.get<int32_t>();
 				if (slot != 0) {
 					Item *item = player->getInventory()->getItem(inventory, slot);
-					if (item == nullptr) {
+					if (item == nullptr || (itemid == Items::ItemLock && item->hasLock()) || item->hasTradeBlock() || (itemid == Items::ScissorsOfKarma && item->hasKarma())) {
 						// Hacking or failure, dunno
 						return;
 					}
-					item->setLock(true);
+					ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(item->getId());
+					if (itemid == Items::ScissorsOfKarma && info->karmascissors) {
+						// Hacking
+						return;
+					}
+
+					switch (itemid) {
+						case Items::ItemLock: item->setLock(true); break;
+						case Items::ScissorsOfKarma: item->setKarma(true); break;
+					}
+
 					InventoryPacket::addNewItem(player, inventory, slot, item, true);
 					used = true;
 				}

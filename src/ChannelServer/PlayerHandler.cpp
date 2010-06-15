@@ -467,7 +467,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		}
 		if (targettotal > 0) {
 			if (mob != nullptr && mob->getHp() > 0) {
-				MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+				MobHandler::handleMobStatus(player, mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
@@ -642,7 +642,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			}
 		}
 		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player, mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -732,7 +732,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			}
 		}
 		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player, mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -779,7 +779,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 			}
 		}
 		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player, mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -823,7 +823,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 			}
 		}
 		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, player->getSkills()->getSkillLevel(skillid), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player, mob, skillid, player->getSkills()->getSkillLevel(skillid), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}

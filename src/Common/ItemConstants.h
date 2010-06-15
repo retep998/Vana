@@ -277,6 +277,7 @@ namespace Items {
 		Cloud9Messenger = 5390001,
 		LoveholicMessenger = 5390002,
 		WheelOfDestiny = 5510000,
+		ScissorsOfKarma = 5520000,
 		ViciousHammer = 5570000
 	};
 }
