@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pet.h"
 #include "PetHandler.h"
+#include "PetsPacket.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
@@ -458,6 +459,19 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			Map *map = Maps::getMap(player->getMap());
 			message = player->getName() + " 's message : " + message;
 			used = map->createWeather(player, false, Items::WeatherTime, itemid, message);
+		}
+	}
+	else if (GameLogicUtilities::getItemType(itemid) == Items::Types::CashPetFood) {
+		// Pet food.
+		Pet *pet = player->getPets()->getSummoned(0);
+		if (pet != nullptr) {
+			bool success = (pet->getFullness() < Stats::MaxFullness);
+			PetsPacket::showAnimation(player, pet, 1, success);
+			if (success) {
+				pet->modifyFullness(Stats::PetFeedFullness, false);
+				pet->addCloseness(100); // All cash pet food gives 100 closeness.
+				used = true;
+			}
 		}
 	}
 	else {

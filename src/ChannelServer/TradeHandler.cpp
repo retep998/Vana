@@ -150,7 +150,6 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						return;
 					}
 					ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(item->getId());
-					std::cout << item->hasKarma() << std::endl;
 					if (info == nullptr || (info->notrade && info->karmascissors && !item->hasKarma()) || (info->notrade && !info->karmascissors) || item->hasLock()) {
 						// Hacking
 						return;

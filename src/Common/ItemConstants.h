@@ -131,7 +131,8 @@ namespace Items {
 			ItemStar = 207,
 			ItemBullet = 233,
 			ItemMonsterCard = 238,
-			WeatherCash = 512
+			WeatherCash = 512,
+			CashPetFood = 524
 		};
 	}
 
