@@ -238,6 +238,7 @@ void Map::buffPlayers(int32_t buffid) {
 		if (Player *toy = m_players[i]) {
 			if (toy->getStats()->getHp() > 0) {
 				Inventory::useItem(toy, buffid);
+				EffectPacket::sendMobItemBuffEffect(toy, buffid);
 			}
 		}
 	}
@@ -332,7 +333,7 @@ int16_t Map::getFhAtPosition(const Pos &pos) {
 	int16_t foothold = 0;
 	for (size_t i = 0; i < m_footholds.size(); i++) {
 		FootholdInfo &cur = m_footholds[i];
-		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.x && pos.y <= cur.pos2.x) || (pos.y > cur.pos2.x && pos.y <= cur.pos1.x))) {
+		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.y && pos.y <= cur.pos2.y) || (pos.y > cur.pos2.y && pos.y <= cur.pos1.y))) {
 			foothold = cur.id;
 			break;
 		}
@@ -747,7 +748,7 @@ void Map::checkMists() {
 		for (miter = m_poison_mists.begin(); miter != m_poison_mists.end(); ++miter) {
 			mist = miter->second;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
-				bool poisoned = (MobHandler::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
+				bool poisoned = (MobHandler::handleMobStatus(PlayerDataProvider::Instance()->getPlayer(mist->getOwnerId()), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
 				if (poisoned) // Mob is poisoned, don't need to check any more mists
 					break;
 			}
