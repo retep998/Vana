@@ -146,6 +146,10 @@ void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
+				if (item->hasKarma()) {
+					item->setKarma(false);
+					item->setTradeBlock(true);
+				}
 				Inventory::addItem(player, new Item(item));
 				delete item;
 			}

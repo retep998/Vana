@@ -43,6 +43,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gdrops == nullptr) {
 		return;
 	}
+
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId); // Make a copy of the data so we can modify the object with global drops
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	int16_t d = 0;
@@ -97,7 +98,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.y = origin.y;
 
 			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-				pos = Maps::getMap(mapid)->findFloor(pos);
+//				pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't correctly!
 			}
 
 			if (!i->ismesos) {
