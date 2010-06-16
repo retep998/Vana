@@ -36,11 +36,12 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	if (pet->isSummoned()) {
 		packet.add<int32_t>(pet->getItemId());
 		packet.addString(pet->getName());
-		packet.add<int32_t>(pet->getId());
-		packet.add<int32_t>(0);
+		packet.add<int64_t>(pet->getId());
 		packet.addPos(pet->getPos());
 		packet.add<int8_t>(pet->getStance());
-		packet.add<int32_t>(pet->getFh());
+		packet.add<int16_t>(pet->getFh());
+		packet.addBool(pet->hasNameTag());
+		packet.addBool(pet->hasQuoteItem());
 	}
 	if (onlyPlayer) {
 		player->getSession()->send(packet);
@@ -58,7 +59,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(act);
 	packet.addString(message);
-	packet.add<int8_t>(0);
+	packet.addBool(pet->hasQuoteItem());
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -79,10 +80,12 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool 
 	packet.addBool(animation == 1 && success);
 	packet.add<int8_t>(animation);
 	if (animation == 1) {
-		packet.add<int8_t>(0);
+		packet.addBool(pet->hasQuoteItem()); // Maybe
+		//packet.add<int8_t>(0);
 	}
 	else {
-		packet.add<int16_t>(success);
+		packet.add<int8_t>(success);
+		packet.addBool(pet->hasQuoteItem()); // Maybe
 	}
 	player->getSession()->send(packet);
 }
@@ -125,7 +128,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.addString(pet->getName());
-	packet.add<int8_t>(0);
+	packet.addBool(pet->hasNameTag());
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -134,9 +137,8 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	packet.addHeader(SMSG_PET_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
-	packet.add<int32_t>(pet->getId());
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int64_t>(pet->getId());
+	packet.addBool(pet->hasNameTag());
 	player->getSession()->send(packet);
 }
 
@@ -171,8 +173,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(3);
 	packet.add<int32_t>(pet->getItemId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(pet->getId());
-	packet.add<int32_t>(0);
+	packet.add<int64_t>(pet->getId());
 	packet.add<int64_t>(Items::NoExpiration);
 	packet.addString(pet->getName(), 13);
 	packet.add<int8_t>(pet->getLevel());

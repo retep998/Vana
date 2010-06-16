@@ -198,6 +198,11 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("Warps all players to your map or the map you specify.");
 	commandlist["warpall"] = command.addToMap();
 
+	command.command = CmdWarpMap;
+	command.syntax = "[#mapid]";
+	command.notes.push_back("Warps all players in your current map to your map or the map you specify.");
+	commandlist["warpmap"] = command.addToMap();
+
 	command.command = CmdKillAll;
 	command.notes.push_back("Kills all mobs on the current map.");
 	commandlist["killall"] = command.addToMap();
@@ -819,7 +824,36 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						if (Maps::getMap(mapid)) {
 							WarpFunctor func = {mapid, player};
 							PlayerDataProvider::Instance()->run(func);
-							PlayerPacket::showMessage(player, "Warped everyone in the map to mapid " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+							if (args.length() > 0) {
+								PlayerPacket::showMessage(player, "Warped everyone in the server to mapid " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Warped everyone in the server to yourself.", PlayerPacket::NoticeTypes::Blue);
+							}
+						}
+						else {
+							PlayerPacket::showMessage(player, "Cannot warp players; invalid Map ID given (map not found).", PlayerPacket::NoticeTypes::Red);
+						}
+						break;
+					}
+					case CmdWarpMap: {
+						int32_t mapid;
+						if (args.length() > 0) {
+							mapid = getMap(args, player);
+						}
+						else {
+							mapid = player->getMap();
+						}
+
+						if (Map *map = Maps::getMap(mapid)) {
+							WarpFunctor func = {mapid, player};
+							Maps::getMap(player->getMap())->runFunctionPlayers(func);
+							if (args.length() > 0) {
+								PlayerPacket::showMessage(player, "Warped everyone in the map to mapid " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Warped everyone in the map to yourself.", PlayerPacket::NoticeTypes::Blue);
+							}
 						}
 						else {
 							PlayerPacket::showMessage(player, "Cannot warp players; invalid Map ID given (map not found).", PlayerPacket::NoticeTypes::Red);

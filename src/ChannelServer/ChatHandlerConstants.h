@@ -71,6 +71,7 @@ enum Commands {
 	CmdHelp,
 	CmdClearDrops,
 	CmdWarpAll,
+	CmdWarpMap,
 	CmdWarp,
 	CmdWarpTo,
 	CmdRankingCalc,

@@ -328,8 +328,8 @@ void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
 		m_equipped[slot][0] = itemid;
 }
 
-int32_t PlayerInventory::getEquippedId(int16_t slot) {
-	return m_equipped[slot][0];
+int32_t PlayerInventory::getEquippedId(int16_t slot, bool cash) {
+	return m_equipped[slot][(cash ? 1 : 0)];
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
