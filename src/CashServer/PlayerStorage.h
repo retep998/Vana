@@ -53,18 +53,12 @@ public:
 	void removeGift(int64_t id);
 	void setMesos(int32_t mesos) { this->mesos = mesos; }
 	void changeMesos(int32_t mesos);
-	void changeCreditNX(int32_t amount) { nxCredit += amount; }
-	void changePrepaidNX(int32_t amount) { nxPrepaid += amount; }
-	void changeMaplePoints(int32_t amount) { maplePoints += amount; }
 
 	int8_t getSlots() const { return this->slots; }
 	int8_t getCharSlots() const { return this->charSlots; }
 	int8_t getNumItems() const { return items.size(); }
 	int8_t getNumItems(int8_t inv);
 	int32_t getMesos() const { return mesos; }
-	int32_t getCreditNX() const { return nxCredit; }
-	int32_t getPrepaidNX() const { return nxPrepaid; }
-	int32_t getMaplePoints() const { return maplePoints; }
 	bool isFull() const { return ((int8_t) items.size() == slots); }
 	Item * getItem(int8_t slot) const {
 		if (slot < (int8_t) items.size())
@@ -75,14 +69,19 @@ public:
 	CashshopGift * getGift(int64_t id) { return (gifts.find(id) != gifts.end() ? gifts[id] : nullptr); }
 
 	void load();
-	void loadNX();
 	void save();
-	void saveNX();
 
 	void checkExpiredItems();
 
 	void cashItemsPacket(PacketCreator &packet);
 	void giftPacket(PacketCreator &packet);
+
+	void changeNxCredit(int32_t val);
+	void changeNxPrepaid(int32_t val);
+	void changeMaplePoints(int32_t val);
+	int32_t getNxCredit();
+	int32_t getNxPrepaid();
+	int32_t getMaplePoints();
 private:
 	Player *player;
 	vector<Item *> items;

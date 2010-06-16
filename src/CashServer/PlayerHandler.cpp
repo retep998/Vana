@@ -491,14 +491,13 @@ void PlayerHandler::handleRedeemCoupon(Player *player, PacketReader &packet) {
 			player->getStorage()->changeMaplePoints(coupon->maplePoints);
 		}
 		if (coupon->nxCredit > 0) {
-			player->getStorage()->changeCreditNX(coupon->nxCredit);
+			player->getStorage()->changeNxCredit(coupon->nxCredit);
 		}
 		if (coupon->nxPrepaid > 0) {
-			player->getStorage()->changePrepaidNX(coupon->nxPrepaid);
+			player->getStorage()->changeNxPrepaid(coupon->nxPrepaid);
 		}
 		PlayerPacket::sendGotCouponRewards(player, rewardedItems, coupon->mesos, coupon->maplePoints);
-		PlayerPacket::showNX(player); // Unstuck...?
-		player->getStorage()->saveNX();
+		PlayerPacket::showNX(player);
 
 		CashDataProvider::Instance()->updateCoupon(couponCode, true);
 		WorldServerConnectPacket::updateCoupon(CashServer::Instance()->getWorldConnection(), couponCode, true);
@@ -599,16 +598,16 @@ bool PlayerHandler::takeCash(Player *player, int8_t buyMode, int32_t amount) {
 		}
 	}
 	else if (buyMode == BuyModes::NxPrepaid) {
-		if (player->getStorage()->getPrepaidNX() >= amount) {
-			player->getStorage()->changePrepaidNX(-amount);
+		if (player->getStorage()->getNxPrepaid() >= amount) {
+			player->getStorage()->changeNxPrepaid(-amount);
 		}
 		else {
 			return false;
 		}
 	}
 	else if (buyMode == BuyModes::NxCredit) {
-		if (player->getStorage()->getCreditNX() >= amount) {
-			player->getStorage()->changeCreditNX(-amount);
+		if (player->getStorage()->getNxCredit() >= amount) {
+			player->getStorage()->changeNxCredit(-amount);
 		}
 		else {
 			return false;
@@ -620,6 +619,5 @@ bool PlayerHandler::takeCash(Player *player, int8_t buyMode, int32_t amount) {
 		CashServer::Instance()->log(LogTypes::Warning, warning.str());
 		return false;
 	}
-	player->getStorage()->saveNX();
 	return true;
 }
