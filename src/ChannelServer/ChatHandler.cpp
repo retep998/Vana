@@ -595,6 +595,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							if (affects != 0) {
 								string banmsg = targetname + " has been banned" + getBanString(reason);
 								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
 							}
 							else {
 								PlayerPacket::showMessage(player, "Couldn't ban " + string(args) + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -624,6 +625,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								if (affects != 0) {
 									string banmsg = targetname + " has been IP banned" + getBanString(reason);
 									PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+									ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
 								}
 								else {
 									PlayerPacket::showMessage(player, "Couldn't IP ban " + string(args) + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -653,6 +655,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							if (affects != 0) {
 								string banmsg = targetname + " has been banned" + getBanString(reason);
 								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>((int16_t)reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetname);
 							}
 							else {
 								PlayerPacket::showMessage(player, "Couldn't temporary ban " + string(args) + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -671,6 +674,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
 							if (affects != 0) {
 								PlayerPacket::showMessage(player, string(args) + " has been unbanned.", PlayerPacket::NoticeTypes::Blue);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM unbanned a character. GM: " + player->getName() + ", Character: " + args);
 							}
 							else {
 								PlayerPacket::showMessage(player, "Couldn't unban " + string(args) + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -682,6 +686,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdShutdown:
 						PlayerPacket::showMessage(player, "Shutting down the server.", PlayerPacket::NoticeTypes::Blue);
+						ChannelServer::Instance()->log(LogTypes::GmCommand, "GM shutdown the server. GM: " + player->getName());
 						ChannelServer::Instance()->shutdown();
 						break;
 					case CmdPacket: {
@@ -1037,10 +1042,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 
 								player->getSkills()->addSkillLevel(skillid, count);
 								if (count < 0) {
-									PlayerPacket::showMessage(player, "Removed " + lexical_cast<string>(count) + " skill points from skillid " + lexical_cast<string>(skillid), PlayerPacket::NoticeTypes::Blue);
+									PlayerPacket::showMessage(player, "Removed " + lexical_cast<string>((int16_t) count) + " skill points from skillid " + lexical_cast<string>(skillid), PlayerPacket::NoticeTypes::Blue);
 								}
 								else {
-									PlayerPacket::showMessage(player, "Added " + lexical_cast<string>(count) + " skill points to skillid " + lexical_cast<string>(skillid), PlayerPacket::NoticeTypes::Blue);
+									PlayerPacket::showMessage(player, "Added " + lexical_cast<string>((int16_t) count) + " skill points to skillid " + lexical_cast<string>(skillid), PlayerPacket::NoticeTypes::Blue);
 								}
 							}
 							else {

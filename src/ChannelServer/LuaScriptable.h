@@ -137,6 +137,9 @@ namespace LuaExports {
 	int useItem(lua_State *luaVm);
 
 	// Player
+	int changeMaplePoints(lua_State *luaVm);
+	int changeNxCredit(lua_State *luaVm);
+	int changeNxPrepaid(lua_State *luaVm);
 	int deletePlayerVariable(lua_State *luaVm);
 	int endMorph(lua_State *luaVm);
 	int getAllianceId(lua_State *luaVm);
@@ -160,10 +163,13 @@ namespace LuaExports {
 	int getLevel(lua_State *luaVm);
 	int getLuk(lua_State *luaVm);
 	int getMap(lua_State *luaVm);
+	int getMaplePoints(lua_State *luaVm);
 	int getMaxHp(lua_State *luaVm);
 	int getMaxMp(lua_State *luaVm);
 	int getMp(lua_State *luaVm);
 	int getName(lua_State *luaVm);
+	int getNxCredit(lua_State *luaVm);
+	int getNxPrepaid(lua_State *luaVm);
 	int getPlayerVariable(lua_State *luaVm);
 	int getPosX(lua_State *luaVm);
 	int getPosY(lua_State *luaVm);

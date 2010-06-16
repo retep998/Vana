@@ -174,16 +174,11 @@ void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
 }
 
 void PlayerPacket::showNX(Player *player, bool update) {
-	if (update) {
-		// For when the client wants to 'check' their cash.
-		player->getStorage()->loadNX();
-	}
-
 	PacketCreator packet;
 	packet.addHeader(SMSG_CASHSHOP_NX);
-	packet.add<int32_t>(player->getStorage()->getCreditNX());
+	packet.add<int32_t>(player->getStorage()->getNxCredit());
 	packet.add<int32_t>(player->getStorage()->getMaplePoints());
-	packet.add<int32_t>(player->getStorage()->getPrepaidNX());
+	packet.add<int32_t>(player->getStorage()->getNxPrepaid());
 	player->getSession()->send(packet);
 }
 
