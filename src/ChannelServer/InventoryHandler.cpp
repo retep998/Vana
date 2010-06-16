@@ -50,6 +50,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
 	if (slot2 == 0) {
+		// Dropping an item
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
 		if (item == nullptr) {
@@ -92,6 +93,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
+		// Change item slot (swapping)
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
@@ -215,6 +217,22 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		player->getActiveBuffs()->stopBooster();
 		player->getActiveBuffs()->stopCharge();
 		player->getActiveBuffs()->stopBulletSkills();
+	}
+	// Check if the label ring changed, so we can update the look of the pet.
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing1) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing1)) {
+		if (Pet *pet = player->getPets()->getSummoned(0)) {
+			PetsPacket::changeName(player, pet);
+		}
+	}
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing2) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing2)) {
+		if (Pet *pet = player->getPets()->getSummoned(1)) {
+			PetsPacket::changeName(player, pet);
+		}
+	}
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing3) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing3)) {
+		if (Pet *pet = player->getPets()->getSummoned(2)) {
+			PetsPacket::changeName(player, pet);
+		}
 	}
 	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);

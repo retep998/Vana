@@ -80,11 +80,11 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
-		packet.skipBytes(4); // Real mob ID, no reason to rely on the packet
+		mobid = packet.get<int32_t>();
 
 		mapmobid = packet.get<int32_t>();
 		mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-		if (mob == nullptr) {
+		if (mob == nullptr || mob->getMobId() != mobid) {
 			// Hacking
 			return;
 		}

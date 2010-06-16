@@ -167,11 +167,12 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(pet->getItemId());
 			packet.addString(pet->getName());
-			packet.add<int32_t>(pet->getId());
-			packet.add<int32_t>(0);
+			packet.add<int64_t>(pet->getId());
 			packet.addPos(pet->getPos());
 			packet.add<int8_t>(pet->getStance());
-			packet.add<int32_t>(pet->getFh());
+			packet.add<int16_t>(pet->getFh());
+			packet.addBool(pet->hasNameTag());
+			packet.addBool(pet->hasQuoteItem());
 		}
 	}
 	packet.add<int32_t>(0);

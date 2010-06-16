@@ -125,6 +125,7 @@ public:
 	void removePlayer(Player *player);
 	void buffPlayers(int32_t buffid);
 	void runFunctionPlayers(function<void (Player *)> successFunc, const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count = 0);
+	void runFunctionPlayers(function<void (Player *)> successFunc);
 
 	// NPCs
 	void removeNpc(uint32_t index);

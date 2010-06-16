@@ -52,13 +52,17 @@ public:
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
 	void changeItemAmount(int32_t itemid, int16_t amount) { m_itemamounts[itemid] += amount; }
+	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
+	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
 
 	uint8_t getMaxSlots(int8_t inv) const { return m_maxslots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }
+	int32_t getAutoHpPot() const { return m_autoHpPotId; }
+	int32_t getAutoMpPot() const { return m_autoMpPotId; }
 
 	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
 	uint16_t getItemAmount(int32_t itemid);
-	int32_t getEquippedId(int16_t slot);
+	int32_t getEquippedId(int16_t slot, bool cash = false);
 	Item * getItem(int8_t inv, int16_t slot);
 	bool isEquippedItem(int32_t itemid);
 
@@ -92,8 +96,10 @@ private:
 	vector<int32_t> m_wishlist;
 
 	unordered_map<int32_t, uint16_t> m_itemamounts;
-	int32_t m_mesos;
 	int16_t m_hammer;
+	int32_t m_mesos;
+	int32_t m_autoHpPotId; // For checking the Auto HP/MP pot ID
+	int32_t m_autoMpPotId;
 	Player *m_player;
 
 	void addEquipped(int16_t slot, int32_t itemid);

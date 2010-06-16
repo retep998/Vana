@@ -178,11 +178,11 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	if (pet == nullptr || !pet->isSummoned()) {
+	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
+	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
 	if (!player->updateTickCount(packet.get<int32_t>())) {
 		// Tickcount was the same or less than 100 of the difference.
 		return;
@@ -191,7 +191,18 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
-	if (item == nullptr || item->getId() != itemid || ((info->hp != 0 || info->mp != 0) && player->getStats()->getHp() == 0)) {
+	if (item == nullptr || item->getId() != itemid) {
+		// Hacking
+		return;
+	}
+
+	// Check if the MP potion IS a MP potion set
+	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemid) {
+		// Hacking
+		return;
+	}
+	// Check if the HP potion IS a HP potion set
+	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemid) {
 		// Hacking
 		return;
 	}

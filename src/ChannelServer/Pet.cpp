@@ -70,7 +70,6 @@ void Pet::levelUp() {
 void Pet::setName(const string &name) {
 	this->name = name;
 	PetsPacket::changeName(player, this);
-	PetsPacket::updatePet(player, this);
 }
 
 void Pet::addCloseness(int16_t amount) {
@@ -100,4 +99,22 @@ void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
+}
+
+bool Pet::hasNameTag() {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+		default: return false; // Who knows...
+	}
+}
+
+bool Pet::hasQuoteItem() {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+		default: return false; // Who knows...
+	}
 }

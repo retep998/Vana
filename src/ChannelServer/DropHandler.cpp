@@ -98,7 +98,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.y = origin.y;
 
 			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-//				pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't correctly!
+//				pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't work correctly!
 			}
 
 			if (!i->ismesos) {
