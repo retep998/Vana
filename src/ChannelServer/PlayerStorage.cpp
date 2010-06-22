@@ -199,7 +199,7 @@ void PlayerStorage::changeNxCredit(int32_t val) {
 		}
 		else {
 			mysqlpp::Query query = Database::getCharDB().query();
-			query << "UPDATE storage SET credit_nx = Credit_nx + " << val << " WHERE userid = " << player->getUserId();
+			query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
 			query.exec();
 		}
 	}
@@ -215,9 +215,6 @@ void PlayerStorage::changeNxCredit(int32_t val) {
 			query.exec();
 		}
 	}
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
-	query.exec();
 }
 
 void PlayerStorage::changeNxPrepaid(int32_t val) {

@@ -173,8 +173,7 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(4);
+	int32_t petid = (int32_t)packet.get<int64_t>();
 
 	lootItem(player, packet, petid);
 }
