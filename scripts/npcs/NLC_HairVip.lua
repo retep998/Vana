@@ -36,7 +36,7 @@ if what == 0 then
 	addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5150031##k I'll change it for you. Choose the one to your liking~");
 	getHairs(newHair, hairs);
 elseif what == 1 then
-	addText("I can totally change your haircolor and make it look so good. Why don't you change it up a bit? With #b#t51051001##k I'll change it for you. Choose the one to your liking.");
+	addText("I can totally change your haircolor and make it look so good. Why don't you change it up a bit? With #b#t5151026##k I'll change it for you. Choose the one to your liking.");
 	getHairColours(newHair);
 elseif what == 2 then
 	addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5420001##k I'll change it for you. With this coupon, you have the power to change your hairstyle to something totally new, as often as you want, for ONE MONTH! Now, please choose the hairstyle of your liking.");
@@ -47,7 +47,7 @@ style = askStyle(newHair) + 1;
 if what == 0 then
 	item = 5150031;
 elseif what == 1 then
-	item = 5151031;
+	item = 5151026;
 elseif what == 2 then
 	item = 5420001;
 end

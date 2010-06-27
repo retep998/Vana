@@ -22,7 +22,7 @@ newEyes = {};
 getEyeColour(newEyes);
 
 addText("Hi there! I'm J.J., the one in charge of the cosmetic lenses here at NLC Shop! With our specialized machine, you can see the results of your potential treatment in advance. What kind of lens would you like to wear? Please choose the style of your liking.");
-style = askStyle(styles) + 1;
+style = askStyle(newEyes) + 1;
 
 if getItemAmount(5152036) > 0 then
 	giveItem(5152036, -1);
