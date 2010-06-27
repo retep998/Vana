@@ -158,7 +158,7 @@ void PlayerInventory::save() {
 				firstrun = false;
 			}
 			else {
-				query << ",(";
+				query << ", (";
 			}
 			query << m_player->getId() << ","
 				<< (int16_t) i << ","

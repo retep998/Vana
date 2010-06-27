@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CashDataProvider.h"
 #include "CashItem.h"
 #include "CashServer.h"
+#include "EquipDataProvider.h"
 #include "Database.h"
 #include "GameConstants.h"
 #include "ItemConstants.h"
@@ -174,14 +175,9 @@ void PlayerHandler::handleWishList(Player *player, PacketReader &packet) {
 				player->getInventory()->addWishListItem(serial);
 			}
 			else {
-				// Hackz?
-				PlayerPacket::sendWishListFailed(player); // Not sure.
+				CashServer::Instance()->log(LogTypes::Warning, "Player tried to add a non-existing cash item serial to whishlist. PlayerID: " + boost::lexical_cast<string>(player->getId()) + ", Serial: " + boost::lexical_cast<string>(serial));
 				break;
 			}
-		}
-		else {
-			// No need to loop further (the packet goes further though!)
-			break;
 		}
 	}
 
@@ -334,6 +330,9 @@ void PlayerHandler::handleMoveItemToInventory(Player *player, PacketReader &pack
 	}
 	
 	Item *realItem = new Item(item->getItemId(), item->getAmount());
+	if (GameLogicUtilities::isEquip(item->getItemId())) {
+		EquipDataProvider::Instance()->setEquipStats(realItem, false);
+	}
 	realItem->setCashId(item->getId());
 	realItem->setName(item->getName());
 	realItem->setExpirationTime(item->getExpirationTime());
@@ -348,7 +347,7 @@ void PlayerHandler::handleMoveItemToStorage(Player *player, PacketReader &packet
 
 	Item *info = player->getInventory()->getItem(inventory, id);
 	if (info == nullptr) {
-		// Hack or w/e. Unstuck
+		// Hacking? Unstuck
 		PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
 		return;
 	}

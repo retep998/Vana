@@ -483,10 +483,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		// Pet food.
 		Pet *pet = player->getPets()->getSummoned(0);
 		if (pet != nullptr) {
-			bool success = (pet->getFullness() < Stats::MaxFullness);
-			PetsPacket::showAnimation(player, pet, 1, success);
-			if (success) {
-				pet->modifyFullness(Stats::PetFeedFullness, false);
+			if (pet->getFullness() < Stats::MaxFullness) {
+				PetsPacket::showAnimation(player, pet, 1);
+				pet->modifyFullness(Stats::MaxFullness, false);
 				pet->addCloseness(100); // All cash pet food gives 100 closeness.
 				used = true;
 			}
