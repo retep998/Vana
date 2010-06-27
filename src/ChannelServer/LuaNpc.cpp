@@ -221,9 +221,11 @@ int LuaExports::askStyle(lua_State *luaVm) {
 		styles.push_back(lua_tointeger(luaVm, -1));
 		lua_pop(luaVm, 1);
 	}
+
 	if (styles.size() > 0) {
 		getNpc(luaVm)->sendStyle(&styles[0], styles.size());
 	}
+
 	return lua_yield(luaVm, 1);
 }
 
