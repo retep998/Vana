@@ -370,9 +370,7 @@ void CExceptionReport::StackWalk(CONTEXT Context) {
 
 	while (true) {
 		// Get next stack frame
-		if (!pStackWalk(dwMachineType, GetCurrentProcess(), GetCurrentThread(),
-						&sf, &Context, 0, 
-						pSymFunctionTableAccess, pSymGetModuleBase,	0))
+		if (!pStackWalk(dwMachineType, GetCurrentProcess(), GetCurrentThread(), &sf, &Context, 0, pSymFunctionTableAccess, pSymGetModuleBase,	0))
 			break;
 
 		if (!sf.AddrFrame.Offset)

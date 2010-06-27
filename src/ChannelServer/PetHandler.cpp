@@ -140,8 +140,8 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 		Inventory::takeItem(player, itemid, 1);
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
-		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
+			PetsPacket::showAnimation(player, pet, 1);
 			pet->modifyFullness(Stats::PetFeedFullness, false);
 			if (Randomizer::Instance()->randInt(99) < 60) {
 				// 60% chance for feed to add closeness
@@ -172,7 +172,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	if (success) {
 		pet->addCloseness(action->increase);
 	}
-	PetsPacket::showAnimation(player, pet, act, success);
+	PetsPacket::showAnimation(player, pet, act);
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {

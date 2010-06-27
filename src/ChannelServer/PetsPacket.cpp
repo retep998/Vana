@@ -72,21 +72,15 @@ void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int3
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation, bool success) {
+void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex()); // Index for multiple pets
-	packet.addBool(animation == 1 && success);
+	packet.addBool(animation == 1);
 	packet.add<int8_t>(animation);
-	if (animation == 1) {
-		packet.addBool(pet->hasQuoteItem()); // Maybe
-		//packet.add<int8_t>(0);
-	}
-	else {
-		packet.add<int8_t>(success);
-		packet.addBool(pet->hasQuoteItem()); // Maybe
-	}
+	packet.add<int8_t>(0); // Unknown
+	packet.addBool(pet->hasQuoteItem());
 	player->getSession()->send(packet);
 }
 

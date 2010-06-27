@@ -36,8 +36,9 @@ level(1),
 fullness(100),
 closeness(0)
 {
+	// Used for creating a new pet.
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
+	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	this->id = (int32_t) res.insert_id();
 	item->setPetId(this->id);
@@ -84,11 +85,12 @@ void Pet::addCloseness(int16_t amount) {
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	fullness += offset;
-
-	if (fullness > Stats::MaxFullness)
+	if (fullness + offset > Stats::MaxFullness)
 		fullness = Stats::MaxFullness;
-	else if (fullness < Stats::MinFullness)
+	else
+		fullness += offset;
+	
+	if (fullness < Stats::MinFullness)
 		fullness = Stats::MinFullness;
 
 	if (sendPacket)
