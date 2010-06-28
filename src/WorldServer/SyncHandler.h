@@ -89,4 +89,8 @@ namespace SyncHandler {
 	void updateLevel(PacketReader &packet);
 	void updateJob(PacketReader &packet);
 	void updateMap(PacketReader &packet);
+	// Buddies
+	void handleBuddyPacket(PacketReader &packet);
+	void buddyInvite(PacketReader &packet);
+	void buddyOnline(PacketReader &packet);
 };

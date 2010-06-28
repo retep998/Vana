@@ -47,6 +47,7 @@ void SyncHandler::handle(WorldServerAcceptConnection *connection, PacketReader &
 		case Sync::SyncTypes::Guild: handleGuildPacket(packet); break;
 		case Sync::SyncTypes::Party: partyOperation(packet); break;
 		case Sync::SyncTypes::Alliance: handleAlliancePacket(packet); break;
+		case Sync::SyncTypes::Buddy: handleBuddyPacket(packet); break;
 	}
 }
 
@@ -1513,6 +1514,66 @@ void SyncHandler::updateMap(PacketReader &packet) {
 		p->setMap(map);
 		if (p->getParty() != nullptr) {
 			SyncHandler::silentUpdate(id);
+		}
+	}
+}
+
+void SyncHandler::handleBuddyPacket(PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Buddies::Invite: buddyInvite(packet); break;
+		case Sync::Buddies::OnlineOffline: buddyOnline(packet); break;
+	}
+}
+
+void SyncHandler::buddyInvite(PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	Player *inviter = PlayerDataProvider::Instance()->getPlayer(playerid);
+	if (inviter == nullptr) {
+		// No idea how this would happen... Lets take no risk and just return.
+		return;
+	}
+
+	int32_t inviteeId = packet.get<int32_t>();
+	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
+		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, playerid, inviter->getName());
+	}
+	else {
+		// Make new pending buddy in the database
+		mysqlpp::Query query = Database::getCharDB().query();
+		query << "INSERT INTO buddylist_pending VALUES ("
+			<< inviteeId << ", "
+			<< mysqlpp::quote << inviter->getName() << ", "
+			<< playerid << ")";
+		query.exec();
+	}
+}
+
+void SyncHandler::buddyOnline(PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	if (player == nullptr) {
+		// No idea how this would happen... Lets take no risk and just return.
+		return;
+	}
+
+	bool online = packet.getBool();
+
+	vector<int32_t> tempIds = packet.getVector<int32_t>();
+	unordered_map<int16_t, vector<int32_t> > ids; // <channel, <ids>> , for sending less packets for a buddylist of 100 people
+
+	int32_t id = 0;
+	for (size_t i = 0; i < tempIds.size(); i++) {
+		id = tempIds[i];
+		if (Player *player = PlayerDataProvider::Instance()->getPlayer(id)) {
+			if (player->isOnline() && !player->isInCashShop()) {
+				ids[player->getChannel()].push_back(id);
+			}
+		}
+	}
+
+	for (unordered_map<int16_t, vector<int32_t> >::iterator iter = ids.begin(); iter != ids.end(); iter++) {
+		if (Channel *channel = Channels::Instance()->getChannel(iter->first)) {
+			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel->getConnection(), iter->second, playerid, (online ? player->getChannel() : -1));
 		}
 	}
 }
