@@ -127,4 +127,11 @@ namespace Sync {
 			ChannelConnect
 		};
 	}
+
+	namespace Buddies {
+		enum Buddies {
+			Invite,
+			OnlineOffline
+		};
+	}
 }

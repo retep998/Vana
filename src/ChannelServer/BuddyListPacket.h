@@ -18,11 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include "PlayerBuddyList.h"
 #include <string>
 
 using std::string;
 
 class Player;
+struct PlayerBuddyList::BuddyInvite;
 
 namespace BuddyListPacket {
 	namespace Errors {
@@ -39,10 +41,21 @@ namespace BuddyListPacket {
 		enum Types {
 			First = 0x07,
 			Add = 0x0A,
-			Remove = 0x12
+			Remove = 0x12,
+			Logon = 0x14
 		};
 	}
+	namespace OppositeStatus {
+		enum Statusses {
+			Registered = 0x00,
+			Requested = 0x01,
+			Unregistered = 0x02
+		};
+	}
+
 	void error(Player *player, uint8_t error);
 	void update(Player *player, uint8_t type);
 	void showSize(Player *player);
+	void invitation(Player *player, PlayerBuddyList::BuddyInvite &invite);
+	void online(Player *player, int32_t charid, int32_t channel);
 }

@@ -20,45 +20,59 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <list>
 #include <string>
 #include <vector>
 
+using std::list;
 using std::string;
 using std::vector;
 using std::tr1::unordered_map;
 
+class PacketCreator;
 class Player;
+
 namespace mysqlpp {
 	class Row;
-}
+};
 
 class PlayerBuddyList {
 public:
-	struct Buddy;
+	struct Buddy {
+		string m_name;
+		string m_group_name;
+		uint8_t m_oppositeStatus;
+		int32_t m_channel;
+		int32_t m_charid;
+	};
+	struct BuddyInvite {
+		BuddyInvite() : m_send(true) { }
+		bool m_send;
+		string m_name;
+		int32_t m_id;
+	};
+
 	typedef std::tr1::shared_ptr<Buddy> BuddyPtr;
 
 	PlayerBuddyList(Player *player);
-	uint8_t add(const string &name);
-	void remove(int32_t charid);
+	uint8_t addBuddy(const string &name, const string &group, bool invite = true);
+	void removeBuddy(int32_t charid);
 
-	BuddyPtr getBuddy(uint8_t pos) { return buddies[buddies_order[pos]]; }
-	uint8_t size() const { return (uint8_t) buddies.size(); }
+	BuddyPtr getBuddy(int32_t charid) { return m_buddies[charid]; }
+	uint8_t listSize() const { return (uint8_t)m_buddies.size(); }
+	vector<int32_t> getBuddyIds(); // For sending the online packet to the players.
+	void addBuddyInvite(PlayerBuddyList::BuddyInvite invite) { m_pending_buddies.push_back(invite); }
+
+	void addBuddies(PacketCreator &packet);
+	void checkForPendingBuddy();
+	void removePendingBuddy(int32_t id, bool accepted);
 private:
-	void add(const mysqlpp::Row &row);
+	void addBuddy(const mysqlpp::Row &row);
+	void load();
 
-	struct OppositeStatus {
-		static const uint8_t registered = 0;
-		static const uint8_t unregistered = 2;
-	};
+	unordered_map<int32_t, BuddyPtr> m_buddies;
+	list<BuddyInvite> m_pending_buddies;
+	Player *m_player;
 
-	vector<int32_t> buddies_order;
-	unordered_map<int32_t, BuddyPtr> buddies;
-	Player *player;
-};
-
-struct PlayerBuddyList::Buddy {
-	int32_t charid;
-	string name;
-	uint8_t oppositeStatus;
-	int32_t channel;
+	bool sentRequest;
 };

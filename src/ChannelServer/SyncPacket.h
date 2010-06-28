@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class Player;
 class WorldServerConnection;
@@ -36,4 +38,6 @@ namespace SyncPacket {
 	void updateLevel(WorldServerConnection *player, int32_t playerid, uint8_t level);
 	void updateJob(WorldServerConnection *player, int32_t playerid, int16_t job);
 	void updateMap(WorldServerConnection *player, int32_t playerid, int32_t map);
+	void buddyInvite(WorldServerConnection *player, int32_t playerid, int32_t inviteeid);
+	void buddyOnline(WorldServerConnection *player, int32_t playerid, vector<int32_t> players, bool online);
 }

@@ -83,6 +83,7 @@ public:
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setNpc(Npc *npc) { this->npc.reset(npc); }
 	void setParty(Party *party) { this->party = party; }
+	void setChangingChannel(bool v) { changing_channel = v; }
 
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
@@ -114,6 +115,7 @@ public:
 	uint8_t getAllianceRank() const { return alliancerank; }
 	bool isGm() const { return gm_level > 0; }
 	bool isAdmin() const { return admin; }
+	bool isChangingChannel() const { return changing_channel; }
 	bool isTrading() const { return trade_state; }
 	bool hasGmEquip() const;
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
@@ -158,6 +160,7 @@ private:
 	bool trade_state;
 	bool save_on_dc;
 	bool is_connect;
+	bool changing_channel;
 	bool admin;
 	int8_t world_id;
 	int8_t map_pos;
