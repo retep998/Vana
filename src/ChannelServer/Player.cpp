@@ -83,7 +83,8 @@ npc(nullptr),
 party(nullptr),
 instance(nullptr),
 tickCount(-1),
-door(nullptr)
+door(nullptr),
+changing_channel(false)
 {
 }
 
@@ -123,6 +124,9 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
+			if (!isChangingChannel()) {
+				SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), false);
+			}
 			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
 		PlayerDataProvider::Instance()->removePlayer(this);
@@ -394,6 +398,7 @@ void Player::playerConnect(PacketReader &packet) {
 	PlayerPacket::showKeys(this, &keyMaps);
 
 	BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add);
+	getBuddyList()->checkForPendingBuddy();
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
@@ -406,6 +411,8 @@ void Player::playerConnect(PacketReader &packet) {
 	setOnline(true);
 	is_connect = true;
 	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel(), guildid, guildrank, allianceid, alliancerank);
+
+	SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), true);
 }
 
 void Player::setMap(int32_t mapid, int8_t pointid, const Pos &spawnpoint, int16_t fh) {
@@ -581,11 +588,10 @@ void Player::changeKey(PacketReader &packet) {
 		keyMaps.save(this->id);
 	}
 	else if (mode == AutoHpPotion) {
-		// For these two modes,
-		// howmany = potion ID, deallocate on 0, I imagine
+		getInventory()->setAutoHpPot(howmany);
 	}
 	else if (mode == AutoMpPotion) {
-
+		getInventory()->setAutoMpPot(howmany);
 	}
 }
 
@@ -744,6 +750,21 @@ uint8_t Player::getPortalCount(bool add) {
 	return m_portalCount;
 }
 
+void Player::handlePong() {
+	// Handle all things like expiring of quests and such
+	getInventory()->checkExpiredItems();
+	getBuddyList()->checkForPendingBuddy();
+
+	int32_t t = TimeUtilities::getTickCount();
+	// Deleting old warnings
+	for (size_t i = 0; i < warnings.size(); i++) {
+		if (warnings[i] + 30000 < t) {
+			warnings.erase(warnings.begin() + i);
+			i--;
+		}
+	}
+}
+
 bool Player::updateTickCount(int32_t newValue) {
 	/*
 	int32_t diff = newValue - tickCount;
@@ -758,9 +779,4 @@ bool Player::updateTickCount(int32_t newValue) {
 	}
 	*/
 	return true;
-}
-
-void Player::handlePong() {
-	// Handle all things like expiring of quests and such
-	getInventory()->checkExpiredItems();
 }

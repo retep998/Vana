@@ -153,6 +153,9 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "useItem", &LuaExports::useItem);
 
 	// Player
+	lua_register(luaVm, "changeMaplePoints", &LuaExports::changeMaplePoints);
+	lua_register(luaVm, "changeNxCredit", &LuaExports::changeNxCredit);
+	lua_register(luaVm, "changeNxPrepaid", &LuaExports::changeNxPrepaid);
 	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
 	lua_register(luaVm, "endMorph", &LuaExports::endMorph);
 	lua_register(luaVm, "getAllianceID", &LuaExports::getAllianceId);
@@ -176,10 +179,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
 	lua_register(luaVm, "getLUK", &LuaExports::getLuk);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
+	lua_register(luaVm, "getMaplePoints", &LuaExports::getMaplePoints);
 	lua_register(luaVm, "getMaxHP", &LuaExports::getMaxHp);
 	lua_register(luaVm, "getMaxMP", &LuaExports::getMaxMp);
 	lua_register(luaVm, "getMP", &LuaExports::getMp);
 	lua_register(luaVm, "getName", &LuaExports::getName);
+	lua_register(luaVm, "getNxCredit", &LuaExports::getNxCredit);
+	lua_register(luaVm, "getNxPrepaid", &LuaExports::getNxPrepaid);
 	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
 	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
 	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
@@ -872,6 +878,24 @@ int LuaExports::useItem(lua_State *luaVm) {
 }
 
 // Player
+int LuaExports::changeMaplePoints(lua_State *luaVm) {
+	int32_t value = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getStorage()->changeMaplePoints(value);
+	return 0;
+}
+
+int LuaExports::changeNxCredit(lua_State *luaVm) {
+	int32_t value = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getStorage()->changeNxCredit(value);
+	return 0;
+}
+
+int LuaExports::changeNxPrepaid(lua_State *luaVm) {
+	int32_t value = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getStorage()->changeNxPrepaid(value);
+	return 0;
+}
+
 int LuaExports::deletePlayerVariable(lua_State *luaVm) {
 	string key = string(lua_tostring(luaVm, -1));
 	getPlayer(luaVm)->getVariables()->deleteVariable(key);
@@ -988,6 +1012,11 @@ int LuaExports::getMap(lua_State *luaVm) {
 	return 1;
 }
 
+int LuaExports::getMaplePoints(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStorage()->getMaplePoints());
+	return 1;
+}
+
 int LuaExports::getMaxHp(lua_State *luaVm) {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getStats()->getMaxHp());
 	return 1;
@@ -1025,6 +1054,16 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	else {
 		lua_pushstring(luaVm, val.c_str());
 	}
+	return 1;
+}
+
+int LuaExports::getNxCredit(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStorage()->getNxCredit());
+	return 1;
+}
+
+int LuaExports::getNxPrepaid(lua_State *luaVm) {
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getStorage()->getNxPrepaid());
 	return 1;
 }
 

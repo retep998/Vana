@@ -49,6 +49,13 @@ public:
 
 	void load();
 	void save();
+
+	void changeNxCredit(int32_t val);
+	void changeNxPrepaid(int32_t val);
+	void changeMaplePoints(int32_t val);
+	int32_t getNxCredit();
+	int32_t getNxPrepaid();
+	int32_t getMaplePoints();
 private:
 	Player *player;
 	vector<Item *> items;

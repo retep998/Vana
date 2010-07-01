@@ -41,7 +41,7 @@ struct Guild {
 	logo(logo),
 	capacity(capacity),
 	allianceid(allianceid) { };
-	~Guild() {};
+
 	int32_t id;
 	int32_t capacity;
 	int32_t allianceid;
@@ -54,7 +54,7 @@ struct Alliance {
 	id(id),
 	name(name),
 	capacity(capacity) { };
-	~Alliance() {};
+
 	int32_t id;
 	int32_t capacity;
 	string name;

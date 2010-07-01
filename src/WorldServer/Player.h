@@ -74,7 +74,7 @@ private:
 	void initialize();
 
 	bool online;
-	bool cashShop; // No, we're not adding it at the moment
+	bool cashShop;
 	uint8_t guildRank;
 	uint8_t allianceRank;
 	uint8_t level;

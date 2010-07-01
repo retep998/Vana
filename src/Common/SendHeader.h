@@ -81,11 +81,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_AVATAR_MEGAPHONE 0x6F
 #define SMSG_NAME_CANCELLATION_REQUEST 0x71 // It's gone before you know it (when it was successfull)
 #define SMSG_TRANSFER_CANCELLATION_REQUEST 0x72 // It's gone before you know it (when it was successfull)
-#define SMSG_GM_BAN 0x74
-#define SMSG_SILVER_BOX_REWARD 0x75 // Silver Box event?
-#define SMSG_NEWYEAR_CARDS 0x76 // I want to code this!
-#define SMSG_RANDOM_TRANSFORMATION_POTION 0x77
-#define SMSG_NAME_CANCELLATION_REQUEST_NOT_REQUESTED 0x78 // 1 thing, 1 whole header
+#define SMSG_GM_BAN 0x77
+#define SMSG_SILVER_BOX_REWARD 0x78 // Silver Box event?
+#define SMSG_NEWYEAR_CARDS 0x79 // I want to code this!
+#define SMSG_RANDOM_TRANSFORMATION_POTION 0x7a
+#define SMSG_NAME_CANCELLATION_REQUEST_NOT_REQUESTED 0x7b // 1 thing, 1 whole header
 #define SMSG_MACRO_LIST 0x7C
 #define SMSG_CHANGE_MAP 0x7D
 #define SMSG_CONNECT_CASHSHOP 0x7F

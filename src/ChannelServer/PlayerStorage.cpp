@@ -82,6 +82,13 @@ void PlayerStorage::load() {
 	else {
 		slots = 4;
 		mesos = 0;
+		// Make a row right away...
+		query << "INSERT INTO storage (userid, world_id, slots, mesos) VALUES ("
+			<< player->getUserId() << ", "
+			<< (int16_t) player->getWorldId() << ", "
+			<< (int16_t) getSlots() << ", "
+			<< getMesos() << ") ";
+		query.exec();
 	}
 
 	items.reserve(slots);
@@ -180,5 +187,122 @@ void PlayerStorage::save() {
 	}
 	if (!firstrun) {
 		query.exec();
+	}
+}
+
+void PlayerStorage::changeNxCredit(int32_t val) {
+	if (val < 0) {
+		if (-val > getNxCredit()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getNxCredit() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+void PlayerStorage::changeNxPrepaid(int32_t val) {
+	if (val < 0) {
+		if (-val > getNxPrepaid()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = prepaid_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getNxPrepaid() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = prepaid_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+void PlayerStorage::changeMaplePoints(int32_t val) {
+	if (val < 0) {
+		if (-val > getMaplePoints()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = maplepoints + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getMaplePoints() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = maplepoints + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+int32_t PlayerStorage::getNxCredit() {
+	mysqlpp::Query query = Database::getCharDB().query();	
+	query << "SELECT credit_nx FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
+	}
+}
+
+int32_t PlayerStorage::getNxPrepaid() {
+	mysqlpp::Query query = Database::getCharDB().query();	
+	query << "SELECT prepaid_nx FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
+	}
+}
+
+int32_t PlayerStorage::getMaplePoints() {
+	mysqlpp::Query query = Database::getCharDB().query();	
+	query << "SELECT maplepoints FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
 	}
 }

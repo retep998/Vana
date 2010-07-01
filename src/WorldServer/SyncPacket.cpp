@@ -709,3 +709,25 @@ void SyncPacket::PlayerPacket::sendAlliances(WorldServerAcceptConnection *player
 	PlayerDataProvider::Instance()->getChannelConnectPacketAlliance(packet);
 	player->getSession()->send(packet);
 }
+
+void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *channel, int32_t inviteeid, int32_t inviterid, const string &name) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Buddy);
+	packet.add<int8_t>(Sync::Buddies::Invite);
+	packet.add<int32_t>(inviteeid);
+	packet.add<int32_t>(inviterid);
+	packet.addString(name);
+	channel->getSession()->send(packet);
+}
+
+void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection *channel, vector<int32_t> players, int32_t playerid, int32_t channelid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Buddy);
+	packet.add<int8_t>(Sync::Buddies::OnlineOffline);
+	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(channelid); // I need to get FF FF FF FF, not FF FF 00 00
+	packet.addVector(players);
+	channel->getSession()->send(packet);
+}

@@ -366,8 +366,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillid, uint8_t level, MobSki
 	}
 }
 
-int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+int32_t MobHandler::handleMobStatus(Player *player, Mob *mob, int32_t skillid, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
@@ -553,7 +552,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 	}
 
 	if (statuses.size() > 0) {
-		mob->addStatus(playerid, statuses);
+		mob->addStatus(player->getId(), statuses);
 	}
 	return statuses.size();
 }

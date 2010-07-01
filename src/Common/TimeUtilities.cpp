@@ -19,9 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
-#define EPOCH_DIFF 0x019DB1DED53E8000LL /* 116444736000000000 nsecs */
-#define RATE_DIFF 10000000 /* 100 nsecs */
-
 int64_t TimeUtilities::getServerTime() {
 	return timeToTick(time(0));
 }
@@ -197,17 +194,16 @@ int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 	return result;
 }
 
-time_t TimeUtilities::tickToTime(int64_t time) {
-	int64_t tconv = (time - EPOCH_DIFF) / RATE_DIFF;
-	tconv -= getTimeZoneOffset();
-	return (time_t)tconv;
-}
-
 time_t TimeUtilities::addDaysToTime(int16_t days) {
 	time_t now = time(NULL);
 	struct tm* tm = localtime(&now);
 	tm->tm_mday += days;
 	return mktime(tm);
+}
+
+int64_t TimeUtilities::addDaysToTicks(int64_t ticks, int16_t days) {
+	// For expiring time increasement
+	return ticks + (days *24 * 60 * 60);
 }
 
 #ifdef WIN32

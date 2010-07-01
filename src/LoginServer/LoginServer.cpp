@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
+#include <iostream>
 
 LoginServer * LoginServer::singleton = nullptr;
 

@@ -17,9 +17,6 @@
     <Filter Include="Source Files\Inter-Server\Login">
       <UniqueIdentifier>{9923393f-b418-46b8-8f7a-3884a3f24f45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Inter-Server\Channel">
-      <UniqueIdentifier>{393731e5-3686-49b9-94d4-b057d5062dfd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Database Loading">
       <UniqueIdentifier>{f952f4a7-2ad6-422a-a5e1-4de59baaa940}</UniqueIdentifier>
     </Filter>
@@ -44,6 +41,9 @@
     </Filter>
     <Filter Include="Header Files\Database Loading">
       <UniqueIdentifier>{31c0bcbc-a498-41ac-b2ed-2aa6ea39f587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server\Others">
+      <UniqueIdentifier>{393731e5-3686-49b9-94d4-b057d5062dfd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,19 +93,19 @@
       <Filter>Source Files\Inter-Server\Login</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\AlliancePacket.cpp">
-      <Filter>Source Files\Inter-Server\Channel</Filter>
+      <Filter>Source Files\Inter-Server\Others</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\GuildPacket.cpp">
-      <Filter>Source Files\Inter-Server\Channel</Filter>
+      <Filter>Source Files\Inter-Server\Others</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp">
-      <Filter>Source Files\Inter-Server\Channel</Filter>
+      <Filter>Source Files\Inter-Server\Others</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp">
-      <Filter>Source Files\Inter-Server\Channel</Filter>
+      <Filter>Source Files\Inter-Server\Others</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp">
-      <Filter>Source Files\Inter-Server\Channel</Filter>
+      <Filter>Source Files\Inter-Server\Others</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\InitializeWorld.cpp">
       <Filter>Source Files\Database Loading</Filter>

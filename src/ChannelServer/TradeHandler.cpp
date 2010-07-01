@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradeHandler.h"
 #include "GameLogicUtilities.h"
+#include "ItemDataProvider.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PacketReader.h"
@@ -144,10 +145,16 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 					int16_t amount = packet.get<int16_t>();
 					uint8_t addslot = packet.get<uint8_t>();
 					Item *item = player->getInventory()->getItem(inventory, slot);
-					if (item == nullptr || trade->isItemInSlot(mod, addslot)) {
+					if (item == nullptr || trade->isItemInSlot(mod, addslot) || item->hasTradeBlock()) {
 						// Hacking
 						return;
 					}
+					ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(item->getId());
+					if (info == nullptr || (info->notrade && info->karmascissors && !item->hasKarma()) || (info->notrade && !info->karmascissors) || item->hasLock()) {
+						// Hacking
+						return;
+					}
+
 					if (GameLogicUtilities::isRechargeable(item->getId())) {
 						amount = item->getAmount();
 					}

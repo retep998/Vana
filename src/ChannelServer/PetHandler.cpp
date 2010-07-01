@@ -140,8 +140,8 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 		Inventory::takeItem(player, itemid, 1);
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
-		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
+			PetsPacket::showAnimation(player, pet, 1);
 			pet->modifyFullness(Stats::PetFeedFullness, false);
 			if (Randomizer::Instance()->randInt(99) < 60) {
 				// 60% chance for feed to add closeness
@@ -172,17 +172,17 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	if (success) {
 		pet->addCloseness(action->increase);
 	}
-	PetsPacket::showAnimation(player, pet, act, success);
+	PetsPacket::showAnimation(player, pet, act);
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	if (pet == nullptr || !pet->isSummoned()) {
+	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
+	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
 	if (!player->updateTickCount(packet.get<int32_t>())) {
 		// Tickcount was the same or less than 100 of the difference.
 		return;
@@ -191,7 +191,18 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
-	if (item == nullptr || item->getId() != itemid || ((info->hp != 0 || info->mp != 0) && player->getStats()->getHp() == 0)) {
+	if (item == nullptr || item->getId() != itemid) {
+		// Hacking
+		return;
+	}
+
+	// Check if the MP potion IS a MP potion set
+	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemid) {
+		// Hacking
+		return;
+	}
+	// Check if the HP potion IS a HP potion set
+	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemid) {
 		// Hacking
 		return;
 	}

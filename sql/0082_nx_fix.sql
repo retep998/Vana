@@ -1,0 +1,1 @@
+UPDATE `storage` SET credit_nx = 0 WHERE credit_nx < 0;

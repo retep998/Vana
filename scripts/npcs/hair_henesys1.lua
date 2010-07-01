@@ -40,7 +40,7 @@ elseif what == 1 then
 	getHairColours(newHair);
 elseif what == 2 then
 	addText("I can totally change up your hairstyle and make it look so good. Why don't you change it up a bit? If you have #b#t5420002##k I'll change it for you. With this coupon, you have the power to change your hairstyle to something totally new, as often as you want, for ONE MONTH! Now, please choose the hairstyle of your liking.");
-	getHairs(newHair, gairs)
+	getHairs(newHair, hairs)
 end
 style = askStyle(newHair) + 1;
 

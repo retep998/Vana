@@ -78,3 +78,14 @@ bool StringUtilities::hasEnding(const string &fullString, const string &ending) 
 
 	return isEnding;
 }
+
+string StringUtilities::replace(const string &input, const string &what, const string &replacement) {
+	string ret = input;
+	size_t searchLen = what.length();
+	size_t foundPos = ret.find(what);
+	while (foundPos != string::npos) {
+		ret.replace(foundPos, searchLen, replacement);
+		foundPos = ret.find(what); // Search the next one.
+	}
+	return ret;
+}

@@ -93,3 +93,18 @@ void EffectPacket::sendMinigameSound(Player *player, const string &sound) {
 	packet.addString(sound);
 	player->getSession()->send(packet);
 }
+
+void EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemid) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_THEATRICS);
+	packet.add<int8_t>(0x0B);
+	packet.add<int32_t>(itemid);
+	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.addHeader(SMSG_SKILL_SHOW);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(0x0B);
+	packet.add<int32_t>(itemid);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}

@@ -347,6 +347,8 @@ LPTSTR CExceptionReport::GetExceptionString(DWORD dwCode) {
 }
 
 void CExceptionReport::StackWalk(CONTEXT Context) {
+#ifndef _WIN64 || __amd64__
+
 	AddToReport("\r\nCall stack:\r\n-----------\r\n\r\n");
 	AddToReport("Address\t\tFrame\t\t\tFunction\t\t\t\t\tSourceFile\r\n");
 
@@ -368,9 +370,7 @@ void CExceptionReport::StackWalk(CONTEXT Context) {
 
 	while (true) {
 		// Get next stack frame
-		if (!pStackWalk(dwMachineType, GetCurrentProcess(), GetCurrentThread(),
-						&sf, &Context, 0, 
-						pSymFunctionTableAccess, pSymGetModuleBase,	0))
+		if (!pStackWalk(dwMachineType, GetCurrentProcess(), GetCurrentThread(), &sf, &Context, 0, pSymFunctionTableAccess, pSymGetModuleBase,	0))
 			break;
 
 		if (!sf.AddrFrame.Offset)
@@ -421,6 +421,9 @@ void CExceptionReport::StackWalk(CONTEXT Context) {
 
 		AddToReport("\r\n");
 	}
+#else
+	AddToReport("Can't get callstack from x64 build.");
+#endif
 }
 
 bool CExceptionReport::writeMiniDump(PEXCEPTION_POINTERS pExceptionInfo) {
@@ -435,7 +438,7 @@ bool CExceptionReport::writeMiniDump(PEXCEPTION_POINTERS pExceptionInfo) {
 	cbMiniDump.CallbackParam = 0;
 
 
-	BOOL written = pMiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), m_hDumpFile, MiniDumpNormal, pExceptionInfo ? &eInfo : NULL, NULL, &cbMiniDump);
+	BOOL written = pMiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), m_hDumpFile, MiniDumpWithFullMemory, pExceptionInfo ? &eInfo : NULL, NULL, &cbMiniDump);
 
 	if (!written) {
 		std::cerr << "Couldn't write minidump: " << GetLastError() << std::endl;

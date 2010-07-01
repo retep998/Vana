@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CashDataProvider.h"
 #include "CashItem.h"
 #include "CashServer.h"
+#include "EquipDataProvider.h"
 #include "Database.h"
 #include "GameConstants.h"
 #include "ItemConstants.h"
@@ -174,14 +175,9 @@ void PlayerHandler::handleWishList(Player *player, PacketReader &packet) {
 				player->getInventory()->addWishListItem(serial);
 			}
 			else {
-				// Hackz?
-				PlayerPacket::sendWishListFailed(player); // Not sure.
+				CashServer::Instance()->log(LogTypes::Warning, "Player tried to add a non-existing cash item serial to whishlist. PlayerID: " + boost::lexical_cast<string>(player->getId()) + ", Serial: " + boost::lexical_cast<string>(serial));
 				break;
 			}
-		}
-		else {
-			// No need to loop further (the packet goes further though!)
-			break;
 		}
 	}
 
@@ -205,9 +201,9 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 		return;
 	}
 	
-	mysqlpp::Query charExist = Database::getCharDB().query();
-	charExist << "SELECT world_id, userid, id, `name` FROM characters WHERE name = " << mysqlpp::quote << to << " LIMIT 1";
-	mysqlpp::StoreQueryResult res = charExist.store();
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT world_id, userid, id, `name` FROM characters WHERE name = " << mysqlpp::quote << to << " LIMIT 1";
+	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() == 0) {
 		PlayerPacket::showFailure(player, ErrorMessages::CheckRecipientName);
 		return;
@@ -266,23 +262,23 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 				vector<CashItemInfo> *items = CashDataProvider::Instance()->getPackageItems(info->itemid);
 				for (size_t i = 0; i < items->size(); i++) {
 					expirationTime = items->at(i).expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(items->at(i).expiration_days)) : Items::NoExpiration;
-					charExist << "INSERT INTO storage_cash VALUES (NULL, "
+					query << "INSERT INTO storage_cash VALUES (NULL, "
 						<< atoi(row["userid"]) << ", "
 						<< (int16_t) atoi(row["world_id"]) << ", "
 						<< items->at(i).itemid << ", "
 						<< items->at(i).quantity << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< 0 << ", "
-						<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
-					charExist.exec();
+						<< expirationTime << ")";
+					query.exec();
 
-					charExist << "INSERT INTO character_cashshop_gifts VALUES ("
+					query << "INSERT INTO character_cashshop_gifts VALUES ("
 						<< atoi(row["id"]) << ", "
-						<< charExist.insert_id() << ", "
+						<< query.insert_id() << ", "
 						<< items->at(i).itemid << ", "
 						<< mysqlpp::quote << player->getName() << ", "
 						<< mysqlpp::quote << message << ")";
-					charExist.exec();
+					query.exec();
 				}
 				CashDataProvider::Instance()->logBoughtItem(player->getUserId(), player->getId(), serial);
 				WorldServerConnectPacket::reloadBestItems(CashServer::Instance()->getWorldConnection());
@@ -294,23 +290,23 @@ void PlayerHandler::handleGift(Player *player, PacketReader &packet) {
 			}
 			else {
 				expirationTime = info->expiration_days != 0 ? TimeUtilities::timeToTick(TimeUtilities::addDaysToTime(info->expiration_days)) : Items::NoExpiration;
-				charExist << "INSERT INTO storage_cash VALUES (NULL, "
+				query << "INSERT INTO storage_cash VALUES (NULL, "
 					<< atoi(row["userid"]) << ", "
 					<< (int16_t) atoi(row["world_id"]) << ", "
 					<< info->itemid << ", "
 					<< info->quantity << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< 0 << ", "
-					<< mysqlpp::quote << (string)mysqlpp::DateTime(TimeUtilities::tickToTime(expirationTime)) << ")";
-				charExist.exec();
+					<< expirationTime << ")";
+				query.exec();
 
-				charExist << "INSERT INTO character_cashshop_gifts VALUES ("
+				query << "INSERT INTO character_cashshop_gifts VALUES ("
 					<< atoi(row["id"]) << ", "
-					<< charExist.insert_id() << ", "
+					<< query.insert_id() << ", "
 					<< info->itemid << ", "
 					<< mysqlpp::quote << player->getName() << ", "
 					<< mysqlpp::quote << message << ")";
-				charExist.exec();
+				query.exec();
 
 				CashDataProvider::Instance()->logBoughtItem(player->getUserId(), player->getId(), serial);
 				WorldServerConnectPacket::reloadBestItems(CashServer::Instance()->getWorldConnection());
@@ -334,6 +330,9 @@ void PlayerHandler::handleMoveItemToInventory(Player *player, PacketReader &pack
 	}
 	
 	Item *realItem = new Item(item->getItemId(), item->getAmount());
+	if (GameLogicUtilities::isEquip(item->getItemId())) {
+		EquipDataProvider::Instance()->setEquipStats(realItem, false);
+	}
 	realItem->setCashId(item->getId());
 	realItem->setName(item->getName());
 	realItem->setExpirationTime(item->getExpirationTime());
@@ -348,7 +347,7 @@ void PlayerHandler::handleMoveItemToStorage(Player *player, PacketReader &packet
 
 	Item *info = player->getInventory()->getItem(inventory, id);
 	if (info == nullptr) {
-		// Hack or w/e. Unstuck
+		// Hacking? Unstuck
 		PlayerPacket::showFailure(player, ErrorMessages::UnknownError);
 		return;
 	}
@@ -491,14 +490,13 @@ void PlayerHandler::handleRedeemCoupon(Player *player, PacketReader &packet) {
 			player->getStorage()->changeMaplePoints(coupon->maplePoints);
 		}
 		if (coupon->nxCredit > 0) {
-			player->getStorage()->changeCreditNX(coupon->nxCredit);
+			player->getStorage()->changeNxCredit(coupon->nxCredit);
 		}
 		if (coupon->nxPrepaid > 0) {
-			player->getStorage()->changePrepaidNX(coupon->nxPrepaid);
+			player->getStorage()->changeNxPrepaid(coupon->nxPrepaid);
 		}
 		PlayerPacket::sendGotCouponRewards(player, rewardedItems, coupon->mesos, coupon->maplePoints);
-		PlayerPacket::showNX(player); // Unstuck...?
-		player->getStorage()->saveNX();
+		PlayerPacket::showNX(player);
 
 		CashDataProvider::Instance()->updateCoupon(couponCode, true);
 		WorldServerConnectPacket::updateCoupon(CashServer::Instance()->getWorldConnection(), couponCode, true);
@@ -599,16 +597,16 @@ bool PlayerHandler::takeCash(Player *player, int8_t buyMode, int32_t amount) {
 		}
 	}
 	else if (buyMode == BuyModes::NxPrepaid) {
-		if (player->getStorage()->getPrepaidNX() >= amount) {
-			player->getStorage()->changePrepaidNX(-amount);
+		if (player->getStorage()->getNxPrepaid() >= amount) {
+			player->getStorage()->changeNxPrepaid(-amount);
 		}
 		else {
 			return false;
 		}
 	}
 	else if (buyMode == BuyModes::NxCredit) {
-		if (player->getStorage()->getCreditNX() >= amount) {
-			player->getStorage()->changeCreditNX(-amount);
+		if (player->getStorage()->getNxCredit() >= amount) {
+			player->getStorage()->changeNxCredit(-amount);
 		}
 		else {
 			return false;
@@ -620,6 +618,5 @@ bool PlayerHandler::takeCash(Player *player, int8_t buyMode, int32_t amount) {
 		CashServer::Instance()->log(LogTypes::Warning, warning.str());
 		return false;
 	}
-	player->getStorage()->saveNX();
 	return true;
 }

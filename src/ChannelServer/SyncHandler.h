@@ -36,4 +36,7 @@ namespace SyncHandler {
 	void newConnectable(PacketReader &packet);
 	void cannotGo(PacketReader &packet);
 	void disbandParty(PacketReader &packet);
+	void handleBuddy(PacketReader &packet);
+	void buddyInvite(PacketReader &packet);
+	void buddyOnlineOffline(PacketReader &packet);
 };

@@ -77,7 +77,7 @@ void PlayerStorage::addCashItem(CashItem *item) {
 			<< item->getAmount() << ", "
 			<< mysqlpp::quote << item->getName() << ", "
 			<< item->getPetId() << ", "
-			<< mysqlpp::quote << mysqlpp::DateTime(TimeUtilities::tickToTime(item->getExpirationTime())) << ")";
+			<< item->getExpirationTime() << ")";
 		query.exec();
 		item->setId(static_cast<int32_t>(query.insert_id()));
 	}
@@ -109,23 +109,25 @@ void PlayerStorage::changeMesos(int32_t mesos) {
 void PlayerStorage::load() {
 	cashStorage.clear();
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT slots, char_slots, mesos, credit_nx, prepaid_nx, maplepoints FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
+	query << "SELECT slots, char_slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
 		slots = (int8_t) res[0][0];
 		charSlots = (int8_t) res[0][1];
 		mesos = res[0][2];
-		nxCredit = res[0][3];
-		nxPrepaid = res[0][4];
-		maplePoints = res[0][5];
 	}
 	else {
 		slots = 4;
 		charSlots = 3;
 		mesos = 0;
-		nxCredit = 0;
-		nxPrepaid = 0;
-		maplePoints = 0;
+		// Make a row right away...
+		query << "INSERT INTO storage (userid, world_id, slots, char_slots, mesos) VALUES ("
+			<< player->getUserId() << ", "
+			<< (int16_t) player->getWorldId() << ", "
+			<< (int16_t) getSlots() << ", "
+			<< (int16_t) getCharSlots() << ", "
+			<< getMesos() << ")";
+		query.exec();
 	}
 
 	items.reserve(slots);
@@ -180,7 +182,7 @@ void PlayerStorage::load() {
 		item->setId(row[0]);
 		item->setItemId(row[1]);
 		item->setAmount(row[2]);
-		item->setExpirationTime(TimeUtilities::timeToTick(mysqlpp::DateTime(row[3])));
+		item->setExpirationTime(row[3]);
 		row[4].to_string(temp);
 		item->setName(temp);
 		item->setUserId(row[5]);
@@ -203,37 +205,17 @@ void PlayerStorage::load() {
 		gifts[gift->cashid] = gift;
 	}
 }
-
-void PlayerStorage::loadNX() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT credit_nx, prepaid_nx, maplepoints FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
-	mysqlpp::StoreQueryResult res = query.store();
-	if (res.num_rows() != 0) {
-		nxCredit = res[0][0];
-		nxPrepaid = res[0][1];
-		maplePoints = res[0][2];
-	}
-	else {
-		nxCredit = 0;
-		nxPrepaid = 0;
-		maplePoints = 0;
-	}
-}
-
 void PlayerStorage::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
-	query.exec();
-
-	query << "INSERT INTO storage (userid, world_id, slots, char_slots, mesos, credit_nx, prepaid_nx, maplepoints) VALUES ("
+	query << "INSERT INTO storage (userid, world_id, slots, char_slots, mesos) VALUES ("
 		<< player->getUserId() << ", "
 		<< (int16_t) player->getWorldId() << ", "
 		<< (int16_t) getSlots() << ", "
 		<< (int16_t) getCharSlots() << ", "
-		<< getMesos() << ", "
-		<< getCreditNX() << ", "
-		<< getPrepaidNX() << ", "
-		<< getMaplePoints() << ")";
+		<< getMesos() << ")"
+		<< "ON DUPLICATE KEY UPDATE slots = " << (int16_t) getSlots() << ", "
+		<< "char_slots = " << (int16_t) getCharSlots() << ", "
+		<< "mesos = " << getMesos();
 	query.exec();
 
 	query << "DELETE FROM storage_items WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
@@ -300,19 +282,10 @@ void PlayerStorage::save() {
 			<< iter->second->getAmount() << ", "
 			<< mysqlpp::quote << iter->second->getName() << ", "
 			<< iter->second->getPetId() << ", "
-			<< mysqlpp::quote << mysqlpp::DateTime(TimeUtilities::tickToTime(iter->second->getExpirationTime())) << ")";
+			<< iter->second->getExpirationTime() << ")";
 	}
 	if (!firstrun)
 		query.exec();
-}
-
-void PlayerStorage::saveNX() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE storage SET "
-		<< "maplepoints = " << getMaplePoints() << ", "
-		<< "credit_nx = " << getCreditNX() << ", "
-		<< "prepaid_nx = " << getPrepaidNX() << " WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
-	query.exec();	
 }
 
 void PlayerStorage::checkExpiredItems() {
@@ -320,7 +293,7 @@ void PlayerStorage::checkExpiredItems() {
 	vector<int64_t> expiredItems;
 	for (size_t i = 0; i < cashStorage.size(); i++) {
 		item = cashStorage[i];
-		if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && TimeUtilities::tickToTime(item->getExpirationTime()) <= time(0)) {
+		if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= TimeUtilities::getServerTime()) {
 			PlayerPacket::sendItemExpired(player, item->getId());
 			expiredItems.push_back(item->getId());
 		}
@@ -346,5 +319,122 @@ void PlayerStorage::giftPacket(PacketCreator &packet) {
 		packet.add<int32_t>(gift->itemid);
 		packet.addString(gift->sender, 13);
 		packet.addString(gift->message, 73);
+	}
+}
+
+void PlayerStorage::changeNxCredit(int32_t val) {
+	if (val < 0) {
+		if (-val > getNxCredit()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getNxCredit() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET credit_nx = credit_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+void PlayerStorage::changeNxPrepaid(int32_t val) {
+	if (val < 0) {
+		if (-val > getNxPrepaid()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = prepaid_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getNxPrepaid() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET prepaid_nx = prepaid_nx + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+void PlayerStorage::changeMaplePoints(int32_t val) {
+	if (val < 0) {
+		if (-val > getMaplePoints()) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = 0 WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = maplepoints + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+	else {
+		if (getMaplePoints() + val < 0) {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = " << INT_MAX << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+		else {
+			mysqlpp::Query query = Database::getCharDB().query();
+			query << "UPDATE storage SET maplepoints = maplepoints + " << val << " WHERE userid = " << player->getUserId();
+			query.exec();
+		}
+	}
+}
+
+int32_t PlayerStorage::getNxCredit() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT credit_nx FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
+	}
+}
+
+int32_t PlayerStorage::getNxPrepaid() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT prepaid_nx FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
+	}
+}
+
+int32_t PlayerStorage::getMaplePoints() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "SELECT maplepoints FROM storage WHERE userid = " << player->getUserId();
+	mysqlpp::StoreQueryResult res = query.store();
+	if (res.num_rows() == 0) {
+		return 0;
+	}
+	else {
+		return atoi(res[0][0]);
 	}
 }

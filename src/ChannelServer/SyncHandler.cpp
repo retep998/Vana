@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.h"
+#include "BuddyListPacket.h"
 #include "Connectable.h"
 #include "GameObjects.h"
 #include "GuildPacket.h"
@@ -27,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
+#include "PlayerBuddyList.h"
 #include "SendHeader.h"
 #include "SyncPacket.h"
 
@@ -38,6 +40,7 @@ void SyncHandler::handle(PacketReader &packet) {
 		case Sync::SyncTypes::Alliance: alliancePacketHandlerWorld(packet); break;
 		case Sync::SyncTypes::Player: handlePlayerSync(packet); break;
 		case Sync::SyncTypes::Data: handleDataSync(packet); break;
+		case Sync::SyncTypes::Buddy: handleBuddy(packet); break;
 	}
 }
 
@@ -58,14 +61,15 @@ void SyncHandler::playerChangeChannel(PacketReader &packet) {
 
 	Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
-
 		return;
 	}
+
 	if (ip == 0) {
 		PlayerPacket::sendBlockedMessage(ccPlayer, Sync::Player::BlockMessages::CannotGo);
 	}
 	else {
 		ccPlayer->setOnline(false); // Set online to 0 BEFORE CC packet is sent to player
+		ccPlayer->setChangingChannel(true);
 		PlayerPacket::changeChannel(ccPlayer, ip, port);
 		ccPlayer->saveAll(true);
 		ccPlayer->setSaveOnDc(false);
@@ -83,7 +87,6 @@ void SyncHandler::cannotGo(PacketReader &packet) {
 		PlayerPacket::sendBlockedMessage(ccPlayer, packet.get<int8_t>());
 	}
 }
-
 
 void SyncHandler::guildPacketHandlerWorld(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
@@ -354,5 +357,38 @@ void SyncHandler::handlePartyResponse(PacketReader &packet) {
 			party->showHpBar(player);
 			party->receiveHpBar(player);
 			break;
+	}
+}
+
+void SyncHandler::handleBuddy(PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Buddies::Invite: SyncHandler::buddyInvite(packet); break;
+		case Sync::Buddies::OnlineOffline: SyncHandler::buddyOnlineOffline(packet); break;
+	}
+}
+
+void SyncHandler::buddyInvite(PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>();
+	if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
+		PlayerBuddyList::BuddyInvite invite;
+		invite.m_id = packet.get<int32_t>();
+		invite.m_name = packet.getString();
+		player->getBuddyList()->addBuddyInvite(invite);
+		player->getBuddyList()->checkForPendingBuddy();
+	}
+}
+
+void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
+	int32_t playerid = packet.get<int32_t>(); // The id of the player coming online
+	int32_t channel = packet.get<int32_t>();
+	vector<int32_t> players = packet.getVector<int32_t>(); // Holds the buddyids
+
+	for (size_t i = 0; i < players.size(); i++) {
+		if (Player *player = PlayerDataProvider::Instance()->getPlayer(players[i])) {
+			if (PlayerBuddyList::BuddyPtr ptr = player->getBuddyList()->getBuddy(playerid)) {
+				ptr->m_channel = channel;
+				BuddyListPacket::online(player, playerid, channel);
+			}
+		}
 	}
 }

@@ -131,7 +131,8 @@ namespace Items {
 			ItemStar = 207,
 			ItemBullet = 233,
 			ItemMonsterCard = 238,
-			WeatherCash = 512
+			WeatherCash = 512,
+			CashPetFood = 524
 		};
 	}
 
@@ -279,6 +280,7 @@ namespace Items {
 		CuteTigerMessenger = 5390005,
 		RoaringTigerMessenger = 5390006,
 		WheelOfDestiny = 5510000,
+		ScissorsOfKarma = 5520000,
 		ViciousHammer = 5570000
 	};
 }

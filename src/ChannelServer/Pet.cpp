@@ -36,8 +36,9 @@ level(1),
 fullness(100),
 closeness(0)
 {
+	// Used for creating a new pet.
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
+	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	this->id = (int32_t) res.insert_id();
 	item->setPetId(this->id);
@@ -55,7 +56,7 @@ closeness(closeness),
 inventorySlot(inventorySlot)
 {
 	if (isSummoned()) {
-		if (index != 0) {
+		if (index == 0) {
 			startTimer();
 		}
 		player->getPets()->setSummoned(index, id);
@@ -70,7 +71,6 @@ void Pet::levelUp() {
 void Pet::setName(const string &name) {
 	this->name = name;
 	PetsPacket::changeName(player, this);
-	PetsPacket::updatePet(player, this);
 }
 
 void Pet::addCloseness(int16_t amount) {
@@ -85,11 +85,12 @@ void Pet::addCloseness(int16_t amount) {
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	fullness += offset;
-
-	if (fullness > Stats::MaxFullness)
+	if (fullness + offset > Stats::MaxFullness)
 		fullness = Stats::MaxFullness;
-	else if (fullness < Stats::MinFullness)
+	else
+		fullness += offset;
+	
+	if (fullness < Stats::MinFullness)
 		fullness = Stats::MinFullness;
 
 	if (sendPacket)
@@ -100,4 +101,22 @@ void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
+}
+
+bool Pet::hasNameTag() {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+		default: return false; // Who knows...
+	}
+}
+
+bool Pet::hasQuoteItem() {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+		default: return false; // Who knows...
+	}
 }
