@@ -125,7 +125,7 @@ public:
 	void setBooster(int32_t skillid) { m_activebooster = skillid; }
 	void stopBooster();
 	int32_t getBooster() const { return m_activebooster; }
-	
+
 	// White Knight/Paladin charges
 	void setCharge(int32_t skillid) { m_activecharge = skillid; }
 	void stopCharge();

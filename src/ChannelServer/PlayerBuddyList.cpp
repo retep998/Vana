@@ -60,7 +60,7 @@ uint8_t PlayerBuddyList::add(const string &name) {
 
 	query << "INSERT INTO buddylist (charid, buddy_charid, name) VALUES (" << player->getId() << ", " << charid << ", " << mysqlpp::quote << res[0][1] << ")";
 	mysqlpp::SimpleResult res2 = query.execute();
-	
+
 	query << "SELECT buddylist.id, buddylist.buddy_charid, buddylist.name AS name_cache, characters.name FROM buddylist LEFT JOIN characters ON buddylist.buddy_charid = characters.id WHERE buddylist.id = " << res2.insert_id();
 	res = query.store();
 
@@ -99,7 +99,7 @@ void PlayerBuddyList::add(const mysqlpp::Row &row) {
 
 	BuddyPtr buddy(new Buddy);
 	buddy->charid = charid;
-	
+
 	// Note that the cache is for displaying the character name when the
 	// character in question is deleted.
 	if (row["name"].is_null()) {

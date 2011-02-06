@@ -221,7 +221,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 		}
 		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
-		if (morph < 0  || (morph != 0 && player->getStats()->getHp() == 0)) {
+		if (morph < 0 || (morph != 0 && player->getStats()->getHp() == 0)) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 class PacketReader;
-	
+
 namespace Fame {
 	void handleFame(Player *player, PacketReader &packet);
 	int32_t canFame(Player *player, int32_t to);

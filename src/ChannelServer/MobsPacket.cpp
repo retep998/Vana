@@ -189,7 +189,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 	}
 
 	packet.add<int16_t>(delay);
-	
+
 	int8_t buffcount = info.size();
 	if (reflection.size() > 0) {
 		buffcount /= 2; // This gives 2 buffs per reflection but it's really one buff

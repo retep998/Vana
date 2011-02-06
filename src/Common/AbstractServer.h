@@ -27,13 +27,13 @@ using std::vector;
 class AbstractServer {
 public:
 	virtual ~AbstractServer() { }
-	
+
 	void initialize();
 	virtual void listen() = 0;
 	virtual void loadConfig() = 0;
 	virtual void loadData() = 0;
 	virtual void shutdown();
-	
+
 	string getInterPassword() const { return inter_password; }
 protected:
 	AbstractServer();

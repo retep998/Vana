@@ -170,7 +170,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
-	
+
 	packet.add<int16_t>(0);
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);

@@ -154,7 +154,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
-	
+
 	// Add party member's names to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addString(iter->second->name, 13);
@@ -191,7 +191,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(-2);
 	}
-	
+
 	packet.add<int32_t>(party->getLeader());
 
 	// Add party member's maps to packet

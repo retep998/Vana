@@ -185,7 +185,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = Players::Instance()->getPlayer(playerid);
-	
+
 		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
 		if (info->hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data

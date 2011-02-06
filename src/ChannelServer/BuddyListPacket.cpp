@@ -24,7 +24,7 @@ void BuddyListPacket::error(Player *player, uint8_t error) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_BUDDY);
 	packet.add<int8_t>(error);
-	
+
 	player->getSession()->send(packet);
 }
 

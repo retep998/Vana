@@ -96,7 +96,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillid, uint8_t leve
 		return;
 	packet = PacketCreator();
 	send = false;
-	packet.add<int16_t>(SMSG_SKILL_SHOW);  // For others
+	packet.add<int16_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	switch (skillid) {
 		case Jobs::FPWizard::MpEater:
@@ -168,7 +168,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_SKILL_SHOW);  // For others
+	packet.add<int16_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Jobs::DarkKnight::Berserk);

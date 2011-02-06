@@ -84,7 +84,7 @@ void PlayerPacket::connectData(Player *player) {
 	// for every pquest: int16_t questid, string questdata
 
 	packet.add<int16_t>(0);
-	
+
 	packet.add<int64_t>(TimeUtilities::getServerTime());
 	player->getSession()->send(packet);
 }
@@ -111,7 +111,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MACRO_LIST);
 	packet.add<int8_t>(macros->getMax() + 1);
-	for (int8_t i = 0; i <= macros->getMax();  i++) {
+	for (int8_t i = 0; i <= macros->getMax(); i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != 0) {
 			packet.addString(macro->name);
