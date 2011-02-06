@@ -96,6 +96,8 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
+
+		ChannelServer::Instance()->displayLaunchTime();
 	}
 	else {
 		std::cout << "Error: No channel to handle" << std::endl;

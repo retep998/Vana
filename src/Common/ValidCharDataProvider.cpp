@@ -51,19 +51,8 @@ void ValidCharDataProvider::loadForbiddenNames() {
 	}
 }
 
-void ValidCharDataProvider::loadCreationItems() {
-	regmale.clear();
-	regfemale.clear();
-	cygnusmale.clear();
-	cygnusfemale.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_creation_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int8_t gender;
-	bool cygnus;
-	int32_t objectid;
-	ValidItems *items;
-
-	struct Functor {
+namespace Functors {
+	struct CreationItemFlags {
 		void operator()(const string &cmp) {
 			if (cmp == "face") items->faces.push_back(objectid);
 			else if (cmp == "hair") items->hair.push_back(objectid);
@@ -77,6 +66,22 @@ void ValidCharDataProvider::loadCreationItems() {
 		ValidItems *items;
 		int32_t objectid;
 	};
+}
+
+void ValidCharDataProvider::loadCreationItems() {
+	regmale.clear();
+	regfemale.clear();
+	cygnusmale.clear();
+	cygnusfemale.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_creation_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int8_t gender;
+	bool cygnus;
+	int32_t objectid;
+	ValidItems *items;
+
+	using namespace Functors;
+
 	enum CreationData {
 		Id = 0,
 		CharacterType, Gender, ObjectType, ObjectId
@@ -88,7 +93,7 @@ void ValidCharDataProvider::loadCreationItems() {
 		objectid = atoi(row[ObjectId]);
 		items = getItems(gender, cygnus);
 
-		Functor whoo = {items, objectid};
+		CreationItemFlags whoo = {items, objectid};
 		runFlags(row[ObjectType], whoo);
 	}
 }

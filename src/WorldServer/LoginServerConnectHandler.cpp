@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
-#include "LoginServerConnection.h"
-#include "WorldServerAcceptPacket.h"
-#include "WorldServer.h"
 #include "Channels.h"
+#include "InitializeWorld.h"
+#include "LoginServerConnection.h"
 #include "PacketReader.h"
 #include "Players.h"
 #include "Rates.h"
+#include "WorldServer.h"
+#include "WorldServerAcceptPacket.h"
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketReader &packet) {
@@ -65,6 +66,9 @@ void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketRea
 
 		WorldServer::Instance()->listen();
 		std::cout << "Handling world " << (int32_t) worldid << std::endl;
+
+		Initializing::worldEstablished();
+		WorldServer::Instance()->displayLaunchTime();
 	}
 	else {
 		std::cout << "Error: No world to handle" << std::endl;

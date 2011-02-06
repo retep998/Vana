@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+
 function beginInstance()
 	addInstanceMap(280030000);
 end
@@ -28,17 +29,14 @@ function timerEnd(name, fromtimer)
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
-	b = isInstanceMap(newmap);
-	if not b then -- Player probably died, want to make sure this doesn't keep the room full
+	if not isInstanceMap(newmap) then -- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerid);
 		startInstanceTimer("clean", 1, false);
-	elseif b then
-		if setPlayer(playerid) then
-			if not isGM() then
-				addInstancePlayer(playerid);
-			end
-			revertPlayer();
+	elseif setPlayer(playerid) then
+		if not isGM() then
+			addInstancePlayer(playerid);
 		end
+		revertPlayer();
 	end
 end
 

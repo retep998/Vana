@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include <iostream>
 
-void AbstractServerConnection::sendAuth(const string &pass, vector<vector<uint32_t> > extIp) {
+void AbstractServerConnection::sendAuth(const string &pass, const IpMatrix &extIp) {
 	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 

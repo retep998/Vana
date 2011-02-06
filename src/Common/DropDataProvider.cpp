@@ -36,6 +36,15 @@ void DropDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
+namespace Functors {
+	struct DropFlags {
+		void operator() (const string &cmp) {
+			if (cmp == "is_mesos") drop->ismesos = true;
+		}
+		DropInfo *drop;
+	};
+}
+
 void DropDataProvider::loadDrops() {
 	dropdata.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM drop_data");
@@ -44,12 +53,7 @@ void DropDataProvider::loadDrops() {
 	int32_t dropper;
 	MYSQL_ROW row;
 
-	struct DropFunctor {
-		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->ismesos = true;
-		}
-		DropInfo *drop;
-	};
+	using namespace Functors;
 
 	enum DropData {
 		Id = 0,
@@ -59,7 +63,7 @@ void DropDataProvider::loadDrops() {
 
 	while (row = res.fetch_raw_row()) {
 		drop = DropInfo();
-		DropFunctor whoo = {&drop};
+		DropFlags whoo = {&drop};
 		runFlags(row[Flags], whoo);
 
 		dropper = atoi(row[DropperId]);
@@ -78,7 +82,7 @@ void DropDataProvider::loadDrops() {
 
 	while (row = res.fetch_raw_row()) {
 		drop = DropInfo();
-		DropFunctor whoo = {&drop};
+		DropFlags whoo = {&drop};
 		runFlags(row[Flags], whoo);
 
 		dropper = atoi(row[DropperId]);
@@ -99,18 +103,22 @@ void DropDataProvider::loadDrops() {
 	}
 }
 
+namespace Functors {
+	struct GlobalDropFlags {
+		void operator() (const string &cmp) {
+			if (cmp == "is_mesos") drop->ismesos = true;
+		}
+		GlobalDrop *drop;
+	};
+}
+
 void DropDataProvider::loadGlobalDrops() {
 	globaldrops.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM drop_global_data");
 	mysqlpp::UseQueryResult res = query.use();
 	GlobalDrop drop;
 
-	struct GlobalDropFunctor {
-		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->ismesos = true;
-		}
-		GlobalDrop *drop;
-	};
+	using namespace Functors;
 
 	enum DropData {
 		Id = 0,
@@ -120,7 +128,7 @@ void DropDataProvider::loadGlobalDrops() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		drop = GlobalDrop();
-		GlobalDropFunctor whoo = {&drop};
+		GlobalDropFlags whoo = {&drop};
 		runFlags(row[Flags], whoo);
 
 		drop.continent = atoi(row[Continent]);

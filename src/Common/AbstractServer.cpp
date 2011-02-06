@@ -29,7 +29,7 @@ AbstractServer::AbstractServer() {
 }
 
 void AbstractServer::initialize() {
-	clock_t startTime = TimeUtilities::getTickCount(); // Measures time it takes to start
+	startTime = TimeUtilities::getTickCount();
 
 	ConfigFile config("conf/inter_password.lua");
 	inter_password = config.getString("inter_password");
@@ -49,11 +49,13 @@ void AbstractServer::initialize() {
 	if (to_listen) {
 		listen();
 	}
-
-	float loadingTime = (TimeUtilities::getTickCount() - startTime) / (float) 1000;
-	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }
 
 void AbstractServer::shutdown() {
 	ConnectionManager::Instance()->stop();
+}
+
+void AbstractServer::displayLaunchTime() const {
+	float loadingTime = (TimeUtilities::getTickCount() - startTime) / (float) 1000;
+	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }

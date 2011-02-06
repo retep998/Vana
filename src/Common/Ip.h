@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2011 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,8 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
--- Rock Covered in Snow
+*/
+#pragma once
 
-addText("");
-sendOK();
+#include "Types.h"
+#include <vector>
+
+typedef std::vector<uint32_t> IpArray;
+typedef std::vector<IpArray> IpMatrix;

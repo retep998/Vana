@@ -53,6 +53,7 @@ Instance::~Instance() {
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *map = m_maps[i];
 		map->setInstance(0);
+		map->setMusic("default");
 		map->clearDrops(false);
 		map->killMobs(0, 0, false, false);
 		map->killReactors(false);
@@ -146,11 +147,14 @@ void Instance::removePlayerSignUp(const string &name) {
 	}
 }
 
-void Instance::moveAllPlayers(int32_t mapid, PortalInfo *portal) {
+void Instance::moveAllPlayers(int32_t mapid, bool respectInstances, PortalInfo *portal) {
 	if (!Maps::getMap(mapid))
 		return;
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->setMap(mapid, portal, true);
+
+	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
+	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); iter++) {
+		iter->second->setMap(mapid, portal, respectInstances);
+
 	}
 }
 

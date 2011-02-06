@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -27,5 +28,5 @@ using std::vector;
 class AbstractServerConnection;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnection *player, string pass, vector<vector<uint32_t> > extIp);
+	void sendPassword(AbstractServerConnection *player, const string &pass, const IpMatrix &extIp);
 }

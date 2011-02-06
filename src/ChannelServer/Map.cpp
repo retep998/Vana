@@ -24,12 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
-#include "MapleTVs.h"
+#include "MapleTvs.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "Mob.h"
 #include "MobHandler.h"
 #include "MobsPacket.h"
+#include "NPCDataProvider.h"
 #include "NPCPacket.h"
 #include "PacketCreator.h"
 #include "Party.h"
@@ -76,7 +77,7 @@ timers(new Timer::Container)
 
 // Map Info
 void Map::setMusic(const string &musicname) {
-	getInfo()->musicname = musicname;
+	getInfo()->musicname = (musicname == "default" ? getInfo()->defaultmusic : musicname);
 	MapPacket::setMusic(getInfo()->id, musicname);
 }
 
@@ -316,8 +317,8 @@ int32_t Map::addNPC(const NPCSpawnInfo &npc) {
 	npcs.push_back(npc);
 	NPCPacket::showNpc(getInfo()->id, npc, npcs.size() - 1 + Map::NpcStart);
 
-	if (MapleTVs::Instance()->isMapleTVNPC(npc.id))
-		MapleTVs::Instance()->addMap(this);
+	if (NpcDataProvider::Instance()->isMapleTv(npc.id))
+		MapleTvs::Instance()->addMap(this);
 
 	return npcs.size() - 1;
 }
@@ -659,10 +660,10 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	if (info->musicname != info->defaultmusic)
 		MapPacket::setMusic(info->id, info->musicname);
 
-	// MapleTV messengers
-	if (MapleTVs::Instance()->isMapleTVMap(info->id) && MapleTVs::Instance()->hasMessage()) {
+	// MapleTv messengers
+	if (MapleTvs::Instance()->isMapleTvMap(info->id) && MapleTvs::Instance()->hasMessage()) {
 		PacketCreator packet;
-		MapleTVs::Instance()->getMapleTVEntryPacket(packet);
+		MapleTvs::Instance()->getMapleTvEntryPacket(packet);
 		player->getSession()->send(packet);
 	}
 

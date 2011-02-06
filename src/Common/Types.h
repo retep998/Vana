@@ -31,3 +31,15 @@ typedef boost::int64_t int64_t;
 typedef boost::uint64_t uint64_t;
 typedef boost::intmax_t intmax_t;
 typedef boost::uintmax_t uintmax_t;
+
+typedef int16_t header_t; // Allows for easier transitioning when the header type isn't 2 bytes
+
+namespace ServerTypes {
+	enum ServerTypes {
+		Login = 1, // Started at 1 so it's easy to do logging
+		World,
+		Channel,
+		Cash,
+		Mts
+	};
+}

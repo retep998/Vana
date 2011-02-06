@@ -64,6 +64,17 @@ void NPC::initData(Player *p, int32_t id) {
 	cend = false;
 }
 
+bool NPC::hasScript(int32_t npcid, int16_t questid, bool start) {
+	string script = "";
+	if (questid == 0) {
+		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+	}
+	else {
+		script = ScriptDataProvider::Instance()->getQuestScript(questid, (start ? 0 : 1));
+	}
+	return FileUtilities::fileExists(script);
+}
+
 string NPC::getScript(int16_t questid, bool start) {
 	if (questid == 0) {
 		return ScriptDataProvider::Instance()->getNpcScript(npcid);

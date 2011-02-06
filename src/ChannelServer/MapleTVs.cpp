@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapleTVs.h"
+#include "MapleTvs.h"
 #include "Map.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
@@ -26,45 +26,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-MapleTVs * MapleTVs::singleton = 0;
+MapleTvs * MapleTvs::singleton = 0;
 
-MapleTVs::MapleTVs() : m_timers(new Timer::Container), m_counter(0), m_hasmessage(false) {
-	m_tvs.push_back(9201066); // NLC
-	m_tvs.push_back(9250023); // Aquarium
-	m_tvs.push_back(9250024); // El Nath
-	m_tvs.push_back(9250025); // Free Market
-	m_tvs.push_back(9250026); // Ludibrium
-	m_tvs.push_back(9250042); // Henesys
-	m_tvs.push_back(9250043); // Kerning
-	m_tvs.push_back(9250044); // Ellinia
-	m_tvs.push_back(9250045); // Perion
-	m_tvs.push_back(9250046); // Orbis
-	m_tvs.push_back(9270000); // Amoria
-	m_tvs.push_back(9270001); // Lith Harbor
-	m_tvs.push_back(9270002); // Sleepywood
-	m_tvs.push_back(9270003); // Omega Sector
-	m_tvs.push_back(9270004); // Korean Folk Town
-	m_tvs.push_back(9270005); // Leafre
-	m_tvs.push_back(9270006); // Mu Lung
-	m_tvs.push_back(9270007); // Bak Cho (?)
-	m_tvs.push_back(9270008); // Y Tan (??)
-	m_tvs.push_back(9270009); // Yuan (???)
-	m_tvs.push_back(9270010); // SeuMunJung (?!)
-	m_tvs.push_back(9270011); // Night Market
-	m_tvs.push_back(9270012); // Mushroom Shrine
-	m_tvs.push_back(9270013); // Showa
-	m_tvs.push_back(9270014); // Ninja (!?)
-	m_tvs.push_back(9270015); // Taiwan
-	m_tvs.push_back(9270016); // Golden
-	m_tvs.push_back(9270040); // Singapore
+MapleTvs::MapleTvs() :
+	m_timers(new Timer::Container),
+	m_counter(0),
+	m_hasmessage(false)
+{
 }
 
-void MapleTVs::addMap(Map *map) {
+void MapleTvs::addMap(Map *map) {
 	m_maps[map->getInfo()->id] = map;
 }
 
-void MapleTVs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {
-	MapleTVMessage message;
+void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {
+	MapleTvMessage message;
 	message.hasreceiver = (receiver != 0);
 	message.megaphoneid = megaphoneid;
 	message.senderid = sender->getId();
@@ -90,55 +66,44 @@ void MapleTVs::addMessage(Player *sender, Player *receiver, const string &msg, c
 	}
 }
 
-void MapleTVs::parseBuffer() {
+void MapleTvs::parseBuffer() {
 	PacketCreator packet;
 	if (m_buffer.size() > 0) {
-		MapleTVMessage message = m_buffer.front();
+		MapleTvMessage message = m_buffer.front();
 		m_buffer.pop_front();
 
-		getMapleTVPacket(message, packet);
+		getMapleTvPacket(message, packet);
 		sendPacket(packet);
 
 		m_currentmessage = message;
 
-		Timer::Id id(Timer::Types::MapleTVTimer, message.senderid, message.counter);
-		new Timer::Timer(bind(&MapleTVs::parseBuffer, this),
+		Timer::Id id(Timer::Types::MapleTvTimer, message.senderid, message.counter);
+		new Timer::Timer(bind(&MapleTvs::parseBuffer, this),
 			id, getTimers(), Timer::Time::fromNow(message.time * 1000));
 	}
 	else {
 		m_hasmessage = false;
-		endMapleTVPacket(packet);
+		endMapleTvPacket(packet);
 		sendPacket(packet);
 	}
 }
 
-void MapleTVs::sendPacket(PacketCreator &packet) {
+void MapleTvs::sendPacket(PacketCreator &packet) {
 	for (unordered_map<int32_t, Map *>::iterator iter = m_maps.begin(); iter != m_maps.end(); iter++) {
 		iter->second->sendPacket(packet);
 	}
 }
 
-bool MapleTVs::isMapleTVNPC(int32_t id) const {
-	bool is = false;
-	for (size_t i = 0; i < m_tvs.size(); i++) {
-		if (m_tvs[i] == id) {
-			is = true;
-			break;
-		}
-	}
-	return is;
-}
-
-int32_t MapleTVs::checkMessageTimer() const {
-	Timer::Id id(Timer::Types::MapleTVTimer, m_currentmessage.senderid, m_currentmessage.counter);
+int32_t MapleTvs::checkMessageTimer() const {
+	Timer::Id id(Timer::Types::MapleTvTimer, m_currentmessage.senderid, m_currentmessage.counter);
 	return getTimers()->checkTimer(id);
 }
 
-void MapleTVs::getMapleTVEntryPacket(PacketCreator &packet) {
-	 getMapleTVPacket(m_currentmessage, packet, checkMessageTimer());
+void MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) {
+	 getMapleTvPacket(m_currentmessage, packet, checkMessageTimer());
 }
 
-void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft) {
+void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeleft) {
 	packet.add<int16_t>(SMSG_MAPLETV_ON);
 	packet.add<int8_t>(message.hasreceiver ? 3 : 1);
 	packet.add<int8_t>((int8_t)(message.megaphoneid - 5075000)); // Positively will be within -128 to 127
@@ -156,6 +121,6 @@ void MapleTVs::getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, 
 	}
 }
 
-void MapleTVs::endMapleTVPacket(PacketCreator &packet) {
+void MapleTvs::endMapleTvPacket(PacketCreator &packet) {
 	packet.add<int16_t>(SMSG_MAPLETV_OFF);
 }

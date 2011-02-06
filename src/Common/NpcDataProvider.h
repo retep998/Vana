@@ -17,27 +17,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Id.h"
-#include "../Types.h"
-#include <boost/functional/hash.hpp>
-#include <boost/tr1/memory.hpp>
+#include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
-namespace Timer {
-
-class Timer;
-
-using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
-class Container {
-public:
-	int32_t checkTimer(const Id &id);
-	int64_t checkTimer(const Id &id, bool msec);
-	void registerTimer(Timer *timer);
-	void removeTimer(const Id &id);
-private:
-	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id> > m_timers;
+struct NpcData {
+	NpcData() : isMapleTv(false), isGuildRank(false) { }
+	int32_t storageCost;
+	bool isMapleTv;
+	bool isGuildRank;
 };
 
-}
+class NpcDataProvider : boost::noncopyable {
+public:
+	static NpcDataProvider * Instance() {
+		if (singleton == 0)
+			singleton = new NpcDataProvider();
+		return singleton;
+	}
+	void loadData();
+
+	int32_t getStorageCost(int32_t npc) { return m_data[npc].storageCost; }
+	bool isMapleTv(int32_t npc) { return m_data[npc].isMapleTv; }
+	bool isGuildRank(int32_t npc) { return m_data[npc].isGuildRank; }
+	bool isValidNpcId(int32_t npc) { return (m_data.find(npc) != m_data.end()); }
+private:
+	NpcDataProvider() {}
+	static NpcDataProvider *singleton;
+
+	unordered_map<int32_t, NpcData> m_data;
+};

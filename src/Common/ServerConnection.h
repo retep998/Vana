@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractConnection.h"
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -30,7 +31,7 @@ class PacketReader;
 class AbstractServerConnection : public AbstractConnection {
 public:
 	AbstractServerConnection() { m_is_server = true; }
-	void sendAuth(const string &pass, vector<vector<uint32_t> > extIp);
+	void sendAuth(const string &pass, const IpMatrix &extIp);
 	int8_t getType() const { return m_type; }
 protected:
 	void setType(int8_t type) { m_type = type; }

@@ -65,6 +65,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_MAP_SPAWN_PLAYER 0x91
 #define SMSG_MAP_REMOVE_PLAYER 0x92
 #define SMSG_PLAYER_CHAT 0x93
+#define SMSG_CHALKBOARD 0x95
 #define SMSG_SCROLL_USE 0x98
 #define SMSG_PET_SUMMON 0x99
 #define SMSG_PET_MOVEMENT 0x9b

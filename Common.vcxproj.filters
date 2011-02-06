@@ -84,48 +84,21 @@
     <Filter Include="Header Files\Database Migration">
       <UniqueIdentifier>{4a32d0bc-adf6-4f07-baa3-cd81ba9a2aba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Database Loading\MCDB">
+      <UniqueIdentifier>{6c08e265-ed9d-419a-b5fa-ab5528a7e517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Loading\MCDB">
+      <UniqueIdentifier>{5612baa9-cd7e-42ec-8dfd-b614c568bf29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\BeautyDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
       <Filter>Source Files\Database Loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\DropDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\EquipDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\InitializeCommon.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ItemDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\MobDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\QuestDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ReactorDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ScriptDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ShopDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\SkillDataProvider.cpp">
-      <Filter>Source Files\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
       <Filter>Source Files\Database Loading</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ConfigFile.cpp">
@@ -218,6 +191,42 @@
     <ClCompile Include="src\Common\Variables.cpp">
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\BeautyDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\DropDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\EquipDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ItemDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MobDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\NpcDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\QuestDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ReactorDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ScriptDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ShopDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SkillDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
+      <Filter>Source Files\Database Loading\MCDB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -232,43 +241,10 @@
     <ClInclude Include="src\Common\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\BeautyDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\BuffDataProvider.h">
       <Filter>Header Files\Database Loading</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DropDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\EquipDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\InitializeCommon.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ItemDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\MobDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\QuestDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ReactorDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ScriptDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ShopDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\SkillDataProvider.h">
-      <Filter>Header Files\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ValidCharDataProvider.h">
       <Filter>Header Files\Database Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ConfigFile.h">
@@ -390,6 +366,45 @@
     </ClInclude>
     <ClInclude Include="src\Common\DatabaseMigrationRunner.h">
       <Filter>Header Files\Database Migration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Ip.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BeautyDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DropDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\EquipDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\NpcDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\QuestDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ReactorDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ScriptDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ShopDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ValidCharDataProvider.h">
+      <Filter>Header Files\Database Loading\MCDB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

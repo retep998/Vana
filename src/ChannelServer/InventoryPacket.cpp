@@ -317,3 +317,14 @@ void InventoryPacket::sendHammerUpdate(Player *player) {
 	packet.add<int32_t>(0x00);
 	player->getSession()->send(packet);
 }
+
+void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
+	if (player->getActiveBuffs()->isUsingHide())
+		return;
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_CHALKBOARD);
+	packet.add<int32_t>(player->getId());
+	packet.addBool(!msg.empty());
+	packet.addString(msg);
+	Maps::getMap(player->getMap())->sendPacket(packet);
+}

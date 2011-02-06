@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
-#include "MapleTVs.h"
+#include "MapleTvs.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "MobHandler.h"
@@ -363,7 +363,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		case 2: time = 60; break;
 	}
 
-	MapleTVs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	MapleTvs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1)
 		InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + line1 + line2 + line3 + line4 + line5, use_whisper);
 }

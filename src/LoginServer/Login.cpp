@@ -63,11 +63,13 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 			LoginPacket::loginError(player, 0x04); // Invalid password
 			valid = false;
 		}
-		// We have a valid password here, so lets hash the password
-		string salt = Randomizer::Instance()->generateSalt(5);
-		string hashed_pass = MiscUtilities::hashPassword(password, salt);
-		query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
-		query.exec();
+		else {
+			// We have a valid password here, so let's hash the password
+			string salt = Randomizer::Instance()->generateSalt(5);
+			string hashed_pass = MiscUtilities::hashPassword(password, salt);
+			query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
+			query.exec();
+		}
 	}
 	else if (res[0]["password"] != MiscUtilities::hashPassword(password, string(res[0]["salt"].data()))) {
 		LoginPacket::loginError(player, 0x04); // Invalid password

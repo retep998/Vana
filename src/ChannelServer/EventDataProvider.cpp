@@ -27,30 +27,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 using std::tr1::bind;
+using Initializing::outputWidth;
 
 EventDataProvider * EventDataProvider::singleton = 0;
 
-EventDataProvider::EventDataProvider() : m_timers(new Timer::Container), m_variables(new Variables) {
+EventDataProvider::EventDataProvider() :
+	m_timers(new Timer::Container),
+	m_variables(new Variables)
+{
+}
 
+void EventDataProvider::loadData() {
+	loadEvents();
+	loadInstances();
 }
 
 void EventDataProvider::loadEvents() {
-	std::cout << std::setw(Initializing::outputWidth) << std::left << "Initializing Events... ";
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Events... ";
 
-	// Declarations go here for boats and regular server events
+	// Declarations go here for regular server events or whatever you want to put on a timer
 
 	// Starts a new timer that runs every hour
-	// new Timer::Timer(bind(&namespace::func, parameter),
+	// new Timer::Timer(bind(&namespace::func, parameters),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), 60 * 60 * 1000);
-	std::cout << "DONE" << std::endl;
 
-	std::cout << std::setw(Initializing::outputWidth) << std::left << "Initializing Instances... ";
-
-	// Starts a new instance, boats or whatevers
-	// Instance *instance = new Instance("scriptName.lua", 0, 0, -3600, false, false);
-	// Instances::InstancePtr()->addInstance(instance);
-	// instance->sendMessage(BeginInstance);
+	// Same, except runs a class function
+	// new Timer::Timer(bind(&class::func, class instance, parameters),
+	// Timer::Id(Timer::Types::EventTimer, ??, ??),
+	// getTimers(), Timer::Time::getNthSecondOfHour(0), 60 * 60 * 1000);
 
 	std::cout << "DONE" << std::endl;
+}
+
+void EventDataProvider::loadInstances() {
+	std::cout << std::setw(outputWidth) << std::left << "Initializing Instances... ";
+
+	int32_t nearestTen = TimeUtilities::getNearestMinuteMark(10); // Most common intervals with boats
+	int32_t nearestFifteen = TimeUtilities::getNearestMinuteMark(15);
+
+	startInstance("kerningToNlcBoarding", -nearestTen, 10 * 60);
+	startInstance("nlcToKerningBoarding", -nearestTen, 10 * 60);
+
+	std::cout << "DONE" << std::endl;
+}
+
+void EventDataProvider::startInstance(const string &name, int32_t time, int32_t repeat) {
+	Instance *instance = new Instance(name, 0, 0, time, repeat, false);
+	Instances::InstancePtr()->addInstance(instance);
+	instance->sendMessage(BeginInstance);
 }

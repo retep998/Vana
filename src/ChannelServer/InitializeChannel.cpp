@@ -25,20 +25,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
 #include "MobDataProvider.h"
+#include "NpcDataProvider.h"
 #include "QuestDataProvider.h"
 #include "ReactorDataProvider.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
 #include <cstdio>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 void Initializing::loadData() {
 	BuffDataProvider::Instance()->loadData();
 	EquipDataProvider::Instance()->loadData();
 	ItemDataProvider::Instance()->loadData();
 	MobDataProvider::Instance()->loadData();
+	NpcDataProvider::Instance()->loadData();
 	DropDataProvider::Instance()->loadData();
 	BeautyDataProvider::Instance()->loadData();
 	ScriptDataProvider::Instance()->loadData();
@@ -47,7 +49,7 @@ void Initializing::loadData() {
 	QuestDataProvider::Instance()->loadData();
 	ReactorDataProvider::Instance()->loadData();
 
-	EventDataProvider::Instance()->loadEvents();
+	EventDataProvider::InstancePtr()->loadData();
 	initializeChat();
 };
 

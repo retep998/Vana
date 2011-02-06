@@ -73,6 +73,7 @@ public:
 	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
+	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
 
@@ -96,6 +97,7 @@ public:
 	int32_t getTradeId() const { return trade_id; }
 	int64_t getConnectionTime() const { return online_time; }
 	int64_t getConnectedTime() const { return time(0) - online_time; }
+	string getChalkboard() const { return chalkboard; }
 	string getMedalName();
 	string getName() const { return name; }
 	NPC * getNPC() const { return npc; }
@@ -159,6 +161,7 @@ private:
 	bool save_on_dc;
 	bool is_connect;
 	bool admin;
+	string chalkboard;
 	string name;
 	NPC *npc;
 	Instance *instance;

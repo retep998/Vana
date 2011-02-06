@@ -37,8 +37,8 @@ namespace Timer {
 	class Container;
 }
 
-struct MapleTVMessage {
-	MapleTVMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
+struct MapleTvMessage {
+	MapleTvMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
 	string msg1;
 	string msg2;
 	string msg3;
@@ -55,38 +55,37 @@ struct MapleTVMessage {
 	PacketCreator senddisplay;
 };
 
-class MapleTVs : boost::noncopyable {
+class MapleTvs : boost::noncopyable {
 public:
-	static MapleTVs * Instance() {
+	static MapleTvs * Instance() {
 		if (singleton == 0)
-			singleton = new MapleTVs;
+			singleton = new MapleTvs;
 		return singleton;
 	}
 
 	void addMap(Map *map);
 
 	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time);
-	void getMapleTVEntryPacket(PacketCreator &packet);
-	bool isMapleTVNPC(int32_t id) const;
-	bool isMapleTVMap(int32_t id) const { return (m_maps.find(id) != m_maps.end()); }
+	void getMapleTvEntryPacket(PacketCreator &packet);
+	bool isMapleTvNPC(int32_t id) const;
+	bool isMapleTvMap(int32_t id) const { return (m_maps.find(id) != m_maps.end()); }
 	bool hasMessage() const { return m_hasmessage; }
 	uint32_t getCounter() { return ++m_counter; }
 private:
-	MapleTVs();
-	static MapleTVs *singleton;
+	MapleTvs();
+	static MapleTvs *singleton;
 
 	void parseBuffer();
-	void getMapleTVPacket(MapleTVMessage &message, PacketCreator &packet, int32_t timeleft = 0);
-	void endMapleTVPacket(PacketCreator &packet);
+	void getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeleft = 0);
+	void endMapleTvPacket(PacketCreator &packet);
 	void sendPacket(PacketCreator &packet);
 	int32_t checkMessageTimer() const;
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	boost::scoped_ptr<Timer::Container> m_timers;
 	unordered_map<int32_t, Map *> m_maps;
-	vector<int32_t> m_tvs;
-	list<MapleTVMessage> m_buffer;
+	list<MapleTvMessage> m_buffer;
 	bool m_hasmessage;
 	uint32_t m_counter;
-	MapleTVMessage m_currentmessage;
+	MapleTvMessage m_currentmessage;
 };

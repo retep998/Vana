@@ -27,6 +27,12 @@
     <Filter Include="Header Files\Inter-Server\Handlers">
       <UniqueIdentifier>{d18ff3b3-3148-4d4d-8772-c287e83e536c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Database Loading">
+      <UniqueIdentifier>{5ce27f61-50d4-49b2-ba95-f72a8e7b8982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database Loading">
+      <UniqueIdentifier>{49aa28ad-d4ae-4a10-936b-a13ed06642aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WorldServer\main_world.cpp">
@@ -74,6 +80,9 @@
     <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp">
       <Filter>Source Files\Inter-Server\Handlers</Filter>
     </ClCompile>
+    <ClCompile Include="src\WorldServer\InitializeWorld.cpp">
+      <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\WorldServer\PrecompiledHeader.h">
@@ -117,6 +126,9 @@
     </ClInclude>
     <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.h">
       <Filter>Header Files\Inter-Server\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WorldServer\InitializeWorld.h">
+      <Filter>Header Files\Database Loading</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
