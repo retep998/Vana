@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MOBSPACKET_H
-#define MOBSPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <vector>
@@ -44,6 +43,4 @@ namespace MobsPacket {
 	void showHp(int32_t mapid, int32_t mobid, int8_t per);
 	void showBossHp(Mob *mob); // For major bosses
 	void dieMob(Mob *mob, int8_t death = 1);
-};
-
-#endif
+}

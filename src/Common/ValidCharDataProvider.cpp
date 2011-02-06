@@ -72,7 +72,7 @@ void ValidCharDataProvider::loadCreationItems() {
 			else if (cmp == "top") items->top.push_back(objectid);
 			else if (cmp == "bottom") items->bottom.push_back(objectid);
 			else if (cmp == "shoes") items->shoes.push_back(objectid);
-			else if (cmp == "weapon") items->weapons.push_back(objectid);		
+			else if (cmp == "weapon") items->weapons.push_back(objectid);
 		}
 		ValidItems *items;
 		int32_t objectid;

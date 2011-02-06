@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef ITEMDATAPROVIDER_H
-#define ITEMDATAPROVIDER_H
+#pragma once
 
 #include "Types.h"
 #include <boost/bimap.hpp>
@@ -221,7 +220,7 @@ public:
 	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : 0); }
 	ScrollInfo * getScrollInfo(int32_t itemid) { return &scrolls[itemid]; }
 	PetInfo * getPetInfo(int32_t itemid) { return &petsInfo[itemid]; }
-	PetInteractInfo * getInteraction(int32_t itemid, int32_t action); 
+	PetInteractInfo * getInteraction(int32_t itemid, int32_t action);
 	vector<Skillbook> * getItemSkills(int32_t itemid) { return &skills[itemid]; }
 	vector<SummonBag> * getItemSummons(int32_t itemid) { return &mobs[itemid]; }
 private:
@@ -251,5 +250,3 @@ private:
 	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
 	card_map cards; // Left, cardid; right, mobid
 };
-
-#endif

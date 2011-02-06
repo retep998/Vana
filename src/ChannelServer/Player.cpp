@@ -112,7 +112,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
-			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);	
+			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
 		Maps::getMap(map)->removePlayer(this);
 		Players::Instance()->removePlayer(this);
@@ -512,7 +512,7 @@ void Player::saveStats() {
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
 		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
-		<< "monsterbookcover = " << getMonsterBook()->getCover() 
+		<< "monsterbookcover = " << getMonsterBook()->getCover()
 		<< " WHERE id = " << id;
 	query.exec();
 }

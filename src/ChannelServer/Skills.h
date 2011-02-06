@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SKILLS_H
-#define SKILLS_H
+#pragma once
 
 #include "Types.h"
 #include <vector>
@@ -46,6 +45,4 @@ namespace Skills {
 	void stopCooldown(Player *player, int32_t skillid);
 	bool isCooling(Player *player, int32_t skillid);
 	int16_t getCooldownTimeLeft(Player *player, int32_t skillid);
-};
-
-#endif
+}

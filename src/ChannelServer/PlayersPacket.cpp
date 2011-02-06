@@ -96,7 +96,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 
 void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESSAGE); 
+	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == 6)
@@ -156,7 +156,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
 	}
-	else {	
+	else {
 		packet.add<int8_t>(0x0A);
 		packet.addString(name);
 		packet.add<int8_t>(is);
@@ -190,7 +190,7 @@ void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {
 	packet.add<int8_t>(player->getSkills()->getSkillLevel(skillid));
 	if (skillid != Jobs::All::RegularAttack) {
 		packet.add<int32_t>(skillid);
-	} 
+	}
 
 	pack.skipBytes(4); // Unk
 	packet.add<int8_t>(pack.get<int8_t>()); // Projectile display
@@ -301,7 +301,7 @@ void PlayersPacket::useRangedAttack(Player *player, PacketReader &pack) {
 				default:
 					break;
 			}
-			packet.add<int32_t>(damage); 
+			packet.add<int32_t>(damage);
 		}
 		pack.skipBytes(4);
 	}

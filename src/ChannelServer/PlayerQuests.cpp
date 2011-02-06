@@ -297,7 +297,7 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 		for (iter = sjobiter; iter != ejobiter; iter++) {
 			if (iter->isitem && iter->prop > 0) {
 				chance += iter->prop;
-				items.push_back(*iter);		
+				items.push_back(*iter);
 			}
 			else {
 				giveRewards(*iter);

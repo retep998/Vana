@@ -54,7 +54,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 			PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
 			PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
 		}
-	}	
+	}
 	else { // Let's connect to the world server to see if the player is on any other channel
 		if (type == 0x05) {
 			WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
@@ -140,14 +140,14 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		}
 		break;
 		default: {
-			std::cout << "Unknown type of Admin command: 0x" << std::hex << static_cast<uint16_t>(type) << ", sent by " << player->getName() << std::endl; 
+			std::cout << "Unknown type of Admin command: 0x" << std::hex << static_cast<uint16_t>(type) << ", sent by " << player->getName() << std::endl;
 			packet.reset(2);
 			size_t length = packet.getBufferLength();
 			std::cout << "Packet data: " << std::endl;
 			for (size_t i = 0; i < length; i++) {
-				std::cout << std::setw(2) 
+				std::cout << std::setw(2)
 					<< std::setfill('0') << std::internal
-					<< std::hex << static_cast<uint16_t>(packet.get<uint8_t>()) 
+					<< std::hex << static_cast<uint16_t>(packet.get<uint8_t>())
 					<< " ";
 			}
 			std::cout << std::endl;

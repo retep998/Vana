@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INVENTORYHANDLER_H
-#define INVENTORYHANDLER_H
+#pragma once
 
 #include "Types.h"
 
@@ -41,5 +40,3 @@ namespace InventoryHandler {
 	bool handleRockTeleport(Player *player, int8_t type, int32_t itemid, PacketReader &packet);
 	void handleHammerTime(Player *player);
 }
-
-#endif

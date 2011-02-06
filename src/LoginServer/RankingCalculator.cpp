@@ -58,7 +58,7 @@ void RankingCalculator::all() {
 	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
 }
 
-void RankingCalculator::overall() {	
+void RankingCalculator::overall() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	
 	// Set the variables we're going to use later

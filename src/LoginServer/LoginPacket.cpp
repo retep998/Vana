@@ -204,7 +204,7 @@ void LoginPacket::showCharacter(PlayerLogin *player, const Character &charc) {
 	packet.add<int16_t>(SMSG_PLAYER_CREATE);
 	packet.add<int8_t>(0);
 	LoginPacketHelper::addCharacter(packet, charc);
-	player->getSession()->send(packet);	
+	player->getSession()->send(packet);
 }
 
 void LoginPacket::deleteCharacter(PlayerLogin *player, int32_t id, bool success) {

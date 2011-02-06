@@ -16,8 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef PARTYHANDLER_H
-#define PARTYHANDLER_H
+#pragma once
 
 #include "Players.h"
 #include "Types.h"
@@ -55,7 +54,7 @@ namespace PartyHandler {
 	void expelPlayer(WorldServerAcceptConnection *player, int32_t playerid, int32_t target);
 	void silentUpdate(int32_t playerid);
 	void logInLogOut(int32_t playerid);
-};
+}
 
 class Party {
 public:
@@ -70,5 +69,3 @@ public:
 private:
 	int32_t leaderid;
 };
-
-#endif

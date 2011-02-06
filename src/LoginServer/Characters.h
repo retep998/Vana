@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef CHARACTERS_H
-#define CHARACTERS_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -78,6 +77,4 @@ namespace Characters {
 	void createItem(int32_t itemid, int32_t charid, int32_t slot, int16_t amount = 1);
 	bool ownerCheck(PlayerLogin *player, int32_t id);
 	bool nameIllegal(PlayerLogin *player, const string &name); // Name is taken or not valid
-};
-
-#endif
+}

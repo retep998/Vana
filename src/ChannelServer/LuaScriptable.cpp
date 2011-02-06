@@ -1595,7 +1595,7 @@ int LuaExports::getPartyMapCount(lua_State *luaVm) {
 		members = p->getMemberCountOnMap(mapid);
 	}
 	lua_pushinteger(luaVm, members);
-	return 1;	
+	return 1;
 }
 
 int LuaExports::isPartyInLevelRange(lua_State *luaVm) {

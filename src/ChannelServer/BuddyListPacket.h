@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef BUDDYLISTPACKET_H
-#define BUDDYLISTPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -34,5 +33,3 @@ namespace BuddyListPacket {
 	static const uint8_t add = 0x0a;
 	static const uint8_t remove = 0x12;
 }
-
-#endif

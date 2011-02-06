@@ -170,7 +170,7 @@ void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
 
 void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESSAGE); 
+	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
 	if (type == 6)

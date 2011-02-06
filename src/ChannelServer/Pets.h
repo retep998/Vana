@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PETS_H
-#define PETS_H
+#pragma once
 
 #include "GameConstants.h"
 #include "MovableLife.h"
@@ -42,7 +41,7 @@ namespace Pets {
 	void handleSummon(Player *player, PacketReader &packet);
 	void handleCommand(Player *player, PacketReader &packet);
 	void changeName(Player *player, const string &name);
-};
+}
 
 class Pet : public MovableLife {
 public:
@@ -81,5 +80,3 @@ private:
 
 	void levelUp();
 };
-
-#endif

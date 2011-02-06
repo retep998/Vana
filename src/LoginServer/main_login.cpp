@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 #ifdef _WIN32
-
 std::tr1::function<void()> console_ctrl_function;
 
 BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
@@ -37,7 +36,6 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 			return FALSE;
 	}
 }
-
 #endif
 
 int main() {
@@ -51,10 +49,9 @@ int main() {
 		// Allow the server to stop on windows console events
 		console_ctrl_function = std::tr1::bind(&ConnectionManager::stop, connMan);
 		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
-#endif
-
 		connMan->run();
 		connMan->join();
+#endif
 	}
 	catch (std::exception &e) {
 		std::cout << "ERROR: " << e.what() << std::endl;

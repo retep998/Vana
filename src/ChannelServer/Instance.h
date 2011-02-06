@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef INSTANCE_H
-#define INSTANCE_H
+#pragma once
 
 #include "InstanceMessageConstants.h"
 #include "Types.h"
@@ -40,7 +39,7 @@ struct PortalInfo;
 
 namespace Timer {
 	class Container;
-};
+}
 
 struct TimerAction {
 	TimerAction() : persistent(0) { }
@@ -146,4 +145,3 @@ private:
 
 	LuaInstance * getLuaInstance() { return m_luainstance.get(); }
 };
-#endif

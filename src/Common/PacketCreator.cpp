@@ -93,7 +93,7 @@ unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
 		}
 		unsigned char *newBuffer = new unsigned char[m_packetCapacity];
 		memcpy(newBuffer, m_packet.get(), pos);
-		m_packet.reset(newBuffer);	
+		m_packet.reset(newBuffer);
 	}
 
 	return m_packet.get() + pos;

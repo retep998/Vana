@@ -41,7 +41,7 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();	
+				stance = packet.get<int8_t>();
 				packet.skipBytes(6);
 				break;
 			case 12: // Horntail knockback

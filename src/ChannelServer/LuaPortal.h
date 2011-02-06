@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LUAPORTAL_H
-#define LUAPORTAL_H
+#pragma once
 
 #include "LuaScriptable.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -44,6 +43,4 @@ namespace LuaExports {
 	int getPortalName(lua_State *luaVm);
 	int instantWarp(lua_State *luaVm);
 	int playPortalSe(lua_State *luaVm);
-};
-
-#endif
+}

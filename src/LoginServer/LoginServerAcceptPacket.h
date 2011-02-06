@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOGINSERVERACCEPTPACKET_H
-#define LOGINSERVERACCEPTPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -31,6 +30,4 @@ namespace LoginServerAcceptPacket {
 	void noMoreWorld(LoginServerAcceptConnection *player);
 	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, int16_t port);
 	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid);
-};
-
-#endif
+}

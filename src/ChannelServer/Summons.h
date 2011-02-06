@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SUMMONS_H
-#define SUMMONS_H
+#pragma once
 
 #include "Player.h"
 #include <string>
@@ -37,7 +36,7 @@ namespace Summons {
 	void damageSummon(Player *player, PacketReader &packet);
 	string getSummonName(int32_t summonid);
 	int32_t loopId();
-};
+}
 
 class Summon : public MovableLife {
 public:
@@ -57,5 +56,3 @@ private:
 	uint8_t type;
 	int32_t hp; // For puppet
 };
-
-#endif

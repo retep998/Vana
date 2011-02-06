@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SESSIONMANAGER_H
-#define SESSIONMANAGER_H
+#pragma once
 
 #include <boost/tr1/memory.hpp>
 #include <set>
@@ -36,5 +35,3 @@ private:
 };
 
 typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
-
-#endif

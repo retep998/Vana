@@ -51,7 +51,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 		if (first == 1)
 			first = 0;
 	}
-} 
+}
  
 void Decoder::next() {
 	MapleEncryption::nextIv(ivSend);
@@ -77,14 +77,14 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 			first = 0;
 	}
 	
-	MapleEncryption::nextIv(ivRecv); 
+	MapleEncryption::nextIv(ivRecv);
 	MapleEncryption::mapleDecrypt(buffer, size);
 }
 
 void Decoder::createHeader(unsigned char *header, int16_t size) {
 	int16_t a = ivSend[3] * 0x100 + ivSend[2];
 	a = a ^ -(MAPLE_VERSION + 1);
-	int16_t b = a ^ size; 
+	int16_t b = a ^ size;
 	header[0] = a % 0x100;
 	header[1] = (a - header[0]) / 0x100;
 	header[2] = b % 0x100;

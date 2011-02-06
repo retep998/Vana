@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
 #include "LoopingId.h"
 #include "MapDataProvider.h"
@@ -42,7 +41,7 @@ class Player;
 class Reactor;
 namespace Timer {
 	class Container;
-};
+}
 
 class Map {
 public:
@@ -187,5 +186,3 @@ private:
 	void updateMobControl(Player *player);
 	int32_t getTimeMobId() const { return timemob; }
 };
-
-#endif

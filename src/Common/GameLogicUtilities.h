@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef GAMELOGICUTILITIES_H
-#define GAMELOGICUTILITIES_H
+#pragma once
 
 #include "GameConstants.h"
 #include "Pos.h"
@@ -87,6 +86,4 @@ namespace GameLogicUtilities {
 	inline int8_t getPartyMember4(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember5(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
 	inline int8_t getPartyMember6(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
-};
-
-#endif
+}

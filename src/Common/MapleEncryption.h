@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAPLEENC_H
-#define MAPLEENC_H
+#pragma once
 
 #include "Types.h"
 #include <cstring>
@@ -28,7 +27,7 @@ namespace MapleEncryption {
 	void setIv(unsigned char *dest, unsigned char *source);
 	uint8_t ror(uint8_t val, int32_t num);
 	uint8_t rol(uint8_t val, int32_t num);
-};
+}
 
 inline
 void MapleEncryption::setIv(unsigned char *dest, unsigned char *source) {
@@ -37,5 +36,3 @@ void MapleEncryption::setIv(unsigned char *dest, unsigned char *source) {
 		memcpy(dest + i*4, source, 4);
 	}
 }
-
-#endif

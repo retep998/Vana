@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef MAPLETV_H
-#define MAPLETV_H
+#pragma once
 
 #include "PacketCreator.h"
 #include "Types.h"
@@ -36,7 +35,7 @@ class Map;
 class Player;
 namespace Timer {
 	class Container;
-};
+}
 
 struct MapleTVMessage {
 	MapleTVMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
@@ -91,5 +90,3 @@ private:
 	uint32_t m_counter;
 	MapleTVMessage m_currentmessage;
 };
-
-#endif

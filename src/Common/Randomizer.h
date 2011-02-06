@@ -15,15 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef RANDOMIZER_H
-#define RANDOMIZER_H
+#pragma once
 
 #pragma warning(push)
 #pragma warning(disable : 4146)
 #pragma warning(disable : 4800)
 #pragma warning(disable : 4996)
 #include "MersenneTwister.h"
-#pragma warning(pop) 
+#pragma warning(pop)
 
 #include "Types.h"
 #include <string>
@@ -53,5 +52,3 @@ private:
 
 	MTRand mtrand;
 };
-
-#endif

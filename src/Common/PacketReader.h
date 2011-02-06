@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PACKETREADER_H
-#define PACKETREADER_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
@@ -68,5 +67,3 @@ vector<T> PacketReader::getVector() {
 	}
 	return vec;
 }
-
-#endif

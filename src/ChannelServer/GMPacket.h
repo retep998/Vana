@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef GMPACKET_H
-#define GMPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -32,6 +31,4 @@ namespace GmPacket {
 	void warning(Player *player, bool succeed);
 	void block(Player *player);
 	void invalidCharacterName(Player *player);
-};
-
-#endif
+}
