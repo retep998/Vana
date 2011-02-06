@@ -36,22 +36,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Pos.h"
 #include "ShopDataProvider.h"
-#include "StoragePacket.h"
 #include "WorldServerConnectPacket.h"
 #include <boost/tr1/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <utility>
-#include <vector>
 
-using std::make_pair;
 using std::tr1::cmatch;
 using std::tr1::regex;
 using std::tr1::regex_match;
 using std::vector;
+using ChatHandler::ChatCommand;
 
-unordered_map<string, pair<Commands, int32_t> > ChatHandler::commandlist;
-unordered_map<string, vector<string> > ChatHandler::commandnotes;
-unordered_map<string, string> ChatHandler::commandsyntax;
+unordered_map<string, ChatCommand> ChatHandler::commandlist;
 
 struct MeFunctor {
 	void operator() (Player *gmplayer) {
@@ -74,238 +70,361 @@ struct WarpFunctor {
 
 void ChatHandler::initializeCommands() {
 	// Set up commands and appropriate GM levels
+	ChatCommand command;
 
-	// GM level 3
-	commandlist["ban"] = make_pair(CmdBan, 3);
-	commandlist["ipban"] = make_pair(CmdIpBan, 3);
-	commandlist["tempban"] = make_pair(CmdTempBan, 3);
-	commandlist["unban"] = make_pair(CmdUnban, 3);
-	commandlist["header"] = make_pair(CmdHeader, 3);
-	commandlist["shutdown"] = make_pair(CmdShutdown, 3);
-	commandlist["packet"] = make_pair(CmdPacket, 3);
-	commandlist["timer"] = make_pair(CmdTimer, 3);
-	commandlist["instruction"] = make_pair(CmdInstruction, 3);
-	commandlist["addnpc"] = make_pair(CmdAddNpc, 3);
-	commandlist["dorankings"] = make_pair(CmdRankingCalc, 3);
-	commandlist["globalmessage"] = make_pair(CmdGlobalMessage, 3);
+	// Notes: 
+	// Don't add syntax to things that have no parameters
+	// Every command needs at least one line of notes that describes what the command does
 
-	// GM level 2
-	commandlist["me"] = make_pair(CmdMe, 2);
-	commandlist["kick"] = make_pair(CmdKick, 2);
-	commandlist["warp"] = make_pair(CmdWarp, 2);
-	commandlist["warpall"] = make_pair(CmdWarpAll, 2);
-	commandlist["killall"] = make_pair(CmdKillAll, 2);
-	commandlist["cleardrops"] = make_pair(CmdClearDrops, 2);
-	commandlist["worldmessage"] = make_pair(CmdWorldMessage, 2);
+#pragma region GM Level 3
+	command.level = 3;
 
-	// GM level 1
-	commandlist["kill"] = make_pair(CmdKill, 1);
-	commandlist["lookup"] = make_pair(CmdLookUp, 1);
-	commandlist["map"] = make_pair(CmdMap, 1);
-	commandlist["job"] = make_pair(CmdJob, 1);
-	commandlist["level"] = make_pair(CmdLevel, 1);
-	commandlist["hp"] = make_pair(CmdHp, 1);
-	commandlist["mp"] = make_pair(CmdMp, 1);
-	commandlist["ap"] = make_pair(CmdAp, 1);
-	commandlist["sp"] = make_pair(CmdSp, 1);
-	commandlist["addsp"] = make_pair(CmdAddSp, 1);
-	commandlist["int"] = make_pair(CmdInt, 1);
-	commandlist["luk"] = make_pair(CmdLuk, 1);
-	commandlist["dex"] = make_pair(CmdDex, 1);
-	commandlist["str"] = make_pair(CmdStr, 1);
-	commandlist["fame"] = make_pair(CmdFame, 1);
-	commandlist["maxstats"] = make_pair(CmdMaxStats, 1);
-	commandlist["npc"] = make_pair(CmdNpc, 1);
-	commandlist["item"] = make_pair(CmdItem, 1);
-	commandlist["summon"] = make_pair(CmdSummon, 1);
-	commandlist["spawn"] = make_pair(CmdSummon, 1);
-	commandlist["notice"] = make_pair(CmdNotice, 1);
-	commandlist["shop"] = make_pair(CmdShop, 1);
-	commandlist["pos"] = make_pair(CmdPos, 1);
-	commandlist["zakum"] = make_pair(CmdZakum, 1);
-	commandlist["horntail"] = make_pair(CmdHorntail, 1);
-	commandlist["heal"] = make_pair(CmdHeal, 1);
-	commandlist["mesos"] = make_pair(CmdMesos, 1);
-	commandlist["dc"] = make_pair(CmdDisconnect, 1);
-	commandlist["music"] = make_pair(CmdMusic, 1);
-	commandlist["storage"] = make_pair(CmdStorage, 1);
-	commandlist["eventinstruct"] = make_pair(CmdEventInstruction, 1);
-	commandlist["relog"] = make_pair(CmdRelog, 1);
-	commandlist["save"] = make_pair(CmdSave, 1);
-	commandlist["warpto"] = make_pair(CmdWarpTo, 1);
-	commandlist["killnpc"] = make_pair(CmdKillNpc, 1);
-	commandlist["listmobs"] = make_pair(CmdListMobs, 1);
-	commandlist["getmobhp"] = make_pair(CmdGetMobHp, 1);
-	commandlist["killmob"] = make_pair(CmdKillMob, 1);
-	commandlist["reload"] = make_pair(CmdReload, 1);
+	command.command = CmdBan;
+	command.syntax = "<$playername> [#reason]";
+	command.notes.push_back("Permanently bans a player by name.");
+	command.notes.push_back("Reason codes:");
+	command.notes.push_back("1 - Hacking");
+	command.notes.push_back("2 - Using macro/auto-keyboard");
+	command.notes.push_back("3 - Illicit promotion or advertising");
+	command.notes.push_back("4 - Harassment");
+	command.notes.push_back("5 - Using profane language");
+	command.notes.push_back("6 - Scamming");
+	command.notes.push_back("7 - Misconduct");
+	command.notes.push_back("8 - Illegal cash transaction");
+	command.notes.push_back("9 - Illegal charging/funding");
+	command.notes.push_back("10 - Temporary request");
+	command.notes.push_back("11 - Impersonating GM");
+	command.notes.push_back("12 - Using illegal programs or violating the game policy");
+	command.notes.push_back("13 - Cursing, scamming, or illegal trading via megaphones");
+	commandlist["ban"] = command.addToMap();
 
-	// No GM level needed
-	commandlist["help"] = make_pair(CmdHelp, 0);
+	command.command = CmdIpBan;
+	command.syntax = "<$playername> [#reason]";
+	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
+	command.notes.push_back("Use !help ban to see the applicable reason codes.");
+	commandlist["ipban"] = command.addToMap();
 
-	// Set up syntax display, don't add commands that don't take parameters
-	commandsyntax["ban"] = "<$playername> [#reason]";
-	commandsyntax["ipban"] = "<$playername> [#reason]";
-	commandsyntax["tempban"] = "<$playername> <#reason> <#length in days>";
-	commandsyntax["unban"] = "<$playername>";
-	commandsyntax["header"] = "[$message]";
-	commandsyntax["packet"] = "<$hexbytes>";
-	commandsyntax["timer"] = "<#time in seconds>";
-	commandsyntax["instruction"] = "<$bubbletext>";
-	commandsyntax["addnpc"] = "<#npcid>";
-	commandsyntax["me"] = "<$message>";
-	commandsyntax["kick"] = "<$playername>";
-	commandsyntax["warp"] = "<$playername> [#mapid]";
-	commandsyntax["warpall"] = "[#mapid]";
-	commandsyntax["worldmessage"] = "<${notice | popup | event | purple}> <$message string>";
-	commandsyntax["globalmessage"] = "<${notice | popup | event | purple}> <$message string>";
-	commandsyntax["kill"] = "<${players | gm | all | me} | $playername>";
-	commandsyntax["lookup"] = "<${item | skill | map | mob | npc | quest | continent | id}> <$search string | #id>";
-	commandsyntax["map"] = "<${town | mapstring | bossmapstring} | #mapid>";
-	commandsyntax["job"] = "<${jobstring} | #jobid>";
-	commandsyntax["level"] = "<#level>";
-	commandsyntax["hp"] = "<#hp>";
-	commandsyntax["mp"] = "<#mp>";
-	commandsyntax["ap"] = "<#ap>";
-	commandsyntax["sp"] = "<#sp>";
-	commandsyntax["addsp"] = "<#skillid> [#skillpoints]";
-	commandsyntax["int"] = "<#int>";
-	commandsyntax["luk"] = "<#luk>";
-	commandsyntax["dex"] = "<#dex>";
-	commandsyntax["str"] = "<#str>";
-	commandsyntax["fame"] = "<#fame>";
-	commandsyntax["npc"] = "<#npcid>";
-	commandsyntax["item"] = "<#itemid> [#amount]";
-	commandsyntax["summon"] = "<#mobid> [#amount]";
-	commandsyntax["spawn"] = "<#mobid> [#amount]";
-	commandsyntax["notice"] = "<$message>";
-	commandsyntax["shop"] = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>";
-	commandsyntax["mesos"] = "<#mesosamount>";
-	commandsyntax["music"] = "[$musicname]";
-	commandsyntax["warpto"] = "<$playername>";
-	commandsyntax["getmobhp"] = "<#mapmobid>";
-	commandsyntax["killmob"] = "<#mapmobid>";
-	commandsyntax["reload"] = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
-	commandsyntax["help"] = "[$command]";
+	command.command = CmdTempBan;
+	command.syntax = "<$playername> <#reason> <#length in days>";
+	command.notes.push_back("Temporarily bans a player by name.");
+	command.notes.push_back("Use !help ban to see the applicable reason codes.");
+	commandlist["tempban"] = command.addToMap();
 
-	// Set up function notes
-	commandnotes["ban"].push_back("Permanently bans a player by name.");
-	commandnotes["ban"].push_back("Reason codes:");
-	commandnotes["ban"].push_back("1 - Hacking");
-	commandnotes["ban"].push_back("2 - Using macro/auto-keyboard");
-	commandnotes["ban"].push_back("3 - Illicit promotion or advertising");
-	commandnotes["ban"].push_back("4 - Harassment");
-	commandnotes["ban"].push_back("5 - Using profane language");
-	commandnotes["ban"].push_back("6 - Scamming");
-	commandnotes["ban"].push_back("7 - Misconduct");
-	commandnotes["ban"].push_back("8 - Illegal cash transaction");
-	commandnotes["ban"].push_back("9 - Illegal charging/funding");
-	commandnotes["ban"].push_back("10 - Temporary request");
-	commandnotes["ban"].push_back("11 - Impersonating GM");
-	commandnotes["ban"].push_back("12 - Using illegal programs or violating the game policy");
-	commandnotes["ban"].push_back("13 - Cursing, scamming, or illegal trading via megaphones");
-	commandnotes["ipban"].push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
-	commandnotes["ipban"].push_back("Use !help ban to see the applicable reason codes.");
-	commandnotes["tempban"].push_back("Temporarily bans a player by name.");
-	commandnotes["tempban"].push_back("Use !help ban to see the applicable reason codes.");
-	commandnotes["unban"].push_back("Removes a ban from the database.");
-	commandnotes["header"].push_back("Changes the scrolling message at the top of the screen.");
-	commandnotes["shutdown"].push_back("Stops the current ChannelServer.");
-	commandnotes["packet"].push_back("Sends a specific packet to yourself. Should only be used for testing.");
-	commandnotes["timer"].push_back("Displays a timer at the top of the map.");
-	commandnotes["instruction"].push_back("Displays a ");
-	commandnotes["addnpc"].push_back("Permanently adds an NPC to a map.");
-	commandnotes["dorankings"].push_back("Forces ranking recalculation.");
-	commandnotes["globalmessage"].push_back("Displays a message to every channel on every world.");
-	commandnotes["me"].push_back("Displays a message to all other online GMs.");
-	commandnotes["kick"].push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
-	commandnotes["warp"].push_back("Warps the specified player to your map or the map you specify.");
-	commandnotes["warpall"].push_back("Warps all players to your map or the map you specify.");
-	commandnotes["killall"].push_back("Kills all mobs on the current map.");
-	commandnotes["cleardrops"].push_back("Clears all drops from the current map.");
-	commandnotes["worldmessage"].push_back("Displays a message to every channel on the current world.");
-	commandnotes["kill"].push_back("If you are GM level 1, you can only kill yourself with this.");
-	commandnotes["kill"].push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
-	commandnotes["lookup"].push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
-	commandnotes["lookup"].push_back("Use !help map to see valid string values for continent lookup.");
-	commandnotes["map"].push_back("Warps you to a desired map.");
-	commandnotes["map"].push_back("Valid map strings:");
-	commandnotes["map"].push_back("southperry | amherst");
-	commandnotes["map"].push_back("gm | fm | happyville | town | here");
-	commandnotes["map"].push_back("showa | armory | shrine | singapore | quay");
-	commandnotes["map"].push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
-	commandnotes["map"].push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
-	commandnotes["map"].push_back("ludi | ereve | kft | aqua | omega | altair");
-	commandnotes["map"].push_back("mansion | nlc | amoria | crimsonwood");
-	commandnotes["map"].push_back("Valid boss map strings:");
-	commandnotes["map"].push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
-	commandnotes["map"].push_back("pap | zakum | horntail | pianus | bean");
-	commandnotes["map"].push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
-	commandnotes["job"].push_back("Sets your job.");
-	commandnotes["job"].push_back("Valid job strings:");
-	commandnotes["job"].push_back("beginner");
-	commandnotes["job"].push_back("warrior - fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
-	commandnotes["job"].push_back("magician - fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
-	commandnotes["job"].push_back("bowman - hunter | ranger | bm | xbowman | sniper | marksman");
-	commandnotes["job"].push_back("thief - sin | hermit | nl | dit | cb | shadower");
-	commandnotes["job"].push_back("pirate - brawler | marauder | buccaneer | gunslinger | outlaw | corsair");
-	commandnotes["job"].push_back("gm");
-	commandnotes["job"].push_back("sgm");
-	commandnotes["level"].push_back("Sets your player's level to the specified amount.");
-	commandnotes["hp"].push_back("Sets your player's HP to the specified amount.");
-	commandnotes["mp"].push_back("Sets your player's MP to the specified amount.");
-	commandnotes["ap"].push_back("Sets your player's AP to the specified amount.");
-	commandnotes["sp"].push_back("Sets your player's SP to the specified amount.");
-	commandnotes["addsp"].push_back("Adds SP to the desired skill.");
-	commandnotes["int"].push_back("Sets your player's INT to the specified amount.");
-	commandnotes["luk"].push_back("Sets your player's LUK to the specified amount.");
-	commandnotes["dex"].push_back("Sets your player's DEX to the specified amount.");
-	commandnotes["str"].push_back("Sets your player's STR to the specified amount.");
-	commandnotes["fame"].push_back("Sets your player's fame to the specified amount.");
-	commandnotes["maxstats"].push_back("Sets all your core stats to their maximum values.");
-	commandnotes["npc"].push_back("Runs the NPC script of the NPC you specify.");
-	commandnotes["item"].push_back("Gives you an item.");
-	commandnotes["summon"].push_back("Spawns monsters.");
-	commandnotes["spawn"].push_back("Spawns monsters.");
-	commandnotes["notice"].push_back("Displays a blue GM notice.");
-	commandnotes["shop"].push_back("Shows you the desired shop.");
-	commandnotes["pos"].push_back("Displays your current position and foothold on the map.");
-	commandnotes["zakum"].push_back("Spawns Zakum.");
-	commandnotes["horntail"].push_back("Spawns Horntail.");
-	commandnotes["heal"].push_back("Sets your HP and MP to 100%.");
-	commandnotes["mesos"].push_back("Sets your mesos to the specified amount.");
-	commandnotes["dc"].push_back("Disconnects yourself.");
-	commandnotes["music"].push_back("Sets the music for a given map.");
-	commandnotes["storage"].push_back("Shows your storage.");
-	commandnotes["eventinstruct"].push_back("Shows event instructions for Ola Ola, etc.");
-	commandnotes["relog"].push_back("Logs you back in to the current channel.");
-	commandnotes["save"].push_back("Saves your stats.");
-	commandnotes["warpto"].push_back("Warps you to the specified player.");
-	commandnotes["killnpc"].push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs.");
-	commandnotes["listmobs"].push_back("Lists all the mobs on the map.");
-	commandnotes["getmobhp"].push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
-	commandnotes["killmob"].push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
-	commandnotes["reload"].push_back("Reloads data from the database.");
-	commandnotes["help"].push_back("I wonder what it does?");
-	commandnotes["help"].push_back("Syntax for help display:");
-	commandnotes["help"].push_back("$ = string");
-	commandnotes["help"].push_back("# = number");
-	commandnotes["help"].push_back("${hi | bye} = specific choices, in this case, strings of hi or bye");
-	commandnotes["help"].push_back("<#time in seconds> = required parameter");
-	commandnotes["help"].push_back("[#time in seconds] = optional parameter");
+	command.command = CmdUnban;
+	command.syntax = "<$playername>";
+	command.notes.push_back("Removes a ban from the database.");
+	commandlist["unban"] = command.addToMap();
+
+	command.command = CmdHeader;
+	command.syntax = "[$message]";
+	command.notes.push_back("Changes the scrolling message at the top of the screen.");
+	commandlist["header"] = command.addToMap();
+
+	command.command = CmdShutdown;
+	command.notes.push_back("Stops the current ChannelServer.");
+	commandlist["shutdown"] = command.addToMap();
+
+	command.command = CmdPacket; 
+	command.syntax = "<$hexbytes>";
+	command.notes.push_back("Sends a specific packet to yourself. Should only be used for testing.");
+	commandlist["packet"] = command.addToMap();
+
+	command.command = CmdTimer;
+	command.syntax = "<#time in seconds>";
+	command.notes.push_back("Displays a timer at the top of the map.");
+	commandlist["timer"] = command.addToMap();
+
+	command.command = CmdInstruction;
+	command.syntax = "<$bubbletext>";
+	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players.");
+	commandlist["instruction"] = command.addToMap();
+
+	command.command = CmdAddNpc;
+	command.syntax = "<#npcid>";
+	command.notes.push_back("Permanently adds an NPC to a map.");
+	commandlist["addnpc"] = command.addToMap();
+
+	command.command = CmdRankingCalc;
+	command.notes.push_back("Forces ranking recalculation.");
+	commandlist["dorankings"] = command.addToMap();
+
+	command.command = CmdGlobalMessage;
+	command.syntax = "<${notice | popup | event | purple}> <$message string>";
+	command.notes.push_back("Displays a message to every channel on every world.");
+	commandlist["globalmessage"] = command.addToMap();
+#pragma endregion
+
+#pragma region GM Level 2
+	command.level = 2;
+ 
+	command.command = CmdMe;
+	command.syntax = "<$message>";
+	command.notes.push_back("Displays a message to all other online GMs.");
+	commandlist["me"] = command.addToMap();
+
+	command.command = CmdKick;
+	command.syntax = "<$playername>";
+	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
+	commandlist["kick"] = command.addToMap();
+
+	command.command = CmdWarp;
+	command.syntax = "<$playername> [#mapid]";
+	command.notes.push_back("Warps the specified player to your map or the map you specify.");
+	commandlist["warp"] = command.addToMap();
+
+	command.command = CmdWarpAll;
+	command.syntax = "[#mapid]";
+	command.notes.push_back("Warps all players to your map or the map you specify.");
+	commandlist["warpall"] = command.addToMap();
+
+	command.command = CmdKillAll;
+	command.notes.push_back("Kills all mobs on the current map.");
+	commandlist["killall"] = command.addToMap();
+
+	command.command = CmdClearDrops;
+	command.notes.push_back("Clears all drops from the current map.");
+	commandlist["cleardrops"] = command.addToMap();
+
+	command.command = CmdWorldMessage;
+	command.syntax = "<${notice | popup | event | purple}> <$message string>";
+	command.notes.push_back("Displays a message to every channel on the current world.");
+	commandlist["worldmessage"] = command.addToMap();
+#pragma endregion
+
+#pragma region GM Level 1
+	command.level = 1;
+ 
+	command.command = CmdKill;
+	command.syntax = "<${players | gm | all | me} | $playername>";
+	command.notes.push_back("If you are GM level 1, you can only kill yourself with this.");
+	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
+	commandlist["kill"] = command.addToMap();
+
+	command.command = CmdLookUp;
+	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid}> <$search string | #id>";
+	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
+	command.notes.push_back("Use !help map to see valid string values for continent lookup.");
+	commandlist["lookup"] = command.addToMap();
+
+	command.command = CmdMap;
+	command.syntax = "<${town | mapstring | bossmapstring} | #mapid>";
+	command.notes.push_back("Warps you to a desired map.");
+	command.notes.push_back("Valid map strings:");
+	command.notes.push_back("southperry | amherst");
+	command.notes.push_back("gm | fm | happyville | town | here");
+	command.notes.push_back("showa | armory | shrine | singapore | quay");
+	command.notes.push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
+	command.notes.push_back("4th | orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
+	command.notes.push_back("ludi | ereve | kft | aqua | omega | altair");
+	command.notes.push_back("mansion | nlc | amoria | crimsonwood");
+	command.notes.push_back("Valid boss map strings:");
+	command.notes.push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
+	command.notes.push_back("pap | zakum | horntail | pianus | bean");
+	command.notes.push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
+	commandlist["map"] = command.addToMap();
+
+	command.command = CmdJob;
+	command.syntax = "<${jobstring} | #jobid>";
+	command.notes.push_back("Sets your job.");
+	command.notes.push_back("Valid job strings:");
+	command.notes.push_back("beginner");
+	command.notes.push_back("warrior - fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
+	command.notes.push_back("magician - fpwiz | fpmage | fparch | ilwiz | ilmage | ilarch | cleric | priest | bishop");
+	command.notes.push_back("bowman - hunter | ranger | bm | xbowman | sniper | marksman");
+	command.notes.push_back("thief - sin | hermit | nl | dit | cb | shadower");
+	command.notes.push_back("pirate - brawler | marauder | buccaneer | gunslinger | outlaw | corsair");
+	command.notes.push_back("gm");
+	command.notes.push_back("sgm");
+	commandlist["job"] = command.addToMap();
+
+	command.command = CmdLevel;
+	command.syntax = "<#level>";
+	command.notes.push_back("Sets your player's level to the specified amount.");
+	commandlist["level"] = command.addToMap();
+
+	command.command = CmdHp;
+	command.syntax = "<#hp>";
+	command.notes.push_back("Sets your player's HP to the specified amount.");
+	commandlist["hp"] = command.addToMap();
+
+	command.command = CmdMp;
+	command.syntax = "<#mp>";
+	command.notes.push_back("Sets your player's MP to the specified amount.");
+	commandlist["mp"] = command.addToMap();
+
+	command.command = CmdAp;
+	command.syntax = "<#ap>";
+	command.notes.push_back("Sets your player's AP to the specified amount.");
+	commandlist["ap"] = command.addToMap();
+
+	command.command = CmdSp;
+	command.syntax = "<#sp>";
+	command.notes.push_back("Sets your player's SP to the specified amount.");
+	commandlist["sp"] = command.addToMap();
+
+	command.command = CmdAddSp;
+	command.syntax = "<#skillid> [#skillpoints]";
+	command.notes.push_back("Adds SP to the desired skill.");
+	commandlist["addsp"] = command.addToMap();
+
+	command.command = CmdInt;
+	command.syntax = "<#int>";
+	command.notes.push_back("Sets your player's INT to the specified amount.");
+	commandlist["int"] = command.addToMap();
+
+	command.command = CmdLuk;
+	command.syntax = "<#luk>";
+	command.notes.push_back("Sets your player's LUK to the specified amount.");
+	commandlist["luk"] = command.addToMap();
+
+	command.command = CmdDex;
+	command.syntax = "<#dex>";
+	command.notes.push_back("Sets your player's DEX to the specified amount.");
+	commandlist["dex"] = command.addToMap();
+
+	command.command = CmdStr;
+	command.syntax = "<#str>";
+	command.notes.push_back("Sets your player's STR to the specified amount.");
+	commandlist["str"] = command.addToMap();
+
+	command.command = CmdFame;
+	command.syntax = "<#fame>";
+	command.notes.push_back("Sets your player's fame to the specified amount.");
+	commandlist["fame"] = command.addToMap();
+
+	command.command = CmdMaxStats;
+	command.notes.push_back("Sets all your core stats to their maximum values.");
+	commandlist["maxstats"] = command.addToMap();
+
+	command.command = CmdNpc;
+	command.syntax = "<#npcid>";
+	command.notes.push_back("Runs the NPC script of the NPC you specify.");
+	commandlist["npc"] = command.addToMap();
+
+	command.command = CmdItem;
+	command.syntax = "<#itemid> [#amount]";
+	command.notes.push_back("Gives you an item.");
+	commandlist["item"] = command.addToMap();
+
+	command.command = CmdSummon;
+	command.syntax = "<#mobid> [#amount]";
+	command.notes.push_back("Spawns monsters.");
+	commandlist["summon"] = command;
+	commandlist["spawn"] = command.addToMap();
+
+	command.command = CmdNotice;
+	command.syntax = "<$message>";
+	command.notes.push_back("Displays a blue GM notice.");
+	commandlist["notice"] = command.addToMap();
+
+	command.command = CmdShop;
+	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>";
+	command.notes.push_back("Shows you the desired shop.");
+	commandlist["shop"] = command.addToMap();
+
+	command.command = CmdPos;
+	command.notes.push_back("Displays your current position and foothold on the map.");
+	commandlist["pos"] = command.addToMap();
+
+	command.command = CmdZakum;
+	command.notes.push_back("Spawns Zakum.");
+	commandlist["zakum"] = command.addToMap();
+
+	command.command = CmdHorntail;
+	command.notes.push_back("Spawns Horntail.");
+	commandlist["horntail"] = command.addToMap();
+
+	command.command = CmdHeal;
+	command.notes.push_back("Sets your HP and MP to 100%.");
+	commandlist["heal"] = command.addToMap();
+
+	command.command = CmdMesos;
+	command.syntax = "<#mesosamount>";
+	command.notes.push_back("Sets your mesos to the specified amount.");
+	commandlist["mesos"] = command.addToMap();
+
+	command.command = CmdDisconnect;
+	command.notes.push_back("Disconnects yourself.");
+	commandlist["dc"] = command.addToMap();
+
+	command.command = CmdMusic;
+	command.syntax = "[$musicname]";
+	command.notes.push_back("Sets the music for a given map.");
+	command.notes.push_back("Using \"default\" will reset the map to default music.");
+	commandlist["music"] = command.addToMap();
+
+	command.command = CmdStorage;
+	command.notes.push_back("Shows your storage.");
+	commandlist["storage"] = command.addToMap();
+
+	command.command = CmdEventInstruction;
+	command.notes.push_back("Shows event instructions for Ola Ola, etc.");
+	commandlist["eventinstruct"] = command.addToMap();
+
+	command.command = CmdRelog;
+	command.notes.push_back("Logs you back in to the current channel.");
+	commandlist["relog"] = command.addToMap();
+
+	command.command = CmdSave;
+	command.notes.push_back("Saves your stats.");
+	commandlist["save"] = command.addToMap();
+
+	command.command = CmdWarpTo;
+	command.syntax = "<$playername>";
+	command.notes.push_back("Warps you to the specified player.");
+	commandlist["warpto"] = command.addToMap();
+
+	command.command = CmdKillNpc;
+	command.notes.push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs.");
+	commandlist["killnpc"] = command.addToMap();
+
+	command.command = CmdListMobs;
+	command.notes.push_back("Lists all the mobs on the map.");
+	commandlist["listmobs"] = command.addToMap();
+
+	command.command = CmdGetMobHp;
+	command.syntax = "<#mapmobid>";
+	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
+	commandlist["getmobhp"] = command.addToMap();
+
+	command.command = CmdKillMob;
+	command.syntax = "<#mapmobid>";
+	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
+	commandlist["killmob"] = command.addToMap();
+
+	command.command = CmdReload;
+	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
+	command.notes.push_back("Reloads data from the database.");
+	commandlist["reload"] = command.addToMap();
+#pragma endregion
+
+#pragma region GM Level 0
+	command.level = 0;
+
+	command.command = CmdHelp;
+	command.syntax = "[$command]";
+	command.notes.push_back("I wonder what it does?");
+	command.notes.push_back("Syntax for help display:");
+	command.notes.push_back("$ = string");
+	command.notes.push_back("# = number");
+	command.notes.push_back("${hi | bye} = specific choices, in this case, strings of hi or bye");
+	command.notes.push_back("<#time in seconds> = required parameter");
+	command.notes.push_back("[#time in seconds] = optional parameter");
+	commandlist["help"] = command.addToMap();
+#pragma endregion
 }
 
 void ChatHandler::showSyntax(Player *player, const string &command, bool fromHelp) {
-	if (commandsyntax.find(command) != commandsyntax.end()) {
-		string msg = "Usage: !" + command + " " + commandsyntax[command];
+	if (commandlist.find(command) != commandlist.end()) {
+		ChatCommand *cmd = &commandlist[command];
+		string msg = "Usage: !" + command + " " + cmd->syntax;
 		PlayerPacket::showMessage(player, msg, 6);
-	}
-	else {
-		PlayerPacket::showMessage(player, "Usage: !" + command, 6);
-	}
-	if (fromHelp && commandnotes.find(command) != commandnotes.end()) {
-		PlayerPacket::showMessage(player, "Notes: " + commandnotes[command][0], 6);
-		for (size_t i = 1; i < commandnotes[command].size(); i++) {
-			PlayerPacket::showMessage(player, commandnotes[command][i], 6);
+
+		if (fromHelp) {
+			PlayerPacket::showMessage(player, "Notes: " + cmd->notes[0], 6);
+			for (size_t i = 1; i < cmd->notes.size(); i++) {
+				PlayerPacket::showMessage(player, cmd->notes[i], 6);
+			}
 		}
 	}
 }
@@ -333,722 +452,748 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		if (commandlist.find(command) == commandlist.end()) {
 			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", 6);
 		}
-		else if (player->getGmLevel() < commandlist[command].second) { // GM level for the command
-			PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
-		}
 		else {
-			switch (commandlist[command].first) { // CMD constant associated with command
-				case CmdHelp: {
-					if (args.length() != 0) {
-						if (commandlist.find(args) != commandlist.end()) {
-							showSyntax(player, args, true);
-						}
-						else {
-							PlayerPacket::showMessage(player, "Command \"" + args + "\" does not exist.", 6);
-						}
-					}
-					else {
-						string msg = "You may not use any commands.";
-						bool has = false;
-						for (unordered_map<string, pair<Commands, int32_t> >::iterator iter = commandlist.begin(); iter != commandlist.end(); iter++) {
-							if (player->getGmLevel() >= iter->second.second) {
-								if (!has) {
-									msg = "Available commands: ";
-									has = true;
-								}
-								msg += iter->first + " ";
+			ChatCommand *cmd = &commandlist[command];
+			if (player->getGmLevel() < cmd->level) { // GM level for the command
+				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", 6);
+			}
+			else {
+				switch (cmd->command) { // CMD constant associated with command
+					case CmdHelp: {
+						if (args.length() != 0) {
+							if (commandlist.find(args) != commandlist.end()) {
+								showSyntax(player, args, true);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Command \"" + args + "\" does not exist.", 6);
 							}
 						}
-						PlayerPacket::showMessage(player, msg, 6);
+						else {
+							string msg = "You may not use any commands.";
+							bool has = false;
+							for (unordered_map<string, ChatCommand>::iterator iter = commandlist.begin(); iter != commandlist.end(); iter++) {
+								if (player->getGmLevel() >= iter->second.level) {
+									if (!has) {
+										msg = "Available commands: ";
+										has = true;
+									}
+									msg += iter->first + " ";
+ 								}
+ 							}
+							PlayerPacket::showMessage(player, msg, 6);
+						}
+						break;
 					}
-					break;
-				}
-				case CmdHeader:
-					WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldConnection(), args);
-					break;
-				case CmdBan: {
-					re = "(\\w+) ?(\\d+)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						string targetname = matches[1];
-						if (Player *target = Players::Instance()->getPlayer(targetname))
-							target->getSession()->disconnect();
-
-						string reasonstring = matches[2];
-						int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
-
-						// Ban account
-						mysqlpp::Query accbanquery = Database::getCharDB().query();
-						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
-						accbanquery.exec();
-
-						string banmsg = targetname + " has been banned" + getBanString(reason);
-						PlayersPacket::showMessage(banmsg, 0);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdIpBan: {
-					re = "(\\w+) ?(\\d+)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						string targetname = matches[1];
-						if (Player *target = Players::Instance()->getPlayer(targetname)) {
-							string targetip = IpUtilities::ipToString(target->getIp());
-							target->getSession()->disconnect();
+					case CmdHeader:
+						WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldConnection(), args);
+						break;
+					case CmdBan: {
+						re = "(\\w+) ?(\\d+)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							string targetname = matches[1];
+							if (Player *target = Players::Instance()->getPlayer(targetname))
+								target->getSession()->disconnect();
 
 							string reasonstring = matches[2];
 							int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
-							// Ip ban
-							mysqlpp::Query accipbanquery = Database::getCharDB().query();
-							accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
-							accipbanquery.exec();
+							// Ban account
+							mysqlpp::Query accbanquery = Database::getCharDB().query();
+							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+							accbanquery.exec();
 
-							string banmsg = targetname + " has been IP banned" + getBanString(reason);
+							string banmsg = targetname + " has been banned" + getBanString(reason);
 							PlayersPacket::showMessage(banmsg, 0);
 						}
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdTempBan: {
-					re = "(\\w+) (\\d+) (\\d+)";
-					if (regex_match(args.c_str(), matches, re)) {
-						string targetname = matches[1];
-						if (Player *target = Players::Instance()->getPlayer(targetname))
-							target->getSession()->disconnect();
-
-						string reasonstring = matches[2];
-						string length = matches[3];
-						int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
-
-						// Ban account
-						mysqlpp::Query accbanquery = Database::getCharDB().query();
-						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
-						accbanquery.exec();
-
-						string banmsg = targetname + " has been banned" + getBanString(reason);
-						PlayersPacket::showMessage(banmsg, 0);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdUnban: {
-					if (args.length() != 0) {
-						// Unban account
-						mysqlpp::Query accbanquery = Database::getCharDB().query();
-						accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
-						accbanquery.exec();
-
-						PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdShutdown:
-					ChannelServer::Instance()->shutdown();
-					break;
-				case CmdPacket: {
-					if (args.length() != 0) {
-						PacketCreator packet;
-						packet.addBytes(args.c_str());
-						player->getSession()->send(packet);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdTimer:
-					if (args.length() != 0) {
-						Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				case CmdInstruction:
-					if (args.length() != 0) {
-						for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-							PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
+						else {
+							showSyntax(player, command);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				case CmdAddNpc: {
-					if (args.length() != 0) {
-						NPCSpawnInfo npc;
-						npc.id = atoi(args.c_str());
-						npc.fh = 0;
-						npc.pos = player->getPos();
-						npc.rx0 = npc.pos.x - 50;
-						npc.rx1 = npc.pos.x + 50;
-						Maps::getMap(player->getMap())->addNPC(npc);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdMe: {
-					if (args.length() != 0) {
-						string msg = player->getName() + " : " + args;
-						MeFunctor func = {msg};
-						Players::Instance()->run(func);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdKick:
-					if (args.length() != 0) {
-						if (Player *target = Players::Instance()->getPlayer(args)) {
-							if (player->getGmLevel() > target->getGmLevel())
+					case CmdIpBan: {
+						re = "(\\w+) ?(\\d+)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							string targetname = matches[1];
+							if (Player *target = Players::Instance()->getPlayer(targetname)) {
+								string targetip = IpUtilities::ipToString(target->getIp());
 								target->getSession()->disconnect();
-							else
-								PlayerPacket::showMessage(player, "Player outranks you.", 6);
-						}
-						else
-							PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				case CmdWarp:
-					re = "(\\w+) ?(\\d*)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
-							string mapstring = matches[2];
-							int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
 
-							if (Maps::getMap(mapid)) {
-								warpee->setMap(mapid);
-							}
-						}
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				case CmdWarpAll: {
-					int32_t mapid = args.length() != 0 ? atoi(args.c_str()) : player->getMap();
+								string reasonstring = matches[2];
+								int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
-					if (Maps::getMap(mapid)) {
-						WarpFunctor func = {mapid, player};
-						Players::Instance()->run(func);
-					}
-					else {
-						PlayerPacket::showMessage(player, "Invalid Map ID", 6);
-					}
-					break;
-				}
-				case CmdKillAll:
-					Maps::getMap(player->getMap())->killMobs(player);
-					break;
-				case CmdClearDrops:
-					Maps::getMap(player->getMap())->clearDrops();
-					break;
-				case CmdKill:
-					if (player->getGmLevel() == 1)
-						player->getStats()->setHp(0);
-					else {
-						if (args == "all") {
-							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-								Player *killpsa;
-								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
-								if (killpsa != player) {
-									killpsa->getStats()->setHp(0);
-								}
-							}
-						}
-						else if (args == "gm") {
-							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-								Player *killpsa;
-								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
-								if (killpsa != player) {
-									if (killpsa->isGm()) {
-										killpsa->getStats()->setHp(0);
-									}
-								}
-							}
-						}
-						else if (args == "players") {
-							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-								Player *killpsa;
-								killpsa = Maps::getMap(player->getMap())->getPlayer(i);
-								if (killpsa != player) {
-									if (!killpsa->isGm()) {
-										killpsa->getStats()->setHp(0);
-									}
-								}
-							}
-						}
-						else if (args == "me") {
-							player->getStats()->setHp(0);
-						}
-						else if (Player *killpsa = Players::Instance()->getPlayer(args)) { // Kill by name
-							killpsa->getStats()->setHp(0);
-						}
-					}
-					break;
-				case CmdLookUp: {
-					re = "(\\w+) (.+)";
-					if (regex_match(args.c_str(), matches, re)) {
-						uint16_t type = 0;
+								// Ip ban
+								mysqlpp::Query accipbanquery = Database::getCharDB().query();
+								accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
+								accipbanquery.exec();
 
-						if (matches[1] == "item") type = 1;
-						else if (matches[1] == "skill") type = 2;
-						else if (matches[1] == "map") type = 3;
-						else if (matches[1] == "mob") type = 4;
-						else if (matches[1] == "npc") type = 5;
-						else if (matches[1] == "quest") type = 6;
-
-						else if (matches[1] == "id") type = 100;
-
-						else if (matches[1] == "continent") type = 200;
-
-						if (type != 0 && type < 200) {
-							mysqlpp::Query query = Database::getDataDB().query();
-							if (type == 100) {
-								query << "SELECT objectid, `name` FROM strings WHERE objectid = " << matches[2];
-							}
-							else {
-								query << "SELECT objectid, `name` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
-							}
-
-							mysqlpp::StoreQueryResult res = query.store();
-
-							if (res.num_rows() == 0) {
-								PlayerPacket::showMessage(player, "No results", 6);
-							}
-							else {
-								for (size_t i = 0; i < res.num_rows(); i++) {
-									string msg = (string) res[i][0] + " : " + (string) res[i][1];
-									PlayerPacket::showMessage(player, msg, 6);
-								}
-							}
-						}
-						else if (type == 200) {
-							int32_t mapid = getMap(matches[2], player);
-							if (Maps::getMap(mapid) != 0) {
-								string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
-								PlayerPacket::showMessage(player, message, 6);
-							}
-							else {
-								PlayerPacket::showMessage(player, "Invalid map", 6);
+								string banmsg = targetname + " has been IP banned" + getBanString(reason);
+								PlayersPacket::showMessage(banmsg, 0);
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id}", 6);
+							showSyntax(player, command);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
+					case CmdTempBan: {
+						re = "(\\w+) (\\d+) (\\d+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							string targetname = matches[1];
+							if (Player *target = Players::Instance()->getPlayer(targetname))
+								target->getSession()->disconnect();
+
+							string reasonstring = matches[2];
+							string length = matches[3];
+							int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+
+							// Ban account
+							mysqlpp::Query accbanquery = Database::getCharDB().query();
+							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
+							accbanquery.exec();
+
+							string banmsg = targetname + " has been banned" + getBanString(reason);
+							PlayersPacket::showMessage(banmsg, 0);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
 					}
-					break;
-				}
-				case CmdMap: {
-					if (args.length() != 0) {
-						int32_t mapid = getMap(args, player);
+					case CmdUnban: {
+						if (args.length() != 0) {
+							// Unban account
+							mysqlpp::Query accbanquery = Database::getCharDB().query();
+							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
+							accbanquery.exec();
+
+							PlayerPacket::showMessage(player, string(args) + " has been unbanned.", 6);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdShutdown:
+						ChannelServer::Instance()->shutdown();
+						break;
+					case CmdPacket: {
+						if (args.length() != 0) {
+							PacketCreator packet;
+							packet.addBytes(args.c_str());
+							player->getSession()->send(packet);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdTimer:
+						if (args.length() != 0) {
+							Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdInstruction:
+						if (args.length() != 0) {
+							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+								PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdAddNpc: {
+						if (args.length() != 0) {
+							NPCSpawnInfo npc;
+							npc.id = atoi(args.c_str());
+							npc.fh = 0;
+							npc.pos = player->getPos();
+							npc.rx0 = npc.pos.x - 50;
+							npc.rx1 = npc.pos.x + 50;
+							Maps::getMap(player->getMap())->addNPC(npc);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdMe: {
+						if (args.length() != 0) {
+							string msg = player->getName() + " : " + args;
+							MeFunctor func = {msg};
+							Players::Instance()->run(func);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdKick:
+						if (args.length() != 0) {
+							if (Player *target = Players::Instance()->getPlayer(args)) {
+								if (player->getGmLevel() > target->getGmLevel())
+									target->getSession()->disconnect();
+								else
+									PlayerPacket::showMessage(player, "Player outranks you.", 6);
+							}
+							else
+								PlayerPacket::showMessage(player, "Invalid player or player is offline.", 6);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdWarp:
+						re = "(\\w+) ?(\\d*)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
+								string mapstring = matches[2];
+								int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
+
+								if (Maps::getMap(mapid)) {
+									warpee->setMap(mapid);
+								}
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdWarpAll: {
+						int32_t mapid = args.length() != 0 ? atoi(args.c_str()) : player->getMap();
+
 						if (Maps::getMap(mapid)) {
-							player->setMap(mapid);
+							WarpFunctor func = {mapid, player};
+							Players::Instance()->run(func);
 						}
 						else {
 							PlayerPacket::showMessage(player, "Invalid Map ID", 6);
 						}
+						break;
 					}
-					else {
-						char msg[60];
-						sprintf(msg, "Current Map: %i", player->getMap());
-						PlayerPacket::showMessage(player, msg, 6);
-					}
-					break;
-				}
-				case CmdNpc: {
-					if (args.length() != 0) {
-						int32_t npcid = atoi(args.c_str());
-						NPC *npc = new NPC(npcid, player);
-						npc->run();
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdAddSp: {
-					re = "(\\d+) ?(-{0,1}\\d+)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						int32_t skillid = atoi(string(matches[1]).c_str());
-						if (SkillDataProvider::Instance()->isSkill(skillid)) { // Don't allow skills that do not exist to be added
-							string countstring = matches[2];
-							uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-
-							player->getSkills()->addSkillLevel(skillid, count);
-						}
+					case CmdKillAll:
+						Maps::getMap(player->getMap())->killMobs(player);
+						break;
+					case CmdClearDrops:
+						Maps::getMap(player->getMap())->clearDrops();
+						break;
+					case CmdKill:
+						if (player->getGmLevel() == 1)
+							player->getStats()->setHp(0);
 						else {
-							PlayerPacket::showMessage(player, "Invalid Skill ID", 6);
+							if (args == "all") {
+								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+									Player *killpsa;
+									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									if (killpsa != player) {
+										killpsa->getStats()->setHp(0);
+									}
+								}
+							}
+							else if (args == "gm") {
+								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+									Player *killpsa;
+									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									if (killpsa != player) {
+										if (killpsa->isGm()) {
+											killpsa->getStats()->setHp(0);
+										}
+									}
+								}
+							}
+							else if (args == "players") {
+								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
+									Player *killpsa;
+									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									if (killpsa != player) {
+										if (!killpsa->isGm()) {
+											killpsa->getStats()->setHp(0);
+										}
+									}
+								}
+							}
+							else if (args == "me") {
+								player->getStats()->setHp(0);
+							}
+							else if (Player *killpsa = Players::Instance()->getPlayer(args)) { // Kill by name
+								killpsa->getStats()->setHp(0);
+							}
 						}
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdSummon: {
-					re = "(\\d+) ?(\\d+)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						int32_t mobid = atoi(string(matches[1]).c_str());
-						if (MobDataProvider::Instance()->mobExists(mobid)) {
-							string countstring = matches[2];
-							int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-							for (int32_t i = 0; i < count && i < 100; i++) {
-								Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+						break;
+					case CmdLookUp: {
+						re = "(\\w+) (.+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							uint16_t type = 0;
+
+							if (matches[1] == "item") type = 1;
+							else if (matches[1] == "skill") type = 2;
+							else if (matches[1] == "map") type = 3;
+							else if (matches[1] == "mob") type = 4;
+							else if (matches[1] == "npc") type = 5;
+							else if (matches[1] == "quest") type = 6;
+
+							else if (matches[1] == "id") type = 100;
+
+							else if (matches[1] == "continent") type = 200;
+							else if (matches[1] == "scriptbyname") type = 300;
+							else if (matches[1] == "scriptbyid") type = 400;
+
+							if (type != 0) {
+								mysqlpp::Query query = Database::getDataDB().query();
+								mysqlpp::StoreQueryResult res;
+								if (type < 200) {
+									if (type == 100) {
+										query << "SELECT objectid, `name` FROM strings WHERE objectid = " << matches[2];
+									}
+									else {
+										query << "SELECT objectid, `name` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+									}
+									res = query.store();
+
+									if (res.num_rows() == 0) {
+										PlayerPacket::showMessage(player, "No results", 6);
+									}
+									else {
+										for (size_t i = 0; i < res.num_rows(); i++) {
+											string msg = (string) res[i][0] + " : " + (string) res[i][1];
+											PlayerPacket::showMessage(player, msg, 6);
+										}
+									}
+								}
+								else if (type == 200) {
+									int32_t mapid = getMap(matches[2], player);
+									if (Maps::getMap(mapid) != 0) {
+										string message = boost::lexical_cast<string>(mapid) + " : " + boost::lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapid)));
+										PlayerPacket::showMessage(player, message, 6);
+									}
+									else {
+										PlayerPacket::showMessage(player, "Invalid map", 6);
+									}
+								}
+								else if (type > 200) {
+									if (type == 300) {
+										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
+									}
+									else if (type == 400) {
+										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+									}
+									res = query.store();
+
+									if (res.num_rows() == 0) {
+										PlayerPacket::showMessage(player, "No results", 6);
+									}
+									else {
+										for (size_t i = 0; i < res.num_rows(); i++) {
+											string msg = (string) res[i][1] + " (" + (string) res[i][0] + "): " + (string) res[i][2];
+											PlayerPacket::showMessage(player, msg, 6);
+										}
+									}
+								}
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", 6);
 							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid Mob ID", 6);
-						}
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdNotice:
-					if (args.length() != 0)
-						PlayersPacket::showMessage(args, 0);
-					break;
-				case CmdMaxStats:
-					player->getStats()->setFame(Stats::MaxFame);
-					player->getStats()->setMHp(Stats::MaxMaxHp);
-					player->getStats()->setMMp(Stats::MaxMaxMp);
-					player->getStats()->setStr(32767);
-					player->getStats()->setDex(32767);
-					player->getStats()->setInt(32767);
-					player->getStats()->setLuk(32767);
-					break;
-				case CmdStr:
-					if (args.length() != 0)
-						player->getStats()->setStr(atoi(args.c_str()));
-					break;
-				case CmdDex:
-					if (args.length() != 0)
-						player->getStats()->setDex(atoi(args.c_str()));
-					break;
-				case CmdLuk:
-					if (args.length() != 0)
-						player->getStats()->setLuk(atoi(args.c_str()));
-					break;
-				case CmdInt:
-					if (args.length() != 0)
-						player->getStats()->setInt(atoi(args.c_str()));
-					break;
-				case CmdHp:
-					if (args.length() != 0) {
-						uint16_t amount = atoi(args.c_str());
-						player->getStats()->setMHp(amount);
-						if (player->getStats()->getHp() > amount)
-							player->getStats()->setHp(player->getStats()->getMHp());
-					}
-					break;
-				case CmdMp:
-					if (args.length() != 0) {
-						uint16_t amount = atoi(args.c_str());
-						player->getStats()->setMMp(amount);
-						if (player->getStats()->getMp() > amount)
-							player->getStats()->setMp(player->getStats()->getMMp());
-					}
-					break;
-				case CmdFame:
-					if (args.length() != 0)
-						player->getStats()->setFame(atoi(args.c_str()));
-					break;
-				case CmdReload: {
-					if (args.length() != 0) {
-						if (args == "items" || args == "drops" || args == "shops" ||
-							args == "mobs" || args == "beauty" || args == "scripts" ||
-							args == "skills" || args == "reactors" || args == "pets" ||
-							args == "quests" || args == "all") {
-							WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
-							PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
-						}
-						else {
-							PlayerPacket::showMessage(player, "Invalid reload type", 6);
-						}
-					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdShop: {
-					if (args.length() != 0) {
-						int32_t shopid = -1;
-						if (args == "gear") shopid = 9999999;
-						else if (args == "scrolls") shopid = 9999998;
-						else if (args == "nx") shopid = 9999997;
-						else if (args == "face") shopid = 9999996;
-						else if (args == "ring") shopid = 9999995;
-						else if (args == "chair") shopid = 9999994;
-						else if (args == "mega") shopid = 9999993;
-						else if (args == "pet") shopid = 9999992;
-						else shopid = atoi(args.c_str());
-
-						if (!NpcHandler::showShop(player, shopid)) {
 							showSyntax(player, command);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdPos: {
-					char msg[50];
-					sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFh());
-					PlayerPacket::showMessage(player, msg, 6);
-					break;
-				}
-				case CmdItem: {
-					re = "(\\d+) ?(\\d*)?";
-					if (regex_match(args.c_str(), matches, re)) {
-						int32_t itemid = atoi(string(matches[1]).c_str());
-						if (ItemDataProvider::Instance()->itemExists(itemid)) {
-							string countstring = matches[2];
-							uint16_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-							Inventory::addNewItem(player, itemid, count);
+					case CmdMap: {
+						if (args.length() != 0) {
+							int32_t mapid = getMap(args, player);
+							if (Maps::getMap(mapid)) {
+								player->setMap(mapid);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid Map ID", 6);
+							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid Item ID", 6);
+							char msg[60];
+							sprintf(msg, "Current Map: %i", player->getMap());
+							PlayerPacket::showMessage(player, msg, 6);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
+					case CmdNpc: {
+						if (args.length() != 0) {
+							int32_t npcid = atoi(args.c_str());
+							NPC *npc = new NPC(npcid, player);
+							npc->run();
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
 					}
-					break;
-				}
-				case CmdLevel:
-					if (args.length() != 0)
-						player->getStats()->setLevel(atoi(args.c_str()));
-					break;
-				case CmdJob: {
-					if (args.length() != 0) {
-						int16_t job = -1;
-						if (args == "beginner") job = 0;
-						else if (args == "warrior") job = 100;
-						else if (args == "fighter") job = 110;
-						else if (args == "sader") job = 111;
-						else if (args == "hero") job = 112;
-						else if (args == "page") job = 120;
-						else if (args == "wk") job = 121;
-						else if (args == "paladin") job = 122;
-						else if (args == "spearman") job = 130;
-						else if (args == "dk") job = 131;
-						else if (args == "drk") job = 132;
-						else if (args == "magician") job = 200;
-						else if (args == "fpwiz") job = 210;
-						else if (args == "fpmage") job = 211;
-						else if (args == "fparch") job = 212;
-						else if (args == "ilwiz") job = 220;
-						else if (args == "ilmage") job = 221;
-						else if (args == "ilarch") job = 222;
-						else if (args == "cleric") job = 230;
-						else if (args == "priest") job = 231;
-						else if (args == "bishop") job = 232;
-						else if (args == "bowman") job = 300;
-						else if (args == "hunter") job = 310;
-						else if (args == "ranger") job = 311;
-						else if (args == "bm") job = 312;
-						else if (args == "xbowman") job = 320;
-						else if (args == "sniper") job = 321;
-						else if (args == "marksman") job = 322;
-						else if (args == "thief") job = 400;
-						else if (args == "sin") job = 410;
-						else if (args == "hermit") job = 411;
-						else if (args == "nl") job = 412;
-						else if (args == "dit") job = 420;
-						else if (args == "cb") job = 421;
-						else if (args == "shadower") job = 422;
-						else if (args == "pirate") job = 500;
-						else if (args == "brawler") job = 510;
-						else if (args == "marauder") job = 511;
-						else if (args == "buccaneer") job = 512;
-						else if (args == "gunslinger") job = 520;
-						else if (args == "outlaw") job = 521;
-						else if (args == "corsair") job = 522;
-						else if (args == "gm") job = 900;
-						else if (args == "sgm") job = 910;
-						else job = atoi(args.c_str());
+					case CmdAddSp: {
+						re = "(\\d+) ?(-{0,1}\\d+)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							int32_t skillid = atoi(string(matches[1]).c_str());
+							if (SkillDataProvider::Instance()->isSkill(skillid)) { // Don't allow skills that do not exist to be added
+								string countstring = matches[2];
+								uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 
-						if (job >= 0)
-							player->getStats()->setJob(job);
+								player->getSkills()->addSkillLevel(skillid, count);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid Skill ID", 6);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
 					}
-					else {
-						char msg[60];
-						sprintf(msg, "Current Job: %i", player->getStats()->getJob());
+					case CmdSummon: {
+						re = "(\\d+) ?(\\d+)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							int32_t mobid = atoi(string(matches[1]).c_str());
+							if (MobDataProvider::Instance()->mobExists(mobid)) {
+								string countstring = matches[2];
+								int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+								for (int32_t i = 0; i < count && i < 100; i++) {
+									Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+								}
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid Mob ID", 6);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdNotice:
+						if (args.length() != 0)
+							PlayersPacket::showMessage(args, 0);
+						break;
+					case CmdMaxStats:
+						player->getStats()->setFame(Stats::MaxFame);
+						player->getStats()->setMHp(Stats::MaxMaxHp);
+						player->getStats()->setMMp(Stats::MaxMaxMp);
+						player->getStats()->setStr(32767);
+						player->getStats()->setDex(32767);
+						player->getStats()->setInt(32767);
+						player->getStats()->setLuk(32767);
+						break;
+					case CmdStr:
+						if (args.length() != 0)
+							player->getStats()->setStr(atoi(args.c_str()));
+						break;
+					case CmdDex:
+						if (args.length() != 0)
+							player->getStats()->setDex(atoi(args.c_str()));
+						break;
+					case CmdLuk:
+						if (args.length() != 0)
+							player->getStats()->setLuk(atoi(args.c_str()));
+						break;
+					case CmdInt:
+						if (args.length() != 0)
+							player->getStats()->setInt(atoi(args.c_str()));
+						break;
+					case CmdHp:
+						if (args.length() != 0) {
+							uint16_t amount = atoi(args.c_str());
+							player->getStats()->setMHp(amount);
+							if (player->getStats()->getHp() > amount)
+								player->getStats()->setHp(player->getStats()->getMHp());
+						}
+						break;
+					case CmdMp:
+						if (args.length() != 0) {
+							uint16_t amount = atoi(args.c_str());
+							player->getStats()->setMMp(amount);
+							if (player->getStats()->getMp() > amount)
+								player->getStats()->setMp(player->getStats()->getMMp());
+						}
+						break;
+					case CmdFame:
+						if (args.length() != 0)
+							player->getStats()->setFame(atoi(args.c_str()));
+						break;
+					case CmdReload: {
+						if (args.length() != 0) {
+							if (args == "items" || args == "drops" || args == "shops" ||
+								args == "mobs" || args == "beauty" || args == "scripts" ||
+								args == "skills" || args == "reactors" || args == "pets" ||
+								args == "quests" || args == "all") {
+								WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
+								PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", 6);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid reload type", 6);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdShop: {
+						if (args.length() != 0) {
+							int32_t shopid = -1;
+							if (args == "gear") shopid = 9999999;
+							else if (args == "scrolls") shopid = 9999998;
+							else if (args == "nx") shopid = 9999997;
+							else if (args == "face") shopid = 9999996;
+							else if (args == "ring") shopid = 9999995;
+							else if (args == "chair") shopid = 9999994;
+							else if (args == "mega") shopid = 9999993;
+							else if (args == "pet") shopid = 9999992;
+							else shopid = atoi(args.c_str());
+
+							if (!NpcHandler::showShop(player, shopid)) {
+								showSyntax(player, command);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdPos: {
+						char msg[50];
+						sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFh());
 						PlayerPacket::showMessage(player, msg, 6);
+						break;
 					}
-					break;
-				}
-				case CmdAp:
-					if (args.length() != 0)
-						player->getStats()->setAp(atoi(args.c_str()));
-					break;
-				case CmdSp:
-					if (args.length() != 0)
-						player->getStats()->setSp(atoi(args.c_str()));
-					break;
-				case CmdKillNpc:
-					player->setNPC(0);
-					break;
-				case CmdHorntail:
-					Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
-					break;
-				case CmdHeal:
-					player->getStats()->setHp(player->getStats()->getMHp());
-					player->getStats()->setMp(player->getStats()->getMMp());
-					break;
-				case CmdMesos:
-					if (args.length() != 0)
-						player->getInventory()->setMesos(atoi(args.c_str()));
-					break;
-				case CmdRelog:
-					player->changeChannel((int8_t)ChannelServer::Instance()->getChannel());
-					break;
-				case CmdSave:
-					player->saveAll();
-					PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
-					break;
-				case CmdWarpTo:
-					Player *warptoee;
-					if (warptoee = Players::Instance()->getPlayer(args)) {
-						player->setMap(warptoee->getMap());
-					}
-					break;
-				case CmdZakum:
-					Maps::getMap(player->getMap())->spawnZakum(player->getPos());
-					break;
-				case CmdMusic:
-					Maps::getMap(player->getMap())->setMusic(args);
-					break;
-				case CmdDisconnect:
-					player->getSession()->disconnect();
-					break;
-				case CmdEventInstruction:
-					MapPacket::showEventInstructions(player->getMap());
-					break;
-				case CmdStorage:
-					StoragePacket::showStorage(player, 9900000);
-					break;
-				case CmdRankingCalc:
-					WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
-					PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
-					break;
-				case CmdWorldMessage: {
-					re = "(\\w+) (.+)";
-					if (regex_match(args.c_str(), matches, re)) {
-						int8_t type = -1;
-						if (matches[1] == "notice") type = 0;
-						else if (matches[1] == "popup") type = 1;
-						else if (matches[1] == "event") type = 5;
-						else if (matches[1] == "purple") type = 6;
-
-						if (type != -1) {
-							WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+					case CmdItem: {
+						re = "(\\d+) ?(\\d*)?";
+						if (regex_match(args.c_str(), matches, re)) {
+							int32_t itemid = atoi(string(matches[1]).c_str());
+							if (ItemDataProvider::Instance()->itemExists(itemid)) {
+								string countstring = matches[2];
+								uint16_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+								Inventory::addNewItem(player, itemid, count);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid Item ID", 6);
+							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+							showSyntax(player, command);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdGlobalMessage: {
-					re = "(\\w+) (.+)";
-					if (regex_match(args.c_str(), matches, re)) {
-						int8_t type = -1;
-						if (matches[1] == "notice") type = 0;
-						else if (matches[1] == "popup") type = 1;
-						else if (matches[1] == "event") type = 5;
-						else if (matches[1] == "purple") type = 6;
+					case CmdLevel:
+						if (args.length() != 0)
+							player->getStats()->setLevel(atoi(args.c_str()));
+						break;
+					case CmdJob: {
+						if (args.length() != 0) {
+							int16_t job = -1;
+							if (args == "beginner") job = 0;
+							else if (args == "warrior") job = 100;
+							else if (args == "fighter") job = 110;
+							else if (args == "sader") job = 111;
+							else if (args == "hero") job = 112;
+							else if (args == "page") job = 120;
+							else if (args == "wk") job = 121;
+							else if (args == "paladin") job = 122;
+							else if (args == "spearman") job = 130;
+							else if (args == "dk") job = 131;
+							else if (args == "drk") job = 132;
+							else if (args == "magician") job = 200;
+							else if (args == "fpwiz") job = 210;
+							else if (args == "fpmage") job = 211;
+							else if (args == "fparch") job = 212;
+							else if (args == "ilwiz") job = 220;
+							else if (args == "ilmage") job = 221;
+							else if (args == "ilarch") job = 222;
+							else if (args == "cleric") job = 230;
+							else if (args == "priest") job = 231;
+							else if (args == "bishop") job = 232;
+							else if (args == "bowman") job = 300;
+							else if (args == "hunter") job = 310;
+							else if (args == "ranger") job = 311;
+							else if (args == "bm") job = 312;
+							else if (args == "xbowman") job = 320;
+							else if (args == "sniper") job = 321;
+							else if (args == "marksman") job = 322;
+							else if (args == "thief") job = 400;
+							else if (args == "sin") job = 410;
+							else if (args == "hermit") job = 411;
+							else if (args == "nl") job = 412;
+							else if (args == "dit") job = 420;
+							else if (args == "cb") job = 421;
+							else if (args == "shadower") job = 422;
+							else if (args == "pirate") job = 500;
+							else if (args == "brawler") job = 510;
+							else if (args == "marauder") job = 511;
+							else if (args == "buccaneer") job = 512;
+							else if (args == "gunslinger") job = 520;
+							else if (args == "outlaw") job = 521;
+							else if (args == "corsair") job = 522;
+							else if (args == "gm") job = 900;
+							else if (args == "sgm") job = 910;
+							else job = atoi(args.c_str());
 
-						if (type != -1) {
-							WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+							if (job >= 0)
+								player->getStats()->setJob(job);
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+							char msg[60];
+							sprintf(msg, "Current Job: %i", player->getStats()->getJob());
+							PlayerPacket::showMessage(player, msg, 6);
 						}
+						break;
 					}
-					else {
-						showSyntax(player, command);
-					}
-					break;
-				}
-				case CmdListMobs: {
-					string message = "No mobs on the current map.";
-					if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
-						typedef unordered_map<int32_t, Mob *> mobmap;
-						mobmap mobs = Maps::getMap(player->getMap())->getMobs();
-						for (mobmap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-							message = "Mob ";
-							message += boost::lexical_cast<string>(iter->first);
-							message += " (ID: ";
-							message += boost::lexical_cast<string>(iter->second->getMobId());
-							message += ", HP: ";
-							message += boost::lexical_cast<string>(iter->second->getHp());
-							message += "/";
-							message += boost::lexical_cast<string>(iter->second->getMaxHp());
-							message += ")";
-							PlayerPacket::showMessage(player, message, 6);
+					case CmdAp:
+						if (args.length() != 0)
+							player->getStats()->setAp(atoi(args.c_str()));
+						break;
+					case CmdSp:
+						if (args.length() != 0)
+							player->getStats()->setSp(atoi(args.c_str()));
+						break;
+					case CmdKillNpc:
+						player->setNPC(0);
+						break;
+					case CmdHorntail:
+						Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
+						break;
+					case CmdHeal:
+						player->getStats()->setHp(player->getStats()->getMHp());
+						player->getStats()->setMp(player->getStats()->getMMp());
+						break;
+					case CmdMesos:
+						if (args.length() != 0)
+							player->getInventory()->setMesos(atoi(args.c_str()));
+						break;
+					case CmdRelog:
+						player->changeChannel((int8_t)ChannelServer::Instance()->getChannel());
+						break;
+					case CmdSave:
+						player->saveAll();
+						PlayerPacket::showMessage(player, "Your progress has been saved.", 5);
+						break;
+					case CmdWarpTo:
+						Player *warptoee;
+						if (warptoee = Players::Instance()->getPlayer(args)) {
+							player->setMap(warptoee->getMap());
 						}
+						break;
+					case CmdZakum:
+						Maps::getMap(player->getMap())->spawnZakum(player->getPos());
+						break;
+					case CmdMusic:
+						Maps::getMap(player->getMap())->setMusic(args);
+						break;
+					case CmdDisconnect:
+						player->getSession()->disconnect();
+						break;
+					case CmdEventInstruction:
+						MapPacket::showEventInstructions(player->getMap());
+						break;
+					case CmdStorage:
+						NpcHandler::showStorage(player, 9900000);
+						break;
+					case CmdRankingCalc:
+						WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
+						PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", 5);
+						break;
+					case CmdWorldMessage: {
+						re = "(\\w+) (.+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							int8_t type = -1;
+							if (matches[1] == "notice") type = 0;
+							else if (matches[1] == "popup") type = 1;
+							else if (matches[1] == "event") type = 5;
+							else if (matches[1] == "purple") type = 6;
+
+							if (type != -1) {
+								WorldServerConnectPacket::worldMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
 					}
-					else {
+					case CmdGlobalMessage: {
+						re = "(\\w+) (.+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							int8_t type = -1;
+							if (matches[1] == "notice") type = 0;
+							else if (matches[1] == "popup") type = 1;
+							else if (matches[1] == "event") type = 5;
+							else if (matches[1] == "purple") type = 6;
+
+							if (type != -1) {
+								WorldServerConnectPacket::globalMessage(ChannelServer::Instance()->getWorldConnection(), (string) matches[2], type);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, popup, event, purple}", 6);
+							}
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					}
+					case CmdListMobs: {
+						string message = "No mobs on the current map.";
+						if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
+							typedef unordered_map<int32_t, Mob *> mobmap;
+							mobmap mobs = Maps::getMap(player->getMap())->getMobs();
+							for (mobmap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+								message = "Mob ";
+								message += boost::lexical_cast<string>(iter->first);
+								message += " (ID: ";
+								message += boost::lexical_cast<string>(iter->second->getMobId());
+								message += ", HP: ";
+								message += boost::lexical_cast<string>(iter->second->getHp());
+								message += "/";
+								message += boost::lexical_cast<string>(iter->second->getMaxHp());
+								message += ")";
+								PlayerPacket::showMessage(player, message, 6);
+							}
+						}
+						else {
+							PlayerPacket::showMessage(player, message, 5);
+						}
+						break;
+					}
+					case CmdGetMobHp: {
+						string message = "Mob does not exist.";
+						if (args.length() != 0) {
+							int32_t mobid = atoi(args.c_str());
+							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+							if (mob != 0) {
+								message = "Mob ";
+								message += boost::lexical_cast<string>(mobid);
+								message += " HP: ";
+								message += boost::lexical_cast<string>(mob->getHp());
+								message += "/";
+								message += boost::lexical_cast<string>(mob->getMaxHp());
+								message += " (";
+								message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
+								message += "%)";
+							}
+						}
 						PlayerPacket::showMessage(player, message, 5);
+						break;
 					}
-					break;
-				}
-				case CmdGetMobHp: {
-					string message = "Mob does not exist.";
-					if (args.length() != 0) {
-						int32_t mobid = atoi(args.c_str());
-						Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-						if (mob != 0) {
-							message = "Mob ";
-							message += boost::lexical_cast<string>(mobid);
-							message += " HP: ";
-							message += boost::lexical_cast<string>(mob->getHp());
-							message += "/";
-							message += boost::lexical_cast<string>(mob->getMaxHp());
-							message += " (";
-							message += boost::lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
-							message += "%)";
+					case CmdKillMob: {
+						if (args.length() != 0) {
+							int32_t mobid = atoi(args.c_str());
+							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+							if (mob != 0) {
+								mob->applyDamage(player->getId(), mob->getHp());
+							}
 						}
+						break;
 					}
-					PlayerPacket::showMessage(player, message, 5);
-					break;
-				}
-				case CmdKillMob: {
-					if (args.length() != 0) {
-						int32_t mobid = atoi(args.c_str());
-						Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-						if (mob != 0) {
-							mob->applyDamage(player->getId(), mob->getHp());
-						}
-					}
-					break;
 				}
 			}
 		}

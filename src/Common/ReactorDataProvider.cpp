@@ -37,6 +37,16 @@ void ReactorDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
+namespace Functors {
+	struct ReactorFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "remove_in_field_set") reactor->removeinfieldset = true;
+			else if (cmp == "activate_by_touch") reactor->activatebytouch = true;
+		}
+		ReactorData *reactor;
+	};
+}
+
 void ReactorDataProvider::loadReactors() {
 	reactorinfo.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_data");
@@ -44,13 +54,7 @@ void ReactorDataProvider::loadReactors() {
 	ReactorData react;
 	int32_t id;
 
-	struct FlagFunctor {
-		void operator()(const string &cmp) {
-			if (cmp == "remove_in_field_set") reactor->removeinfieldset = true;
-			else if (cmp == "activate_by_touch") reactor->activatebytouch = true;
-		}
-		ReactorData *reactor;
-	};
+	using namespace Functors;
 
 	enum Reactors {
 		ReactorId = 0,
@@ -60,7 +64,7 @@ void ReactorDataProvider::loadReactors() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		id = atoi(row[ReactorId]);
 		react = ReactorData();
-		FlagFunctor whoo = {&react};
+		ReactorFlags whoo = {&react};
 		runFlags(row[Flags], whoo);
 
 		react.maxstates = atoi(row[MaxStates]);
@@ -70,14 +74,8 @@ void ReactorDataProvider::loadReactors() {
 	}
 }
 
-void ReactorDataProvider::loadStates() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorid, state ASC");
-	mysqlpp::UseQueryResult res = query.use();
-	ReactorStateInfo revent;
-	int32_t id;
-	int8_t state;
-
-	struct TypeFunctor {
+namespace Functors {
+	struct StateTypeFlags {
 		void operator()(const string &cmp) {
 			if (cmp == "plain_advance_state") reactor->type = 0;
 			else if (cmp == "no_clue") reactor->type = 0;
@@ -89,6 +87,16 @@ void ReactorDataProvider::loadStates() {
 		}
 		ReactorStateInfo *reactor;
 	};
+}
+
+void ReactorDataProvider::loadStates() {
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorid, state ASC");
+	mysqlpp::UseQueryResult res = query.use();
+	ReactorStateInfo revent;
+	int32_t id;
+	int8_t state;
+
+	using namespace Functors;
 
 	enum ReactorEvent {
 		ReactorId = 0,
@@ -101,7 +109,7 @@ void ReactorDataProvider::loadStates() {
 		state = atoi(row[State]);
 		revent = ReactorStateInfo();
 
-		TypeFunctor whoo = {&revent};
+		StateTypeFlags whoo = {&revent};
 		runFlags(row[Type], whoo);
 
 		revent.itemid = atoi(row[ItemId]);

@@ -35,6 +35,7 @@ void LoginServer::loadData() {
 	Initializing::setUsersOffline(1);
 	Initializing::loadData();
 	RankingCalculator::setTimer();
+	displayLaunchTime();
 }
 
 void LoginServer::loadConfig() {

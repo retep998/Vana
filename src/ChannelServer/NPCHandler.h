@@ -28,4 +28,5 @@ namespace NpcHandler {
 	void handleNpcAnimation(Player *player, PacketReader &packet);
 	void handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid = 0);
 	bool showShop(Player *player, int32_t shopid);
+	bool showStorage(Player *player, int32_t npcid);
 }

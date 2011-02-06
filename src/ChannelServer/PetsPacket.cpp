@@ -172,7 +172,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(pet->getId());
 	packet.add<int32_t>(0);
-	packet.add<int64_t>(Items::NoExpiration);
+	packet.add<int64_t>(0LL);
 	packet.addString(pet->getName(), 13);
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());

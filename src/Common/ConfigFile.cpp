@@ -60,13 +60,13 @@ string ConfigFile::getString(const string &value) {
 	return string(lua_tostring(luaVm, -1));
 }
 
-vector<vector<uint32_t> > ConfigFile::getIpMatrix(const string &value) {
-	vector<vector<uint32_t> > matrix;
+IpMatrix ConfigFile::getIpMatrix(const string &value) {
+	IpMatrix matrix;
 
 	lua_getglobal(luaVm, value.c_str());
 	lua_pushnil(luaVm);
 	while (lua_next(luaVm, -2)) {
-		vector<uint32_t> arr;
+		IpArray arr;
 		arr.reserve(2);
 
 		lua_pushnil(luaVm);

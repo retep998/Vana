@@ -287,7 +287,11 @@ namespace FieldLimitBits {
 		NoClue5 = 0x8000, // Ariant colosseum-related?
 		NoClue6 = 0x10000, // No notes
 		DropDown = 0x20000,
-		NoClue7 = 0x40000 // Seems to .. disable Rush if 0x2 is set
+		NoClue7 = 0x40000, // Seems to .. disable Rush if 0x2 is set
+		NoClue8 = 0x80000,
+		Unused2 = 0x100000,
+		Unused3 = 0x200000,
+		Chalkboard = 0x400000
 	};
 }
 
@@ -1099,6 +1103,8 @@ namespace Items {
 		FungusScroll = 5300000,
 		OinkerDelight = 5300001,
 		ZetaNightmare = 5300002,
+		Chalkboard = 5370000,
+		Chalkboard2 = 5370001,
 		DiabloMessenger = 5390000,
 		Cloud9Messenger = 5390001,
 		LoveholicMessenger = 5390002,

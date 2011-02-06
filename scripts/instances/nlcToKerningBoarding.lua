@@ -15,6 +15,24 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Kirium (Ereve storage)
 
-showStorage();
+function beginInstance()
+	addInstanceMap(600010002);
+end
+
+function instanceTimerEnd(fromtimer)
+	if getInstancePlayerCount() > 0 then
+		createInstance("nlcToKerningTrip", 60, false);
+		passPlayersBetweenInstances(600010003);
+	end
+end
+
+function playerDisconnect(playerid) end
+function playerDeath(playerid) end
+function timerEnd(name, fromtimer) end
+function mobDeath(mobid, mapmobid) end
+function mobSpawn(mobid, mapmobid) end
+function changeMap(playerid, newmap, oldmap) end
+function partyDisband(partyid) end
+function partyRemoveMember(partyid, playerid) end
+

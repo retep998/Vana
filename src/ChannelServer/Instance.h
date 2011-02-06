@@ -73,7 +73,7 @@ public:
 	void setBanned(const string &name, bool isbanned);
 	void addPlayerSignUp(Player *player);
 	void removePlayerSignUp(const string &name);
-	void moveAllPlayers(int32_t mapid, PortalInfo *portal = 0);
+	void moveAllPlayers(int32_t mapid, bool respectInstances, PortalInfo *portal = 0);
 	bool isPlayerSignedUp(const string &name);
 	bool isBanned(const string &name);
 	bool instanceHasPlayers() const;

@@ -152,8 +152,13 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int32_t>(pet->getFh());
 		}
 	}
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+ 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
-	packet.add<int16_t>(1);
+	packet.addBool(!player->getChalkboard().empty());
+	packet.addString(player->getChalkboard());
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);

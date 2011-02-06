@@ -40,6 +40,8 @@ public:
 	NPC(int32_t npcid, Player *player, const string &script);
 	~NPC();
 
+	static bool hasScript(int32_t npcid, int16_t questid, bool start);
+
 	void run();
 
 	PacketCreator npcPacket(int8_t type);

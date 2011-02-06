@@ -35,6 +35,7 @@ namespace TimeUtilities {
 	int32_t getSecond(time_t ctime = time(0));
 	int32_t getDay(time_t ctime = time(0));
 	int32_t getWeek(time_t ctime = time(0));
+	int32_t getNearestMinuteMark(int32_t interval, time_t ctime = time(0));
 	string getDayString(time_t ctime = time(0));
 	bool getDST(time_t ctime = time(0));
 	int32_t getTimeZoneOffset();

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -35,10 +36,12 @@ public:
 	virtual void shutdown();
 
 	string getInterPassword() const { return inter_password; }
+	void displayLaunchTime() const;
 protected:
 	AbstractServer();
 
+	clock_t startTime;
 	bool to_listen;
 	string inter_password;
-	vector<vector<uint32_t> > external_ip;
+	IpMatrix external_ip;
 };

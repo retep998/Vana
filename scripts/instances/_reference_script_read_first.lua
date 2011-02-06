@@ -51,7 +51,8 @@ function friendlyHit(mobid, mapmobid, mapid, hp, maxhp)
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
-	-- Happens every time a player associated with an instance switches maps
+	-- Happens every time a player switches to or from an instance map
+	-- Players need not be a part of the instance to trigger this
 end
 
 function partyDisband(partyid)

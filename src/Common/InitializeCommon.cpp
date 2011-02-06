@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeCommon.h"
-#include "DatabaseMigration.h"
 #include "Database.h"
+#include "DatabaseMigration.h"
 #include "MapleVersion.h"
 #include <cstdio>
 #include <iostream>
@@ -31,7 +31,7 @@ void Initializing::checkMcdbVersion() {
 
 	int32_t version = (int32_t) res[0]["version"];
 	int32_t subversion = (int32_t) res[0]["subversion"];
-	int32_t maple_version = (int32_t) res[0]["maple_version"];
+	int16_t maple_version = (int16_t) res[0]["maple_version"];
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		// MCDB incompatible
@@ -42,8 +42,8 @@ void Initializing::checkMcdbVersion() {
 		exit(4);
 	}
 
-	if (maple_version != MAPLE_VERSION) {
-		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MAPLE_VERSION << " MCDB: " << maple_version << std::endl;
+	if (maple_version != MapleVersion::Version) {
+		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MapleVersion::Version << " MCDB: " << maple_version << std::endl;
 	}
 }
 

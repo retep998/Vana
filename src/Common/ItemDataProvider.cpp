@@ -18,9 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "BuffDataProvider.h"
 #include "Database.h"
+#include "EquipDataProvider.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
+#include "GameObjects.h"
 #include "InitializeCommon.h"
+#include "Randomizer.h"
 #include "ShopDataProvider.h"
 #include "StringUtilities.h"
 #include <iostream>
@@ -50,14 +53,8 @@ void ItemDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ItemDataProvider::loadItems() {
-	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	ItemInfo item;
-
-	struct ItemFunctor {
+namespace Functors {
+	struct AllItemFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "time_limited") item->timelimited = true;
 			else if (cmp == "cash_item") item->cash = true;
@@ -70,6 +67,16 @@ void ItemDataProvider::loadItems() {
 		}
 		ItemInfo *item;
 	};
+}
+
+void ItemDataProvider::loadItems() {
+	items.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.name FROM item_data, strings WHERE item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	ItemInfo item;
+
+	using namespace Functors;
 
 	enum ItemData {
 		ItemId = 0,
@@ -80,7 +87,7 @@ void ItemDataProvider::loadItems() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ItemInfo();
-		ItemFunctor whoo = {&item};
+		AllItemFlags whoo = {&item};
 		runFlags(row[Flags], whoo);
 
 		id = atoi(row[ItemId]);
@@ -97,14 +104,8 @@ void ItemDataProvider::loadItems() {
 	}
 }
 
-void ItemDataProvider::loadScrolls() {
-	scrolls.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_scroll_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	ScrollInfo item;
-
-	struct ScrollFunctor {
+namespace Functors {
+	struct ScrollFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "rand_stat") item->randstat = true;
 			else if (cmp == "recover_slot") item->recover = true;
@@ -113,6 +114,16 @@ void ItemDataProvider::loadScrolls() {
 		}
 		ScrollInfo *item;
 	};
+}
+
+void ItemDataProvider::loadScrolls() {
+	scrolls.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_scroll_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	ScrollInfo item;
+
+	using namespace Functors;
 
 	enum ScrollData {
 		ItemId = 0,
@@ -124,7 +135,7 @@ void ItemDataProvider::loadScrolls() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ScrollInfo();
-		ScrollFunctor whoo = {&item};
+		ScrollFlags whoo = {&item};
 		runFlags(row[Flags], whoo);
 
 		id = atoi(row[ItemId]);
@@ -149,18 +160,8 @@ void ItemDataProvider::loadScrolls() {
 	}
 }
 
-void ItemDataProvider::loadConsumes() {
-	consumes.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_consume_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
-	int16_t morphid;
-	ConsumeInfo item;
-	AilmentInfo ailment;
-	Morph morph;
-	string dropup;
-
-	struct ConsumeFunctor {
+namespace Functors {
+	struct ConsumeFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "auto_consume") item->autoconsume = true;
 			else if (cmp == "party_item") item->party = true;
@@ -179,7 +180,7 @@ void ItemDataProvider::loadConsumes() {
 		ConsumeInfo *item;
 	};
 
-	struct AilmentFunctor {
+	struct AilmentFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "darkness") item->darkness = true;
 			else if (cmp == "weakness") item->weakness = true;
@@ -189,6 +190,20 @@ void ItemDataProvider::loadConsumes() {
 		}
 		AilmentInfo *item;
 	};
+}
+
+void ItemDataProvider::loadConsumes() {
+	consumes.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_consume_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t id;
+	int16_t morphid;
+	ConsumeInfo item;
+	AilmentInfo ailment;
+	Morph morph;
+	string dropup;
+
+	using namespace Functors;
 
 	enum ConsumeableData {
 		ItemId = 0,
@@ -205,10 +220,10 @@ void ItemDataProvider::loadConsumes() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ConsumeInfo();
 		ailment = AilmentInfo();
-		ConsumeFunctor whoot = {&item};
+		ConsumeFlags whoot = {&item};
 		runFlags(row[Flags], whoot);
 
-		AilmentFunctor whoo = {&ailment};
+		AilmentFlags whoo = {&ailment};
 		runFlags(row[Ailments], whoo);
 		if (ailment.darkness) item.ailment |= 0x01;
 		if (ailment.poison) item.ailment |= 0x02;
@@ -369,14 +384,8 @@ void ItemDataProvider::loadSummonBags() {
 	}
 }
 
-void ItemDataProvider::loadPets() {
-	petsInfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
-	mysqlpp::UseQueryResult res = query.use();
-	PetInfo pet;
-	int32_t itemid;
-
-	struct PetFunctor {
+namespace Functors {
+	struct PetFlags {
 		void operator() (const string &cmp) {
 			if (cmp == "no_revive") item->norevive = true;
 			else if (cmp == "no_move_to_cash_shop") item->nostoreincashshop = true;
@@ -384,6 +393,16 @@ void ItemDataProvider::loadPets() {
 		}
 		PetInfo *item;
 	};
+}
+
+void ItemDataProvider::loadPets() {
+	petsInfo.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
+	mysqlpp::UseQueryResult res = query.use();
+	PetInfo pet;
+	int32_t itemid;
+
+	using namespace Functors;
 
 	enum PetData {
 		ItemId = 0,
@@ -393,7 +412,7 @@ void ItemDataProvider::loadPets() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		pet = PetInfo();
-		PetFunctor whoo = {&pet};
+		PetFlags whoo = {&pet};
 		runFlags(row[Flags], whoo);
 
 		itemid = atoi(row[ItemId]);
@@ -458,4 +477,119 @@ PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemid, int32_t actio
 		}
 	}
 	return 0;
+}
+
+void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {
+	if (scrolls.find(scrollid) == scrolls.end())
+		return;
+
+	ScrollInfo *iteminfo = &scrolls[scrollid];
+	if (iteminfo->randstat) {
+		if (equip->slots > 0) {
+			succeed = 0;
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Add stats
+				int8_t n = -1; // Default - Decrease stats
+				if (Randomizer::Instance()->randShort(99) < 50U) // Increase
+					n = 1;
+				// Gives/takes 0-5 stats on every stat on the item
+				if (equip->istr > 0)
+					equip->istr = Randomizer::Instance()->randShort(5) * n;
+				if (equip->idex > 0)
+					equip->idex = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iint > 0)
+					equip->iint = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iluk > 0)
+					equip->iluk = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iavo > 0)
+					equip->iavo = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iacc > 0)
+					equip->iacc = Randomizer::Instance()->randShort(5) * n;
+				if (equip->ihand > 0)
+					equip->ihand = Randomizer::Instance()->randShort(5) * n;
+				if (equip->ijump > 0)
+					equip->ijump = Randomizer::Instance()->randShort(5) * n;
+				if (equip->ispeed > 0)
+					equip->ispeed = Randomizer::Instance()->randShort(5) * n;
+				if (equip->imatk > 0)
+					equip->imatk = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iwatk > 0)
+					equip->iwatk = Randomizer::Instance()->randShort(5) * n;
+				if (equip->imdef > 0)
+					equip->imdef = Randomizer::Instance()->randShort(5) * n;
+				if (equip->iwdef > 0)
+					equip->iwdef = Randomizer::Instance()->randShort(5) * n;
+				if (equip->ihp > 0)
+					equip->ihp = Randomizer::Instance()->randShort(5) * n;
+				if (equip->imp > 0)
+					equip->imp = Randomizer::Instance()->randShort(5) * n;
+				equip->scrolls;
+				equip->slots--;
+				succeed = 1;
+			}
+			else if (!wscroll)
+				equip->slots--;
+		}
+	}
+	else if (iteminfo->recover) {
+		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->id) + static_cast<int8_t>(equip->hammers);
+		if ((maxslots - equip->scrolls) > equip->slots) {
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot
+				equip->slots;
+				succeed = 1;
+			}
+			else {
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
+					cursed = true;
+				succeed = 0;
+			}
+		}
+	}
+	else if (iteminfo->preventslip) {
+		succeed = 0;
+		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			equip->flags |= FlagSpikes;
+			succeed = 1;
+		}
+	}
+	else if (iteminfo->warmsupport) {
+		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			equip->flags |= FlagCold;
+			succeed = 1;
+		}
+	}
+	else {
+		if (GameLogicUtilities::itemTypeToScrollType(equip->id) != GameLogicUtilities::getScrollType(scrollid)) {
+			// Hacking, equip slot different from the scroll slot
+			return;
+		}
+		if (equip->slots > 0) {
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+				succeed = 1;
+				equip->istr = iteminfo->istr;
+				equip->idex = iteminfo->idex;
+				equip->iint = iteminfo->iint;
+				equip->iluk = iteminfo->iluk;
+				equip->ihp = iteminfo->ihp;
+				equip->imp = iteminfo->imp;
+				equip->iwatk = iteminfo->iwatk;
+				equip->imatk = iteminfo->imatk;
+				equip->iwdef = iteminfo->iwdef;
+				equip->imdef = iteminfo->imdef;
+				equip->iacc = iteminfo->iacc;
+				equip->iavo = iteminfo->iavo;
+				equip->ihand = iteminfo->ihand;
+				equip->ijump = iteminfo->ijump;
+				equip->ispeed = iteminfo->ispeed;
+				equip->scrolls;
+				equip->slots--;
+			}
+			else {
+				succeed = 0;
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
+					cursed = true;
+				else if (!wscroll)
+					equip->slots--;
+			}
+		}
+	}
 }

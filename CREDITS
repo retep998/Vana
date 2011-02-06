@@ -30,9 +30,11 @@ zOmgnO1
 CONTRIBUTIONS
 [Trent] - Owner of the IRC server we use for #vana
 Angel-SL - Being the guy who does the stuff and discusses content with the developers every few weeks
+Biscuit/dbgtdbz - Boat scripts
 Bri - Lots of bug reports
 Bri - Being rage-inducingly terrible at math
 Bri - Lots of work surrounding NPCs
+caelestis - Lots of bug reports and CMake suggestions
 DeanSan - Lots of bug reports
 doyos - VEDB/MCDB
 ExtremeDevilz - Map crash packet and Obama :)
@@ -50,10 +52,12 @@ Leifde - Pointing out a bug regarding death and logging out
 Levi - Creating one of the first - if not the first - Vana setup guides
 lordstyx - Reporting lots of bugs
 MooMoo - Provides website and SVN
+RedXIII - Macro guy
 robtbs - Creating a helpful guide for connection to Vana
 Ruezu - Helping with MySQL indexing
 Ruezu - Pointed out a couple bugs
 Snow - GM event instruction packet (original discoverer)
+Snow - Finder of the modified Tausworthe generator random stuff
 Snow - Lots of packet-related/information contributions
 synexic - Original SVN
 Tris - Contributed some help regarding content and hangs out with us
@@ -61,5 +65,6 @@ yuejun54321 - Contributing numerous Gachapon scripts
 yuejun54321 - Lots of bug reports
 Zak aka Mudkipz (Geno) - Most pretentious credit name ever; lots of Lua contributions
 Zak aka Mudkipz (Geno) - IP banning system
+Zak aka Mudkipz (Geno) - Original Cygnus skill code
 zOmgnO1 - Countless bug reports
 zOmgnO1 - Numerous patches

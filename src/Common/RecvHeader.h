@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ATTACK_ENERGY_CHARGE 0x2e
 #define CMSG_PLAYER_DAMAGE 0x2f
 #define CMSG_PLAYER_CHAT 0x30
+#define CMSG_CHALKBOARD 0x31
 #define CMSG_EMOTE 0x32
 #define CMSG_ITEM_EFFECT 0x33
 #define CMSG_MONSTER_BOOK 0x38

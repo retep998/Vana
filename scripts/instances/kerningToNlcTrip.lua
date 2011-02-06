@@ -17,29 +17,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
 function beginInstance()
-	addInstanceMap(921100000);
+	addInstanceMap(600010005);
 end
 
 function playerDisconnect(playerid, ispartyleader)
-	finish(playerid);
+	finish();
 end
 
 function instanceTimerEnd(fromtimer)
 	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(211042300);
+   		moveAllPlayers(600010001);
 		removeAllInstancePlayers();
-	end
+  	end
 end
 
 function changeMap(playerid, newmap, oldmap, ispartyleader)
 	if not isInstanceMap(newmap) then
-		finish(playerid);
+		finish();
+		removeInstancePlayer(playerid);
+	else
+		addInstancePlayer(playerid);
 	end
 end
 
-function finish(playerid)
-	removeInstancePlayer(playerid);
-	markForDelete();
+function finish()
+	if getInstancePlayerCount() == 1 then
+		markForDelete();
+	end
 end
 
 function playerDeath(playerid) end

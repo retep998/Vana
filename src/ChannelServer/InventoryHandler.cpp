@@ -25,7 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Levels.h"
 #include "Maps.h"
-#include "MapleTVs.h"
+#include "MapleTvs.h"
+#include "NPCDataProvider.h"
 #include "PacketReader.h"
 #include "Pets.h"
 #include "Player.h"
@@ -65,12 +66,11 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 
-		ItemInfo *info = ItemDataProvider::Instance()->getItemInfo(droppeditem.id);
-		bool istradeable = !(info->notrade || info->quest);
-		drop->setTradeable(istradeable);
+		bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppeditem.id);
+		drop->setTradeable(isTradeable);
 
 		drop->doDrop(player->getPos());
-		if (istradeable) // Drop is deleted otherwise, avoid like plague
+		if (isTradeable) // Drop is deleted otherwise, avoid like plague
 			Reactors::checkDrop(player, drop);
 	}
 	else {
@@ -97,8 +97,8 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 		else {
 			if (slot2 < 0) {
-				ItemInfo *i = ItemDataProvider::Instance()->getItemInfo(item1->id);
-				uint8_t desiredslot = -(slot2 + (i->cash ? 100 : 0));
+				bool isCash = ItemDataProvider::Instance()->isCash(item1->id);
+				uint8_t desiredslot = -(slot2 + (isCash ? 100 : 0));
 				if (!EquipDataProvider::Instance()->validSlot(item1->id, desiredslot)) {
 					// Hacking
 					return;
@@ -271,7 +271,16 @@ void InventoryHandler::useShop(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
+	if (player->getShop() == 0) {
+		// Hacking
+		return;
+	}
 	int8_t type = packet.get<int8_t>();
+	int32_t cost = NpcDataProvider::Instance()->getStorageCost(player->getShop());
+	if (cost == 0) {
+		// Hacking
+		return;
+	}
 	switch (type) {
 		case 4: { // Take item out
 			int8_t inv = packet.get<int8_t>(); // Inventory, as in equip, use, etc
@@ -290,7 +299,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			int16_t slot = packet.get<int16_t>();
 			int32_t itemid = packet.get<int32_t>();
 			int16_t amount = packet.get<int16_t>();
-			if (player->getInventory()->getMesos() < 100) {
+			if (player->getInventory()->getMesos() < cost) {
 				StoragePacket::noMesos(player); // We don't have enough mesos to store this item
 				return;
 			}
@@ -316,7 +325,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			// the one in the inventory to go bye bye.
 			// Else: For items we just create a new item based on the ID and amount.
 			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->amount : amount, true);
-			player->getInventory()->modifyMesos(-100); // Take 100 mesos for storage cost
+			player->getInventory()->modifyMesos(-cost);
 			StoragePacket::addItem(player, inv);
 			break;
 		}
@@ -328,7 +337,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			break;
 		}
 		case 8:
-			// 8 is close storage. For now we have no reason to handle this.
+			player->setShop(0);
 			break;
 	}
 }
@@ -495,124 +504,11 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	int32_t itemid = item->id;
 	int8_t succeed = -1;
 	bool cursed = false;
-	if (!ItemDataProvider::Instance()->scrollExists(itemid))
-		return;
+	ItemDataProvider::Instance()->scrollItem(item->id, equip, succeed, cursed, wscroll);
 
-	ScrollInfo *iteminfo = ItemDataProvider::Instance()->getScrollInfo(itemid);
-
-	if (iteminfo->randstat) {
-		if (equip->slots > 0) {
-			succeed = 0;
-			if (wscroll)
-				Inventory::takeItem(player, Items::WhiteScroll, 1);
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Add stats
-				int8_t n = -1; // Default - Decrease stats
-				if (Randomizer::Instance()->randShort(99) < 50U) // Increase
-					n = 1;
-				// Gives/takes 0-5 stats on every stat on the item
-				if (equip->istr > 0)
-					equip->istr += Randomizer::Instance()->randShort(5) * n;
-				if (equip->idex > 0)
-					equip->idex += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iint > 0)
-					equip->iint += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iluk > 0)
-					equip->iluk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iavo > 0)
-					equip->iavo += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iacc > 0)
-					equip->iacc += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ihand > 0)
-					equip->ihand += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ijump > 0)
-					equip->ijump += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ispeed > 0)
-					equip->ispeed += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imatk > 0)
-					equip->imatk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iwatk > 0)
-					equip->iwatk += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imdef > 0)
-					equip->imdef += Randomizer::Instance()->randShort(5) * n;
-				if (equip->iwdef > 0)
-					equip->iwdef += Randomizer::Instance()->randShort(5) * n;
-				if (equip->ihp > 0)
-					equip->ihp += Randomizer::Instance()->randShort(5) * n;
-				if (equip->imp > 0)
-					equip->imp += Randomizer::Instance()->randShort(5) * n;
-				equip->scrolls++;
-				equip->slots--;
-				succeed = 1;
-			}
-			else if (!wscroll)
-				equip->slots--;
-		}
-	}
-	else if (iteminfo->recover) {
-		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->id) + static_cast<int8_t>(equip->hammers);
-		if ((maxslots - equip->scrolls) > equip->slots) {
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot
-				equip->slots++;
-				succeed = 1;
-			}
-			else {
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
-					cursed = true;
-				succeed = 0;
-			}
-		}
-	}
-	else if (iteminfo->preventslip) {
-		succeed = 0;
-		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-			equip->flags |= FlagSpikes;
-			succeed = 1;
-		}
-	}
-	else if (iteminfo->warmsupport) {
-		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-			equip->flags |= FlagCold;
-			succeed = 1;
-		}
-	}
-	else {
-		if (GameLogicUtilities::itemTypeToScrollType(equip->id) != GameLogicUtilities::getScrollType(itemid)) {
-			// Hacking, equip slot different from the scroll slot
-			return;
-		}
-		if (equip->slots > 0) {
-			if (wscroll)
-				Inventory::takeItem(player, Items::WhiteScroll, 1);
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
-				succeed = 1;
-				equip->istr += iteminfo->istr;
-				equip->idex += iteminfo->idex;
-				equip->iint += iteminfo->iint;
-				equip->iluk += iteminfo->iluk;
-				equip->ihp += iteminfo->ihp;
-				equip->imp += iteminfo->imp;
-				equip->iwatk += iteminfo->iwatk;
-				equip->imatk += iteminfo->imatk;
-				equip->iwdef += iteminfo->iwdef;
-				equip->imdef += iteminfo->imdef;
-				equip->iacc += iteminfo->iacc;
-				equip->iavo += iteminfo->iavo;
-				equip->ihand += iteminfo->ihand;
-				equip->ijump += iteminfo->ijump;
-				equip->ispeed += iteminfo->ispeed;
-				equip->scrolls++;
-				equip->slots--;
-			}
-			else {
-				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
-					cursed = true;
-				else if (!wscroll)
-					equip->slots--;
-			}
-		}
-	}
 	if (succeed != -1) {
+		if (wscroll)
+			Inventory::takeItem(player, Items::WhiteScroll, 1);
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendary_spirit);
 		if (!cursed) {
@@ -771,7 +667,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::MapleTvMessenger: 
 		case Items::Megassenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
-			bool show_whisper = itemid == Items::Megassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::Megassenger ? packet.getBool() : false);
 
 			Player *receiver = Players::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
@@ -782,7 +678,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
+				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
 				
 				if (itemid == Items::Megassenger)
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -794,14 +690,14 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::MapleTvStarMessenger: 
 		case Items::StarMegassenger: {
 			int32_t time = 30;
-			bool show_whisper = itemid == Items::StarMegassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::StarMegassenger ? packet.getBool() : false);
 			string msg = packet.getString();
 			string msg2 = packet.getString();
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
 			packet.get<int32_t>(); // Ticks
-			MapleTVs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
+			MapleTvs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
 			
 			if (itemid == Items::StarMegassenger)
 				InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
@@ -811,7 +707,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::MapleTvHeartMessenger:
 		case Items::HeartMegassenger: {
-			bool show_whisper = itemid == Items::HeartMegassenger ? packet.getBool() : false;
+			bool show_whisper = (itemid == Items::HeartMegassenger ? packet.getBool() : false);
 
 			string name = packet.getString();
 			Player *receiver = Players::Instance()->getPlayer(name);
@@ -823,7 +719,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
-				MapleTVs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
+				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
 				if (itemid == Items::HeartMegassenger)
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
 				used = true;
@@ -861,6 +757,13 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				InventoryPacket::sendMesobagSucceed(player, mesos);
 				used = true;
 			}
+			break;
+		}
+		case Items::Chalkboard:
+		case Items::Chalkboard2: {
+			string msg = packet.getString();
+			player->setChalkboard(msg);
+			InventoryPacket::sendChalkboardUpdate(player, msg);
 			break;
 		}
 		case Items::FungusScroll:
