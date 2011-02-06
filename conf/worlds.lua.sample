@@ -1,0 +1,91 @@
+-- World name
+world0_name = "Scania";
+
+-- World channels (minimum 1, maximum 20)
+world0_channels = 19;
+
+-- World ID (affects the icon of the world; minimum 0, maximum 9)
+world0_id = 0;
+
+-- World Ribbon
+--  0 = None
+--  1 = E
+--  2 = N
+--  3 = H
+world0_ribbon = 0;
+
+-- Server rates
+world0_exprate = 1;
+world0_questexprate = 1;
+world0_mesorate = 1;
+world0_droprate = 1;
+
+-- Max allowed character slots (between 1 and 6; doesn't do much for now)
+world0_maxchars = 3;
+
+-- Max AP a user is allowed to put into their core stats (minimum 4, maximum 32767)
+world0_maxstats = 999;
+
+-- How many times should your users level up at once, if EXP allows?
+--  0 is disabled leveling
+-- -1 is as many times as the EXP allows
+world0_max_multi_level = 1;
+
+-- What port should the world server listen on?
+-- Channels will run on port world port + channel number
+-- i.e. channel one will run on 7101 and channel 2 will run on 7102
+world0_port = 7100;
+
+-- Event message (displays while logging in)
+world0_event_msg = "";
+
+-- Scrolling header
+world0_scrolling_header = "";
+
+-- Maximum player load on the worldserver
+world0_max_player_load = 1000;
+
+-- Valid boss channels
+-- An empty list means the boss is disabled, -1 means all channels
+-- e.g. world0_zakum_channels = {};
+-- e.g. world0_zakum_channels = {-1};
+world0_pianus_channels = {-1};
+world0_pap_channels = {-1};
+world0_zakum_channels = {4, 5, 6};
+world0_horntail_channels = {8};
+world0_pinkbean_channels = {9};
+
+-- Number of times a player may fight a boss
+-- -1 means as many times as they would like, 0 means they cannot fight a given boss
+world0_pianus_attempts = -1;
+world0_pap_attempts = 2;
+world0_zakum_attempts = 2;
+world0_horntail_attempts = 2;
+world0_pinkbean_attempts = 1;
+
+-- Uncomment for another world
+-- world1_name = "Bera";
+-- world1_channels = 1;
+-- world1_id = 1;
+-- world1_ribbon = 2;
+-- world1_exprate = 1;
+-- world1_questexprate = 1;
+-- world1_mesorate = 1;
+-- world1_droprate = 1;
+-- world1_maxchars = 6;
+-- world1_maxstats = 999;
+-- world1_max_multi_level = 1;
+-- world1_port = 7200;
+-- world1_event_msg = "";
+-- world1_scrolling_header = "";
+-- world1_max_player_load = 1000;
+-- world1_pianus_channels = {-1};
+-- world1_pap_channels = {-1};
+-- world1_zakum_channels = {4, 5, 6};
+-- world1_horntail_channels = {8};
+-- world1_pinkbean_channels = {9};
+-- world1_pianus_attempts = -1;
+-- world1_pap_attempts = 2;
+-- world1_zakum_attempts = 2;
+-- world1_horntail_attempts = 2;
+-- world1_pinkbean_attempts = 1;

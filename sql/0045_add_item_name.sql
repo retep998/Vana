@@ -1,0 +1,1 @@
+ALTER TABLE items ADD name VARCHAR(12) NOT NULL AFTER petid;

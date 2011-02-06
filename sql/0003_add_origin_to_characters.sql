@@ -1,0 +1,1 @@
+ALTER TABLE characters ADD origin INT DEFAULT 0 AFTER map;

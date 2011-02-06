@@ -1,0 +1,1 @@
+alter table `storage` add `char_slots` int(11) NOT NULL DEFAULT '3';
