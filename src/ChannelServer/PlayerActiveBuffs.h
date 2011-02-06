@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERACTIVEBUFF_H
-#define PLAYERACTIVEBUFF_H
+#pragma once
 
 #include "Buffs.h"
 #include "Types.h"
@@ -37,7 +36,7 @@ struct SkillLevelInfo;
 
 namespace Timer {
 	class Container;
-};
+}
 
 struct MapEntryBuffs {
 	MapEntryBuffs() : mountid(0), mountskill(0) {
@@ -201,5 +200,3 @@ private:
 
 	int32_t calculateDebuffMaskBit(uint8_t skill);
 };
-
-#endif

@@ -42,7 +42,7 @@ void ShopDataProvider::loadData() {
 void ShopDataProvider::loadShops() {
 	shops.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_data");
-	mysqlpp::UseQueryResult res = query.use(); 
+	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopid;
 	MYSQL_ROW row;
@@ -82,7 +82,7 @@ void ShopDataProvider::loadShops() {
 
 void ShopDataProvider::loadUserShops() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM user_shop_data");
-	mysqlpp::UseQueryResult res = query.use(); 
+	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopid;
 	MYSQL_ROW row;

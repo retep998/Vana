@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDSERVERCONNECTPACKET_H
-#define WORLDSERVERCONNECTPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -49,6 +48,4 @@ namespace WorldServerConnectPacket {
 	void worldMessage(WorldServerConnection *player, const string &message, int8_t type);
 	void globalMessage(WorldServerConnection *player, const string &message, int8_t type);
 	void reloadMcdb(WorldServerConnection *player, const string &type);
-};
-
-#endif
+}

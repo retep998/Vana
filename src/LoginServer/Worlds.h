@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef WORLDS_H
-#define WORLDS_H
+#pragma once
 
 #include "Types.h"
 #include <map>
@@ -94,6 +93,4 @@ namespace Worlds {
 	void calculatePlayerLoad(World *world);
 	World *getWorld(uint8_t id);
 	extern map<uint8_t, World *> worlds;
-};
-
-#endif
+}

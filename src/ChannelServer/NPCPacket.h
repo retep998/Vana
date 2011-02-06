@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef NPCPACKET_H
-#define NPCPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -31,6 +30,4 @@ namespace NPCPacket {
 	void showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show = true);
 	void controlNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show = true);
 	void animateNpc(Player *player, PacketReader &pack);
-};
-
-#endif
+}

@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SKILLMACROS_H
-#define SKILLMACROS_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
@@ -76,5 +75,3 @@ inline int8_t SkillMacros::getMax() {
 }
 
 inline SkillMacros::SkillMacro::SkillMacro(const string &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3) : name(name), shout(shout), skill1(skill1), skill2(skill2), skill3(skill3) { }
-
-#endif

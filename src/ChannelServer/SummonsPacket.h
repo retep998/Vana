@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef SUMMONPACKET_H
-#define SUMMONPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -29,6 +28,4 @@ namespace SummonsPacket {
 	void moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen);
 	void removeSummon(Player *player, Summon *summon, bool animated);
 	void damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid);
-};
-
-#endif
+}

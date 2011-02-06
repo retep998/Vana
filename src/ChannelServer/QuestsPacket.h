@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef QUESTSPACKET_H
-#define QUESTSPACKET_H
+#pragma once
 
 #include "Types.h"
 
@@ -41,6 +40,4 @@ namespace QuestsPacket {
 	void giveItem(Player *player, int32_t itemid, int32_t amount);
 	void giveMesos(Player *player, int32_t amount);
 	void giveFame(Player *player, int32_t amount);
-};
-
-#endif
+}

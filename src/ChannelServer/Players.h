@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PLAYERS_H
-#define PLAYERS_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -54,5 +53,3 @@ private:
 	unordered_map<int32_t, Player *> m_players;
 	unordered_map<string, Player *> m_players_names; // Index of players by name
 };
-
-#endif

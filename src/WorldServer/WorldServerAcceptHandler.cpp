@@ -36,7 +36,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, Pa
 		int32_t receiver = packet.get<int32_t>();
 		WorldServerAcceptConnection *channel = Channels::Instance()->getChannel(Players::Instance()->getPlayer(receiver)->channel)->player;
 		WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
-	}	
+	}
 }
 
 void WorldServerAcceptHandler::partyOperation(WorldServerAcceptConnection *player, PacketReader &packet) {

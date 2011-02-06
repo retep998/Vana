@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef POS_H
-#define POS_H
+#pragma once
 
 #include "Types.h"
 #include <cmath>
@@ -30,5 +29,3 @@ struct Pos {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x-p.x), 2) + pow(static_cast<float>(y-p.y), 2)));
 	}
 };
-
-#endif

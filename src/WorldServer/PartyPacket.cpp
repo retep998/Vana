@@ -111,7 +111,7 @@ void PartyPacket::updateParty(WorldServerAcceptConnection *player, int8_t type, 
 			packet.add<int8_t>(0x01);
 			packet.add<int8_t>(type == PARTY_LEAVE ? 0x00 : 0x01);
 			packet.addString(Players::Instance()->getPlayer(target, true)->name);
-			break;	
+			break;
 		case PARTY_SILENT_UPDATE:
 		case PARTY_LOG_IN_OUT:
 			packet.add<int8_t>(0x07);
@@ -182,7 +182,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	// Add party member's channels to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->online) {
-			packet.add<int32_t>(iter->second->channel); 
+			packet.add<int32_t>(iter->second->channel);
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -197,7 +197,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	// Add party member's maps to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->channel == tochan) {
-			packet.add<int32_t>(iter->second->map); 
+			packet.add<int32_t>(iter->second->map);
 		}
 		else {
 			packet.add<int32_t>(-2);

@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOGINPACKET_H
-#define LOGINPACKET_H
+#pragma once
 
 #define MAX_FIELD_SIZE 15
 
@@ -51,6 +50,4 @@ namespace LoginPacket {
 	void deleteCharacter(PlayerLogin *player, int32_t id, bool success);
 	void connectIp(PlayerLogin *player, int32_t charid);
 	void relogResponse(PlayerLogin *player);
-};
-
-#endif
+}

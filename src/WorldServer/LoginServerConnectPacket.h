@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef LOGINSERVERCONNECTPACKET_H
-#define LOGINSERVERCONNECTPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -31,6 +30,4 @@ namespace LoginServerConnectPacket {
 	void registerChannel(LoginServerConnection *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port);
 	void updateChannelPop(LoginServerConnection *player, int32_t channel, int32_t population);
 	void removeChannel(LoginServerConnection *player, int32_t channel);
-};
-
-#endif
+}

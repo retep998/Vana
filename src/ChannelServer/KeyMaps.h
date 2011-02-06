@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef KEYMAPS_H
-#define KEYMAPS_H
+#pragma once
 
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
@@ -74,5 +73,3 @@ inline int32_t KeyMaps::getMax() {
 }
 
 inline KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) : type(type), action(action) { }
-
-#endif

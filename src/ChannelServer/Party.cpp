@@ -212,7 +212,7 @@ void Party::disband() {
 	}
 }
 
-Player * Party::getMemberByIndex(uint8_t index) { 
+Player * Party::getMemberByIndex(uint8_t index) {
 	Player *p = 0;
 	if (index <= members.size()) {
 		int8_t f = 0;

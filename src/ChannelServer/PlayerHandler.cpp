@@ -102,7 +102,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			pgmr.pos.y = packet.get<int16_t>();
 			pgmr.damage = damage;
 			if (pgmr.isphysical) // Only Power Guard decreases damage
-				damage = (damage - (damage * pgmr.reduction / 100)); 
+				damage = (damage - (damage * pgmr.reduction / 100));
 			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 		}
 	}
@@ -354,7 +354,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 	string line3 = packet.getString();
 	string line4 = packet.getString();
 	string line5 = packet.getString();
-	if (has_to_name) 
+	if (has_to_name)
 		receiver = Players::Instance()->getPlayer(packet.getString());
 
 	int32_t time = 15;

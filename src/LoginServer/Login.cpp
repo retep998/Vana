@@ -44,7 +44,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
-	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";	
+	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";
 	mysqlpp::StoreQueryResult resIp = query.store();
 
 	bool valid = true;

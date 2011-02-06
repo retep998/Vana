@@ -104,7 +104,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 		player->getSession()->send(packet);
 	}
 	else {
-		Maps::getMap(mob->getMapId())->sendPacket(packet);	
+		Maps::getMap(mob->getMapId())->sendPacket(packet);
 	}
 }
 

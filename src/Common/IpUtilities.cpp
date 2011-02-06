@@ -23,10 +23,10 @@ using boost::asio::ip::tcp;
 
 uint32_t IpUtilities::stringToIp(const string &name) {
 	boost::asio::io_service io_service;
-	tcp::resolver resolver(io_service); 
+	tcp::resolver resolver(io_service);
 	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
-	tcp::resolver::iterator iter = resolver.resolve(query); 
-	tcp::resolver::iterator end; 
+	tcp::resolver::iterator iter = resolver.resolve(query);
+	tcp::resolver::iterator end;
 
 	// boost::asio throws an exception if the name cannot be resolved
 

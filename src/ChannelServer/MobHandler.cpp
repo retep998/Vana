@@ -129,7 +129,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 					case MobSkills::MagicDefenseUp:
 					case MobSkills::MagicDefenseUpAoe:
 						stop = mob->hasStatus(StatusEffects::Mob::Mdef);
-						break;					
+						break;
 					case MobSkills::WeaponImmunity:
 					case MobSkills::MagicImmunity:
 					case MobSkills::WeaponDamageReflect:
@@ -169,7 +169,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 					}
 				}
 			}
-			if (!used) { 
+			if (!used) {
 				realskill = 0;
 				level = 0;
 			}

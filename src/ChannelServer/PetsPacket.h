@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PETSPACKET_H
-#define PETSPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -39,6 +38,4 @@ namespace PetsPacket {
 	void updateSummonedPets(Player *player);
 	void blankUpdate(Player *player);
 	void addInfo(PacketCreator &packet, Pet *pet);
-};
-
-#endif
+}

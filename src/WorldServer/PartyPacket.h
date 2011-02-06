@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#ifndef PARTYPACKET_H
-#define PARTYPACKET_H
+#pragma once
 
 #include "Types.h"
 #include <string>
@@ -35,6 +34,4 @@ namespace PartyPacket {
 	void invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &inviter);
 	void updateParty(WorldServerAcceptConnection *player, int8_t type, int32_t playerid, int32_t target = 0);
 	void addParty(PacketCreator &packet, Party *party, int32_t tochan);
-};
-
-#endif
+}
