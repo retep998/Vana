@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CFFE2EE8-4188-4E42-B76C-8005041C2877}</ProjectGuid>
+    <RootNamespace>Common</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/boost/boost_1_39_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(SystemDrive)/MySQL++/include;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProgramFiles)/boost/boost_1_39_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Common\PrecompiledHeader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Common\BeautyDataProvider.cpp" />
+    <ClCompile Include="src\Common\BuffDataProvider.cpp" />
+    <ClCompile Include="src\Common\DropDataProvider.cpp" />
+    <ClCompile Include="src\Common\EquipDataProvider.cpp" />
+    <ClCompile Include="src\Common\InitializeCommon.cpp" />
+    <ClCompile Include="src\Common\ItemDataProvider.cpp" />
+    <ClCompile Include="src\Common\MobDataProvider.cpp" />
+    <ClCompile Include="src\Common\QuestDataProvider.cpp" />
+    <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
+    <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
+    <ClCompile Include="src\Common\ShopDataProvider.cpp" />
+    <ClCompile Include="src\Common\SkillDataProvider.cpp" />
+    <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
+    <ClCompile Include="src\Common\ConfigFile.cpp" />
+    <ClCompile Include="src\Common\Database.cpp" />
+    <ClCompile Include="src\Common\PacketCreator.cpp" />
+    <ClCompile Include="src\Common\PacketReader.cpp" />
+    <ClCompile Include="src\Common\PingPacket.cpp" />
+    <ClCompile Include="src\Common\AuthenticationPacket.cpp" />
+    <ClCompile Include="src\Common\FileUtilities.cpp" />
+    <ClCompile Include="src\Common\IpUtilities.cpp" />
+    <ClCompile Include="src\Common\MiscUtilities.cpp" />
+    <ClCompile Include="src\Common\Randomizer.cpp" />
+    <ClCompile Include="src\Common\StringUtilities.cpp" />
+    <ClCompile Include="src\Common\TimeUtilities.cpp" />
+    <ClCompile Include="src\Common\ConnectionManager.cpp" />
+    <ClCompile Include="src\Common\MapleServer.cpp" />
+    <ClCompile Include="src\Common\MapleServerClient.cpp" />
+    <ClCompile Include="src\Common\MapleSession.cpp" />
+    <ClCompile Include="src\Common\SessionManager.cpp" />
+    <ClCompile Include="src\Common\Decoder.cpp" />
+    <ClCompile Include="src\Common\MapleEncryption.cpp" />
+    <ClCompile Include="src\Common\Timer\Container.cpp" />
+    <ClCompile Include="src\Common\Timer\Id.cpp" />
+    <ClCompile Include="src\Common\Timer\Thread.cpp" />
+    <ClCompile Include="src\Common\Timer\Timer.cpp" />
+    <ClCompile Include="src\Common\AbstractConnection.cpp" />
+    <ClCompile Include="src\Common\AbstractServer.cpp" />
+    <ClCompile Include="src\Common\DatabaseMigration.cpp" />
+    <ClCompile Include="src\Common\DatabaseMigrationRunner.cpp" />
+    <ClCompile Include="src\Common\ServerConnection.cpp" />
+    <ClCompile Include="src\Common\GameObjects.cpp" />
+    <ClCompile Include="src\Common\Variables.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\MapleVersion.h" />
+    <ClInclude Include="src\Common\PrecompiledHeader.h" />
+    <ClInclude Include="src\Common\Types.h" />
+    <ClInclude Include="src\Common\BeautyDataProvider.h" />
+    <ClInclude Include="src\Common\BuffDataProvider.h" />
+    <ClInclude Include="src\Common\DropDataProvider.h" />
+    <ClInclude Include="src\Common\EquipDataProvider.h" />
+    <ClInclude Include="src\Common\InitializeCommon.h" />
+    <ClInclude Include="src\Common\ItemDataProvider.h" />
+    <ClInclude Include="src\Common\MobDataProvider.h" />
+    <ClInclude Include="src\Common\QuestDataProvider.h" />
+    <ClInclude Include="src\Common\ReactorDataProvider.h" />
+    <ClInclude Include="src\Common\ScriptDataProvider.h" />
+    <ClInclude Include="src\Common\ShopDataProvider.h" />
+    <ClInclude Include="src\Common\SkillDataProvider.h" />
+    <ClInclude Include="src\Common\ValidCharDataProvider.h" />
+    <ClInclude Include="src\Common\ConfigFile.h" />
+    <ClInclude Include="src\Common\Database.h" />
+    <ClInclude Include="src\Common\PacketCreator.h" />
+    <ClInclude Include="src\Common\PacketReader.h" />
+    <ClInclude Include="src\Common\PingPacket.h" />
+    <ClInclude Include="src\Common\InterHeader.h" />
+    <ClInclude Include="src\Common\RecvHeader.h" />
+    <ClInclude Include="src\Common\SendHeader.h" />
+    <ClInclude Include="src\Common\AuthenticationPacket.h" />
+    <ClInclude Include="src\Common\FileUtilities.h" />
+    <ClInclude Include="src\Common\GameLogicUtilities.h" />
+    <ClInclude Include="src\Common\IpUtilities.h" />
+    <ClInclude Include="src\Common\LoopingId.h" />
+    <ClInclude Include="src\Common\MiscUtilities.h" />
+    <ClInclude Include="src\Common\Randomizer.h" />
+    <ClInclude Include="src\Common\StringUtilities.h" />
+    <ClInclude Include="src\Common\TimeUtilities.h" />
+    <ClInclude Include="src\Common\ConnectionManager.h" />
+    <ClInclude Include="src\Common\MapleServer.h" />
+    <ClInclude Include="src\Common\MapleServerClient.h" />
+    <ClInclude Include="src\Common\MapleSession.h" />
+    <ClInclude Include="src\Common\SessionManager.h" />
+    <ClInclude Include="src\Common\Decoder.h" />
+    <ClInclude Include="src\Common\MapleEncryption.h" />
+    <ClInclude Include="src\Common\Timer\Container.h" />
+    <ClInclude Include="src\Common\Timer\Id.h" />
+    <ClInclude Include="src\Common\Timer\Thread.h" />
+    <ClInclude Include="src\Common\Timer\Time.h" />
+    <ClInclude Include="src\Common\Timer\Timer.h" />
+    <ClInclude Include="src\Common\Timer\Types.h" />
+    <ClInclude Include="src\Common\AbstractConnection.h" />
+    <ClInclude Include="src\Common\AbstractServer.h" />
+    <ClInclude Include="src\Common\AbstractSession.h" />
+    <ClInclude Include="src\Common\Rates.h" />
+    <ClInclude Include="src\Common\ServerConnection.h" />
+    <ClInclude Include="src\Common\GameObjects.h" />
+    <ClInclude Include="src\Common\Pos.h" />
+    <ClInclude Include="src\Common\Variables.h" />
+    <ClInclude Include="src\Common\DatabaseMigration.h" />
+    <ClInclude Include="src\Common\DatabaseMigrationRunner.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
