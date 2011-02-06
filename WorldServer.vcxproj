@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{045746E8-6588-437D-B8F7-5B5E9E42B9EF}</ProjectGuid>
+    <RootNamespace>WorldServer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;lua_d.lib;cryptlib_d.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>src/Common;$(SystemDrive)/lua/include;$(SystemDrive)/Crypto++/include;$(ProgramFiles)/boost/boost_1_39_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;lua.lib;cryptlib.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(Configuration)/Common;$(SystemDrive)/lua/lib;$(SystemDrive)/Crypto++/lib;$(ProgramFiles)/boost/boost_1_39_0/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\WorldServer\main_world.cpp" />
+    <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\WorldServer\ChannelChangeRequests.cpp" />
+    <ClCompile Include="src\WorldServer\Channels.cpp" />
+    <ClCompile Include="src\WorldServer\Parties.cpp" />
+    <ClCompile Include="src\WorldServer\Players.cpp" />
+    <ClCompile Include="src\WorldServer\WorldServer.cpp" />
+    <ClCompile Include="src\WorldServer\LoginServerConnection.cpp" />
+    <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp" />
+    <ClCompile Include="src\WorldServer\PartyPacket.cpp" />
+    <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp" />
+    <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp" />
+    <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp" />
+    <ClCompile Include="src\WorldServer\PartyHandler.cpp" />
+    <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\WorldServer\PrecompiledHeader.h" />
+    <ClInclude Include="src\WorldServer\ChannelChangeRequests.h" />
+    <ClInclude Include="src\WorldServer\Channels.h" />
+    <ClInclude Include="src\WorldServer\Parties.h" />
+    <ClInclude Include="src\WorldServer\Players.h" />
+    <ClInclude Include="src\WorldServer\WorldServer.h" />
+    <ClInclude Include="src\WorldServer\LoginServerConnection.h" />
+    <ClInclude Include="src\WorldServer\LoginServerConnectPacket.h" />
+    <ClInclude Include="src\WorldServer\PartyPacket.h" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.h" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.h" />
+    <ClInclude Include="src\WorldServer\LoginServerConnectHandler.h" />
+    <ClInclude Include="src\WorldServer\PartyHandler.h" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Common.vcxproj">
+      <Project>{cffe2ee8-4188-4e42-b76c-8005041c2877}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
