@@ -111,7 +111,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				uint8_t rand = (uint8_t)Randomizer::Instance()->randInt(size - 1);
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realskill = info->skillid;
- 				level = info->level;
+				level = info->level;
 				MobSkillLevelInfo *mobskill = SkillDataProvider::Instance()->getMobSkill(realskill, level);
 				switch (realskill) {
 					case MobSkills::WeaponAttackUp:

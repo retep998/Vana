@@ -62,7 +62,7 @@ string ConfigFile::getString(const string &value) {
 
 vector<vector<uint32_t> > ConfigFile::getIpMatrix(const string &value) {
 	vector<vector<uint32_t> > matrix;
-	
+
 	lua_getglobal(luaVm, value.c_str());
 	lua_pushnil(luaVm);
 	while (lua_next(luaVm, -2)) {

@@ -26,7 +26,7 @@ void GmPacket::beginHide(Player *player) {
 	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(true);
-	
+
 	player->getSession()->send(packet);
 }
 
@@ -35,7 +35,7 @@ void GmPacket::endHide(Player *player) {
 	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(false);
-	
+
 	player->getSession()->send(packet);
 }
 
@@ -44,7 +44,7 @@ void GmPacket::warning(Player *player, bool succeed) {
 	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x1d);
 	packet.addBool(succeed);
-	
+
 	player->getSession()->send(packet);
 }
 
@@ -53,7 +53,7 @@ void GmPacket::block(Player *player) {
 	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x04);
 	packet.add<int8_t>(0); // Might be something like succeed but it isn't displayed
-	
+
 	player->getSession()->send(packet);
 }
 
@@ -62,6 +62,6 @@ void GmPacket::invalidCharacterName(Player *player) {
 	packet.add<int16_t>(SMSG_GM);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(1);
-	
+
 	player->getSession()->send(packet);
 }

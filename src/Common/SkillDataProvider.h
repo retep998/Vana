@@ -67,7 +67,7 @@ struct SkillLevelInfo {
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
 struct SpecialSkillInfo { // Hurricane, Big Bang, Monster Magnet, Pierce, etc.
-	SpecialSkillInfo() : level(0), w_speed(0), direction(0),  skillid(0) { }
+	SpecialSkillInfo() : level(0), w_speed(0), direction(0), skillid(0) { }
 	uint8_t level;
 	uint8_t w_speed;
 	uint8_t direction;

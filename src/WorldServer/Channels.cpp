@@ -57,7 +57,7 @@ uint16_t Channels::getAvailableChannel() {
 		if (channels.find(i) == channels.end()) {
 			channel = i;
 			break;
- 		}
- 	}
+		}
+	}
 	return channel;
 }

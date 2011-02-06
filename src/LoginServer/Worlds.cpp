@@ -72,7 +72,7 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 	}
 	packet.skipBytes(1);
 	int8_t channel = packet.get<int8_t>();
-	
+
 	LoginPacket::channelSelect(player);
 	World *world = worlds[player->getWorld()];
 	if (world->channels.find(channel) != world->channels.end()) {
@@ -95,7 +95,7 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptConnection *player) {
 			break;
 		}
 	}
-	
+
 	if (world != 0) {
 		LoginServerAcceptPacket::connect(player, world);
 		std::cout << "Assigned world " << (int32_t) world->id << " to World Server." << std::endl;

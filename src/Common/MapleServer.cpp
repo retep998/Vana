@@ -41,7 +41,7 @@ void MapleServer::start_accept() {
 	MapleSessionPtr new_session(new MapleSession(m_acceptor.io_service(),
 		m_session_manager, m_apf->createConnection(), true, m_connect_packet_unknown));
 
-    m_acceptor.async_accept(new_session->getSocket(),
+	m_acceptor.async_accept(new_session->getSocket(),
 		boost::bind(&MapleServer::handle_accept, this, new_session,
 			boost::asio::placeholders::error));
 }

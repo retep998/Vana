@@ -79,7 +79,7 @@ public:
 	string getScrollingHeader() const { return scrollingHeader; }
 	WorldServerConnection * getWorldConnection() const { return worldPlayer; }
 	bool isConnected() const { return channel != -1; }
-	
+
 	// Specific bosses that can be battled on this channel
 	void setPianusChannel(bool is) { this->pianusChannel = is; }
 	void setPapChannel(bool is) { this->papChannel = is; }

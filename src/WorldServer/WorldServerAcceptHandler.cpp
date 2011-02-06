@@ -102,7 +102,7 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *player
 	Player *whisperee = Players::Instance()->getPlayerFromName(whisperee_name);
 	if (whisperee->channel != -1) {
 		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->name, 1);
-		WorldServerAcceptPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(),  message);
+		WorldServerAcceptPacket::whisperPlayer(Channels::Instance()->getChannel(whisperee->channel)->player, whisperee->id, Players::Instance()->getPlayer(whisperer)->name, player->getChannel(), message);
 	}
 	else
 		WorldServerAcceptPacket::findPlayer(player, whisperer, whisperee->channel, whisperee_name);

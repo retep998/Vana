@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 MapleSession::MapleSession(boost::asio::io_service &io_service,
-						   SessionManagerPtr sessionManager,
-						   AbstractConnection *player, bool isServer,
-						   string connectPacketUnknown) :
+							SessionManagerPtr sessionManager,
+							AbstractConnection *player, bool isServer,
+							string connectPacketUnknown) :
 AbstractSession(sessionManager),
 m_socket(io_service),
 m_player(player),
@@ -119,7 +119,7 @@ void MapleSession::handle_write(const boost::system::error_code &error,
 }
 
 void MapleSession::handle_read_header(const boost::system::error_code &error,
-									  size_t bytes_transferred) {
+										size_t bytes_transferred) {
 	if (!error) {
 		size_t len = Decoder::getLength(m_buffer.get());
 

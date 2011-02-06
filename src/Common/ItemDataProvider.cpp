@@ -56,7 +56,7 @@ void ItemDataProvider::loadItems() {
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
-	
+
 	struct ItemFunctor {
 		void operator() (const string &cmp) {
 			if (cmp == "time_limited") item->timelimited = true;

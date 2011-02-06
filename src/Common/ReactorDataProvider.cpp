@@ -76,7 +76,7 @@ void ReactorDataProvider::loadStates() {
 	ReactorStateInfo revent;
 	int32_t id;
 	int8_t state;
-	
+
 	struct TypeFunctor {
 		void operator()(const string &cmp) {
 			if (cmp == "plain_advance_state") reactor->type = 0;

@@ -113,7 +113,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 			if (what == 1) {
 				npc->proceedSelection(packet.get<uint8_t>());
 			}
-			else  {
+			else {
 				npc->end();
 			}
 			break;

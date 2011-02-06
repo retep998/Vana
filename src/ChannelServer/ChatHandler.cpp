@@ -614,7 +614,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						else if (matches[1] == "npc") type = 5;
 						else if (matches[1] == "quest") type = 6;
 
-						else if (matches[1] == "id")  type = 100;
+						else if (matches[1] == "id") type = 100;
 
 						else if (matches[1] == "continent") type = 200;
 
@@ -854,7 +854,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						else if (args == "wk") job = 121;
 						else if (args == "paladin") job = 122;
 						else if (args == "spearman") job = 130;
-						else if (args == "dk") job  = 131;
+						else if (args == "dk") job = 131;
 						else if (args == "drk") job = 132;
 						else if (args == "magician") job = 200;
 						else if (args == "fpwiz") job = 210;

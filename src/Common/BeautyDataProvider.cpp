@@ -123,13 +123,13 @@ vector<int8_t> BeautyDataProvider::getSkins() {
 }
 
 vector<int32_t> BeautyDataProvider::getHair(int8_t gender) {
-	if (gender == Gender::Female)  // Female
+	if (gender == Gender::Female) // Female
 		return femalehair;
 	return malehair;
 }
 
 vector<int32_t> BeautyDataProvider::getFaces(int8_t gender) {
-	if (gender == Gender::Female)  // Female
+	if (gender == Gender::Female) // Female
 		return femalefaces;
 	return malefaces;
 }

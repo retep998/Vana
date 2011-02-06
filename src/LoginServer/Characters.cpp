@@ -174,7 +174,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 			<< "\"\")";
 	}
 	else {
-		query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << charid << ", " << inventory << ", " << slot << ", " << itemid  << ", " << amount << ", \"\")";
+		query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << charid << ", " << inventory << ", " << slot << ", " << itemid << ", " << amount << ", \"\")";
 	}
 	query.exec();
 }

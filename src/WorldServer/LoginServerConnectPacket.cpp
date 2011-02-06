@@ -40,7 +40,7 @@ void LoginServerConnectPacket::updateChannelPop(LoginServerConnection *player, i
 	packet.add<int16_t>(INTER_UPDATE_CHANNEL_POP);
 	packet.add<int32_t>(channel);
 	packet.add<int32_t>(population);
-	
+
 	player->getSession()->send(packet);
 }
 

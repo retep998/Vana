@@ -189,7 +189,7 @@ void WorldServerConnectPacket::globalMessage(WorldServerConnection *player, cons
 	packet.addString(message);
 	if (type == 6)
 		packet.add<int32_t>(0);
-	
+
 	player->getSession()->send(packet);
 }
 
