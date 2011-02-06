@@ -1,0 +1,1 @@
+ALTER TABLE `active_quests` ADD `data` VARCHAR(40) AFTER `mobskilled`;

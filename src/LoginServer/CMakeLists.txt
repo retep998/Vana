@@ -1,0 +1,43 @@
+set(SOURCES 
+	Characters.h
+	InitializeLogin.h
+	Login.h
+	LoginPacket.h
+	LoginPacketHelper.h
+	LoginServer.h
+	LoginServerAcceptConnection.h
+	LoginServerAcceptHandler.h
+	LoginServerAcceptPacket.h
+	PlayerLogin.h
+	PlayerStatus.h
+	PrecompiledHeader.h
+	RankingCalculator.h
+	Worlds.h
+	Characters.cpp
+	InitializeLogin.cpp
+	Login.cpp
+	LoginPacket.cpp
+	LoginPacketHelper.cpp
+	LoginServer.cpp
+	LoginServerAcceptConnection.cpp
+	LoginServerAcceptHandler.cpp
+	LoginServerAcceptPacket.cpp
+	main_login.cpp
+	PlayerLogin.cpp
+	PrecompiledHeader.cpp
+	RankingCalculator.cpp
+	Worlds.cpp
+)
+
+add_executable(LoginServer ${SOURCES})
+
+target_link_libraries(LoginServer
+	Common
+	${MYSQL_LIBRARIES}
+	${MYSQL++_LIBRARIES}
+	${LUA_LIBRARIES}
+	${CRYPTO++_LIBRARIES}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
+	${Boost_THREAD_LIBRARY}
+)

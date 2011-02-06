@@ -1,0 +1,41 @@
+set(SOURCES 
+	ChannelChangeRequests.h
+	Channels.h
+	LoginServerConnection.h
+	LoginServerConnectHandler.h
+	LoginServerConnectPacket.h
+	Parties.h
+	PartyHandler.h
+	PartyPacket.h
+	Players.h
+	PrecompiledHeader.h
+	WorldServer.h
+	WorldServerAcceptConnection.h
+	WorldServerAcceptHandler.h
+	WorldServerAcceptPacket.h
+	ChannelChangeRequests.cpp
+	Channels.cpp
+	LoginServerConnection.cpp
+	LoginServerConnectHandler.cpp
+	LoginServerConnectPacket.cpp
+	main_world.cpp
+	Parties.cpp
+	PartyHandler.cpp
+	PartyPacket.cpp
+	Players.cpp
+	PrecompiledHeader.cpp
+	WorldServer.cpp
+	WorldServerAcceptConnection.cpp
+	WorldServerAcceptHandler.cpp
+	WorldServerAcceptPacket.cpp
+)
+
+add_executable(WorldServer ${SOURCES})
+
+target_link_libraries(WorldServer
+	Common
+	${LUA_LIBRARIES}
+	${CRYPTO++_LIBRARIES}
+	${Boost_SYSTEM_LIBRARY}
+	${Boost_THREAD_LIBRARY}
+)
