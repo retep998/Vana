@@ -107,7 +107,7 @@
     <ClCompile Include="src\ChannelServer\Map.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\MapleTVs.cpp">
+    <ClCompile Include="src\ChannelServer\MapleTvs.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\Maps.cpp">
@@ -119,7 +119,7 @@
     <ClCompile Include="src\ChannelServer\Mob.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\NPC.cpp">
+    <ClCompile Include="src\ChannelServer\Npc.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\Party.cpp">
@@ -164,7 +164,7 @@
     <ClCompile Include="src\ChannelServer\FamePacket.cpp">
       <Filter>Source Files\Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\GMPacket.cpp">
+    <ClCompile Include="src\ChannelServer\GmPacket.cpp">
       <Filter>Source Files\Packets</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\InventoryPacket.cpp">
@@ -182,7 +182,7 @@
     <ClCompile Include="src\ChannelServer\MonsterBookPacket.cpp">
       <Filter>Source Files\Packets</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\NPCPacket.cpp">
+    <ClCompile Include="src\ChannelServer\NpcPacket.cpp">
       <Filter>Source Files\Packets</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\PetsPacket.cpp">
@@ -239,7 +239,7 @@
     <ClCompile Include="src\ChannelServer\LuaInstance.cpp">
       <Filter>Source Files\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\LuaNPC.cpp">
+    <ClCompile Include="src\ChannelServer\LuaNpc.cpp">
       <Filter>Source Files\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\LuaPortal.cpp">
@@ -326,7 +326,7 @@
     <ClCompile Include="src\ChannelServer\MovementHandler.cpp">
       <Filter>Source Files\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\NPCHandler.cpp">
+    <ClCompile Include="src\ChannelServer\NpcHandler.cpp">
       <Filter>Source Files\Handlers</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\PlayerHandler.cpp">
@@ -361,7 +361,7 @@
     <ClInclude Include="src\ChannelServer\Map.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\MapleTVs.h">
+    <ClInclude Include="src\ChannelServer\MapleTvs.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Maps.h">
@@ -376,7 +376,7 @@
     <ClInclude Include="src\ChannelServer\MovableLife.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\NPC.h">
+    <ClInclude Include="src\ChannelServer\Npc.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Party.h">
@@ -421,7 +421,7 @@
     <ClInclude Include="src\ChannelServer\FamePacket.h">
       <Filter>Header Files\Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\GMPacket.h">
+    <ClInclude Include="src\ChannelServer\GmPacket.h">
       <Filter>Header Files\Packets</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\InventoryPacket.h">
@@ -439,7 +439,7 @@
     <ClInclude Include="src\ChannelServer\MonsterBookPacket.h">
       <Filter>Header Files\Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\NPCPacket.h">
+    <ClInclude Include="src\ChannelServer\NpcPacket.h">
       <Filter>Header Files\Packets</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PetsPacket.h">
@@ -496,7 +496,7 @@
     <ClInclude Include="src\ChannelServer\LuaInstance.h">
       <Filter>Header Files\Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\LuaNPC.h">
+    <ClInclude Include="src\ChannelServer\LuaNpc.h">
       <Filter>Header Files\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\LuaPortal.h">
@@ -589,7 +589,7 @@
     <ClInclude Include="src\ChannelServer\MovementHandler.h">
       <Filter>Header Files\Handlers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\NPCHandler.h">
+    <ClInclude Include="src\ChannelServer\NpcHandler.h">
       <Filter>Header Files\Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerHandler.h">

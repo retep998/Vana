@@ -110,11 +110,11 @@
     <ClCompile Include="src\ChannelServer\Inventory.cpp" />
     <ClCompile Include="src\ChannelServer\KeyMaps.cpp" />
     <ClCompile Include="src\ChannelServer\Map.cpp" />
-    <ClCompile Include="src\ChannelServer\MapleTVs.cpp" />
+    <ClCompile Include="src\ChannelServer\MapleTvs.cpp" />
     <ClCompile Include="src\ChannelServer\Maps.cpp" />
     <ClCompile Include="src\ChannelServer\Mist.cpp" />
     <ClCompile Include="src\ChannelServer\Mob.cpp" />
-    <ClCompile Include="src\ChannelServer\NPC.cpp" />
+    <ClCompile Include="src\ChannelServer\Npc.cpp" />
     <ClCompile Include="src\ChannelServer\Party.cpp" />
     <ClCompile Include="src\ChannelServer\Pets.cpp" />
     <ClCompile Include="src\ChannelServer\Players.cpp" />
@@ -129,13 +129,13 @@
     <ClCompile Include="src\ChannelServer\BuffsPacket.cpp" />
     <ClCompile Include="src\ChannelServer\DropsPacket.cpp" />
     <ClCompile Include="src\ChannelServer\FamePacket.cpp" />
-    <ClCompile Include="src\ChannelServer\GMPacket.cpp" />
+    <ClCompile Include="src\ChannelServer\GmPacket.cpp" />
     <ClCompile Include="src\ChannelServer\InventoryPacket.cpp" />
     <ClCompile Include="src\ChannelServer\LevelsPacket.cpp" />
     <ClCompile Include="src\ChannelServer\MapPacket.cpp" />
     <ClCompile Include="src\ChannelServer\MobsPacket.cpp" />
     <ClCompile Include="src\ChannelServer\MonsterBookPacket.cpp" />
-    <ClCompile Include="src\ChannelServer\NPCPacket.cpp" />
+    <ClCompile Include="src\ChannelServer\NpcPacket.cpp" />
     <ClCompile Include="src\ChannelServer\PetsPacket.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerPacket.cpp" />
     <ClCompile Include="src\ChannelServer\PlayersPacket.cpp" />
@@ -154,7 +154,7 @@
     <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp" />
     <ClCompile Include="src\ChannelServer\LuaInstance.cpp" />
-    <ClCompile Include="src\ChannelServer\LuaNPC.cpp" />
+    <ClCompile Include="src\ChannelServer\LuaNpc.cpp" />
     <ClCompile Include="src\ChannelServer\LuaPortal.cpp" />
     <ClCompile Include="src\ChannelServer\LuaReactor.cpp" />
     <ClCompile Include="src\ChannelServer\LuaScriptable.cpp" />
@@ -183,7 +183,7 @@
     <ClCompile Include="src\ChannelServer\InventoryHandler.cpp" />
     <ClCompile Include="src\ChannelServer\MobHandler.cpp" />
     <ClCompile Include="src\ChannelServer\MovementHandler.cpp" />
-    <ClCompile Include="src\ChannelServer\NPCHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\NpcHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerHandler.cpp" />
     <ClCompile Include="src\ChannelServer\TradeHandler.cpp" />
   </ItemGroup>
@@ -196,12 +196,12 @@
     <ClInclude Include="src\ChannelServer\Inventory.h" />
     <ClInclude Include="src\ChannelServer\KeyMaps.h" />
     <ClInclude Include="src\ChannelServer\Map.h" />
-    <ClInclude Include="src\ChannelServer\MapleTVs.h" />
+    <ClInclude Include="src\ChannelServer\MapleTvs.h" />
     <ClInclude Include="src\ChannelServer\Maps.h" />
     <ClInclude Include="src\ChannelServer\Mist.h" />
     <ClInclude Include="src\ChannelServer\Mob.h" />
     <ClInclude Include="src\ChannelServer\MovableLife.h" />
-    <ClInclude Include="src\ChannelServer\NPC.h" />
+    <ClInclude Include="src\ChannelServer\Npc.h" />
     <ClInclude Include="src\ChannelServer\Party.h" />
     <ClInclude Include="src\ChannelServer\Pets.h" />
     <ClInclude Include="src\ChannelServer\Players.h" />
@@ -216,13 +216,13 @@
     <ClInclude Include="src\ChannelServer\BuffsPacket.h" />
     <ClInclude Include="src\ChannelServer\DropsPacket.h" />
     <ClInclude Include="src\ChannelServer\FamePacket.h" />
-    <ClInclude Include="src\ChannelServer\GMPacket.h" />
+    <ClInclude Include="src\ChannelServer\GmPacket.h" />
     <ClInclude Include="src\ChannelServer\InventoryPacket.h" />
     <ClInclude Include="src\ChannelServer\LevelsPacket.h" />
     <ClInclude Include="src\ChannelServer\MapPacket.h" />
     <ClInclude Include="src\ChannelServer\MobsPacket.h" />
     <ClInclude Include="src\ChannelServer\MonsterBookPacket.h" />
-    <ClInclude Include="src\ChannelServer\NPCPacket.h" />
+    <ClInclude Include="src\ChannelServer\NpcPacket.h" />
     <ClInclude Include="src\ChannelServer\PetsPacket.h" />
     <ClInclude Include="src\ChannelServer\PlayerPacket.h" />
     <ClInclude Include="src\ChannelServer\PlayersPacket.h" />
@@ -241,7 +241,7 @@
     <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h" />
     <ClInclude Include="src\ChannelServer\LuaInstance.h" />
-    <ClInclude Include="src\ChannelServer\LuaNPC.h" />
+    <ClInclude Include="src\ChannelServer\LuaNpc.h" />
     <ClInclude Include="src\ChannelServer\LuaPortal.h" />
     <ClInclude Include="src\ChannelServer\LuaReactor.h" />
     <ClInclude Include="src\ChannelServer\LuaScriptable.h" />
@@ -272,7 +272,7 @@
     <ClInclude Include="src\ChannelServer\InventoryHandler.h" />
     <ClInclude Include="src\ChannelServer\MobHandler.h" />
     <ClInclude Include="src\ChannelServer\MovementHandler.h" />
-    <ClInclude Include="src\ChannelServer\NPCHandler.h" />
+    <ClInclude Include="src\ChannelServer\NpcHandler.h" />
     <ClInclude Include="src\ChannelServer\PlayerHandler.h" />
     <ClInclude Include="src\ChannelServer\TradeHandler.h" />
   </ItemGroup>
