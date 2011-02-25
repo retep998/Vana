@@ -109,7 +109,6 @@
     <ClCompile Include="src\ChannelServer\Fame.cpp" />
     <ClCompile Include="src\ChannelServer\Inventory.cpp" />
     <ClCompile Include="src\ChannelServer\KeyMaps.cpp" />
-    <ClCompile Include="src\ChannelServer\Levels.cpp" />
     <ClCompile Include="src\ChannelServer\Map.cpp" />
     <ClCompile Include="src\ChannelServer\MapleTVs.cpp" />
     <ClCompile Include="src\ChannelServer\Maps.cpp" />
@@ -196,7 +195,6 @@
     <ClInclude Include="src\ChannelServer\Fame.h" />
     <ClInclude Include="src\ChannelServer\Inventory.h" />
     <ClInclude Include="src\ChannelServer\KeyMaps.h" />
-    <ClInclude Include="src\ChannelServer\Levels.h" />
     <ClInclude Include="src\ChannelServer\Map.h" />
     <ClInclude Include="src\ChannelServer\MapleTVs.h" />
     <ClInclude Include="src\ChannelServer\Maps.h" />

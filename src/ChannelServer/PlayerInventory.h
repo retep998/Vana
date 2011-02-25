@@ -80,7 +80,7 @@ private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
 	boost::array<uint8_t, Inventories::InventoryCount> m_maxslots;
-	boost::array<boost::array<int32_t, 2>, 51> m_equipped; // 51 slots for regular items, 51 slots for cash items
+	boost::array<boost::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
 	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
 
 	vector<int32_t> m_viplocations;

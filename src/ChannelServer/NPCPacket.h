@@ -24,7 +24,7 @@ class PacketCreator;
 class PacketReader;
 struct NPCSpawnInfo;
 
-namespace NPCPacket {
+namespace NpcPacket {
 	void showNpc(Player *player, const NPCSpawnInfo &npc, int32_t id, bool show = true);
 	void showNpc(int32_t mapid, const NPCSpawnInfo &npc, int32_t id, bool show = true);
 	void showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show = true);

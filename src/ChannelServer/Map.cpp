@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "GMPacket.h"
+#include "GmPacket.h"
 #include "Instance.h"
 #include "Inventory.h"
 #include "MapPacket.h"
@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "MobHandler.h"
 #include "MobsPacket.h"
-#include "NPCDataProvider.h"
-#include "NPCPacket.h"
+#include "NpcDataProvider.h"
+#include "NpcPacket.h"
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
@@ -315,7 +315,7 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 // NPCs
 int32_t Map::addNPC(const NPCSpawnInfo &npc) {
 	npcs.push_back(npc);
-	NPCPacket::showNpc(getInfo()->id, npc, npcs.size() - 1 + Map::NpcStart);
+	NpcPacket::showNpc(getInfo()->id, npc, npcs.size() - 1 + Map::NpcStart);
 
 	if (NpcDataProvider::Instance()->isMapleTv(npc.id))
 		MapleTvs::Instance()->addMap(this);
@@ -327,7 +327,7 @@ void Map::removeNPC(int32_t index) {
 	int32_t size = npcs.size();
 	if (index >= 0 && index < size) {
 		NPCSpawnInfo npc = npcs[index];
-		NPCPacket::showNpc(getInfo()->id, npc, size - 1 + Map::NpcStart, false);
+		NpcPacket::showNpc(getInfo()->id, npc, size - 1 + Map::NpcStart, false);
 		npcs.erase(npcs.begin() + index);
 	}
 }
@@ -680,7 +680,7 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	}
 	// NPCs
 	for (size_t i = 0; i < npcs.size(); i++) {
-		NPCPacket::showNpc(player, npcs[i], i + Map::NpcStart);
+		NpcPacket::showNpc(player, npcs[i], i + Map::NpcStart);
 	}
 	// Reactors
 	for (size_t i = 0; i < reactors.size(); i++) {
