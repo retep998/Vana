@@ -39,7 +39,7 @@ m_player(player)
 {
 	boost::array<int32_t, 2> g = {0};
 
-	for (size_t i = 0; i < 51; i++) {
+	for (size_t i = 0; i < Inventories::EquippedSlots; i++) {
 		m_equipped[i] = g;
 	}
 
@@ -295,7 +295,7 @@ int32_t PlayerInventory::getEquippedId(int16_t slot) {
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
-	for (int8_t i = 0; i < 50; i++) { // Shown items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
 			packet.add<int8_t>(i);
 			if (m_equipped[i][1] <= 0 || (i == 11 && m_equipped[i][0] > 0)) // Normal weapons always here
@@ -305,7 +305,7 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 		}
 	}
 	packet.add<int8_t>(-1);
-	for (int8_t i = 0; i < 50; i++) { // Covered items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Covered items
 		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != 11) {
 			packet.add<int8_t>(i);
 			packet.add<int32_t>(m_equipped[i][0]);

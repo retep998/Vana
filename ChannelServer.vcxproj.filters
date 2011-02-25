@@ -104,9 +104,6 @@
     <ClCompile Include="src\ChannelServer\KeyMaps.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Levels.cpp">
-      <Filter>Source Files\ChannelServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\Map.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
@@ -359,9 +356,6 @@
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\KeyMaps.h">
-      <Filter>Header Files\ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Levels.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Map.h">
