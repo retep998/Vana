@@ -1,0 +1,1 @@
+ALTER TABLE `users` CHANGE `ban_reason_message` `ban_reason_message` VARCHAR(255) NOT NULL DEFAULT '';
