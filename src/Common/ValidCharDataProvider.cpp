@@ -89,7 +89,7 @@ void ValidCharDataProvider::loadCreationItems() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		gender = GameLogicUtilities::getGenderId(row[Gender]);
-		cygnus = (row[CharacterType] == "cygnus");
+		cygnus = (static_cast<string>(row[CharacterType]) == "cygnus");
 		objectid = atoi(row[ObjectId]);
 		items = getItems(gender, cygnus);
 
