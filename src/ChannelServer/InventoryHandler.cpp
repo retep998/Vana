@@ -846,8 +846,8 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 		}
 	}
 	if (targetmapid != -1) {
-		MapInfoPtr destination = Maps::getMap(targetmapid)->getInfo();
-		MapInfoPtr origin = Maps::getMap(player->getMap())->getInfo();
+		MapInfo *destination = Maps::getMap(targetmapid)->getInfo();
+		MapInfo *origin = Maps::getMap(player->getMap())->getInfo();
 		if ((destination->fieldLimit & FieldLimitBits::VipRock) != 0) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}

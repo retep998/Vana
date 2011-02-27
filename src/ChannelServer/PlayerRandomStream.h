@@ -21,13 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 class PacketCreator;
-class PacketReader;
-struct NpcSpawnInfo;
 
-namespace NpcPacket {
-	void showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void showNpc(int32_t mapid, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void animateNpc(Player *player, PacketReader &pack);
-}
+class PlayerRandStream {
+public:
+	PlayerRandStream(Player *p);
+
+	void reset(uint32_t seed1, uint32_t seed2, uint32_t seed3);
+	uint32_t next();
+
+	void connectData(PacketCreator &packet);
+private:
+	Player *m_player;
+	uint32_t m_seed1;
+	uint32_t m_seed2;
+	uint32_t m_seed3;
+};

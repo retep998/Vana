@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void NpcPacket::showNpc(Player *player, const NPCSpawnInfo &npc, int32_t id, bool show) {
+void NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;
 	showNpc(packet, npc, id, show);
 	player->getSession()->send(packet);
@@ -33,7 +33,7 @@ void NpcPacket::showNpc(Player *player, const NPCSpawnInfo &npc, int32_t id, boo
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpc(int32_t mapid, const NPCSpawnInfo &npc, int32_t id, bool show) {
+void NpcPacket::showNpc(int32_t mapid, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;
 	showNpc(packet, npc, id, show);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -43,26 +43,26 @@ void NpcPacket::showNpc(int32_t mapid, const NPCSpawnInfo &npc, int32_t id, bool
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
-void NpcPacket::showNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
+void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	packet.add<int16_t>(SMSG_NPC_SHOW);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.addBool(npc.facesright);
-	packet.add<int16_t>(npc.fh);
+	packet.addBool(npc.facesRight);
+	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
 	packet.addBool(show);
 }
 
-void NpcPacket::controlNpc(PacketCreator &packet, const NPCSpawnInfo &npc, int32_t id, bool show) {
+void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	packet.add<int16_t>(SMSG_NPC_CONTROL);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
-	packet.addBool(npc.facesright);
-	packet.add<int16_t>(npc.fh);
+	packet.addBool(npc.facesRight);
+	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
 	packet.addBool(show);

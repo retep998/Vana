@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaReactor.h"
 #include "Drop.h"
+#include "GameLogicUtilities.h"
 #include "Maps.h"
 #include "Mob.h"
 #include "Player.h"
@@ -82,8 +83,15 @@ int LuaExports::dropItemReactor(lua_State *luaVm) {
 	}
 	Reactor *reactor = getReactor(luaVm);
 	Player *player = getPlayer(luaVm);
-	Item f(itemid, amount);
-	Drop *drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != 0 ? player->getId() : 0);
+	Drop *drop;
+	if (GameLogicUtilities::isEquip(itemid)) {
+		Item f(itemid, true);
+		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != 0 ? player->getId() : 0);
+	}
+	else {
+		Item f(itemid, amount);
+		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != 0 ? player->getId() : 0);
+	}
 	drop->setTime(player != 0 ? 100 : 0); // FFA if player isn't around
 	drop->doDrop(reactor->getPos());
 	return 0;

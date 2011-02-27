@@ -136,6 +136,7 @@
     <ClInclude Include="src\Common\GameConstants.h" />
     <ClInclude Include="src\Common\Ip.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
+    <ClInclude Include="src\Common\MapObjects.h" />
     <ClInclude Include="src\Common\NpcDataProvider.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\Types.h" />

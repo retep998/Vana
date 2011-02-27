@@ -607,13 +607,13 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdAddNpc: {
 						if (args.length() != 0) {
-							NPCSpawnInfo npc;
+							NpcSpawnInfo npc;
 							npc.id = atoi(args.c_str());
-							npc.fh = 0;
+							npc.foothold = 0;
 							npc.pos = player->getPos();
 							npc.rx0 = npc.pos.x - 50;
 							npc.rx1 = npc.pos.x + 50;
-							Maps::getMap(player->getMap())->addNPC(npc);
+							Maps::getMap(player->getMap())->addNpc(npc);
 						}
 						else {
 							showSyntax(player, command);
@@ -813,8 +813,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						else {
-							char msg[60];
-							sprintf(msg, "Current Map: %i", player->getMap());
+							string msg = "Current Map: " + boost::lexical_cast<string>(player->getMap());
 							PlayerPacket::showMessage(player, msg, 6);
 						}
 						break;
@@ -959,8 +958,11 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					}
 					case CmdPos: {
-						char msg[50];
-						sprintf(msg, "X: %d Y: %d FH: %d", player->getPos().x, player->getPos().y, player->getFh());
+						Pos p = player->getPos();
+						string msg = "(FH, X, Y): (";
+						msg += boost::lexical_cast<string>(player->getFh()) + ", ";
+						msg += boost::lexical_cast<string>(p.x) + ", ";
+						msg += boost::lexical_cast<string>(p.y) + ")";
 						PlayerPacket::showMessage(player, msg, 6);
 						break;
 					}
@@ -1039,8 +1041,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->getStats()->setJob(job);
 						}
 						else {
-							char msg[60];
-							sprintf(msg, "Current Job: %i", player->getStats()->getJob());
+							string msg = "Current Job: " + boost::lexical_cast<string>(player->getStats()->getJob());
 							PlayerPacket::showMessage(player, msg, 6);
 						}
 						break;

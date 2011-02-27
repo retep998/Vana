@@ -16,13 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.h"
+#include "Database.h"
 #include "Map.h"
 #include "MapleTvs.h"
-#include "Database.h"
+#include "MapObjects.h"
 #include "StringUtilities.h"
-#include <string>
 
-using std::string;
 using StringUtilities::runFlags;
 
 MapDataProvider * MapDataProvider::singleton = 0;
@@ -72,6 +71,7 @@ void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
 		loadPortals(map, checkmap);
 		loadMapLife(map, checkmap);
 		loadFootholds(map, checkmap);
+		loadMapTimeMob(map);
 	}
 }
 
@@ -83,16 +83,16 @@ namespace Functors {
 			else if (cmp == "swim") map->swim = true;
 			else if (cmp == "fly") map->fly = true;
 			else if (cmp == "everlast") map->everlast = true;
-			else if (cmp == "no_party_leader_pass") map->nopartyleaderpass = true;
+			else if (cmp == "no_party_leader_pass") map->noLeaderPass = true;
 			else if (cmp == "shop") map->shop = true;
-			else if (cmp == "scroll_disable") map->scrolldisable = true;
-			else if (cmp == "shuffle_reactors") map->shufflereactors = true;
+			else if (cmp == "scroll_disable") map->scrollDisable = true;
+			else if (cmp == "shuffle_reactors") map->shuffleReactors = true;
 		}
 		MapInfoPtr map;
 	};
 	struct FieldTypeFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "force_map_equip") map->forcemapequip = true;
+			if (cmp == "force_map_equip") map->forceMapEquip = true;
 		}
 		MapInfoPtr map;
 	};
@@ -119,7 +119,6 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		MapInfoPtr mapinfo(new MapInfo);
 		link = atoi(row[Link]);
 		mapinfo->link = link;
-		mapinfo->id = mapid;
 
 		FieldTypeFlags f = {mapinfo};
 		MapFlags whoo = {mapinfo};
@@ -130,21 +129,20 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		mapinfo->rm = atoi(row[ReturnMap]);
 		mapinfo->forcedReturn = atoi(row[ForcedReturn]);
 		mapinfo->fieldLimit = atoi(row[FieldLimit]);
-		mapinfo->spawnrate = atof(row[MobRate]);
-		mapinfo->defaultmusic = row[Bgm];
-		mapinfo->musicname = row[Bgm];
+		mapinfo->spawnRate = atof(row[MobRate]);
+		mapinfo->defaultMusic = row[Bgm];
 		mapinfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
 		mapinfo->rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		mapinfo->shufflename = row[ShuffleName];
-		mapinfo->dechp = atoi(row[DecHp]);
+		mapinfo->shuffleName = row[ShuffleName];
+		mapinfo->decHp = atoi(row[DecHp]);
 		mapinfo->dps = atoi(row[Dps]);
 		mapinfo->traction = atof(row[Traction]);
-		mapinfo->regenrate = atoi(row[RegenRate]);
-		mapinfo->minlevel = atoi(row[MinLevel]);
-		mapinfo->timelimit = atoi(row[TimeLimit]);
-		mapinfo->protectitem = atoi(row[ProtectItem]);
+		mapinfo->regenRate = atoi(row[RegenRate]);
+		mapinfo->minLevel = atoi(row[MinLevel]);
+		mapinfo->timeLimit = atoi(row[TimeLimit]);
+		mapinfo->protectItem = atoi(row[ProtectItem]);
 
-		map = new Map(mapinfo);
+		map = new Map(mapinfo, mapid);
 	}
 
 	maps[mapid] = map;
@@ -205,8 +203,8 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 		portal.id = atoi(row[Id]);
 		portal.name = row[Name];
 		portal.pos = Pos(atoi(row[X]), atoi(row[Y]));
-		portal.tomap = atoi(row[ToMap]);
-		portal.toname = row[ToName];
+		portal.toMap = atoi(row[ToMap]);
+		portal.toName = row[ToName];
 		portal.script = row[Script];
 
 		map->addPortal(portal);
@@ -214,23 +212,11 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 }
 
 namespace Functors {
-	struct NpcFlags {
+	struct LifeFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "faces_left") npc->facesright = false;
+			if (cmp == "faces_left") life->facesRight = false;
 		}
-		NPCSpawnInfo *npc;
-	};
-	struct MobFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "faces_left") mob->facesright = false;
-		}
-		MobSpawnInfo *mob;
-	};
-	struct ReactorFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "faces_left") reactor->facesright = false;
-		}
-		ReactorSpawnInfo *reactor;
+		SpawnInfo *life;
 	};
 }
 
@@ -238,9 +224,10 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDB().query();
 	query << "SELECT * FROM map_life WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
-	NPCSpawnInfo npc;
+	NpcSpawnInfo npc;
 	MobSpawnInfo spawn;
 	ReactorSpawnInfo reactor;
+	SpawnInfo life;
 	string type;
 	Pos pos;
 
@@ -254,43 +241,30 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		life = SpawnInfo();
+		LifeFlags flags = {&life};
+
 		type = row[LifeType];
-		pos = Pos(atoi(row[X]), atoi(row[Y]));
-
+		life.id = atoi(row[LifeId]);
+		life.pos = Pos(atoi(row[X]), atoi(row[Y]));
+		life.foothold = atoi(row[Foothold]);
+		life.time = atoi(row[RespawnTime]);
 		if (type == "npc") {
-			npc = NPCSpawnInfo();
-
-			NpcFlags flags = {&npc};
-			runFlags(row[Flags], flags);
-
-			npc.id = atoi(row[LifeId]);
-			npc.pos = pos;
-			npc.fh = atoi(row[Foothold]);
+			npc = NpcSpawnInfo();
+			npc.setSpawnInfo(life);
 			npc.rx0 = atoi(row[MinClickPos]);
 			npc.rx1 = atoi(row[MaxClickPos]);
-			map->addNPC(npc);
+			map->addNpc(npc);
 		}
 		else if (type == "mob") {
 			spawn = MobSpawnInfo();
-
-			MobFlags flags = {&spawn};
-			runFlags(row[Flags], flags);
-
-			spawn.id = atoi(row[LifeId]);
-			spawn.pos = pos;
-			spawn.fh = atoi(row[Foothold]);
-			spawn.time = atoi(row[RespawnTime]);
+			spawn.setSpawnInfo(life);
 			map->addMobSpawn(spawn);
 		}
 		else if (type == "reactor") {
 			reactor = ReactorSpawnInfo();
-
-			ReactorFlags flags = {&reactor};
-			runFlags(row[Flags], flags);
-
-			reactor.id = atoi(row[LifeId]);
-			reactor.pos = pos;
-			reactor.time = atoi(row[RespawnTime]);
+			reactor.setSpawnInfo(life);
+			reactor.name = (row[Name] != 0 ? row[Name] : "");
 			map->addReactorSpawn(reactor);
 		}
 	}
@@ -299,7 +273,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 namespace Functors {
 	struct FootholdFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "forbid_downward_jump") foot->forbidjumpdown = true;
+			if (cmp == "forbid_downward_jump") foot->forbidJumpDown = true;
 		}
 		FootholdInfo *foot;
 	};
@@ -327,28 +301,29 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 		foot.id = atoi(row[Id]);
 		foot.pos1 = Pos(atoi(row[X1]), atoi(row[Y1]));
 		foot.pos2 = Pos(atoi(row[X2]), atoi(row[Y2]));
-		foot.dragforce = atoi(row[DragForce]);
+		foot.dragForce = atoi(row[DragForce]);
 		foot.next = atoi(row[Next]);
 		foot.prev = atoi(row[Prev]);
 		map->addFoothold(foot);
 	}
 }
 
-void MapDataProvider::loadMapTimeMob(MapInfoPtr info) {
-	// TODO: Fix this, MCDB 4.0 broke it
+void MapDataProvider::loadMapTimeMob(Map *map) {
 	mysqlpp::Query query = Database::getDataDB().query();
-	query << "SELECT * FROM map_time_mob WHERE mapid = " << info->id;
+	query << "SELECT * FROM map_time_mob WHERE mapid = " << map->getId();
 	mysqlpp::UseQueryResult res = query.use();
 
-	enum Footholds {
+	enum TimeMobFields {
 		MapId = 0,
 		MobId, StartHour, EndHour, Message
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		info->timemob = atoi(row[MobId]);
-		info->starthour = atoi(row[StartHour]);
-		info->endhour = atoi(row[EndHour]);
+		TimeMobPtr info(new TimeMob);
+
+		info->id = atoi(row[MobId]);
+		info->startHour = atoi(row[StartHour]);
+		info->endHour = atoi(row[EndHour]);
 		info->message = row[Message];
 	}
 }

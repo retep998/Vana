@@ -542,7 +542,7 @@ namespace Jobs {
 	namespace Swordsman {
 		enum Skills {
 			ImprovedMaxHpIncrease = 1000001,
-			IronBody = 1000003
+			IronBody = 1001003
 		};
 	}
 	namespace Fighter {
@@ -1109,6 +1109,7 @@ namespace Items {
 		DiabloMessenger = 5390000,
 		Cloud9Messenger = 5390001,
 		LoveholicMessenger = 5390002,
+		WheelOfDestiny = 5510000,
 		ViciousHammer = 5570000
 	};
 }
@@ -1155,6 +1156,7 @@ namespace Mobs {
 
 namespace Maps {
 	enum {
+		GmMap = 180000000,
 		OriginOfClockTower = 220080001,
 		SorcerersRoom = 270020211,
 		NoMap = 999999999

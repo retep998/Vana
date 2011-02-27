@@ -24,7 +24,6 @@ using std::vector;
 
 class Player;
 class Mob;
-struct MobInfo;
 struct Pos;
 struct StatusInfo;
 

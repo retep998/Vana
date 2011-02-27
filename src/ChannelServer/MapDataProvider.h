@@ -36,127 +36,60 @@ using std::vector;
 class Map;
 class Player;
 
+struct TimeMob {
+	TimeMob() : startHour(0), endHour(0), id(0) { }
+	int8_t startHour;
+	int8_t endHour;
+	int32_t id;
+	string message;
+};
+typedef shared_ptr<TimeMob> TimeMobPtr;
+
 struct MapInfo {
 	MapInfo() :
 		lt(Pos(0,0)),
 		rb(Pos(0,0)),
-		timemob(0),
 		clock(false),
 		town(false),
 		swim(false),
 		fly(false),
 		everlast(false),
-		nopartyleaderpass(false),
+		noLeaderPass(false),
 		shop(false),
-		scrolldisable(false),
-		shufflereactors(false),
-		forcemapequip(false)
+		scrollDisable(false),
+		shuffleReactors(false),
+		forceMapEquip(false)
 		{ }
 	bool clock;
 	bool town;
 	bool swim;
 	bool fly;
 	bool everlast;
-	bool nopartyleaderpass;
+	bool noLeaderPass;
 	bool shop;
-	bool scrolldisable;
-	bool shufflereactors;
-	bool forcemapequip;
+	bool scrollDisable;
+	bool shuffleReactors;
+	bool forceMapEquip;
 	int8_t continent;
-	int8_t starthour;
-	int8_t endhour;
-	int8_t regenrate;
-	uint8_t minlevel;
-	uint8_t dechp;
+	int8_t regenRate;
+	uint8_t minLevel;
+	uint8_t decHp;
 	uint16_t dps;
-	int32_t id;
 	int32_t rm;
 	int32_t forcedReturn;
 	int32_t fieldLimit;
 	int32_t link;
-	int32_t timemob;
-	int32_t timelimit;
-	int32_t protectitem;
-	double spawnrate;
+	int32_t timeLimit;
+	int32_t protectItem;
+	double spawnRate;
 	double traction;
-	string musicname;
-	string defaultmusic;
-	string shufflename;
+	string defaultMusic;
+	string shuffleName;
 	string message;
 	Pos lt;
 	Pos rb;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;
-
-struct FootholdInfo {
-	FootholdInfo() : forbidjumpdown(false) { }
-
-	bool forbidjumpdown;
-	int16_t id;
-	int16_t dragforce;
-	int16_t next;
-	int16_t prev;
-	Pos pos1;
-	Pos pos2;
-};
-typedef vector<FootholdInfo> FootholdsInfo;
-
-struct PortalInfo {
-	PortalInfo() : onlyOnce(false) { }
-
-	int8_t id;
-	string name;
-	Pos pos;
-	int32_t tomap;
-	string toname;
-	string script;
-	bool onlyOnce; // Run it only once per map entry
-};
-typedef unordered_map<string, PortalInfo> PortalsInfo;
-typedef unordered_map<int8_t, PortalInfo> SpawnPoints;
-
-struct NPCSpawnInfo {
-	NPCSpawnInfo() : facesright(true) { }
-	int32_t id;
-	Pos pos;
-	int16_t fh;
-	int16_t rx0;
-	int16_t rx1;
-	bool facesright;
-};
-typedef vector<NPCSpawnInfo> NPCSpawnsInfo;
-
-struct ReactorSpawnInfo {
-	ReactorSpawnInfo() : spawnat(-1), spawned(false), facesright(true) { }
-	int32_t id;
-	int32_t time;
-	clock_t spawnat;
-	bool spawned;
-	bool facesright;
-	Pos pos;
-};
-typedef vector<ReactorSpawnInfo> ReactorSpawnsInfo;
-
-struct SeatInfo {
-	SeatInfo() : occupant(0) { }
-	Pos pos;
-	Player *occupant;
-};
-
-typedef std::map<int16_t, SeatInfo> SeatsInfo;
-
-struct MobSpawnInfo {
-	MobSpawnInfo() : spawned(false), facesright(true), spawnat(-1) { }
-	bool facesright;
-	bool spawned;
-	int16_t fh;
-	int32_t id;
-	int32_t time;
-	int32_t link;
-	clock_t spawnat;
-	Pos pos;
-};
-typedef vector<MobSpawnInfo> MobSpawnsInfo;
 
 class MapDataProvider : boost::noncopyable {
 public:
@@ -176,7 +109,7 @@ private:
 	typedef continent_map::value_type continent_info;
 
 	int32_t loadMapData(int32_t mapid, Map *&map);
-	void loadMapTimeMob(MapInfoPtr info);
+	void loadMapTimeMob(Map *map);
 	void loadFootholds(Map *map, int32_t link);
 	void loadMapLife(Map *map, int32_t link);
 	void loadPortals(Map *map, int32_t link);

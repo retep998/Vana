@@ -131,7 +131,7 @@ public:
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return owner; }
 	Mob * getSponge() const { return sponge; }
-	const MobInfo * getInfo() const { return info; }
+	const MobInfo getInfo() const { return info; }
 	uint8_t getSkillCount() const { return info->skillcount; }
 	int16_t getSpawnCount() const { return static_cast<int16_t>(spawns.size()); }
 	unordered_map<int32_t, Mob *> getSpawns() const { return spawns; }
@@ -160,7 +160,7 @@ private:
 	uint64_t totalhealth;
 	Mob *owner;
 	Mob *sponge;
-	const MobInfo *info;
+	const MobInfo info;
 	map<int32_t, StatusInfo> statuses;
 	unordered_map<int32_t, uint64_t> damages;
 	unordered_map<uint8_t, time_t> skilluse;
