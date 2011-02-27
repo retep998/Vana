@@ -17,31 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.h"
 #include "MovableLife.h"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
 #include <string>
 
 using std::string;
-using std::tr1::unordered_map;
 
-class Pet;
 class Player;
-class PacketReader;
 struct Item;
-
-namespace Pets {
-	extern int16_t exps[Stats::PetLevels - 1];
-	void showPets(Player *player);
-	void handleChat(Player *player, PacketReader &packet);
-	void handleFeed(Player *player, PacketReader &packet);
-	void handleMovement(Player *player, PacketReader &packet);
-	void handleSummon(Player *player, PacketReader &packet);
-	void handleCommand(Player *player, PacketReader &packet);
-	void changeName(Player *player, const string &name);
-}
 
 class Pet : public MovableLife {
 public:

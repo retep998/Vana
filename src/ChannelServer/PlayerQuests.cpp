@@ -263,22 +263,22 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	int16_t job = m_player->getStats()->getJob();
 
 	if (start) {
-			startiter = questinfo->getStartRewardsBegin();
-			enditer = questinfo->getStartRewardsEnd();
-			if (questinfo->hasStartJobRewards(job)) {
-				sjobiter = questinfo->getStartJobRewardsBegin(job);
-				ejobiter = questinfo->getStartJobRewardsEnd(job);
-				jobrewards = true;
-			}
+		startiter = questinfo->getStartRewardsBegin();
+		enditer = questinfo->getStartRewardsEnd();
+		if (questinfo->hasStartJobRewards(job)) {
+			sjobiter = questinfo->getStartJobRewardsBegin(job);
+			ejobiter = questinfo->getStartJobRewardsEnd(job);
+			jobrewards = true;
+		}
 	}
 	else {
-			startiter = questinfo->getEndRewardsBegin();
-			enditer = questinfo->getEndRewardsEnd();
-			if (questinfo->hasEndJobRewards(job)) {
-				sjobiter = questinfo->getEndJobRewardsBegin(job);
-				ejobiter = questinfo->getEndJobRewardsEnd(job);
-				jobrewards = true;
-			}
+		startiter = questinfo->getEndRewardsBegin();
+		enditer = questinfo->getEndRewardsEnd();
+		if (questinfo->hasEndJobRewards(job)) {
+			sjobiter = questinfo->getEndJobRewardsBegin(job);
+			ejobiter = questinfo->getEndJobRewardsEnd(job);
+			jobrewards = true;
+		}
 	}
 	if (!checkRewards(questid, startiter, enditer) || (jobrewards && !checkRewards(questid, sjobiter, ejobiter))) {
 		return false;

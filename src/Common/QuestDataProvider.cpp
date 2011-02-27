@@ -46,8 +46,8 @@ void QuestDataProvider::loadQuestData() {
 
 	enum QuestData {
 		QuestId = 0,
-		NextQuest, MinLevel, MaxLevel, PetCloseness, TamingMobLevel,
-		Interval, Fame
+		NextQuest, Area, MinLevel, MaxLevel, PetCloseness,
+		TamingMobLevel, Interval, Fame, TimeLimit, Flags
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
@@ -255,7 +255,7 @@ void QuestDataProvider::loadRewards() {
 		rwa = QuestRewardInfo();
 		job = atoi(row[Job]);
 		jobtracks = row[JobTrackFlags];
-		start = (row[State] == "start");
+		start = (static_cast<string>(row[State]) == "start");
 
 		RewardTypeFlags whoo = {&rwa};
 		RewardFlags flags = {&rwa};

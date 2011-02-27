@@ -125,9 +125,6 @@
     <ClCompile Include="src\ChannelServer\Party.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Pets.cpp">
-      <Filter>Source Files\ChannelServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\Players.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
@@ -338,6 +335,12 @@
     <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\Pet.cpp">
+      <Filter>Source Files\ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\PetHandler.cpp">
+      <Filter>Source Files\Handlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -383,9 +386,6 @@
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Party.h">
-      <Filter>Header Files\ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Pets.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Players.h">
@@ -603,6 +603,12 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerRandomStream.h">
       <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\Pet.h">
+      <Filter>Header Files\ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PetHandler.h">
+      <Filter>Header Files\Handlers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

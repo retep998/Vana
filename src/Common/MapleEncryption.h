@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 
 namespace MapleEncryption {
+	extern uint8_t values[256];
 	void nextIv(unsigned char *vector);
 	void mapleDecrypt(unsigned char *buf, int32_t size);
 	void mapleEncrypt(unsigned char *buf, int32_t size);
@@ -33,6 +34,6 @@ inline
 void MapleEncryption::setIv(unsigned char *dest, unsigned char *source) {
 	// The 16 bit IV is the 4 bit IV repeated 4 times
 	for (uint8_t i = 0; i < 4; i++) {
-		memcpy(dest + i*4, source, 4);
+		memcpy(dest + i * 4, source, 4);
 	}
 }

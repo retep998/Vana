@@ -18,13 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <string>
 
-namespace Initializing {
-	void checkSchemaVersion(bool update = false);
-	void checkMcdbVersion();
-	void setUsersOffline(int32_t onlineid);
+using std::string;
 
-	const int32_t outputWidth = 26;
-	const int32_t McdbVersion = 4;
-	const int32_t McdbSubVersion = 2;
-}
+class Player;
+class PacketReader;
+
+namespace PetHandler {
+	void showPets(Player *player);
+	void handleChat(Player *player, PacketReader &packet);
+	void handleFeed(Player *player, PacketReader &packet);
+	void handleMovement(Player *player, PacketReader &packet);
+	void handleSummon(Player *player, PacketReader &packet);
+	void handleCommand(Player *player, PacketReader &packet);
+	void changeName(Player *player, const string &name);
+};

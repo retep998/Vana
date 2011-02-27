@@ -67,7 +67,7 @@ m_timers(new Timer::Container)
 // Map Info
 void Map::setMusic(const string &musicname) {
 	m_music = (musicname == "default" ? getInfo()->defaultMusic : musicname);
-	MapPacket::setMusic(getId(), m_music);
+	MapPacket::playMusic(getId(), m_music);
 }
 
 void Map::setMobSpawning(int32_t spawn) {
@@ -809,7 +809,7 @@ void Map::setMapTimer(int32_t t) {
 void Map::showObjects(Player *player) { // Show all Map Objects
 	// Music
 	if (getMusic() != getInfo()->defaultMusic)
-		MapPacket::setMusic(getId(), getMusic());
+		MapPacket::playMusic(player, getMusic());
 
 	// MapleTV messengers
 	if (MapleTvs::Instance()->isMapleTvMap(getId()) && MapleTvs::Instance()->hasMessage()) {
