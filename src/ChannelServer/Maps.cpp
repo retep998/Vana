@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapDataProvider.h"
 #include "MapObjects.h"
 #include "MapPacket.h"
-#include "Pets.h"
+#include "PetHandler.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "Players.h"
@@ -64,7 +64,13 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			}
 		}
 		else {
-			string message = "This portal '" + portal->script + "' is currently unavailable.";
+			string message;
+			if (player->isGm()) {
+				message = "Portal '" + portal->script + "' is currently unavailable.";
+			}
+			else {
+				message = "This portal is currently unavailable.";
+			}
 			PlayerPacket::showMessage(player, message, 5);
 			MapPacket::portalBlocked(player);
 		}
@@ -90,8 +96,8 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->getHp() == 0) {
-				string unk = packet.getString();
-				packet.skipBytes(1);
+				string unk = packet.getString(); // Useless
+				packet.skipBytes(1); // Useless
 				bool wheel = packet.getBool();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
 					player->acceptDeath(false);
@@ -137,7 +143,7 @@ void Maps::addPlayer(Player *player, int32_t mapid) {
 	Players::Instance()->addPlayer(player);
 	getMap(mapid)->addPlayer(player);
 	getMap(mapid)->showObjects(player);
-	Pets::showPets(player);
+	PetHandler::showPets(player);
 	Summons::showSummon(player);
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client

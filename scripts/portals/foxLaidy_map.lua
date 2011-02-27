@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2011 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,17 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#pragma once
+--]]
+-- KFT portal at the entrance to Fox Ridge (quest portal, I think)
 
-#include "Types.h"
-
-namespace Initializing {
-	void checkSchemaVersion(bool update = false);
-	void checkMcdbVersion();
-	void setUsersOffline(int32_t onlineid);
-
-	const int32_t outputWidth = 26;
-	const int32_t McdbVersion = 4;
-	const int32_t McdbSubVersion = 2;
-}
+playPortalSE();
+setMap(222010200, "east00");

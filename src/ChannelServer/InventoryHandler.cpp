@@ -27,7 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTvs.h"
 #include "NpcDataProvider.h"
 #include "PacketReader.h"
-#include "Pets.h"
+#include "Pet.h"
+#include "PetHandler.h"
 #include "Player.h"
 #include "Players.h"
 #include "Randomizer.h"
@@ -630,7 +631,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		}
 		case Items::PetNameTag: {
 			string name = packet.getString();
-			Pets::changeName(player, name);
+			PetHandler::changeName(player, name);
 			used = true;
 			break;
 		}

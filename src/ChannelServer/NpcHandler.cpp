@@ -32,7 +32,6 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	if (player->getNPC() != 0) {
 		return;
 	}
-
 	uint32_t npcid = Map::makeNpcId(packet.get<uint32_t>());
 
 	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
@@ -41,16 +40,21 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (NPC::hasScript(npcs.id, 0, false)) {
+	if (player->getNPC() == 0 && NPC::hasScript(npcs.id, 0, false)) {
 		NPC *npc = new NPC(npcs.id, player, npcs.pos);
 		npc->run();
 		return;
 	}
-	if (NpcHandler::showShop(player, npcs.id)) {
-		return;
-	}
-	if (NpcHandler::showStorage(player, npcs.id)) {
-		return;
+	if (player->getShop() == 0) {
+		if (NpcHandler::showShop(player, npcs.id)) {
+			return;
+		}
+		if (NpcHandler::showStorage(player, npcs.id)) {
+			return;
+		}
+		if (NpcHandler::showGuildRank(player, npcs.id)) {
+			return;
+		}
 	}
 }
 
@@ -150,6 +154,14 @@ bool NpcHandler::showStorage(Player *player, int32_t npcid) {
 	if (NpcDataProvider::Instance()->getStorageCost(npcid)) {
 		player->setShop(npcid);
 		StoragePacket::showStorage(player, npcid);
+		return true;
+	}
+	return false;
+}
+
+bool NpcHandler::showGuildRank(Player *player, int32_t npcid) {
+	if (NpcDataProvider::Instance()->isGuildRank(npcid)) {
+		// To be implemented later
 	}
 	return false;
 }

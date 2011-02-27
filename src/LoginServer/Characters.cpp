@@ -79,7 +79,7 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 		charc.w_rank = row["world_cpos"];
 		charc.w_rankmove = (int32_t) row["world_cpos"] - row["world_opos"];
 		charc.j_rank = row["job_cpos"];
-		charc.j_rankmove = (int32_t) row["world_cpos"] - row["world_opos"];
+		charc.j_rankmove = (int32_t) row["job_cpos"] - row["job_opos"];
 	}
 	loadEquips(charc.id, charc.equips);
 }

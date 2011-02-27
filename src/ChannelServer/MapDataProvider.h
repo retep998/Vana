@@ -72,6 +72,7 @@ struct MapInfo {
 	bool forceMapEquip;
 	int8_t continent;
 	int8_t regenRate;
+	int8_t shipKind;
 	uint8_t minLevel;
 	uint8_t decHp;
 	uint16_t dps;
