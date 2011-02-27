@@ -335,6 +335,9 @@
     <ClCompile Include="src\ChannelServer\TradeHandler.cpp">
       <Filter>Source Files\Handlers</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -597,6 +600,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\TradeHandler.h">
       <Filter>Header Files\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PlayerRandomStream.h">
+      <Filter>Header Files\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

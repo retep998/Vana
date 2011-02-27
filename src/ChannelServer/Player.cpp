@@ -175,6 +175,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 		case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
 		case CMSG_REACTOR_HIT: Reactors::hitReactor(this, packet); break;
 		case CMSG_REACTOR_TOUCH: Reactors::touchReactor(this, packet); break;
+		case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
 		case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
 		case CMSG_SHOP: InventoryHandler::useShop(this, packet); break;
 		case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
@@ -228,12 +229,17 @@ void Player::playerConnect(PacketReader &packet) {
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
-	if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
+	if (isGm() || isAdmin()) {
+		map = Maps::GmMap;
+		map_pos = -1;
+	}
+	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
 		map = Maps::getMap(map)->getInfo()->forcedReturn;
-		map_pos = 0;
+		map_pos = -1;
 	}
 	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
 		map = Maps::getMap(map)->getInfo()->rm;
+		map_pos = -1;
 	}
 
 	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
@@ -303,6 +309,7 @@ void Player::playerConnect(PacketReader &packet) {
 	variables.reset(new PlayerVariables(this));
 	buddyList.reset(new PlayerBuddyList(this));
 	quests.reset(new PlayerQuests(this));
+	randStream.reset(new PlayerRandStream(this));
 	monsterBook.reset(new PlayerMonsterBook(this));
 
 	getMonsterBook()->setCover(res[0]["monsterbookcover"]);
@@ -547,8 +554,11 @@ void Player::setLevelDate() {
 	query.exec();
 }
 
-void Player::acceptDeath() {
+void Player::acceptDeath(bool wheel) {
 	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
+	if (wheel) {
+		tomap = getMap();
+	}
 	stats->setHp(50, false);
 	getActiveBuffs()->removeBuff();
 	setMap(tomap);

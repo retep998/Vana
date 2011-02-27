@@ -58,8 +58,7 @@ Instance::~Instance() {
 		map->killMobs(0, 0, false, false);
 		map->killReactors(false);
 		if (m_reset_on_destroy) { // Reset all mobs/reactors
-			map->checkReactorSpawn(0, true);
-			map->checkMobSpawn(0, true);
+			map->respawn();
 		}
 	}
 	m_maps.clear();
@@ -203,7 +202,7 @@ Map * Instance::getMap(int32_t mapid) {
 	Map *map = 0;
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *tmap = m_maps[i];
-		if (tmap->getInfo()->id == mapid) {
+		if (tmap->getId() == mapid) {
 			map = tmap;
 			break;
 		}
@@ -359,34 +358,34 @@ void Instance::markForDelete() {
 void Instance::respawnMobs(int32_t mapid) {
 	if (mapid == Maps::NoMap) {
 		for (size_t i = 0; i < getMapNum(); i++) {
-			m_maps[i]->checkMobSpawn(0, true);
+			m_maps[i]->respawn(SpawnTypes::Mob);
 		}
 	}
 	else {
-		Maps::getMap(mapid)->checkMobSpawn(0, true);
+		Maps::getMap(mapid)->respawn(SpawnTypes::Mob);
 	}
 }
 
 void Instance::respawnReactors(int32_t mapid) {
 	if (mapid == Maps::NoMap) {
 		for (size_t i = 0; i < getMapNum(); i++) {
-			m_maps[i]->checkReactorSpawn(0, true);
+			m_maps[i]->respawn(SpawnTypes::Reactor);
 		}
 	}
 	else {
-		Maps::getMap(mapid)->checkReactorSpawn(0, true);
+		Maps::getMap(mapid)->respawn(SpawnTypes::Reactor);
 	}
 }
 
 void Instance::showTimer(bool show, bool doit) {
 	if (!show && (doit || m_show_timer)) {
 		for (size_t i = 0; i < getMapNum(); i++) {
-			MapPacket::showTimer(m_maps[i]->getInfo()->id, 0);
+			MapPacket::showTimer(m_maps[i]->getId(), 0);
 		}
 	}
 	else if (show && (doit || !m_show_timer)) {
 		for (size_t i = 0; i < getMapNum(); i++) {
-			MapPacket::showTimer(m_maps[i]->getInfo()->id, checkInstanceTimer());
+			MapPacket::showTimer(m_maps[i]->getId(), checkInstanceTimer());
 		}
 	}
 }

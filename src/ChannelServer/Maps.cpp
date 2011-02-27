@@ -18,8 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "FileUtilities.h"
 #include "Instance.h"
+#include "Inventory.h"
 #include "LuaPortal.h"
 #include "MapDataProvider.h"
+#include "MapObjects.h"
 #include "MapPacket.h"
 #include "Pets.h"
 #include "Player.h"
@@ -69,15 +71,15 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 	else {
 		// Normal portal
-		Map *tomap = getMap(portal->tomap);
+		Map *tomap = getMap(portal->toMap);
 		if (tomap == 0) {
 			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
 			PlayerPacket::showMessage(player, message, 5);
 			MapPacket::portalBlocked(player);
 			return;
 		}
-		PortalInfo *nextportal = tomap->getPortal(portal->toname);
-		player->setMap(portal->tomap, nextportal);
+		PortalInfo *nextportal = tomap->getPortal(portal->toName);
+		player->setMap(portal->toMap, nextportal);
 	}
 }
 
@@ -87,8 +89,16 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	int32_t opcode = packet.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
-			if (player->getStats()->getHp() == 0) { // else, hacking
-				player->acceptDeath();
+			if (player->getStats()->getHp() == 0) {
+				string unk = packet.getString();
+				packet.skipBytes(1);
+				bool wheel = packet.getBool();
+				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
+					player->acceptDeath(false);
+					return;
+				}
+				Inventory::takeItem(player, Items::WheelOfDestiny, 1);
+				player->acceptDeath(wheel);
 			}
 			break;
 		case -1: {

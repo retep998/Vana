@@ -98,6 +98,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
+    <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -204,6 +205,7 @@
     <ClInclude Include="src\ChannelServer\Npc.h" />
     <ClInclude Include="src\ChannelServer\Party.h" />
     <ClInclude Include="src\ChannelServer\Pets.h" />
+    <ClInclude Include="src\ChannelServer\PlayerRandomStream.h" />
     <ClInclude Include="src\ChannelServer\Players.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
     <ClInclude Include="src\ChannelServer\Reactors.h" />

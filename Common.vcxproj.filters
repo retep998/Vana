@@ -406,5 +406,8 @@
     <ClInclude Include="src\Common\ValidCharDataProvider.h">
       <Filter>Header Files\Database Loading\MCDB</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\MapObjects.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
