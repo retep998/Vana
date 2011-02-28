@@ -27,8 +27,8 @@ class Player;
 class PacketCreator;
 
 struct MonsterCard {
-	MonsterCard() : id(0), level(0) { };
-	MonsterCard(int32_t id, uint8_t level) : id(id), level(level) { };
+	MonsterCard() : id(0), level(0) { }
+	MonsterCard(int32_t id, uint8_t level) : id(id), level(level) { }
 	int32_t id; // Card ID
 	uint8_t level; // 1 - 5
 };

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, int16_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_REGISTER_CHANNEL);
+	packet.add<int16_t>(IMSG_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
 	packet.add<uint32_t>(ip);
 
@@ -38,7 +38,7 @@ void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, con
 
 void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t population) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_UPDATE_CHANNEL_POP);
+	packet.add<int16_t>(IMSG_UPDATE_CHANNEL_POP);
 	packet.add<int32_t>(channel);
 	packet.add<int32_t>(population);
 
@@ -47,7 +47,7 @@ void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t populat
 
 void LoginServerConnectPacket::removeChannel(int32_t channel) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_REMOVE_CHANNEL);
+	packet.add<int16_t>(IMSG_REMOVE_CHANNEL);
 	packet.add<int32_t>(channel);
 
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);

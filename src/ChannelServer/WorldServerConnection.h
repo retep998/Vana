@@ -27,7 +27,6 @@ public:
 	WorldServerConnection();
 	~WorldServerConnection();
 	void realHandleRequest(PacketReader &packet);
-	void playerChangeChannel(Player *info, uint16_t channel);
 };
 
 class WorldServerConnectionFactory : public AbstractConnectionFactory {

@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 #pragma once
 
 #include "Types.h"
@@ -23,15 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerAcceptConnection;
+class PacketReader;
 
-namespace PartyHandler {
-	void createParty(WorldServerAcceptConnection *player, int32_t playerid);
-	void leaveParty(WorldServerAcceptConnection *player, int32_t playerid);
-	void invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &invitee);
-	void joinParty(WorldServerAcceptConnection *player, int32_t playerid, int32_t partyid);
-	void giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is);
-	void expelPlayer(WorldServerAcceptConnection *player, int32_t playerid, int32_t target);
-	void silentUpdate(int32_t playerid);
-	void logInLogOut(int32_t playerid);
-};
+namespace SyncHandler {
+	void handle(PacketReader &packet);
+	void guildPacketHandlerWorld(PacketReader &packet);
+	void alliancePacketHandlerWorld(PacketReader &packet);
+	void handleDataSync(PacketReader &packet);
+	void handleChannelStart(PacketReader &packet);
+	void handlePartyResponse(PacketReader &packet);
+	void handlePlayerSync(PacketReader &packet);
+	void playerChangeChannel(PacketReader &packet);
+	void newConnectable(PacketReader &packet);
+	void disbandParty(PacketReader &packet);
+}

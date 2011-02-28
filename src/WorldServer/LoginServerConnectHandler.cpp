@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectHandler.h"
+#include "Channels.h"
 #include "Configuration.h"
 #include "ConfigurationPacket.h"
 #include "InitializeWorld.h"
 #include "LoginServerConnection.h"
-#include "WorldServerAcceptPacket.h"
-#include "WorldServer.h"
-#include "Channels.h"
 #include "PacketReader.h"
 #include "PlayerDataProvider.h"
 #include "Rates.h"
+#include "SyncPacket.h"
+#include "WorldServer.h"
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketReader &packet) {
@@ -58,7 +58,7 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 		if (PlayerDataProvider::Instance()->getPlayer(playerid) == 0) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			WorldServerAcceptPacket::newConnectable(channel, playerid);
+			SyncPacket::PlayerPacket::newConnectable(channel, playerid);
 		}
 	}
 }

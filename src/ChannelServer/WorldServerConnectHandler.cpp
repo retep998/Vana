@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "Configuration.h"
 #include "ConfigurationPacket.h"
-#include "Connectable.h"
 #include "DropDataProvider.h"
 #include "ItemDataProvider.h"
 #include "MapDataProvider.h"
@@ -48,7 +47,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 	if (worldid != -1) {
 		ChannelServer::Instance()->setWorld(worldid);
 		ChannelServer::Instance()->setWorldIp(packet.get<uint32_t>());
-		ChannelServer::Instance()->setWorldPort(packet.get<int16_t>());
+		ChannelServer::Instance()->setWorldPort(packet.get<uint16_t>());
 		std::cout << "Connecting to world " << (int16_t) worldid << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
@@ -86,26 +85,6 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	}
 }
 
-void WorldServerConnectHandler::playerChangeChannel(WorldServerConnection *player, PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
-	uint32_t ip = packet.get<uint32_t>();
-	int16_t port = packet.get<int16_t>();
-
-	Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (!ccPlayer) {
-		return;
-	}
-	if (ip == 0) {
-		PlayerPacket::sendBlockedMessage(ccPlayer, 0x01);
-	}
-	else {
-		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
-		PlayerPacket::changeChannel(ccPlayer, ip, port);
-		ccPlayer->saveAll(true);
-		ccPlayer->setSaveOnDc(false);
-	}
-}
-
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
 	int16_t channel = packet.get<int16_t>();
@@ -133,10 +112,6 @@ void WorldServerConnectHandler::scrollingHeader(PacketReader &packet) {
 	ChannelServer::Instance()->setScrollingHeader(message);
 }
 
-void WorldServerConnectHandler::newConnectable(PacketReader &packet) {
-	Connectable::Instance()->newPlayer(packet.get<int32_t>());
-}
-
 void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	PacketCreator ppacket;
 	int32_t playerid = packet.get<int32_t>();
@@ -158,6 +133,10 @@ void WorldServerConnectHandler::setRates(PacketReader &packet) {
 	if (ratesSetBit & Rates::SetBits::drop) {
 		ChannelServer::Instance()->setDropRate(packet.get<int32_t>());
 	}
+}
+
+void WorldServerConnectHandler::sendToPlayers(PacketReader &packet) {
+	PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength());
 }
 
 void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {

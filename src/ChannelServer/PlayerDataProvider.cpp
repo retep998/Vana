@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
-#include "WorldServerConnectPacket.h"
+#include "SyncPacket.h"
 #include <boost/algorithm/string.hpp>
 #include <cstring>
 
@@ -38,7 +38,7 @@ void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
 	memcpy(buf, packet.getBuffer(), psize);
 	
 	m_packets[playerid].reset(new PacketReader(buf, psize));
-	WorldServerConnectPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
+	SyncPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
 }
 
 void PlayerDataProvider::removePacket(int32_t id) {

@@ -113,14 +113,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\WorldServer\Channels.cpp" />
+    <ClCompile Include="src\WorldServer\SyncHandler.cpp" />
+    <ClCompile Include="src\WorldServer\SyncPacket.cpp" />
     <ClCompile Include="src\WorldServer\WorldServer.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnection.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp" />
-    <ClCompile Include="src\WorldServer\PartyPacket.cpp" />
     <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp" />
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp" />
-    <ClCompile Include="src\WorldServer\PartyHandler.cpp" />
     <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,14 +132,14 @@
     <ClInclude Include="src\WorldServer\PrecompiledHeader.h" />
     <ClInclude Include="src\WorldServer\Channels.h" />
     <ClInclude Include="src\WorldServer\Parties.h" />
+    <ClInclude Include="src\WorldServer\SyncHandler.h" />
+    <ClInclude Include="src\WorldServer\SyncPacket.h" />
     <ClInclude Include="src\WorldServer\WorldServer.h" />
     <ClInclude Include="src\WorldServer\LoginServerConnection.h" />
     <ClInclude Include="src\WorldServer\LoginServerConnectPacket.h" />
-    <ClInclude Include="src\WorldServer\PartyPacket.h" />
     <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.h" />
     <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.h" />
     <ClInclude Include="src\WorldServer\LoginServerConnectHandler.h" />
-    <ClInclude Include="src\WorldServer\PartyHandler.h" />
     <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.h" />
   </ItemGroup>
   <ItemGroup>

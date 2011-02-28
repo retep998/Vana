@@ -24,8 +24,4 @@ class Player;
 
 namespace PartyHandler {
 	void handleRequest(Player *player, PacketReader &packet);
-	void handleResponse(PacketReader &packet);
-	void handleDataSync(PacketReader &packet);
-	void handleChannelStart(PacketReader &packet);
-	void disbandParty(PacketReader &packet);
-};
+}

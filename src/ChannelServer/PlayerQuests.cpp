@@ -331,7 +331,7 @@ bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewar
 	boost::array<bool, Inventories::InventoryCount> chanceitem = {false};
 
 	for (Rewards::iterator iter = begin; iter != end; iter++) { // Loop through rewards, make sure it can be done
-		if (iter->isitem){
+		if (iter->isitem) {
 			uint8_t inv = GameLogicUtilities::getInventory(iter->id) - 1;
 			if (iter->count < 0) continue;
 

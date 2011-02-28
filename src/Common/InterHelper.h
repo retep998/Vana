@@ -20,21 +20,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Specific packet constants that are shared between servers
 namespace PartyActions {
 	enum PartyActions {
-		Leave = 0x01,
-		Join = 0x02,
-		SetLeader = 0x03,
-		SilentUpdate = 0x04,
-		LogInOrOut = 0x05,
-		Expel = 0x06	
+		Create = 0x01,
+		Leave = 0x02,
+		Join = 0x03,
+		Invite = 0x04,
+		Expel = 0x05,
+		SetLeader = 0x06,
+		SilentUpdate,
+		LogInOrOut
 	};
-	namespace Sync {
-		enum PartySync {
-			ChannelStart = 0x01,
-			Disband = 0x02,
-			Create = 0x03,
-			SwitchLeader = 0x04,
-			RemoveMember = 0x05,
-			AddMember = 0x06
+}
+
+namespace Sync {
+	namespace SyncTypes {
+		enum SyncTypes {
+			ChannelStart,
+			Player,
+			Party,
+			Buddy,
+			Guild,
+			GuildBbs,
+			Alliance
+		};
+	}
+	namespace Player {
+		enum SyncModes {
+			Connect,
+			Disconnect,
+			ChangeChannelRequest,
+			ChangeChannelGo,
+			PacketTransfer,
+			RemovePacketTransfer,
+			NewConnectable,
+			UpdateLevel,
+			UpdateJob,
+			UpdateMap
+		};
+	}
+	namespace Party {
+		enum SyncModes {
+			Disband,
+			Create,
+			SwitchLeader,
+			RemoveMember,
+			AddMember
 		};
 	}
 }

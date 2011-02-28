@@ -106,7 +106,7 @@ void PlayersPacket::showMessage(const string &msg, int8_t type) {
 
 void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(INTER_TO_PLAYERS);
+	packet.add<int16_t>(IMSG_TO_PLAYERS);
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);

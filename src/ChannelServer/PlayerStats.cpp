@@ -34,8 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
 #include "Summons.h"
+#include "SyncPacket.h"
 #include "VersionConstants.h"
-#include "WorldServerConnectPacket.h"
 #include <boost/lexical_cast.hpp>
 #include <string>
 
@@ -186,7 +186,7 @@ void PlayerStats::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(player, Stats::Level, level);
 	LevelsPacket::levelUp(player);
-	WorldServerConnectPacket::updateLevel(ChannelServer::Instance()->getWorldConnection(), player->getId(), level);
+	SyncPacket::updateLevel(ChannelServer::Instance()->getWorldConnection(), player->getId(), level);
 }
 
 void PlayerStats::setHp(int16_t shp, bool is) {
@@ -277,7 +277,7 @@ void PlayerStats::setJob(int16_t job) {
 	this->job = job;
 	PlayerPacket::updateStatShort(player, Stats::Job, job);
 	LevelsPacket::jobChange(player);
-	WorldServerConnectPacket::updateJob(ChannelServer::Instance()->getWorldConnection(), player->getId(), job);
+	SyncPacket::updateJob(ChannelServer::Instance()->getWorldConnection(), player->getId(), job);
 }
 
 void PlayerStats::setStr(int16_t str) {
