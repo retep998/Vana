@@ -36,7 +36,7 @@ public:
 	void newPlayer(int32_t id);
 	bool checkPlayer(int32_t id);
 private:
-	Connectable() {};
+	Connectable() {}
 	static Connectable *singleton;
 
 	ConnectableMap map;

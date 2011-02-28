@@ -20,9 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "PacketReader.h"
 #include "PartyHandler.h"
-#include "PlayerActiveBuffs.h"
-#include "PlayerDataProvider.h"
-#include "PlayersPacket.h"
+#include "SyncHandler.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
 #include <iostream>
@@ -40,24 +38,16 @@ WorldServerConnection::~WorldServerConnection() {
 
 void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
-		case INTER_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
-		case INTER_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerConnectHandler::playerChangeChannel(this, packet); break;
-		case INTER_TO_PLAYERS: PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength()); break;
-		case INTER_FIND: WorldServerConnectHandler::findPlayer(packet); break;
-		case INTER_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
-		case INTER_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
-		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
-		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
-		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
-		case INTER_PARTY_OPERATION: PartyHandler::handleResponse(packet); break;
-		case INTER_PARTY_SYNC: PartyHandler::handleDataSync(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
-		case INTER_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet);
-	}
-}
+		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
+		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
+		case IMSG_TO_PLAYERS: WorldServerConnectHandler::sendToPlayers(packet); break;
+		case IMSG_FIND: WorldServerConnectHandler::findPlayer(packet); break;
+		case IMSG_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
+		case IMSG_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
+		case IMSG_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
+		case IMSG_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
+		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet);
 
-void WorldServerConnection::playerChangeChannel(Player *info, uint16_t channel) {
-	WorldServerConnectPacket::playerChangeChannel(this, info, channel);
+		case IMSG_SYNC: SyncHandler::handle(packet); break;
+	}
 }

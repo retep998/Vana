@@ -49,7 +49,7 @@ public:
 	uint16_t size();
 	uint16_t getAvailableChannel();
 private:
-	Channels() {};
+	Channels() {}
 	static Channels *singleton;
 
 	unordered_map<uint16_t, shared_ptr<Channel> > channels;

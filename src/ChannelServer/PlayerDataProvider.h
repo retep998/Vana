@@ -60,7 +60,7 @@ public:
 	void addParty(Party *party);
 	void removeParty(int32_t id);
 private:
-	PlayerDataProvider() {};
+	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
 	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_packets;

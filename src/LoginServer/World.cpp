@@ -16,9 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "World.h"
+#include "Randomizer.h"
 
 void World::runChannelFunction(function<void (Channel *)> func) {
 	for (ChannelMap::iterator iter = m_channels.begin(); iter != m_channels.end(); iter++) {
 		func(iter->second.get());
 	}
+}
+
+uint16_t World::getRandomChannel() const {
+	return Randomizer::Instance()->randShort(getMaxChannels() - 1);
 }

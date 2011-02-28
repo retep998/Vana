@@ -60,7 +60,7 @@ public:
 	Party * getParty(int32_t id);
 	unordered_map<int32_t, Party *> getParties();
 private:
-	PlayerDataProvider() {};
+	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
 	void loadGuilds(int16_t worldId);

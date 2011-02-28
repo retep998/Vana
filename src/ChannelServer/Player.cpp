@@ -57,10 +57,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "StringUtilities.h"
 #include "Summons.h"
+#include "SyncPacket.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
 #include "WorldServerConnection.h"
-#include "WorldServerConnectPacket.h"
 #include <boost/array.hpp>
 #include <stdexcept>
 
@@ -114,7 +114,7 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
-			WorldServerConnectPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
+			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
 		Maps::getMap(map)->removePlayer(this);
 		PlayerDataProvider::Instance()->removePlayer(this);
@@ -239,22 +239,6 @@ void Player::playerConnect(PacketReader &packet) {
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
-	if (isGm() || isAdmin()) {
-		map = Maps::GmMap;
-		map_pos = -1;
-	}
-	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
-		map = Maps::getMap(map)->getInfo()->forcedReturn;
-		map_pos = -1;
-	}
-	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
-		map = Maps::getMap(map)->getInfo()->rm;
-		map_pos = -1;
-	}
-
-	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
-	m_stance = 0;
-	m_foothold = 0;
 
 	// Stats
 	stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
@@ -293,7 +277,8 @@ void Player::playerConnect(PacketReader &packet) {
 	summons.reset(new PlayerSummons(this));
 
 	// Packet transferring on channel switch
-	if (PlayerDataProvider::Instance()->checkPlayer(id)) {
+	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
+	if (checked) {
 		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
 
 		setConnectionTime(pack.get<int64_t>());
@@ -333,6 +318,25 @@ void Player::playerConnect(PacketReader &packet) {
 
 	stats->checkHpMp(); // Adjust down HP or MP if necessary
 
+	if (isGm() || isAdmin()) {
+		if (!checked) {
+			map = Maps::GmMap;
+			map_pos = -1;
+		}
+	}
+	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
+		map = Maps::getMap(map)->getInfo()->forcedReturn;
+		map_pos = -1;
+	}
+	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
+		map = Maps::getMap(map)->getInfo()->rm;
+		map_pos = -1;
+	}
+
+	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
+	m_stance = 0;
+	m_foothold = 0;
+
 	PlayerPacket::connectData(this);
 
 	if (ChannelServer::Instance()->getScrollingHeader().size() > 0) {
@@ -355,7 +359,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	WorldServerConnectPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel());
+	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel());
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
@@ -402,10 +406,10 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
-	if (!getChalkboard().empty() && (Maps::getMap(mapid)->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
+	if (!getChalkboard().empty() && (newmap->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
 		setChalkboard("");
 	}
-	WorldServerConnectPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
+	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
 }
@@ -422,7 +426,7 @@ string Player::getMedalName() {
 }
 
 void Player::changeChannel(int8_t channel) {
-	ChannelServer::Instance()->getWorldConnection()->playerChangeChannel(this, channel);
+	SyncPacket::playerChangeChannel(ChannelServer::Instance()->getWorldConnection(), this, channel);
 }
 
 void Player::changeKey(PacketReader &packet) {

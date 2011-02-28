@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "Player.h"
 #include "StringUtilities.h"
+#include "SyncHandler.h"
 #include "WorldServer.h"
 
 using Initializing::outputWidth;
@@ -63,24 +64,20 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 		m_players[player->getId()] = player;
 	}
 	if (online) {
+		if (player->getParty() != 0) {
+			SyncHandler::logInLogOut(player->getId());
+		}
 		Channels::Instance()->increasePopulation(player->getChannel());
 	}
 }
 
 void PlayerDataProvider::remove(int32_t id, int16_t channel) {
-	if (channel == -1 || m_players[id]->getChannel() == channel) {
-		m_players[id]->setOnline(false);
-		/*
-		// FIXME AT SOME POINT
-		if (m_players[id]->getParty() != 0) {
-			PartyHandler::logInLogOut(id);
+	Player *player = m_players[id];
+	if (channel == -1 || player->getChannel() == channel) {
+		player->setOnline(false);
+		if (player->getParty() != 0) {
+			SyncHandler::logInLogOut(id);
 		}
-		if (m_players[id]->getGuild() != 0) {
-			GuildPacket::sendPlayerUpdate(m_players[id]->getGuild(), m_players[id], 3);
-			if (m_players[id]->getAlliance() != 0)
-				AlliancePacket::sendUpdatePlayer(m_players[id]->getAlliance(), m_players[id], 2);
-		}
-		*/
 		Channels::Instance()->decreasePopulation(channel);
 	}
 }

@@ -39,7 +39,7 @@ public:
 	Instance * getInstance(const string &name);
 	bool isInstance(const string &name);
 private:
-	Instances() {};
+	Instances() {}
 	static Instances *singleton;
 
 	unordered_map<string, Instance *> m_instances; // Index of instances by name

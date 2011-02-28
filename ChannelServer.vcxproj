@@ -126,6 +126,8 @@
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp" />
     <ClCompile Include="src\ChannelServer\Skills.cpp" />
     <ClCompile Include="src\ChannelServer\Summons.cpp" />
+    <ClCompile Include="src\ChannelServer\SyncHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\SyncPacket.cpp" />
     <ClCompile Include="src\ChannelServer\Trade.cpp" />
     <ClCompile Include="src\ChannelServer\Trades.cpp" />
     <ClCompile Include="src\ChannelServer\BuddyListPacket.cpp" />
@@ -215,6 +217,8 @@
     <ClInclude Include="src\ChannelServer\SkillMacros.h" />
     <ClInclude Include="src\ChannelServer\Skills.h" />
     <ClInclude Include="src\ChannelServer\Summons.h" />
+    <ClInclude Include="src\ChannelServer\SyncHandler.h" />
+    <ClInclude Include="src\ChannelServer\SyncPacket.h" />
     <ClInclude Include="src\ChannelServer\Trade.h" />
     <ClInclude Include="src\ChannelServer\Trades.h" />
     <ClInclude Include="src\ChannelServer\BuddyListPacket.h" />

@@ -347,6 +347,12 @@
     <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp">
       <Filter>Source Files\Inter-Server\World</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\SyncPacket.cpp">
+      <Filter>Source Files\Inter-Server\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\SyncHandler.cpp">
+      <Filter>Source Files\Inter-Server\Sync</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -615,6 +621,12 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\WorldServerConnection.h">
       <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\SyncPacket.h">
+      <Filter>Header Files\Inter-Server\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\SyncHandler.h">
+      <Filter>Header Files\Inter-Server\Sync</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

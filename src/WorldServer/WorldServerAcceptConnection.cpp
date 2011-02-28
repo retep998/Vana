@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPacket.h"
 #include "MapleSession.h"
 #include "MiscUtilities.h"
-#include "Rates.h"
 #include "PacketReader.h"
 #include "PlayerDataProvider.h"
+#include "Rates.h"
+#include "SyncHandler.h"
+#include "SyncPacket.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
@@ -45,22 +47,14 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
-		case INTER_PLAYER_CHANGE_CHANNEL: WorldServerAcceptHandler::playerChangeChannel(this, packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET: WorldServerAcceptHandler::handleChangeChannel(this, packet); break;
-		case INTER_REGISTER_PLAYER: WorldServerAcceptHandler::playerConnect(this, packet); break;
-		case INTER_REMOVE_PLAYER: WorldServerAcceptHandler::playerDisconnect(this, packet); break;
-		case INTER_PARTY_OPERATION: WorldServerAcceptHandler::partyOperation(this, packet); break;
-		case INTER_UPDATE_LEVEL: WorldServerAcceptHandler::updateLevel(this, packet); break;
-		case INTER_UPDATE_JOB: WorldServerAcceptHandler::updateJob(this, packet); break;
-		case INTER_UPDATE_MAP: WorldServerAcceptHandler::updateMap(this, packet); break;
-
-		case INTER_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
-		case INTER_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
-		case INTER_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
-		case INTER_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
-		case INTER_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
-		case INTER_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
-		case INTER_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
+		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
+		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
+		case IMSG_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
+		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
+		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
+		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendToChannels(packet); break;
 	}
 }
 
@@ -73,7 +67,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			WorldServerAcceptPacket::connect(this, channel, port);
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-			WorldServerAcceptPacket::sendParties(this);
+			SyncPacket::PlayerPacket::sendParties(this);
 			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
 			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
 		}

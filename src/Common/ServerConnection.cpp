@@ -28,7 +28,7 @@ void AbstractServerConnection::sendAuth(const string &pass, const IpMatrix &extI
 }
 
 bool AbstractServerAcceptConnection::processAuth(PacketReader &packet, const string &pass) {
-	if (packet.get<int16_t>() == INTER_PASSWORD) {
+	if (packet.get<int16_t>() == IMSG_PASSWORD) {
 		if (packet.getString() == pass) {
 			std::cout << "Server successfully authenticated." << std::endl;
 			m_is_authenticated = true;

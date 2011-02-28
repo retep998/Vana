@@ -47,7 +47,7 @@ public:
 	double rand();
 	string generateSalt(size_t length);
 private:
-	Randomizer() {};
+	Randomizer() {}
 	static Randomizer *singleton;
 
 	MTRand mtrand;
