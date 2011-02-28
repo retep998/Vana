@@ -206,6 +206,21 @@ namespace Functors {
 				quest->addReward(start, *reward, Jobs::JobIds::ThunderBreaker2);
 				quest->addReward(start, *reward, Jobs::JobIds::ThunderBreaker3);
 			}
+			else if (cmp == "episode2_beginner") {
+				quest->addReward(start, *reward, Jobs::JobIds::Legend);
+			}
+			else if (cmp == "episode2_warrior") {
+				quest->addReward(start, *reward, Jobs::JobIds::Aran1);
+				quest->addReward(start, *reward, Jobs::JobIds::Aran2);
+				quest->addReward(start, *reward, Jobs::JobIds::Aran3);
+				quest->addReward(start, *reward, Jobs::JobIds::Aran4);
+			}
+			else if (cmp == "episode2_magician") {
+				quest->addReward(start, *reward, Jobs::JobIds::Evan1);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan2);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan3);
+				quest->addReward(start, *reward, Jobs::JobIds::Evan4);
+			}
 		}
 		Quest *quest;
 		QuestRewardInfo *reward;

@@ -24,6 +24,7 @@ using std::string;
 
 class PacketReader;
 class Player;
+struct Attack;
 struct ReturnDamageInfo;
 
 namespace PlayersPacket {
@@ -37,9 +38,9 @@ namespace PlayersPacket {
 	void findPlayer(Player *player, const string &name, int32_t map, uint8_t is = 0, bool is_channel = 0);
 	void whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message);
 	void sendToPlayers(unsigned char *data, int32_t len);
-	void useMeleeAttack(Player *player, PacketReader &pack);
-	void useRangedAttack(Player *player, PacketReader &pack);
-	void useSpellAttack(Player *player, PacketReader &pack);
+	void useMeleeAttack(Player *player, const Attack &attack);
+	void useRangedAttack(Player *player, const Attack &attack);
+	void useSpellAttack(Player *player, const Attack &attack);
+	void useSummonAttack(Player *player, const Attack &attack);
 	void useEnergyChargeAttack(Player *player, PacketReader &pack);
-	void useSummonAttack(Player *player, PacketReader &pack);
 }

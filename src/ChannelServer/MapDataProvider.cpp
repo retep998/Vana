@@ -237,8 +237,8 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	enum MapLife {
 		Id = 0,
 		MapId, LifeType, LifeId, Name, X,
-		Y, Foothold, MinClickPos, MaxClickPos,
-		RespawnTime, Flags
+		Y, Foothold, MinClickPos, MaxClickPos, RespawnTime,
+		Flags
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

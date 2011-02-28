@@ -83,7 +83,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 
 void Decoder::createHeader(unsigned char *header, int16_t size) {
 	int16_t a = ivSend[3] * 0x100 + ivSend[2];
-	a = a ^ -(MAPLE_VERSION + 1);
+	a = a ^ -(MapleVersion::Version + 1);
 	int16_t b = a ^ size;
 	header[0] = a % 0x100;
 	header[1] = (a - header[0]) / 0x100;

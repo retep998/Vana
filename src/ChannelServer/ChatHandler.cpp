@@ -746,10 +746,10 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								mysqlpp::StoreQueryResult res;
 								if (type < 200) {
 									if (type == 100) {
-										query << "SELECT objectid, `name` FROM strings WHERE objectid = " << matches[2];
+										query << "SELECT objectid, `label` FROM strings WHERE objectid = " << matches[2];
 									}
 									else {
-										query << "SELECT objectid, `name` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+										query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 									}
 									res = query.store();
 

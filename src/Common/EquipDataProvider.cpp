@@ -77,12 +77,13 @@ void EquipDataProvider::loadEquips() {
 	enum EquipData {
 		EquipId = 0,
 		Flags, Unused, AttackSpeed, Healing, ScrollSlots,
-		ReqStr, ReqDex, ReqInt, ReqLuk, ReqFame,
-		ReqJob, Hp, Mp, Str, Dex,
-		Int, Luk, Hands, Watk, Wdef,
-		Matk, Mdef, Acc, Avoid, Jump,
-		Speed, Traction, TamingMob, LightningDamage, IceDamage,
-		FireDamage, PoisonDamage, ElementalDefault, EquipSlots
+		SpecialId, ReqStr, ReqDex, ReqInt, ReqLuk,
+		ReqFame, ReqJob, Hp, Mp, Str,
+		Dex, Int, Luk, Hands, Watk,
+		Wdef, Matk, Mdef, Acc, Avoid,
+		Jump, Speed, Traction, Recovery, Knockback,
+		TamingMob, LightningDamage, IceDamage, FireDamage, PoisonDamage,
+		ElementalDefault, EquipSlots
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

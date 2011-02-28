@@ -71,11 +71,11 @@ public:
 	int32_t getMesoRate() const { return m_config.mesoRate; }
 	int32_t getDropRate() const { return m_config.dropRate; }
 	int32_t getMaxChars() const { return m_config.maxChars; }
-	int16_t getPianusAttempts() const { return m_config.pianusAttempts; }
-	int16_t getPapAttempts() const { return m_config.papAttempts; }
-	int16_t getZakumAttempts() const { return m_config.zakumAttempts; }
-	int16_t getHorntailAttempts() const { return m_config.horntailAttempts; }
-	int16_t getPinkBeanAttempts() const { return m_config.pinkbeanAttempts; }
+	int16_t getPianusAttempts() const { return m_config.pianus.attempts; }
+	int16_t getPapAttempts() const { return m_config.pap.attempts; }
+	int16_t getZakumAttempts() const { return m_config.zakum.attempts; }
+	int16_t getHorntailAttempts() const { return m_config.horntail.attempts; }
+	int16_t getPinkBeanAttempts() const { return m_config.pinkbean.attempts; }
 	string getScrollingHeader() const { return m_config.scrollingHeader; }
 	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
 
@@ -86,11 +86,11 @@ public:
 	bool isHorntailChannel() const { return m_horntailChannel; }
 	bool isPinkBeanChannel() const { return m_pinkbeanChannel; }
 	// Boss channel lists
-	vector<int8_t> getPianusChannels() const { return m_config.pianusChannels; }
-	vector<int8_t> getPapChannels() const { return m_config.papChannels; }
-	vector<int8_t> getZakumChannels() const { return m_config.zakumChannels; }
-	vector<int8_t> getHorntailChannels() const { return m_config.horntailChannels; }
-	vector<int8_t> getPinkBeanChannels() const { return m_config.pinkbeanChannels; }
+	vector<int8_t> getPianusChannels() const { return m_config.pianus.channels; }
+	vector<int8_t> getPapChannels() const { return m_config.pap.channels; }
+	vector<int8_t> getZakumChannels() const { return m_config.zakum.channels; }
+	vector<int8_t> getHorntailChannels() const { return m_config.horntail.channels; }
+	vector<int8_t> getPinkBeanChannels() const { return m_config.pinkbean.channels; }
 private:
 	ChannelServer() : m_channel(-1) {}
 	static ChannelServer *singleton;

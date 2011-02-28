@@ -131,12 +131,14 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
 		}
 	}
 
-	uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
-	LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
 	if (worldid != -1) {
+		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
+		LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
+
 		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
 	}
 	else {
+		LoginServerAcceptPacket::connectChannel(player, worldid, 0, 0);
 		std::cout << "Error: No more channels to assign." << std::endl;
 	}
 	player->getSession()->disconnect();
