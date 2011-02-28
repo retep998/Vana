@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectHandler.h"
 #include "BeautyDataProvider.h"
 #include "ChannelServer.h"
+#include "Configuration.h"
+#include "ConfigurationPacket.h"
 #include "Connectable.h"
 #include "DropDataProvider.h"
 #include "ItemDataProvider.h"
@@ -29,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "QuestDataProvider.h"
 #include "Rates.h"
@@ -59,40 +61,19 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) {
 	int16_t channel = packet.get<int16_t>();
 	if (channel != -1) {
-		ChannelServer::Instance()->setChannel(channel);
-		uint16_t port = packet.get<uint16_t>();
-		vector<int8_t> bosschannels;
 		int8_t chid = channel + 1;
+		uint16_t port = packet.get<uint16_t>();
+		ChannelServer::Instance()->setChannel(channel);
 		ChannelServer::Instance()->setPort(port);
-		ChannelServer::Instance()->setMaxMultiLevel(packet.get<int8_t>());
-		ChannelServer::Instance()->setMaxStats(packet.get<int16_t>());
-		ChannelServer::Instance()->setMaxChars(packet.get<int32_t>());
+		
+		Configuration conf = ConfigurationPacket::getConfig(packet);
 
-		ChannelServer::Instance()->setPianusAttempts(packet.get<int16_t>());
-		ChannelServer::Instance()->setPapAttempts(packet.get<int16_t>());
-		ChannelServer::Instance()->setZakumAttempts(packet.get<int16_t>());
-		ChannelServer::Instance()->setHorntailAttempts(packet.get<int16_t>());
-		ChannelServer::Instance()->setPinkBeanAttempts(packet.get<int16_t>());
-
-		bosschannels = packet.getVector<int8_t>();
-		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(bosschannels, chid));
-		ChannelServer::Instance()->setPianusChannels(bosschannels);
-
-		bosschannels = packet.getVector<int8_t>();
-		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(bosschannels, chid));
-		ChannelServer::Instance()->setPapChannels(bosschannels);
-
-		bosschannels = packet.getVector<int8_t>();
-		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(bosschannels, chid));
-		ChannelServer::Instance()->setZakumChannels(bosschannels);
-
-		bosschannels = packet.getVector<int8_t>();
-		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(bosschannels, chid));
-		ChannelServer::Instance()->setHorntailChannels(bosschannels);
-
-		bosschannels = packet.getVector<int8_t>();
-		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(bosschannels, chid));
-		ChannelServer::Instance()->setPinkBeanChannels(bosschannels);
+		ChannelServer::Instance()->setConfig(conf);
+		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianusChannels, chid));
+		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(conf.papChannels, chid));
+		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(conf.zakumChannels, chid));
+		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntailChannels, chid));
+		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbeanChannels, chid));
 
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
@@ -110,7 +91,7 @@ void WorldServerConnectHandler::playerChangeChannel(WorldServerConnection *playe
 	uint32_t ip = packet.get<uint32_t>();
 	int16_t port = packet.get<int16_t>();
 
-	Player *ccPlayer = Players::Instance()->getPlayer(playerid);
+	Player *ccPlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (!ccPlayer) {
 		return;
 	}
@@ -131,10 +112,10 @@ void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	string name = packet.getString();
 	int8_t is = packet.get<int8_t>();
 	if (channel == -1) {
-		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, -1, is);
+		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, -1, is);
 	}
 	else {
-		PlayersPacket::findPlayer(Players::Instance()->getPlayer(finder), name, channel, is, 1);
+		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, channel, is, 1);
 	}
 }
 
@@ -144,7 +125,7 @@ void WorldServerConnectHandler::whisperPlayer(PacketReader &packet) {
 	uint16_t channel = packet.get<int16_t>();
 	string message = packet.getString();
 
-	PlayersPacket::whisperPlayer(Players::Instance()->getPlayer(whisperee), whisperer, channel, message);
+	PlayersPacket::whisperPlayer(PlayerDataProvider::Instance()->getPlayer(whisperee), whisperer, channel, message);
 }
 
 void WorldServerConnectHandler::scrollingHeader(PacketReader &packet) {
@@ -160,22 +141,22 @@ void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	PacketCreator ppacket;
 	int32_t playerid = packet.get<int32_t>();
 	ppacket.addBuffer(packet);
-	Players::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
+	PlayerDataProvider::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
 }
 
 void WorldServerConnectHandler::setRates(PacketReader &packet) {
 	int32_t ratesSetBit = packet.get<int32_t>();
 	if (ratesSetBit & Rates::SetBits::exp) {
-		ChannelServer::Instance()->setExprate(packet.get<int32_t>());
+		ChannelServer::Instance()->setExpRate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::questExp) {
-		ChannelServer::Instance()->setQuestExprate(packet.get<int32_t>());
+		ChannelServer::Instance()->setQuestExpRate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::meso) {
-		ChannelServer::Instance()->setMesorate(packet.get<int32_t>());
+		ChannelServer::Instance()->setMesoRate(packet.get<int32_t>());
 	}
 	if (ratesSetBit & Rates::SetBits::drop) {
-		ChannelServer::Instance()->setDroprate(packet.get<int32_t>());
+		ChannelServer::Instance()->setDropRate(packet.get<int32_t>());
 	}
 }
 

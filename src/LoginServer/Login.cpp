@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "MiscUtilities.h"
 #include "PacketReader.h"
-#include "PlayerLogin.h"
+#include "Player.h"
 #include "PlayerStatus.h"
 #include "Randomizer.h"
 #include "StringUtilities.h"
@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
-void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
+void Login::loginUser(Player *player, PacketReader &packet) {
 	string username = packet.getString();
 	string password = packet.getString();
 	string ip = IpUtilities::ipToString(player->getIp());
@@ -131,7 +131,7 @@ void Login::loginUser(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-void Login::setGender(PlayerLogin *player, PacketReader &packet) {
+void Login::setGender(Player *player, PacketReader &packet) {
 	if (player->getStatus() != PlayerStatus::SetGender) {
 		//hacking
 		return;
@@ -150,7 +150,7 @@ void Login::setGender(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-void Login::handleLogin(PlayerLogin *player, PacketReader &packet) {
+void Login::handleLogin(Player *player, PacketReader &packet) {
 	int32_t status = player->getStatus();
 	if (status == PlayerStatus::SetPin)
 		LoginPacket::loginProcess(player, 0x01);
@@ -166,7 +166,7 @@ void Login::handleLogin(PlayerLogin *player, PacketReader &packet) {
 		player->setOnline(true);
 	}
 }
-void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
+void Login::checkPin(Player *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled()) {
 		//hacking
 		return;
@@ -198,7 +198,7 @@ void Login::checkPin(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-void Login::registerPin(PlayerLogin *player, PacketReader &packet) {
+void Login::registerPin(Player *player, PacketReader &packet) {
 	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != PlayerStatus::SetPin) {
 		//hacking
 		return;

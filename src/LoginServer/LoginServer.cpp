@@ -16,18 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
+#include "Configuration.h"
 #include "InitializeCommon.h"
 #include "InitializeLogin.h"
 #include "ConnectionManager.h"
 #include "RankingCalculator.h"
+#include "World.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
 
 LoginServer * LoginServer::singleton = 0;
 
 void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(port, new PlayerLoginFactory(), "0");
-	ConnectionManager::Instance()->accept(inter_port, new LoginServerAcceptConnectionFactory());
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), "0");
+	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory());
 }
 
 void LoginServer::loadData() {
@@ -40,10 +42,10 @@ void LoginServer::loadData() {
 
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
-	pinEnabled = config.getBool("pin");
-	port = config.getShort("port");
-	inter_port = config.getShort("inter_port");
-	invalid_login_threshold = config.getInt("invalid_login_threshold");
+	m_pinEnabled = config.getBool("pin");
+	m_port = config.getShort("port");
+	m_interPort = config.getShort("inter_port");
+	m_maxInvalidLogins = config.getInt("invalid_login_threshold");
 	to_listen = true;
 
 	loadWorlds();
@@ -51,6 +53,7 @@ void LoginServer::loadConfig() {
 
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
+	Configuration conf;
 	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
 	while (1) {
@@ -59,81 +62,82 @@ void LoginServer::loadWorlds() {
 			break; // No more worlds
 
 		World *world = new World();
-		world->name = config.getString(formatter.str());
+		conf.name = config.getString(formatter.str());
 
 		formatter % i % "channels";
-		world->maxChannels = config.getInt(formatter.str());
+		conf.maxChannels = config.getInt(formatter.str());
 
 		formatter % i % "id";
-		world->id = (uint8_t) config.getInt(formatter.str());
+		world->setId((int8_t) config.getInt(formatter.str()));
 
 		formatter % i % "ribbon";
-		world->ribbon = (uint8_t) config.getInt(formatter.str());
+		conf.ribbon = (uint8_t) config.getInt(formatter.str());
 
 		formatter % i % "port";
-		world->port = config.getShort(formatter.str());
+		world->setPort(config.getShort(formatter.str()));
 
 		formatter % i % "exprate";
-		world->exprate = config.getInt(formatter.str());
+		conf.expRate = config.getInt(formatter.str());
 
 		formatter % i % "questexprate";
-		world->questexprate = config.getInt(formatter.str());
+		conf.questExpRate = config.getInt(formatter.str());
 
 		formatter % i % "mesorate";
-		world->mesorate = config.getInt(formatter.str());
+		conf.mesoRate = config.getInt(formatter.str());
 
 		formatter % i % "droprate";
-		world->droprate = config.getInt(formatter.str());
+		conf.dropRate = config.getInt(formatter.str());
 
 		formatter % i % "maxstats";
-		world->maxStats = config.getShort(formatter.str());
+		conf.maxStats = config.getShort(formatter.str());
 
 		formatter % i % "max_multi_level";
-		world->maxMultiLevel = (uint8_t) config.getInt(formatter.str());
+		conf.maxMultiLevel = (uint8_t) config.getInt(formatter.str());
 
 		formatter % i % "event_msg";
-		world->eventMsg = config.getString(formatter.str());
+		conf.eventMsg = config.getString(formatter.str());
 
 		formatter % i % "scrolling_header";
-		world->scrollingHeader = config.getString(formatter.str());
+		conf.scrollingHeader = config.getString(formatter.str());
 
 		formatter % i % "max_player_load";
-		world->maxPlayerLoad = config.getInt(formatter.str());
+		conf.maxPlayerLoad = config.getInt(formatter.str());
 
 		formatter % i % "maxchars";
-		world->maxChars = config.getInt(formatter.str());
+		conf.maxChars = config.getInt(formatter.str());
 
 		formatter % i % "pianus_channels";
-		world->pianusChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+		conf.pianusChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
 
 		formatter % i % "pap_channels";
-		world->papChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+		conf.papChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
 
 		formatter % i % "zakum_channels";
-		world->zakumChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+		conf.zakumChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
 
 		formatter % i % "horntail_channels";
-		world->horntailChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+		conf.horntailChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
 
 		formatter % i % "pinkbean_channels";
-		world->pinkbeanChannels = config.getBossChannels(formatter.str(), world->maxChannels);
+		conf.pinkbeanChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
 
 		formatter % i % "pianus_attempts";
-		world->pianusAttempts = config.getShort(formatter.str());
+		conf.pianusAttempts = config.getShort(formatter.str());
 
 		formatter % i % "pap_attempts";
-		world->papAttempts = config.getShort(formatter.str());
+		conf.papAttempts = config.getShort(formatter.str());
 
 		formatter % i % "zakum_attempts";
-		world->zakumAttempts = config.getShort(formatter.str());
+		conf.zakumAttempts = config.getShort(formatter.str());
 
 		formatter % i % "horntail_attempts";
-		world->horntailAttempts = config.getShort(formatter.str());
+		conf.horntailAttempts = config.getShort(formatter.str());
 
 		formatter % i % "pinkbean_attempts";
-		world->pinkbeanAttempts = config.getShort(formatter.str());
-
-		Worlds::worlds[world->id] = world;
+		conf.pinkbeanAttempts = config.getShort(formatter.str());
+		
+		world->setConfiguration(conf);
+		Worlds::Instance()->addWorld(world);
 		i++;
 	}
 }

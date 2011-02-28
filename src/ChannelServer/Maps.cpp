@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PetHandler.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PacketReader.h"
 #include "Summons.h"
 #include <string>
@@ -140,7 +140,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 }
 
 void Maps::addPlayer(Player *player, int32_t mapid) {
-	Players::Instance()->addPlayer(player);
+	PlayerDataProvider::Instance()->addPlayer(player);
 	getMap(mapid)->addPlayer(player);
 	getMap(mapid)->showObjects(player);
 	PetHandler::showPets(player);

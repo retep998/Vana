@@ -18,36 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
 #include <map>
 #include <string>
 #include <vector>
 
 using std::map;
 using std::string;
-using std::tr1::unordered_map;
 using std::vector;
 
 class Instance;
-class PacketReader;
-class Party;
 class Player;
-
-#define PARTY_SYNC_CHANNEL_START 0x01
-#define PARTY_SYNC_DISBAND 0x02
-#define PARTY_SYNC_CREATE 0x03
-#define PARTY_SYNC_SWITCH_LEADER 0x04
-#define PARTY_SYNC_REMOVE_MEMBER 0x05
-#define PARTY_SYNC_ADD_MEMBER 0x06
-
-namespace PartyFunctions {
-	extern unordered_map<int32_t, Party *> parties;
-	void handleRequest(Player* player, PacketReader &packet);
-	void handleResponse(PacketReader &packet);
-	void handleDataSync(PacketReader &packet);
-	void handleChannelStart(PacketReader &packet);
-	void disbandParty(PacketReader &packet);
-}
 
 class Party {
 public:

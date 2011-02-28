@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 
-class PlayerLogin : public AbstractConnection {
+class Player : public AbstractConnection {
 public:
-	PlayerLogin() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0), quiet_ban_reason(0) { }
+	Player() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0), quiet_ban_reason(0) { }
 
-	~PlayerLogin();
+	~Player();
 
 	void realHandleRequest(PacketReader &packet);
 
@@ -73,9 +73,9 @@ private:
 	PlayerStatus::PlayerStatus status;
 };
 
-class PlayerLoginFactory : public AbstractConnectionFactory {
+class PlayerFactory : public AbstractConnectionFactory {
 public:
 	AbstractConnection * createConnection() {
-		return new PlayerLogin();
+		return new Player();
 	}
 };

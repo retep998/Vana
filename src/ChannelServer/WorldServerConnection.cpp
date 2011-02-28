@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
-#include "Party.h"
+#include "PartyHandler.h"
 #include "PlayerActiveBuffs.h"
-#include "PlayerPacketHolder.h"
+#include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
@@ -50,10 +50,10 @@ void WorldServerConnection::realHandleRequest(PacketReader &packet) {
 		case INTER_NEW_CONNECTABLE: WorldServerConnectHandler::newConnectable(packet); break;
 		case INTER_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case INTER_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
-		case INTER_PARTY_OPERATION: PartyFunctions::handleResponse(packet); break;
-		case INTER_PARTY_SYNC: PartyFunctions::handleDataSync(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET: PlayerPacketHolder::Instance()->parseIncomingPacket(packet); break;
-		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerPacketHolder::Instance()->removePacket(packet.get<int32_t>()); break;
+		case INTER_PARTY_OPERATION: PartyHandler::handleResponse(packet); break;
+		case INTER_PARTY_SYNC: PartyHandler::handleDataSync(packet); break;
+		case INTER_TRANSFER_PLAYER_PACKET: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
+		case INTER_TRANSFER_PLAYER_PACKET_DISCONNECT: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
 		case INTER_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet);
 	}
 }

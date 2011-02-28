@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerInventory.h"
 #include "PlayerPacket.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "PacketReader.h"
 #include "Map.h"
@@ -44,7 +44,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 		chat = packet.getString();
 	}
 
-	Player *receiver = Players::Instance()->getPlayer(name);
+	Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 	if (receiver) {
 		if (type == 0x05) {
 			PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
@@ -94,7 +94,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		break;
 		case 0x03: { // /ban (character name)
 			string victim = packet.getString();
-			if (Player *receiver = Players::Instance()->getPlayer(victim)) {
+			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				receiver->getSession()->disconnect();
 			}
 			else {
@@ -108,7 +108,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			int8_t reason = packet.get<int8_t>();
 			int32_t length = packet.get<int32_t>();
 			string reason_message = packet.getString();
-			if (Player *receiver = Players::Instance()->getPlayer(victim)) {
+			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				mysqlpp::Query accbanquery = Database::getCharDB().query();
 				accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET "
 					<< "users.ban_reason = " << (int16_t) reason << ", "
@@ -129,7 +129,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		case 0x1D: { // /w (character name) (message)
 			string victim = packet.getString();
 			string message = packet.getString();
-			if (Player *receiver = Players::Instance()->getPlayer(victim)) {
+			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				PlayerPacket::showMessage(receiver, message, 1);
 				GmPacket::warning(player, true);
 			}

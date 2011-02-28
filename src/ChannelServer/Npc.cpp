@@ -192,7 +192,7 @@ void NPC::sendStyle(int32_t styles[], int8_t size) {
 
 void NPC::proceedBack() {
 	if (state == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 

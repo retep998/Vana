@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -183,7 +183,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 	hp -= damage;
 
 	if (!poison) { // HP bar packet does nothing for showing damage when poison is damaging for whatever reason
-		Player *player = Players::Instance()->getPlayer(playerid);
+		Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 
 		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
@@ -487,7 +487,7 @@ int32_t Mob::giveExp(Player *killer) {
 				highestdamager = iter->first;
 				highestdamage = iter->second;
 			}
-			damager = Players::Instance()->getPlayer(iter->first);
+			damager = PlayerDataProvider::Instance()->getPlayer(iter->first);
 			if (damager == 0 || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 
@@ -516,7 +516,7 @@ int32_t Mob::giveExp(Player *killer) {
 				// Account for EXP increasing junk
 				int16_t hsrate = damager->getActiveBuffs()->getHolySymbolRate();
 				exp = exp * getTauntEffect() / 100;
-				exp *= ChannelServer::Instance()->getExprate();
+				exp *= ChannelServer::Instance()->getExpRate();
 				exp += ((exp * hsrate) / 100);
 				damager->getStats()->giveExp(exp, false, (damager == killer));
 			}
@@ -544,7 +544,7 @@ int32_t Mob::giveExp(Player *killer) {
 					uint32_t exp = static_cast<uint32_t>(info->exp * ((8 * damagerlevel / totallevel) + (damager == partyiter->second.highestdamager ? 2 : 0)) / 10);
 					int16_t hsrate = damager->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
-					exp *= ChannelServer::Instance()->getExprate();
+					exp *= ChannelServer::Instance()->getExpRate();
 					exp += ((exp * hsrate) / 100);
 					damager->getStats()->giveExp(exp, false, (damager == killer));
 				}

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pet.h"
 #include "PetHandler.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Randomizer.h"
 #include "Reactors.h"
 #include "ShopDataProvider.h"
@@ -49,7 +49,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		if (GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isRechargeable(item->id))
 			amount = item->amount;
 		else if (amount <= 0 || amount > item->amount) {
-			// hacking
+			// Hacking
 			return;
 		}
 		Item droppeditem = Item(item);
@@ -287,7 +287,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			int8_t slot = packet.get<int8_t>(); // Slot within the inventory
 			Item *item = player->getStorage()->getItem(slot);
 			if (item == 0) { // It's a trap
-				// hacking
+				// Hacking
 				return;
 			}
 			Inventory::addItem(player, new Item(item));
@@ -310,13 +310,13 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
 			Item *item = player->getInventory()->getItem(inv, slot);
 			if (item == 0) {
-				// hacking
+				// Hacking
 				return;
 			}
 			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
 				amount = 1;
 			else if (amount <= 0 || amount > item->amount) {
-				// hacking
+				// Hacking
 				return;
 			}
 			player->getStorage()->addItem((inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
@@ -347,7 +347,7 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 	if (player->getStats()->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
@@ -604,7 +604,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				int16_t slot = (int16_t) packet.get<int32_t>();
 				item = player->getInventory()->getItem(inv, slot);
 				if (item == 0) {
-					// hacking
+					// Hacking
 					return;
 				}
 			}
@@ -669,7 +669,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
 			bool show_whisper = (itemid == Items::Megassenger ? packet.getBool() : false);
 
-			Player *receiver = Players::Instance()->getPlayer(packet.getString());
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
 			if ((hasreceiver && receiver != 0) || (!hasreceiver && receiver == 0)) {
 				string msg = packet.getString();
@@ -710,7 +710,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			bool show_whisper = (itemid == Items::HeartMegassenger ? packet.getBool() : false);
 
 			string name = packet.getString();
-			Player *receiver = Players::Instance()->getPlayer(name);
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 			int32_t time = 60;
 			if (receiver != 0) {
 				string msg = packet.getString();
@@ -801,7 +801,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 void InventoryHandler::useItemEffect(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 	if (player->getInventory()->getItemAmount(itemid) == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 	player->setItemEffect(itemid);
@@ -834,7 +834,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 	}
 	else if (mode == 1) { // IGN
 		string tname = packet.getString();
-		Player *target = Players::Instance()->getPlayer(tname);
+		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
 		if (target != 0 && target != player) {
 			targetmapid = target->getMap();
 		}

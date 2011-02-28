@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerLogin.h"
+#include "Player.h"
 #include "Characters.h"
 #include "Database.h"
 #include "Login.h"
@@ -25,15 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include <stdexcept>
 
-void PlayerLogin::realHandleRequest(PacketReader &packet) {
+void Player::realHandleRequest(PacketReader &packet) {
 	try {
 		switch (packet.get<int16_t>()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
-			case CMSG_PLAYER_LIST: Worlds::channelSelect(this, packet); break;
-			case CMSG_WORLD_STATUS: Worlds::selectWorld(this, packet); break;
+			case CMSG_PLAYER_LIST: Worlds::Instance()->channelSelect(this, packet); break;
+			case CMSG_WORLD_STATUS: Worlds::Instance()->selectWorld(this, packet); break;
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_WORLD_LIST:
-			case CMSG_WORLD_LIST_REFRESH: Worlds::showWorld(this); break;
+			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
@@ -53,11 +53,11 @@ void PlayerLogin::realHandleRequest(PacketReader &packet) {
 	}
 }
 
-PlayerLogin::~PlayerLogin() {
+Player::~Player() {
 	setOnline(false);
 }
 
-void PlayerLogin::setOnline(bool online) {
+void Player::setOnline(bool online) {
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "UPDATE users SET online = " << online
 			<< ", last_login = NOW()"

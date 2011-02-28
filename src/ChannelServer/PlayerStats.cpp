@@ -513,7 +513,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t type = packet.get<int32_t>();
 	if (getAp() == 0) {
-		// hacking
+		// Hacking
 		return;
 	}
 	LevelsPacket::statOK(player);

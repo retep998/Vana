@@ -17,16 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyPacket.h"
 #include "Channels.h"
+#include "GameConstants.h"
 #include "InterHeader.h"
+#include "InterHelper.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "Parties.h"
-#include "PartyHandler.h"
-#include "Players.h"
+#include "Party.h"
+#include "Player.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
-#include "WorldServerAcceptConnection.h"
 
-void PartyPacket::giveLeader(WorldServerAcceptConnection *player, int32_t playerid, int32_t target, bool is) {
+void PartyPacket::giveLeader(uint16_t channel, int32_t playerid, int32_t target, bool is) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
@@ -34,93 +35,93 @@ void PartyPacket::giveLeader(WorldServerAcceptConnection *player, int32_t player
 	packet.add<int8_t>(0x1A);
 	packet.add<int32_t>(target);
 	packet.add<int8_t>(is);
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void PartyPacket::invitePlayer(WorldServerAcceptConnection *player, int32_t playerid, const string &inviter) {
+void PartyPacket::invitePlayer(uint16_t channel, int32_t playerid, const string &inviter) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x04);
-	packet.add<int32_t>(Players::Instance()->getPlayerFromName(inviter)->party);
+	packet.add<int32_t>(PlayerDataProvider::Instance()->getPlayer(inviter)->getParty()->getId());
 	packet.addString(inviter);
 	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void PartyPacket::createParty(WorldServerAcceptConnection *player, int32_t playerid) {
-	Player *partyplayer = Players::Instance()->getPlayer(playerid);
+void PartyPacket::createParty(uint16_t channel, int32_t playerid) {
+	Player *partyplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x08);
-	packet.add<int32_t>(partyplayer->party);
-	packet.add<int32_t>(999999999);
-	packet.add<int32_t>(999999999);
+	packet.add<int32_t>(partyplayer->getParty()->getId());
+	packet.add<int32_t>(Maps::NoMap);
+	packet.add<int32_t>(Maps::NoMap);
 	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 
 	packet = PacketCreator();
 	packet.add<int16_t>(INTER_PARTY_OPERATION);
-	packet.add<int8_t>(PARTY_JOIN);
+	packet.add<int8_t>(PartyActions::Join);
 	packet.add<int32_t>(playerid);
-	packet.add<int32_t>(partyplayer->party);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(partyplayer->getParty()->getId());
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void PartyPacket::disbandParty(WorldServerAcceptConnection *player, int32_t playerid) {
-	Player *partyplayer = Players::Instance()->getPlayer(playerid);
+void PartyPacket::disbandParty(uint16_t channel, int32_t playerid) {
+	Player *partyplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x0C);
-	packet.add<int32_t>(partyplayer->party);
-	packet.add<int32_t>(Parties::Instance()->getParty(partyplayer->party)->getLeader());
+	packet.add<int32_t>(partyplayer->getParty()->getId());
+	packet.add<int32_t>(partyplayer->getParty()->getLeader());
 	packet.add<int8_t>(0);
-	packet.add<int32_t>(partyplayer->party);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(partyplayer->getParty()->getId());
+	Channels::Instance()->sendToChannel(channel, packet);
 
 	packet = PacketCreator();
 	packet.add<int16_t>(INTER_PARTY_OPERATION);
-	packet.add<int8_t>(PARTY_LEAVE);
+	packet.add<int8_t>(PartyActions::Leave);
 	packet.add<int32_t>(playerid);
-	packet.add<int32_t>(partyplayer->party);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(partyplayer->getParty()->getId());
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void PartyPacket::updateParty(WorldServerAcceptConnection *player, int8_t type, int32_t playerid, int32_t target) {
-	Player *partyplayer = Players::Instance()->getPlayer(playerid);
+void PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t playerid, int32_t target) {
+	Player *partyplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_PARTY);
 	switch (type) {
-		case PARTY_JOIN: 
+		case PartyActions::Join: 
 			packet.add<int8_t>(0x0F);
-			packet.add<int32_t>(partyplayer->party);
-			packet.addString(Players::Instance()->getPlayer(target)->name);
+			packet.add<int32_t>(partyplayer->getParty()->getId());
+			packet.addString(PlayerDataProvider::Instance()->getPlayer(target)->getName());
 			break;
-		case PARTY_LEAVE:
-		case PARTY_EXPEL:
+		case PartyActions::Leave:
+		case PartyActions::Expel:
 			packet.add<int8_t>(0x0C);
-			packet.add<int32_t>(partyplayer->party);
+			packet.add<int32_t>(partyplayer->getParty()->getId());
 			packet.add<int32_t>(target);
 			packet.add<int8_t>(0x01);
-			packet.add<int8_t>(type == PARTY_LEAVE ? 0x00 : 0x01);
-			packet.addString(Players::Instance()->getPlayer(target, true)->name);
-			break;
-		case PARTY_SILENT_UPDATE:
-		case PARTY_LOG_IN_OUT:
+			packet.add<int8_t>(type == PartyActions::Leave ? 0x00 : 0x01);
+			packet.addString(PlayerDataProvider::Instance()->getPlayer(target, true)->getName());
+			break;	
+		case PartyActions::SilentUpdate:
+		case PartyActions::LogInOrOut:
 			packet.add<int8_t>(0x07);
-			packet.add<int32_t>(partyplayer->party);
+			packet.add<int32_t>(partyplayer->getParty()->getId());
 	}
-	addParty(packet, Parties::Instance()->getParty(partyplayer->party), Players::Instance()->getPlayer(playerid)->channel);
-	player->getSession()->send(packet);
+	addParty(packet, partyplayer->getParty(), PlayerDataProvider::Instance()->getPlayer(playerid)->getChannel());
+	Channels::Instance()->sendToChannel(channel, packet);
 
-	if (type == PARTY_SILENT_UPDATE)
+	if (type == PartyActions::SilentUpdate)
 		return;
 
 	target = target == 0 ? playerid : target;
@@ -129,17 +130,17 @@ void PartyPacket::updateParty(WorldServerAcceptConnection *player, int8_t type, 
 	packet.add<int16_t>(INTER_PARTY_OPERATION);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(target);
-	packet.add<int32_t>(Players::Instance()->getPlayer(target, true)->party);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(PlayerDataProvider::Instance()->getPlayer(target, true)->getParty()->getId());
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void PartyPacket::partyError(WorldServerAcceptConnection *player, int32_t playerid, int8_t error) {
+void PartyPacket::partyError(uint16_t channel, int32_t playerid, int8_t error) {
 	PacketCreator packet;
 	packet.add<int16_t>(INTER_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(error);
-	player->getSession()->send(packet);
+	Channels::Instance()->sendToChannel(channel, packet);
 }
 
 void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) {
@@ -149,15 +150,15 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 
 	// Add party member's ids to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		packet.add<int32_t>(iter->second->id);
+		packet.add<int32_t>(iter->second->getId());
 	}
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
-
+	
 	// Add party member's names to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		packet.addString(iter->second->name, 13);
+		packet.addString(iter->second->getName(), 13);
 	}
 	for (i = 0; i < offset; i++) {
 		packet.addString("", 13);
@@ -165,7 +166,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 
 	// Add party member's jobs to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		packet.add<int32_t>(iter->second->job);
+		packet.add<int32_t>(iter->second->getJob());
 	}
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
@@ -173,7 +174,7 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 
 	// Add party member's levels to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		packet.add<int32_t>(iter->second->level);
+		packet.add<int32_t>(iter->second->getLevel());
 	}
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
@@ -181,8 +182,8 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 
 	// Add party member's channels to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		if (iter->second->online) {
-			packet.add<int32_t>(iter->second->channel);
+		if (iter->second->isOnline()) {
+			packet.add<int32_t>(iter->second->getChannel()); 
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -191,13 +192,13 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(-2);
 	}
-
+	
 	packet.add<int32_t>(party->getLeader());
 
 	// Add party member's maps to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		if (iter->second->channel == tochan) {
-			packet.add<int32_t>(iter->second->map);
+		if (iter->second->getChannel() == tochan) {
+			packet.add<int32_t>(iter->second->getMap()); 
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -209,14 +210,14 @@ void PartyPacket::addParty(PacketCreator &packet, Party *party, int32_t tochan) 
 
 	// Add some portal shit
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
-		packet.add<int32_t>(999999999);
-		packet.add<int32_t>(999999999);
+		packet.add<int32_t>(Maps::NoMap);
+		packet.add<int32_t>(Maps::NoMap);
 		packet.add<int32_t>(-1);
 		packet.add<int32_t>(-1);
 	}
 	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(999999999);
-		packet.add<int32_t>(999999999);
+		packet.add<int32_t>(Maps::NoMap);
+		packet.add<int32_t>(Maps::NoMap);
 		packet.add<int32_t>(-1);
 		packet.add<int32_t>(-1);
 	}

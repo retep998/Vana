@@ -22,13 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketReader.h"
 #include "RankingCalculator.h"
+#include "World.h"
 #include "Worlds.h"
 #include <iostream>
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (worldId != -1) {
-		Worlds::worlds[worldId]->connected = false;
-		Worlds::worlds[worldId]->channels.clear(); // Remove the channels (they will automaticly disconnect)
+		World *world = Worlds::Instance()->getWorld(worldId);
+		world->setConnected(false);
+		world->clearChannels();
 		std::cout << "World " << (int32_t) worldId << " disconnected." << std::endl;
 	}
 }
@@ -47,10 +49,10 @@ void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 void LoginServerAcceptConnection::authenticated(int8_t type) {
 	switch (type) {
 		case InterWorldServer:
-			Worlds::connectWorldServer(this);
+			Worlds::Instance()->addWorldServer(this);
 			break;
 		case InterChannelServer:
-			Worlds::connectChannelServer(this);
+			Worlds::Instance()->addChannelServer(this);
 			break;
 		default:
 			getSession()->disconnect();

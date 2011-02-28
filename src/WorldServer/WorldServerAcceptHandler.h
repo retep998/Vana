@@ -21,17 +21,19 @@ class WorldServerAcceptConnection;
 class PacketReader;
 
 namespace WorldServerAcceptHandler {
+	void playerConnect(WorldServerAcceptConnection *player, PacketReader &packet);
+	void playerDisconnect(WorldServerAcceptConnection *player, PacketReader &packet);
 	void playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
 	void handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
-	void findPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void registerPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void removePlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet);
 	void partyOperation(WorldServerAcceptConnection *player, PacketReader &packet);
 	void updateLevel(WorldServerAcceptConnection *player, PacketReader &packet);
 	void updateJob(WorldServerAcceptConnection *player, PacketReader &packet);
 	void updateMap(WorldServerAcceptConnection *player, PacketReader &packet);
+
+	void findPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
+	void scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet);
 	void groupChat(WorldServerAcceptConnection *player, PacketReader &packet);
-	void toChannels(PacketReader &packet);
+	void sendToChannels(PacketReader &packet);
+	void sendToLogin(PacketReader &packet);
 }

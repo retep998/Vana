@@ -25,28 +25,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServer * WorldServer::singleton = 0;
 
 void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(inter_port, new WorldServerAcceptConnectionFactory());
+	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory());
 }
 
 void WorldServer::loadData() {
 	Initializing::checkSchemaVersion();
 	Initializing::loadData();
 
-	loginPlayer = new LoginServerConnection;
-	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
-	loginPlayer->sendAuth(inter_password, external_ip);
+	m_loginConnection = new LoginServerConnection;
+	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConnection);
+	m_loginConnection->sendAuth(inter_password, external_ip);
 }
 
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
-	login_ip = IpUtilities::stringToIp(config.getString("login_ip"));
-	login_inter_port = config.getShort("login_inter_port");
+	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
+	m_loginPort = config.getShort("login_inter_port");
 
-	inter_port = -1; // Will get from login server later
-	scrollingHeader = ""; // Will get from login server later
+	m_port = -1; // Will get from login server later
 }
 
 void WorldServer::setScrollingHeader(const string &message) {
-	scrollingHeader = message;
+	m_config.scrollingHeader = message;
 	WorldServerAcceptPacket::scrollingHeader(message);
 }

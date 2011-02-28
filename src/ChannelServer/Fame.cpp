@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Fame.h"
 #include "FamePacket.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Database.h"
 #include "PacketReader.h"
 
@@ -31,7 +31,7 @@ void Fame::handleFame(Player *player, PacketReader &packet) {
 			if (checkResult >= 1 && checkResult <= 4)
 				FamePacket::sendError(player, checkResult);
 			else {
-				Player *famee = Players::Instance()->getPlayer(playerid);
+				Player *famee = PlayerDataProvider::Instance()->getPlayer(playerid);
 				int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
 				famee->getStats()->setFame(newFame);
 				addFameLog(player->getId(), playerid);

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Pos.h"
 #include "QuestDataProvider.h"
 #include "Randomizer.h"
@@ -44,7 +44,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		return;
 	}
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
-	Player *player = Players::Instance()->getPlayer(playerid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	int16_t d = 0;
 	int32_t partyid = 0;
 	Pos pos;
@@ -82,7 +82,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		}
 		else {
 			chance = chance * taunt / 100;
-			chance *= ChannelServer::Instance()->getDroprate();
+			chance *= ChannelServer::Instance()->getDropRate();
 		}
 		if (Randomizer::Instance()->randInt(999999) < chance) {
 			if (explosive) {
@@ -122,7 +122,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			else {
 				int32_t mesos = amount;
 				if (!isSteal) {
-					mesos *= ChannelServer::Instance()->getMesorate();
+					mesos *= ChannelServer::Instance()->getMesoRate();
 					if (player != 0 && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Jobs::Hermit::MesoUp)->x) / 100;
 					}
@@ -154,7 +154,7 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int32_t amount = packet.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
-		// hacking
+		// Hacking
 		return;
 	}
 	player->getInventory()->modifyMesos(-amount, true);

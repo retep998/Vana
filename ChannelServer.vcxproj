@@ -98,8 +98,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
+    <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
     <ClCompile Include="src\ChannelServer\Pet.cpp" />
     <ClCompile Include="src\ChannelServer\PetHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -119,7 +121,6 @@
     <ClCompile Include="src\ChannelServer\Mob.cpp" />
     <ClCompile Include="src\ChannelServer\Npc.cpp" />
     <ClCompile Include="src\ChannelServer\Party.cpp" />
-    <ClCompile Include="src\ChannelServer\Players.cpp" />
     <ClCompile Include="src\ChannelServer\Quests.cpp" />
     <ClCompile Include="src\ChannelServer\Reactors.cpp" />
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp" />
@@ -166,7 +167,6 @@
     <ClCompile Include="src\ChannelServer\PlayerInventory.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerMonsterBook.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerMounts.cpp" />
-    <ClCompile Include="src\ChannelServer\PlayerPacketHolder.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerPets.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerQuests.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerSkills.cpp" />
@@ -205,10 +205,11 @@
     <ClInclude Include="src\ChannelServer\MovableLife.h" />
     <ClInclude Include="src\ChannelServer\Npc.h" />
     <ClInclude Include="src\ChannelServer\Party.h" />
+    <ClInclude Include="src\ChannelServer\PartyHandler.h" />
     <ClInclude Include="src\ChannelServer\Pet.h" />
     <ClInclude Include="src\ChannelServer\PetHandler.h" />
+    <ClInclude Include="src\ChannelServer\PlayerDataProvider.h" />
     <ClInclude Include="src\ChannelServer\PlayerRandomStream.h" />
-    <ClInclude Include="src\ChannelServer\Players.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
     <ClInclude Include="src\ChannelServer\Reactors.h" />
     <ClInclude Include="src\ChannelServer\SkillMacros.h" />
@@ -255,7 +256,6 @@
     <ClInclude Include="src\ChannelServer\PlayerInventory.h" />
     <ClInclude Include="src\ChannelServer\PlayerMonsterBook.h" />
     <ClInclude Include="src\ChannelServer\PlayerMounts.h" />
-    <ClInclude Include="src\ChannelServer\PlayerPacketHolder.h" />
     <ClInclude Include="src\ChannelServer\PlayerPets.h" />
     <ClInclude Include="src\ChannelServer\PlayerQuests.h" />
     <ClInclude Include="src\ChannelServer\PlayerSkills.h" />
