@@ -39,5 +39,4 @@ namespace PlayerHandler {
 	void useEnergyChargeAttack(Player *player, PacketReader &packet);
 	void useSummonAttack(Player *player, PacketReader &packet);
 	uint32_t damageMobs(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0);
-
 }

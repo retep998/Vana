@@ -15,28 +15,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Parties.h"
-#include "PartyHandler.h"
+#pragma once
 
-Parties * Parties::singleton = 0;
-
-int32_t Parties::addParty(Party *party) {
-	m_map[++pid] = party;
-	return pid;
-}
-
-void Parties::removeParty(int32_t id) {
-	if (m_map.find(id) != m_map.end()) {
-		Party *party = m_map[id];
-		delete party;
-		m_map.erase(id);
+// Specific packet constants that are shared between servers
+namespace PartyActions {
+	enum PartyActions {
+		Leave = 0x01,
+		Join = 0x02,
+		SetLeader = 0x03,
+		SilentUpdate = 0x04,
+		LogInOrOut = 0x05,
+		Expel = 0x06	
+	};
+	namespace Sync {
+		enum PartySync {
+			ChannelStart = 0x01,
+			Disband = 0x02,
+			Create = 0x03,
+			SwitchLeader = 0x04,
+			RemoveMember = 0x05,
+			AddMember = 0x06
+		};
 	}
-}
-
-Party * Parties::getParty(int32_t id) {
-	return (m_map.find(id) != m_map.end() ? m_map[id] : 0);
-}
-
-unordered_map<int32_t, Party *> Parties::getParties() {
-	return m_map;
 }

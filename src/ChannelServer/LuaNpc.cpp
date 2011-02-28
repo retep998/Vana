@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaNpc.h"
 #include "Npc.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Quests.h"
 #include "ScriptDataProvider.h"
 #include "StoragePacket.h"
@@ -65,7 +65,7 @@ bool LuaNPC::run() {
 bool LuaNPC::resume(int32_t nargs) {
 	int32_t ret = lua_resume(luaThread, nargs);
 	if (ret == 0) { // NPC finished
-		Players::Instance()->getPlayer(playerid)->getNPC()->end();
+		PlayerDataProvider::Instance()->getPlayer(playerid)->getNPC()->end();
 	}
 	else if (ret != LUA_YIELD) { // error, a working NPC returns either 0 or LUA_YIELD
 		handleError();
@@ -95,7 +95,7 @@ bool LuaNPC::proceedText(const string &text) {
 
 void LuaNPC::handleError() {
 	printError(lua_tostring(luaThread, -1));
-	Players::Instance()->getPlayer(playerid)->getNPC()->end();
+	PlayerDataProvider::Instance()->getPlayer(playerid)->getNPC()->end();
 }
 
 NPC * LuaExports::getNPC(lua_State *luaVm) {

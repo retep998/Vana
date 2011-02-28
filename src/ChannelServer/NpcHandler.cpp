@@ -75,7 +75,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 
 	int8_t type = packet.get<int8_t>();
 	if (type != npc->getSentDialog()) {
-		// hacking
+		// Hacking
 		return;
 	}
 

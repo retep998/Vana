@@ -15,32 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
+#include "Party.h"
+#include "Player.h"
 
-#include "Types.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+Party::Party(int32_t id) :
+m_id(id),
+m_leaderId(0)
+{
+}
 
-using std::tr1::unordered_map;
+void Party::addMember(Player *player) {
+	members[player->getId()] = player;
+}
 
-class PacketReader;
-
-class PlayerPacketHolder : boost::noncopyable {
-public:
-	static PlayerPacketHolder * Instance() {
-		if (singleton == 0)
-			singleton = new PlayerPacketHolder;
-		return singleton;
-	}
-
-	void parseIncomingPacket(PacketReader &packet);
-	void removePacket(int32_t playerid);
-	bool checkPlayer(int32_t playerid);
-	PacketReader & getPacket(int32_t playerid);
-private:
-	PlayerPacketHolder() {};
-	static PlayerPacketHolder *singleton;
-
-	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_map;
-};
+void Party::setLeader(int32_t playerId) {
+	m_oldLeaders.push_back(m_leaderId);
+	m_leaderId = playerId;
+}

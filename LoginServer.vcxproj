@@ -107,8 +107,9 @@
     <ClCompile Include="src\LoginServer\Characters.cpp" />
     <ClCompile Include="src\LoginServer\Login.cpp" />
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
-    <ClCompile Include="src\LoginServer\PlayerLogin.cpp" />
+    <ClCompile Include="src\LoginServer\Player.cpp" />
     <ClCompile Include="src\LoginServer\RankingCalculator.cpp" />
+    <ClCompile Include="src\LoginServer\World.cpp" />
     <ClCompile Include="src\LoginServer\Worlds.cpp" />
     <ClCompile Include="src\LoginServer\LoginPacket.cpp" />
     <ClCompile Include="src\LoginServer\LoginPacketHelper.cpp" />
@@ -118,15 +119,17 @@
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\LoginServer\Channel.h" />
     <ClInclude Include="src\LoginServer\PrecompiledHeader.h" />
     <ClInclude Include="src\LoginServer\LoginPacket.h" />
     <ClInclude Include="src\LoginServer\LoginPacketHelper.h" />
     <ClInclude Include="src\LoginServer\Characters.h" />
     <ClInclude Include="src\LoginServer\Login.h" />
     <ClInclude Include="src\LoginServer\LoginServer.h" />
-    <ClInclude Include="src\LoginServer\PlayerLogin.h" />
+    <ClInclude Include="src\LoginServer\Player.h" />
     <ClInclude Include="src\LoginServer\PlayerStatus.h" />
     <ClInclude Include="src\LoginServer\RankingCalculator.h" />
+    <ClInclude Include="src\LoginServer\World.h" />
     <ClInclude Include="src\LoginServer\Worlds.h" />
     <ClInclude Include="src\LoginServer\InitializeLogin.h" />
     <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h" />

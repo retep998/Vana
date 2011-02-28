@@ -17,9 +17,6 @@
     <Filter Include="Source Files\Inter-Server">
       <UniqueIdentifier>{beaba7ce-6b55-4024-bbec-f2e518c82908}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Inter-Server\Handlers">
-      <UniqueIdentifier>{54773211-83cc-4e2b-a465-96a0fca9f271}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Database Loading">
       <UniqueIdentifier>{f4456596-7abe-459a-ae8b-d15ea3b08d02}</UniqueIdentifier>
     </Filter>
@@ -42,9 +39,6 @@
     <Filter Include="Header Files\Inter-Server">
       <UniqueIdentifier>{6a9d3c47-a667-4533-a5c7-dd3b3ae4bac1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Inter-Server\Handlers">
-      <UniqueIdentifier>{aee263c4-ff71-4442-835d-1ad3db7de46d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LoginServer\main_login.cpp">
@@ -60,9 +54,6 @@
       <Filter>Source Files\LoginServer</Filter>
     </ClCompile>
     <ClCompile Include="src\LoginServer\LoginServer.cpp">
-      <Filter>Source Files\LoginServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LoginServer\PlayerLogin.cpp">
       <Filter>Source Files\LoginServer</Filter>
     </ClCompile>
     <ClCompile Include="src\LoginServer\RankingCalculator.cpp">
@@ -83,11 +74,17 @@
     <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp">
       <Filter>Source Files\Inter-Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp">
-      <Filter>Source Files\Inter-Server\Handlers</Filter>
-    </ClCompile>
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp">
       <Filter>Source Files\Database Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\Player.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\World.cpp">
+      <Filter>Source Files\LoginServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp">
+      <Filter>Source Files\Inter-Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,9 +106,6 @@
     <ClInclude Include="src\LoginServer\LoginServer.h">
       <Filter>Header Files\LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\PlayerLogin.h">
-      <Filter>Header Files\LoginServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\LoginServer\PlayerStatus.h">
       <Filter>Header Files\LoginServer</Filter>
     </ClInclude>
@@ -130,8 +124,17 @@
     <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
       <Filter>Header Files\Inter-Server</Filter>
     </ClInclude>
+    <ClInclude Include="src\LoginServer\Player.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\World.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\Channel.h">
+      <Filter>Header Files\LoginServer</Filter>
+    </ClInclude>
     <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h">
-      <Filter>Header Files\Inter-Server\Handlers</Filter>
+      <Filter>Header Files\Inter-Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

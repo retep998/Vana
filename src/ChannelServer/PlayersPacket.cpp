@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pet.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "SendHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
@@ -101,7 +101,7 @@ void PlayersPacket::showMessage(const string &msg, int8_t type) {
 	packet.addString(msg);
 	if (type == 6)
 		packet.add<int32_t>(0);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::showMessageWorld(const string &msg, int8_t type) {
@@ -168,7 +168,7 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
-	Players::Instance()->sendPacket(packet);
+	PlayerDataProvider::Instance()->sendPacket(packet);
 }
 
 void PlayersPacket::useMeleeAttack(Player *player, PacketReader &pack) {

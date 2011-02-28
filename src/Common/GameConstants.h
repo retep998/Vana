@@ -134,6 +134,10 @@ namespace Gender {
 	};
 }
 
+namespace GuildsAndAlliances {
+	const int32_t RankQuantity = 5;
+}
+
 namespace BuffBytes {
 	const int8_t ByteQuantity = 16;
 	const int8_t EntryByteQuantity = 8;

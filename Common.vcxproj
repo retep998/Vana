@@ -83,6 +83,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Common\ConfigurationPacket.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -133,7 +134,10 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\Configuration.h" />
+    <ClInclude Include="src\Common\ConfigurationPacket.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\InterHelper.h" />
     <ClInclude Include="src\Common\Ip.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\MapObjects.h" />

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "Trades.h"
 #include "VersionConstants.h"
 
@@ -218,9 +218,9 @@ Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t 
 }
 
 Player * ActiveTrade::getSender() {
-	return Players::Instance()->getPlayer(senderid);
+	return PlayerDataProvider::Instance()->getPlayer(senderid);
 }
 
 Player * ActiveTrade::getReceiver() {
-	return Players::Instance()->getPlayer(receiverid);
+	return PlayerDataProvider::Instance()->getPlayer(receiverid);
 }

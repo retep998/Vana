@@ -227,6 +227,9 @@
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
       <Filter>Source Files\Database Loading\MCDB</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\ConfigurationPacket.cpp">
+      <Filter>Source Files\Packets\Inter-Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -408,6 +411,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\MapObjects.h">
       <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterHelper.h">
+      <Filter>Header Files\Packets\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Configuration.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConfigurationPacket.h">
+      <Filter>Header Files\Packets\Inter-Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -102,16 +102,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\WorldServer\Channel.cpp" />
     <ClCompile Include="src\WorldServer\InitializeWorld.cpp" />
     <ClCompile Include="src\WorldServer\main_world.cpp" />
+    <ClCompile Include="src\WorldServer\Party.cpp" />
+    <ClCompile Include="src\WorldServer\Player.cpp" />
+    <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp" />
     <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\ChannelChangeRequests.cpp" />
     <ClCompile Include="src\WorldServer\Channels.cpp" />
-    <ClCompile Include="src\WorldServer\Parties.cpp" />
-    <ClCompile Include="src\WorldServer\Players.cpp" />
     <ClCompile Include="src\WorldServer\WorldServer.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnection.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectPacket.cpp" />
@@ -123,12 +124,14 @@
     <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\WorldServer\Channel.h" />
     <ClInclude Include="src\WorldServer\InitializeWorld.h" />
+    <ClInclude Include="src\WorldServer\Party.h" />
+    <ClInclude Include="src\WorldServer\Player.h" />
+    <ClInclude Include="src\WorldServer\PlayerDataProvider.h" />
     <ClInclude Include="src\WorldServer\PrecompiledHeader.h" />
-    <ClInclude Include="src\WorldServer\ChannelChangeRequests.h" />
     <ClInclude Include="src\WorldServer\Channels.h" />
     <ClInclude Include="src\WorldServer\Parties.h" />
-    <ClInclude Include="src\WorldServer\Players.h" />
     <ClInclude Include="src\WorldServer\WorldServer.h" />
     <ClInclude Include="src\WorldServer\LoginServerConnection.h" />
     <ClInclude Include="src\WorldServer\LoginServerConnectPacket.h" />

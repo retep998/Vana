@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "Pos.h"
 #include "ShopDataProvider.h"
@@ -491,7 +491,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+) ?(\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
-							if (Player *target = Players::Instance()->getPlayer(targetname))
+							if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname))
 								target->getSession()->disconnect();
 
 							string reasonstring = matches[2];
@@ -514,7 +514,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+) ?(\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
-							if (Player *target = Players::Instance()->getPlayer(targetname)) {
+							if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname)) {
 								string targetip = IpUtilities::ipToString(target->getIp());
 								target->getSession()->disconnect();
 
@@ -539,7 +539,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+) (\\d+) (\\d+)";
 						if (regex_match(args.c_str(), matches, re)) {
 							string targetname = matches[1];
-							if (Player *target = Players::Instance()->getPlayer(targetname))
+							if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname))
 								target->getSession()->disconnect();
 
 							string reasonstring = matches[2];
@@ -624,7 +624,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						if (args.length() != 0) {
 							string msg = player->getName() + " : " + args;
 							MeFunctor func = {msg};
-							Players::Instance()->run(func);
+							PlayerDataProvider::Instance()->run(func);
 						}
 						else {
 							showSyntax(player, command);
@@ -633,7 +633,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					}
 					case CmdKick:
 						if (args.length() != 0) {
-							if (Player *target = Players::Instance()->getPlayer(args)) {
+							if (Player *target = PlayerDataProvider::Instance()->getPlayer(args)) {
 								if (player->getGmLevel() > target->getGmLevel())
 									target->getSession()->disconnect();
 								else
@@ -649,7 +649,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdWarp:
 						re = "(\\w+) ?(\\d*)?";
 						if (regex_match(args.c_str(), matches, re)) {
-							if (Player *warpee = Players::Instance()->getPlayer(matches[1])) {
+							if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(matches[1])) {
 								string mapstring = matches[2];
 								int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
 
@@ -667,7 +667,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 
 						if (Maps::getMap(mapid)) {
 							WarpFunctor func = {mapid, player};
-							Players::Instance()->run(func);
+							PlayerDataProvider::Instance()->run(func);
 						}
 						else {
 							PlayerPacket::showMessage(player, "Invalid Map ID", 6);
@@ -718,7 +718,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							else if (args == "me") {
 								player->getStats()->setHp(0);
 							}
-							else if (Player *killpsa = Players::Instance()->getPlayer(args)) { // Kill by name
+							else if (Player *killpsa = PlayerDataProvider::Instance()->getPlayer(args)) { // Kill by name
 								killpsa->getStats()->setHp(0);
 							}
 						}
@@ -1077,7 +1077,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdWarpTo:
 						Player *warptoee;
-						if (warptoee = Players::Instance()->getPlayer(args)) {
+						if (warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
 							player->setMap(warptoee->getMap());
 						}
 						break;

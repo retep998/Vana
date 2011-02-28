@@ -17,32 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
-#include <vector>
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
 
 using std::string;
-using std::vector;
 using std::tr1::shared_ptr;
 using std::tr1::unordered_map;
 
-class WorldServerAcceptConnection;
+class Channel;
 class PacketCreator;
-
-struct Channel : boost::noncopyable {
-	Channel() : players(0) { }
-
-	WorldServerAcceptConnection *player;
-	uint16_t id;
-	uint32_t ip;
-	vector<vector<uint32_t> > external_ip;
-
-	uint16_t port;
-	int32_t players;
-};
+class WorldServerAcceptConnection;
 
 class Channels {
 public:
@@ -51,9 +39,12 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, uint16_t port);
+	void registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port);
 	void removeChannel(uint16_t channel);
 	Channel * getChannel(uint16_t num);
+	void increasePopulation(uint16_t channel);
+	void decreasePopulation(uint16_t channel);
+	void sendToChannel(uint16_t channel, PacketCreator &packet);
 	void sendToAll(PacketCreator &packet);
 	uint16_t size();
 	uint16_t getAvailableChannel();

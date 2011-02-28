@@ -20,9 +20,6 @@
     <Filter Include="Source Files\Inter-Server">
       <UniqueIdentifier>{f2458e12-5cfb-4ab9-9a6d-cf23c5d525d7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Inter-Server\Handlers">
-      <UniqueIdentifier>{af78a9b4-67f1-4156-a031-decc44436c60}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Scripting">
       <UniqueIdentifier>{8121e5ce-8978-4b9e-ac5d-ae595156b19d}</UniqueIdentifier>
     </Filter>
@@ -57,9 +54,6 @@
     <Filter Include="Header Files\Inter-Server">
       <UniqueIdentifier>{f7e04f1a-8e83-4dfc-9906-6d2d694155e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Inter-Server\Handlers">
-      <UniqueIdentifier>{ffa07b5b-ff3c-4fbf-ae6d-0f502377d0df}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Scripting">
       <UniqueIdentifier>{f9c0a104-cfce-44e8-909a-5cdf6e259337}</UniqueIdentifier>
     </Filter>
@@ -74,6 +68,18 @@
     </Filter>
     <Filter Include="Header Files\Handlers">
       <UniqueIdentifier>{0140c948-d10c-4558-83a3-d7de3b14137b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server\Sync">
+      <UniqueIdentifier>{af78a9b4-67f1-4156-a031-decc44436c60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server\Sync">
+      <UniqueIdentifier>{ffa07b5b-ff3c-4fbf-ae6d-0f502377d0df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Inter-Server\World">
+      <UniqueIdentifier>{a051d740-5e42-405e-a29b-24e1d02f9f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inter-Server\World">
+      <UniqueIdentifier>{fb1723a3-2b8e-4259-938a-2f4b468c0758}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +129,6 @@
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\Party.cpp">
-      <Filter>Source Files\ChannelServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\Players.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\Quests.cpp">
@@ -224,15 +227,6 @@
     <ClCompile Include="src\ChannelServer\MapDataProvider.cpp">
       <Filter>Source Files\Database Loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp">
-      <Filter>Source Files\Inter-Server</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp">
-      <Filter>Source Files\Inter-Server</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp">
-      <Filter>Source Files\Inter-Server\Handlers</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\LuaInstance.cpp">
       <Filter>Source Files\Scripting</Filter>
     </ClCompile>
@@ -264,9 +258,6 @@
       <Filter>Source Files\Player</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\PlayerMounts.cpp">
-      <Filter>Source Files\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerPacketHolder.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\PlayerPets.cpp">
@@ -341,6 +332,21 @@
     <ClCompile Include="src\ChannelServer\PetHandler.cpp">
       <Filter>Source Files\Handlers</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\PartyHandler.cpp">
+      <Filter>Source Files\Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp">
+      <Filter>Source Files\Inter-Server\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -386,9 +392,6 @@
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Party.h">
-      <Filter>Header Files\ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Players.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Quests.h">
@@ -487,15 +490,6 @@
     <ClInclude Include="src\ChannelServer\MapDataProvider.h">
       <Filter>Header Files\Database Loading</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnection.h">
-      <Filter>Header Files\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h">
-      <Filter>Header Files\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h">
-      <Filter>Header Files\Inter-Server\Handlers</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChannelServer\LuaInstance.h">
       <Filter>Header Files\Scripting</Filter>
     </ClInclude>
@@ -527,9 +521,6 @@
       <Filter>Header Files\Player</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerMounts.h">
-      <Filter>Header Files\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerPacketHolder.h">
       <Filter>Header Files\Player</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerPets.h">
@@ -609,6 +600,21 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PetHandler.h">
       <Filter>Header Files\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PartyHandler.h">
+      <Filter>Header Files\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PlayerDataProvider.h">
+      <Filter>Header Files\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\WorldServerConnection.h">
+      <Filter>Header Files\Inter-Server\World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

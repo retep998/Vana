@@ -16,58 +16,67 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Worlds.h"
+#include "Channel.h"
 #include "Characters.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServerAcceptConnection.h"
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
-#include "PlayerLogin.h"
+#include "Player.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "PlayerStatus.h"
+#include "World.h"
 #include <iostream>
 
-map<uint8_t, World *> Worlds::worlds;
+Worlds * Worlds::singleton = 0;
 
-void Worlds::showWorld(PlayerLogin *player) {
+void Worlds::showWorld(Player *player) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
-		// hacking
+		// Hacking
 		return;
 	}
 
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
-		if (iter->second->connected == true)
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second->isConnected()) {
 			LoginPacket::showWorld(player, iter->second);
+		}
+	}
 	LoginPacket::worldEnd(player);
 }
 
-void Worlds::selectWorld(PlayerLogin *player, PacketReader &packet) {
+void Worlds::addWorld(World *world) {
+	worlds[world->getId()] = world;
+}
+
+void Worlds::selectWorld(Player *player, PacketReader &packet) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
-		// hacking
+		// Hacking
 		return;
 	}
 	uint8_t worldId = packet.get<uint8_t>();
 	if (World *world = getWorld(worldId)) {
 		player->setWorld(worldId);
-		int32_t minMaxLoad = (world->maxPlayerLoad / 100) * 90; // 90% is enough for the many users warning, i think.
+		int32_t maxLoad = world->getMaxPlayerLoad();
+		int32_t minMaxLoad = (maxLoad / 100) * 90; // 90% is enough for the many users warning, I think
 		int8_t message = 0x00;
-		if (world->currentPlayerLoad >= minMaxLoad && world->currentPlayerLoad < world->maxPlayerLoad)
+		if (world->getPlayerLoad() >= minMaxLoad && world->getPlayerLoad() < maxLoad)
 			message = 0x01;
-		else if (world->currentPlayerLoad == world->maxPlayerLoad)
+		else if (world->getPlayerLoad() == maxLoad)
 			message = 0x02;
 
 		LoginPacket::showChannels(player, message);
 	}
 	else {
-		// hacking of some sort...
+		// Hacking of some sort...
 		return;
 	}
 }
 
-void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
+void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
-		// hacking
+		// Hacking
 		return;
 	}
 	packet.skipBytes(1);
@@ -75,7 +84,7 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 
 	LoginPacket::channelSelect(player);
 	World *world = worlds[player->getWorld()];
-	if (world->channels.find(channel) != world->channels.end()) {
+	if (Channel *chan = worlds[player->getWorld()]->getChannel(channel)) {
 		player->setChannel(channel);
 		Characters::showCharacters(player);
 	}
@@ -84,22 +93,22 @@ void Worlds::channelSelect(PlayerLogin *player, PacketReader &packet) {
 	}
 }
 
-int8_t Worlds::connectWorldServer(LoginServerAcceptConnection *player) {
+int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
 	World *world = 0;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second->connected == 0) {
+		if (iter->second->isConnected()) {
 			player->setWorldId(iter->first);
 			world = iter->second;
-			iter->second->connected = true;
-			iter->second->player = player;
+			iter->second->setConnected(true);
+			iter->second->setConnection(player);
 			break;
 		}
 	}
 
 	if (world != 0) {
 		LoginServerAcceptPacket::connect(player, world);
-		std::cout << "Assigned world " << (int32_t) world->id << " to World Server." << std::endl;
-		return world->id;
+		std::cout << "Assigned world " << (int32_t) world->getId() << " to World Server." << std::endl;
+		return world->getId();
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(player);
@@ -109,15 +118,15 @@ int8_t Worlds::connectWorldServer(LoginServerAcceptConnection *player) {
 	}
 }
 
-int8_t Worlds::connectChannelServer(LoginServerAcceptConnection *player) {
+int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
 	int8_t worldid = -1;
-	int16_t port;
+	uint16_t port;
 	AbstractServerAcceptConnection *worldPlayer;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second->channels.size() < (size_t) iter->second->maxChannels && iter->second->connected) {
-			worldid = iter->second->id;
-			port = iter->second->port;
-			worldPlayer = iter->second->player;
+		if (iter->second->getChannelCount() < iter->second->getMaxChannels() && iter->second->isConnected()) {
+			worldid = iter->second->getId();
+			port = iter->second->getPort();
+			worldPlayer = iter->second->getConnection();
 			break;
 		}
 	}
@@ -135,17 +144,34 @@ int8_t Worlds::connectChannelServer(LoginServerAcceptConnection *player) {
 }
 
 void Worlds::toWorlds(PacketCreator &packet) {
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++)
-		if (iter->second->connected == true)
-			iter->second->player->getSession()->send(packet);
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (iter->second->isConnected()) {
+			iter->second->getConnection()->getSession()->send(packet);
+		}
+	}
+}
+
+void Worlds::runFunction(function<bool (World *)> func) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+		if (func(iter->second)) {
+			break;
+		}
+	}
+}
+
+namespace Functors {
+	struct PlayerLoad {
+		void operator()(Channel *channel) {
+			world->setPlayerLoad(world->getPlayerLoad() + channel->getPopulation());
+		}
+		World *world;
+	};
 }
 
 void Worlds::calculatePlayerLoad(World *world) {
-	world->currentPlayerLoad = 0;
-	for (size_t i = 0; i < world->maxChannels; i++) {
-		if (world->channels.find(i) != world->channels.end())
-			world->currentPlayerLoad += world->channels[i]->population;
-	}
+	world->setPlayerLoad(0);
+	Functors::PlayerLoad load = {world};
+	world->runChannelFunction(load);
 }
 
 World * Worlds::getWorld(uint8_t id) {

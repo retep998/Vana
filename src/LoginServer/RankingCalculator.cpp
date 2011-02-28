@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include "Timer/Thread.h"
 #include "TimeUtilities.h"
+#include "World.h"
 #include "Worlds.h"
 #include <boost/scoped_ptr.hpp>
 #include <ctime>
@@ -92,42 +93,47 @@ void RankingCalculator::overall() {
 	query.exec();
 }
 
+namespace Functors {
+	struct RankingFunctor {
+		bool operator()(World *world) {
+			mysqlpp::Query query = Database::getCharDB().query();
+
+			query << "SET @rank := @real_rank := 0, @level := @exp := -1";
+			query.exec();
+
+			query << "UPDATE characters target"
+				<< "	INNER JOIN ("
+				<< "		SELECT c.id,"
+				<< "			GREATEST("
+				<< "				@rank := IF(level <> 200 AND @level = level AND @exp = exp, @rank, @real_rank + 1),"
+				<< "				LEAST(0, @real_rank := @real_rank + 1),"
+				<< "				LEAST(0, @level := level),"
+				<< "				LEAST(0, @exp := exp)"
+				<< "			) AS rank"
+				<< "		FROM characters c"
+				<< "		LEFT JOIN users u ON u.id = c.userid"
+				<< "		WHERE "
+				<< "			u.ban_expire < NOW()"
+				<< "			AND u.gm = 0"
+				<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
+				<< "			AND world_id = " << (int32_t) world->getId()
+				<< "		ORDER BY"
+				<< "			c.level DESC,"
+				<< "			c.exp DESC,"
+				<< "			c.time_level ASC"
+				<< "	) AS source ON source.id = target.id"
+				<< "	SET"
+				<< "		target.world_opos = target.world_cpos,"
+				<< "		target.world_cpos = source.rank";
+			query.exec();
+			return false;
+		}
+	};
+}
+
 void RankingCalculator::world() {
-	mysqlpp::Query query = Database::getCharDB().query();
-
-	// We will iterate through each world
-	for (std::map<uint8_t, World *>::iterator iter = Worlds::worlds.begin(); iter != Worlds::worlds.end(); iter++) {
-		// Set the variables we're going to use later
-		query << "SET @rank := @real_rank := 0, @level := @exp := -1";
-		query.exec();
-
-		// Calculate the rank
-		query << "UPDATE characters target"
-			<< "	INNER JOIN ("
-			<< "		SELECT c.id,"
-			<< "			GREATEST("
-			<< "				@rank := IF(level <> 200 AND @level = level AND @exp = exp, @rank, @real_rank + 1),"
-			<< "				LEAST(0, @real_rank := @real_rank + 1),"
-			<< "				LEAST(0, @level := level),"
-			<< "				LEAST(0, @exp := exp)"
-			<< "			) AS rank"
-			<< "		FROM characters c"
-			<< "		LEFT JOIN users u ON u.id = c.userid"
-			<< "		WHERE "
-			<< "			u.ban_expire < NOW()"
-			<< "			AND u.gm = 0"
-			<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
-			<< "			AND world_id = " << (int32_t) iter->second->id
-			<< "		ORDER BY"
-			<< "			c.level DESC,"
-			<< "			c.exp DESC,"
-			<< "			c.time_level ASC"
-			<< "	) AS source ON source.id = target.id"
-			<< "	SET"
-			<< "		target.world_opos = target.world_cpos,"
-			<< "		target.world_cpos = source.rank";
-		query.exec();
-	}
+	Functors::RankingFunctor func = {};
+	Worlds::Instance()->runFunction(func);
 }
 
 void RankingCalculator::job() {

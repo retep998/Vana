@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -27,7 +28,7 @@ using std::vector;
 class LoginServerConnection;
 
 namespace LoginServerConnectPacket {
-	void registerChannel(LoginServerConnection *player, int32_t channel, uint32_t ip, const vector<vector<uint32_t> > &extIp, int16_t port);
-	void updateChannelPop(LoginServerConnection *player, int32_t channel, int32_t population);
-	void removeChannel(LoginServerConnection *player, int32_t channel);
+	void registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, int16_t port);
+	void updateChannelPop(int32_t channel, int32_t population);
+	void removeChannel(int32_t channel);
 }

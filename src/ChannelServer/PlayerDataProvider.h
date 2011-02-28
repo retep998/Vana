@@ -16,40 +16,55 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-
+#include "GameObjects.h"
 #include "Types.h"
-#include <string>
 #include <boost/tr1/functional.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
+#include <string>
 
 using std::string;
 using std::tr1::function;
 using std::tr1::unordered_map;
 
 class PacketCreator;
-class Player;
 class PacketReader;
+class Party;
+class Player;
 
-class Players : boost::noncopyable {
+class PlayerDataProvider : boost::noncopyable {
 public:
-	static Players * Instance() {
+	static PlayerDataProvider * Instance() {
 		if (singleton == 0)
-			singleton = new Players;
+			singleton = new PlayerDataProvider;
 		return singleton;
 	}
 
+	// Incoming packets
+	void parseIncomingPacket(PacketReader &packet);
+	void removePacket(int32_t id);
+	bool checkPlayer(int32_t id);
+	PacketReader & getPacket(int32_t id);
+
+	// Players
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
 	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
-
 	void run(function<void (Player *)> func);
 	void sendPacket(PacketCreator &packet);
-private:
-	Players() {};
-	static Players *singleton;
 
+	// Parties
+	Party * getParty(int32_t id);
+	void addParty(Party *party);
+	void removeParty(int32_t id);
+private:
+	PlayerDataProvider() {};
+	static PlayerDataProvider *singleton;
+
+	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_packets;
 	unordered_map<int32_t, Player *> m_players;
+	unordered_map<int32_t, Party *> m_parties;
 	unordered_map<string, Player *> m_players_names; // Index of players by name
 };

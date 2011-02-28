@@ -39,6 +39,6 @@ void LoginServerConnection::realHandleRequest(PacketReader &packet) {
 	switch (packet.get<int16_t>()) {
 		case INTER_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case INTER_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
-		case INTER_TO_CHANNELS: WorldServerAcceptHandler::toChannels(packet); break;
+		case INTER_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
 	}
 }

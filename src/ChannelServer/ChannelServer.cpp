@@ -23,19 +23,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Players.h"
+#include "PlayerDataProvider.h"
 #include "ServerPacket.h"
 #include "WorldServerConnection.h"
 
 ChannelServer * ChannelServer::singleton = 0;
 
 void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(port, new PlayerFactory());
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory());
 	Initializing::setUsersOffline(getOnlineId());
 }
 
 void ChannelServer::shutdown() {
-	channel = -1; // Else when WorldServerConnection disconnects, it will try to call shutdown() again
+	m_channel = -1; // Else when WorldServerConnection disconnects, it will try to call shutdown() again
 	AbstractServer::shutdown();
 }
 
@@ -45,49 +45,43 @@ void ChannelServer::loadData() {
 	Initializing::loadData();
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(login_ip, login_inter_port, loginPlayer);
+	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
 	loginPlayer->sendAuth(inter_password, external_ip);
 }
 
 void ChannelServer::connectWorld() {
-	worldPlayer = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(world_ip, world_port, worldPlayer);
-	worldPlayer->sendAuth(inter_password, external_ip);
+	m_worldConnection = new WorldServerConnection;
+	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_worldConnection);
+	m_worldConnection->sendAuth(inter_password, external_ip);
 }
 
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
-	login_ip = IpUtilities::stringToIp(config.getString("login_ip"));
-	login_inter_port = config.getShort("login_inter_port");
+	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
+	m_loginPort = config.getShort("login_inter_port");
 
 	 // Will get from world server
-	world = -1;
-	port = -1;
-	channel = -1;
-	exprate = 1;
-	questexprate = 1;
-	mesorate = 1;
-	droprate = 1;
-	maxStats = 999;
-	pianusChannel = false;
-	papChannel = false;
-	zakumChannel = false;
-	horntailChannel = false;
-	pinkbeanChannel = false;
+	m_world = -1;
+	m_port = -1;
+	m_pianusChannel = false;
+	m_papChannel = false;
+	m_zakumChannel = false;
+	m_horntailChannel = false;
+	m_pinkbeanChannel = false;
 }
 
 void ChannelServer::sendToWorld(PacketCreator &packet) {
-	worldPlayer->getSession()->send(packet);
+	getWorldConnection()->getSession()->send(packet);
 }
 
 void ChannelServer::setScrollingHeader(const string &message) {
-	if (scrollingHeader != message) {
-		scrollingHeader = message;
-		if (scrollingHeader.size() == 0) {
+	if (getScrollingHeader() != message) {
+		m_config.scrollingHeader = message;
+		if (message.size() == 0) {
 			ServerPacket::scrollingHeaderOff();
 		}
 		else {
-			ServerPacket::changeScrollingHeader(scrollingHeader);
+			ServerPacket::changeScrollingHeader(message);
 		}
 	}
 }
