@@ -34,8 +34,10 @@ void LoginServer::listen() {
 
 void LoginServer::loadData() {
 	Initializing::checkSchemaVersion(true);
+	Initializing::checkMcdbVersion();
 	Initializing::setUsersOffline(1);
 	Initializing::loadData();
+
 	RankingCalculator::setTimer();
 	displayLaunchTime();
 }
@@ -53,6 +55,7 @@ void LoginServer::loadConfig() {
 
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
+	MajorBoss boss;
 	Configuration conf;
 	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
@@ -106,36 +109,36 @@ void LoginServer::loadWorlds() {
 		formatter % i % "maxchars";
 		conf.maxChars = config.getInt(formatter.str());
 
-		formatter % i % "pianus_channels";
-		conf.pianusChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
-
-		formatter % i % "pap_channels";
-		conf.papChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
-
-		formatter % i % "zakum_channels";
-		conf.zakumChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
-
-		formatter % i % "horntail_channels";
-		conf.horntailChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
-
-		formatter % i % "pinkbean_channels";
-		conf.pinkbeanChannels = config.getBossChannels(formatter.str(), conf.maxChannels);
-
 		formatter % i % "pianus_attempts";
-		conf.pianusAttempts = config.getShort(formatter.str());
+		boss.attempts = config.getShort(formatter.str());
+		formatter % i % "pianus_channels";
+		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
+		conf.pianus = boss;
 
 		formatter % i % "pap_attempts";
-		conf.papAttempts = config.getShort(formatter.str());
+		boss.attempts = config.getShort(formatter.str());
+		formatter % i % "pap_channels";
+		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
+		conf.pap = boss;
 
 		formatter % i % "zakum_attempts";
-		conf.zakumAttempts = config.getShort(formatter.str());
+		boss.attempts = config.getShort(formatter.str());
+		formatter % i % "zakum_channels";
+		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
+		conf.zakum = boss;
 
 		formatter % i % "horntail_attempts";
-		conf.horntailAttempts = config.getShort(formatter.str());
+		boss.attempts = config.getShort(formatter.str());
+		formatter % i % "horntail_channels";
+		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
+		conf.horntail = boss;
 
 		formatter % i % "pinkbean_attempts";
-		conf.pinkbeanAttempts = config.getShort(formatter.str());
-		
+		boss.attempts = config.getShort(formatter.str());
+		formatter % i % "pinkbean_channels";
+		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
+		conf.pinkbean = boss;
+
 		world->setConfiguration(conf);
 		Worlds::Instance()->addWorld(world);
 		i++;

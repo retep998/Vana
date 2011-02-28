@@ -23,17 +23,20 @@ if getMap() == 280030000 then
 	-- Zakum's Altar
 	x = getMaxZakumBattles();
 	addText("Are you sure you want to leave this place? ");
-	addText("You are entitled to enter the Zakum Altar up to " .. x .. " " .. timeString(x) .. " a day, and by leaving right now, you may ");
-	y = getEntryCount("Zakum", x);
-	if y < x then
-		addText("only re-enter this shrine " .. x - y .. " more " .. timeString(x - y));
-	else
-		addText("not re-enter this shrine");
+
+	if x ~= -1 then
+		addText("You are entitled to enter the Zakum Altar up to " .. x .. " " .. timeString(x) .. " a day, and by leaving right now, you may ");
+		y = getEntryCount("Zakum", x);
+		if y < x then
+			addText("only re-enter this shrine " .. x - y .. " more " .. timeString(x - y));
+		else
+			addText("not re-enter this shrine");
+		end
+		addText(" for the rest of the day.");
 	end
-	addText(" for the rest of the day.");
 
 	yes = askYesNo();
-    
+
 	if yes == 1 then
 		if getNumPlayers(280030000) == 1 then
 			setReactorState(280030000, 2111001, 0); -- Zakum's altar
@@ -47,7 +50,7 @@ else
 	-- Maps 280020000 and 280020001, Zakum's jump quest
 	addText("Are you sure you want to quit and leave this place? Next time you come back in, you'll have to start all over again.");
 	yes = askYesNo();
-    
+
 	if yes == 1 then
 		setMap(211042300); -- Door to Zakum
 	end

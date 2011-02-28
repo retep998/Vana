@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 class Player;
+struct Attack;
 struct MpEaterInfo;
 
 namespace PlayerHandler {
@@ -38,5 +39,5 @@ namespace PlayerHandler {
 	void useSpellAttack(Player *player, PacketReader &packet);
 	void useEnergyChargeAttack(Player *player, PacketReader &packet);
 	void useSummonAttack(Player *player, PacketReader &packet);
-	uint32_t damageMobs(Player *player, PacketReader &packet, int8_t targets, int8_t hits, int32_t skillid, int32_t &extra, MpEaterInfo *eater = 0);
+	Attack compileAttack(Player *player, PacketReader &packet, int8_t skillType);
 }

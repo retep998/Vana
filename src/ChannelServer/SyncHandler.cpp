@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SyncHandler::handle(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
-		case Sync::SyncTypes::ChannelStart: handleDataSync(packet); break;
+		case Sync::SyncTypes::ChannelStart: handleChannelStart(packet); break;
 		case Sync::SyncTypes::Party: handlePartyResponse(packet); break;
 		case Sync::SyncTypes::Player: handlePlayerSync(packet); break;
 	}
@@ -73,9 +73,6 @@ void SyncHandler::newConnectable(PacketReader &packet) {
 
 void SyncHandler::handleDataSync(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
-		case Sync::SyncTypes::ChannelStart:
-			handleChannelStart(packet);
-			break;
 		case Sync::SyncTypes::Party: {
 			int8_t type = packet.get<int8_t>();
 			switch (type) {

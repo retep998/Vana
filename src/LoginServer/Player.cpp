@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "RecvHeader.h"
 #include "Worlds.h"
+#include <iostream>
 #include <stdexcept>
 
 void Player::realHandleRequest(PacketReader &packet) {
@@ -35,6 +36,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
+			case CMSG_CLIENT_ERROR: std::cout << packet.getString(); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;

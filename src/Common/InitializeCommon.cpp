@@ -21,30 +21,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleVersion.h"
 #include <cstdio>
 #include <iostream>
-#include <string>
 
-using std::string;
+using std::cout;
+using std::endl;
 
 void Initializing::checkMcdbVersion() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
-	int32_t version = (int32_t) res[0]["version"];
-	int32_t subversion = (int32_t) res[0]["subversion"];
-	int16_t maple_version = (int16_t) res[0]["maple_version"];
-
-	if (version != McdbVersion || subversion != McdbSubVersion) {
-		// MCDB incompatible
-		std::cout << "ERROR: MCDB version imcompatible. Expected: " << McdbVersion << "." << McdbSubVersion << " ";
-		std::cout << "Have: " << version << "." << subversion << std::endl;
-		std::cout << "Press enter to quit ...";
+	if (res.num_rows() == 0) {
+		cout << "ERROR: mcdb_info is empty." << endl;
+		cout << "Press enter to quit ...";
 		getchar();
 		exit(4);
 	}
 
-	if (maple_version != MapleVersion::Version) {
-		std::cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files. Vana: " << MapleVersion::Version << " MCDB: " << maple_version << std::endl;
+	int32_t version = (int32_t) res[0]["version"];
+	int32_t subversion = (int32_t) res[0]["subversion"];
+	int16_t mapleVersion = (int16_t) res[0]["maple_version"];
+	bool testServer = (bool) res[0]["test_server"];
+	string mapleLocale = (string) res[0]["maple_locale"];
+
+	if (version != McdbVersion || subversion != McdbSubVersion) {
+		cout << "ERROR: MCDB version incompatible." << endl;
+		cout << "Vana: " << McdbVersion << "." << McdbSubVersion << endl;
+		cout << "MCDB: " << version << "." << subversion << endl;
+		cout << "Press enter to quit ...";
+		getchar();
+		exit(4);
 	}
+
+	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
+		cout << "ERROR: Your MCDB is designed for different locale." << endl;
+		cout << "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << endl;
+		cout << "MCDB: " << makeLocale(mapleLocale, testServer) << endl;
+		cout << "Press enter to quit ...";
+		getchar();
+		exit(4);
+	}
+	if (mapleVersion != MapleVersion::Version) {
+		cout << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << endl;
+		cout << "Vana: " << MapleVersion::Version << endl;
+		cout << "MCDB: " << mapleVersion << endl;
+	}
+}
+
+string Initializing::makeLocale(const string &locale, bool testServer) {
+	string loc = locale;
+	if (testServer) {
+		loc += " (test server)";
+	}
+	return loc;
 }
 
 void Initializing::checkSchemaVersion(bool update) {
@@ -54,18 +81,18 @@ void Initializing::checkSchemaVersion(bool update) {
 
 	if (!succeed && !update) {
 		// Wrong version and we're not allowed to update, so let's quit
-		std::cout << "ERROR: Wrong version of database, please run Login Server to update." << std::endl;
-		std::cout << "Press enter to quit ...";
+		cout << "ERROR: Wrong version of database, please run Login Server to update." << endl;
+		cout << "Press enter to quit ...";
 		getchar();
 		exit(4);
 	}
 	else if (!succeed) {
 		// Failed, but we can update it
-		std::cout << std::setw(outputWidth) << "Updating database...";
+		cout << std::setw(outputWidth) << "Updating database...";
 
 		dbMigration.update();
 
-		std::cout << "DONE" << std::endl;
+		cout << "DONE" << endl;
 	}
 }
 
