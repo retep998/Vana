@@ -52,7 +52,7 @@ struct StatusInfo {
 };
 
 struct PartyExp {
-	PartyExp() : totalexp(0), party(0), highestdamager(0), highestdamage(0), minhitlevel(200) { }
+	PartyExp() : totalexp(0), party(nullptr), highestdamager(nullptr), highestdamage(0), minhitlevel(200) { }
 	uint8_t minhitlevel;
 	uint32_t totalexp;
 	uint64_t highestdamage;
@@ -71,7 +71,7 @@ public:
 	void setMp(int32_t mp) { this->mp = mp; }
 	void addStatus(int32_t playerid, vector<StatusInfo> &statusinfo);
 	void removeStatus(int32_t status, bool fromTimer = false);
-	void setControl(Player *control, bool spawn = false, Player *display = 0);
+	void setControl(Player *control, bool spawn = false, Player *display = nullptr);
 	void endControl();
 	void setOwner(Mob *owner) { this->owner = owner; }
 	void setSponge(Mob *sponge) { this->sponge = sponge; }

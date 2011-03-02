@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-SkillDataProvider * SkillDataProvider::singleton = 0;
+SkillDataProvider * SkillDataProvider::singleton = nullptr;
 
 void SkillDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
@@ -228,7 +228,7 @@ SkillLevelInfo * SkillDataProvider::getSkill(int32_t skill, uint8_t level) {
 			return &skills[skill][level];
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 MobSkillLevelInfo * SkillDataProvider::getMobSkill(uint8_t skill, uint8_t level) {
@@ -237,5 +237,5 @@ MobSkillLevelInfo * SkillDataProvider::getMobSkill(uint8_t skill, uint8_t level)
 			return &mobskills[skill][level];
 		}
 	}
-	return 0;
+	return nullptr;
 }

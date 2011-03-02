@@ -28,7 +28,7 @@ using std::tr1::unordered_map;
 class ScriptDataProvider : boost::noncopyable {
 public:
 	static ScriptDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ScriptDataProvider();
 		return singleton;
 	}

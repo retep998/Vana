@@ -34,7 +34,7 @@ namespace Timer {
 class EventDataProvider : boost::noncopyable {
 public:
 	static EventDataProvider * InstancePtr() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new EventDataProvider;
 		return singleton;
 	}
@@ -48,7 +48,7 @@ private:
 
 	void loadEvents();
 	void loadInstances();
-	void startInstance(const string  &name, int32_t time, int32_t repeat = 0);
+	void startInstance(const string &name, int32_t time, int32_t repeat = 0);
 
 	boost::scoped_ptr<Timer::Container> m_timers;
 	boost::scoped_ptr<Variables> m_variables;

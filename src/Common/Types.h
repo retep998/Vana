@@ -34,6 +34,16 @@ typedef boost::uintmax_t uintmax_t;
 
 typedef int16_t header_t; // Allows for easier transitioning when the header type isn't 2 bytes
 
+// Take out this ugliness when C++0x is widely supported, find other instances of "C++0x" and remove
+#include <boost/config.hpp>
+#if _MSC_VER < 1600
+// VS2010 (version 1600) supports nullptr, Boost 1.41 doesn't have this info
+# define nullptr 0
+// Yes, this is evil, deal with it
+#elif defined BOOST_NO_NULLPTR && _MSC_VER != 1600
+# define nullptr 0
+#endif
+
 namespace ServerTypes {
 	enum ServerTypes {
 		Login = 1, // Started at 1 so it's easy to do logging

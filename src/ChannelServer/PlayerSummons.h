@@ -26,7 +26,7 @@ class Summon;
 
 class PlayerSummons {
 public:
-	PlayerSummons(Player *player) : m_player(player), m_summon(0), m_puppet(0) { }
+	PlayerSummons(Player *player) : m_player(player), m_summon(nullptr), m_puppet(nullptr) { }
 
 	Summon * getSummon() { return m_summon; }
 	Summon * getPuppet() { return m_puppet; }

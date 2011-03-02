@@ -29,7 +29,7 @@ using std::tr1::unordered_map;
 class Instances : boost::noncopyable {
 public:
 	static Instances * InstancePtr() { // The irony, it burns!
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Instances;
 		return singleton;
 	}

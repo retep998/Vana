@@ -28,7 +28,7 @@ class Party;
 class Parties : boost::noncopyable {
 public:
 	static Parties * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Parties;
 		return singleton;
 	}

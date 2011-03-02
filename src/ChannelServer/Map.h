@@ -61,20 +61,29 @@ public:
 
 	void boatDock(bool isDocked);
 
-	// Map Info
+	// Map info
 	static uint32_t makeNpcId(uint32_t receivedId);
 	static uint32_t makeReactorId(uint32_t receivedId);
 	uint32_t makeNpcId();
 	uint32_t makeReactorId();
 	void setMusic(const string &musicname);
 	void setMobSpawning(int32_t spawn);
-	string getMusic() const { return m_music; }
+	bool forceMapEquip() const { return (getInfo()->forceMapEquip); }
+	bool hasClock() const { return (getInfo()->clock); }
+	bool canVip() const { return !(getInfo()->limitations.vipRock); }
+	bool canChalkboard() const { return !(getInfo()->limitations.chalkboard); }
+	bool loseOnePercent() const { return (getInfo()->limitations.regularExpLoss || getInfo()->town); }
+	uint8_t getContinent() const { return getInfo()->continent; }
+	int32_t getForcedReturn() const { return getInfo()->forcedReturn; }
+	int32_t getReturnMap() const { return getInfo()->rm; }
+	const string & getMusic() const { return m_music; }
+	const string & getDefaultMusic() const { return getInfo()->defaultMusic; }
+	const Pos & getMapLeftTop() const { return getInfo()->lt; }
+	const Pos & getMapRightBottom() const { return getInfo()->rb; }
 	int32_t getObjectId() { return m_objectids.next(); }
 	int32_t getId() const { return m_id; }
-	MapInfo * getInfo() const { return m_info.get(); }
-	TimeMob * getTimeMob() const { return m_time_mob.get(); }
 
-	// Data Initialization
+	// Data initialization
 	void addFoothold(const FootholdInfo &foothold);
 	void addSeat(int16_t id, const SeatInfo &seat);
 	void addPortal(const PortalInfo &portal);
@@ -120,9 +129,9 @@ public:
 	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
 	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
-	void updateMobControl(Mob *mob, bool spawn = false, Player *display = 0);
+	void updateMobControl(Mob *mob, bool spawn = false, Player *display = nullptr);
 	int32_t spawnShell(int32_t mobid, const Pos &pos, int16_t fh);
-	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = 0, int8_t summoneffect = 0);
+	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = nullptr, int8_t summoneffect = 0);
 	int32_t spawnMob(int32_t spawnid, const MobSpawnInfo &info);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);
@@ -164,17 +173,20 @@ public:
 	void showObjects(Player *player);
 
 	// Packet stuff
-	void sendPacket(PacketCreator &packet, Player *player = 0);
+	void sendPacket(PacketCreator &packet, Player *player = nullptr);
 	void showMessage(const string &message, int8_t type);
 
 	// Instance
 	void setInstance(Instance *instance) { m_instance = instance; }
 	Instance * getInstance() const { return m_instance; }
 private:
-	void updateMobControl(Player *player);
-	int32_t getTimeMobId() const { return m_timemob; }
 	static const uint32_t NpcStart = 100;
 	static const uint32_t ReactorStart = 200;
+
+	void updateMobControl(Player *player);
+	int32_t getTimeMobId() const { return m_timemob; }
+	MapInfo * getInfo() const { return m_info.get(); }
+	TimeMob * getTimeMob() const { return m_time_mob.get(); }
 
 	// Data
 	bool m_ship;
@@ -198,7 +210,7 @@ private:
 	unordered_map<string, PortalInfo> m_portals;
 	unordered_map<int8_t, PortalInfo> m_spawn_points;
 	unordered_map<string, Pos> m_reactor_positions;
-	
+
 	// Shorter-lived objects
 	vector<Player *> m_players;
 	vector<Reactor *> m_reactors;

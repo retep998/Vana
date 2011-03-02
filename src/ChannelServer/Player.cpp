@@ -74,9 +74,9 @@ trade_id(0),
 trade_state(false),
 save_on_dc(true),
 is_connect(false),
-npc(0),
-party(0),
-instance(0)
+npc(nullptr),
+party(nullptr),
+instance(nullptr)
 {
 }
 
@@ -86,16 +86,13 @@ Player::~Player() {
 			TradeHandler::cancelTrade(this);
 		}
 		int32_t isleader = 0;
-		if (getParty() != 0) {
-			getParty()->setMember(getId(), 0);
+		if (Party *party = getParty()) {
+			party->setMember(getId(), nullptr);
 			isleader = getParty()->isLeader(getId()) ? 1 : 0;
 		}
-		if (getInstance() != 0) {
-			getInstance()->removePlayer(getId());
-			getInstance()->sendMessage(PlayerDisconnect, getId(), isleader);
-		}
-		if (getNPC() != 0) {
-			delete getNPC();
+		if (Instance *instance = getInstance()) {
+			instance->removePlayer(getId());
+			instance->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
 		if (getMapChair() != 0) {
 			Maps::getMap(getMap())->playerSeated(getMapChair(), 0);
@@ -106,7 +103,7 @@ Player::~Player() {
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
 		PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos());
-		if (closest != 0) {
+		if (closest != nullptr) {
 			map_pos = closest->id;
 		}
 		if (save_on_dc) {
@@ -297,7 +294,7 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
-		setConnectionTime(time(0));
+		setConnectionTime(time(nullptr));
 	}
 
 	// The rest
@@ -324,12 +321,12 @@ void Player::playerConnect(PacketReader &packet) {
 			map_pos = -1;
 		}
 	}
-	else if (Maps::getMap(map)->getInfo()->forcedReturn != Maps::NoMap) {
-		map = Maps::getMap(map)->getInfo()->forcedReturn;
+	else if (Maps::getMap(map)->getForcedReturn() != Maps::NoMap) {
+		map = Maps::getMap(map)->getForcedReturn();
 		map_pos = -1;
 	}
 	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
-		map = Maps::getMap(map)->getInfo()->rm;
+		map = Maps::getMap(map)->getReturnMap();
 		map_pos = -1;
 	}
 
@@ -370,16 +367,16 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	Map *oldmap = Maps::getMap(map);
 	Map *newmap = Maps::getMap(mapid);
 
-	if (portal == 0)
+	if (portal == nullptr)
 		portal = newmap->getSpawnPoint();
 
 	if (!instance) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != 0 ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
-		if (oldmap->getInstance() != 0) {
-			oldmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		if (Instance *i = oldmap->getInstance()) {
+			i->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 		}
-		if (newmap->getInstance() != 0) {
-			newmap->getInstance()->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+		if (Instance *i = newmap->getInstance()) {
+			i->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
 		}
 	}
 
@@ -397,16 +394,16 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		}
 	}
 
-	if (getSummons()->getPuppet() != 0) { // Puppets and non-moving summons don't go with you
+	if (getSummons()->getPuppet() != nullptr) { // Puppets and non-moving summons don't go with you
 		Summons::removeSummon(this, true, true, false, 0);
 	}
-	if (getSummons()->getSummon() != 0 && getSummons()->getSummon()->getType() == 0) {
+	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == 0) {
 		Summons::removeSummon(this, false, true, false, 0);
 	}
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
-	if (!getChalkboard().empty() && (newmap->getInfo()->fieldLimit & FieldLimitBits::Chalkboard) != 0) {
+	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
 		setChalkboard("");
 	}
 	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
@@ -518,9 +515,9 @@ void Player::saveStats() {
 		<< "`int` = " << stats->getInt() << ","
 		<< "luk = " << stats->getLuk() << ","
 		<< "chp = " << stats->getHp() << ","
-		<< "mhp = " << stats->getMHp(true) << ","
+		<< "mhp = " << stats->getMaxHp(true) << ","
 		<< "cmp = " << stats->getMp() << ","
-		<< "mmp = " << stats->getMMp(true) << ","
+		<< "mmp = " << stats->getMaxMp(true) << ","
 		<< "hpmp_ap = " << stats->getHpMpAp() << ","
 		<< "ap = " << stats->getAp() << ","
 		<< "sp = " << stats->getSp() << ","
@@ -571,7 +568,7 @@ void Player::setLevelDate() {
 }
 
 void Player::acceptDeath(bool wheel) {
-	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getInfo()->rm : map);
+	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getReturnMap() : map);
 	if (wheel) {
 		tomap = getMap();
 	}
@@ -580,7 +577,7 @@ void Player::acceptDeath(bool wheel) {
 	setMap(tomap);
 }
 
-bool Player::hasGmEquip() {
+bool Player::hasGmEquip() const {
 	if (getInventory()->getEquippedId(EquipSlots::Helm) == Items::GmHat)
 		return true;
 	if (getInventory()->getEquippedId(EquipSlots::Top) == Items::GmTop)

@@ -39,7 +39,7 @@ using std::tr1::bind;
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobid = packet.get<int32_t>();
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
-	if (player->getStats()->getHp() == 0 || mob == 0) {
+	if (player->getStats()->getHp() == 0 || mob == nullptr) {
 		return;
 	}
 	if (mob->getSelfDestructHp() == 0) {
@@ -57,7 +57,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	Map *map = Maps::getMap(player->getMap());
 	Mob *dealer = map->getMob(mobfrom);
 	Mob *taker = map->getMob(mobto);
-	if (dealer != 0 && taker != 0 && taker->isFriendly()) {
+	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
 		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10; // Temp for now until I figure out something more effective
 		int32_t mobId = taker->getMobId();
 		int32_t mapMobId =  taker->getId();
@@ -65,7 +65,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 		int32_t maxHp = taker->getMaxHp();
 
 		taker->applyDamage(playerid, damage);
-		if (map->getInstance() != 0) {
+		if (map->getInstance() != nullptr) {
 			map->getInstance()->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
 	}
@@ -83,7 +83,7 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	Map *map = Maps::getMap(player->getMap());
 	Mob *damager = map->getMob(mobfrom);
 	Mob *taker = map->getMob(mobto);
-	if (damager != 0 && taker != 0) {
+	if (damager != nullptr && taker != nullptr) {
 		taker->applyDamage(playerid, damage);
 	}
 }
@@ -93,7 +93,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 
-	if (mob == 0 || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
+	if (mob == nullptr || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		return;
 	}
 
@@ -155,7 +155,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 					}
 				}
 				if (!stop) {
-					time_t now = time(0);
+					time_t now = time(nullptr);
 					time_t ls = mob->getLastSkillUse(realskill);
 					if (ls == 0 || ((int32_t)(now - ls) > mobskill->interval)) {
 						mob->setLastSkillUse(realskill, now);
@@ -373,7 +373,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillid,
 					int16_t vatk = venom->matk;
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
-					
+
 					damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {

@@ -60,7 +60,7 @@ void SyncHandler::playerChangeChannel(PacketReader &packet) {
 		PlayerPacket::sendBlockedMessage(ccPlayer, 0x01);
 	}
 	else {
-		ccPlayer->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
+		ccPlayer->setOnline(false); // Set online to 0 BEFORE CC packet is sent to player
 		PlayerPacket::changeChannel(ccPlayer, ip, port);
 		ccPlayer->saveAll(true);
 		ccPlayer->setSaveOnDc(false);
@@ -84,7 +84,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					int32_t leaderid = packet.get<int32_t>();
 					Party *party = new Party(partyid);
 					Player *leader = PlayerDataProvider::Instance()->getPlayer(leaderid);
-					if (leader == 0) {
+					if (leader == nullptr) {
 						party->addMember(leaderid);
 					}
 					else {
@@ -107,7 +107,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 						int32_t playerid = packet.get<int32_t>();
 						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-						if (member == 0) {
+						if (member == nullptr) {
 							party->deleteMember(playerid);
 						}
 						else {
@@ -121,7 +121,7 @@ void SyncHandler::handleDataSync(PacketReader &packet) {
 					if (Party *party = PlayerDataProvider::Instance()->getParty(partyid)) {
 						int32_t playerid = packet.get<int32_t>();
 						Player *member = PlayerDataProvider::Instance()->getPlayer(playerid);
-						if (member == 0) {
+						if (member == nullptr) {
 							party->addMember(playerid);
 						}
 						else {
@@ -166,7 +166,7 @@ void SyncHandler::handlePartyResponse(PacketReader &packet) {
 	int32_t partyid = packet.get<int32_t>();
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Party *party = PlayerDataProvider::Instance()->getParty(partyid);
-	if (player == 0 || party == 0)
+	if (player == nullptr || party == nullptr)
 		return;
 	switch (type) {
 		case PartyActions::Leave: // Leave / Disband

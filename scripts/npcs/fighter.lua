@@ -49,8 +49,7 @@ if getJob() == 0 then
 			setJob(100);
 			giveItem(1302077, 1); -- Give beginner warrior's sword
 			hpinc = 200 + getRandomNumber(50); -- Extra HP given
-			setMHP(getMHP() + hpinc); -- Set HP to current HP plus amount to be added for this job
-			setRMHP(getRMHP() + hpinc);
+			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus amount to be added for this job
 			setSTR(35); -- Stat reset
 			setDEX(4);
 			setINT(4);
@@ -250,8 +249,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newhp = 300 + getRandomNumber(50); -- Extra HP given
-						setMHP(getMHP() + newhp); -- Add to current HP
-						setRMHP(getRMHP() + newhp);
+						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
 						addText("Alright! You have now become the #bFighter#k! A fighter strives to become the strongest ");
 						addText("of the strong, and never stops fighting. Don't ever lose that will to fight, and push forward 24/7. ");
 						addText("It'll help you become even stronger than you already are.");
@@ -297,8 +295,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright! You have now become the #bPage#k! The Pages have high intelligence and bravery for ");
 						addText("a Warrior...here's hoping that you'll take the right path with the right mindset...I'll help you ");
 						addText("become much stronger than you are right now.");
@@ -343,8 +340,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMMP(getMMP() + newmp); -- Add to current MP
-						setRMMP(getRMMP() + newmp);
+						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
 						addText("Alright! You have now become the #bSpearman#k! The spearman use the power of darkness to take out ");
 						addText("the enemies, always in shadows...please believe in yourself and your awesome power as you go on ");
 						addText("in your journey...I'll help you become much stronger than you are right now.");

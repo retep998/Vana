@@ -63,7 +63,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	int32_t mapmobid = 0; // Map Mob ID
 	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t nodamageid = 0;
-	Mob *mob = 0;
+	Mob *mob = nullptr;
 	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
@@ -71,7 +71,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 		mapmobid = packet.get<int32_t>();
 		mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-		if (mob == 0) {
+		if (mob == nullptr) {
 			// Hacking
 			return;
 		}
@@ -80,7 +80,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		if (type != BumpDamage) {
 			int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
 			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
-			if (attack == 0) {
+			if (attack == nullptr) {
 				// Hacking, I think
 				return;
 			}
@@ -221,7 +221,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 		}
 		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
-		if (morph < 0  || (morph != 0 && player->getStats()->getHp() == 0)) {
+		if (morph < 0 || (morph != 0 && player->getStats()->getHp() == 0)) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
@@ -338,7 +338,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		player->addWarning();
 		return;
 	}
-	Player *receiver = 0;
+	Player *receiver = nullptr;
 	bool hasTarget = packet.get<int8_t>() == 2;
 	int8_t sort = packet.get<int8_t>();
 	bool useWhisper = packet.getBool();
@@ -392,7 +392,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		int32_t targettotal = 0;
 		int8_t connectedhits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(i->first);
-		if (mob == 0) {
+		if (mob == nullptr) {
 			continue;
 		}
 		origin = mob->getPos(); // Info for pickpocket before mob is set to 0 (in the case that mob dies)
@@ -406,7 +406,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				ppdamages.push_back(damage);
 			}
-			if (mob == 0) {
+			if (mob == nullptr) {
 				if (ppok) {
 					// Roll along after the mob is dead to finish getting damage values for pickpocket
 					continue;
@@ -422,11 +422,11 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
 			if (temphp < damage) { // Mob was killed, so set the Mob pointer to 0
-				mob = 0;
+				mob = nullptr;
 			}
 		}
 		if (targettotal > 0) {
-			if (mob != 0 && mob->getHp() > 0) {
+			if (mob != nullptr && mob->getHp() > 0) {
 				MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
@@ -462,7 +462,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				int32_t objId = packet.get<int32_t>();
 				packet.skipBytes(1); // Boolean for hit a monster
 				Drop *drop = Maps::getMap(map)->getDrop(objId);
-				if (drop != 0) {
+				if (drop != nullptr) {
 					DropsPacket::explodeDrop(drop);
 					Maps::getMap(map)->removeDrop(drop->getId());
 					delete drop;
@@ -473,8 +473,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Marauder::EnergyDrain:
 		case Jobs::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillid)->x / 100);
-			if (hpRecover > player->getStats()->getMHp())
-				player->getStats()->setHp(player->getStats()->getMHp());
+			if (hpRecover > player->getStats()->getMaxHp())
+				player->getStats()->setHp(player->getStats()->getMaxHp());
 			else
 				player->getStats()->modifyHp((int16_t) hpRecover);
 			break;
@@ -493,7 +493,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		case Jobs::DragonKnight::DragonRoar: {
 			int16_t x_value = SkillDataProvider::Instance()->getSkill(skillid, level)->x;
-			uint16_t reduction = (player->getStats()->getMHp() / 100) * x_value;
+			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * x_value;
 			if (reduction < player->getStats()->getHp()) {
 				player->getStats()->damageHp(reduction);
 			}
@@ -556,7 +556,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t mapmobid = i->first;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-		if (mob == 0) {
+		if (mob == nullptr) {
 			continue;
 		}
 		int32_t targettotal = 0;
@@ -585,10 +585,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
 			if (damage > temphp) {
-				mob = 0;
+				mob = nullptr;
 			}
 		}
-		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
+		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
 			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
@@ -602,10 +602,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * drain_x / 100);
 			if (hpRecover > mhp)
 				hpRecover = mhp;
-			if (hpRecover > (player->getStats()->getMHp() / 2))
-				hpRecover = player->getStats()->getMHp() / 2;
-			if (hpRecover > player->getStats()->getMHp())
-				player->getStats()->setHp(player->getStats()->getMHp());
+			if (hpRecover > (player->getStats()->getMaxHp() / 2))
+				hpRecover = player->getStats()->getMaxHp() / 2;
+			if (hpRecover > player->getStats()->getMaxHp())
+				player->getStats()->setHp(player->getStats()->getMaxHp());
 			else
 				player->getStats()->modifyHp((int16_t) hpRecover);
 			break;
@@ -644,7 +644,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		int32_t mapmobid = i->first;
 		int8_t connectedhits = 0;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-		if (mob == 0) {
+		if (mob == nullptr) {
 			continue;
 		}
 		if (attack.isHeal && !mob->isUndead()) {
@@ -665,11 +665,11 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			mob->applyDamage(player->getId(), damage);
 			if (damage > temphp) {
 				// Mob was killed, so set the Mob pointer to 0
-				mob = 0;
+				mob = nullptr;
 				break;
 			}
 		}
-		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
+		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
 			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
@@ -700,7 +700,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	packet.skipBytes(4); // Ticks
 	int32_t mapmobid = packet.get<int32_t>();
 	Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-	if (mob == 0)
+	if (mob == nullptr)
 		return;
 	packet.skipBytes(14); // ???
 	int32_t damage = packet.get<int32_t>();
@@ -711,7 +711,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Summon);
 	Summon *summon = player->getSummons()->getSummon();
-	if (summon == 0) {
+	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
 		return;
 	}
@@ -722,7 +722,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		int32_t mapmobid = i->first;
 		int8_t connectedhits = 0;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
-		if (mob == 0) {
+		if (mob == nullptr) {
 			continue;
 		}
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
@@ -735,11 +735,11 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 			mob->applyDamage(player->getId(), damage);
 			if (damage > temphp) {
 				// Mob was killed, so set the Mob pointer to 0
-				mob = 0;
+				mob = nullptr;
 				break;
 			}
 		}
-		if (mob != 0 && targettotal > 0 && mob->getHp() > 0) {
+		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
 			MobHandler::handleMobStatus(player->getId(), mob, skillid, player->getSkills()->getSkillLevel(skillid), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();

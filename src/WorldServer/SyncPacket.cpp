@@ -128,7 +128,7 @@ void SyncPacket::PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t
 	if (type == PartyActions::SilentUpdate)
 		return;
 
-	target = target == 0 ? playerid : target;
+	target = target == nullptr ? playerid : target;
 
 	packet = PacketCreator();
 	packet.add<int16_t>(IMSG_SYNC);
@@ -160,7 +160,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
-	
+
 	// Add party member's names to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		packet.addString(iter->second->getName(), 13);
@@ -197,7 +197,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(-2);
 	}
-	
+
 	packet.add<int32_t>(party->getLeader());
 
 	// Add party member's maps to packet

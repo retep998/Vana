@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "../Types.h" // For nullptr, remove with C++0x
 #include <list>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
@@ -32,7 +33,7 @@ class Timer;
 class Thread : boost::noncopyable {
 public:
 	static Thread * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Thread;
 		return singleton;
 	}

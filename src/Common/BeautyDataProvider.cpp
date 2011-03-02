@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using Initializing::outputWidth;
 
-BeautyDataProvider * BeautyDataProvider::singleton = 0;
+BeautyDataProvider * BeautyDataProvider::singleton = nullptr;
 
 void BeautyDataProvider::loadData() {
 	loadSkins();

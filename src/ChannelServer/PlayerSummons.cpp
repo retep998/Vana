@@ -40,30 +40,30 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 }
 
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
-	if (!puppet && m_summon != 0) {
+	if (!puppet && m_summon != nullptr) {
 		if (!fromTimer) {
 			Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
 			m_player->getTimers()->removeTimer(id);
 		}
 		delete m_summon;
-		m_summon = 0;
+		m_summon = nullptr;
 	}
-	else if (m_puppet != 0) {
+	else if (m_puppet != nullptr) {
 		if (!fromTimer) {
 			Timer::Id id(Timer::Types::BuffTimer, m_puppet->getSummonId(), 0);
 			m_player->getTimers()->removeTimer(id);
 		}
 		delete m_puppet;
-		m_puppet = 0;
+		m_puppet = nullptr;
 	}
 }
 
 Summon * PlayerSummons::getSummon(int32_t summonid) {
-	if (m_summon != 0 && m_summon->getId() == summonid)
+	if (m_summon != nullptr && m_summon->getId() == summonid)
 		return m_summon;
-	if (m_puppet != 0 && m_puppet->getId() == summonid)
+	if (m_puppet != nullptr && m_puppet->getId() == summonid)
 		return m_puppet;
-	return 0;
+	return nullptr;
 }
 
 int32_t PlayerSummons::getSummonTimeRemaining() {
@@ -75,7 +75,7 @@ void PlayerSummons::getSummonTransferPacket(PacketCreator &packet) {
 	int32_t summonid = 0;
 	int32_t timeleft = 0;
 	uint8_t level = 0;
-	if (m_summon != 0) {
+	if (m_summon != nullptr) {
 		summonid = m_summon->getSummonId();
 		timeleft = getSummonTimeRemaining();
 		level = m_summon->getLevel();

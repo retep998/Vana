@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-NpcDataProvider * NpcDataProvider::singleton = 0;
+NpcDataProvider * NpcDataProvider::singleton = nullptr;
 
 namespace Functors {
 	struct FlagFunctor {

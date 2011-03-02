@@ -198,7 +198,7 @@ struct PetInteractInfo {
 class ItemDataProvider {
 public:
 	static ItemDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ItemDataProvider;
 		return singleton;
 	}
@@ -220,7 +220,7 @@ public:
 	void scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
 
 	ItemInfo * getItemInfo(int32_t itemid) { return &items[itemid]; }
-	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : 0); }
+	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : nullptr); }
 	PetInfo * getPetInfo(int32_t itemid) { return &petsInfo[itemid]; }
 	PetInteractInfo * getInteraction(int32_t itemid, int32_t action);
 	vector<Skillbook> * getItemSkills(int32_t itemid) { return &skills[itemid]; }

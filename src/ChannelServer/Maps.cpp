@@ -51,7 +51,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 				player->addUsedPortal(portal->id);
 			}
 		}
-		
+
 		string filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
@@ -78,7 +78,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	else {
 		// Normal portal
 		Map *tomap = getMap(portal->toMap);
-		if (tomap == 0) {
+		if (tomap == nullptr) {
 			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
 			PlayerPacket::showMessage(player, message, 5);
 			MapPacket::portalBlocked(player);
@@ -111,10 +111,10 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			string portalname = packet.getString();
 
 			Map *tomap = getMap(player->getMap());
-			if (tomap == 0)
+			if (tomap == nullptr)
 				return;
 			PortalInfo *portal = tomap->getPortal(portalname);
-			if (portal == 0) // Exit the function if portal is not found
+			if (portal == nullptr) // Exit the function if portal is not found
 				return;
 
 			usePortal(player, portal);
@@ -133,7 +133,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	string portalname = packet.getString();
 
 	PortalInfo *portal = getMap(player->getMap())->getPortal(portalname);
-	if (portal == 0) // Exit the function if portal is not found
+	if (portal == nullptr) // Exit the function if portal is not found
 		return;
 
 	usePortal(player, portal);

@@ -64,7 +64,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		uint16_t port = packet.get<uint16_t>();
 		ChannelServer::Instance()->setChannel(channel);
 		ChannelServer::Instance()->setPort(port);
-		
+
 		Configuration conf = ConfigurationPacket::getConfig(packet);
 
 		ChannelServer::Instance()->setConfig(conf);

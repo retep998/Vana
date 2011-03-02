@@ -122,7 +122,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
 	switch (skillid) {
 		case Jobs::Brawler::MpRecovery: {
-			int16_t modhp = player->getStats()->getMHp() * skill->x / 100;
+			int16_t modhp = player->getStats()->getMaxHp() * skill->x / 100;
 			int16_t healmp = modhp * skill->y / 100;
 			player->getStats()->modifyHp(-modhp);
 			player->getStats()->modifyMp(healmp);
@@ -203,12 +203,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			int8_t affected = packet.get<int8_t>();
 			player->getActiveBuffs()->useDispel();
 			Party *party = player->getParty();
-			if (party != 0) {
+			if (party != nullptr) {
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
-					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
 						if (Randomizer::Instance()->randShort(99) < skill->prop) {
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 							SkillsPacket::showSkill(cmem, skillid, level, direction, true);
@@ -233,7 +233,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint16_t healrate = skill->hpP;
 			if (healrate > 100)
 				healrate = 100;
-			player->getStats()->modifyHp(healrate * player->getStats()->getMHp() / 100);
+			player->getStats()->modifyHp(healrate * player->getStats()->getMaxHp() / 100);
 			break;
 		}
 		case Jobs::Fighter::Rage:
@@ -271,13 +271,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			Party *party = player->getParty();
 			if (skillid == Jobs::Buccaneer::TimeLeap)
 				player->getSkills()->removeAllCooldowns();
-			if (party != 0) {
+			if (party != nullptr) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
-					if (cmem != 0 && cmem != player && cmem->getMap() == player->getMap()) {
+					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillid, level, direction, true);
 						Buffs::addBuff(cmem, skillid, level, addedinfo);
@@ -298,7 +298,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player) { // ???
+				if (target != nullptr && target != player) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
 					Buffs::addBuff(target, skillid, level, addedinfo);
@@ -311,11 +311,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player && target->getStats()->getHp() > 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() > 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
-					target->getStats()->setHp(target->getStats()->getMHp());
-					target->getStats()->setMp(target->getStats()->getMMp());
+					target->getStats()->setHp(target->getStats()->getMaxHp());
+					target->getStats()->setMp(target->getStats()->getMaxMp());
 					target->getActiveBuffs()->useDispel();
 				}
 			}
@@ -326,10 +326,10 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != 0 && target != player && target->getStats()->getHp() <= 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) { // ???
 					SkillsPacket::showSkill(target, skillid, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillid, level, direction, true);
-					target->getStats()->setHp(target->getStats()->getMHp());
+					target->getStats()->setHp(target->getStats()->getMaxHp());
 				}
 			}
 			break;
@@ -427,7 +427,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillid, int16_t pos) 
 }
 
 void Skills::heal(Player *player, int16_t value, int32_t skillid) {
-	if (player->getStats()->getHp() < player->getStats()->getMHp() && player->getStats()->getHp() > 0) {
+	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		player->getStats()->modifyHp(value);
 		SkillsPacket::healHP(player, value);
 	}

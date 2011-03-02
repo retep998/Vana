@@ -29,13 +29,13 @@ void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player
 	packet.add<int8_t>(0x05);
 	packet.add<int8_t>(0x03);
 	packet.add<int8_t>(0x02);
-	packet.add<int16_t>(((player1 != 0 && player2 != 0) ? 1 : 0));
-	if (player2 != 0) {
+	packet.add<int16_t>(((player1 != nullptr && player2 != nullptr) ? 1 : 0));
+	if (player2 != nullptr) {
 		PlayerPacketHelper::addPlayerDisplay(packet, player2);
 		packet.addString(player2->getName());
 		packet.add<int8_t>(1); // Location in the window
 	}
-	if (player1 != 0) {
+	if (player1 != nullptr) {
 		PlayerPacketHelper::addPlayerDisplay(packet, player1);
 		packet.addString(player1->getName());
 		packet.add<int8_t>(-1); // Location in the window

@@ -118,7 +118,7 @@ typedef std::tr1::shared_ptr<MobInfoRaw> MobInfo;
 class MobDataProvider : boost::noncopyable {
 public:
 	static MobDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new MobDataProvider();
 		return singleton;
 	}

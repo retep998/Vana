@@ -28,8 +28,8 @@ struct Pos;
 struct StatusInfo;
 
 namespace MobsPacket {
-	void spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner = 0, bool spawn = false, bool show = false);
-	void requestControl(Player *player, Mob *mob, bool spawn = false, Player *display = 0);
+	void spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner = nullptr, bool spawn = false, bool show = false);
+	void requestControl(Player *player, Mob *mob, bool spawn = false, Player *display = nullptr);
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill = 0, uint8_t level = 0);
 	void moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len);

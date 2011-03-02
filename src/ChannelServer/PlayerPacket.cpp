@@ -41,8 +41,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	player->getRandStream()->connectData(packet); // Seeding RNG
 
-	packet.add<int32_t>(-1);
-	packet.add<int32_t>(-1);
+	packet.add<int64_t>(-1);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 13);
 	packet.add<int8_t>(player->getGender());
@@ -64,7 +63,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
-	packet.add<int8_t>(player->getBuddyListSize());
+	packet.add<uint8_t>(player->getBuddyListSize());
 
 	player->getInventory()->connectData(packet); // Inventory data
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
@@ -94,7 +93,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	packet.add<int8_t>(0);
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
-		if (keyMap != 0) {
+		if (keyMap != nullptr) {
 			packet.add<int8_t>(keyMap->type);
 			packet.add<int32_t>(keyMap->action);
 		}
@@ -112,7 +111,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	packet.add<int8_t>(macros->getMax() + 1);
 	for (int8_t i = 0; i <= macros->getMax(); i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
-		if (macro != 0) {
+		if (macro != nullptr) {
 			packet.addString(macro->name);
 			packet.addBool(macro->shout);
 			packet.add<int32_t>(macro->skill1);
@@ -208,7 +207,7 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	packet.add<int16_t>(SMSG_PARTY_HP_DISPLAY);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(player->getStats()->getHp());
-	packet.add<int32_t>(player->getStats()->getMHp());
+	packet.add<int32_t>(player->getStats()->getMaxHp());
 	target->getSession()->send(packet);
 }
 

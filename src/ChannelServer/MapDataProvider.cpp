@@ -24,7 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using StringUtilities::runFlags;
 
-MapDataProvider * MapDataProvider::singleton = 0;
+MapDataProvider * MapDataProvider::singleton = nullptr;
+
+FieldLimit::FieldLimit() :
+	jump(false),
+	movementSkills(false),
+	summoningBag(false),
+	mysticDoor(false),
+	channelSwitching(false),
+	regularExpLoss(false),
+	vipRock(false),
+	minigames(false),
+	mount(false),
+	potionUse(false),
+	dropDown(false),
+	chalkboard(false)
+{
+}
+
 
 MapDataProvider::MapDataProvider() {
 	loadData();
@@ -35,7 +52,7 @@ Map * MapDataProvider::getMap(int32_t mapid) {
 		return maps[mapid];
 	}
 	else {
-		Map *map = 0;
+		Map *map = nullptr;
 		loadMap(mapid, map);
 		return map;
 	}
@@ -96,6 +113,23 @@ namespace Functors {
 		}
 		MapInfoPtr map;
 	};
+	struct FieldLimitFlags {
+		void operator()(const string &cmp) {
+			if (cmp == "jump") limitations->jump = true;
+			else if (cmp == "movement_skills") limitations->movementSkills = true;
+			else if (cmp == "summoning_bag") limitations->summoningBag = true;
+			else if (cmp == "mystic_door") limitations->mysticDoor = true;
+			else if (cmp == "channel_switching") limitations->channelSwitching = true;
+			else if (cmp == "regular_exp_loss") limitations->regularExpLoss = true;
+			else if (cmp == "vip_rock") limitations->vipRock = true;
+			else if (cmp == "minigames") limitations->minigames = true;
+			else if (cmp == "mount") limitations->mount = true;
+			else if (cmp == "potion_use") limitations->potionUse = true;
+			else if (cmp == "drop_down") limitations->dropDown = true;
+			else if (cmp == "chalkboard") limitations->chalkboard = true;
+		}
+		FieldLimit *limitations;
+	};
 }
 
 int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
@@ -121,14 +155,15 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 		mapinfo->link = link;
 
 		FieldTypeFlags f = {mapinfo};
+		FieldLimitFlags limits = {&mapinfo->limitations};
 		MapFlags whoo = {mapinfo};
 		runFlags(row[FieldType], f);
+		runFlags(row[FieldLimit], limits);
 		runFlags(row[Flags], whoo);
 
 		mapinfo->continent = getContinent(mapid);
 		mapinfo->rm = atoi(row[ReturnMap]);
 		mapinfo->forcedReturn = atoi(row[ForcedReturn]);
-		mapinfo->fieldLimit = atoi(row[FieldLimit]);
 		mapinfo->spawnRate = atof(row[MobRate]);
 		mapinfo->defaultMusic = row[Bgm];
 		mapinfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
@@ -147,7 +182,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 	}
 
 	maps[mapid] = map;
-	if (map == 0) // Map does not exist, so no need to run the rest of the code
+	if (map == nullptr) // Map does not exist, so no need to run the rest of the code
 		return -1;
 	return (link == 0 ? mapid : link);
 }
@@ -197,7 +232,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		portal = PortalInfo();
-		
+
 		PortalFlags whoo = {&portal};
 		runFlags(row[Flags], whoo);
 
@@ -265,7 +300,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		else if (type == "reactor") {
 			reactor = ReactorSpawnInfo();
 			reactor.setSpawnInfo(life);
-			reactor.name = (row[Name] != 0 ? row[Name] : "");
+			reactor.name = (row[Name] != nullptr ? row[Name] : "");
 			map->addReactorSpawn(reactor);
 		}
 	}

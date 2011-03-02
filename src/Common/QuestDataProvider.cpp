@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-QuestDataProvider * QuestDataProvider::singleton = 0;
+QuestDataProvider * QuestDataProvider::singleton = nullptr;
 
 void QuestDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";

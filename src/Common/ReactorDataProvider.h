@@ -50,7 +50,7 @@ struct ReactorData {
 class ReactorDataProvider : boost::noncopyable {
 public:
 	static ReactorDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ReactorDataProvider();
 		return singleton;
 	}

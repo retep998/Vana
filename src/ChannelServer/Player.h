@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractConnection.h"
 #include "MovableLife.h"
+#include "Npc.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
 #include "PlayerInventory.h"
@@ -45,7 +46,6 @@ using std::vector;
 using std::tr1::unordered_set;
 
 class Instance;
-class NPC;
 class PacketReader;
 class Party;
 struct PortalInfo;
@@ -53,7 +53,6 @@ struct PortalInfo;
 class Player : public AbstractConnection, public MovableLife {
 public:
 	Player();
-
 	~Player();
 
 	void realHandleRequest(PacketReader &packet);
@@ -65,18 +64,18 @@ public:
 	void setMapChair(int16_t s) { mapchair = s; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
-	void setMap(int32_t mapid, PortalInfo *portal = 0, bool instance = false);
+	void setMap(int32_t mapid, PortalInfo *portal = nullptr, bool instance = false);
 	void setBuddyListSize(uint8_t size);
 	void setConnectionTime(int64_t newtime) { online_time = newtime; }
 	void setTradeId(int32_t id) { this->trade_id = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
-	void setNPC(NPC *npc) { this->npc = npc; }
-	void setParty(Party *party) { this->party = party; }
-	void setInstance(Instance *instance) { this->instance = instance; }
 	void setChair(int32_t chair) { this->chair = chair; }
 	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
+	void setNpc(Npc *npc) { this->npc.reset(npc); }
+	void setParty(Party *party) { this->party = party; }
+	void setInstance(Instance *instance) { this->instance = instance; }
 
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
@@ -101,16 +100,15 @@ public:
 	string getChalkboard() const { return chalkboard; }
 	string getMedalName();
 	string getName() const { return name; }
-	NPC * getNPC() const { return npc; }
-	Party * getParty() const { return party; }
-	Instance * getInstance() const { return instance; }
 	bool isGm() const { return gm_level > 0; }
 	bool isAdmin() const { return admin; }
 	bool isTrading() const { return trade_state; }
+	bool hasGmEquip() const;
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
-	bool hasGmEquip();
-
+	Npc * getNpc() const { return npc.get(); }
+	Party * getParty() const { return party; }
+	Instance * getInstance() const { return instance; }
 	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
 	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
 	PlayerInventory * getInventory() const { return inv.get(); }
@@ -141,6 +139,10 @@ private:
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 
+	bool trade_state;
+	bool save_on_dc;
+	bool is_connect;
+	bool admin;
 	int8_t world_id;
 	int8_t map_pos;
 	int8_t gender;
@@ -159,19 +161,15 @@ private:
 	int32_t gm_level;
 	int32_t trade_id;
 	int64_t online_time;
-	bool trade_state;
-	bool save_on_dc;
-	bool is_connect;
-	bool admin;
 	string chalkboard;
 	string name;
-	NPC *npc;
-	Instance *instance;
-	Party *party;
 	unordered_set<int8_t> used_portals;
 	vector<int32_t> warnings;
 	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
+	Instance *instance;
+	Party *party;
+	scoped_ptr<Npc> npc;
 	scoped_ptr<PlayerActiveBuffs> activeBuffs;
 	scoped_ptr<PlayerBuddyList> buddyList;
 	scoped_ptr<PlayerInventory> inv;

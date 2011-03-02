@@ -25,7 +25,7 @@ namespace Timer {
 
 using std::tr1::bind;
 
-Thread * Thread::singleton = 0;
+Thread * Thread::singleton = nullptr;
 
 Thread::Thread() :
 m_resort_timer(false),
@@ -59,7 +59,7 @@ bool less_than (const Timer *t1, const Timer *t2) {
 Timer * Thread::findMin() {
 	// Unsynchronized
 	if (m_timers.size() == 0) {
-		return 0;
+		return nullptr;
 	}
 
 	if (m_resort_timer) {
@@ -81,7 +81,7 @@ void Thread::runThread() {
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
-		int64_t msec = (minTimer == 0) ? 1000000000 : minTimer->getRunAt() - TimeUtilities::getTickCount(); // Be certain the time stays in milliseconds
+		int64_t msec = (minTimer == nullptr) ? 1000000000 : minTimer->getRunAt() - TimeUtilities::getTickCount(); // Be certain the time stays in milliseconds
 		if (msec <= 0) {
 			minTimer->run();
 			continue;
@@ -92,7 +92,7 @@ void Thread::runThread() {
 				continue;
 		}
 
-		if (minTimer != 0) {
+		if (minTimer != nullptr) {
 			minTimer->run();
 		}
 	}

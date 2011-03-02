@@ -182,7 +182,7 @@ struct Attack {
 class SkillDataProvider : boost::noncopyable {
 public:
 	static SkillDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new SkillDataProvider();
 		return singleton;
 	}
@@ -194,10 +194,10 @@ public:
 	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
 
 	bool hasBanishData(int32_t mobid) { return (banishinfo.find(mobid) != banishinfo.end()); }
-	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &banishinfo[mobid] : 0); }
+	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &banishinfo[mobid] : nullptr); }
 
 	bool hasMorphData(int16_t morph) { return (morphinfo.find(morph) != morphinfo.end()); }
-	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &morphinfo[morph] : 0); }
+	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &morphinfo[morph] : nullptr); }
 private:
 	SkillDataProvider() {}
 	static SkillDataProvider *singleton;

@@ -45,5 +45,5 @@ public:
 
 inline
 int32_t Decoder::getLength(unsigned char *header) {
-	return ((header[0] + header[1]*0x100) ^ (header[2] + header[3]*0x100));
+	return ((header[0] + header[1] * 0x100) ^ (header[2] + header[3] * 0x100));
 }

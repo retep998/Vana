@@ -117,7 +117,7 @@ void LoginPacket::showWorld(Player *player, World *world) {
 		}
 
 		packet.add<int8_t>(world->getId());
-		packet.add<int16_t>(i);
+		packet.add<uint16_t>(i);
 	}
 	packet.add<int16_t>(0); // Amount of messages
 	// packet.addPos(); // Pos of message
@@ -157,7 +157,7 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(chars.size());
+	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
@@ -184,8 +184,8 @@ void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(worlds);
-	packet.add<int32_t>(unk);
+	packet.add<uint32_t>(worlds);
+	packet.add<uint32_t>(unk);
 	player->getSession()->send(packet);
 }
 
@@ -193,8 +193,8 @@ void LoginPacket::showCharactersWorld(Player *player, uint8_t worldid, const vec
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(worldid);
-	packet.add<int8_t>(chars.size());
+	packet.add<uint8_t>(worldid);
+	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}

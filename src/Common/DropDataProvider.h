@@ -53,7 +53,7 @@ typedef vector<GlobalDrop> GlobalDrops;
 class DropDataProvider : boost::noncopyable {
 public:
 	static DropDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new DropDataProvider();
 		return singleton;
 	}
@@ -61,7 +61,7 @@ public:
 
 	bool hasDrops(int32_t oid) { return (dropdata.find(oid) != dropdata.end()); }
 	DropsInfo getDrops(int32_t objectid) { return dropdata[objectid]; }
-	GlobalDrops * getGlobalDrops() { return (globaldrops.size() > 0 ? &globaldrops : 0); }
+	GlobalDrops * getGlobalDrops() { return (globaldrops.size() > 0 ? &globaldrops : nullptr); }
 private:
 	DropDataProvider() {}
 	static DropDataProvider *singleton;

@@ -44,7 +44,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	if (slot2 == 0) {
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
-		if (item == 0)
+		if (item == nullptr)
 			return;
 		if (GameLogicUtilities::isEquip(item->id) || GameLogicUtilities::isRechargeable(item->id))
 			amount = item->amount;
@@ -77,12 +77,12 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
-		if (item1 == 0) {
+		if (item1 == nullptr) {
 			// Hacking
 			return;
 		}
 
-		if (item2 != 0 && !GameLogicUtilities::isRechargeable(item1->id) && !GameLogicUtilities::isEquip(item1->id) && !GameLogicUtilities::isPet(item1->id) && item1->id == item2->id) {
+		if (item2 != nullptr && !GameLogicUtilities::isRechargeable(item1->id) && !GameLogicUtilities::isEquip(item1->id) && !GameLogicUtilities::isPet(item1->id) && item1->id == item2->id) {
 			if (item1->amount + item2->amount <= ItemDataProvider::Instance()->getMaxSlot(item1->id)) {
 				item2->amount += item1->amount;
 				player->getInventory()->deleteItem(inv, slot1, false);
@@ -103,7 +103,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 					// Hacking
 					return;
 				}
-				Item *remove = 0;
+				Item *remove = nullptr;
 				int16_t oldslot = 0;
 				bool weapon = -slot2 == EquipSlots::Weapon;
 				bool shield = -slot2 == EquipSlots::Shield;
@@ -149,7 +149,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 						else if (bottom) {
 							swapslot = -EquipSlots::Top;
 						}
-						player->getInventory()->setItem(inv, swapslot, 0);
+						player->getInventory()->setItem(inv, swapslot, nullptr);
 						player->getInventory()->setItem(inv, slot1, remove);
 						player->getInventory()->setItem(inv, slot2, item1);
 						InventoryPacket::moveItem(player, inv, slot1, slot2);
@@ -165,13 +165,13 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 						int16_t freeslot = 0;
 						for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 							Item *olditem = player->getInventory()->getItem(inv, s);
-							if (olditem == 0) {
+							if (olditem == nullptr) {
 								freeslot = s;
 								break;
 							}
 						}
 						player->getInventory()->setItem(inv, freeslot, remove);
-						player->getInventory()->setItem(inv, oldslot, 0);
+						player->getInventory()->setItem(inv, oldslot, nullptr);
 						InventoryPacket::moveItem(player, inv, oldslot, freeslot);
 					}
 				}
@@ -180,7 +180,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			player->getInventory()->setItem(inv, slot2, item1);
 			if (item1->petid > 0)
 				player->getPets()->getPet(item1->petid)->setInventorySlot((int8_t) slot2);
-			if (item2 != 0 && item2->petid > 0)
+			if (item2 != nullptr && item2->petid > 0)
 				player->getPets()->getPet(item2->petid)->setInventorySlot((int8_t) slot1);
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 		}
@@ -286,7 +286,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			int8_t inv = packet.get<int8_t>(); // Inventory, as in equip, use, etc
 			int8_t slot = packet.get<int8_t>(); // Slot within the inventory
 			Item *item = player->getStorage()->getItem(slot);
-			if (item == 0) { // It's a trap
+			if (item == nullptr) { // It's a trap
 				// Hacking
 				return;
 			}
@@ -309,7 +309,7 @@ void InventoryHandler::useStorage(Player *player, PacketReader &packet) {
 			}
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
 			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == 0) {
+			if (item == nullptr) {
 				// Hacking
 				return;
 			}
@@ -365,7 +365,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 
 	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (it == 0 || it->id != itemid) {
+	if (it == nullptr || it->id != itemid) {
 		// Hacking
 		return;
 	}
@@ -422,7 +422,7 @@ void InventoryHandler::handleChair(Player *player, PacketReader &packet) {
 			player->setChair(0);
 		}
 		else {
-			map->playerSeated(player->getMapChair(), 0);
+			map->playerSeated(player->getMapChair(), nullptr);
 			player->setMapChair(0);
 		}
 		InventoryPacket::stopChair(player);
@@ -450,7 +450,7 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	}
 
 	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (inventoryitem == 0 || inventoryitem->id != itemid) {
+	if (inventoryitem == nullptr || inventoryitem->id != itemid) {
 		// Hacking
 		return;
 	}
@@ -473,18 +473,18 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 	int32_t itemid = packet.get<int32_t>();
 
 	Item *it = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (it == 0 || it->id != itemid) {
+	if (it == nullptr || it->id != itemid) {
 		// Hacking
 		return;
 	}
 	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
-	if (info == 0) {
+	if (info == nullptr) {
 		// Probably hacking
 		return;
 	}
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	int32_t map = info->moveTo;
-	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getInfo()->rm : map);
+	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getReturnMap() : map);
 }
 
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
@@ -496,7 +496,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
-	if (item == 0 || equip == 0) {
+	if (item == nullptr || equip == nullptr) {
 		// Most likely hacking
 		return;
 	}
@@ -598,12 +598,12 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::ItemMegaphone: {
 			string msg = player->getMedalName() + " : " + packet.getString();
 			bool whisper = packet.getBool();
-			Item *item = 0;
+			Item *item = nullptr;
 			if (packet.getBool()) {
 				int8_t inv = (int8_t) packet.get<int32_t>();
 				int16_t slot = (int16_t) packet.get<int32_t>();
 				item = player->getInventory()->getItem(inv, slot);
-				if (item == 0) {
+				if (item == nullptr) {
 					// Hacking
 					return;
 				}
@@ -639,7 +639,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			int16_t slot = packet.get<int16_t>();
 			if (slot != 0) {
 				Item *item = player->getInventory()->getItem(Inventories::EquipInventory, slot);
-				if (item == 0) {
+				if (item == nullptr) {
 					// Hacking or failure, dunno
 					return;
 				}
@@ -654,7 +654,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			int16_t slot = (int16_t) packet.get<int32_t>();
 			if (slot != 0) {
 				Item *item = player->getInventory()->getItem(inventory, slot);
-				if (item == 0) {
+				if (item == nullptr) {
 					// Hacking or failure, dunno
 					return;
 				}
@@ -671,7 +671,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
-			if ((hasreceiver && receiver != 0) || (!hasreceiver && receiver == 0)) {
+			if ((hasreceiver && receiver != nullptr) || (!hasreceiver && receiver == nullptr)) {
 				string msg = packet.getString();
 				string msg2 = packet.getString();
 				string msg3 = packet.getString();
@@ -679,10 +679,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				string msg5 = packet.getString();
 				packet.get<int32_t>(); // Ticks
 				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
-				
+
 				if (itemid == Items::Megassenger)
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
-			
+
 				used = true;
 			}
 			break;
@@ -698,10 +698,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			string msg5 = packet.getString();
 			packet.get<int32_t>(); // Ticks
 			MapleTvs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
-			
+
 			if (itemid == Items::StarMegassenger)
 				InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
-			
+
 			used = true;
 			break;
 		}
@@ -712,7 +712,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			string name = packet.getString();
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 			int32_t time = 60;
-			if (receiver != 0) {
+			if (receiver != nullptr) {
 				string msg = packet.getString();
 				string msg2 = packet.getString();
 				string msg3 = packet.getString();
@@ -776,7 +776,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			int8_t inventory = (int8_t) packet.get<int32_t>(); // How pointless...
 			int16_t slot = (int16_t) packet.get<int32_t>();
 			Item *f = player->getInventory()->getItem(inventory, slot);
-			if (f == 0 || f->hammers == 2) {
+			if (f == nullptr || f->hammers == 2) {
 				// Hacking, probably
 				return;
 			}
@@ -835,10 +835,10 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 	else if (mode == 1) { // IGN
 		string tname = packet.getString();
 		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
-		if (target != 0 && target != player) {
+		if (target != nullptr && target != player) {
 			targetmapid = target->getMap();
 		}
-		else if (target == 0) {
+		else if (target == nullptr) {
 			InventoryPacket::sendRockError(player, 0x06, type);
 		}
 		else if (target == player) {
@@ -847,15 +847,15 @@ bool InventoryHandler::handleRockTeleport(Player *player, int8_t type, int32_t i
 		}
 	}
 	if (targetmapid != -1) {
-		MapInfo *destination = Maps::getMap(targetmapid)->getInfo();
-		MapInfo *origin = Maps::getMap(player->getMap())->getInfo();
-		if ((destination->fieldLimit & FieldLimitBits::VipRock) != 0) {
+		Map *destination = Maps::getMap(targetmapid);
+		Map *origin = Maps::getMap(player->getMap());
+		if (!destination->canVip()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
-		else if ((origin->fieldLimit & FieldLimitBits::VipRock) != 0) {
+		else if (!origin->canVip()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
-		else if (type == 0 && destination->continent != origin->continent) {
+		else if (type == 0 && destination->getContinent()!= origin->getContinent()) {
 			InventoryPacket::sendRockError(player, 0x08, type);
 		}
 		else {

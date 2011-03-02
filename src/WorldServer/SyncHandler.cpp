@@ -64,7 +64,7 @@ void SyncHandler::logInLogOut(int32_t playerid) {
 
 void SyncHandler::createParty(int32_t playerid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (pplayer->getParty() != 0) {
+	if (pplayer->getParty() != nullptr) {
 		// Hacking
 		return;
 	}
@@ -80,44 +80,44 @@ void SyncHandler::createParty(int32_t playerid) {
 
 void SyncHandler::giveLeader(int32_t playerid, int32_t target, bool is) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
+	if (pplayer->getParty() == nullptr || !pplayer->getParty()->isLeader(playerid)) {
 		// Hacking
 		return;
 	}
 	Party *party = pplayer->getParty();
 	party->setLeader(target);
-	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); ++iter) {
 		if (iter->second->isOnline()) {
 			SyncPacket::PartyPacket::giveLeader(iter->second->getChannel(), iter->second->getId(), target, is);
 		}
 	}
-	SyncPacket::PlayerPacket::sendSwitchPartyLeader(target, pplayer->getParty()->getId());
+	SyncPacket::PlayerPacket::sendSwitchPartyLeader(target, party->getId());
 }
 
 void SyncHandler::expelPlayer(int32_t playerid, int32_t target) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	Player *tplayer = PlayerDataProvider::Instance()->getPlayer(target);
-	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
+	if (pplayer->getParty() == nullptr || !pplayer->getParty()->isLeader(playerid)) {
 		// Hacking
 		return;
 	}
 	Party *party = pplayer->getParty();
 	party->deleteMember(target);
-	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+	for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); ++iter) {
 		if (iter->second->isOnline()) {
 			SyncPacket::PartyPacket::updateParty(iter->second->getChannel(), PartyActions::Expel, iter->first, target);
 		}
 	}
-	if (tplayer != 0) {
+	if (tplayer != nullptr) {
 		SyncPacket::PartyPacket::updateParty(tplayer->getChannel(), PartyActions::Expel, target, target);
 	}
-	SyncPacket::PlayerPacket::sendRemovePartyPlayer(pplayer->getId(), pplayer->getParty()->getId());
-	PlayerDataProvider::Instance()->getPlayer(target, true)->setParty(0);
+	SyncPacket::PlayerPacket::sendRemovePartyPlayer(pplayer->getId(), party->getId());
+	PlayerDataProvider::Instance()->getPlayer(target, true)->setParty(nullptr);
 }
 
 void SyncHandler::leaveParty(int32_t playerid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (pplayer->getParty() == 0) {
+	if (pplayer->getParty() == nullptr) {
 		// Hacking
 		return;
 	}
@@ -126,7 +126,7 @@ void SyncHandler::leaveParty(int32_t playerid) {
 		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
 			if (iter->second->isOnline()) {
 				SyncPacket::PartyPacket::disbandParty(iter->second->getChannel(), iter->second->getId());
-				iter->second->setParty(0);
+				iter->second->setParty(nullptr);
 			}
 		}
 		SyncPacket::PlayerPacket::sendDisbandParty(party->getId());
@@ -141,13 +141,13 @@ void SyncHandler::leaveParty(int32_t playerid) {
 			}
 		}
 		SyncPacket::PartyPacket::updateParty(pplayer->getChannel(), PartyActions::Leave, playerid, playerid);
-		pplayer->setParty(0);
+		pplayer->setParty(nullptr);
 	}
 }
 
 void SyncHandler::joinParty(int32_t playerid, int32_t partyid) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (pplayer->getParty() != 0) {
+	if (pplayer->getParty() != nullptr) {
 		// Hacking
 		return;
 	}
@@ -158,7 +158,7 @@ void SyncHandler::joinParty(int32_t playerid, int32_t partyid) {
 	else {
 		pplayer->setParty(party);
 		party->addMember(pplayer);
-		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); iter++) {
+		for (map<int32_t, Player *>::iterator iter = party->members.begin(); iter != party->members.end(); ++iter) {
 			if (iter->second->isOnline()) {
 				SyncPacket::PartyPacket::updateParty(iter->second->getChannel(), PartyActions::Join, iter->second->getId(), playerid);
 			}
@@ -169,13 +169,13 @@ void SyncHandler::joinParty(int32_t playerid, int32_t partyid) {
 
 void SyncHandler::invitePlayer(int32_t playerid, const string &invitee) {
 	Player *pplayer = PlayerDataProvider::Instance()->getPlayer(playerid);
-	if (pplayer->getParty() == 0 || !pplayer->getParty()->isLeader(playerid)) {
+	if (pplayer->getParty() == nullptr || !pplayer->getParty()->isLeader(playerid)) {
 		// Hacking
 		return;
 	}
 	Player *invited = PlayerDataProvider::Instance()->getPlayer(invitee);
 	if (invited->isOnline() && invited->getChannel() == pplayer->getChannel()) {
-		if (invited->getParty() != 0) {
+		if (invited->getParty() != nullptr) {
 			SyncPacket::PartyPacket::partyError(pplayer->getChannel(), playerid, 0x10);
 		}
 		else {
@@ -206,9 +206,9 @@ void SyncHandler::playerConnect(uint16_t channel, PacketReader &packet) {
 	int32_t map = packet.get<int32_t>();
 	int16_t job = static_cast<int16_t>(packet.get<int32_t>());
 	uint8_t level = static_cast<uint8_t>(packet.get<int32_t>());
-	
+
 	Player *p = PlayerDataProvider::Instance()->getPlayer(id, true);
-	if (p == 0) {
+	if (p == nullptr) {
 		p = new Player(id);
 	}
 	p->setIp(ip);
@@ -238,7 +238,7 @@ void SyncHandler::partyOperation(PacketReader &packet) {
 		case PartyActions::Join: joinParty(playerid, packet.get<int32_t>()); break;
 		case PartyActions::Invite: invitePlayer(playerid, packet.getString()); break;
 		case PartyActions::Expel: expelPlayer(playerid, packet.get<int32_t>()); break;
-		case PartyActions::SetLeader: giveLeader(playerid, packet.get<int32_t>(), 0); break;
+		case PartyActions::SetLeader: giveLeader(playerid, packet.get<int32_t>(), false); break;
 	}
 }
 
@@ -278,7 +278,7 @@ void SyncHandler::updateJob(PacketReader &packet) {
 	int16_t job = packet.get<int16_t>();
 	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
 	plyr->setJob(job);
-	if (plyr->getParty() != 0) {
+	if (plyr->getParty() != nullptr) {
 		SyncHandler::silentUpdate(id);
 	}
 }
@@ -288,7 +288,7 @@ void SyncHandler::updateLevel(PacketReader &packet) {
 	uint8_t level = packet.get<uint8_t>();
 	Player *plyr = PlayerDataProvider::Instance()->getPlayer(id);
 	plyr->setLevel(level);
-	if (plyr->getParty() != 0) {
+	if (plyr->getParty() != nullptr) {
 		SyncHandler::silentUpdate(id);
 	}
 }
@@ -298,7 +298,7 @@ void SyncHandler::updateMap(PacketReader &packet) {
 	int32_t map = packet.get<int32_t>();
 	if (Player *p = PlayerDataProvider::Instance()->getPlayer(id)) {
 		p->setMap(map);
-		if (p->getParty() != 0) {
+		if (p->getParty() != nullptr) {
 			SyncHandler::silentUpdate(id);
 		}
 	}
