@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/algorithm/string.hpp>
 #include <cstring>
 
-PlayerDataProvider * PlayerDataProvider::singleton = 0;
+PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 // Stored packets
 void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
@@ -36,7 +36,7 @@ void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
 	size_t psize = packet.getBufferLength();
 	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
 	memcpy(buf, packet.getBuffer(), psize);
-	
+
 	m_packets[playerid].reset(new PacketReader(buf, psize));
 	SyncPacket::playerBuffsTransferred(ChannelServer::Instance()->getWorldConnection(), playerid);
 }
@@ -67,12 +67,12 @@ void PlayerDataProvider::removePlayer(Player *player) {
 }
 
 Player * PlayerDataProvider::getPlayer(int32_t id) {
-	return (m_players.find(id) == m_players.end()) ? 0 : m_players[id];
+	return (m_players.find(id) == m_players.end()) ? nullptr : m_players[id];
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name) {
 	string upCaseName = boost::to_upper_copy(name);
-	return (m_players_names.find(upCaseName) == m_players_names.end()) ? 0 : m_players_names[upCaseName];
+	return (m_players_names.find(upCaseName) == m_players_names.end()) ? nullptr : m_players_names[upCaseName];
 }
 
 void PlayerDataProvider::run(function<void (Player *)> func) {
@@ -89,7 +89,7 @@ void PlayerDataProvider::sendPacket(PacketCreator &packet) {
 
 // Parties
 Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) == m_parties.end() ? 0 : m_parties[id]);
+	return (m_parties.find(id) == m_parties.end() ? nullptr : m_parties[id]);
 }
 
 void PlayerDataProvider::addParty(Party *party) {

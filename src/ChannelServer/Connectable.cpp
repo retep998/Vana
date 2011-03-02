@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <ctime>
 
-Connectable * Connectable::singleton = 0;
+Connectable * Connectable::singleton = nullptr;
 
 void Connectable::newPlayer(int32_t id) {
 	map[id] = TimeUtilities::getTickCount();

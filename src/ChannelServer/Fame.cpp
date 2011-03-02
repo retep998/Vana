@@ -71,7 +71,7 @@ bool Fame::getLastFameLog(int32_t from) { // Last fame from that char
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << from << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-86400 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())
-		return (res.num_rows() == 0) ? false : true;
+		return (res.num_rows() != 0);
 	return false;
 }
 
@@ -80,6 +80,6 @@ bool Fame::getLastFameSPLog(int32_t from, int32_t to) {
 	query << "SELECT `time` FROM `fame_log` WHERE `from`=" << from << " AND `to`=" << to << " AND UNIX_TIMESTAMP(`time`) > UNIX_TIMESTAMP()-2592000 ORDER BY `time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty())
-		return (res.num_rows() == 0) ? false : true;
+		return (res.num_rows() != 0);
 	return false;
 }

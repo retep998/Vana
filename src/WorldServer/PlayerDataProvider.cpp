@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using Initializing::outputWidth;
 
-PlayerDataProvider * PlayerDataProvider::singleton = 0;
+PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 void PlayerDataProvider::loadData() {
 	int16_t worldid = WorldServer::Instance()->getWorldId();
@@ -64,7 +64,7 @@ void PlayerDataProvider::registerPlayer(Player *player, bool online) {
 		m_players[player->getId()] = player;
 	}
 	if (online) {
-		if (player->getParty() != 0) {
+		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(player->getId());
 		}
 		Channels::Instance()->increasePopulation(player->getChannel());
@@ -75,7 +75,7 @@ void PlayerDataProvider::remove(int32_t id, int16_t channel) {
 	Player *player = m_players[id];
 	if (channel == -1 || player->getChannel() == channel) {
 		player->setOnline(false);
-		if (player->getParty() != 0) {
+		if (player->getParty() != nullptr) {
 			SyncHandler::logInLogOut(id);
 		}
 		Channels::Instance()->decreasePopulation(channel);
@@ -109,7 +109,7 @@ Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 		if (player->isOnline() || includeOffline)
 			return player;
 	}
-	return 0;
+	return nullptr;
 }
 
 void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
@@ -162,7 +162,7 @@ void PlayerDataProvider::removeParty(int32_t id) {
 }
 
 Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) != m_parties.end() ? m_parties[id] : 0);
+	return (m_parties.find(id) != m_parties.end() ? m_parties[id] : nullptr);
 }
 
 unordered_map<int32_t, Party *> PlayerDataProvider::getParties() {

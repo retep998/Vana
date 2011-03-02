@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 
 int64_t TimeUtilities::getServerTime() {
-	return timeToTick(time(0));
+	return timeToTick(time(nullptr));
 }
 
 int64_t TimeUtilities::timeToTick(time_t time) {
@@ -123,13 +123,13 @@ int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 	return result;
 }
 
-bool TimeUtilities::getDST(time_t ctime) {
+bool TimeUtilities::isDst(time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	return (timeinfo->tm_isdst > 0);
 }
 
 int32_t TimeUtilities::getTimeZoneOffset() {
-	time_t ctime = time(0);
+	time_t ctime = time(nullptr);
 	tm *ts = localtime(&ctime);
 	int32_t hour = ts->tm_hour; // C/C++ have extremely unsightly time handling, beware
 	ts = gmtime(&ctime);

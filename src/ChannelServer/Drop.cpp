@@ -69,11 +69,12 @@ void Drop::doDrop(const Pos &origin) {
 	setDropped(TimeUtilities::getTickCount());
 	if (!isQuest()) {
 		if (!isTradeable()) {
-			DropsPacket::showDrop(0, this, 3, false, origin);
+			DropsPacket::showDrop(nullptr, this, 3, false, origin);
 			this->removeDrop(false);
 		}
-		else
-			DropsPacket::showDrop(0, this, 1, true, origin);
+		else {
+			DropsPacket::showDrop(nullptr, this, 1, true, origin);
+		}
 	}
 	else if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
 		if (player->getMap() == this->mapid) {

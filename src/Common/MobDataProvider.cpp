@@ -27,7 +27,7 @@ using std::string;
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-MobDataProvider * MobDataProvider::singleton = 0;
+MobDataProvider * MobDataProvider::singleton = nullptr;
 
 void MobDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Mobs... ";
@@ -218,7 +218,7 @@ MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobid, uint8_t index) {
 	catch (std::out_of_range) {
 		std::cout << "Attack does not exist for mobid " << mobid << " at index " << index << std::endl;
 	}
-	return 0;
+	return nullptr;
 }
 
 MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobid, uint8_t index) {
@@ -228,7 +228,7 @@ MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobid, uint8_t index) {
 	catch (std::out_of_range) {
 		std::cout << "Skill does not exist for mobid " << mobid << " at index " << index << std::endl;
 	}
-	return 0;
+	return nullptr;
 }
 
 uint8_t MobDataProvider::getSkillCount(int32_t mobid) {

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerPacket.h"
 #include "WorldServerConnection.h"
 
-ChannelServer * ChannelServer::singleton = 0;
+ChannelServer * ChannelServer::singleton = nullptr;
 
 void ChannelServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new PlayerFactory());

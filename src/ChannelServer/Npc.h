@@ -33,12 +33,12 @@ using std::vector;
 class PacketCreator;
 class Player;
 
-class NPC {
+class Npc {
 public:
-	NPC(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
-	NPC(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
-	NPC(int32_t npcid, Player *player, const string &script);
-	~NPC();
+	Npc(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
+	Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
+	Npc(int32_t npcid, Player *player, const string &script);
+	~Npc();
 
 	static bool hasScript(int32_t npcid, int16_t questid, bool start);
 
@@ -102,14 +102,14 @@ private:
 	uint32_t state; // For "back" button
 	vector<StatePtr> previousStates; // For "back" button
 
-	scoped_ptr<LuaNPC> luaNPC;
+	scoped_ptr<LuaNpc> luaNpc;
 
 	void initData(Player *p, int32_t id);
 	string getScript(int16_t questid, bool start);
 	void initScript(Player *player, int32_t npcid, const string &filename);
 };
 
-namespace NPCDialogs {
+namespace NpcDialogs {
 	const uint8_t normal = 0x00;
 	const uint8_t yesNo = 0x01;
 	const uint8_t getText = 0x02;

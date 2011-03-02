@@ -59,7 +59,7 @@ public:
 	size_t getChannelCount() const { return m_channels.size(); }
 	string getName() const { return m_config.name; }
 	string getEventMessage() const { return m_config.eventMsg; }
-	Channel * getChannel(int32_t id) { return (m_channels.find(id) != m_channels.end() ? m_channels[id].get() : 0); }
+	Channel * getChannel(int32_t id) { return (m_channels.find(id) != m_channels.end() ? m_channels[id].get() : nullptr); }
 	Configuration & getConfig() { return m_config; }
 	LoginServerAcceptConnection * getConnection() const { return m_connection; }
 private:

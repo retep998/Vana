@@ -36,5 +36,5 @@ void Player::initialize() {
 	ip = 0;
 	onlineTime = 0;
 	inviteTime = 0;
-	party = 0;
+	party = nullptr;
 }

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 using Initializing::outputWidth;
 
-EventDataProvider * EventDataProvider::singleton = 0;
+EventDataProvider * EventDataProvider::singleton = nullptr;
 
 EventDataProvider::EventDataProvider() :
 	m_timers(new Timer::Container),

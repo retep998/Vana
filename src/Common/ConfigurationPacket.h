@@ -23,8 +23,8 @@ struct Configuration;
 struct MajorBoss;
 
 namespace ConfigurationPacket {
-	void addConfig(Configuration &config, PacketCreator &packet);
+	void addConfig(const Configuration &config, PacketCreator &packet);
 	Configuration getConfig(PacketReader &packet);
-	void addMajorBoss(MajorBoss &boss, PacketCreator &packet);
+	void addMajorBoss(const MajorBoss &boss, PacketCreator &packet);
 	MajorBoss getMajorBoss(PacketReader &packet);
 }

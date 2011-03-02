@@ -45,6 +45,22 @@ struct TimeMob {
 };
 typedef shared_ptr<TimeMob> TimeMobPtr;
 
+struct FieldLimit {
+	FieldLimit();
+	bool jump;
+	bool movementSkills;
+	bool summoningBag;
+	bool mysticDoor;
+	bool channelSwitching;
+	bool regularExpLoss;
+	bool vipRock;
+	bool minigames;
+	bool mount;
+	bool potionUse;
+	bool dropDown;
+	bool chalkboard;
+};
+
 struct MapInfo {
 	MapInfo() :
 		lt(Pos(0,0)),
@@ -78,7 +94,6 @@ struct MapInfo {
 	uint16_t dps;
 	int32_t rm;
 	int32_t forcedReturn;
-	int32_t fieldLimit;
 	int32_t link;
 	int32_t timeLimit;
 	int32_t protectItem;
@@ -89,13 +104,14 @@ struct MapInfo {
 	string message;
 	Pos lt;
 	Pos rb;
+	FieldLimit limitations;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;
 
 class MapDataProvider : boost::noncopyable {
 public:
 	static MapDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new MapDataProvider();
 		return singleton;
 	}

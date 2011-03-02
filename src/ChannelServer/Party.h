@@ -31,7 +31,7 @@ class Player;
 
 class Party {
 public:
-	Party(int32_t pid) : partyid(pid), instance(0) { }
+	Party(int32_t pid) : partyid(pid), instance(nullptr) { }
 	void setLeader(int32_t playerid, bool firstload = false);
 	void addMember(Player *player);
 	void addMember(int32_t id);
@@ -43,7 +43,7 @@ public:
 	void receiveHpBar(Player *player);
 	void setInstance(Instance *inst) { instance = inst; }
 	void warpAllMembers(int32_t mapid, const string &portalname = "");
-	Player * getMember(int32_t id) { return (members.find(id) != members.end() ? members[id] : 0); }
+	Player * getMember(int32_t id) { return (members.find(id) != members.end() ? members[id] : nullptr); }
 	Player * getMemberByIndex(uint8_t index);
 	Player * getLeader() { return members[leaderid]; }
 	Instance * getInstance() const { return instance; }

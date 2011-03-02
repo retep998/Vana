@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
 
-Channels * Channels::singleton = 0;
+Channels * Channels::singleton = nullptr;
 
 void Channels::registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
 	shared_ptr<Channel> chan(new Channel());
@@ -40,7 +40,7 @@ void Channels::removeChannel(uint16_t channel) {
 }
 
 Channel * Channels::getChannel(uint16_t num) {
-	return channels.find(num) != channels.end() ? channels[num].get() : 0;
+	return channels.find(num) != channels.end() ? channels[num].get() : nullptr;
 }
 
 void Channels::sendToAll(PacketCreator &packet) {

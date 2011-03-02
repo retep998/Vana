@@ -77,21 +77,23 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Shown items
 		if (equips[i][0] > 0) {
 			packet.add<int8_t>(i);
-			if (i == 11 && equips[i][1] > 0) // Normal weapons always here
+			if (i == EquipSlots::Weapon && equips[i][1] > 0) { // Normal weapons always here
 				packet.add<int32_t>(equips[i][1]);
-			else
+			}
+			else {
 				packet.add<int32_t>(equips[i][0]);
+			}
 		}
 	}
 	packet.add<int8_t>(-1);
 	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Covered items
-		if (equips[i][1] > 0 && i != 11) {
+		if (equips[i][1] > 0 && i != EquipSlots::Weapon) {
 			packet.add<int8_t>(i);
 			packet.add<int32_t>(equips[i][1]);
 		}
 	}
 	packet.add<int8_t>(-1);
-	packet.add<int32_t>(equips[11][0]); // Cash weapon
+	packet.add<int32_t>(equips[EquipSlots::Weapon][0]); // Cash weapon
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);

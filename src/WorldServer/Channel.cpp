@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channel::Channel() :
 m_players(0),
-m_connection(0),
+m_connection(nullptr),
 m_id(0),
 m_ip(0),
 m_port(0)

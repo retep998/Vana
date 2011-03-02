@@ -34,7 +34,7 @@ using std::string;
 using Initializing::outputWidth;
 using StringUtilities::runFlags;
 
-ItemDataProvider * ItemDataProvider::singleton = 0;
+ItemDataProvider * ItemDataProvider::singleton = nullptr;
 
 void ItemDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
@@ -477,7 +477,7 @@ PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemid, int32_t actio
 			return &petsInteractInfo[itemid][action];
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {

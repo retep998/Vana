@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 
 void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
-	if (player->getNPC() != 0) {
+	if (player->getNpc() != nullptr) {
 		return;
 	}
 	uint32_t npcid = Map::makeNpcId(packet.get<uint32_t>());
@@ -40,8 +40,8 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 
 	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
-	if (player->getNPC() == 0 && NPC::hasScript(npcs.id, 0, false)) {
-		NPC *npc = new NPC(npcs.id, player, npcs.pos);
+	if (player->getNpc() == nullptr && Npc::hasScript(npcs.id, 0, false)) {
+		Npc *npc = new Npc(npcs.id, player, npcs.pos);
 		npc->run();
 		return;
 	}
@@ -59,17 +59,17 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 }
 
 void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid) {
-	if (player->getNPC() != 0) {
+	if (player->getNpc() != nullptr) {
 		return;
 	}
 
-	NPC *npc = new NPC(npcid, player, questid, start);
+	Npc *npc = new Npc(npcid, player, questid, start);
 	npc->run();
 }
 
 void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
-	NPC *npc = player->getNPC();
-	if (npc == 0) {
+	Npc *npc = player->getNpc();
+	if (npc == nullptr) {
 		return;
 	}
 
@@ -82,22 +82,22 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 	int8_t what = packet.get<int8_t>();
 
 	switch (type) {
-		case NPCDialogs::normal:
+		case NpcDialogs::normal:
 			switch (what) {
 				case 0: npc->proceedBack(); break;
 				case 1:	npc->proceedNext(); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NPCDialogs::yesNo:
-		case NPCDialogs::acceptDecline:
+		case NpcDialogs::yesNo:
+		case NpcDialogs::acceptDecline:
 			switch (what) {
 				case 0: npc->proceedSelection(0); break;
 				case 1:	npc->proceedSelection(1); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NPCDialogs::getText:
+		case NpcDialogs::getText:
 			if (what != 0) {
 				npc->proceedText(packet.getString());
 			}
@@ -105,7 +105,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->end();
 			}
 			break;
-		case NPCDialogs::getNumber:
+		case NpcDialogs::getNumber:
 			if (what == 1) {
 				npc->proceedNumber(packet.get<int32_t>());
 			}
@@ -113,7 +113,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->end();
 			}
 			break;
-		case NPCDialogs::simple:
+		case NpcDialogs::simple:
 			if (what == 0) {
 				npc->end();
 			}
@@ -121,7 +121,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->proceedSelection(packet.get<uint8_t>());
 			}
 			break;
-		case NPCDialogs::style:
+		case NpcDialogs::style:
 			if (what == 1) {
 				npc->proceedSelection(packet.get<uint8_t>());
 			}

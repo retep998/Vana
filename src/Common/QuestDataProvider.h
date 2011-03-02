@@ -119,7 +119,7 @@ private:
 class QuestDataProvider : boost::noncopyable {
 public:
 	static QuestDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new QuestDataProvider();
 		return singleton;
 	}

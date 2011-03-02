@@ -199,7 +199,7 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, int8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
 	if (amount == item->amount || inventory == Inventories::EquipInventory) {
-		holder->getInventory()->setItem(inventory, inventoryslot, 0);
+		holder->getInventory()->setItem(inventory, inventoryslot, nullptr);
 		InventoryPacket::moveItem(holder, inventory, inventoryslot, 0);
 		holder->getInventory()->deleteItem(inventory, inventoryslot);
 	}

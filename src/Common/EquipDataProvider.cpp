@@ -30,7 +30,7 @@ using Initializing::outputWidth;
 using StringUtilities::atoli;
 using StringUtilities::runFlags;
 
-EquipDataProvider * EquipDataProvider::singleton = 0;
+EquipDataProvider * EquipDataProvider::singleton = nullptr;
 
 void EquipDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";

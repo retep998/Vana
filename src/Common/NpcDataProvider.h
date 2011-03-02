@@ -33,7 +33,7 @@ struct NpcData {
 class NpcDataProvider : boost::noncopyable {
 public:
 	static NpcDataProvider * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new NpcDataProvider();
 		return singleton;
 	}

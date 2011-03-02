@@ -36,7 +36,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 	uint8_t subopcode = packet.get<int8_t>();
 	switch (subopcode) {
 		case 0x00: // Open trade - this usually comes with 03 00 - no clue why
-			TradesPacket::sendOpenTrade(player, player, 0);
+			TradesPacket::sendOpenTrade(player, player, nullptr);
 			break;
 		case 0x02: { // Send trade request
 			if (player->isTrading()) {
@@ -45,7 +45,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			}
 			int32_t recvid = packet.get<int32_t>();
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(recvid);
-			if (receiver != 0) {
+			if (receiver != nullptr) {
 				if (!receiver->isTrading())
 					TradesPacket::sendTradeRequest(player, receiver, Trades::Instance()->newTrade(player, receiver));
 				else
@@ -56,7 +56,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case 0x03: { // Deny request - trade ID + message ID
 			int32_t tradeid = packet.get<int32_t>();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
-			if (trade != 0) {
+			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				TradeHandler::removeTrade(tradeid);
@@ -67,7 +67,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case 0x04: { // Accept request
 			int32_t tradeid = packet.get<int32_t>();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
-			if (trade != 0) {
+			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				two->setTrading(true);
@@ -82,7 +82,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		}
 		case 0x06: { // Chat in a trade
 			ActiveTrade *trade = Trades::Instance()->getTrade(player->getTradeId());
-			if (trade == 0) {
+			if (trade == nullptr) {
 				// Hacking
 				return;
 			}
@@ -91,7 +91,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			uint8_t blue = (player == two ? 0x01 : 0x00);
 			string chat = player->getName() + " : " + packet.getString();
 			TradesPacket::sendTradeChat(one, blue, chat);
-			if (two != 0)
+			if (two != nullptr)
 				TradesPacket::sendTradeChat(two, blue, chat);
 			break;
 		}
@@ -103,7 +103,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case 0x10: { // Accept trade
 			int32_t tradeid = player->getTradeId();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
-			if (trade == 0) {
+			if (trade == nullptr) {
 				// most likely hacking
 				return;
 			}
@@ -119,7 +119,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 					int16_t amount = packet.get<int16_t>();
 					int8_t addslot = packet.get<int8_t>();
 					Item *item = player->getInventory()->getItem(inventory, slot);
-					if (item == 0 || (!isreceiver && trade->isItemInSlot(send, addslot)) || (isreceiver && trade->isItemInSlot(recv, addslot))) {
+					if (item == nullptr || (!isreceiver && trade->isItemInSlot(send, addslot)) || (isreceiver && trade->isItemInSlot(recv, addslot))) {
 						// Hacking
 						return;
 					}
@@ -170,11 +170,11 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 void TradeHandler::cancelTrade(Player *player) {
 	int32_t tradeid = player->getTradeId();
 	ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
-	if (trade != 0) {
+	if (trade != nullptr) {
 		Player *one = trade->getSender();
 		Player *two = trade->getReceiver();
 		bool isreceiver = (player == two);
-		if (isreceiver || (!isreceiver && two != 0 && two->getTradeId() == one->getTradeId())) { // Left while in trade, give items back
+		if (isreceiver || (!isreceiver && two != nullptr && two->getTradeId() == one->getTradeId())) { // Left while in trade, give items back
 			TradesPacket::sendLeaveTrade(isreceiver ? one : two);
 			trade->returnTrade();
 		}

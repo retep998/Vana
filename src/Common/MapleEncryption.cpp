@@ -60,7 +60,7 @@ void MapleEncryption::nextIv(unsigned char *vector) {
 		x[2] = b;
 		a += values[vector[i]];
 		x[3] = a;
-		
+
 		c = x[0] + x[1] * 0x100 + x[2] * 0x10000 + x[3] * 0x1000000;
 		d = c;
 		c = c >> 0x1D;

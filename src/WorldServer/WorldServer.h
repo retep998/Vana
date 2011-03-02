@@ -32,7 +32,7 @@ using std::string;
 class WorldServer : public AbstractServer, boost::noncopyable {
 public:
 	static WorldServer * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new WorldServer;
 		return singleton;
 	}

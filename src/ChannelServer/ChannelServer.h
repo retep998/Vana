@@ -32,7 +32,7 @@ class PacketCreator;
 class ChannelServer : public AbstractServer, boost::noncopyable {
 public:
 	static ChannelServer * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new ChannelServer;
 		return singleton;
 	}

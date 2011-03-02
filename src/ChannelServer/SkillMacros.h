@@ -65,9 +65,7 @@ inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
 	if (skillMacros.find(pos) != skillMacros.end()) {
 		return skillMacros[pos].get();
 	}
-	else {
-		return 0;
-	}
+	return nullptr;
 }
 
 inline int8_t SkillMacros::getMax() {

@@ -35,7 +35,7 @@ class MTRand;
 class Randomizer : boost::noncopyable {
 public:
 	static Randomizer * Instance() {
-		if (singleton == 0)
+		if (singleton == nullptr)
 			singleton = new Randomizer;
 		return singleton;
 	}
