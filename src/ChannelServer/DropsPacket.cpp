@@ -28,15 +28,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_DROP_ITEM);
-	packet.add<int8_t>(type); // 3 = disappear during drop animation, 2 = show existing, 1 then 0 = show new
+	packet.add<int8_t>(type);
 	packet.add<int32_t>(drop->getId());
 	packet.addBool(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
-	packet.add<int8_t>(drop->getType()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
+	packet.add<int8_t>(drop->getType());
 	packet.addPos(drop->getPos());
 	packet.add<int32_t>(drop->getTime());
-	if (type != 2) { // Give the point of origin for things that are just being dropped
+	if (type != DropTypes::ShowExisting) {
+		// Give the point of origin for things that are just being dropped
 		packet.addPos(origin);
 		packet.add<int16_t>(0);
 	}
@@ -44,13 +45,15 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 		packet.add<int64_t>(Items::NoExpiration);
 	}
 	packet.addBool(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
-	if (player != nullptr)
-		player->getSession()->send(packet);
-	else
-		Maps::getMap(drop->getMap())->sendPacket(packet);
 
+	if (player != nullptr) {
+		player->getSession()->send(packet);
+	}
+	else {
+		Maps::getMap(drop->getMap())->sendPacket(packet);
+	}
 	if (newdrop) {
-		showDrop(player, drop, 0, false, origin);
+		showDrop(player, drop, DropTypes::ShowDrop, false, origin);
 	}
 }
 
@@ -60,12 +63,15 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
 	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int32_t>(player->getId());
-	if (pet_index != -1)
+	if (pet_index != -1) {
 		packet.add<int8_t>(pet_index);
-	if (!drop->isQuest())
+	}
+	if (!drop->isQuest()) {
 		Maps::getMap(drop->getMap())->sendPacket(packet);
-	else
+	}
+	else {
 		player->getSession()->send(packet);
+	}
 }
 
 void DropsPacket::dontTake(Player *player) {
@@ -115,15 +121,17 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 	packet.addBool(isMesos);
 	packet.add<int32_t>(id);
 
-	if (isMesos)
+	if (isMesos) {
 		packet.add<int16_t>(cafeBonus);
-	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory)
+	}
+	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory) {
 		packet.add<int16_t>(static_cast<int16_t>(amount));
-
+	}
 	if (!isMesos) {
 		packet.add<int32_t>(0);
 		packet.add<int32_t>(0);
 	}
+
 	player->getSession()->send(packet);
 }
 

@@ -32,4 +32,5 @@ namespace NpcPacket {
 	void animateNpc(Player *player, PacketReader &pack);
 	void showNpcEffect(Player *player, int32_t index, bool show = false);
 	void showNpcEffect(int32_t mapid, int32_t index, bool show = false);
+	void bought(Player *player, uint8_t msg);
 }

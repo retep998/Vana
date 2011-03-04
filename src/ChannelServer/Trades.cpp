@@ -28,8 +28,10 @@ using std::tr1::bind;
 
 Trades * Trades::singleton = nullptr;
 
-Trades::Trades() : ids(0), container(new Timer::Container) {
-
+Trades::Trades() :
+	ids(0),
+	container(new Timer::Container)
+{
 }
 
 int32_t Trades::newTrade(Player *start, Player *recv) {
@@ -40,9 +42,9 @@ int32_t Trades::newTrade(Player *start, Player *recv) {
 }
 
 void Trades::removeTrade(int32_t id) {
-	if (checkTimer(id) != 0)
+	if (checkTimer(id) != 0) {
 		stopTimeout(id);
-
+	}
 	Player *p = trades[id]->getSender();
 	if (p != nullptr) {
 		p->setTrading(false);
@@ -77,5 +79,5 @@ void Trades::stopTimeout(int32_t id) {
 void Trades::startTimeout(int32_t id, Player *sender) {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
 	new Timer::Timer(bind(&Trades::timeout, this, sender),
-		tid, 0, Timer::Time::fromNow(TradeTimeout * 1000));
+		tid, nullptr, Timer::Time::fromNow(TradeTimeout * 1000));
 }

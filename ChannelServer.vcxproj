@@ -97,6 +97,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
     <ClCompile Include="src\ChannelServer\Pet.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\ChannelServer\Drop.h" />
     <ClInclude Include="src\ChannelServer\Fame.h" />
     <ClInclude Include="src\ChannelServer\Inventory.h" />
+    <ClInclude Include="src\ChannelServer\InventoryPacketHelper.h" />
     <ClInclude Include="src\ChannelServer\KeyMaps.h" />
     <ClInclude Include="src\ChannelServer\Map.h" />
     <ClInclude Include="src\ChannelServer\MapleTvs.h" />

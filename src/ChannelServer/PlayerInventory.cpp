@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "InventoryPacketHelper.h"
 #include "ItemDataProvider.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
@@ -306,7 +307,7 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	}
 	packet.add<int8_t>(-1);
 	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Covered items
-		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != 11) {
+		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != EquipSlots::Weapon) {
 			packet.add<int8_t>(i);
 			packet.add<int32_t>(m_equipped[i][0]);
 		}
@@ -334,8 +335,9 @@ bool PlayerInventory::isEquippedItem(int32_t itemid) {
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
 	int16_t required = 0;
 	int8_t inv = GameLogicUtilities::getInventory(itemid);
-	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid))
+	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) {
 		required = amount; // These aren't stackable
+	}
 	else {
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
 		uint16_t existing = getItemAmount(itemid) % maxslot;
@@ -380,14 +382,14 @@ int32_t PlayerInventory::doShadowStars() {
 	return 0;
 }
 void PlayerInventory::addRockMap(int32_t mapid, int8_t type) {
-	const int8_t mode = 03;
-	if (type == 0) { // Regular Teleport Rock
+	const int8_t mode = InventoryPacket::RockModes::Add;
+	if (type == InventoryPacket::RockTypes::Regular) {
 		if (m_rocklocations.size() < Inventories::TeleportRockMax) {
 			m_rocklocations.push_back(mapid);
 		}
 		InventoryPacket::sendRockUpdate(m_player, mode, type, m_rocklocations);
 	}
-	else if (type == 1) { // VIP Teleport Rock
+	else if (type == InventoryPacket::RockTypes::Vip) {
 		if (m_viplocations.size() < Inventories::VipRockMax) {
 			m_viplocations.push_back(mapid);
 			// Want packet
@@ -397,8 +399,8 @@ void PlayerInventory::addRockMap(int32_t mapid, int8_t type) {
 }
 
 void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
-	const int8_t mode = 02;
-	if (type == 0) {
+	const int8_t mode = InventoryPacket::RockModes::Delete;
+	if (type == InventoryPacket::RockTypes::Regular) {
 		for (size_t k = 0; k < m_rocklocations.size(); k++) {
 			if (m_rocklocations[k] == mapid) {
 				m_rocklocations.erase(m_rocklocations.begin() + k);
@@ -407,7 +409,7 @@ void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
 			}
 		}
 	}
-	else if (type == 1) {
+	else if (type == InventoryPacket::RockTypes::Vip) {
 		for (size_t k = 0; k < m_viplocations.size(); k++) {
 			if (m_viplocations[k] == mapid) {
 				m_viplocations.erase(m_viplocations.begin() + k);
@@ -419,20 +421,17 @@ void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
 }
 
 bool PlayerInventory::ensureRockDestination(int32_t mapid) {
-	bool valid = false;
 	for (size_t k = 0; k < m_rocklocations.size(); k++) {
 		if (m_rocklocations[k] == mapid) {
-			valid = true;
-			break;
+			return true;
 		}
 	}
 	for (size_t k = 0; k < m_viplocations.size(); k++) {
 		if (m_viplocations[k] == mapid) {
-			valid = true;
-			break;
+			return true;
 		}
 	}
-	return valid;
+	return false;
 }
 
 void PlayerInventory::addWishListItem(int32_t itemid) {
@@ -487,21 +486,8 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 }
 
 void PlayerInventory::rockPacket(PacketCreator &packet) {
-	size_t remaining;
-	for (remaining = 1; remaining <= m_rocklocations.size(); remaining++) {
-		int32_t mapid = m_rocklocations[remaining - 1];
-		packet.add<int32_t>(mapid);
-	}
-	for (; remaining <= Inventories::TeleportRockMax; remaining++) {
-		packet.add<int32_t>(Maps::NoMap);
-	}
-	for (remaining = 1; remaining <= m_viplocations.size(); remaining++) {
-		int32_t mapid = m_viplocations[remaining - 1];
-		packet.add<int32_t>(mapid);
-	}
-	for (; remaining <= Inventories::VipRockMax; remaining++) {
-		packet.add<int32_t>(Maps::NoMap);
-	}
+	InventoryPacketHelper::fillRockPacket(packet, m_rocklocations, Inventories::TeleportRockMax);
+	InventoryPacketHelper::fillRockPacket(packet, m_viplocations, Inventories::VipRockMax);
 }
 
 void PlayerInventory::wishListPacket(PacketCreator &packet) {

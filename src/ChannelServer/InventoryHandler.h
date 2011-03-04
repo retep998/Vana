@@ -23,8 +23,6 @@ class Player;
 class PacketReader;
 
 namespace InventoryHandler {
-	void useShop(Player *player, PacketReader &packet);
-	void useStorage(Player *player, PacketReader &packet);
 	void itemMove(Player *player, PacketReader &packet);
 	void useItem(Player *player, PacketReader &packet);
 	void cancelItem(Player *player, PacketReader &packet);
@@ -37,6 +35,6 @@ namespace InventoryHandler {
 	void useScroll(Player *player, PacketReader &packet);
 	void useCashItem(Player *player, PacketReader &packet);
 	void handleRockFunctions(Player *player, PacketReader &packet);
-	bool handleRockTeleport(Player *player, int8_t type, int32_t itemid, PacketReader &packet);
+	bool handleRockTeleport(Player *player, int32_t itemid, PacketReader &packet);
 	void handleHammerTime(Player *player);
 }

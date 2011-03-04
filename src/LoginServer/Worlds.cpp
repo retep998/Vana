@@ -60,11 +60,11 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 		player->setWorld(worldId);
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90; // 90% is enough for the many users warning, I think
-		int8_t message = 0x00;
+		int8_t message = LoginPacket::WorldMessages::Normal;;
 		if (world->getPlayerLoad() >= minMaxLoad && world->getPlayerLoad() < maxLoad)
-			message = 0x01;
+			message = LoginPacket::WorldMessages::HeavyLoad;
 		else if (world->getPlayerLoad() == maxLoad)
-			message = 0x02;
+			message = LoginPacket::WorldMessages::MaxLoad;
 
 		LoginPacket::showChannels(player, message);
 	}

@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instances.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
-#include "Maps.h"
 #include "MapPacket.h"
+#include "Maps.h"
 #include "Mob.h"
-#include "NpcHandler.h"
 #include "Npc.h"
+#include "NpcHandler.h"
 #include "Party.h"
 #include "PartyHandler.h"
 #include "Player.h"
@@ -61,7 +61,11 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
-	setVariable("playerid", playerid); // Pushing id for reference from static functions
+	setVariable("playerid", playerid); // Pushing ID for reference from static functions
+	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
+	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
+	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
+	setVariable("m_box", PlayerPacket::NoticeTypes::Box);
 
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player != nullptr && player->getInstance() != nullptr)
@@ -347,10 +351,10 @@ void LuaScriptable::printError(const string &error) {
 	}
 
 	if (player->isGm()) {
-		PlayerPacket::showMessage(player, error, 6);
+		PlayerPacket::showMessage(player, error, PlayerPacket::NoticeTypes::Blue);
 	}
 	else {
-		PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", 6);
+		PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", PlayerPacket::NoticeTypes::Blue);
 	}
 }
 
@@ -359,6 +363,18 @@ Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "playerid");
 	return PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 }
+
+Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
+	Player *player = nullptr;
+	if (lua_type(luaVm, parameter) == LUA_TSTRING) {
+		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, parameter));
+	}
+	else {
+		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, parameter));
+	}
+	return player;
+}
+
 
 Instance * LuaExports::getInstance(lua_State *luaVm) {
 	lua_getglobal(luaVm, "instancename");
@@ -443,8 +459,8 @@ int LuaExports::setChannelVariable(lua_State *luaVm) {
 
 int LuaExports::showChannelMessage(lua_State *luaVm) {
 	string msg = lua_tostring(luaVm, -2);
-	uint8_t type = lua_tointeger(luaVm, -1);
-	PlayersPacket::showMessage(msg, type);
+	int8_t type = lua_tointeger(luaVm, -1);
+	PlayerPacket::showMessageChannel(msg, type);
 	return 0;
 }
 
@@ -1019,12 +1035,7 @@ int LuaExports::isGm(lua_State *luaVm) {
 }
 
 int LuaExports::isOnline(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	lua_pushboolean(luaVm, player != nullptr);
+	lua_pushboolean(luaVm, getPlayerDeduced(-1, luaVm) != nullptr);
 	return 1;
 }
 
@@ -1122,11 +1133,7 @@ int LuaExports::setMp(lua_State *luaVm) {
 }
 
 int LuaExports::setPlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	if (player != nullptr) {
 		lua_getglobal(luaVm, "playerid");
 		lua_setglobal(luaVm, "oldplayerid");
@@ -1460,12 +1467,15 @@ int LuaExports::getDate(lua_State *luaVm) {
 
 int LuaExports::getDay(lua_State *luaVm) {
 	bool stringreturn = false;
-	if (lua_isboolean(luaVm, -1))
-		stringreturn = (lua_toboolean(luaVm, -1) != 0 ? true : false);
-	if (stringreturn)
+	if (lua_isboolean(luaVm, -1)) {
+		stringreturn = (lua_toboolean(luaVm, -1) != 0);
+	}
+	if (stringreturn) {
 		lua_pushstring(luaVm, TimeUtilities::getDayString().c_str());
-	else
+	}
+	else {
 		lua_pushinteger(luaVm, TimeUtilities::getDay());
+	}
 	return 1;
 }
 
@@ -1691,32 +1701,21 @@ int LuaExports::addInstanceParty(lua_State *luaVm) {
 }
 
 int LuaExports::addInstancePlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	getInstance(luaVm)->addPlayer(player);
 	return 0;
 }
 
 int LuaExports::addPlayerSignUp(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	getInstance(luaVm)->addPlayerSignUp(player);
 	return 0;
 }
 
 int LuaExports::banInstancePlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
-	getInstance(luaVm)->setBanned(player->getName(), true);
+	if (Player *player = getPlayerDeduced(-1, luaVm)) {
+		getInstance(luaVm)->setBanned(player->getName(), true);
+	}
 	return 0;
 }
 
@@ -1745,9 +1744,9 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 
-	if (instance->showTimer())
+	if (instance->showTimer()) {
 		instance->showTimer(true, true);
-
+	}
 	lua_pushstring(luaVm, name.c_str());
 	lua_setglobal(luaVm, "instancename");
 	return 0;
@@ -1796,11 +1795,7 @@ int LuaExports::getInstancePlayerCount(lua_State *luaVm) {
 }
 
 int LuaExports::getInstancePlayerId(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	lua_pushinteger(luaVm, player->getId());
 	return 1;
 }
@@ -1836,11 +1831,7 @@ int LuaExports::getInstanceVariable(lua_State *luaVm) {
 }
 
 int LuaExports::isBannedInstancePlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	lua_pushboolean(luaVm, getInstance(luaVm)->isBanned(player->getName()));
 	return 1;
 }
@@ -1904,11 +1895,7 @@ int LuaExports::removeAllInstancePlayers(lua_State *luaVm) {
 }
 
 int LuaExports::removeInstancePlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	getInstance(luaVm)->removePlayer(player);
 	return 0;
 }
@@ -2009,11 +1996,7 @@ int LuaExports::stopInstanceTimer(lua_State *luaVm) {
 }
 
 int LuaExports::unbanInstancePlayer(lua_State *luaVm) {
-	Player *player = nullptr;
-	if (lua_type(luaVm, -1) == LUA_TSTRING)
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tostring(luaVm, -1));
-	else
-		player = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *player = getPlayerDeduced(-1, luaVm);
 	getInstance(luaVm)->setBanned(player->getName(), false);
 	return 0;
 }

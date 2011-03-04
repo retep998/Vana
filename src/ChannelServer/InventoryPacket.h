@@ -28,9 +28,35 @@ class Player;
 struct Item;
 
 namespace InventoryPacket {
+	namespace RockModes {
+		enum Modes {
+			Delete = 0x02,
+			Add = 0x03
+		};
+	}
+	namespace RockErrors {
+		enum Errors {
+			Unk = 0x02, // Causes error 38 with current data
+			Unk2 = 0x03, // Causes error 38 with current data
+			CannotGo2 = 0x05, // This is unused
+			DifficultToLocate = 0x06,
+			DifficultToLocate2 = 0x07, // This is unused
+			CannotGo = 0x08,
+			AlreadyThere = 0x09,
+			CannotSaveMap = 0x0A,
+			NoobsCannotLeaveMapleIsland = 0x0B, // "Users below level 7 are not allowed to go out from Maple Island."
+
+		};
+	}
+	namespace RockTypes {
+		enum Types {
+			Regular = 0x00,
+			Vip = 0x01,
+		};
+	}
+
 	void moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2);
 	void updatePlayer(Player *player);
-	void bought(Player *player, uint8_t msg);
 	void addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
 	void addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is);
 	void updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2);
@@ -38,7 +64,7 @@ namespace InventoryPacket {
 	void sitMapChair(Player *player, int16_t chairid);
 	void stopChair(Player *player, bool showMap = true);
 	void useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed);
-	void useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit);
+	void useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit);
 	void showMegaphone(Player *player, const string &msg);
 	void showSuperMegaphone(Player *player, const string &msg, bool whisper = false);
 	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);

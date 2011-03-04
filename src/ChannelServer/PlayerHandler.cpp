@@ -90,18 +90,19 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			deadlyAttack = attack->deadlyAttack;
 		}
 		hit = packet.get<int8_t>(); // Knock direction
-		pgmr.reduction = packet.get<int8_t>();
+		pgmr.reduction = packet.get<uint8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
 			pgmr.isPhysical = packet.getBool();
 			pgmr.mapMobId = packet.get<int32_t>();
 			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			packet.skipBytes(4); // Mob position garbage
-			pgmr.pos.x = packet.get<int16_t>();
-			pgmr.pos.y = packet.get<int16_t>();
+			pgmr.pos = packet.getPos();
 			pgmr.damage = damage;
-			if (pgmr.isPhysical) // Only Power Guard decreases damage
-				damage = (damage - (damage * pgmr.reduction / 100)); 
+			if (pgmr.isPhysical) {
+				// Only Power Guard decreases damage
+				damage = (damage - (damage * pgmr.reduction / 100));
+			}
 			mob->applyDamage(player->getId(), (pgmr.damage * pgmr.reduction / 100));
 		}
 	}
@@ -126,7 +127,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		nodamageid = player->getSkills()->getNoDamageSkill();
 	}
 
-	if (disease > 0 && damage != 0) { // Fake/Guardian don't prevent disease
+	if (disease > 0 && damage != 0) {
+		// Fake/Guardian don't prevent disease
 		player->getActiveBuffs()->addDebuff(disease, level);
 	}
 
@@ -138,22 +140,27 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
 
-			if (newmesos < 0) { // Special damage calculation for not having enough mesos
+			if (newmesos < 0) {
+				// Special damage calculation for not having enough mesos
 				double reduction = 2.0 - ((double)(mesos / mesoloss)) / 2.0;
-				damage = (uint16_t)(damage / reduction); // This puts us pretty close to the damage observed clientside, needs improvement
+				damage = (uint16_t)(damage / reduction);
+				// This puts us pretty close to the damage observed clientside, needs improvement
+				// TODO: Improve formula
 			}
 			else {
-				damage /= 2; // Usually displays 1 below the actual damage but is sometimes accurate - no clue why
+				damage /= 2;
+				// Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			}
 
 			player->getInventory()->setMesos(newmesos);
 			player->getStats()->damageHp((uint16_t) damage);
 
-			if (deadlyAttack && player->getStats()->getMp() > 0)
+			if (deadlyAttack && player->getStats()->getMp() > 0) {
 				player->getStats()->setMp(1);
-			if (mpBurn > 0)
+			}
+			if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
-
+			}
 			applieddamage = true;
 
 			SkillsPacket::showSkillEffect(player, sid);
@@ -163,8 +170,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			int16_t hp = player->getStats()->getHp();
 
 			if (deadlyAttack) {
-				if (mp > 0)
+				if (mp > 0) {
 					player->getStats()->setMp(1);
+				}
 				player->getStats()->setHp(1);
 			}
 			else if (mpBurn > 0) {
@@ -188,32 +196,37 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			applieddamage = true;
 		}
+
 		if (player->getSkills()->hasAchilles()) {
 			int32_t sid = player->getSkills()->getAchilles();
 			double red = (2.0 - player->getSkills()->getSkillInfo(sid)->x / 1000.0);
 
 			player->getStats()->damageHp((uint16_t) (damage / red));
 
-			if (deadlyAttack && player->getStats()->getMp() > 0)
+			if (deadlyAttack && player->getStats()->getMp() > 0) {
 				player->getStats()->setMp(1);
-			if (mpBurn > 0)
+			}
+			if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
+			}
 
 			applieddamage = true;
 		}
 
 		if (!applieddamage) {
 			if (deadlyAttack) {
-				if (player->getStats()->getMp() > 0)
+				if (player->getStats()->getMp() > 0) {
 					player->getStats()->setMp(1);
+				}
 				player->getStats()->setHp(1);
 			}
 			else {
 				player->getStats()->damageHp((uint16_t) damage);
 			}
 
-			if (mpBurn > 0)
+			if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
+			}
 
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
@@ -244,7 +257,7 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
 	if (player->getStats()->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
-		// hacking
+		// Hacking
 		return;
 	}
 	player->getStats()->modifyHp(hp);
@@ -256,13 +269,16 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	MovementHandler::parseMovement(player, packet);
 	packet.reset(11);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
+
 	if (player->getFh() == 0) {
+		// Player is floating in the air
 		int32_t mapid = player->getMap();
 		Pos playerpos = player->getPos();
 		Map *map = Maps::getMap(mapid);
 
 		Pos floor = map->findFloor(playerpos);
-		if (floor.y == playerpos.y) { // There are no footholds below the player
+		if (floor.y == playerpos.y) {
+			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
 			if (count > 3) {
 				player->setMap(mapid);
@@ -512,10 +528,12 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::WhiteKnight::ChargeBlow: {
 			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
 			int16_t acb_x = 0;
-			if (acb_level > 0)
+			if (acb_level > 0) {
 				acb_x = SkillDataProvider::Instance()->getSkill(Jobs::Paladin::AdvancedCharge, acb_level)->x;
-			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1)))
+			}
+			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1))) {
 				player->getActiveBuffs()->stopCharge();
+			}
 			break;
 		}
 		default:
@@ -603,14 +621,18 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			int16_t drain_x = player->getSkills()->getSkillInfo(skillId)->x;
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * drain_x / 100);
 			int16_t playerMaxHp = player->getStats()->getMaxHp();
-			if (hpRecover > mhp)
+			if (hpRecover > mhp) {
 				hpRecover = mhp;
-			if (hpRecover > (playerMaxHp / 2))
+			}
+			if (hpRecover > (playerMaxHp / 2)) {
 				hpRecover = playerMaxHp / 2;
-			if (hpRecover > playerMaxHp)
+			}
+			if (hpRecover > playerMaxHp) {
 				player->getStats()->setHp(playerMaxHp);
-			else
+			}
+			else {
 				player->getStats()->modifyHp(static_cast<int16_t>(hpRecover));
+			}
 			break;
 		}
 		case Jobs::DawnWarrior::SoulBlade:

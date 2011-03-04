@@ -35,6 +35,11 @@ void PacketCreator::addPos(const Pos &pos) {
 	add<int16_t>(pos.y);
 }
 
+void PacketCreator::addPos(const Pos &pos, bool fullInts) {
+	add<int32_t>(pos.x);
+	add<int32_t>(pos.y);
+}
+
 void PacketCreator::addBool(bool value) {
 	add<int8_t>(value ? 1 : 0);
 }

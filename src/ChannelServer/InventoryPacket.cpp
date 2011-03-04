@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InterHeader.h"
 #include "Inventory.h"
+#include "InventoryPacketHelper.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -44,8 +45,9 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 }
 
 void InventoryPacket::updatePlayer(Player *player) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_CHANGE_LOOK);
 	packet.add<int32_t>(player->getId());
@@ -54,13 +56,6 @@ void InventoryPacket::updatePlayer(Player *player) {
 	packet.add<int8_t>(0);
 	packet.add<int16_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
-}
-
-void InventoryPacket::bought(Player *player, uint8_t msg) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ITEM_PURCHASED);
-	packet.add<int8_t>(msg);
-	player->getSession()->send(packet);
 }
 
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
@@ -105,8 +100,9 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 }
 
 void InventoryPacket::sitChair(Player *player, int32_t chairid) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int16_t>(1);
@@ -132,8 +128,9 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	packet.add<int16_t>(SMSG_CHAIR);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide() || !showMap)
+	if (player->getActiveBuffs()->isUsingHide() || !showMap) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
@@ -141,15 +138,16 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendary_spirit) {
-	if (player->getActiveBuffs()->isUsingHide())
+void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) {
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SCROLL_USE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(succeed); // Succeed/Fail/Large string of Korean garbage
-	packet.addBool(destroy); // Destroy/Not Destroy
-	packet.add<int16_t>(legendary_spirit);
+	packet.add<int8_t>(succeed);
+	packet.addBool(destroy);
+	packet.add<int16_t>(legendarySpirit);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -229,8 +227,8 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
 	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(newMaxLevel);
-	packet.addBool(use); // Use/cannot use
-	packet.addBool(succeed); // Pass/fail
+	packet.addBool(use);
+	packet.addBool(succeed);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -263,14 +261,17 @@ void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, c
 	packet.add<int16_t>(SMSG_TELEPORT_ROCK);
 	packet.add<int8_t>(mode);
 	packet.add<int8_t>(type);
-	size_t remaining = 1;
-	uint8_t max = (type == 0 ? Inventories::TeleportRockMax : Inventories::VipRockMax);
-	for (; remaining <= maps.size(); remaining++) {
-		packet.add<int32_t>(maps[remaining - 1]);
-	}
-	for (; remaining <= max; remaining++) {
-		packet.add<int32_t>(Maps::NoMap);
-	}
+
+	InventoryPacketHelper::fillRockPacket(packet, maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax));
+
+	player->getSession()->send(packet);
+}
+
+void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_TELEPORT_ROCK);
+	packet.add<int8_t>(code);
+	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }
 
@@ -284,14 +285,6 @@ void InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) {
 void InventoryPacket::sendMesobagFailed(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MESOBAG_FAILURE);
-	player->getSession()->send(packet);
-}
-
-void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_TELEPORT_ROCK);
-	packet.add<int8_t>(code);
-	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }
 
@@ -337,8 +330,9 @@ void InventoryPacket::sendHammerUpdate(Player *player) {
 }
 
 void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_CHALKBOARD);
 	packet.add<int32_t>(player->getId());

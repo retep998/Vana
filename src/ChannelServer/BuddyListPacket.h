@@ -25,11 +25,24 @@ using std::string;
 class Player;
 
 namespace BuddyListPacket {
+	namespace Errors {
+		enum Errors {
+			None = 0x00,
+			BuddyListFull = 0x0B,
+			TargetListFull = 0x0C,
+			AlreadyInList = 0x0D,
+			NoGms = 0x0E,
+			UserDoesNotExist = 0x0F
+		};
+	}
+	namespace ActionTypes {
+		enum Types {
+			First = 0x07,
+			Add = 0x0A,
+			Remove = 0x12
+		};
+	}
 	void error(Player *player, uint8_t error);
 	void update(Player *player, uint8_t type);
 	void showSize(Player *player);
-
-	static const uint8_t first = 0x07;
-	static const uint8_t add = 0x0a;
-	static const uint8_t remove = 0x12;
 }

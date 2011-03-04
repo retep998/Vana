@@ -17,11 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacket.h"
 #include "ChannelServer.h"
+#include "InterHeader.h"
 #include "KeyMaps.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Pet.h"
 #include "Player.h"
+#include "PlayerDataProvider.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
 #include "SkillMacros.h"
@@ -168,12 +170,41 @@ void PlayerPacket::changeChannel(Player *player, uint32_t ip, int16_t port) {
 
 void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(type);
-	packet.addString(msg);
-	if (type == 6)
-		packet.add<int32_t>(0);
+	showMessagePacket(packet, msg, type);
 	player->getSession()->send(packet);
+}
+
+void PlayerPacket::showMessageChannel(const string &msg, int8_t type) {
+	PacketCreator packet;
+	showMessagePacket(packet, msg, type);
+	PlayerDataProvider::Instance()->sendPacket(packet);
+}
+
+void PlayerPacket::showMessageWorld(const string &msg, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_CHANNELS);
+	packet.add<int16_t>(IMSG_TO_PLAYERS);
+	showMessagePacket(packet, msg, type);
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
+void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_LOGIN);
+	packet.add<int16_t>(IMSG_TO_WORLDS);
+	packet.add<int16_t>(IMSG_TO_CHANNELS);
+	packet.add<int16_t>(IMSG_TO_PLAYERS);
+	showMessagePacket(packet, msg, type);
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
+void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, int8_t type) {
+	packet.add<int16_t>(SMSG_MESSAGE);
+ 	packet.add<int8_t>(type);
+ 	packet.addString(msg);
+	if (type == NoticeTypes::Blue) {
+ 		packet.add<int32_t>(0);
+	}
 }
 
 void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t width, int16_t height) {
@@ -194,7 +225,8 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::sendSound(Player *player, const string &soundname) { // Send Sound
+void PlayerPacket::sendSound(Player *player, const string &soundname) {
+	// Send Sound
 	PacketCreator packet = PacketCreator();
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
@@ -211,16 +243,9 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	target->getSession()->send(packet);
 }
 
-void PlayerPacket::sendBlockedMessage(Player *player, uint8_t type) {
-	/* Types:
-		0x01: You cannot move that channel. Please try again later.
-		0x02: You cannot go into the cash shop. Please try again later.
-		0x03: The Item-Trading shop is currently unavailable, please try again later.
-		0x04: You cannot go into the trade shop, due to the limitation of user count.
-		0x05: You do not meet the minimum level requirement to access the Trade Shop.
-	*/
+void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_CHANNEL_BLOCKED);
-	packet.add<uint8_t>(type);
+	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }

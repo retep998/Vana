@@ -41,8 +41,9 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, Active
 	packet.add<int16_t>(addedinfo);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	if (pskill.hasmapbuff) {
 		packet = PacketCreator();
 		packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
@@ -87,8 +88,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	packet.add<int16_t>(delay);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
@@ -96,8 +98,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
 
 	for (size_t i = 0; i < mskill.values.size(); i++) {
-		if (skillId == MobSkills::Poison)
+		if (skillId == MobSkills::Poison) {
 			packet.add<int16_t>(mskill.values[i]);
+		}
 		packet.add<uint16_t>(skillId);
 		packet.add<uint16_t>(level);
 	}
@@ -114,8 +117,9 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_BUFF_END);
 	packet.add<int32_t>(player->getId());
@@ -133,8 +137,9 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_BUFF_END);
 	packet.add<int32_t>(player->getId());
@@ -163,8 +168,9 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, A
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
@@ -201,8 +207,9 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedinfo);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
@@ -235,8 +242,9 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, Active
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());

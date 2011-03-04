@@ -25,6 +25,14 @@ class Pet;
 struct Pos;
 
 namespace DropsPacket {
+	namespace DropTypes {
+		enum DropTypes {
+			ShowDrop = 0,
+			DropAnimation = 1,
+			ShowExisting = 2,
+			DisappearDuringDrop = 3
+		};
+	}
 	void showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin);
 	void takeDrop(Player *player, Drop *drop, int8_t pet_index = -1);
 	void dontTake(Player *player);
