@@ -1092,6 +1092,7 @@ namespace Items {
 		Megassenger = 5075003,
 		StarMegassenger = 5075004,
 		HeartMegassenger = 5075005,
+		CongratulatorySong = 5100000,
 		SafetyCharm = 5130000,
 		PetNameTag = 5170000,
 		BronzeSackOfMesos = 5200000,

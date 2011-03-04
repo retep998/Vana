@@ -28,7 +28,7 @@ struct Pos;
 struct StatusInfo;
 
 namespace MobsPacket {
-	void spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner = nullptr, bool spawn = false, bool show = false);
+	void spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner = nullptr, bool spawn = false, bool show = false);
 	void requestControl(Player *player, Mob *mob, bool spawn = false, Player *display = nullptr);
 	void endControlMob(Player *player, Mob *mob);
 	void moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill = 0, uint8_t level = 0);
@@ -42,4 +42,5 @@ namespace MobsPacket {
 	void showHp(int32_t mapid, int32_t mobid, int8_t per);
 	void showBossHp(Mob *mob); // For major bosses
 	void dieMob(Mob *mob, int8_t death = 1);
+	void showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &pos);
 }

@@ -23,18 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SkillDataProvider.h"
 
-int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
+int16_t Buffs::getValue(int8_t value, int32_t skillId, uint8_t level) {
 	int16_t rvalue = 0;
-	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	switch (value) {
 		case SkillX: rvalue = skill->x; break;
 		case SkillY: rvalue = skill->y; break;
 		case SkillSpeed: rvalue = skill->speed; break;
 		case SkillJump: rvalue = skill->jump; break;
-		case SkillWatk: rvalue = skill->watk; break;
-		case SkillWdef: rvalue = skill->wdef; break;
-		case SkillMatk: rvalue = skill->matk; break;
-		case SkillMdef: rvalue = skill->mdef; break;
+		case SkillWatk: rvalue = skill->wAtk; break;
+		case SkillWdef: rvalue = skill->wDef; break;
+		case SkillMatk: rvalue = skill->mAtk; break;
+		case SkillMdef: rvalue = skill->mDef; break;
 		case SkillAcc: rvalue = skill->acc; break;
 		case SkillAvo: rvalue = skill->avo; break;
 		case SkillProp: rvalue = skill->prop; break;
@@ -44,9 +44,9 @@ int16_t Buffs::getValue(int8_t value, int32_t skillid, uint8_t level) {
 	return rvalue;
 }
 
-int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
+int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillId, uint8_t level) {
 	int16_t rvalue = 0;
-	MobSkillLevelInfo *skill = SkillDataProvider::Instance()->getMobSkill(skillid, level);
+	MobSkillLevelInfo *skill = SkillDataProvider::Instance()->getMobSkill(skillId, level);
 	switch (value) {
 		case SkillX: rvalue = static_cast<int16_t>(skill->x); break;
 		case SkillY: rvalue = static_cast<int16_t>(skill->y); break;
@@ -56,9 +56,9 @@ int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level) {
 	return rvalue;
 }
 
-int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
+int32_t Buffs::parseMountInfo(Player *player, int32_t skillId, uint8_t level) {
 	int32_t mountid = 0;
-	switch (skillid) {
+	switch (skillId) {
 		case Jobs::Beginner::MonsterRider:
 		case Jobs::Noblesse::MonsterRider:
 			mountid = player->getInventory()->getEquippedId(EquipSlots::Mount);
@@ -70,16 +70,16 @@ int32_t Buffs::parseMountInfo(Player *player, int32_t skillid, uint8_t level) {
 	return mountid;
 }
 
-ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) {
+ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) {
 	ActiveBuff playerskill;
 	BuffInfo cur;
-	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
-	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
 	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
 		cur = skillsinfo->player[i];
 		int8_t val = cur.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) // Cancel speed change for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) // Cancel speed change for maxed dark sight
 			continue;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		int16_t value = 0;
@@ -88,7 +88,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 		if (val == SkillNone)
 			value = cur.itemval;
 		else {
-			switch (skillid) {
+			switch (skillId) {
 				case Jobs::Bowmaster::SharpEyes:
 				case Jobs::Marksman::SharpEyes:
 				case Jobs::Hermit::ShadowPartner:
@@ -106,7 +106,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 				case Jobs::Buccaneer::SuperTransformation:
 				case Jobs::WindArcher::EagleEye:
 				case Jobs::ThunderBreaker::Transformation:
-					value = getValue(val, skillid, level);
+					value = getValue(val, skillId, level);
 					if (val == SkillMorph)
 						value += (player->getGender() * 100); // Females are +100
 					break;
@@ -115,7 +115,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 					value = player->getActiveBuffs()->getEnergyChargeLevel();
 					break;
 				default:
-					value = getValue(val, skillid, level);
+					value = getValue(val, skillId, level);
 					break;
 			}
 		}
@@ -124,12 +124,12 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillid, uint8_t level) 
 	return playerskill;
 }
 
-ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level) {
+ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
 	BuffMapInfo map;
 	int32_t maps = 0;
-	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
 	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
 		cur = skillsinfo->player[i];
@@ -137,7 +137,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 			continue;
 		map = skillsinfo->map[maps++];
 		int8_t val = map.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -150,13 +150,13 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 				value = cur.itemval;
 			}
 			else {
-				switch (skillid) {
+				switch (skillId) {
 					case Jobs::Crusader::ComboAttack:
 					case Jobs::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
-						value = getValue(val, skillid, level);
+						value = getValue(val, skillId, level);
 						break;
 				}
 			}
@@ -166,12 +166,12 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillid, uint8_t l
 	return mapskill;
 }
 
-ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint8_t level) {
+ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
 	BuffMapInfo map;
 	int8_t mapctr = 0;
-	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
 	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
 		cur = skillsinfo->player[i];
@@ -180,7 +180,7 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 		}
 		map = skillsinfo->map[mapctr++];
 		int8_t val = map.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		mapskill.bytes.push_back(map.buff.byte);
@@ -193,13 +193,13 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 				value = cur.itemval;
 			}
 			else {
-				switch (skillid) {
+				switch (skillId) {
 					case Jobs::Crusader::ComboAttack:
 					case Jobs::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
-						value = getValue(val, skillid, level);
+						value = getValue(val, skillId, level);
 						break;
 				}
 			}
@@ -209,13 +209,13 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillid, uint
 	return mapskill;
 }
 
-vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
+vector<Buff> Buffs::parseBuffs(int32_t skillId, uint8_t level) {
 	vector<Buff> ret;
-	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
 	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
 		BuffInfo cur = skillsinfo->player[i];
-		if (GameLogicUtilities::isMaxDarkSight(skillid, level) && cur.buff.value == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && cur.buff.value == SkillSpeed) { // Cancel speed update for maxed dark sight
 			continue;
 		}
 		ret.push_back(cur.buff);
@@ -223,26 +223,26 @@ vector<Buff> Buffs::parseBuffs(int32_t skillid, uint8_t level) {
 	return ret;
 }
 
-ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t level) {
+ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t level) {
 	ActiveBuff playerskill;
 	BuffInfo cur;
-	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
 	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
 		cur = mobskillsinfo->mob[i];
 		int8_t val = cur.buff.value;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		playerskill.hasmapbuff = true;
-		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillid, level));
+		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
 		playerskill.vals.push_back(value);
 	}
 	return playerskill;
 }
 
-ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_t level) {
+ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
-	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
 	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
 		cur = mobskillsinfo->mob[i];
@@ -251,16 +251,16 @@ ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_
 		mapskill.types.push_back(cur.buff.type);
 		mapskill.typelist[cur.buff.byte] += cur.buff.type;
 		mapskill.usevals.push_back(cur.useval);
-		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillid, level));
+		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
 		mapskill.values.push_back(value);
 	}
 	return mapskill;
 }
 
-ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, uint8_t level) {
+ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, uint8_t level) {
 	ActiveMapBuff mapskill;
 	BuffInfo cur;
-	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
 	for (size_t i = 0; i < mobskillsinfo->mob.size(); i++) {
 		cur = mobskillsinfo->mob[i];
@@ -270,16 +270,16 @@ ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, u
 		mapskill.typelist[cur.buff.byte] += cur.buff.type;
 		mapskill.usevals.push_back(true);
 		mapskill.usevals.push_back(false);
-		mapskill.values.push_back(skillid);
+		mapskill.values.push_back(skillId);
 		mapskill.values.push_back(level);
 	}
 	mapskill.debuff = true;
 	return mapskill;
 }
 
-vector<Buff> Buffs::parseMobBuffs(uint8_t skillid) {
+vector<Buff> Buffs::parseMobBuffs(uint8_t skillId) {
 	vector<Buff> ret;
-	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	MobAilmentInfo mobskillsinfo = *BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
 	for (size_t i = 0; i < mobskillsinfo.mob.size(); i++) {
 		BuffInfo cur = mobskillsinfo.mob[i];
@@ -288,14 +288,14 @@ vector<Buff> Buffs::parseMobBuffs(uint8_t skillid) {
 	return ret;
 }
 
-bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo, int32_t mapmobid) {
-	if (!BuffDataProvider::Instance()->isBuff(skillid))
+bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedinfo, int32_t mapMobId) {
+	if (!BuffDataProvider::Instance()->isBuff(skillId))
 		return false; // Not a buff, so return false
 
-	int32_t mountid = parseMountInfo(player, skillid, level);
-	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillid, level);
+	int32_t mountid = parseMountInfo(player, skillId, level);
+	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	int32_t time = skill->time;
-	switch (skillid) {
+	switch (skillId) {
 		case Jobs::DragonKnight::DragonRoar:
 			time = skill->y;
 			break;
@@ -306,7 +306,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 				// Hacking
 				return true;
 			}
-			player->getActiveBuffs()->setMountInfo(skillid, mountid);
+			player->getActiveBuffs()->setMountInfo(skillId, mountid);
 			break;
 		case Jobs::SuperGm::Hide:
 			time = 2100000; // Make sure that it doesn't end any time soon
@@ -343,7 +343,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::WindArcher::BowBooster:
 		case Jobs::NightWalker::ClawBooster:
 		case Jobs::ThunderBreaker::KnucklerBooster:
-			player->getActiveBuffs()->setBooster(skillid); // Makes switching equips MUCH easier
+			player->getActiveBuffs()->setBooster(skillId); // Makes switching equips MUCH easier
 			break;
 		case Jobs::WhiteKnight::BwFireCharge:
 		case Jobs::WhiteKnight::BwIceCharge:
@@ -355,7 +355,7 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 		case Jobs::Paladin::SwordHolyCharge:
 		case Jobs::DawnWarrior::SoulCharge:
 		case Jobs::ThunderBreaker::LightningCharge:
-			player->getActiveBuffs()->setCharge(skillid); // Makes switching equips/Charged Blow easier
+			player->getActiveBuffs()->setCharge(skillId); // Makes switching equips/Charged Blow easier
 			break;
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
@@ -372,19 +372,19 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
 			break;
 	}
-	vector<Buff> buffs = parseBuffs(skillid, level);
-	ActiveBuff playerskill = parseBuffInfo(player, skillid, level);
-	ActiveMapBuff mapskill = parseBuffMapInfo(player, skillid, level);
-	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillid, level);
+	vector<Buff> buffs = parseBuffs(skillId, level);
+	ActiveBuff playerskill = parseBuffInfo(player, skillId, level);
+	ActiveMapBuff mapskill = parseBuffMapInfo(player, skillId, level);
+	ActiveMapBuff enterskill = parseBuffMapEntryInfo(player, skillId, level);
 
 	if (mountid > 0) {
-		BuffsPacket::useMount(player, skillid, time, playerskill, mapskill, addedinfo, mountid);
+		BuffsPacket::useMount(player, skillId, time, playerskill, mapskill, addedinfo, mountid);
 	}
 	else {
-		switch (skillid) {
+		switch (skillId) {
 			case Jobs::Pirate::Dash:
 			case Jobs::ThunderBreaker::Dash:
-				BuffsPacket::usePirateBuff(player, skillid, time, playerskill, mapskill);
+				BuffsPacket::usePirateBuff(player, skillId, time, playerskill, mapskill);
 				break;
 			case Jobs::Marauder::EnergyCharge:
 			case Jobs::ThunderBreaker::EnergyCharge:
@@ -392,27 +392,27 @@ bool Buffs::addBuff(Player *player, int32_t skillid, uint8_t level, int16_t adde
 				break;
 			case Jobs::Buccaneer::SpeedInfusion:
 			case Jobs::ThunderBreaker::SpeedInfusion:
-				BuffsPacket::useSpeedInfusion(player, skillid, time, playerskill, mapskill, addedinfo);
+				BuffsPacket::useSpeedInfusion(player, skillId, time, playerskill, mapskill, addedinfo);
 				break;
 			case Jobs::Outlaw::HomingBeacon:
 			case Jobs::Corsair::Bullseye:
 				if (player->getActiveBuffs()->hasMarkedMonster()) // Otherwise the animation appears above numerous
 					BuffsPacket::endSkill(player, playerskill);
-				player->getActiveBuffs()->setMarkedMonster(mapmobid);
-				BuffsPacket::useHomingBeacon(player, skillid, playerskill, mapmobid);
+				player->getActiveBuffs()->setMarkedMonster(mapMobId);
+				BuffsPacket::useHomingBeacon(player, skillId, playerskill, mapMobId);
 				break;
 			default:
-				BuffsPacket::useSkill(player, skillid, time, playerskill, mapskill, addedinfo);
+				BuffsPacket::useSkill(player, skillId, time, playerskill, mapskill, addedinfo);
 		}
 	}
-	if (skillid != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
+	if (skillId != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-		playerbuffs->addBuffInfo(skillid, buffs);
+		playerbuffs->addBuffInfo(skillId, buffs);
 		playerbuffs->addMapEntryBuffInfo(enterskill);
-		playerbuffs->setActiveSkillLevel(skillid, level);
-		playerbuffs->removeBuff(skillid);
-		playerbuffs->addBuff(skillid, time);
-		doAct(player, skillid, level);
+		playerbuffs->setActiveSkillLevel(skillId, level);
+		playerbuffs->removeBuff(skillId);
+		playerbuffs->addBuff(skillId, time);
+		doAct(player, skillId, level);
 	}
 	return true;
 }
@@ -518,34 +518,34 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	playerbuffs->setActiveSkillLevel(skill, 0);
 }
 
-void Buffs::doAct(Player *player, int32_t skillid, uint8_t level) {
-	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillid);
+void Buffs::doAct(Player *player, int32_t skillId, uint8_t level) {
+	SkillInfo *skillsinfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
 	if (skillsinfo->bact) {
-		int16_t value = getValue(skillsinfo->act.value, skillid, level);
-		player->getActiveBuffs()->addAct(skillid, skillsinfo->act.type, value, skillsinfo->act.time);
+		int16_t value = getValue(skillsinfo->act.value, skillId, level);
+		player->getActiveBuffs()->addAct(skillId, skillsinfo->act.type, value, skillsinfo->act.time);
 	}
 }
 
-void Buffs::addDebuff(Player *player, uint8_t skillid, uint8_t level) {
-	if (!BuffDataProvider::Instance()->isDebuff(skillid))
+void Buffs::addDebuff(Player *player, uint8_t skillId, uint8_t level) {
+	if (!BuffDataProvider::Instance()->isDebuff(skillId))
 		return;
 
-	int16_t time = SkillDataProvider::Instance()->getMobSkill(skillid, level)->time;
-	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillid);
+	int16_t time = SkillDataProvider::Instance()->getMobSkill(skillId, level)->time;
+	MobAilmentInfo *mobskillsinfo = BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
-	vector<Buff> buffs = parseMobBuffs(skillid);
-	ActiveBuff playerskill = parseMobBuffInfo(player, skillid, level);
-	ActiveMapBuff mapskill = parseMobBuffMapInfo(player, skillid, level);
-	ActiveMapBuff enterskill = parseMobBuffMapEntryInfo(player, skillid, level);
+	vector<Buff> buffs = parseMobBuffs(skillId);
+	ActiveBuff playerskill = parseMobBuffInfo(player, skillId, level);
+	ActiveMapBuff mapskill = parseMobBuffMapInfo(player, skillId, level);
+	ActiveMapBuff enterskill = parseMobBuffMapEntryInfo(player, skillId, level);
 
-	BuffsPacket::giveDebuff(player, skillid, level, time, mobskillsinfo->delay, playerskill, mapskill);
+	BuffsPacket::giveDebuff(player, skillId, level, time, mobskillsinfo->delay, playerskill, mapskill);
 
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-	playerbuffs->setActiveSkillLevel(skillid, level);
-	playerbuffs->addBuffInfo(skillid, buffs);
+	playerbuffs->setActiveSkillLevel(skillId, level);
+	playerbuffs->addBuffInfo(skillId, buffs);
 	playerbuffs->addMapEntryBuffInfo(enterskill);
-	playerbuffs->addBuff(skillid, time);
+	playerbuffs->addBuff(skillId, time);
 }
 
 void Buffs::endDebuff(Player *player, uint8_t skill) {

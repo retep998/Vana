@@ -282,9 +282,9 @@ void Player::playerConnect(PacketReader &packet) {
 
 		getActiveBuffs()->parseBuffTransferPacket(pack);
 		if (getActiveBuffs()->hasHyperBody()) {
-			int32_t skillid = getActiveBuffs()->getHyperBody();
-			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillid);
-			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+			int32_t skillId = getActiveBuffs()->getHyperBody();
+			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillId);
+			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
 			stats->setHyperBody(hb->x, hb->y);
 		}
 

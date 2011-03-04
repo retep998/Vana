@@ -204,38 +204,38 @@ MapEntryBuffs PlayerActiveBuffs::getMapEntryBuffs() {
 	return m_mapbuffs;
 }
 
-void PlayerActiveBuffs::setMountInfo(int32_t skillid, int32_t mountid) {
-	m_mapbuffs.mountskill = skillid;
+void PlayerActiveBuffs::setMountInfo(int32_t skillId, int32_t mountid) {
+	m_mapbuffs.mountskill = skillId;
 	m_mapbuffs.mountid = mountid;
 }
 
 // Active skill levels
-uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillid) {
-	return m_activelevels.find(skillid) != m_activelevels.end() ? m_activelevels[skillid] : 0;
+uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillId) {
+	return m_activelevels.find(skillId) != m_activelevels.end() ? m_activelevels[skillId] : 0;
 }
 
-void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillid, uint8_t level) {
-	m_activelevels[skillid] = level;
+void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillId, uint8_t level) {
+	m_activelevels[skillId] = level;
 }
 
-SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillid) {
-	uint8_t level = getActiveSkillLevel(skillid);
-	return (level != 0 ? SkillDataProvider::Instance()->getSkill(skillid, level) : 0);
+SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) {
+	uint8_t level = getActiveSkillLevel(skillId);
+	return (level != 0 ? SkillDataProvider::Instance()->getSkill(skillId, level) : 0);
 }
 
 // Buff addition/removal
-void PlayerActiveBuffs::addBuffInfo(int32_t skillid, const vector<Buff> &buffs) {
+void PlayerActiveBuffs::addBuffInfo(int32_t skillId, const vector<Buff> &buffs) {
 	for (size_t i = 0; i < buffs.size(); i++) {
 		Buff cur = buffs[i];
-		m_activebuffsbytype[cur.byte][cur.type] = skillid;
+		m_activebuffsbytype[cur.byte][cur.type] = skillId;
 	}
 }
 
-ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillid, const vector<Buff> &buffs) {
+ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillId, const vector<Buff> &buffs) {
 	ActiveBuff ret;
 	for (size_t i = 0; i < buffs.size(); i++) {
 		Buff cur = buffs[i];
-		if (m_activebuffsbytype[cur.byte][cur.type] == skillid) { // Make sure that the buff types are still affected by the skill
+		if (m_activebuffsbytype[cur.byte][cur.type] == skillId) { // Make sure that the buff types are still affected by the skill
 			m_activebuffsbytype[cur.byte].erase(cur.type);
 			ret.types[cur.byte] += cur.type;
 		}
@@ -259,10 +259,10 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	m_battleshiphp -= amount;
 	if (m_battleshiphp <= 0) {
 		m_battleshiphp = 0;
-		int32_t skillid = Jobs::Corsair::Battleship;
-		int16_t cooltime = getActiveSkillInfo(skillid)->cooltime;
-		Skills::startCooldown(m_player, skillid, cooltime);
-		Skills::stopSkill(m_player, skillid);
+		int32_t skillId = Jobs::Corsair::Battleship;
+		int16_t cooltime = getActiveSkillInfo(skillId)->cooltime;
+		Skills::startCooldown(m_player, skillId, cooltime);
+		Skills::stopSkill(m_player, skillId);
 	}
 }
 
@@ -273,18 +273,18 @@ void PlayerActiveBuffs::resetBattleshipHp() {
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
-		int32_t skillid = m_player->getSkills()->getComboAttack();
-		int32_t timeleft = buffTimeLeft(skillid);
-		uint8_t level = getActiveSkillLevel(skillid);
-		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillid, level);
-		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillid, level);
-		BuffsPacket::useSkill(m_player, skillid, timeleft, playerskill, mapskill, 0);
+		int32_t skillId = m_player->getSkills()->getComboAttack();
+		int32_t timeleft = buffTimeLeft(skillId);
+		uint8_t level = getActiveSkillLevel(skillId);
+		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillId, level);
+		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillId, level);
+		BuffsPacket::useSkill(m_player, skillId, timeleft, playerskill, mapskill, 0);
 	}
 }
 
 void PlayerActiveBuffs::addCombo() { // Add orbs
-	int32_t skillid = m_player->getSkills()->getComboAttack();
-	uint8_t clevel = getActiveSkillLevel(skillid);
+	int32_t skillId = m_player->getSkills()->getComboAttack();
+	uint8_t clevel = getActiveSkillLevel(skillId);
 	if (clevel > 0) {
 		int32_t advskill = m_player->getSkills()->getAdvancedCombo();
 		uint8_t advcombo = m_player->getSkills()->getSkillLevel(advskill);
@@ -295,7 +295,7 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 			prop = combo->prop;
 		}
 		else {
-			combo = SkillDataProvider::Instance()->getSkill(skillid, clevel);
+			combo = SkillDataProvider::Instance()->getSkill(skillId, clevel);
 		}
 		int8_t maxcombo = static_cast<int8_t>(combo->x);
 		if (m_combo == maxcombo)
@@ -311,10 +311,10 @@ void PlayerActiveBuffs::addCombo() { // Add orbs
 
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) { // Berserk calculations
-		int32_t skillid = Jobs::DarkKnight::Berserk;
-		int8_t level = m_player->getSkills()->getSkillLevel(skillid);
+		int32_t skillId = Jobs::DarkKnight::Berserk;
+		int8_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
-			int16_t r_hp = m_player->getStats()->getMaxHp() * SkillDataProvider::Instance()->getSkill(skillid, level)->x / 100;
+			int16_t r_hp = m_player->getStats()->getMaxHp() * SkillDataProvider::Instance()->getSkill(skillId, level)->x / 100;
 			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > r_hp) { // If on and we're above Berserk HP, Berserk fails
@@ -333,30 +333,30 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 	if (m_energycharge != 10000 && targets > 0) {
-		int32_t skillid = m_player->getSkills()->getEnergyCharge();
-		Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed);
+		int32_t skillId = m_player->getSkills()->getEnergyCharge();
+		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed);
 		if (m_player->getTimers()->checkTimer(id) > 0)
 			stopEnergyChargeTimer();
 		startEnergyChargeTimer();
-		m_energycharge += m_player->getSkills()->getSkillInfo(skillid)->x * targets;
+		m_energycharge += m_player->getSkills()->getSkillInfo(skillId)->x * targets;
 		if (m_energycharge > 10000) {
 			m_energycharge = 10000;
 			stopEnergyChargeTimer();
 		}
-		Buffs::addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
+		Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
 	}
 }
 
 void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 	m_energycharge -= 200; // Always the same
-	int32_t skillid = m_player->getSkills()->getEnergyCharge();
+	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	if (m_energycharge < 0) {
 		m_energycharge = 0;
 	}
 	else {
 		startEnergyChargeTimer();
 	}
-	Buffs::addBuff(m_player, skillid, m_player->getSkills()->getSkillLevel(skillid), 0);
+	Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
 }
 
 void PlayerActiveBuffs::resetEnergyChargeLevel() {
@@ -365,8 +365,8 @@ void PlayerActiveBuffs::resetEnergyChargeLevel() {
 
 void PlayerActiveBuffs::startEnergyChargeTimer() {
 	m_timeseed = static_cast<uint32_t>(clock());
-	int32_t skillid = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	int32_t skillId = m_player->getSkills()->getEnergyCharge();
+	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
 		id, m_player->getTimers(), Timer::Time::fromNow(10 * 1000)); // 10 seconds
 }
@@ -379,8 +379,8 @@ void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTime
 }
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
-	int32_t skillid = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillid, m_timeseed);
+	int32_t skillId = m_player->getSkills()->getEnergyCharge();
+	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed);
 	m_player->getTimers()->removeTimer(id);
 }
 
@@ -407,8 +407,8 @@ void PlayerActiveBuffs::stopBulletSkills() {
 		Skills::stopSkill(m_player, Jobs::NightLord::ShadowStars);
 }
 
-bool PlayerActiveBuffs::hasBuff(int32_t skillid) {
-	return (getActiveSkillLevel(skillid) > 0);
+bool PlayerActiveBuffs::hasBuff(int32_t skillId) {
+	return (getActiveSkillLevel(skillId) > 0);
 }
 
 bool PlayerActiveBuffs::hasIceCharge() const {
@@ -504,18 +504,18 @@ int32_t PlayerActiveBuffs::getHolySymbol() {
 }
 
 int32_t PlayerActiveBuffs::getPowerStance() {
-	int32_t skillid = 0;
+	int32_t skillId = 0;
 	if (hasBuff(Jobs::Hero::PowerStance))
-		skillid = Jobs::Hero::PowerStance;
+		skillId = Jobs::Hero::PowerStance;
 	else if (hasBuff(Jobs::Paladin::PowerStance))
-		skillid = Jobs::Paladin::PowerStance;
+		skillId = Jobs::Paladin::PowerStance;
 	else if (hasBuff(Jobs::DarkKnight::PowerStance))
-		skillid = Jobs::DarkKnight::PowerStance;
+		skillId = Jobs::DarkKnight::PowerStance;
 	else if (hasBuff(Jobs::Marauder::EnergyCharge))
-		skillid = Jobs::Marauder::EnergyCharge;
+		skillId = Jobs::Marauder::EnergyCharge;
 	else if (hasBuff(Jobs::ThunderBreaker::EnergyCharge))
-		skillid = Jobs::ThunderBreaker::EnergyCharge;
-	return skillid;
+		skillId = Jobs::ThunderBreaker::EnergyCharge;
+	return skillId;
 }
 
 int32_t PlayerActiveBuffs::getHyperBody() {
@@ -631,12 +631,12 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 	// Current buff info
 	uint8_t nbuffs = packet.get<uint8_t>();
 	for (uint8_t i = 0; i < nbuffs; i++) {
-		int32_t skillid = packet.get<int32_t>();
+		int32_t skillId = packet.get<int32_t>();
 		int32_t timeleft = packet.get<int32_t>();
 		uint8_t level = packet.get<uint8_t>();
-		addBuff(skillid, timeleft);
-		setActiveSkillLevel(skillid, level);
-		Buffs::doAct(m_player, skillid, level);
+		addBuff(skillId, timeleft);
+		setActiveSkillLevel(skillId, level);
+		Buffs::doAct(m_player, skillId, level);
 	}
 	// Current buffs by type
 	unordered_map<uint8_t, int32_t> currentbyte;

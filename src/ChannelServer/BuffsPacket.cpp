@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
+void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SKILL_USE);
@@ -34,7 +34,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
-		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(skillId);
 		packet.add<int32_t>(time);
 	}
 	packet.add<int16_t>(0);
@@ -51,7 +51,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 		BuffsPacketHelper::addBytes(packet, mskill.typelist);
 
 		if ((mskill.typelist[BuffBytes::Byte3] & 0x40) > 0) {
-			packet.add<int32_t>(skillid);
+			packet.add<int32_t>(skillId);
 		}
 		else {
 			for (size_t i = 0; i < mskill.values.size(); i++) {
@@ -70,7 +70,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillid, int32_t time, Active
 	}
 }
 
-void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int16_t time, int16_t delay, ActiveBuff &pskill, ActiveMapBuff &mskill) {
+void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int16_t time, int16_t delay, ActiveBuff &pskill, ActiveMapBuff &mskill) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SKILL_USE);
@@ -79,7 +79,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
-		packet.add<uint16_t>(skillid);
+		packet.add<uint16_t>(skillId);
 		packet.add<uint16_t>(level);
 		packet.add<int32_t>(time);
 	}
@@ -96,9 +96,9 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillid, uint8_t level, int
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
 
 	for (size_t i = 0; i < mskill.values.size(); i++) {
-		if (skillid == MobSkills::Poison)
+		if (skillId == MobSkills::Poison)
 			packet.add<int16_t>(mskill.values[i]);
-		packet.add<uint16_t>(skillid);
+		packet.add<uint16_t>(skillId);
 		packet.add<uint16_t>(level);
 	}
 	packet.add<int16_t>(0);
@@ -144,7 +144,7 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill) {
+void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill) {
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<int16_t>(SMSG_SKILL_USE);
@@ -155,7 +155,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
-		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(skillId);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
 		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
@@ -175,7 +175,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	for (size_t i = 0; i < pskill.vals.size(); i++) {
 		packet.add<int16_t>(pskill.vals[i]);
 		packet.add<int16_t>(0);
-		packet.add<int32_t>(skillid);
+		packet.add<int32_t>(skillId);
 		packet.add<int32_t>(0); // No idea, hate pirates, seems to be server tick count in ms
 		packet.add<int8_t>(0);
 		packet.add<int16_t>(castedtime);
@@ -184,7 +184,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillid, int32_t time, A
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
+void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	int32_t castedvalue = static_cast<int32_t>(pskill.vals[0]);
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
@@ -194,7 +194,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
@@ -211,7 +211,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(castedvalue);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
@@ -220,7 +220,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillid, int32_t time
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid) {
+void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SKILL_USE);
@@ -229,7 +229,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(0); // Server tick value
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
@@ -245,7 +245,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(mountid);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
@@ -253,7 +253,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillid, int32_t time, Active
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useHomingBeacon(Player *player, int32_t skillid, ActiveBuff &pskill, int32_t mapmobid) {
+void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, ActiveBuff &pskill, int32_t mapMobId) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SKILL_USE);
 
@@ -264,10 +264,10 @@ void BuffsPacket::useHomingBeacon(Player *player, int32_t skillid, ActiveBuff &p
 		packet.add<int16_t>(pskill.vals[i]);
 	}
 	packet.add<int16_t>(0);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(0); // Time
 	packet.add<int8_t>(0);
-	packet.add<int32_t>(mapmobid);
+	packet.add<int32_t>(mapMobId);
 	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
 }

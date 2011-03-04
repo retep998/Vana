@@ -60,21 +60,21 @@ struct MapEntryVals {
 
 namespace Buffs {
 	void addBuff(Player *player, int32_t itemid, int32_t time);
-	bool addBuff(Player *player, int32_t skillid, uint8_t level, int16_t addedinfo, int32_t mapmobid = 0);
+	bool addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedinfo, int32_t mapMobId = 0);
 	void endBuff(Player *player, int32_t skill);
-	void doAct(Player *player, int32_t skillid, uint8_t level);
-	void addDebuff(Player *player, uint8_t skillid, uint8_t level);
-	void endDebuff(Player *player, uint8_t skillid);
+	void doAct(Player *player, int32_t skillId, uint8_t level);
+	void addDebuff(Player *player, uint8_t skillId, uint8_t level);
+	void endDebuff(Player *player, uint8_t skillId);
 
-	ActiveBuff parseBuffInfo(Player *player, int32_t skillid, uint8_t level);
-	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillid, uint8_t level);
-	vector<Buff> parseBuffs(int32_t skillid, uint8_t level);
-	ActiveBuff parseMobBuffInfo(Player *player, uint8_t skillid, uint8_t level);
-	ActiveMapBuff parseMobBuffMapInfo(Player *player, uint8_t skillid, uint8_t level);
-	vector<Buff> parseMobBuffs(uint8_t skillid);
-	ActiveMapBuff parseBuffMapEntryInfo(Player *player, int32_t skillid, uint8_t level);
-	ActiveMapBuff parseMobBuffMapEntryInfo(Player *player, uint8_t skillid, uint8_t level);
-	int16_t getValue(int8_t value, int32_t skillid, uint8_t level);
-	int16_t getMobSkillValue(int8_t value, uint8_t skillid, uint8_t level);
-	int32_t parseMountInfo(Player *player, int32_t skillid, uint8_t level);
+	ActiveBuff parseBuffInfo(Player *player, int32_t skillId, uint8_t level);
+	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level);
+	vector<Buff> parseBuffs(int32_t skillId, uint8_t level);
+	ActiveBuff parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t level);
+	ActiveMapBuff parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_t level);
+	vector<Buff> parseMobBuffs(uint8_t skillId);
+	ActiveMapBuff parseBuffMapEntryInfo(Player *player, int32_t skillId, uint8_t level);
+	ActiveMapBuff parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, uint8_t level);
+	int16_t getValue(int8_t value, int32_t skillId, uint8_t level);
+	int16_t getMobSkillValue(int8_t value, uint8_t skillId, uint8_t level);
+	int32_t parseMountInfo(Player *player, int32_t skillId, uint8_t level);
 }

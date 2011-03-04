@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SkillDataProvider.h"
 
-Mist::Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillid, uint8_t level, bool ispoison) :
+Mist::Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool ispoison) :
 m_ownermap(mapid),
 m_ownerid(owner->getId()),
-m_skill(skillid),
+m_skill(skillId),
 m_level(level),
 m_origin(origin),
 m_time((int16_t)(skill->time)),
@@ -47,10 +47,10 @@ m_poison(ispoison)
 	Maps::getMap(mapid)->addMist(this);
 }
 
-Mist::Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillid, uint8_t level) :
+Mist::Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level) :
 m_ownermap(mapid),
 m_ownerid(owner->getId()),
-m_skill(skillid),
+m_skill(skillId),
 m_level(level),
 m_origin(origin),
 m_time(skill->time),

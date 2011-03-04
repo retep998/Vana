@@ -77,17 +77,17 @@ public:
 	void dispelBuffs();
 
 	// Buff info
-	void addBuffInfo(int32_t skillid, const vector<Buff> &buffs);
-	void setActiveSkillLevel(int32_t skillid, uint8_t level);
-	uint8_t getActiveSkillLevel(int32_t skillid);
-	ActiveBuff removeBuffInfo(int32_t skillid, const vector<Buff> &buffs);
+	void addBuffInfo(int32_t skillId, const vector<Buff> &buffs);
+	void setActiveSkillLevel(int32_t skillId, uint8_t level);
+	uint8_t getActiveSkillLevel(int32_t skillId);
+	ActiveBuff removeBuffInfo(int32_t skillId, const vector<Buff> &buffs);
 	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
-	SkillLevelInfo * getActiveSkillInfo(int32_t skillid);
+	SkillLevelInfo * getActiveSkillInfo(int32_t skillId);
 
 	// Buff map info
 	void addMapEntryBuffInfo(ActiveMapBuff &buff);
 	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
-	void setMountInfo(int32_t skillid, int32_t mountid);
+	void setMountInfo(int32_t skillId, int32_t mountid);
 	MapEntryBuffs getMapEntryBuffs();
 
 	// Skill "acts"
@@ -122,12 +122,12 @@ public:
 	void stopEnergyChargeTimer();
 
 	// Boosters
-	void setBooster(int32_t skillid) { m_activebooster = skillid; }
+	void setBooster(int32_t skillId) { m_activebooster = skillId; }
 	void stopBooster();
 	int32_t getBooster() const { return m_activebooster; }
 
 	// White Knight/Paladin charges
-	void setCharge(int32_t skillid) { m_activecharge = skillid; }
+	void setCharge(int32_t skillId) { m_activecharge = skillId; }
 	void stopCharge();
 	bool hasIceCharge() const;
 	int32_t getCharge() const { return m_activecharge; }
@@ -147,7 +147,7 @@ public:
 	// Homing Beacon
 	int32_t getMarkedMonster() const { return m_markedmonster; }
 	bool hasMarkedMonster() const { return (m_markedmonster != 0); }
-	void setMarkedMonster(int32_t mapmobid) { m_markedmonster = mapmobid; }
+	void setMarkedMonster(int32_t mapMobId) { m_markedmonster = mapMobId; }
 
 	// Commonly referred to (de)buffs on the server end
 	bool hasInfinity();
@@ -179,7 +179,7 @@ public:
 	void getBuffTransferPacket(PacketCreator &packet);
 	void parseBuffTransferPacket(PacketReader &packet);
 private:
-	bool hasBuff(int32_t skillid);
+	bool hasBuff(int32_t skillId);
 
 	Player *m_player;
 	uint8_t m_combo;

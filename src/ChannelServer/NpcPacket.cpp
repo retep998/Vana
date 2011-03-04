@@ -83,3 +83,19 @@ void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
 	}
 	player->getSession()->send(packet);
 }
+
+void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NPC_SHOW_EFFECT);
+	packet.add<int32_t>(index);
+	packet.addBool(show);
+	player->getSession()->send(packet);
+}
+
+void NpcPacket::showNpcEffect(int32_t mapid, int32_t index, bool show) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NPC_SHOW_EFFECT);
+	packet.add<int32_t>(index);
+	packet.addBool(show);
+	Maps::getMap(mapid)->sendPacket(packet);
+}

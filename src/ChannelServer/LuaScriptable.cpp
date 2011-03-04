@@ -668,33 +668,33 @@ int LuaExports::getBuddySlots(lua_State *luaVm) {
 
 // Skill
 int LuaExports::addSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, 1);
+	int32_t skillId = lua_tointeger(luaVm, 1);
 	uint8_t level = lua_tointeger(luaVm, 2);
 
 	if (lua_isnumber(luaVm, 3)) { // Optional argument of increasing a skill's max level
-		getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, lua_tointeger(luaVm, 3));
+		getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillId, lua_tointeger(luaVm, 3));
 	}
 
-	getPlayer(luaVm)->getSkills()->addSkillLevel(skillid, level);
+	getPlayer(luaVm)->getSkills()->addSkillLevel(skillId, level);
 	return 0;
 }
 
 int LuaExports::getSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillid));
+	int32_t skillId = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getSkillLevel(skillId));
 	return 1;
 }
 
 int LuaExports::getMaxSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getMaxSkillLevel(skillid));
+	int32_t skillId = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getSkills()->getMaxSkillLevel(skillId));
 	return 1;
 }
 
 int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
-	int32_t skillid = lua_tointeger(luaVm, -2);
+	int32_t skillId = lua_tointeger(luaVm, -2);
 	uint8_t level = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillid, level);
+	getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillId, level);
 	return 0;
 }
 
@@ -1368,66 +1368,66 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 // Mob
 int LuaExports::getMobFh(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getFh());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getFh());
 	return 1;
 }
 
 int LuaExports::getMobHp(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getHp());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getHp());
 	return 1;
 
 }
 
 int LuaExports::getMobMaxHp(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMaxHp());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMaxHp());
 	return 1;
 
 }
 
 int LuaExports::getMobMaxMp(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMaxMp());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMaxMp());
 	return 1;
 }
 
 int LuaExports::getMobMp(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getMp());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMp());
 	return 1;
 }
 
 int LuaExports::getMobPosX(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getPos().x);
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getPos().x);
 	return 1;
 }
 
 int LuaExports::getMobPosY(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getPos().y);
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getPos().y);
 	return 1;
 }
 
 int LuaExports::getRealMobId(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapmobid)->getId());
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getId());
 	return 1;
 }
 
 int LuaExports::killMob(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
-	Mob *m = Maps::getMap(mapid)->getMob(mapmobid);
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
+	Mob *m = Maps::getMap(mapid)->getMob(mapMobId);
 	if (m != nullptr) {
 		m->applyDamage(0, m->getHp());
 	}
@@ -1436,13 +1436,13 @@ int LuaExports::killMob(lua_State *luaVm) {
 
 int LuaExports::mobDropItem(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mapmobid = lua_tointeger(luaVm, 2);
+	int32_t mapMobId = lua_tointeger(luaVm, 2);
 	int32_t itemid = lua_tointeger(luaVm, 3);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 4)) {
 		amount = lua_tointeger(luaVm, 4);
 	}
-	Mob *m = Maps::getMap(mapid)->getMob(mapmobid);
+	Mob *m = Maps::getMap(mapid)->getMob(mapMobId);
 	if (m != nullptr) {
 		Item f(itemid, amount);
 		Drop *drop = new Drop(mapid, f, m->getPos(), 0);
