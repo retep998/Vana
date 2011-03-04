@@ -58,15 +58,15 @@ int32_t Summons::loopId() {
 	return summonids.next();
 }
 
-void Summons::useSummon(Player *player, int32_t skillid, uint8_t level) {
-	Summon *summon = new Summon(loopId(), skillid, level);
-	bool puppet = GameLogicUtilities::isPuppet(skillid);
+void Summons::useSummon(Player *player, int32_t skillId, uint8_t level) {
+	Summon *summon = new Summon(loopId(), skillId, level);
+	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	removeSummon(player, puppet, true, false, 0);
 	Pos sumpos = player->getPos();
 	if (puppet)
 		sumpos = Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->isFacingRight() ? 1 : -1)), player->getPos().y));
 	summon->setPos(sumpos);
-	player->getSummons()->addSummon(summon, SkillDataProvider::Instance()->getSkill(skillid, level)->time);
+	player->getSummons()->addSummon(summon, SkillDataProvider::Instance()->getSkill(skillId, level)->time);
 	SummonsPacket::showSummon(player, summon, true);
 }
 

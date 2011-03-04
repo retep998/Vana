@@ -204,12 +204,30 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::useSkillbook(Player *player, int32_t skillid, int32_t newMaxLevel, bool use, bool succeed) {
+void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_PLAYERS);
+	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.add<int8_t>(0x0a);
+	packet.addString(line1);
+	packet.add<int8_t>(lines);
+	if (lines > 1) {
+		packet.addString(line2);
+	}
+	if (lines > 2) {
+		packet.addString(line3);
+	}
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
+	packet.addBool(whisper);
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
+void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SKILLBOOK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(newMaxLevel);
 	packet.addBool(use); // Use/cannot use
 	packet.addBool(succeed); // Pass/fail
@@ -327,4 +345,12 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	packet.addBool(!msg.empty());
 	packet.addString(msg);
 	Maps::getMap(player->getMap())->sendPacket(packet);
+}
+
+void InventoryPacket::playCashSong(int32_t map, int32_t itemid, const string &playername) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_CASH_SONG);
+	packet.add<int32_t>(itemid);
+	packet.addString(playername);
+	Maps::getMap(map)->sendPacket(packet);
 }

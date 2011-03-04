@@ -60,7 +60,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t nodamageskill, const ReturnDamageInfo &pgmr) {
+void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, uint8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
@@ -78,15 +78,15 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			packet.add<int8_t>(hit);
 			packet.add<int8_t>(pgmr.reduction);
 			if (pgmr.reduction > 0) {
-				packet.addBool(pgmr.isphysical); // Maybe? No Mana Reflection on global to test with
-				packet.add<int32_t>(pgmr.mapmobid);
+				packet.addBool(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
+				packet.add<int32_t>(pgmr.mapMobId);
 				packet.add<int8_t>(6);
 				packet.addPos(pgmr.pos);
 			}
 			packet.add<int8_t>(stance);
 			packet.add<int32_t>(dmg);
-			if (nodamageskill > 0) {
-				packet.add<int32_t>(nodamageskill);
+			if (noDamageSkill > 0) {
+				packet.add<int32_t>(noDamageSkill);
 			}
 			break;
 	}
@@ -174,7 +174,7 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 
 void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	int8_t tbyte = attack.targets + attack.hits;
-	int32_t skillid = attack.skillId;
+	int32_t skillId = attack.skillId;
 	bool mesoexplosion = attack.isMesoExplosion;
 	if (mesoexplosion) {
 		tbyte = (attack.targets * 0x10) + 0x0A;
@@ -185,8 +185,8 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(attack.skillLevel);
-	if (skillid != Jobs::All::RegularAttack) {
-		packet.add<int32_t>(skillid);
+	if (skillId != Jobs::All::RegularAttack) {
+		packet.add<int32_t>(skillId);
 	}
 
 	packet.add<uint8_t>(attack.display);
@@ -212,15 +212,15 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 
 void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	int8_t tbyte = attack.targets + attack.hits;
-	int32_t skillid = attack.skillId;
+	int32_t skillId = attack.skillId;
 
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_ATTACK_RANGED);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<uint8_t>(attack.skillLevel);
-	if (skillid != Jobs::All::RegularAttack) {
-		packet.add<int32_t>(skillid);
+	if (skillId != Jobs::All::RegularAttack) {
+		packet.add<int32_t>(skillId);
 	}
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
@@ -238,7 +238,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 		packet.add<int8_t>(0x06);
 		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
 			int32_t damage = *j;
-			switch (skillid) {
+			switch (skillId) {
 				case Jobs::Marksman::Snipe: // Snipe is always crit
 					damage += 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
@@ -255,14 +255,14 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 
 void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	int8_t tbyte = attack.targets + attack.hits;
-	int32_t skillid = attack.skillId;
+	int32_t skillId = attack.skillId;
 
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_ATTACK_MAGIC);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<int8_t>(attack.skillLevel);
-	packet.add<int32_t>(skillid);
+	packet.add<int32_t>(skillId);
 
 	packet.add<uint8_t>(attack.display);
 	packet.add<uint8_t>(attack.animation);
@@ -314,8 +314,8 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, PacketReader &pack) {
 	//packet.add<int32_t>(player->getId());
 	//packet.add<int8_t>(tbyte);
 	//packet.add<int8_t>(1);
-	//int32_t skillid = pack.get<int32_t>();
-	//packet.add<int32_t>(skillid);
+	//int32_t skillId = pack.get<int32_t>();
+	//packet.add<int32_t>(skillId);
 
 	//Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

@@ -80,10 +80,10 @@ public:
 	void loadData();
 	void addItemInfo(int32_t itemid, const ConsumeInfo &cons);
 
-	bool isBuff(int32_t skillid) { return (skillsinfo.find(skillid) != skillsinfo.end()); }
-	bool isDebuff(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end()); }
-	SkillInfo * getSkillInfo(int32_t skillid) { return &skillsinfo[skillid]; }
-	MobAilmentInfo * getMobSkillInfo(uint8_t skillid) { return (mobskillsinfo.find(skillid) != mobskillsinfo.end() ? &mobskillsinfo[skillid] : nullptr); }
+	bool isBuff(int32_t skillId) { return (skillsinfo.find(skillId) != skillsinfo.end()); }
+	bool isDebuff(uint8_t skillId) { return (mobskillsinfo.find(skillId) != mobskillsinfo.end()); }
+	SkillInfo * getSkillInfo(int32_t skillId) { return &skillsinfo[skillId]; }
+	MobAilmentInfo * getMobSkillInfo(uint8_t skillId) { return (mobskillsinfo.find(skillId) != mobskillsinfo.end() ? &mobskillsinfo[skillId] : nullptr); }
 private:
 	BuffDataProvider() { }
 	static BuffDataProvider *singleton;

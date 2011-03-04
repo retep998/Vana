@@ -406,16 +406,16 @@ NpcSpawnInfo Map::getNpc(uint32_t id) const {
 }
 
 // Mobs
-int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int8_t summoneffect) {
+int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int8_t summonEffect) {
 	int32_t id = getObjectId();
 
 	Mob *mob = new Mob(id, getId(), mobid, pos, fh);
 	m_mobs[id] = mob;
-	if (summoneffect != 0) {
+	if (summonEffect != 0) {
 		mob->setOwner(owner);
 		owner->addSpawn(id, mob);
 	}
-	MobsPacket::spawnMob(nullptr, mob, summoneffect, owner, (owner == nullptr));
+	MobsPacket::spawnMob(nullptr, mob, summonEffect, owner, (owner == nullptr));
 	updateMobControl(mob, true);
 	return id;
 }

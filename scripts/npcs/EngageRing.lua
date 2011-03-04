@@ -1,4 +1,4 @@
-/*
+--[[
 Copyright (C) 2008-2011 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,22 +14,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-#pragma once
+--]]
+-- Moony
 
-#include "GameConstants.h"
-#include "Types.h"
+addText("Have you found true love? If so, I can make you a ring worthy of your devotion...\r\n");
+addText("#b#L0#I would like to make an engagement ring for my lover.\r\n");
+addText("#L1#I want an annulment.#l#k");
+value = askChoice();
 
-class Mob;
-class PacketReader;
-class Player;
-struct MobSkillLevelInfo;
-
-namespace MobHandler {
-	int32_t handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage = 0);
-	void handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillinfo);
-	void handleBomb(Player *player, PacketReader &packet);
-	void monsterControl(Player *player, PacketReader &packet);
-	void friendlyDamaged(Player *player, PacketReader &packet);
-	void handleTurncoats(Player *player, PacketReader &packet);
-}
+if value == 0 then
+	addText("Looks like you're not quite done. If you want that ring, you'd better hurry and get me the following all materials to make an engagement ring. I need you to bring me #b4 Proof of Love#k from Nana.");
+	sendNext();
+elseif value == 1 then
+	addText("It looks like you haven't married yet. I don't have anything to talk to you about this.");
+	sendOk();
+end

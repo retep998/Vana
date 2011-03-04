@@ -40,11 +40,11 @@ public:
 	void save(bool savecooldowns = false);
 	void connectData(PacketCreator &packet);
 
-	bool addSkillLevel(int32_t skillid, uint8_t amount, bool sendpacket = true);
-	uint8_t getSkillLevel(int32_t skillid);
-	uint8_t getMaxSkillLevel(int32_t skillid);
-	void setMaxSkillLevel(int32_t skillid, uint8_t maxlevel, bool sendpacket = true);
-	SkillLevelInfo * getSkillInfo(int32_t skillid);
+	bool addSkillLevel(int32_t skillId, uint8_t amount, bool sendpacket = true);
+	uint8_t getSkillLevel(int32_t skillId);
+	uint8_t getMaxSkillLevel(int32_t skillId);
+	void setMaxSkillLevel(int32_t skillId, uint8_t maxlevel, bool sendpacket = true);
+	SkillLevelInfo * getSkillInfo(int32_t skillId);
 
 	bool hasElementalAmp();
 	bool hasEnergyCharge();
@@ -67,8 +67,8 @@ public:
 	int32_t getNoDamageSkill();
 	int16_t getRechargeableBonus();
 
-	void addCooldown(int32_t skillid, int16_t time);
-	void removeCooldown(int32_t skillid);
+	void addCooldown(int32_t skillId, int16_t time);
+	void removeCooldown(int32_t skillId);
 	void removeAllCooldowns();
 private:
 	unordered_map<int32_t, PlayerSkillInfo> playerskills;

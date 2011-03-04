@@ -35,16 +35,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
-StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillid, clock_t time) :
+StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t time) :
 status(status),
 val(val),
-skillid(skillid),
+skillId(skillId),
 mobskill(0),
 level(0),
 reflection(0),
 time(time)
 {
-	if (val == StatusEffects::Mob::Freeze && skillid != Jobs::FPArchMage::Paralyze) {
+	if (val == StatusEffects::Mob::Freeze && skillId != Jobs::FPArchMage::Paralyze) {
 		this->time += Randomizer::Instance()->randInt(time);
 	}
 }
@@ -52,7 +52,7 @@ time(time)
 StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, clock_t time) :
 status(status),
 val(val),
-skillid(-1),
+skillId(-1),
 mobskill(mobskill),
 level(level),
 time(time),
@@ -63,7 +63,7 @@ reflection(-1)
 StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time) :
 status(status),
 val(val),
-skillid(-1),
+skillId(-1),
 mobskill(mobskill),
 level(level),
 time(time),
@@ -131,20 +131,20 @@ void Mob::initMob() {
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	statuses[empty.status] = empty;
 
-	if (info->hprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hprecovery),
+	if (info->hpRecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealHp, this, info->hpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info->mprecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealMp, this, info->mprecovery),
+	if (info->mpRecovery > 0) {
+		new Timer::Timer(bind(&Mob::naturalHealMp, this, info->mpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
 	}
-	if (info->removeafter > 0) {
+	if (info->removeAfter > 0) {
 		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
-			map->getTimers(), Timer::Time::fromNow(info->removeafter * 1000));
+			map->getTimers(), Timer::Time::fromNow(info->removeAfter * 1000));
 	}
 }
 
@@ -187,7 +187,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 
 		uint8_t percent = static_cast<uint8_t>(hp * 100 / info->hp);
 
-		if (info->hpcolor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
+		if (info->hpColor > 0) { // Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHp(this);
 		}
 		else if (info->boss) { // Minibosses
@@ -267,7 +267,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 				Maps::getMap(mapid)->addWebbedMob(this);
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
-				if (statusinfo[i].skillid == Jobs::NightLord::Taunt || statusinfo[i].skillid == Jobs::Shadower::Taunt) {
+				if (statusinfo[i].skillId == Jobs::NightLord::Taunt || statusinfo[i].skillId == Jobs::Shadower::Taunt) {
 					taunteffect = (100 - statusinfo[i].val) + 100; // Value passed as 100 - x, so 100 - value will = x
 				}
 				break;
@@ -311,11 +311,11 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(status);
 	for (map<int32_t, StatusInfo>::iterator iter = statuses.begin(); iter != statuses.end(); iter++) {
-		// Val/skillid pairs must be ordered in the packet by status value ascending, this is done for us by std::map
+		// Val/skillId pairs must be ordered in the packet by status value ascending, this is done for us by std::map
 		if (iter->first != StatusEffects::Mob::Empty) {
 			packet.add<int16_t>(static_cast<int16_t>(iter->second.val));
-			if (iter->second.skillid >= 0) {
-				packet.add<int32_t>(iter->second.skillid);
+			if (iter->second.skillId >= 0) {
+				packet.add<int32_t>(iter->second.skillId);
 			}
 			else {
 				packet.add<int16_t>(iter->second.mobskill);
@@ -339,7 +339,7 @@ void Mob::removeStatus(int32_t status, bool fromTimer) {
 				Maps::getMap(mapid)->removeWebbedMob(getId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
-				if (stat->skillid == Jobs::NightLord::Taunt || stat->skillid == Jobs::Shadower::Taunt) {
+				if (stat->skillId == Jobs::NightLord::Taunt || stat->skillId == Jobs::Shadower::Taunt) {
 					taunteffect = 100;
 				}
 				break;
@@ -637,8 +637,8 @@ void Mob::dispelBuffs() {
 	removeStatus(StatusEffects::Mob::Speed);
 }
 
-void Mob::doCrashSkill(int32_t skillid) {
-	switch (skillid) {
+void Mob::doCrashSkill(int32_t skillId) {
+	switch (skillId) {
 		case Jobs::Crusader::ArmorCrash:
 			removeStatus(StatusEffects::Mob::Wdef);
 			break;
@@ -653,7 +653,7 @@ void Mob::doCrashSkill(int32_t skillid) {
 
 void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 	if ((mpeatercount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
-		mp->onlyonce = true;
+		mp->used = true;
 		int32_t emp = getMaxMp() * mp->x / 100;
 
 		if (emp > getMp())
@@ -664,7 +664,7 @@ void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 			emp = 30000;
 		player->getStats()->modifyMp(static_cast<int16_t>(emp));
 
-		SkillsPacket::showSkillEffect(player, mp->id);
+		SkillsPacket::showSkillEffect(player, mp->skillId);
 		mpeatercount++;
 	}
 }

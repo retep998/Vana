@@ -128,7 +128,7 @@ void ReactorDataProvider::loadTriggerSkills() {
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	int8_t state;
-	int32_t skillid;
+	int32_t skillId;
 	size_t i;
 
 	enum ReactorEvent {
@@ -139,10 +139,10 @@ void ReactorDataProvider::loadTriggerSkills() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		id = atoi(row[ReactorId]);
 		state = atoi(row[State]);
-		skillid = atoi(row[SkillId]);
+		skillId = atoi(row[SkillId]);
 
 		for (i = 0; i < reactorinfo[id].states[state].size(); i++) {
-			reactorinfo[id].states[state][i].triggerskills.push_back(skillid);
+			reactorinfo[id].states[state][i].triggerskills.push_back(skillId);
 		}
 	}
 }

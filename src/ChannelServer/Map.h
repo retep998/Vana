@@ -131,7 +131,7 @@ public:
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
 	void updateMobControl(Mob *mob, bool spawn = false, Player *display = nullptr);
 	int32_t spawnShell(int32_t mobid, const Pos &pos, int16_t fh);
-	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = nullptr, int8_t summoneffect = 0);
+	int32_t spawnMob(int32_t mobid, const Pos &pos, int16_t fh = 0, Mob *owner = nullptr, int8_t summonEffect = 0);
 	int32_t spawnMob(int32_t spawnid, const MobSpawnInfo &info);
 	int32_t killMobs(Player *player, int32_t mobid = 0, bool playerkill = true, bool showpacket = true);
 	int32_t countMobs(int32_t mobid = 0);

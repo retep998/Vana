@@ -53,18 +53,18 @@ namespace GameLogicUtilities {
 	inline int8_t getGenderId(const string &gender) { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
 
 	// Player skills
-	inline bool isBeginnerSkill(int32_t skillid) { return ((skillid / 1000000) == (skillid < 10000000 ? 0 : 10)); }
-	inline bool isFourthJobSkill(int32_t skillid) { return ((skillid / 10000) % 10 == 2); }
-	inline bool isPuppet(int32_t skillid) { return (skillid == Jobs::Sniper::Puppet || skillid == Jobs::Ranger::Puppet || skillid == Jobs::WindArcher::Puppet); }
-	inline bool isSummon(int32_t skillid) { return (isPuppet(skillid) || skillid == Jobs::Priest::SummonDragon || skillid == Jobs::Ranger::SilverHawk || skillid == Jobs::Sniper::GoldenEagle || skillid == Jobs::DarkKnight::Beholder || skillid == Jobs::FPArchMage::Elquines || skillid == Jobs::ILArchMage::Ifrit || skillid == Jobs::BlazeWizard::Ifrit || skillid == Jobs::Bishop::Bahamut || skillid == Jobs::Bowmaster::Phoenix || skillid == Jobs::Marksman::Frostprey || skillid == Jobs::Outlaw::Octopus || skillid == Jobs::Corsair::WrathOfTheOctopi || skillid == Jobs::Outlaw::Gaviota || skillid == Jobs::DawnWarrior::Soul || skillid == Jobs::BlazeWizard::Flame || skillid == Jobs::WindArcher::Storm || skillid == Jobs::NightWalker::Darkness || skillid == Jobs::ThunderBreaker::Lightning); }
+	inline bool isBeginnerSkill(int32_t skillId) { return ((skillId / 1000000) == (skillId < 10000000 ? 0 : 10)); }
+	inline bool isFourthJobSkill(int32_t skillId) { return ((skillId / 10000) % 10 == 2); }
+	inline bool isPuppet(int32_t skillId) { return (skillId == Jobs::Sniper::Puppet || skillId == Jobs::Ranger::Puppet || skillId == Jobs::WindArcher::Puppet); }
+	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Jobs::Priest::SummonDragon || skillId == Jobs::Ranger::SilverHawk || skillId == Jobs::Sniper::GoldenEagle || skillId == Jobs::DarkKnight::Beholder || skillId == Jobs::FPArchMage::Elquines || skillId == Jobs::ILArchMage::Ifrit || skillId == Jobs::BlazeWizard::Ifrit || skillId == Jobs::Bishop::Bahamut || skillId == Jobs::Bowmaster::Phoenix || skillId == Jobs::Marksman::Frostprey || skillId == Jobs::Outlaw::Octopus || skillId == Jobs::Corsair::WrathOfTheOctopi || skillId == Jobs::Outlaw::Gaviota || skillId == Jobs::DawnWarrior::Soul || skillId == Jobs::BlazeWizard::Flame || skillId == Jobs::WindArcher::Storm || skillId == Jobs::NightWalker::Darkness || skillId == Jobs::ThunderBreaker::Lightning); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
-	inline bool isMaxDarkSight(int32_t skillid, uint8_t level) { return (skillid == Jobs::Rogue::DarkSight && level == 20 || skillid == Jobs::NightWalker::DarkSight && level == 10); }
-	inline bool skillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 1000000 == job / 100) && (skillid / 10000 <= job)); }
-	inline bool itemSkillMatchesJob(int32_t skillid, int16_t job) { return ((skillid / 10000) == job); }
+	inline bool isMaxDarkSight(int32_t skillId, uint8_t level) { return (skillId == Jobs::Rogue::DarkSight && level == 20 || skillId == Jobs::NightWalker::DarkSight && level == 10); }
+	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
+	inline bool itemSkillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 10000) == job); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
 
 	// Mob skills
-	inline bool isMobSkill(int32_t skillid) { return (skillid >= 100 && skillid <= 200); }
+	inline bool isMobSkill(int32_t skillId) { return (skillId >= 100 && skillId <= 200); }
 
 	// Jobs
 	inline bool isRegularJob(int32_t job) { return (job == Jobs::JobIds::Beginner || (job >= 100 && job <= 910)); }

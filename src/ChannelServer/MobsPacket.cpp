@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *owner, bool spawn, bool show) {
+void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_MOB_SHOW);
 	packet.add<int32_t>(mob->getId());
@@ -44,7 +44,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summoneffect, Mob *ow
 	packet.add<int16_t>(mob->getOriginFh());
 
 	if (owner != nullptr) {
-		packet.add<int8_t>(summoneffect != 0 ? summoneffect : -3);
+		packet.add<int8_t>(summonEffect != 0 ? summonEffect : -3);
 		packet.add<int32_t>(owner->getId());
 	}
 	else {
@@ -174,8 +174,8 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 
 	for (size_t i = 0; i < info.size(); i++) {
 		packet.add<int16_t>(static_cast<int16_t>(info[i].val));
-		if (info[i].skillid >= 0) {
-			packet.add<int32_t>(info[i].skillid);
+		if (info[i].skillId >= 0) {
+			packet.add<int32_t>(info[i].skillId);
 		}
 		else {
 			packet.add<int16_t>(info[i].mobskill);
@@ -242,4 +242,14 @@ void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(death);
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
+}
+
+void MobsPacket::showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &pos) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.add<int8_t>(0x00);
+	packet.add<int8_t>(summonEffect);
+	packet.add<int32_t>(pos.x);
+	packet.add<int32_t>(pos.y);
+	Maps::getMap(mapid)->sendPacket(packet);
 }

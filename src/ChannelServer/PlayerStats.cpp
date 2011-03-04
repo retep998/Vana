@@ -486,9 +486,9 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 			setSp(getSp() + spgain);
 			// Let hyperbody remain on if on during a level up, as it should
 			if (player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillid = player->getActiveBuffs()->getHyperBody();
-				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+				int32_t skillId = player->getActiveBuffs()->getHyperBody();
+				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillId);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -621,9 +621,9 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isreset) {
 				case Stats::MaxMp: modifyMaxMp(mpgain); break;
 			}
 			if (player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillid = player->getActiveBuffs()->getHyperBody();
-				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillid);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillid, hblevel);
+				int32_t skillId = player->getActiveBuffs()->getHyperBody();
+				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillId);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -648,12 +648,12 @@ int16_t PlayerStats::randMp() {
 	return Randomizer::Instance()->randShort(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
-int16_t PlayerStats::getX(int32_t skillid) {
-	return player->getSkills()->getSkillInfo(skillid)->x;
+int16_t PlayerStats::getX(int32_t skillId) {
+	return player->getSkills()->getSkillInfo(skillId)->x;
 }
 
-int16_t PlayerStats::getY(int32_t skillid) {
-	return player->getSkills()->getSkillInfo(skillid)->y;
+int16_t PlayerStats::getY(int32_t skillId) {
+	return player->getSkills()->getSkillInfo(skillId)->y;
 }
 
 int16_t PlayerStats::apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval) {

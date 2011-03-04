@@ -38,7 +38,6 @@ public:
 	Npc(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
 	Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
 	Npc(int32_t npcid, Player *player, const string &script);
-	~Npc();
 
 	static bool hasScript(int32_t npcid, int16_t questid, bool start);
 

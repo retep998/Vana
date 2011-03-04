@@ -374,7 +374,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t skillid = 0;
+	int32_t skillId = 0;
 	uint8_t newMaxLevel = 0;
 	bool use = false;
 	bool succeed = false;
@@ -384,16 +384,16 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 
 	for (size_t i = 0; i < item->size(); i++) {
 		s = (*item)[i];
-		skillid = s.skillid;
+		skillId = s.skillId;
 		newMaxLevel = s.maxlevel;
-		if (GameLogicUtilities::itemSkillMatchesJob(skillid, player->getStats()->getJob())) {
+		if (GameLogicUtilities::itemSkillMatchesJob(skillId, player->getStats()->getJob())) {
 			// Make sure the skill is for the person's job
-			if (player->getSkills()->getSkillLevel(skillid) >= s.reqlevel) {
+			if (player->getSkills()->getSkillLevel(skillId) >= s.reqlevel) {
 				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
-				if (player->getSkills()->getMaxSkillLevel(skillid) < newMaxLevel) {
+				if (player->getSkills()->getMaxSkillLevel(skillId) < newMaxLevel) {
 					// Don't want to break up this vertical spacing
 					if (Randomizer::Instance()->randShort(99) < s.chance) {
-						player->getSkills()->setMaxSkillLevel(skillid, newMaxLevel);
+						player->getSkills()->setMaxSkillLevel(skillId, newMaxLevel);
 						succeed = true;
 					}
 					Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
@@ -403,8 +403,8 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 		}
 	}
 
-	if (skillid != 0) {
-		InventoryPacket::useSkillbook(player, skillid, newMaxLevel, true, succeed);
+	if (skillId != 0) {
+		InventoryPacket::useSkillbook(player, skillId, newMaxLevel, true, succeed);
 	}
 }
 
@@ -618,14 +618,12 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			string text[3] = {"", "", ""};
+			string text[3];
 			for (int8_t i = 0; i < lines; i++) {
 				text[i] = player->getMedalName() + " : " + packet.getString();
 			}
 			bool whisper = packet.getBool();
-			for (int8_t i = 0; i < lines; i++) {
-				InventoryPacket::showSuperMegaphone(player, text[i], whisper);
-			}
+			InventoryPacket::showTripleMegaphone(player, lines, text[0], text[1], text[2], whisper);
 			used = true;
 			break;
 		}
@@ -668,21 +666,21 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		case Items::Megassenger: {
 			bool hasreceiver = (packet.get<int8_t>() == 3);
 			bool show_whisper = (itemid == Items::Megassenger ? packet.getBool() : false);
-
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 			int32_t time = 15;
+
 			if ((hasreceiver && receiver != nullptr) || (!hasreceiver && receiver == nullptr)) {
 				string msg = packet.getString();
 				string msg2 = packet.getString();
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				packet.get<int32_t>(); // Ticks
+				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::Megassenger ? 3 : 0), time);
 
-				if (itemid == Items::Megassenger)
+				if (itemid == Items::Megassenger) {
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
-
+				}
 				used = true;
 			}
 			break;
@@ -696,60 +694,41 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			string msg3 = packet.getString();
 			string msg4 = packet.getString();
 			string msg5 = packet.getString();
-			packet.get<int32_t>(); // Ticks
-			MapleTvs::Instance()->addMessage(player, 0, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
+			packet.skipBytes(4); // Ticks
+			MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::StarMegassenger ? 3 : 0), time);
 
-			if (itemid == Items::StarMegassenger)
+			if (itemid == Items::StarMegassenger) {
 				InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
-
+			}
 			used = true;
 			break;
 		}
 		case Items::MapleTvHeartMessenger:
 		case Items::HeartMegassenger: {
 			bool show_whisper = (itemid == Items::HeartMegassenger ? packet.getBool() : false);
-
 			string name = packet.getString();
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 			int32_t time = 60;
+
 			if (receiver != nullptr) {
 				string msg = packet.getString();
 				string msg2 = packet.getString();
 				string msg3 = packet.getString();
 				string msg4 = packet.getString();
 				string msg5 = packet.getString();
-				packet.get<int32_t>(); // Ticks
+				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemid - (itemid == Items::HeartMegassenger ? 3 : 0), time);
-				if (itemid == Items::HeartMegassenger)
+				if (itemid == Items::HeartMegassenger) {
 					InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, show_whisper);
+				}
 				used = true;
 			}
 			break;
 		}
-		case Items::BronzeSackOfMesos: {
-			int32_t mesos = 1000000;
-			if (!player->getInventory()->modifyMesos(mesos)) {
-				InventoryPacket::sendMesobagFailed(player);
-			}
-			else {
-				InventoryPacket::sendMesobagSucceed(player, mesos);
-				used = true;
-			}
-			break;
-		}
-		case Items::SilverSackOfMesos: {
-			int32_t mesos = 5000000;
-			if (!player->getInventory()->modifyMesos(mesos)) {
-				InventoryPacket::sendMesobagFailed(player);
-			}
-			else {
-				InventoryPacket::sendMesobagSucceed(player, mesos);
-				used = true;
-			}
-			break;
-		}
+		case Items::BronzeSackOfMesos:
+		case Items::SilverSackOfMesos:
 		case Items::GoldSackOfMesos: {
-			int32_t mesos = 10000000;
+			int32_t mesos = ItemDataProvider::Instance()->getMesoBonus(itemid);
 			if (!player->getInventory()->modifyMesos(mesos)) {
 				InventoryPacket::sendMesobagFailed(player);
 			}
@@ -784,6 +763,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			f->slots++;
 			InventoryPacket::sendHammerSlots(player, f->hammers);
 			player->getInventory()->setHammerSlot(slot);
+			used = true;
+			break;
+		}
+		case Items::CongratulatorySong: {
+			InventoryPacket::playCashSong(player->getMap(), itemid, player->getName());
 			used = true;
 			break;
 		}

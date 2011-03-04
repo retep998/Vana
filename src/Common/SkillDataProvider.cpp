@@ -43,7 +43,7 @@ void SkillDataProvider::loadPlayerSkills() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_player_level_data");
 	mysqlpp::UseQueryResult res = query.use();
 	SkillLevelInfo level;
-	int32_t skillid;
+	int32_t skillId;
 	uint8_t skilllevel;
 
 	enum SkillData {
@@ -59,7 +59,7 @@ void SkillDataProvider::loadPlayerSkills() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		skillid = atoi(row[SkillId]);
+		skillId = atoi(row[SkillId]);
 		skilllevel = atoi(row[Level]);
 
 		level.mobcount = atoi(row[MobCount]);
@@ -69,35 +69,35 @@ void SkillDataProvider::loadPlayerSkills() {
 		level.mp = atoi(row[Mp]);
 		level.hp = atoi(row[Hp]);
 		level.damage = atoi(row[Damage]);
-		level.fixeddamage = atoi(row[FixedDamage]);
+		level.fixedDamage = atoi(row[FixedDamage]);
 		level.criticaldamage = atoi(row[CriticalDamage]);
 		level.item = atoi(row[Item]);
 		level.optionalitem = atoi(row[OptionalItem]);
-		level.itemcount = atoi(row[ItemCount]);
-		level.bulletcon = atoi(row[BulletCon]);
-		level.moneycon = atoi(row[MoneyCon]);
+		level.itemCount = atoi(row[ItemCount]);
+		level.bulletConsume = atoi(row[BulletCon]);
+		level.moneyConsume = atoi(row[MoneyCon]);
 		level.x = atoi(row[X]);
 		level.y = atoi(row[Y]);
 		level.speed = atoi(row[Speed]);
 		level.jump = atoi(row[Jump]);
 		level.str = atoi(row[Str]);
-		level.watk = atoi(row[Watk]);
-		level.wdef = atoi(row[Wdef]);
-		level.matk = atoi(row[Matk]);
-		level.mdef = atoi(row[Mdef]);
+		level.wAtk = atoi(row[Watk]);
+		level.wDef = atoi(row[Wdef]);
+		level.mAtk = atoi(row[Matk]);
+		level.mDef = atoi(row[Mdef]);
 		level.acc = atoi(row[Acc]);
 		level.avo = atoi(row[Avoid]);
-		level.hpP = atoi(row[HpP]);
-		level.mpP = atoi(row[MpP]);
+		level.hpProp = atoi(row[HpP]);
+		level.mpProp = atoi(row[MpP]);
 		level.prop = atoi(row[Prop]);
 		level.morph = atoi(row[Morph]);
 		level.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
 		level.rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
 		level.cooltime = atoi(row[Cooldown]);
 
-		skills[skillid][skilllevel] = level;
-		if (maxlevels.find(skillid) == maxlevels.end() || maxlevels[skillid] < skilllevel) {
-			maxlevels[skillid] = skilllevel;
+		skills[skillId][skilllevel] = level;
+		if (maxlevels.find(skillId) == maxlevels.end() || maxlevels[skillId] < skilllevel) {
+			maxlevels[skillId] = skilllevel;
 		}
 	}
 }
@@ -106,7 +106,7 @@ void SkillDataProvider::loadMobSkills() {
 	mobskills.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_mob_data");
 	mysqlpp::UseQueryResult res = query.use();
-	uint8_t skillid;
+	uint8_t skillId;
 	uint8_t level;
 
 	MobSkillLevelInfo moblevel;
@@ -119,7 +119,7 @@ void SkillDataProvider::loadMobSkills() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		skillid = atoi(row[SkillId]);
+		skillId = atoi(row[SkillId]);
 		level = atoi(row[SkillLevel]);
 
 		moblevel.time = atoi(row[Time]);
@@ -135,9 +135,9 @@ void SkillDataProvider::loadMobSkills() {
 		moblevel.rb.y = atoi(row[RBY]);
 		moblevel.hp = atoi(row[Hp]);
 		moblevel.limit = atoi(row[Limit]);
-		moblevel.summoneffect = atoi(row[SummonEffect]);
+		moblevel.summonEffect = atoi(row[SummonEffect]);
 
-		mobskills[skillid][level] = moblevel;
+		mobskills[skillId][level] = moblevel;
 	}
 }
 

@@ -105,8 +105,8 @@ public:
 	int16_t levelMp(int16_t val, int16_t bonus = 0);
 	int16_t apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
 	int16_t apResetMp(bool isreset, bool issubtract, int16_t val, int16_t sval = 0);
-	int16_t getX(int32_t skillid);
-	int16_t getY(int32_t skillid);
+	int16_t getX(int32_t skillId);
+	int16_t getY(int32_t skillId);
 	uint32_t getExp(uint8_t level);
 	uint8_t getMaxLevel(int16_t jobid);
 

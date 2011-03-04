@@ -43,7 +43,7 @@ void MobDataProvider::loadData() {
 namespace Functors {
 	struct MobAttackFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "deadly") attack->deadlyattack = true;
+			if (cmp == "deadly") attack->deadlyAttack = true;
 		}
 		MobAttackInfo *attack;
 	};
@@ -71,8 +71,8 @@ void MobDataProvider::loadAttacks() {
 
 		mobid = atoi(row[MobId]);
 		mobattack.id = atoi(row[AttackId]);
-		mobattack.mpconsume = atoi(row[MpCons]);
-		mobattack.mpburn = atoi(row[MpBurn]);
+		mobattack.mpConsume = atoi(row[MpCons]);
+		mobattack.mpBurn = atoi(row[MpBurn]);
 		mobattack.disease = atoi(row[Disease]);
 		mobattack.level = atoi(row[Level]);
 
@@ -95,7 +95,7 @@ void MobDataProvider::loadSkills() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		mobid = atoi(row[MobId]);
 
-		mobskill.skillid = atoi(row[SkillId]);
+		mobskill.skillId = atoi(row[SkillId]);
 		mobskill.level = atoi(row[Level]);
 		mobskill.effectAfter = atoi(row[EffectAfter]);
 
@@ -110,13 +110,13 @@ namespace Functors {
 			else if (cmp == "undead") mob->undead = true;
 			else if (cmp == "flying") mob->flying = true;
 			else if (cmp == "friendly") mob->friendly = true;
-			else if (cmp == "public_reward") mob->publicreward = true;
-			else if (cmp == "explosive_reward") mob->explosivereward = true;
+			else if (cmp == "public_reward") mob->publicReward = true;
+			else if (cmp == "explosive_reward") mob->explosiveReward = true;
 			else if (cmp == "invincible") mob->invincible = true;
-			else if (cmp == "auto_aggro") mob->autoaggro = true;
-			else if (cmp == "damaged_by_normal_attacks_only") mob->onlynormalattacks = true;
-			else if (cmp == "no_remove_on_death") mob->keepcorpse = true;
-			else if (cmp == "cannot_damage_player") mob->candamage = false;
+			else if (cmp == "auto_aggro") mob->autoAggro = true;
+			else if (cmp == "damaged_by_normal_attacks_only") mob->onlyNormalAttacks = true;
+			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
+			else if (cmp == "cannot_damage_player") mob->canDamage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
 		}
 		MobInfo mob;
@@ -152,42 +152,42 @@ void MobDataProvider::loadMobs() {
 		mob->level = atoi(row[Level]);
 		mob->hp = atoi(row[Hp]);
 		mob->mp = atoi(row[Mp]);
-		mob->hprecovery = atoi(row[HpRecovery]);
-		mob->mprecovery = atoi(row[MpRecovery]);
-		mob->selfdestruction = atoi(row[SelfDestruct]);
+		mob->hpRecovery = atoi(row[HpRecovery]);
+		mob->mpRecovery = atoi(row[MpRecovery]);
+		mob->selfDestruction = atoi(row[SelfDestruct]);
 		mob->exp = atoi(row[Exp]);
 		mob->link = atoi(row[Link]);
 		mob->buff = atoi(row[DeathBuff]);
-		mob->removeafter = atoi(row[DeathAfter]);
-		mob->hpcolor = atoi(row[HpBar]);
-		mob->hpbgcolor = atoi(row[HpBarBg]);
-		mob->cp = atoi(row[CarnivalPoints]);
+		mob->removeAfter = atoi(row[DeathAfter]);
+		mob->hpColor = atoi(row[HpBar]);
+		mob->hpBackgroundColor = atoi(row[HpBarBg]);
+		mob->carnivalPoints = atoi(row[CarnivalPoints]);
 		mob->avo = atoi(row[Avoidability]);
 		mob->acc = atoi(row[Accuracy]);
 		mob->speed = atoi(row[Speed]);
-		mob->chasespeed = atoi(row[ChaseSpeed]);
-		mob->watk = atoi(row[PhysicalAtt]);
-		mob->wdef = atoi(row[PhysicalDef]);
-		mob->matk = atoi(row[MagicAtt]);
-		mob->mdef = atoi(row[MagicDef]);
+		mob->chaseSpeed = atoi(row[ChaseSpeed]);
+		mob->wAtk = atoi(row[PhysicalAtt]);
+		mob->wDef = atoi(row[PhysicalDef]);
+		mob->mAtk = atoi(row[MagicAtt]);
+		mob->mDef = atoi(row[MagicDef]);
 		mob->traction = atof(row[Traction]);
-		mob->damageskill = atoi(row[DamageSkill]);
-		mob->damagemob = atoi(row[DamageMob]);
+		mob->damageSkill = atoi(row[DamageSkill]);
+		mob->damageMob = atoi(row[DamageMob]);
 		mob->knockback = atoi(row[Knockback]);
-		mob->summontype = atoi(row[SummonType]);
-		mob->fixeddamage = atoi(row[FixedDamage]);
+		mob->summonType = atoi(row[SummonType]);
+		mob->fixedDamage = atoi(row[FixedDamage]);
 
-		mob->iceattr = getElemModifier(row[IceMod]);
-		mob->fireattr = getElemModifier(row[FireMod]);
-		mob->poisonattr = getElemModifier(row[PoisonMod]);
-		mob->lightningattr = getElemModifier(row[LightningMod]);
-		mob->holyattr = getElemModifier(row[HolyMod]);
-		mob->nonelemattr = getElemModifier(row[NonElementalMod]);
+		mob->iceAttr = getElemModifier(row[IceMod]);
+		mob->fireAttr = getElemModifier(row[FireMod]);
+		mob->poisonAttr = getElemModifier(row[PoisonMod]);
+		mob->lightningAttr = getElemModifier(row[LightningMod]);
+		mob->holyAttr = getElemModifier(row[HolyMod]);
+		mob->nonElemAttr = getElemModifier(row[NonElementalMod]);
 
-		mob->canfreeze = (!mob->boss && mob->iceattr != MobElements::Immune && mob->iceattr != MobElements::Strong);
-		mob->canpoison = (!mob->boss && mob->poisonattr != MobElements::Immune && mob->poisonattr != MobElements::Strong);
+		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElements::Immune && mob->iceAttr != MobElements::Strong);
+		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElements::Immune && mob->poisonAttr != MobElements::Strong);
 
-		mob->skillcount = getSkillCount(mobid); // Relies on skills being loaded first
+		mob->skillCount = getSkillCount(mobid); // Relies on skills being loaded first
 		mobinfo[mobid] = mob;
 	}
 }

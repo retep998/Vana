@@ -98,6 +98,7 @@ void ItemDataProvider::loadItems() {
 		item.minlevel = atoi(row[MinLevel]);
 		item.maxlevel = atoi(row[MaxLevel]);
 		item.exp = atoi(row[Experience]);
+		item.mesos = atoi(row[Mesos]);
 		if (row[Name]) {
 			item.name = row[Name];
 		}
@@ -357,7 +358,7 @@ void ItemDataProvider::loadItemSkills() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		itemid = atoi(row[ItemId]);
-		skill.skillid = atoi(row[SkillId]);
+		skill.skillId = atoi(row[SkillId]);
 		skill.reqlevel = atoi(row[ReqLevel]);
 		skill.maxlevel = atoi(row[MasterLevel]);
 		skill.chance = atoi(row[Chance]);

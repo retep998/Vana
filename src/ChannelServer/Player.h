@@ -93,7 +93,7 @@ public:
 	int32_t getChair() const { return chair; }
 	int32_t getItemEffect() const { return item_effect; }
 	int32_t getGmLevel() const { return gm_level; }
-	int32_t getSpecialSkill() const { return info.skillid; }
+	int32_t getSpecialSkill() const { return info.skillId; }
 	int32_t getTradeId() const { return trade_id; }
 	int64_t getConnectionTime() const { return online_time; }
 	int64_t getConnectedTime() const { return time(0) - online_time; }

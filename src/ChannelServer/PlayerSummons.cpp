@@ -86,11 +86,11 @@ void PlayerSummons::getSummonTransferPacket(PacketCreator &packet) {
 }
 
 void PlayerSummons::parseSummonTransferPacket(PacketReader &packet) {
-	int32_t skillid = packet.get<int32_t>();
+	int32_t skillId = packet.get<int32_t>();
 	int32_t timeleft = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
-	if (skillid != 0) {
-		Summon *summon = new Summon(Summons::loopId(), skillid, level);
+	if (skillId != 0) {
+		Summon *summon = new Summon(Summons::loopId(), skillId, level);
 		summon->setPos(m_player->getPos());
 		addSummon(summon, timeleft);
 		SummonsPacket::showSummon(m_player, summon, true);

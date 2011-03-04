@@ -263,7 +263,7 @@ void ChatHandler::initializeCommands() {
 	commandlist["sp"] = command.addToMap();
 
 	command.command = CmdAddSp;
-	command.syntax = "<#skillid> [#skillpoints]";
+	command.syntax = "<#skillId> [#skillpoints]";
 	command.notes.push_back("Adds SP to the desired skill.");
 	commandlist["addsp"] = command.addToMap();
 
@@ -383,12 +383,12 @@ void ChatHandler::initializeCommands() {
 	commandlist["listmobs"] = command.addToMap();
 
 	command.command = CmdGetMobHp;
-	command.syntax = "<#mapmobid>";
+	command.syntax = "<#mapMobId>";
 	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
 	commandlist["getmobhp"] = command.addToMap();
 
 	command.command = CmdKillMob;
-	command.syntax = "<#mapmobid>";
+	command.syntax = "<#mapMobId>";
 	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
 	commandlist["killmob"] = command.addToMap();
 
@@ -832,12 +832,12 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdAddSp: {
 						re = "(\\d+) ?(-{0,1}\\d+)?";
 						if (regex_match(args.c_str(), matches, re)) {
-							int32_t skillid = atoi(string(matches[1]).c_str());
-							if (SkillDataProvider::Instance()->isSkill(skillid)) { // Don't allow skills that do not exist to be added
+							int32_t skillId = atoi(string(matches[1]).c_str());
+							if (SkillDataProvider::Instance()->isSkill(skillId)) { // Don't allow skills that do not exist to be added
 								string countstring = matches[2];
 								uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 
-								player->getSkills()->addSkillLevel(skillid, count);
+								player->getSkills()->addSkillLevel(skillId, count);
 							}
 							else {
 								PlayerPacket::showMessage(player, "Invalid Skill ID", 6);
