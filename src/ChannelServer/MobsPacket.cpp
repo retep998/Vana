@@ -190,7 +190,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 
 	packet.add<int16_t>(delay);
 
-	int8_t buffcount = info.size();
+	uint8_t buffcount = info.size();
 	if (reflection.size() > 0) {
 		buffcount /= 2; // This gives 2 buffs per reflection but it's really one buff
 	}
@@ -249,7 +249,6 @@ void MobsPacket::showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &
 	packet.add<int16_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(summonEffect);
-	packet.add<int32_t>(pos.x);
-	packet.add<int32_t>(pos.y);
+	packet.addPos(pos, true);
 	Maps::getMap(mapid)->sendPacket(packet);
 }

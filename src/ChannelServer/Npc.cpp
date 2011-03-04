@@ -130,13 +130,13 @@ PacketCreator Npc::npcPacket(int8_t type) {
 }
 
 void Npc::sendSimple() {
-	PacketCreator packet = npcPacket(NpcDialogs::simple);
+	PacketCreator packet = npcPacket(NpcDialogs::Simple);
 
 	player->getSession()->send(packet);
 }
 
 void Npc::sendYesNo() {
-	PacketCreator packet = npcPacket(NpcDialogs::yesNo);
+	PacketCreator packet = npcPacket(NpcDialogs::YesNo);
 	player->getSession()->send(packet);
 }
 
@@ -145,7 +145,7 @@ void Npc::sendDialog(bool back, bool next, bool save) {
 		previousStates.push_back(StatePtr(new State(text, back, next)));
 	}
 
-	PacketCreator packet = npcPacket(NpcDialogs::normal);
+	PacketCreator packet = npcPacket(NpcDialogs::Normal);
 	packet.addBool(back);
 	packet.addBool(next);
 	player->getSession()->send(packet);
@@ -157,12 +157,12 @@ void Npc::sendDialog(StatePtr npcState) {
 }
 
 void Npc::sendAcceptDecline() {
-	PacketCreator packet = npcPacket(NpcDialogs::acceptDecline);
+	PacketCreator packet = npcPacket(NpcDialogs::AcceptDecline);
 	player->getSession()->send(packet);
 }
 
 void Npc::sendGetText(int16_t min, int16_t max) {
-	PacketCreator packet = npcPacket(NpcDialogs::getText);
+	PacketCreator packet = npcPacket(NpcDialogs::GetText);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(max);
 	packet.add<int16_t>(min);
@@ -170,7 +170,7 @@ void Npc::sendGetText(int16_t min, int16_t max) {
 }
 
 void Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) {
-	PacketCreator packet = npcPacket(NpcDialogs::getNumber);
+	PacketCreator packet = npcPacket(NpcDialogs::GetNumber);
 	packet.add<int32_t>(def);
 	packet.add<int32_t>(min);
 	packet.add<int32_t>(max);
@@ -179,7 +179,7 @@ void Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 }
 
 void Npc::sendStyle(int32_t styles[], int8_t size) {
-	PacketCreator packet = npcPacket(NpcDialogs::style);
+	PacketCreator packet = npcPacket(NpcDialogs::Style);
 	packet.add<int8_t>(size);
 	for (int8_t i = 0; i < size; i++)
 		packet.add<int32_t>(styles[i]);

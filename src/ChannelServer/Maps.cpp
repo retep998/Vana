@@ -71,7 +71,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			else {
 				message = "This portal is currently unavailable.";
 			}
-			PlayerPacket::showMessage(player, message, 5);
+			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
 			MapPacket::portalBlocked(player);
 		}
 	}
@@ -80,7 +80,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 		Map *tomap = getMap(portal->toMap);
 		if (tomap == nullptr) {
 			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
-			PlayerPacket::showMessage(player, message, 5);
+			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
 			MapPacket::portalBlocked(player);
 			return;
 		}

@@ -57,10 +57,12 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 			packet.add<uint8_t>(direction);
 			break;
 	}
-	if (self)
+	if (self) {
 		player->getSession()->send(packet);
-	else
+	}
+	else {
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
+	}
 }
 
 void SkillsPacket::healHP(Player *player, int16_t hp) {
@@ -90,10 +92,12 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 			send = true;
 			break;
 	}
-	if (send)
+	if (send) {
 		player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	}
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	send = false;
 	packet.add<int16_t>(SMSG_SKILL_SHOW); // For others
@@ -119,8 +123,9 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info) { // Hurricane, Pierce, Big Bang, Monster Magnet
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SPECIAL_SKILL);
 	packet.add<int32_t>(player->getId());
@@ -132,8 +137,9 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_SPECIAL_SKILL_END);
 	packet.add<int32_t>(player->getId());
@@ -165,8 +171,9 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(level);
 	packet.addBool(on);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	packet = PacketCreator();
 	packet.add<int16_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());

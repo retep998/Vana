@@ -16,7 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcHandler.h"
+#include "GameLogicUtilities.h"
 #include "Inventory.h"
+#include "InventoryPacket.h"
+#include "ItemDataProvider.h"
 #include "Map.h"
 #include "Maps.h"
 #include "Npc.h"
@@ -27,6 +30,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
+
+namespace ShopOpcodes {
+	enum Opcodes {
+		Buy = 0x00,
+		Sell = 0x01,
+		Recharge = 0x02,
+		ExitShop = 0x03,
+		// Storage
+		TakeItem = 0x04,
+		StoreItem = 0x05,
+		MesoTransaction = 0x07,
+		ExitStorage = 0x08
+	};
+}
 
 void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	if (player->getNpc() != nullptr) {
@@ -82,22 +99,22 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 	int8_t what = packet.get<int8_t>();
 
 	switch (type) {
-		case NpcDialogs::normal:
+		case NpcDialogs::Normal:
 			switch (what) {
 				case 0: npc->proceedBack(); break;
 				case 1:	npc->proceedNext(); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NpcDialogs::yesNo:
-		case NpcDialogs::acceptDecline:
+		case NpcDialogs::YesNo:
+		case NpcDialogs::AcceptDecline:
 			switch (what) {
 				case 0: npc->proceedSelection(0); break;
 				case 1:	npc->proceedSelection(1); break;
 				default: npc->end(); break;
 			}
 			break;
-		case NpcDialogs::getText:
+		case NpcDialogs::GetText:
 			if (what != 0) {
 				npc->proceedText(packet.getString());
 			}
@@ -105,7 +122,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->end();
 			}
 			break;
-		case NpcDialogs::getNumber:
+		case NpcDialogs::GetNumber:
 			if (what == 1) {
 				npc->proceedNumber(packet.get<int32_t>());
 			}
@@ -113,7 +130,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->end();
 			}
 			break;
-		case NpcDialogs::simple:
+		case NpcDialogs::Simple:
 			if (what == 0) {
 				npc->end();
 			}
@@ -121,7 +138,7 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 				npc->proceedSelection(packet.get<uint8_t>());
 			}
 			break;
-		case NpcDialogs::style:
+		case NpcDialogs::Style:
 			if (what == 1) {
 				npc->proceedSelection(packet.get<uint8_t>());
 			}
@@ -137,6 +154,158 @@ void NpcHandler::handleNpcIn(Player *player, PacketReader &packet) {
 
 void NpcHandler::handleNpcAnimation(Player *player, PacketReader &packet) {
 	NpcPacket::animateNpc(player, packet);
+}
+
+void NpcHandler::useShop(Player *player, PacketReader &packet) {
+	if (player->getShop() == 0) {
+		// Hacking
+		return;
+	}
+	int8_t type = packet.get<int8_t>();
+	switch (type) {
+		case ShopOpcodes::Buy: {
+			uint16_t itemindex = packet.get<uint16_t>();
+			packet.skipBytes(4); // Item ID, no reason to trust this
+			uint16_t quantity = packet.get<uint16_t>();
+			packet.skipBytes(4); // Price, don't want to trust this
+			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
+			int32_t itemid = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
+			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
+			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxslot
+			int32_t totalprice = quantity * price;
+			if (price == 0 || totalamount > ItemDataProvider::Instance()->getMaxSlot(itemid) || player->getInventory()->getMesos() < totalprice) {
+				// Hacking
+				return;
+			}
+			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemid, static_cast<int16_t>(totalamount), true);
+			if (haveslot) {
+				Inventory::addNewItem(player, itemid, static_cast<int16_t>(totalamount));
+				player->getInventory()->modifyMesos(-totalprice);
+			}
+			NpcPacket::bought(player, haveslot ? 0 : 3);
+			break;
+		}
+		case ShopOpcodes::Sell: {
+			int16_t slot = packet.get<int16_t>();
+			int32_t itemid = packet.get<int32_t>();
+			int16_t amount = packet.get<int16_t>();
+			int8_t inv = GameLogicUtilities::getInventory(itemid);
+			Item *item = player->getInventory()->getItem(inv, slot);
+			if (item == nullptr || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->amount)) {
+				NpcPacket::bought(player, 1); // Hacking
+				return;
+			}
+			int32_t price = ItemDataProvider::Instance()->getPrice(itemid);
+
+			player->getInventory()->modifyMesos(price * amount);
+			if (GameLogicUtilities::isRechargeable(itemid)) {
+				Inventory::takeItemSlot(player, inv, slot, item->amount, true);
+			}
+			else {
+				Inventory::takeItemSlot(player, inv, slot, amount, true);
+			}
+			NpcPacket::bought(player, 0);
+			break;
+		}
+		case ShopOpcodes::Recharge: {
+			int16_t slot = packet.get<int16_t>();
+			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+			if (item == nullptr || GameLogicUtilities::isRechargeable(item->id) == false) {
+				// Hacking
+				return;
+			}
+			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
+			if (GameLogicUtilities::isRechargeable(item->id))
+				maxslot += player->getSkills()->getRechargeableBonus();
+
+			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
+			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
+				player->getInventory()->modifyMesos(modifiedmesos);
+				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxslot, 0, 0);
+				item->amount = maxslot;
+				NpcPacket::bought(player, 0);
+			}
+			break;
+		}
+		case ShopOpcodes::ExitShop:
+			player->setShop(0);
+			break;
+	}
+}
+
+void NpcHandler::useStorage(Player *player, PacketReader &packet) {
+	if (player->getShop() == 0) {
+		// Hacking
+		return;
+	}
+	int8_t type = packet.get<int8_t>();
+	int32_t cost = NpcDataProvider::Instance()->getStorageCost(player->getShop());
+	if (cost == 0) {
+		// Hacking
+		return;
+	}
+	switch (type) {
+		case ShopOpcodes::TakeItem: {
+			int8_t inv = packet.get<int8_t>();
+			int8_t slot = packet.get<int8_t>();
+			Item *item = player->getStorage()->getItem(slot);
+			if (item == nullptr) {
+				// Hacking
+				return;
+			}
+			Inventory::addItem(player, new Item(item));
+			player->getStorage()->takeItem(slot);
+			StoragePacket::takeItem(player, inv);
+			break;
+		}
+		case ShopOpcodes::StoreItem: {
+			int16_t slot = packet.get<int16_t>();
+			int32_t itemid = packet.get<int32_t>();
+			int16_t amount = packet.get<int16_t>();
+			if (player->getInventory()->getMesos() < cost) {
+				// Player doesn't have enough mesos to store this item
+				StoragePacket::noMesos(player);
+				return;
+			}
+			if (player->getStorage()->isFull()) {
+				// Storage is full, so tell the player and abort the mission
+				StoragePacket::storageFull(player);
+				return;
+			}
+			int8_t inv = GameLogicUtilities::getInventory(itemid);
+			Item *item = player->getInventory()->getItem(inv, slot);
+			if (item == nullptr) {
+				// Hacking
+				return;
+			}
+			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
+				amount = 1;
+			else if (amount <= 0 || amount > item->amount) {
+				// Hacking
+				return;
+			}
+			player->getStorage()->addItem((inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) ? new Item(item) : new Item(itemid, amount));
+			// For equips or rechargeable items (stars/bullets) we create a
+			// new object for storage with the inventory object, and allow
+			// the one in the inventory to go bye bye.
+			// Else: For items we just create a new item based on the ID and amount.
+			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->amount : amount, true);
+			player->getInventory()->modifyMesos(-cost);
+			StoragePacket::addItem(player, inv);
+			break;
+		}
+		case ShopOpcodes::MesoTransaction: {
+			int32_t mesos = packet.get<int32_t>();
+			// Amount of mesos to remove. Deposits are negative, and withdrawals are positive
+			if (player->getInventory()->modifyMesos(mesos)) {
+				player->getStorage()->changeMesos(mesos);
+			}
+			break;
+		}
+		case ShopOpcodes::ExitStorage:
+			player->setShop(0);
+			break;
+	}
 }
 
 bool NpcHandler::showShop(Player *player, int32_t shopid) {

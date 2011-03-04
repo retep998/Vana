@@ -15,21 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
+#include "InventoryPacketHelper.h"
+#include "GameConstants.h"
+#include "GameLogicUtilities.h"
+#include "PacketCreator.h"
 
-#include "Types.h"
-
-class Player;
-
-namespace FamePacket {
-	namespace Errors {
-		enum Errors {
-			IncorrectUser = 0x01,
-			LevelUnder15 = 0x02,
-			AlreadyFamedToday = 0x03,
-			FamedThisMonth = 0x04
-		};
+void InventoryPacketHelper::fillRockPacket(PacketCreator &packet, const vector<int32_t> &vec, size_t maxSize) {
+	size_t remaining = 1;
+	while (remaining <= vec.size()) {
+		packet.add<int32_t>(vec[remaining - 1]);
+		remaining++;
 	}
-	void sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame);
-	void sendError(Player *player, int32_t reason);
+	while (remaining <= maxSize) {
+		packet.add<int32_t>(Maps::NoMap);
+		remaining++;
+	}
 }

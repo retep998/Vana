@@ -37,6 +37,10 @@ public:
 	T get();
 	template<typename T>
 	vector<T> getVector();
+	template<typename T>
+	vector<T> getVector(size_t size);
+
+
 	void skipBytes(int32_t len);
 	int16_t getHeader(); // Basically getShort that always reads at the start
 	string getString();
@@ -66,6 +70,15 @@ template<typename T>
 vector<T> PacketReader::getVector() {
 	vector<T> vec;
 	size_t size = get<uint32_t>();
+	for (size_t i = 0; i < size; i++) {
+		vec.push_back(get<T>());
+	}
+	return vec;
+}
+
+template<typename T>
+vector<T> PacketReader::getVector(size_t size) {
+	vector<T> vec;
 	for (size_t i = 0; i < size; i++) {
 		vec.push_back(get<T>());
 	}

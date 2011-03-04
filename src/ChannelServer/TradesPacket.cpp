@@ -71,12 +71,12 @@ void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t messag
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeChat(Player *player, uint8_t blue, const string &chat) {
+void TradesPacket::sendTradeChat(Player *player, bool blue, const string &chat) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(0x08);
-	packet.add<uint8_t>(blue);
+	packet.addBool(blue);
 	packet.addString(chat);
 	player->getSession()->send(packet);
 }
@@ -116,21 +116,7 @@ void TradesPacket::sendAccepted(Player *destination) {
 	destination->getSession()->send(packet);
 }
 
-void TradesPacket::sendEndTrade(Player *destination, uint8_t message) {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x0A);
-	packet.add<int8_t>(0x00);
-	packet.add<int8_t>(message);
-	// Message:
-	//			0x06 = success [tax is automated]
-	//			0x07 = unsuccessful
-	//			0x08 = "You cannot make the trade because there are some items which you cannot carry more than one."
-	//			0x09 = "You cannot make the trade because the other person's on a different map."
-	destination->getSession()->send(packet);
-}
-
-void TradesPacket::sendAddItem(Player *destination, uint8_t player, int8_t slot, int8_t inventory, Item *item) {
+void TradesPacket::sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x0E);

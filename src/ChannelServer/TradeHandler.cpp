@@ -32,55 +32,79 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 using std::string;
 
+namespace TradeOpcodes {
+	enum Opcodes {
+		OpenTrade = 0x00,
+		SendTradeRequest = 0x02,
+		DenyRequest = 0x03,
+		AcceptRequest = 0x04,
+		Chat = 0x06,
+		CancelTrade = 0x0A,
+		AddItem = 0x0E,
+		AddMesos = 0x0F,
+		AcceptTrade = 0x10
+	};
+}
+
+namespace TradeSlots {
+	enum Slots {
+		One = 0x00,
+		Two = 0x01
+	};
+}
+
 void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
-	uint8_t subopcode = packet.get<int8_t>();
+	int8_t subopcode = packet.get<int8_t>();
 	switch (subopcode) {
-		case 0x00: // Open trade - this usually comes with 03 00 - no clue why
+		case TradeOpcodes::OpenTrade: // Open trade - this usually comes with 03 00 - no clue why
 			TradesPacket::sendOpenTrade(player, player, nullptr);
 			break;
-		case 0x02: { // Send trade request
+		case TradeOpcodes::SendTradeRequest: {
 			if (player->isTrading()) {
-				// most likely hacking
+				// Most likely hacking
 				return;
 			}
 			int32_t recvid = packet.get<int32_t>();
 			Player *receiver = PlayerDataProvider::Instance()->getPlayer(recvid);
 			if (receiver != nullptr) {
-				if (!receiver->isTrading())
+				if (!receiver->isTrading()) {
 					TradesPacket::sendTradeRequest(player, receiver, Trades::Instance()->newTrade(player, receiver));
-				else
-					TradesPacket::sendTradeMessage(receiver, player, 0x03, 0x02);
+				}
+				else {
+					TradesPacket::sendTradeMessage(receiver, player, TradesPacket::MessageTypes::DenyTrade, TradesPacket::Messages::DoingSomethingElse);
+				}
 			}
 			break;
 		}
-		case 0x03: { // Deny request - trade ID + message ID
+		case TradeOpcodes::DenyRequest: {
 			int32_t tradeid = packet.get<int32_t>();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				TradeHandler::removeTrade(tradeid);
-				TradesPacket::sendTradeMessage(two, one, 0x03, packet.get<int8_t>());
+				TradesPacket::sendTradeMessage(two, one, TradesPacket::MessageTypes::DenyTrade, packet.get<int8_t>());
 			}
 			break;
 		}
-		case 0x04: { // Accept request
+		case TradeOpcodes::AcceptRequest: {
 			int32_t tradeid = packet.get<int32_t>();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				two->setTrading(true);
-				TradesPacket::sendAddUser(one, two, 0x01);
+				TradesPacket::sendAddUser(one, two, TradeSlots::Two);
 				TradesPacket::sendOpenTrade(player, two, one);
 				Trades::Instance()->stopTimeout(tradeid);
 			}
-			else { // Pool's closed, AIDS
-				TradesPacket::sendTradeMessage(player, 0x05, 0x01);
+			else {
+				// Pool's closed, AIDS
+				TradesPacket::sendTradeMessage(player, TradesPacket::MessageTypes::ShopEntryMessages, TradesPacket::Messages::RoomAlreadyClosed);
 			}
 			break;
 		}
-		case 0x06: { // Chat in a trade
+		case TradeOpcodes::Chat: {
 			ActiveTrade *trade = Trades::Instance()->getTrade(player->getTradeId());
 			if (trade == nullptr) {
 				// Hacking
@@ -88,23 +112,24 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			}
 			Player *one = trade->getSender();
 			Player *two = trade->getReceiver();
-			uint8_t blue = (player == two ? 0x01 : 0x00);
+			bool blue = (player == two);
 			string chat = player->getName() + " : " + packet.getString();
 			TradesPacket::sendTradeChat(one, blue, chat);
-			if (two != nullptr)
+			if (two != nullptr) {
 				TradesPacket::sendTradeChat(two, blue, chat);
+			}
 			break;
 		}
-		case 0x0a:
+		case TradeOpcodes::CancelTrade:
 			TradeHandler::cancelTrade(player);
 			break;
-		case 0x0e: // Add items
-		case 0x0f: // Add mesos
-		case 0x10: { // Accept trade
+		case TradeOpcodes::AddItem:
+		case TradeOpcodes::AddMesos:
+		case TradeOpcodes::AcceptTrade: {
 			int32_t tradeid = player->getTradeId();
 			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
 			if (trade == nullptr) {
-				// most likely hacking
+				// Most likely hacking
 				return;
 			}
 			TradeInfo *send = trade->getSenderTrade();
@@ -112,14 +137,15 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			Player *one = trade->getSender();
 			Player *two = trade->getReceiver();
 			bool isreceiver = (player == two);
+			TradeInfo *mod = (isreceiver ? trade->getReceiverTrade() : trade->getSenderTrade());
 			switch (subopcode) {
-				case 0x0e: {
+				case TradeOpcodes::AddItem: {
 					int8_t inventory = packet.get<int8_t>();
 					int16_t slot = packet.get<int16_t>();
 					int16_t amount = packet.get<int16_t>();
-					int8_t addslot = packet.get<int8_t>();
+					uint8_t addslot = packet.get<uint8_t>();
 					Item *item = player->getInventory()->getItem(inventory, slot);
-					if (item == nullptr || (!isreceiver && trade->isItemInSlot(send, addslot)) || (isreceiver && trade->isItemInSlot(recv, addslot))) {
+					if (item == nullptr || trade->isItemInSlot(mod, addslot)) {
 						// Hacking
 						return;
 					}
@@ -130,33 +156,38 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						// Hacking
 						amount = item->amount;
 					}
-					Item *use = trade->addItem(player, isreceiver ? recv : send, item, addslot, slot, inventory, amount);
-					TradesPacket::sendAddItem(one, (isreceiver ? 0x01 : 0x00), addslot, inventory, use);
-					TradesPacket::sendAddItem(two, (isreceiver ? 0x00 : 0x01), addslot, inventory, use);
+					Item *use = trade->addItem(player, mod, item, addslot, slot, inventory, amount);
+					TradesPacket::sendAddItem(one, (isreceiver ? TradeSlots::Two : TradeSlots::One), addslot, use);
+					TradesPacket::sendAddItem(two, (isreceiver ? TradeSlots::One : TradeSlots::Two), addslot, use);
 					break;
 				}
-				case 0x0f: { // Add mesos
+				case TradeOpcodes::AddMesos: {
 					int32_t amount = packet.get<int32_t>();
 					if (player->getInventory()->getMesos() < amount || amount < 0) {
 						// Hacking
 						return;
 					}
-					int32_t mesos = trade->addMesos(player, isreceiver ? recv : send, amount);
-					TradesPacket::sendAddMesos(one, (isreceiver ? 0x01 : 0x00), mesos);
-					TradesPacket::sendAddMesos(two, (isreceiver ? 0x00 : 0x01), mesos);
+					int32_t mesos = trade->addMesos(player, mod, amount);
+					TradesPacket::sendAddMesos(one, (isreceiver ? TradeSlots::Two : TradeSlots::One), mesos);
+					TradesPacket::sendAddMesos(two, (isreceiver ? TradeSlots::One : TradeSlots::Two), mesos);
 					break;
 				}
-				case 0x10: { // Accept trade
-					trade->accept(isreceiver ? recv : send);
+				case TradeOpcodes::AcceptTrade: {
+					trade->accept(mod);
 					TradesPacket::sendAccepted(isreceiver ? one : two);
-					if (trade->bothAccepted()) { // Do trade processing
+					if (trade->bothAccepted()) {
+						// Do trade processing
 						bool fail = !trade->bothCanTrade();
-						if (fail)
+						if (fail) {
 							trade->returnTrade();
-						else
+						}
+						else {
 							trade->swapTrade();
-						TradesPacket::sendEndTrade(one, (fail ? 0x07 : 0x06));
-						TradesPacket::sendEndTrade(two, (fail ? 0x07 : 0x06));
+						}
+						int8_t type = TradesPacket::MessageTypes::EndTrade;
+						int8_t message = (fail ? TradesPacket::Messages::Failure : TradesPacket::Messages::Success);
+						TradesPacket::sendTradeMessage(one, type, message);
+						TradesPacket::sendTradeMessage(two, type, message);
 						TradeHandler::removeTrade(tradeid);
 					}
 					break;
@@ -174,7 +205,8 @@ void TradeHandler::cancelTrade(Player *player) {
 		Player *one = trade->getSender();
 		Player *two = trade->getReceiver();
 		bool isreceiver = (player == two);
-		if (isreceiver || (!isreceiver && two != nullptr && two->getTradeId() == one->getTradeId())) { // Left while in trade, give items back
+		if (isreceiver || (!isreceiver && two != nullptr && two->getTradeId() == one->getTradeId())) {
+			// Left while in trade, give items back
 			TradesPacket::sendLeaveTrade(isreceiver ? one : two);
 			trade->returnTrade();
 		}

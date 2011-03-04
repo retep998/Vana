@@ -28,16 +28,16 @@ struct Item;
 
 struct TradeInfo {
 	TradeInfo() : count(0), mesos(0), accepted(false) {
-		for (int8_t i = 0; i < TradeSize; i++) {
+		for (uint8_t i = 0; i < TradeSize; i++) {
 			slot[i] = false;
 			items[i] = 0;
 		}
 	}
 
-	const static int8_t TradeSize = 9;
+	const static uint8_t TradeSize = 9;
 
 	int32_t mesos;
-	int8_t count;
+	uint8_t count;
 	bool accepted;
 	boost::array<Item *, TradeSize> items;
 	boost::array<bool, TradeSize> slot;
@@ -47,9 +47,9 @@ class ActiveTrade {
 public:
 	ActiveTrade(Player *starter, Player *receiver, int32_t id);
 
-	int32_t getId() const { return id; }
-	TradeInfo * getSenderTrade() const { return sender.get(); }
-	TradeInfo * getReceiverTrade() const { return receiver.get(); }
+	int32_t getId() const { return m_id; }
+	TradeInfo * getSenderTrade() const { return m_sender.get(); }
+	TradeInfo * getReceiverTrade() const { return m_receiver.get(); }
 
 	// Wrapper functions using their IDs in case the pointers are now bad
 	Player * getSender();
@@ -61,14 +61,14 @@ public:
 	void swapTrade();
 	void accept(TradeInfo *unit);
 	int32_t addMesos(Player *holder, TradeInfo *unit, int32_t amount);
-	Item * addItem(Player *holder, TradeInfo *unit, Item *item, int8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount);
-	bool isItemInSlot(TradeInfo *unit, int8_t tradeslot) { return ((tradeslot > TradeInfo::TradeSize || tradeslot < 0) ? true : unit->slot[tradeslot - 1]); }
+	Item * addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount);
+	bool isItemInSlot(TradeInfo *unit, uint8_t tradeslot) { return (tradeslot > TradeInfo::TradeSize ? true : unit->slot[tradeslot - 1]); }
 private:
-	scoped_ptr<TradeInfo> sender;
-	scoped_ptr<TradeInfo> receiver;
-	int32_t id;
-	int32_t senderid;
-	int32_t receiverid;
+	scoped_ptr<TradeInfo> m_sender;
+	scoped_ptr<TradeInfo> m_receiver;
+	int32_t m_id;
+	int32_t m_senderId;
+	int32_t m_receiverId;
 
 	bool canTrade(Player *target, TradeInfo *unit);
 	void giveItems(Player *target, TradeInfo *unit);

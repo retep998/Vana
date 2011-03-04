@@ -69,18 +69,20 @@ void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32
 }
 
 void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
-	size_t len = pack.getBufferLength();
-
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_NPC_ANIMATE);
-	if (len == 6) { // NPC talking
+
+	size_t len = pack.getBufferLength();
+	if (len == 6) {
+		// NPC talking
 		packet.add<int32_t>(pack.get<int32_t>());
 		packet.add<int16_t>(pack.get<int16_t>());
 	}
-
-	else if (len > 6) { // NPC moving
+	else if (len > 6) {
+		// NPC moving
 		packet.addBuffer(pack.getBuffer(), len - 9);
 	}
+
 	player->getSession()->send(packet);
 }
 
@@ -98,4 +100,11 @@ void NpcPacket::showNpcEffect(int32_t mapid, int32_t index, bool show) {
 	packet.add<int32_t>(index);
 	packet.addBool(show);
 	Maps::getMap(mapid)->sendPacket(packet);
+}
+
+void NpcPacket::bought(Player *player, uint8_t msg) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_ITEM_PURCHASED);
+	packet.add<int8_t>(msg);
+	player->getSession()->send(packet);
 }

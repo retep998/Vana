@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StringUtilities.h"
+#include "Database.h"
 #include <boost/tokenizer.hpp>
 
 int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
@@ -52,10 +53,14 @@ void StringUtilities::runFlags(const string &flags, function<void (string)> func
 	}
 }
 
-int64_t StringUtilities::atoli(char *str) {
+int64_t StringUtilities::atoli(const char *str) {
 	int64_t result = 0;
 	while (*str >= '0' && *str <= '9') {
 		result = (result * 10) + (*str++ - '0');
 	}
 	return result;
+}
+
+time_t StringUtilities::atot(const char *ref) {
+	return (time_t) mysqlpp::DateTime(ref);
 }

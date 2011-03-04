@@ -23,19 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+namespace BuddyOpcodes {
+	enum Opcodes {
+		Add = 0x01,
+		Remove = 0x03
+	};
+}
+
 void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
-	uint8_t type = packet.get<int8_t>();
-	if (type == 1) { // Add
-		string name = packet.getString();
+	int8_t type = packet.get<int8_t>();
+	switch (type) {
+		case BuddyOpcodes::Add: {
+			string name = packet.getString();
+			uint8_t error = player->getBuddyList()->add(name);
 
-		uint8_t error = player->getBuddyList()->add(name);
-
-		if (error) {
-			BuddyListPacket::error(player, error);
+			if (error) {
+				BuddyListPacket::error(player, error);
+			}
+			break;
 		}
-	}
-	else if (type == 3) { // Remove
-		int32_t charid = packet.get<int32_t>();
-		player->getBuddyList()->remove(charid);
+		case BuddyOpcodes::Remove: {
+			int32_t charid = packet.get<int32_t>();
+			player->getBuddyList()->remove(charid);
+			break;
+		}
 	}
 }

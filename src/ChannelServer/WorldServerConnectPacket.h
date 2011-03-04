@@ -36,7 +36,5 @@ namespace WorldServerConnectPacket {
 	void rankingCalculation(WorldServerConnection *player);
 	void toChannels(WorldServerConnection *player, PacketCreator &packet);
 	void toWorlds(WorldServerConnection *player, PacketCreator &packet);
-	void worldMessage(WorldServerConnection *player, const string &message, int8_t type);
-	void globalMessage(WorldServerConnection *player, const string &message, int8_t type);
 	void reloadMcdb(WorldServerConnection *player, const string &type);
 }

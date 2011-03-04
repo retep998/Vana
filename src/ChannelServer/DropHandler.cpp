@@ -43,7 +43,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gdrops == nullptr) {
 		return;
 	}
-	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId);
+	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId); // Make a copy of the data so we can modify the object with global drops
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
 	int16_t d = 0;
 	int32_t partyid = 0;
@@ -54,7 +54,8 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			partyid = party->getId();
 		}
 	}
-	if (droppingLevel != 0 && gdrops != nullptr) { // Check for global drops, add to the vector if needed
+	if (droppingLevel != 0 && gdrops != nullptr) {
+		// Check for global drops, add to the vector if needed
 		DropInfo d;
 		int8_t continent = MapDataProvider::Instance()->getContinent(mapid);
 		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
@@ -102,13 +103,14 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				int16_t questid = i->questid;
 
 				if (questid > 0) {
-					if (player == nullptr || !player->getQuests()->isQuestActive(questid))
+					if (player == nullptr || !player->getQuests()->isQuestActive(questid)) {
 						continue;
-
+					}
 					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemid);
 					int16_t amount = player->getInventory()->getItemAmount(itemid);
-					if (amount >= request)
+					if (amount >= request) {
 						continue;
+					}
 				}
 
 				Item f = (GameLogicUtilities::isEquip(itemid) ? Item(itemid, true) : Item(itemid, amount));
@@ -123,7 +125,8 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				int32_t mesos = amount;
 				if (!isSteal) {
 					mesos *= ChannelServer::Instance()->getMesoRate();
-					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) { // Account for Meso Up
+					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
+						// Account for Meso Up
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Jobs::Hermit::MesoUp)->x) / 100;
 					}
 				}
@@ -133,13 +136,13 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 
 		if (drop != nullptr) {
 			if (explosive) {
-				drop->setType(3);
+				drop->setType(Drop::Explosive);
 			}
 			else if (ffa) {
-				drop->setType(2);
+				drop->setType(Drop::FreeForAll);
 			}
 			else if (partyid > 0) {
-				drop->setType(1);
+				drop->setType(Drop::Party);
 				drop->setOwner(partyid);
 			}
 			drop->setTime(100);
@@ -187,8 +190,9 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		return;
 	}
 	else if (drop->getPos() - player->getPos() > 300) {
-		if (player->addWarning())
+		if (player->addWarning()) {
 			return;
+		}
 	}
 
 	if (drop->isQuest()) {
