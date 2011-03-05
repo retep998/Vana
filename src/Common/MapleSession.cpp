@@ -27,28 +27,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 MapleSession::MapleSession(boost::asio::io_service &io_service,
 							SessionManagerPtr sessionManager,
-							AbstractConnection *player, bool isServer,
-							string connectPacketUnknown) :
+							AbstractConnection *player,
+							bool isServer,
+							const string &patchLocation) :
 AbstractSession(sessionManager),
 m_socket(io_service),
 m_player(player),
-m_is_server(isServer),
-m_connect_packet_unknown(connectPacketUnknown)
+m_isServer(isServer),
+m_patchLocation(patchLocation)
 {
 }
 
 void MapleSession::start() {
-	m_session_manager->start(shared_from_this());
+	m_sessionManager->start(shared_from_this());
 }
 
 void MapleSession::handle_start() {
 	m_player->setSession(this);
 	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
-	if (m_is_server) {
+	if (m_isServer) {
 		std::cout << "Accepted connection from " << IpUtilities::ipToString(m_player->getIp()) << std::endl;
 
-		PacketCreator connectPacket = m_decoder.getConnectPacket(m_connect_packet_unknown);
+		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
 		send(connectPacket, false);
 	}
 
@@ -56,7 +57,7 @@ void MapleSession::handle_start() {
 }
 
 void MapleSession::stop() {
-	m_session_manager->stop(shared_from_this());
+	m_sessionManager->stop(shared_from_this());
 }
 
 void MapleSession::disconnect() {
@@ -72,10 +73,10 @@ void MapleSession::handle_stop() {
 }
 
 void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
-	boost::mutex::scoped_lock l(m_send_mutex);
+	boost::mutex::scoped_lock l(m_sendMutex);
 	size_t realLength = encrypt ? len + headerLen : len;
 	unsigned char *buffer = new unsigned char[realLength];
-	m_send_packet.reset(buffer);
+	m_sendPacket.reset(buffer);
 
 	if (encrypt) {
 		memcpy(buffer + headerLen, buf, len);
@@ -110,16 +111,14 @@ void MapleSession::start_read_header() {
 			boost::asio::placeholders::bytes_transferred));
 }
 
-void MapleSession::handle_write(const boost::system::error_code &error,
-								size_t bytes_transferred) {
-	boost::mutex::scoped_lock l(m_send_mutex);
+void MapleSession::handle_write(const boost::system::error_code &error, size_t bytes_transferred) {
+	boost::mutex::scoped_lock l(m_sendMutex);
 	if (error) {
 		disconnect();
 	}
 }
 
-void MapleSession::handle_read_header(const boost::system::error_code &error,
-										size_t bytes_transferred) {
+void MapleSession::handle_read_header(const boost::system::error_code &error, size_t bytes_transferred) {
 	if (!error) {
 		size_t len = Decoder::getLength(m_buffer.get());
 
@@ -142,8 +141,7 @@ void MapleSession::handle_read_header(const boost::system::error_code &error,
 	}
 }
 
-void MapleSession::handle_read_body(const boost::system::error_code &error,
-									size_t bytes_transferred) {
+void MapleSession::handle_read_body(const boost::system::error_code &error, size_t bytes_transferred) {
 	if (!error) {
 		m_decoder.decrypt(m_buffer.get(), bytes_transferred);
 

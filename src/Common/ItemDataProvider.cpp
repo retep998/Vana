@@ -47,6 +47,7 @@ void ItemDataProvider::loadData() {
 	loadMonsterCardData();
 	loadItemSkills();
 	loadSummonBags();
+	loadItemRewards();
 	loadPets();
 	loadPetInteractions();
 
@@ -71,7 +72,7 @@ namespace Functors {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
@@ -386,6 +387,28 @@ void ItemDataProvider::loadSummonBags() {
 	}
 }
 
+void ItemDataProvider::loadItemRewards() {
+	itemRewards.clear();
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_reward_data");
+	mysqlpp::UseQueryResult res = query.use();
+	int32_t itemid;
+	ItemRewardInfo reward;
+
+	enum RewardData {
+		Id = 0,
+		ItemId, RewardId, Chance, Quantity, Effect
+	};
+
+	while (MYSQL_ROW row = res.fetch_raw_row()) {
+		itemid = atoi(row[ItemId]);
+		reward.rewardid = atoi(row[RewardId]);
+		reward.prob = atoi(row[Chance]);
+		reward.quantity = atoi(row[Quantity]);
+		reward.effect = row[Effect];
+		itemRewards[itemid].push_back(reward);
+	}
+}
+
 namespace Functors {
 	struct PetFlags {
 		void operator() (const string &cmp) {
@@ -481,6 +504,23 @@ PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemid, int32_t actio
 	return nullptr;
 }
 
+ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemid) {
+	if (itemRewards.find(itemid) == itemRewards.end())
+		return nullptr;
+
+	vector<ItemRewardInfo> *rewards = &itemRewards[itemid];
+	ItemRewardInfo *info = nullptr;
+
+	for (size_t i = 0; i < rewards->size(); i++) {
+		info = &(*rewards)[i];
+		if (Randomizer::Instance()->randShort(99) < info->prob) {
+			return info;
+		}
+	}
+
+	return nullptr;
+}
+
 void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {
 	if (scrolls.find(scrollid) == scrolls.end())
 		return;
@@ -489,10 +529,13 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 	if (iteminfo->randstat) {
 		if (equip->slots > 0) {
 			succeed = 0;
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Add stats
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+				// Add stats
 				int8_t n = -1; // Default - Decrease stats
-				if (Randomizer::Instance()->randShort(99) < 50U) // Increase
+				if (Randomizer::Instance()->randShort(99) < 50U) {
+					// Increase
 					n = 1;
+				}
 				// Gives/takes 0-5 stats on every stat on the item
 				if (equip->istr > 0)
 					equip->istr = Randomizer::Instance()->randShort(5) * n;
@@ -535,28 +578,35 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 	else if (iteminfo->recover) {
 		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->id) + static_cast<int8_t>(equip->hammers);
 		if ((maxslots - equip->scrolls) > equip->slots) {
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) { // Give back a slot
+			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+				// Give back a slot
 				equip->slots;
 				succeed = 1;
 			}
 			else {
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed) {
 					cursed = true;
+				}
 				succeed = 0;
 			}
 		}
 	}
 	else if (iteminfo->preventslip) {
-		succeed = 0;
 		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
 			equip->flags |= FlagSpikes;
 			succeed = 1;
+		}
+		else {
+			succeed = 0;
 		}
 	}
 	else if (iteminfo->warmsupport) {
 		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
 			equip->flags |= FlagCold;
 			succeed = 1;
+		}
+		else {
+			succeed = 0;
 		}
 	}
 	else {
@@ -587,10 +637,12 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 			}
 			else {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed)
+				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed) {
 					cursed = true;
-				else if (!wscroll)
+				}
+				else if (!wscroll) {
 					equip->slots--;
+				}
 			}
 		}
 	}

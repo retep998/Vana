@@ -93,7 +93,7 @@ void Decoder::createHeader(unsigned char *header, int16_t size) {
 	header[3] = (b - header[2]) / 0x100;
 }
 
-PacketCreator Decoder::getConnectPacket(const string &unknown) {
+PacketCreator Decoder::getConnectPacket(const string &patchLocation) {
 	(*(int32_t*)ivRecv) = Randomizer::Instance()->randInt();
 	(*(int32_t*)ivSend) = Randomizer::Instance()->randInt();
 	// Use the setter to prepare the IV
@@ -101,14 +101,12 @@ PacketCreator Decoder::getConnectPacket(const string &unknown) {
 	setIvSend(ivSend);
 
 	PacketCreator packet;
-	packet.add<int16_t>(0); // Packet len, this will be added later in the packet
+	packet.add<int16_t>(patchLocation != "" ? IV_PATCH_LOCATION : IV_NO_PATCH_LOCATION);
 	packet.add<int16_t>(MapleVersion::Version);
-	packet.addString(unknown); // Unknown, the official login server sends a "0", the channel server sends nothing
+	packet.addString(patchLocation);
 	packet.add<int32_t>(*(int32_t*) ivRecv);
 	packet.add<int32_t>(*(int32_t*) ivSend);
 	packet.add<int8_t>(MapleVersion::Locale);
-
-	packet.set<int16_t>(packet.getSize() - 2, 0); // -2 as the size does not include the size of the size header
 
 	return packet;
 }

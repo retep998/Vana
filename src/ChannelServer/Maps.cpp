@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-int32_t Maps::mistids;
-
 Map * Maps::getMap(int32_t mapid) {
 	return MapDataProvider::Instance()->getMap(mapid);
 }
@@ -148,8 +146,4 @@ void Maps::addPlayer(Player *player, int32_t mapid) {
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes
-}
-
-int32_t Maps::getMistId() {
-	return ++mistids;
 }

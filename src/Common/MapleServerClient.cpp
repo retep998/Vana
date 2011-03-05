@@ -17,12 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleServerClient.h"
 #include "AbstractConnection.h"
+#include "ExitCodes.h"
 #include "MapleVersion.h"
 #include "PacketReader.h"
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <cstdio>
+#include <exception>
 #include <iostream>
+
+using std::cout;
+using std::endl;
 
 MapleServerClient::MapleServerClient(boost::asio::io_service &io_service,
 		uint32_t server, uint16_t port,
@@ -44,25 +49,36 @@ void MapleServerClient::start_connect() {
 
 	if (!error) {
 		// Now let's process the connect packet
-		readConnectPacket();
-
-		// Start the normal MapleSession routine
-		start();
+		try {
+			readConnectPacket();
+			// Start the normal MapleSession routine
+			start();
+		}
+		catch (std::range_error) {
+			cout << "Error: Malformed IV packet" << endl;
+			cout << "Press enter to quit ...";
+			disconnect();
+			getchar();
+			exit(ExitCodes::ServerConnectionError);
+		}
 	}
 	else {
-		std::cout << "Error: " << error.message() << std::endl;
+		cout << "Error: " << error.message() << endl;
+		cout << "Press enter to quit ...";
+		getchar();
+		exit(ExitCodes::ServerConnectionError);
 	}
 }
 
 void MapleServerClient::readConnectPacket() {
 	boost::system::error_code error;
 
-	m_buffer.reset(new unsigned char[connectHeaderLen]);
+	m_buffer.reset(new unsigned char[maxBufferLen]);
 
 	// Get the size of the connect packet
-	boost::asio::read(m_socket,
-		boost::asio::buffer(m_buffer.get(), connectHeaderLen),
-		boost::asio::transfer_all(), 
+	size_t packetSize = boost::asio::read(m_socket,
+		boost::asio::buffer(m_buffer.get(), maxBufferLen),
+		boost::asio::transfer_at_least(10), // May require maintenance if the IV packet ever dips below 10 bytes
 		error);
 
 	if (error) {
@@ -70,36 +86,26 @@ void MapleServerClient::readConnectPacket() {
 		return;
 	}
 
-	uint16_t packetLen = m_buffer[0] + m_buffer[1] * 0x100;
+	// Now process it
+	PacketReader packet(m_buffer.get(), packetSize);
 
-	m_buffer.reset(new unsigned char[packetLen]);
+	packet.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
+	int16_t version = packet.get<int16_t>();
+	uint16_t stringSize = packet.get<uint16_t>();
+	packet.skipBytes(stringSize); // Patch location, unimportant for the same reason as header
+	uint32_t sendIv = packet.get<uint32_t>(); // Using the packet buffer directly is unsafe
+	uint32_t recvIv = packet.get<uint32_t>();
+	int8_t locale = packet.get<int8_t>();
 
-	// Get the rest of the packet
-	boost::asio::read(m_socket,
-		boost::asio::buffer(m_buffer.get(), packetLen),
-		boost::asio::transfer_all(),
-		error);
-
-	if (error) {
+	if (version != MapleVersion::Version || locale != MapleVersion::Locale) {
+		cout << "ERROR: The server you are connecting to lacks the same MapleStory version." << endl;
+		cout << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << endl;
+		cout << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << endl;
+		cout << "Press enter to quit ...";
 		disconnect();
-		return;
-	}
-
-	// Now finally process it
-	PacketReader packet(m_buffer.get(), packetLen);
-
-	int16_t version = packet.get<int16_t>(); // Maple version
-	if (version != MapleVersion::Version) {
-		std::cout << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
-		std::cout << "Expected version: " << version << std::endl;
-		std::cout << "Local version: " << MapleVersion::Version << std::endl;
-		std::cout << "Press enter to quit ...";
 		getchar();
-		exit(5);
+		exit(ExitCodes::ServerVersionMismatch);
 	}
-	packet.getString(); // Unknown
-
-	unsigned char *rawpacket = packet.getBuffer();
-	m_decoder.setIvSend(rawpacket);
-	m_decoder.setIvRecv(rawpacket + 4);
+	m_decoder.setIvSend(reinterpret_cast<unsigned char*>(&sendIv));
+	m_decoder.setIvRecv(reinterpret_cast<unsigned char*>(&recvIv));
 }

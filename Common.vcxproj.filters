@@ -421,5 +421,11 @@
     <ClInclude Include="src\Common\ConfigurationPacket.h">
       <Filter>Header Files\Packets\Inter-Server</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\ExitCodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\VanaConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -180,6 +180,7 @@ public:
 	void setInstance(Instance *instance) { m_instance = instance; }
 	Instance * getInstance() const { return m_instance; }
 private:
+	int32_t getMistId() { return m_mistids.next(); }
 	static const uint32_t NpcStart = 100;
 	static const uint32_t ReactorStart = 200;
 
@@ -198,6 +199,7 @@ private:
 	string m_music;
 	Instance *m_instance;
 	LoopingId m_objectids;
+	LoopingId m_mistids;
 	MapInfoPtr m_info;
 	TimeMobPtr m_time_mob;
 	boost::recursive_mutex m_drops_mutex;

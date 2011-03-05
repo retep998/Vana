@@ -33,10 +33,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
-m_maxslots(maxslots),
-m_mesos(mesos),
-m_hammer(-1),
-m_player(player)
+	m_maxslots(maxslots),
+	m_mesos(mesos),
+	m_hammer(-1),
+	m_player(player)
 {
 	boost::array<int32_t, 2> g = {0};
 

@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#pragma once
 
 #define CMSG_AUTHENTICATION 0x01
 #define CMSG_WORLD_LIST_REFRESH 0x04 // Click back after select channel
@@ -81,6 +82,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_TELEPORT_ROCK 0x65
 #define CMSG_QUEST_OBTAIN 0x6a
 #define CMSG_MACRO_LIST 0x6d
+#define CMSG_USE_REWARD_ITEM 0x6f
 #define CMSG_MESSAGE_GROUP 0x75 // Party, buddy and guild chat
 #define CMSG_COMMAND 0x76 // / commands like "/find"
 #define CMSG_PLAYER_ROOM 0x79 // Trades, player shops, minigames, etc.

@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacketHelper.h"
 #include "GameConstants.h"
-#include "GameLogicUtilities.h"
 #include "PacketCreator.h"
 
 void InventoryPacketHelper::fillRockPacket(PacketCreator &packet, const vector<int32_t> &vec, size_t maxSize) {
