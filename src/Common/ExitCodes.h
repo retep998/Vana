@@ -17,16 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Map.h"
-#include "Types.h"
-
-class PacketReader;
-class Player;
-
-namespace Maps {
-	Map * getMap(int32_t mapid);
-	void usePortal(Player *player, PortalInfo *portal);
-	void usePortal(Player *player, PacketReader &packet);
-	void useScriptedPortal(Player *player, PacketReader &packet);
-	void addPlayer(Player *player, int32_t mapid);
+namespace ExitCodes {
+	enum {
+		Ok = 0,
+		ConfigError = 1,
+		ConfigFileMissing = 2,
+		McdbError = 3,
+		McdbIncompatible = 4,
+		InfoDatabaseError = 5,
+		ServerVersionMismatch = 6,
+		ServerConnectionError = 7
+	};
 }

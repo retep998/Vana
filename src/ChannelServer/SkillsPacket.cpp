@@ -37,8 +37,9 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 }
 
 void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
+	}
 	PacketCreator packet;
 	if (party && self) {
 		packet.add<int16_t>(SMSG_THEATRICS);
@@ -118,8 +119,9 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 			send = true;
 			break;
 	}
-	if (send)
+	if (send) {
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
+	}
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info) { // Hurricane, Pierce, Big Bang, Monster Magnet

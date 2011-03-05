@@ -622,6 +622,8 @@ void Map::playerSeated(int16_t id, Player *player) {
 
 // Mists
 void Map::addMist(Mist *mist) {
+	mist->setId(getMistId());
+
 	if (mist->isPoison() && !mist->isMobMist()) {
 		m_poison_mists[mist->getId()] = mist;
 	}

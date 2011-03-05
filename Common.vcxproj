@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="src\Common\Configuration.h" />
     <ClInclude Include="src\Common\ConfigurationPacket.h" />
+    <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
     <ClInclude Include="src\Common\InterHelper.h" />
     <ClInclude Include="src\Common\Ip.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="src\Common\ServerConnection.h" />
     <ClInclude Include="src\Common\GameObjects.h" />
     <ClInclude Include="src\Common\Pos.h" />
+    <ClInclude Include="src\Common\VanaConstants.h" />
     <ClInclude Include="src\Common\Variables.h" />
     <ClInclude Include="src\Common\DatabaseMigration.h" />
     <ClInclude Include="src\Common\DatabaseMigrationRunner.h" />

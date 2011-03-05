@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MiscUtilities.h"
-// CryptoPP
+#include "VanaConstants.h"
 #include <filters.h>
 #include <hex.h>
 #include <sha.h>
@@ -25,13 +25,22 @@ string MiscUtilities::hashPassword(const string &password, const string &salt) {
 	string salted = salt + password;
 	string digest;
 
-	CryptoPP::SHA1 hash;
+	if (salt.length() != VanaConstants::SaltSize) {
+		CryptoPP::SHA1 hash;
 
-	CryptoPP::StringSource(salted, true,
-		new CryptoPP::HashFilter(hash,
-			new CryptoPP::HexEncoder(
-				new CryptoPP::StringSink(digest))));
+		CryptoPP::StringSource(salted, true,
+			new CryptoPP::HashFilter(hash,
+				new CryptoPP::HexEncoder(
+					new CryptoPP::StringSink(digest))));
+	}
+	else {
+		CryptoPP::SHA512 hash;
 
+		CryptoPP::StringSource(salted, true,
+			new CryptoPP::HashFilter(hash,
+				new CryptoPP::HexEncoder(
+					new CryptoPP::StringSink(digest))));
+	}
 	return digest;
 }
 

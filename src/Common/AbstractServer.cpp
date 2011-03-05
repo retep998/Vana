@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "ConfigFile.h"
 #include "ConnectionManager.h"
+#include "ExitCodes.h"
 #include "MiscUtilities.h"
 #include "TimeUtilities.h"
 #include <ctime>
@@ -41,7 +42,7 @@ void AbstractServer::initialize() {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
-		exit(1);
+		exit(ExitCodes::ConfigError);
 	}
 
 	loadConfig();

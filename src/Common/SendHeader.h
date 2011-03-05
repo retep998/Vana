@@ -15,6 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#pragma once
+
+#define IV_NO_PATCH_LOCATION 0x0d
+#define IV_PATCH_LOCATION 0x0e
 
 #define SMSG_AUTHENTICATION 0x00
 #define SMSG_WORLD_STATUS 0x03

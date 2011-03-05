@@ -43,7 +43,6 @@ m_poison(ispoison)
 	m_skilllt = skill->lt;
 	m_skillrb = skill->rb;
 
-	m_id = Maps::getMistId();
 	Maps::getMap(mapid)->addMist(this);
 }
 
@@ -69,7 +68,6 @@ m_poison(true)
 	m_skilllt = skill->lt;
 	m_skillrb = skill->rb;
 
-	m_id = Maps::getMistId();
 	Maps::getMap(mapid)->addMist(this);
 }
 

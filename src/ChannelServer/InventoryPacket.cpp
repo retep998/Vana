@@ -348,3 +348,22 @@ void InventoryPacket::playCashSong(int32_t map, int32_t itemid, const string &pl
 	packet.addString(playername);
 	Maps::getMap(map)->sendPacket(packet);
 }
+
+void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_THEATRICS);
+	packet.add<int8_t>(0x0E);
+	packet.add<int32_t>(itemid);
+	packet.add<int8_t>(1); // Unk...?
+	packet.addString(effect);
+	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.add<int16_t>(SMSG_SKILL_SHOW);
+	packet.add<int32_t>(player->getId());
+	packet.add<int8_t>(0x0E);
+	packet.add<int32_t>(itemid);
+	packet.add<int8_t>(1); // Unk...?
+	packet.addString(effect);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}

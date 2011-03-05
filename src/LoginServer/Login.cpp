@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "StringUtilities.h"
 #include "TimeUtilities.h"
+#include "VanaConstants.h"
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -70,7 +71,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		}
 		else {
 			// We have a valid password here, so let's hash the password
-			string salt = Randomizer::Instance()->generateSalt(5);
+			string salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
 			string hashed_pass = MiscUtilities::hashPassword(password, salt);
 			query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
 			query.exec();
@@ -121,7 +122,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 			player->setStatus(PlayerStatus::SetGender);
 		}
 		else {
-			player->setGender((uint8_t) res[0]["gender"]);
+			player->setGender((int8_t) res[0]["gender"]);
 		}
 
 		time_t qban =  atot(res[0]["quiet_ban_expire"]);
@@ -150,6 +151,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 		return;
 	}
 	if (packet.get<int8_t>() == 1) {
+		// getBool candidate?
 		player->setStatus(PlayerStatus::NotLoggedIn);
 		int8_t gender = packet.get<int8_t>();
 		mysqlpp::Query query = Database::getCharDB().query();

@@ -34,17 +34,16 @@ public:
 	MapleServer(boost::asio::io_service &io_service,
 		const tcp::endpoint &endpoint,
 		AbstractConnectionFactory *apf,
-		string connectPacketUnknown);
+		const string &patchLocation);
 	void stop();
 private:
 	void start_accept();
-	void handle_accept(MapleSessionPtr new_session,
-		const boost::system::error_code &error);
+	void handle_accept(MapleSessionPtr new_session, const boost::system::error_code &error);
 
 	tcp::acceptor m_acceptor;
 	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
-	SessionManagerPtr m_session_manager;
-	string m_connect_packet_unknown;
+	SessionManagerPtr m_sessionManager;
+	string m_patchLocation;
 };
 
 typedef boost::shared_ptr<MapleServer> MapleServerPtr;

@@ -29,14 +29,14 @@ public:
 	virtual ~AbstractSession() { }
 
 	AbstractSession(SessionManagerPtr sessionManager) :
-		m_session_manager(sessionManager) { }
+		m_sessionManager(sessionManager) { }
 	virtual void start() = 0;
 	virtual void handle_start() = 0;
 	virtual void stop() = 0;
 	virtual void disconnect() = 0;
 	virtual void handle_stop() = 0;
 protected:
-	SessionManagerPtr m_session_manager;
+	SessionManagerPtr m_sessionManager;
 };
 
 typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;

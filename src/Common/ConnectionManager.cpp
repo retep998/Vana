@@ -24,23 +24,23 @@ ConnectionManager * ConnectionManager::singleton = nullptr;
 
 ConnectionManager::ConnectionManager() :
 m_clients(new SessionManager),
-m_work(new boost::asio::io_service::work(m_io_service))
+m_work(new boost::asio::io_service::work(m_ioService))
 {
 }
 
-void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, string ivUnknown) {
+void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, const string &patchLocation) {
 	tcp::endpoint endpoint(tcp::v4(), port);
-	m_servers.push_back(MapleServerPtr(new MapleServer(m_io_service, endpoint, apf, ivUnknown)));
+	m_servers.push_back(MapleServerPtr(new MapleServer(m_ioService, endpoint, apf, patchLocation)));
 }
 
 void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractConnection *player) {
-	MapleServerClientPtr c = MapleServerClientPtr(new MapleServerClient(m_io_service, server, port, m_clients, player));
+	MapleServerClientPtr c = MapleServerClientPtr(new MapleServerClient(m_ioService, server, port, m_clients, player));
 	c->start_connect();
 }
 
 void ConnectionManager::stop() {
 	// Post a call to io_service so it is safe to call from all threads
-	m_io_service.post(boost::bind(&ConnectionManager::handle_stop, this));
+	m_ioService.post(boost::bind(&ConnectionManager::handle_stop, this));
 }
 
 void ConnectionManager::run() {
@@ -52,12 +52,11 @@ void ConnectionManager::join() {
 }
 
 void ConnectionManager::handle_run() {
-	m_io_service.run();
+	m_ioService.run();
 }
 
 void ConnectionManager::handle_stop() {
-	std::for_each(m_servers.begin(), m_servers.end(),
-		boost::bind(&MapleServer::stop, _1));
+	std::for_each(m_servers.begin(), m_servers.end(), boost::bind(&MapleServer::stop, _1));
 
 	m_clients->stopAll();
 
