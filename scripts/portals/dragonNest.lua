@@ -24,8 +24,8 @@ if getItemAmount(4001094) > 0 then
 		playPortalSE();
 		setMap(240040611);
 	else
-		showMessage("Someone else is already inside in an attempt to complete the quest. Please try again later.", 5);
+		showMessage("Someone else is already inside in an attempt to complete the quest. Please try again later.", m_red);
 	end
 else
-	showMessage("In order to enter the premise, you'll need to have the Nine Spirit's Egg in possession..", 5);
+	showMessage("In order to enter the premise, you'll need to have the Nine Spirit's Egg in possession..", m_red);
 end

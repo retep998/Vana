@@ -209,19 +209,24 @@ void ChatHandler::initializeCommands() {
 	command.command = CmdMap;
 	command.syntax = "<${town | mapstring | bossmapstring} | #mapid>";
 	command.notes.push_back("Warps you to a desired map.");
-	command.notes.push_back("Valid map strings:");
-	command.notes.push_back("southperry | amherst");
-	command.notes.push_back("gm | fm | happyville | town | dunes | here");
-	command.notes.push_back("showa | armory | shrine | singapore | quay");
-	command.notes.push_back("henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | dungeon | sharenian");
-	command.notes.push_back("3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
-	command.notes.push_back("orbis | nath | mine | leafre | temple | mulung | herbtown | ariant | magatia");
-	command.notes.push_back("ludi | ereve | kft | aqua | omega | altaire | rien");
-	command.notes.push_back("mansion | nlc | amoria | crimsonwood");
-	command.notes.push_back("Valid boss map strings:");
-	command.notes.push_back("ergoth | lordpirate | alishar | papapixie | kingslime");
-	command.notes.push_back("pap | zakum | horntail | pianus | bean");
-	command.notes.push_back("manon | griffey | jrbalrog | grandpa | anego | tengu | lilynouch | dodo | lyka");
+	command.notes.push_back("-------------");
+	command.notes.push_back("Valid maps");
+	command.notes.push_back("-------------");
+	command.notes.push_back("Special: gm | fm | happyville | town | here | 3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
+	command.notes.push_back("Maple Island: southperry | amherst");
+	command.notes.push_back("Victoria: henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
+	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
+	command.notes.push_back("Ludus Lake: ludi |  kft | aqua | omega | altaire");
+	command.notes.push_back("Masteria: nlc | amoria | crimsonwood");
+	command.notes.push_back("Landmasses: temple | ereve | rien");
+	command.notes.push_back("World Tour: showa | shrine | singapore | quay | malaysia | kampung");
+	command.notes.push_back("Dungeons: dungeon | mine | armory | mansion");
+	command.notes.push_back("-------------");
+	command.notes.push_back("Boss maps");
+	command.notes.push_back("-------------");
+	command.notes.push_back("PQ Bosses: ergoth | lordpirate | alishar | papapixie | kingslime");
+	command.notes.push_back("Area Bosses: manon | griffey | jrbalrog | anego | tengu | lilynouch | dodo | lyka");
+	command.notes.push_back("Bosses: pap | zakum | horntail | pianus | grandpa | bean");
 	commandlist["map"] = command.addToMap();
 
 	command.command = CmdJob;
@@ -1196,10 +1201,9 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 
 int32_t ChatHandler::getMap(const string &query, Player *player) {
 	int32_t mapid = -1;
+	// Special
 	if (query == "here") mapid = player->getMap();
 	else if (query == "town") mapid = Maps::getMap(player->getMap())->getReturnMap();
-	else if (query == "southperry") mapid = 60000;
-	else if (query == "amherst") mapid = 1010000;
 	else if (query == "gm") mapid = Maps::GmMap;
 	else if (query == "fm") mapid = 910000000;
 	else if (query == "4th") mapid = 240010501;
@@ -1209,62 +1213,76 @@ int32_t ChatHandler::getMap(const string &query, Player *player) {
 	else if (query == "darklord") mapid = 103000003;
 	else if (query == "danceswb") mapid = 102000003;
 	else if (query == "kyrin") mapid = 120000101;
-	else if (query == "showa") mapid = 801000000;
-	else if (query == "armory") mapid = 801040004;
-	else if (query == "shrine") mapid = 800000000;
-	else if (query == "mansion") mapid = 682000000;
+	else if (query == "happyville") mapid = 209000000;
+	// Maple Island
+	else if (query == "southperry") mapid = 60000;
+	else if (query == "amherst") mapid = 1010000;
+	// Victoria
 	else if (query == "henesys") mapid = 100000000;
 	else if (query == "perion") mapid = 102000000;
 	else if (query == "sharenian") mapid = 101030104;
 	else if (query == "ellinia") mapid = 101000000;
 	else if (query == "sleepywood") mapid = 105040300;
-	else if (query == "dungeon") mapid = 105090200;
 	else if (query == "lith") mapid = 104000000;
 	else if (query == "florina") mapid = 110000000;
 	else if (query == "kerning") mapid = 103000000;
 	else if (query == "port") mapid = 120000000;
+	// Ossyria
 	else if (query == "orbis") mapid = 200000000;
 	else if (query == "nath") mapid = 211000000;
-	else if (query == "mine") mapid = 211041400;
-	else if (query == "ludi") mapid = 220000000;
-	else if (query == "ereve") mapid = 130000200;
-	else if (query == "kft") mapid = 222000000;
-	else if (query == "aqua") mapid = 230000000;
-	else if (query == "omega") mapid = 221000000;
 	else if (query == "leafre") mapid = 240000000;
 	else if (query == "mulung") mapid = 250000000;
 	else if (query == "herbtown") mapid = 251000000;
 	else if (query == "ariant") mapid = 260000000;
+	else if (query == "magatia") mapid = 261000000;
+	// Ludus Lake area
+	else if (query == "ludi") mapid = 220000000;
+	else if (query == "altaire") mapid = 300000000;
+	else if (query == "kft") mapid = 222000000;
+	else if (query == "aqua") mapid = 230000000;
+	else if (query == "omega") mapid = 221000000;
+	// Floating areas/not officially a part of other continents
+	else if (query == "temple") mapid = 270000000;
+	else if (query == "ereve") mapid = 130000200;
+	else if (query == "rien") mapid = 140000000;
+	// Masteria
 	else if (query == "nlc") mapid = 600000000;
 	else if (query == "amoria") mapid = 680000000;
-	else if (query == "happyville") mapid = 209000000;
 	else if (query == "crimsonwood") mapid = 610020006;
+	// Dungeon areas
+	else if (query == "armory") mapid = 801040004;
+	else if (query == "mansion") mapid = 682000000;
+	else if (query == "dungeon") mapid = 105090200;
+	else if (query == "mine") mapid = 211041400;
+	// World Tour
 	else if (query == "singapore") mapid = 540000000;
 	else if (query == "quay") mapid = 541000000;
-	else if (query == "magatia") mapid = 261000000;
-	else if (query == "temple") mapid = 270000000;
-	else if (query == "altaire") mapid = 300000000;
-	else if (query == "rien") mapid = 140000000;
-	else if (query == "dunes") mapid = 926010000;
-	// Boss maps
-	else if (query == "ergoth") mapid = 990000900;
-	else if (query == "pap") mapid = 220080001;
-	else if (query == "zakum") mapid = 280030000;
-	else if (query == "horntail") mapid = 240060200;
-	else if (query == "lordpirate") mapid = 925100500;
-	else if (query == "alishar") mapid = 922010900;
-	else if (query == "papapixie") mapid = 920010800;
-	else if (query == "kingslime") mapid = 103000804;
-	else if (query == "pianus") mapid = 230040420;
+	else if (query == "malaysia") mapid = 550000000;
+	else if (query == "kampung") mapid = 551000000;
+	else if (query == "shrine") mapid = 800000000;
+	else if (query == "showa") mapid = 801000000;
+	// Area boss maps
 	else if (query == "manon") mapid = 240020401;
 	else if (query == "griffey") mapid = 240020101;
 	else if (query == "jrbalrog") mapid = 105090900;
-	else if (query == "grandpa") mapid = 801040100;
 	else if (query == "anego") mapid = 801040003;
 	else if (query == "tengu") mapid = 800020130;
 	else if (query == "lilynouch") mapid = 270020500;
 	else if (query == "dodo") mapid = 270010500;
 	else if (query == "lyka") mapid = 270030500;
+	// PQ boss maps
+	else if (query == "ergoth") mapid = 990000900;
+	else if (query == "lordpirate") mapid = 925100500;
+	else if (query == "alishar") mapid = 922010900;
+	else if (query == "papapixie") mapid = 920010800;
+	else if (query == "kingslime") mapid = 103000804;
+	else if (query == "dunes") mapid = 926010000;
+	// Boss maps
+	else if (query == "pap") mapid = 220080001;
+	else if (query == "zakum") mapid = 280030000;
+	else if (query == "horntail") mapid = 240060200;
+	else if (query == "pianus") mapid = 230040420;
+	else if (query == "grandpa") mapid = 801040100;
 	else if (query == "bean") mapid = 270050100;
 	else {
 		char *endptr;

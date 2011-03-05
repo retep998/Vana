@@ -191,7 +191,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			int16_t amount = packet.get<int16_t>();
 			int8_t inv = GameLogicUtilities::getInventory(itemid);
 			Item *item = player->getInventory()->getItem(inv, slot);
-			if (item == nullptr || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->amount)) {
+			if (item == nullptr || (!GameLogicUtilities::isRechargeable(itemid) && amount > item->getAmount())) {
 				NpcPacket::bought(player, 1); // Hacking
 				return;
 			}
@@ -199,7 +199,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 
 			player->getInventory()->modifyMesos(price * amount);
 			if (GameLogicUtilities::isRechargeable(itemid)) {
-				Inventory::takeItemSlot(player, inv, slot, item->amount, true);
+				Inventory::takeItemSlot(player, inv, slot, item->getAmount(), true);
 			}
 			else {
 				Inventory::takeItemSlot(player, inv, slot, amount, true);
@@ -210,19 +210,19 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 		case ShopOpcodes::Recharge: {
 			int16_t slot = packet.get<int16_t>();
 			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-			if (item == nullptr || GameLogicUtilities::isRechargeable(item->id) == false) {
+			if (item == nullptr || GameLogicUtilities::isRechargeable(item->getId()) == false) {
 				// Hacking
 				return;
 			}
-			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->id);
-			if (GameLogicUtilities::isRechargeable(item->id))
+			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->getId());
+			if (GameLogicUtilities::isRechargeable(item->getId()))
 				maxslot += player->getSkills()->getRechargeableBonus();
 
-			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->id, maxslot - item->amount);
+			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->getId(), maxslot - item->getAmount());
 			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
 				player->getInventory()->modifyMesos(modifiedmesos);
 				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxslot, 0, 0);
-				item->amount = maxslot;
+				item->setAmount(maxslot);
 				NpcPacket::bought(player, 0);
 			}
 			break;
@@ -278,9 +278,10 @@ void NpcHandler::useStorage(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid))
+			if (GameLogicUtilities::isRechargeable(itemid) || GameLogicUtilities::isEquip(itemid)) {
 				amount = 1;
-			else if (amount <= 0 || amount > item->amount) {
+			}
+			else if (amount <= 0 || amount > item->getAmount()) {
 				// Hacking
 				return;
 			}
@@ -289,7 +290,7 @@ void NpcHandler::useStorage(Player *player, PacketReader &packet) {
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.
 			// Else: For items we just create a new item based on the ID and amount.
-			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->amount : amount, true);
+			Inventory::takeItemSlot(player, inv, slot, GameLogicUtilities::isRechargeable(itemid) ? item->getAmount() : amount, true);
 			player->getInventory()->modifyMesos(-cost);
 			StoragePacket::addItem(player, inv);
 			break;

@@ -35,14 +35,16 @@ public:
 	}
 	void loadData();
 	void loadConfig();
+	void loadLogConfig();
 	void loadWorlds();
 	void listen();
+	string makeLogIdentifier();
 
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
 private:
-	LoginServer() {};
+	LoginServer();
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;

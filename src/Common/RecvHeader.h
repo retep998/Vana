@@ -61,6 +61,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ITEM_CANCEL 0x48
 #define CMSG_SUMMON_BAG_USE 0x4a
 #define CMSG_PET_FOOD_USE 0x4b
+#define CMSG_USE_SCRIPT_ITEM 0x4d // For items that runs scripts
 #define CMSG_CASH_ITEM_USE 0x4e
 #define CMSG_SKILLBOOK_USE 0x51
 #define CMSG_TELEPORT_ROCK_USE 0x53 // Only the one in your Use

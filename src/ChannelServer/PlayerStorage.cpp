@@ -46,11 +46,12 @@ void PlayerStorage::setSlots(int8_t slots) {
 }
 
 void PlayerStorage::addItem(Item *item) {
-	int8_t inv = GameLogicUtilities::getInventory(item->id);
+	int8_t inv = GameLogicUtilities::getInventory(item->getId());
 	int8_t i;
 	for (i = 0; i < (int8_t) items.size(); i++) {
-		if (GameLogicUtilities::getInventory(items[i]->id) > inv)
+		if (GameLogicUtilities::getInventory(items[i]->getId()) > inv) {
 			break;
+		}
 	}
 	items.insert(items.begin() + i, item);
 }
@@ -58,8 +59,9 @@ void PlayerStorage::addItem(Item *item) {
 int8_t PlayerStorage::getNumItems(int8_t inv) {
 	int8_t itemNum = 0;
 	for (int8_t i = 0; i < (int8_t) items.size(); i++) {
-		if (GameLogicUtilities::getInventory(items[i]->id) == inv)
+		if (GameLogicUtilities::getInventory(items[i]->getId()) == inv) {
 			itemNum++;
+		}
 	}
 	return itemNum;
 }
@@ -84,32 +86,43 @@ void PlayerStorage::load() {
 
 	items.reserve(slots);
 
-	query << "SELECT itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, name FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
+	enum TableFields {
+		UserId = 0,
+		WorldId, Slot, ItemId, Amount, Slots,
+		Scrolls, iStr, iDex, iInt, iLuk,
+		iHp, iMp, iWatk, iMatk, iWdef,
+		iMdef, iAcc, iAvo, iHand, iSpeed,
+		iJump, Flags, Hammers, Name
+	};
+
+	query << "SELECT * FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();
+	string temp;
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		Item *item = new Item;
-		item->id = res[i][0];
-		item->amount = res[i][1];
-		item->slots = (int8_t) res[i][2];
-		item->scrolls = (int8_t) res[i][3];
-		item->istr = res[i][4];
-		item->idex = res[i][5];
-		item->iint = res[i][6];
-		item->iluk = res[i][7];
-		item->ihp = res[i][8];
-		item->imp = res[i][9];
-		item->iwatk = res[i][10];
-		item->imatk = res[i][11];
-		item->iwdef = res[i][12];
-		item->imdef = res[i][13];
-		item->iacc = res[i][14];
-		item->iavo = res[i][15];
-		item->ihand = res[i][16];
-		item->ispeed = res[i][17];
-		item->ijump = res[i][18];
-		item->flags = (int8_t) res[i][19];
-		item->hammers = res[i][20];
-		res[i][21].to_string(item->name);
+		mysqlpp::Row &row = res[i];
+		Item *item = new Item(row[ItemId]);
+		item->setAmount(row[Amount]);
+		item->setSlots(static_cast<int8_t>(row[Slots]));
+		item->setScrolls(static_cast<int8_t>(row[Scrolls]));
+		item->setStr(row[iStr]);
+		item->setDex(row[iDex]);
+		item->setInt(row[iInt]);
+		item->setLuk(row[iLuk]);
+		item->setHp(row[iHp]);
+		item->setMp(row[iMp]);
+		item->setWatk(row[iWatk]);
+		item->setMatk(row[iMatk]);
+		item->setWdef(row[iWdef]);
+		item->setMdef(row[iMdef]);
+		item->setAccuracy(row[iAcc]);
+		item->setAvoid(row[iAvo]);
+		item->setHands(row[iHand]);
+		item->setSpeed(row[iSpeed]);
+		item->setJump(row[iJump]);
+		item->setFlags(static_cast<int16_t>(row[Flags]));
+		item->setHammers(row[Hammers]);
+		row[Name].to_string(temp);
+		item->setName(temp);
 		addItem(item);
 	}
 }
@@ -142,29 +155,30 @@ void PlayerStorage::save() {
 		query << player->getUserId() << ","
 			<< (int16_t) player->getWorldId() << ","
 			<< (int16_t) i << ","
-			<< item->id << ","
-			<< item->amount << ","
-			<< (int16_t) item->slots << ","
-			<< (int16_t) item->scrolls << ","
-			<< item->istr << ","
-			<< item->idex << ","
-			<< item->iint << ","
-			<< item->iluk << ","
-			<< item->ihp << ","
-			<< item->imp << ","
-			<< item->iwatk << ","
-			<< item->imatk << ","
-			<< item->iwdef << ","
-			<< item->imdef << ","
-			<< item->iacc << ","
-			<< item->iavo << ","
-			<< item->ihand << ","
-			<< item->ispeed << ","
-			<< item->ijump << ","
-			<< (int16_t) item->flags << ","
-			<< item->hammers << ","
-			<< mysqlpp::quote << item->name << ")";
+			<< item->getId() << ","
+			<< item->getAmount() << ","
+			<< (int16_t) item->getSlots() << ","
+			<< (int16_t) item->getScrolls() << ","
+			<< item->getStr() << ","
+			<< item->getDex() << ","
+			<< item->getInt() << ","
+			<< item->getLuk() << ","
+			<< item->getHp() << ","
+			<< item->getMp() << ","
+			<< item->getWatk() << ","
+			<< item->getMatk() << ","
+			<< item->getWdef() << ","
+			<< item->getMdef() << ","
+			<< item->getAccuracy() << ","
+			<< item->getAvoid() << ","
+			<< item->getHands() << ","
+			<< item->getSpeed() << ","
+			<< item->getJump() << ","
+			<< item->getFlags() << ","
+			<< item->getHammers() << ","
+			<< mysqlpp::quote << item->getName() << ")";
 	}
-	if (!firstrun)
+	if (!firstrun) {
 		query.exec();
+	}
 }

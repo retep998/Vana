@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <vector>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::vector;
 
+class Item;
 class Player;
-struct Item;
 
 namespace InventoryPacket {
 	namespace RockModes {
@@ -44,14 +44,13 @@ namespace InventoryPacket {
 			CannotGo = 0x08,
 			AlreadyThere = 0x09,
 			CannotSaveMap = 0x0A,
-			NoobsCannotLeaveMapleIsland = 0x0B, // "Users below level 7 are not allowed to go out from Maple Island."
-
+			NoobsCannotLeaveMapleIsland = 0x0B // "Users below level 7 are not allowed to go out from Maple Island."
 		};
 	}
 	namespace RockTypes {
 		enum Types {
 			Regular = 0x00,
-			Vip = 0x01,
+			Vip = 0x01
 		};
 	}
 

@@ -98,7 +98,8 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
-		std::cout << username << " logged in." << std::endl;
+		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
+
 		player->setUserId(res[0]["id"]);
 		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null()) {

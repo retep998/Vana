@@ -292,8 +292,8 @@ int32_t PlayerSkills::getMpIncrease() {
 int32_t PlayerSkills::getMastery() {
 	int32_t masteryid = 0;
 	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-		case Weapon1hSword:
-		case Weapon2hSword:
+		case Items::Types::Weapon1hSword:
+		case Items::Types::Weapon2hSword:
 			switch (player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
@@ -307,38 +307,22 @@ int32_t PlayerSkills::getMastery() {
 					break;
 			}
 			break;
-		case Weapon1hAxe:
-		case Weapon2hAxe:
+		case Items::Types::Weapon1hAxe:
+		case Items::Types::Weapon2hAxe:
 			masteryid = Jobs::Fighter::AxeMastery;
 			break;
-		case Weapon1hMace:
-		case Weapon2hMace:
+		case Items::Types::Weapon1hMace:
+		case Items::Types::Weapon2hMace:
 			masteryid = Jobs::Page::BwMastery;
 			break;
-		case WeaponSpear:
-			masteryid = Jobs::Spearman::SpearMastery;
-			break;
-		case WeaponPolearm:
-			masteryid = Jobs::Spearman::PolearmMastery;
-			break;
-		case WeaponDagger:
-			masteryid = Jobs::Bandit::DaggerMastery;
-			break;
-		case WeaponKnuckle:
-			masteryid = Jobs::Brawler::KnucklerMastery;
-			break;
-		case WeaponBow:
-			masteryid = Jobs::Hunter::BowMastery;
-			break;
-		case WeaponCrossbow:
-			masteryid = Jobs::Crossbowman::CrossbowMastery;
-			break;
-		case WeaponClaw:
-			masteryid = Jobs::Assassin::ClawMastery;
-			break;
-		case WeaponGun:
-			masteryid = Jobs::Gunslinger::GunMastery;
-			break;
+		case Items::Types::WeaponSpear: masteryid = Jobs::Spearman::SpearMastery; break;
+		case Items::Types::WeaponPolearm: masteryid = Jobs::Spearman::PolearmMastery; break;
+		case Items::Types::WeaponDagger: masteryid = Jobs::Bandit::DaggerMastery; break;
+		case Items::Types::WeaponKnuckle: masteryid = Jobs::Brawler::KnucklerMastery; break;
+		case Items::Types::WeaponBow: masteryid = Jobs::Hunter::BowMastery; break;
+		case Items::Types::WeaponCrossbow: masteryid = Jobs::Crossbowman::CrossbowMastery; break;
+		case Items::Types::WeaponClaw: masteryid = Jobs::Assassin::ClawMastery; break;
+		case Items::Types::WeaponGun: masteryid = Jobs::Gunslinger::GunMastery; break;
 	}
 	return masteryid;
 }

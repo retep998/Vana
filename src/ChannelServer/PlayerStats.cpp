@@ -96,13 +96,13 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 	slot = abs(slot);
 	if (equip != nullptr) {
-		equipStats[slot].Id = equip->id;
-		equipStats[slot].Hp = equip->ihp;
-		equipStats[slot].Mp = equip->imp;
-		equipStats[slot].Str = equip->istr;
-		equipStats[slot].Dex = equip->idex;
-		equipStats[slot].Int = equip->iint;
-		equipStats[slot].Luk = equip->iluk;
+		equipStats[slot].Id = equip->getId();
+		equipStats[slot].Hp = equip->getHp();
+		equipStats[slot].Mp = equip->getMp();
+		equipStats[slot].Str = equip->getStr();
+		equipStats[slot].Dex = equip->getDex();
+		equipStats[slot].Int = equip->getInt();
+		equipStats[slot].Luk = equip->getLuk();
 	}
 	else {
 		equipStats.erase(slot);

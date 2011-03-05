@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Zakum Party Quest Chest - summons 3 "Mimics"
 
-showMessage("Oh noes! Monsters in the chest!", 5);
+showMessage("Oh noes! Monsters in the chest!", m_red);
 spawnMob(9300004);
 spawnMob(9300004);
 spawnMob(9300004);

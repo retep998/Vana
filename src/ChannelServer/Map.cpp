@@ -356,7 +356,7 @@ Pos Map::findRandomPos() {
 int16_t Map::getFhAtPosition(const Pos &pos) {
 	int16_t foothold = 0;
 	for (size_t i = 0; i < m_footholds.size(); i++) {
-		FootholdInfo cur = m_footholds[i];
+		FootholdInfo &cur = m_footholds[i];
 		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.x && pos.y <= cur.pos2.x) || (pos.y > cur.pos2.x && pos.y <= cur.pos1.x))) {
 			foothold = cur.id;
 			break;
@@ -777,7 +777,7 @@ void Map::runTimer() {
 }
 
 void Map::timeMob(bool firstLoad) {
-	int32_t chour = TimeUtilities::getHour();
+	int32_t chour = TimeUtilities::getHour(false);
 	TimeMob *tm = getTimeMob();
 	if (firstLoad) {
 		if (chour >= tm->startHour && chour < tm->endHour) {

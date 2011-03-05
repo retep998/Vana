@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 
-struct Item;
-class Player;
+class Item;
 class PacketCreator;
+class Player;
 
 namespace PlayerPacketHelper {
 	void addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot = false);

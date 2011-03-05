@@ -26,53 +26,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
 	if (slot != 0) {
-		if (shortSlot)
+		if (shortSlot) {
 			packet.add<int16_t>(slot);
+		}
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;
 			packet.add<int8_t>((int8_t) slot);
 		}
 	}
-	bool equip = GameLogicUtilities::isEquip(item->id);
+	bool equip = GameLogicUtilities::isEquip(item->getId());
 	packet.add<int8_t>(equip ? 1 : 2);
-	packet.add<int32_t>(item->id);
+	packet.add<int32_t>(item->getId());
 	packet.add<int8_t>(0);
-	packet.add<int64_t>(Items::NoExpiration); // Expiration, I think
+	packet.add<int64_t>(Items::NoExpiration);
 	if (equip) {
-		packet.add<int8_t>(item->slots); // Slots
-		packet.add<int8_t>(item->scrolls); // Scrolls
-		packet.add<int16_t>(item->istr); // STR
-		packet.add<int16_t>(item->idex); // DEX
-		packet.add<int16_t>(item->iint); // INT
-		packet.add<int16_t>(item->iluk); // LUK
-		packet.add<int16_t>(item->ihp); // HP
-		packet.add<int16_t>(item->imp); // MP
-		packet.add<int16_t>(item->iwatk); // W.Atk
-		packet.add<int16_t>(item->imatk); // M.Atk
-		packet.add<int16_t>(item->iwdef); // W.Def
-		packet.add<int16_t>(item->imdef); // M.Def
-		packet.add<int16_t>(item->iacc); // Acc
-		packet.add<int16_t>(item->iavo); // Avo
-		packet.add<int16_t>(item->ihand); // Hands
-		packet.add<int16_t>(item->ispeed); // Speed
-		packet.add<int16_t>(item->ijump); // Jump
-		packet.addString(item->name); // Owner string
-		packet.add<int16_t>(item->flags); // Lock, shoe spikes, cape cold protection, etc.
+		packet.add<int8_t>(item->getSlots());
+		packet.add<int8_t>(item->getScrolls());
+		packet.add<int16_t>(item->getStr());
+		packet.add<int16_t>(item->getDex());
+		packet.add<int16_t>(item->getInt());
+		packet.add<int16_t>(item->getLuk());
+		packet.add<int16_t>(item->getHp());
+		packet.add<int16_t>(item->getMp());
+		packet.add<int16_t>(item->getWatk());
+		packet.add<int16_t>(item->getMatk());
+		packet.add<int16_t>(item->getWdef());
+		packet.add<int16_t>(item->getMdef());
+		packet.add<int16_t>(item->getAccuracy());
+		packet.add<int16_t>(item->getAvoid());
+		packet.add<int16_t>(item->getHands());
+		packet.add<int16_t>(item->getSpeed());
+		packet.add<int16_t>(item->getJump());
+		packet.addString(item->getName()); // Owner string
+		packet.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
 		packet.add<int8_t>(0);
 		packet.add<int8_t>(0); // Item level
 		packet.add<int16_t>(0);
 		packet.add<int16_t>(0); // Item EXP of.. some sort
-		packet.add<int32_t>(item->hammers); // Vicious' Hammer
+		packet.add<int32_t>(item->getHammers()); // Vicious' Hammer
 		packet.add<int64_t>(-1);
 		packet.addBytes("0040E0FD3B374F01"); // Always the same?
 		packet.add<int32_t>(-1);
 	}
 	else {
-		packet.add<int16_t>(item->amount); // Amount
-		packet.addString(item->name); // Specially made by <IGN>
-		packet.add<int16_t>(item->flags);
-		if (GameLogicUtilities::isRechargeable(item->id)) {
+		packet.add<int16_t>(item->getAmount()); // Amount
+		packet.addString(item->getName()); // Specially made by <IGN>
+		packet.add<int16_t>(item->getFlags());
+		if (GameLogicUtilities::isRechargeable(item->getId())) {
 			packet.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
 		}
 	}

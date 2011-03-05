@@ -58,8 +58,9 @@ namespace LuaExports {
 	// Global exports
 
 	// Miscellaneous
-	int getRandomNumber(lua_State *luaVm);
 	int consoleOutput(lua_State *luaVm);
+	int getRandomNumber(lua_State *luaVm);
+	int log(lua_State *luaVm);
 
 	// Channel
 	int deleteChannelVariable(lua_State *luaVm);

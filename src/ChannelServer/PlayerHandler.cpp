@@ -436,7 +436,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp < damage) { // Mob was killed, so set the Mob pointer to 0
+			if (temphp <= damage) {
+				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 			}
 		}
@@ -604,7 +605,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (damage > temphp) {
+			if (temphp <= damage) {
 				mob = nullptr;
 			}
 		}
@@ -688,7 +689,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (damage > temphp) {
+			if (temphp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
@@ -758,7 +759,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (damage > temphp) {
+			if (temphp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
@@ -850,12 +851,12 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			}
 			else if (csStar > 0) {
 				if (Item *item = player->getInventory()->getItem(Inventories::CashInventory, csStar)) {
-					attack.starId = item->id;
+					attack.starId = item->getId();
 				}
 			}
 			else if (starSlot > 0) {
 				if (Item *item = player->getInventory()->getItem(Inventories::UseInventory, starSlot)) {
-					attack.starId = item->id;
+					attack.starId = item->getId();
 				}
 			}
 		}

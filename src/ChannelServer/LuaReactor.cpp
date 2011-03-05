@@ -28,9 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactors.h"
 #include <string>
 
-LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) : LuaScriptable(filename, playerid), reactorid(reactorid) {
-	setVariable("reactorid", reactorid);
-	setVariable("mapid", mapid);
+LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) :
+	LuaScriptable(filename, playerid),
+	reactorid(reactorid)
+{
+	setVariable("_reactorid", reactorid);
+	setVariable("_mapid", mapid);
 
 	// Reactor
 	lua_register(luaVm, "getState", &LuaExports::getState);
@@ -49,8 +52,8 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 }
 
 Reactor * LuaExports::getReactor(lua_State *luaVm) {
-	lua_getglobal(luaVm, "reactorid");
-	lua_getglobal(luaVm, "mapid");
+	lua_getglobal(luaVm, "_reactorid");
+	lua_getglobal(luaVm, "_mapid");
 	int32_t reactorid = lua_tointeger(luaVm, -2);
 	int32_t mapid = lua_tointeger(luaVm, -1);
 	return Maps::getMap(mapid)->getReactor(reactorid);

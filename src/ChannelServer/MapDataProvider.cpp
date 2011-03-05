@@ -338,8 +338,8 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 		foot.pos1 = Pos(atoi(row[X1]), atoi(row[Y1]));
 		foot.pos2 = Pos(atoi(row[X2]), atoi(row[Y2]));
 		foot.dragForce = atoi(row[DragForce]);
-		foot.next = atoi(row[Next]);
-		foot.prev = atoi(row[Prev]);
+		foot.leftEdge = atoi(row[Prev]) == 0;
+		foot.rightEdge = atoi(row[Next]) == 0;
 		map->addFoothold(foot);
 	}
 }

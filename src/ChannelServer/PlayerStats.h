@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::map;
 
-class Player;
+class Item;
 class PacketCreator;
 class PacketReader;
-struct Item;
+class Player;
 
 struct BonusSet {
 	uint16_t Hp,

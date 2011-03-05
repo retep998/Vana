@@ -16,21 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ServerConnection.h"
+#include "AbstractServer.h"
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
 #include "MapleSession.h"
 #include "PacketReader.h"
 #include <iostream>
+#include <boost/asio.hpp>
+#include <boost/lexical_cast.hpp>
 
 void AbstractServerConnection::sendAuth(const string &pass, const IpMatrix &extIp) {
 	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 
-bool AbstractServerAcceptConnection::processAuth(PacketReader &packet, const string &pass) {
+bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet, const string &pass) {
 	if (packet.get<int16_t>() == IMSG_PASSWORD) {
 		if (packet.getString() == pass) {
-			std::cout << "Server successfully authenticated." << std::endl;
 			m_is_authenticated = true;
 
 			IpUtilities::extractExternalIp(packet, m_external_ip);
@@ -40,6 +42,8 @@ bool AbstractServerAcceptConnection::processAuth(PacketReader &packet, const str
 			authenticated(type);
 		}
 		else {
+			server->log(LogTypes::ServerAuthFailure, "IP: " + IpUtilities::ipToString(getSession()->getIp()));
+
 			getSession()->disconnect();
 			return false;
 		}

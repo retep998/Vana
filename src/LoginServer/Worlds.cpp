@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
+#include "LoginServer.h"
 #include "LoginServerAcceptConnection.h"
 #include "LoginServerAcceptPacket.h"
 #include "MapleSession.h"
@@ -107,7 +108,9 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
 
 	if (world != nullptr) {
 		LoginServerAcceptPacket::connect(player, world);
-		std::cout << "Assigned world " << (int32_t) world->getId() << " to World Server." << std::endl;
+
+		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(world->getId())));
+
 		return world->getId();
 	}
 	else {
@@ -134,8 +137,6 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
 	if (worldid != -1) {
 		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
 		LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
-
-		std::cout << "Assigning channel server to world server " << (int32_t) worldid << "." << std::endl;
 	}
 	else {
 		LoginServerAcceptPacket::connectChannel(player, worldid, 0, 0);

@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
-using std::vector;
 using std::tr1::unordered_map;
+using std::vector;
 
-class Player;
+class Item;
 class PacketReader;
-struct Item;
+class Player;
 
 namespace Inventory {
 	int16_t addItem(Player *player, Item *item, bool is = false);
@@ -34,5 +34,4 @@ namespace Inventory {
 	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
 	void useItem(Player *player, int32_t itemid);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
-	bool showShop(Player *player, int32_t shopid);
 }

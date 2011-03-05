@@ -58,11 +58,11 @@ item(item)
 }
 
 int32_t Drop::getObjectId() {
-	return (mesos > 0 ? mesos : item.id);
+	return (mesos > 0 ? mesos : item.getId());
 }
 
 int16_t Drop::getAmount() {
-	return item.amount;
+	return item.getAmount();
 }
 
 void Drop::doDrop(const Pos &origin) {

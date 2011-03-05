@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
 #include "ConfigFile.h"
+#include "Configuration.h"
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
@@ -26,8 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "ServerPacket.h"
 #include "WorldServerConnection.h"
+#include <boost/lexical_cast.hpp>
 
 ChannelServer * ChannelServer::singleton = nullptr;
+
+ChannelServer::ChannelServer() :
+	m_channel(-1)
+{
+}
 
 void ChannelServer::listen() {
 	ConnectionManager::Instance()->accept(m_port, new PlayerFactory());
@@ -46,13 +53,30 @@ void ChannelServer::loadData() {
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
-	loginPlayer->sendAuth(inter_password, external_ip);
+	loginPlayer->sendAuth(getInterPassword(), getExternalIp());
 }
+
+void ChannelServer::loadLogConfig() {
+	ConfigFile conf("conf/logger.lua", false);
+	initializeLoggingConstants(conf);
+	conf.execute();
+
+	bool enabled = conf.getBool("log_channels");
+	if (enabled) {
+		LogConfig log = conf.getLogConfig("channel");
+		createLogger(log);
+	}
+}
+
+string ChannelServer::makeLogIdentifier() {
+	return "World: " + boost::lexical_cast<string>(getWorld()) + "; ID: " + boost::lexical_cast<string>(getChannel());
+}
+
 
 void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_worldConnection);
-	m_worldConnection->sendAuth(inter_password, external_ip);
+	m_worldConnection->sendAuth(getInterPassword(), getExternalIp());
 }
 
 void ChannelServer::loadConfig() {

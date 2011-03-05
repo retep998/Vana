@@ -61,7 +61,7 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
-	setVariable("playerid", playerid); // Pushing ID for reference from static functions
+	setVariable("_playerid", playerid); // Pushing ID for reference from static functions
 	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
 	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
 	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
@@ -69,11 +69,12 @@ void LuaScriptable::initialize() {
 
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player != nullptr && player->getInstance() != nullptr)
-		setVariable("instancename", player->getInstance()->getName());
+		setVariable("_instancename", player->getInstance()->getName());
 
 	// Miscellanous
-	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "consoleOutput", &LuaExports::consoleOutput);
+	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
+	lua_register(luaVm, "log", &LuaExports::log);
 
 	// Channel
 	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
@@ -360,7 +361,7 @@ void LuaScriptable::printError(const string &error) {
 
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "playerid");
+	lua_getglobal(luaVm, "_playerid");
 	return PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 }
 
@@ -377,19 +378,24 @@ Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
 
 
 Instance * LuaExports::getInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "instancename");
+	lua_getglobal(luaVm, "_instancename");
 	return Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 }
 
 // Miscellaneous
+int LuaExports::consoleOutput(lua_State *luaVm) {
+	std::cout << lua_tostring(luaVm, 1) << std::endl;
+	return 0;
+}
+
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
 	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
 	return 1;
 }
 
-int LuaExports::consoleOutput(lua_State *luaVm) {
-	std::cout << lua_tostring(luaVm, 1) << std::endl;
+int LuaExports::log(lua_State *luaVm) {
+	ChannelServer::Instance()->log(LogTypes::ScriptLog, lua_tostring(luaVm, 1));
 	return 0;
 }
 
@@ -1471,7 +1477,7 @@ int LuaExports::getDay(lua_State *luaVm) {
 		stringreturn = (lua_toboolean(luaVm, -1) != 0);
 	}
 	if (stringreturn) {
-		lua_pushstring(luaVm, TimeUtilities::getDayString().c_str());
+		lua_pushstring(luaVm, TimeUtilities::getDayString(false).c_str());
 	}
 	else {
 		lua_pushinteger(luaVm, TimeUtilities::getDay());
@@ -1480,7 +1486,11 @@ int LuaExports::getDay(lua_State *luaVm) {
 }
 
 int LuaExports::getHour(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getHour());
+	bool military = false;
+	if (lua_isboolean(luaVm, 1)) {
+		military = lua_toboolean(luaVm, 1) != 0;
+	}
+	lua_pushinteger(luaVm, TimeUtilities::getHour(military));
 	return 1;
 }
 
@@ -1520,7 +1530,7 @@ int LuaExports::getWeek(lua_State *luaVm) {
 }
 
 int LuaExports::getYear(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getYear());
+	lua_pushinteger(luaVm, TimeUtilities::getYear(false));
 	return 1;
 }
 
@@ -1748,7 +1758,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 		instance->showTimer(true, true);
 	}
 	lua_pushstring(luaVm, name.c_str());
-	lua_setglobal(luaVm, "instancename");
+	lua_setglobal(luaVm, "_instancename");
 	return 0;
 }
 
@@ -1924,19 +1934,19 @@ int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
 }
 
 int LuaExports::revertInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "oldinstancename");
-	lua_setglobal(luaVm, "instancename");
+	lua_getglobal(luaVm, "_oldinstancename");
+	lua_setglobal(luaVm, "_instancename");
 	return 0;
 }
 
 int LuaExports::setInstance(lua_State *luaVm) {
 	Instance *instance = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 	if (instance != nullptr) {
-		lua_getglobal(luaVm, "instancename");
-		lua_setglobal(luaVm, "oldinstancename");
+		lua_getglobal(luaVm, "_instancename");
+		lua_setglobal(luaVm, "_oldinstancename");
 
 		lua_pushstring(luaVm, instance->getName().c_str());
-		lua_setglobal(luaVm, "instancename");
+		lua_setglobal(luaVm, "_instancename");
 	}
 	lua_pushboolean(luaVm, instance != nullptr);
 	return 1;

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <cstdio>
-#include <exception>
 #include <iostream>
+#include <stdexcept>
 
 using std::cout;
 using std::endl;

@@ -49,3 +49,11 @@ struct Configuration {
 	MajorBoss horntail;
 	MajorBoss pinkbean;
 };
+
+struct LogConfig {
+	int32_t destination;
+	uint32_t bufferSize;
+	string format;
+	string timeFormat;
+	string file;
+};
