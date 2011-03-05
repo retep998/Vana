@@ -6,7 +6,7 @@ log_cash = false; -- These servers don't exist
 log_mts = false;
 
 -- The format that %t expands to
-log_time_format = "%MM/%DD/%YY %MI:%HH:%SS";
+log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 
 -- The following replacements are supported:
 -- %yy = short year (99, 00, 10)
@@ -36,6 +36,7 @@ log_time_format = "%MM/%DD/%YY %MI:%HH:%SS";
 
 -- Logging options
 -- *_log_destination: the place you wish to log to; options are LOG_NONE, LOG_FILE, LOG_SQL, and LOG_CONSOLE
+-- You may combine log types by doing something such as LOG_FILE_SQL_CONSOLE or any variation thereof
 
 -- *_log_buffer_size: buffer for limited resources like SQL and files, log items are cached until these are full
 

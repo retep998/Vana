@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Npc.h"
 #include "FileUtilities.h"
+#include "GameConstants.h"
 #include "LuaNpc.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
@@ -114,7 +115,7 @@ void Npc::run() {
 	checkEnd();
 }
 
-PacketCreator Npc::npcPacket(int8_t type) {
+PacketCreator Npc::npcPacket(int8_t type, bool addText) {
 	sentDialog = type;
 
 	PacketCreator packet;
@@ -122,9 +123,10 @@ PacketCreator Npc::npcPacket(int8_t type) {
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(npcid);
 	packet.add<int8_t>(type);
-	packet.addString(text);
-
-	text = "";
+	if (addText) {
+		packet.addString(text);
+		text = "";
+	}
 
 	return packet;
 }
@@ -141,7 +143,8 @@ void Npc::sendYesNo() {
 }
 
 void Npc::sendDialog(bool back, bool next, bool save) {
-	if (save) { // Store the current Npc state, for future "back" button use
+	if (save) {
+		// Store the current Npc state, for future "back" button use
 		previousStates.push_back(StatePtr(new State(text, back, next)));
 	}
 
@@ -158,6 +161,22 @@ void Npc::sendDialog(StatePtr npcState) {
 
 void Npc::sendAcceptDecline() {
 	PacketCreator packet = npcPacket(NpcDialogs::AcceptDecline);
+	player->getSession()->send(packet);
+}
+
+void Npc::sendAcceptDeclineNoExit() {
+	PacketCreator packet = npcPacket(NpcDialogs::AcceptDeclineNoExit);
+	player->getSession()->send(packet);
+}
+
+void Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) {
+	PacketCreator packet = npcPacket(NpcDialogs::Quiz, false);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(type); // 0 = NPC, 1 = Mob, 2 = Item
+	packet.add<int32_t>(objectId);
+	packet.add<int32_t>(correct);
+	packet.add<int32_t>(questions);
+	packet.add<int32_t>(time);
 	player->getSession()->send(packet);
 }
 
@@ -178,11 +197,12 @@ void Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 	player->getSession()->send(packet);
 }
 
-void Npc::sendStyle(int32_t styles[], int8_t size) {
+void Npc::sendStyle(int32_t styles[], uint8_t size) {
 	PacketCreator packet = npcPacket(NpcDialogs::Style);
-	packet.add<int8_t>(size);
-	for (int8_t i = 0; i < size; i++)
+	packet.add<uint8_t>(size);
+	for (uint8_t i = 0; i < size; i++) {
 		packet.add<int32_t>(styles[i]);
+	}
 	player->getSession()->send(packet);
 }
 

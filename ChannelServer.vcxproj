@@ -97,6 +97,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChannelServer\EffectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="src\ChannelServer\ChannelServer.h" />
     <ClInclude Include="src\ChannelServer\Connectable.h" />
     <ClInclude Include="src\ChannelServer\Drop.h" />
+    <ClInclude Include="src\ChannelServer\EffectPacket.h" />
     <ClInclude Include="src\ChannelServer\Fame.h" />
     <ClInclude Include="src\ChannelServer\Inventory.h" />
     <ClInclude Include="src\ChannelServer\InventoryPacketHelper.h" />

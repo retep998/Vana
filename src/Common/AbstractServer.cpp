@@ -16,6 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
+#include "Combo Loggers/ConsoleFileLogger.h"
+#include "Combo Loggers/ConsoleSqlFileLogger.h"
+#include "Combo Loggers/ConsoleSqlLogger.h"
+#include "Combo Loggers/SqlFileLogger.h"
 #include "ConfigFile.h"
 #include "Configuration.h"
 #include "ConnectionManager.h"
@@ -64,19 +68,43 @@ void AbstractServer::shutdown() {
 }
 
 void AbstractServer::createLogger(const LogConfig &conf) {
+	const string &tForm = conf.timeFormat;
+	const string &form = conf.format;
+	const string &file = conf.file;
+	int16_t sType = getServerType();
+	size_t bSize = conf.bufferSize;
+
 	switch (conf.destination) {
-		case LogDestinations::None: m_logger.reset(new Logger("", "", getServerType())); break; // Here's to hoping the compiler optimizes out useless functions
-		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(conf.format, conf.timeFormat, getServerType())); break;
-		case LogDestinations::File: m_logger.reset(new FileLogger(conf.file, conf.format, conf.timeFormat, getServerType(), conf.bufferSize)); break;
-		case LogDestinations::Sql: m_logger.reset(new SqlLogger(conf.format, conf.timeFormat, getServerType(), conf.bufferSize)); break;
+		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(form, tForm, sType)); break;
+		case LogDestinations::File: m_logger.reset(new FileLogger(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::Sql: m_logger.reset(new SqlLogger(form, tForm, sType, bSize)); break;
+		case LogDestinations::FileSql: m_logger.reset(new SqlFileLogger(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileConsole: m_logger.reset(new ConsoleFileLogger(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::SqlConsole: m_logger.reset(new ConsoleSqlLogger(form, tForm, sType, bSize));
+		case LogDestinations::FileSqlConsole: m_logger.reset(new ConsoleSqlFileLogger(file, form, tForm, sType, bSize));  break;
 	}
 }
 
 void AbstractServer::initializeLoggingConstants(ConfigFile &conf) const {
-	conf.setVariable("LOG_FILE", LogDestinations::File);
-	conf.setVariable("LOG_SQL", LogDestinations::Sql);
 	conf.setVariable("LOG_NONE", LogDestinations::None);
+
 	conf.setVariable("LOG_CONSOLE", LogDestinations::Console);
+	conf.setVariable("LOG_CONSOLE_FILE", LogDestinations::FileConsole);
+	conf.setVariable("LOG_CONSOLE_SQL", LogDestinations::SqlConsole);
+	conf.setVariable("LOG_CONSOLE_FILE_SQL", LogDestinations::FileSqlConsole);
+	conf.setVariable("LOG_CONSOLE_SQL_FILE", LogDestinations::FileSqlConsole);
+
+	conf.setVariable("LOG_FILE", LogDestinations::File);
+	conf.setVariable("LOG_FILE_CONSOLE", LogDestinations::FileConsole);
+	conf.setVariable("LOG_FILE_SQL", LogDestinations::FileSql);
+	conf.setVariable("LOG_FILE_CONSOLE_SQL", LogDestinations::FileSqlConsole);
+	conf.setVariable("LOG_FILE_SQL_CONSOLE", LogDestinations::FileSqlConsole);
+
+	conf.setVariable("LOG_SQL", LogDestinations::Sql);
+	conf.setVariable("LOG_SQL_FILE", LogDestinations::FileSql);
+	conf.setVariable("LOG_SQL_CONSOLE", LogDestinations::SqlConsole);
+	conf.setVariable("LOG_SQL_FILE_CONSOLE", LogDestinations::FileSqlConsole);
+	conf.setVariable("LOG_SQL_CONSOLE_FILE", LogDestinations::FileSqlConsole);
 }
 
 void AbstractServer::log(LogTypes::LogTypes type, const string &message) {

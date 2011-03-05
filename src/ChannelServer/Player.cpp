@@ -390,7 +390,8 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (portal == nullptr)
 		portal = newmap->getSpawnPoint();
 
-	if (!instance) { // Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
+	if (!instance) {
+		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
 		if (Instance *i = oldmap->getInstance()) {
 			i->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
@@ -408,18 +409,30 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	setStance(0);
 	setFh(0);
 	setFallCounter(0);
+
+	// Prevent chair Denial of Service
+	if (getMapChair() != 0) {
+		oldmap->playerSeated(getMapChair(), nullptr);
+		setMapChair(0);
+	}
+	if (getChair() != 0) {
+		setChair(0);
+	}
+
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getPets()->getSummoned(i)) {
 			pet->setPos(portal->pos);
 		}
 	}
 
-	if (getSummons()->getPuppet() != nullptr) { // Puppets and non-moving summons don't go with you
-		Summons::removeSummon(this, true, true, false, SummonMessages::None);
+	// Puppets and non-moving summons don't go with you
+	if (getSummons()->getPuppet() != nullptr) {
+		Summons::removeSummon(this, true, false, SummonMessages::None);
 	}
-	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == 0) {
-		Summons::removeSummon(this, false, true, false, SummonMessages::None);
+	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == Summon::Static) {
+		Summons::removeSummon(this, false, false, SummonMessages::None);
 	}
+
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
@@ -433,7 +446,8 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 
 string Player::getMedalName() {
 	string ret;
-	if (int32_t itemid = getInventory()->getEquippedId(EquipSlots::Medal)) { // Check if there's an item at that slot
+	if (int32_t itemid = getInventory()->getEquippedId(EquipSlots::Medal)) {
+		// Check if there's an item at that slot
 		ret = "<";
 		ret += ItemDataProvider::Instance()->getItemName(itemid);
 		ret += "> ";

@@ -29,7 +29,7 @@ class LoopingId;
 namespace Summons {
 	extern LoopingId summonids;
 	void useSummon(Player *player, int32_t skillId, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer = false);
+	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
 	void showSummon(Player *player);
 	void showSummons(Player *ofplayer, Player *toplayer);
 	void moveSummon(Player *Player, PacketReader &packet);
@@ -40,14 +40,20 @@ namespace Summons {
 
 namespace SummonMessages {
 	enum Messages {
-		None = 0x00,
 		OutOfTime = 0x01,
-		Disappearing = 0x02
+		Disappearing = 0x03,
+		None = 0x04
 	};
 }
 
 class Summon : public MovableLife {
 public:
+	enum MovementPatterns {
+		Static = 0,
+		Follow = 1,
+		Flying = 3
+	};
+
 	Summon() { }
 	Summon(int32_t id, int32_t summonid, uint8_t level);
 

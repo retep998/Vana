@@ -27,7 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonsPacket.h"
 
 // Summon Class
-Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(summonid), level(level), hp(0) {
+Summon::Summon(int32_t id, int32_t summonid, uint8_t level) :
+	id(id),
+	summonid(summonid),
+	level(level),
+	hp(0)
+{
 	switch (summonid) {
 		case Jobs::Ranger::Puppet:
 		case Jobs::Sniper::Puppet:
@@ -35,7 +40,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 			hp = SkillDataProvider::Instance()->getSkill(summonid, level)->x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
 		case Jobs::Corsair::WrathOfTheOctopi:
-			type = 0; // No movement - Puppets and Octopus
+			type = Static;
 			break;
 		case Jobs::Priest::SummonDragon:
 		case Jobs::Ranger::SilverHawk:
@@ -43,10 +48,10 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) : id(id), summonid(s
 		case Jobs::Bowmaster::Phoenix:
 		case Jobs::Marksman::Frostprey:
 		case Jobs::Outlaw::Gaviota:
-			type = 3; // Flying - Birds and Priest dragon
+			type = Flying;
 			break;
 		default:
-			type = 1; // Follow - 4th job mage summons
+			type = Follow;
 			break;
 	}
 }
@@ -61,28 +66,27 @@ int32_t Summons::loopId() {
 void Summons::useSummon(Player *player, int32_t skillId, uint8_t level) {
 	Summon *summon = new Summon(loopId(), skillId, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
-	removeSummon(player, puppet, true, false, SummonMessages::None);
-	Pos sumpos = player->getPos();
-	if (puppet)
-		sumpos = Maps::getMap(player->getMap())->findFloor(Pos((player->getPos().x + 200 * (player->isFacingRight() ? 1 : -1)), player->getPos().y));
+	removeSummon(player, puppet, false, SummonMessages::None);
+	Pos &ppos = player->getPos();
+	Pos sumpos;
+	if (puppet) {
+		int16_t x = ppos.x + 200 * (player->isFacingRight() ? 1 : -1);
+		sumpos = Maps::getMap(player->getMap())->findFloor(Pos(x, ppos.y));
+	}
+	else {
+		sumpos = ppos;
+	}
 	summon->setPos(sumpos);
 	player->getSummons()->addSummon(summon, SkillDataProvider::Instance()->getSkill(skillId, level)->time);
 	SummonsPacket::showSummon(player, summon, true);
 }
 
-void Summons::removeSummon(Player *player, bool puppet, bool animated, bool packetOnly, int8_t showMessage, bool fromTimer) {
+void Summons::removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer) {
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
 	if (summon != nullptr) {
-		SummonsPacket::removeSummon(player, summon, animated);
+		SummonsPacket::removeSummon(player, summon, showMessage);
 		if (!packetOnly) {
-			string name = getSummonName(summon->getSummonId());
 			player->getSummons()->removeSummon(puppet, fromTimer);
-			string msg = name;
-			switch (showMessage) {
-				case SummonMessages::OutOfTime: msg += " has run out of time and will disappear."; break;
-				case SummonMessages::Disappearing: msg += " is disappearing."; break;
-			}
-			PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Red);
 		}
 	}
 }
@@ -95,15 +99,20 @@ void Summons::showSummon(Player *player) {
 }
 
 void Summons::showSummons(Player *ofplayer, Player *toplayer) {
-	if (Summon *summon = ofplayer->getSummons()->getSummon())
+	if (Summon *summon = ofplayer->getSummons()->getSummon()) {
 		SummonsPacket::showSummon(ofplayer, summon, false, toplayer);
-	if (Summon *puppet = ofplayer->getSummons()->getPuppet())
+	}
+	if (Summon *puppet = ofplayer->getSummons()->getPuppet()) {
 		SummonsPacket::showSummon(ofplayer, puppet, false, toplayer);
+	}
 }
 
 void Summons::moveSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.get<int32_t>();
-	packet.skipBytes(4); // I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
+
+	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
+	packet.skipBytes(4);
+
 	Summon *summon = player->getSummons()->getSummon(summonid);
 	if (summon == nullptr) {
 		// Up to no good, lag, or something else
@@ -126,35 +135,7 @@ void Summons::damageSummon(Player *player, PacketReader &packet) {
 		summon->doDamage(damage);
 		//SummonsPacket::damageSummon(player, summonid, notsure, damage, mobid); // TODO: Find out if this packet even sends anymore
 		if (summon->getHP() <= 0) {
-			removeSummon(player, true, true, false, false, true);
+			removeSummon(player, true, false, SummonMessages::None, true);
 		}
 	}
-}
-
-string Summons::getSummonName(int32_t summonid) {
-	string ret = "Summon";
-	switch (summonid) {
-		case Jobs::Bishop::Bahamut: ret = "Bahamut"; break;
-		case Jobs::Outlaw::Gaviota: ret = "Gaviota"; break;
-		case Jobs::Outlaw::Octopus:
-		case Jobs::Corsair::WrathOfTheOctopi: ret = "Octopus"; break;
-		case Jobs::Sniper::Puppet:
-		case Jobs::Ranger::Puppet:
-		case Jobs::WindArcher::Puppet: ret = "Puppet"; break;
-		case Jobs::Priest::SummonDragon: ret = "Summon Dragon"; break;
-		case Jobs::Ranger::SilverHawk: ret = "Silver Hawk"; break;
-		case Jobs::Sniper::GoldenEagle: ret = "Golden Eagle"; break;
-		case Jobs::DarkKnight::Beholder: ret = "Beholder"; break;
-		case Jobs::FPArchMage::Elquines: ret = "Elquines"; break;
-		case Jobs::ILArchMage::Ifrit: ret = "Ifrit"; break;
-		case Jobs::Bowmaster::Phoenix: ret = "Phoenix"; break;
-		case Jobs::Marksman::Frostprey: ret = "Frostprey"; break;
-		case Jobs::DawnWarrior::Soul: ret = "Soul"; break;
-		case Jobs::BlazeWizard::Ifrit: ret = "Ifrit"; break;
-		case Jobs::BlazeWizard::Flame: ret = "Flame"; break;
-		case Jobs::WindArcher::Storm: ret = "Storm"; break;
-		case Jobs::NightWalker::Darkness: ret = "Darkness"; break;
-		case Jobs::ThunderBreaker::Lightning: ret = "Lightning"; break;
-	}
-	return ret;
 }
