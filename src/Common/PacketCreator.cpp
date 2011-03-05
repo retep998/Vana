@@ -16,12 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
-#include "Pos.h"
 #include "PacketReader.h"
-#include <iostream>
-#include <boost/asio.hpp>
+#include "Pos.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <cctype>
+#include <iostream>
+#include <stdexcept>
 
 PacketCreator::PacketCreator() : 
 m_pos(0),
@@ -53,30 +54,34 @@ void PacketCreator::addBuffer(PacketReader &packet) {
 }
 
 void PacketCreator::addBytes(const char *hex) {
+	size_t x = 0;
 	for (size_t i = 0; i < strlen(hex) / 2; i++) {
-		unsigned char byte1 = hex[i * 2];
-		unsigned char byte2 = hex[i * 2 + 1];
-		if (byte1 >= 'A' && byte1 <= 'F')
-			byte1 -= 'A' - 0xa;
-		else if (byte1 >= 'a' && byte1 <= 'f')
-			byte1 -= 'a' - 0xa;
-		else if (byte1 >= '0' && byte1 <= '9')
-			byte1 -= '0';
-		if (byte2 >= 'A' && byte2 <= 'F')
-			byte2 -= 'A' - 0xa;
-		else if (byte2 >= 'a' && byte2 <= 'f')
-			byte2 -= 'a' - 0xa;
-		else if (byte2 >= '0' && byte2 <= '9')
-			byte2 -= '0';
+		x = i * 2;
+		unsigned char byte1 = getHexByte(hex[x]);
+		unsigned char byte2 = getHexByte(hex[x + 1]);
 		unsigned char byte = byte1 * 0x10 + byte2;
 		add<uint8_t>(byte);
 	}
 }
 
+unsigned char PacketCreator::getHexByte(unsigned char input) {
+	input = toupper(input);
+	if (input >= 'A' && input <= 'F') {
+		input -= 'A' - 0xA;
+	}
+	else if (input >= '0' && input <= '9') {
+		input -= '0';
+	}
+	else {
+		throw std::invalid_argument("addBytes used with a non-hex digit");
+	}
+	return input;
+}
+
 void PacketCreator::addString(const string &str, size_t len) {
 	size_t slen = str.size();
 	if (len < slen) {
-		std::cout << "ERROR: addString used with length shorter than string size." << std::endl; // TODO: Throw exception
+		throw std::invalid_argument("addString used with a length shorter than string size");
 	}
 	strncpy((char *) getBuffer(m_pos, len), str.c_str(), slen);
 	for (size_t i = slen; i < len; i++) {
@@ -92,7 +97,8 @@ void PacketCreator::addString(const string &str) {
 }
 
 unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
-	if (m_packetCapacity < pos + len) { // Buffer is not large enough
+	if (m_packetCapacity < pos + len) {
+		// Buffer is not large enough
 		while (m_packetCapacity < pos + len) {
 			m_packetCapacity *= 2; // Double the capacity each time the buffer is full
 		}

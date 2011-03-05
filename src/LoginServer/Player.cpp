@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Login.h"
 #include "LoginPacket.h"
+#include "LoginServer.h"
 #include "PacketReader.h"
 #include "RecvHeader.h"
 #include "Worlds.h"
@@ -36,7 +37,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
-			case CMSG_CLIENT_ERROR: std::cout << packet.getString(); break;
+			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
@@ -51,6 +52,19 @@ void Player::realHandleRequest(PacketReader &packet) {
 		// Packet data didn't match the packet length somewhere
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
+
+		std::stringstream x;
+		packet.reset();
+		unsigned char *y = packet.getBuffer();
+		size_t z = packet.getBufferLength();
+		size_t i = 0;
+		x << "User ID: " << getUserId() << "; Packet: ";
+		while (i < z) {
+			x << std::hex << std::setw(2) << std::setfill('0') << (int16_t) y[i] << " ";
+			i++;
+		}
+
+		LoginServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}
 }

@@ -29,23 +29,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
-		if (getType() == InterChannelServer) {
+		if (getType() == ServerTypes::Channel) {
 			if (WorldServer::Instance()->isConnected()) {
 				LoginServerConnectPacket::removeChannel(channel);
 			}
 			PlayerDataProvider::Instance()->removeChannelPlayers(channel);
 			Channels::Instance()->removeChannel(channel);
-			std::cout << "Channel " << channel << " disconnected." << std::endl;
+
+			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + boost::lexical_cast<string>(channel));
 		}
 	}
 }
 
 void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
-	if (!processAuth(packet, WorldServer::Instance()->getInterPassword())) return;
+	if (!processAuth(WorldServer::Instance(), packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.get<int16_t>()) {
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
@@ -60,7 +62,7 @@ void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 
 void WorldServerAcceptConnection::authenticated(int8_t type) {
 	channel = Channels::Instance()->getAvailableChannel();
-	if (type == InterChannelServer) {
+	if (type == ServerTypes::Channel) {
 		if (channel != -1) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
@@ -69,11 +71,12 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			SyncPacket::PlayerPacket::sendParties(this);
 			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
-			std::cout << "Assigned channel " << channel << " to channel server." << std::endl;
+
+			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + boost::lexical_cast<string>(channel));
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);
-			std::cout << "Error: No more channel to assign." << std::endl;
+			std::cout << "Error: No more channels to assign." << std::endl;
 			getSession()->disconnect();
 		}
 	}

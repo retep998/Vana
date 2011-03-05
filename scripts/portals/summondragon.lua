@@ -20,6 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getInstanceVariable("egg", true) ~= 1 and getItemAmount(4001094) > 0 then
 	giveItem(4001094, -1);
 	setReactorState(240040611, 2406000, 1);
-	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", 5);
+	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", m_red);
 	setInstanceVariable("egg", "1");
 end

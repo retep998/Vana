@@ -77,7 +77,7 @@ void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *it
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(inv);
 	packet.add<int16_t>(slot);
-	packet.add<int16_t>(item->amount);
+	packet.add<int16_t>(item->getAmount());
 	player->getSession()->send(packet);
 }
 
@@ -191,7 +191,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	packet.add<int16_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
-	packet.add<int8_t>((uint8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
 	packet.addBool(whisper);
 	if (item == nullptr) {
 		packet.add<int8_t>(0);
@@ -313,7 +313,7 @@ void InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(0x02);
 	packet.add<int8_t>(0x03);
-	packet.add<int8_t>(GameLogicUtilities::getInventory(hammered->id));
+	packet.add<int8_t>(GameLogicUtilities::getInventory(hammered->getId()));
 	packet.add<int16_t>(slot);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(0x01);

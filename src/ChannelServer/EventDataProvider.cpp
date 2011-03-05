@@ -73,7 +73,7 @@ void EventDataProvider::loadInstances() {
 }
 
 void EventDataProvider::startInstance(const string &name, int32_t time, int32_t repeat) {
-	Instance *instance = new Instance(name, 0, 0, time, repeat, false);
+	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 }

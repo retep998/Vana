@@ -15,10 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "GameObjects.h"
-#include "EquipDataProvider.h"
+#pragma once
 
-// Item
-Item::Item(int32_t equipid, bool random) : id(equipid), amount(1), scrolls(0), hammers(0), flags(0), petid(0), name("") {
-	EquipDataProvider::Instance()->setEquipStats(this, random);
-}
+#include "Logger.h"
+#include <string>
+
+using std::string;
+
+// Default logger/console
+class ConsoleLogger : public Logger {
+public:
+	ConsoleLogger(const string &format, const string &timeFormat, int16_t serverType);
+
+	void log(LogTypes::LogTypes type, const string &identifier, const string &message);
+};

@@ -46,6 +46,7 @@ public:
 	bool hasItemScript(int32_t itemid);
 	bool hasMapEntryScript(int32_t mapid);
 	bool hasFirstMapEntryScript(int32_t mapid);
+	int32_t getObjectIdFromScript(const string &script) { return scripts.find(script) == scripts.end() ? 0 : scripts[script]; }
 private:
 	ScriptDataProvider() {}
 	static ScriptDataProvider *singleton;
@@ -56,4 +57,5 @@ private:
 	unordered_map<int32_t, string> firstmapentryscripts;
 	unordered_map<int32_t, string> itemscripts;
 	unordered_map<int16_t, unordered_map<int8_t, string> > questscripts;
+	unordered_map<string, int32_t> scripts;
 };

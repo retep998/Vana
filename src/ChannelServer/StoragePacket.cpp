@@ -55,8 +55,9 @@ void StoragePacket::addItem(Player *player, int8_t inv) {
 	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
-		if (GameLogicUtilities::getInventory(item->id) == inv)
+		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
+		}
 	}
 	player->getSession()->send(packet);
 }
@@ -72,8 +73,9 @@ void StoragePacket::takeItem(Player *player, int8_t inv) {
 	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
-		if (GameLogicUtilities::getInventory(item->id) == inv)
+		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
 			PlayerPacketHelper::addItemInfo(packet, 0, item);
+		}
 	}
 	player->getSession()->send(packet);
 }

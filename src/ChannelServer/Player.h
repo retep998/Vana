@@ -70,8 +70,8 @@ public:
 	void setTradeId(int32_t id) { this->trade_id = id; }
 	void setShop(int32_t shopid) { shop = shopid; }
 	void setChair(int32_t chair) { this->chair = chair; }
-	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setItemEffect(int32_t effect) { this->item_effect = effect; }
+	void setChalkboard(const string &msg) { this->chalkboard = msg; }
 	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
 	void setNpc(Npc *npc) { this->npc.reset(npc); }
 	void setParty(Party *party) { this->party = party; }
@@ -84,6 +84,7 @@ public:
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
 	int16_t getMapChair() const { return mapchair; }
+	uint16_t getPortalCount(bool initialPacket = false);
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
 	int32_t getEyes() const { return eyes; }
@@ -150,6 +151,7 @@ private:
 	int8_t fall_counter;
 	uint8_t buddylist_size;
 	int16_t mapchair;
+	uint16_t m_portalCount;
 	int32_t id;
 	int32_t user_id;
 	int32_t eyes;

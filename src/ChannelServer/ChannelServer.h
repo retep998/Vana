@@ -38,10 +38,11 @@ public:
 	}
 	void loadData();
 	void loadConfig();
+	void loadLogConfig();
 	void listen();
 	void shutdown();
 	void connectWorld();
-	void sendToWorld(PacketCreator &packet);
+	string makeLogIdentifier();
 
 	void setPianusChannel(bool isChannel) { m_pianusChannel = isChannel; }
 	void setPapChannel(bool isChannel) { m_papChannel = isChannel; }
@@ -78,6 +79,7 @@ public:
 	int16_t getPinkBeanAttempts() const { return m_config.pinkbean.attempts; }
 	string getScrollingHeader() const { return m_config.scrollingHeader; }
 	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
+	void sendToWorld(PacketCreator &packet);
 
 	// Specific bosses that can be battled on this channel
 	bool isPianusChannel() const { return m_pianusChannel; }
@@ -92,7 +94,7 @@ public:
 	vector<int8_t> getHorntailChannels() const { return m_config.horntail.channels; }
 	vector<int8_t> getPinkBeanChannels() const { return m_config.pinkbean.channels; }
 private:
-	ChannelServer() : m_channel(-1) {}
+	ChannelServer();
 	static ChannelServer *singleton;
 
 	WorldServerConnection *m_worldConnection;

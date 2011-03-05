@@ -67,7 +67,7 @@ void PlayerPets::petInfoPacket(PacketCreator &packet) {
 			packet.add<int8_t>(pet->getFullness());
 			packet.add<int16_t>(0);
 			it = m_player->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)));
-			packet.add<int32_t>(it != nullptr ? it->id : 0);
+			packet.add<int32_t>(it != nullptr ? it->getId() : 0);
 		}
 	}
 	packet.add<int8_t>(0); // End of pets / start of taming mob

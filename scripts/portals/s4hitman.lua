@@ -26,11 +26,11 @@ if isQuestActive(6201) then
 			maps = {910200000, 910200001, 910200002};
 			setMap(maps[getRandomNumber(#maps)]);
 		else
-			showMessage("Other characters are on request. You can't enter.", 5);
+			showMessage("Other characters are on request. You can't enter.", m_red);
 		end
 	else
-		showMessage("Shawn's request is completed. You don't need to go in again.", 5);
+		showMessage("Shawn's request is completed. You don't need to go in again.", m_red);
 	end
 else
-	showMessage("You can't go. You didn't get Shawn's request.", 5);
+	showMessage("You can't go. You didn't get Shawn's request.", m_red);
 end

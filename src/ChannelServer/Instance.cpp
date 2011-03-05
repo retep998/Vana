@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Instance.h"
+#include "ChannelServer.h"
 #include "Instances.h"
 #include "LuaInstance.h"
 #include "MapPacket.h"
@@ -29,22 +30,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer/Timer.h"
 #include "TimeUtilities.h"
 #include <functional>
+#include <sstream>
 
 using std::tr1::bind;
 
-Instance::Instance(const string &name, int32_t map, int32_t playerid, int32_t time, int32_t persistent, bool showtimer) :
-m_name(name),
-m_max_players(0),
-m_timer_counter(0),
-m_persistent(persistent),
-m_show_timer(showtimer),
-m_timers(new Timer::Container),
-m_variables(new Variables),
-m_luainstance(new LuaInstance(name, playerid)),
-m_start(TimeUtilities::getTickCount()),
-m_reset_on_destroy(true),
-m_marked_for_delete(false)
+Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t time, int32_t persistent, bool showTimer, bool appLaunch) :
+	m_name(name),
+	m_max_players(0),
+	m_timer_counter(0),
+	m_persistent(persistent),
+	m_show_timer(showTimer),
+	m_timers(new Timer::Container),
+	m_variables(new Variables),
+	m_luainstance(new LuaInstance(name, playerId)),
+	m_start(TimeUtilities::getTickCount()),
+	m_reset_on_destroy(true),
+	m_marked_for_delete(false)
 {
+	if (!appLaunch) {
+		std::stringstream x;
+		x << name << " started by player " << playerId;
+		ChannelServer::Instance()->log(LogTypes::InstanceBegin, x.str());
+	}
 	setInstanceTimer(time, true);
 }
 

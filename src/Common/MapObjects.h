@@ -26,13 +26,13 @@ using std::string;
 class Player;
 
 struct FootholdInfo {
-	FootholdInfo() : forbidJumpDown(false) { }
+	FootholdInfo() : forbidJumpDown(false), leftEdge(false), rightEdge(false) { }
 
 	bool forbidJumpDown;
+	bool leftEdge;
+	bool rightEdge;
 	int16_t id;
 	int16_t dragForce;
-	int16_t next;
-	int16_t prev;
 	Pos pos1;
 	Pos pos2;
 };

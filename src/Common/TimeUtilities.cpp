@@ -66,9 +66,12 @@ int32_t TimeUtilities::getMonth(time_t ctime) {
 	return result;
 }
 
-int32_t TimeUtilities::getYear(time_t ctime) {
+int32_t TimeUtilities::getYear(bool twoYear, time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	int32_t result = timeinfo->tm_year + 1900;
+	if (twoYear) {
+		return result % 100;
+	}
 	return result;
 }
 
@@ -78,23 +81,45 @@ int32_t TimeUtilities::getDay(time_t ctime) {
 	return result;
 }
 
-string TimeUtilities::getDayString(time_t ctime) {
+string TimeUtilities::getDayString(bool shortened, time_t ctime) {
 	string result = "fail";
 	switch (getDay(ctime)) {
-		case 1: result = "Sunday"; break;
-		case 2: result = "Monday"; break;
-		case 3: result = "Tuesday"; break;
-		case 4: result = "Wednesday"; break;
-		case 5: result = "Thursday"; break;
-		case 6: result = "Friday"; break;
-		case 7: result = "Saturday"; break;
+		case 1: result = (shortened ? "Sun" : "Sunday"); break;
+		case 2: result = (shortened ? "Mon" : "Monday"); break;
+		case 3: result = (shortened ? "Tue" : "Tuesday"); break;
+		case 4: result = (shortened ? "Wed" : "Wednesday"); break;
+		case 5: result = (shortened ? "Thu" : "Thursday"); break;
+		case 6: result = (shortened ? "Fri" : "Friday"); break;
+		case 7: result = (shortened ? "Sat" : "Saturday"); break;
 	}
 	return result;
 }
 
-int32_t TimeUtilities::getHour(time_t ctime) {
+string TimeUtilities::getMonthString(bool shortened, time_t ctime) {
+	string result = "fail";
+	switch (getMonth(ctime)) {
+		case 1: result = (shortened ? "Jan" : "January"); break;
+		case 2: result = (shortened ? "Feb" : "February"); break;
+		case 3: result = (shortened ? "Mar" : "March"); break;
+		case 4: result = (shortened ? "Apr" : "April"); break;
+		case 5: result = (shortened ? "May" : "May"); break;
+		case 6: result = (shortened ? "Jun" : "June"); break;
+		case 7: result = (shortened ? "Jul" : "July"); break;
+		case 8: result = (shortened ? "Aug" : "August"); break;
+		case 9: result = (shortened ? "Sep" : "September"); break;
+		case 10: result = (shortened ? "Oct" : "October"); break;
+		case 11: result = (shortened ? "Nov" : "November"); break;
+		case 12: result = (shortened ? "Dec" : "December"); break;
+	}
+	return result;
+}
+
+int32_t TimeUtilities::getHour(bool nonMilitary, time_t ctime) {
 	tm *timeinfo = localtime(&ctime);
 	int32_t result = timeinfo->tm_hour;
+	if (nonMilitary && result > 12) {
+		result -= 12;
+	}
 	return result;
 }
 
@@ -128,12 +153,37 @@ bool TimeUtilities::isDst(time_t ctime) {
 	return (timeinfo->tm_isdst > 0);
 }
 
+string TimeUtilities::getTimeZone() {
+	int32_t offset = getTimeZoneOffset() / 60 / 60 * 100; // Offset in hours
+	bool negative = false;
+	if (offset < 0) {
+		negative = true;
+		offset *= -1;
+	}
+
+	string ret;
+	std::stringstream t;
+	if (negative) {
+		t << "-";
+	}
+	else if (offset != 0) {
+		t << "+";
+	}
+	t << std::setw(4) << std::setfill('0') << offset;
+	ret = t.str();
+	return ret;
+}
+
 int32_t TimeUtilities::getTimeZoneOffset() {
 	time_t ctime = time(nullptr);
+
 	tm *ts = localtime(&ctime);
-	int32_t hour = ts->tm_hour; // C/C++ have extremely unsightly time handling, beware
+	int32_t ltime = ts->tm_hour * 100 + ts->tm_min;
+
 	ts = gmtime(&ctime);
-	return ((hour - ts->tm_hour) * 60 * 60);
+	int32_t gtime = ts->tm_hour * 100 + ts->tm_min;
+
+	return ((ltime - gtime) * 60 * 60 / 100); // Number of seconds as an offset
 }
 
 #ifdef WIN32

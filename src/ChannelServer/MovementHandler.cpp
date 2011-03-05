@@ -27,7 +27,7 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
-	uint8_t n = packet.get<int8_t>();
+	uint8_t n = packet.get<uint8_t>();
 	for (uint8_t i = 0; i < n; i++) {
 		int8_t type = packet.get<int8_t>();
 		switch (type) {

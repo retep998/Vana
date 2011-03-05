@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("scripts/instances/" + name + ".lua", playerid) {
 	initialize();
-	setVariable("instancename", name);
+	setVariable("_instancename", name);
 
 	lua_register(luaVm, "createInstance", &LuaExports::createInstanceInstance);
 

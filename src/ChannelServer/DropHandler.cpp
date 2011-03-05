@@ -74,6 +74,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		}
 	}
 	std::random_shuffle(drops.begin(), drops.end());
+	int16_t mod = 25;
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount - i->minamount) + i->minamount);
 		Drop *drop = nullptr;
@@ -87,11 +88,9 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		}
 		if (Randomizer::Instance()->randInt(999999) < chance) {
 			if (explosive) {
-				pos.x = origin.x + ((d % 2) ? (35 * (d + 1) / 2) : -(35 * (d / 2)));
+				mod = 35;
 			}
-			else {
-				pos.x = origin.x + ((d % 2) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
-			}
+			pos.x = origin.x + ((d % 2) ? (mod * (d + 1) / 2) : -(mod * (d / 2)));
 			pos.y = origin.y;
 
 //			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
@@ -256,16 +255,16 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 	}
 	else {
 		Item dropitem = drop->getItem();
-		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropitem.id);
+		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropitem.getId());
 		if (cons != nullptr && cons->autoconsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
-				Inventory::useItem(player, dropitem.id);
+				Inventory::useItem(player, dropitem.getId());
 				DropsPacket::dontTake(player);
 				drop->takeDrop(player, petid);
 				return;
 			}
-			Inventory::useItem(player, dropitem.id);
+			Inventory::useItem(player, dropitem.getId());
 		}
 		else {
 			Item *item = new Item(dropitem);

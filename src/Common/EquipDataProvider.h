@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Item.h"
 #include "Types.h"
-#include "GameObjects.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <vector>
 
@@ -81,6 +81,8 @@ private:
 	static EquipDataProvider *singleton;
 
 	void loadEquips();
+	int16_t getStatVariance(uint16_t amount);
+	int16_t getRandomStat(int16_t equipAmount, uint16_t variance);
 	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
 
 	unordered_map<int32_t, EquipInfo> equips;

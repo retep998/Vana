@@ -90,6 +90,12 @@
     <Filter Include="Source Files\Database Loading\MCDB">
       <UniqueIdentifier>{5612baa9-cd7e-42ec-8dfd-b614c568bf29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Loggers">
+      <UniqueIdentifier>{2c17dad6-15c7-4881-85ce-15f5869bd8ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Loggers">
+      <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -185,9 +191,6 @@
     <ClCompile Include="src\Common\ServerConnection.cpp">
       <Filter>Source Files\Inter-Server</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\GameObjects.cpp">
-      <Filter>Source Files\Data Structures</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Variables.cpp">
       <Filter>Source Files\Data Structures</Filter>
     </ClCompile>
@@ -229,6 +232,24 @@
     </ClCompile>
     <ClCompile Include="src\Common\ConfigurationPacket.cpp">
       <Filter>Source Files\Packets\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Item.cpp">
+      <Filter>Source Files\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConsoleLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\FileLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Logger.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\LogReplacements.cpp">
+      <Filter>Source Files\Loggers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\SqlLogger.cpp">
+      <Filter>Source Files\Loggers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +447,24 @@
     </ClInclude>
     <ClInclude Include="src\Common\VanaConstants.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Item.h">
+      <Filter>Header Files\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConsoleLogger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\FileLogger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Logger.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LogReplacements.h">
+      <Filter>Header Files\Loggers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SqlLogger.h">
+      <Filter>Header Files\Loggers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,7 +27,8 @@ using boost::bimap;
 using std::tr1::unordered_map;
 using std::vector;
 using std::string;
-struct Item;
+
+class Item;
 
 struct SummonBag {
 	int32_t mobid;
@@ -221,10 +222,11 @@ public:
 	bool summonBagExists(int32_t itemid) { return (mobs.find(itemid) != mobs.end()); }
 	bool isTradeable(int32_t itemid) { return (!(items[itemid].notrade || items[itemid].quest)); }
 	bool isCash(int32_t itemid) { return items[itemid].cash; }
+	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
 	int32_t getPrice(int32_t itemid) { return (itemExists(itemid) ? items[itemid].price : 0); }
 	int32_t getMesoBonus(int32_t itemid) { return (itemExists(itemid) ? items[itemid].mesos : 0); }
-	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
-	int32_t getHunger(int32_t itemid) {return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
+	int32_t getHunger(int32_t itemid) { return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
+	int32_t getItemNpc(int32_t itemid) { return (itemExists(itemid) ? items[itemid].npc : 0); }
 	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
 	ItemRewardInfo * getRandomReward(int32_t itemid);
 
@@ -250,6 +252,7 @@ private:
 	void loadItemRewards();
 	void loadPets();
 	void loadPetInteractions();
+	int16_t getStatVariance(int8_t mod);
 
 	typedef bimap<int32_t, int32_t> card_map;
 	typedef card_map::value_type card_info;

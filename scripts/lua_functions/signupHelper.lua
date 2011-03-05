@@ -52,7 +52,7 @@ end
 function messageAll(msg)
 	for i = 1, getInstanceSignupCount() do
 		if setPlayer(getInstancePlayerByIndex(i)) then
-			showMessage(msg, 5);
+			showMessage(msg, m_red);
 			revertPlayer();
 		end
 	end

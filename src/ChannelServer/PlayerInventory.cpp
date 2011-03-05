@@ -56,47 +56,63 @@ PlayerInventory::~PlayerInventory() {
 
 void PlayerInventory::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT inv, slot, itemid, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, petid, items.name, pets.index, pets.name, pets.level, pets.closeness, pets.fullness FROM items LEFT JOIN pets ON items.petid = pets.id WHERE charid = " << m_player->getId();
+	query << "SELECT items.*, pets.* FROM items LEFT JOIN pets ON items.petid = pets.id WHERE charid = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
+	enum TableFields {
+		ItemCharId = 0,
+		Inv, Slot, ItemId, Amount, Slots,
+		Scrolls, iStr, iDex, iInt, iLuk,
+		iHp, iMp, iWatk, iMatk, iWdef,
+		iMdef, iAcc, iAvo, iHand, iSpeed,
+		iJump, Flags, Hammers, PetId, Name,
+		// End of items, start of pets
+		PetsId, Index, PetName, Level, Closeness,
+		Fullness
+	};
+
+
 	Item *item;
+	string temp;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		item = new Item;
-		item->id = res[i][2];
-		item->amount = res[i][3];
-		item->slots = (int8_t) res[i][4];
-		item->scrolls = (int8_t) res[i][5];
-		item->istr = res[i][6];
-		item->idex = res[i][7];
-		item->iint = res[i][8];
-		item->iluk = res[i][9];
-		item->ihp = res[i][10];
-		item->imp = res[i][11];
-		item->iwatk = res[i][12];
-		item->imatk = res[i][13];
-		item->iwdef = res[i][14];
-		item->imdef = res[i][15];
-		item->iacc = res[i][16];
-		item->iavo = res[i][17];
-		item->ihand = res[i][18];
-		item->ispeed = res[i][19];
-		item->ijump = res[i][20];
-		item->flags = (int8_t) res[i][21];
-		item->hammers = res[i][22];
-		item->petid = res[i][23];
-		res[i][24].to_string(item->name);
-		addItem((int8_t) res[i][0], res[i][1], item, true);
-		if (item->petid != 0) {
+		mysqlpp::Row &row = res[i];
+		item = new Item(row[ItemId]);
+		item->setAmount(row[Amount]);
+		item->setSlots(static_cast<int8_t>(row[Slots]));
+		item->setScrolls(static_cast<int8_t>(row[Scrolls]));
+		item->setStr(row[iStr]);
+		item->setDex(row[iDex]);
+		item->setInt(row[iInt]);
+		item->setLuk(row[iLuk]);
+		item->setHp(row[iHp]);
+		item->setMp(row[iMp]);
+		item->setWatk(row[iWatk]);
+		item->setMatk(row[iMatk]);
+		item->setWdef(row[iWdef]);
+		item->setMdef(row[iMdef]);
+		item->setAccuracy(row[iAcc]);
+		item->setAvoid(row[iAvo]);
+		item->setHands(row[iHand]);
+		item->setSpeed(row[iSpeed]);
+		item->setJump(row[iJump]);
+		item->setPetId(row[PetId]);
+		item->setFlags(static_cast<int16_t>(row[Flags]));
+		item->setHammers(row[Hammers]);
+		row[Name].to_string(temp);
+		item->setName(temp);
+
+		addItem((int8_t) row[Inv], row[Slot], item, true);
+		if (item->getPetId() != 0) {
 			Pet *pet = new Pet(
 				m_player,
-				item, // Item - Gives id and type to pet
-				(int8_t) res[i][25], // Index
-				(string) res[i][26], // Name
-				(uint8_t) res[i][27], // Level
-				(int16_t) res[i][28], // Closeness
-				(uint8_t) res[i][29], // Fullness
-				(uint8_t) res[i][1] // Inventory Slot
-			);
+				item,
+				static_cast<int8_t>(row[Index]),
+				static_cast<string>(row[PetName]),
+				static_cast<uint8_t>(row[Level]),
+				static_cast<int16_t>(row[Closeness]),
+				static_cast<uint8_t>(row[Fullness]),
+				static_cast<uint8_t>(row[Slot])
+ 			);
 			m_player->getPets()->addPet(pet);
 		}
 	}
@@ -138,34 +154,34 @@ void PlayerInventory::save() {
 			query << m_player->getId() << ","
 				<< (int16_t) i << ","
 				<< iter->first << ","
-				<< item->id << ","
-				<< item->amount << ","
-				<< (int16_t) item->slots << ","
-				<< (int16_t) item->scrolls << ","
-				<< item->istr << ","
-				<< item->idex << ","
-				<< item->iint << ","
-				<< item->iluk << ","
-				<< item->ihp << ","
-				<< item->imp << ","
-				<< item->iwatk << ","
-				<< item->imatk << ","
-				<< item->iwdef << ","
-				<< item->imdef << ","
-				<< item->iacc << ","
-				<< item->iavo << ","
-				<< item->ihand << ","
-				<< item->ispeed << ","
-				<< item->ijump << ","
-				<< (int16_t) item->flags << ","
-				<< item->hammers << ","
-				<< item->petid << ","
-				<< mysqlpp::quote << item->name << ")";
+				<< item->getId() << ","
+				<< item->getAmount() << ","
+				<< (int16_t) item->getSlots() << ","
+				<< (int16_t) item->getScrolls() << ","
+				<< item->getStr() << ","
+				<< item->getDex() << ","
+				<< item->getInt() << ","
+				<< item->getLuk() << ","
+				<< item->getHp() << ","
+				<< item->getMp() << ","
+				<< item->getWatk() << ","
+				<< item->getMatk() << ","
+				<< item->getWdef() << ","
+				<< item->getMdef() << ","
+				<< item->getAccuracy() << ","
+				<< item->getAvoid() << ","
+				<< item->getHands() << ","
+				<< item->getSpeed() << ","
+				<< item->getJump() << ","
+				<< item->getFlags() << ","
+				<< item->getHammers() << ","
+				<< item->getPetId() << ","
+				<< mysqlpp::quote << item->getName() << ")";
 		}
 	}
-	if (!firstrun)
+	if (!firstrun) {
 		query.exec();
-
+	}
 	query << "DELETE FROM teleport_rock_locations WHERE charid = " << m_player->getId();
 	query.exec();
 
@@ -224,30 +240,37 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 
 void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoading) {
 	m_items[inv - 1][slot] = item;
-	if (m_itemamounts.find(item->id) != m_itemamounts.end())
-		m_itemamounts[item->id] += item->amount;
-	else
-		m_itemamounts[item->id] = item->amount;
+	int32_t itemid = item->getId();
+	if (m_itemamounts.find(itemid) != m_itemamounts.end()) {
+		m_itemamounts[itemid] += item->getAmount();
+	}
+	else {
+		m_itemamounts[itemid] = item->getAmount();
+	}
 	if (slot < 0) {
-		addEquipped(slot, item->id);
+		addEquipped(slot, itemid);
 		m_player->getStats()->setEquip(slot, item, isLoading);
 	}
 }
 
 Item * PlayerInventory::getItem(int8_t inv, int16_t slot) {
-	if (!GameLogicUtilities::isValidInventory(inv))
+	if (!GameLogicUtilities::isValidInventory(inv)) {
 		return nullptr;
+	}
 	inv -= 1;
-	if (m_items[inv].find(slot) != m_items[inv].end())
+	if (m_items[inv].find(slot) != m_items[inv].end()) {
 		return m_items[inv][slot];
+	}
 	return nullptr;
 }
 
 void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 	inv -= 1;
 	if (m_items[inv].find(slot) != m_items[inv].end()) {
-		if (updateAmount)
-			m_itemamounts[m_items[inv][slot]->id] -= m_items[inv][slot]->amount;
+		if (updateAmount) {
+			Item *x = m_items[inv][slot];
+			m_itemamounts[x->getId()] -= x->getAmount();
+		}
 		if (slot < 0) {
 			addEquipped(slot, 0);
 			m_player->getStats()->setEquip(slot, nullptr);
@@ -269,7 +292,7 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 	else {
 		m_items[inv][slot] = item;
 		if (slot < 0) {
-			addEquipped(slot, item->id);
+			addEquipped(slot, item->getId());
 			m_player->getStats()->setEquip(slot, item);
 		}
 	}
@@ -277,7 +300,7 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 
 int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	inv -= 1;
-	return m_items[inv].find(slot) != m_items[inv].end() ? m_items[inv][slot]->amount : 0;
+	return (m_items[inv].find(slot) != m_items[inv].end() ? m_items[inv][slot]->getAmount() : 0);
 }
 
 void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
@@ -372,11 +395,12 @@ int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 int32_t PlayerInventory::doShadowStars() {
 	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); s++) {
 		Item *item = getItem(Inventories::UseInventory, s);
-		if (item == nullptr)
+		if (item == nullptr) {
 			continue;
-		if (GameLogicUtilities::isStar(item->id) && item->amount >= 200) {
+		}
+		if (GameLogicUtilities::isStar(item->getId()) && item->getAmount() >= 200) {
 			Inventory::takeItemSlot(m_player, Inventories::UseInventory, s, 200);
-			return item->id;
+			return item->getId();
 		}
 	}
 	return 0;
@@ -470,13 +494,14 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
 		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
 			Item *item = getItem(i, s);
-			if (item == nullptr)
+			if (item == nullptr) {
 				continue;
-			if (item->petid == 0) {
+			}
+			if (item->getPetId() == 0) {
 				PlayerPacketHelper::addItemInfo(packet, s, item);
 			}
 			else {
-				Pet *pet = m_player->getPets()->getPet(item->petid);
+				Pet *pet = m_player->getPets()->getPet(item->getPetId());
 				packet.add<int8_t>((int8_t) s);
 				PetsPacket::addInfo(packet, pet);
 			}

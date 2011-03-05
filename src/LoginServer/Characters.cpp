@@ -128,9 +128,9 @@ void Characters::showCharacters(Player *player) {
 	query << "SELECT char_slots FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorld();
 	res = query.store();
 
-	int32_t max = 3;
+	int32_t max = Characters::DefaultCharacterSlots;
 	if (!res.empty()) {
-		max = (int32_t)(res[0][0]);
+		max = static_cast<int32_t>(res[0][0]);
 	}
 
 	LoginPacket::showCharacters(player, chars, max);
@@ -138,7 +138,7 @@ void Characters::showCharacters(Player *player) {
 
 void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 	string name = packet.getString();
-	if (name.size() > 15 || name.size() < 4) {
+	if (name.size() > Characters::MaxNameSize || name.size() < Characters::MinNameSize) {
 		return;
 	}
 
@@ -155,22 +155,22 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 			<< inventory << ", "
 			<< slot << ", "
 			<< itemid << ", "
-			<< (int16_t) equip.slots << ", "
-			<< equip.istr << ", "
-			<< equip.idex << ", "
-			<< equip.iint << ", "
-			<< equip.iluk << ", "
-			<< equip.ihp << ", "
-			<< equip.imp << ", "
-			<< equip.iwatk << ", "
-			<< equip.imatk << ", "
-			<< equip.iwdef << ", "
-			<< equip.imdef << ", "
-			<< equip.iacc << ", "
-			<< equip.iavo << ", "
-			<< equip.ihand << ", "
-			<< equip.ispeed << ", "
-			<< equip.ijump << ", "
+			<< (int16_t) equip.getSlots() << ", "
+			<< equip.getStr() << ", "
+			<< equip.getDex() << ", "
+			<< equip.getInt() << ", "
+			<< equip.getLuk() << ", "
+			<< equip.getHp() << ", "
+			<< equip.getMp() << ", "
+			<< equip.getWatk() << ", "
+			<< equip.getMatk() << ", "
+			<< equip.getWdef() << ", "
+			<< equip.getMdef() << ", "
+			<< equip.getAccuracy() << ", "
+			<< equip.getAvoid() << ", "
+			<< equip.getHands() << ", "
+			<< equip.getSpeed() << ", "
+			<< equip.getJump() << ", "
 			<< "\"\")";
 	}
 	else {
@@ -182,7 +182,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 void Characters::createCharacter(Player *player, PacketReader &packet) {
 	Character charc;
 	string name = packet.getString();
-	if (name.size() > 15 || name.size() < 4) {
+	if (name.size() > Characters::MaxNameSize || name.size() < Characters::MinNameSize) {
 		return;
 	}
 
