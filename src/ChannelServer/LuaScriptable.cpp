@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BeautyDataProvider.h"
 #include "ChannelServer.h"
 #include "Drop.h"
+#include "EffectPacket.h"
 #include "EventDataProvider.h"
 #include "Instance.h"
 #include "Instances.h"
@@ -188,7 +189,6 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
 	lua_register(luaVm, "isGM", &LuaExports::isGm);
 	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
-	lua_register(luaVm, "playSoundPlayer", &LuaExports::playSoundPlayer);
 	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
 	lua_register(luaVm, "setAP", &LuaExports::setAp);
 	lua_register(luaVm, "setDEX", &LuaExports::setDex);
@@ -210,6 +210,13 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
 	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
 
+	// Effects
+	lua_register(luaVm, "playFieldSound", &LuaExports::playFieldSound);
+	lua_register(luaVm, "playMinigameSound", &LuaExports::playMinigameSound);
+	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
+	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
+	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
+
 	// Map
 	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
 	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
@@ -218,12 +225,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
 	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
 	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
-	lua_register(luaVm, "playSoundMap", &LuaExports::playSoundMap);
 	lua_register(luaVm, "setMapSpawn", &LuaExports::setMapSpawn);
-	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
-	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
-	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
 	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
 	lua_register(luaVm, "showMapTimer", &LuaExports::showMapTimer);
 	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
@@ -1045,15 +1048,9 @@ int LuaExports::isOnline(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::playSoundPlayer(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
-	PlayerPacket::sendSound(getPlayer(luaVm), val);
-	return 0;
-}
-
 int LuaExports::revertPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "oldplayerid");
-	lua_setglobal(luaVm, "playerid");
+	lua_getglobal(luaVm, "_oldplayerid");
+	lua_setglobal(luaVm, "_playerid");
 	return 0;
 }
 
@@ -1141,11 +1138,11 @@ int LuaExports::setMp(lua_State *luaVm) {
 int LuaExports::setPlayer(lua_State *luaVm) {
 	Player *player = getPlayerDeduced(-1, luaVm);
 	if (player != nullptr) {
-		lua_getglobal(luaVm, "playerid");
-		lua_setglobal(luaVm, "oldplayerid");
+		lua_getglobal(luaVm, "_playerid");
+		lua_setglobal(luaVm, "_oldplayerid");
 
 		lua_pushinteger(luaVm, player->getId());
-		lua_setglobal(luaVm, "playerid");
+		lua_setglobal(luaVm, "_playerid");
 	}
 	lua_pushboolean(luaVm, player != nullptr);
 	return 1;
@@ -1209,16 +1206,70 @@ int LuaExports::showMessage(lua_State *luaVm) {
 	return 0;
 }
 
+// Effects
+int LuaExports::playFieldSound(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, 1);
+	if (lua_isnumber(luaVm, 2)) {
+		EffectPacket::sendFieldSound(lua_tointeger(luaVm, 2), val);
+	}
+	else {
+		EffectPacket::sendFieldSound(getPlayer(luaVm), val);
+	}
+	return 0;
+}
+
+int LuaExports::playMinigameSound(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, 1);
+	if (lua_isnumber(luaVm, 2)) {
+		EffectPacket::sendMinigameSound(lua_tointeger(luaVm, 2), val);
+	}
+	else {
+		EffectPacket::sendMinigameSound(getPlayer(luaVm), val);
+	}
+	return 0;
+}
+
+int LuaExports::setMusic(lua_State *luaVm) {
+	int32_t mapid = -1;
+	string music = lua_tostring(luaVm, 1);
+
+	if (lua_isnumber(luaVm, 2)) {
+		mapid = lua_tointeger(luaVm, 2);
+	}
+	else if (Player *player = getPlayer(luaVm)) {
+		mapid = player->getMap();
+	}
+
+	if (mapid != -1) {
+		Maps::getMap(mapid)->setMusic(music);
+	}
+	return 0;
+}
+
+int LuaExports::showMapEffect(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, -1);
+	EffectPacket::sendEffect(getPlayer(luaVm)->getMap(), val);
+	return 0;
+}
+
+int LuaExports::showMapEvent(lua_State *luaVm) {
+	string val = lua_tostring(luaVm, -1);
+	EffectPacket::sendEvent(getPlayer(luaVm)->getMap(), val);
+	return 0;
+}
+
 // Map
 int LuaExports::clearDrops(lua_State *luaVm) {
-	int32_t mapid = 0;
+	int32_t mapid = -1;
 	if (lua_type(luaVm, 1) == LUA_TNUMBER) {
 		mapid = lua_tointeger(luaVm, 1);
 	}
-	else {
+	else if (Player *player = getPlayer(luaVm)) {
 		mapid = getPlayer(luaVm)->getMap();
 	}
-	Maps::getMap(mapid)->clearDrops(false);
+	if (mapid != -1) {
+		Maps::getMap(mapid)->clearDrops(false);
+	}
 	return 0;
 }
 
@@ -1289,33 +1340,10 @@ int LuaExports::killMobs(lua_State *luaVm) {
 	return 1;
 }
 
-int LuaExports::playSoundMap(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
-	MapPacket::sendSound(getPlayer(luaVm)->getMap(), val);
-	return 0;
-}
-
 int LuaExports::setMapSpawn(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	int32_t spawn = lua_tointeger(luaVm, 2);
 	Maps::getMap(mapid)->setMobSpawning(spawn);
-	return 0;
-}
-
-int LuaExports::setMusic(lua_State *luaVm) {
-	int32_t mapid = -1;
-	string music = lua_tostring(luaVm, 1);
-
-	if (lua_isnumber(luaVm, 2)) {
-		mapid = lua_tointeger(luaVm, 2);
-	}
-	else if (Player *player = getPlayer(luaVm)) {
-		mapid = player->getMap();
-	}
-
-	if (mapid != -1) {
-		Maps::getMap(mapid)->setMusic(music);
-	}
 	return 0;
 }
 
@@ -1330,18 +1358,6 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 			break;
 		}
 	}
-	return 0;
-}
-
-int LuaExports::showMapEffect(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
-	MapPacket::sendEffect(getPlayer(luaVm)->getMap(), val);
-	return 0;
-}
-
-int LuaExports::showMapEvent(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
-	MapPacket::sendEvent(getPlayer(luaVm)->getMap(), val);
 	return 0;
 }
 
@@ -1391,7 +1407,6 @@ int LuaExports::getMobHp(lua_State *luaVm) {
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getHp());
 	return 1;
-
 }
 
 int LuaExports::getMobMaxHp(lua_State *luaVm) {
@@ -1399,7 +1414,6 @@ int LuaExports::getMobMaxHp(lua_State *luaVm) {
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
 	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMaxHp());
 	return 1;
-
 }
 
 int LuaExports::getMobMaxMp(lua_State *luaVm) {

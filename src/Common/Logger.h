@@ -29,7 +29,11 @@ namespace LogDestinations {
 		None,
 		File,
 		Console,
-		Sql
+		Sql,
+		FileSql,
+		FileConsole,
+		SqlConsole,
+		FileSqlConsole
 	};
 }
 

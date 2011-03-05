@@ -43,15 +43,17 @@ public:
 
 	void run();
 
-	PacketCreator npcPacket(int8_t type);
+	PacketCreator npcPacket(int8_t type, bool addText = true);
 
 	void sendSimple();
 	void sendYesNo();
 	void sendDialog(bool back, bool next, bool save = true);
 	void sendAcceptDecline();
+	void sendAcceptDeclineNoExit();
 	void sendGetText(int16_t min, int16_t max);
 	void sendGetNumber(int32_t def, int32_t min, int32_t max);
-	void sendStyle(int32_t styles[], int8_t size);
+	void sendStyle(int32_t styles[], uint8_t size);
+	void sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time);
 	void addText(const string &text) { this->text += text; }
 	void end() { cend = true; }
 
@@ -59,7 +61,7 @@ public:
 	void proceedNext();
 	void proceedSelection(uint8_t selected); // Yes/No, Accept/Decline, List
 	void proceedNumber(int32_t number); // sendGetNumber
-	void proceedText(const string &text); // sendGetText
+	void proceedText(const string &text); // sendGetText and sendQuiz
 
 	Player * getPlayer() const { return player; }
 	uint8_t getSentDialog() const { return sentDialog; }
@@ -115,7 +117,9 @@ namespace NpcDialogs {
 		GetText = 0x02,
 		GetNumber = 0x03,
 		Simple = 0x04,
+		Quiz = 0x06,
 		Style = 0x07,
-		AcceptDecline = 0x0c
+		AcceptDecline = 0x0C,
+		AcceptDeclineNoExit = 0x0D
 	};
 }

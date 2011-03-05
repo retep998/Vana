@@ -36,12 +36,6 @@ namespace MapPacket {
 	void showTimer(int32_t mapid, int32_t sec); // Show timer like in PQs
 	void showTimer(Player *player, int32_t sec); // Show timer like in PQs
 	void forceMapEquip(Player *player);
-	void playMusic(int32_t mapid, const string &music); // Set map music
-	void playMusic(Player *player, const string &music); // Set map music
-	void sendSound(int32_t mapid, const string &sound); // Send sound - clear/wrong/etc
-	void sendEvent(int32_t mapid, const string &id); // Send event - clear/wrong/etc
-	void sendEffect(int32_t mapid, const string &effect); // Send effect - gate/etc
-	void playPortalSoundEffect(Player *player);
 	void showEventInstructions(int32_t mapid);
 	void showMist(Player *player, Mist *mist);
 	void spawnMist(int32_t mapid, Mist *mist);

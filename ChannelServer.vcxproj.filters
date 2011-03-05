@@ -356,6 +356,9 @@
     <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp">
       <Filter>Source Files\Packets\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\EffectPacket.cpp">
+      <Filter>Source Files\Packets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -633,6 +636,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\InventoryPacketHelper.h">
       <Filter>Header Files\Packets\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\EffectPacket.h">
+      <Filter>Header Files\Packets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

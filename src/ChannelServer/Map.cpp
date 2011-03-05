@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.h"
 #include "Drop.h"
+#include "EffectPacket.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
@@ -67,7 +68,7 @@ m_timers(new Timer::Container)
 // Map info
 void Map::setMusic(const string &musicname) {
 	m_music = (musicname == "default" ? getInfo()->defaultMusic : musicname);
-	MapPacket::playMusic(getId(), m_music);
+	EffectPacket::playMusic(getId(), m_music);
 }
 
 void Map::setMobSpawning(int32_t spawn) {
@@ -203,8 +204,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	Summons::removeSummon(player, true, false, false, SummonMessages::None);
-	Summons::removeSummon(player, false, false, true, SummonMessages::None);
+	Summons::removeSummon(player, true, false, SummonMessages::None);
+	Summons::removeSummon(player, false, true, SummonMessages::None);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
 }
@@ -812,10 +813,10 @@ void Map::setMapTimer(int32_t t) {
 	}
 }
 
-void Map::showObjects(Player *player) { // Show all Map Objects
+void Map::showObjects(Player *player) {
 	// Music
 	if (getMusic() != getDefaultMusic())
-		MapPacket::playMusic(player, getMusic());
+		EffectPacket::playMusic(player, getMusic());
 
 	// MapleTV messengers
 	if (MapleTvs::Instance()->isMapleTvMap(getId()) && MapleTvs::Instance()->hasMessage()) {

@@ -165,10 +165,11 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			direction = packet.get<uint8_t>();
 			break;
 		}
-		case Jobs::Page::Threaten:
 		case Jobs::FPWizard::Slow:
 		case Jobs::ILWizard::Slow:
 		case Jobs::BlazeWizard::Slow:
+		case Jobs::Page::Threaten:
+			packet.skipBytes(4); // Might be CRC too O.o?
 		case Jobs::FPMage::Seal:
 		case Jobs::ILMage::Seal:
 		case Jobs::BlazeWizard::Seal:

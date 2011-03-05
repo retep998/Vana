@@ -30,12 +30,14 @@ using std::tr1::bind;
 
 void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());
-	if (!puppet)
+	if (!puppet) {
 		m_summon = summon;
-	else
+	}
+	else {
 		m_puppet = summon;
+	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	new Timer::Timer(bind(&Summons::removeSummon, m_player, puppet, true, false, true, true),
+	new Timer::Timer(bind(&Summons::removeSummon, m_player, puppet, true, SummonMessages::OutOfTime, true),
 		id, m_player->getTimers(), Timer::Time::fromNow(time * 1000));
 }
 
@@ -59,10 +61,12 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 }
 
 Summon * PlayerSummons::getSummon(int32_t summonid) {
-	if (m_summon != nullptr && m_summon->getId() == summonid)
+	if (m_summon != nullptr && m_summon->getId() == summonid) {
 		return m_summon;
-	if (m_puppet != nullptr && m_puppet->getId() == summonid)
+	}
+	if (m_puppet != nullptr && m_puppet->getId() == summonid) {
 		return m_puppet;
+	}
 	return nullptr;
 }
 

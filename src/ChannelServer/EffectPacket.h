@@ -1,4 +1,4 @@
---[[
+/*
 Copyright (C) 2008-2011 Vana Development Team
 
 This program is free software; you can redistribute it and/or
@@ -14,7 +14,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
---]]
--- Noob portal
+*/
+#pragma once
 
-showInstructionBubble("Press #e#b[Left] or [Right] arrow key#k#n to move.", 250, 5);
+#include "Types.h"
+#include <string>
+
+using std::string;
+
+class Player;
+
+namespace EffectPacket {
+	void playMusic(int32_t mapId, const string &music);
+	void playMusic(Player *player, const string &music);
+	void sendEvent(int32_t mapId, const string &id);
+	void sendEffect(int32_t mapId, const string &effect);
+	void playPortalSoundEffect(Player *player);
+	void sendFieldSound(int32_t mapId, const string &sound);
+	void sendFieldSound(Player *player, const string &sound);
+	void sendMinigameSound(int32_t mapId, const string &sound);
+	void sendMinigameSound(Player *player, const string &sound);
+}

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaPortal.h"
+#include "EffectPacket.h"
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Player.h"
@@ -52,6 +53,6 @@ int LuaExports::instantWarp(lua_State *luaVm) {
 }
 
 int LuaExports::playPortalSe(lua_State *luaVm) {
-	MapPacket::playPortalSoundEffect(getPlayer(luaVm));
+	EffectPacket::playPortalSoundEffect(getPlayer(luaVm));
 	return 0;
 }
