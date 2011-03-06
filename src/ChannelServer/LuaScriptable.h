@@ -61,6 +61,8 @@ namespace LuaExports {
 	int consoleOutput(lua_State *luaVm);
 	int getRandomNumber(lua_State *luaVm);
 	int log(lua_State *luaVm);
+	int showGlobalMessage(lua_State *luaVm);
+	int showWorldMessage(lua_State *luaVm);
 
 	// Channel
 	int deleteChannelVariable(lua_State *luaVm);

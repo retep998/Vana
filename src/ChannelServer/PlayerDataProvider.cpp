@@ -81,9 +81,12 @@ void PlayerDataProvider::run(function<void (Player *)> func) {
 	}
 }
 
-void PlayerDataProvider::sendPacket(PacketCreator &packet) {
+void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		iter->second->getSession()->send(packet);
+		Player *p = iter->second;
+		if (p->getGmLevel() >= minGmLevel) {
+			p->getSession()->send(packet);
+		}
 	}
 }
 

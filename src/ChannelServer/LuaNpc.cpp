@@ -49,6 +49,7 @@ LuaNpc::LuaNpc(const string &filename, int32_t playerid) : LuaScriptable(filenam
 	lua_register(luaVm, "askText", &LuaExports::askText);
 	lua_register(luaVm, "askYesNo", &LuaExports::askYesNo);
 	lua_register(luaVm, "askQuiz", &LuaExports::askQuiz);
+	lua_register(luaVm, "askQuestion", &LuaExports::askQuestion);
 
 	// Quest
 	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
@@ -212,6 +213,11 @@ int LuaExports::askYesNo(lua_State *luaVm) {
 
 int LuaExports::askQuiz(lua_State *luaVm) {
 	getNpc(luaVm)->sendQuiz(lua_tointeger(luaVm, -5), lua_tointeger(luaVm, -4), lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
+	return lua_yield(luaVm, 1);
+}
+
+int LuaExports::askQuestion(lua_State *luaVm) {
+	getNpc(luaVm)->sendQuestion(lua_tostring(luaVm, -5), lua_tostring(luaVm, -4), lua_tointeger(luaVm, -3), lua_tointeger(luaVm, -2), lua_tointeger(luaVm, -1));
 	return lua_yield(luaVm, 1);
 }
 

@@ -71,7 +71,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 	packet.addHeader(SMSG_GM);
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x01); // Mode, 00 = map, 01 = channel
-	packet.add<int8_t>(channel);
+	packet.add<int8_t>(channel); // 0xFE / -2 for 'Not found'
 
 	player->getSession()->send(packet);
 }
@@ -82,6 +82,17 @@ void GmPacket::hiredMerchantPlace(Player *player, int32_t mapid) {
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x00); // Mode, 00 = map, 01 = channel
 	packet.add<int32_t>(mapid);
+
+	player->getSession()->send(packet);
+}
+
+void GmPacket::setGetVarResult(Player *player, const string &name, const string &variable, const string &value) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_GM);
+	packet.add<int8_t>(0x09);
+	packet.addString(name);
+	packet.addString(variable);
+	packet.addString(value);
 
 	player->getSession()->send(packet);
 }

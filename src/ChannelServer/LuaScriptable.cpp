@@ -76,6 +76,8 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "consoleOutput", &LuaExports::consoleOutput);
 	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
 	lua_register(luaVm, "log", &LuaExports::log);
+	lua_register(luaVm, "showGlobalMessage", &LuaExports::showGlobalMessage);
+	lua_register(luaVm, "showWorldMessage", &LuaExports::showWorldMessage);
 
 	// Channel
 	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
@@ -399,6 +401,20 @@ int LuaExports::getRandomNumber(lua_State *luaVm) {
 
 int LuaExports::log(lua_State *luaVm) {
 	ChannelServer::Instance()->log(LogTypes::ScriptLog, lua_tostring(luaVm, 1));
+	return 0;
+}
+
+int LuaExports::showGlobalMessage(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, -2);
+	int8_t type = lua_tointeger(luaVm, -1);
+	PlayerPacket::showMessageGlobal(msg, type);
+	return 0;
+}
+
+int LuaExports::showWorldMessage(lua_State *luaVm) {
+	string msg = lua_tostring(luaVm, -2);
+	int8_t type = lua_tointeger(luaVm, -1);
+	PlayerPacket::showMessageWorld(msg, type);
 	return 0;
 }
 
