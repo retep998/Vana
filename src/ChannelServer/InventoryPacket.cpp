@@ -367,3 +367,14 @@ void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, co
 	packet.addString(effect);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
+
+void InventoryPacket::sendItemExpired(Player *player, vector<int32_t> *items) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_NOTICE);
+	packet.add<int8_t>(0x08);
+	packet.add<int8_t>(items->size());
+	for (size_t i = 0; i < items->size(); i++) {
+		packet.add<int32_t>(items->at(i));
+	}
+	player->getSession()->send(packet);
+}

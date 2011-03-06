@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Characters.h"
 #include "Database.h"
+#include "IpUtilities.h"
 #include "Login.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
@@ -38,6 +39,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
 			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
+			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + IpUtilities::ipToString(this->getIp())); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;

@@ -53,7 +53,7 @@ public:
 	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
 	void run(function<void (Player *)> func);
-	void sendPacket(PacketCreator &packet);
+	void sendPacket(PacketCreator &packet, int32_t minGmLevel = 0);
 
 	// Parties
 	Party * getParty(int32_t id);

@@ -849,7 +849,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		attack.cashStarPos = csStar;
 		packet.skipBytes(1); // 0x00 = AoE?
 		if (!shadowMeso) {
-			if (player->getActiveBuffs()->hasShadowStars()) {
+			if (player->getActiveBuffs()->hasShadowStars() && skillId != Jobs::NightLord::Taunt) {
 				attack.starId = packet.get<int32_t>();
 			}
 			else if (csStar > 0) {

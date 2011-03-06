@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryHandler.h"
 #include "InventoryPacket.h"
+#include "IpUtilities.h"
 #include "ItemDataProvider.h"
 #include "KeyMaps.h"
 #include "LevelsPacket.h"
@@ -374,6 +375,10 @@ void Player::playerConnect(PacketReader &packet) {
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
 	Maps::addPlayer(this, map);
+
+	std::stringstream x;
+	x << getName() << " (" << getId() << ") connected from " << IpUtilities::ipToString(getIp());
+	ChannelServer::Instance()->log(LogTypes::Info, x.str());
 
 	setOnline(true);
 	is_connect = true;
