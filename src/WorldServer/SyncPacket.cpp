@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
+#include "MapConstants.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Party.h"
@@ -116,7 +117,7 @@ void SyncPacket::PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t
 			packet.add<int8_t>(0x01);
 			packet.add<int8_t>(type == PartyActions::Leave ? 0x00 : 0x01);
 			packet.addString(PlayerDataProvider::Instance()->getPlayer(target, true)->getName());
-			break;	
+
 		case PartyActions::SilentUpdate:
 		case PartyActions::LogInOrOut:
 			packet.add<int8_t>(0x07);
@@ -188,7 +189,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	// Add party member's channels to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->isOnline()) {
-			packet.add<int32_t>(iter->second->getChannel()); 
+
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -203,7 +204,7 @@ void SyncPacket::PartyPacket::addParty(PacketCreator &packet, Party *party, int3
 	// Add party member's maps to packet
 	for (iter = party->members.begin(); iter != party->members.end(); iter++) {
 		if (iter->second->getChannel() == tochan) {
-			packet.add<int32_t>(iter->second->getMap()); 
+
 		}
 		else {
 			packet.add<int32_t>(-2);

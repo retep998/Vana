@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerInventory.h"
 #include "Database.h"
 #include "EquipDataProvider.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
 #include "InventoryPacketHelper.h"
+#include "ItemConstants.h"
 #include "ItemDataProvider.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
@@ -112,7 +112,7 @@ void PlayerInventory::load() {
 				static_cast<int16_t>(row[Closeness]),
 				static_cast<uint8_t>(row[Fullness]),
 				static_cast<uint8_t>(row[Slot])
- 			);
+			);
 			m_player->getPets()->addPet(pet);
 		}
 	}
@@ -358,7 +358,7 @@ bool PlayerInventory::isEquippedItem(int32_t itemId) {
 bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack) {
 	int16_t required = 0;
 	int8_t inv = GameLogicUtilities::getInventory(itemId);
-	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemId)) {
+	if (!GameLogicUtilities::isStackable(itemId)) {
 		required = amount; // These aren't stackable
 	}
 	else {

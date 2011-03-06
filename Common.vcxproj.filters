@@ -102,6 +102,9 @@
     <Filter Include="Header Files\Loggers\Combo">
       <UniqueIdentifier>{dc1eb06e-3b0a-4918-9280-55723903a9f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game Constants">
+      <UniqueIdentifier>{29b0530c-2642-4ae6-9118-6a284e250b78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -271,9 +274,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\GameConstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\MapleVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -495,6 +495,21 @@
     </ClInclude>
     <ClInclude Include="src\Common\Combo Loggers\SqlFileLogger.h">
       <Filter>Header Files\Loggers\Combo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\GameConstants.h">
+      <Filter>Header Files\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemConstants.h">
+      <Filter>Header Files\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapConstants.h">
+      <Filter>Header Files\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobConstants.h">
+      <Filter>Header Files\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillConstants.h">
+      <Filter>Header Files\Game Constants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

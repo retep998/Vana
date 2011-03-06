@@ -69,7 +69,7 @@ void ChannelServer::loadLogConfig() {
 }
 
 string ChannelServer::makeLogIdentifier() {
-	return "World: " + boost::lexical_cast<string>(getWorld()) + "; ID: " + boost::lexical_cast<string>(getChannel());
+	return "World: " + boost::lexical_cast<string>(static_cast<int16_t>(getWorld())) + "; ID: " + boost::lexical_cast<string>(getChannel());
 }
 
 

@@ -36,7 +36,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, b
 		packet.add<int8_t>(0x0D);
 		player->getSession()->send(packet);
 
-		// GMS doesnt send the animation for others. 
+		// GMS doesnt send the animation for others.
 		// If you want to enable displaying it, just uncomment this VV
 		/*
 		packet = PacketCreator();

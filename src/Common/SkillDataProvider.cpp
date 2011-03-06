@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Database.h"
 #include "InitializeCommon.h"
+#include "SkillConstants.h"
 #include "StringUtilities.h"
 
 using Initializing::outputWidth;

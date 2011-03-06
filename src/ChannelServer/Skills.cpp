@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.h"
 #include "Buffs.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Inventory.h"
@@ -30,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
@@ -69,7 +69,7 @@ void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
 		case Jobs::Bishop::BigBang:
-		case Jobs::Corsair::RapidFire: // Special skills
+		case Jobs::Corsair::RapidFire:
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
@@ -78,7 +78,7 @@ void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 				// Hacking
 				return;
 			}
-			if (skillId == Jobs::SuperGm::Hide) { // GM Hide
+			if (skillId == Jobs::SuperGm::Hide) {
 				MapPacket::showPlayer(player);
 				GmPacket::endHide(player);
 			}
@@ -112,7 +112,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
 	int32_t skillId = packet.get<int32_t>();
 	int16_t addedinfo = 0;
-	uint8_t level = packet.get<int8_t>();
+	uint8_t level = packet.get<uint8_t>();
 	uint8_t type = 0;
 	uint8_t direction = 0;
 	if (level == 0 || player->getSkills()->getSkillLevel(skillId) != level) {
@@ -231,7 +231,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Cleric::Heal: { // Heal
+		case Jobs::Cleric::Heal: {
 			uint16_t healrate = skill->hpProp;
 			if (healrate > 100)
 				healrate = 100;
@@ -283,8 +283,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true);
 						Buffs::addBuff(cmem, skillId, level, addedinfo);
-						if (skillId == Jobs::Buccaneer::TimeLeap)
+						if (skillId == Jobs::Buccaneer::TimeLeap) {
 							cmem->getSkills()->removeAllCooldowns();
+						}
 					}
 				}
 			}
@@ -300,7 +301,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != nullptr && target != player) { // ???
+				if (target != nullptr && target != player) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
 					Buffs::addBuff(target, skillId, level, addedinfo);
@@ -313,7 +314,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != nullptr && target != player && target->getStats()->getHp() > 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() > 0) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
 					target->getStats()->setHp(target->getStats()->getMaxHp());
@@ -328,7 +329,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerid = packet.get<int32_t>();
 				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
-				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) { // ???
+				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
 					target->getStats()->setHp(target->getStats()->getMaxHp());
@@ -366,7 +367,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 	int16_t moneyConsume = skill->moneyConsume;
 	int32_t item = skill->item;
 	if (mpuse > 0) {
-		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) { // Reduced MP usage for Concentration
+		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) {
 			int16_t mprate = conc->x;
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->getStats()->modifyMp(-mploss, true);
@@ -389,8 +390,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 	if (moneyConsume > 0) {
 		int16_t mesos_min = moneyConsume - (80 + level * 5);
 		int16_t mesos_max = moneyConsume + (80 + level * 5);
-		int16_t difference = mesos_max - mesos_min; // Randomize up to this, add minimum for range
-		int16_t amount = Randomizer::Instance()->randShort(difference) + mesos_min;
+		int16_t amount = Randomizer::Instance()->randShort(mesos_max, mesos_min);
 		int32_t mesos = player->getInventory()->getMesos();
 		if (mesos - amount > -1)
 			player->getInventory()->modifyMesos(-amount);

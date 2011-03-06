@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.h"
 #include "DropDataProvider.h"
 #include "DropsPacket.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "ItemDataProvider.h"
@@ -34,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestDataProvider.h"
 #include "Randomizer.h"
 #include "ReactorHandler.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include <algorithm>
@@ -76,7 +76,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
-		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount - i->minamount) + i->minamount);
+		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount, i->minamount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
 		if (isSteal) {
@@ -94,7 +94,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.y = origin.y;
 
 //			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-//				Need something to keep drops inside the map here		
+//				Need something to keep drops inside the map here
 //			}
 
 			if (!i->ismesos) {

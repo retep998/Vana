@@ -393,7 +393,7 @@ int LuaExports::consoleOutput(lua_State *luaVm) {
 
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number - 1) + 1);
+	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number, 1));
 	return 1;
 }
 
@@ -1896,8 +1896,8 @@ int LuaExports::moveAllPlayers(lua_State *luaVm) {
 	}
 
 	getInstance(luaVm)->moveAllPlayers(mapid, true, portal);
- 	return 0;
- }
+	return 0;
+}
 
 int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;

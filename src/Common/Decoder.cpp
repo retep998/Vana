@@ -35,19 +35,21 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	MapleEncryption::mapleEncrypt(buffer, size);
 	int32_t pos = 0;
 	uint8_t first = 1;
+	int32_t tpos = 0;
 
 	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption;
 
 	while (size > pos) {
 		ofbEncryption.SetKeyWithIV(AesKey, AesKeySize, ivSend); // Need to set it before every encryption
 
-		if (size > (pos + 1460 - first * 4)) {
-			ofbEncryption.ProcessData(buffer + pos, buffer + pos, 1460 - first * 4);
+		tpos = 1460 - first * 4;
+		if (size > (pos + tpos)) {
+			ofbEncryption.ProcessData(buffer + pos, buffer + pos, tpos);
 		}
 		else {
 			ofbEncryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
-		pos += 1460 - first * 4;
+		pos += tpos;
 		if (first) {
 			first = 0;
 		}
@@ -61,19 +63,20 @@ void Decoder::next() {
 void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 	int32_t pos = 0;
 	uint8_t first = 1;
-
+	int32_t tpos = 0;
 	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption;
 
 	while (size > pos) {
 		ofbDecryption.SetKeyWithIV(AesKey, AesKeySize, ivRecv); // Need to set it before every decryption
 
-		if (size > (pos + 1460 - first * 4)) {
-			ofbDecryption.ProcessData(buffer + pos, buffer + pos, 1460 - first * 4);
+		tpos = 1460 - first * 4;
+		if (size > (pos + tpos)) {
+			ofbDecryption.ProcessData(buffer + pos, buffer + pos, tpos);
 		}
 		else {
 			ofbDecryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
-		pos += 1460 - first * 4;
+		pos += tpos;
 		if (first) {
 			first = 0;
 		}

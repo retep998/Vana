@@ -46,7 +46,7 @@ function getBannedList()
 end
 
 function isListFull()
-	return getInstanceSignUpCount() >= getInstanceMax();
+	return getInstanceSignupCount() >= getInstanceMax();
 end
 
 function messageAll(msg)

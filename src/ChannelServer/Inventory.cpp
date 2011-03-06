@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Inventory.h"
 #include "Buffs.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
@@ -35,7 +34,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *olditem = player->getInventory()->getItem(inv, s);
 		if (olditem != nullptr) {
-			if (!GameLogicUtilities::isRechargeable(item->getId()) && !GameLogicUtilities::isEquip(item->getId()) && !GameLogicUtilities::isPet(item->getId()) && olditem->getId() == item->getId() && olditem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
+			if (GameLogicUtilities::isStackable(item->getId()) && olditem->getId() == item->getId() && olditem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
 				if (item->getAmount() + olditem->getAmount() > ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
 					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->getId()) - olditem->getAmount();
 					item->decAmount(amount);
@@ -53,7 +52,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 		}
 		else if (!freeslot) {
 			freeslot = s;
-			if (GameLogicUtilities::isRechargeable(item->getId()) || GameLogicUtilities::isEquip(item->getId()) || GameLogicUtilities::isPet(item->getId())) {
+			if (GameLogicUtilities::isStackable(item->getId())) {
 				break;
 			}
 		}

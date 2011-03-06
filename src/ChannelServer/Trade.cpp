@@ -64,8 +64,8 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 				Item *check = unit->items[i];
 				int32_t itemId = check->getId();
 				int8_t inv = GameLogicUtilities::getInventory(itemId);
-				if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemId)) {
-					// Equips and rechargeables always take 1 slot, no need to clutter unordered map
+				if (!GameLogicUtilities::isStackable(itemId)) {
+					// No need to clutter unordered map
 					totals[inv - 1]++;
 				}
 				else {
@@ -77,15 +77,15 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						added[itemId] = check->getAmount();
 					}
 				}
- 			}
- 		}
+			}
+		}
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
 			// Determine precisely how many slots are needed for stackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
 				int32_t itemId = check->getId();
 				int8_t inv = GameLogicUtilities::getInventory(itemId);
-				if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemId)) {
+				if (GameLogicUtilities::isStackable(itemId)) {
 					// Already did these
 					if (added.find(itemId) == added.end()) {
 						// Already did this item
@@ -134,7 +134,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 					yes = false;
 					break;
 				}
- 			}
+			}
 		}
 	}
 	return yes;
@@ -206,7 +206,7 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 
 Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
-	if (amount == item->getAmount() || inventory == Inventories::EquipInventory) {
+	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
 		holder->getInventory()->setItem(inventory, inventoryslot, nullptr);
 		InventoryPacket::moveItem(holder, inventory, inventoryslot, 0);
 		holder->getInventory()->deleteItem(inventory, inventoryslot);

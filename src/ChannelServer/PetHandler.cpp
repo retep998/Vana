@@ -16,8 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetHandler.h"
+#include "GameConstants.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "ItemConstants.h"
 #include "ItemDataProvider.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"
@@ -25,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PetsPacket.h"
 #include "Player.h"
 #include "Randomizer.h"
+#include "SkillConstants.h"
 
 void PetHandler::handleMovement(Player *player, PacketReader &packet) {
 	int32_t petid = packet.get<int32_t>();
