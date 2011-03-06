@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	time *= 1000;
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -46,7 +46,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, Active
 	}
 	if (pskill.hasmapbuff) {
 		packet = PacketCreator();
-		packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
+		packet.addHeader(SMSG_3RD_PARTY_SKILL);
 		packet.add<int32_t>(player->getId());
 
 		BuffsPacketHelper::addBytes(packet, mskill.typelist);
@@ -74,7 +74,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, Active
 void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int16_t time, int16_t delay, ActiveBuff &pskill, ActiveMapBuff &mskill) {
 	time *= 1000;
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -92,7 +92,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
+	packet.addHeader(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
@@ -111,7 +111,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 
 void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_CANCEL);
+	packet.addHeader(SMSG_SKILL_CANCEL);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -121,7 +121,7 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_BUFF_END);
+	packet.addHeader(SMSG_3RD_PARTY_BUFF_END);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
@@ -131,7 +131,7 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &pskill) {
 
 void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_CANCEL);
+	packet.addHeader(SMSG_SKILL_CANCEL);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -141,7 +141,7 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_BUFF_END);
+	packet.addHeader(SMSG_3RD_PARTY_BUFF_END);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
@@ -152,7 +152,7 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &pskill) {
 void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill) {
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -172,7 +172,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, A
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
+	packet.addHeader(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
@@ -194,7 +194,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	int32_t castedvalue = static_cast<int32_t>(pskill.vals[0]);
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -211,7 +211,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
+	packet.addHeader(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
@@ -230,7 +230,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo, int32_t mountid) {
 	time *= 1000;
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 
@@ -246,7 +246,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, Active
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_3RD_PARTY_SKILL);
+	packet.addHeader(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());
 
 	BuffsPacketHelper::addBytes(packet, mskill.typelist);
@@ -263,7 +263,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, Active
 
 void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, ActiveBuff &pskill, int32_t mapMobId) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILL_USE);
+	packet.addHeader(SMSG_SKILL_USE);
 
 	BuffsPacketHelper::addBytes(packet, pskill.types);
 

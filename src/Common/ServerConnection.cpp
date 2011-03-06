@@ -22,20 +22,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include "MapleSession.h"
 #include "PacketReader.h"
-#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 void AbstractServerConnection::sendAuth(const string &pass, const IpMatrix &extIp) {
 	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 
 bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet, const string &pass) {
-	if (packet.get<int16_t>() == IMSG_PASSWORD) {
+	if (packet.getHeader() == IMSG_PASSWORD) {
 		if (packet.getString() == pass) {
-			m_is_authenticated = true;
+			m_isAuthenticated = true;
 
-			IpUtilities::extractExternalIp(packet, m_external_ip);
+			IpUtilities::extractExternalIp(packet, m_externalIp);
 
 			int8_t type = packet.get<int8_t>();
 			setType(type);
@@ -48,7 +48,7 @@ bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketR
 			return false;
 		}
 	}
-	else if (m_is_authenticated == false) {
+	else if (m_isAuthenticated == false) {
 		// Trying to do something while unauthenticated? DC!
 		getSession()->disconnect();
 		return false;

@@ -35,7 +35,7 @@ using std::tr1::unordered_map;
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
-	packet.add<int16_t>(SMSG_MAP_SPAWN_PLAYER);
+	packet.addHeader(SMSG_MAP_SPAWN_PLAYER);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
 	packet.addString(""); // Guild
@@ -177,14 +177,14 @@ void MapPacket::showPlayer(Player *player) {
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_REMOVE_PLAYER);
+	packet.addHeader(SMSG_MAP_REMOVE_PLAYER);
 	packet.add<int32_t>(player->getId());
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHANGE_MAP);
+	packet.addHeader(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
 	packet.add<uint32_t>(player->getPortalCount());
 	packet.add<int32_t>(player->getMap());
@@ -197,7 +197,7 @@ void MapPacket::changeMap(Player *player) {
 
 void MapPacket::portalBlocked(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(0x01);
 	packet.add<int32_t>(0x00);
 	player->getSession()->send(packet);
@@ -205,7 +205,7 @@ void MapPacket::portalBlocked(Player *player) {
 
 void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_TIMER);
+	packet.addHeader(SMSG_TIMER);
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(hour);
 	packet.add<int8_t>(min);
@@ -216,12 +216,12 @@ void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 void MapPacket::showTimer(int32_t mapid, int32_t sec) {
 	PacketCreator packet;
 	if (sec > 0) {
-		packet.add<int16_t>(SMSG_TIMER);
+		packet.addHeader(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
 		packet.add<int32_t>(sec);
 	}
 	else {
-		packet.add<int16_t>(SMSG_TIMER_OFF);
+		packet.addHeader(SMSG_TIMER_OFF);
 	}
 	Maps::getMap(mapid)->sendPacket(packet);
 }
@@ -229,32 +229,32 @@ void MapPacket::showTimer(int32_t mapid, int32_t sec) {
 void MapPacket::showTimer(Player *player, int32_t sec) {
 	PacketCreator packet;
 	if (sec > 0) {
-		packet.add<int16_t>(SMSG_TIMER);
+		packet.addHeader(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
 		packet.add<int32_t>(sec);
 	}
 	else {
-		packet.add<int16_t>(SMSG_TIMER_OFF);
+		packet.addHeader(SMSG_TIMER_OFF);
 	}
 	player->getSession()->send(packet);
 }
 
 void MapPacket::forceMapEquip(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_FORCE_EQUIPMENT);
+	packet.addHeader(SMSG_MAP_FORCE_EQUIPMENT);
 	player->getSession()->send(packet);
 }
 
 void MapPacket::showEventInstructions(int32_t mapid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_EVENT_INSTRUCTION);
+	packet.addHeader(SMSG_EVENT_INSTRUCTION);
 	packet.add<int8_t>(0x00);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::showMist(Player *player, Mist *mist) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MIST_SPAWN);
+	packet.addHeader(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
 	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
 	packet.add<int32_t>(mist->getOwnerId());
@@ -269,7 +269,7 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 
 void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MIST_SPAWN);
+	packet.addHeader(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
 	packet.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2);
 	packet.add<int32_t>(mist->getOwnerId());
@@ -284,14 +284,14 @@ void MapPacket::spawnMist(int32_t mapid, Mist *mist) {
 
 void MapPacket::removeMist(int32_t mapid, int32_t id) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MIST_DESPAWN);
+	packet.addHeader(SMSG_MIST_DESPAWN);
 	packet.add<int32_t>(id);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
 
 void MapPacket::instantWarp(Player *player, int8_t pid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_TELEPORT);
+	packet.addHeader(SMSG_MAP_TELEPORT);
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(pid);
 	player->getSession()->send(packet);
@@ -299,7 +299,7 @@ void MapPacket::instantWarp(Player *player, int8_t pid) {
 
 void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemId, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_WEATHER_EFFECT);
+	packet.addHeader(SMSG_MAP_WEATHER_EFFECT);
 	packet.addBool(adminWeather);
 	packet.add<int32_t>(itemId);
 	if (itemId != 0 && !adminWeather) {
