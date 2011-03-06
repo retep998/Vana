@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacket.h"
 #include "ChannelServer.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InterHeader.h"
 #include "Inventory.h"
 #include "InventoryPacketHelper.h"
+#include "ItemConstants.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"

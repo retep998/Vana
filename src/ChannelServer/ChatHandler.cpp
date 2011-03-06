@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapPacket.h"
 #include "Maps.h"
 #include "Mob.h"
+#include "MobConstants.h"
 #include "NpcHandler.h"
 #include "Npc.h"
 #include "PacketCreator.h"
@@ -49,30 +50,47 @@ using ChatHandler::ChatCommand;
 
 unordered_map<string, ChatCommand> ChatHandler::commandlist;
 
-struct MeFunctor {
-	void operator() (Player *gmplayer) {
-		if (gmplayer->isGm()) {
-			PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
+namespace Functors {
+	struct MeFunctor {
+		void operator() (Player *gmplayer) {
+			if (gmplayer->isGm()) {
+				PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
+			}
 		}
-	}
-	string msg;
-};
+		string msg;
+	};
 
-struct WarpFunctor {
-	void operator() (Player *warpee) {
-		if (warpee->getMap() != mapid) {
-			warpee->setMap(mapid);
+	struct WarpFunctor {
+		void operator() (Player *warpee) {
+			if (warpee->getMap() != mapid) {
+				warpee->setMap(mapid);
+			}
 		}
-	}
-	int32_t mapid;
-	Player *player;
-};
+		int32_t mapid;
+		Player *player;
+	};
+
+	struct NameFunctor {
+		void operator() (Player *player) {
+			if (*i < max) {
+				if (*i != 0) {
+					*names = *names + ", ";
+				}
+				*names = *names + player->getName();
+				*i++;
+			}
+		}
+		int32_t max;
+		int32_t *i;
+		string *names;
+	};
+}
 
 void ChatHandler::initializeCommands() {
 	// Set up commands and appropriate GM levels
 	ChatCommand command;
 
-	// Notes: 
+	// Notes:
 	// Don't add syntax to things that have no parameters
 	// Every command needs at least one line of notes that describes what the command does
 
@@ -124,7 +142,7 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("Stops the current ChannelServer.");
 	commandlist["shutdown"] = command.addToMap();
 
-	command.command = CmdPacket; 
+
 	command.syntax = "<$hexbytes>";
 	command.notes.push_back("Sends a specific packet to yourself. Should only be used for testing.");
 	commandlist["packet"] = command.addToMap();
@@ -406,6 +424,15 @@ void ChatHandler::initializeCommands() {
 	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
 	command.notes.push_back("Reloads data from the database.");
 	commandlist["reload"] = command.addToMap();
+
+	command.command = CmdCc;
+	command.syntax = "<#channel>";
+	command.notes.push_back("Allows you to change channels on any map.");
+	commandlist["cc"] = command.addToMap();
+
+	command.command = CmdOnline;
+	command.notes.push_back("Allows you to see up to 100 players on the current channel.");
+	commandlist["online"] = command.addToMap();
 #pragma endregion
 
 #pragma region GM Level 0
@@ -449,6 +476,8 @@ void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 }
 
 bool ChatHandler::handleCommand(Player *player, const string &message) {
+	using namespace Functors;
+
 	if (player->isAdmin() && message[0] == '/') {
 		// Prevent command printing for Admins
 		return true;
@@ -465,11 +494,30 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		}
 		else {
 			ChatCommand &cmd = commandlist[command];
-			if (player->getGmLevel() < cmd.level) { // GM level for the command
+			if (player->getGmLevel() < cmd.level) {
 				PlayerPacket::showMessage(player, "You are not at a high enough GM level to use the command.", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
-				switch (cmd.command) { // CMD constant associated with command
+				switch (cmd.command) {
+					case CmdCc:
+						re = "(\\d+)";
+						if (regex_match(args.c_str(), matches, re)) {
+							string targetChannel = matches[1];
+							int8_t channel = atoi(targetChannel.c_str()) - 1;
+							player->changeChannel(channel);
+						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdOnline: {
+						string igns = "IGNs: ";
+						int32_t i = 0;
+						NameFunctor func = {100, &i, &igns}; // Max of 100, may decide to change this in the future
+						PlayerDataProvider::Instance()->run(func);
+						PlayerPacket::showMessage(player, igns, PlayerPacket::NoticeTypes::Blue);
+						break;
+					}
 					case CmdHelp: {
 						if (args.length() != 0) {
 							if (commandlist.find(args) != commandlist.end()) {
@@ -489,8 +537,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 										has = true;
 									}
 									msg += iter->first + " ";
- 								}
- 							}
+								}
+							}
 							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
@@ -1044,8 +1092,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Red);
 						break;
 					case CmdWarpTo:
-						Player *warptoee;
-						if (warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
+						if (Player *warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
 							player->setMap(warptoee->getMap());
 						}
 						break;
@@ -1344,10 +1391,10 @@ string ChatHandler::getBanString(int8_t reason) {
 
 int8_t ChatHandler::getMessageType(const string &query) {
 	int8_t ret = -1;
-	if (query == "notice") ret = 0;
-	else if (query == "box") ret = 1;
-	else if (query == "red") ret = 5;
-	else if (query == "blue") ret = 6;
+	if (query == "notice") ret = PlayerPacket::NoticeTypes::Notice;
+	else if (query == "box") ret = PlayerPacket::NoticeTypes::Box;
+	else if (query == "red") ret = PlayerPacket::NoticeTypes::Red;
+	else if (query == "blue") ret = PlayerPacket::NoticeTypes::Blue;
 	return ret;
 }
 

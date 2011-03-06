@@ -72,7 +72,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x01); // Mode, 00 = map, 01 = channel
 	packet.add<int8_t>(channel);
-	
+
 	player->getSession()->send(packet);
 }
 

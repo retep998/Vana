@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ShopDataProvider.h"
 #include "Database.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
@@ -146,19 +145,19 @@ void ShopDataProvider::loadRechargeTiers() {
 }
 
 void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet) {
+	ShopInfo &info = shops[id];
+	int8_t rechargetier = info.rechargetier;
+	map<int32_t, double> &rechargables = rechargecosts[rechargetier];
+	int16_t shopcount = info.items.size() + rechargables.size();
 	unordered_map<int32_t, bool> idsdone;
-	int8_t rechargetier = shops[id].rechargetier;
-	map<int32_t, double> rechargables = rechargecosts[rechargetier];
-	int16_t shopcount = shops[id].items.size() + rechargables.size();
 
 	packet.add<int16_t>(SMSG_SHOP);
-	packet.add<int32_t>(shops[id].npc);
+	packet.add<int32_t>(info.npc);
 	packet.add<int16_t>(0); // To be set later
 
 	// Items
-	ShopItemInfo item;
-	for (size_t i = 0; i < shops[id].items.size(); i++) {
-		item = shops[id].items[i];
+	for (size_t i = 0; i < info.items.size(); i++) {
+		ShopItemInfo &item = info.items[i];
 		packet.add<int32_t>(item.itemId);
 		packet.add<int32_t>(item.price);
 		if (GameLogicUtilities::isRechargeable(item.itemId)) {
@@ -166,8 +165,9 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 			double cost = 0.0;
 			if (rechargetier != 0) {
 				shopcount--;
-				if (rechargables.find(item.itemId) != rechargables.end())
+				if (rechargables.find(item.itemId) != rechargables.end()) {
 					cost = rechargables[item.itemId];
+				}
 			}
 			packet.add<double>(cost);
 		}
@@ -175,13 +175,14 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 			packet.add<int16_t>(item.quantity); // Item amount
 		}
 		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemId);
-		if (GameLogicUtilities::isRechargeable(item.itemId))
+		if (GameLogicUtilities::isRechargeable(item.itemId)) {
 			maxslot += rechargeablebonus;
+		}
 		packet.add<int16_t>(maxslot);
 	}
 
 	// Rechargables
-	for (map<int32_t, double>::iterator iter = rechargables.begin(); iter != rechargables.end(); iter++) {
+	for (map<int32_t, double>::iterator iter = rechargables.begin(); iter != rechargables.end(); ++iter) {
 		if (idsdone.find(iter->first) == idsdone.end()) {
 			packet.add<int32_t>(iter->first);
 			packet.add<int32_t>(0);
@@ -194,17 +195,17 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 }
 
 int32_t ShopDataProvider::getPrice(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> s = shops[shopid].items;
+	vector<ShopItemInfo> &s = shops[shopid].items;
 	return (shopindex < s.size() ? s[shopindex].price : 0);
 }
 
 int16_t ShopDataProvider::getAmount(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> s = shops[shopid].items;
+	vector<ShopItemInfo> &s = shops[shopid].items;
 	return (shopindex < s.size() ? s[shopindex].quantity : 0);
 }
 
 int32_t ShopDataProvider::getItemId(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> s = shops[shopid].items;
+	vector<ShopItemInfo> &s = shops[shopid].items;
 	return (shopindex < s.size() ? s[shopindex].itemId : 0);
 }
 

@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryHandler.h"
 #include "Drop.h"
 #include "EquipDataProvider.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "ItemConstants.h"
 #include "ItemDataProvider.h"
 #include "MapleTvs.h"
 #include "Maps.h"
@@ -48,7 +48,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		if (item == nullptr) {
 			return;
 		}
-		if (GameLogicUtilities::isEquip(item->getId()) || GameLogicUtilities::isRechargeable(item->getId())) {
+		if (GameLogicUtilities::isStackable(item->getId())) {
 			amount = item->getAmount();
 		}
 		else if (amount <= 0 || amount > item->getAmount()) {
@@ -87,7 +87,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		if (item2 != nullptr && !GameLogicUtilities::isRechargeable(item1->getId()) && !GameLogicUtilities::isEquip(item1->getId()) && !GameLogicUtilities::isPet(item1->getId()) && item1->getId() == item2->getId()) {
+		if (item2 != nullptr && !GameLogicUtilities::isStackable(item1->getId()) && item1->getId() == item2->getId()) {
 			if (item1->getAmount() + item2->getAmount() <= ItemDataProvider::Instance()->getMaxSlot(item1->getId())) {
 				item2->incAmount(item1->getAmount());
 				player->getInventory()->deleteItem(inv, slot1, false);

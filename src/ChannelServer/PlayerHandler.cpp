@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.h"
 #include "DropHandler.h"
 #include "DropsPacket.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "InventoryPacket.h"
 #include "ItemDataProvider.h"
@@ -35,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "PacketReader.h"
+#include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
@@ -89,7 +89,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			mpBurn = attack->mpBurn;
 			deadlyAttack = attack->deadlyAttack;
 		}
-		hit = packet.get<int8_t>(); // Knock direction
+		hit = packet.get<uint8_t>(); // Knock direction
 		pgmr.reduction = packet.get<uint8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
@@ -296,23 +296,23 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	int32_t skillId = packet.get<int32_t>();
 	switch (skillId) {
-		case Jobs::Hero::MonsterMagnet: // Monster Magnet x3
+		case Jobs::Hero::MonsterMagnet:
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet:
-		case Jobs::Marksman::PiercingArrow: // Pierce
-		case Jobs::FPArchMage::BigBang: // Big Bang x3
+		case Jobs::Marksman::PiercingArrow:
+		case Jobs::FPArchMage::BigBang:
 		case Jobs::ILArchMage::BigBang:
 		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
 			info.skillId = skillId;
-			info.level = packet.get<int8_t>();
-			info.direction = packet.get<int8_t>();
-			info.weaponSpeed = packet.get<int8_t>();
+			info.level = packet.get<uint8_t>();
+			info.direction = packet.get<uint8_t>();
+			info.weaponSpeed = packet.get<uint8_t>();
 			player->setSpecialSkill(info);
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
-		case Jobs::ChiefBandit::Chakra: { // Chakra
+		case Jobs::ChiefBandit::Chakra: {
 			int16_t dex = player->getStats()->getDex(true);
 			int16_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillId)->y;
@@ -321,8 +321,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
-			int16_t range = maximum - minimum;
-			player->getStats()->modifyHp(Randomizer::Instance()->randShort(range) + minimum);
+			player->getStats()->modifyHp(Randomizer::Instance()->randShort(maximum, minimum));
 			break;
 		}
 	}
@@ -476,9 +475,13 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
 				int32_t objId = packet.get<int32_t>();
-				packet.skipBytes(1); // Boolean for hit a monster
-				Drop *drop = Maps::getMap(map)->getDrop(objId);
-				if (drop != nullptr) {
+				packet.skipBytes(1); // Some value
+				if (Drop *drop = Maps::getMap(map)->getDrop(objId)) {
+					if (!drop->isMesos()) {
+						// Hacking
+						player->addWarning();
+						return;
+					}
 					DropsPacket::explodeDrop(drop);
 					Maps::getMap(map)->removeDrop(drop->getId());
 					delete drop;
@@ -731,7 +734,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	packet.skipBytes(14); // ???
 	int32_t damage = packet.get<int32_t>();
 	mob->applyDamage(player->getId(), damage);
-	packet.skipBytes(8); // End of packet	
+	packet.skipBytes(8); // End of packet
 }
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
@@ -874,7 +877,6 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			packet.skipBytes(2); // Distance
 		}
 		else {
-			packet.skipBytes(1);
 			hits = packet.get<int8_t>(); // Hits for Meso Explosion
 		}
 		for (int8_t k = 0; k < hits; k++) {

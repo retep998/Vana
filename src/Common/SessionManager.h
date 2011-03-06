@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/tr1/memory.hpp>
-#include <set>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/tr1/memory.hpp>
+#include <set>
 
 class AbstractSession;
 typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;

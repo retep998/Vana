@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Drop.h"
 #include "EffectPacket.h"
-#include "GameConstants.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Instance.h"
@@ -29,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mist.h"
 #include "Mob.h"
+#include "MobConstants.h"
 #include "MobHandler.h"
 #include "MobsPacket.h"
 #include "NpcDataProvider.h"
@@ -211,62 +211,27 @@ void Map::removePlayer(Player *player) {
 	updateMobControl(player);
 }
 
-void Map::dispelPlayers(int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
-	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *dispelee = m_players[i];
-		if (dispelee != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, dispelee->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-			dispelee->getActiveBuffs()->dispelBuffs();
-		}
-	}
-}
-
-void Map::statusPlayers(uint8_t status, uint8_t level, int16_t count, int16_t prop, const Pos &origin, const Pos &lt, const Pos &rb) {
+void Map::runFunctionPlayers(function<void (Player *)> successFunc, const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count) {
 	int16_t done = 0;
 	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *toy = m_players[i];
-		if (toy != nullptr) {
+		if (Player *toy = m_players[i]) {
 			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-				toy->getActiveBuffs()->addDebuff(status, level);
+				successFunc(toy);
 				done++;
 			}
 		}
-		if (count > 0 && done == count)
+		if (count > 0 && done == count) {
 			break;
-	}
-}
-
-void Map::sendPlayersToTown(int32_t mobid, int16_t prop, int16_t count, const Pos &origin, const Pos &lt, const Pos &rb) {
-	int16_t done = 0;
-	string message = "";
-	PortalInfo *p = nullptr;
-	int32_t field = getReturnMap();
-	if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mobid)) {
-		field = ban->field;
-		message = ban->message;
-		if (ban->portal != "" && ban->portal != "sp") {
-			p = Maps::getMap(field)->getPortal(ban->portal);
 		}
-	}
-	for (size_t i = 0; i < m_players.size(); i++) {
-		Player *toy = m_players[i];
-		if (toy != nullptr) {
-			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
-				if (message != "") {
-					PlayerPacket::showMessage(toy, message, PlayerPacket::NoticeTypes::Blue);
-				}
-				toy->setMap(field, p);
-				done++;
-			}
-		}
-		if (count > 0 && done == count)
-			break;
 	}
 }
 
 void Map::buffPlayers(int32_t buffid) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (Player *toy = m_players[i]) {
-			Inventory::useItem(toy, buffid);
+			if (toy->getStats()->getHp() > 0) {
+				Inventory::useItem(toy, buffid);
+			}
 		}
 	}
 }
@@ -303,7 +268,7 @@ void Map::killReactors(bool showpacket) {
 			if (showpacket) {
 				ReactorPacket::destroyReactor(r);
 			}
-			removeReactor(makeReactorId(r->getId())); 
+
 		}
 	}
 }
@@ -342,8 +307,8 @@ Pos Map::findRandomPos() {
 	Pos pos(0, 0);
 	Pos tpos;
 	while (pos.x == 0 && pos.y == 0) {
-		tempx = Randomizer::Instance()->randShort(max_x - min_x) + min_x;
-		tempy = Randomizer::Instance()->randShort(max_y - min_y) + min_y;
+		tempx = Randomizer::Instance()->randShort(max_x, min_x);
+		tempy = Randomizer::Instance()->randShort(max_y, min_y);
 		tpos.x = tempx;
 		tpos.y = tempy;
 		tpos = findFloor(tpos);
@@ -484,7 +449,7 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	if (m_mobs.find(id) != m_mobs.end()) {
 		if (spawnid >= 0 && m_mob_spawns[spawnid].time != -1) {
 			// Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(100) + 100) / 100;
+			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
 			// Randomly spawn between 1x and 2x the spawn time
 			spawnTime += TimeUtilities::getTickCount();
 			m_mob_respawns.push_back(Respawnable(spawnid, spawnTime));
@@ -599,7 +564,7 @@ Drop * Map::getDrop(int32_t id) {
 	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : nullptr);
 }
 
-void Map::clearDrops(bool showPacket) { // Clear all drops
+void Map::clearDrops(bool showPacket) {
 	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {

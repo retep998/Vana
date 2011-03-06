@@ -53,7 +53,7 @@ public:
 	void setWorld(int8_t id) { m_world = id; }
 	void setWorldPort(uint16_t port) { m_worldPort = port; }
 	void setPort(uint16_t port) { m_port = port; }
- 	void setScrollingHeader(const string &message);
+	void setScrollingHeader(const string &message);
 	void setWorldIp(uint32_t ip) { m_worldIp = ip; }
 	void setExpRate(int32_t rate) { m_config.expRate = rate; }
 	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }

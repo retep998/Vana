@@ -198,10 +198,10 @@ void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
 
 void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, int8_t type) {
 	packet.add<int16_t>(SMSG_MESSAGE);
- 	packet.add<int8_t>(type);
- 	packet.addString(msg);
+	packet.add<int8_t>(type);
+	packet.addString(msg);
 	if (type == NoticeTypes::Blue) {
- 		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
 	}
 }
 

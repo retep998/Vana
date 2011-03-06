@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "ChannelServer.h"
 #include "DropHandler.h"
-#include "GameConstants.h"
 #include "Instance.h"
 #include "Maps.h"
+#include "MobConstants.h"
 #include "MobsPacket.h"
 #include "PacketCreator.h"
 #include "Party.h"
@@ -36,67 +36,76 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t time) :
-status(status),
-val(val),
-skillId(skillId),
-mobskill(0),
-level(0),
-reflection(0),
-time(time)
+	status(status),
+	val(val),
+	skillId(skillId),
+	mobskill(0),
+	level(0),
+	reflection(0),
+	time(time)
 {
-	if (val == StatusEffects::Mob::Freeze && skillId != Jobs::FPArchMage::Paralyze) {
-		this->time += Randomizer::Instance()->randInt(time);
+	switch (val) {
+		case StatusEffects::Mob::Freeze:
+			if (skillId == Jobs::FPArchMage::Paralyze) {
+				break;
+			}
+		case StatusEffects::Mob::Stun:
+			this->time = time + 1 + Randomizer::Instance()->randInt(time * 2); // The 1 accounts for the skill cast time
+			if (skillId == Jobs::ILArchMage::Blizzard) {
+				time += 2; // Account for skill cast time, ideally we'd like to remove both these additions with MCDB suport for cast times
+			}
+			break;
 	}
 }
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, clock_t time) :
-status(status),
-val(val),
-skillId(-1),
-mobskill(mobskill),
-level(level),
-time(time),
-reflection(-1)
+	status(status),
+	val(val),
+	skillId(-1),
+	mobskill(mobskill),
+	level(level),
+	time(time),
+	reflection(-1)
 {
 }
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t level, int32_t reflect, clock_t time) :
-status(status),
-val(val),
-skillId(-1),
-mobskill(mobskill),
-level(level),
-time(time),
-reflection(reflect)
+	status(status),
+	val(val),
+	skillId(-1),
+	mobskill(mobskill),
+	level(level),
+	time(time),
+	reflection(reflect)
 {
 }
 
 Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh, int8_t controlstatus) :
-MovableLife(fh, pos, 2),
-originfh(fh),
-id(id),
-mapid(mapid),
-spawnid(-1),
-mobid(mobid),
-timers(new Timer::Container),
-info(MobDataProvider::Instance()->getMobInfo(mobid)),
-facingdirection(1),
-controlstatus(controlstatus)
+	MovableLife(fh, pos, 2),
+	originfh(fh),
+	id(id),
+	mapid(mapid),
+	spawnid(-1),
+	mobid(mobid),
+	timers(new Timer::Container),
+	info(MobDataProvider::Instance()->getMobInfo(mobid)),
+	facingdirection(1),
+	controlstatus(controlstatus)
 {
 	initMob();
 }
 
 Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh) :
-MovableLife(fh, pos, 2),
-originfh(fh),
-id(id),
-mapid(mapid),
-spawnid(spawnid),
-mobid(mobid),
-timers(new Timer::Container),
-info(MobDataProvider::Instance()->getMobInfo(mobid)),
-facingdirection(direction),
-controlstatus(Mobs::ControlStatus::ControlNormal)
+	MovableLife(fh, pos, 2),
+	originfh(fh),
+	id(id),
+	mapid(mapid),
+	spawnid(spawnid),
+	mobid(mobid),
+	timers(new Timer::Container),
+	info(MobDataProvider::Instance()->getMobInfo(mobid)),
+	facingdirection(direction),
+	controlstatus(Mobs::ControlStatus::ControlNormal)
 {
 	initMob();
 }
@@ -625,7 +634,9 @@ void Mob::skillHeal(int32_t basehealhp, int32_t healrange) {
 	if (getMobId() == Mobs::HorntailSponge)
 		return;
 
-	int32_t amount = Randomizer::Instance()->randInt(healrange) + (basehealhp - (healrange / 2));
+	int32_t min = (basehealhp - (healrange / 2));
+	int32_t max = (basehealhp + (healrange / 2));
+	int32_t amount = Randomizer::Instance()->randInt(max, min);
 	int32_t original = amount;
 
 	if (hp + amount > getMaxHp()) {

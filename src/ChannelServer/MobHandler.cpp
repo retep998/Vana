@@ -22,11 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mist.h"
 #include "Mob.h"
+#include "MobConstants.h"
 #include "MobsPacket.h"
 #include "MovementHandler.h"
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "PlayerPacket.h"
 #include "Pos.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
@@ -116,7 +118,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			bool used = false;
 			if (size) {
 				bool stop = false;
-				uint8_t rand = (uint8_t)Randomizer::Instance()->randInt(size - 1);
+				uint8_t rand = Randomizer::Instance()->randChar(size - 1);
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realskill = info->skillId;
 				level = info->level;
@@ -188,7 +190,35 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 
+namespace Functors {
+	struct StatusPlayers {
+		void operator() (Player *player) {
+			player->getActiveBuffs()->addDebuff(skill, level);
+		}
+		uint8_t skill;
+		uint8_t level;
+	};
+	struct BanishPlayers {
+		void operator() (Player *player) {
+			if (message != "") {
+				PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+			}
+			player->setMap(field, portal);
+		}
+		string message;
+		int32_t field;
+		PortalInfo *portal;
+	};
+	struct DispelPlayers {
+		void operator() (Player *player) {
+			player->getActiveBuffs()->dispelBuffs();
+		}
+	};
+}
+
 void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillinfo) {
+	using namespace Functors;
+
 	Pos mobpos = mob->getPos();
 	Map *map = Maps::getMap(mob->getMapId());
 	vector<StatusInfo> statuses;
@@ -214,7 +244,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 		case MobSkills::MagicDefenseUp:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo->x, skillId, level, skillinfo->time));
 			break;
-		case MobSkills::Heal:
+		case MobSkills::HealAoe:
 			map->healMobs(skillinfo->x, skillinfo->y, mobpos, skillinfo->lt, skillinfo->rb);
 			break;
 		case MobSkills::Seal:
@@ -226,15 +256,31 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 		case MobSkills::Slow:
 		case MobSkills::Seduce:
 		case MobSkills::CrazySkull:
-		case MobSkills::Zombify:
-			map->statusPlayers(skillId, level, skillinfo->count, skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
+		case MobSkills::Zombify: {
+			StatusPlayers func = {skillId, level};
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
 			break;
-		case MobSkills::Dispel:
-			map->dispelPlayers(skillinfo->prop, mobpos, skillinfo->lt, skillinfo->rb);
+		}
+		case MobSkills::Dispel: {
+			DispelPlayers func;
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop);
 			break;
-		case MobSkills::SendToTown:
-			map->sendPlayersToTown(mob->getMobId(), skillinfo->prop, skillinfo->count, mobpos, skillinfo->lt, skillinfo->rb);
+		}
+		case MobSkills::SendToTown: {
+			int32_t field = map->getReturnMap();
+			PortalInfo *portal = nullptr;
+			string message = "";
+			if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mob->getMobId())) {
+				field = ban->field;
+				message = ban->message;
+				if (ban->portal != "" && ban->portal != "sp") {
+					portal = Maps::getMap(field)->getPortal(ban->portal);
+				}
+			}
+			BanishPlayers func = {message, field, portal};
+			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
 			break;
+		}
 		case MobSkills::PoisonMist:
 			new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillId, level);
 			break;
@@ -274,27 +320,24 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 				minx = mobpos.x + skillinfo->lt.x;
 				maxx = mobpos.x + skillinfo->rb.x;
 			}
-			int16_t rangex = maxx - minx;
-			int16_t rangey = maxy - miny;
-			if (rangex < 0)
-				rangex *= -1;
-			if (rangey < 0)
-				rangey *= -1;
 			for (size_t summonsize = 0; summonsize < skillinfo->summons.size(); summonsize++) {
 				int32_t spawnid = skillinfo->summons[summonsize];
-				int16_t mobx = Randomizer::Instance()->randShort(rangex) + minx;
-				int16_t moby = Randomizer::Instance()->randShort(rangey) + miny;
+				int16_t mobx = Randomizer::Instance()->randShort(maxx, minx);
+				int16_t moby = Randomizer::Instance()->randShort(maxy, miny);
 				Pos floor;
-				if (mob->getMapId() == Maps::OriginOfClockTower) { // Papulatus' map
-					if (spawnid == Mobs::HighDarkstar) { // Keep High Darkstars high
+				if (mob->getMapId() == Maps::OriginOfClockTower) {
+					// Papulatus' map
+					if (spawnid == Mobs::HighDarkstar) {
+						// Keep High Darkstars high
 						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo->lt, skillinfo->rb, floor)) {
 							// Mobs spawn on the ground, we need them up top
-							mobx = Randomizer::Instance()->randShort(rangex) + minx;
+							mobx = Randomizer::Instance()->randShort(maxx, minx);
 							moby = -590;
 							floor = map->findFloor(Pos(mobx, moby));
 						}
 					}
-					else if (spawnid == Mobs::LowDarkstar) { // Keep Low Darkstars low
+					else if (spawnid == Mobs::LowDarkstar) {
+						// Keep Low Darkstars low
 						floor = map->findFloor(Pos(mobx, mobpos.y));
 					}
 				}
@@ -367,8 +410,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId,
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vskill = player->getSkills()->getVenomousWeapon();
-					uint8_t vlevel = player->getSkills()->getSkillLevel(vskill);
-					SkillLevelInfo *venom = SkillDataProvider::Instance()->getSkill(vskill, vlevel);
+					SkillLevelInfo *venom = player->getSkills()->getSkillInfo(vskill);
 
 					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
 					int32_t part2 = player->getStats()->getDex(true) * 2;
@@ -376,7 +418,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId,
 					int32_t mindamage = ((80 * part1 / 10 + part2) / 100) * vatk;
 					int32_t maxdamage = ((185 * part1 / 10 + part2) / 100) * vatk;
 
-					damage = Randomizer::Instance()->randInt(maxdamage - mindamage) + mindamage;
+					damage = Randomizer::Instance()->randInt(maxdamage, mindamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); counter++) {
 						success = (Randomizer::Instance()->randInt(99) < venom->prop);
