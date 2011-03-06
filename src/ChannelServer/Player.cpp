@@ -84,6 +84,13 @@ Player::Player() :
 
 Player::~Player() {
 	if (is_connect) {
+		Map *curMap = Maps::getMap(map);
+		if (getMapChair() != 0) {
+			curMap->playerSeated(getMapChair(), nullptr);
+		}
+		curMap->removePlayer(this);
+		is_connect = false;
+
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
@@ -96,26 +103,23 @@ Player::~Player() {
 			instance->removePlayer(getId());
 			instance->sendMessage(PlayerDisconnect, getId(), isleader);
 		}
-		if (getMapChair() != 0) {
-			Maps::getMap(getMap())->playerSeated(getMapChair(), nullptr);
-		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
-		PortalInfo *closest = Maps::getMap(getMap())->getNearestSpawnPoint(getPos());
-		if (closest != nullptr) {
+		if (PortalInfo *closest =curMap->getNearestSpawnPoint(getPos())) {
 			map_pos = closest->id;
 		}
+
 		if (save_on_dc) {
 			saveAll(true);
 			setOnline(false);
 		}
-		if (ChannelServer::Instance()->isConnected()) { // Do not connect to worldserver if the worldserver has disconnected
+		if (ChannelServer::Instance()->isConnected()) {
+			// Do not connect to worldserver if the worldserver has disconnected
 			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
-		Maps::getMap(map)->removePlayer(this);
 		PlayerDataProvider::Instance()->removePlayer(this);
 	}
 }
@@ -165,6 +169,7 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
 				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
 				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
+				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
 				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
@@ -246,7 +251,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	res[0]["name"].to_string(name);
 	user_id		= res[0]["userid"];
-	map		    = res[0]["map"];
+	map			= res[0]["map"];
 	gm_level	= res[0]["gm"];
 	admin		= StringUtilities::atob(res[0]["admin"]);
 	eyes		= res[0]["eyes"];

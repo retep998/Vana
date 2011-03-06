@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 namespace fs = boost::filesystem;
 

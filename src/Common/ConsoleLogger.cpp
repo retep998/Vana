@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConsoleLogger.h"
+#include <iomanip>
+#include <sstream>
 
 ConsoleLogger::ConsoleLogger(const string &format, const string &timeFormat, int16_t serverType) :
 Logger(format, timeFormat, serverType)

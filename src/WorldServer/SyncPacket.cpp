@@ -35,9 +35,9 @@ void SyncPacket::PartyPacket::giveLeader(uint16_t channel, int32_t playerid, int
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
 	packet.addHeader(SMSG_PARTY);
-	packet.add<int8_t>(0x1A);
+	packet.add<int8_t>(0x1B);
 	packet.add<int32_t>(target);
-	packet.add<int8_t>(is);
+	packet.addBool(is);
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 

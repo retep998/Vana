@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Logger.h"
 #include "LogReplacements.h"
 #include "TimeUtilities.h"
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 string Logger::getLevelString(LogTypes::LogTypes type) {
 	string ret;

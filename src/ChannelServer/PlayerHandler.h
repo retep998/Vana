@@ -25,6 +25,7 @@ struct Attack;
 struct MpEaterInfo;
 
 namespace PlayerHandler {
+	void handleDoorUse(Player *player, PacketReader &packet);
 	void handleDamage(Player *player, PacketReader &packet);
 	void handleFacialExpression(Player *player, PacketReader &packet);
 	void handleGetInfo(Player *player, PacketReader &packet);

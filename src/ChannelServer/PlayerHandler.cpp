@@ -45,6 +45,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::bind;
 
+void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
+	int32_t doorId = packet.get<int32_t>();
+	bool toTown = !packet.getBool();
+	//Player *doorHolder = PlayerDataProvider::Instance()->getPlayer(doorId);
+	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
+	//	// Hacking or lag
+	//	return;
+	//}
+	//doorHolder->getDoor()->warp(player, toTown);
+}
+
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
@@ -733,25 +744,42 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) {
-	PlayersPacket::useEnergyChargeAttack(player, packet);
-	packet.reset(2);
-	packet.skipBytes(1);
-	uint8_t tbyte = packet.get<int8_t>();
-	int8_t targets = tbyte / 0x10;
-	int8_t hits = tbyte % 0x10;
-	int32_t skillId = packet.get<int32_t>();
-	packet.skipBytes(4); // Unk
-	packet.skipBytes(2); // Display, direction/animation
-	packet.skipBytes(2); // Weapon subclass, casting speed
-	packet.skipBytes(4); // Ticks
-	int32_t mapMobId = packet.get<int32_t>();
-	Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
-	if (mob == nullptr)
-		return;
-	packet.skipBytes(14); // ???
-	int32_t damage = packet.get<int32_t>();
-	mob->applyDamage(player->getId(), damage);
-	packet.skipBytes(8); // End of packet
+	Attack attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
+	PlayersPacket::useEnergyChargeAttack(player, attack);
+
+	int32_t skillid = attack.skillId;
+	int8_t level = attack.skillLevel;
+
+	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+		int32_t targettotal = 0;
+		int32_t mapmobid = i->first;
+		int8_t connectedhits = 0;
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+		if (mob == nullptr) {
+			continue;
+		}
+
+		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+			int32_t damage = *k;
+			if (damage != 0) {
+				connectedhits++;
+				targettotal += damage;
+			}
+			int32_t temphp = mob->getHp();
+			mob->applyDamage(player->getId(), damage);
+			if (temphp <= damage) {
+				// Mob was killed, so set the Mob pointer to 0
+				mob = nullptr;
+				break;
+			}
+		}
+		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
+			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+			if (mob->getHp() < mob->getSelfDestructHp()) {
+				mob->explode();
+			}
+		}
+	}
 }
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {

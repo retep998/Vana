@@ -235,7 +235,32 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint16_t healrate = skill->hpProp;
 			if (healrate > 100)
 				healrate = 100;
-			player->getStats()->modifyHp(healrate * player->getStats()->getMaxHp() / 100);
+
+			Party *party = player->getParty();
+			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
+			int32_t expIncreasement = 0;
+
+			int16_t heal = (healrate * player->getStats()->getMaxHp() / 100) / partyPlayers;
+
+			if (party != nullptr) {
+				vector<Player *> members = party->getPartyMembers(player->getMap());
+				for (size_t i = 0; i < members.size(); i++) {
+					Player *cmem = members[i];
+					int16_t chp = cmem->getStats()->getHp();
+					if (chp > 0 && chp < cmem->getStats()->getMaxHp()) {
+						cmem->getStats()->modifyHp(heal);
+						if (player != cmem) {
+							expIncreasement += 20 * (cmem->getStats()->getHp() - chp) / (8 * cmem->getStats()->getLevel() + 190);
+						}
+					}
+				}
+				if (expIncreasement > 0) {
+					player->getStats()->giveExp(expIncreasement);
+				}
+			}
+			else {
+				player->getStats()->modifyHp(heal);
+			}
 			break;
 		}
 		case Jobs::Fighter::Rage:
@@ -351,12 +376,14 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 	}
 	applySkillCosts(player, skillId, level);
-	if (skillId != Jobs::Cleric::Heal)
-		SkillsPacket::showSkill(player, skillId, level, direction);
-	if (Buffs::addBuff(player, skillId, level, addedinfo))
+	SkillsPacket::showSkill(player, skillId, level, direction);
+
+	if (Buffs::addBuff(player, skillId, level, addedinfo)) {
 		return;
-	if (GameLogicUtilities::isSummon(skillId))
+	}
+	if (GameLogicUtilities::isSummon(skillId)) {
 		Summons::useSummon(player, skillId, level);
+	}
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalamp) {
