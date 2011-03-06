@@ -68,6 +68,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_WEDDING_MORE 0x47 // Holds wedding stuff too.....
 #define SMSG_YELLOW_MESSAGE 0x4a // Used by bosses like Stumpy and Mano
 #define SMSG_ARIANT_CATCH_RESULT 0x4c // Used by the Ariant match when using the Element Rock
+#define SMSG_PLAYER_NPC_SHOW 0x4e
 #define SMSG_MONSTER_BOOK_ADD 0x4f
 #define SMSG_MONSTER_BOOK_COVER 0x50
 #define SMSG_PLAYER_LEVEL_UPDATE 0x63 // Byte after it: 2 = guild, everything else = family
@@ -177,6 +178,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PACKAGE_DELIVERY 0x120 // Duey :D
 #define SMSG_CASHSHOP_NX 0x122
 #define SMSG_CASHSHOP_OPERATION 0x123
+#define SMSG_CASHSHOP_NAMECHANGE_RESULT 0x125
 #define SMSG_KEYMAP 0x12a
 #define SMSG_MAPLETV_ON 0x130
 #define SMSG_MAPLETV_OFF 0x131

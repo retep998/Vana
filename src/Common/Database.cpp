@@ -26,10 +26,10 @@ void Database::connectCharDB() {
 	// Character Database
 	chardb.reset(new mysqlpp::Connection);
 	chardb->set_option(new mysqlpp::ReconnectOption(true));
-	chardb->connect(config.getString("chardb_database").c_str(), 
-					config.getString("chardb_host").c_str(), 
-					config.getString("chardb_username").c_str(), 
-					config.getString("chardb_password").c_str(), 
+	chardb->connect(config.getString("chardb_database").c_str(),
+					config.getString("chardb_host").c_str(),
+					config.getString("chardb_username").c_str(),
+					config.getString("chardb_password").c_str(),
 					config.getInt("chardb_port")
 					);
 }
@@ -39,10 +39,10 @@ void Database::connectDataDB() {
 	// Data Database
 	datadb.reset(new mysqlpp::Connection);
 	datadb->set_option(new mysqlpp::ReconnectOption(true));
-	datadb->connect(config.getString("datadb_database").c_str(), 
-					config.getString("datadb_host").c_str(), 
-					config.getString("datadb_username").c_str(), 
-					config.getString("datadb_password").c_str(), 
+	datadb->connect(config.getString("datadb_database").c_str(),
+					config.getString("datadb_host").c_str(),
+					config.getString("datadb_username").c_str(),
+					config.getString("datadb_password").c_str(),
 					config.getInt("datadb_port")
 					);
 }

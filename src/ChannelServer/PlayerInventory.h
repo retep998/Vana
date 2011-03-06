@@ -76,6 +76,7 @@ public:
 	bool ensureRockDestination(int32_t mapid);
 
 	void addWishListItem(int32_t itemId);
+	void checkExpiredItems();
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 

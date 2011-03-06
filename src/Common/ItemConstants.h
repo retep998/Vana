@@ -235,6 +235,9 @@ namespace Items {
 
 		// Etc.
 		LudibriumMedal = 4031172,
+		BeginnersShoppingGuide = 4031180,
+		GoldenBell = 4031191,
+		RedRibbon = 4031192,
 		BeginnersGuidebook = 4161001,
 
 		// Cash
@@ -276,4 +279,25 @@ namespace Items {
 		WheelOfDestiny = 5510000,
 		ViciousHammer = 5570000
 	};
+
+	namespace Cash {
+		namespace Serials {
+			enum {
+				AddEquipSlots = 50200093,
+				AddUseSlots = 50200094,
+				AddEtcSlots = 50200095,
+				GoldenBell = 80000001,
+				RedRibbon = 80000002,
+				BeginnersShopingGuide = 80000048
+			};
+		}
+
+		namespace Flags {
+			enum {
+				HasDiscount = 0x4,
+				RemoveAddItem = 0x400, // It has a byte/bool after it: don't show/show
+				ReplaceMark = 0x800
+			};
+		}
+	}
 }

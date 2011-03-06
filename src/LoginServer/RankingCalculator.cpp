@@ -35,7 +35,7 @@ using std::tr1::bind;
 // Note: calculations are done on the MySQL server because it is faster that way
 
 void RankingCalculator::setTimer() {
-	new Timer::Timer(RankingCalculator::runThread, 
+	new Timer::Timer(RankingCalculator::runThread,
 		Timer::Id(Timer::Types::RankTimer, 0, 0), 0, Timer::Time::nthSecondOfHour(0), 3600000);
 	// Calculate ranking every 1 hour, starting on the hour
 }

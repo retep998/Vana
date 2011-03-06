@@ -53,6 +53,8 @@ public:
 	bool getBool(const string &value);
 	LogConfig getLogConfig(const string &server);
 private:
+	void keyMustExist(const string &value);
+
 	lua_State * getLuaState() const { return m_luaVm; }
 	lua_State *m_luaVm;
 	string m_file;

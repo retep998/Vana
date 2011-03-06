@@ -30,24 +30,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 
 void PetHandler::handleMovement(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
+	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	packet.skipBytes(8);
+	if (pet == nullptr) {
+		// Hacking
+		return;
+	}
+	packet.skipBytes(4); // Ticks?
 	MovementHandler::parseMovement(pet, packet);
 	packet.reset(10);
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
 void PetHandler::handleChat(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(5);
+	int32_t petid = (int32_t)packet.get<int64_t>();
+	if (player->getPets()->getPet(petid) == nullptr) {
+		// Hacking
+		return;
+	}
+	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
 	string message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
 }
 
 void PetHandler::handleSummon(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	packet.skipBytes(4); // Ticks
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1; // Might possibly fit under getBool criteria
 	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::FollowTheLead) > 0;
@@ -117,11 +125,14 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleFeed(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	packet.skipBytes(4); // Ticks
+
 	int16_t slot = packet.get<int16_t>();
-	int32_t item = packet.get<int32_t>();
-	if (Pet *pet = player->getPets()->getSummoned(0)) {
-		Inventory::takeItem(player, item, 1);
+	int32_t itemId = packet.get<int32_t>();
+	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	Pet *pet = player->getPets()->getSummoned(0);
+	if (pet != nullptr && item != nullptr && item->getId() == itemId) {
+		Inventory::takeItem(player, itemId, 1);
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
 		PetsPacket::showAnimation(player, pet, 1, success);
@@ -139,13 +150,19 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleCommand(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(5);
-	int8_t act = packet.get<int8_t>();
+	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	PetInteractInfo *action = ItemDataProvider::Instance()->getInteraction(pet->getItemId(), act);
-	if (action == nullptr)
+	if (pet == nullptr) {
+		// Hacking
 		return;
+	}
+	packet.skipBytes(1);
+	int8_t act = packet.get<int8_t>();
+	PetInteractInfo *action = ItemDataProvider::Instance()->getInteraction(pet->getItemId(), act);
+	if (action == nullptr) {
+		// Hacking or no action info available
+		return;
+	}
 	bool success = (Randomizer::Instance()->randInt(100) < action->prob);
 	if (success) {
 		pet->addCloseness(action->increase);
@@ -154,16 +171,16 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(5);
-	packet.skipBytes(4); // Ticks
-	int16_t slot = packet.get<int16_t>();
-	int32_t itemid = packet.get<int32_t>();
+	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	if (pet == nullptr || !pet->isSummoned()) {
 		// Hacking
 		return;
 	}
+	packet.skipBytes(1);
+	packet.skipBytes(4); // Ticks
+	int16_t slot = packet.get<int16_t>();
+	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemid) {
 		// Hacking

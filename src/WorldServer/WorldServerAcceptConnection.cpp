@@ -61,8 +61,8 @@ void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
 }
 
 void WorldServerAcceptConnection::authenticated(int8_t type) {
-	channel = Channels::Instance()->getAvailableChannel();
 	if (type == ServerTypes::Channel) {
+		channel = Channels::Instance()->getAvailableChannel();
 		if (channel != -1) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);

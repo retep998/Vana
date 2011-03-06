@@ -37,7 +37,16 @@ void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
-	packet.add<uint32_t>(player->getPortalCount(true));
+	packet.add<uint8_t>(player->getPortalCount(true));
+	packet.addBool(true); // Is a connect packet
+	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+	if (false) {
+		size_t lineAmount = 0;
+		packet.addString("Message title");
+		for (size_t i = 0; i < lineAmount; i++) {
+			packet.addString("Line");
+		}
+	}
 
 	player->getRandStream()->connectData(packet); // Seeding RNG
 
@@ -48,12 +57,8 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int8_t>(player->getSkin());
 	packet.add<int32_t>(player->getEyes());
 	packet.add<int32_t>(player->getHair());
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+
+	player->getPets()->connectData(packet);
 	player->getStats()->connectData(packet); // Stats
 
 	packet.add<int32_t>(0); // Gachapon EXP

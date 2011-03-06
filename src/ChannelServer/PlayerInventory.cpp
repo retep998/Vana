@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerPacketHelper.h"
+#include "StringUtilities.h"
+
+using StringUtilities::atot;
 
 PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
 	m_maxslots(maxslots),
@@ -66,11 +69,11 @@ void PlayerInventory::load() {
 		iHp, iMp, iWatk, iMatk, iWdef,
 		iMdef, iAcc, iAvo, iHand, iSpeed,
 		iJump, Flags, Hammers, PetId, Name,
+		ExpirationTime,
 		// End of items, start of pets
 		PetsId, Index, PetName, Level, Closeness,
 		Fullness
 	};
-
 
 	Item *item;
 	string temp;
@@ -98,6 +101,7 @@ void PlayerInventory::load() {
 		item->setPetId(row[PetId]);
 		item->setFlags(static_cast<int16_t>(row[Flags]));
 		item->setHammers(row[Hammers]);
+		item->setExpirationTime(atot(row[ExpirationTime]));
 		row[Name].to_string(temp);
 		item->setName(temp);
 
@@ -176,7 +180,8 @@ void PlayerInventory::save() {
 				<< item->getFlags() << ","
 				<< item->getHammers() << ","
 				<< item->getPetId() << ","
-				<< mysqlpp::quote << item->getName() << ")";
+				<< mysqlpp::quote << item->getName() << ","
+				<< mysqlpp::quote << mysqlpp::DateTime(time_t(item->getExpirationTime())) << ")";
 		}
 	}
 	if (!firstrun) {
@@ -519,5 +524,24 @@ void PlayerInventory::wishListPacket(PacketCreator &packet) {
 	packet.add<uint8_t>(m_wishlist.size());
 	for (size_t i = 0; i < m_wishlist.size(); i++) {
 		packet.add<int32_t>(m_wishlist[i]);
+	}
+}
+
+void PlayerInventory::checkExpiredItems() {
+	vector<int32_t> expiredItemIds;
+	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
+		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
+			Item *item = getItem(i, s);
+			if (item == nullptr || item->getExpirationTime() == -1)
+				continue;
+
+			if (item->getExpirationTime() <= time(0)) {
+				expiredItemIds.push_back(item->getId());
+				Inventory::takeItemSlot(m_player, i, s, item->getAmount());
+			}
+		}
+	}
+	if (expiredItemIds.size() > 0) {
+		InventoryPacket::sendItemExpired(m_player, &expiredItemIds);
 	}
 }
