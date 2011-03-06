@@ -44,7 +44,7 @@ void NpcPacket::showNpc(int32_t mapid, const NpcSpawnInfo &npc, int32_t id, bool
 }
 
 void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
-	packet.add<int16_t>(SMSG_NPC_SHOW);
+	packet.addHeader(SMSG_NPC_SHOW);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addPos(npc.pos);
@@ -56,7 +56,7 @@ void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t 
 }
 
 void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
-	packet.add<int16_t>(SMSG_NPC_CONTROL);
+	packet.addHeader(SMSG_NPC_CONTROL);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
@@ -70,7 +70,7 @@ void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32
 
 void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NPC_ANIMATE);
+	packet.addHeader(SMSG_NPC_ANIMATE);
 
 	size_t len = pack.getBufferLength();
 	if (len == 6) {
@@ -88,7 +88,7 @@ void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
 
 void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NPC_SHOW_EFFECT);
+	packet.addHeader(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
 	packet.addBool(show);
 	player->getSession()->send(packet);
@@ -96,7 +96,7 @@ void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
 
 void NpcPacket::showNpcEffect(int32_t mapid, int32_t index, bool show) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NPC_SHOW_EFFECT);
+	packet.addHeader(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
 	packet.addBool(show);
 	Maps::getMap(mapid)->sendPacket(packet);
@@ -104,7 +104,7 @@ void NpcPacket::showNpcEffect(int32_t mapid, int32_t index, bool show) {
 
 void NpcPacket::bought(Player *player, uint8_t msg) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ITEM_PURCHASED);
+	packet.addHeader(SMSG_ITEM_PURCHASED);
 	packet.add<int8_t>(msg);
 	player->getSession()->send(packet);
 }

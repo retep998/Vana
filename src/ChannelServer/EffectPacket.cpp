@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void EffectPacket::playMusic(int32_t mapId, const string &music) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
 	packet.addString(music);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -31,7 +31,7 @@ void EffectPacket::playMusic(int32_t mapId, const string &music) {
 
 void EffectPacket::playMusic(Player *player, const string &music) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
 	packet.addString(music);
 	player->getSession()->send(packet);
@@ -40,7 +40,7 @@ void EffectPacket::playMusic(Player *player, const string &music) {
 void EffectPacket::sendEvent(int32_t mapId, const string &id) {
 	// Look in Map.wz/Effect.img to find valid strings
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x03);
 	packet.addString(id);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -49,7 +49,7 @@ void EffectPacket::sendEvent(int32_t mapId, const string &id) {
 void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
 	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x02);
 	packet.addString(effect);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -57,7 +57,7 @@ void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
 
 void EffectPacket::playPortalSoundEffect(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_THEATRICS);
+	packet.addHeader(SMSG_THEATRICS);
 	packet.add<int8_t>(0x07);
 	player->getSession()->send(packet);
 }
@@ -65,7 +65,7 @@ void EffectPacket::playPortalSoundEffect(Player *player) {
 void EffectPacket::sendFieldSound(int32_t mapId, const string &sound) {
 	// Look in Sound.wz/Field.img to find valid strings
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
 	packet.addString(sound);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -73,7 +73,7 @@ void EffectPacket::sendFieldSound(int32_t mapId, const string &sound) {
 
 void EffectPacket::sendFieldSound(Player *player, const string &sound) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MAP_EFFECT);
+	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
 	packet.addString(sound);
 	player->getSession()->send(packet);
@@ -82,14 +82,14 @@ void EffectPacket::sendFieldSound(Player *player, const string &sound) {
 void EffectPacket::sendMinigameSound(int32_t mapId, const string &sound) {
 	// Look in Sound.wz/MiniGame.img to find valid strings
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SOUND);
+	packet.addHeader(SMSG_SOUND);
 	packet.addString(sound);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
 void EffectPacket::sendMinigameSound(Player *player, const string &sound) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SOUND);
+	packet.addHeader(SMSG_SOUND);
 	packet.addString(sound);
 	player->getSession()->send(packet);
 }

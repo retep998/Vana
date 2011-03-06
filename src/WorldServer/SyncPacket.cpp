@@ -34,7 +34,7 @@ void SyncPacket::PartyPacket::giveLeader(uint16_t channel, int32_t playerid, int
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	packet.add<int8_t>(0x1A);
 	packet.add<int32_t>(target);
 	packet.add<int8_t>(is);
@@ -45,7 +45,7 @@ void SyncPacket::PartyPacket::invitePlayer(uint16_t channel, int32_t playerid, c
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	packet.add<int8_t>(0x04);
 	packet.add<int32_t>(PlayerDataProvider::Instance()->getPlayer(inviter)->getParty()->getId());
 	packet.addString(inviter);
@@ -58,7 +58,7 @@ void SyncPacket::PartyPacket::createParty(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	packet.add<int8_t>(0x08);
 	packet.add<int32_t>(partyplayer->getParty()->getId());
 	packet.add<int32_t>(Maps::NoMap);
@@ -80,7 +80,7 @@ void SyncPacket::PartyPacket::disbandParty(uint16_t channel, int32_t playerid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	packet.add<int8_t>(0x0C);
 	packet.add<int32_t>(partyplayer->getParty()->getId());
 	packet.add<int32_t>(partyplayer->getParty()->getLeader());
@@ -102,7 +102,7 @@ void SyncPacket::PartyPacket::updateParty(uint16_t channel, int8_t type, int32_t
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	switch (type) {
 		case PartyActions::Join: 
 			packet.add<int8_t>(0x0F);
@@ -144,7 +144,7 @@ void SyncPacket::PartyPacket::partyError(uint16_t channel, int32_t playerid, int
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_PARTY);
+	packet.addHeader(SMSG_PARTY);
 	packet.add<int8_t>(error);
 	Channels::Instance()->sendToChannel(channel, packet);
 }

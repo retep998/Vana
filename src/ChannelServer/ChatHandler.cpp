@@ -77,7 +77,7 @@ namespace Functors {
 					*names = *names + ", ";
 				}
 				*names = *names + player->getName();
-				*i++;
+				(*i)++;
 			}
 		}
 		int32_t max;

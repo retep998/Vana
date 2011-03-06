@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(2);
@@ -49,7 +49,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_CHANGE_LOOK);
+	packet.addHeader(SMSG_PLAYER_CHANGE_LOOK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1);
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
@@ -60,7 +60,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.addBool(is);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(0);
@@ -71,7 +71,7 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 
 void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.addBool(is);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
@@ -83,7 +83,7 @@ void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *it
 
 void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>((slot2 > 0) + 1);
 	packet.add<int8_t>(1);
@@ -104,12 +104,12 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PLAYER_UPDATE);
+	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_CHAIR_SIT);
+	packet.addHeader(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(chairid);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -117,7 +117,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 
 void InventoryPacket::sitMapChair(Player *player, int16_t chairid) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHAIR);
+	packet.addHeader(SMSG_CHAIR);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(chairid);
 	player->getSession()->send(packet);
@@ -125,14 +125,14 @@ void InventoryPacket::sitMapChair(Player *player, int16_t chairid) {
 
 void InventoryPacket::stopChair(Player *player, bool showMap) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHAIR);
+	packet.addHeader(SMSG_CHAIR);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide() || !showMap) {
 		return;
 	}
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_CHAIR_SIT);
+	packet.addHeader(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -143,7 +143,7 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SCROLL_USE);
+	packet.addHeader(SMSG_SCROLL_USE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(succeed);
 	packet.addBool(destroy);
@@ -153,7 +153,7 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 
 void InventoryPacket::showMegaphone(Player *player, const string &msg) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(2);
 	packet.addString(msg);
 	PlayerDataProvider::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
@@ -162,7 +162,7 @@ void InventoryPacket::showMegaphone(Player *player, const string &msg) {
 void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool whisper) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
@@ -173,7 +173,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSENGER);
+	packet.addHeader(SMSG_AVATAR_MEGAPHONE);
 	packet.add<int32_t>(itemId);
 	packet.addString(player->getName());
 	packet.addString(msg);
@@ -188,7 +188,7 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool whisper, Item *item) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
@@ -205,7 +205,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
-	packet.add<int16_t>(SMSG_MESSAGE);
+	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(0x0a);
 	packet.addString(line1);
 	packet.add<int8_t>(lines);
@@ -222,7 +222,7 @@ void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const st
 
 void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_SKILLBOOK);
+	packet.addHeader(SMSG_SKILLBOOK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
 	packet.add<int32_t>(skillId);
@@ -234,7 +234,7 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 
 void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_ITEM_EFFECT);
+	packet.addHeader(SMSG_ITEM_EFFECT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(itemId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -242,7 +242,7 @@ void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
 
 void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_SLOT_UPDATE);
+	packet.addHeader(SMSG_INVENTORY_SLOT_UPDATE);
 	packet.add<int8_t>(inventory);
 	packet.add<int8_t>(slots);
 	player->getSession()->send(packet);
@@ -250,7 +250,7 @@ void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots
 
 void InventoryPacket::blankUpdate(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(0x00);
 	player->getSession()->send(packet);
@@ -258,7 +258,7 @@ void InventoryPacket::blankUpdate(Player *player) {
 
 void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_TELEPORT_ROCK);
+	packet.addHeader(SMSG_TELEPORT_ROCK);
 	packet.add<int8_t>(mode);
 	packet.add<int8_t>(type);
 
@@ -269,7 +269,7 @@ void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, c
 
 void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_TELEPORT_ROCK);
+	packet.addHeader(SMSG_TELEPORT_ROCK);
 	packet.add<int8_t>(code);
 	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
@@ -277,20 +277,20 @@ void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
 
 void InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESOBAG_SUCCESS);
+	packet.addHeader(SMSG_MESOBAG_SUCCESS);
 	packet.add<int32_t>(mesos);
 	player->getSession()->send(packet);
 }
 
 void InventoryPacket::sendMesobagFailed(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_MESOBAG_FAILURE);
+	packet.addHeader(SMSG_MESOBAG_FAILURE);
 	player->getSession()->send(packet);
 }
 
 void InventoryPacket::useCharm(Player *player, uint8_t charmsleft, uint8_t daysleft) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_THEATRICS);
+	packet.addHeader(SMSG_THEATRICS);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(0x01);
 	packet.add<uint8_t>(charmsleft);
@@ -300,7 +300,7 @@ void InventoryPacket::useCharm(Player *player, uint8_t charmsleft, uint8_t daysl
 
 void InventoryPacket::sendHammerSlots(Player *player, int32_t slots) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_HAMMER);
+	packet.addHeader(SMSG_HAMMER);
 	packet.add<int8_t>(0x34); // No idea... mode of some sort, I think
 	packet.add<int32_t>(0x00);
 	packet.add<int32_t>(slots);
@@ -309,7 +309,7 @@ void InventoryPacket::sendHammerSlots(Player *player, int32_t slots) {
 
 void InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(0x02);
 	packet.add<int8_t>(0x03);
@@ -323,7 +323,7 @@ void InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered
 
 void InventoryPacket::sendHammerUpdate(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_HAMMER);
+	packet.addHeader(SMSG_HAMMER);
 	packet.add<int8_t>(0x38); // No idea... mode of some sort, I think
 	packet.add<int32_t>(0x00);
 	player->getSession()->send(packet);
@@ -334,7 +334,7 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CHALKBOARD);
+	packet.addHeader(SMSG_CHALKBOARD);
 	packet.add<int32_t>(player->getId());
 	packet.addBool(!msg.empty());
 	packet.addString(msg);
@@ -343,7 +343,7 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 
 void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playername) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_CASH_SONG);
+	packet.addHeader(SMSG_CASH_SONG);
 	packet.add<int32_t>(itemId);
 	packet.addString(playername);
 	Maps::getMap(map)->sendPacket(packet);
@@ -351,7 +351,7 @@ void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &pl
 
 void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, const string &effect) {
 	PacketCreator packet;
-	packet.add<int16_t>(SMSG_THEATRICS);
+	packet.addHeader(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0E);
 	packet.add<int32_t>(itemId);
 	packet.add<int8_t>(1); // Unk...?
@@ -359,7 +359,7 @@ void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, co
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<int16_t>(SMSG_SKILL_SHOW);
+	packet.addHeader(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(0x0E);
 	packet.add<int32_t>(itemId);

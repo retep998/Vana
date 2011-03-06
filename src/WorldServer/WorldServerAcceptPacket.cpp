@@ -41,7 +41,7 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerid);
-	packet.add<int16_t>(SMSG_MESSAGE_GROUP);
+	packet.addHeader(SMSG_MESSAGE_GROUP);
 	packet.add<int8_t>(type);
 	packet.addString(sender);
 	packet.addString(message);
