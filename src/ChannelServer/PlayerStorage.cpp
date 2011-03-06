@@ -95,7 +95,7 @@ void PlayerStorage::load() {
 		iJump, Flags, Hammers, Name
 	};
 
-	query << "SELECT * FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
+	query << "SELECT * FROM storage_items WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
 	res = query.store();
 	string temp;
 	for (size_t i = 0; i < res.num_rows(); i++) {
@@ -139,13 +139,13 @@ void PlayerStorage::save() {
 		<< "mesos = " << getMesos();
 	query.exec();
 
-	query << "DELETE FROM storageitems WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
+	query << "DELETE FROM storage_items WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
 	query.exec();
 
 	bool firstrun = true;
 	for (int8_t i = 0; i < getNumItems(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO storageitems VALUES (";
+			query << "INSERT INTO storage_items VALUES (";
 			firstrun = false;
 		}
 		else {

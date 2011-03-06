@@ -254,6 +254,7 @@ void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
+
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
 	if (player->getStats()->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
@@ -265,6 +266,10 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
+	if (packet.get<uint8_t>() != player->getPortalCount()) {
+		// Portal count doesn't match, usually an indication of hacking
+		return;
+	}
 	packet.reset(11);
 	MovementHandler::parseMovement(player, packet);
 	packet.reset(11);
@@ -386,6 +391,10 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Melee);
+	if (attack.portals != player->getPortalCount()) {
+		// Usually evidence of hacking
+		return;
+	}
 	PlayersPacket::useMeleeAttack(player, attack);
 	int8_t damagedtargets = 0;
 	int32_t skillId = attack.skillId;
@@ -549,6 +558,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Ranged);
+	if (attack.portals != player->getPortalCount()) {
+		// Usually evidence of hacking
+		return;
+	}
 	PlayersPacket::useRangedAttack(player, attack);
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
@@ -649,6 +662,10 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Magic);
+	if (attack.portals != player->getPortalCount()) {
+		// Usually evidence of hacking
+		return;
+	}
 	PlayersPacket::useSpellAttack(player, attack);
 
 	int32_t skillId = attack.skillId;
@@ -786,7 +803,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	bool shadowMeso = false;
 
 	if (skillType != SkillTypes::Summon) {
-		packet.skipBytes(1); // Portals entered
+		attack.portals = packet.get<uint8_t>();
 		uint8_t tbyte = packet.get<uint8_t>();
 		skillId = packet.get<int32_t>();
 		targets = tbyte / 0x10;
@@ -889,7 +906,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		}
 	}
 
-	if (skillType == SkillTypes::Ranged || skillType == SkillTypes::Summon) {
+	if (skillType == SkillTypes::Ranged) {
 		attack.projectilePos = packet.getPos();
 	}
 	attack.playerPos = packet.getPos();

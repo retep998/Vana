@@ -22,6 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include <iostream>
 
+using std::cout;
+using std::cerr;
+using std::endl;
+
 ConfigFile::ConfigFile(const string &filename, bool executeFile) {
 	loadFile(filename);
 	if (executeFile) {
@@ -37,8 +41,8 @@ ConfigFile::~ConfigFile() {
 
 void ConfigFile::loadFile(const string &filename) {
 	if (!FileUtilities::fileExists(filename)) {
-		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
-		std::cout << "Press enter to quit ...";
+		cerr << "ERROR: Configuration file " << filename << " does not exist!" << endl;
+		cout << "Press enter to quit ...";
 		getchar();
 		exit(ExitCodes::ConfigFileMissing);
 	}
@@ -61,7 +65,7 @@ void ConfigFile::handleError() {
 }
 
 void ConfigFile::printError(const string &error) {
-	std::cout << error << std::endl;
+	cout << error << endl;
 }
 
 bool ConfigFile::keyExists(const string &value) {
@@ -69,6 +73,17 @@ bool ConfigFile::keyExists(const string &value) {
 	bool ret = !lua_isnil(getLuaState(), -1);
 	lua_pop(getLuaState(), 1);
 	return ret;
+}
+
+void ConfigFile::keyMustExist(const string &value) {
+	if (!keyExists(value)) {
+		cerr << "ERROR: Couldn't get a value from config file." << endl;
+		cerr << "File: " << m_file << endl;
+		cerr << "Value: " << value << endl;
+		cout << "Press enter to quit ..." << endl;
+		getchar();
+		exit(ExitCodes::ConfigError);
+	}
 }
 
 void ConfigFile::setVariable(const string &name, const string &value) {
@@ -82,6 +97,7 @@ void ConfigFile::setVariable(const string &name, int32_t value) {
 }
 
 int32_t ConfigFile::getInt(const string &value) {
+	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
 	int32_t val = lua_tointeger(getLuaState(), -1);
 	lua_pop(getLuaState(), 1);
@@ -89,10 +105,12 @@ int32_t ConfigFile::getInt(const string &value) {
 }
 
 int16_t ConfigFile::getShort(const string &value) {
+	keyMustExist(value);
 	return static_cast<int16_t>(getInt(value));
 }
 
 string ConfigFile::getString(const string &value) {
+	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
 	string x = lua_tostring(getLuaState(), -1);
 	lua_pop(getLuaState(), 1);
@@ -100,6 +118,7 @@ string ConfigFile::getString(const string &value) {
 }
 
 IpMatrix ConfigFile::getIpMatrix(const string &value) {
+	keyMustExist(value);
 	IpMatrix matrix;
 
 	lua_getglobal(getLuaState(), value.c_str());
@@ -115,8 +134,8 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 		}
 
 		if (arr.size() != 2) {
-			std::cerr << "ERROR: external_ip configuration is malformed!" << std::endl;
-			std::cout << "Press enter to quit ...";
+			std::cerr << "ERROR: external_ip configuration is malformed!" << endl;
+			cout << "Press enter to quit ...";
 			getchar();
 			exit(ExitCodes::ConfigError);
 		}
@@ -131,6 +150,7 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 }
 
 vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChannels) {
+	keyMustExist(value);
 	vector<int8_t> channels;
 
 	lua_getglobal(getLuaState(), value.c_str());
@@ -151,6 +171,7 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 }
 
 bool ConfigFile::getBool(const string &value) {
+	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
 	bool ret = (lua_toboolean(getLuaState(), -1) != 0);
 	lua_pop(getLuaState(), 1);

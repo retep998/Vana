@@ -81,7 +81,7 @@ void LoginServer::loadWorlds() {
 	Configuration conf;
 	boost::format formatter("world%i_%s"); // The formatter we'll be using
 	size_t i = 0;
-	while (1) {
+	while (true) {
 		formatter % i % "name";
 		if (!config.keyExists(formatter.str()))
 			break; // No more worlds

@@ -22,10 +22,15 @@ int64_t TimeUtilities::getServerTime() {
 }
 
 int64_t TimeUtilities::timeToTick(time_t time) {
-	if (time == -1)
+	if (time == -1) {
 		return -1;
+	}
 	struct tm *timeinfo;
 	timeinfo = localtime(&time);
+	if (timeinfo == nullptr) {
+		// Couldn't parse the time, so return the given time
+		return time;
+	}
 	uint64_t ticks = 0;
 
 	// Calculate leap days
@@ -184,6 +189,13 @@ int32_t TimeUtilities::getTimeZoneOffset() {
 	int32_t gtime = ts->tm_hour * 100 + ts->tm_min;
 
 	return ((ltime - gtime) * 60 * 60 / 100); // Number of seconds as an offset
+}
+
+time_t TimeUtilities::addDaysToTime(int16_t days) {
+	time_t now = time(nullptr);
+	struct tm* tm = localtime(&now);
+	tm->tm_mday += days;
+	return mktime(tm);
 }
 
 #ifdef WIN32

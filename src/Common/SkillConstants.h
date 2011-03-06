@@ -84,7 +84,7 @@ namespace StatusEffects {
 			Freeze = 0x100,
 			Poison = 0x200,
 
-			Seal = 0x400, 
+			Seal = 0x400,
 			NoClue1 = 0x800,
 			WeaponAttackUp = 0x1000,
 			WeaponDefenseUp = 0x2000,
@@ -157,7 +157,7 @@ namespace MobSkills {
 		MagicImmunity = 141,
 		ArmorSkill = 142,
 		WeaponDamageReflect = 143,
-		MagicDamageReflect = 144, 
+		MagicDamageReflect = 144,
 		AnyDamageReflect = 145,
 		McWeaponAttackUp = 150,
 		McMagicAttackUp = 151,

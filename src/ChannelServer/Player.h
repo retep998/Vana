@@ -83,8 +83,8 @@ public:
 	int8_t getMappos() const { return map_pos; }
 	int8_t getFallCounter() const { return fall_counter; }
 	uint8_t getBuddyListSize() const { return buddylist_size; }
+	uint8_t getPortalCount(bool add = false);
 	int16_t getMapChair() const { return mapchair; }
-	uint16_t getPortalCount(bool initialPacket = false);
 	int32_t getId() const { return id; }
 	int32_t getUserId() const { return user_id; }
 	int32_t getEyes() const { return eyes; }
@@ -150,8 +150,8 @@ private:
 	int8_t skin;
 	int8_t fall_counter;
 	uint8_t buddylist_size;
+	uint8_t m_portalCount;
 	int16_t mapchair;
-	uint16_t m_portalCount;
 	int32_t id;
 	int32_t user_id;
 	int32_t eyes;

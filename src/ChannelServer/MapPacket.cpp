@@ -186,7 +186,16 @@ void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
-	packet.add<uint32_t>(player->getPortalCount());
+	packet.add<uint8_t>(player->getPortalCount(true));
+	packet.addBool(false); // Not a connect packet
+	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+	if (false) {
+		size_t lineAmount = 0;
+		packet.addString("Message title");
+		for (size_t i = 0; i < lineAmount; i++) {
+			packet.addString("Line");
+		}
+	}
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
 	packet.add<int16_t>(player->getStats()->getHp());
