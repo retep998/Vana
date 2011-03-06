@@ -441,6 +441,7 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Noblesse::MonsterRider:
 		case Jobs::Corsair::Battleship:
 			playerbuffs->setMountInfo(0, 0);
+			break;
 		case Jobs::Crusader::ComboAttack:
 		case Jobs::DawnWarrior::ComboAttack:
 			playerbuffs->setCombo(0, false);

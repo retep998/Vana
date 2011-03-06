@@ -67,7 +67,7 @@ void Summons::useSummon(Player *player, int32_t skillId, uint8_t level) {
 	Summon *summon = new Summon(loopId(), skillId, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	removeSummon(player, puppet, false, SummonMessages::None);
-	Pos &ppos = player->getPos();
+	Pos ppos = player->getPos();
 	Pos sumpos;
 	if (puppet) {
 		int16_t x = ppos.x + 200 * (player->isFacingRight() ? 1 : -1);

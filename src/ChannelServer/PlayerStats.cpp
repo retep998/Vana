@@ -41,24 +41,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-PlayerStats::PlayerStats(Player *player,
-	uint8_t level,
-	int16_t job,
-	int16_t fame,
-	int16_t str,
-	int16_t dex,
-	int16_t intt,
-	int16_t luk,
-	int16_t ap,
-	uint16_t hpmp_ap,
-	int16_t sp,
-	int16_t hp,
-	int16_t mhp,
-	int16_t mp,
-	int16_t mmp,
-	int32_t exp) : player(player), level(level), job(job), fame(fame), str(str), dex(dex), intt(intt), luk(luk), ap(ap), hpmp_ap(hpmp_ap), sp(sp), hp(hp), mhp(mhp), mp(mp), mmp(mmp), exp(exp), hbx(0), hby(0), mw(0) {
-		if (this->hp == 0)
-			this->hp = 50;
+PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpmp_ap, int16_t sp, int16_t hp, int16_t mhp, int16_t mp, int16_t mmp, int32_t exp) :
+	player(player),
+	level(level),
+	job(job),
+	fame(fame),
+	str(str),
+	dex(dex),
+	intt(intt),
+	luk(luk),
+	ap(ap),
+	hpmp_ap(hpmp_ap),
+	sp(sp),
+	hp(hp),
+	mhp(mhp),
+	mp(mp),
+	mmp(mmp),
+	exp(exp),
+	hbx(0),
+	hby(0),
+	mw(0)
+{
+	if (this->hp == 0) {
+		this->hp = 50;
+	}
 }
 
 // Equip stat bonus handling

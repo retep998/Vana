@@ -35,7 +35,7 @@ using std::tr1::unordered_map;
 PacketCreator MapPacket::playerPacket(Player *player) {
 	PacketCreator packet;
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
-	packet.addHeader(SMSG_MAP_SPAWN_PLAYER);
+	packet.addHeader(SMSG_MAP_PLAYER_SPAWN);
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName());
 	packet.addString(""); // Guild
@@ -177,7 +177,7 @@ void MapPacket::showPlayer(Player *player) {
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MAP_REMOVE_PLAYER);
+	packet.addHeader(SMSG_MAP_PLAYER_DESPAWN);
 	packet.add<int32_t>(player->getId());
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
