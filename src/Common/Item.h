@@ -25,8 +25,8 @@ using std::string;
 class Item {
 public:
 	Item();
-	Item(int32_t itemid);
-	Item(int32_t itemid, int16_t amount);
+	Item(int32_t itemId);
+	Item(int32_t itemId, int16_t amount);
 	Item(int32_t equipid, bool random);
 	Item(Item *item);
 

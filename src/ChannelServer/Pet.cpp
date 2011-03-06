@@ -29,9 +29,9 @@ using std::tr1::bind;
 
 Pet::Pet(Player *player, Item *item) :
 	player(player),
-	itemid(item->getId()),
+	itemId(item->getId()),
 	index(-1),
-	name(ItemDataProvider::Instance()->getItemName(itemid)),
+	name(ItemDataProvider::Instance()->getItemName(itemId)),
 	level(1),
 	fullness(100),
 	closeness(0)
@@ -46,7 +46,7 @@ Pet::Pet(Player *player, Item *item) :
 Pet::Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
 player(player),
 id(item->getPetId()),
-itemid(item->getId()),
+itemId(item->getId()),
 index(index),
 name(name),
 level(level),

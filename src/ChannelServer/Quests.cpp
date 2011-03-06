@@ -23,17 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.h"
 #include "PacketReader.h"
 
-bool Quests::giveItem(Player *player, int32_t itemid, int16_t amount) {
+bool Quests::giveItem(Player *player, int32_t itemId, int16_t amount) {
 	//Temp
-	QuestsPacket::giveItem(player, itemid, amount);
+	QuestsPacket::giveItem(player, itemId, amount);
 	if (amount > 0) {
-		Inventory::addNewItem(player, itemid, amount);
+		Inventory::addNewItem(player, itemId, amount);
 	}
 	else {
-		if (player->getInventory()->getItemAmount(itemid) < amount) { // Player does not have (enough of) what is being taken
+		if (player->getInventory()->getItemAmount(itemId) < amount) { // Player does not have (enough of) what is being taken
 			return false;
 		}
-		Inventory::takeItem(player, itemid, -amount);
+		Inventory::takeItem(player, itemId, -amount);
 	}
 	return true;
 }

@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Quests.h"
 #include "Randomizer.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "TimeUtilities.h"
@@ -777,8 +777,8 @@ int LuaExports::getEquippedItemInSlot(lua_State *luaVm) {
 }
 
 int LuaExports::getItemAmount(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, -1);
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemid));
+	int32_t itemId = lua_tointeger(luaVm, -1);
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getItemAmount(itemId));
 	return 1;
 }
 
@@ -794,12 +794,12 @@ int LuaExports::getOpenSlots(lua_State *luaVm) {
 }
 
 int LuaExports::giveItem(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, 1);
+	int32_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 2)) {
 		amount = lua_tointeger(luaVm, 2);
 	}
-	bool success = Quests::giveItem(getPlayer(luaVm), itemid, amount);
+	bool success = Quests::giveItem(getPlayer(luaVm), itemId, amount);
 	lua_pushboolean(luaVm, success);
 	return 1;
 }
@@ -812,23 +812,23 @@ int LuaExports::giveMesos(lua_State *luaVm) {
 }
 
 int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, 1);
+	int32_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 2))
 		amount = lua_tointeger(luaVm, 2);
-	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemid, amount));
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemId, amount));
 	return 1;
 }
 
 int LuaExports::isEquippedItem(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, 1);
-	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->isEquippedItem(itemid));
+	int32_t itemId = lua_tointeger(luaVm, 1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->isEquippedItem(itemId));
 	return 1;
 }
 
 int LuaExports::useItem(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, -1);
-	Inventory::useItem(getPlayer(luaVm), itemid);
+	int32_t itemId = lua_tointeger(luaVm, -1);
+	Inventory::useItem(getPlayer(luaVm), itemId);
 	return 0;
 }
 
@@ -1318,9 +1318,9 @@ int LuaExports::getNumPlayers(lua_State *luaVm) {
 
 int LuaExports::getReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -2);
-	int32_t reactorid = lua_tointeger(luaVm, -1);
+	int32_t reactorId = lua_tointeger(luaVm, -1);
 	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		if (Maps::getMap(mapid)->getReactor(i)->getReactorId() == reactorid) {
+		if (Maps::getMap(mapid)->getReactor(i)->getReactorId() == reactorId) {
 			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
 			return 1;
 		}
@@ -1349,11 +1349,11 @@ int LuaExports::setMapSpawn(lua_State *luaVm) {
 
 int LuaExports::setReactorState(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, -3);
-	int32_t reactorid = lua_tointeger(luaVm, -2);
+	int32_t reactorId = lua_tointeger(luaVm, -2);
 	uint8_t state = lua_tointeger(luaVm, -1);
 	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
 		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
-		if (reactor->getReactorId() == reactorid) {
+		if (reactor->getReactorId() == reactorId) {
 			reactor->setState(state, true);
 			break;
 		}
@@ -1464,14 +1464,14 @@ int LuaExports::killMob(lua_State *luaVm) {
 int LuaExports::mobDropItem(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	int32_t itemid = lua_tointeger(luaVm, 3);
+	int32_t itemId = lua_tointeger(luaVm, 3);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 4)) {
 		amount = lua_tointeger(luaVm, 4);
 	}
 	Mob *m = Maps::getMap(mapid)->getMob(mapMobId);
 	if (m != nullptr) {
-		Item f(itemid, amount);
+		Item f(itemId, amount);
 		Drop *drop = new Drop(mapid, f, m->getPos(), 0);
 		drop->setTime(0);
 		drop->doDrop(m->getPos());

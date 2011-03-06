@@ -72,17 +72,17 @@ int16_t Inventory::addItem(Player *player, Item *item, bool is) {
 	return item->getAmount();
 }
 
-void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
-	if (!ItemDataProvider::Instance()->itemExists(itemid))
+void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
+	if (!ItemDataProvider::Instance()->itemExists(itemId))
 		return;
 
-	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemid);
+	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemId);
 	int16_t thisamount = 0;
-	if (GameLogicUtilities::isRechargeable(itemid)) {
+	if (GameLogicUtilities::isRechargeable(itemId)) {
 		thisamount = max + player->getSkills()->getRechargeableBonus();
 		amount -= 1;
 	}
-	else if (GameLogicUtilities::isEquip(itemid) || GameLogicUtilities::isPet(itemid)) {
+	else if (GameLogicUtilities::isEquip(itemId) || GameLogicUtilities::isPet(itemId)) {
 		thisamount = 1;
 		amount -= 1;
 	}
@@ -96,28 +96,28 @@ void Inventory::addNewItem(Player *player, int32_t itemid, int16_t amount) {
 	}
 
 	Item *item = nullptr;
-	if (GameLogicUtilities::isEquip(itemid)) {
-		item = new Item(itemid, false);
-		if (GameLogicUtilities::isMount(itemid)) {
-			player->getMounts()->addMount(itemid);
+	if (GameLogicUtilities::isEquip(itemId)) {
+		item = new Item(itemId, false);
+		if (GameLogicUtilities::isMount(itemId)) {
+			player->getMounts()->addMount(itemId);
 		}
 	}
 	else {
-		item = new Item(itemid, thisamount);
+		item = new Item(itemId, thisamount);
 	}
-	if (addItem(player, item, GameLogicUtilities::isPet(itemid)) == 0 && amount > 0) {
-		addNewItem(player, itemid, amount);
+	if (addItem(player, item, GameLogicUtilities::isPet(itemId)) == 0 && amount > 0) {
+		addNewItem(player, itemId, amount);
 	}
 }
 
-void Inventory::takeItem(Player *player, int32_t itemid, uint16_t howmany) {
-	player->getInventory()->changeItemAmount(itemid, -howmany);
-	int8_t inv = GameLogicUtilities::getInventory(itemid);
+void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howmany) {
+	player->getInventory()->changeItemAmount(itemId, -howmany);
+	int8_t inv = GameLogicUtilities::getInventory(itemId);
 	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
 		if (item == nullptr)
 			continue;
-		if (item->getId() == itemid) {
+		if (item->getId() == itemId) {
 			if (item->getAmount() >= howmany) {
 				item->decAmount(howmany);
 				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
@@ -155,8 +155,8 @@ void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 	}
 }
 
-void Inventory::useItem(Player *player, int32_t itemid) {
-	ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(itemid);
+void Inventory::useItem(Player *player, int32_t itemId) {
+	ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(itemId);
 
 	if (item == nullptr) {
 		// No reason not to check
@@ -186,13 +186,13 @@ void Inventory::useItem(Player *player, int32_t itemid) {
 
 	if (item->time > 0 && item->mcprob == 0) {
 		int32_t time = item->time * potency / 100;
-		Buffs::addBuff(player, itemid, time);
+		Buffs::addBuff(player, itemId, time);
 	}
-	if (GameLogicUtilities::isMonsterCard(itemid)) {
-		bool isFull = player->getMonsterBook()->addCard(itemid); // Has a special buff for being full?
-		MonsterBookPacket::addCard(player, itemid, player->getMonsterBook()->getCardLevel(itemid), isFull);
+	if (GameLogicUtilities::isMonsterCard(itemId)) {
+		bool isFull = player->getMonsterBook()->addCard(itemId); // Has a special buff for being full?
+		MonsterBookPacket::addCard(player, itemId, player->getMonsterBook()->getCardLevel(itemId), isFull);
 		if (item->mcprob != 0 && Randomizer::Instance()->randShort(99) < item->mcprob) {
-			Buffs::addBuff(player, itemid, item->time);
+			Buffs::addBuff(player, itemId, item->time);
 		}
 	}
 }

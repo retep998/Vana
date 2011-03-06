@@ -25,28 +25,28 @@ using std::string;
 
 namespace GameLogicUtilities {
 	// Inventory
-	inline uint8_t getInventory(int32_t itemid) { return static_cast<uint8_t>(itemid / 1000000); }
-	inline int32_t getItemType(int32_t itemid) { return (itemid / 10000); }
-	inline int32_t getScrollType(int32_t itemid) { return ((itemid % 10000) - (itemid % 100)); }
-	inline int32_t itemTypeToScrollType(int32_t itemid) { return ((getItemType(itemid) % 100) * 100); }
-	inline bool isArrow(int32_t itemid) { return (getItemType(itemid) == Items::Types::ItemArrow); }
-	inline bool isStar(int32_t itemid) { return (getItemType(itemid) == Items::Types::ItemStar); }
-	inline bool isBullet(int32_t itemid) { return (getItemType(itemid) == Items::Types::ItemBullet); }
-	inline bool isRechargeable(int32_t itemid) { return (isBullet(itemid) || isStar(itemid)); }
-	inline bool isEquip(int32_t itemid) { return (getInventory(itemid) == Inventories::EquipInventory); }
-	inline bool isPet(int32_t itemid) {	return ((itemid / 100 * 100) == 5000000); }
-	inline bool isOverall(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorOverall); }
-	inline bool isTop(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorTop); }
-	inline bool isBottom(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorBottom); }
-	inline bool isShield(int32_t itemid) { return (getItemType(itemid) == Items::Types::ArmorShield); }
-	inline bool is2hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 14); }
-	inline bool is1hWeapon(int32_t itemid) { return (getItemType(itemid) / 10 == 13); }
-	inline bool isBow(int32_t itemid) { return (getItemType(itemid) == Items::Types::WeaponBow); }
-	inline bool isCrossbow(int32_t itemid) { return (getItemType(itemid) == Items::Types::WeaponCrossbow); }
-	inline bool isSword(int32_t itemid) { return (getItemType(itemid) == Items::Types::Weapon1hSword || getItemType(itemid) == Items::Types::Weapon2hSword); }
-	inline bool isMace(int32_t itemid) { return (getItemType(itemid) == Items::Types::Weapon1hMace || getItemType(itemid) == Items::Types::Weapon2hMace); }
-	inline bool isMount(int32_t itemid) { return (getItemType(itemid) == Items::Types::Mount); }
-	inline bool isMedal(int32_t itemid) { return (getItemType(itemid) == Items::Types::Medal); }
+	inline uint8_t getInventory(int32_t itemId) { return static_cast<uint8_t>(itemId / 1000000); }
+	inline int32_t getItemType(int32_t itemId) { return (itemId / 10000); }
+	inline int32_t getScrollType(int32_t itemId) { return ((itemId % 10000) - (itemId % 100)); }
+	inline int32_t itemTypeToScrollType(int32_t itemId) { return ((getItemType(itemId) % 100) * 100); }
+	inline bool isArrow(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemArrow); }
+	inline bool isStar(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemStar); }
+	inline bool isBullet(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemBullet); }
+	inline bool isRechargeable(int32_t itemId) { return (isBullet(itemId) || isStar(itemId)); }
+	inline bool isEquip(int32_t itemId) { return (getInventory(itemId) == Inventories::EquipInventory); }
+	inline bool isPet(int32_t itemId) {	return ((itemId / 100 * 100) == 5000000); }
+	inline bool isOverall(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorOverall); }
+	inline bool isTop(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorTop); }
+	inline bool isBottom(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorBottom); }
+	inline bool isShield(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorShield); }
+	inline bool is2hWeapon(int32_t itemId) { return (getItemType(itemId) / 10 == 14); }
+	inline bool is1hWeapon(int32_t itemId) { return (getItemType(itemId) / 10 == 13); }
+	inline bool isBow(int32_t itemId) { return (getItemType(itemId) == Items::Types::WeaponBow); }
+	inline bool isCrossbow(int32_t itemId) { return (getItemType(itemId) == Items::Types::WeaponCrossbow); }
+	inline bool isSword(int32_t itemId) { return (getItemType(itemId) == Items::Types::Weapon1hSword || getItemType(itemId) == Items::Types::Weapon2hSword); }
+	inline bool isMace(int32_t itemId) { return (getItemType(itemId) == Items::Types::Weapon1hMace || getItemType(itemId) == Items::Types::Weapon2hMace); }
+	inline bool isMount(int32_t itemId) { return (getItemType(itemId) == Items::Types::Mount); }
+	inline bool isMedal(int32_t itemId) { return (getItemType(itemId) == Items::Types::Medal); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
 
 	// Player
@@ -75,7 +75,7 @@ namespace GameLogicUtilities {
 	inline int16_t getJobTrack(int16_t job, bool flattencygnus = false) { return (flattencygnus && isCygnus(job) ? ((job / 100) % 10) : (job / 100)); }
 
 	// Monster card
-	inline bool isMonsterCard(int32_t itemid) { return (getItemType(itemid) == Items::Types::ItemMonsterCard); }
+	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }
 	inline int16_t getCardShortId(int32_t cardid) { return (cardid % 10000); }
 	inline bool isSpecialCard(int32_t cardid) { return (getCardShortId(cardid) >= 8000); }
 

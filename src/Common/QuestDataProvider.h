@@ -73,7 +73,7 @@ public:
 	void addReward(bool start, const QuestRewardInfo &info, int16_t job = -1);
 	void addValidJob(int16_t jobid);
 	void addMobRequest(int32_t mobid, int16_t quantity);
-	void addItemRequest(int32_t itemid, int16_t quantity);
+	void addItemRequest(int32_t itemId, int16_t quantity);
 	void addQuestRequest(int16_t questid, int8_t state);
 	void setNextQuest(int16_t questid) { nextquest = questid; }
 	void setQuestId(int16_t q) { id = q; }
@@ -90,7 +90,7 @@ public:
 	int16_t getNextQuest() const { return nextquest; }
 	int16_t getQuestId() const { return id; }
 	int16_t getMobRequestQuantity(int32_t mobid) { return (mobrequests.find(mobid) != mobrequests.end() ? mobrequests[mobid] : 0); }
-	int16_t getItemRequestQuantity(int32_t itemid) { return (itemrequests.find(itemid) != itemrequests.end() ? itemrequests[itemid] : 0); }
+	int16_t getItemRequestQuantity(int32_t itemId) { return (itemrequests.find(itemId) != itemrequests.end() ? itemrequests[itemId] : 0); }
 	MobRequests::iterator getMobBegin() { return mobrequests.begin(); }
 	MobRequests::iterator getMobEnd() { return mobrequests.end(); }
 	ItemRequests::iterator getItemBegin() { return itemrequests.begin(); }
@@ -126,7 +126,7 @@ public:
 	void loadData();
 
 	bool isQuest(int16_t questid) { return (quests.find(questid) != quests.end()); }
-	int16_t getItemRequest(int16_t questid, int32_t itemid);
+	int16_t getItemRequest(int16_t questid, int32_t itemId);
 	Quest * getInfo(int16_t questid) { return &quests[questid]; }
 private:
 	QuestDataProvider() {}

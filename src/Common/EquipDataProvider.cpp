@@ -179,8 +179,8 @@ int16_t EquipDataProvider::getStatVariance(uint16_t amount) {
 	return s;
 }
 
-bool EquipDataProvider::canEquip(int32_t itemid, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) {
-	EquipInfo *e = getEquipInfo(itemid);
+bool EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) {
+	EquipInfo *e = getEquipInfo(itemId);
 	return (str >= e->reqstr && dex >= e->reqdex && intt >= e->reqint && luk >= e->reqluk && fame >= e->reqfame);
 }
 

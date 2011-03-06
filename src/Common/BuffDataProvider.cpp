@@ -816,7 +816,7 @@ void BuffDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
+void BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) {
 	using namespace BuffBytes;
 	vector<uint8_t> types;
 	vector<int8_t> bytes;
@@ -909,7 +909,7 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 			case 1: // Regular drop rate increase for all items, the only one I can parse at the moment
 				break;
 			//case 2: // Specific item drop rate increase
-			//case 3: // Specific item range (itemid / 10000) increase
+			//case 3: // Specific item range (itemId / 10000) increase
 		}
 	}
 
@@ -918,11 +918,11 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 		BuffInfo player;
 		BuffMapInfo map;
 
-		itemid *= -1;
+		itemId *= -1;
 
-		if (isBuff(itemid)) { // Already loaded, don't want doubles
-			skillsinfo[itemid].player.clear();
-			skillsinfo[itemid].map.clear();
+		if (isBuff(itemId)) { // Already loaded, don't want doubles
+			skillsinfo[itemId].player.clear();
+			skillsinfo[itemId].map.clear();
 		}
 
 		for (size_t i = 0; i < types.size(); i++) {
@@ -938,13 +938,13 @@ void BuffDataProvider::addItemInfo(int32_t itemid, const ConsumeInfo &cons) {
 			if ((buff.byte == Byte1 && (buff.type & 0x80) > 0) || buff.byte == Byte5) {
 				player.hasmapval = true;
 				player.hasmapentry = true;
-				skillsinfo[itemid].player.push_back(player);
+				skillsinfo[itemId].player.push_back(player);
 				map.buff = buff;
 				map.useval = true;
-				skillsinfo[itemid].map.push_back(map);
+				skillsinfo[itemId].map.push_back(map);
 			}
 			else {
-				skillsinfo[itemid].player.push_back(player);
+				skillsinfo[itemId].player.push_back(player);
 			}
 		}
 	}

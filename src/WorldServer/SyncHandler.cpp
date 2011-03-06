@@ -262,7 +262,7 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, Packe
 		Channel *chan = Channels::Instance()->getChannel(chanid);
 		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
 		if (chan) {
-			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerid);
+			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerid, gamePlayer->getIp());
 			uint32_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
 			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
 		}

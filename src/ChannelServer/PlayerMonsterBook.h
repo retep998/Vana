@@ -41,7 +41,7 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 
-	bool addCard(int32_t itemid, uint8_t level = 1, bool initialload = false);
+	bool addCard(int32_t itemId, uint8_t level = 1, bool initialload = false);
 	void calculateLevel();
 	void infoData(PacketCreator &packet);
 	void setCover(int32_t newcover) { m_cover = newcover; }

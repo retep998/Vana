@@ -73,7 +73,7 @@ public:
 	void loadData();
 
 	void setEquipStats(Item *equip, bool random);
-	bool canEquip(int32_t itemid, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame);
+	bool canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame);
 	bool validSlot(int32_t equipid, int16_t target);
 	int8_t getSlots(int32_t equipid) { return getEquipInfo(equipid)->slots; }
 private:

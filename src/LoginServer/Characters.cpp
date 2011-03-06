@@ -34,7 +34,7 @@ using std::tr1::unordered_map;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT itemid, slot FROM items WHERE charid = " << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
+	query << "SELECT itemId, slot FROM items WHERE charid = " << id << " AND inv = 1 AND slot < 0 ORDER BY slot ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -147,16 +147,16 @@ void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 	LoginPacket::checkName(player, name, nameIllegal(player, name));
 }
 
-void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_t amount) {
+void Characters::createItem(int32_t itemId, int32_t charid, int32_t slot, int16_t amount) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	int16_t inventory = GameLogicUtilities::getInventory(itemid);
+	int16_t inventory = GameLogicUtilities::getInventory(itemId);
 	if (inventory == Inventories::EquipInventory) {
-		Item equip(itemid, false);
-		query << "INSERT INTO items (charid, inv, slot, itemid, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
+		Item equip(itemId, false);
+		query << "INSERT INTO items (charid, inv, slot, itemId, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) VALUES ("
 			<< charid << ", "
 			<< inventory << ", "
 			<< slot << ", "
-			<< itemid << ", "
+			<< itemId << ", "
 			<< (int16_t) equip.getSlots() << ", "
 			<< equip.getStr() << ", "
 			<< equip.getDex() << ", "
@@ -176,7 +176,7 @@ void Characters::createItem(int32_t itemid, int32_t charid, int32_t slot, int16_
 			<< "\"\")";
 	}
 	else {
-		query << "INSERT INTO items (charid, inv, slot, itemid, amount, name) VALUES (" << charid << ", " << inventory << ", " << slot << ", " << itemid << ", " << amount << ", \"\")";
+		query << "INSERT INTO items (charid, inv, slot, itemId, amount, name) VALUES (" << charid << ", " << inventory << ", " << slot << ", " << itemId << ", " << amount << ", \"\")";
 	}
 	query.exec();
 }
@@ -352,7 +352,7 @@ void Characters::connectGame(Player *player, int32_t charid) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid);
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid, player->getIp());
 	LoginPacket::connectIp(player, charid);
 }
 

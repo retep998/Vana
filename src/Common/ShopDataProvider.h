@@ -30,7 +30,7 @@ using std::vector;
 class PacketCreator;
 
 struct ShopItemInfo {
-	int32_t itemid;
+	int32_t itemId;
 	int32_t price;
 	int16_t quantity;
 };
@@ -55,7 +55,7 @@ public:
 	int32_t getPrice(int32_t shopid, uint16_t shopindex);
 	int32_t getItemId(int32_t shopid, uint16_t shopindex);
 	int16_t getAmount(int32_t shopid, uint16_t shopindex);
-	int32_t getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount);
+	int32_t getRechargeCost(int32_t shopid, int32_t itemId, int16_t amount);
 private:
 	ShopDataProvider() {}
 	static ShopDataProvider *singleton;

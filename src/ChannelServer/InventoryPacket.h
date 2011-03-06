@@ -66,10 +66,10 @@ namespace InventoryPacket {
 	void useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit);
 	void showMegaphone(Player *player, const string &msg);
 	void showSuperMegaphone(Player *player, const string &msg, bool whisper = false);
-	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid);
+	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemId);
 	void showItemMegaphone(Player *player, const string &msg, bool whisper = false, Item *item = nullptr);
 	void showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper);
-	void useItemEffect(Player *player, int32_t itemid);
+	void useItemEffect(Player *player, int32_t itemId);
 	void updateSlots(Player *player, int8_t inventory, int8_t slots);
 	void sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps);
 	void sendRockError(Player *player, int8_t code, int8_t type);
@@ -80,7 +80,7 @@ namespace InventoryPacket {
 	void sendHulkSmash(Player *player, int16_t slot, Item *hammered);
 	void sendHammerUpdate(Player *player);
 	void sendChalkboardUpdate(Player *player, const string &msg = "");
-	void playCashSong(int32_t map, int32_t itemid, const string &playername);
-	void sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect);
+	void playCashSong(int32_t map, int32_t itemId, const string &playername);
+	void sendRewardItemAnimation(Player *player, int32_t itemId, const string &effect);
 	void blankUpdate(Player *player);
 }

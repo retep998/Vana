@@ -35,7 +35,7 @@ namespace InventoryHandler {
 	void useScroll(Player *player, PacketReader &packet);
 	void useCashItem(Player *player, PacketReader &packet);
 	void handleRockFunctions(Player *player, PacketReader &packet);
-	bool handleRockTeleport(Player *player, int32_t itemid, PacketReader &packet);
+	bool handleRockTeleport(Player *player, int32_t itemId, PacketReader &packet);
 	void handleHammerTime(Player *player);
 	void handleRewardItem(Player *player, PacketReader &packet);
 	void handleScriptItem(Player *player, PacketReader &packet);

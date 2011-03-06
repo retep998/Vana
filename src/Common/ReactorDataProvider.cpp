@@ -40,15 +40,15 @@ void ReactorDataProvider::loadData() {
 namespace Functors {
 	struct ReactorFlags {
 		void operator()(const string &cmp) {
-			if (cmp == "remove_in_field_set") reactor->removeinfieldset = true;
-			else if (cmp == "activate_by_touch") reactor->activatebytouch = true;
+			if (cmp == "remove_in_field_set") reactor->removeInFieldSet = true;
+			else if (cmp == "activate_by_touch") reactor->activateByTouch = true;
 		}
 		ReactorData *reactor;
 	};
 }
 
 void ReactorDataProvider::loadReactors() {
-	reactorinfo.clear();
+	m_reactorInfo.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ReactorData react;
@@ -67,10 +67,10 @@ void ReactorDataProvider::loadReactors() {
 		ReactorFlags whoo = {&react};
 		runFlags(row[Flags], whoo);
 
-		react.maxstates = atoi(row[MaxStates]);
+		react.maxStates = atoi(row[MaxStates]);
 		react.link = atoi(row[Link]);
 
-		reactorinfo[id] = react;
+		m_reactorInfo[id] = react;
 	}
 }
 
@@ -90,7 +90,7 @@ namespace Functors {
 }
 
 void ReactorDataProvider::loadStates() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorid, state ASC");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	ReactorStateInfo revent;
 	int32_t id;
@@ -112,14 +112,14 @@ void ReactorDataProvider::loadStates() {
 		StateTypeFlags whoo = {&revent};
 		runFlags(row[Type], whoo);
 
-		revent.itemid = atoi(row[ItemId]);
-		revent.itemquantity = atoi(row[Quantity]);
+		revent.itemId = atoi(row[ItemId]);
+		revent.itemQuantity = atoi(row[Quantity]);
 		revent.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
 		revent.rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		revent.nextstate = atoi(row[NextState]);
+		revent.nextState = atoi(row[NextState]);
 		revent.timeout = atoi(row[Timeout]);
 
-		reactorinfo[id].states[state].push_back(revent);
+		m_reactorInfo[id].states[state].push_back(revent);
 	}
 }
 
@@ -141,17 +141,17 @@ void ReactorDataProvider::loadTriggerSkills() {
 		state = atoi(row[State]);
 		skillId = atoi(row[SkillId]);
 
-		for (i = 0; i < reactorinfo[id].states[state].size(); i++) {
-			reactorinfo[id].states[state][i].triggerskills.push_back(skillId);
+		for (i = 0; i < m_reactorInfo[id].states[state].size(); i++) {
+			m_reactorInfo[id].states[state][i].triggerSkills.push_back(skillId);
 		}
 	}
 }
 
-ReactorData * ReactorDataProvider::getReactorData(int32_t reactorid, bool respectLink) {
-	if (reactorinfo.find(reactorid) != reactorinfo.end()) {
-		ReactorData *retval = &reactorinfo[reactorid];
+ReactorData * ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) {
+	if (m_reactorInfo.find(reactorId) !=m_reactorInfo.end()) {
+		ReactorData *retval = &m_reactorInfo[reactorId];
 		if (respectLink && retval->link) {
-			return &reactorinfo[retval->link];
+			return &m_reactorInfo[retval->link];
 		}
 		return retval;
 	}

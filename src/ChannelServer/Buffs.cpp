@@ -417,21 +417,21 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	return true;
 }
 
-void Buffs::addBuff(Player *player, int32_t itemid, int32_t time) {
-	itemid *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
-	vector<Buff> buffs = parseBuffs(itemid, 0);
-	ActiveBuff pskill = parseBuffInfo(player, itemid, 0);
-	ActiveMapBuff mskill = parseBuffMapInfo(player, itemid, 0);
-	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, itemid, 0);
+void Buffs::addBuff(Player *player, int32_t itemId, int32_t time) {
+	itemId *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
+	vector<Buff> buffs = parseBuffs(itemId, 0);
+	ActiveBuff pskill = parseBuffInfo(player, itemId, 0);
+	ActiveMapBuff mskill = parseBuffMapInfo(player, itemId, 0);
+	ActiveMapBuff meskill = parseBuffMapEntryInfo(player, itemId, 0);
 
-	BuffsPacket::useSkill(player, itemid, time, pskill, mskill, 0);
+	BuffsPacket::useSkill(player, itemId, time, pskill, mskill, 0);
 
 	PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
-	playerbuffs->removeBuff(itemid);
-	playerbuffs->addBuffInfo(itemid, buffs);
-	playerbuffs->addBuff(itemid, time);
+	playerbuffs->removeBuff(itemId);
+	playerbuffs->addBuffInfo(itemId, buffs);
+	playerbuffs->addBuff(itemId, time);
 	playerbuffs->addMapEntryBuffInfo(meskill);
-	playerbuffs->setActiveSkillLevel(itemid, 1);
+	playerbuffs->setActiveSkillLevel(itemId, 1);
 }
 
 void Buffs::endBuff(Player *player, int32_t skill) {

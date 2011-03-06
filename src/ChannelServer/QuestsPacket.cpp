@@ -119,12 +119,12 @@ void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveItem(Player *player, int32_t itemid, int32_t amount) {
+void QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(3);
-	packet.add<int8_t>(1); // Number of different items (itemid and amount gets repeated)
-	packet.add<int32_t>(itemid);
+	packet.add<int8_t>(1); // Number of different items (itemId and amount gets repeated)
+	packet.add<int32_t>(itemId);
 	packet.add<int32_t>(amount);
 	player->getSession()->send(packet);
 }

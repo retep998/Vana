@@ -15,32 +15,35 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
+#include "Reactor.h"
+#include "DropHandler.h"
+#include "Maps.h"
+#include "Player.h"
+#include "ReactorPacket.h"
 
-namespace Timer {
+Reactor::Reactor(int32_t mapid, int32_t reactorId, const Pos &pos) :
+	state(0),
+	reactorId(reactorId),
+	mapid(mapid),
+	alive(true),
+	pos(pos)
+{
+	Maps::getMap(mapid)->addReactor(this);
+}
 
-struct Types {
-	enum {
-		BuffTimer,
-		CoolTimer,
-		InstanceTimer,
-		MapleTvTimer,
-		MapTimer,
-		MistTimer,
-		MobHealTimer,
-		MobRemoveTimer,
-		MobStatusTimer,
-		MobSkillTimer,
-		PetTimer,
-		PickpocketTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		SpongeCleanupTimer,
-		TradeTimer,
-		WeatherTimer
-	};
-};
+void Reactor::setState(int8_t state, bool is) {
+	this->state = state;
+	if (is) {
+		ReactorPacket::triggerReactor(this);
+	}
+}
 
+void Reactor::restore() {
+	revive();
+	setState(0, false);
+	ReactorPacket::spawnReactor(this);
+}
+
+void Reactor::drop(Player *player) {
+	DropHandler::doDrops(player->getId(), mapid, 0, reactorId, pos, false, false);
 }

@@ -170,11 +170,11 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemid) {
+void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
 	packet.add<int16_t>(SMSG_MESSENGER);
-	packet.add<int32_t>(itemid);
+	packet.add<int32_t>(itemId);
 	packet.addString(player->getName());
 	packet.addString(msg);
 	packet.addString(msg2);
@@ -232,11 +232,11 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void InventoryPacket::useItemEffect(Player *player, int32_t itemid) {
+void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_ITEM_EFFECT);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(itemid);
+	packet.add<int32_t>(itemId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -341,19 +341,19 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void InventoryPacket::playCashSong(int32_t map, int32_t itemid, const string &playername) {
+void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playername) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_CASH_SONG);
-	packet.add<int32_t>(itemid);
+	packet.add<int32_t>(itemId);
 	packet.addString(playername);
 	Maps::getMap(map)->sendPacket(packet);
 }
 
-void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect) {
+void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, const string &effect) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0E);
-	packet.add<int32_t>(itemid);
+	packet.add<int32_t>(itemId);
 	packet.add<int8_t>(1); // Unk...?
 	packet.addString(effect);
 	player->getSession()->send(packet);
@@ -362,7 +362,7 @@ void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemid, co
 	packet.add<int16_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(0x0E);
-	packet.add<int32_t>(itemid);
+	packet.add<int32_t>(itemId);
 	packet.add<int8_t>(1); // Unk...?
 	packet.addString(effect);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);

@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "QuestDataProvider.h"
 #include "Randomizer.h"
-#include "Reactors.h"
+#include "ReactorHandler.h"
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include <algorithm>
@@ -64,7 +64,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 					d = DropInfo();
 					d.chance = i->chance;
 					d.ismesos = i->ismesos;
-					d.itemid = i->itemid;
+					d.itemId = i->itemId;
 					d.minamount = i->minamount;
 					d.maxamount = i->maxamount;
 					d.questid = i->questid;
@@ -98,21 +98,21 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 //			}
 
 			if (!i->ismesos) {
-				int32_t itemid = i->itemid;
+				int32_t itemId = i->itemId;
 				int16_t questid = i->questid;
 
 				if (questid > 0) {
 					if (player == nullptr || !player->getQuests()->isQuestActive(questid)) {
 						continue;
 					}
-					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemid);
-					int16_t amount = player->getInventory()->getItemAmount(itemid);
+					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemId);
+					int16_t amount = player->getInventory()->getItemAmount(itemId);
 					if (amount >= request) {
 						continue;
 					}
 				}
 
-				Item f = (GameLogicUtilities::isEquip(itemid) ? Item(itemid, true) : Item(itemid, amount));
+				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, true) : Item(itemId, amount));
 				drop = new Drop(mapid, f, pos, playerid);
 
 				if (questid > 0) {
@@ -147,7 +147,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			drop->setTime(100);
 			drop->doDrop(origin);
 			d++;
-			Reactors::checkDrop(player, drop);
+			ReactorHandler::checkDrop(player, drop);
 		}
 	}
 }
@@ -282,6 +282,6 @@ void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
 		}
 		DropsPacket::pickupDrop(player, drop->getObjectId(), drop->getAmount());
 	}
-	Reactors::checkLoot(drop);
+	ReactorHandler::checkLoot(drop);
 	drop->takeDrop(player, petid);
 }
