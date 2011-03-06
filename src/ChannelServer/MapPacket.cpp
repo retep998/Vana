@@ -203,7 +203,7 @@ void MapPacket::portalBlocked(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showClock(Player *player, uint8_t hour, uint8_t min, uint8_t sec) {
+void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_TIMER);
 	packet.add<int8_t>(0x01);
@@ -295,4 +295,16 @@ void MapPacket::instantWarp(Player *player, int8_t pid) {
 	packet.add<int8_t>(0x01);
 	packet.add<int8_t>(pid);
 	player->getSession()->send(packet);
+}
+
+void MapPacket::changeWeather(int32_t mapid, bool adminWeather, int32_t itemId, const string &message) {
+	PacketCreator packet;
+	packet.add<int16_t>(SMSG_MAP_WEATHER_EFFECT);
+	packet.addBool(adminWeather);
+	packet.add<int32_t>(itemId);
+	if (itemId != 0 && !adminWeather) {
+		// Admin weathers doesn't have a message
+		packet.addString(message);
+	}
+	Maps::getMap(mapid)->sendPacket(packet);
 }

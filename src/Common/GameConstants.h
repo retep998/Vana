@@ -986,6 +986,7 @@ namespace Jobs {
 namespace Items {
 	const int64_t NoExpiration = 150842304000000000LL;
 	const int32_t MaxHammers = 2;
+	const int32_t WeatherTime = 30;
 
 	namespace Types {
 		enum ItemTypes {
@@ -1023,7 +1024,8 @@ namespace Items {
 			ItemArrow = 206,
 			ItemStar = 207,
 			ItemBullet = 233,
-			ItemMonsterCard = 238
+			ItemMonsterCard = 238,
+			WeatherCash = 512
 		};
 	}
 
@@ -1150,6 +1152,7 @@ namespace Items {
 		StarMegassenger = 5075004,
 		HeartMegassenger = 5075005,
 		CongratulatorySong = 5100000,
+		SnowySnow = 5120000,
 		SafetyCharm = 5130000,
 		PetNameTag = 5170000,
 		BronzeSackOfMesos = 5200000,

@@ -35,15 +35,15 @@ public:
 	void loadData();
 
 	string getNpcScript(int32_t npcid);
-	string getReactorScript(int32_t reactorid);
+	string getReactorScript(int32_t reactorId);
 	string getQuestScript(int16_t questid, int8_t state);
-	string getItemScript(int32_t itemid);
+	string getItemScript(int32_t itemId);
 	string getMapEntryScript(int32_t mapid);
 	string getFirstMapEntryScript(int32_t mapid);
 	bool hasNpcScript(int32_t npcid);
-	bool hasReactorScript(int32_t reactorid);
+	bool hasReactorScript(int32_t reactorId);
 	bool hasQuestScript(int16_t questid, int8_t state);
-	bool hasItemScript(int32_t itemid);
+	bool hasItemScript(int32_t itemId);
 	bool hasMapEntryScript(int32_t mapid);
 	bool hasFirstMapEntryScript(int32_t mapid);
 	int32_t getObjectIdFromScript(const string &script) { return scripts.find(script) == scripts.end() ? 0 : scripts[script]; }

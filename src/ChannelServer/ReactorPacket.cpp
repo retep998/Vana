@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "SendHeader.h"
 
 void ReactorPacket::spawnReactor(Reactor *reactor) {

@@ -30,8 +30,8 @@ class Player;
 
 namespace Inventory {
 	int16_t addItem(Player *player, Item *item, bool is = false);
-	void addNewItem(Player *player, int32_t itemid, int16_t amount);
-	void takeItem(Player *player, int32_t itemid, uint16_t howmany);
-	void useItem(Player *player, int32_t itemid);
+	void addNewItem(Player *player, int32_t itemId, int16_t amount);
+	void takeItem(Player *player, int32_t itemId, uint16_t howmany);
+	void useItem(Player *player, int32_t itemId);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 }

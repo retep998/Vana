@@ -78,7 +78,7 @@ public:
 		return singleton;
 	}
 	void loadData();
-	void addItemInfo(int32_t itemid, const ConsumeInfo &cons);
+	void addItemInfo(int32_t itemId, const ConsumeInfo &cons);
 
 	bool isBuff(int32_t skillId) { return (skillsinfo.find(skillId) != skillsinfo.end()); }
 	bool isDebuff(uint8_t skillId) { return (mobskillsinfo.find(skillId) != mobskillsinfo.end()); }

@@ -53,10 +53,11 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *player
 	player->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid) {
+void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid, uint32_t charIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_NEW_PLAYER);
 	packet.add<int16_t>(channel);
 	packet.add<int32_t>(charid);
+	packet.add<uint32_t>(charIp);
 	player->getSession()->send(packet);
 }

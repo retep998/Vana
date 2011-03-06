@@ -72,7 +72,7 @@ namespace Functors {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemid = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemId = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
@@ -351,7 +351,7 @@ void ItemDataProvider::loadItemSkills() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_skills");
 	mysqlpp::UseQueryResult res = query.use();
 	Skillbook skill;
-	int32_t itemid;
+	int32_t itemId;
 
 	enum SkillData {
 		ItemId = 0,
@@ -359,12 +359,12 @@ void ItemDataProvider::loadItemSkills() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemid = atoi(row[ItemId]);
+		itemId = atoi(row[ItemId]);
 		skill.skillId = atoi(row[SkillId]);
 		skill.reqlevel = atoi(row[ReqLevel]);
 		skill.maxlevel = atoi(row[MasterLevel]);
 		skill.chance = atoi(row[Chance]);
-		skills[itemid].push_back(skill);
+		skills[itemId].push_back(skill);
 	}
 }
 
@@ -372,7 +372,7 @@ void ItemDataProvider::loadSummonBags() {
 	mobs.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_summons");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t itemid;
+	int32_t itemId;
 	SummonBag summon;
 
 	enum BagData {
@@ -381,10 +381,10 @@ void ItemDataProvider::loadSummonBags() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemid = atoi(row[ItemId]);
+		itemId = atoi(row[ItemId]);
 		summon.mobid = atoi(row[MobId]);
 		summon.chance = atoi(row[Chance]);
-		mobs[itemid].push_back(summon);
+		mobs[itemId].push_back(summon);
 	}
 }
 
@@ -392,7 +392,7 @@ void ItemDataProvider::loadItemRewards() {
 	itemRewards.clear();
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_reward_data");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t itemid;
+	int32_t itemId;
 	ItemRewardInfo reward;
 
 	enum RewardData {
@@ -401,12 +401,12 @@ void ItemDataProvider::loadItemRewards() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemid = atoi(row[ItemId]);
+		itemId = atoi(row[ItemId]);
 		reward.rewardid = atoi(row[RewardId]);
 		reward.prob = atoi(row[Chance]);
 		reward.quantity = atoi(row[Quantity]);
 		reward.effect = row[Effect];
-		itemRewards[itemid].push_back(reward);
+		itemRewards[itemId].push_back(reward);
 	}
 }
 
@@ -426,7 +426,7 @@ void ItemDataProvider::loadPets() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
 	mysqlpp::UseQueryResult res = query.use();
 	PetInfo pet;
-	int32_t itemid;
+	int32_t itemId;
 
 	using namespace Functors;
 
@@ -441,14 +441,14 @@ void ItemDataProvider::loadPets() {
 		PetFlags whoo = {&pet};
 		runFlags(row[Flags], whoo);
 
-		itemid = atoi(row[ItemId]);
+		itemId = atoi(row[ItemId]);
 		pet.name = row[Name];
 		pet.hunger = atoi(row[Hunger]);
 		pet.life = atoi(row[Life]);
 		pet.limitedlife = atoi(row[LimitedLife]);
 		pet.evoitem = atoi(row[EvoItem]);
 		pet.evolevel = atoi(row[EvoLevel]);
-		petsInfo[itemid] = pet;
+		petsInfo[itemId] = pet;
 	}
 }
 
@@ -496,20 +496,20 @@ int32_t ItemDataProvider::getMobId(int32_t cardid) {
 	return 0;
 }
 
-PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemid, int32_t action) {
-	if (petsInteractInfo.find(itemid) != petsInteractInfo.end()) {
-		if (petsInteractInfo[itemid].find(action) != petsInteractInfo[itemid].end()) {
-			return &petsInteractInfo[itemid][action];
+PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemId, int32_t action) {
+	if (petsInteractInfo.find(itemId) != petsInteractInfo.end()) {
+		if (petsInteractInfo[itemId].find(action) != petsInteractInfo[itemId].end()) {
+			return &petsInteractInfo[itemId][action];
 		}
 	}
 	return nullptr;
 }
 
-ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemid) {
-	if (itemRewards.find(itemid) == itemRewards.end())
+ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
+	if (itemRewards.find(itemId) == itemRewards.end())
 		return nullptr;
 
-	vector<ItemRewardInfo> *rewards = &itemRewards[itemid];
+	vector<ItemRewardInfo> *rewards = &itemRewards[itemId];
 	ItemRewardInfo *info = nullptr;
 
 	for (size_t i = 0; i < rewards->size(); i++) {

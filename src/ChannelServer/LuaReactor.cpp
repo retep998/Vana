@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "Quests.h"
 #include "ReactorPacket.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include <string>
 
-LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorid, int32_t mapid) :
+LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactorId, int32_t mapid) :
 	LuaScriptable(filename, playerid),
-	reactorid(reactorid)
+	reactorId(reactorId)
 {
-	setVariable("_reactorid", reactorid);
+	setVariable("_reactorId", reactorId);
 	setVariable("_mapid", mapid);
 
 	// Reactor
@@ -52,11 +52,11 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerid, int32_t reactor
 }
 
 Reactor * LuaExports::getReactor(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_reactorid");
+	lua_getglobal(luaVm, "_reactorId");
 	lua_getglobal(luaVm, "_mapid");
-	int32_t reactorid = lua_tointeger(luaVm, -2);
+	int32_t reactorId = lua_tointeger(luaVm, -2);
 	int32_t mapid = lua_tointeger(luaVm, -1);
-	return Maps::getMap(mapid)->getReactor(reactorid);
+	return Maps::getMap(mapid)->getReactor(reactorId);
 }
 
 // Reactor
@@ -79,7 +79,7 @@ int LuaExports::setStateReactor(lua_State *luaVm) {
 
 // Miscellaneous
 int LuaExports::dropItemReactor(lua_State *luaVm) {
-	int32_t itemid = lua_tointeger(luaVm, 1);
+	int32_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 2)) {
 		amount = lua_tointeger(luaVm, 2);
@@ -87,12 +87,12 @@ int LuaExports::dropItemReactor(lua_State *luaVm) {
 	Reactor *reactor = getReactor(luaVm);
 	Player *player = getPlayer(luaVm);
 	Drop *drop;
-	if (GameLogicUtilities::isEquip(itemid)) {
-		Item f(itemid, true);
+	if (GameLogicUtilities::isEquip(itemId)) {
+		Item f(itemId, true);
 		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != nullptr ? player->getId() : 0);
 	}
 	else {
-		Item f(itemid, amount);
+		Item f(itemId, amount);
 		drop = new Drop(reactor->getMapId(), f, reactor->getPos(), player != nullptr ? player->getId() : 0);
 	}
 	drop->setTime(player != nullptr ? 100 : 0); // FFA if player isn't around

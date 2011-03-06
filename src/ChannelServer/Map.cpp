@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Randomizer.h"
 #include "ReactorPacket.h"
-#include "Reactors.h"
+#include "Reactor.h"
 #include "Summons.h"
 #include "Timer/Time.h"
 #include "Timer/Timer.h"
@@ -60,7 +60,8 @@ m_spawnmobs(-1),
 m_music(info->defaultMusic),
 m_timers(new Timer::Container)
 {
-	new Timer::Timer(bind(&Map::runTimer, this), // Dynamic loading, start the map timer once the object is created
+	// Dynamic loading, start the map timer once the object is created
+	new Timer::Timer(bind(&Map::runTimer, this),
 		Timer::Id(Timer::Types::MapTimer, id, 0),
 		getTimers(), 0, 10 * 1000);
 }
@@ -903,4 +904,17 @@ void Map::showMessage(const string &message, int8_t type) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		PlayerPacket::showMessage(m_players[i], message, type);
 	}
+}
+
+bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string &message) {
+	Timer::Id timerId(Timer::Types::WeatherTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
+	if (getTimers()->checkTimer(timerId) != 0) {
+		// Hacking
+		return false;
+	}
+
+	MapPacket::changeWeather(getId(), adminWeather, itemId, message);
+	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
+		timerId, getTimers(), Timer::Time::fromNow(time * 1000));
+	return true;
 }

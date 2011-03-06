@@ -134,9 +134,6 @@
     <ClCompile Include="src\ChannelServer\Quests.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Reactors.cpp">
-      <Filter>Source Files\ChannelServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp">
       <Filter>Source Files\ChannelServer</Filter>
     </ClCompile>
@@ -359,6 +356,12 @@
     <ClCompile Include="src\ChannelServer\EffectPacket.cpp">
       <Filter>Source Files\Packets</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\Reactor.cpp">
+      <Filter>Source Files\ChannelServer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\ReactorHandler.cpp">
+      <Filter>Source Files\Handlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -407,9 +410,6 @@
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Quests.h">
-      <Filter>Header Files\ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Reactors.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\SkillMacros.h">
@@ -639,6 +639,12 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\EffectPacket.h">
       <Filter>Header Files\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\Reactor.h">
+      <Filter>Header Files\ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\ReactorHandler.h">
+      <Filter>Header Files\Handlers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

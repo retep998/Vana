@@ -15,9 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Reactors.h"
+#include "ReactorHandler.h"
 #include "Drop.h"
-#include "DropHandler.h"
 #include "FileUtilities.h"
 #include "GameLogicUtilities.h"
 #include "LuaReactor.h"
@@ -25,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "Pos.h"
+#include "Reactor.h"
 #include "ReactorDataProvider.h"
 #include "ReactorPacket.h"
 #include "ScriptDataProvider.h"
@@ -37,36 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-// Reactor class
-Reactor::Reactor(int32_t mapid, int32_t reactorid, const Pos &pos) :
-state(0),
-reactorid(reactorid),
-mapid(mapid),
-alive(true),
-pos(pos)
-{
-	Maps::getMap(mapid)->addReactor(this);
-}
-
-void Reactor::setState(int8_t state, bool is) {
-	this->state = state;
-	if (is) {
-		ReactorPacket::triggerReactor(this);
-	}
-}
-
-void Reactor::restore() {
-	revive();
-	setState(0, false);
-	ReactorPacket::spawnReactor(this);
-}
-
-void Reactor::drop(Player *player) {
-	DropHandler::doDrops(player->getId(), mapid, 0, reactorid, pos, false, false);
-}
-
-// Reactors namespace
-void Reactors::hitReactor(Player *player, PacketReader &packet) {
+void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
@@ -77,14 +48,14 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 			// Not sure how this would happen, but whatever
 			return;
 		}
-		if (reactor->getState() < (data->maxstates - 1)) {
+		if (reactor->getState() < (data->maxStates - 1)) {
 			ReactorStateInfo *revent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
-			if (revent->nextstate < (data->maxstates - 1)) {
+			if (revent->nextState < (data->maxStates - 1)) {
 				if (revent->type == 100)
 					return;
 
 				ReactorPacket::triggerReactor(reactor);
-				reactor->setState(revent->nextstate, true);
+				reactor->setState(revent->nextState, true);
 				return;
 			}
 			else {
@@ -97,7 +68,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 					reactor->drop(player);
 				}
 
-				reactor->setState(revent->nextstate, false);
+				reactor->setState(revent->nextState, false);
 				reactor->kill();
 				Maps::getMap(reactor->getMapId())->removeReactor(id);
 				ReactorPacket::destroyReactor(reactor);
@@ -106,7 +77,7 @@ void Reactors::hitReactor(Player *player, PacketReader &packet) {
 	}
 }
 
-void Reactors::touchReactor(Player *player, PacketReader &packet) {
+void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 	bool istouching = packet.getBool();
 
@@ -133,7 +104,7 @@ struct Reaction {
 	int8_t state;
 };
 
-void Reactors::checkDrop(Player *player, Drop *drop) {
+void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 	Reactor *reactor;
 	Map *map = Maps::getMap(drop->getMap());
 	for (size_t i = 0; i < map->getNumReactors(); i++) {
@@ -143,17 +114,17 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 			// Not sure how this would happen, but whatever
 			continue;
 		}
-		if (reactor->getState() < (data->maxstates - 1)) {
+		if (reactor->getState() < (data->maxStates - 1)) {
 			ReactorStateInfo *revent;
 			for (int8_t j = 0; j < static_cast<int8_t>(data->states[reactor->getState()].size()); j++) {
 				revent = &(data->states[reactor->getState()][j]);
-				if (revent->type == 100 && drop->getObjectId() == revent->itemid) {
+				if (revent->type == 100 && drop->getObjectId() == revent->itemId) {
 					if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
 						Reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;
 						reaction.player = player;
-						reaction.state = revent->nextstate;
+						reaction.state = revent->nextState;
 
 						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 						new Timer::Timer(reaction, id, 0, Timer::Time::fromNow(3000));
@@ -165,7 +136,7 @@ void Reactors::checkDrop(Player *player, Drop *drop) {
 	}
 }
 
-void Reactors::checkLoot(Drop *drop) {
+void ReactorHandler::checkLoot(Drop *drop) {
 	Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 	Timer::Thread::Instance()->getContainer()->removeTimer(id);
 }

@@ -51,18 +51,18 @@ public:
 	void addItem(int8_t inv, int16_t slot, Item *item, bool isLoading = false);
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
-	void changeItemAmount(int32_t itemid, int16_t amount) { m_itemamounts[itemid] += amount; }
+	void changeItemAmount(int32_t itemId, int16_t amount) { m_itemamounts[itemId] += amount; }
 
 	uint8_t getMaxSlots(int8_t inv) const { return m_maxslots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }
 
 	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
-	uint16_t getItemAmount(int32_t itemid);
+	uint16_t getItemAmount(int32_t itemId);
 	int32_t getEquippedId(int16_t slot);
 	Item * getItem(int8_t inv, int16_t slot);
-	bool isEquippedItem(int32_t itemid);
+	bool isEquippedItem(int32_t itemId);
 
-	bool hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack = false);
+	bool hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack = false);
 	int16_t getOpenSlotsNum(int8_t inv);
 
 	int32_t doShadowStars();
@@ -75,7 +75,7 @@ public:
 	void delRockMap(int32_t mapid, int8_t type);
 	bool ensureRockDestination(int32_t mapid);
 
-	void addWishListItem(int32_t itemid);
+	void addWishListItem(int32_t itemId);
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
@@ -92,5 +92,5 @@ private:
 	int16_t m_hammer;
 	Player *m_player;
 
-	void addEquipped(int16_t slot, int32_t itemid);
+	void addEquipped(int16_t slot, int32_t itemId);
 };

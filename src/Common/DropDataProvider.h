@@ -26,9 +26,9 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct DropInfo {
-	DropInfo() : ismesos(false), itemid(0), minamount(0), maxamount(0), questid(0), chance(0) { }
+	DropInfo() : ismesos(false), itemId(0), minamount(0), maxamount(0), questid(0), chance(0) { }
 	bool ismesos;
-	int32_t itemid;
+	int32_t itemId;
 	int32_t minamount;
 	int32_t maxamount;
 	int16_t questid;
@@ -37,9 +37,9 @@ struct DropInfo {
 typedef vector<DropInfo> DropsInfo;
 
 struct GlobalDrop {
-	GlobalDrop() : ismesos(false), itemid(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), continent(-1), questid(0), chance(0) { }
+	GlobalDrop() : ismesos(false), itemId(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), continent(-1), questid(0), chance(0) { }
 	bool ismesos;
-	int32_t itemid;
+	int32_t itemId;
 	int32_t minamount;
 	int32_t maxamount;
 	uint8_t minlevel;

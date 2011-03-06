@@ -240,15 +240,15 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 
 void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoading) {
 	m_items[inv - 1][slot] = item;
-	int32_t itemid = item->getId();
-	if (m_itemamounts.find(itemid) != m_itemamounts.end()) {
-		m_itemamounts[itemid] += item->getAmount();
+	int32_t itemId = item->getId();
+	if (m_itemamounts.find(itemId) != m_itemamounts.end()) {
+		m_itemamounts[itemId] += item->getAmount();
 	}
 	else {
-		m_itemamounts[itemid] = item->getAmount();
+		m_itemamounts[itemId] = item->getAmount();
 	}
 	if (slot < 0) {
-		addEquipped(slot, itemid);
+		addEquipped(slot, itemId);
 		m_player->getStats()->setEquip(slot, item, isLoading);
 	}
 }
@@ -303,15 +303,15 @@ int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	return (m_items[inv].find(slot) != m_items[inv].end() ? m_items[inv][slot]->getAmount() : 0);
 }
 
-void PlayerInventory::addEquipped(int16_t slot, int32_t itemid) {
+void PlayerInventory::addEquipped(int16_t slot, int32_t itemId) {
 	slot = abs(slot);
 	if (slot == EquipSlots::Mount)
-		m_player->getMounts()->setCurrentMount(itemid);
+		m_player->getMounts()->setCurrentMount(itemId);
 
 	if (slot > 100) // Cash items
-		m_equipped[slot - 100][1] = itemid;
+		m_equipped[slot - 100][1] = itemId;
 	else // Normal items
-		m_equipped[slot][0] = itemid;
+		m_equipped[slot][0] = itemId;
 }
 
 int32_t PlayerInventory::getEquippedId(int16_t slot) {
@@ -339,15 +339,15 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	packet.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
 }
 
-uint16_t PlayerInventory::getItemAmount(int32_t itemid) {
-	return m_itemamounts.find(itemid) != m_itemamounts.end() ? m_itemamounts[itemid] : 0;
+uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
+	return m_itemamounts.find(itemId) != m_itemamounts.end() ? m_itemamounts[itemId] : 0;
 }
 
-bool PlayerInventory::isEquippedItem(int32_t itemid) {
+bool PlayerInventory::isEquippedItem(int32_t itemId) {
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
 	bool has = false;
 	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
-		if (iter->first == itemid) {
+		if (iter->first == itemId) {
 			has = true;
 			break;
 		}
@@ -355,15 +355,15 @@ bool PlayerInventory::isEquippedItem(int32_t itemid) {
 	return has;
 }
 
-bool PlayerInventory::hasOpenSlotsFor(int32_t itemid, int16_t amount, bool canStack) {
+bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack) {
 	int16_t required = 0;
-	int8_t inv = GameLogicUtilities::getInventory(itemid);
-	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) {
+	int8_t inv = GameLogicUtilities::getInventory(itemId);
+	if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemId)) {
 		required = amount; // These aren't stackable
 	}
 	else {
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
-		uint16_t existing = getItemAmount(itemid) % maxslot;
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemId);
+		uint16_t existing = getItemAmount(itemId) % maxslot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
 		if (canStack && existing > 0) { // If not, calculate how many slots necessary
@@ -458,8 +458,8 @@ bool PlayerInventory::ensureRockDestination(int32_t mapid) {
 	return false;
 }
 
-void PlayerInventory::addWishListItem(int32_t itemid) {
-	m_wishlist.push_back(itemid);
+void PlayerInventory::addWishListItem(int32_t itemId) {
+	m_wishlist.push_back(itemId);
 }
 
 void PlayerInventory::connectData(PacketCreator &packet) {

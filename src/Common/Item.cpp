@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Item::Item() { }
 
 // The only places that use this constructor set everything manually
-Item::Item(int32_t itemid) :
-	m_id(itemid)
+Item::Item(int32_t itemId) :
+	m_id(itemId)
 {
 }
 
 //
-Item::Item(int32_t itemid, int16_t amount) :
-	m_id(itemid),
+Item::Item(int32_t itemId, int16_t amount) :
+	m_id(itemId),
 	m_amount(amount),
 	m_hammers(0),
 	m_slots(0),

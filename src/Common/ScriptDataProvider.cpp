@@ -84,15 +84,15 @@ string ScriptDataProvider::getNpcScript(int32_t npcid) {
 	return g;
 }
 
-string ScriptDataProvider::getReactorScript(int32_t reactorid) {
-	if (hasReactorScript(reactorid)) {
-		string s = "scripts/reactors/" + reactorscripts[reactorid] + ".lua";
+string ScriptDataProvider::getReactorScript(int32_t reactorId) {
+	if (hasReactorScript(reactorId)) {
+		string s = "scripts/reactors/" + reactorscripts[reactorId] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
 	}
 	std::ostringstream filestream;
-	filestream << "scripts/reactors/" << reactorid << ".lua";
+	filestream << "scripts/reactors/" << reactorId << ".lua";
 	string g(filestream.str());
 	return g;
 }
@@ -110,15 +110,15 @@ string ScriptDataProvider::getQuestScript(int16_t questid, int8_t state) {
 	return g;
 }
 
-string ScriptDataProvider::getItemScript(int32_t itemid) {
-	if (hasItemScript(itemid)) {
-		string s = "scripts/items/" + itemscripts[itemid] + ".lua";
+string ScriptDataProvider::getItemScript(int32_t itemId) {
+	if (hasItemScript(itemId)) {
+		string s = "scripts/items/" + itemscripts[itemId] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
 	}
 	std::ostringstream filestream;
-	filestream << "scripts/items/" << itemid << ".lua";
+	filestream << "scripts/items/" << itemId << ".lua";
 	string g(filestream.str());
 	return g;
 }
@@ -153,16 +153,16 @@ bool ScriptDataProvider::hasNpcScript(int32_t npcid) {
 	return (npcscripts.find(npcid) != npcscripts.end());
 }
 
-bool ScriptDataProvider::hasReactorScript(int32_t reactorid) {
-	return (reactorscripts.find(reactorid) != reactorscripts.end());
+bool ScriptDataProvider::hasReactorScript(int32_t reactorId) {
+	return (reactorscripts.find(reactorId) != reactorscripts.end());
 }
 
 bool ScriptDataProvider::hasQuestScript(int16_t questid, int8_t state) {
 	return (questscripts.find(questid) != questscripts.end());
 }
 
-bool ScriptDataProvider::hasItemScript(int32_t itemid) {
-	return (itemscripts.find(itemid) != itemscripts.end());
+bool ScriptDataProvider::hasItemScript(int32_t itemId) {
+	return (itemscripts.find(itemId) != itemscripts.end());
 }
 
 bool ScriptDataProvider::hasMapEntryScript(int32_t mapid) {

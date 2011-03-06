@@ -216,27 +216,27 @@ public:
 	int32_t getCardId(int32_t mobid);
 	int32_t getMobId(int32_t cardid);
 	bool itemExists(int32_t id) { return (items.find(id) != items.end()); }
-	bool petExists(int32_t itemid) { return (petsInfo.find(itemid) != petsInfo.end()); }
-	bool consumeInfoExists(int32_t itemid) { return (consumes.find(itemid) != consumes.end()); }
-	bool skillItemExists(int32_t itemid) { return (skills.find(itemid) != skills.end()); }
-	bool summonBagExists(int32_t itemid) { return (mobs.find(itemid) != mobs.end()); }
-	bool isTradeable(int32_t itemid) { return (!(items[itemid].notrade || items[itemid].quest)); }
-	bool isCash(int32_t itemid) { return items[itemid].cash; }
-	uint16_t getMaxSlot(int32_t itemid) { return (itemExists(itemid) ? items[itemid].maxslot : 0); }
-	int32_t getPrice(int32_t itemid) { return (itemExists(itemid) ? items[itemid].price : 0); }
-	int32_t getMesoBonus(int32_t itemid) { return (itemExists(itemid) ? items[itemid].mesos : 0); }
-	int32_t getHunger(int32_t itemid) { return (petExists(itemid) ? petsInfo[itemid].hunger : 0); }
-	int32_t getItemNpc(int32_t itemid) { return (itemExists(itemid) ? items[itemid].npc : 0); }
-	string getItemName(int32_t itemid) { return (itemExists(itemid) ? items[itemid].name : ""); }
-	ItemRewardInfo * getRandomReward(int32_t itemid);
+	bool petExists(int32_t itemId) { return (petsInfo.find(itemId) != petsInfo.end()); }
+	bool consumeInfoExists(int32_t itemId) { return (consumes.find(itemId) != consumes.end()); }
+	bool skillItemExists(int32_t itemId) { return (skills.find(itemId) != skills.end()); }
+	bool summonBagExists(int32_t itemId) { return (mobs.find(itemId) != mobs.end()); }
+	bool isTradeable(int32_t itemId) { return (!(items[itemId].notrade || items[itemId].quest)); }
+	bool isCash(int32_t itemId) { return items[itemId].cash; }
+	uint16_t getMaxSlot(int32_t itemId) { return (itemExists(itemId) ? items[itemId].maxslot : 0); }
+	int32_t getPrice(int32_t itemId) { return (itemExists(itemId) ? items[itemId].price : 0); }
+	int32_t getMesoBonus(int32_t itemId) { return (itemExists(itemId) ? items[itemId].mesos : 0); }
+	int32_t getHunger(int32_t itemId) { return (petExists(itemId) ? petsInfo[itemId].hunger : 0); }
+	int32_t getItemNpc(int32_t itemId) { return (itemExists(itemId) ? items[itemId].npc : 0); }
+	string getItemName(int32_t itemId) { return (itemExists(itemId) ? items[itemId].name : ""); }
+	ItemRewardInfo * getRandomReward(int32_t itemId);
 
 	void scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
-	ItemInfo * getItemInfo(int32_t itemid) { return &items[itemid]; }
-	ConsumeInfo * getConsumeInfo(int32_t itemid) { return (consumeInfoExists(itemid) ? &consumes[itemid] : nullptr); }
-	PetInfo * getPetInfo(int32_t itemid) { return &petsInfo[itemid]; }
-	PetInteractInfo * getInteraction(int32_t itemid, int32_t action);
-	vector<Skillbook> * getItemSkills(int32_t itemid) { return &skills[itemid]; }
-	vector<SummonBag> * getItemSummons(int32_t itemid) { return &mobs[itemid]; }
+	ItemInfo * getItemInfo(int32_t itemId) { return &items[itemId]; }
+	ConsumeInfo * getConsumeInfo(int32_t itemId) { return (consumeInfoExists(itemId) ? &consumes[itemId] : nullptr); }
+	PetInfo * getPetInfo(int32_t itemId) { return &petsInfo[itemId]; }
+	PetInteractInfo * getInteraction(int32_t itemId, int32_t action);
+	vector<Skillbook> * getItemSkills(int32_t itemId) { return &skills[itemId]; }
+	vector<SummonBag> * getItemSummons(int32_t itemId) { return &mobs[itemId]; }
 private:
 	ItemDataProvider() { }
 	static ItemDataProvider *singleton;

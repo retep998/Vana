@@ -72,7 +72,7 @@ void ShopDataProvider::loadShops() {
 	while (row = res.fetch_raw_row()) {
 		shopid = atoi(row[ItemShopId]);
 
-		item.itemid = atoi(row[ItemId]);
+		item.itemId = atoi(row[ItemId]);
 		item.quantity = atoi(row[Quantity]);
 		item.price = atoi(row[Price]);
 
@@ -115,7 +115,7 @@ void ShopDataProvider::loadUserShops() {
 	while (row = res.fetch_raw_row()) {
 		shopid = atoi(row[ItemShopId]);
 
-		item.itemid = atoi(row[ItemId]);
+		item.itemId = atoi(row[ItemId]);
 		item.quantity = atoi(row[Quantity]);
 		item.price = atoi(row[Price]);
 
@@ -128,7 +128,7 @@ void ShopDataProvider::loadRechargeTiers() {
 	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_recharge_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t rechargetier;
-	int32_t itemid;
+	int32_t itemId;
 	double price;
 
 	enum RechargeData {
@@ -138,10 +138,10 @@ void ShopDataProvider::loadRechargeTiers() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		rechargetier = atoi(row[TierId]);
-		itemid = atoi(row[ItemId]);
+		itemId = atoi(row[ItemId]);
 		price = atof(row[Price]);
 
-		rechargecosts[rechargetier][itemid] = price;
+		rechargecosts[rechargetier][itemId] = price;
 	}
 }
 
@@ -159,23 +159,23 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 	ShopItemInfo item;
 	for (size_t i = 0; i < shops[id].items.size(); i++) {
 		item = shops[id].items[i];
-		packet.add<int32_t>(item.itemid);
+		packet.add<int32_t>(item.itemId);
 		packet.add<int32_t>(item.price);
-		if (GameLogicUtilities::isRechargeable(item.itemid)) {
-			idsdone[item.itemid] = true;
+		if (GameLogicUtilities::isRechargeable(item.itemId)) {
+			idsdone[item.itemId] = true;
 			double cost = 0.0;
 			if (rechargetier != 0) {
 				shopcount--;
-				if (rechargables.find(item.itemid) != rechargables.end())
-					cost = rechargables[item.itemid];
+				if (rechargables.find(item.itemId) != rechargables.end())
+					cost = rechargables[item.itemId];
 			}
 			packet.add<double>(cost);
 		}
 		else {
 			packet.add<int16_t>(item.quantity); // Item amount
 		}
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemid);
-		if (GameLogicUtilities::isRechargeable(item.itemid))
+		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemId);
+		if (GameLogicUtilities::isRechargeable(item.itemId))
 			maxslot += rechargeablebonus;
 		packet.add<int16_t>(maxslot);
 	}
@@ -205,16 +205,16 @@ int16_t ShopDataProvider::getAmount(int32_t shopid, uint16_t shopindex) {
 
 int32_t ShopDataProvider::getItemId(int32_t shopid, uint16_t shopindex) {
 	vector<ShopItemInfo> s = shops[shopid].items;
-	return (shopindex < s.size() ? s[shopindex].itemid : 0);
+	return (shopindex < s.size() ? s[shopindex].itemId : 0);
 }
 
-int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemid, int16_t amount) {
+int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemId, int16_t amount) {
 	int32_t cost = 1;
 	if (shops.find(shopid) != shops.end()) {
 		int8_t tier = shops[shopid].rechargetier;
 		if (rechargecosts.find(tier) != rechargecosts.end()) {
-			if (rechargecosts[tier].find(itemid) != rechargecosts[tier].end()) {
-				cost = -1 * static_cast<int32_t>(rechargecosts[tier][itemid] * amount);
+			if (rechargecosts[tier].find(itemId) != rechargecosts[tier].end()) {
+				cost = -1 * static_cast<int32_t>(rechargecosts[tier][itemId] * amount);
 			}
 		}
 	}

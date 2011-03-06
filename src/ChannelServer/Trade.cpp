@@ -62,19 +62,19 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			// Also, determine needed slots for nonstackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
-				int32_t itemid = check->getId();
-				int8_t inv = GameLogicUtilities::getInventory(itemid);
-				if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemid)) {
+				int32_t itemId = check->getId();
+				int8_t inv = GameLogicUtilities::getInventory(itemId);
+				if (inv == Inventories::EquipInventory || GameLogicUtilities::isRechargeable(itemId)) {
 					// Equips and rechargeables always take 1 slot, no need to clutter unordered map
 					totals[inv - 1]++;
 				}
 				else {
-					if (added.find(itemid) != added.end()) {
+					if (added.find(itemId) != added.end()) {
 						// Already initialized this item
-						added[itemid] += check->getAmount();
+						added[itemId] += check->getAmount();
 					}
 					else {
-						added[itemid] = check->getAmount();
+						added[itemId] = check->getAmount();
 					}
 				}
  			}
@@ -83,18 +83,18 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 			// Determine precisely how many slots are needed for stackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
-				int32_t itemid = check->getId();
-				int8_t inv = GameLogicUtilities::getInventory(itemid);
-				if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemid)) {
+				int32_t itemId = check->getId();
+				int8_t inv = GameLogicUtilities::getInventory(itemId);
+				if (inv != Inventories::EquipInventory && !GameLogicUtilities::isRechargeable(itemId)) {
 					// Already did these
-					if (added.find(itemid) == added.end()) {
+					if (added.find(itemId) == added.end()) {
 						// Already did this item
 						continue;
 					}
-					int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemid);
-					int32_t current_amount = target->getInventory()->getItemAmount(itemid);
+					int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemId);
+					int32_t current_amount = target->getInventory()->getItemAmount(itemId);
 					int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
-					int32_t item_sum = last_slot + added[itemid];
+					int32_t item_sum = last_slot + added[itemId];
 					bool needslots = false;
 					if (last_slot > 0) {
 						// Items in the last slot, potential for needing slots
@@ -114,7 +114,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						}
 						totals[inv - 1] += numslots;
 					}
-					added.erase(itemid);
+					added.erase(itemId);
 				}
 			}
 		}

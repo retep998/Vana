@@ -23,7 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::tr1::unordered_map;
 
-typedef unordered_map<int32_t, int64_t> ConnectableMap;
+struct ConnectingPlayer {
+	uint32_t connectIp;
+	uint32_t connectTime;
+};
+
+typedef unordered_map<int32_t, ConnectingPlayer> ConnectableMap;
 
 class Connectable : boost::noncopyable {
 public:
@@ -33,11 +38,13 @@ public:
 		return singleton;
 	}
 
-	void newPlayer(int32_t id);
-	bool checkPlayer(int32_t id);
+	void newPlayer(int32_t id, uint32_t ip);
+	bool checkPlayer(int32_t id, uint32_t ip);
 private:
 	Connectable() {}
 	static Connectable *singleton;
 
-	ConnectableMap map;
+	const static uint32_t MaxMilliseconds = 5000;
+
+	ConnectableMap m_map;
 };

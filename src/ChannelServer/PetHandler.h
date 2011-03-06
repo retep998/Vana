@@ -32,5 +32,6 @@ namespace PetHandler {
 	void handleMovement(Player *player, PacketReader &packet);
 	void handleSummon(Player *player, PacketReader &packet);
 	void handleCommand(Player *player, PacketReader &packet);
+	void handleConsumePotion(Player *player, PacketReader &packet);
 	void changeName(Player *player, const string &name);
-};
+}

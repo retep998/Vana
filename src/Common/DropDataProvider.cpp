@@ -67,7 +67,7 @@ void DropDataProvider::loadDrops() {
 		runFlags(row[Flags], whoo);
 
 		dropper = atoi(row[DropperId]);
-		drop.itemid = atoi(row[ItemId]);
+		drop.itemId = atoi(row[ItemId]);
 		drop.minamount = atoi(row[Minimum]);
 		drop.maxamount = atoi(row[Maximum]);
 		drop.questid = atoi(row[Quest]);
@@ -89,7 +89,7 @@ void DropDataProvider::loadDrops() {
 		if (dropper != lastdropperid) {
 			dropped = false;
 		}
-		drop.itemid = atoi(row[ItemId]);
+		drop.itemId = atoi(row[ItemId]);
 		drop.minamount = atoi(row[Minimum]);
 		drop.maxamount = atoi(row[Maximum]);
 		drop.questid = atoi(row[Quest]);
@@ -132,7 +132,7 @@ void DropDataProvider::loadGlobalDrops() {
 		runFlags(row[Flags], whoo);
 
 		drop.continent = atoi(row[Continent]);
-		drop.itemid = atoi(row[ItemId]);
+		drop.itemId = atoi(row[ItemId]);
 		drop.minamount = atoi(row[Minimum]);
 		drop.maxamount = atoi(row[Maximum]);
 		drop.minlevel = atoi(row[MinLevel]);

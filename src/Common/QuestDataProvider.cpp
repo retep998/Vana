@@ -299,15 +299,15 @@ void QuestDataProvider::loadRewards() {
 	}
 }
 
-int16_t QuestDataProvider::getItemRequest(int16_t questid, int32_t itemid) {
+int16_t QuestDataProvider::getItemRequest(int16_t questid, int32_t itemId) {
 	if (quests.find(questid) != quests.end()) {
-		return quests[questid].getItemRequestQuantity(itemid);
+		return quests[questid].getItemRequestQuantity(itemId);
 	}
 	return 0;
 }
 
-void Quest::addItemRequest(int32_t itemid, int16_t quantity) {
-	itemrequests[itemid] = quantity;
+void Quest::addItemRequest(int32_t itemId, int16_t quantity) {
+	itemrequests[itemId] = quantity;
 }
 
 void Quest::addMobRequest(int32_t mobid, int16_t quantity) {
