@@ -191,11 +191,11 @@ void Npc::sendQuestion(const string &question, const string &clue, int32_t minCh
 	player->getSession()->send(packet);
 }
 
-void Npc::sendGetText(int16_t min, int16_t max) {
+void Npc::sendGetText(int16_t min, int16_t max, const string &def) {
 	PacketCreator packet = npcPacket(NpcDialogs::GetText);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(max);
+	packet.addString(def);
 	packet.add<int16_t>(min);
+	packet.add<int16_t>(max);
 	player->getSession()->send(packet);
 }
 
@@ -204,7 +204,6 @@ void Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) {
 	packet.add<int32_t>(def);
 	packet.add<int32_t>(min);
 	packet.add<int32_t>(max);
-	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 

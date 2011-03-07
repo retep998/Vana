@@ -50,7 +50,7 @@ public:
 	void sendDialog(bool back, bool next, bool save = true);
 	void sendAcceptDecline();
 	void sendAcceptDeclineNoExit();
-	void sendGetText(int16_t min, int16_t max);
+	void sendGetText(int16_t min, int16_t max, const string &def = "");
 	void sendGetNumber(int32_t def, int32_t min, int32_t max);
 	void sendStyle(int32_t styles[], uint8_t size);
 	void sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time);

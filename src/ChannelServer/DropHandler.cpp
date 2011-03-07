@@ -165,33 +165,25 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 	drop->doDrop(player->getPos());
 }
 
-void DropHandler::playerLoot(Player *player, PacketReader &packet) {
-	packet.skipBytes(5);
-	packet.skipBytes(4); // Player pos
-	int32_t dropid = packet.get<int32_t>();
-
-	lootItem(player, dropid);
-}
-
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petid = packet.get<int32_t>();
-	packet.skipBytes(13);
-	int32_t dropid = packet.get<int32_t>();
-
-	lootItem(player, dropid, petid);
+	int32_t petId = packet.get<int32_t>();
+	packet.skipBytes(4);
+	lootItem(player, packet, petId);
 }
 
-void DropHandler::lootItem(Player *player, int32_t dropid, int32_t petid) {
-	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropid);
+void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) {
+	packet.skipBytes(5);
+	Pos playerPos = packet.getPos();
+	int32_t dropId = packet.get<int32_t>();
+	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropId);
 
-	if (drop == 0) {
+	if (drop == nullptr) {
 		DropsPacket::dontTake(player);
 		return;
 	}
 	else if (drop->getPos() - player->getPos() > 300) {
-		if (player->addWarning()) {
-			return;
-		}
+		// Hacking
+		return;
 	}
 
 	if (drop->isQuest()) {
