@@ -49,16 +49,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 Map::Map(MapInfoPtr info, int32_t id) :
-m_info(info),
-m_id(id),
-m_objectids(1000),
-m_instance(nullptr),
-m_timer(0),
-m_timerstart(0),
-m_timemob(0),
-m_spawnmobs(-1),
-m_music(info->defaultMusic),
-m_timers(new Timer::Container)
+	m_info(info),
+	m_id(id),
+	m_objectids(1000),
+	m_instance(nullptr),
+	m_timer(0),
+	m_timerstart(0),
+	m_timemob(0),
+	m_spawnmobs(-1),
+	m_music(info->defaultMusic),
+	m_timers(new Timer::Container)
 {
 	// Dynamic loading, start the map timer once the object is created
 	new Timer::Timer(bind(&Map::runTimer, this),
@@ -231,6 +231,7 @@ void Map::buffPlayers(int32_t buffid) {
 		if (Player *toy = m_players[i]) {
 			if (toy->getStats()->getHp() > 0) {
 				Inventory::useItem(toy, buffid);
+				EffectPacket::sendMobItemBuffEffect(toy, buffid);
 			}
 		}
 	}
@@ -324,7 +325,7 @@ int16_t Map::getFhAtPosition(const Pos &pos) {
 	int16_t foothold = 0;
 	for (size_t i = 0; i < m_footholds.size(); i++) {
 		FootholdInfo &cur = m_footholds[i];
-		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.x && pos.y <= cur.pos2.x) || (pos.y > cur.pos2.x && pos.y <= cur.pos1.x))) {
+		if (((pos.x > cur.pos1.x && pos.x <= cur.pos2.x) || (pos.x > cur.pos2.x && pos.x <= cur.pos1.x)) && ((pos.y > cur.pos1.y && pos.y <= cur.pos2.y) || (pos.y > cur.pos2.y && pos.y <= cur.pos1.y))) {
 			foothold = cur.id;
 			break;
 		}

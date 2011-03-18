@@ -45,8 +45,7 @@ public:
 	void printError(const string &error);
 	void setVariable(const string &name, const string &value);
 	void setVariable(const string &name, int32_t value);
-	int32_t getInt(const string &value);
-	int16_t getShort(const string &value);
+	template<typename T> T get(const string &value);
 	string getString(const string &value);
 	IpMatrix getIpMatrix(const string &value);
 	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
@@ -59,3 +58,12 @@ private:
 	lua_State *m_luaVm;
 	string m_file;
 };
+
+template<typename T>
+T ConfigFile::get(const string &value) {
+	keyMustExist(value);
+	lua_getglobal(getLuaState(), value.c_str());
+	T val = lua_tointeger(getLuaState(), -1);
+	lua_pop(getLuaState(), 1);
+	return val;
+}

@@ -181,3 +181,9 @@ void Worlds::calculatePlayerLoad(World *world) {
 World * Worlds::getWorld(uint8_t id) {
 	return worlds.find(id) == worlds.end() ? nullptr : worlds[id];
 }
+
+void Worlds::setEventMessages(const string &message) {
+	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); ++iter) {
+		iter->second->setEventMessage(message);
+	}
+}

@@ -48,7 +48,7 @@ private:
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
-	int16_t m_port;
-	int16_t m_interPort;
+	uint16_t m_port;
+	uint16_t m_interPort;
 	int32_t m_maxInvalidLogins;
 };

@@ -79,6 +79,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount, i->minamount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
+
 		if (isSteal) {
 			chance = chance * 3 / 10;
 		}
@@ -86,6 +87,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			chance = chance * taunt / 100;
 			chance *= ChannelServer::Instance()->getDropRate();
 		}
+
 		if (Randomizer::Instance()->randInt(999999) < chance) {
 			if (explosive) {
 				mod = 35;
@@ -93,9 +95,9 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.x = origin.x + ((d % 2) ? (mod * (d + 1) / 2) : -(mod * (d / 2)));
 			pos.y = origin.y;
 
-//			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-//				Need something to keep drops inside the map here
-//			}
+			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
+				pos = Maps::getMap(mapid)->findFloor(pos);
+			}
 
 			if (!i->ismesos) {
 				int32_t itemId = i->itemId;
