@@ -200,6 +200,11 @@ time_t TimeUtilities::addDaysToTime(int16_t days) {
 	return mktime(tm);
 }
 
+int64_t TimeUtilities::addDaysToTicks(int64_t ticks, int16_t days) {
+	// For expiration time increases
+	return ticks + (days * 24 * 60 * 60);
+}
+
 #ifdef WIN32
 # include <windows.h>
 uint32_t TimeUtilities::getTickCount() {

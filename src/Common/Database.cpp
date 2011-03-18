@@ -30,7 +30,7 @@ void Database::connectCharDB() {
 					config.getString("chardb_host").c_str(),
 					config.getString("chardb_username").c_str(),
 					config.getString("chardb_password").c_str(),
-					config.getInt("chardb_port")
+					config.get<uint16_t>("chardb_port")
 					);
 }
 
@@ -43,6 +43,6 @@ void Database::connectDataDB() {
 					config.getString("datadb_host").c_str(),
 					config.getString("datadb_username").c_str(),
 					config.getString("datadb_password").c_str(),
-					config.getInt("datadb_port")
+					config.get<uint16_t>("datadb_port")
 					);
 }

@@ -798,7 +798,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							else if (args == "me") {
 								player->getStats()->setHp(0);
 							}
-							else if (Player *killpsa = PlayerDataProvider::Instance()->getPlayer(args)) { // Kill by name
+							else if (Player *killpsa = PlayerDataProvider::Instance()->getPlayer(args)) {
+								// Kill by name
 								killpsa->getStats()->setHp(0);
 							}
 						}
@@ -826,7 +827,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								mysqlpp::StoreQueryResult res;
 								if (type < 200) {
 									if (type == 100) {
-										query << "SELECT objectid, `label` FROM strings WHERE objectid = " << matches[2];
+										query << "SELECT objectid, `label` FROM strings WHERE objectid = " << mysqlpp::quote << (string) matches[2];
 									}
 									else {
 										query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
@@ -858,7 +859,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 										query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
 									}
 									else if (type == 400) {
-										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << matches[2];
+										query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << mysqlpp::quote << (string) matches[2];
 									}
 									res = query.store();
 
@@ -888,7 +889,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->setMap(mapid);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Map ID", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Map not found.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {

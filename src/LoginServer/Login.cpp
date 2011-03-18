@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.h"
 #include "Database.h"
+#include "GameConstants.h"
 #include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
@@ -43,7 +44,12 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	string password = packet.getString();
 	string ip = IpUtilities::ipToString(player->getIp());
 
-	if (username.size() > 15 || password.size() > 15) {
+	if (username.size() > Characters::MaxNameSize || username.size() < Characters::MinNameSize) {
+		// Hacking, the client doesn't actually allow this
+		return;
+	}
+	if (password.size() > Characters::MaxPasswordSize || password.size() < Characters::MinPasswordSize) {
+		// Hacking, the client doesn't actually allow this
 		return;
 	}
 

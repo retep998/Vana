@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
+#include <iostream>
 
 LoginServer * LoginServer::singleton = nullptr;
 
@@ -51,9 +52,9 @@ void LoginServer::loadData() {
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
 	m_pinEnabled = config.getBool("pin");
-	m_port = config.getShort("port");
-	m_interPort = config.getShort("inter_port");
-	m_maxInvalidLogins = config.getInt("invalid_login_threshold");
+	m_port = config.get<uint16_t>("port");
+	m_interPort = config.get<uint16_t>("inter_port");
+	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
 	setListening(true);
 
 	loadWorlds();
@@ -90,34 +91,34 @@ void LoginServer::loadWorlds() {
 		conf.name = config.getString(formatter.str());
 
 		formatter % i % "channels";
-		conf.maxChannels = config.getInt(formatter.str());
+		conf.maxChannels = config.get<int32_t>(formatter.str());
 
 		formatter % i % "id";
-		world->setId((int8_t) config.getInt(formatter.str()));
+		world->setId(config.get<int8_t>(formatter.str()));
 
 		formatter % i % "ribbon";
-		conf.ribbon = (uint8_t) config.getInt(formatter.str());
+		conf.ribbon = config.get<uint8_t>(formatter.str());
 
 		formatter % i % "port";
-		world->setPort(config.getShort(formatter.str()));
+		world->setPort(config.get<uint16_t>(formatter.str()));
 
 		formatter % i % "exprate";
-		conf.expRate = config.getInt(formatter.str());
+		conf.expRate = config.get<int32_t>(formatter.str());
 
 		formatter % i % "questexprate";
-		conf.questExpRate = config.getInt(formatter.str());
+		conf.questExpRate = config.get<int32_t>(formatter.str());
 
 		formatter % i % "mesorate";
-		conf.mesoRate = config.getInt(formatter.str());
+		conf.mesoRate = config.get<int32_t>(formatter.str());
 
 		formatter % i % "droprate";
-		conf.dropRate = config.getInt(formatter.str());
+		conf.dropRate = config.get<int32_t>(formatter.str());
 
 		formatter % i % "maxstats";
-		conf.maxStats = config.getShort(formatter.str());
+		conf.maxStats = config.get<int16_t>(formatter.str());
 
 		formatter % i % "max_multi_level";
-		conf.maxMultiLevel = (uint8_t) config.getInt(formatter.str());
+		conf.maxMultiLevel = config.get<uint8_t>(formatter.str());
 
 		formatter % i % "event_msg";
 		conf.eventMsg = config.getString(formatter.str());
@@ -126,37 +127,37 @@ void LoginServer::loadWorlds() {
 		conf.scrollingHeader = config.getString(formatter.str());
 
 		formatter % i % "max_player_load";
-		conf.maxPlayerLoad = config.getInt(formatter.str());
+		conf.maxPlayerLoad = config.get<int32_t>(formatter.str());
 
 		formatter % i % "maxchars";
-		conf.maxChars = config.getInt(formatter.str());
+		conf.maxChars = config.get<int32_t>(formatter.str());
 
 		formatter % i % "pianus_attempts";
-		boss.attempts = config.getShort(formatter.str());
+		boss.attempts = config.get<int16_t>(formatter.str());
 		formatter % i % "pianus_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.pianus = boss;
 
 		formatter % i % "pap_attempts";
-		boss.attempts = config.getShort(formatter.str());
+		boss.attempts = config.get<int16_t>(formatter.str());
 		formatter % i % "pap_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.pap = boss;
 
 		formatter % i % "zakum_attempts";
-		boss.attempts = config.getShort(formatter.str());
+		boss.attempts = config.get<int16_t>(formatter.str());
 		formatter % i % "zakum_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.zakum = boss;
 
 		formatter % i % "horntail_attempts";
-		boss.attempts = config.getShort(formatter.str());
+		boss.attempts = config.get<int16_t>(formatter.str());
 		formatter % i % "horntail_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.horntail = boss;
 
 		formatter % i % "pinkbean_attempts";
-		boss.attempts = config.getShort(formatter.str());
+		boss.attempts = config.get<int16_t>(formatter.str());
 		formatter % i % "pinkbean_channels";
 		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
 		conf.pinkbean = boss;

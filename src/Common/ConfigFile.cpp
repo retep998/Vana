@@ -96,19 +96,6 @@ void ConfigFile::setVariable(const string &name, int32_t value) {
 	lua_setglobal(getLuaState(), name.c_str());
 }
 
-int32_t ConfigFile::getInt(const string &value) {
-	keyMustExist(value);
-	lua_getglobal(getLuaState(), value.c_str());
-	int32_t val = lua_tointeger(getLuaState(), -1);
-	lua_pop(getLuaState(), 1);
-	return val;
-}
-
-int16_t ConfigFile::getShort(const string &value) {
-	keyMustExist(value);
-	return static_cast<int16_t>(getInt(value));
-}
-
 string ConfigFile::getString(const string &value) {
 	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
@@ -181,8 +168,8 @@ bool ConfigFile::getBool(const string &value) {
 LogConfig ConfigFile::getLogConfig(const string &server) {
 	LogConfig x;
 	string t = server + "_log_";
-	x.destination = getInt(t + "destination");
-	x.bufferSize = getInt(t + "buffer_size");
+	x.destination = get<int32_t>(t + "destination");
+	x.bufferSize = get<uint32_t>(t + "buffer_size");
 	x.format = getString(t + "format");
 	x.file = getString(t + "file");
 	x.timeFormat = getString("log_time_format");

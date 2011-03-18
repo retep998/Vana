@@ -51,7 +51,7 @@ namespace PlayerPacket {
 	void updateStatInt(Player *player, int32_t id, int32_t value, bool is = false);
 	void updateStatShort(Player *player, int32_t id, int16_t value, bool is = false);
 	void updateStatChar(Player *player, int32_t id, int8_t value, bool is = false);
-	void changeChannel(Player *player, uint32_t ip, int16_t port);
+	void changeChannel(Player *player, uint32_t ip, uint16_t port);
 	void showMessage(Player *player, const string &msg, int8_t type);
 	void showMessageChannel(const string &msg, int8_t type);
 	void showMessageWorld(const string &msg, int8_t type);
