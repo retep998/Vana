@@ -20,45 +20,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <list>
 #include <string>
 #include <vector>
 
+using std::list;
 using std::string;
-using std::vector;
 using std::tr1::unordered_map;
+using std::vector;
 
+class PacketCreator;
 class Player;
 namespace mysqlpp {
 	class Row;
 }
 
-class PlayerBuddyList {
-public:
-	struct Buddy;
-	typedef std::tr1::shared_ptr<Buddy> BuddyPtr;
-
-	PlayerBuddyList(Player *player);
-	uint8_t add(const string &name);
-	void remove(int32_t charid);
-
-	BuddyPtr getBuddy(uint8_t pos) { return buddies[buddies_order[pos]]; }
-	uint8_t size() const { return (uint8_t) buddies.size(); }
-private:
-	void add(const mysqlpp::Row &row);
-
-	struct OppositeStatus {
-		static const uint8_t registered = 0;
-		static const uint8_t unregistered = 2;
-	};
-
-	vector<int32_t> buddies_order;
-	unordered_map<int32_t, BuddyPtr> buddies;
-	Player *player;
-};
-
-struct PlayerBuddyList::Buddy {
-	int32_t charid;
+struct Buddy {
 	string name;
+	string groupName;
 	uint8_t oppositeStatus;
 	int32_t channel;
+	int32_t charId;
+};
+typedef std::tr1::shared_ptr<Buddy> BuddyPtr;
+
+struct BuddyInvite {
+	BuddyInvite() : send(true) { }
+	bool send;
+	string name;
+	int32_t id;
+};
+
+class PlayerBuddyList {
+public:
+	PlayerBuddyList(Player *player);
+	uint8_t addBuddy(const string &name, const string &group, bool invite = true);
+	void removeBuddy(int32_t charid);
+
+	BuddyPtr getBuddy(int32_t charid) { return m_buddies[charid]; }
+	uint8_t listSize() const { return m_buddies.size(); }
+	vector<int32_t> getBuddyIds(); // For sending the online packet to the players.
+	void addBuddyInvite(const BuddyInvite &invite) { m_pendingBuddies.push_back(invite); }
+
+	void addBuddies(PacketCreator &packet);
+	void checkForPendingBuddy();
+	void removePendingBuddy(int32_t id, bool accepted);
+private:
+	void addBuddy(const mysqlpp::Row &row);
+	void load();
+
+	bool m_sentRequest;
+	list<BuddyInvite> m_pendingBuddies;
+	unordered_map<int32_t, BuddyPtr> m_buddies;
+	Player *m_player;
 };

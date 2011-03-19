@@ -59,6 +59,7 @@ public:
 
 	void setSaveOnDc(bool save) { save_on_dc = save; }
 	void setTrading(bool state) { trade_state = state; }
+	void setChangingChannel(bool v) { changing_channel = v; }
 	void setSkin(int8_t id);
 	void setFallCounter(int8_t falls) { fall_counter = falls; }
 	void setMapChair(int16_t s) { mapchair = s; }
@@ -77,6 +78,11 @@ public:
 	void setParty(Party *party) { this->party = party; }
 	void setInstance(Instance *instance) { this->instance = instance; }
 
+	bool isGm() const { return gm_level > 0; }
+	bool isAdmin() const { return admin; }
+	bool isChangingChannel() const { return changing_channel; }
+	bool isTrading() const { return trade_state; }
+	bool hasGmEquip() const;
 	int8_t getWorldId() const { return world_id; }
 	int8_t getGender() const { return gender; }
 	int8_t getSkin() const { return skin; }
@@ -101,10 +107,6 @@ public:
 	string getChalkboard() const { return chalkboard; }
 	string getMedalName();
 	string getName() const { return name; }
-	bool isGm() const { return gm_level > 0; }
-	bool isAdmin() const { return admin; }
-	bool isTrading() const { return trade_state; }
-	bool hasGmEquip() const;
 	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
 
 	Npc * getNpc() const { return npc.get(); }
@@ -143,6 +145,7 @@ private:
 	bool trade_state;
 	bool save_on_dc;
 	bool is_connect;
+	bool changing_channel;
 	bool admin;
 	int8_t world_id;
 	int8_t map_pos;

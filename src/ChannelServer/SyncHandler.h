@@ -26,8 +26,6 @@ class PacketReader;
 
 namespace SyncHandler {
 	void handle(PacketReader &packet);
-	void guildPacketHandlerWorld(PacketReader &packet);
-	void alliancePacketHandlerWorld(PacketReader &packet);
 	void handleDataSync(PacketReader &packet);
 	void handleChannelStart(PacketReader &packet);
 	void handlePartyResponse(PacketReader &packet);
@@ -35,4 +33,7 @@ namespace SyncHandler {
 	void playerChangeChannel(PacketReader &packet);
 	void newConnectable(PacketReader &packet);
 	void disbandParty(PacketReader &packet);
+	void handleBuddy(PacketReader &packet);
+	void buddyInvite(PacketReader &packet);
+	void buddyOnlineOffline(PacketReader &packet);
 }

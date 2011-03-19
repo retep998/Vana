@@ -78,7 +78,8 @@ Player::Player() :
 	is_connect(false),
 	npc(nullptr),
 	party(nullptr),
-	instance(nullptr)
+	instance(nullptr),
+	changing_channel(false)
 {
 }
 
@@ -117,6 +118,9 @@ Player::~Player() {
 			setOnline(false);
 		}
 		if (ChannelServer::Instance()->isConnected()) {
+			if (!isChangingChannel()) {
+				SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), false);
+			}
 			// Do not connect to worldserver if the worldserver has disconnected
 			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
 		}
@@ -375,6 +379,7 @@ void Player::playerConnect(PacketReader &packet) {
 	PlayerPacket::showKeys(this, &keyMaps);
 
 	BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add);
+	getBuddyList()->checkForPendingBuddy();
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
@@ -387,6 +392,7 @@ void Player::playerConnect(PacketReader &packet) {
 	setOnline(true);
 	is_connect = true;
 	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel());
+	SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), true);
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {

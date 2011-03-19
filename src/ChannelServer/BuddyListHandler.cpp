@@ -26,6 +26,7 @@ using std::string;
 namespace BuddyOpcodes {
 	enum Opcodes {
 		Add = 0x01,
+		AcceptInvite = 0x02,
 		Remove = 0x03
 	};
 }
@@ -35,16 +36,23 @@ void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
 	switch (type) {
 		case BuddyOpcodes::Add: {
 			string name = packet.getString();
-			uint8_t error = player->getBuddyList()->add(name);
+			string group = packet.getString();
+
+			uint8_t error = player->getBuddyList()->addBuddy(name, group);
 
 			if (error) {
 				BuddyListPacket::error(player, error);
 			}
 			break;
 		}
+		case BuddyOpcodes::AcceptInvite: {
+			int32_t charid = packet.get<int32_t>();
+			player->getBuddyList()->removePendingBuddy(charid, true);
+			break;
+		}
 		case BuddyOpcodes::Remove: {
 			int32_t charid = packet.get<int32_t>();
-			player->getBuddyList()->remove(charid);
+			player->getBuddyList()->removeBuddy(charid);
 			break;
 		}
 	}
