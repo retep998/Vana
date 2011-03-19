@@ -122,3 +122,24 @@ void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t p
 	packet.add<int32_t>(playerid);
 	player->getSession()->send(packet);
 }
+
+void SyncPacket::buddyInvite(WorldServerConnection *player, int32_t playerid, int32_t inviteeid) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Buddy);
+	packet.add<int8_t>(Sync::Buddy::Invite);
+	packet.add<int32_t>(inviteeid);
+	packet.add<int32_t>(playerid);
+	player->getSession()->send(packet);
+}
+
+void SyncPacket::buddyOnline(WorldServerConnection *player, int32_t playerid, const vector<int32_t> &players, bool online) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Buddy);
+	packet.add<int8_t>(Sync::Buddy::OnlineOffline);
+	packet.add<int32_t>(playerid);
+	packet.addBool(online);
+	packet.addVector(players);
+	player->getSession()->send(packet);
+}

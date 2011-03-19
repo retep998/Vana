@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class PacketCreator;
 class PacketReader;
@@ -51,5 +53,9 @@ namespace SyncPacket {
 		void sendDisbandParty(int32_t partyid);
 		void sendGuilds(WorldServerAcceptConnection *player);
 		void sendAlliances(WorldServerAcceptConnection *player);
+	}
+	namespace BuddyPacket {
+		void sendBuddyInvite(WorldServerAcceptConnection *channel, int32_t inviteeid, int32_t inviterid, const string &name);
+		void sendBuddyOnlineOffline(WorldServerAcceptConnection *channel, const vector<int32_t> &players, int32_t playerid, int32_t channelid);
 	}
 }

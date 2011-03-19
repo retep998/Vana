@@ -40,7 +40,8 @@ namespace Sync {
 			Buddy,
 			Guild,
 			GuildBbs,
-			Alliance
+			Alliance,
+			Data
 		};
 	}
 	namespace Player {
@@ -64,6 +65,12 @@ namespace Sync {
 			SwitchLeader,
 			RemoveMember,
 			AddMember
+		};
+	}
+	namespace Buddy {
+		enum SyncModes {
+			Invite,
+			OnlineOffline
 		};
 	}
 }
