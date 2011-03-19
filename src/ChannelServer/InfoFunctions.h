@@ -17,17 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
-#include <string>
-
-using std::string;
+#include "ChatHandlerFunctions.h"
 
 class Player;
-class PacketReader;
 
-namespace ChatHandler {
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	bool handleCommand(Player *player, const string &message);
-	void handleGroupChat(Player *player, PacketReader &packet);
+namespace InfoFunctions {
+	bool help(Player *player, const string &args);
+	bool lookup(Player *player, const string &args);
+	bool pos(Player *player, const string &args);
+	bool online(Player *player, const string &args);
 }
