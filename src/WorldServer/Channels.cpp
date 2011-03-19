@@ -44,7 +44,7 @@ Channel * Channels::getChannel(uint16_t num) {
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
-	for (unordered_map<uint16_t, shared_ptr<Channel> >::iterator iter = channels.begin(); iter != channels.end(); iter++) {
+	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
 		sendToChannel(iter->first, packet);
 	}
 }

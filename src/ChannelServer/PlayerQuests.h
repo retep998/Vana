@@ -41,7 +41,7 @@ struct ActiveQuest {
 			return data;
 
 		std::ostringstream info;
-		for (map<int32_t, int16_t, std::less<int32_t> >::const_iterator iter = kills.begin(); iter != kills.end(); iter++) {
+		for (map<int32_t, int16_t, std::less<int32_t>>::const_iterator iter = kills.begin(); iter != kills.end(); iter++) {
 			info << std::setw(3) << std::setfill('0') << iter->second;
 		}
 		return info.str();
@@ -50,7 +50,7 @@ struct ActiveQuest {
 	int16_t id;
 	bool done;
 	string data;
-	map<int32_t, int16_t, std::less<int32_t> > kills;
+	map<int32_t, int16_t, std::less<int32_t>> kills;
 };
 
 class PlayerQuests {
@@ -72,7 +72,7 @@ public:
 	string getQuestData(int16_t id);
 private:
 	Player *m_player;
-	unordered_map<int32_t, vector<int16_t> > m_mobtoquest;
+	unordered_map<int32_t, vector<int16_t>> m_mobtoquest;
 	map<int16_t, ActiveQuest> m_quests;
 	map<int16_t, int64_t> m_completed;
 

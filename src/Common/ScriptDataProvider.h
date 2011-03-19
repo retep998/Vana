@@ -56,6 +56,6 @@ private:
 	unordered_map<int32_t, string> mapentryscripts;
 	unordered_map<int32_t, string> firstmapentryscripts;
 	unordered_map<int32_t, string> itemscripts;
-	unordered_map<int16_t, unordered_map<int8_t, string> > questscripts;
+	unordered_map<int16_t, unordered_map<int8_t, string>> questscripts;
 	unordered_map<string, int32_t> scripts;
 };

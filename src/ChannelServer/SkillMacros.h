@@ -39,7 +39,7 @@ public:
 	void load(int32_t charid);
 	void save(int32_t charid);
 private:
-	unordered_map<int8_t, shared_ptr<SkillMacro> > skillMacros;
+	unordered_map<int8_t, shared_ptr<SkillMacro>> skillMacros;
 	int8_t maxPos;
 };
 

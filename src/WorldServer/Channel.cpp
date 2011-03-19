@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.h"
 
 Channel::Channel() :
-m_players(0),
-m_connection(nullptr),
-m_id(0),
-m_ip(0),
-m_port(0)
+	m_players(0),
+	m_connection(nullptr),
+	m_id(0),
+	m_ip(0),
+	m_port(0)
 {
 }

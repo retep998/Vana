@@ -49,7 +49,7 @@ private:
 	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
 
 	boost::scoped_ptr<Timer::Container> container;
-	unordered_map<int32_t, boost::shared_ptr<ActiveTrade> > trades;
+	unordered_map<int32_t, boost::shared_ptr<ActiveTrade>> trades;
 	int32_t ids;
 
 	Timer::Container * getTimers() const { return container.get(); }

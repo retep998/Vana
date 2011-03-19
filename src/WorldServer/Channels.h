@@ -52,5 +52,5 @@ private:
 	Channels() {}
 	static Channels *singleton;
 
-	unordered_map<uint16_t, shared_ptr<Channel> > channels;
+	unordered_map<uint16_t, shared_ptr<Channel>> channels;
 };

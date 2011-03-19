@@ -63,7 +63,7 @@ private:
 	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
-	unordered_map<int32_t, boost::shared_ptr<PacketReader> > m_packets;
+	unordered_map<int32_t, boost::shared_ptr<PacketReader>> m_packets;
 	unordered_map<int32_t, Player *> m_players;
 	unordered_map<int32_t, Party *> m_parties;
 	unordered_map<string, Player *> m_players_names; // Index of players by name

@@ -44,7 +44,7 @@ struct ReactorData {
 	bool activateByTouch;
 	int8_t maxStates;
 	int32_t link;
-	unordered_map<int8_t, vector<ReactorStateInfo> > states;
+	unordered_map<int8_t, vector<ReactorStateInfo>> states;
 };
 
 class ReactorDataProvider : boost::noncopyable {

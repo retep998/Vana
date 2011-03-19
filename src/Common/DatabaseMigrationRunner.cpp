@@ -57,7 +57,7 @@ void DatabaseMigration::Runner::loadFile() {
 
 	// Parse each SQL statement
 	{
-		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
 		typedef boost::char_separator<char> separator;
 
 		separator sep(";");

@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Fame.h"
+#include "Database.h"
 #include "FamePacket.h"
+#include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
-#include "Database.h"
-#include "PacketReader.h"
 
 void Fame::handleFame(Player *player, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();

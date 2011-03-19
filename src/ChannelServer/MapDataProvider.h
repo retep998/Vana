@@ -122,7 +122,7 @@ public:
 private:
 	MapDataProvider();
 	static MapDataProvider *singleton;
-	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t> > continent_map;
+	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t>> continent_map;
 	typedef continent_map::value_type continent_info;
 
 	int32_t loadMapData(int32_t mapid, Map *&map);
