@@ -34,6 +34,7 @@ public:
 	bool hasSlipPrevention() const;
 	bool hasLock() const;
 	bool hasKarma() const;
+	bool hasTradeBlock() const;
 	int8_t getSlots() const { return m_slots; }
 	int8_t getScrolls() const { return m_scrolls; }
 	int16_t getStr() const { return m_str; }
@@ -85,6 +86,7 @@ public:
 	void setWarmSupport(bool warm);
 	void setLock(bool lock);
 	void setKarma(bool karma);
+	void setTradeBlock(bool block);
 	void setExpirationTime(int64_t exp) { m_expiration = exp; }
 	void addStr(int16_t strength, bool onlyIfExists = false);
 	void addDex(int16_t dexterity, bool onlyIfExists = false);

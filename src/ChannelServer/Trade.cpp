@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VersionConstants.h"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
-m_sender(new TradeInfo()),
-m_receiver(new TradeInfo()),
-m_id(id)
+	m_sender(new TradeInfo()),
+	m_receiver(new TradeInfo()),
+	m_id(id)
 {
 	sender->setTrading(true);
 	receiver->setTrading(false);
@@ -140,12 +140,15 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 	return yes;
 }
 
-
 void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 	if (info->count > 0) {
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
+				if (item->hasKarma()) {
+					item->setKarma(false);
+					item->setTradeBlock(true);
+				}
 				Inventory::addItem(player, new Item(item));
 				delete item;
 			}

@@ -96,7 +96,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.y = origin.y;
 
 			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-				pos = Maps::getMap(mapid)->findFloor(pos);
+				// pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't work correctly!
 			}
 
 			if (!i->ismesos) {
@@ -168,8 +168,7 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petId = packet.get<int32_t>();
-	packet.skipBytes(4);
+	int32_t petId = (int32_t)packet.get<int64_t>();
 	lootItem(player, packet, petId);
 }
 

@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 #include <algorithm>
 
-PlayerStorage::PlayerStorage(Player *player) : player(player) {
+PlayerStorage::PlayerStorage(Player *player) :
+	player(player)
+{
 	load();
 }
 
@@ -82,6 +84,13 @@ void PlayerStorage::load() {
 	else {
 		slots = 4;
 		mesos = 0;
+		// Make a row right away...
+		query << "INSERT INTO storage (userid, world_id, slots, mesos) VALUES ("
+			<< player->getUserId() << ", "
+			<< (int16_t) player->getWorldId() << ", "
+			<< (int16_t) getSlots() << ", "
+			<< getMesos() << ") ";
+		query.exec();
 	}
 
 	items.reserve(slots);

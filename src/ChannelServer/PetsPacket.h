@@ -30,7 +30,7 @@ namespace PetsPacket {
 	void petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false, int8_t index = -1);
 	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
 	void showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
-	void showAnimation(Player *player, Pet *pet, int8_t animation, bool success = false);
+	void showAnimation(Player *player, Pet *pet, int8_t animation);
 	void updatePet(Player *player, Pet *pet);
 	void levelUp(Player *player, Pet *pet);
 	void changeName(Player *player, Pet *pet);

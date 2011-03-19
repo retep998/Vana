@@ -496,11 +496,10 @@ void Player::changeKey(PacketReader &packet) {
 		keyMaps.save(this->id);
 	}
 	else if (mode == AutoHpPotion) {
-		// For these two modes,
-		// howmany = potion ID, deallocate on 0, I imagine
+		getInventory()->setAutoHpPot(howmany);
 	}
 	else if (mode == AutoMpPotion) {
-
+		getInventory()->setAutoMpPot(howmany);
 	}
 }
 

@@ -49,6 +49,8 @@ public:
 	bool isSummoned() const { return this->index != -1; }
 	string getName() { return this->name; }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
+	bool hasNameTag() const;
+	bool hasQuoteItem() const;
 
 	void startTimer();
 private:

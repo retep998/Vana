@@ -226,6 +226,14 @@ void Map::runFunctionPlayers(function<void (Player *)> successFunc, const Pos &o
 	}
 }
 
+void Map::runFunctionPlayers(function<void (Player *)> successFunc) {
+	for (size_t i = 0; i < m_players.size(); i++) {
+		if (Player *toy = m_players[i]) {
+			successFunc(toy);
+		}
+	}
+}
+
 void Map::buffPlayers(int32_t buffid) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (Player *toy = m_players[i]) {
@@ -409,7 +417,7 @@ int32_t Map::spawnShell(int32_t mobid, const Pos &pos, int16_t fh) {
 
 Mob * Map::getMob(int32_t id, bool isMapId) {
 	if (isMapId)
-		return (m_mobs.find(id) != m_mobs.end() ? m_mobs[id] : 0);
+		return (m_mobs.find(id) != m_mobs.end() ? m_mobs[id] : nullptr);
 
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
 		if (iter->second != nullptr && iter->second->getMobId() == id) {
