@@ -89,7 +89,7 @@ void Characters::showAllCharacters(Player *player) {
 	query << "SELECT * FROM characters WHERE userid = " << player->getUserId();
 	mysqlpp::StoreQueryResult res = query.store();
 
-	typedef unordered_map<uint8_t, vector<Character> > CharsMap;
+	typedef unordered_map<uint8_t, vector<Character>> CharsMap;
 
 	CharsMap chars;
 	uint32_t charsNum = 0;

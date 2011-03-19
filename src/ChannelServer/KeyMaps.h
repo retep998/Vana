@@ -40,7 +40,7 @@ public:
 
 	static const size_t size = 90;
 private:
-	unordered_map<int32_t, shared_ptr<KeyMap> > keyMaps;
+	unordered_map<int32_t, shared_ptr<KeyMap>> keyMaps;
 	int32_t maxValue; // Cache max value
 };
 

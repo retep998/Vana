@@ -64,7 +64,7 @@ public:
 	Configuration & getConfig() { return m_config; }
 	LoginServerAcceptConnection * getConnection() const { return m_connection; }
 private:
-	typedef std::tr1::unordered_map<int32_t, boost::shared_ptr<Channel> > ChannelMap;
+	typedef std::tr1::unordered_map<int32_t, boost::shared_ptr<Channel>> ChannelMap;
 
 	bool m_connected;
 	int8_t m_id;

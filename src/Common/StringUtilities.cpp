@@ -41,7 +41,7 @@ int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 
 void StringUtilities::runFlags(const string &flags, function<void (string)> func) {
 	if (flags.length() > 0) {
-		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
 		typedef boost::char_separator<char> separator;
 
 		separator sep(",");

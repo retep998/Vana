@@ -139,6 +139,6 @@ private:
 	int8_t getElemModifier(const string &elemattr);
 
 	unordered_map<int32_t, MobInfo> mobinfo;
-	unordered_map<int32_t, vector<MobAttackInfo> > attacks;
-	unordered_map<int32_t, vector<MobSkillInfo> > skills;
+	unordered_map<int32_t, vector<MobAttackInfo>> attacks;
+	unordered_map<int32_t, vector<MobSkillInfo>> skills;
 };

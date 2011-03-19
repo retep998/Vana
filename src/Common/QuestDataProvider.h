@@ -63,7 +63,7 @@ struct QuestRewardsInfo {
 };
 
 typedef vector<int16_t> JobRequests;
-typedef map<int32_t, int16_t, std::less<int32_t> > MobRequests;
+typedef map<int32_t, int16_t, std::less<int32_t>> MobRequests;
 typedef unordered_map<int32_t, int16_t> ItemRequests;
 typedef unordered_map<int16_t, int8_t> QuestRequests;
 

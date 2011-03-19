@@ -138,7 +138,7 @@ namespace SkillTypes {
 }
 
 struct Attack {
-	typedef unordered_map<int32_t, vector<int32_t> >::const_iterator iterator;
+	typedef unordered_map<int32_t, vector<int32_t>>::const_iterator iterator;
 	typedef vector<int32_t>::const_iterator diterator;
 
 	Attack() :
@@ -179,7 +179,7 @@ struct Attack {
 	int64_t totalDamage;
 	Pos projectilePos;
 	Pos playerPos;
-	unordered_map<int32_t, vector<int32_t> > damages;
+	unordered_map<int32_t, vector<int32_t>> damages;
 };
 
 

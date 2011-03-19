@@ -37,10 +37,7 @@ using boost::shared_array;
 class AbstractConnection;
 class PacketCreator;
 
-class MapleSession :
-public AbstractSession,
-public boost::enable_shared_from_this<MapleSession>
-{
+class MapleSession : public AbstractSession, public boost::enable_shared_from_this<MapleSession> {
 public:
 	MapleSession(boost::asio::io_service &io_service,
 				SessionManagerPtr sessionManager,

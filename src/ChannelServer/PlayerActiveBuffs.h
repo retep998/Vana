@@ -45,13 +45,13 @@ struct MapEntryBuffs {
 		}
 	}
 	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
-	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals> > values;
+	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals>> values;
 
 	int32_t mountid;
 	int32_t mountskill;
 };
 
-typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t> > ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
+typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t>> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
 class PlayerActiveBuffs {
 public:
@@ -196,7 +196,7 @@ private:
 	ActiveBuffsByType m_activebuffsbytype;
 	MapEntryBuffs m_mapbuffs;
 	unordered_map<int32_t, uint8_t> m_activelevels;
-	unordered_map<int32_t, shared_ptr<Timer::Container> > m_skill_acts;
+	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skill_acts;
 
 	int32_t calculateDebuffMaskBit(uint8_t skill);
 };

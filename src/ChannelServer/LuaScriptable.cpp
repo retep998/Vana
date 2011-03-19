@@ -1596,7 +1596,7 @@ int LuaExports::checkPartyFootholds(lua_State *luaVm) {
 	Party *p = getPlayer(luaVm)->getParty();
 	bool winner = false;
 	if (p != nullptr) {
-		vector<vector<int16_t> > footholds;
+		vector<vector<int16_t>> footholds;
 		lua_pushnil(luaVm);
 		while (lua_next(luaVm, 2)) {
 			vector<int16_t> arr;
@@ -1692,7 +1692,7 @@ int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
 	Party *p = getPlayer(luaVm)->getParty();
 	bool winner = false;
 	if (p != nullptr) {
-		vector<vector<int16_t> > footholds;
+		vector<vector<int16_t>> footholds;
 		lua_pushnil(luaVm);
 		while (lua_next(luaVm, 1)) {
 			vector<int16_t> arr;

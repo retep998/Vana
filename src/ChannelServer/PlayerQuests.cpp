@@ -50,7 +50,7 @@ void PlayerQuests::save() {
 		}
 		if (q->second.kills.size()) {
 			firstrun2 = true;
-			for (map<int32_t, int16_t, std::less<int32_t> >::iterator v = q->second.kills.begin(); v != q->second.kills.end(); v++) {
+			for (map<int32_t, int16_t, std::less<int32_t>>::iterator v = q->second.kills.begin(); v != q->second.kills.end(); v++) {
 				if (!firstrun2) {
 					query << ",(";
 				}

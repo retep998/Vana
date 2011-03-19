@@ -262,10 +262,10 @@ private:
 	unordered_map<int32_t, ItemInfo> items;
 	unordered_map<int32_t, ScrollInfo> scrolls;
 	unordered_map<int32_t, ConsumeInfo> consumes;
-	unordered_map<int32_t, vector<SummonBag> > mobs;
-	unordered_map<int32_t, vector<Skillbook> > skills;
-	unordered_map<int32_t, vector<ItemRewardInfo> > itemRewards;
+	unordered_map<int32_t, vector<SummonBag>> mobs;
+	unordered_map<int32_t, vector<Skillbook>> skills;
+	unordered_map<int32_t, vector<ItemRewardInfo>> itemRewards;
 	unordered_map<int32_t, PetInfo> petsInfo;
-	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo> > petsInteractInfo;
+	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> petsInteractInfo;
 	card_map cards; // Left, cardid; right, mobid
 };
