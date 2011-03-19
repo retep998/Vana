@@ -61,7 +61,6 @@ public:
 	void takeDrop(Player *player, int32_t petid);
 	void removeDrop(bool showPacket = true);
 
-
 	static const int8_t Explosive = 3;
 	static const int8_t FreeForAll = 2;
 	static const int8_t Party = 1;

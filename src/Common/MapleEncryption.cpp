@@ -127,7 +127,6 @@ void MapleEncryption::mapleEncrypt(unsigned char *buf, int32_t size) {
 	}
 }
 
-
 void MapleEncryption::mapleDecrypt(unsigned char *buf, int32_t size) {
 	int32_t j;
 	uint8_t a, b, c;

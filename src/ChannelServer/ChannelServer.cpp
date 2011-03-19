@@ -74,7 +74,6 @@ string ChannelServer::makeLogIdentifier() {
 	return "World: " + boost::lexical_cast<string>(static_cast<int16_t>(getWorld())) + "; ID: " + boost::lexical_cast<string>(getChannel());
 }
 
-
 void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_worldConnection);

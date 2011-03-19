@@ -381,7 +381,6 @@ Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
 	return player;
 }
 
-
 Instance * LuaExports::getInstance(lua_State *luaVm) {
 	lua_getglobal(luaVm, "_instancename");
 	return Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));

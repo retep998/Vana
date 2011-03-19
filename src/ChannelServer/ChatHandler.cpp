@@ -530,7 +530,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 							else {
 								PlayerPacket::showMessage(player, "Player not found.", PlayerPacket::NoticeTypes::Red);
-							}							
+							}
 						}
 						else {
 							showSyntax(player, command);

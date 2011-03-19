@@ -42,7 +42,6 @@ FieldLimit::FieldLimit() :
 {
 }
 
-
 MapDataProvider::MapDataProvider() {
 	loadData();
 }

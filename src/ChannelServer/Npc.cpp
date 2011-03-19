@@ -181,7 +181,7 @@ void Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t quest
 
 void Npc::sendQuestion(const string &question, const string &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) {
 	PacketCreator packet = npcPacket(NpcDialogs::Question, false);
-	packet.add<int8_t>(0x00); // If it's 0x01, it does something else 
+	packet.add<int8_t>(0x00); // If it's 0x01, it does something else
 	packet.addString(text);
 	packet.addString(question); // Another question thing
 	packet.addString(clue);

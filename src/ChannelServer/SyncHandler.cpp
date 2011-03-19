@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SendHeader.h"
 #include "SyncPacket.h"
 
-
 void SyncHandler::handle(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::SyncTypes::ChannelStart: handleChannelStart(packet); break;
