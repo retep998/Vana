@@ -61,14 +61,16 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 	bool multipet = player->getSkills()->getSkillLevel(Jobs::Beginner::FollowTheLead) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->getPetId());
 
-	if (pet->isSummoned()) { // Removing a pet
+	if (pet->isSummoned()) {
+		// Removing a pet
 		player->getPets()->setSummoned(pet->getIndex(), 0);
 		if (pet->getIndex() == 0) {
 			Timer::Id id(Timer::Types::PetTimer, pet->getIndex(), 0);
 			player->getTimers()->removeTimer(id);
 		}
 		if (multipet) {
-			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; i++) { // Shift around pets if using multipet
+			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; i++) {
+				// Shift around pets if using multipet
 				if (Pet *move = player->getPets()->getSummoned(i)) {
 					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getIndex(), move->getId());
@@ -82,7 +84,8 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 		pet->setIndex(-1);
 		PetsPacket::petSummoned(player, pet, false, false, index);
 	}
-	else { // Summoning a Pet
+	else {
+		// Summoning a Pet
 		pet->setPos(player->getPos());
 		if (!multipet || master) {
 			pet->setIndex(0);
@@ -103,9 +106,9 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 				player->getTimers()->removeTimer(id);
 				PetsPacket::petSummoned(player, pet, true);
 			}
-			else
+			else {
 				PetsPacket::petSummoned(player, pet);
-
+			}
 			player->getPets()->setSummoned(0, pet->getId());
 			pet->startTimer();
 		}
@@ -135,8 +138,8 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 		Inventory::takeItem(player, itemId, 1);
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
-		PetsPacket::showAnimation(player, pet, 1, success);
 		if (success) {
+			PetsPacket::showAnimation(player, pet, 1);
 			pet->modifyFullness(Stats::PetFeedFullness, false);
 			if (Randomizer::Instance()->randInt(99) < 60) {
 				// 60% chance for feed to add closeness
@@ -167,23 +170,35 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	if (success) {
 		pet->addCloseness(action->increase);
 	}
-	PetsPacket::showAnimation(player, pet, act, success);
+	PetsPacket::showAnimation(player, pet, act);
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int32_t petid = (int32_t)packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
-	if (pet == nullptr || !pet->isSummoned()) {
+	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
+	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
 	packet.skipBytes(4); // Ticks
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemid = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
-	if (item == nullptr || item->getId() != itemid || ((info->hp != 0 || info->mp != 0) && player->getStats()->getHp() == 0)) {
+	if (item == nullptr || item->getId() != itemid) {
+		// Hacking
+		return;
+	}
+
+	// Check if the MP potion IS a MP potion set
+	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemid) {
+		// Hacking
+		return;
+	}
+
+	// Check if the HP potion IS a HP potion set
+	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemid) {
 		// Hacking
 		return;
 	}

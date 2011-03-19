@@ -37,22 +37,23 @@ Pet::Pet(Player *player, Item *item) :
 	closeness(0)
 {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "INSERT INTO pets (name) VALUES ("<< mysqlpp::quote << this->name << ")";
+	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
 	this->id = (int32_t) res.insert_id();
 	item->setPetId(this->id);
 }
 
 Pet::Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
-player(player),
-id(item->getPetId()),
-itemId(item->getId()),
-index(index),
-name(name),
-level(level),
-fullness(fullness),
-closeness(closeness),
-inventorySlot(inventorySlot) {
+	player(player),
+	id(item->getPetId()),
+	itemId(item->getId()),
+	index(index),
+	name(name),
+	level(level),
+	fullness(fullness),
+	closeness(closeness),
+	inventorySlot(inventorySlot)
+{
 	if (isSummoned()) {
 		if (index == 1) {
 			startTimer();
@@ -69,7 +70,6 @@ void Pet::levelUp() {
 void Pet::setName(const string &name) {
 	this->name = name;
 	PetsPacket::changeName(player, this);
-	PetsPacket::updatePet(player, this);
 }
 
 void Pet::addCloseness(int16_t amount) {
@@ -84,19 +84,42 @@ void Pet::addCloseness(int16_t amount) {
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	fullness += offset;
-
-	if (fullness > Stats::MaxFullness)
+	if (fullness + offset > Stats::MaxFullness) {
 		fullness = Stats::MaxFullness;
-	else if (fullness < Stats::MinFullness)
-		fullness = Stats::MinFullness;
+	}
+	else {
+		fullness += offset;
+	}
 
-	if (sendPacket)
+	if (fullness < Stats::MinFullness) {
+		fullness = Stats::MinFullness;
+	}
+
+	if (sendPacket) {
 		PetsPacket::updatePet(player, this);
+	}
 }
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
+}
+
+bool Pet::hasNameTag() const {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+	}
+	return false;
+}
+
+bool Pet::hasQuoteItem() const {
+	switch (index) {
+		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
+		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
+		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+	}
+	return false;
 }

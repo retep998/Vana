@@ -64,3 +64,14 @@ int64_t StringUtilities::atoli(const char *str) {
 time_t StringUtilities::atot(const char *ref) {
 	return (time_t) mysqlpp::DateTime(ref);
 }
+
+string StringUtilities::replace(const string &input, const string &what, const string &replacement) {
+	string ret = input;
+	size_t searchLen = what.length();
+	size_t foundPos = ret.find(what);
+	while (foundPos != string::npos) {
+		ret.replace(foundPos, searchLen, replacement);
+		foundPos = ret.find(what); // Search the next one
+	}
+	return ret;
+}

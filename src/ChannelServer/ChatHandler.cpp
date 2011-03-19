@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Mob.h"
 #include "MobConstants.h"
-#include "NpcHandler.h"
 #include "Npc.h"
+#include "NpcHandler.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Player.h"
@@ -143,7 +143,7 @@ void ChatHandler::initializeCommands() {
 	command.notes.push_back("Stops the current ChannelServer.");
 	commandlist["shutdown"] = command.addToMap();
 
-
+	command.command = CmdPacket;
 	command.syntax = "<$hexbytes>";
 	command.notes.push_back("Sends a specific packet to yourself. Should only be used for testing.");
 	commandlist["packet"] = command.addToMap();
@@ -195,6 +195,11 @@ void ChatHandler::initializeCommands() {
 	command.syntax = "[#mapid]";
 	command.notes.push_back("Warps all players to your map or the map you specify.");
 	commandlist["warpall"] = command.addToMap();
+
+	command.command = CmdWarpMap;
+	command.syntax = "[#mapid]";
+	command.notes.push_back("Warps all players in your current map to your map or the map you specify.");
+	commandlist["warpmap"] = command.addToMap();
 
 	command.command = CmdKillAll;
 	command.notes.push_back("Kills all mobs on the current map.");
@@ -520,14 +525,12 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+)";
 						if (regex_match(args.c_str(), matches, re)) {
 							string target = matches[1];
-							string message;
 							if (Player *p = PlayerDataProvider::Instance()->getPlayer(target)) {
-								message = p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency()) + "ms";
+								PlayerPacket::showMessage(player, p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency()) + "ms", PlayerPacket::NoticeTypes::Blue);
 							}
 							else {
-								message = "Player not found.";
-							}
-							PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Player not found.", PlayerPacket::NoticeTypes::Red);
+							}							
 						}
 						else {
 							showSyntax(player, command);
@@ -584,8 +587,15 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
 							accbanquery.exec();
 
-							string banmsg = targetname + " has been banned" + getBanString(reason);
-							PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+							int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+							if (affects != 0) {
+								string banmsg = targetname + " has been banned" + getBanString(reason);
+								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Couldn't ban " + targetname + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+							}
 						}
 						else {
 							showSyntax(player, command);
@@ -607,8 +617,15 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
 								accipbanquery.exec();
 
-								string banmsg = targetname + " has been IP banned" + getBanString(reason);
-								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+								int32_t affects = static_cast<int32_t>(accipbanquery.affected_rows());
+								if (affects != 0) {
+									string banmsg = targetname + " has been IP banned" + getBanString(reason);
+									PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+									ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
+								}
+								else {
+									PlayerPacket::showMessage(player, "Couldn't IP ban " + targetip + ".", PlayerPacket::NoticeTypes::Red);
+								}
 							}
 						}
 						else {
@@ -631,8 +648,15 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
 							accbanquery.exec();
 
-							string banmsg = targetname + " has been banned" + getBanString(reason);
-							PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+							int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+							if (affects != 0) {
+								string banmsg = targetname + " has been banned" + getBanString(reason);
+								PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>((int16_t)reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetname);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Couldn't temporary ban " + targetname + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+							}
 						}
 						else {
 							showSyntax(player, command);
@@ -645,13 +669,23 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
 							accbanquery.exec();
 
-							PlayerPacket::showMessage(player, string(args) + " has been unbanned.", PlayerPacket::NoticeTypes::Blue);
+							int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+							if (affects != 0) {
+								string banmsg = args + " has been unbanned.";
+								PlayerPacket::showMessage(player, banmsg, PlayerPacket::NoticeTypes::Blue);
+								ChannelServer::Instance()->log(LogTypes::GmCommand, "GM unbanned a character. GM: " + player->getName() + ", Character: " + args);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Couldn't unban " + args + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+							}
 						}
 						else {
 							showSyntax(player, command);
 						}
 						break;
 					case CmdShutdown:
+						PlayerPacket::showMessage(player, "Shutting down the server.", PlayerPacket::NoticeTypes::Blue);
+						ChannelServer::Instance()->log(LogTypes::GmCommand, "GM shutdown the server. GM: " + player->getName());
 						ChannelServer::Instance()->shutdown();
 						break;
 					case CmdPacket: {
@@ -667,7 +701,32 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					}
 					case CmdTimer:
 						if (args.length() != 0) {
-							Maps::getMap(player->getMap())->setMapTimer(atoi(args.c_str()));
+							int32_t time = atoi(args.c_str());
+							string msg = "Stopped map timer.";
+							if (time > 0) {
+								int32_t seconds = time /= 60;
+								int32_t minutes = time /= 60;
+								int32_t hours = time /= 60;
+								msg = "Started map timer. Counting down from ";
+								if (hours > 0) {
+									msg += lexical_cast<string>(hours) + " hours";
+								}
+								if (minutes > 0) {
+									if (hours > 0) {
+										msg += ", ";
+									}
+									msg += lexical_cast<string>(minutes) + " minutes";
+								}
+								if (seconds > 0) {
+									if (hours > 0 || minutes > 0) {
+										msg += " and ";
+									}
+									msg += lexical_cast<string>(seconds) + " seconds";
+								}
+								msg += "!";
+							}
+							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
+							Maps::getMap(player->getMap())->setMapTimer(time);
 						}
 						else {
 							showSyntax(player, command);
@@ -678,6 +737,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
 								PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
 							}
+							PlayerPacket::showMessage(player, "Showing instruction bubble to everyone on the map.", PlayerPacket::NoticeTypes::Blue);
 						}
 						else {
 							showSyntax(player, command);
@@ -691,7 +751,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							npc.pos = player->getPos();
 							npc.rx0 = npc.pos.x - 50;
 							npc.rx1 = npc.pos.x + 50;
-							Maps::getMap(player->getMap())->addNpc(npc);
+							int32_t id = Maps::getMap(player->getMap())->addNpc(npc);
+							PlayerPacket::showMessage(player, "Spawned NPC with object ID " + lexical_cast<string>(id) , PlayerPacket::NoticeTypes::Blue);
 						}
 						else {
 							showSyntax(player, command);
@@ -712,13 +773,14 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							if (Player *target = PlayerDataProvider::Instance()->getPlayer(args)) {
 								if (player->getGmLevel() > target->getGmLevel()) {
 									target->getSession()->disconnect();
+									PlayerPacket::showMessage(player, "Kicked " + args + " from the server.", PlayerPacket::NoticeTypes::Blue);
 								}
 								else {
-									PlayerPacket::showMessage(player, "Player outranks you.", PlayerPacket::NoticeTypes::Blue);
+									PlayerPacket::showMessage(player, "Player outranks you.", PlayerPacket::NoticeTypes::Red);
 								}
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid player or player is offline.", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid player or player is offline.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -728,13 +790,21 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdWarp:
 						re = "(\\w+) ?(\\d*)?";
 						if (regex_match(args.c_str(), matches, re)) {
-							if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(matches[1])) {
+							string targetname = matches[1];
+							if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetname)) {
 								string mapstring = matches[2];
-								int32_t mapid = mapstring.length() > 0 ? atoi(mapstring.c_str()) : player->getMap();
+								int32_t mapid = mapstring.length() > 0 ? getMap(mapstring, player) : player->getMap();
 
 								if (Maps::getMap(mapid)) {
 									warpee->setMap(mapid);
+									PlayerPacket::showMessage(player, "Warped " + targetname + " to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
 								}
+								else {
+									PlayerPacket::showMessage(player, "Cannot warp player; invalid map ID given.", PlayerPacket::NoticeTypes::Red);
+								}
+							}
+							else {
+								PlayerPacket::showMessage(player, targetname + " not found for warping.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -742,65 +812,89 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						}
 						break;
 					case CmdWarpAll: {
-						int32_t mapid = args.length() != 0 ? atoi(args.c_str()) : player->getMap();
+						int32_t mapid = args.length() != 0 ? getMap(args, player) : player->getMap();
 
 						if (Maps::getMap(mapid)) {
 							WarpFunctor func = {mapid, player};
 							PlayerDataProvider::Instance()->run(func);
+							if (args.length() > 0) {
+								PlayerPacket::showMessage(player, "Warped everyone in the server to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Warped everyone in the server to yourself.", PlayerPacket::NoticeTypes::Blue);
+							}
 						}
 						else {
-							PlayerPacket::showMessage(player, "Invalid Map ID", PlayerPacket::NoticeTypes::Blue);
+							PlayerPacket::showMessage(player, "Cannot warp players; invalid Map ID given (map not found).", PlayerPacket::NoticeTypes::Red);
 						}
 						break;
 					}
-					case CmdKillAll:
-						Maps::getMap(player->getMap())->killMobs(player);
+					case CmdWarpMap: {
+						int32_t mapid = args.length() != 0 ? getMap(args, player) : player->getMap();
+
+						if (Map *map = Maps::getMap(mapid)) {
+							WarpFunctor func = {mapid, player};
+							Maps::getMap(player->getMap())->runFunctionPlayers(func);
+							if (args.length() > 0) {
+								PlayerPacket::showMessage(player, "Warped everyone in the map to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+							}
+							else {
+								PlayerPacket::showMessage(player, "Warped everyone in the map to yourself.", PlayerPacket::NoticeTypes::Blue);
+							}
+						}
+						else {
+							PlayerPacket::showMessage(player, "Cannot warp players; invalid Map ID given (map not found).", PlayerPacket::NoticeTypes::Red);
+						}
 						break;
+					}
+					case CmdKillAll: {
+						int32_t killed = Maps::getMap(player->getMap())->killMobs(player);
+						PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(killed) + " mobs!", PlayerPacket::NoticeTypes::Blue);
+						break;
+					}
 					case CmdClearDrops:
 						Maps::getMap(player->getMap())->clearDrops();
 						break;
 					case CmdKill:
 						if (player->getGmLevel() == 1) {
 							player->getStats()->setHp(0);
+							PlayerPacket::showMessage(player, "Killed yourself.", PlayerPacket::NoticeTypes::Blue);
 						}
 						else {
-							if (args == "all") {
+							if (args == "gm" || args == "all") {
+								int32_t kills = 0;
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
-									if (killpsa != player) {
-										killpsa->getStats()->setHp(0);
-									}
-								}
-							}
-							else if (args == "gm") {
-								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									Player *killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 									if (killpsa != player) {
 										if (killpsa->isGm()) {
 											killpsa->getStats()->setHp(0);
+											kills++;
 										}
 									}
 								}
+								PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(kills) + "  GMs in the current map!", PlayerPacket::NoticeTypes::Blue);
 							}
-							else if (args == "players") {
+							if (args == "players" || args == "all") {
+								int32_t kills = 0;
 								for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-									Player *killpsa;
-									killpsa = Maps::getMap(player->getMap())->getPlayer(i);
+									Player *killpsa = Maps::getMap(player->getMap())->getPlayer(i);
 									if (killpsa != player) {
 										if (!killpsa->isGm()) {
 											killpsa->getStats()->setHp(0);
+											kills++;
 										}
 									}
 								}
+								PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(kills) + "  players in the current map!", PlayerPacket::NoticeTypes::Blue);
 							}
 							else if (args == "me") {
 								player->getStats()->setHp(0);
+								PlayerPacket::showMessage(player, "Killed yourself.", PlayerPacket::NoticeTypes::Blue);
 							}
 							else if (Player *killpsa = PlayerDataProvider::Instance()->getPlayer(args)) {
 								// Kill by name
 								killpsa->getStats()->setHp(0);
+								PlayerPacket::showMessage(player, "Killed " + args + ".", PlayerPacket::NoticeTypes::Blue);
 							}
 						}
 						break;
@@ -808,19 +902,19 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						re = "(\\w+) (.+)";
 						if (regex_match(args.c_str(), matches, re)) {
 							uint16_t type = 0;
+							string test = matches[1];
+							if (test == "item") type = 1;
+							else if (test == "skill") type = 2;
+							else if (test == "map") type = 3;
+							else if (test == "mob") type = 4;
+							else if (test == "npc") type = 5;
+							else if (test == "quest") type = 6;
 
-							if (matches[1] == "item") type = 1;
-							else if (matches[1] == "skill") type = 2;
-							else if (matches[1] == "map") type = 3;
-							else if (matches[1] == "mob") type = 4;
-							else if (matches[1] == "npc") type = 5;
-							else if (matches[1] == "quest") type = 6;
+							else if (test == "id") type = 100;
 
-							else if (matches[1] == "id") type = 100;
-
-							else if (matches[1] == "continent") type = 200;
-							else if (matches[1] == "scriptbyname") type = 300;
-							else if (matches[1] == "scriptbyid") type = 400;
+							else if (test == "continent") type = 200;
+							else if (test == "scriptbyname") type = 300;
+							else if (test == "scriptbyid") type = 400;
 
 							if (type != 0) {
 								mysqlpp::Query query = Database::getDataDB().query();
@@ -835,7 +929,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									res = query.store();
 
 									if (res.num_rows() == 0) {
-										PlayerPacket::showMessage(player, "No results", PlayerPacket::NoticeTypes::Blue);
+										PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
 									}
 									else {
 										for (size_t i = 0; i < res.num_rows(); i++) {
@@ -851,7 +945,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 										PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 									}
 									else {
-										PlayerPacket::showMessage(player, "Invalid map", PlayerPacket::NoticeTypes::Blue);
+										PlayerPacket::showMessage(player, "Invalid map.", PlayerPacket::NoticeTypes::Red);
 									}
 								}
 								else if (type > 200) {
@@ -864,7 +958,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 									res = query.store();
 
 									if (res.num_rows() == 0) {
-										PlayerPacket::showMessage(player, "No results", PlayerPacket::NoticeTypes::Blue);
+										PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
 									}
 									else {
 										for (size_t i = 0; i < res.num_rows(); i++) {
@@ -875,7 +969,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								}
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -893,8 +987,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							}
 						}
 						else {
-							string msg = "Current Map: " + lexical_cast<string>(player->getMap());
-							PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
+							PlayerPacket::showMessage(player, "Current Map: " + lexical_cast<string>(player->getMap()), PlayerPacket::NoticeTypes::Blue);
 						}
 						break;
 					case CmdNpc:
@@ -919,7 +1012,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								player->getSkills()->addSkillLevel(skillId, count);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Skill ID", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid Skill ID.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -933,12 +1026,19 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							if (MobDataProvider::Instance()->mobExists(mobid)) {
 								string countstring = matches[2];
 								int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
-								for (int32_t i = 0; i < count && i < 100; i++) {
+								if (count > 100) count = 100;
+								for (int32_t i = 0; i < count; i++) {
 									Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+								}
+								if (count > 0) {
+									PlayerPacket::showMessage(player, "Spawned " + lexical_cast<string>(count) + " mobs with ID " + lexical_cast<string>(mobid) + ".", PlayerPacket::NoticeTypes::Blue);
+								}
+								else {
+									PlayerPacket::showMessage(player, "No mobs spawned.", PlayerPacket::NoticeTypes::Red);
 								}
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Mob ID", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid Mob ID.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -958,6 +1058,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						player->getStats()->setDex(32767);
 						player->getStats()->setInt(32767);
 						player->getStats()->setLuk(32767);
+						PlayerPacket::showMessage(player, "Maxed every stat for this character.", PlayerPacket::NoticeTypes::Blue);
 						break;
 					case CmdStr:
 						if (args.length() != 0) {
@@ -1012,7 +1113,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", PlayerPacket::NoticeTypes::Blue);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid reload type", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid reload type.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -1059,7 +1160,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								Inventory::addNewItem(player, itemId, count);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid Item ID", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid Item ID.", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -1096,9 +1197,6 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 					case CmdKillNpc:
 						player->setNpc(nullptr);
 						break;
-					case CmdHorntail:
-						Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
-						break;
 					case CmdHeal:
 						player->getStats()->setHp(player->getStats()->getMaxHp());
 						player->getStats()->setMp(player->getStats()->getMaxMp());
@@ -1113,18 +1211,32 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdSave:
 						player->saveAll();
-						PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Red);
+						PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Blue);
 						break;
 					case CmdWarpTo:
-						if (Player *warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
-							player->setMap(warptoee->getMap());
+						if (args.length() > 0) {
+							if (Player *warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
+								player->setMap(warptoee->getMap());
+							}
+							else {
+								PlayerPacket::showMessage(player, "Player not found: " + args, PlayerPacket::NoticeTypes::Red);
+							}
 						}
+						else {
+							showSyntax(player, command);
+						}
+						break;
+					case CmdHorntail:
+						Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
+						ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Horntail on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
 						break;
 					case CmdZakum:
 						Maps::getMap(player->getMap())->spawnZakum(player->getPos());
+						ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Zakum on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
 						break;
 					case CmdMusic:
 						Maps::getMap(player->getMap())->setMusic(args);
+						PlayerPacket::showMessage(player, "Set music on the map to: " + args, PlayerPacket::NoticeTypes::Blue);
 						break;
 					case CmdDisconnect:
 						player->getSession()->disconnect();
@@ -1137,7 +1249,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 						break;
 					case CmdRankingCalc:
 						WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
-						PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", PlayerPacket::NoticeTypes::Red);
+						PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", PlayerPacket::NoticeTypes::Blue);
 						break;
 					case CmdWorldMessage:
 						re = "(\\w+) (.+)";
@@ -1147,7 +1259,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								PlayerPacket::showMessageWorld((string) matches[2], type);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -1162,7 +1274,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								PlayerPacket::showMessageGlobal((string) matches[2], type);
 							}
 							else {
-								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Blue);
+								PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Red);
 							}
 						}
 						else {
@@ -1208,8 +1320,11 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 								message += lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
 								message += "%)";
 							}
+							PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 						}
-						PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
+						else {
+							PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
+						}
 						break;
 					}
 					case CmdKillMob:
@@ -1217,8 +1332,15 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 							int32_t mobid = atoi(args.c_str());
 							Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
 							if (mob != nullptr) {
+								PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". HP left: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
 								mob->applyDamage(player->getId(), mob->getHp());
 							}
+							else {
+								PlayerPacket::showMessage(player, "Couldn't kill mob. Mob with map mob ID " + args + " not found.", PlayerPacket::NoticeTypes::Red);
+							}
+						}
+						else {
+							showSyntax(player, command);
 						}
 						break;
 				}
@@ -1404,7 +1526,7 @@ string ChatHandler::getBanString(int8_t reason) {
 		case 0x06: banmsg = " for scamming."; break;
 		case 0x07: banmsg = " for misconduct."; break;
 		case 0x08: banmsg = " for illegal cash transaction."; break;
-		case 0x09: banmsg = " for illegal charging/funding. Please contact customer support for further details."; break;
+		case 0x09: banmsg = " for illegal charging/funding."; break;
 		case 0x0A: banmsg = " for temporary request."; break;
 		case 0x0B: banmsg = " for impersonating GM."; break;
 		case 0x0C: banmsg = " for using illegal programs or violating the game policy."; break;

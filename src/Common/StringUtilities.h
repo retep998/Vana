@@ -30,6 +30,7 @@ namespace StringUtilities {
 	int64_t atoli(const char *str); // ASCII to long int
 	bool atob(const char *str); // ASCII to bool
 	time_t atot(const char *str); // ASCII to time_t
+	string replace(const string &input, const string &what, const string &replacement);
 }
 
 inline

@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pet.h"
 #include "PetHandler.h"
+#include "PetsPacket.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Randomizer.h"
@@ -44,6 +45,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
 	if (slot2 == 0) {
+		// Dropping an item
 		int16_t amount = packet.get<int16_t>();
 		Item *item = player->getInventory()->getItem(inv, slot1);
 		if (item == nullptr) {
@@ -80,6 +82,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
+		// Change item slot (swapping)
 		Item *item1 = player->getInventory()->getItem(inv, slot1);
 		Item *item2 = player->getInventory()->getItem(inv, slot2);
 
@@ -201,6 +204,22 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		player->getActiveBuffs()->stopBooster();
 		player->getActiveBuffs()->stopCharge();
 		player->getActiveBuffs()->stopBulletSkills();
+	}
+	// Check if the label ring changed, so we can update the look of the pet.
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing1) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing1)) {
+		if (Pet *pet = player->getPets()->getSummoned(0)) {
+			PetsPacket::changeName(player, pet);
+		}
+	}
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing2) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing2)) {
+		if (Pet *pet = player->getPets()->getSummoned(1)) {
+			PetsPacket::changeName(player, pet);
+		}
+	}
+	if ((slot1 < 0 && -slot1 - 100 == EquipSlots::PetLabelRing3) || (slot2 < 0 && -slot2 - 100 == EquipSlots::PetLabelRing3)) {
+		if (Pet *pet = player->getPets()->getSummoned(2)) {
+			PetsPacket::changeName(player, pet);
+		}
 	}
 	if (slot1 < 0 || slot2 < 0) {
 		InventoryPacket::updatePlayer(player);
@@ -424,6 +443,17 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			used = map->createWeather(player, false, Items::WeatherTime, itemId, message);
 		}
 	}
+	else if (GameLogicUtilities::getItemType(itemId) == Items::Types::CashPetFood) {
+		Pet *pet = player->getPets()->getSummoned(0);
+		if (pet != nullptr) {
+			if (pet->getFullness() < Stats::MaxFullness) {
+				PetsPacket::showAnimation(player, pet, 1);
+				pet->modifyFullness(Stats::MaxFullness, false);
+				pet->addCloseness(100); // All cash pet food gives 100 closeness
+				used = true;
+			}
+		}
+	}
 	else {
 		switch (itemId) {
 			case Items::TeleportRock:
@@ -533,6 +563,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				}
 				break;
 			}
+			case Items::ScissorsOfKarma:
 			case Items::ItemLock: {
 				int8_t inventory = (int8_t) packet.get<int32_t>();
 				int16_t slot = (int16_t) packet.get<int32_t>();
@@ -542,7 +573,27 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 						// Hacking or failure, dunno
 						return;
 					}
-					item->setLock(true);
+					switch (itemId) {
+						case Items::ItemLock:
+							if (item->hasLock()) {
+								// Hacking
+								return;
+							}
+							item->setLock(true);
+							break;
+						case Items::ScissorsOfKarma:
+							if (!ItemDataProvider::Instance()->canKarma(item->getId())) {
+								// Hacking
+								return;
+							}
+							if (item->hasTradeBlock() || item->hasKarma()) {
+								// Hacking
+								return;
+							}
+							item->setKarma(true);
+							break;
+					}
+
 					InventoryPacket::addNewItem(player, inventory, slot, item, true);
 					used = true;
 				}

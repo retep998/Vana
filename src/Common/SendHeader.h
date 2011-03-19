@@ -102,6 +102,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_OX_QUIZ_QUESTION 0x85 // Shows the OX quiz question (with a timer)
 #define SMSG_EVENT_INSTRUCTION 0x86 // GM event instructions - Ola Ola, etc.
 #define SMSG_TIMER 0x87 // For places with clock i.e. ship station
+#define SMSG_SHIP 0x88 // Showing or removing (balrog) ships. Only works for maps with ships (else you'll only hear the horn)
 #define SMSG_GM_WARNING 0x8c // Shows a popup with the message from a GM/an Admin
 #define SMSG_TIMER_OFF 0x8e // Makes timer disappear from map
 #define SMSG_MAP_PLAYER_SPAWN 0x91

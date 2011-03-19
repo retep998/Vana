@@ -109,6 +109,10 @@ bool Item::hasKarma() const {
 	return testFlags(Items::Flags::KarmaScissors);
 }
 
+bool Item::hasTradeBlock() const {
+	return testFlags(Items::Flags::TradeUnavailable);
+}
+
 bool Item::testFlags(int16_t flags) const {
 	return ((m_flags & flags) != 0);
 }
@@ -127,6 +131,10 @@ void Item::setLock(bool lock) {
 
 void Item::setKarma(bool karma) {
 	modifyFlags(karma, Items::Flags::KarmaScissors);
+}
+
+void Item::setTradeBlock(bool block) {
+	modifyFlags(block, Items::Flags::TradeUnavailable);
 }
 
 void Item::modifyFlags(bool add, int16_t flags) {
