@@ -182,7 +182,6 @@ struct Attack {
 	unordered_map<int32_t, vector<int32_t>> damages;
 };
 
-
 class SkillDataProvider : boost::noncopyable {
 public:
 	static SkillDataProvider * Instance() {

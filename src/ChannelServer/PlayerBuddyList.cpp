@@ -46,10 +46,10 @@ void PlayerBuddyList::load() {
 
 	query << "SELECT pending.* FROM buddylist_pending pending "
 		<< "LEFT JOIN characters c ON c.id = pending.inviter_id "
-		<< "WHERE c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld()) 
+		<< "WHERE c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld())
 		<< " AND pending.char_id = " << m_player->getId();
 	res = query.store();
-	
+
 	enum TableData {
 		CharID, InviterName, InviterId
 	};
@@ -121,7 +121,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 	else {
 		query << "INSERT INTO buddylist (charid, buddy_charid, name, groupname) VALUES (" << m_player->getId() << ", " << charid << ", " << mysqlpp::quote << res[0][1] << ", " << mysqlpp::quote << group << ")";
 		mysqlpp::SimpleResult res2 = query.execute();
-	
+
 		query << "SELECT bl.id, bl.buddy_charid, bl.name AS name_cache, c.name, bl.groupname, u.online "
 			<< "FROM buddylist bl "
 			<< "LEFT JOIN characters c ON bl.buddy_charid = c.id "
@@ -131,7 +131,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		res = query.store();
 
 		addBuddy(res[0]);
-		
+
 		query << "SELECT id FROM buddylist WHERE charid = " << charid << " AND buddy_charid = " << m_player->getId();
 		mysqlpp::StoreQueryResult res = query.store();
 
@@ -147,7 +147,6 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		}
 	}
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add);
-
 
 	return BuddyListPacket::Errors::None;
 }
@@ -172,7 +171,7 @@ void PlayerBuddyList::removeBuddy(int32_t charid) {
 		idVector.push_back(charid);
 		SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), m_player->getId(), idVector, false);
 	}
-	
+
 	m_buddies.erase(charid);
 
 	query << "DELETE FROM buddylist WHERE charid = " << m_player->getId() << " AND buddy_charid = " << charid;
@@ -220,7 +219,7 @@ void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
 	else {
 		row["groupname"].to_string(buddy->groupName);
 	}
-	
+
 	query << "SELECT id FROM buddylist WHERE charid = " << charid << " AND buddy_charid = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -289,12 +288,12 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 			idVector.push_back(id);
 			SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), m_player->getId(), idVector, true);
 		}
-		
+
 		mysqlpp::Query query = Database::getCharDB().query();
 		query << "DELETE FROM buddylist_pending WHERE char_id = " << m_player->getId() << " AND inviter_id = " << id;
 		query.exec();
 	}
-	
+
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::First);
 
 	m_pendingBuddies.pop_front();

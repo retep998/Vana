@@ -139,7 +139,6 @@ public:
 	Mob * getMob(int32_t id, bool isMapId = true);
 	unordered_map<int32_t, Mob *> getMobs() const;
 
-
 	// Reactors
 	void addReactor(Reactor *reactor);
 	void removeReactor(uint32_t id);

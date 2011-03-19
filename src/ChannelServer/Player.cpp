@@ -266,7 +266,6 @@ void Player::playerConnect(PacketReader &packet) {
 	map_pos		= static_cast<int8_t>(res[0]["pos"]);
 	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
-
 	// Stats
 	stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
 		static_cast<int16_t>(res[0]["job"]),
