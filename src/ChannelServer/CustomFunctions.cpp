@@ -15,19 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
+#include "CustomFunctions.h"
+#include "Player.h"
+#include <boost/lexical_cast.hpp>
 
-#include "Types.h"
-#include <string>
+using boost::lexical_cast;
 
-using std::string;
-
-class Player;
-class PacketReader;
-
-namespace ChatHandler {
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	bool handleCommand(Player *player, const string &message);
-	void handleGroupChat(Player *player, PacketReader &packet);
+void CustomFunctions::initialize(CommandListType &commandList) {
+	// Define any custom functions you may have here, just like ChatHandlerFunctions::initialize
 }

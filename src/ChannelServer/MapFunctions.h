@@ -17,17 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
-#include <string>
-
-using std::string;
+#include "ChatHandlerFunctions.h"
 
 class Player;
-class PacketReader;
 
-namespace ChatHandler {
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	bool handleCommand(Player *player, const string &message);
-	void handleGroupChat(Player *player, PacketReader &packet);
+namespace MapFunctions {
+	bool eventInstruction(Player *player, const string &args);
+	bool instruction(Player *player, const string &args);
+	bool timer(Player *player, const string &args);
+	bool killMob(Player *player, const string &args);
+	bool getMobHp(Player *player, const string &args);
+	bool listMobs(Player *player, const string &args);
+	bool zakum(Player *player, const string &args);
+	bool horntail(Player *player, const string &args);
+	bool music(Player *player, const string &args);
+	bool summon(Player *player, const string &args);
+	bool clearDrops(Player *player, const string &args);
+	bool killAllMobs(Player *player, const string &args);
 }

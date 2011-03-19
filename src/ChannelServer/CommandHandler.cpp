@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CommandHandler.h"
 #include "Buffs.h"
-#include "ChatHandler.h"
+#include "ChatHandlerFunctions.h"
 #include "ChannelServer.h"
 #include "Database.h"
 #include "GameLogicUtilities.h"
@@ -203,7 +203,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 				accbanquery.exec();
 
 				GmPacket::block(player);
-				string banmsg = victim + " has been banned" + ChatHandler::getBanString(reason);
+				string banmsg = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
 			}
 			else {

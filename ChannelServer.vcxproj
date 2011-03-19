@@ -97,13 +97,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChannelServer\CustomFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\EffectPacket.cpp" />
+    <ClCompile Include="src\ChannelServer\InfoFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\InventoryPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
+    <ClCompile Include="src\ChannelServer\ManagementFunctions.cpp" />
+    <ClCompile Include="src\ChannelServer\MapFunctions.cpp" />
+    <ClCompile Include="src\ChannelServer\MessageFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
     <ClCompile Include="src\ChannelServer\Pet.cpp" />
     <ClCompile Include="src\ChannelServer\PetHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp" />
+    <ClCompile Include="src\ChannelServer\PlayerModFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -158,6 +164,7 @@
     <ClCompile Include="src\ChannelServer\PlayerPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\InitializeChannel.cpp" />
     <ClCompile Include="src\ChannelServer\MapDataProvider.cpp" />
+    <ClCompile Include="src\ChannelServer\WarpFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp" />
@@ -193,20 +200,26 @@
     <ClCompile Include="src\ChannelServer\NpcHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerHandler.cpp" />
     <ClCompile Include="src\ChannelServer\TradeHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\ChatHandlerFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h" />
     <ClInclude Include="src\ChannelServer\ChannelServer.h" />
     <ClInclude Include="src\ChannelServer\Connectable.h" />
+    <ClInclude Include="src\ChannelServer\CustomFunctions.h" />
     <ClInclude Include="src\ChannelServer\Drop.h" />
     <ClInclude Include="src\ChannelServer\EffectPacket.h" />
     <ClInclude Include="src\ChannelServer\Fame.h" />
+    <ClInclude Include="src\ChannelServer\InfoFunctions.h" />
     <ClInclude Include="src\ChannelServer\Inventory.h" />
     <ClInclude Include="src\ChannelServer\InventoryPacketHelper.h" />
     <ClInclude Include="src\ChannelServer\KeyMaps.h" />
+    <ClInclude Include="src\ChannelServer\ManagementFunctions.h" />
     <ClInclude Include="src\ChannelServer\Map.h" />
+    <ClInclude Include="src\ChannelServer\MapFunctions.h" />
     <ClInclude Include="src\ChannelServer\MapleTvs.h" />
     <ClInclude Include="src\ChannelServer\Maps.h" />
+    <ClInclude Include="src\ChannelServer\MessageFunctions.h" />
     <ClInclude Include="src\ChannelServer\Mist.h" />
     <ClInclude Include="src\ChannelServer\Mob.h" />
     <ClInclude Include="src\ChannelServer\MovableLife.h" />
@@ -216,6 +229,7 @@
     <ClInclude Include="src\ChannelServer\Pet.h" />
     <ClInclude Include="src\ChannelServer\PetHandler.h" />
     <ClInclude Include="src\ChannelServer\PlayerDataProvider.h" />
+    <ClInclude Include="src\ChannelServer\PlayerModFunctions.h" />
     <ClInclude Include="src\ChannelServer\PlayerRandomStream.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
     <ClInclude Include="src\ChannelServer\Reactor.h" />
@@ -252,6 +266,7 @@
     <ClInclude Include="src\ChannelServer\PlayerPacketHelper.h" />
     <ClInclude Include="src\ChannelServer\InitializeChannel.h" />
     <ClInclude Include="src\ChannelServer\MapDataProvider.h" />
+    <ClInclude Include="src\ChannelServer\WarpFunctions.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnection.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h" />
@@ -276,7 +291,7 @@
     <ClInclude Include="src\ChannelServer\EventDataProvider.h" />
     <ClInclude Include="src\ChannelServer\Instance.h" />
     <ClInclude Include="src\ChannelServer\Instances.h" />
-    <ClInclude Include="src\ChannelServer\ChatHandlerConstants.h" />
+    <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.h" />
     <ClInclude Include="src\ChannelServer\InstanceMessageConstants.h" />
     <ClInclude Include="src\ChannelServer\VersionConstants.h" />
     <ClInclude Include="src\ChannelServer\BuddyListHandler.h" />
