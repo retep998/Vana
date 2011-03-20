@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 using Initializing::outputWidth;
 

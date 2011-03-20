@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void StoragePacket::showStorage(Player *player, int32_t npcid) {
 	PacketCreator packet;

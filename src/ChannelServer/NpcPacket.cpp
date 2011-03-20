@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;

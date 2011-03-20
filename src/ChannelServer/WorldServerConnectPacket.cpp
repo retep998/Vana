@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnectPacket.h"
 #include "InterHeader.h"
-#include "SendHeader.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "SmsgHeader.h"
 #include "WorldServerConnection.h"
 
 void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {

@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "SendHeader.h"
 #include "ScriptDataProvider.h"
+#include "SmsgHeader.h"
 #include <string>
 
 using std::string;

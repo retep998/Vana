@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleVersion.h"
 #include "PacketCreator.h"
 #include "Randomizer.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 // CryptoPP
 #include <aes.h>
 #include <modes.h>

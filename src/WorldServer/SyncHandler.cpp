@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 #include "SyncPacket.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"

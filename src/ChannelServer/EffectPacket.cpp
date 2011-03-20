@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void EffectPacket::playMusic(int32_t mapId, const string &music) {
 	PacketCreator packet;

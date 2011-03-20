@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Player.h"
 #include "Characters.h"
+#include "CmsgHeader.h"
 #include "Database.h"
 #include "IpUtilities.h"
 #include "Login.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "PacketReader.h"
-#include "RecvHeader.h"
 #include "Worlds.h"
 #include <iostream>
 #include <stdexcept>

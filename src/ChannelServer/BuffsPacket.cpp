@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "SendHeader.h"
 #include "SkillConstants.h"
+#include "SmsgHeader.h"
 
 void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, ActiveBuff &pskill, ActiveMapBuff &mskill, int16_t addedinfo) {
 	time *= 1000;

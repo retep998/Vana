@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "Maps.h"
 #include "PacketCreator.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 #include "Summons.h"
 
 void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toplayer) {
