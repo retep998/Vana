@@ -181,6 +181,7 @@ namespace Jobs {
 			Thief = 4,
 			Pirate = 5,
 
+			JuniorGm = 8, // ??
 			Gm = 9,
 
 			Noblesse = 10,
@@ -192,7 +193,12 @@ namespace Jobs {
 
 			Legend = 20,
 			Aran = 21,
-			Evan = 22
+			Evan = 22,
+
+			Citizen = 30,
+			BattleMage = 32,
+			WildHunter = 33,
+			Mechanic = 35
 		};
 	}
 	namespace JobIds {
@@ -236,6 +242,11 @@ namespace Jobs {
 			Bandit = 420,
 			ChiefBandit = 421,
 			Shadower = 422,
+			DualBlade1 = 430,
+			DualBlade2 = 431,
+			DualBlade3 = 432,
+			DualBlade4 = 433,
+			DualBlade5 = 434,
 
 			Pirate = 500,
 			Brawler = 510,
@@ -245,6 +256,7 @@ namespace Jobs {
 			Outlaw = 521,
 			Corsair = 522,
 
+			JuniorGm = 800, // ??
 			Gm = 900,
 			SuperGm = 910,
 
@@ -291,7 +303,24 @@ namespace Jobs {
 			Evan7 = 2215,
 			Evan8 = 2216,
 			Evan9 = 2217,
-			Evan10 = 2218
+			Evan10 = 2218,
+
+			Citizen = 3000,
+
+			BattleMage1 = 3200,
+			BattleMage2 = 3210,
+			BattleMage3 = 3211,
+			BattleMage4 = 3212,
+
+			WildHunter1 = 3300,
+			WildHunter2 = 3310,
+			WildHunter3 = 3311,
+			WildHunter4 = 3312,
+
+			Mechanic1 = 3500,
+			Mechanic2 = 3510,
+			Mechanic3 = 3511,
+			Mechanic4 = 3512
 		};
 	}
 	namespace All {
