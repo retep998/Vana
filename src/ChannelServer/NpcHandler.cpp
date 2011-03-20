@@ -292,7 +292,7 @@ void NpcHandler::useStorage(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			player->getStorage()->addItem(GameLogicUtilities::isStackable(itemId) ? new Item(item) : new Item(itemId, amount));
+			player->getStorage()->addItem(!GameLogicUtilities::isStackable(itemId) ? new Item(item) : new Item(itemId, amount));
 			// For equips or rechargeable items (stars/bullets) we create a
 			// new object for storage with the inventory object, and allow
 			// the one in the inventory to go bye bye.

@@ -176,7 +176,7 @@ void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int3
 			<< equip.getHands() << ", "
 			<< equip.getSpeed() << ", "
 			<< equip.getJump() << ", "
-			<< "\"\")";
+			<< mysqlpp::quote << "" << ")";
 	}
 	else {
 		query << "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, amount, name) VALUES ("

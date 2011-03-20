@@ -141,7 +141,6 @@ private:
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 	void saveStats();
-	void deleteItems();
 
 	bool trade_state;
 	bool save_on_dc;

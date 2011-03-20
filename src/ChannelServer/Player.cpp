@@ -594,21 +594,10 @@ void Player::saveStats() {
 	query.exec();
 }
 
-void Player::deleteItems() {
-	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << getUserId() << " AND world_id = " << (int32_t) getWorldId();
-	query.exec();
-
-	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << getId();
-	query.exec();
-}
-
 void Player::saveAll(bool savecooldowns) {
-	deleteItems();
+	saveStats();
 	getInventory()->save();
 	getStorage()->save();
-
-	saveStats();
 	getMonsterBook()->save();
 	getMounts()->save();
 	getPets()->save();
