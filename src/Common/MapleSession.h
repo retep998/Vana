@@ -20,19 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractSession.h"
 #include "Decoder.h"
 #include "Types.h"
-#include <queue>
-#include <string>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/tr1/memory.hpp>
+#include <queue>
+#include <string>
 
-using std::queue;
-using std::string;
 using boost::asio::ip::tcp;
 using boost::shared_array;
+using std::queue;
+using std::string;
 
 class AbstractConnection;
 class PacketCreator;
@@ -44,20 +44,20 @@ public:
 	tcp::socket & getSocket() { return m_socket; }
 
 	void start();
-	void handle_start();
 	void stop();
 	void disconnect();
-	void handle_stop();
-	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
-	void send(const PacketCreator &packet, bool encrypt = true);
+	void send(const PacketCreator &packet);
 	uint32_t getIp() const;
 protected:
 	void start_read_header();
 	void handle_write(const boost::system::error_code &error, size_t bytes_transferred);
 	void handle_read_header(const boost::system::error_code &error, size_t bytes_transferred);
 	void handle_read_body(const boost::system::error_code &error, size_t bytes_transferred);
+	void handle_start();
+	void handle_stop();
+	void send(const unsigned char *buf, int32_t len);
+	void sendIv(const PacketCreator &packet);
 
-	static const size_t connectHeaderLen = 2;
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
 

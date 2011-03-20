@@ -32,6 +32,9 @@ const uint8_t AesKey[AesKeySize] = {
 };
 
 void Decoder::encrypt(unsigned char *buffer, int32_t size) {
+	if (!isEncrypted()) {
+		return;
+	}
 	MapleEncryption::mapleEncrypt(buffer, size);
 	int32_t pos = 0;
 	uint8_t first = 1;
@@ -57,10 +60,16 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 }
 
 void Decoder::next() {
+	if (!isEncrypted()) {
+		return;
+	}
 	MapleEncryption::nextIv(ivSend);
 }
 
 void Decoder::decrypt(unsigned char *buffer, int32_t size) {
+	if (!isEncrypted()) {
+		return;
+	}
 	int32_t pos = 0;
 	uint8_t first = 1;
 	int32_t tpos = 0;
@@ -87,18 +96,23 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 }
 
 void Decoder::createHeader(unsigned char *header, int16_t size) {
-	int16_t a = ivSend[3] * 0x100 + ivSend[2];
-	a = a ^ -(MapleVersion::Version + 1);
-	int16_t b = a ^ size;
-	header[0] = a % 0x100;
-	header[1] = (a - header[0]) / 0x100;
-	header[2] = b % 0x100;
-	header[3] = (b - header[2]) / 0x100;
+	if (isEncrypted()) {
+		int16_t a = ivSend[3] * 0x100 + ivSend[2];
+		a = a ^ -(MapleVersion::Version + 1);
+		int16_t b = a ^ size;
+		header[0] = a % 0x100;
+		header[1] = (a - header[0]) / 0x100;
+		header[2] = b % 0x100;
+		header[3] = (b - header[2]) / 0x100;
+	}
+	else {
+		(*(int32_t *)(header)) = size;
+	}
 }
 
 PacketCreator Decoder::getConnectPacket(const string &patchLocation) {
-	(*(int32_t*)ivRecv) = Randomizer::Instance()->randInt();
-	(*(int32_t*)ivSend) = Randomizer::Instance()->randInt();
+	(*(int32_t*)(ivRecv)) = Randomizer::Instance()->randInt();
+	(*(int32_t*)(ivSend)) = Randomizer::Instance()->randInt();
 	// Use the setter to prepare the IV
 	setIvRecv(ivRecv);
 	setIvSend(ivSend);
