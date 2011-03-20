@@ -9,3 +9,6 @@ inter_port = 8485;
 
 -- How many invalid login should the server handles before disconnecting the player? (0 to turn off this feature)
 invalid_login_threshold = 5;
+
+-- Use encryption to communicate with clients?
+use_client_encryption = true;

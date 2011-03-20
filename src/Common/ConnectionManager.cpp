@@ -28,9 +28,9 @@ m_work(new boost::asio::io_service::work(m_ioService))
 {
 }
 
-void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, const string &patchLocation) {
+void ConnectionManager::accept(uint16_t port, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation) {
 	tcp::endpoint endpoint(tcp::v4(), port);
-	m_servers.push_back(MapleServerPtr(new MapleServer(m_ioService, endpoint, apf, patchLocation)));
+	m_servers.push_back(MapleServerPtr(new MapleServer(m_ioService, endpoint, apf, encrypted, patchLocation)));
 }
 
 void ConnectionManager::connect(uint32_t server, uint16_t port, AbstractConnection *player) {

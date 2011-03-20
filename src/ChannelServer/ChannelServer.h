@@ -62,6 +62,7 @@ public:
 	void setConfig(const Configuration &config) { m_config = config; }
 
 	bool isConnected() const { return m_channel != -1; }
+	bool useEncryption() const { return m_config.clientEncryption; }
 	int8_t getWorld() const { return m_world; }
 	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
 	int16_t getMaxStats() const { return m_config.maxStats; }

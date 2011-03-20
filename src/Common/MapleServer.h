@@ -31,10 +31,7 @@ class AbstractConnectionFactory;
 
 class MapleServer {
 public:
-	MapleServer(boost::asio::io_service &io_service,
-		const tcp::endpoint &endpoint,
-		AbstractConnectionFactory *apf,
-		const string &patchLocation);
+	MapleServer(boost::asio::io_service &io_service, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation);
 	void stop();
 private:
 	void start_accept();
@@ -44,6 +41,7 @@ private:
 	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
 	SessionManagerPtr m_sessionManager;
 	string m_patchLocation;
+	bool m_isEncrypted;
 };
 
 typedef boost::shared_ptr<MapleServer> MapleServerPtr;

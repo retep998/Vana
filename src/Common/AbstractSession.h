@@ -28,15 +28,22 @@ class AbstractSession {
 public:
 	virtual ~AbstractSession() { }
 
-	AbstractSession(SessionManagerPtr sessionManager) :
-		m_sessionManager(sessionManager) { }
+	AbstractSession(SessionManagerPtr sessionManager, bool encrypted = true) :
+		m_sessionManager(sessionManager),
+		m_encrypt(encrypted)
+	{
+	}
 	virtual void start() = 0;
 	virtual void handle_start() = 0;
 	virtual void stop() = 0;
 	virtual void disconnect() = 0;
 	virtual void handle_stop() = 0;
 protected:
+	bool isEncrypted() const { return m_encrypt; }
+	void setEncrypted(bool encrypted) { m_encrypt = encrypted; }
+
 	SessionManagerPtr m_sessionManager;
+	bool m_encrypt;
 };
 
 typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;

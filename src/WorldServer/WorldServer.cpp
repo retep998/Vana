@@ -32,7 +32,7 @@ WorldServer::WorldServer() :
 }
 
 void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory());
+	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory(), true);
 }
 
 void WorldServer::loadData() {
