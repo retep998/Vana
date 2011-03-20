@@ -201,8 +201,8 @@ private:
 	time_t m_timerstart;
 	string m_music;
 	Instance *m_instance;
-	LoopingId m_objectids;
-	LoopingId m_mistids;
+	LoopingId<int32_t> m_objectids;
+	LoopingId<int32_t> m_mistids;
 	MapInfoPtr m_info;
 	TimeMobPtr m_time_mob;
 	boost::recursive_mutex m_drops_mutex;

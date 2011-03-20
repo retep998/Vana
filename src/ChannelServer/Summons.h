@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class Summon;
 class PacketReader;
-class LoopingId;
+class Summon;
+template<typename T> class LoopingId;
 
 namespace Summons {
-	extern LoopingId summonids;
+	extern LoopingId<int32_t> summonids;
 	void useSummon(Player *player, int32_t skillId, uint8_t level);
 	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
 	void showSummon(Player *player);

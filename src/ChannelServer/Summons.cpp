@@ -57,7 +57,7 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) :
 }
 
 // Summons namespace
-LoopingId Summons::summonids;
+LoopingId<int32_t> Summons::summonids;
 
 int32_t Summons::loopId() {
 	return summonids.next();
