@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
 #include "MapleEncryption.h"
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -26,11 +26,9 @@ using std::string;
 class PacketCreator;
 
 class Decoder {
-private:
-	unsigned char ivRecv[16];
-	unsigned char ivSend[16];
 public:
-	static int32_t getLength(unsigned char *header);
+	static int32_t getLength(unsigned char *header, bool encrypted);
+
 	void createHeader(unsigned char *header, int16_t size);
 
 	PacketCreator getConnectPacket(const string &patchLocation = "");
@@ -41,9 +39,20 @@ public:
 	void encrypt(unsigned char *buffer, int32_t size);
 	void decrypt(unsigned char *buffer, int32_t size);
 	void next();
+	void setEncryption(bool encrypted) { m_encrypted = encrypted; }
+private:
+	bool isEncrypted() const { return m_encrypted; }
+
+	unsigned char ivRecv[16];
+	unsigned char ivSend[16];
+	bool m_encrypted;
 };
 
 inline
-int32_t Decoder::getLength(unsigned char *header) {
+int32_t Decoder::getLength(unsigned char *header, bool encrypted) {
+	if (!encrypted) {
+		// Only the bottom 2 bytes are interesting
+		return (*(int32_t *)(header)) & 0x0000FFFF;
+	}
 	return ((header[0] + header[1] * 0x100) ^ (header[2] + header[3] * 0x100));
 }

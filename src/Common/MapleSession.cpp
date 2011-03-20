@@ -34,6 +34,7 @@ MapleSession::MapleSession(boost::asio::io_service &io_service, SessionManagerPt
 	m_isServer(isServer),
 	m_patchLocation(patchLocation)
 {
+	m_decoder.setEncryption(this->isEncrypted());
 }
 
 void MapleSession::start() {
@@ -46,7 +47,7 @@ void MapleSession::handle_start() {
 
 	if (m_isServer) {
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
-		send(connectPacket, false);
+		sendIv(connectPacket);
 	}
 
 	start_read_header();
@@ -68,27 +69,21 @@ void MapleSession::handle_stop() {
 	}
 }
 
-void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
+void MapleSession::send(const PacketCreator &packet) {
+	send(packet.getBuffer(), packet.getSize());
+}
+
+void MapleSession::send(const unsigned char *buf, int32_t len) {
 	boost::mutex::scoped_lock l(m_sendMutex);
 
-	// Manually override encryption if this connection isn't encrypted
-	if (!isEncrypted()) encrypt = false;
-
-	size_t realLength = encrypt ? len + headerLen : len;
+	size_t realLength = len + headerLen;
 	unsigned char *buffer = new unsigned char[realLength];
 	m_sendPacket.reset(buffer);
 
-	if (encrypt) {
-		memcpy(buffer + headerLen, buf, len);
-
-		// Encrypt packet
-		m_decoder.createHeader(buffer, (int16_t) len);
-		m_decoder.encrypt(buffer + headerLen, len);
-		m_decoder.next();
-	}
-	else {
-		memcpy(buffer, buf, len);
-	}
+	memcpy(buffer + headerLen, buf, len);
+	m_decoder.createHeader(buffer, (int16_t) len);
+	m_decoder.encrypt(buffer + headerLen, len);
+	m_decoder.next();
 
 	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, realLength),
 		boost::bind(&MapleSession::handle_write, shared_from_this(),
@@ -96,8 +91,19 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 		boost::asio::placeholders::bytes_transferred));
 }
 
-void MapleSession::send(const PacketCreator &packet, bool encrypt) {
-	send(packet.getBuffer(), packet.getSize(), encrypt);
+void MapleSession::sendIv(const PacketCreator &packet) {
+	boost::mutex::scoped_lock l(m_sendMutex);
+
+	int32_t len = packet.getSize();
+	unsigned char *buffer = new unsigned char[len];
+	m_sendPacket.reset(buffer);
+
+	memcpy(buffer, packet.getBuffer(), len);
+
+	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, len),
+		boost::bind(&MapleSession::handle_write, shared_from_this(),
+		boost::asio::placeholders::error,
+		boost::asio::placeholders::bytes_transferred));
 }
 
 void MapleSession::start_read_header() {
@@ -120,7 +126,7 @@ void MapleSession::handle_write(const boost::system::error_code &error, size_t b
 
 void MapleSession::handle_read_header(const boost::system::error_code &error, size_t bytes_transferred) {
 	if (!error) {
-		size_t len = Decoder::getLength(m_buffer.get());
+		size_t len = Decoder::getLength(m_buffer.get(), isEncrypted());
 
 		if (len < 2 || len > maxBufferLen) {
 			// Hacking or trying to crash server
