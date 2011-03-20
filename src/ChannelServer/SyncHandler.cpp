@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 #include "SyncPacket.h"
 
 void SyncHandler::handle(PacketReader &packet) {

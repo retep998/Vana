@@ -26,10 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "PlayerDataProvider.h"
 #include "PlayerInventory.h"
 #include "PlayerPacketHelper.h"
-#include "PlayerDataProvider.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
 	PacketCreator packet;

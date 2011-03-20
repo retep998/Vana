@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Pet.h"
 #include "Player.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
 	PacketCreator packet;

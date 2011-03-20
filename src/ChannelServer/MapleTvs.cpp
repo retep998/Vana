@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
 #include <functional>

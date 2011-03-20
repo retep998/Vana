@@ -192,8 +192,8 @@
     <ClInclude Include="src\Common\PacketReader.h" />
     <ClInclude Include="src\Common\PingPacket.h" />
     <ClInclude Include="src\Common\InterHeader.h" />
-    <ClInclude Include="src\Common\RecvHeader.h" />
-    <ClInclude Include="src\Common\SendHeader.h" />
+    <ClInclude Include="src\Common\CmsgHeader.h" />
+    <ClInclude Include="src\Common\SmsgHeader.h" />
     <ClInclude Include="src\Common\AuthenticationPacket.h" />
     <ClInclude Include="src\Common\FileUtilities.h" />
     <ClInclude Include="src\Common\GameLogicUtilities.h" />

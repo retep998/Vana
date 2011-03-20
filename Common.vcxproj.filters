@@ -17,9 +17,6 @@
     <Filter Include="Source\Packets">
       <UniqueIdentifier>{1a4cf086-e5e2-4c4c-9f20-97d3a449c143}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Packets\Inter-Server">
-      <UniqueIdentifier>{5b7eacdf-ed43-41ca-a675-b3ab1e934fea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Utilities">
       <UniqueIdentifier>{5f4db1cc-5069-40bd-b5d3-c03db8af0732}</UniqueIdentifier>
     </Filter>
@@ -50,11 +47,11 @@
     <Filter Include="Source\Loggers\Combo">
       <UniqueIdentifier>{967be805-c083-44ad-af8c-10031db3207b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Packets\Headers">
-      <UniqueIdentifier>{f3ef9843-a3d9-456b-bd4c-4b4e3b25facf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Game Constants">
       <UniqueIdentifier>{29b0530c-2642-4ae6-9118-6a284e250b78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Packet Headers">
+      <UniqueIdentifier>{635f429e-0bbc-4e1f-be81-7d434e9f6054}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,9 +78,6 @@
     </ClCompile>
     <ClCompile Include="src\Common\PingPacket.cpp">
       <Filter>Source\Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\AuthenticationPacket.cpp">
-      <Filter>Source\Packets\Inter-Server</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\FileUtilities.cpp">
       <Filter>Source\Utilities</Filter>
@@ -178,9 +172,6 @@
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
       <Filter>Source\Database Loading\MCDB</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConfigurationPacket.cpp">
-      <Filter>Source\Packets\Inter-Server</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Item.cpp">
       <Filter>Source\Data Structures</Filter>
     </ClCompile>
@@ -222,6 +213,12 @@
     </ClCompile>
     <ClCompile Include="src\Common\TimerThread.cpp">
       <Filter>Source\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AuthenticationPacket.cpp">
+      <Filter>Source\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConfigurationPacket.cpp">
+      <Filter>Source\Inter-Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,24 +293,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\PacketReader.h">
       <Filter>Source\Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AuthenticationPacket.h">
-      <Filter>Source\Packets\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\InterHelper.h">
-      <Filter>Source\Packets\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ConfigurationPacket.h">
-      <Filter>Source\Packets\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\InterHeader.h">
-      <Filter>Source\Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\SendHeader.h">
-      <Filter>Source\Packets\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\RecvHeader.h">
-      <Filter>Source\Packets\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h">
       <Filter>Source\Loggers\Combo</Filter>
@@ -458,6 +437,24 @@
     </ClInclude>
     <ClInclude Include="src\Common\TimerTypes.h">
       <Filter>Source\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterHelper.h">
+      <Filter>Source\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AuthenticationPacket.h">
+      <Filter>Source\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConfigurationPacket.h">
+      <Filter>Source\Inter-Server</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\InterHeader.h">
+      <Filter>Source\Packet Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CmsgHeader.h">
+      <Filter>Source\Packet Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SmsgHeader.h">
+      <Filter>Source\Packet Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;

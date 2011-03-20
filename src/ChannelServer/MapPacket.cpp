@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pet.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 #include "TimeUtilities.h"
 #include <boost/tr1/unordered_map.hpp>
 

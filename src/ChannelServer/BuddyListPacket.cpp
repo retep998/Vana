@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerBuddyList.h"
-#include "SendHeader.h"
+#include "SmsgHeader.h"
 
 void BuddyListPacket::error(Player *player, uint8_t error) {
 	PacketCreator packet;
