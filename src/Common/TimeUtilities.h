@@ -44,4 +44,25 @@ namespace TimeUtilities {
 	string getTimeZone();
 	int32_t getTimeZoneOffset();
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
+
+	int64_t fromNow(clock_t msec);
+	clock_t nthSecondOfHour(uint16_t second);
+}
+
+inline
+int64_t TimeUtilities::fromNow(clock_t msec) {
+	return msec + TimeUtilities::getTickCount();
+}
+
+inline
+clock_t TimeUtilities::nthSecondOfHour(uint16_t second) {
+	clock_t secThisHour = time(0) % 3600;
+	clock_t secDest;
+
+	if (secThisHour > second) // Already passed the time in this hour, try next hour
+		secDest = (3600 - secThisHour) + second;
+	else // The requested time is within this hour
+		secDest = second - secThisHour;
+
+	return TimeUtilities::getTickCount() + (secDest * 1000);
 }

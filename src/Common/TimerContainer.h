@@ -15,20 +15,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Id.h"
+#pragma once
+
+#include "TimerId.h"
+#include "TimerTypes.h"
 #include <boost/functional/hash.hpp>
+#include <boost/tr1/memory.hpp>
+#include <boost/tr1/unordered_map.hpp>
 
 namespace Timer {
 
-// For hashing Id
-size_t hash_value(Id const &id) {
-	size_t seed = 0;
+class Timer;
 
-	boost::hash_combine(seed, id.type);
-	boost::hash_combine(seed, id.id);
-	boost::hash_combine(seed, id.id2);
+using std::tr1::shared_ptr;
+using std::tr1::unordered_map;
 
-	return seed;
-}
+class Container {
+public:
+	int32_t checkTimer(const Id &id);
+	int64_t checkTimer(const Id &id, bool msec);
+	void registerTimer(Timer *timer);
+	void removeTimer(const Id &id);
+private:
+	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id>> m_timers;
+};
 
 }

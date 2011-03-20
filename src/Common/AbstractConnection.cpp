@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "RecvHeader.h"
 #include "SendHeader.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h" // update
+#include "Timer.h"
 #include <iostream>
 #include <functional>
 
@@ -59,7 +59,7 @@ void AbstractConnection::handleRequest(PacketReader &packet) {
 void AbstractConnection::setTimer() {
 	new Timer::Timer(bind(&AbstractConnection::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), Timer::Time::fromNow(InitialPing), PingTime);
+		getTimers(), TimeUtilities::fromNow(InitialPing), PingTime);
 }
 
 void AbstractConnection::ping() {

@@ -39,8 +39,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -479,7 +479,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			ppdrop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				0, Timer::Time::fromNow(pptime));
+				0, TimeUtilities::fromNow(pptime));
 		}
 		ppdamages.clear();
 	}

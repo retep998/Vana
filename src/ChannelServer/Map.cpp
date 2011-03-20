@@ -41,8 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactor.h"
 #include "Summons.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <ctime>
 #include <functional>
 
@@ -139,11 +139,11 @@ void Map::addPortal(const PortalInfo &portal) {
 void Map::addTimeMob(TimeMobPtr info) {
 	new Timer::Timer(bind(&Map::timeMob, this, false),
 		Timer::Id(Timer::Types::MapTimer, getId(), 1),
-		getTimers(), Timer::Time::nthSecondOfHour(0), 60 * 60 * 1000); // Check once per hour
+		getTimers(), TimeUtilities::nthSecondOfHour(0), 60 * 60 * 1000); // Check once per hour
 
 	new Timer::Timer(bind(&Map::timeMob, this, true),
 		Timer::Id(Timer::Types::MapTimer, getId(), 2),
-		getTimers(), Timer::Time::fromNow(3 * 1000), 0); // First check
+		getTimers(), TimeUtilities::fromNow(3 * 1000), 0); // First check
 
 	m_time_mob = info;
 }
@@ -609,7 +609,7 @@ void Map::addMist(Mist *mist) {
 
 	new Timer::Timer(bind(&Map::removeMist, this, mist),
 		Timer::Id(Timer::Types::MistTimer, mist->getId(), 0),
-		getTimers(), Timer::Time::fromNow(mist->getTime() * 1000));
+		getTimers(), TimeUtilities::fromNow(mist->getTime() * 1000));
 
 	MapPacket::spawnMist(getId(), mist);
 }
@@ -784,7 +784,7 @@ void Map::setMapTimer(int32_t t) {
 	if (t > 0) {
 		new Timer::Timer(bind(&Map::setMapTimer, this, 0),
 			Timer::Id(Timer::Types::MapTimer, getId(), 25),
-			getTimers(), Timer::Time::fromNow(t * 1000));
+			getTimers(), TimeUtilities::fromNow(t * 1000));
 	}
 }
 
@@ -889,6 +889,6 @@ bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t
 
 	MapPacket::changeWeather(getId(), adminWeather, itemId, message);
 	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
-		timerId, getTimers(), Timer::Time::fromNow(time * 1000));
+		timerId, getTimers(), TimeUtilities::fromNow(time * 1000));
 	return true;
 }

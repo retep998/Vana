@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
-#include "Timer/Container.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
+#include "TimerContainer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -42,11 +42,11 @@ void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
 			new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, (uint8_t)(skill), true),
-				id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+				id, m_player->getTimers(), TimeUtilities::fromNow(skillExpire));
 		}
 		else {
 			new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
-				id, m_player->getTimers(), Timer::Time::fromNow(skillExpire));
+				id, m_player->getTimers(), TimeUtilities::fromNow(skillExpire));
 		}
 	}
 	m_buffs.push_back(skill);
@@ -368,7 +368,7 @@ void PlayerActiveBuffs::startEnergyChargeTimer() {
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
-		id, m_player->getTimers(), Timer::Time::fromNow(10 * 1000)); // 10 seconds
+		id, m_player->getTimers(), TimeUtilities::fromNow(10 * 1000)); // 10 seconds
 }
 
 void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTimer) {

@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Party.h"
 #include "Player.h"
 #include "Reactor.h"
-#include "Timer/Container.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
+#include "TimerContainer.h"
 #include "TimeUtilities.h"
 #include <functional>
 #include <sstream>
@@ -232,11 +232,11 @@ bool Instance::addTimer(const string &timername, const TimerAction &timer) {
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		if (timer.time > 0) { // Positive, occurs in the future
 			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
-				id, getTimers(), Timer::Time::fromNow(timer.time * 1000), timer.persistent * 1000);
+				id, getTimers(), TimeUtilities::fromNow(timer.time * 1000), timer.persistent * 1000);
 		}
 		else { // Negative, occurs nth second of hour
 			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
-				id, getTimers(), Timer::Time::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
+				id, getTimers(), TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
 		}
 		return true;
 	}
@@ -290,11 +290,11 @@ void Instance::setInstanceTimer(int32_t time, bool firstrun) {
 		int64_t runat = 0;
 		if (time < 0) {
 			m_time = -(time + 1);
-			runat = Timer::Time::nthSecondOfHour(static_cast<uint16_t>(m_time));
+			runat = TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(m_time));
 		}
 		else if (time > 0) {
 			m_time = time * 1000;
-			runat = Timer::Time::fromNow(m_time);
+			runat = TimeUtilities::fromNow(m_time);
 		}
 
 		new Timer::Timer(bind(&Instance::instanceEnd, this, true),

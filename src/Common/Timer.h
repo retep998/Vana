@@ -17,33 +17,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "TimerId.h"
+#include "TimerTypes.h"
 #include <ctime>
-#include "../TimeUtilities.h"
-#include "Types.h"
+#include <boost/tr1/functional.hpp>
+
+using std::tr1::function;
 
 namespace Timer {
 
-namespace Time {
-	int64_t fromNow(clock_t msec);
-	clock_t nthSecondOfHour(uint16_t second);
-}
+class Container;
 
-inline
-int64_t Time::fromNow(clock_t msec) {
-	return msec + TimeUtilities::getTickCount();
-}
+class Timer {
+public:
+	Timer(function<void ()> func, const Id &id, Container *container, int64_t runAt, clock_t repeat = 0);
+	~Timer();
 
-inline
-clock_t Time::nthSecondOfHour(uint16_t second) {
-	clock_t secThisHour = time(0) % 3600;
-	clock_t secDest;
+	Id getId() const { return m_id; }
+	int64_t getRunAt() const { return m_run_at; }
+	int64_t getTimeLeft() const;
 
-	if (secThisHour > second) // Already passed the time in this hour, try next hour
-		secDest = (3600 - secThisHour) + second;
-	else // The requested time is within this hour
-		secDest = second - secThisHour;
-
-	return TimeUtilities::getTickCount() + (secDest * 1000);
-}
+	void run();
+	void reset(); // Only available for repeated timers
+private:
+	Id m_id;
+	Container *m_container;
+	int64_t m_run_at; // The time that this timer will run
+	clock_t m_repeat; // Repeat this timer x msec after the timer ran
+	function<void ()> m_function;
+};
 
 }

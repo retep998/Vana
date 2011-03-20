@@ -17,34 +17,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Id.h"
-#include "../Types.h"
-#include <ctime>
-#include <boost/tr1/functional.hpp>
-
-using std::tr1::function;
+#include "TimerTypes.h"
+#include "Types.h"
 
 namespace Timer {
 
-class Container;
+struct Id {
+	Id(uint32_t type, uint32_t id, uint32_t id2);
+	uint32_t type;
+	uint32_t id;
+	uint32_t id2;
 
-class Timer {
-public:
-	Timer(function<void ()> func, const Id &id, Container *container, int64_t runAt, clock_t repeat = 0);
-	~Timer();
-
-	Id getId() const { return m_id; }
-	int64_t getRunAt() const { return m_run_at; }
-	int64_t getTimeLeft() const;
-
-	void run();
-	void reset(); // Only available for repeated timers
-private:
-	Id m_id;
-	Container *m_container;
-	int64_t m_run_at; // The time that this timer will run
-	clock_t m_repeat; // Repeat this timer x msec after the timer ran
-	function<void ()> m_function;
+	bool operator==(Id const &other) const;
+	friend size_t hash_value(Id const &id);
 };
+
+inline
+Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
+type(type),
+id(id),
+id2(id2)
+{
+}
+
+inline
+bool Id::operator==(Id const &other) const {
+	return type == other.type && id == other.id && id2 == other.id2;
+}
 
 }

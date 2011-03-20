@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "SkillsPacket.h"
 #include "Summons.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -489,7 +489,7 @@ void Skills::startCooldown(Player *player, int32_t skillId, int16_t cooltime, bo
 	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillId),
 		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
-		player->getTimers(), Timer::Time::fromNow(cooltime * 1000));
+		player->getTimers(), TimeUtilities::fromNow(cooltime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillId) {

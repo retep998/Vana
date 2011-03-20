@@ -15,31 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Container.h"
-#include "Timer.h"
+#include "TimerId.h"
+#include <boost/functional/hash.hpp>
 
 namespace Timer {
 
-int32_t Container::checkTimer(const Id &id) {
-	if (m_timers.find(id) != m_timers.end()) {
-		return (int32_t)(m_timers[id]->getTimeLeft() / 1000);
-	}
-	return 0;
-}
+// For hashing Id
+size_t hash_value(Id const &id) {
+	size_t seed = 0;
 
-int64_t Container::checkTimer(const Id &id, bool msec) {
-	if (m_timers.find(id) != m_timers.end()) {
-		return m_timers[id]->getTimeLeft();
-	}
-	return 0;
-}
+	boost::hash_combine(seed, id.type);
+	boost::hash_combine(seed, id.id);
+	boost::hash_combine(seed, id.id2);
 
-void Container::registerTimer(Timer *timer) {
-	m_timers[timer->getId()] = shared_ptr<Timer>(timer);
-}
-
-void Container::removeTimer(const Id &id) {
-	m_timers.erase(id);
+	return seed;
 }
 
 }

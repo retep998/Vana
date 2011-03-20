@@ -111,6 +111,10 @@
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
     <ClCompile Include="src\Common\SqlLogger.cpp" />
+    <ClCompile Include="src\Common\Timer.cpp" />
+    <ClCompile Include="src\Common\TimerContainer.cpp" />
+    <ClCompile Include="src\Common\TimerId.cpp" />
+    <ClCompile Include="src\Common\TimerThread.cpp" />
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
     <ClCompile Include="src\Common\ConfigFile.cpp" />
     <ClCompile Include="src\Common\Database.cpp" />
@@ -131,10 +135,6 @@
     <ClCompile Include="src\Common\SessionManager.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
     <ClCompile Include="src\Common\MapleEncryption.cpp" />
-    <ClCompile Include="src\Common\Timer\Container.cpp" />
-    <ClCompile Include="src\Common\Timer\Id.cpp" />
-    <ClCompile Include="src\Common\Timer\Thread.cpp" />
-    <ClCompile Include="src\Common\Timer\Timer.cpp" />
     <ClCompile Include="src\Common\AbstractConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServer.cpp" />
     <ClCompile Include="src\Common\DatabaseMigration.cpp" />
@@ -167,6 +167,11 @@
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
+    <ClInclude Include="src\Common\Timer.h" />
+    <ClInclude Include="src\Common\TimerContainer.h" />
+    <ClInclude Include="src\Common\TimerId.h" />
+    <ClInclude Include="src\Common\TimerThread.h" />
+    <ClInclude Include="src\Common\TimerTypes.h" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\BeautyDataProvider.h" />
     <ClInclude Include="src\Common\BuffDataProvider.h" />
@@ -205,12 +210,6 @@
     <ClInclude Include="src\Common\SessionManager.h" />
     <ClInclude Include="src\Common\Decoder.h" />
     <ClInclude Include="src\Common\MapleEncryption.h" />
-    <ClInclude Include="src\Common\Timer\Container.h" />
-    <ClInclude Include="src\Common\Timer\Id.h" />
-    <ClInclude Include="src\Common\Timer\Thread.h" />
-    <ClInclude Include="src\Common\Timer\Time.h" />
-    <ClInclude Include="src\Common\Timer\Timer.h" />
-    <ClInclude Include="src\Common\Timer\Types.h" />
     <ClInclude Include="src\Common\AbstractConnection.h" />
     <ClInclude Include="src\Common\AbstractServer.h" />
     <ClInclude Include="src\Common\AbstractSession.h" />

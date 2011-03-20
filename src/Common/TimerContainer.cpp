@@ -15,34 +15,31 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#pragma once
-
-#include "Types.h"
-#include "../Types.h"
+#include "TimerContainer.h"
+#include "Timer.h"
 
 namespace Timer {
 
-struct Id {
-	Id(uint32_t type, uint32_t id, uint32_t id2);
-	uint32_t type;
-	uint32_t id;
-	uint32_t id2;
-
-	bool operator==(Id const &other) const;
-	friend size_t hash_value(Id const &id);
-};
-
-inline
-Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
-type(type),
-id(id),
-id2(id2)
-{
+int32_t Container::checkTimer(const Id &id) {
+	if (m_timers.find(id) != m_timers.end()) {
+		return (int32_t)(m_timers[id]->getTimeLeft() / 1000);
+	}
+	return 0;
 }
 
-inline
-bool Id::operator==(Id const &other) const {
-	return type == other.type && id == other.id && id2 == other.id2;
+int64_t Container::checkTimer(const Id &id, bool msec) {
+	if (m_timers.find(id) != m_timers.end()) {
+		return m_timers[id]->getTimeLeft();
+	}
+	return 0;
+}
+
+void Container::registerTimer(Timer *timer) {
+	m_timers[timer->getId()] = shared_ptr<Timer>(timer);
+}
+
+void Container::removeTimer(const Id &id) {
+	m_timers.erase(id);
 }
 
 }

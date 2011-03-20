@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "WarpFunctions.h"
 
-std::tr1::unordered_map<string, ChatCommand> ChatHandlerFunctions::CommandList;
+CommandListType ChatHandlerFunctions::CommandList;
 
 void ChatHandlerFunctions::initialize() {
 	// Set up commands and appropriate GM levels

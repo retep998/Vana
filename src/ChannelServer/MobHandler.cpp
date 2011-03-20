@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -172,7 +172,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 							else {
 								new Timer::Timer(bind(&MobHandler::handleMobSkill, mob, realskill, level, mobskill),
 									Timer::Id(Timer::Types::MobSkillTimer, mob->getMobId(), mob->getCounter()),
-									mob->getTimers(), Timer::Time::fromNow(info->effectAfter));
+									mob->getTimers(), TimeUtilities::fromNow(info->effectAfter));
 							}
 							used = true;
 						}
