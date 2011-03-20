@@ -35,8 +35,8 @@ LoginServer::LoginServer()
 }
 
 void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), MapleVersion::PatchLocation);
-	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory());
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_clientEncryption, MapleVersion::PatchLocation);
+	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory(), true);
 }
 
 void LoginServer::loadData() {
@@ -55,6 +55,7 @@ void LoginServer::loadConfig() {
 	m_port = config.get<uint16_t>("port");
 	m_interPort = config.get<uint16_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
+	m_clientEncryption = config.getBool("use_client_encryption");
 	setListening(true);
 
 	loadWorlds();
@@ -89,6 +90,9 @@ void LoginServer::loadWorlds() {
 
 		World *world = new World();
 		conf.name = config.getString(formatter.str());
+
+		formatter % i % "client_encryption";
+		conf.clientEncryption = config.getBool(formatter.str());
 
 		formatter % i % "channels";
 		conf.maxChannels = config.get<int32_t>(formatter.str());

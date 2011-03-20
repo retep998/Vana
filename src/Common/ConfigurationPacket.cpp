@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 void ConfigurationPacket::addConfig(const Configuration &config, PacketCreator &packet) {
+	packet.addBool(config.clientEncryption);
 	packet.add<int8_t>(config.ribbon);
 	packet.add<uint8_t>(config.maxMultiLevel);
 	packet.add<int16_t>(config.maxStats);
@@ -43,6 +44,7 @@ void ConfigurationPacket::addConfig(const Configuration &config, PacketCreator &
 
 Configuration ConfigurationPacket::getConfig(PacketReader &packet) {
 	Configuration conf;
+	conf.clientEncryption = packet.getBool();
 	conf.ribbon = packet.get<int8_t>();
 	conf.maxMultiLevel = packet.get<uint8_t>();
 	conf.maxStats = packet.get<int16_t>();

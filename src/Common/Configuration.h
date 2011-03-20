@@ -30,6 +30,7 @@ struct MajorBoss {
 };
 
 struct Configuration {
+	bool clientEncryption;
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
 	int16_t maxStats;

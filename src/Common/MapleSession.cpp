@@ -25,16 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/bind.hpp>
 #include <iostream>
 
-MapleSession::MapleSession(boost::asio::io_service &io_service,
-							SessionManagerPtr sessionManager,
-							AbstractConnection *player,
-							bool isServer,
-							const string &patchLocation) :
-AbstractSession(sessionManager),
-m_socket(io_service),
-m_player(player),
-m_isServer(isServer),
-m_patchLocation(patchLocation)
+MapleSession::MapleSession(boost::asio::io_service &io_service, SessionManagerPtr sessionManager, AbstractConnection *player, bool isServer, bool isEncrypted, const string &patchLocation) :
+	AbstractSession(sessionManager, (!isServer || isEncrypted)),
+		// Apparently, "isServer" is true from sessions created by the server for the client
+		// In addition, it's false from sessions created for the server clients
+	m_socket(io_service),
+	m_player(player),
+	m_isServer(isServer),
+	m_patchLocation(patchLocation)
 {
 }
 
@@ -72,6 +70,10 @@ void MapleSession::handle_stop() {
 
 void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 	boost::mutex::scoped_lock l(m_sendMutex);
+
+	// Manually override encryption if this connection isn't encrypted
+	if (!isEncrypted()) encrypt = false;
+
 	size_t realLength = encrypt ? len + headerLen : len;
 	unsigned char *buffer = new unsigned char[realLength];
 	m_sendPacket.reset(buffer);
@@ -95,7 +97,7 @@ void MapleSession::send(const unsigned char *buf, int32_t len, bool encrypt) {
 }
 
 void MapleSession::send(const PacketCreator &packet, bool encrypt) {
-	return send(packet.getBuffer(), packet.getSize(), encrypt);
+	send(packet.getBuffer(), packet.getSize(), encrypt);
 }
 
 void MapleSession::start_read_header() {

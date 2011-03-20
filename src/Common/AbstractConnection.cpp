@@ -21,18 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "RecvHeader.h"
 #include "SendHeader.h"
-#include "TimeUtilities.h" // update
 #include "Timer.h"
+#include "TimeUtilities.h"
 #include <iostream>
 #include <functional>
 
 using std::tr1::bind;
 
 AbstractConnection::AbstractConnection() :
-m_isServer(false),
-m_isPinged(false),
-m_latency(InitialPing),
-m_timers(new Timer::Container)
+	m_isServer(false),
+	m_isPinged(false),
+	m_latency(InitialPing),
+	m_timers(new Timer::Container)
 {
 }
 
@@ -45,6 +45,11 @@ void AbstractConnection::handleRequest(PacketReader &packet) {
 				}
 				break;
 			case CMSG_PONG:
+				if (!m_isPinged) {
+					// Trying to spoof pongs without pings
+					getSession()->disconnect();
+					return;
+				}
 				m_isPinged = false;
 				m_latency = (clock() - m_lastPing) / 2; // This is for the trip to and from, so latency is averaged between them
 				break;

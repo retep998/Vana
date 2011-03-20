@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/utility.hpp>
 
-// LoginServer main application class, implemented as singleton
 class LoginServer : public AbstractServer, boost::noncopyable {
 public:
 	static LoginServer * Instance() {
@@ -48,6 +47,7 @@ private:
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
+	bool m_clientEncryption;
 	uint16_t m_port;
 	uint16_t m_interPort;
 	int32_t m_maxInvalidLogins;
