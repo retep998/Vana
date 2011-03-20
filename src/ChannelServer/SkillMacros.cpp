@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SkillMacros::load(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM skillmacros WHERE charid = " << charid;
+	query << "SELECT s.* FROM skill_macros s WHERE s.character_id = " << charid;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		int8_t pos = static_cast<int8_t>(res[i]["pos"]);
@@ -29,16 +29,16 @@ void SkillMacros::load(int32_t charid) {
 		res[i]["name"].to_string(name);
 
 		bool shout = static_cast<bool>(res[i]["shout"]);
-		int32_t skill1 = static_cast<int32_t>(res[i]["skill1"]);
-		int32_t skill2 = static_cast<int32_t>(res[i]["skill2"]);
-		int32_t skill3 = static_cast<int32_t>(res[i]["skill3"]);
+		int32_t skill1 = static_cast<int32_t>(res[i]["skill_1"]);
+		int32_t skill2 = static_cast<int32_t>(res[i]["skill_2"]);
+		int32_t skill3 = static_cast<int32_t>(res[i]["skill_3"]);
 		add(pos, new SkillMacro(name, shout, skill1, skill2, skill3));
 	}
 }
 
 void SkillMacros::save(int32_t charid) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "REPLACE INTO skillmacros VALUES ";
+	query << "REPLACE INTO skill_macros VALUES ";
 	int8_t max = getMax();
 	for (int8_t i = 0; i <= max; i++) {
 		SkillMacro *macro = getSkillMacro(i);

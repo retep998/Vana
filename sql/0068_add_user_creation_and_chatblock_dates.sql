@@ -1,2 +1,0 @@
-ALTER TABLE `users` ADD `quiet_ban` DATETIME NOT NULL DEFAULT 0;
-ALTER TABLE `users` ADD `creation_date` DATETIME NOT NULL DEFAULT 0;

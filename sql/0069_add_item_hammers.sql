@@ -1,2 +1,0 @@
-ALTER TABLE items ADD hammers TINYINT(3) NOT NULL DEFAULT '0' AFTER flags;
-ALTER TABLE storageitems ADD hammers TINYINT(3) NOT NULL DEFAULT '0' AFTER flags;

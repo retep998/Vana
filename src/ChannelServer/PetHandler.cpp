@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 
 void PetHandler::handleMovement(Player *player, PacketReader &packet) {
-	int32_t petid = (int32_t)packet.get<int64_t>();
+	int64_t petid = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	if (pet == nullptr) {
 		// Hacking
@@ -43,7 +43,7 @@ void PetHandler::handleMovement(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleChat(Player *player, PacketReader &packet) {
-	int32_t petid = (int32_t)packet.get<int64_t>();
+	int64_t petid = packet.get<int64_t>();
 	if (player->getPets()->getPet(petid) == nullptr) {
 		// Hacking
 		return;
@@ -153,7 +153,7 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleCommand(Player *player, PacketReader &packet) {
-	int32_t petid = (int32_t)packet.get<int64_t>();
+	int64_t petid = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	if (pet == nullptr) {
 		// Hacking
@@ -174,7 +174,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
-	int32_t petid = (int32_t)packet.get<int64_t>();
+	int64_t petid = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petid);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
 		// Hacking

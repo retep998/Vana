@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT skillId, points, maxlevel FROM skills WHERE charid = " << player->getId();
+	query << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	PlayerSkillInfo skill;
 
@@ -38,12 +38,12 @@ void PlayerSkills::load() {
 		playerskills[res[i][0]] = skill;
 	}
 
-	query << "SELECT * FROM cooldowns WHERE charid = " << player->getId();
+	query << "SELECT c.* FROM cooldowns c WHERE c.character_id = " << player->getId();
 	res = query.store();
 
 	for (size_t i = 0; i < res.size(); i++) {
-		int32_t skillId = res[i]["skillId"];
-		int16_t timeleft = static_cast<int16_t>(res[i]["timeleft"]);
+		int32_t skillId = res[i]["skill_id"];
+		int16_t timeleft = static_cast<int16_t>(res[i]["remaining_time"]);
 		Skills::startCooldown(player, skillId, timeleft, true);
 		cooldowns[skillId] = timeleft;
 	}
@@ -67,13 +67,13 @@ void PlayerSkills::save(bool savecooldowns) {
 		query.exec();
 
 	if (savecooldowns) {
-		query << "DELETE FROM cooldowns WHERE charid = " << player->getId();
+		query << "DELETE FROM cooldowns WHERE character_id = " << player->getId();
 		query.exec();
 		if (cooldowns.size() > 0) {
 			firstrun = true;
 			for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
 				if (firstrun) {
-					query << "INSERT INTO cooldowns (charid, skillId, timeleft) VALUES (";
+					query << "INSERT INTO cooldowns (character_id, skill_id, remaining_time) VALUES (";
 					firstrun = false;
 				}
 				else {
@@ -103,8 +103,9 @@ bool PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendpacke
 }
 
 uint8_t PlayerSkills::getSkillLevel(int32_t skillId) {
-	if (playerskills.find(skillId) != playerskills.end())
+	if (playerskills.find(skillId) != playerskills.end()) {
 		return playerskills[skillId].level;
+	}
 	return 0;
 }
 

@@ -241,10 +241,9 @@ void Player::playerConnect(PacketReader &packet) {
 
 	// Character info
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT "
-		<< "c.*, u.gm, u.admin FROM characters c "
-		<< "LEFT JOIN users u ON c.userid = u.id "
-		<< "WHERE c.id = " << id;
+	query << "SELECT c.*, u.gm_level, u.admin FROM characters c "
+		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "WHERE c.character_id = " << id;
 
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.empty()) {
@@ -254,9 +253,9 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	res[0]["name"].to_string(name);
-	user_id		= res[0]["userid"];
+	user_id		= res[0]["user_id"];
 	map			= res[0]["map"];
-	gm_level	= res[0]["gm"];
+	gm_level	= res[0]["gm_level"];
 	admin		= StringUtilities::atob(res[0]["admin"]);
 	eyes		= res[0]["eyes"];
 	hair		= res[0]["hair"];
@@ -333,7 +332,7 @@ void Player::playerConnect(PacketReader &packet) {
 	randStream.reset(new PlayerRandStream(this));
 	monsterBook.reset(new PlayerMonsterBook(this));
 
-	getMonsterBook()->setCover(res[0]["monsterbookcover"]);
+	getMonsterBook()->setCover(res[0]["book_cover"]);
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -590,34 +589,49 @@ void Player::saveStats() {
 		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
 		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
 		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
-		<< "monsterbookcover = " << getMonsterBook()->getCover()
-		<< " WHERE id = " << id;
+		<< "book_cover = " << getMonsterBook()->getCover()
+		<< " WHERE character_id = " << getId();
+	query.exec();
+}
+
+void Player::deleteItems() {
+	mysqlpp::Query query = Database::getCharDB().query();
+	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << getUserId() << " AND world_id = " << (int32_t) getWorldId();
+	query.exec();
+
+	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << getId();
 	query.exec();
 }
 
 void Player::saveAll(bool savecooldowns) {
-	saveStats();
+	deleteItems();
 	getInventory()->save();
+	getStorage()->save();
+
+	saveStats();
 	getMonsterBook()->save();
 	getMounts()->save();
 	getPets()->save();
 	getQuests()->save();
 	getSkills()->save(savecooldowns);
-	getStorage()->save();
 	getVariables()->save();
 }
 
 void Player::setOnline(bool online) {
 	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.online = " << onlineid <<
-			", characters.online = " << online << " WHERE characters.id = " << id;
+	query << "UPDATE user_accounts u "
+			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "SET "
+			<< "	u.online = " << onlineid <<	", "
+			<< "	c.online = " << online << " "
+			<< "WHERE c.character_id = " << id;
 	query.exec();
 }
 
 void Player::setLevelDate() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE characters SET time_level = NOW() WHERE characters.id = " << id;
+	query << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = " << id;
 	query.exec();
 }
 

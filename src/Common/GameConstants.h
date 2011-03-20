@@ -27,7 +27,7 @@ namespace Characters {
 	const int8_t MaxNameSize = 12;
 	const int8_t MinNameSize = 4;
 	const int8_t MaxPasswordSize = 15;
-	const int8_t MinPasswordSize = 4;
+	const int8_t MinPasswordSize = 5;
 	const int32_t DefaultCharacterSlots = 3;
 }
 

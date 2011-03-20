@@ -54,9 +54,10 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	}
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, password, salt, online, pin, gender, char_delete_password, creation_date, quiet_ban_reason, quiet_ban_expire, ban_reason, ban_expire, (ban_expire > NOW()) as banned, admin FROM users WHERE username = " << mysqlpp::quote << username << " LIMIT 1";
+	query << "SELECT u.*, (u.ban_expire > NOW()) as `banned` FROM user_accounts u WHERE u.username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
-	query << "SELECT id FROM ipbans WHERE ip = " << mysqlpp::quote << ip << " LIMIT 1";
+
+	query << "SELECT i.ip_ban_id FROM ip_bans i WHERE i.ip = " << mysqlpp::quote << ip << " LIMIT 1";
 	mysqlpp::StoreQueryResult resIp = query.store();
 
 	bool valid = true;
@@ -79,7 +80,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 			// We have a valid password here, so let's hash the password
 			string salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
 			string hashed_pass = MiscUtilities::hashPassword(password, salt);
-			query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
+			query << "UPDATE user_accounts u SET u.password = " << mysqlpp::quote << hashed_pass << ", u.salt = " << mysqlpp::quote << salt << " WHERE u.user_id = " << res[0]["user_id"];
 			query.exec();
 		}
 	}
@@ -106,7 +107,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	else {
 		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
 
-		player->setUserId(res[0]["id"]);
+		player->setUserId(res[0]["user_id"]);
 		if (LoginServer::Instance()->getPinEnabled()) {
 			if (res[0]["pin"].is_null()) {
 				player->setPin(-1);
@@ -135,7 +136,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		time_t qban =  atot(res[0]["quiet_ban_expire"]);
 		if (qban > 0) {
 			if (time(0) > qban) {
-				query << "UPDATE users SET quiet_ban_expire = '0000-00-00 00:00:00', quiet_ban_reason = 0 WHERE id = " << player->getUserId();
+				query << "UPDATE user_accounts u SET u.quiet_ban_expire = '0000-00-00 00:00:00', u.quiet_ban_reason = 0 WHERE u.user_id = " << player->getUserId();
 				query.exec();
 			}
 			else {
@@ -162,7 +163,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 		player->setStatus(PlayerStatus::NotLoggedIn);
 		int8_t gender = packet.get<int8_t>();
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "UPDATE users SET gender = " << (int32_t) gender << " WHERE id = " << player->getUserId();
+		query << "UPDATE user_accounts u SET u.gender = " << (int32_t) gender << " WHERE u.user_id = " << player->getUserId();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled()) {
 			player->setStatus(PlayerStatus::SetPin); // Set pin
@@ -242,7 +243,7 @@ void Login::registerPin(Player *player, PacketReader &packet) {
 	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 	player->setStatus(PlayerStatus::NotLoggedIn);
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users SET pin = " << pin << " WHERE id = " << player->getUserId();
+	query << "UPDATE user_accounts u SET u.pin = " << pin << " WHERE u.user_id = " << player->getUserId();
 	query.exec();
 	LoginPacket::pinAssigned(player);
 }

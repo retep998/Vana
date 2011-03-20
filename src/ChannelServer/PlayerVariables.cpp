@@ -25,7 +25,7 @@ PlayerVariables::PlayerVariables(Player *p) : player(p) {
 
 void PlayerVariables::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM character_variables WHERE charid = " << player->getId();
+	query << "DELETE FROM character_variables WHERE character_id = " << player->getId();
 	query.exec();
 
 	if (m_variables.size() > 0) {
@@ -48,7 +48,7 @@ void PlayerVariables::save() {
 
 void PlayerVariables::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM character_variables WHERE charid = " << player->getId();
+	query << "SELECT * FROM character_variables WHERE character_id = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
 		m_variables[(string) res[i]["key"]] = string(res[i]["value"]);

@@ -28,21 +28,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <boost/array.hpp>
 
-PlayerQuests::PlayerQuests(Player *player) : m_player(player) {
+PlayerQuests::PlayerQuests(Player *player) :
+	m_player(player)
+{
 	load();
 }
 
 void PlayerQuests::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 
-	query << "DELETE FROM active_quests WHERE charid = " << m_player->getId();
+	query << "DELETE FROM active_quests WHERE character_id = " << m_player->getId();
 	query.exec();
 
 	bool firstrun = true;
 	bool firstrun2 = true;
 	for (map<int16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); q++) {
 		if (firstrun) {
-			query << "INSERT INTO active_quests (`charid`, `questid`, `mobid`, `mobskilled`, `data`) VALUES (";
+			query << "INSERT INTO active_quests (`chararcter_id`, `quest_id`, `mob_id`, `quantity_killed`, `data`) VALUES (";
 			firstrun = false;
 		}
 		else {
@@ -75,7 +77,7 @@ void PlayerQuests::save() {
 	if (!firstrun)
 		query.exec();
 
-	query << "DELETE FROM completed_quests WHERE charid = " << m_player->getId();
+	query << "DELETE FROM completed_quests WHERE character_id = " << m_player->getId();
 	query.exec();
 
 	firstrun = true;
@@ -101,11 +103,11 @@ void PlayerQuests::load() {
 	int16_t current = 0;
 	ActiveQuest curquest;
 	string data;
-	query << "SELECT questid, mobid, mobskilled, data FROM active_quests WHERE charid = " << m_player->getId() << " ORDER BY questid ASC";
+	query << "SELECT a.quest_id, a.mob_id, a.quantity_killed, a.data FROM active_quests a WHERE a.character_id = " << m_player->getId() << " ORDER BY a.quest_id ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); i++) {
-		current = res[i]["questid"];
-		int32_t mob = res[i]["mobid"];
+		current = res[i]["quest_id"];
+		int32_t mob = res[i]["mob_id"];
 		res[i]["data"].to_string(data);
 
 		if (previous == -1) {
@@ -119,7 +121,7 @@ void PlayerQuests::load() {
 			curquest.data = data;
 		}
 		if (mob != 0) {
-			int16_t kills = res[i]["mobskilled"];
+			int16_t kills = res[i]["quantity_killed"];
 			curquest.kills[mob] = kills;
 			m_mobtoquest[mob].push_back(current);
 		}
@@ -129,10 +131,10 @@ void PlayerQuests::load() {
 		m_quests[previous] = curquest;
 	}
 
-	query << "SELECT questid, endtime FROM completed_quests WHERE charid = " << m_player->getId();
+	query << "SELECT c.quest_id, c.end_time FROM completed_quests c WHERE c.character_id = " << m_player->getId();
 	res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
-		m_completed[res[i]["questid"]] = res[i]["endtime"];
+		m_completed[res[i]["quest_id"]] = res[i]["end_time"];
 	}
 }
 
@@ -219,7 +221,8 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
 
-	if (!giveRewards(questid, false)) { // Failed, don't complete the quest yet
+	if (!giveRewards(questid, false)) {
+		// Failed, don't complete the quest yet
 		return;
 	}
 
@@ -227,7 +230,8 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
 			for (size_t k = 0; k < m_mobtoquest[i->first].size(); k++) {
 				if (m_mobtoquest[i->first][k] == questid) {
-					if (m_mobtoquest[i->first].size() == 1) { // Only one quest for this mob
+					if (m_mobtoquest[i->first].size() == 1) {
+						// Only one quest for this mob
 						m_mobtoquest.erase(i->first);
 					}
 					else {

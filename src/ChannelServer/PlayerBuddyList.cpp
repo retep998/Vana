@@ -33,21 +33,21 @@ PlayerBuddyList::PlayerBuddyList(Player *player) :
 
 void PlayerBuddyList::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT bl.id, bl.buddy_charid, bl.name AS name_cache, c.name, bl.groupname, u.online "
+	query << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
 		<< "FROM buddylist bl "
-		<< "LEFT JOIN characters c ON bl.buddy_charid = c.id "
-		<< "LEFT JOIN users u ON c.userid = u.id "
-		<< "WHERE bl.charid = " << m_player->getId();
+		<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
+		<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "WHERE bl.character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		addBuddy(res[i]);
 	}
 
-	query << "SELECT pending.* FROM buddylist_pending pending "
-		<< "LEFT JOIN characters c ON c.id = pending.inviter_id "
+	query << "SELECT p.* FROM buddylist_pending p "
+		<< "LEFT JOIN characters c ON c.character_id = p.inviter_character_id "
 		<< "WHERE c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld())
-		<< " AND pending.char_id = " << m_player->getId();
+		<< " AND p.character_id = " << m_player->getId();
 	res = query.store();
 
 	enum TableData {
@@ -79,12 +79,13 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		CharacterID, CharacterName, GM, BuddylistLimit, BuddylistSize
 	};
 
-	query << "SELECT "
-		<< "c.id, c.name, u.gm, c.buddylist_size AS buddylist_limit, "
-		<< "(SELECT COUNT(b.id) FROM buddylist b WHERE b.charid = c.id) AS buddylist_size "
+	query << "SELECT c.character_id, c.name, u.gm, c.buddylist_size AS buddylist_limit, ("
+		<< "	SELECT COUNT(b.id) "
+		<< "	FROM buddylist b WHERE b.character_id = c.character_id"
+		<< ") AS buddylist_size "
 		<< "FROM characters c "
-		<< "INNER JOIN users u ON c.userid = u.id "
-		<< "WHERE c.name = " << mysqlpp::quote << name << " AND world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld());
+		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "WHERE c.name = " << mysqlpp::quote << name << " AND c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld());
 
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -113,26 +114,26 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 			return BuddyListPacket::Errors::AlreadyInList;
 		}
 		else {
-			query << "UPDATE buddylist SET groupname = " << mysqlpp::quote << group << " WHERE buddy_charid = " << charid << " AND charid = " << m_player->getId();
+			query << "UPDATE buddylist SET group_name = " << mysqlpp::quote << group << " WHERE buddy_character_id = " << charid << " AND character_id = " << m_player->getId();
 			query.exec();
 			m_buddies[charid]->groupName = group;
 		}
 	}
 	else {
-		query << "INSERT INTO buddylist (charid, buddy_charid, name, groupname) VALUES (" << m_player->getId() << ", " << charid << ", " << mysqlpp::quote << res[0][1] << ", " << mysqlpp::quote << group << ")";
+		query << "INSERT INTO buddylist (character_id, buddy_character_id, name, group_name) VALUES (" << m_player->getId() << ", " << charid << ", " << mysqlpp::quote << res[0][1] << ", " << mysqlpp::quote << group << ")";
 		mysqlpp::SimpleResult res2 = query.execute();
 
-		query << "SELECT bl.id, bl.buddy_charid, bl.name AS name_cache, c.name, bl.groupname, u.online "
+		query << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
 			<< "FROM buddylist bl "
-			<< "LEFT JOIN characters c ON bl.buddy_charid = c.id "
-			<< "LEFT JOIN users u ON c.userid = u.id "
+			<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
+			<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
 			<< "WHERE bl.id = " << res2.insert_id();
 
 		res = query.store();
 
 		addBuddy(res[0]);
 
-		query << "SELECT id FROM buddylist WHERE charid = " << charid << " AND buddy_charid = " << m_player->getId();
+		query << "SELECT id FROM buddylist WHERE character_id = " << charid << " AND buddy_character_id = " << m_player->getId();
 		mysqlpp::StoreQueryResult res = query.store();
 
 		if (res.num_rows() == 0) {
@@ -174,7 +175,7 @@ void PlayerBuddyList::removeBuddy(int32_t charid) {
 
 	m_buddies.erase(charid);
 
-	query << "DELETE FROM buddylist WHERE charid = " << m_player->getId() << " AND buddy_charid = " << charid;
+	query << "DELETE FROM buddylist WHERE character_id = " << m_player->getId() << " AND buddy_character_id = " << charid;
 	query.exec();
 
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Remove);
@@ -211,16 +212,16 @@ void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
 	}
 
 	buddy->channel = channelid;
-	if (row["groupname"].is_null()) {
+	if (row["group_name"].is_null()) {
 		buddy->groupName = "Default Group";
-		query << "UPDATE buddylist SET groupname = 'Default Group' WHERE buddy_charid = " << charid << " AND charid = " << m_player->getId();
+		query << "UPDATE buddylist SET group_name = " << mysqlpp::quote << buddy->groupName << " WHERE buddy_character_id = " << charid << " AND character_id = " << m_player->getId();
 		query.exec();
 	}
 	else {
-		row["groupname"].to_string(buddy->groupName);
+		row["group_name"].to_string(buddy->groupName);
 	}
 
-	query << "SELECT id FROM buddylist WHERE charid = " << charid << " AND buddy_charid = " << m_player->getId();
+	query << "SELECT id FROM buddylist WHERE character_id = " << charid << " AND buddy_character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.num_rows() != 0) {
@@ -290,7 +291,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 		}
 
 		mysqlpp::Query query = Database::getCharDB().query();
-		query << "DELETE FROM buddylist_pending WHERE char_id = " << m_player->getId() << " AND inviter_id = " << id;
+		query << "DELETE FROM buddylist_pending WHERE character_id = " << m_player->getId() << " AND inviter_character_id = " << id;
 		query.exec();
 	}
 

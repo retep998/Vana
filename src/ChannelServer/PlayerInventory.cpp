@@ -57,17 +57,20 @@ PlayerInventory::~PlayerInventory() {
 
 void PlayerInventory::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT items.*, pets.* FROM items LEFT JOIN pets ON items.petid = pets.id WHERE charid = " << m_player->getId();
+	query << "SELECT i.*, p.* "
+			<< "FROM items i "
+			<< "LEFT JOIN pets p ON i.pet_id = p.pet_id "
+			<< "WHERE i.location = " << mysqlpp::quote << "inventory" << " AND i.character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 
 	enum TableFields {
 		ItemCharId = 0,
-		Inv, Slot, ItemId, Amount, Slots,
-		Scrolls, iStr, iDex, iInt, iLuk,
-		iHp, iMp, iWatk, iMatk, iWdef,
-		iMdef, iAcc, iAvo, iHand, iSpeed,
-		iJump, Flags, Hammers, PetId, Name,
-		ExpirationTime,
+		Inv, Slot, Location, UserId, WorldId,
+		ItemId, Amount, Slots, Scrolls, iStr,
+		iDex, iInt, iLuk, iHp, iMp,
+		iWatk, iMatk, iWdef, iMdef, iAcc,
+		iAvo, iHand, iSpeed, iJump, Flags,
+		Hammers, PetId, Name, ExpirationTime,
 		// End of items, start of pets
 		PetsId, Index, PetName, Level, Closeness,
 		Fullness
@@ -119,7 +122,7 @@ void PlayerInventory::load() {
 		}
 	}
 
-	query << "SELECT mapindex, mapid FROM teleport_rock_locations WHERE charid = " << m_player->getId();
+	query << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = " << m_player->getId();
 	res = query.store();
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
@@ -138,9 +141,6 @@ void PlayerInventory::load() {
 void PlayerInventory::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 
-	query << "DELETE FROM items WHERE charid = " << m_player->getId();
-	query.exec();
-
 	bool firstrun = true;
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		ItemInventory &itemsinv = m_items[i - 1];
@@ -156,6 +156,9 @@ void PlayerInventory::save() {
 			query << m_player->getId() << ","
 				<< (int16_t) i << ","
 				<< iter->first << ","
+				<< mysqlpp::quote << "inventory" << ","
+				<< m_player->getUserId() << ","
+				<< (int16_t) m_player->getWorldId() << ","
 				<< item->getId() << ","
 				<< item->getAmount() << ","
 				<< (int16_t) item->getSlots() << ","
@@ -185,7 +188,7 @@ void PlayerInventory::save() {
 	if (!firstrun) {
 		query.exec();
 	}
-	query << "DELETE FROM teleport_rock_locations WHERE charid = " << m_player->getId();
+	query << "DELETE FROM teleport_rock_locations WHERE character_id = " << m_player->getId();
 	query.exec();
 
 	for (size_t i = 0; i < m_rocklocations.size(); i++) {
@@ -206,7 +209,7 @@ void PlayerInventory::save() {
 	}
 }
 
-void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) { // Useful with .lua
+void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 	inventory -= 1;
 	m_maxslots[inventory] += (rows * 4);
 	if (m_maxslots[inventory] > 100)

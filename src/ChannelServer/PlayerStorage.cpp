@@ -75,7 +75,7 @@ void PlayerStorage::changeMesos(int32_t mesos) {
 
 void PlayerStorage::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT slots, mesos FROM storage WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
+	query << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = " << player->getUserId() << " AND s.world_id = " << (int16_t) player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
 		slots = (uint8_t) res[0][0];
@@ -85,7 +85,7 @@ void PlayerStorage::load() {
 		slots = 4;
 		mesos = 0;
 		// Make a row right away...
-		query << "INSERT INTO storage (userid, world_id, slots, mesos) VALUES ("
+		query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
 			<< player->getUserId() << ", "
 			<< (int16_t) player->getWorldId() << ", "
 			<< (int16_t) getSlots() << ", "
@@ -96,15 +96,23 @@ void PlayerStorage::load() {
 	items.reserve(slots);
 
 	enum TableFields {
-		UserId = 0,
-		WorldId, Slot, ItemId, Amount, Slots,
-		Scrolls, iStr, iDex, iInt, iLuk,
-		iHp, iMp, iWatk, iMatk, iWdef,
-		iMdef, iAcc, iAvo, iHand, iSpeed,
-		iJump, Flags, Hammers, Name
+		ItemCharId = 0,
+		Inv, Slot, Location, UserId, WorldId,
+		ItemId, Amount, Slots, Scrolls, iStr,
+		iDex, iInt, iLuk, iHp, iMp,
+		iWatk, iMatk, iWdef, iMdef, iAcc,
+		iAvo, iHand, iSpeed, iJump, Flags,
+		Hammers, PetId, Name, ExpirationTime
 	};
 
-	query << "SELECT * FROM storage_items WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId() << " ORDER BY slot ASC";
+	query << "SELECT i.* "
+			<< "FROM items i "
+			<< "WHERE "
+			<< "	i.location = " << mysqlpp::quote << "storage" << " "
+			<< "	AND i.user_id = " << player->getUserId() << " "
+			<< "	AND i.world_id = " << (int16_t) player->getWorldId() << " "
+			<< "ORDER BY slot ASC";
+
 	res = query.store();
 	string temp;
 	for (size_t i = 0; i < res.num_rows(); i++) {
@@ -130,8 +138,10 @@ void PlayerStorage::load() {
 		item->setJump(row[iJump]);
 		item->setFlags(static_cast<int16_t>(row[Flags]));
 		item->setHammers(row[Hammers]);
+		item->setExpirationTime(row[ExpirationTime]);
 		row[Name].to_string(temp);
 		item->setName(temp);
+		item->setPetId(row[PetId]);
 		addItem(item);
 	}
 }
@@ -139,7 +149,7 @@ void PlayerStorage::load() {
 void PlayerStorage::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
-	query << "INSERT INTO storage (userid, world_id, slots, mesos) VALUES ("
+	query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
 		<< player->getUserId() << ", "
 		<< (int16_t) player->getWorldId() << ", "
 		<< (int16_t) getSlots() << ", "
@@ -148,44 +158,46 @@ void PlayerStorage::save() {
 		<< "mesos = " << getMesos();
 	query.exec();
 
-	query << "DELETE FROM storage_items WHERE userid = " << player->getUserId() << " AND world_id = " << (int16_t) player->getWorldId();
-	query.exec();
-
 	bool firstrun = true;
 	for (int8_t i = 0; i < getNumItems(); i++) {
 		if (firstrun) {
-			query << "INSERT INTO storage_items VALUES (";
+			query << "INSERT INTO items VALUES (";
 			firstrun = false;
 		}
 		else {
 			query << ",(";
 		}
 		Item *item = getItem(i);
-		query << player->getUserId() << ","
-			<< (int16_t) player->getWorldId() << ","
-			<< (int16_t) i << ","
-			<< item->getId() << ","
-			<< item->getAmount() << ","
-			<< (int16_t) item->getSlots() << ","
-			<< (int16_t) item->getScrolls() << ","
-			<< item->getStr() << ","
-			<< item->getDex() << ","
-			<< item->getInt() << ","
-			<< item->getLuk() << ","
-			<< item->getHp() << ","
-			<< item->getMp() << ","
-			<< item->getWatk() << ","
-			<< item->getMatk() << ","
-			<< item->getWdef() << ","
-			<< item->getMdef() << ","
-			<< item->getAccuracy() << ","
-			<< item->getAvoid() << ","
-			<< item->getHands() << ","
-			<< item->getSpeed() << ","
-			<< item->getJump() << ","
-			<< item->getFlags() << ","
-			<< item->getHammers() << ","
-			<< mysqlpp::quote << item->getName() << ")";
+		query << player->getId() << ","
+				<< (int16_t) GameLogicUtilities::getInventory(item->getId()) << ","
+				<< (int16_t) i << ","
+				<< mysqlpp::quote << "storage" << ","
+				<< player->getUserId() << ","
+				<< (int16_t) player->getWorldId() << ","
+				<< item->getId() << ","
+				<< item->getAmount() << ","
+				<< (int16_t) item->getSlots() << ","
+				<< (int16_t) item->getScrolls() << ","
+				<< item->getStr() << ","
+				<< item->getDex() << ","
+				<< item->getInt() << ","
+				<< item->getLuk() << ","
+				<< item->getHp() << ","
+				<< item->getMp() << ","
+				<< item->getWatk() << ","
+				<< item->getMatk() << ","
+				<< item->getWdef() << ","
+				<< item->getMdef() << ","
+				<< item->getAccuracy() << ","
+				<< item->getAvoid() << ","
+				<< item->getHands() << ","
+				<< item->getSpeed() << ","
+				<< item->getJump() << ","
+				<< item->getFlags() << ","
+				<< item->getHammers() << ","
+				<< item->getPetId() << ","
+				<< mysqlpp::quote << item->getName() << ","
+				<< item->getExpirationTime() << ")";
 	}
 	if (!firstrun) {
 		query.exec();

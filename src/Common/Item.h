@@ -56,10 +56,15 @@ public:
 	int16_t getFlags() const { return m_flags; }
 	int32_t getId() const { return m_id; }
 	int32_t getHammers() const { return m_hammers; }
-	int32_t getPetId() const { return m_petId; }
+	int64_t getPetId() const { return m_petId; }
 	int64_t getExpirationTime() const { return m_expiration; }
 	const string & getName() const { return m_name; }
 
+	void setPreventSlip(bool prevent);
+	void setWarmSupport(bool warm);
+	void setLock(bool lock);
+	void setKarma(bool karma);
+	void setTradeBlock(bool block);
 	void setSlots(int8_t slots) { m_slots = slots; }
 	void setScrolls(int8_t scrolls) { m_scrolls = scrolls; }
 	void setStr(int16_t strength);
@@ -77,16 +82,11 @@ public:
 	void setHands(int16_t hands);
 	void setJump(int16_t jump);
 	void setSpeed(int16_t speed);
-	void setPetId(int32_t petId) { m_petId = petId; }
 	void setAmount(int16_t amount) { m_amount = amount; }
 	void setName(const string &name) { m_name = name; }
 	void setFlags(int16_t flags) { m_flags = flags; }
 	void setHammers(int32_t hammers) { m_hammers = hammers; }
-	void setPreventSlip(bool prevent);
-	void setWarmSupport(bool warm);
-	void setLock(bool lock);
-	void setKarma(bool karma);
-	void setTradeBlock(bool block);
+	void setPetId(int64_t petId) { m_petId = petId; }
 	void setExpirationTime(int64_t exp) { m_expiration = exp; }
 	void addStr(int16_t strength, bool onlyIfExists = false);
 	void addDex(int16_t dexterity, bool onlyIfExists = false);
@@ -136,7 +136,7 @@ private:
 	int16_t m_amount;
 	int32_t m_id;
 	int32_t m_hammers;
-	int32_t m_petId;
+	int64_t m_petId;
 	int64_t m_expiration;
 	string m_name;
 };

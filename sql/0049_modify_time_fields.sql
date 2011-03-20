@@ -1,2 +1,0 @@
-ALTER TABLE `users` CHANGE `last_login` `last_login` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
-ALTER TABLE `characters` CHANGE `time_level_200` `time_level_200` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';

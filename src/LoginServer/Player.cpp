@@ -69,8 +69,10 @@ Player::~Player() {
 
 void Player::setOnline(bool online) {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "UPDATE users SET online = " << online
-			<< ", last_login = NOW()"
-			<< " WHERE id = " << this->userid;
+	query << "UPDATE user_accounts u "
+			<< "SET "
+			<< "	u.online = " << online << ","
+			<< "	u.last_login = NOW() "
+			<< "WHERE u.user_id = " << getUserId();
 	query.exec();
 }

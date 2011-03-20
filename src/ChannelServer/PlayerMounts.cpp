@@ -27,7 +27,7 @@ PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentmount(0) {
 
 void PlayerMounts::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "DELETE FROM mounts WHERE charid = " << m_player->getId();
+	query << "DELETE FROM mounts WHERE character_id = " << m_player->getId();
 	query.exec();
 
 	if (m_mounts.size() > 0) {
@@ -54,14 +54,14 @@ void PlayerMounts::save() {
 
 void PlayerMounts::load() {
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT * FROM mounts WHERE charid = " << m_player->getId();
+	query << "SELECT m.* FROM mounts m WHERE m.character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	MountData c;
 	for (size_t i = 0; i < res.size(); i++) {
 		c.exp = (int16_t) res[i]["exp"];
 		c.level = (int8_t) res[i]["level"];
 		c.tiredness = (int8_t) res[i]["tiredness"];
-		m_mounts[res[i]["mountid"]] = c;
+		m_mounts[res[i]["mount_id"]] = c;
 	}
 }
 
