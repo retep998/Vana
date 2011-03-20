@@ -40,7 +40,7 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Players... ";
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, `name` FROM characters WHERE world_id = " << worldId << " ORDER BY guildrank ASC";
+	query << "SELECT id, `name` FROM characters WHERE world_id = " << worldId;
 	mysqlpp::UseQueryResult res = query.use();
 	Player *p;
 
