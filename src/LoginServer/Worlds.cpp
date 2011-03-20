@@ -98,7 +98,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
 	World *world = nullptr;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
-		if (iter->second->isConnected()) {
+		if (!iter->second->isConnected()) {
 			player->setWorldId(iter->first);
 			world = iter->second;
 			iter->second->setConnected(true);
