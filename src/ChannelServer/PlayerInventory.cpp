@@ -140,6 +140,8 @@ void PlayerInventory::load() {
 
 void PlayerInventory::save() {
 	mysqlpp::Query query = Database::getCharDB().query();
+	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << m_player->getId();
+	query.exec();
 
 	bool firstrun = true;
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {

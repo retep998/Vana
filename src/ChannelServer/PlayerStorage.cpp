@@ -158,6 +158,9 @@ void PlayerStorage::save() {
 		<< "mesos = " << getMesos();
 	query.exec();
 
+	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorldId();
+	query.exec();
+
 	bool firstrun = true;
 	for (int8_t i = 0; i < getNumItems(); i++) {
 		if (firstrun) {
