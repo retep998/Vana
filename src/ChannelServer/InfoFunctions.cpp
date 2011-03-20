@@ -90,12 +90,14 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 		if (type != 0) {
 			mysqlpp::Query query = Database::getDataDB().query();
 			mysqlpp::StoreQueryResult res;
+
+			string q = matches[2];
 			if (type < 200) {
 				if (type == 100) {
-					query << "SELECT objectid, `label` FROM strings WHERE objectid = " << mysqlpp::quote << (string) matches[2];
+					query << "SELECT objectid, `label` FROM strings WHERE objectid = " << mysqlpp::quote << q;
 				}
 				else {
-					query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND name LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+					query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND label LIKE " << mysqlpp::quote << ("%" + q + "%") ;
 				}
 				res = query.store();
 
@@ -121,10 +123,10 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 			}
 			else if (type > 200) {
 				if (type == 300) {
-					query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + (string) matches[2] + "%");
+					query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + q + "%");
 				}
 				else if (type == 400) {
-					query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << mysqlpp::quote << (string) matches[2];
+					query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << mysqlpp::quote << q;
 				}
 				res = query.store();
 
