@@ -40,16 +40,16 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Players... ";
 
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT id, `name` FROM characters WHERE world_id = " << worldId;
+	query << "SELECT c.character_id, c.`name` FROM characters c WHERE c.world_id = " << worldId;
 	mysqlpp::UseQueryResult res = query.use();
 	Player *p;
 
 	enum TableColumns {
-		Id, Name
+		CharacterId, Name
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		p = new Player(atoi(row[Id]));
+		p = new Player(atoi(row[CharacterId]));
 		p->setName(static_cast<string>(row[Name]));
 		p->setJob(-1);
 		p->setLevel(-1);

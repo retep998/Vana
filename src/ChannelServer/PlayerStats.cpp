@@ -432,8 +432,9 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 	if (getLevel() >= getMaxLevel(fulljob)) // Do not give EXP to characters of max level or over
 		return;
 	uint32_t cexp = getExp() + exp;
-	if (exp != 0)
-		LevelsPacket::showEXP(player, exp, white, inChat);
+	if (exp != 0) {
+		LevelsPacket::showExp(player, exp, white, inChat);
+	}
 	uint8_t level = getLevel();
 	if (cexp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fulljob);
@@ -543,7 +544,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	LevelsPacket::statOK(player);
+	LevelsPacket::statOk(player);
 	addStat(type);
 }
 
@@ -551,7 +552,7 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	packet.skipBytes(4);
 	uint32_t amount = packet.get<uint32_t>();
 
-	LevelsPacket::statOK(player);
+	LevelsPacket::statOk(player);
 
 	for (uint32_t i = 0; i < amount; i++) {
 		int32_t type = packet.get<int32_t>();

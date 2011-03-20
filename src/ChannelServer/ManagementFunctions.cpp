@@ -270,7 +270,12 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 
 		// Ban account
 		mysqlpp::Query accbanquery = Database::getCharDB().query();
-		accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = '9000-00-00 00:00:00' WHERE characters.name = '" << targetname << "'";
+		accbanquery << "UPDATE user_accounts u "
+					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "SET "
+					<< "	u.ban_reason = " << (int16_t) reason << ","
+					<< "	u.ban_expire = " << mysqlpp::quote << "9000-00-00 00:00:00" << " "
+					<< "WHERE c.name = " << mysqlpp::quote << targetname;
 		accbanquery.exec();
 
 		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
@@ -300,7 +305,12 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 
 		// Ban account
 		mysqlpp::Query accbanquery = Database::getCharDB().query();
-		accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_reason = " << (int16_t) reason << ", users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) WHERE characters.name = '" << targetname << "'";
+		accbanquery << "UPDATE user_accounts u "
+					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "SET "
+					<< "	u.ban_reason = " << (int16_t) reason << ","
+					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) "
+					<< "WHERE c.name = " << mysqlpp::quote << targetname;
 		accbanquery.exec();
 
 		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
@@ -330,7 +340,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 
 			// Ip ban
 			mysqlpp::Query accipbanquery = Database::getCharDB().query();
-			accipbanquery << "INSERT INTO `ipbans`(`id`, `ip`) VALUES (NULL, '" << targetip << "')";
+			accipbanquery << "INSERT INTO `ip_bans` (`id`, `ip`) VALUES (NULL, " << mysqlpp::quote << targetip << ")";
 			accipbanquery.exec();
 
 			int32_t affects = static_cast<int32_t>(accipbanquery.affected_rows());
@@ -352,7 +362,12 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 	if (args.length() != 0) {
 		// Unban account
 		mysqlpp::Query accbanquery = Database::getCharDB().query();
-		accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET users.ban_expire = '0000-00-00 00:00:00' WHERE characters.name = '" << args << "'";
+		accbanquery << "UPDATE user_accounts u "
+					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "SET "
+					<< "	u.ban_expire = " << mysqlpp::quote << "0000-00-00 00:00:00" << " "
+					<< "WHERE c.name = " << mysqlpp::quote << args;
+
 		accbanquery.exec();
 
 		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());

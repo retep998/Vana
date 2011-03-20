@@ -1,1 +1,0 @@
-ALTER TABLE `character_variables` CHANGE `value` `value` VARCHAR( 255 ) NOT NULL;

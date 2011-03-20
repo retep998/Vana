@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SendHeader.h"
 
-void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat) {
+void LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(3);
@@ -36,6 +36,7 @@ void LevelsPacket::showEXP(Player *player, int32_t exp, bool white, bool inChat)
 	if (inChat) {
 		packet.add<int8_t>(0);
 	}
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(0);
 
 	player->getSession()->send(packet);
@@ -49,7 +50,7 @@ void LevelsPacket::levelUp(Player *player) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void LevelsPacket::statOK(Player *player) {
+void LevelsPacket::statOk(Player *player) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_UPDATE);
 	packet.add<int16_t>(1);

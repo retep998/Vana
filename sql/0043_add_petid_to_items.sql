@@ -1,1 +1,0 @@
-ALTER TABLE items ADD petid INT DEFAULT 0 AFTER ijump;

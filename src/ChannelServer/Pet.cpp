@@ -39,7 +39,7 @@ Pet::Pet(Player *player, Item *item) :
 	mysqlpp::Query query = Database::getCharDB().query();
 	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << this->name << ")";
 	mysqlpp::SimpleResult res = query.execute();
-	this->id = (int32_t) res.insert_id();
+	this->id = (int64_t) res.insert_id();
 	item->setPetId(this->id);
 }
 

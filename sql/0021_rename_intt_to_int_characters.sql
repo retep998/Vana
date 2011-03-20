@@ -1,1 +1,0 @@
-ALTER TABLE characters CHANGE intt `int` smallint(6) not null default 4;

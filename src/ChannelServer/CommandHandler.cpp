@@ -196,10 +196,13 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			string reason_message = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				mysqlpp::Query accbanquery = Database::getCharDB().query();
-				accbanquery << "UPDATE users INNER JOIN characters ON users.id = characters.userid SET "
-					<< "users.ban_reason = " << (int16_t) reason << ", "
-					<< "users.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY), "
-					<< "ban_reason_message = " << mysqlpp::quote << reason_message << " WHERE characters.name = '" << victim << "'";
+				accbanquery << "UPDATE user_accounts u "
+					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "SET "
+					<< "	u.ban_reason = " << (int16_t) reason << ", "
+					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY), "
+					<< "	u.ban_reason_message = " << mysqlpp::quote << reason_message << " "
+					<< "WHERE c.name = " << mysqlpp::quote << victim;
 				accbanquery.exec();
 
 				GmPacket::block(player);

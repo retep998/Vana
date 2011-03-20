@@ -1,1 +1,0 @@
-ALTER TABLE `users` CHANGE `gender` `gender` TINYINT( 1 ) UNSIGNED NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE `characters` ADD COLUMN `buddylist_size` INTEGER UNSIGNED NOT NULL DEFAULT 20 AFTER `mesos`;

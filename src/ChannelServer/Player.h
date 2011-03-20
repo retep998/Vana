@@ -132,7 +132,6 @@ public:
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
-	void saveStats();
 	void saveAll(bool savecooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
@@ -141,6 +140,8 @@ private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
+	void saveStats();
+	void deleteItems();
 
 	bool trade_state;
 	bool save_on_dc;
