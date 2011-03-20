@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Summons.h"
 #include "SummonsPacket.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -38,7 +38,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
 	new Timer::Timer(bind(&Summons::removeSummon, m_player, puppet, false, SummonMessages::OutOfTime, true),
-		id, m_player->getTimers(), Timer::Time::fromNow(time * 1000));
+		id, m_player->getTimers(), TimeUtilities::fromNow(time * 1000));
 }
 
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {

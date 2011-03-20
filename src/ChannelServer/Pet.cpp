@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "PetsPacket.h"
 #include "Player.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;

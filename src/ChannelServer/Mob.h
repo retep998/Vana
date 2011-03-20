@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobDataProvider.h"
 #include "MovableLife.h"
 #include "Pos.h"
-#include "Timer/Container.h"
+#include "TimerContainer.h"
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>

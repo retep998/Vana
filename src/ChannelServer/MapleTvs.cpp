@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacketHelper.h"
 #include "SendHeader.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -79,7 +79,7 @@ void MapleTvs::parseBuffer() {
 
 		Timer::Id id(Timer::Types::MapleTvTimer, message.senderid, message.counter);
 		new Timer::Timer(bind(&MapleTvs::parseBuffer, this),
-			id, getTimers(), Timer::Time::fromNow(message.time * 1000));
+			id, getTimers(), TimeUtilities::fromNow(message.time * 1000));
 	}
 	else {
 		m_hasmessage = false;

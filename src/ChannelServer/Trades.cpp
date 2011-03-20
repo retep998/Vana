@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Trade.h"
 #include "TradeHandler.h"
-#include "Timer/Container.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
+#include "TimerContainer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -79,5 +79,5 @@ void Trades::stopTimeout(int32_t id) {
 void Trades::startTimeout(int32_t id, Player *sender) {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
 	new Timer::Timer(bind(&Trades::timeout, this, sender),
-		tid, nullptr, Timer::Time::fromNow(TradeTimeout * 1000));
+		tid, nullptr, TimeUtilities::fromNow(TradeTimeout * 1000));
 }

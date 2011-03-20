@@ -44,7 +44,7 @@
     <Filter Include="Source\Handlers\Chat Handlers">
       <UniqueIdentifier>{a43f671f-fadc-46a7-a555-8db7b505f76a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Handlers\Chat Handlers\Commands">
+    <Filter Include="Source\Handlers\Chat Handlers\GM Commands">
       <UniqueIdentifier>{2b5fee69-32fb-4aa6-af0a-6e907517b3b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -327,28 +327,28 @@
       <Filter>Source\Handlers\Chat Handlers</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\WarpFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\CommandHandler.cpp">
       <Filter>Source\Handlers\Chat Handlers</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\MessageFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\PlayerModFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\CustomFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\ManagementFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\InfoFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\MapFunctions.cpp">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -632,28 +632,28 @@
       <Filter>Source\Handlers\Chat Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\WarpFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\CommandHandler.h">
       <Filter>Source\Handlers\Chat Handlers</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\MessageFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerModFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\CustomFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\ManagementFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\InfoFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\MapFunctions.h">
-      <Filter>Source\Handlers\Chat Handlers\Commands</Filter>
+      <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

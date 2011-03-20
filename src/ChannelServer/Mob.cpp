@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
-#include "Timer/Time.h"
-#include "Timer/Timer.h"
+#include "TimeUtilities.h"
+#include "Timer.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -153,7 +153,7 @@ void Mob::initMob() {
 	if (info->removeAfter > 0) {
 		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
-			map->getTimers(), Timer::Time::fromNow(info->removeAfter * 1000));
+			map->getTimers(), TimeUtilities::fromNow(info->removeAfter * 1000));
 	}
 }
 
@@ -221,7 +221,7 @@ void Mob::applyDamage(int32_t playerid, int32_t damage, bool poison) {
 					for (unordered_map<int32_t, Mob *>::iterator spawniter = spawns.begin(); spawniter != spawns.end(); spawniter++) {
 						new Timer::Timer(bind(&Mob::die, spawniter->second, true),
 							Timer::Id(Timer::Types::SpongeCleanupTimer, id, spawniter->first),
-							0, Timer::Time::fromNow(400));
+							0, TimeUtilities::fromNow(400));
 					}
 					break;
 				case Mobs::ZakumArm1:
@@ -321,7 +321,7 @@ void Mob::addStatus(int32_t playerid, vector<StatusInfo> &statusinfo) {
 
 		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus, true),
 			Timer::Id(Timer::Types::MobStatusTimer, cstatus, 0),
-			getTimers(), Timer::Time::fromNow(statusinfo[i].time * 1000));
+			getTimers(), TimeUtilities::fromNow(statusinfo[i].time * 1000));
 	}
 	// Calculate new status mask
 	status = 0;

@@ -124,18 +124,6 @@
     <ClCompile Include="src\Common\MapleEncryption.cpp">
       <Filter>Source\Decoder</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Timer\Container.cpp">
-      <Filter>Source\Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Timer\Id.cpp">
-      <Filter>Source\Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Timer\Thread.cpp">
-      <Filter>Source\Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Timer\Timer.cpp">
-      <Filter>Source\Timer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\AbstractConnection.cpp">
       <Filter>Source\Abstracts</Filter>
     </ClCompile>
@@ -223,6 +211,18 @@
     <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp">
       <Filter>Source\Loggers\Combo</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\Timer.cpp">
+      <Filter>Source\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TimerContainer.cpp">
+      <Filter>Source\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TimerId.cpp">
+      <Filter>Source\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\TimerThread.cpp">
+      <Filter>Source\Timer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -287,24 +287,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\StringUtilities.h">
       <Filter>Source\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Container.h">
-      <Filter>Source\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Types.h">
-      <Filter>Source\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Id.h">
-      <Filter>Source\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Thread.h">
-      <Filter>Source\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Time.h">
-      <Filter>Source\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Timer\Timer.h">
-      <Filter>Source\Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\PacketCreator.h">
       <Filter>Source\Packets</Filter>
@@ -461,6 +443,21 @@
     </ClInclude>
     <ClInclude Include="src\Common\MapleSession.h">
       <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Timer.h">
+      <Filter>Source\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimerContainer.h">
+      <Filter>Source\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimerId.h">
+      <Filter>Source\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimerThread.h">
+      <Filter>Source\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimerTypes.h">
+      <Filter>Source\Timer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
