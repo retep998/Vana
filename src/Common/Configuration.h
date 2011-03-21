@@ -40,6 +40,8 @@ struct Configuration {
 	int32_t dropRate;
 	int32_t maxChars;
 	int32_t maxPlayerLoad;
+	int32_t fameTime;
+	int32_t fameResetTime;
 	size_t maxChannels;
 	string eventMsg;
 	string scrollingHeader;

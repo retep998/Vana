@@ -106,25 +106,25 @@ void LoginServer::loadWorlds() {
 		formatter % i % "port";
 		world->setPort(config.get<uint16_t>(formatter.str()));
 
-		formatter % i % "exprate";
+		formatter % i % "exp_rate";
 		conf.expRate = config.get<int32_t>(formatter.str());
 
-		formatter % i % "questexprate";
+		formatter % i % "quest_exp_rate";
 		conf.questExpRate = config.get<int32_t>(formatter.str());
 
-		formatter % i % "mesorate";
+		formatter % i % "meso_rate";
 		conf.mesoRate = config.get<int32_t>(formatter.str());
 
-		formatter % i % "droprate";
+		formatter % i % "drop_rate";
 		conf.dropRate = config.get<int32_t>(formatter.str());
 
-		formatter % i % "maxstats";
+		formatter % i % "max_stats";
 		conf.maxStats = config.get<int16_t>(formatter.str());
 
 		formatter % i % "max_multi_level";
 		conf.maxMultiLevel = config.get<uint8_t>(formatter.str());
 
-		formatter % i % "event_msg";
+		formatter % i % "event_message";
 		conf.eventMsg = config.getString(formatter.str());
 
 		formatter % i % "scrolling_header";
@@ -133,8 +133,14 @@ void LoginServer::loadWorlds() {
 		formatter % i % "max_player_load";
 		conf.maxPlayerLoad = config.get<int32_t>(formatter.str());
 
-		formatter % i % "maxchars";
+		formatter % i % "max_characters";
 		conf.maxChars = config.get<int32_t>(formatter.str());
+
+		formatter % i % "fame_time";
+		conf.fameTime = config.get<int32_t>(formatter.str());
+
+		formatter % i % "fame_reset_time";
+		conf.fameTime = config.get<int32_t>(formatter.str());
 
 		formatter % i % "pianus_attempts";
 		boss.attempts = config.get<int16_t>(formatter.str());

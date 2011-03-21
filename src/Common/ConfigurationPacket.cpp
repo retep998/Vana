@@ -32,6 +32,8 @@ void ConfigurationPacket::addConfig(const Configuration &config, PacketCreator &
 	packet.add<int32_t>(config.maxChars);
 	packet.add<int32_t>(config.maxPlayerLoad);
 	packet.add<int32_t>(config.maxChannels);
+	packet.add<int32_t>(config.fameTime);
+	packet.add<int32_t>(config.fameResetTime);
 	packet.addString(config.eventMsg);
 	packet.addString(config.scrollingHeader);
 	packet.addString(config.name);
@@ -55,6 +57,8 @@ Configuration ConfigurationPacket::getConfig(PacketReader &packet) {
 	conf.maxChars = packet.get<int32_t>();
 	conf.maxPlayerLoad = packet.get<int32_t>();
 	conf.maxChannels = packet.get<int32_t>();
+	conf.fameTime = packet.get<int32_t>();
+	conf.fameResetTime = packet.get<int32_t>();
 	conf.eventMsg = packet.getString();
 	conf.scrollingHeader = packet.getString();
 	conf.name = packet.getString();
