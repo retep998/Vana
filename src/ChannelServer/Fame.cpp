@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Fame.h"
+#include "ChannelServer.h"
 #include "Database.h"
 #include "FamePacket.h"
 #include "PacketReader.h"
@@ -70,9 +71,15 @@ void Fame::addFameLog(int32_t from, int32_t to) {
 }
 
 bool Fame::getLastFameLog(int32_t from) {
-	// Last fame from that char
+	int32_t fameTime = ChannelServer::Instance()->getFameTime();
+	if (fameTime == 0) {
+		return true;
+	}
+	if (fameTime == -1) {
+		return false;
+	}
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - 86400 ORDER BY `fame_time` DESC LIMIT 1";
+	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - " << fameTime << " ORDER BY `fame_time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty()) {
 		return (res.num_rows() != 0);
@@ -81,8 +88,15 @@ bool Fame::getLastFameLog(int32_t from) {
 }
 
 bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
+	int32_t fameResetTime = ChannelServer::Instance()->getFameResetTime();
+	if (fameResetTime == 0) {
+		return true;
+	}
+	if (fameResetTime == -1) {
+		return false;
+	}
 	mysqlpp::Query query = Database::getCharDB().query();
-	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND `to_character_id` = " << to << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - 2592000 ORDER BY `fame_time` DESC LIMIT 1";
+	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND `to_character_id` = " << to << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - " << fameResetTime << " ORDER BY `fame_time` DESC LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 	if (!res.empty()) {
 		return (res.num_rows() != 0);

@@ -73,6 +73,8 @@ public:
 	int32_t getMesoRate() const { return m_config.mesoRate; }
 	int32_t getDropRate() const { return m_config.dropRate; }
 	int32_t getMaxChars() const { return m_config.maxChars; }
+	int32_t getFameTime() const { return m_config.fameTime; }
+	int32_t getFameResetTime() const { return m_config.fameResetTime; }
 	int16_t getPianusAttempts() const { return m_config.pianus.attempts; }
 	int16_t getPapAttempts() const { return m_config.pap.attempts; }
 	int16_t getZakumAttempts() const { return m_config.zakum.attempts; }
