@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ServerConnection.h"
 #include <algorithm>
 
-void AuthenticationPacket::sendPassword(AbstractServerConnection *player, const string &pass, const IpMatrix &extIp) {
+void AuthenticationPacket::sendPassword(AbstractServerConnection *connection, const string &pass, const IpMatrix &extIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_PASSWORD);
 	packet.addString(pass);
@@ -31,6 +31,6 @@ void AuthenticationPacket::sendPassword(AbstractServerConnection *player, const 
 	packet.add<uint32_t>(extIp.size());
 	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
 
-	packet.add<int8_t>(player->getType());
-	player->getSession()->send(packet);
+	packet.add<int8_t>(connection->getType());
+	connection->getSession()->send(packet);
 }

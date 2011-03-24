@@ -25,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/bind.hpp>
 #include <iostream>
 
-MapleSession::MapleSession(boost::asio::io_service &io_service, SessionManagerPtr sessionManager, AbstractConnection *player, bool isServer, bool isEncrypted, const string &patchLocation) :
+MapleSession::MapleSession(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation) :
 	AbstractSession(sessionManager, (!isServer || isEncrypted)),
 		// Apparently, "isServer" is true from sessions created by the server for the client
 		// In addition, it's false from sessions created for the server clients
-	m_socket(io_service),
-	m_player(player),
+	m_socket(ioService),
+	m_connection(connection),
 	m_isServer(isServer),
 	m_patchLocation(patchLocation)
 {
@@ -42,8 +42,8 @@ void MapleSession::start() {
 }
 
 void MapleSession::handle_start() {
-	m_player->setSession(this);
-	m_player->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
+	m_connection->setSession(this);
+	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_isServer) {
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
@@ -117,14 +117,14 @@ void MapleSession::start_read_header() {
 			boost::asio::placeholders::bytes_transferred));
 }
 
-void MapleSession::handle_write(const boost::system::error_code &error, size_t bytes_transferred) {
+void MapleSession::handle_write(const boost::system::error_code &error, size_t bytesTransferred) {
 	boost::mutex::scoped_lock l(m_sendMutex);
 	if (error) {
 		disconnect();
 	}
 }
 
-void MapleSession::handle_read_header(const boost::system::error_code &error, size_t bytes_transferred) {
+void MapleSession::handle_read_header(const boost::system::error_code &error, size_t bytesTransferred) {
 	if (!error) {
 		size_t len = Decoder::getLength(m_buffer.get(), isEncrypted());
 
@@ -147,12 +147,12 @@ void MapleSession::handle_read_header(const boost::system::error_code &error, si
 	}
 }
 
-void MapleSession::handle_read_body(const boost::system::error_code &error, size_t bytes_transferred) {
+void MapleSession::handle_read_body(const boost::system::error_code &error, size_t bytesTransferred) {
 	if (!error) {
-		m_decoder.decrypt(m_buffer.get(), bytes_transferred);
+		m_decoder.decrypt(m_buffer.get(), bytesTransferred);
 
-		PacketReader packet(m_buffer.get(), bytes_transferred);
-		m_player->handleRequest(packet);
+		PacketReader packet(m_buffer.get(), bytesTransferred);
+		m_connection->handleRequest(packet);
 
 		start_read_header();
 	}
@@ -162,5 +162,5 @@ void MapleSession::handle_read_body(const boost::system::error_code &error, size
 }
 
 uint32_t MapleSession::getIp() const {
-	return m_player->getIp();
+	return m_connection->getIp();
 }

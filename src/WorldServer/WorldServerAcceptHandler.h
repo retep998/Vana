@@ -17,14 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class WorldServerAcceptConnection;
 class PacketReader;
+class WorldServerAcceptConnection;
 
 namespace WorldServerAcceptHandler {
-	void findPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet);
-	void scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet);
-	void groupChat(WorldServerAcceptConnection *player, PacketReader &packet);
+	void findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void scrollingHeader(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void groupChat(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void sendToChannels(PacketReader &packet);
 	void sendToLogin(PacketReader &packet);
 }

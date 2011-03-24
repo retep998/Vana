@@ -95,55 +95,55 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	}
 }
 
-int8_t Worlds::addWorldServer(LoginServerAcceptConnection *player) {
+int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	World *world = nullptr;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (!iter->second->isConnected()) {
-			player->setWorldId(iter->first);
+			connection->setWorldId(iter->first);
 			world = iter->second;
 			iter->second->setConnected(true);
-			iter->second->setConnection(player);
+			iter->second->setConnection(connection);
 			break;
 		}
 	}
 
 	if (world != nullptr) {
-		LoginServerAcceptPacket::connect(player, world);
+		LoginServerAcceptPacket::connect(connection, world);
 
 		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(world->getId())));
 
 		return world->getId();
 	}
 	else {
-		LoginServerAcceptPacket::noMoreWorld(player);
+		LoginServerAcceptPacket::noMoreWorld(connection);
 		std::cout << "Error: No more worlds to assign." << std::endl;
-		player->getSession()->disconnect();
+		connection->getSession()->disconnect();
 		return -1;
 	}
 }
 
-int8_t Worlds::addChannelServer(LoginServerAcceptConnection *player) {
+int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	int8_t worldid = -1;
 	uint16_t port;
-	AbstractServerAcceptConnection *worldPlayer;
+	AbstractServerAcceptConnection *worldConnection;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->getChannelCount() < iter->second->getMaxChannels() && iter->second->isConnected()) {
 			worldid = iter->second->getId();
 			port = iter->second->getPort();
-			worldPlayer = iter->second->getConnection();
+			worldConnection = iter->second->getConnection();
 			break;
 		}
 	}
 
 	if (worldid != -1) {
-		uint32_t worldIp = IpUtilities::matchIpSubnet(player->getIp(), worldPlayer->getExternalIp(), worldPlayer->getIp());
-		LoginServerAcceptPacket::connectChannel(player, worldid, worldIp, port);
+		uint32_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), worldConnection->getExternalIp(), worldConnection->getIp());
+		LoginServerAcceptPacket::connectChannel(connection, worldid, worldIp, port);
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(player, worldid, 0, 0);
+		LoginServerAcceptPacket::connectChannel(connection, worldid, 0, 0);
 		std::cout << "Error: No more channels to assign." << std::endl;
 	}
-	player->getSession()->disconnect();
+	connection->getSession()->disconnect();
 	return worldid;
 }
 

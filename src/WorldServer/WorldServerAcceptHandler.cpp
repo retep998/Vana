@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.h"
 #include "WorldServerAcceptPacket.h"
 
-void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
 	string message = packet.getString();
@@ -43,31 +43,31 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *player, Pa
 	}
 }
 
-void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
 	string findee_name = packet.getString();
 
 	Player *findee = PlayerDataProvider::Instance()->getPlayer(findee_name);
 
-	WorldServerAcceptPacket::findPlayer(player, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
+	WorldServerAcceptPacket::findPlayer(connection, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
 }
 
-void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t whisperer = packet.get<int32_t>();
 	string whisperee_name = packet.getString();
 	string message = packet.getString();
 
 	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whisperee_name);
 	if (whisperee->isOnline()) {
-		WorldServerAcceptPacket::findPlayer(player, whisperer, -1, whisperee->getName(), 1);
-		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::Instance()->getPlayer(whisperer)->getName(), player->getChannel(),  message);
+		WorldServerAcceptPacket::findPlayer(connection, whisperer, -1, whisperee->getName(), 1);
+		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::Instance()->getPlayer(whisperer)->getName(), connection->getChannel(),  message);
 	}
 	else {
-		WorldServerAcceptPacket::findPlayer(player, whisperer, whisperee->getChannel(), whisperee_name);
+		WorldServerAcceptPacket::findPlayer(connection, whisperer, whisperee->getChannel(), whisperee_name);
 	}
 }
 
-void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *player, PacketReader &packet) {
+void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	string message = packet.getString();
 	WorldServer::Instance()->setScrollingHeader(message);
 }

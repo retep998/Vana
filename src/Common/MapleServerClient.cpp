@@ -29,11 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::cout;
 using std::endl;
 
-MapleServerClient::MapleServerClient(boost::asio::io_service &io_service, uint32_t server, uint16_t port, SessionManagerPtr sessionManager, AbstractConnection *player) :
-	MapleSession(io_service, sessionManager, player, false, true),
+MapleServerClient::MapleServerClient(boost::asio::io_service &ioService, uint32_t server, uint16_t port, SessionManagerPtr sessionManager, AbstractConnection *connection) :
+	MapleSession(ioService, sessionManager, connection, false, true),
 	m_server(server),
 	m_port(port),
-	m_resolver(io_service)
+	m_resolver(ioService)
 {
 }
 

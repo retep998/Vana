@@ -39,7 +39,7 @@ public:
 			singleton = new Channels;
 		return singleton;
 	}
-	void registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port);
+	void registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port);
 	void removeChannel(uint16_t channel);
 	Channel * getChannel(uint16_t num);
 	void increasePopulation(uint16_t channel);

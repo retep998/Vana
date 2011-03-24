@@ -48,7 +48,7 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port) {
+void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
@@ -56,10 +56,10 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *player, uint1
 
 	ConfigurationPacket::addConfig(WorldServer::Instance()->getConfig(), packet);
 
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
+void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FIND);
 	packet.add<int32_t>(finder);
@@ -67,7 +67,7 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *player, in
 	packet.addString(findee);
 	packet.add<int8_t>(is);
 
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
 void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message) {
@@ -89,25 +89,25 @@ void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *player, int32_t setBit) {
+void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *connection, int32_t setBit) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SET_RATES);
 	packet.add<int32_t>(setBit);
 
 	Configuration &conf = WorldServer::Instance()->getConfig();
 
-	if (setBit & Rates::SetBits::exp) {
+	if (setBit & Rates::SetBits::Exp) {
 		packet.add<int32_t>(conf.expRate);
 	}
-	if (setBit & Rates::SetBits::questExp) {
+	if (setBit & Rates::SetBits::QuestExp) {
 		packet.add<int32_t>(conf.questExpRate);
 	}
-	if (setBit & Rates::SetBits::meso) {
+	if (setBit & Rates::SetBits::Meso) {
 		packet.add<int32_t>(conf.mesoRate);
 	}
-	if (setBit & Rates::SetBits::drop) {
+	if (setBit & Rates::SetBits::Drop) {
 		packet.add<int32_t>(conf.dropRate);
 	}
 
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }

@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = nullptr;
 
-void Channels::registerChannel(WorldServerAcceptConnection *player, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
+void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
 	shared_ptr<Channel> chan(new Channel());
-	chan->setConnection(player);
+	chan->setConnection(connection);
 	chan->setId(channel);
 	chan->setIp(ip);
 	chan->setExternalIps(extIp);

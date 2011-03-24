@@ -28,5 +28,5 @@ using std::vector;
 class AbstractServerConnection;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnection *player, const string &pass, const IpMatrix &extIp);
+	void sendPassword(AbstractServerConnection *connection, const string &pass, const IpMatrix &extIp);
 }

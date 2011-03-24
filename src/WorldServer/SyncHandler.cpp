@@ -243,19 +243,20 @@ void SyncHandler::partyOperation(PacketReader &packet) {
 	}
 }
 
-void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
 		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
 		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
 	}
-	else { // Channel doesn't exist (offline)
-		SyncPacket::PlayerPacket::playerChangeChannel(player, playerid, 0, -1);
+	else {
+		// Channel doesn't exist (offline)
+		SyncPacket::PlayerPacket::playerChangeChannel(connection, playerid, 0, -1);
 	}
 }
 
-void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet) {
+void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerid = packet.get<int32_t>();
 	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
 	if (gamePlayer) {

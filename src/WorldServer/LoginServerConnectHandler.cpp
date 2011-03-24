@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnection *player, PacketReader &packet) {
+void LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) {
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);

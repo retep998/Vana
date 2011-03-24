@@ -54,8 +54,8 @@ public:
 	World * getWorld(uint8_t id);
 
 	// Inter-server
-	int8_t addWorldServer(LoginServerAcceptConnection *player); //Inter-server
-	int8_t addChannelServer(LoginServerAcceptConnection *player); //Inter-server
+	int8_t addWorldServer(LoginServerAcceptConnection *connection);
+	int8_t addChannelServer(LoginServerAcceptConnection *connection);
 private:
 	Worlds() { }
 	static Worlds *singleton;

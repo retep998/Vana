@@ -21,6 +21,6 @@ class LoginServerConnection;
 class PacketReader;
 
 namespace LoginServerConnectHandler {
-	void connect(LoginServerConnection *player, PacketReader &packet);
+	void connect(LoginServerConnection *connection, PacketReader &packet);
 	void newPlayer(PacketReader &packet);
 }

@@ -26,8 +26,8 @@ class LoginServerAcceptConnection;
 class World;
 
 namespace LoginServerAcceptPacket {
-	void connect(LoginServerAcceptConnection *player, World *world);
-	void noMoreWorld(LoginServerAcceptConnection *player);
-	void connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port);
-	void newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid, uint32_t charIp);
+	void connect(LoginServerAcceptConnection *connection, World *world);
+	void noMoreWorld(LoginServerAcceptConnection *connection);
+	void connectChannel(LoginServerAcceptConnection *connection, int8_t worldid, uint32_t ip, uint16_t port);
+	void newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charid, uint32_t charIp);
 }

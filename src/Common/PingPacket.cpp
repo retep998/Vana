@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "SmsgHeader.h"
 
-void PingPacket::ping(AbstractConnection *player) {
+void PingPacket::ping(AbstractConnection *connection) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PING);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void PingPacket::pong(AbstractConnection *player) {
+void PingPacket::pong(AbstractConnection *connection) {
 	PacketCreator packet;
 	packet.addHeader(CMSG_PONG);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }

@@ -22,16 +22,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class WorldServerAcceptConnection;
 class PacketReader;
+class WorldServerAcceptConnection;
 
 namespace WorldServerAcceptPacket {
-	void connect(WorldServerAcceptConnection *player, uint16_t channel, uint16_t port);
-	void findPlayer(WorldServerAcceptConnection *player, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
+	void connect(WorldServerAcceptConnection *connection, uint16_t channel, uint16_t port);
+	void findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
 	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
 	void scrollingHeader(const string &message);
 	void groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender);
 
 	// I have my eye on you...
-	void sendRates(WorldServerAcceptConnection *player, int32_t setBit);
+	void sendRates(WorldServerAcceptConnection *connection, int32_t setBit);
 }

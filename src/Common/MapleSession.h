@@ -39,7 +39,7 @@ class PacketCreator;
 
 class MapleSession : public AbstractSession, public boost::enable_shared_from_this<MapleSession> {
 public:
-	MapleSession(boost::asio::io_service &io_service, SessionManagerPtr sessionManager, AbstractConnection *player, bool isServer, bool isEncrypted, const string &patchLocation = "");
+	MapleSession(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
 
 	tcp::socket & getSocket() { return m_socket; }
 
@@ -50,9 +50,9 @@ public:
 	uint32_t getIp() const;
 protected:
 	void start_read_header();
-	void handle_write(const boost::system::error_code &error, size_t bytes_transferred);
-	void handle_read_header(const boost::system::error_code &error, size_t bytes_transferred);
-	void handle_read_body(const boost::system::error_code &error, size_t bytes_transferred);
+	void handle_write(const boost::system::error_code &error, size_t bytesTransferred);
+	void handle_read_header(const boost::system::error_code &error, size_t bytesTransferred);
+	void handle_read_body(const boost::system::error_code &error, size_t bytesTransferred);
 	void handle_start();
 	void handle_stop();
 	void send(const unsigned char *buf, int32_t len);
@@ -63,7 +63,7 @@ protected:
 
 	tcp::socket m_socket;
 	Decoder m_decoder;
-	std::tr1::shared_ptr<AbstractConnection> m_player;
+	std::tr1::shared_ptr<AbstractConnection> m_connection;
 	shared_array<unsigned char> m_buffer;
 	bool m_isServer;
 	string m_patchLocation;

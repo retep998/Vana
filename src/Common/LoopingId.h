@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 template<typename T>
 class LoopingId {
 public:
-	LoopingId(T minimum = 1, T maximum = std::numeric_limits<T>::max());
+	explicit LoopingId(T minimum = 1, T maximum = std::numeric_limits<T>::max());
 	T next();
 	void reset();
 private:
