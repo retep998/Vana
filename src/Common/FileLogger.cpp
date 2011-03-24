@@ -84,9 +84,9 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 }
 
 FileLogger::FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
-Logger(format, timeFormat, serverType),
-m_bufferSize(bufferSize),
-m_filenameFormat(filename)
+	Logger(filename, format, timeFormat, serverType, bufferSize),
+	m_bufferSize(bufferSize),
+	m_filenameFormat(filename)
 {
 	m_buffer.reserve(bufferSize);
 }

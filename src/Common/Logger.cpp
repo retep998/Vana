@@ -142,10 +142,10 @@ string Logger::getTimeFormatted(const string &fmt) {
 	return ret;
 }
 
-Logger::Logger(const string &format, const string &timeFormat, int16_t serverType) :
-m_format(format),
-m_timeFormat(timeFormat),
-m_serverType(serverType)
+Logger::Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
+	m_format(format),
+	m_timeFormat(timeFormat),
+	m_serverType(serverType)
 {
 }
 

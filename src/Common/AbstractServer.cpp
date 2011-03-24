@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
+#include "ComboLoggers.h"
 #include "Combo Loggers/ConsoleFileLogger.h"
 #include "Combo Loggers/ConsoleSqlFileLogger.h"
 #include "Combo Loggers/ConsoleSqlLogger.h"
@@ -75,13 +76,13 @@ void AbstractServer::createLogger(const LogConfig &conf) {
 	size_t bSize = conf.bufferSize;
 
 	switch (conf.destination) {
-		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(form, tForm, sType)); break;
+		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(file, form, tForm, sType, bSize)); break;
 		case LogDestinations::File: m_logger.reset(new FileLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::Sql: m_logger.reset(new SqlLogger(form, tForm, sType, bSize)); break;
-		case LogDestinations::FileSql: m_logger.reset(new SqlFileLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileConsole: m_logger.reset(new ConsoleFileLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::SqlConsole: m_logger.reset(new ConsoleSqlLogger(form, tForm, sType, bSize));
-		case LogDestinations::FileSqlConsole: m_logger.reset(new ConsoleSqlFileLogger(file, form, tForm, sType, bSize));  break;
+		case LogDestinations::Sql: m_logger.reset(new SqlLogger(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileSql: m_logger.reset(new DualLogger<FileLogger, SqlLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileConsole: m_logger.reset(new DualLogger<FileLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::SqlConsole: m_logger.reset(new DualLogger<SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileSqlConsole: m_logger.reset(new TriLogger<FileLogger, SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
 	}
 }
 

@@ -83,10 +83,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleFileLogger.cpp" />
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp" />
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp" />
-    <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp" />
     <ClCompile Include="src\Common\ConfigurationPacket.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
@@ -143,10 +139,7 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h" />
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.h" />
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h" />
-    <ClInclude Include="src\Common\Combo Loggers\SqlFileLogger.h" />
+    <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
     <ClInclude Include="src\Common\ConfigurationPacket.h" />
     <ClInclude Include="src\Common\ConsoleLogger.h" />
