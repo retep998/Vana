@@ -29,33 +29,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::lexical_cast;
 
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *player, PacketReader &packet) {
+void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	chan->setIp(packet.get<uint32_t>());
 	IpUtilities::extractExternalIp(packet, chan->getExternalIps());
 	chan->setPort(packet.get<uint16_t>());
-	Worlds::Instance()->getWorld(player->getWorldId())->addChannel(channel, chan);
-	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(static_cast<int16_t>(player->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
+	Worlds::Instance()->getWorld(connection->getWorldId())->addChannel(channel, chan);
+	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(static_cast<int16_t>(connection->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
 }
 
-void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *player, PacketReader &packet) {
+void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	int32_t population = packet.get<int32_t>();
 
-	World *world = Worlds::Instance()->getWorld(player->getWorldId());
+	World *world = Worlds::Instance()->getWorld(connection->getWorldId());
 	world->getChannel(channel)->setPopulation(population);
 	Worlds::Instance()->calculatePlayerLoad(world);
 }
 
-void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *player, PacketReader &packet) {
+void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 
-	Worlds::Instance()->getWorld(player->getWorldId())->removeChannel(channel);
-	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(static_cast<int16_t>(player->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
+	Worlds::Instance()->getWorld(connection->getWorldId())->removeChannel(channel);
+	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(static_cast<int16_t>(connection->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
 }
 
-void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *player, PacketReader &packet) {
+void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	Worlds::Instance()->toWorlds(pack);

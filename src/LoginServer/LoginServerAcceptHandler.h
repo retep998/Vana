@@ -21,8 +21,8 @@ class LoginServerAcceptConnection;
 class PacketReader;
 
 namespace LoginServerAcceptHandler {
-	void registerChannel(LoginServerAcceptConnection *player, PacketReader &packet);
-	void updateChannelPop(LoginServerAcceptConnection *player, PacketReader &packet);
-	void removeChannel(LoginServerAcceptConnection *player, PacketReader &packet);
-	void toWorlds(LoginServerAcceptConnection *player, PacketReader &packet);
+	void registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet);
+	void updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet);
+	void removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet);
+	void toWorlds(LoginServerAcceptConnection *connection, PacketReader &packet);
 }

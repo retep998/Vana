@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World *world) {
+void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, World *world) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(world->getId());
@@ -34,30 +34,30 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *player, World
 
 	ConfigurationPacket::addConfig(world->getConfig(), packet);
 
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *player) {
+void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(-1);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *player, int8_t worldid, uint32_t ip, uint16_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldid, uint32_t ip, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldid);
 	packet.add<uint32_t>(ip);
 	packet.add<uint16_t>(port);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *player, uint16_t channel, int32_t charid, uint32_t charIp) {
+void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charid, uint32_t charIp) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_NEW_PLAYER);
 	packet.add<int16_t>(channel);
 	packet.add<int32_t>(charid);
 	packet.add<uint32_t>(charIp);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }

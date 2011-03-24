@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Rates {
 	namespace SetBits {
-		static int32_t exp = 1;
-		static int32_t questExp = 2;
-		static int32_t meso = 4;
-		static int32_t drop = 8;
-		static int32_t all = exp + questExp + meso + drop;
+		static int32_t Exp = 0x01;
+		static int32_t QuestExp = 0x02;
+		static int32_t Meso = 0x04;
+		static int32_t Drop = 0x08;
+		static int32_t All = Exp | QuestExp | Meso | Drop;
 	}
 }

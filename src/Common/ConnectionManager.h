@@ -41,8 +41,8 @@ public:
 		return singleton;
 	}
 
-	void accept(uint16_t port, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation = "");
-	void connect(uint32_t server, uint16_t port, AbstractConnection *player);
+	void accept(uint16_t port, AbstractConnectionFactory *acf, bool encrypted, const string &patchLocation = "");
+	void connect(uint32_t server, uint16_t port, AbstractConnection *connection);
 	void stop();
 
 	void run();

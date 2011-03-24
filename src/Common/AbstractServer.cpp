@@ -17,10 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.h"
 #include "ComboLoggers.h"
-#include "Combo Loggers/ConsoleFileLogger.h"
-#include "Combo Loggers/ConsoleSqlFileLogger.h"
-#include "Combo Loggers/ConsoleSqlLogger.h"
-#include "Combo Loggers/SqlFileLogger.h"
 #include "ConfigFile.h"
 #include "Configuration.h"
 #include "ConnectionManager.h"

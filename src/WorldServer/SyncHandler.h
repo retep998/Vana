@@ -44,8 +44,8 @@ namespace SyncHandler {
 	void handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void playerConnect(uint16_t channel, PacketReader &packet);
 	void playerDisconnect(uint16_t channel, PacketReader &packet);
-	void playerChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
-	void handleChangeChannel(WorldServerAcceptConnection *player, PacketReader &packet);
+	void playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void updateLevel(PacketReader &packet);
 	void updateJob(PacketReader &packet);
 	void updateMap(PacketReader &packet);

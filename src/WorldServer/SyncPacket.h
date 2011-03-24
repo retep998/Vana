@@ -43,19 +43,17 @@ namespace SyncPacket {
 	namespace PlayerPacket {
 		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
 		void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
-		void playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, uint16_t port);
+		void playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerid, uint32_t ip, uint16_t port);
 		void newConnectable(uint16_t channel, int32_t playerid, uint32_t playerIp);
-		void sendParties(WorldServerAcceptConnection *player);
+		void sendParties(WorldServerAcceptConnection *connection);
 		void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
 		void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
 		void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
 		void sendCreateParty(int32_t playerid, int32_t partyid);
 		void sendDisbandParty(int32_t partyid);
-		void sendGuilds(WorldServerAcceptConnection *player);
-		void sendAlliances(WorldServerAcceptConnection *player);
 	}
 	namespace BuddyPacket {
-		void sendBuddyInvite(WorldServerAcceptConnection *channel, int32_t inviteeid, int32_t inviterid, const string &name);
-		void sendBuddyOnlineOffline(WorldServerAcceptConnection *channel, const vector<int32_t> &players, int32_t playerid, int32_t channelid);
+		void sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeid, int32_t inviterid, const string &name);
+		void sendBuddyOnlineOffline(WorldServerAcceptConnection *connection, const vector<int32_t> &players, int32_t playerid, int32_t channelid);
 	}
 }

@@ -259,7 +259,7 @@ void SyncPacket::PlayerPacket::sendHeldPacketRemoval(uint16_t channel, int32_t p
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *player, int32_t playerid, uint32_t ip, uint16_t port) {
+void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerid, uint32_t ip, uint16_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
@@ -267,10 +267,10 @@ void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *
 	packet.add<int32_t>(playerid);
 	packet.add<uint32_t>(ip);
 	packet.add<uint16_t>(port);
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void SyncPacket::PlayerPacket::sendParties(WorldServerAcceptConnection *player) {
+void SyncPacket::PlayerPacket::sendParties(WorldServerAcceptConnection *connection) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::ChannelStart);
@@ -289,7 +289,7 @@ void SyncPacket::PlayerPacket::sendParties(WorldServerAcceptConnection *player) 
 		packet.add<int32_t>(iter->second->getLeader());
 	}
 
-	player->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
 void SyncPacket::PlayerPacket::sendRemovePartyPlayer(int32_t playerid, int32_t partyid) {
@@ -341,7 +341,7 @@ void SyncPacket::PlayerPacket::sendDisbandParty(int32_t partyid) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *channel, int32_t inviteeid, int32_t inviterid, const string &name) {
+void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeid, int32_t inviterid, const string &name) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
@@ -349,10 +349,10 @@ void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *chann
 	packet.add<int32_t>(inviteeid);
 	packet.add<int32_t>(inviterid);
 	packet.addString(name);
-	channel->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }
 
-void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection *channel, const vector<int32_t> &players, int32_t playerid, int32_t channelid) {
+void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection *connection, const vector<int32_t> &players, int32_t playerid, int32_t channelid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
@@ -360,5 +360,5 @@ void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection
 	packet.add<int32_t>(playerid);
 	packet.add<int32_t>(channelid); // I need to get FF FF FF FF, not FF FF 00 00
 	packet.addVector(players);
-	channel->getSession()->send(packet);
+	connection->getSession()->send(packet);
 }

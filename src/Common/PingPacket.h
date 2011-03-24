@@ -20,6 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractConnection;
 
 namespace PingPacket {
-	void ping(AbstractConnection *player);
-	void pong(AbstractConnection *player);
+	void ping(AbstractConnection *connection);
+	void pong(AbstractConnection *connection);
 }

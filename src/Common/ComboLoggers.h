@@ -27,7 +27,7 @@ using std::string;
 template<typename Logger1, typename Logger2>
 class DualLogger : public Logger {
 public:
-	explicit DualLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+	DualLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
 		m_logger1.reset(new Logger1(filename, format, timeFormat, serverType, bufferSize));
 		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
 	}
@@ -46,7 +46,7 @@ private:
 template<typename Logger1, typename Logger2, typename Logger3>
 class TriLogger : public Logger {
 public:
-	explicit TriLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+	TriLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
 		m_logger1.reset(new Logger1(filename, format, timeFormat, serverType, bufferSize));
 		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
 		m_logger3.reset(new Logger3(filename, format, timeFormat, serverType, bufferSize));
