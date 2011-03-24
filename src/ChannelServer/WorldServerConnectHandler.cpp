@@ -120,16 +120,16 @@ void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 
 void WorldServerConnectHandler::setRates(PacketReader &packet) {
 	int32_t ratesSetBit = packet.get<int32_t>();
-	if (ratesSetBit & Rates::SetBits::exp) {
+	if (ratesSetBit & Rates::SetBits::Exp) {
 		ChannelServer::Instance()->setExpRate(packet.get<int32_t>());
 	}
-	if (ratesSetBit & Rates::SetBits::questExp) {
+	if (ratesSetBit & Rates::SetBits::QuestExp) {
 		ChannelServer::Instance()->setQuestExpRate(packet.get<int32_t>());
 	}
-	if (ratesSetBit & Rates::SetBits::meso) {
+	if (ratesSetBit & Rates::SetBits::Meso) {
 		ChannelServer::Instance()->setMesoRate(packet.get<int32_t>());
 	}
-	if (ratesSetBit & Rates::SetBits::drop) {
+	if (ratesSetBit & Rates::SetBits::Drop) {
 		ChannelServer::Instance()->setDropRate(packet.get<int32_t>());
 	}
 }
