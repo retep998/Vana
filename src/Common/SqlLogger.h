@@ -26,7 +26,7 @@ using std::vector;
 
 class SqlLogger : public Logger {
 public:
-	SqlLogger(const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	SqlLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	~SqlLogger();
 
 	void log(LogTypes::LogTypes type, const string &identifier, const string &message);

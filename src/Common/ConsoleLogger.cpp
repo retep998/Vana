@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
-ConsoleLogger::ConsoleLogger(const string &format, const string &timeFormat, int16_t serverType) :
-Logger(format, timeFormat, serverType)
+ConsoleLogger::ConsoleLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
+	Logger(filename, format, timeFormat, serverType, bufferSize)
 {
 }
 

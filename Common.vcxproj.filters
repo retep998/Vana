@@ -44,9 +44,6 @@
     <Filter Include="Source\Loggers">
       <UniqueIdentifier>{fe600ed3-a39e-4c75-9cfd-9836aff52806}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Loggers\Combo">
-      <UniqueIdentifier>{967be805-c083-44ad-af8c-10031db3207b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Game Constants">
       <UniqueIdentifier>{29b0530c-2642-4ae6-9118-6a284e250b78}</UniqueIdentifier>
     </Filter>
@@ -190,18 +187,6 @@
     <ClCompile Include="src\Common\SqlLogger.cpp">
       <Filter>Source\Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleFileLogger.cpp">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.cpp">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Combo Loggers\ConsoleSqlLogger.cpp">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Combo Loggers\SqlFileLogger.cpp">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Timer.cpp">
       <Filter>Source\Timer</Filter>
     </ClCompile>
@@ -293,18 +278,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\PacketReader.h">
       <Filter>Source\Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleFileLogger.h">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Combo Loggers\SqlFileLogger.h">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlFileLogger.h">
-      <Filter>Source\Loggers\Combo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Combo Loggers\ConsoleSqlLogger.h">
-      <Filter>Source\Loggers\Combo</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ConsoleLogger.h">
       <Filter>Source\Loggers</Filter>
@@ -455,6 +428,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\SmsgHeader.h">
       <Filter>Source\Packet Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ComboLoggers.h">
+      <Filter>Source\Loggers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

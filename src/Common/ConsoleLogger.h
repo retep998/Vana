@@ -25,7 +25,7 @@ using std::string;
 // Default logger/console
 class ConsoleLogger : public Logger {
 public:
-	ConsoleLogger(const string &format, const string &timeFormat, int16_t serverType);
+	ConsoleLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 
 	void log(LogTypes::LogTypes type, const string &identifier, const string &message);
 };
