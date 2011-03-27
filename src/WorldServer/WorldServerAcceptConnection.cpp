@@ -67,7 +67,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
 			WorldServerAcceptPacket::connect(this, channel, port);
-			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::all);
+			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::All);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 			SyncPacket::PlayerPacket::sendParties(this);
 			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
