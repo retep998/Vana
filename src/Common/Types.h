@@ -33,6 +33,8 @@ typedef boost::intmax_t intmax_t;
 typedef boost::uintmax_t uintmax_t;
 
 typedef int16_t header_t; // Allows for easier transitioning when the header type isn't 2 bytes
+typedef uint16_t port_t;
+typedef uint32_t ip_t;
 
 // Take out this ugliness when C++0x is widely supported, find other instances of "C++0x" and remove
 #include <boost/config.hpp>

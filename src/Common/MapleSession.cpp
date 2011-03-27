@@ -83,7 +83,6 @@ void MapleSession::send(const unsigned char *buf, int32_t len) {
 	memcpy(buffer + headerLen, buf, len);
 	m_decoder.createHeader(buffer, (int16_t) len);
 	m_decoder.encrypt(buffer + headerLen, len);
-	m_decoder.next();
 
 	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, realLength),
 		boost::bind(&MapleSession::handle_write, shared_from_this(),
@@ -161,6 +160,6 @@ void MapleSession::handle_read_body(const boost::system::error_code &error, size
 	}
 }
 
-uint32_t MapleSession::getIp() const {
+ip_t MapleSession::getIp() const {
 	return m_connection->getIp();
 }

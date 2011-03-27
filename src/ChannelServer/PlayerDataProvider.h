@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 #include "GameObjects.h"
+#include "PlayerObjects.h"
 #include "Types.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/tr1/functional.hpp>
@@ -41,30 +42,42 @@ public:
 		return singleton;
 	}
 
+	void parseChannelConnectPacket(PacketReader &packet);
+
 	// Incoming packets
 	void parseIncomingPacket(PacketReader &packet);
 	void removePacket(int32_t id);
 	bool checkPlayer(int32_t id);
 	PacketReader & getPacket(int32_t id);
 
-	// Players
+	// Online players
 	void addPlayer(Player *player);
+	void changeChannel(PacketReader &packet);
+	void newConnectable(PacketReader &packet);
 	void removePlayer(Player *player);
 	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
 	void run(function<void (Player *)> func);
 	void sendPacket(PacketCreator &packet, int32_t minGmLevel = 0);
 
+	// Player data
+	PlayerData * getPlayerData(int32_t id);
+	void updatePlayer(PacketReader &packet);
+
 	// Parties
 	Party * getParty(int32_t id);
-	void addParty(Party *party);
-	void removeParty(int32_t id);
+	void newParty(int32_t id, int32_t leaderId);
+	void disbandParty(int32_t id);
+	void switchPartyLeader(int32_t id, int32_t leaderId);
+	void removePartyMember(int32_t id, int32_t playerId, bool kicked);
+	void addPartyMember(int32_t id, int32_t playerId);
 private:
 	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
 	unordered_map<int32_t, boost::shared_ptr<PacketReader>> m_packets;
+	unordered_map<int32_t, boost::shared_ptr<PlayerData>> m_playerData;
+	unordered_map<int32_t, boost::shared_ptr<Party>> m_parties;
 	unordered_map<int32_t, Player *> m_players;
-	unordered_map<int32_t, Party *> m_parties;
-	unordered_map<string, Player *> m_players_names; // Index of players by name
+	unordered_map<string, Player *> m_playersByName;
 };

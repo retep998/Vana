@@ -66,8 +66,8 @@ void EventDataProvider::loadInstances() {
 	int32_t nearestTen = TimeUtilities::getNearestMinuteMark(10); // Most common intervals with boats
 	int32_t nearestFifteen = TimeUtilities::getNearestMinuteMark(15);
 
-	startInstance("kerningToNlcBoarding", -nearestTen, 10 * 60);
-	startInstance("nlcToKerningBoarding", -nearestTen, 10 * 60);
+	//startInstance("kerningToNlcBoarding", -nearestTen, 10 * 60);
+	//startInstance("nlcToKerningBoarding", -nearestTen, 10 * 60);
 
 	std::cout << "DONE" << std::endl;
 }

@@ -35,13 +35,13 @@ namespace Sync {
 	namespace SyncTypes {
 		enum SyncTypes {
 			ChannelStart,
+			Update,
 			Player,
 			Party,
 			Buddy,
 			Guild,
 			GuildBbs,
-			Alliance,
-			Data
+			Alliance
 		};
 	}
 	namespace Player {
@@ -53,10 +53,16 @@ namespace Sync {
 			PacketTransfer,
 			RemovePacketTransfer,
 			NewConnectable,
-			UpdateLevel,
-			UpdateJob,
-			UpdateMap
+			UpdatePlayer
 		};
+		namespace UpdateBits {
+			enum {
+				Level = 0x01,
+				Job = 0x02,
+				Map = 0x04,
+				Channel = 0x08
+			};
+		}
 	}
 	namespace Party {
 		enum SyncModes {

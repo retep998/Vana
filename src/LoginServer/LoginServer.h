@@ -48,7 +48,7 @@ private:
 
 	bool m_pinEnabled;
 	bool m_clientEncryption;
-	uint16_t m_port;
-	uint16_t m_interPort;
+	port_t m_port;
+	port_t m_interPort;
 	int32_t m_maxInvalidLogins;
 };

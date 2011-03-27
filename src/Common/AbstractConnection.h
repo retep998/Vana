@@ -38,8 +38,8 @@ public:
 
 	MapleSession * getSession() const { return m_session; }
 	void setSession(MapleSession *val);
-	uint32_t getIp() const { return m_ip; }
-	void setIp(uint32_t ip) { m_ip = ip; }
+	ip_t getIp() const { return m_ip; }
+	void setIp(ip_t ip) { m_ip = ip; }
 	Timer::Container * getTimers() const { return m_timers.get(); }
 	uint32_t getLatency() const { return static_cast<uint32_t>(m_latency); }
 
@@ -48,7 +48,7 @@ public:
 	const static uint32_t PingTime = 15000; // Lower values (~15000) give better latency approximation but will disconnect quicker during lag
 protected:
 	MapleSession *m_session;
-	uint32_t m_ip;
+	ip_t m_ip;
 	bool m_isServer;
 private:
 	bool m_isPinged;

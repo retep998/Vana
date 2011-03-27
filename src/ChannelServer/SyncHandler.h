@@ -18,22 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <string>
-
-using std::string;
 
 class PacketReader;
 
 namespace SyncHandler {
 	void handle(PacketReader &packet);
-	void handleDataSync(PacketReader &packet);
-	void handleChannelStart(PacketReader &packet);
-	void handlePartyResponse(PacketReader &packet);
+	void handleChannelSync(PacketReader &packet);
 	void handlePlayerSync(PacketReader &packet);
-	void playerChangeChannel(PacketReader &packet);
-	void newConnectable(PacketReader &packet);
-	void disbandParty(PacketReader &packet);
-	void handleBuddy(PacketReader &packet);
+	void handlePartySync(PacketReader &packet);
+	void handleBuddySync(PacketReader &packet);
 	void buddyInvite(PacketReader &packet);
 	void buddyOnlineOffline(PacketReader &packet);
 }

@@ -131,7 +131,6 @@
     <ClInclude Include="src\WorldServer\PlayerDataProvider.h" />
     <ClInclude Include="src\WorldServer\PrecompiledHeader.h" />
     <ClInclude Include="src\WorldServer\Channels.h" />
-    <ClInclude Include="src\WorldServer\Parties.h" />
     <ClInclude Include="src\WorldServer\SyncHandler.h" />
     <ClInclude Include="src\WorldServer\SyncPacket.h" />
     <ClInclude Include="src\WorldServer\WorldServer.h" />

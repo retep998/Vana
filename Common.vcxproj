@@ -139,6 +139,7 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\BitUtilities.h" />
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
     <ClInclude Include="src\Common\ConfigurationPacket.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="src\Common\MapObjects.h" />
     <ClInclude Include="src\Common\MobConstants.h" />
     <ClInclude Include="src\Common\NpcDataProvider.h" />
+    <ClInclude Include="src\Common\PlayerObjects.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />

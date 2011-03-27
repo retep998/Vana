@@ -47,7 +47,7 @@ public:
 	void stop();
 	void disconnect();
 	void send(const PacketCreator &packet);
-	uint32_t getIp() const;
+	ip_t getIp() const;
 protected:
 	void start_read_header();
 	void handle_write(const boost::system::error_code &error, size_t bytesTransferred);

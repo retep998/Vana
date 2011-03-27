@@ -30,7 +30,7 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, W
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(world->getId());
-	packet.add<uint16_t>(world->getPort());
+	packet.add<port_t>(world->getPort());
 
 	ConfigurationPacket::addConfig(world->getConfig(), packet);
 
@@ -44,20 +44,20 @@ void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connectio
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldid, uint32_t ip, uint16_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldid, ip_t ip, port_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldid);
-	packet.add<uint32_t>(ip);
-	packet.add<uint16_t>(port);
+	packet.add<ip_t>(ip);
+	packet.add<port_t>(port);
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charid, uint32_t charIp) {
+void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charid, ip_t ip) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_NEW_PLAYER);
 	packet.add<int16_t>(channel);
 	packet.add<int32_t>(charid);
-	packet.add<uint32_t>(charIp);
+	packet.add<ip_t>(ip);
 	connection->getSession()->send(packet);
 }

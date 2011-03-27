@@ -29,17 +29,15 @@ class Decoder {
 public:
 	static int32_t getLength(unsigned char *header, bool encrypted);
 
-	void createHeader(unsigned char *header, int16_t size);
+	void createHeader(unsigned char *header, uint16_t size);
 
 	PacketCreator getConnectPacket(const string &patchLocation = "");
 
-	void setIvRecv(unsigned char *iv) { MapleEncryption::setIv(ivRecv, iv); }
-	void setIvSend(unsigned char *iv) { MapleEncryption::setIv(ivSend, iv); }
-
 	void encrypt(unsigned char *buffer, int32_t size);
 	void decrypt(unsigned char *buffer, int32_t size);
-	void next();
 	void setEncryption(bool encrypted) { m_encrypted = encrypted; }
+	void setIvRecv(unsigned char *iv) { MapleEncryption::setIv(ivRecv, iv); }
+	void setIvSend(unsigned char *iv) { MapleEncryption::setIv(ivSend, iv); }
 private:
 	bool isEncrypted() const { return m_encrypted; }
 
@@ -52,7 +50,7 @@ inline
 int32_t Decoder::getLength(unsigned char *header, bool encrypted) {
 	if (!encrypted) {
 		// Only the bottom 2 bytes are interesting
-		return (*(int32_t *)(header)) & 0x0000FFFF;
+		return (*(int16_t *)(header + 2));
 	}
-	return ((header[0] + header[1] * 0x100) ^ (header[2] + header[3] * 0x100));
+	return (header[0] | (header[1] << 8)) ^ (header[2] | (header[3] << 8));
 }

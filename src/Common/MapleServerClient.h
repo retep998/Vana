@@ -30,13 +30,13 @@ class AbstractConnection;
 
 class MapleServerClient : public MapleSession {
 public:
-	MapleServerClient(boost::asio::io_service &ioService, uint32_t server, uint16_t port, SessionManagerPtr sessionManager, AbstractConnection *connection);
+	MapleServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection);
 	void start_connect();
 private:
 	void readConnectPacket();
 
-	uint32_t m_server;
-	uint16_t m_port;
+	ip_t m_server;
+	port_t m_port;
 	tcp::resolver m_resolver;
 };
 

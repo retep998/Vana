@@ -18,29 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <iostream>
 
-using std::tr1::unordered_map;
-
-class Party;
-
-class Parties : boost::noncopyable {
-public:
-	static Parties * Instance() {
-		if (singleton == nullptr)
-			singleton = new Parties;
-		return singleton;
+namespace BitUtilities {
+	template<typename T> T RotateRight(T val, int32_t shifts) {
+		size_t size = sizeof(T) * 8;
+		shifts %= size;
+		return static_cast<T>((val >> shifts) | (val << (size - shifts)));
 	}
-
-	int32_t addParty(Party *party);
-	void removeParty(int32_t id);
-	Party * getParty(int32_t id);
-	unordered_map<int32_t, Party *> getParties();
-private:
-	Parties() : pid(0) {};
-	static Parties *singleton;
-
-	int32_t pid;
-	unordered_map<int32_t, Party *> m_map;
-};
+	template<typename T> T RotateLeft(T val, int32_t shifts) {
+		size_t size = sizeof(T) * 8;
+		shifts %= size;
+		return static_cast<T>((val << shifts) | (val >> (size - shifts)));
+	}
+}

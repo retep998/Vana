@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::asio::ip::tcp;
 
-uint32_t IpUtilities::stringToIp(const string &name) {
+ip_t IpUtilities::stringToIp(const string &name) {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
 	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
@@ -34,17 +34,17 @@ uint32_t IpUtilities::stringToIp(const string &name) {
 	return ep.address().to_v4().to_ulong();
 }
 
-string IpUtilities::ipToString(uint32_t ip) {
+string IpUtilities::ipToString(ip_t ip) {
 	return boost::asio::ip::address_v4(ip).to_string();
 }
 
-uint32_t IpUtilities::matchIpSubnet(uint32_t ip, const IpMatrix &ipMatrix, uint32_t defaultIp) {
-	uint32_t ret = defaultIp;
+ip_t IpUtilities::matchIpSubnet(ip_t ip, const IpMatrix &ipMatrix, ip_t defaultIp) {
+	ip_t ret = defaultIp;
 
 	for (IpMatrix::const_iterator iter = ipMatrix.begin(); iter != ipMatrix.end(); iter++) {
 		const IpArray &ipArray = *iter;
-		uint32_t serverIp = ipArray[0];
-		uint32_t subnet = ipArray[1];
+		ip_t serverIp = ipArray[0];
+		ip_t subnet = ipArray[1];
 
 		if ((ip & subnet) == (serverIp & subnet)) {
 			ret = serverIp;
@@ -61,8 +61,8 @@ void IpUtilities::extractExternalIp(PacketReader &packet, IpMatrix &extIp) {
 		IpArray ip;
 		ip.reserve(2);
 
-		ip.push_back(packet.get<uint32_t>());
-		ip.push_back(packet.get<uint32_t>());
+		ip.push_back(packet.get<ip_t>());
+		ip.push_back(packet.get<ip_t>());
 
 		extIp.push_back(ip);
 	}

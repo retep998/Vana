@@ -23,18 +23,18 @@ class Channel {
 public:
 	Channel() : m_population(0) { }
 
-	void setPort(uint16_t port) { m_port = port; }
+	void setPort(port_t port) { m_port = port; }
 	void setPopulation(int32_t population) { m_population = population; }
-	void setIp(uint32_t ip) { m_ip = ip; }
+	void setIp(ip_t ip) { m_ip = ip; }
 	void setExternalIps(const IpMatrix &matrix) { m_externalIps = matrix; }
 
-	uint16_t getPort() const { return m_port; }
+	port_t getPort() const { return m_port; }
 	int32_t getPopulation() const { return m_population; }
-	uint32_t getIp() const { return m_ip; }
+	ip_t getIp() const { return m_ip; }
 	IpMatrix & getExternalIps() { return m_externalIps; }
 private:
-	uint16_t m_port;
+	port_t m_port;
 	int32_t m_population;
-	uint32_t m_ip;
+	ip_t m_ip;
 	IpMatrix m_externalIps;
 };

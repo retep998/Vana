@@ -16,10 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyHandler.h"
-#include "ChannelServer.h"
 #include "InterHelper.h"
 #include "PacketReader.h"
+#include "Party.h"
+#include "PartyPacket.h"
 #include "Player.h"
+#include "PlayerDataProvider.h"
 #include "SyncPacket.h"
 
 void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
@@ -27,15 +29,39 @@ void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 	switch (type) {
 		case PartyActions::Create:
 		case PartyActions::Leave:
-			SyncPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId());
+			SyncPacket::PartyPacket::sync(type, player->getId());
 			break;
-		case PartyActions::Join:
+		case PartyActions::Join: {
+			int32_t partyId = packet.get<int32_t>();
+			if (Party *party = PlayerDataProvider::Instance()->getParty(partyId)) {
+				if (party->getMembersCount() == Parties::MaxMembers) {
+					PartyPacket::error(player, PartyPacket::Errors::PartyFull);
+				}
+				else {
+					SyncPacket::PartyPacket::sync(type, player->getId(), partyId);
+				}
+			}
+			break;
+		}
 		case PartyActions::Expel:
-		case PartyActions::SetLeader:
-			SyncPacket::partyOperation(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), packet.get<int32_t>());
+		case PartyActions::SetLeader: {
+			SyncPacket::PartyPacket::sync(type, player->getId(), packet.get<int32_t>());
 			break;
-		case PartyActions::Invite:
-			SyncPacket::partyInvite(ChannelServer::Instance()->getWorldConnection(), player->getId(), packet.getString());
+		}
+		case PartyActions::Invite: {
+			string invName = packet.getString();
+			if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(invName)) { 
+				if (invitee->getParty() != nullptr) {
+					PartyPacket::error(player, PartyPacket::Errors::PlayerHasParty);
+				}
+				else {
+					PartyPacket::invitePlayer(invitee, player->getParty(), player->getName());
+				}
+			}
+			else {
+				PartyPacket::error(player, PartyPacket::Errors::DifferingChannel);
+			}
 			break;
+		}
 	}
 }

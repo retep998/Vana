@@ -26,8 +26,6 @@ namespace MapleEncryption {
 	void mapleDecrypt(unsigned char *buf, int32_t size);
 	void mapleEncrypt(unsigned char *buf, int32_t size);
 	void setIv(unsigned char *dest, unsigned char *source);
-	uint8_t ror(uint8_t val, int32_t num);
-	uint8_t rol(uint8_t val, int32_t num);
 }
 
 inline

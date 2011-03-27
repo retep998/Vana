@@ -51,10 +51,10 @@ public:
 	void setPinkBeanChannel(bool isChannel) { m_pinkbeanChannel = isChannel; }
 	void setChannel(int16_t channel) { m_channel = channel; }
 	void setWorld(int8_t id) { m_world = id; }
-	void setWorldPort(uint16_t port) { m_worldPort = port; }
-	void setPort(uint16_t port) { m_port = port; }
+	void setWorldPort(port_t port) { m_worldPort = port; }
+	void setPort(port_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
-	void setWorldIp(uint32_t ip) { m_worldIp = ip; }
+	void setWorldIp(ip_t ip) { m_worldIp = ip; }
 	void setExpRate(int32_t rate) { m_config.expRate = rate; }
 	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }
 	void setDropRate(int32_t rate) { m_config.dropRate = rate; }
@@ -109,10 +109,10 @@ private:
 	bool m_pinkbeanChannel;
 	int8_t m_world;
 	int16_t m_channel;
-	uint16_t m_worldPort;
-	uint16_t m_loginPort;
-	uint16_t m_port;
-	uint32_t m_worldIp;
-	uint32_t m_loginIp;
+	port_t m_worldPort;
+	port_t m_loginPort;
+	port_t m_port;
+	ip_t m_worldIp;
+	ip_t m_loginIp;
 	Configuration m_config;
 };

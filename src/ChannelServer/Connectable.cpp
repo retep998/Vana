@@ -23,14 +23,14 @@ using TimeUtilities::getTickCount;
 
 Connectable * Connectable::singleton = nullptr;
 
-void Connectable::newPlayer(int32_t id, uint32_t ip) {
+void Connectable::newPlayer(int32_t id, ip_t ip) {
 	ConnectingPlayer player;
 	player.connectIp = ip;
 	player.connectTime = getTickCount();
 	m_map[id] = player;
 }
 
-bool Connectable::checkPlayer(int32_t id, uint32_t ip) {
+bool Connectable::checkPlayer(int32_t id, ip_t ip) {
 	bool correct = false;
 	if (m_map.find(id) != m_map.end()) {
 		ConnectingPlayer &t = m_map[id];

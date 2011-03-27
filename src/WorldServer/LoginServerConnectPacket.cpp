@@ -23,16 +23,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "WorldServer.h"
 
-void LoginServerConnectPacket::registerChannel(int32_t channel, uint32_t ip, const IpMatrix &extIp, uint16_t port) {
+void LoginServerConnectPacket::registerChannel(int32_t channel, ip_t ip, const IpMatrix &extIp, port_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
-	packet.add<uint32_t>(ip);
+	packet.add<ip_t>(ip);
 
 	packet.add<uint32_t>(extIp.size());
 	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
 
-	packet.add<uint16_t>(port);
+	packet.add<port_t>(port);
 	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
 }
 

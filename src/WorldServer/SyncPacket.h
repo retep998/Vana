@@ -31,26 +31,23 @@ class Player;
 class WorldServerAcceptConnection;
 
 namespace SyncPacket {
+	void sendSyncData(WorldServerAcceptConnection *player);
+
 	namespace PartyPacket {
-		void createParty(uint16_t channel, int32_t playerid);
-		void disbandParty(uint16_t channel, int32_t playerid);
-		void partyError(uint16_t channel, int32_t playerid, int8_t error);
-		void giveLeader(uint16_t channel, int32_t playerid, int32_t target, bool is);
-		void invitePlayer(uint16_t channel, int32_t playerid, const string &inviter);
-		void updateParty(uint16_t channel, int8_t type, int32_t playerid, int32_t target = 0);
-		void addParty(PacketCreator &packet, Party *party, int32_t tochan);
+		void removePartyMember(int32_t partyId, int32_t playerId, bool kicked);
+		void addPartyMember(int32_t partyId, int32_t playerId);
+		void newPartyLeader(int32_t partyId, int32_t playerId);
+		void createParty(int32_t partyId, int32_t playerId);
+		void disbandParty(int32_t partyId);
 	}
 	namespace PlayerPacket {
 		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerid, PacketReader &buffer);
 		void sendHeldPacketRemoval(uint16_t channel, int32_t playerid);
-		void playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerid, uint32_t ip, uint16_t port);
-		void newConnectable(uint16_t channel, int32_t playerid, uint32_t playerIp);
-		void sendParties(WorldServerAcceptConnection *connection);
-		void sendRemovePartyPlayer(int32_t playerid, int32_t partyid);
-		void sendAddPartyPlayer(int32_t playerid, int32_t partyid);
-		void sendSwitchPartyLeader(int32_t playerid, int32_t partyid);
-		void sendCreateParty(int32_t playerid, int32_t partyid);
-		void sendDisbandParty(int32_t partyid);
+		void playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerid, ip_t ip, port_t port);
+		void newConnectable(uint16_t channel, int32_t playerId, ip_t ip);
+		void updatePlayerJob(int32_t playerId, int16_t job);
+		void updatePlayerMap(int32_t playerId, int32_t map);
+		void updatePlayerLevel(int32_t playerId, int16_t level);
 	}
 	namespace BuddyPacket {
 		void sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeid, int32_t inviterid, const string &name);

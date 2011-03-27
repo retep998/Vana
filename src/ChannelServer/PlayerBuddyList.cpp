@@ -138,13 +138,13 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 
 		if (res.num_rows() == 0) {
 			if (invite) {
-				SyncPacket::buddyInvite(ChannelServer::Instance()->getWorldConnection(), charid, m_player->getId());
+				SyncPacket::BuddyPacket::buddyInvite(charid, m_player->getId());
 			}
 		}
 		else {
 			vector<int32_t> idVector;
 			idVector.push_back(charid);
-			SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), m_player->getId(), idVector, true);
+			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
 	}
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add);
@@ -170,7 +170,7 @@ void PlayerBuddyList::removeBuddy(int32_t charid) {
 	if (m_buddies[charid]->channel != -1) {
 		vector<int32_t> idVector;
 		idVector.push_back(charid);
-		SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), m_player->getId(), idVector, false);
+		SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false);
 	}
 
 	m_buddies.erase(charid);
@@ -287,7 +287,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 		else {
 			vector<int32_t> idVector;
 			idVector.push_back(id);
-			SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), m_player->getId(), idVector, true);
+			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
 
 		mysqlpp::Query query = Database::getCharDB().query();

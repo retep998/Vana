@@ -119,10 +119,10 @@ Player::~Player() {
 		}
 		if (ChannelServer::Instance()->isConnected()) {
 			if (!isChangingChannel()) {
-				SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), false);
+				SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false);
 			}
 			// Do not connect to worldserver if the worldserver has disconnected
-			SyncPacket::removePlayer(ChannelServer::Instance()->getWorldConnection(), id);
+			SyncPacket::PlayerPacket::disconnect(id);
 		}
 		PlayerDataProvider::Instance()->removePlayer(this);
 	}
@@ -389,8 +389,8 @@ void Player::playerConnect(PacketReader &packet) {
 
 	setOnline(true);
 	is_connect = true;
-	SyncPacket::registerPlayer(ChannelServer::Instance()->getWorldConnection(), getIp(), id, name, map, stats->getJob(), stats->getLevel());
-	SyncPacket::buddyOnline(ChannelServer::Instance()->getWorldConnection(), getId(), getBuddyList()->getBuddyIds(), true);
+	SyncPacket::PlayerPacket::connect(this);
+	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
 
 void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
@@ -453,7 +453,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
 		setChalkboard("");
 	}
-	SyncPacket::updateMap(ChannelServer::Instance()->getWorldConnection(), id, mapid);
+	SyncPacket::PlayerPacket::updateMap(id, mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
 }
@@ -471,7 +471,7 @@ string Player::getMedalName() {
 }
 
 void Player::changeChannel(int8_t channel) {
-	SyncPacket::playerChangeChannel(ChannelServer::Instance()->getWorldConnection(), this, channel);
+	SyncPacket::PlayerPacket::changeChannel(this, channel);
 }
 
 void Player::changeKey(PacketReader &packet) {

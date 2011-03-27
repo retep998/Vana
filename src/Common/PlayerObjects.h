@@ -18,7 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <vector>
+#include <string>
 
-typedef std::vector<ip_t> IpArray;
-typedef std::vector<IpArray> IpMatrix;
+using std::string;
+
+struct PlayerData {
+	PlayerData() : cashShop(false), admin(false), party(0), gmLevel(0), connectionTime(0) { }
+	bool cashShop;
+	bool admin;
+	int16_t level;
+	int16_t job;
+	int16_t channel;
+	int32_t map;
+	int32_t party;
+	int32_t gmLevel;
+	uint32_t connectionTime;
+	string name;
+};

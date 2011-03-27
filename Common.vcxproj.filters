@@ -432,5 +432,11 @@
     <ClInclude Include="src\Common\ComboLoggers.h">
       <Filter>Source\Loggers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\BitUtilities.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PlayerObjects.h">
+      <Filter>Source\Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
