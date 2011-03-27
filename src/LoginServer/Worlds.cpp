@@ -124,7 +124,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 
 int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	int8_t worldid = -1;
-	uint16_t port;
+	port_t port;
 	AbstractServerAcceptConnection *worldConnection;
 	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
 		if (iter->second->getChannelCount() < iter->second->getMaxChannels() && iter->second->isConnected()) {
@@ -136,7 +136,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	}
 
 	if (worldid != -1) {
-		uint32_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), worldConnection->getExternalIp(), worldConnection->getIp());
+		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), worldConnection->getExternalIp(), worldConnection->getIp());
 		LoginServerAcceptPacket::connectChannel(connection, worldid, worldIp, port);
 	}
 	else {

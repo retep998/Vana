@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapleEncryption.h"
+#include "BitUtilities.h"
 
 uint8_t MapleEncryption::values[256] = {
 	0xEC, 0x3F, 0x77, 0xA4, 0x45, 0xD0, 0x71, 0xBF, 0xB7, 0x98, 0x20, 0xFC, 0x4B, 0xE9, 0xB3, 0xE1,
@@ -38,63 +39,30 @@ uint8_t MapleEncryption::values[256] = {
 
 void MapleEncryption::nextIv(unsigned char *vector) {
 	uint8_t x[4] = {0xF2, 0x53, 0x50, 0xC6};
+	uint8_t input;
+	uint8_t valueInput;
+	uint32_t fullIv;
+	uint32_t shift;
 
 	for (uint8_t i = 0; i < 4; i++) {
-		uint8_t a = x[1];
-		uint8_t b = a;
-		uint32_t c, d;
+		input = vector[i];
+		valueInput = values[input];
 
-		b = values[b];
-		b -= vector[i];
-		x[0] += b;
-		b = x[2];
-		b = b ^ values[vector[i]];
-		a -= b;
-		x[1] = a;
-		a = x[3];
-		b = a;
-		a -= x[0];
-		b = values[b];
-		b += vector[i];
-		b = b ^ x[2];
-		x[2] = b;
-		a += values[vector[i]];
-		x[3] = a;
+		x[0] += (values[x[1]] - input);
+		x[1] -= (x[2] ^ valueInput);
+		x[2] ^= (values[x[3]] + input);
+		x[3] -= (x[0] - valueInput);
 
-		c = x[0] + x[1] * 0x100 + x[2] * 0x10000 + x[3] * 0x1000000;
-		d = c;
-		c = c >> 0x1D;
-		d = d << 0x03;
-		c = c | d;
-		x[0] = (uint8_t)(c % 0x100); // Guaranteed to be 0x00 to 0xFF, we want this cast
-		c /= 0x100;
-		x[1] = (uint8_t)(c % 0x100);
-		c /= 0x100;
-		x[2] = (uint8_t)(c % 0x100);
-		x[3] = (uint8_t)(c / 0x100);
+		fullIv = (x[3] << 24) | (x[2] << 16) | (x[1] << 8) | x[0];
+		shift = (fullIv >> 0x1D) | (fullIv << 0x03);
+
+		x[0] = static_cast<uint8_t>(shift & 0xFFu);
+		x[1] = static_cast<uint8_t>((shift >> 8) & 0xFFu);
+		x[2] = static_cast<uint8_t>((shift >> 16) & 0xFFu);
+		x[3] = static_cast<uint8_t>((shift >> 24) & 0xFFu);
 	}
 
 	setIv(vector, x);
-}
-
-uint8_t MapleEncryption::rol(uint8_t val, int32_t num) {
-	int32_t highbit;
-	for (int32_t i = 0; i < num; i++) {
-		highbit = ((val & 0x80) ? 1 : 0);
-		val <<= 1;
-		val |= highbit;
-	}
-	return val;
-}
-
-uint8_t MapleEncryption::ror(uint8_t val, int32_t num) {
-	int32_t lowbit;
-	for (int32_t i = 0; i < num; i++) {
-		lowbit = ((val & 1) ? 1 : 0);
-		val >>= 1;
-		val |= (lowbit << 7);
-	}
-	return val;
 }
 
 void MapleEncryption::mapleEncrypt(unsigned char *buf, int32_t size) {
@@ -104,11 +72,11 @@ void MapleEncryption::mapleEncrypt(unsigned char *buf, int32_t size) {
 		a = 0;
 		for (j = size; j > 0; j--) {
 			c = buf[size - j];
-			c = rol(c, 3);
+			c = BitUtilities::RotateLeft(c, 3);
 			c = (uint8_t)(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
-			c = ror(a, j);
+			c = BitUtilities::RotateRight(a, j);
 			c = c ^ 0xFF;
 			c = c + 0x48;
 			buf[size - j] = c;
@@ -116,12 +84,12 @@ void MapleEncryption::mapleEncrypt(unsigned char *buf, int32_t size) {
 		a = 0;
 		for (j = size; j > 0; j--) {
 			c = buf[j - 1];
-			c = rol(c, 4);
+			c = BitUtilities::RotateLeft(c, 4);
 			c = (uint8_t)(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = c ^ 0x13;
-			c = ror(c, 3);
+			c = BitUtilities::RotateRight(c, 3);
 			buf[j - 1] = c;
 		}
 	}
@@ -135,12 +103,12 @@ void MapleEncryption::mapleDecrypt(unsigned char *buf, int32_t size) {
 		b = 0;
 		for (j = size; j > 0; j--) {
 			c = buf[j - 1];
-			c = rol(c, 3);
+			c = BitUtilities::RotateLeft(c, 3);
 			c = c ^ 0x13;
 			a = c;
 			c = c ^ b;
 			c = (uint8_t)(c - j); // Guess this is supposed to be right?
-			c = ror(c, 4);
+			c = BitUtilities::RotateRight(c, 4);
 			b = a;
 			buf[j - 1] = c;
 		}
@@ -150,11 +118,11 @@ void MapleEncryption::mapleDecrypt(unsigned char *buf, int32_t size) {
 			c = buf[size - j];
 			c = c - 0x48;
 			c = c ^ 0xFF;
-			c = rol(c, j);
+			c = BitUtilities::RotateLeft(c, j);
 			a = c;
 			c = c ^ b;
 			c = (uint8_t)(c - j); // Guess this is supposed to be right?
-			c = ror(c, 3);
+			c = BitUtilities::RotateRight(c, 3);
 			b = a;
 			buf[size - j] = c;
 		}

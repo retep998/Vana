@@ -32,9 +32,9 @@ using boost::lexical_cast;
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
-	chan->setIp(packet.get<uint32_t>());
+	chan->setIp(packet.get<ip_t>());
 	IpUtilities::extractExternalIp(packet, chan->getExternalIps());
-	chan->setPort(packet.get<uint16_t>());
+	chan->setPort(packet.get<port_t>());
 	Worlds::Instance()->getWorld(connection->getWorldId())->addChannel(channel, chan);
 	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(static_cast<int16_t>(connection->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
 }

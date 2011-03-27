@@ -16,66 +16,48 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.h"
+#include "ChannelServer.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
 #include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Party.h"
 #include "Player.h"
-#include "WorldServerConnection.h"
 
-void SyncPacket::updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level) {
+void SyncPacket::PlayerPacket::updateLevel(int32_t playerId, int32_t level) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdateLevel);
-	packet.add<int32_t>(playerid);
+	packet.add<int8_t>(Sync::Player::UpdatePlayer);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Level);
+	packet.add<int32_t>(playerId);
 	packet.add<int32_t>(level);
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::updateJob(WorldServerConnection *player, int32_t playerid, int32_t job) {
+void SyncPacket::PlayerPacket::updateJob(int32_t playerId, int32_t job) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdateJob);
-	packet.add<int32_t>(playerid);
+	packet.add<int8_t>(Sync::Player::UpdatePlayer);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Job);
+	packet.add<int32_t>(playerId);
 	packet.add<int32_t>(job);
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::updateMap(WorldServerConnection *player, int32_t playerid, int32_t map) {
+void SyncPacket::PlayerPacket::updateMap(int32_t playerId, int32_t map) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdateMap);
-	packet.add<int32_t>(playerid);
+	packet.add<int8_t>(Sync::Player::UpdatePlayer);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Map);
+	packet.add<int32_t>(playerId);
 	packet.add<int32_t>(map);
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Party);
-	packet.add<int8_t>(type);
-	packet.add<int32_t>(playerid);
-	if (target != nullptr) {
-		packet.add<int32_t>(target);
-	}
-	player->getSession()->send(packet);
-}
-
-void SyncPacket::partyInvite(WorldServerConnection *player, int32_t playerid, const string &invitee) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Party);
-	packet.add<int8_t>(0x04);
-	packet.add<int32_t>(playerid);
-	packet.addString(invitee);
-	player->getSession()->send(packet);
-}
-
-void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel) {
+void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
@@ -88,52 +70,60 @@ void SyncPacket::playerChangeChannel(WorldServerConnection *player, Player *info
 	info->getActiveBuffs()->getBuffTransferPacket(packet);
 	info->getSummons()->getSummonTransferPacket(packet);
 
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level) {
+void SyncPacket::PlayerPacket::connect(Player *player) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::Connect);
-	packet.add<uint32_t>(ip);
-	packet.add<int32_t>(playerid);
-	packet.addString(name);
-	packet.add<int32_t>(map);
-	packet.add<int32_t>(job);
-	packet.add<int32_t>(level);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(player->getMap());
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::removePlayer(WorldServerConnection *player, int32_t playerid) {
+void SyncPacket::PlayerPacket::disconnect(int32_t playerId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::Disconnect);
-	packet.add<int32_t>(playerid);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(playerId);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::playerBuffsTransferred(WorldServerConnection *player, int32_t playerid) {
+void SyncPacket::PlayerPacket::buffsTransferred(int32_t playerId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
-	packet.add<int32_t>(playerid);
-	player->getSession()->send(packet);
+	packet.add<int32_t>(playerId);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::buddyInvite(WorldServerConnection *player, int32_t playerid, int32_t inviteeid) {
+void SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target) {
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Party);
+	packet.add<int8_t>(type);
+	packet.add<int32_t>(playerId);
+	if (target != nullptr) {
+		packet.add<int32_t>(target);
+	}
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
+void SyncPacket::BuddyPacket::buddyInvite(int32_t playerid, int32_t inviteeid) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::Invite);
 	packet.add<int32_t>(inviteeid);
 	packet.add<int32_t>(playerid);
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::buddyOnline(WorldServerConnection *player, int32_t playerid, const vector<int32_t> &players, bool online) {
+void SyncPacket::BuddyPacket::buddyOnline(int32_t playerid, const vector<int32_t> &players, bool online) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
@@ -141,5 +131,5 @@ void SyncPacket::buddyOnline(WorldServerConnection *player, int32_t playerid, co
 	packet.add<int32_t>(playerid);
 	packet.addBool(online);
 	packet.addVector(players);
-	player->getSession()->send(packet);
+	ChannelServer::Instance()->sendToWorld(packet);
 }

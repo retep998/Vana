@@ -84,9 +84,6 @@
     <ClInclude Include="src\WorldServer\Channels.h">
       <Filter>Source\WorldServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\Parties.h">
-      <Filter>Source\WorldServer</Filter>
-    </ClInclude>
     <ClInclude Include="src\WorldServer\Party.h">
       <Filter>Source\WorldServer</Filter>
     </ClInclude>

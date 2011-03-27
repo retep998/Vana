@@ -219,13 +219,14 @@ void LoginPacket::connectIp(Player *player, int32_t charid) {
 	packet.add<int16_t>(0);
 
 	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorld())->getChannel(player->getChannel())) {
-		uint32_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->getExternalIps(), channel->getIp());
-		packet.add<uint32_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
-		packet.add<uint16_t>(channel->getPort());
+		ip_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->getExternalIps(), channel->getIp());
+		packet.add<ip_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
+		packet.add<port_t>(channel->getPort());
 	}
-	else { // Channel does not exist, let's be mean and send something non-existent
-		packet.add<uint32_t>(0); // ip
-		packet.add<int16_t>(-1); // port
+	else {
+		// Channel does not exist, let's be mean and send something non-existent
+		packet.add<ip_t>(0); // ip
+		packet.add<port_t>(-1); // port
 	}
 	packet.add<int32_t>(charid);
 	packet.add<int32_t>(0);

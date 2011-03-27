@@ -106,6 +106,7 @@
     <ClCompile Include="src\ChannelServer\MapFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\MessageFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\PartyPacket.cpp" />
     <ClCompile Include="src\ChannelServer\Pet.cpp" />
     <ClCompile Include="src\ChannelServer\PetHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="src\ChannelServer\Npc.h" />
     <ClInclude Include="src\ChannelServer\Party.h" />
     <ClInclude Include="src\ChannelServer\PartyHandler.h" />
+    <ClInclude Include="src\ChannelServer\PartyPacket.h" />
     <ClInclude Include="src\ChannelServer\Pet.h" />
     <ClInclude Include="src\ChannelServer\PetHandler.h" />
     <ClInclude Include="src\ChannelServer\PlayerDataProvider.h" />

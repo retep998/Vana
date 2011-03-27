@@ -32,7 +32,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	int8_t worldid = packet.get<int8_t>();
 	if (worldid != -1) {
 		WorldServer::Instance()->setWorldId(worldid);
-		WorldServer::Instance()->setInterPort(packet.get<uint16_t>());
+		WorldServer::Instance()->setInterPort(packet.get<port_t>());
 
 		Configuration conf = ConfigurationPacket::getConfig(packet);
 		WorldServer::Instance()->setConfig(conf);
@@ -53,13 +53,13 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	uint16_t channel = packet.get<int16_t>();
 	int32_t playerid = packet.get<int32_t>();
-	uint32_t playerIp = packet.get<uint32_t>();
+	ip_t ip = packet.get<ip_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		if (PlayerDataProvider::Instance()->getPlayer(playerid) == nullptr) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			SyncPacket::PlayerPacket::newConnectable(channel, playerid, playerIp);
+			SyncPacket::PlayerPacket::newConnectable(channel, playerid, ip);
 		}
 	}
 }

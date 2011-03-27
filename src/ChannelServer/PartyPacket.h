@@ -22,16 +22,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-class PacketReader;
-class WorldServerAcceptConnection;
+class Party;
+class Player;
 
-namespace WorldServerAcceptPacket {
-	void connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port);
-	void findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
-	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
-	void scrollingHeader(const string &message);
-	void groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender);
+namespace PartyPacket {
+	namespace Errors {
+		enum {
+			PlayerHasParty = 0x10,
+			PartyFull = 0x11,
+			DifferingChannel = 0x12
+		};
+	}
 
-	// I have my eye on you...
-	void sendRates(WorldServerAcceptConnection *connection, int32_t setBit);
+	void error(Player *player, int8_t error);
+	void createParty(Player *packetTarget, Party *party);
+	void joinParty(Player *packetTarget, Party *party, const string &player);
+	void leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string &name, bool kicked);
+	void invitePlayer(Player *packetTarget, Party *party, const string &inviter);
+	void disbandParty(Player *packetTarget, Party *party);
+	void setLeader(Player *packetTarget, Party *party, int32_t newLeader);
+	void silentUpdate(Player *packetTarget, Party *party);
 }

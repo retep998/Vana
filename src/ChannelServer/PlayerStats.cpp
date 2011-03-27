@@ -197,7 +197,7 @@ void PlayerStats::setLevel(uint8_t level) {
 	this->level = level;
 	PlayerPacket::updateStatShort(player, Stats::Level, level);
 	LevelsPacket::levelUp(player);
-	SyncPacket::updateLevel(ChannelServer::Instance()->getWorldConnection(), player->getId(), level);
+	SyncPacket::PlayerPacket::updateLevel(player->getId(), level);
 }
 
 void PlayerStats::setHp(int16_t shp, bool is) {
@@ -303,7 +303,7 @@ void PlayerStats::setJob(int16_t job) {
 	this->job = job;
 	PlayerPacket::updateStatShort(player, Stats::Job, job);
 	LevelsPacket::jobChange(player);
-	SyncPacket::updateJob(ChannelServer::Instance()->getWorldConnection(), player->getId(), job);
+	SyncPacket::PlayerPacket::updateJob(player->getId(), job);
 }
 
 void PlayerStats::setStr(int16_t str) {

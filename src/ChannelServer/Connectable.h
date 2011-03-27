@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::unordered_map;
 
 struct ConnectingPlayer {
-	uint32_t connectIp;
+	ip_t connectIp;
 	uint32_t connectTime;
 };
 
@@ -38,8 +38,8 @@ public:
 		return singleton;
 	}
 
-	void newPlayer(int32_t id, uint32_t ip);
-	bool checkPlayer(int32_t id, uint32_t ip);
+	void newPlayer(int32_t id, ip_t ip);
+	bool checkPlayer(int32_t id, ip_t ip);
 private:
 	Connectable() {}
 	static Connectable *singleton;

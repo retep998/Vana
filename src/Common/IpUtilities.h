@@ -29,9 +29,9 @@ using std::vector;
 class PacketReader;
 
 namespace IpUtilities {
-	uint32_t stringToIp(const string &name);
-	string ipToString(uint32_t ip);
-	uint32_t matchIpSubnet(uint32_t ip, const IpMatrix &ipMatrix, uint32_t defaultIp = 0);
+	ip_t stringToIp(const string &name);
+	string ipToString(ip_t ip);
+	ip_t matchIpSubnet(ip_t ip, const IpMatrix &ipMatrix, ip_t defaultIp = 0);
 
 	// Used for receiving vectors of external IPs
 	void extractExternalIp(PacketReader &packet, IpMatrix &extIp);
@@ -40,11 +40,10 @@ namespace IpUtilities {
 	public:
 		SendIpArray(PacketCreator &packet) : packet(packet) { }
 
-		void operator()(IpArray ip) {
-			packet.add<uint32_t>(ip[0]); // IP
-			packet.add<uint32_t>(ip[1]); // Subnet
+		void operator()(const IpArray &ip) {
+			packet.add<ip_t>(ip[0]); // IP
+			packet.add<ip_t>(ip[1]); // Subnet
 		}
-
 	private:
 		PacketCreator &packet;
 	};

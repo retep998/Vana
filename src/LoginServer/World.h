@@ -39,7 +39,7 @@ public:
 
 	void setConnected(bool connected) { m_connected = connected; }
 	void setId(int8_t id) { m_id = id; }
-	void setPort(uint16_t port) { m_port = port; }
+	void setPort(port_t port) { m_port = port; }
 	void setPlayerLoad(int32_t load) { m_playerLoad = load; }
 	void setConnection(LoginServerAcceptConnection *connection) { m_connection = connection; }
 	void setConfiguration(Configuration &config) { m_config = config; }
@@ -52,7 +52,7 @@ public:
 	bool isConnected() const { return m_connected; }
 	int8_t getId() const { return m_id; }
 	int8_t getRibbon() const { return m_config.ribbon; }
-	uint16_t getPort() const { return m_port; }
+	port_t getPort() const { return m_port; }
 	uint16_t getRandomChannel() const;
 	size_t getMaxChannels() const { return m_config.maxChannels; }
 	int32_t getPlayerLoad() const { return m_playerLoad; }
@@ -68,7 +68,7 @@ private:
 
 	bool m_connected;
 	int8_t m_id;
-	uint16_t m_port;
+	port_t m_port;
 	int32_t m_playerLoad;
 	Configuration m_config;
 	ChannelMap m_channels;

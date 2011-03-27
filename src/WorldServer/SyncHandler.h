@@ -31,24 +31,14 @@ namespace SyncHandler {
 	// Dispatch
 	void handle(WorldServerAcceptConnection *connection, PacketReader &packet);
 	// Party
-	void partyOperation(PacketReader &packet);
-	void createParty(int32_t playerid);
-	void leaveParty(int32_t playerid);
-	void invitePlayer(int32_t playerid, const string &invitee);
-	void joinParty(int32_t playerid, int32_t partyid);
-	void giveLeader(int32_t playerid, int32_t target, bool is);
-	void expelPlayer(int32_t playerid, int32_t target);
-	void silentUpdate(int32_t playerid);
-	void logInLogOut(int32_t playerid);
+	void handlePartySync(PacketReader &packet);
 	// Player
 	void handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void playerConnect(uint16_t channel, PacketReader &packet);
-	void playerDisconnect(uint16_t channel, PacketReader &packet);
+	void playerConnect(int16_t channel, PacketReader &packet);
+	void playerDisconnect(int16_t channel, PacketReader &packet);
 	void playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void updateLevel(PacketReader &packet);
-	void updateJob(PacketReader &packet);
-	void updateMap(PacketReader &packet);
+	void handlePlayerUpdate(PacketReader &packet);
 	// Buddy
 	void handleBuddyPacket(PacketReader &packet);
 	void buddyInvite(PacketReader &packet);

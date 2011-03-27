@@ -52,8 +52,8 @@ void LoginServer::loadData() {
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
 	m_pinEnabled = config.getBool("pin");
-	m_port = config.get<uint16_t>("port");
-	m_interPort = config.get<uint16_t>("inter_port");
+	m_port = config.get<port_t>("port");
+	m_interPort = config.get<port_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
 	m_clientEncryption = config.getBool("use_client_encryption");
 	setListening(true);
@@ -104,7 +104,7 @@ void LoginServer::loadWorlds() {
 		conf.ribbon = config.get<uint8_t>(formatter.str());
 
 		formatter % i % "port";
-		world->setPort(config.get<uint16_t>(formatter.str()));
+		world->setPort(config.get<port_t>(formatter.str()));
 
 		formatter % i % "exp_rate";
 		conf.expRate = config.get<int32_t>(formatter.str());

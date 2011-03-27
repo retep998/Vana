@@ -350,6 +350,9 @@
     <ClCompile Include="src\ChannelServer\MapFunctions.cpp">
       <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\PartyPacket.cpp">
+      <Filter>Source\Packets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -654,6 +657,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\MapFunctions.h">
       <Filter>Source\Handlers\Chat Handlers\GM Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PartyPacket.h">
+      <Filter>Source\Packets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

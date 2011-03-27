@@ -48,11 +48,11 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, uint16_t port) {
+void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
-	packet.add<uint16_t>(port);
+	packet.add<port_t>(port);
 
 	ConfigurationPacket::addConfig(WorldServer::Instance()->getConfig(), packet);
 

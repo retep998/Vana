@@ -20,11 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.h"
 #include "GameObjects.h"
 #include "InitializeCommon.h"
+#include "InterHelper.h"
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
+#include "PlayerObjects.h"
 #include "StringUtilities.h"
 #include "SyncHandler.h"
+#include "SyncPacket.h"
 #include "WorldServer.h"
 
 using Initializing::outputWidth;
@@ -32,8 +35,8 @@ using Initializing::outputWidth;
 PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 void PlayerDataProvider::loadData() {
-	int16_t worldid = WorldServer::Instance()->getWorldId();
-	loadPlayers(worldid);
+	int16_t worldId = WorldServer::Instance()->getWorldId();
+	loadPlayers(worldId);
 }
 
 void PlayerDataProvider::loadPlayers(int16_t worldId) {
@@ -56,42 +59,79 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 		p->setMap(-1);
 		p->setChannel(0);
 
-		registerPlayer(p, false);
+		playerConnect(p, false);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
+namespace Functors {
+	struct PlayerCompile {
+		void operator()(Player *player) {
+			packet->add<int32_t>(player->getId());
+		}
+		PacketCreator *packet;
+	};
+}
+
+void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
+	Functors::PlayerCompile func = {&packet};
+
+	packet.add<uint32_t>(m_players.size());
+	Player *player;
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+		player = iter->second.get();
+		packet.addBool(false);
+		packet.addBool(false);
+		packet.add<int16_t>(player->getLevel());
+		packet.add<int16_t>(player->getChannel());
+		packet.add<int32_t>(player->getMap());
+		packet.add<int32_t>(player->getParty() != nullptr ? player->getParty()->getId() : 0);
+		packet.add<int32_t>(0);
+	}
+
+	packet.add<uint32_t>(m_parties.size());
+	Party *party;
+	for (PartyMap::iterator iter = m_parties.begin(); iter != m_parties.end(); iter++) {
+		party = iter->second.get();
+		packet.add<int32_t>(party->getId());
+		packet.add<int32_t>(party->getLeaderId());
+		packet.add<int8_t>(party->getMemberCount());
+
+		party->runFunction(func);
+	}
+}
+
 // Players
-void PlayerDataProvider::registerPlayer(Player *player, bool online) {
+void PlayerDataProvider::playerConnect(Player *player, bool online) {
 	if (m_players.find(player->getId()) == m_players.end()) {
-		m_players[player->getId()] = player;
+		m_players[player->getId()].reset(player);
 	}
 	if (online) {
 		if (player->getParty() != nullptr) {
-			SyncHandler::logInLogOut(player->getId());
+			//SyncHandler::logInLogOut(player->getId());
 		}
 		Channels::Instance()->increasePopulation(player->getChannel());
 	}
 }
 
-void PlayerDataProvider::remove(int32_t id, int16_t channel) {
-	Player *player = m_players[id];
+void PlayerDataProvider::playerDisconnect(int32_t id, int16_t channel) {
+	Player *player = m_players[id].get();
 	if (channel == -1 || player->getChannel() == channel) {
 		player->setOnline(false);
 		if (player->getParty() != nullptr) {
-			SyncHandler::logInLogOut(id);
+			//SyncHandler::logInLogOut(id);
 		}
 		Channels::Instance()->decreasePopulation(channel);
 	}
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) {
-	Player *player;
+	Player *player = nullptr;
 	bool found = false;
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		if ((iter->second->isOnline() || includeOffline) && StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {
-			player = iter->second;
+			player = iter->second.get();
 			found = true;
 			break;
 		}
@@ -109,15 +149,16 @@ int32_t PlayerDataProvider::getPlayerQuantity() {
 
 Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 	if (m_players.find(id) != m_players.end()) {
-		Player *player = m_players[id];
-		if (player->isOnline() || includeOffline)
+		Player *player = m_players[id].get();
+		if (player->isOnline() || includeOffline) {
 			return player;
+		}
 	}
 	return nullptr;
 }
 
 void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
 		if (iter->second->getChannel() == channel) {
 			iter->second->setOnline(false);
 			removePendingPlayerEarly(iter->second->getId());
@@ -153,22 +194,72 @@ int32_t PlayerDataProvider::getPartyId() {
 	return ++pid;
 }
 
-void PlayerDataProvider::addParty(Party *party) {
-	m_parties[party->getId()] = party;
+Party * PlayerDataProvider::getParty(int32_t id) {
+	return (m_parties.find(id) != m_parties.end() ? m_parties[id].get() : nullptr);
 }
 
-void PlayerDataProvider::removeParty(int32_t id) {
-	if (m_parties.find(id) != m_parties.end()) {
-		Party *party = m_parties[id];
-		delete party;
+void PlayerDataProvider::createParty(int32_t playerId) {
+	Player *player = getPlayer(playerId);
+	if (player->getParty() != nullptr) {
+		// Hacking
+		return;
+	}
+	Party *party = new Party(getPartyId(), player->getId());
+	party->addMember(player, true);
+
+	m_parties[party->getId()].reset(party);
+}
+
+void PlayerDataProvider::removePartyMember(int32_t playerId) {
+	Player *player = getPlayer(playerId);
+	Party *party = player->getParty();
+	if (party == nullptr) {
+		// Hacking
+		return;
+	}
+
+	if (party->isLeader(playerId)) {
+		int32_t id = party->getId();
+		party->disband();
 		m_parties.erase(id);
+	}
+	else {
+		party->deleteMember(player, false);
 	}
 }
 
-Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) != m_parties.end() ? m_parties[id] : nullptr);
+void PlayerDataProvider::removePartyMember(int32_t playerId, int32_t target) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+	Party *party = player->getParty();
+	if (party == nullptr || !party->isLeader(playerId)) {
+		// Hacking
+		return;
+	}
+
+	Player *tplayer = PlayerDataProvider::Instance()->getPlayer(target, true);
+	party->deleteMember(tplayer, true);
 }
 
-unordered_map<int32_t, Party *> PlayerDataProvider::getParties() {
-	return m_parties;
+void PlayerDataProvider::addPartyMember(int32_t playerId) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+	Party *party = player->getParty();
+	if (party != nullptr) {
+		// Hacking
+		return;
+	}
+	if (party->getMemberCount() < Parties::MaxMembers) {
+		// Silent failure otherwise
+		party->addMember(player);
+	}
+}
+
+void PlayerDataProvider::setPartyLeader(int32_t playerId, int32_t leaderId) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+	Party *party = player->getParty();
+	if (party == nullptr || !party->isLeader(playerId)) {
+		// Hacking
+		return;
+	}
+
+	party->setLeader(player);
 }

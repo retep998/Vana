@@ -64,12 +64,15 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 	if (type == ServerTypes::Channel) {
 		channel = Channels::Instance()->getAvailableChannel();
 		if (channel != -1) {
-			uint16_t port = WorldServer::Instance()->getInterPort() + channel + 1;
+			port_t port = WorldServer::Instance()->getInterPort() + channel + 1;
 			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
 			WorldServerAcceptPacket::connect(this, channel, port);
+
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::All);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-			SyncPacket::PlayerPacket::sendParties(this);
+
+			SyncPacket::sendSyncData(this);
+
 			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
 
 			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + boost::lexical_cast<string>(channel));

@@ -25,18 +25,22 @@ using std::string;
 using std::vector;
 
 class Player;
-class WorldServerConnection;
 
 namespace SyncPacket {
-	void playerChangeChannel(WorldServerConnection *player, Player *info, uint16_t channel);
-	void playerBuffsTransferred(WorldServerConnection *player, int32_t playerid);
-	void registerPlayer(WorldServerConnection *player, uint32_t ip, int32_t playerid, const string &name, int32_t map, int32_t job, int32_t level);
-	void removePlayer(WorldServerConnection *player, int32_t playerid);
-	void partyOperation(WorldServerConnection *player, int8_t type, int32_t playerid, int32_t target = 0);
-	void partyInvite(WorldServerConnection *player, int32_t playerid, const string &invitee);
-	void updateLevel(WorldServerConnection *player, int32_t playerid, int32_t level);
-	void updateJob(WorldServerConnection *player, int32_t playerid, int32_t job);
-	void updateMap(WorldServerConnection *player, int32_t playerid, int32_t map);
-	void buddyInvite(WorldServerConnection *player, int32_t playerid, int32_t inviteeid);
-	void buddyOnline(WorldServerConnection *player, int32_t playerid, const vector<int32_t> &players, bool online);
+	namespace PlayerPacket {
+		void changeChannel(Player *info, uint16_t channel);
+		void buffsTransferred(int32_t playerId);
+		void connect(Player *player);
+		void disconnect(int32_t playerId);
+		void updateLevel(int32_t playerId, int32_t level);
+		void updateJob(int32_t playerId, int32_t job);
+		void updateMap(int32_t playerId, int32_t map);
+	}
+	namespace PartyPacket {
+		void sync(int8_t type, int32_t playerId, int32_t target = 0);
+	}
+	namespace BuddyPacket {
+		void buddyInvite(int32_t playerid, int32_t inviteeid);
+		void buddyOnline(int32_t playerid, const vector<int32_t> &players, bool online);
+	}
 }

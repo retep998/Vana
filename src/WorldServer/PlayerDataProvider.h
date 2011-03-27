@@ -19,10 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameObjects.h"
 #include "Types.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <string>
 
 using std::string;
+using std::tr1::function;
 using std::tr1::unordered_map;
 
 class PacketCreator;
@@ -37,11 +40,11 @@ public:
 		return singleton;
 	}
 	void loadData();
-	void assignAndPrune(int16_t worldId);
+	void getChannelConnectPacket(PacketCreator &packet);
 
 	// Player info
-	void registerPlayer(Player *player, bool online = true);
-	void remove(int32_t id, int16_t channel = -1);
+	void playerConnect(Player *player, bool online = true);
+	void playerDisconnect(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
 	Player * getPlayer(const string &name, bool includeOffline = false);
 	Player * getPlayer(int32_t id, bool includeOffline = false);
@@ -55,20 +58,25 @@ public:
 
 	// Parties
 	int32_t getPartyId();
-	void addParty(Party *party);
-	void removeParty(int32_t id);
+	void createParty(int32_t playerId);
+	void addPartyMember(int32_t playerId);
+	void removePartyMember(int32_t playerId, int32_t target);
+	void removePartyMember(int32_t playerId);
+	void setPartyLeader(int32_t playerId, int32_t leaderId);
+	void disbandParty(int32_t id);
 	Party * getParty(int32_t id);
-	unordered_map<int32_t, Party *> getParties();
 private:
 	PlayerDataProvider() : pid(0) {}
 	static PlayerDataProvider *singleton;
+	typedef unordered_map<int32_t, boost::shared_ptr<Party>> PartyMap;
+	typedef unordered_map<int32_t, boost::shared_ptr<Player>> PlayerMap;
 
 	void loadGuilds(int16_t worldId);
 	void loadAlliances(int16_t worldId);
 	void loadPlayers(int16_t worldId);
 
 	int32_t pid; // For assigning party IDs
-	unordered_map<int32_t, Player *> m_players; // Player info
 	unordered_map<int32_t, uint16_t> m_channelSwitches; // Channel changes
-	unordered_map<int32_t, Party *> m_parties;
+	PartyMap m_parties;
+	PlayerMap m_players;
 };

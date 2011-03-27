@@ -29,7 +29,7 @@ public:
 	Player();
 	Player(int32_t id);
 	void setOnline(bool isOnline) { online = isOnline; }
-	void setIp(uint32_t newIp) { ip = newIp; }
+	void setIp(ip_t newIp) { ip = newIp; }
 	void setChannel(int16_t newChannel) { channel = newChannel; }
 	void setOnlineTime(int64_t newTime) { onlineTime = newTime; }
 	void setMap(int32_t mapId) { map = mapId; }
@@ -42,7 +42,7 @@ public:
 	int16_t getJob() const { return job; }
 	int32_t getMap() const { return map; }
 	int32_t getId() const { return id; }
-	uint32_t getIp() const { return ip; }
+	ip_t getIp() const { return ip; }
 	int64_t getOnlineTime() const { return onlineTime; }
 	string getName() const { return name; }
 
@@ -59,7 +59,7 @@ private:
 	int16_t job;
 	int32_t id;
 	int32_t map;
-	uint32_t ip;
+	ip_t ip;
 	int64_t onlineTime;
 	int64_t inviteTime;
 	string name;
