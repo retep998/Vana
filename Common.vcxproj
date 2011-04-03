@@ -104,6 +104,7 @@
     <ClCompile Include="src\Common\QuestDataProvider.cpp" />
     <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
     <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
+    <ClCompile Include="src\Common\Session.cpp" />
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
     <ClCompile Include="src\Common\SqlLogger.cpp" />
@@ -127,7 +128,6 @@
     <ClCompile Include="src\Common\ConnectionManager.cpp" />
     <ClCompile Include="src\Common\MapleServer.cpp" />
     <ClCompile Include="src\Common\MapleServerClient.cpp" />
-    <ClCompile Include="src\Common\MapleSession.cpp" />
     <ClCompile Include="src\Common\SessionManager.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
     <ClCompile Include="src\Common\MapleEncryption.cpp" />
@@ -201,7 +201,7 @@
     <ClInclude Include="src\Common\ConnectionManager.h" />
     <ClInclude Include="src\Common\MapleServer.h" />
     <ClInclude Include="src\Common\MapleServerClient.h" />
-    <ClInclude Include="src\Common\MapleSession.h" />
+    <ClInclude Include="src\Common\Session.h" />
     <ClInclude Include="src\Common\SessionManager.h" />
     <ClInclude Include="src\Common\Decoder.h" />
     <ClInclude Include="src\Common\MapleEncryption.h" />

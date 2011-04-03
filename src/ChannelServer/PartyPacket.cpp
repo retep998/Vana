@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PartyPacket.h"
 #include "GameConstants.h"
 #include "InterHelper.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void PartyPacket::error(Player *player, int8_t error) {

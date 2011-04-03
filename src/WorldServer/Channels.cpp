@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.h"
 #include "Channel.h"
 #include "LoginServerConnectPacket.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Session.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
 

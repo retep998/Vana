@@ -103,9 +103,6 @@
     <ClCompile Include="src\Common\MapleServerClient.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\MapleSession.cpp">
-      <Filter>Source\Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\SessionManager.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
@@ -204,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="src\Common\ConfigurationPacket.cpp">
       <Filter>Source\Inter-Server</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Session.cpp">
+      <Filter>Source\Connection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -393,9 +393,6 @@
     <ClInclude Include="src\Common\MapleServerClient.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MapleSession.h">
-      <Filter>Source\Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Timer.h">
       <Filter>Source\Timer</Filter>
     </ClInclude>
@@ -437,6 +434,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\PlayerObjects.h">
       <Filter>Source\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Session.h">
+      <Filter>Source\Connection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

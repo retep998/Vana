@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillsPacket.h"
 #include "GameConstants.h"
-#include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "Skills.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillinfo) {

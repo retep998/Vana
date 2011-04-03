@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradesPacket.h"
 #include "Inventory.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerPacketHelper.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) {

@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Party.h"
 #include "Player.h"
+#include "Session.h"
 
 void SyncPacket::PlayerPacket::updateLevel(int32_t playerId, int32_t level) {
 	PacketCreator packet;

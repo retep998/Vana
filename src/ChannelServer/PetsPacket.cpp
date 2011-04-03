@@ -18,12 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PetsPacket.h"
 #include "GameConstants.h"
 #include "ItemConstants.h"
-#include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Pet.h"
 #include "Player.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {

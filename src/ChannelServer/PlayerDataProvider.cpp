@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Connectable.h"
 #include "Database.h"
 #include "InterHelper.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
 #include "PlayerPacket.h"
+#include "Session.h"
 #include "SyncPacket.h"
 #include <boost/algorithm/string.hpp>
 #include <cstring>

@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "AbstractConnection.h"
 #include "CmsgHeader.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void PingPacket::ping(AbstractConnection *connection) {

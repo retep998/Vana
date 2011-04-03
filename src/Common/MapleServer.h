@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "MapleSession.h"
+#include "Session.h"
 #include "SessionManager.h"
 #include <string>
 #include <boost/asio.hpp>
@@ -35,7 +35,7 @@ public:
 	void stop();
 private:
 	void start_accept();
-	void handle_accept(MapleSessionPtr new_session, const boost::system::error_code &error);
+	void handle_accept(SessionPtr new_session, const boost::system::error_code &error);
 
 	tcp::acceptor m_acceptor;
 	boost::scoped_ptr<AbstractConnectionFactory> m_apf;

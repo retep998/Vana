@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "ItemDataProvider.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 using Initializing::outputWidth;

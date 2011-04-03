@@ -30,14 +30,14 @@ using std::cout;
 using std::endl;
 
 MapleServerClient::MapleServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection) :
-	MapleSession(ioService, sessionManager, connection, false, true),
+	Session(ioService, sessionManager, connection, false, true),
 	m_server(serverIp),
 	m_port(serverPort),
 	m_resolver(ioService)
 {
 }
 
-void MapleServerClient::start_connect() {
+void MapleServerClient::startConnect() {
 	// Synchronously connect and process the connect packet
 
 	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
@@ -48,7 +48,7 @@ void MapleServerClient::start_connect() {
 		// Now let's process the connect packet
 		try {
 			readConnectPacket();
-			// Start the normal MapleSession routine
+			// Start the normal Session routine
 			start();
 		}
 		catch (std::range_error) {
