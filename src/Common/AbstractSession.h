@@ -26,6 +26,7 @@ typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
 
 class AbstractSession {
 public:
+	friend class SessionManager;
 	virtual ~AbstractSession() { }
 
 	AbstractSession(SessionManagerPtr sessionManager, bool encrypted = true) :
@@ -33,12 +34,12 @@ public:
 		m_encrypt(encrypted)
 	{
 	}
-	virtual void start() = 0;
-	virtual void handle_start() = 0;
-	virtual void stop() = 0;
 	virtual void disconnect() = 0;
-	virtual void handle_stop() = 0;
 protected:
+	virtual void start() = 0;
+	virtual void stop() = 0;
+	virtual void handleStart() = 0;
+	virtual void handleStop() = 0;
 	bool isEncrypted() const { return m_encrypt; }
 	void setEncrypted(bool encrypted) { m_encrypt = encrypted; }
 
