@@ -63,4 +63,7 @@ protected:
 	string m_interPassword;
 	IpMatrix m_externalIp;
 	boost::scoped_ptr<Logger> m_logger;
+private:
+	typedef std::tr1::unordered_map<string, int32_t> ConstantMap;
+	void loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const;
 };

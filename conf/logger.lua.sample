@@ -35,8 +35,8 @@ log_time_format = "%MM/%DD/%YY %MI:%II:%SS";
 -- All replacement identifiers are case-sensitive
 
 -- Logging options
--- *_log_destination: the place you wish to log to; options are LOG_NONE, LOG_FILE, LOG_SQL, and LOG_CONSOLE
--- You may combine log types by doing something such as LOG_FILE_SQL_CONSOLE or any variation thereof
+-- *_log_destination: the place you wish to log to; options are LOG_NONE, LOG_ALL, LOG_FILE, LOG_SQL, and LOG_CONSOLE
+-- You may combine specific log types by doing something such as LOG_FILE_SQL_CONSOLE or any variation thereof
 
 -- *_log_buffer_size: buffer for limited resources like SQL and files, log items are cached until these are full
 

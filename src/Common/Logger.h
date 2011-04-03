@@ -26,14 +26,15 @@ using std::tr1::unordered_map;
 
 namespace LogDestinations {
 	enum LogDestinations {
-		None,
-		File,
-		Console,
-		Sql,
-		FileSql,
-		FileConsole,
-		SqlConsole,
-		FileSqlConsole
+		None = 0x00,
+		File = 0x01,
+		Console = 0x02,
+		Sql = 0x04,
+		FileSql = File | Sql,
+		FileConsole = File | Console,
+		SqlConsole = Sql | Console,
+		FileSqlConsole = File | Sql | Console,
+		All = FileSqlConsole
 	};
 }
 

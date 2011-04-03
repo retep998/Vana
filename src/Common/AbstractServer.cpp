@@ -31,7 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <iomanip>
 
-AbstractServer::AbstractServer() {
+AbstractServer::AbstractServer()
+{
 	setListening(false);
 }
 
@@ -84,24 +85,31 @@ void AbstractServer::createLogger(const LogConfig &conf) {
 
 void AbstractServer::initializeLoggingConstants(ConfigFile &conf) const {
 	conf.setVariable("LOG_NONE", LogDestinations::None);
+	conf.setVariable("LOG_ALL", LogDestinations::All);
 
-	conf.setVariable("LOG_CONSOLE", LogDestinations::Console);
-	conf.setVariable("LOG_CONSOLE_FILE", LogDestinations::FileConsole);
-	conf.setVariable("LOG_CONSOLE_SQL", LogDestinations::SqlConsole);
-	conf.setVariable("LOG_CONSOLE_FILE_SQL", LogDestinations::FileSqlConsole);
-	conf.setVariable("LOG_CONSOLE_SQL_FILE", LogDestinations::FileSqlConsole);
+	ConstantMap constants;
+	constants["CONSOLE"] = LogDestinations::Console;
+	constants["FILE"] = LogDestinations::File;
+	constants["SQL"] = LogDestinations::Sql;
+	// If you add more location constants, be sure to add them to this map
 
-	conf.setVariable("LOG_FILE", LogDestinations::File);
-	conf.setVariable("LOG_FILE_CONSOLE", LogDestinations::FileConsole);
-	conf.setVariable("LOG_FILE_SQL", LogDestinations::FileSql);
-	conf.setVariable("LOG_FILE_CONSOLE_SQL", LogDestinations::FileSqlConsole);
-	conf.setVariable("LOG_FILE_SQL_CONSOLE", LogDestinations::FileSqlConsole);
+	loggerOptions(constants, conf, "LOG", 0, 0);
+}
 
-	conf.setVariable("LOG_SQL", LogDestinations::Sql);
-	conf.setVariable("LOG_SQL_FILE", LogDestinations::FileSql);
-	conf.setVariable("LOG_SQL_CONSOLE", LogDestinations::SqlConsole);
-	conf.setVariable("LOG_SQL_FILE_CONSOLE", LogDestinations::FileSqlConsole);
-	conf.setVariable("LOG_SQL_CONSOLE_FILE", LogDestinations::FileSqlConsole);
+void AbstractServer::loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const {
+	int32_t oVal = val;
+	for (ConstantMap::const_iterator iter = constants.begin(); iter != constants.end(); ++iter) {
+		if (base.find(iter->first) != string::npos) continue;
+
+		string newBase = base + "_" + iter->first;
+		val |= iter->second;
+		conf.setVariable(newBase, val);
+
+		if (depth < constants.size()) {
+			loggerOptions(constants, conf, newBase, val, depth + 1);
+		}
+		val = oVal;
+	}
 }
 
 void AbstractServer::log(LogTypes::LogTypes type, const string &message) {
@@ -111,6 +119,6 @@ void AbstractServer::log(LogTypes::LogTypes type, const string &message) {
 }
 
 void AbstractServer::displayLaunchTime() const {
-	float loadingTime = (TimeUtilities::getTickCount() - getStartTime()) / (float) 1000;
+	float loadingTime = (TimeUtilities::getTickCount() - getStartTime()) / 1000.0f;
 	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }
