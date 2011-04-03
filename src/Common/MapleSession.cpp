@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 MapleSession::MapleSession(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation) :
+	// Apparently, "isServer" is true from sessions created by the server for the client
+	// In addition, it's false from sessions created for the server clients
 	AbstractSession(sessionManager, (!isServer || isEncrypted)),
-		// Apparently, "isServer" is true from sessions created by the server for the client
-		// In addition, it's false from sessions created for the server clients
 	m_socket(ioService),
 	m_connection(connection),
 	m_isServer(isServer),
@@ -41,7 +41,7 @@ void MapleSession::start() {
 	m_sessionManager->start(shared_from_this());
 }
 
-void MapleSession::handle_start() {
+void MapleSession::handleStart() {
 	m_connection->setSession(this);
 	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
@@ -61,7 +61,7 @@ void MapleSession::disconnect() {
 	stop();
 }
 
-void MapleSession::handle_stop() {
+void MapleSession::handleStop() {
 	boost::system::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
