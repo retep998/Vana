@@ -68,7 +68,7 @@ namespace PatchLocations {
 }
 
 namespace MapleVersion {
-	const int16_t Version = MAPLE_VERSION;
+	const uint16_t Version = MAPLE_VERSION;
 	const int8_t Locale = Locales::Global;
 	const string LocaleString = "global"; // Used for MCDB verification
 	const bool TestServer = false;

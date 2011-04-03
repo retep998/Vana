@@ -187,13 +187,13 @@
     <ClCompile Include="src\Common\ConfigurationPacket.cpp">
       <Filter>Source\Inter-Server</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\Decoder.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
     <ClCompile Include="src\Common\Session.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Decoder.cpp">
-      <Filter>Source\Connection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\MapleEncryption.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ServerClient.cpp">
@@ -220,9 +220,6 @@
       <Filter>Source\Game Constants</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\AbstractConnection.h">
-      <Filter>Source\Abstracts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractSession.h">
       <Filter>Source\Abstracts</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\AbstractServer.h">
@@ -420,10 +417,10 @@
     <ClInclude Include="src\Common\PlayerObjects.h">
       <Filter>Source\Data Structures</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Session.h">
+    <ClInclude Include="src\Common\Decoder.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MapleEncryption.h">
+    <ClInclude Include="src\Common\Session.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Decoder.h">
@@ -434,6 +431,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\ConnectionAcceptor.h">
       <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractSession.h">
+      <Filter>Source\Abstracts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
