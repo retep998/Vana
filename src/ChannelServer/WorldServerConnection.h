@@ -31,7 +31,7 @@ public:
 
 class WorldServerConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createPlayer() {
+	AbstractConnection * createConnection() {
 		return new WorldServerConnection();
 	}
 };
