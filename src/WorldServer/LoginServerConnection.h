@@ -25,7 +25,7 @@ class LoginServerConnection : public AbstractServerConnection {
 public:
 	LoginServerConnection();
 	~LoginServerConnection();
-	void realHandleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet);
 };
 
 class LoginServerConnectionFactory : public AbstractConnectionFactory {

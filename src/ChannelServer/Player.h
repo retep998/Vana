@@ -55,7 +55,7 @@ public:
 	Player();
 	~Player();
 
-	void realHandleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet);
 
 	void setSaveOnDc(bool save) { save_on_dc = save; }
 	void setTrading(bool state) { trade_state = state; }

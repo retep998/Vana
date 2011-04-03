@@ -26,7 +26,7 @@ class LoginServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
 	LoginServerAcceptConnection() : worldId(-1) { };
 	~LoginServerAcceptConnection();
-	void realHandleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
 	void setWorldId(int8_t id) { worldId = id; }

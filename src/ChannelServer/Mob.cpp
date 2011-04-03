@@ -421,8 +421,6 @@ int32_t Mob::getWeaponReflection() {
 }
 
 void Mob::setControl(Player *control, bool spawn, Player *display) {
-	/*if (this->control != nullptr)
-		MobsPacket::endControlMob(this->control, this);*/
 	this->control = control;
 	if (control != nullptr) {
 		MobsPacket::requestControl(control, this, spawn);
@@ -507,20 +505,23 @@ int32_t Mob::giveExp(Player *killer) {
 	int32_t highestdamager = 0;
 	uint64_t highestdamage = 0;
 
-	if (damages.size()) { // Don't really want to bother with construction of the iterators and stuff if we won't use them
+	if (damages.size()) {
+		// Don't really want to bother with construction of the iterators and stuff if we won't use them
 		unordered_map<int32_t, PartyExp> parties;
 		Player *damager = nullptr;
 		uint8_t damagerlevel = 0;
 		Party *damagerparty = nullptr;
 		for (unordered_map<int32_t, uint64_t>::iterator iter = damages.begin(); iter != damages.end(); iter++) {
-			if (iter->second > highestdamage) { // Find the highest damager to give drop ownership
+			if (iter->second > highestdamage) {
+				// Find the highest damager to give drop ownership
 				highestdamager = iter->first;
 				highestdamage = iter->second;
 			}
 			damager = PlayerDataProvider::Instance()->getPlayer(iter->first);
-			if (damager == nullptr || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) // Only give EXP if the damager is in the same channel, on the same map and is alive
+			if (damager == nullptr || damager->getMap() != this->mapid || damager->getStats()->getHp() == 0) {
+				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
-
+			}
 			damagerlevel = damager->getStats()->getLevel();
 			damagerparty = damager->getParty();
 

@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-void Player::realHandleRequest(PacketReader &packet) {
+void Player::handleRequest(PacketReader &packet) {
 	try {
 		switch (packet.getHeader()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;

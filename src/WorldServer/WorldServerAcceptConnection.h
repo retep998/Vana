@@ -26,7 +26,7 @@ class WorldServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
 	~WorldServerAcceptConnection();
 
-	void realHandleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
 	uint16_t getChannel() const { return channel; }

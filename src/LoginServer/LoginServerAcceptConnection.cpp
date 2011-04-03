@@ -36,7 +36,7 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	}
 }
 
-void LoginServerAcceptConnection::realHandleRequest(PacketReader &packet) {
+void LoginServerAcceptConnection::handleRequest(PacketReader &packet) {
 	if (!processAuth(LoginServer::Instance(), packet, LoginServer::Instance()->getInterPassword())) return;
 	switch (packet.getHeader()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;

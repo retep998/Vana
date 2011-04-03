@@ -128,7 +128,7 @@ Player::~Player() {
 	}
 }
 
-void Player::realHandleRequest(PacketReader &packet) {
+void Player::handleRequest(PacketReader &packet) {
 	try {
 		header_t header = packet.getHeader();
 		if (!is_connect) {

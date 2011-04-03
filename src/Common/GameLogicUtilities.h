@@ -65,6 +65,7 @@ namespace GameLogicUtilities {
 	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
 	inline bool itemSkillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 10000) == job); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
+	inline int32_t getBattleshipHp(uint8_t shipLevel, uint8_t playerLevel) { return ((4000 * shipLevel) + ((playerLevel - 120) * 2000)); }
 
 	// Mob skills
 	inline bool isMobSkill(int32_t skillId) { return (skillId >= 100 && skillId <= 200); }

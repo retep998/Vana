@@ -267,7 +267,9 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 }
 
 void PlayerActiveBuffs::resetBattleshipHp() {
-	m_battleshiphp = (4000 * m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship)) + ((m_player->getStats()->getLevel() - 120) * 2000);
+	uint8_t shipLevel = m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship);
+	uint8_t playerLevel = m_player->getStats()->getLevel();
+	m_battleshiphp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
 
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
@@ -332,15 +334,16 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 }
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
-	if (m_energycharge != 10000 && targets > 0) {
+	if (m_energycharge != Stats::MaxEnergyChargeLevel && targets > 0) {
 		int32_t skillId = m_player->getSkills()->getEnergyCharge();
 		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed);
-		if (m_player->getTimers()->checkTimer(id) > 0)
+		if (m_player->getTimers()->checkTimer(id) > 0) {
 			stopEnergyChargeTimer();
+		}
 		startEnergyChargeTimer();
 		m_energycharge += m_player->getSkills()->getSkillInfo(skillId)->x * targets;
-		if (m_energycharge > 10000) {
-			m_energycharge = 10000;
+		if (m_energycharge > Stats::MaxEnergyChargeLevel) {
+			m_energycharge = Stats::MaxEnergyChargeLevel;
 			stopEnergyChargeTimer();
 		}
 		Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
@@ -348,7 +351,7 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 }
 
 void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
-	m_energycharge -= 200; // Always the same
+	m_energycharge -= Stats::EnergyChargeDecay;
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	if (m_energycharge < 0) {
 		m_energycharge = 0;
@@ -438,6 +441,7 @@ bool PlayerActiveBuffs::hasHolySymbol() {
 bool PlayerActiveBuffs::hasPowerStance() {
 	return (getPowerStance() != 0);
 }
+
 bool PlayerActiveBuffs::hasHyperBody() {
 	return (getHyperBody() != 0);
 }
@@ -478,6 +482,7 @@ int16_t PlayerActiveBuffs::getHolySymbolRate() {
 	}
 	return val;
 }
+
 int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
 	if (hasBuff(Jobs::Magician::MagicGuard))
