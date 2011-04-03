@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionAcceptor.h"
 #include "SessionManager.h"
 #include "Types.h"
-#include <list>
-#include <boost/tr1/memory.hpp>
-#include <string>
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
+#include <boost/tr1/memory.hpp>
+#include <list>
+#include <string>
 
 using std::string;
 

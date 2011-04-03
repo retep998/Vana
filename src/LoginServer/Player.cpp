@@ -28,6 +28,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
+Player::Player() :
+	status(PlayerStatus::NotLoggedIn),
+	invalid_logins(0),
+	quiet_ban_time(0),
+	quiet_ban_reason(0)
+{
+}
+
 void Player::handleRequest(PacketReader &packet) {
 	try {
 		switch (packet.getHeader()) {
