@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.h"
 #include "IpUtilities.h"
 #include "LoginServerConnection.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
+#include "Session.h"
 #include "WorldServer.h"
 
 void LoginServerConnectPacket::registerChannel(int32_t channel, ip_t ip, const IpMatrix &extIp, port_t port) {

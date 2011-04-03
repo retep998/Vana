@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Npc.h"
 #include "FileUtilities.h"
 #include "LuaNpc.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "ScriptDataProvider.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 #include <string>
 

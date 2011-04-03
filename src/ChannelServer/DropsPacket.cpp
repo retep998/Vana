@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.h"
 #include "GameLogicUtilities.h"
 #include "ItemConstants.h"
-#include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {

@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
-#include "MapleSession.h"
 #include "PacketCreator.h"
 #include "ServerConnection.h"
+#include "Session.h"
 #include <algorithm>
 
 void AuthenticationPacket::sendPassword(AbstractServerConnection *connection, const string &pass, const IpMatrix &extIp) {

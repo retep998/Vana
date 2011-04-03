@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "MapleSession.h"
+#include "Session.h"
 #include "SessionManager.h"
 #include "Types.h"
 #include <string>
@@ -28,11 +28,12 @@ using boost::asio::ip::tcp;
 
 class AbstractConnection;
 
-class MapleServerClient : public MapleSession {
+class MapleServerClient : public Session {
 public:
+	friend class ConnectionManager;
 	MapleServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection);
-	void start_connect();
 private:
+	void startConnect();
 	void readConnectPacket();
 
 	ip_t m_server;

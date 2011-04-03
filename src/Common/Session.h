@@ -37,10 +37,10 @@ using std::string;
 class AbstractConnection;
 class PacketCreator;
 
-class MapleSession : public AbstractSession, public boost::enable_shared_from_this<MapleSession> {
+class Session : public AbstractSession, public boost::enable_shared_from_this<Session> {
 public:
 	friend class MapleServer;
-	MapleSession(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
+	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
 
 	tcp::socket & getSocket() { return m_socket; }
 
@@ -53,10 +53,10 @@ protected:
 	void handleStart();
 	void handleStop();
 
-	void start_read_header();
-	void handle_write(const boost::system::error_code &error, size_t bytesTransferred);
-	void handle_read_header(const boost::system::error_code &error, size_t bytesTransferred);
-	void handle_read_body(const boost::system::error_code &error, size_t bytesTransferred);
+	void startReadHeader();
+	void handleWrite(const boost::system::error_code &error, size_t bytesTransferred);
+	void handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred);
+	void handleReadBody(const boost::system::error_code &error, size_t bytesTransferred);
 	void send(const unsigned char *buf, int32_t len);
 	void sendIv(const PacketCreator &packet);
 
@@ -75,4 +75,4 @@ protected:
 	boost::mutex m_sendMutex;
 };
 
-typedef boost::shared_ptr<MapleSession> MapleSessionPtr;
+typedef boost::shared_ptr<Session> SessionPtr;

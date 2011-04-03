@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
 #include "MapleServer.h"
-#include "MapleSession.h"
+#include "Session.h"
 #include <boost/bind.hpp>
 
 MapleServer::MapleServer(boost::asio::io_service &io_service, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation) :
@@ -36,7 +36,7 @@ void MapleServer::stop() {
 }
 
 void MapleServer::start_accept() {
-	MapleSessionPtr new_session(new MapleSession(m_acceptor.io_service(),
+	SessionPtr new_session(new Session(m_acceptor.io_service(),
 		m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
 
 	m_acceptor.async_accept(new_session->getSocket(),
@@ -44,7 +44,7 @@ void MapleServer::start_accept() {
 			boost::asio::placeholders::error));
 }
 
-void MapleServer::handle_accept(MapleSessionPtr new_session, const boost::system::error_code &error) {
+void MapleServer::handle_accept(SessionPtr new_session, const boost::system::error_code &error) {
 	if (!error) {
 		new_session->start();
 		start_accept();

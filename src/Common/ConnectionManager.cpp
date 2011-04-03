@@ -35,7 +35,7 @@ void ConnectionManager::accept(port_t port, AbstractConnectionFactory *acf, bool
 
 void ConnectionManager::connect(ip_t serverIp, port_t serverPort, AbstractConnection *connection) {
 	MapleServerClientPtr c = MapleServerClientPtr(new MapleServerClient(m_ioService, serverIp, serverPort, m_clients, connection));
-	c->start_connect();
+	c->startConnect();
 }
 
 void ConnectionManager::stop() {

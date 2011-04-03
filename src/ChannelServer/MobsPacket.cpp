@@ -16,11 +16,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobsPacket.h"
-#include "MapleSession.h"
 #include "Maps.h"
 #include "Mob.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner, bool spawn, bool show) {

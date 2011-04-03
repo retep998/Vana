@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "MapleSession.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Pet.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {

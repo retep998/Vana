@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
 #include "CmsgHeader.h"
-#include "MapleSession.h"
 #include "PacketReader.h"
 #include "PingPacket.h"
+#include "Session.h"
 #include "SmsgHeader.h"
 #include "Timer.h"
 #include "TimeUtilities.h"
@@ -78,7 +78,7 @@ void AbstractConnection::ping() {
 	PingPacket::ping(this);
 }
 
-void AbstractConnection::setSession(MapleSession *val) {
+void AbstractConnection::setSession(Session *val) {
 	m_session = val;
 	setTimer();
 }

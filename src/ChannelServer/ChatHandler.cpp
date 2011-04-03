@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.h"
 #include "ChannelServer.h"
 #include "ChatHandlerFunctions.h"
-#include "MapleSession.h"
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayersPacket.h"
+#include "Session.h"
 #include "WorldServerConnectPacket.h"
 
 using std::vector;

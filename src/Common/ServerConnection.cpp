@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
-#include "MapleSession.h"
 #include "PacketReader.h"
+#include "Session.h"
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
