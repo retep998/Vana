@@ -32,9 +32,9 @@ Session::Session(boost::asio::io_service &ioService, SessionManagerPtr sessionMa
 	m_socket(ioService),
 	m_connection(connection),
 	m_isServer(isServer),
-	m_patchLocation(patchLocation)
+	m_patchLocation(patchLocation),
+	m_decoder(!isServer || isEncrypted)
 {
-	m_decoder.setEncryption(this->isEncrypted());
 }
 
 void Session::start() {
@@ -125,11 +125,18 @@ void Session::handleWrite(const boost::system::error_code &error, size_t bytesTr
 
 void Session::handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) {
 	if (!error) {
-		size_t len = Decoder::getLength(m_buffer.get(), isEncrypted());
+		// TODO: Figure out how to distinguish between client versions and server versions, can use this after
+		//if (!m_decoder.validPacket(m_buffer.get())) {
+		//	// Hacking or trying to crash server
+		//	disconnect();
+		//	return;
+		//}
 
-		if (len < 2 || len > maxBufferLen) {
+		size_t len = m_decoder.getLength(m_buffer.get());
+		if (len < 2) {
 			// Hacking or trying to crash server
 			disconnect();
+			return;
 		}
 
 		m_buffer.reset(new unsigned char[len]);

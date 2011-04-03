@@ -130,7 +130,6 @@
     <ClCompile Include="src\Common\ServerClient.cpp" />
     <ClCompile Include="src\Common\SessionManager.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
-    <ClCompile Include="src\Common\MapleEncryption.cpp" />
     <ClCompile Include="src\Common\AbstractConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServer.cpp" />
     <ClCompile Include="src\Common\DatabaseMigration.cpp" />
@@ -139,6 +138,7 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\AbstractSession.h" />
     <ClInclude Include="src\Common\BitUtilities.h" />
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
@@ -204,10 +204,8 @@
     <ClInclude Include="src\Common\Session.h" />
     <ClInclude Include="src\Common\SessionManager.h" />
     <ClInclude Include="src\Common\Decoder.h" />
-    <ClInclude Include="src\Common\MapleEncryption.h" />
     <ClInclude Include="src\Common\AbstractConnection.h" />
     <ClInclude Include="src\Common\AbstractServer.h" />
-    <ClInclude Include="src\Common\AbstractSession.h" />
     <ClInclude Include="src\Common\Rates.h" />
     <ClInclude Include="src\Common\ServerConnection.h" />
     <ClInclude Include="src\Common\GameObjects.h" />
