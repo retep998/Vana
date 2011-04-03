@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "LoginServerAcceptConnection.h"
 #include "LoginServerAcceptPacket.h"
-#include "Session.h"
 #include "Player.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "PlayerStatus.h"
+#include "Session.h"
 #include "World.h"
 #include <boost/lexical_cast.hpp>
 #include <iostream>

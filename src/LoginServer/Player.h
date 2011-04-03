@@ -25,8 +25,7 @@ class PacketReader;
 
 class Player : public AbstractConnection {
 public:
-	Player() : status(PlayerStatus::NotLoggedIn), invalid_logins(0), quiet_ban_time(0), quiet_ban_reason(0) { }
-
+	Player();
 	~Player();
 
 	void handleRequest(PacketReader &packet);

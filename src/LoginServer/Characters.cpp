@@ -25,9 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.h"
 #include "PacketReader.h"
 #include "Player.h"
-#include "ValidCharDataProvider.h"
+#include "Session.h"
 #include "World.h"
 #include "Worlds.h"
+#include "ValidCharDataProvider.h"
 #include <boost/tr1/unordered_map.hpp>
 
 using std::tr1::unordered_map;
