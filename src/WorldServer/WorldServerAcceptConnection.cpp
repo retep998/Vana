@@ -46,7 +46,7 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	}
 }
 
-void WorldServerAcceptConnection::realHandleRequest(PacketReader &packet) {
+void WorldServerAcceptConnection::handleRequest(PacketReader &packet) {
 	if (!processAuth(WorldServer::Instance(), packet, WorldServer::Instance()->getInterPassword())) return;
 	switch (packet.getHeader()) {
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;

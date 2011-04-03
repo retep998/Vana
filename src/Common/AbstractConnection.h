@@ -31,8 +31,8 @@ public:
 	AbstractConnection();
 	virtual ~AbstractConnection() { }
 
-	virtual void realHandleRequest(PacketReader &packet) = 0;
-	void handleRequest(PacketReader &packet);
+	virtual void handleRequest(PacketReader &packet) = 0;
+	void baseHandleRequest(PacketReader &packet);
 	void setTimer();
 	void ping();
 

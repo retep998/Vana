@@ -151,7 +151,7 @@ void MapleSession::handle_read_body(const boost::system::error_code &error, size
 		m_decoder.decrypt(m_buffer.get(), bytesTransferred);
 
 		PacketReader packet(m_buffer.get(), bytesTransferred);
-		m_connection->handleRequest(packet);
+		m_connection->baseHandleRequest(packet);
 
 		start_read_header();
 	}

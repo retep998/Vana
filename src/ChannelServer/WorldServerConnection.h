@@ -26,7 +26,7 @@ class WorldServerConnection : public AbstractServerConnection {
 public:
 	WorldServerConnection();
 	~WorldServerConnection();
-	void realHandleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet);
 };
 
 class WorldServerConnectionFactory : public AbstractConnectionFactory {

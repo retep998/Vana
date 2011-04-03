@@ -36,7 +36,7 @@ AbstractConnection::AbstractConnection() :
 {
 }
 
-void AbstractConnection::handleRequest(PacketReader &packet) {
+void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 	try {
 		switch (packet.getHeader(false)) {
 			case SMSG_PING:
@@ -54,7 +54,7 @@ void AbstractConnection::handleRequest(PacketReader &packet) {
 				m_latency = (clock() - m_lastPing) / 2; // This is for the trip to and from, so latency is averaged between them
 				break;
 		}
-		realHandleRequest(packet);
+		handleRequest(packet);
 	}
 	catch (std::exception &e) {
 		std::cout << "ERROR: " << e.what() << std::endl;

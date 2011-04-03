@@ -62,6 +62,8 @@ namespace Stats {
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
 	const int32_t MaxDamage = 199999;
+	const int16_t EnergyChargeDecay = 200;
+	const int16_t MaxEnergyChargeLevel = 10000;
 
 	const int16_t PetExp[PetLevels - 1] = {
 		1, 3, 6, 14, 31, 60, 108, 181, 287, 434,

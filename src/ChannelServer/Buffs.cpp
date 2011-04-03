@@ -388,7 +388,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 				break;
 			case Jobs::Marauder::EnergyCharge:
 			case Jobs::ThunderBreaker::EnergyCharge:
-				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == 10000 ? time : 0), playerskill, mapskill);
+				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : 0), playerskill, mapskill);
 				break;
 			case Jobs::Buccaneer::SpeedInfusion:
 			case Jobs::ThunderBreaker::SpeedInfusion:
@@ -405,7 +405,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 				BuffsPacket::useSkill(player, skillId, time, playerskill, mapskill, addedinfo);
 		}
 	}
-	if (skillId != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == 10000) {
+	if (skillId != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel) {
 		PlayerActiveBuffs *playerbuffs = player->getActiveBuffs();
 		playerbuffs->addBuffInfo(skillId, buffs);
 		playerbuffs->addMapEntryBuffInfo(enterskill);

@@ -36,7 +36,7 @@ WorldServerConnection::~WorldServerConnection() {
 	}
 }
 
-void WorldServerConnection::realHandleRequest(PacketReader &packet) {
+void WorldServerConnection::handleRequest(PacketReader &packet) {
 	switch (packet.getHeader()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
