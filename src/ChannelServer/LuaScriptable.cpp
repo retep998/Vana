@@ -69,8 +69,9 @@ void LuaScriptable::initialize() {
 	setVariable("m_box", PlayerPacket::NoticeTypes::Box);
 
 	Player *player = LuaExports::getPlayer(luaVm);
-	if (player != nullptr && player->getInstance() != nullptr)
+	if (player != nullptr && player->getInstance() != nullptr) {
 		setVariable("_instancename", player->getInstance()->getName());
+	}
 
 	// Miscellanous
 	lua_register(luaVm, "consoleOutput", &LuaExports::consoleOutput);
@@ -367,7 +368,9 @@ void LuaScriptable::printError(const string &error) {
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
 	lua_getglobal(luaVm, "_playerid");
-	return PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	Player *p = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
+	lua_pop(luaVm, 1);
+	return p;
 }
 
 Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
@@ -383,7 +386,9 @@ Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
 
 Instance * LuaExports::getInstance(lua_State *luaVm) {
 	lua_getglobal(luaVm, "_instancename");
-	return Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
+	Instance *i = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
+	lua_pop(luaVm, 1);
+	return i;
 }
 
 // Miscellaneous
