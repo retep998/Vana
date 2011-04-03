@@ -126,8 +126,8 @@
     <ClCompile Include="src\Common\StringUtilities.cpp" />
     <ClCompile Include="src\Common\TimeUtilities.cpp" />
     <ClCompile Include="src\Common\ConnectionManager.cpp" />
-    <ClCompile Include="src\Common\MapleServer.cpp" />
-    <ClCompile Include="src\Common\MapleServerClient.cpp" />
+    <ClCompile Include="src\Common\ConnectionAcceptor.cpp" />
+    <ClCompile Include="src\Common\ServerClient.cpp" />
     <ClCompile Include="src\Common\SessionManager.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
     <ClCompile Include="src\Common\MapleEncryption.cpp" />
@@ -199,8 +199,8 @@
     <ClInclude Include="src\Common\StringUtilities.h" />
     <ClInclude Include="src\Common\TimeUtilities.h" />
     <ClInclude Include="src\Common\ConnectionManager.h" />
-    <ClInclude Include="src\Common\MapleServer.h" />
-    <ClInclude Include="src\Common\MapleServerClient.h" />
+    <ClInclude Include="src\Common\ConnectionAcceptor.h" />
+    <ClInclude Include="src\Common\ServerClient.h" />
     <ClInclude Include="src\Common\Session.h" />
     <ClInclude Include="src\Common\SessionManager.h" />
     <ClInclude Include="src\Common\Decoder.h" />

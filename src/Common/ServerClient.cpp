@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapleServerClient.h"
+#include "ServerClient.h"
 #include "AbstractConnection.h"
 #include "ExitCodes.h"
 #include "MapleVersion.h"
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::cout;
 using std::endl;
 
-MapleServerClient::MapleServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection) :
+ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection) :
 	Session(ioService, sessionManager, connection, false, true),
 	m_server(serverIp),
 	m_port(serverPort),
@@ -37,7 +37,7 @@ MapleServerClient::MapleServerClient(boost::asio::io_service &ioService, ip_t se
 {
 }
 
-void MapleServerClient::startConnect() {
+void ServerClient::startConnect() {
 	// Synchronously connect and process the connect packet
 
 	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
@@ -67,7 +67,7 @@ void MapleServerClient::startConnect() {
 	}
 }
 
-void MapleServerClient::readConnectPacket() {
+void ServerClient::readConnectPacket() {
 	boost::system::error_code error;
 
 	m_buffer.reset(new unsigned char[maxBufferLen]);

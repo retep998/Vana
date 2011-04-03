@@ -28,10 +28,10 @@ using boost::asio::ip::tcp;
 
 class AbstractConnection;
 
-class MapleServerClient : public Session {
+class ServerClient : public Session {
 public:
 	friend class ConnectionManager;
-	MapleServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection);
+	ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection);
 private:
 	void startConnect();
 	void readConnectPacket();
@@ -41,4 +41,4 @@ private:
 	tcp::resolver m_resolver;
 };
 
-typedef boost::shared_ptr<MapleServerClient> MapleServerClientPtr;
+typedef boost::shared_ptr<ServerClient> ServerClientPtr;

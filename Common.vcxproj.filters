@@ -23,9 +23,6 @@
     <Filter Include="Source\Connection">
       <UniqueIdentifier>{141f19d0-b99a-489a-8871-97bdb6db4f5c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Decoder">
-      <UniqueIdentifier>{8012938b-3fc4-47f1-9ff0-706089b23520}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Timer">
       <UniqueIdentifier>{ba915691-350f-47c6-9ed5-324e433bbc1e}</UniqueIdentifier>
     </Filter>
@@ -97,20 +94,8 @@
     <ClCompile Include="src\Common\ConnectionManager.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\MapleServer.cpp">
-      <Filter>Source\Connection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\MapleServerClient.cpp">
-      <Filter>Source\Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\SessionManager.cpp">
       <Filter>Source\Connection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\Decoder.cpp">
-      <Filter>Source\Decoder</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\MapleEncryption.cpp">
-      <Filter>Source\Decoder</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\AbstractConnection.cpp">
       <Filter>Source\Abstracts</Filter>
@@ -203,6 +188,18 @@
       <Filter>Source\Inter-Server</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Session.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Decoder.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MapleEncryption.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ServerClient.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConnectionAcceptor.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
   </ItemGroup>
@@ -300,12 +297,6 @@
     <ClInclude Include="src\Common\ServerConnection.h">
       <Filter>Source\Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Decoder.h">
-      <Filter>Source\Decoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\MapleEncryption.h">
-      <Filter>Source\Decoder</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\DatabaseMigration.h">
       <Filter>Source\Database Migration</Filter>
     </ClInclude>
@@ -387,12 +378,6 @@
     <ClInclude Include="src\Common\SessionManager.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\MapleServer.h">
-      <Filter>Source\Connection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\MapleServerClient.h">
-      <Filter>Source\Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Timer.h">
       <Filter>Source\Timer</Filter>
     </ClInclude>
@@ -436,6 +421,18 @@
       <Filter>Source\Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Session.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MapleEncryption.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Decoder.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ServerClient.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConnectionAcceptor.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
   </ItemGroup>

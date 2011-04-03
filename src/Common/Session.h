@@ -39,7 +39,7 @@ class PacketCreator;
 
 class Session : public AbstractSession, public boost::enable_shared_from_this<Session> {
 public:
-	friend class MapleServer;
+	friend class ConnectionAcceptor;
 	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
 
 	tcp::socket & getSocket() { return m_socket; }

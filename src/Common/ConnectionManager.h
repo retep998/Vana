@@ -17,8 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "MapleServerClient.h"
-#include "MapleServer.h"
+#include "ConnectionAcceptor.h"
 #include "SessionManager.h"
 #include "Types.h"
 #include <list>
@@ -31,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class AbstractConnectionFactory;
-class MapleServer;
+class ConnectionAcceptor;
 
 class ConnectionManager : private boost::noncopyable {
 public:
@@ -48,8 +47,8 @@ public:
 	void run();
 	void join();
 private:
-	void handle_run();
-	void handle_stop();
+	void handleRun();
+	void handleStop();
 
 	ConnectionManager();
 	static ConnectionManager *singleton;
@@ -57,6 +56,6 @@ private:
 	boost::scoped_ptr<boost::thread> m_thread;
 	boost::asio::io_service m_ioService;
 	SessionManagerPtr m_clients;
-	std::list<MapleServerPtr> m_servers;
+	std::list<ConnectionAcceptorPtr> m_servers;
 	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };
