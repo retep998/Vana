@@ -16,37 +16,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
-#include "MapleServer.h"
+#include "ConnectionAcceptor.h"
 #include "Session.h"
 #include <boost/bind.hpp>
 
-MapleServer::MapleServer(boost::asio::io_service &io_service, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation) :
-	m_acceptor(io_service, endpoint),
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation) :
+	m_acceptor(ioService, endpoint),
 	m_apf(apf),
 	m_sessionManager(new SessionManager),
 	m_patchLocation(patchLocation),
 	m_isEncrypted(encrypted)
 {
-	start_accept();
+	startAccepting();
 }
 
-void MapleServer::stop() {
+void ConnectionAcceptor::stop() {
 	m_acceptor.close();
 	m_sessionManager->stopAll();
 }
 
-void MapleServer::start_accept() {
-	SessionPtr new_session(new Session(m_acceptor.io_service(),
-		m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
-
-	m_acceptor.async_accept(new_session->getSocket(),
-		boost::bind(&MapleServer::handle_accept, this, new_session,
-			boost::asio::placeholders::error));
+void ConnectionAcceptor::startAccepting() {
+	SessionPtr newSession(new Session(m_acceptor.io_service(), m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
+	m_acceptor.async_accept(newSession->getSocket(), boost::bind(&ConnectionAcceptor::handleConnection, this, newSession, boost::asio::placeholders::error));
 }
 
-void MapleServer::handle_accept(SessionPtr new_session, const boost::system::error_code &error) {
+void ConnectionAcceptor::handleConnection(SessionPtr newSession, const boost::system::error_code &error) {
 	if (!error) {
-		new_session->start();
-		start_accept();
+		newSession->start();
+		startAccepting();
 	}
 }

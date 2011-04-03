@@ -17,46 +17,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
 #include "ConnectionManager.h"
+#include "ServerClient.h"
 #include <algorithm>
 #include <boost/bind.hpp>
 
 ConnectionManager * ConnectionManager::singleton = nullptr;
 
 ConnectionManager::ConnectionManager() :
-m_clients(new SessionManager),
-m_work(new boost::asio::io_service::work(m_ioService))
+	m_clients(new SessionManager),
+	m_work(new boost::asio::io_service::work(m_ioService))
 {
 }
 
 void ConnectionManager::accept(port_t port, AbstractConnectionFactory *acf, bool encrypted, const string &patchLocation) {
 	tcp::endpoint endpoint(tcp::v4(), port);
-	m_servers.push_back(MapleServerPtr(new MapleServer(m_ioService, endpoint, acf, encrypted, patchLocation)));
+	m_servers.push_back(ConnectionAcceptorPtr(new ConnectionAcceptor(m_ioService, endpoint, acf, encrypted, patchLocation)));
 }
 
 void ConnectionManager::connect(ip_t serverIp, port_t serverPort, AbstractConnection *connection) {
-	MapleServerClientPtr c = MapleServerClientPtr(new MapleServerClient(m_ioService, serverIp, serverPort, m_clients, connection));
+	ServerClientPtr c = ServerClientPtr(new ServerClient(m_ioService, serverIp, serverPort, m_clients, connection));
 	c->startConnect();
 }
 
 void ConnectionManager::stop() {
 	// Post a call to io_service so it is safe to call from all threads
-	m_ioService.post(boost::bind(&ConnectionManager::handle_stop, this));
+	m_ioService.post(boost::bind(&ConnectionManager::handleStop, this));
 }
 
 void ConnectionManager::run() {
-	m_thread.reset(new boost::thread(boost::bind(&ConnectionManager::handle_run, this)));
+	m_thread.reset(new boost::thread(boost::bind(&ConnectionManager::handleRun, this)));
 }
 
 void ConnectionManager::join() {
 	m_thread->join();
 }
 
-void ConnectionManager::handle_run() {
+void ConnectionManager::handleRun() {
 	m_ioService.run();
 }
 
-void ConnectionManager::handle_stop() {
-	std::for_each(m_servers.begin(), m_servers.end(), boost::bind(&MapleServer::stop, _1));
+void ConnectionManager::handleStop() {
+	std::for_each(m_servers.begin(), m_servers.end(), boost::bind(&ConnectionAcceptor::stop, _1));
 
 	m_clients->stopAll();
 

@@ -29,13 +29,13 @@ using boost::asio::ip::tcp;
 
 class AbstractConnectionFactory;
 
-class MapleServer {
+class ConnectionAcceptor {
 public:
-	MapleServer(boost::asio::io_service &io_service, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation);
+	ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation);
 	void stop();
 private:
-	void start_accept();
-	void handle_accept(SessionPtr new_session, const boost::system::error_code &error);
+	void startAccepting();
+	void handleConnection(SessionPtr newSession, const boost::system::error_code &error);
 
 	tcp::acceptor m_acceptor;
 	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
@@ -44,4 +44,4 @@ private:
 	bool m_isEncrypted;
 };
 
-typedef boost::shared_ptr<MapleServer> MapleServerPtr;
+typedef boost::shared_ptr<ConnectionAcceptor> ConnectionAcceptorPtr;
