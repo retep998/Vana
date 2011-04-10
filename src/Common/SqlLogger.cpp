@@ -43,7 +43,7 @@ void SqlLogger::log(LogTypes::LogTypes type, const string &identifier, const str
 
 void SqlLogger::flush() {
 	if (m_buffer.size() > 0) {
-		mysqlpp::Query query = Database::getCharDB().query("INSERT INTO logs VALUES ");
+		mysqlpp::Query query = Database::getCharDb().query("INSERT INTO logs VALUES ");
 		for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
 			if (iter != m_buffer.begin()) {
 				query << ",";

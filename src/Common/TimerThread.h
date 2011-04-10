@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h" // For nullptr, remove with C++0x
-#include <list>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/utility.hpp>
+#include <list>
 
 namespace Timer {
 
@@ -52,13 +52,13 @@ private:
 	Timer * findMin();
 	void runThread();
 
-	bool m_resort_timer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
+	bool m_resortTimer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
 	volatile bool m_terminate;
 	list<Timer *> m_timers;
-	boost::recursive_mutex m_timers_mutex;
+	boost::recursive_mutex m_timersMutex;
 
 	boost::scoped_ptr<boost::thread> m_thread;
-	boost::condition_variable_any m_main_loop_condition;
+	boost::condition_variable_any m_mainLoopCondition;
 
 	boost::scoped_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
 };

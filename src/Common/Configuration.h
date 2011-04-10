@@ -60,3 +60,11 @@ struct LogConfig {
 	string timeFormat;
 	string file;
 };
+
+struct DbConfig {
+	string database;
+	string host;
+	string username;
+	string password;
+	port_t port;
+};

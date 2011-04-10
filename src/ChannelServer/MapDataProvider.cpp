@@ -59,7 +59,7 @@ Map * MapDataProvider::getMap(int32_t mapid) {
 
 void MapDataProvider::loadData() {
 	continents.clear();
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_continent_data";
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t mapcluster;
@@ -132,7 +132,7 @@ namespace Functors {
 }
 
 int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = " << mapid;
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t link = 0;
@@ -187,7 +187,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 }
 
 void MapDataProvider::loadSeats(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * from map_seats WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	SeatInfo chair;
@@ -216,7 +216,7 @@ namespace Functors {
 }
 
 void MapDataProvider::loadPortals(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_portals WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	PortalInfo portal;
@@ -256,7 +256,7 @@ namespace Functors {
 }
 
 void MapDataProvider::loadMapLife(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_life WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	NpcSpawnInfo npc;
@@ -315,7 +315,7 @@ namespace Functors {
 }
 
 void MapDataProvider::loadFootholds(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_footholds WHERE mapid = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	FootholdInfo foot;
@@ -344,7 +344,7 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 }
 
 void MapDataProvider::loadMapTimeMob(Map *map) {
-	mysqlpp::Query query = Database::getDataDB().query();
+	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_time_mob WHERE mapid = " << map->getId();
 	mysqlpp::UseQueryResult res = query.use();
 

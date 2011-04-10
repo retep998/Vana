@@ -40,7 +40,7 @@ void ShopDataProvider::loadData() {
 
 void ShopDataProvider::loadShops() {
 	shops.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopid;
@@ -80,7 +80,7 @@ void ShopDataProvider::loadShops() {
 }
 
 void ShopDataProvider::loadUserShops() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM user_shop_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM user_shop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopid;
@@ -124,7 +124,7 @@ void ShopDataProvider::loadUserShops() {
 
 void ShopDataProvider::loadRechargeTiers() {
 	rechargecosts.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM shop_recharge_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_recharge_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t rechargetier;
 	int32_t itemId;

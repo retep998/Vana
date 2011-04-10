@@ -34,14 +34,14 @@ public:
 	class Runner;
 private:
 	void loadDatabaseInfo();
-	void loadSQLFiles();
+	void loadSqlFiles();
 	static void createInfoTable();
 	static void updateInfoTable(size_t version);
 
-	typedef map<int32_t, string> SQLFiles;
+	typedef map<int32_t, string> SqlFiles;
 
 	size_t m_version;
-	size_t m_sql_version; // Version of the .sql files
+	size_t m_sqlVersion; // Version of the .sql files
 	bool m_update;
-	SQLFiles m_sql_files;
+	SqlFiles m_sqlFiles;
 };

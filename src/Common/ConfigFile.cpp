@@ -22,18 +22,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IpUtilities.h"
 #include <iostream>
 
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
 
-ConfigFile::ConfigFile(const string &filename, bool executeFile) {
+ConfigFile::ConfigFile(const string &filename, bool executeFile)
+{
 	loadFile(filename);
 	if (executeFile) {
 		execute();
 	}
 }
 
-ConfigFile::ConfigFile() { }
+ConfigFile::ConfigFile()
+{
+}
 
 ConfigFile::~ConfigFile() {
 	lua_close(getLuaState());
@@ -173,5 +176,16 @@ LogConfig ConfigFile::getLogConfig(const string &server) {
 	x.format = getString(t + "format");
 	x.file = getString(t + "file");
 	x.timeFormat = getString("log_time_format");
+	return x;
+}
+
+DbConfig ConfigFile::getDbConfig(const string &prefix) {
+	DbConfig x;
+	string t = prefix + "_";
+	x.database = getString(t + "database");
+	x.host = getString(t + "host");
+	x.username = getString(t + "username");
+	x.password = getString(t + "password");
+	x.port = get<port_t>(t + "port");
 	return x;
 }

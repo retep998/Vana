@@ -29,15 +29,15 @@ namespace TimeUtilities {
 	int32_t tickToTick32(int64_t tick);
 	int32_t getDate(time_t ctime = time(nullptr));
 	int32_t getMonth(time_t ctime = time(nullptr));
-	int32_t getYear(bool twoDigit, time_t ctime = time(0));
-	int32_t getHour(bool nonMilitary, time_t ctime = time(0));
+	int32_t getYear(bool twoDigit, time_t ctime = time(nullptr));
+	int32_t getHour(bool nonMilitary, time_t ctime = time(nullptr));
 	int32_t getMinute(time_t ctime = time(nullptr));
 	int32_t getSecond(time_t ctime = time(nullptr));
 	int32_t getDay(time_t ctime = time(nullptr));
 	int32_t getWeek(time_t ctime = time(nullptr));
 	int32_t getNearestMinuteMark(int32_t interval, time_t ctime = time(nullptr));
-	string getDayString(bool shortened, time_t ctime = time(0));
-	string getMonthString(bool shortened, time_t ctime = time(0));
+	string getDayString(bool shortened, time_t ctime = time(nullptr));
+	string getMonthString(bool shortened, time_t ctime = time(nullptr));
 	int64_t addDaysToTicks(int64_t ticks, int16_t days);
 	time_t addDaysToTime(int16_t days);
 	bool isDst(time_t ctime = time(nullptr));
@@ -56,13 +56,16 @@ int64_t TimeUtilities::fromNow(clock_t msec) {
 
 inline
 clock_t TimeUtilities::nthSecondOfHour(uint16_t second) {
-	clock_t secThisHour = time(0) % 3600;
+	clock_t secThisHour = time(nullptr) % 3600;
 	clock_t secDest;
 
-	if (secThisHour > second) // Already passed the time in this hour, try next hour
+	if (secThisHour > second) {
+		// Already passed the time in this hour, try next hour
 		secDest = (3600 - secThisHour) + second;
-	else // The requested time is within this hour
+	}
+	else {
+		// The requested time is within this hour
 		secDest = second - secThisHour;
-
+	}
 	return TimeUtilities::getTickCount() + (secDest * 1000);
 }

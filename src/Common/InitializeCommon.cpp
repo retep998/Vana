@@ -27,7 +27,7 @@ using std::cout;
 using std::endl;
 
 void Initializing::checkMcdbVersion() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mcdb_info LIMIT 1");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mcdb_info LIMIT 1");
 	mysqlpp::StoreQueryResult res = query.store();
 
 	if (res.num_rows() == 0) {
@@ -98,7 +98,7 @@ void Initializing::checkSchemaVersion(bool update) {
 }
 
 void Initializing::setUsersOffline(int32_t onlineid) {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE user_accounts u "
 			<< "INNER JOIN characters c ON u.user_id = c.user_id "
 			<< "SET "

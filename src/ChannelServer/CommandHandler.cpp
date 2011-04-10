@@ -195,7 +195,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			int32_t length = packet.get<int32_t>();
 			string reason_message = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
-				mysqlpp::Query accbanquery = Database::getCharDB().query();
+				mysqlpp::Query accbanquery = Database::getCharDb().query();
 				accbanquery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "

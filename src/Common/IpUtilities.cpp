@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using boost::asio::ip::tcp;
 
 ip_t IpUtilities::stringToIp(const string &name) {
-	boost::asio::io_service io_service;
-	tcp::resolver resolver(io_service);
+	boost::asio::io_service ioService;
+	tcp::resolver resolver(ioService);
 	tcp::resolver::query query(tcp::v4(), name, "http"); // Resolver wants a service...
 	tcp::resolver::iterator iter = resolver.resolve(query);
 	tcp::resolver::iterator end;

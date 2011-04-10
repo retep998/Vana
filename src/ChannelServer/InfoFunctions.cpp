@@ -88,7 +88,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 		else if (test == "scriptbyid") type = 400;
 
 		if (type != 0) {
-			mysqlpp::Query query = Database::getDataDB().query();
+			mysqlpp::Query query = Database::getDataDb().query();
 			mysqlpp::StoreQueryResult res;
 
 			string q = matches[2];

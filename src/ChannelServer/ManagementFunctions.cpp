@@ -269,7 +269,7 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 		int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
 		// Ban account
-		mysqlpp::Query accbanquery = Database::getCharDB().query();
+		mysqlpp::Query accbanquery = Database::getCharDb().query();
 		accbanquery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
@@ -304,7 +304,7 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 		int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
 		// Ban account
-		mysqlpp::Query accbanquery = Database::getCharDB().query();
+		mysqlpp::Query accbanquery = Database::getCharDb().query();
 		accbanquery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
@@ -339,7 +339,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 			int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
 
 			// Ip ban
-			mysqlpp::Query accipbanquery = Database::getCharDB().query();
+			mysqlpp::Query accipbanquery = Database::getCharDb().query();
 			accipbanquery << "INSERT INTO `ip_bans` (`id`, `ip`) VALUES (NULL, " << mysqlpp::quote << targetip << ")";
 			accipbanquery.exec();
 
@@ -361,7 +361,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 bool ManagementFunctions::unban(Player *player, const string &args) {
 	if (args.length() != 0) {
 		// Unban account
-		mysqlpp::Query accbanquery = Database::getCharDB().query();
+		mysqlpp::Query accbanquery = Database::getCharDb().query();
 		accbanquery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "

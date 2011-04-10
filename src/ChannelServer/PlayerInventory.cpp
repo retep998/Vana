@@ -56,7 +56,7 @@ PlayerInventory::~PlayerInventory() {
 }
 
 void PlayerInventory::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT i.*, p.* "
 			<< "FROM items i "
 			<< "LEFT JOIN pets p ON i.pet_id = p.pet_id "
@@ -139,7 +139,7 @@ void PlayerInventory::load() {
 }
 
 void PlayerInventory::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << m_player->getId();
 	query.exec();
 

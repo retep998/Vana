@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Session.h"
 #include "TimerContainer.h"
-#include <string>
 #include <boost/scoped_ptr.hpp>
+#include <string>
 
 using std::string;
 

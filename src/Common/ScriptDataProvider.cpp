@@ -38,7 +38,7 @@ void ScriptDataProvider::loadData() {
 	firstmapentryscripts.clear();
 	itemscripts.clear();
 
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM scripts");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM scripts");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t modifier;
 	int32_t objectid;

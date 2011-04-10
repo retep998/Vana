@@ -34,9 +34,9 @@ struct Id {
 
 inline
 Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
-type(type),
-id(id),
-id2(id2)
+	type(type),
+	id(id),
+	id2(id2)
 {
 }
 

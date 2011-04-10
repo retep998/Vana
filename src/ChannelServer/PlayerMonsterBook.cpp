@@ -29,7 +29,7 @@ PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_spec
 }
 
 void PlayerMonsterBook::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT b.card_id, b.level FROM monster_book b WHERE b.character_id = " << m_player->getId() << " ORDER BY b.card_id ASC";
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -41,7 +41,7 @@ void PlayerMonsterBook::load() {
 }
 
 void PlayerMonsterBook::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	query << "DELETE FROM monster_book WHERE character_id = " << m_player->getId();
 	query.exec();

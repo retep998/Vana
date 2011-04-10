@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 
 void PlayerSkills::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = " << player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	PlayerSkillInfo skill;
@@ -50,7 +50,7 @@ void PlayerSkills::load() {
 }
 
 void PlayerSkills::save(bool savecooldowns) {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	bool firstrun = true;
 	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {

@@ -72,7 +72,7 @@ namespace Functors {
 
 void ItemDataProvider::loadItems() {
 	items.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemId = strings.objectid AND strings.object_type = \'item\'");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemId = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ItemInfo item;
@@ -122,7 +122,7 @@ namespace Functors {
 
 void ItemDataProvider::loadScrolls() {
 	scrolls.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_scroll_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_scroll_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	ScrollInfo item;
@@ -198,7 +198,7 @@ namespace Functors {
 
 void ItemDataProvider::loadConsumes() {
 	consumes.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_consume_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_consume_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	int16_t morphid;
@@ -290,7 +290,7 @@ void ItemDataProvider::loadConsumes() {
 }
 
 void ItemDataProvider::loadMapRanges() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_monster_card_map_ranges");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_monster_card_map_ranges");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	CardMapRange range;
@@ -309,7 +309,7 @@ void ItemDataProvider::loadMapRanges() {
 }
 
 void ItemDataProvider::loadMultiMorphs() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_random_morphs");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_random_morphs");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	Morph morph;
@@ -329,7 +329,7 @@ void ItemDataProvider::loadMultiMorphs() {
 
 void ItemDataProvider::loadMonsterCardData() {
 	cards.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM monster_card_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM monster_card_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t cardid;
 	int32_t mobid;
@@ -348,7 +348,7 @@ void ItemDataProvider::loadMonsterCardData() {
 
 void ItemDataProvider::loadItemSkills() {
 	skills.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_skills");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_skills");
 	mysqlpp::UseQueryResult res = query.use();
 	Skillbook skill;
 	int32_t itemId;
@@ -370,7 +370,7 @@ void ItemDataProvider::loadItemSkills() {
 
 void ItemDataProvider::loadSummonBags() {
 	mobs.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_summons");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_summons");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
 	SummonBag summon;
@@ -390,7 +390,7 @@ void ItemDataProvider::loadSummonBags() {
 
 void ItemDataProvider::loadItemRewards() {
 	itemRewards.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_reward_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_reward_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
 	ItemRewardInfo reward;
@@ -423,7 +423,7 @@ namespace Functors {
 
 void ItemDataProvider::loadPets() {
 	petsInfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_data");
 	mysqlpp::UseQueryResult res = query.use();
 	PetInfo pet;
 	int32_t itemId;
@@ -454,7 +454,7 @@ void ItemDataProvider::loadPets() {
 
 void ItemDataProvider::loadPetInteractions() {
 	petsInteractInfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM item_pet_interactions");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_interactions");
 	mysqlpp::UseQueryResult res = query.use();
 	PetInteractInfo petinteract;
 	int32_t petid;

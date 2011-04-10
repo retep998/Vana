@@ -21,18 +21,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
-DatabaseMigration::Runner::Runner(const string &filename) : m_filename(filename) {
+DatabaseMigration::Runner::Runner(const string &filename) :
+	m_filename(filename)
+{
 	loadFile();
 }
 
 void DatabaseMigration::Runner::run() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	for (size_t i = 0; i < m_queries.size(); i++) {
 		query << m_queries[i];
 
 		if (!query.exec()) {
-			std::cout << "\nERROR: " << Database::getCharDB().error() << std::endl;
+			std::cout << "\nERROR: " << Database::getCharDb().error() << std::endl;
 			std::cout << "File: " << m_filename << std::endl;
 			// TODO: Handle the error
 		}
@@ -63,7 +65,7 @@ void DatabaseMigration::Runner::loadFile() {
 		separator sep(";");
 		tokenizer tokens(content, sep);
 
-		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
+		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
 			string query = boost::trim_copy(*iter);
 
 			if (query.size() > 0) {

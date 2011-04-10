@@ -156,7 +156,7 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 	}
 	else {
 		// Make new pending buddy in the database
-		mysqlpp::Query query = Database::getCharDB().query();
+		mysqlpp::Query query = Database::getCharDb().query();
 		query << "INSERT INTO buddylist_pending VALUES ("
 			<< inviteeId << ", "
 			<< mysqlpp::quote << inviter->getName() << ", "

@@ -51,7 +51,7 @@ namespace Functors {
 
 void MobDataProvider::loadAttacks() {
 	attacks.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mob_attacks");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_attacks");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobid;
 	MobAttackInfo mobattack;
@@ -82,7 +82,7 @@ void MobDataProvider::loadAttacks() {
 
 void MobDataProvider::loadSkills() {
 	skills.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM mob_skills");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_skills");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobid;
 	MobSkillInfo mobskill;
@@ -125,7 +125,7 @@ namespace Functors {
 
 void MobDataProvider::loadMobs() {
 	mobinfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * from mob_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobid;
 	MobInfo mob;
@@ -193,7 +193,7 @@ void MobDataProvider::loadMobs() {
 }
 
 void MobDataProvider::loadSummons() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * from mob_summons");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_summons");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobid;
 	int32_t summonid;

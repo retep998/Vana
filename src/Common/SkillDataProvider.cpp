@@ -41,7 +41,7 @@ void SkillDataProvider::loadData() {
 void SkillDataProvider::loadPlayerSkills() {
 	maxlevels.clear();
 	skills.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_player_level_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_player_level_data");
 	mysqlpp::UseQueryResult res = query.use();
 	SkillLevelInfo level;
 	int32_t skillId;
@@ -105,7 +105,7 @@ void SkillDataProvider::loadPlayerSkills() {
 
 void SkillDataProvider::loadMobSkills() {
 	mobskills.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_mob_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_data");
 	mysqlpp::UseQueryResult res = query.use();
 	uint8_t skillId;
 	uint8_t level;
@@ -143,7 +143,7 @@ void SkillDataProvider::loadMobSkills() {
 }
 
 void SkillDataProvider::loadMobSummons() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_mob_summons");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_summons");
 	mysqlpp::UseQueryResult res = query.use();
 	uint8_t level;
 	int32_t mobid;
@@ -163,7 +163,7 @@ void SkillDataProvider::loadMobSummons() {
 
 void SkillDataProvider::loadBanishData() {
 	banishinfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM skill_mob_banish_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_banish_data");
 	mysqlpp::UseQueryResult res = query.use();
 	BanishField banish;
 	int32_t mobid;
@@ -195,7 +195,7 @@ namespace Functors {
 
 void SkillDataProvider::loadMorphs() {
 	morphinfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM morph_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM morph_data");
 	mysqlpp::UseQueryResult res = query.use();
 	MorphData morph;
 	int16_t morphid;

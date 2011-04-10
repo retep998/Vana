@@ -17,32 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Database.h"
 #include "ConfigFile.h"
+#include "Configuration.h"
 
-Database::tsConn Database::chardb;
-Database::tsConn Database::datadb;
+Database::tsConn Database::m_chardb;
+Database::tsConn Database::m_datadb;
 
-void Database::connectCharDB() {
+void Database::connectCharDb() {
 	ConfigFile config("conf/mysql.lua");
-	// Character Database
-	chardb.reset(new mysqlpp::Connection);
-	chardb->set_option(new mysqlpp::ReconnectOption(true));
-	chardb->connect(config.getString("chardb_database").c_str(),
-					config.getString("chardb_host").c_str(),
-					config.getString("chardb_username").c_str(),
-					config.getString("chardb_password").c_str(),
-					config.get<port_t>("chardb_port")
-					);
+	DbConfig conf = config.getDbConfig("chardb");
+	m_chardb.reset(new mysqlpp::Connection);
+	m_chardb->set_option(new mysqlpp::ReconnectOption(true));
+	m_chardb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);
 }
 
-void Database::connectDataDB() {
+void Database::connectDataDb() {
 	ConfigFile config("conf/mysql.lua");
-	// Data Database
-	datadb.reset(new mysqlpp::Connection);
-	datadb->set_option(new mysqlpp::ReconnectOption(true));
-	datadb->connect(config.getString("datadb_database").c_str(),
-					config.getString("datadb_host").c_str(),
-					config.getString("datadb_username").c_str(),
-					config.getString("datadb_password").c_str(),
-					config.get<port_t>("datadb_port")
-					);
+	DbConfig conf = config.getDbConfig("datadb");
+	m_datadb.reset(new mysqlpp::Connection);
+	m_datadb->set_option(new mysqlpp::ReconnectOption(true));
+	m_datadb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);
 }

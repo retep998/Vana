@@ -54,10 +54,12 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 
 int32_t TimeUtilities::tickToTick32(int64_t tick) {
 	int32_t tick32;
-	if (tick == -1)
+	if (tick == -1) {
 		tick32 = -1;
-	else
+	}
+	else {
 		tick32 = (int32_t) (tick / 4294967296LL + 1); // Plus one to compensate for the loss of conversion
+	}
 	return tick32;
 }
 

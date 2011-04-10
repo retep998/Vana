@@ -74,7 +74,7 @@ void PlayerStorage::changeMesos(int32_t mesos) {
 }
 
 void PlayerStorage::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = " << player->getUserId() << " AND s.world_id = " << (int16_t) player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
@@ -147,7 +147,7 @@ void PlayerStorage::load() {
 }
 
 void PlayerStorage::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
 	query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
 		<< player->getUserId() << ", "
