@@ -202,6 +202,9 @@
     <ClCompile Include="src\Common\ConnectionAcceptor.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\Quest.cpp">
+      <Filter>Source\Data Structures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -434,6 +437,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\AbstractSession.h">
       <Filter>Source\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Quest.h">
+      <Filter>Source\Data Structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,104 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Pos.h"
+#include "Quest.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
-#include <map>
-#include <string>
-#include <vector>
 
-using std::map;
-using std::string;
 using std::tr1::unordered_map;
-using std::vector;
-
-struct QuestRewardInfo {
-	QuestRewardInfo() :
-		isMesos(false),
-		isItem(false),
-		isExp(false),
-		isFame(false),
-		isSkill(false),
-		isBuff(false),
-		masterLevelOnly(false)
-		{ }
-
-	bool isMesos;
-	bool isItem;
-	bool isExp;
-	bool isFame;
-	bool isSkill;
-	bool isBuff;
-	bool masterLevelOnly;
-	int8_t gender;
-	int16_t count;
-	int16_t masterLevel;
-	int32_t prop;
-	int32_t id;
-};
-
-typedef vector<QuestRewardInfo> Rewards;
-
-struct QuestRewardsInfo {
-	Rewards rewards;
-	unordered_map<int16_t, Rewards> jobrewards;
-};
-
-typedef vector<int16_t> JobRequests;
-typedef map<int32_t, int16_t, std::less<int32_t>> MobRequests;
-typedef unordered_map<int32_t, int16_t> ItemRequests;
-typedef unordered_map<int16_t, int8_t> QuestRequests;
-
-class Quest {
-public:
-	Quest() : nextquest(0) { }
-	void addReward(bool start, const QuestRewardInfo &info, int16_t job = -1);
-	void addValidJob(int16_t jobid);
-	void addMobRequest(int32_t mobid, int16_t quantity);
-	void addItemRequest(int32_t itemId, int16_t quantity);
-	void addQuestRequest(int16_t questId, int8_t state);
-	void setNextQuest(int16_t questId) { nextquest = questId; }
-	void setQuestId(int16_t q) { id = q; }
-
-	bool hasRequests() { return (hasMobRequests() || hasItemRequests() || hasQuestRequests()); }
-	bool hasMobRequests() { return (mobrequests.size() > 0); }
-	bool hasItemRequests() { return (itemrequests.size() > 0); }
-	bool hasQuestRequests() { return (questrequests.size() > 0); }
-	bool hasStartRewards() { return (startrewards.rewards.size() > 0 || startrewards.jobrewards.size() > 0); }
-	bool hasEndRewards() { return (endrewards.rewards.size() > 0 || endrewards.jobrewards.size() > 0); }
-	bool hasRewards() { return (hasStartRewards() || hasEndRewards()); }
-	bool hasStartJobRewards(int16_t job) { return (startrewards.jobrewards.find(job) != startrewards.jobrewards.end()); }
-	bool hasEndJobRewards(int16_t job) { return (endrewards.jobrewards.find(job) != endrewards.jobrewards.end()); }
-	int16_t getNextQuest() const { return nextquest; }
-	int16_t getQuestId() const { return id; }
-	int16_t getMobRequestQuantity(int32_t mobid) { return (mobrequests.find(mobid) != mobrequests.end() ? mobrequests[mobid] : 0); }
-	int16_t getItemRequestQuantity(int32_t itemId) { return (itemrequests.find(itemId) != itemrequests.end() ? itemrequests[itemId] : 0); }
-	MobRequests::iterator getMobBegin() { return mobrequests.begin(); }
-	MobRequests::iterator getMobEnd() { return mobrequests.end(); }
-	ItemRequests::iterator getItemBegin() { return itemrequests.begin(); }
-	ItemRequests::iterator getItemEnd() { return itemrequests.end(); }
-	QuestRequests::iterator getQuestBegin() { return questrequests.begin(); }
-	QuestRequests::iterator getQuestEnd() { return questrequests.end(); }
-	Rewards::iterator getStartRewardsBegin() { return startrewards.rewards.begin(); }
-	Rewards::iterator getStartRewardsEnd() { return startrewards.rewards.end(); }
-	Rewards::iterator getStartJobRewardsBegin(int16_t job) { return startrewards.jobrewards[job].begin(); }
-	Rewards::iterator getStartJobRewardsEnd(int16_t job) { return startrewards.jobrewards[job].end(); }
-	Rewards::iterator getEndRewardsBegin() { return endrewards.rewards.begin(); }
-	Rewards::iterator getEndRewardsEnd() { return endrewards.rewards.end(); }
-	Rewards::iterator getEndJobRewardsBegin(int16_t job) { return endrewards.jobrewards[job].begin(); }
-	Rewards::iterator getEndJobRewardsEnd(int16_t job) { return endrewards.jobrewards[job].end(); }
-private:
-	MobRequests mobrequests;
-	ItemRequests itemrequests;
-	JobRequests jobrequests;
-	QuestRequests questrequests;
-	QuestRewardsInfo startrewards;
-	QuestRewardsInfo endrewards;
-	int16_t nextquest;
-	int16_t id;
-};
 
 class QuestDataProvider : boost::noncopyable {
 public:

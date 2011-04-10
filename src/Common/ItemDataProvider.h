@@ -256,8 +256,8 @@ private:
 	void loadPetInteractions();
 	int16_t getStatVariance(int8_t mod);
 
-	typedef bimap<int32_t, int32_t> cardMap;
-	typedef cardMap::value_type cardInfo;
+	typedef bimap<int32_t, int32_t> CardMap;
+	typedef CardMap::value_type CardInfo;
 
 	unordered_map<int32_t, ItemInfo> m_itemInfo;
 	unordered_map<int32_t, ScrollInfo> m_scrollInfo;
@@ -267,5 +267,5 @@ private:
 	unordered_map<int32_t, vector<ItemRewardInfo>> m_itemRewards;
 	unordered_map<int32_t, PetInfo> m_petInfo;
 	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> m_petInteractInfo;
-	cardMap m_cards; // Left, card ID; right, mob ID
+	CardMap m_cards; // Left, card ID; right, mob ID
 };
