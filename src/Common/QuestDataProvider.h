@@ -32,25 +32,25 @@ using std::vector;
 
 struct QuestRewardInfo {
 	QuestRewardInfo() :
-		ismesos(false),
-		isitem(false),
-		isexp(false),
-		isfame(false),
-		isskill(false),
-		isbuff(false),
-		masterlevelonly(false)
+		isMesos(false),
+		isItem(false),
+		isExp(false),
+		isFame(false),
+		isSkill(false),
+		isBuff(false),
+		masterLevelOnly(false)
 		{ }
 
-	bool ismesos;
-	bool isitem;
-	bool isexp;
-	bool isfame;
-	bool isskill;
-	bool isbuff;
-	bool masterlevelonly;
+	bool isMesos;
+	bool isItem;
+	bool isExp;
+	bool isFame;
+	bool isSkill;
+	bool isBuff;
+	bool masterLevelOnly;
 	int8_t gender;
 	int16_t count;
-	int16_t masterlevel;
+	int16_t masterLevel;
 	int32_t prop;
 	int32_t id;
 };
@@ -74,8 +74,8 @@ public:
 	void addValidJob(int16_t jobid);
 	void addMobRequest(int32_t mobid, int16_t quantity);
 	void addItemRequest(int32_t itemId, int16_t quantity);
-	void addQuestRequest(int16_t questid, int8_t state);
-	void setNextQuest(int16_t questid) { nextquest = questid; }
+	void addQuestRequest(int16_t questId, int8_t state);
+	void setNextQuest(int16_t questId) { nextquest = questId; }
 	void setQuestId(int16_t q) { id = q; }
 
 	bool hasRequests() { return (hasMobRequests() || hasItemRequests() || hasQuestRequests()); }
@@ -125,9 +125,9 @@ public:
 	}
 	void loadData();
 
-	bool isQuest(int16_t questid) { return (quests.find(questid) != quests.end()); }
-	int16_t getItemRequest(int16_t questid, int32_t itemId);
-	Quest * getInfo(int16_t questid) { return &quests[questid]; }
+	bool isQuest(int16_t questId) { return (m_quests.find(questId) != m_quests.end()); }
+	int16_t getItemRequest(int16_t questId, int32_t itemId);
+	Quest * getInfo(int16_t questId) { return &m_quests[questId]; }
 private:
 	QuestDataProvider() {}
 	static QuestDataProvider *singleton;
@@ -137,5 +137,5 @@ private:
 	void loadRequiredJobs();
 	void loadRewards();
 
-	unordered_map<int16_t, Quest> quests;
+	unordered_map<int16_t, Quest> m_quests;
 };

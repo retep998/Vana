@@ -38,7 +38,7 @@ struct ShopItemInfo {
 struct ShopInfo {
 	int32_t npc;
 	vector<ShopItemInfo> items;
-	int8_t rechargetier;
+	int8_t rechargeTier;
 };
 
 class ShopDataProvider : boost::noncopyable {
@@ -50,12 +50,12 @@ public:
 	}
 	void loadData();
 
-	bool isShop(int32_t id) { return (shops.find(id) != shops.end()); }
-	void showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet);
-	int32_t getPrice(int32_t shopid, uint16_t shopindex);
-	int32_t getItemId(int32_t shopid, uint16_t shopindex);
-	int16_t getAmount(int32_t shopid, uint16_t shopindex);
-	int32_t getRechargeCost(int32_t shopid, int32_t itemId, int16_t amount);
+	bool isShop(int32_t id) { return (m_shops.find(id) != m_shops.end()); }
+	void showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet);
+	int32_t getPrice(int32_t shopId, uint16_t shopIndex);
+	int32_t getItemId(int32_t shopId, uint16_t shopIndex);
+	int16_t getAmount(int32_t shopId, uint16_t shopIndex);
+	int32_t getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount);
 private:
 	ShopDataProvider() {}
 	static ShopDataProvider *singleton;
@@ -64,6 +64,6 @@ private:
 	void loadUserShops();
 	void loadRechargeTiers();
 
-	unordered_map<int32_t, ShopInfo> shops;
-	unordered_map<int8_t, map<int32_t, double>> rechargecosts;
+	unordered_map<int32_t, ShopInfo> m_shops;
+	unordered_map<int8_t, map<int32_t, double>> m_rechargeCosts;
 };

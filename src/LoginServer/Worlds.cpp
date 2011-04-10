@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.h"
 #include "LoginServerAcceptConnection.h"
 #include "LoginServerAcceptPacket.h"
-#include "Player.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
+#include "Player.h"
 #include "PlayerStatus.h"
 #include "Session.h"
 #include "World.h"
@@ -40,7 +40,7 @@ void Worlds::showWorld(Player *player) {
 		return;
 	}
 
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->isConnected()) {
 			LoginPacket::showWorld(player, iter->second);
 		}
@@ -49,7 +49,7 @@ void Worlds::showWorld(Player *player) {
 }
 
 void Worlds::addWorld(World *world) {
-	worlds[world->getId()] = world;
+	m_worlds[world->getId()] = world;
 }
 
 void Worlds::selectWorld(Player *player, PacketReader &packet) {
@@ -62,12 +62,14 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 		player->setWorld(worldId);
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90; // 90% is enough for the many users warning, I think
-		int8_t message = LoginPacket::WorldMessages::Normal;;
-		if (world->getPlayerLoad() >= minMaxLoad && world->getPlayerLoad() < maxLoad)
-			message = LoginPacket::WorldMessages::HeavyLoad;
-		else if (world->getPlayerLoad() == maxLoad)
-			message = LoginPacket::WorldMessages::MaxLoad;
+		int8_t message = LoginPacket::WorldMessages::Normal;
 
+		if (world->getPlayerLoad() >= minMaxLoad && world->getPlayerLoad() < maxLoad) {
+			message = LoginPacket::WorldMessages::HeavyLoad;
+		}
+		else if (world->getPlayerLoad() == maxLoad) {
+			message = LoginPacket::WorldMessages::MaxLoad;
+		}
 		LoginPacket::showChannels(player, message);
 	}
 	else {
@@ -85,8 +87,8 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	int8_t channel = packet.get<int8_t>();
 
 	LoginPacket::channelSelect(player);
-	World *world = worlds[player->getWorld()];
-	if (Channel *chan = worlds[player->getWorld()]->getChannel(channel)) {
+	World *world = m_worlds[player->getWorld()];
+	if (Channel *chan = m_worlds[player->getWorld()]->getChannel(channel)) {
 		player->setChannel(channel);
 		Characters::showCharacters(player);
 	}
@@ -97,7 +99,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 
 int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	World *world = nullptr;
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (!iter->second->isConnected()) {
 			connection->setWorldId(iter->first);
 			world = iter->second;
@@ -126,7 +128,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	int8_t worldid = -1;
 	port_t port;
 	AbstractServerAcceptConnection *worldConnection;
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->getChannelCount() < iter->second->getMaxChannels() && iter->second->isConnected()) {
 			worldid = iter->second->getId();
 			port = iter->second->getPort();
@@ -148,7 +150,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 }
 
 void Worlds::toWorlds(PacketCreator &packet) {
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->isConnected()) {
 			iter->second->getConnection()->getSession()->send(packet);
 		}
@@ -156,7 +158,7 @@ void Worlds::toWorlds(PacketCreator &packet) {
 }
 
 void Worlds::runFunction(function<bool (World *)> func) {
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); iter++) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (func(iter->second)) {
 			break;
 		}
@@ -179,11 +181,11 @@ void Worlds::calculatePlayerLoad(World *world) {
 }
 
 World * Worlds::getWorld(uint8_t id) {
-	return worlds.find(id) == worlds.end() ? nullptr : worlds[id];
+	return m_worlds.find(id) == m_worlds.end() ? nullptr : m_worlds[id];
 }
 
 void Worlds::setEventMessages(const string &message) {
-	for (map<uint8_t, World *>::iterator iter = worlds.begin(); iter != worlds.end(); ++iter) {
+	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		iter->second->setEventMessage(message);
 	}
 }

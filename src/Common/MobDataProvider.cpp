@@ -50,11 +50,11 @@ namespace Functors {
 }
 
 void MobDataProvider::loadAttacks() {
-	attacks.clear();
+	m_attacks.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_attacks");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobid;
-	MobAttackInfo mobattack;
+	int32_t mobId;
+	MobAttackInfo mobAttack;
 
 	using namespace Functors;
 
@@ -65,27 +65,27 @@ void MobDataProvider::loadAttacks() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobattack = MobAttackInfo();
-		MobAttackFlags whoo = {&mobattack};
+		mobAttack = MobAttackInfo();
+		MobAttackFlags whoo = {&mobAttack};
 		runFlags(row[Flags], whoo);
 
-		mobid = atoi(row[MobId]);
-		mobattack.id = atoi(row[AttackId]);
-		mobattack.mpConsume = atoi(row[MpCons]);
-		mobattack.mpBurn = atoi(row[MpBurn]);
-		mobattack.disease = atoi(row[Disease]);
-		mobattack.level = atoi(row[Level]);
+		mobId = atoi(row[MobId]);
+		mobAttack.id = atoi(row[AttackId]);
+		mobAttack.mpConsume = atoi(row[MpCons]);
+		mobAttack.mpBurn = atoi(row[MpBurn]);
+		mobAttack.disease = atoi(row[Disease]);
+		mobAttack.level = atoi(row[Level]);
 
-		attacks[mobid].push_back(mobattack);
+		m_attacks[mobId].push_back(mobAttack);
 	}
 }
 
 void MobDataProvider::loadSkills() {
-	skills.clear();
+	m_skills.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_skills");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobid;
-	MobSkillInfo mobskill;
+	int32_t mobId;
+	MobSkillInfo mobSkill;
 
 	enum SkillData {
 		Id = 0,
@@ -93,13 +93,13 @@ void MobDataProvider::loadSkills() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobid = atoi(row[MobId]);
+		mobId = atoi(row[MobId]);
 
-		mobskill.skillId = atoi(row[SkillId]);
-		mobskill.level = atoi(row[Level]);
-		mobskill.effectAfter = atoi(row[EffectAfter]);
+		mobSkill.skillId = atoi(row[SkillId]);
+		mobSkill.level = atoi(row[Level]);
+		mobSkill.effectAfter = atoi(row[EffectAfter]);
 
-		skills[mobid].push_back(mobskill);
+		m_skills[mobId].push_back(mobSkill);
 	}
 }
 
@@ -124,10 +124,10 @@ namespace Functors {
 }
 
 void MobDataProvider::loadMobs() {
-	mobinfo.clear();
+	m_mobInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_data");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobid;
+	int32_t mobId;
 	MobInfo mob;
 
 	using namespace Functors;
@@ -148,7 +148,7 @@ void MobDataProvider::loadMobs() {
 		MobDataFlags whoo = {mob};
 		runFlags(row[Flags], whoo);
 
-		mobid = atoi(row[MobId]);
+		mobId = atoi(row[MobId]);
 		mob->level = atoi(row[Level]);
 		mob->hp = atoi(row[Hp]);
 		mob->mp = atoi(row[Mp]);
@@ -187,16 +187,16 @@ void MobDataProvider::loadMobs() {
 		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElements::Immune && mob->iceAttr != MobElements::Strong);
 		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElements::Immune && mob->poisonAttr != MobElements::Strong);
 
-		mob->skillCount = getSkillCount(mobid); // Relies on skills being loaded first
-		mobinfo[mobid] = mob;
+		mob->skillCount = getSkillCount(mobId); // Relies on skills being loaded first
+		m_mobInfo[mobId] = mob;
 	}
 }
 
 void MobDataProvider::loadSummons() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_summons");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobid;
-	int32_t summonid;
+	int32_t mobId;
+	int32_t summonId;
 
 	enum SummonData {
 		Id = 0,
@@ -204,41 +204,41 @@ void MobDataProvider::loadSummons() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobid = atoi(row[MobId]);
-		summonid = atoi(row[SummonId]);
+		mobId = atoi(row[MobId]);
+		summonId = atoi(row[SummonId]);
 
-		mobinfo[mobid]->summon.push_back(summonid);
+		m_mobInfo[mobId]->summon.push_back(summonId);
 	}
 }
 
-MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobid, uint8_t index) {
+MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) {
 	try {
-		return &attacks[mobid].at(index);
+		return &m_attacks[mobId].at(index);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Attack does not exist for mobid " << mobid << " at index " << index << std::endl;
+		std::cout << "Attack does not exist for mobid " << mobId << " at index " << index << std::endl;
 	}
 	return nullptr;
 }
 
-MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobid, uint8_t index) {
+MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) {
 	try {
-		return &skills[mobid].at(index);
+		return &m_skills[mobId].at(index);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Skill does not exist for mobid " << mobid << " at index " << index << std::endl;
+		std::cout << "Skill does not exist for mobid " << mobId << " at index " << index << std::endl;
 	}
 	return nullptr;
 }
 
-uint8_t MobDataProvider::getSkillCount(int32_t mobid) {
-	return (skills.find(mobid) != skills.end() ? skills[mobid].size() : 0);
+uint8_t MobDataProvider::getSkillCount(int32_t mobId) {
+	return (m_skills.find(mobId) != m_skills.end() ? m_skills[mobId].size() : 0);
 }
 
-int8_t MobDataProvider::getElemModifier(const string &elemattr) {
+int8_t MobDataProvider::getElemModifier(const string &elemAttr) {
 	int8_t ret = MobElements::Normal;
-	if (elemattr == "immune") ret = MobElements::Immune;
-	else if (elemattr == "strong") ret = MobElements::Strong;
-	else if (elemattr == "weak") ret = MobElements::Weak;
+	if (elemAttr == "immune") ret = MobElements::Immune;
+	else if (elemAttr == "strong") ret = MobElements::Strong;
+	else if (elemAttr == "weak") ret = MobElements::Weak;
 	return ret;
 }

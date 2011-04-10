@@ -60,5 +60,5 @@ private:
 	Worlds() { }
 	static Worlds *singleton;
 
-	map<uint8_t, World *> worlds;
+	map<uint8_t, World *> m_worlds;
 };

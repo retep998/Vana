@@ -31,23 +31,23 @@ using std::string;
 class Item;
 
 struct SummonBag {
-	int32_t mobid;
+	int32_t mobId;
 	uint32_t chance;
 };
 
 struct Skillbook {
 	int32_t skillId;
 	uint8_t reqlevel;
-	uint8_t maxlevel;
+	uint8_t maxLevel;
 	int8_t chance;
 };
 
 struct ScrollInfo {
-	ScrollInfo() : randstat(false), recover(false), warmsupport(false), preventslip(false), ihand(0) { }
-	bool warmsupport;
-	bool randstat;
+	ScrollInfo() : randStat(false), recover(false), warmSupport(false), preventSlip(false), ihand(0) { }
+	bool warmSupport;
+	bool randStat;
 	bool recover;
-	bool preventslip;
+	bool preventSlip;
 	int16_t istr;
 	int16_t idex;
 	int16_t iint;
@@ -74,8 +74,8 @@ struct Morph {
 };
 
 struct CardMapRange {
-	int32_t startmap;
-	int32_t endmap;
+	int32_t startMap;
+	int32_t endMap;
 };
 
 struct AilmentInfo {
@@ -89,32 +89,32 @@ struct AilmentInfo {
 
 struct ConsumeInfo {
 	ConsumeInfo() :
-		fireresist(0), iceresist(0), lightningresist(0), poisonresist(0),
-		cursedef(0), stundef(0), weaknessdef(0), darknessdef(0), sealdef(0),
-		dropupitem(0), dropupitemrange(0),
+		fireResist(0), iceResist(0), lightningResist(0), poisonResist(0),
+		curseDef(0), stunDef(0), weaknessDef(0), darknessDef(0), sealDef(0),
+		dropUpitem(0), dropUpItemRange(0),
 		ailment(0),
-		autoconsume(false), ignorewdef(false), ignoremdef(false), party(false), mousecancel(true),
-		ignorecontinent(false), ghost(false), barrier(false), overridetraction(false), preventdrown(false),
-		preventfreeze(false), mesoup(false), partydropup(false), dropup(false)
+		autoConsume(false), ignoreWdef(false), ignoreMdef(false), party(false), mouseCancel(true),
+		ignoreContinent(false), ghost(false), barrier(false), overrideTraction(false), preventDrown(false),
+		preventFreeze(false), mesoUp(false), partyDropUp(false), dropUp(false)
 		{ }
 
-	bool autoconsume;
-	bool ignorewdef;
-	bool ignoremdef;
+	bool autoConsume;
+	bool ignoreWdef;
+	bool ignoreMdef;
 	bool party;
-	bool mousecancel;
-	bool ignorecontinent;
+	bool mouseCancel;
+	bool ignoreContinent;
 	bool ghost;
 	bool barrier;
-	bool overridetraction;
-	bool preventdrown;
-	bool preventfreeze;
-	bool mesoup;
-	bool dropup;
-	bool partydropup;
+	bool overrideTraction;
+	bool preventDrown;
+	bool preventFreeze;
+	bool mesoUp;
+	bool dropUp;
+	bool partyDropUp;
 	uint8_t effect;
-	uint8_t dechunger;
-	uint8_t decfatigue;
+	uint8_t decHunger;
+	uint8_t decFatigue;
 	uint8_t cp;
 	int16_t hp;
 	int16_t mp;
@@ -128,67 +128,67 @@ struct ConsumeInfo {
 	int16_t mdef;
 	int16_t speed;
 	int16_t jump;
-	int16_t fireresist;
-	int16_t iceresist;
-	int16_t lightningresist;
-	int16_t poisonresist;
-	int16_t cursedef;
-	int16_t stundef;
-	int16_t weaknessdef;
-	int16_t darknessdef;
-	int16_t sealdef;
-	int16_t dropupitemrange;
-	uint16_t mcprob;
-	int32_t dropupitem;
+	int16_t fireResist;
+	int16_t iceResist;
+	int16_t lightningResist;
+	int16_t poisonResist;
+	int16_t curseDef;
+	int16_t stunDef;
+	int16_t weaknessDef;
+	int16_t darknessDef;
+	int16_t sealDef;
+	int16_t dropUpItemRange;
+	uint16_t mcProb;
+	int32_t dropUpitem;
 	int32_t moveTo;
 	int32_t time;
 	int32_t ailment;
 	vector<Morph> morphs;
-	vector<CardMapRange> mapranges;
+	vector<CardMapRange> mapRanges;
 };
 
 struct ItemInfo {
 	ItemInfo() :
-		timelimited(false),
-		nosale(false),
-		karmascissors(false),
-		expireonlogout(false),
-		blockpickup(false),
-		notrade(false),
+		timeLimited(false),
+		noSale(false),
+		karmaScissors(false),
+		expireOnLogout(false),
+		blockPickup(false),
+		noTrade(false),
 		cash(false),
 		quest(false)
 		{ }
 
 	string name;
-	uint8_t minlevel;
-	uint8_t maxlevel;
-	uint8_t makerlevel;
-	uint16_t maxslot;
+	uint8_t minLevel;
+	uint8_t maxLevel;
+	uint8_t makerLevel;
+	uint16_t maxSlot;
 	int32_t price;
-	int32_t maxobtainable;
+	int32_t maxObtainable;
 	int32_t exp;
 	int32_t npc;
 	int32_t mesos;
-	bool timelimited;
-	bool nosale;
-	bool karmascissors;
-	bool expireonlogout;
-	bool blockpickup;
-	bool notrade;
+	bool timeLimited;
+	bool noSale;
+	bool karmaScissors;
+	bool expireOnLogout;
+	bool blockPickup;
+	bool noTrade;
 	bool quest;
 	bool cash;
 };
 
 struct PetInfo {
-	PetInfo() : norevive(false), nostoreincashshop(false), autoreact(false) { }
-	bool norevive;
-	bool nostoreincashshop;
-	bool autoreact;
-	int8_t evolevel;
+	PetInfo() : noRevive(false), noStoringInCashShop(false), autoReact(false) { }
+	bool noRevive;
+	bool noStoringInCashShop;
+	bool autoReact;
+	int8_t evolveLevel;
 	int32_t hunger;
 	int32_t life;
-	int32_t limitedlife;
-	int32_t evoitem;
+	int32_t limitedLife;
+	int32_t evolveItem;
 	string name;
 };
 
@@ -198,7 +198,7 @@ struct PetInteractInfo {
 };
 
 struct ItemRewardInfo {
-	int32_t rewardid;
+	int32_t rewardId;
 	uint16_t prob;
 	int16_t quantity;
 	string effect;
@@ -213,32 +213,32 @@ public:
 	}
 	void loadData();
 
-	int32_t getCardId(int32_t mobid);
-	int32_t getMobId(int32_t cardid);
-	bool itemExists(int32_t id) { return (items.find(id) != items.end()); }
-	bool petExists(int32_t itemId) { return (petsInfo.find(itemId) != petsInfo.end()); }
-	bool consumeInfoExists(int32_t itemId) { return (consumes.find(itemId) != consumes.end()); }
-	bool skillItemExists(int32_t itemId) { return (skills.find(itemId) != skills.end()); }
-	bool summonBagExists(int32_t itemId) { return (mobs.find(itemId) != mobs.end()); }
-	bool isTradeable(int32_t itemId) { return (!(items[itemId].notrade || items[itemId].quest)); }
-	bool isCash(int32_t itemId) { return items[itemId].cash; }
-	bool isQuest(int32_t itemId) { return items[itemId].quest; }
-	bool canKarma(int32_t itemId) { return items[itemId].karmascissors; }
-	uint16_t getMaxSlot(int32_t itemId) { return (itemExists(itemId) ? items[itemId].maxslot : 0); }
-	int32_t getPrice(int32_t itemId) { return (itemExists(itemId) ? items[itemId].price : 0); }
-	int32_t getMesoBonus(int32_t itemId) { return (itemExists(itemId) ? items[itemId].mesos : 0); }
-	int32_t getHunger(int32_t itemId) { return (petExists(itemId) ? petsInfo[itemId].hunger : 0); }
-	int32_t getItemNpc(int32_t itemId) { return (itemExists(itemId) ? items[itemId].npc : 0); }
-	string getItemName(int32_t itemId) { return (itemExists(itemId) ? items[itemId].name : ""); }
+	int32_t getCardId(int32_t mobId);
+	int32_t getMobId(int32_t cardId);
+	bool itemExists(int32_t id) { return (m_itemInfo.find(id) != m_itemInfo.end()); }
+	bool petExists(int32_t itemId) { return (m_petInfo.find(itemId) != m_petInfo.end()); }
+	bool consumeInfoExists(int32_t itemId) { return (m_consumeInfo.find(itemId) != m_consumeInfo.end()); }
+	bool skillItemExists(int32_t itemId) { return (m_skillbooks.find(itemId) != m_skillbooks.end()); }
+	bool summonBagExists(int32_t itemId) { return (m_summonBags.find(itemId) != m_summonBags.end()); }
+	bool isTradeable(int32_t itemId) { return (!(m_itemInfo[itemId].noTrade || m_itemInfo[itemId].quest)); }
+	bool isCash(int32_t itemId) { return m_itemInfo[itemId].cash; }
+	bool isQuest(int32_t itemId) { return m_itemInfo[itemId].quest; }
+	bool canKarma(int32_t itemId) { return m_itemInfo[itemId].karmaScissors; }
+	uint16_t getMaxSlot(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].maxSlot : 0); }
+	int32_t getPrice(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].price : 0); }
+	int32_t getMesoBonus(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].mesos : 0); }
+	int32_t getHunger(int32_t itemId) { return (petExists(itemId) ? m_petInfo[itemId].hunger : 0); }
+	int32_t getItemNpc(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].npc : 0); }
+	string getItemName(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].name : ""); }
 	ItemRewardInfo * getRandomReward(int32_t itemId);
 
-	void scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
-	ItemInfo * getItemInfo(int32_t itemId) { return &items[itemId]; }
-	ConsumeInfo * getConsumeInfo(int32_t itemId) { return (consumeInfoExists(itemId) ? &consumes[itemId] : nullptr); }
-	PetInfo * getPetInfo(int32_t itemId) { return &petsInfo[itemId]; }
+	void scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
+	ItemInfo * getItemInfo(int32_t itemId) { return &m_itemInfo[itemId]; }
+	ConsumeInfo * getConsumeInfo(int32_t itemId) { return (consumeInfoExists(itemId) ? &m_consumeInfo[itemId] : nullptr); }
+	PetInfo * getPetInfo(int32_t itemId) { return &m_petInfo[itemId]; }
 	PetInteractInfo * getInteraction(int32_t itemId, int32_t action);
-	vector<Skillbook> * getItemSkills(int32_t itemId) { return &skills[itemId]; }
-	vector<SummonBag> * getItemSummons(int32_t itemId) { return &mobs[itemId]; }
+	vector<Skillbook> * getItemSkills(int32_t itemId) { return &m_skillbooks[itemId]; }
+	vector<SummonBag> * getItemSummons(int32_t itemId) { return &m_summonBags[itemId]; }
 private:
 	ItemDataProvider() { }
 	static ItemDataProvider *singleton;
@@ -256,16 +256,16 @@ private:
 	void loadPetInteractions();
 	int16_t getStatVariance(int8_t mod);
 
-	typedef bimap<int32_t, int32_t> card_map;
-	typedef card_map::value_type card_info;
+	typedef bimap<int32_t, int32_t> cardMap;
+	typedef cardMap::value_type cardInfo;
 
-	unordered_map<int32_t, ItemInfo> items;
-	unordered_map<int32_t, ScrollInfo> scrolls;
-	unordered_map<int32_t, ConsumeInfo> consumes;
-	unordered_map<int32_t, vector<SummonBag>> mobs;
-	unordered_map<int32_t, vector<Skillbook>> skills;
-	unordered_map<int32_t, vector<ItemRewardInfo>> itemRewards;
-	unordered_map<int32_t, PetInfo> petsInfo;
-	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> petsInteractInfo;
-	card_map cards; // Left, cardid; right, mobid
+	unordered_map<int32_t, ItemInfo> m_itemInfo;
+	unordered_map<int32_t, ScrollInfo> m_scrollInfo;
+	unordered_map<int32_t, ConsumeInfo> m_consumeInfo;
+	unordered_map<int32_t, vector<SummonBag>> m_summonBags;
+	unordered_map<int32_t, vector<Skillbook>> m_skillbooks;
+	unordered_map<int32_t, vector<ItemRewardInfo>> m_itemRewards;
+	unordered_map<int32_t, PetInfo> m_petInfo;
+	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> m_petInteractInfo;
+	cardMap m_cards; // Left, card ID; right, mob ID
 };

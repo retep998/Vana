@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
+void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcid) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
@@ -42,7 +42,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questid, int32_t npcid) {
 	packet = PacketCreator();
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	packet.add<int32_t>(npcid);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
@@ -58,34 +58,34 @@ void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::doneQuest(Player *player, int16_t questid) {
+void QuestsPacket::doneQuest(Player *player, int16_t questId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_QUEST_COMPLETED);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questError(Player *player, int16_t questid, int8_t errorcode) {
+void QuestsPacket::questError(Player *player, int16_t questId, int8_t errorcode) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(errorcode);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questExpire(Player *player, int16_t questid) {
+void QuestsPacket::questExpire(Player *player, int16_t questId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(0x0F);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, int16_t nextquest, int64_t time) {
+void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcid, int16_t nextquest, int64_t time) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	packet.add<int8_t>(2);
 	packet.add<int64_t>(time);
 	player->getSession()->send(packet);
@@ -93,7 +93,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	packet = PacketCreator();
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	packet.add<int32_t>(npcid);
 	packet.add<int16_t>(nextquest);
 	player->getSession()->send(packet);
@@ -110,11 +110,11 @@ void QuestsPacket::questFinish(Player *player, int16_t questid, int32_t npcid, i
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void QuestsPacket::forfeitQuest(Player *player, int16_t questid) {
+void QuestsPacket::forfeitQuest(Player *player, int16_t questId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
-	packet.add<int16_t>(questid);
+	packet.add<int16_t>(questId);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }

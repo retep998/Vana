@@ -75,12 +75,12 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 }
 
-void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questid) {
+void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questId) {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
 
-	Npc *npc = new Npc(npcid, player, questid, start);
+	Npc *npc = new Npc(npcid, player, questId, start);
 	npc->run();
 }
 
@@ -178,7 +178,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
 			int32_t itemId = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
-			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxslot
+			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
 			int32_t totalprice = quantity * price;
 			if (price == 0 || totalamount > ItemDataProvider::Instance()->getMaxSlot(itemId) || player->getInventory()->getMesos() < totalprice) {
 				// Hacking
@@ -221,15 +221,15 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item->getId());
+			int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(item->getId());
 			if (GameLogicUtilities::isRechargeable(item->getId())) {
-				maxslot += player->getSkills()->getRechargeableBonus();
+				maxSlot += player->getSkills()->getRechargeableBonus();
 			}
-			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->getId(), maxslot - item->getAmount());
+			int32_t modifiedmesos = ShopDataProvider::Instance()->getRechargeCost(player->getShop(), item->getId(), maxSlot - item->getAmount());
 			if ((modifiedmesos < 0) && (player->getInventory()->getMesos() > -modifiedmesos)) {
 				player->getInventory()->modifyMesos(modifiedmesos);
-				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxslot, 0, 0);
-				item->setAmount(maxslot);
+				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxSlot, 0, 0);
+				item->setAmount(maxSlot);
 				NpcPacket::bought(player, 0);
 			}
 			break;

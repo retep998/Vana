@@ -31,19 +31,19 @@ ScriptDataProvider * ScriptDataProvider::singleton = nullptr;
 void ScriptDataProvider::loadData() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Scripts... ";
 
-	npcscripts.clear();
-	reactorscripts.clear();
-	questscripts.clear();
-	mapentryscripts.clear();
-	firstmapentryscripts.clear();
-	itemscripts.clear();
+	m_npcScripts.clear();
+	m_reactorScripts.clear();
+	m_questScripts.clear();
+	m_mapEntryScripts.clear();
+	m_firstMapEntryScripts.clear();
+	m_itemScripts.clear();
 
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM scripts");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t modifier;
-	int32_t objectid;
+	int32_t objectId;
 	string script;
-	string scripttype;
+	string scriptType;
 
 	enum ScriptData {
 		ScriptType = 0,
@@ -51,124 +51,80 @@ void ScriptDataProvider::loadData() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		objectid = atoi(row[ObjectId]);
-		scripttype = row[ScriptType];
+		objectId = atoi(row[ObjectId]);
+		scriptType = row[ScriptType];
 		script = row[Script];
 		modifier = atoi(row[Modifier]);
 
-		if (scripttype == "npc") npcscripts[objectid] = script;
-		else if (scripttype == "reactor") reactorscripts[objectid] = script;
-		else if (scripttype == "map_enter") mapentryscripts[objectid] = script;
-		else if (scripttype == "map_first_enter") firstmapentryscripts[objectid] = script;
-		else if (scripttype == "item") itemscripts[objectid] = script;
-		else if (scripttype == "quest") {
-			questscripts[static_cast<int16_t>(objectid)][modifier] = script;
+		if (scriptType == "npc") m_npcScripts[objectId] = script;
+		else if (scriptType == "reactor") m_reactorScripts[objectId] = script;
+		else if (scriptType == "map_enter") m_mapEntryScripts[objectId] = script;
+		else if (scriptType == "map_first_enter") m_firstMapEntryScripts[objectId] = script;
+		else if (scriptType == "item") m_itemScripts[objectId] = script;
+		else if (scriptType == "quest") {
+			m_questScripts[static_cast<int16_t>(objectId)][modifier] = script;
 		}
 
-		scripts[script] = objectid;
+		m_scripts[script] = objectId;
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-string ScriptDataProvider::getNpcScript(int32_t npcid) {
-	if (hasNpcScript(npcid)) {
-		string s = "scripts/npcs/" + npcscripts[npcid] + ".lua";
+string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
+	if (hasScript(objectId, type)) {
+		string s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
 	}
 	std::ostringstream filestream;
-	filestream << "scripts/npcs/" << npcid << ".lua";
+	filestream << "scripts/" << resolvePath(type) << "/" << objectId << ".lua";
 	string g(filestream.str());
 	return g;
 }
 
-string ScriptDataProvider::getReactorScript(int32_t reactorId) {
-	if (hasReactorScript(reactorId)) {
-		string s = "scripts/reactors/" + reactorscripts[reactorId] + ".lua";
+string ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) {
+	if (hasQuestScript(questId, state)) {
+		string s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
 	}
 	std::ostringstream filestream;
-	filestream << "scripts/reactors/" << reactorId << ".lua";
+	filestream << "scripts/quests/" << questId << (state == 0 ? "s" : "e") << ".lua";
 	string g(filestream.str());
 	return g;
 }
 
-string ScriptDataProvider::getQuestScript(int16_t questid, int8_t state) {
-	if (hasQuestScript(questid, state)) {
-		string s = "scripts/quests/" + questscripts[questid][state] + ".lua";
-		if (fileExists(s)) {
-			return s;
-		}
+bool ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
+	unordered_map<int32_t, string> &map = resolve(type);
+	return (map.find(objectId) != map.end());
+}
+
+bool ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) {
+	return (m_questScripts.find(questId) != m_questScripts.end());
+}
+
+unordered_map<int32_t, string> & ScriptDataProvider::resolve(ScriptTypes::ScriptTypes type) {
+	switch (type) {
+		case ScriptTypes::Item: return m_itemScripts; break;
+		case ScriptTypes::MapEntry: return m_mapEntryScripts; break;
+		case ScriptTypes::FirstMapEntry: return m_firstMapEntryScripts; break;
+		case ScriptTypes::Npc: return m_npcScripts; break;
+		case ScriptTypes::Reactor: return m_reactorScripts; break;
 	}
-	std::ostringstream filestream;
-	filestream << "scripts/quests/" << questid << (state == 0 ? "s" : "e") << ".lua";
-	string g(filestream.str());
-	return g;
+	// No point, just return something in global scope
+	return m_itemScripts;
 }
 
-string ScriptDataProvider::getItemScript(int32_t itemId) {
-	if (hasItemScript(itemId)) {
-		string s = "scripts/items/" + itemscripts[itemId] + ".lua";
-		if (fileExists(s)) {
-			return s;
-		}
+string ScriptDataProvider::resolvePath(ScriptTypes::ScriptTypes type) {
+	switch (type) {
+		case ScriptTypes::Item: return "item"; break;
+		case ScriptTypes::MapEntry: return "map_entry"; break;
+		case ScriptTypes::FirstMapEntry: return "first_map_entry"; break;
+		case ScriptTypes::Npc: return "npc"; break;
+		case ScriptTypes::Reactor: return "reactor"; break;
 	}
-	std::ostringstream filestream;
-	filestream << "scripts/items/" << itemId << ".lua";
-	string g(filestream.str());
-	return g;
-}
-
-string ScriptDataProvider::getMapEntryScript(int32_t mapid) {
-	if (hasMapEntryScript(mapid)) {
-		string s = "scripts/map_entry/" + mapentryscripts[mapid] + ".lua";
-		if (fileExists(s)) {
-			return s;
-		}
-	}
-	std::ostringstream filestream;
-	filestream << "scripts/map_entry/" << mapid << ".lua";
-	string g(filestream.str());
-	return g;
-}
-
-string ScriptDataProvider::getFirstMapEntryScript(int32_t mapid) {
-	if (hasMapEntryScript(mapid)) {
-		string s = "scripts/first_map_entry/" + firstmapentryscripts[mapid] + ".lua";
-		if (fileExists(s)) {
-			return s;
-		}
-	}
-	std::ostringstream filestream;
-	filestream << "scripts/first_map_entry/" << mapid << ".lua";
-	string g(filestream.str());
-	return g;
-}
-
-bool ScriptDataProvider::hasNpcScript(int32_t npcid) {
-	return (npcscripts.find(npcid) != npcscripts.end());
-}
-
-bool ScriptDataProvider::hasReactorScript(int32_t reactorId) {
-	return (reactorscripts.find(reactorId) != reactorscripts.end());
-}
-
-bool ScriptDataProvider::hasQuestScript(int16_t questid, int8_t state) {
-	return (questscripts.find(questid) != questscripts.end());
-}
-
-bool ScriptDataProvider::hasItemScript(int32_t itemId) {
-	return (itemscripts.find(itemId) != itemscripts.end());
-}
-
-bool ScriptDataProvider::hasMapEntryScript(int32_t mapid) {
-	return (mapentryscripts.find(mapid) != mapentryscripts.end());
-}
-
-bool ScriptDataProvider::hasFirstMapEntryScript(int32_t mapid) {
-	return (firstmapentryscripts.find(mapid) != firstmapentryscripts.end());
+	return "";
 }

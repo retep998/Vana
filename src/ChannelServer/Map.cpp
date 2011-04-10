@@ -494,15 +494,15 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 
 int32_t Map::countMobs(int32_t mobid) {
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
-	int32_t mobcount = 0;
+	int32_t mobCount = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != nullptr) {
 			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
-				mobcount++;
+				mobCount++;
 			}
 		}
 	}
-	return mobcount;
+	return mobCount;
 }
 
 void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb) {

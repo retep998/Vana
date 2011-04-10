@@ -57,13 +57,13 @@ void ItemDataProvider::loadData() {
 namespace Functors {
 	struct AllItemFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "time_limited") item->timelimited = true;
+			if (cmp == "time_limited") item->timeLimited = true;
 			else if (cmp == "cash_item") item->cash = true;
-			else if (cmp == "no_trade") item->notrade = true;
-			else if (cmp == "no_sale") item->nosale = true;
-			else if (cmp == "karma_scissorable") item->karmascissors = true;
-			else if (cmp == "expire_on_logout") item->expireonlogout = true;
-			else if (cmp == "block_pickup") item->blockpickup = true;
+			else if (cmp == "no_trade") item->noTrade = true;
+			else if (cmp == "no_sale") item->noSale = true;
+			else if (cmp == "karma_scissorable") item->karmaScissors = true;
+			else if (cmp == "expire_on_logout") item->expireOnLogout = true;
+			else if (cmp == "block_pickup") item->blockPickup = true;
 			else if (cmp == "quest") item->quest = true;
 		}
 		ItemInfo *item;
@@ -71,7 +71,7 @@ namespace Functors {
 }
 
 void ItemDataProvider::loadItems() {
-	items.clear();
+	m_itemInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemId = strings.objectid AND strings.object_type = \'item\'");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
@@ -93,35 +93,35 @@ void ItemDataProvider::loadItems() {
 
 		id = atoi(row[ItemId]);
 		item.price = atoi(row[ItemPrice]);
-		item.maxslot = atoi(row[SlotMax]);
-		item.makerlevel = atoi(row[MakerLevel]);
-		item.maxobtainable = atoi(row[MaxAtOnce]);
-		item.minlevel = atoi(row[MinLevel]);
-		item.maxlevel = atoi(row[MaxLevel]);
+		item.maxSlot = atoi(row[SlotMax]);
+		item.makerLevel = atoi(row[MakerLevel]);
+		item.maxObtainable = atoi(row[MaxAtOnce]);
+		item.minLevel = atoi(row[MinLevel]);
+		item.maxLevel = atoi(row[MaxLevel]);
 		item.exp = atoi(row[Experience]);
 		item.mesos = atoi(row[Mesos]);
 		item.npc = atoi(row[Npc]);
 		if (row[Name]) {
 			item.name = row[Name];
 		}
-		items[id] = item;
+		m_itemInfo[id] = item;
 	}
 }
 
 namespace Functors {
 	struct ScrollFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "rand_stat") item->randstat = true;
+			if (cmp == "rand_stat") item->randStat = true;
 			else if (cmp == "recover_slot") item->recover = true;
-			else if (cmp == "warm_support") item->warmsupport = true;
-			else if (cmp == "prevent_slip") item->preventslip = true;
+			else if (cmp == "warm_support") item->warmSupport = true;
+			else if (cmp == "prevent_slip") item->preventSlip = true;
 		}
 		ScrollInfo *item;
 	};
 }
 
 void ItemDataProvider::loadScrolls() {
-	scrolls.clear();
+	m_scrollInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_scroll_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
@@ -160,26 +160,26 @@ void ItemDataProvider::loadScrolls() {
 		item.ijump = atoi(row[IncJump]);
 		item.ispeed = atoi(row[IncSpeed]);
 
-		scrolls[id] = item;
+		m_scrollInfo[id] = item;
 	}
 }
 
 namespace Functors {
 	struct ConsumeFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "auto_consume") item->autoconsume = true;
+			if (cmp == "auto_consume") item->autoConsume = true;
 			else if (cmp == "party_item") item->party = true;
-			else if (cmp == "meso_up") item->mesoup = true;
-			else if (cmp == "ignore_physical_defense") item->ignorewdef = true;
-			else if (cmp == "ignore_magical_defense") item->ignoremdef = true;
-			else if (cmp == "no_mouse_cancel") item->mousecancel = false;
-			else if (cmp == "ignore_continent") item->ignorecontinent = true;
+			else if (cmp == "meso_up") item->mesoUp = true;
+			else if (cmp == "ignore_physical_defense") item->ignoreWdef = true;
+			else if (cmp == "ignore_magical_defense") item->ignoreMdef = true;
+			else if (cmp == "no_mouse_cancel") item->mouseCancel = false;
+			else if (cmp == "ignore_continent") item->ignoreContinent = true;
 			else if (cmp == "ghost") item->ghost = true;
 			else if (cmp == "barrier") item->barrier = true;
-			else if (cmp == "prevent_drowning") item->preventdrown = true;
-			else if (cmp == "prevent_freezing") item->preventfreeze = true;
-			else if (cmp == "override_traction") item->overridetraction = true;
-			else if (cmp == "drop_up_for_party") item->partydropup = true;
+			else if (cmp == "prevent_drowning") item->preventDrown = true;
+			else if (cmp == "prevent_freezing") item->preventFreeze = true;
+			else if (cmp == "override_traction") item->overrideTraction = true;
+			else if (cmp == "drop_up_for_party") item->partyDropUp = true;
 		}
 		ConsumeInfo *item;
 	};
@@ -197,15 +197,15 @@ namespace Functors {
 }
 
 void ItemDataProvider::loadConsumes() {
-	consumes.clear();
+	m_consumeInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_consume_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
-	int16_t morphid;
+	int16_t morphId;
 	ConsumeInfo item;
 	AilmentInfo ailment;
 	Morph morph;
-	string dropup;
+	string dropUp;
 
 	using namespace Functors;
 
@@ -240,8 +240,8 @@ void ItemDataProvider::loadConsumes() {
 		item.mp = atoi(row[Mp]);
 		item.hpr = atoi(row[HpPercentage]);
 		item.mpr = atoi(row[MpPercentage]);
-		item.dechunger = atoi(row[DecHunger]);
-		item.decfatigue = atoi(row[DecFatigue]);
+		item.decHunger = atoi(row[DecHunger]);
+		item.decFatigue = atoi(row[DecFatigue]);
 		item.cp = atoi(row[CarnivalPoints]);
 		item.time = atoi(row[Time]);
 		item.watk = atoi(row[Watk]);
@@ -255,37 +255,37 @@ void ItemDataProvider::loadConsumes() {
 		item.speed = atoi(row[Speed]);
 		item.moveTo = atoi(row[MoveTo]);
 
-		morphid = atoi(row[Morph]);
-		if (morphid) {
-			morph.morph = morphid;
+		morphId = atoi(row[Morph]);
+		if (morphId) {
+			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
 		}
 
-		dropup = row[DropUp];
-		if (dropup != "none") {
-			item.dropup = true;
-			if (dropup == "specific_item") {
-				item.dropupitem = atoi(row[DropUpItem]);
+		dropUp = row[DropUp];
+		if (dropUp != "none") {
+			item.dropUp = true;
+			if (dropUp == "specific_item") {
+				item.dropUpitem = atoi(row[DropUpItem]);
 			}
-			else if (dropup == "item_range") {
-				item.dropupitemrange = atoi(row[DropUpItemRange]);
+			else if (dropUp == "item_range") {
+				item.dropUpItemRange = atoi(row[DropUpItemRange]);
 			}
 		}
 
-		item.mcprob = atoi(row[Prob]);
-		item.iceresist = atoi(row[IceDef]);
-		item.fireresist = atoi(row[FireDef]);
-		item.lightningresist = atoi(row[LightningDef]);
-		item.poisonresist = atoi(row[PoisonDef]);
-		item.stundef = atoi(row[StunDef]);
-		item.darknessdef = atoi(row[DarknessDef]);
-		item.weaknessdef = atoi(row[WeaknessDef]);
-		item.sealdef = atoi(row[SealDef]);
-		item.cursedef = atoi(row[CurseDef]);
+		item.mcProb = atoi(row[Prob]);
+		item.iceResist = atoi(row[IceDef]);
+		item.fireResist = atoi(row[FireDef]);
+		item.lightningResist = atoi(row[LightningDef]);
+		item.poisonResist = atoi(row[PoisonDef]);
+		item.stunDef = atoi(row[StunDef]);
+		item.darknessDef = atoi(row[DarknessDef]);
+		item.weaknessDef = atoi(row[WeaknessDef]);
+		item.sealDef = atoi(row[SealDef]);
+		item.curseDef = atoi(row[CurseDef]);
 
 		BuffDataProvider::Instance()->addItemInfo(id, item);
-		consumes[id] = item;
+		m_consumeInfo[id] = item;
 	}
 }
 
@@ -302,9 +302,9 @@ void ItemDataProvider::loadMapRanges() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		id = atoi(row[ItemId]);
-		range.startmap = atoi(row[StartMap]);
-		range.endmap = atoi(row[EndMap]);
-		consumes[id].mapranges.push_back(range);
+		range.startMap = atoi(row[StartMap]);
+		range.endMap = atoi(row[EndMap]);
+		m_consumeInfo[id].mapRanges.push_back(range);
 	}
 }
 
@@ -323,16 +323,16 @@ void ItemDataProvider::loadMultiMorphs() {
 		id = atoi(row[ItemId]);
 		morph.morph = atoi(row[Morph]);
 		morph.chance = atoi(row[Success]);
-		consumes[id].morphs.push_back(morph);
+		m_consumeInfo[id].morphs.push_back(morph);
 	}
 }
 
 void ItemDataProvider::loadMonsterCardData() {
-	cards.clear();
+	m_cards.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM monster_card_data");
 	mysqlpp::UseQueryResult res = query.use();
-	int32_t cardid;
-	int32_t mobid;
+	int32_t cardId;
+	int32_t mobId;
 
 	enum CardData {
 		CardId = 0,
@@ -340,14 +340,14 @@ void ItemDataProvider::loadMonsterCardData() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		cardid = atoi(row[CardId]);
-		mobid = atoi(row[MobId]);
-		cards.insert(card_info(cardid, mobid));
+		cardId = atoi(row[CardId]);
+		mobId = atoi(row[MobId]);
+		m_cards.insert(cardInfo(cardId, mobId));
 	}
 }
 
 void ItemDataProvider::loadItemSkills() {
-	skills.clear();
+	m_skillbooks.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_skills");
 	mysqlpp::UseQueryResult res = query.use();
 	Skillbook skill;
@@ -362,14 +362,14 @@ void ItemDataProvider::loadItemSkills() {
 		itemId = atoi(row[ItemId]);
 		skill.skillId = atoi(row[SkillId]);
 		skill.reqlevel = atoi(row[ReqLevel]);
-		skill.maxlevel = atoi(row[MasterLevel]);
+		skill.maxLevel = atoi(row[MasterLevel]);
 		skill.chance = atoi(row[Chance]);
-		skills[itemId].push_back(skill);
+		m_skillbooks[itemId].push_back(skill);
 	}
 }
 
 void ItemDataProvider::loadSummonBags() {
-	mobs.clear();
+	m_summonBags.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_summons");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
@@ -382,14 +382,14 @@ void ItemDataProvider::loadSummonBags() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		itemId = atoi(row[ItemId]);
-		summon.mobid = atoi(row[MobId]);
+		summon.mobId = atoi(row[MobId]);
 		summon.chance = atoi(row[Chance]);
-		mobs[itemId].push_back(summon);
+		m_summonBags[itemId].push_back(summon);
 	}
 }
 
 void ItemDataProvider::loadItemRewards() {
-	itemRewards.clear();
+	m_itemRewards.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_reward_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
@@ -402,27 +402,27 @@ void ItemDataProvider::loadItemRewards() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		itemId = atoi(row[ItemId]);
-		reward.rewardid = atoi(row[RewardId]);
+		reward.rewardId = atoi(row[RewardId]);
 		reward.prob = atoi(row[Chance]);
 		reward.quantity = atoi(row[Quantity]);
 		reward.effect = row[Effect];
-		itemRewards[itemId].push_back(reward);
+		m_itemRewards[itemId].push_back(reward);
 	}
 }
 
 namespace Functors {
 	struct PetFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "no_revive") item->norevive = true;
-			else if (cmp == "no_move_to_cash_shop") item->nostoreincashshop = true;
-			else if (cmp == "auto_react") item->autoreact = true;
+			if (cmp == "no_revive") item->noRevive = true;
+			else if (cmp == "no_move_to_cash_shop") item->noStoringInCashShop = true;
+			else if (cmp == "auto_react") item->autoReact = true;
 		}
 		PetInfo *item;
 	};
 }
 
 void ItemDataProvider::loadPets() {
-	petsInfo.clear();
+	m_petInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_data");
 	mysqlpp::UseQueryResult res = query.use();
 	PetInfo pet;
@@ -445,20 +445,20 @@ void ItemDataProvider::loadPets() {
 		pet.name = row[Name];
 		pet.hunger = atoi(row[Hunger]);
 		pet.life = atoi(row[Life]);
-		pet.limitedlife = atoi(row[LimitedLife]);
-		pet.evoitem = atoi(row[EvoItem]);
-		pet.evolevel = atoi(row[EvoLevel]);
-		petsInfo[itemId] = pet;
+		pet.limitedLife = atoi(row[LimitedLife]);
+		pet.evolveItem = atoi(row[EvoItem]);
+		pet.evolveLevel = atoi(row[EvoLevel]);
+		m_petInfo[itemId] = pet;
 	}
 }
 
 void ItemDataProvider::loadPetInteractions() {
-	petsInteractInfo.clear();
+	m_petInteractInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_interactions");
 	mysqlpp::UseQueryResult res = query.use();
 	PetInteractInfo petinteract;
-	int32_t petid;
-	int32_t commandid;
+	int32_t petId;
+	int32_t commandId;
 
 	enum PetInteractions {
 		ItemId = 0,
@@ -466,50 +466,50 @@ void ItemDataProvider::loadPetInteractions() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		petid = atoi(row[ItemId]);
-		commandid = atoi(row[CommandId]);
+		petId = atoi(row[ItemId]);
+		commandId = atoi(row[CommandId]);
 
 		petinteract.increase = atoi(row[Closeness]);
 		petinteract.prob = atoi(row[Success]);
 
-		petsInteractInfo[petid][commandid] = petinteract;
+		m_petInteractInfo[petId][commandId] = petinteract;
 	}
 }
 
-int32_t ItemDataProvider::getCardId(int32_t mobid) {
+int32_t ItemDataProvider::getCardId(int32_t mobId) {
 	try {
-		return cards.right.at(mobid);
+		return m_cards.right.at(mobId);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Mob out of range for mobid " << mobid << std::endl;
+		std::cout << "Mob out of range for mobid " << mobId << std::endl;
 	}
 	return 0;
 }
 
-int32_t ItemDataProvider::getMobId(int32_t cardid) {
+int32_t ItemDataProvider::getMobId(int32_t cardId) {
 	try {
-		return cards.left.at(cardid);
+		return m_cards.left.at(cardId);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Card out of range for cardid " << cardid << std::endl;
+		std::cout << "Card out of range for cardid " << cardId << std::endl;
 	}
 	return 0;
 }
 
 PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemId, int32_t action) {
-	if (petsInteractInfo.find(itemId) != petsInteractInfo.end()) {
-		if (petsInteractInfo[itemId].find(action) != petsInteractInfo[itemId].end()) {
-			return &petsInteractInfo[itemId][action];
+	if (m_petInteractInfo.find(itemId) != m_petInteractInfo.end()) {
+		if (m_petInteractInfo[itemId].find(action) != m_petInteractInfo[itemId].end()) {
+			return &m_petInteractInfo[itemId][action];
 		}
 	}
 	return nullptr;
 }
 
 ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
-	if (itemRewards.find(itemId) == itemRewards.end())
+	if (m_itemRewards.find(itemId) == m_itemRewards.end()) {
 		return nullptr;
-
-	vector<ItemRewardInfo> *rewards = &itemRewards[itemId];
+	}
+	vector<ItemRewardInfo> *rewards = &m_itemRewards[itemId];
 	ItemRewardInfo *info = nullptr;
 
 	for (size_t i = 0; i < rewards->size(); i++) {
@@ -522,15 +522,15 @@ ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
 	return nullptr;
 }
 
-void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {
-	if (scrolls.find(scrollid) == scrolls.end())
+void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {
+	if (m_scrollInfo.find(scrollId) == m_scrollInfo.end()) {
 		return;
-
-	ScrollInfo *iteminfo = &scrolls[scrollid];
-	if (iteminfo->randstat) {
+	}
+	ScrollInfo *itemInfo = &m_scrollInfo[scrollId];
+	if (itemInfo->randStat) {
 		if (equip->getSlots() > 0) {
 			succeed = 0;
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
 				int8_t n = -1;
 				if (Randomizer::Instance()->randShort(99) < 50U) {
 					// Increase stats
@@ -563,24 +563,24 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 			}
 		}
 	}
-	else if (iteminfo->recover) {
-		int8_t maxslots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
-		if ((maxslots - equip->getScrolls()) > equip->getSlots()) {
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+	else if (itemInfo->recover) {
+		int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
+		if ((maxSlots - equip->getScrolls()) > equip->getSlots()) {
+			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
 				// Give back a slot
 				equip->incSlots();
 				succeed = 1;
 			}
 			else {
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed) {
+				if (Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
 					cursed = true;
 				}
 				succeed = 0;
 			}
 		}
 	}
-	else if (iteminfo->preventslip) {
-		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+	else if (itemInfo->preventSlip) {
+		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
 			equip->setPreventSlip(true);
 			succeed = 1;
 		}
@@ -588,8 +588,8 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 			succeed = 0;
 		}
 	}
-	else if (iteminfo->warmsupport) {
-		if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+	else if (itemInfo->warmSupport) {
+		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
 			equip->setWarmSupport(true);
 			succeed = 1;
 		}
@@ -598,34 +598,34 @@ void ItemDataProvider::scrollItem(int32_t scrollid, Item *equip, int8_t &succeed
 		}
 	}
 	else {
-		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollid)) {
+		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
 			// Hacking, equip slot different from the scroll slot
 			return;
 		}
 		if (equip->getSlots() > 0) {
-			if (Randomizer::Instance()->randShort(99) < iteminfo->success) {
+			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
 				succeed = 1;
-				equip->addStr(iteminfo->istr);
-				equip->addDex(iteminfo->idex);
-				equip->addInt(iteminfo->iint);
-				equip->addLuk(iteminfo->iluk);
-				equip->addHp(iteminfo->ihp);
-				equip->addMp(iteminfo->imp);
-				equip->addWatk(iteminfo->iwatk);
-				equip->addMatk(iteminfo->imatk);
-				equip->addWdef(iteminfo->iwdef);
-				equip->addMdef(iteminfo->imdef);
-				equip->addAccuracy(iteminfo->iacc);
-				equip->addAvoid(iteminfo->iavo);
-				equip->addHands(iteminfo->ihand);
-				equip->addJump(iteminfo->ijump);
-				equip->addSpeed(iteminfo->ispeed);
+				equip->addStr(itemInfo->istr);
+				equip->addDex(itemInfo->idex);
+				equip->addInt(itemInfo->iint);
+				equip->addLuk(itemInfo->iluk);
+				equip->addHp(itemInfo->ihp);
+				equip->addMp(itemInfo->imp);
+				equip->addWatk(itemInfo->iwatk);
+				equip->addMatk(itemInfo->imatk);
+				equip->addWdef(itemInfo->iwdef);
+				equip->addMdef(itemInfo->imdef);
+				equip->addAccuracy(itemInfo->iacc);
+				equip->addAvoid(itemInfo->iavo);
+				equip->addHands(itemInfo->ihand);
+				equip->addJump(itemInfo->ijump);
+				equip->addSpeed(itemInfo->ispeed);
 				equip->incScrolls();
 				equip->decSlots();
 			}
 			else {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < iteminfo->cursed) {
+				if (Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
 					cursed = true;
 				}
 				else if (!wscroll) {

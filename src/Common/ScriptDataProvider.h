@@ -25,6 +25,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::tr1::unordered_map;
 
+namespace ScriptTypes {
+	enum ScriptTypes {
+		Npc,
+		Reactor,
+		Quest,
+		Item,
+		MapEntry,
+		FirstMapEntry
+	};
+}
+
 class ScriptDataProvider : boost::noncopyable {
 public:
 	static ScriptDataProvider * Instance() {
@@ -34,28 +45,23 @@ public:
 	}
 	void loadData();
 
-	string getNpcScript(int32_t npcid);
-	string getReactorScript(int32_t reactorId);
-	string getQuestScript(int16_t questid, int8_t state);
-	string getItemScript(int32_t itemId);
-	string getMapEntryScript(int32_t mapid);
-	string getFirstMapEntryScript(int32_t mapid);
-	bool hasNpcScript(int32_t npcid);
-	bool hasReactorScript(int32_t reactorId);
-	bool hasQuestScript(int16_t questid, int8_t state);
-	bool hasItemScript(int32_t itemId);
-	bool hasMapEntryScript(int32_t mapid);
-	bool hasFirstMapEntryScript(int32_t mapid);
-	int32_t getObjectIdFromScript(const string &script) { return scripts.find(script) == scripts.end() ? 0 : scripts[script]; }
+	string getQuestScript(int16_t questId, int8_t state);
+	string getScript(int32_t objectId, ScriptTypes::ScriptTypes type);
+	bool hasQuestScript(int16_t questId, int8_t state);
+	bool hasScript(int32_t objectId, ScriptTypes::ScriptTypes type);
+	int32_t getObjectIdFromScript(const string &script) { return m_scripts.find(script) == m_scripts.end() ? 0 : m_scripts[script]; }
 private:
 	ScriptDataProvider() {}
 	static ScriptDataProvider *singleton;
 
-	unordered_map<int32_t, string> npcscripts;
-	unordered_map<int32_t, string> reactorscripts;
-	unordered_map<int32_t, string> mapentryscripts;
-	unordered_map<int32_t, string> firstmapentryscripts;
-	unordered_map<int32_t, string> itemscripts;
-	unordered_map<int16_t, unordered_map<int8_t, string>> questscripts;
-	unordered_map<string, int32_t> scripts;
+	unordered_map<int32_t, string> & resolve(ScriptTypes::ScriptTypes type);
+	string resolvePath(ScriptTypes::ScriptTypes type);
+
+	unordered_map<int32_t, string> m_npcScripts;
+	unordered_map<int32_t, string> m_reactorScripts;
+	unordered_map<int32_t, string> m_mapEntryScripts;
+	unordered_map<int32_t, string> m_firstMapEntryScripts;
+	unordered_map<int32_t, string> m_itemScripts;
+	unordered_map<int16_t, unordered_map<int8_t, string>> m_questScripts;
+	unordered_map<string, int32_t> m_scripts;
 };

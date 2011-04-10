@@ -35,11 +35,11 @@ class Player;
 
 class Npc {
 public:
-	Npc(int32_t npcid, Player *player, int16_t questid = 0, bool isstart = false);
-	Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questid = 0, bool isstart = false);
+	Npc(int32_t npcid, Player *player, int16_t questId = 0, bool isstart = false);
+	Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questId = 0, bool isstart = false);
 	Npc(int32_t npcid, Player *player, const string &script);
 
-	static bool hasScript(int32_t npcid, int16_t questid, bool start);
+	static bool hasScript(int32_t npcid, int16_t questId, bool start);
 
 	void run();
 
@@ -107,7 +107,7 @@ private:
 	scoped_ptr<LuaNpc> luaNpc;
 
 	void initData(Player *p, int32_t id);
-	string getScript(int16_t questid, bool start);
+	string getScript(int16_t questId, bool start);
 	void initScript(Player *player, int32_t npcid, const string &filename);
 };
 

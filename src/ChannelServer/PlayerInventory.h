@@ -34,7 +34,7 @@ class PacketCreator;
 
 class PlayerInventory {
 public:
-	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos);
+	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
 	~PlayerInventory();
 
 	void load();
@@ -55,7 +55,7 @@ public:
 	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
 	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
 
-	uint8_t getMaxSlots(int8_t inv) const { return m_maxslots[inv - 1]; }
+	uint8_t getMaxSlots(int8_t inv) const { return m_maxSlots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }
 	int32_t getAutoHpPot() const { return m_autoHpPotId; }
 	int32_t getAutoMpPot() const { return m_autoMpPotId; }
@@ -84,7 +84,7 @@ public:
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
-	boost::array<uint8_t, Inventories::InventoryCount> m_maxslots;
+	boost::array<uint8_t, Inventories::InventoryCount> m_maxSlots;
 	boost::array<boost::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
 	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
 

@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "TimeUtilities.h"
 
-PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxslots, int32_t mesos) :
-	m_maxslots(maxslots),
+PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos) :
+	m_maxSlots(maxSlots),
 	m_mesos(mesos),
 	m_hammer(-1),
 	m_player(player)
@@ -213,12 +213,12 @@ void PlayerInventory::save() {
 
 void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 	inventory -= 1;
-	m_maxslots[inventory] += (rows * 4);
-	if (m_maxslots[inventory] > 100)
-		m_maxslots[inventory] = 100;
-	if (m_maxslots[inventory] < 24) // Retard.
-		m_maxslots[inventory] = 24;
-	InventoryPacket::updateSlots(m_player, inventory + 1, m_maxslots[inventory]);
+	m_maxSlots[inventory] += (rows * 4);
+	if (m_maxSlots[inventory] > 100)
+		m_maxSlots[inventory] = 100;
+	if (m_maxSlots[inventory] < 24) // Retard.
+		m_maxSlots[inventory] = 24;
+	InventoryPacket::updateSlots(m_player, inventory + 1, m_maxSlots[inventory]);
 }
 
 void PlayerInventory::setMesos(int32_t mesos, bool is) {
@@ -370,21 +370,21 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 		required = amount; // These aren't stackable
 	}
 	else {
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemId);
-		uint16_t existing = getItemAmount(itemId) % maxslot;
+		int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId);
+		uint16_t existing = getItemAmount(itemId) % maxSlot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
 		if (canStack && existing > 0) { // If not, calculate how many slots necessary
 			existing += amount;
-			if (existing > maxslot) { // Only have to bother with required slots if it would put us over the limit of a slot
-				required = (int16_t) (existing / maxslot);
-				if ((existing % maxslot) > 0)
+			if (existing > maxSlot) { // Only have to bother with required slots if it would put us over the limit of a slot
+				required = (int16_t) (existing / maxSlot);
+				if ((existing % maxSlot) > 0)
 					required += 1;
 			}
 		}
 		else { // If it is, treat it as though no items exist at all
-			required = (int16_t) (amount / maxslot);
-			if ((amount % maxslot) > 0)
+			required = (int16_t) (amount / maxSlot);
+			if ((amount % maxSlot) > 0)
 				required += 1;
 		}
 	}

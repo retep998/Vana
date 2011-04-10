@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "Timer.h"
 #include "TimeUtilities.h"
-#include <iostream>
 #include <functional>
+#include <iostream>
 
 using std::tr1::bind;
 
@@ -32,6 +32,7 @@ AbstractConnection::AbstractConnection() :
 	m_isServer(false),
 	m_isPinged(false),
 	m_latency(InitialPing),
+	m_lastPing(InitialPing),
 	m_timers(new Timer::Container)
 {
 }

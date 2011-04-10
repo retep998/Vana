@@ -183,14 +183,14 @@ void Inventory::useItem(Player *player, int32_t itemId) {
 	if (item->ailment > 0)
 		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
 
-	if (item->time > 0 && item->mcprob == 0) {
+	if (item->time > 0 && item->mcProb == 0) {
 		int32_t time = item->time * potency / 100;
 		Buffs::addBuff(player, itemId, time);
 	}
 	if (GameLogicUtilities::isMonsterCard(itemId)) {
 		bool isFull = player->getMonsterBook()->addCard(itemId); // Has a special buff for being full?
 		MonsterBookPacket::addCard(player, itemId, player->getMonsterBook()->getCardLevel(itemId), isFull);
-		if (item->mcprob != 0 && Randomizer::Instance()->randShort(99) < item->mcprob) {
+		if (item->mcProb != 0 && Randomizer::Instance()->randShort(99) < item->mcProb) {
 			Buffs::addBuff(player, itemId, item->time);
 		}
 	}

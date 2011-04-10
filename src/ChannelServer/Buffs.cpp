@@ -83,10 +83,10 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) 
 			continue;
 		playerskill.types[cur.buff.byte] += cur.buff.type;
 		int16_t value = 0;
-		if (cur.hasmapval)
+		if (cur.hasMapVal)
 			playerskill.hasmapbuff = true;
 		if (val == SkillNone)
-			value = cur.itemval;
+			value = cur.itemVal;
 		else {
 			switch (skillId) {
 				case Jobs::Bowmaster::SharpEyes:
@@ -133,7 +133,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t l
 
 	for (size_t i = 0; i < skillsinfo->player.size(); i++) {
 		cur = skillsinfo->player[i];
-		if (!cur.hasmapval)
+		if (!cur.hasMapVal)
 			continue;
 		map = skillsinfo->map[maps++];
 		int8_t val = map.buff.value;
@@ -143,11 +143,11 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t l
 		mapskill.bytes.push_back(map.buff.byte);
 		mapskill.types.push_back(map.buff.type);
 		mapskill.typelist[map.buff.byte] += map.buff.type;
-		mapskill.usevals.push_back(map.useval);
-		if (map.useval) {
+		mapskill.useVals.push_back(map.useVal);
+		if (map.useVal) {
 			int16_t value = 0;
 			if (val == SkillNone) {
-				value = cur.itemval;
+				value = cur.itemVal;
 			}
 			else {
 				switch (skillId) {
@@ -186,11 +186,11 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint
 		mapskill.bytes.push_back(map.buff.byte);
 		mapskill.types.push_back(map.buff.type);
 		mapskill.typelist[map.buff.byte] += map.buff.type;
-		mapskill.usevals.push_back(map.useval);
-		if (map.useval) {
+		mapskill.useVals.push_back(map.useVal);
+		if (map.useVal) {
 			int16_t value = 0;
 			if (val == SkillNone) {
-				value = cur.itemval;
+				value = cur.itemVal;
 			}
 			else {
 				switch (skillId) {
@@ -250,7 +250,7 @@ ActiveMapBuff Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_
 		mapskill.bytes.push_back(cur.buff.byte);
 		mapskill.types.push_back(cur.buff.type);
 		mapskill.typelist[cur.buff.byte] += cur.buff.type;
-		mapskill.usevals.push_back(cur.useval);
+		mapskill.useVals.push_back(cur.useVal);
 		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
 		mapskill.values.push_back(value);
 	}
@@ -268,8 +268,8 @@ ActiveMapBuff Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, u
 		mapskill.bytes.push_back(cur.buff.byte);
 		mapskill.types.push_back(cur.buff.type);
 		mapskill.typelist[cur.buff.byte] += cur.buff.type;
-		mapskill.usevals.push_back(true);
-		mapskill.usevals.push_back(false);
+		mapskill.useVals.push_back(true);
+		mapskill.useVals.push_back(false);
 		mapskill.values.push_back(skillId);
 		mapskill.values.push_back(level);
 	}

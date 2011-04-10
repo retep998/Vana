@@ -59,15 +59,15 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 		DropInfo d;
 		int8_t continent = MapDataProvider::Instance()->getContinent(mapid);
 		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
-			if (droppingLevel >= i->minlevel && droppingLevel <= i->maxlevel) {
+			if (droppingLevel >= i->minLevel && droppingLevel <= i->maxLevel) {
 				if (i->continent == 0 || (continent == i->continent)) {
 					d = DropInfo();
 					d.chance = i->chance;
-					d.ismesos = i->ismesos;
+					d.isMesos = i->isMesos;
 					d.itemId = i->itemId;
-					d.minamount = i->minamount;
-					d.maxamount = i->maxamount;
-					d.questid = i->questid;
+					d.minAmount = i->minAmount;
+					d.maxAmount = i->maxAmount;
+					d.questId = i->questId;
 					drops.push_back(d);
 				}
 			}
@@ -76,7 +76,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
-		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxamount, i->minamount));
+		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxAmount, i->minAmount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
 
@@ -99,15 +99,15 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				// pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't work correctly!
 			}
 
-			if (!i->ismesos) {
+			if (!i->isMesos) {
 				int32_t itemId = i->itemId;
-				int16_t questid = i->questid;
+				int16_t questId = i->questId;
 
-				if (questid > 0) {
-					if (player == nullptr || !player->getQuests()->isQuestActive(questid)) {
+				if (questId > 0) {
+					if (player == nullptr || !player->getQuests()->isQuestActive(questId)) {
 						continue;
 					}
-					int16_t request = QuestDataProvider::Instance()->getItemRequest(questid, itemId);
+					int16_t request = QuestDataProvider::Instance()->getItemRequest(questId, itemId);
 					int16_t amount = player->getInventory()->getItemAmount(itemId);
 					if (amount >= request) {
 						continue;
@@ -117,9 +117,9 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, true) : Item(itemId, amount));
 				drop = new Drop(mapid, f, pos, playerid);
 
-				if (questid > 0) {
+				if (questId > 0) {
 					drop->setPlayerId(playerid);
-					drop->setQuest(questid);
+					drop->setQuest(questId);
 				}
 			}
 			else {
@@ -249,7 +249,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) 
 	else {
 		Item dropitem = drop->getItem();
 		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropitem.getId());
-		if (cons != nullptr && cons->autoconsume) {
+		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
 				Inventory::useItem(player, dropitem.getId());

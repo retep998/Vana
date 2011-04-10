@@ -276,7 +276,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item->size(); i++) {
 		s = (*item)[i];
 		skillId = s.skillId;
-		newMaxLevel = s.maxlevel;
+		newMaxLevel = s.maxLevel;
 		if (GameLogicUtilities::itemSkillMatchesJob(skillId, player->getStats()->getJob())) {
 			// Make sure the skill is for the person's job
 			if (player->getSkills()->getSkillLevel(skillId) >= s.reqlevel) {
@@ -353,8 +353,8 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	for (size_t i = 0; i < item->size(); i++) {
 		s = (*item)[i];
 		if (Randomizer::Instance()->randInt(99) < s.chance) {
-			if (MobDataProvider::Instance()->mobExists(s.mobid)) {
-				Maps::getMap(player->getMap())->spawnMob(s.mobid, player->getPos());
+			if (MobDataProvider::Instance()->mobExists(s.mobId)) {
+				Maps::getMap(player->getMap())->spawnMob(s.mobId, player->getPos());
 			}
 		}
 	}
@@ -855,7 +855,7 @@ void InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) {
 	}
 
 	Inventory::takeItem(player, itemId, 1);
-	Item *rewardItem = new Item(reward->rewardid, reward->quantity);
+	Item *rewardItem = new Item(reward->rewardId, reward->quantity);
 	Inventory::addItem(player, rewardItem, true);
 	InventoryPacket::sendRewardItemAnimation(player, itemId, reward->effect);
 }
@@ -878,7 +878,7 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string scriptName = ScriptDataProvider::Instance()->getItemScript(itemId);
+	string scriptName = ScriptDataProvider::Instance()->getScript(itemId, ScriptTypes::Item);
 	if (scriptName == "") {
 		// Hacking or no script for item found.
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?

@@ -25,8 +25,8 @@ using std::string;
 using std::vector;
 
 namespace mysqlpp { class Row; };
-class Player;
 class PacketReader;
+class Player;
 
 struct CharEquip {
 	int32_t id;

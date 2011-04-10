@@ -43,19 +43,19 @@ void EquipDataProvider::loadData() {
 namespace Functors {
 	struct EquipFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "wear_trade_block") item->tradeblockonequip = true;
+			if (cmp == "wear_trade_block") item->tradeBlockOnEquip = true;
 		}
 		EquipInfo *item;
 	};
 	struct EquipJobFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "common") item->validjobs.push_back(-1);
-			else if (cmp == "beginner") item->validjobs.push_back(Jobs::JobTracks::Beginner); // Respective job tracks
-			else if (cmp == "warrior") item->validjobs.push_back(Jobs::JobTracks::Warrior);
-			else if (cmp == "magician") item->validjobs.push_back(Jobs::JobTracks::Magician);
-			else if (cmp == "bowman") item->validjobs.push_back(Jobs::JobTracks::Bowman);
-			else if (cmp == "thief") item->validjobs.push_back(Jobs::JobTracks::Thief);
-			else if (cmp == "pirate") item->validjobs.push_back(Jobs::JobTracks::Pirate);
+			if (cmp == "common") item->validJobs.push_back(-1);
+			else if (cmp == "beginner") item->validJobs.push_back(Jobs::JobTracks::Beginner); // Respective job tracks
+			else if (cmp == "warrior") item->validJobs.push_back(Jobs::JobTracks::Warrior);
+			else if (cmp == "magician") item->validJobs.push_back(Jobs::JobTracks::Magician);
+			else if (cmp == "bowman") item->validJobs.push_back(Jobs::JobTracks::Bowman);
+			else if (cmp == "thief") item->validJobs.push_back(Jobs::JobTracks::Thief);
+			else if (cmp == "pirate") item->validJobs.push_back(Jobs::JobTracks::Pirate);
 		}
 		EquipInfo *item;
 	};
@@ -63,7 +63,7 @@ namespace Functors {
 }
 
 void EquipDataProvider::loadEquips() {
-	equips.clear();
+	m_equipInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") FROM item_equip_data");
 	// Ugly hack to get the integers instead of scientific notation
 	// Note to users: This is MySQL's crappy behavior
@@ -94,16 +94,16 @@ void EquipDataProvider::loadEquips() {
 		runFlags(row[ReqJob], whoot);
 
 		id = atoi(row[EquipId]);
-		equip.attackspeed = atoi(row[AttackSpeed]);
+		equip.attackSpeed = atoi(row[AttackSpeed]);
 		equip.healing = atoi(row[Healing]);
 		equip.slots = atoi(row[ScrollSlots]);
 		equip.ihp = atoi(row[Hp]);
 		equip.imp = atoi(row[Mp]);
-		equip.reqstr = atoi(row[ReqStr]);
-		equip.reqdex = atoi(row[ReqDex]);
-		equip.reqint = atoi(row[ReqInt]);
-		equip.reqluk = atoi(row[ReqLuk]);
-		equip.reqfame = atoi(row[ReqFame]);
+		equip.reqStr = atoi(row[ReqStr]);
+		equip.reqDex = atoi(row[ReqDex]);
+		equip.reqInt = atoi(row[ReqInt]);
+		equip.reqLuk = atoi(row[ReqLuk]);
+		equip.reqFame = atoi(row[ReqFame]);
 		equip.istr = atoi(row[Str]);
 		equip.idex = atoi(row[Dex]);
 		equip.iint = atoi(row[Int]);
@@ -117,16 +117,16 @@ void EquipDataProvider::loadEquips() {
 		equip.iavo = atoi(row[Avoid]);
 		equip.ijump = atoi(row[Jump]);
 		equip.ispeed = atoi(row[Speed]);
-		equip.tamingmob = atoi(row[TamingMob]);
-		equip.icedamage = atoi(row[IceDamage]);
-		equip.firedamage = atoi(row[FireDamage]);
-		equip.lightningdamage = atoi(row[LightningDamage]);
-		equip.poisondamage = atoi(row[PoisonDamage]);
-		equip.elementaldefault = atoi(row[ElementalDefault]);
+		equip.tamingMob = atoi(row[TamingMob]);
+		equip.iceDamage = atoi(row[IceDamage]);
+		equip.fireDamage = atoi(row[FireDamage]);
+		equip.lightningDamage = atoi(row[LightningDamage]);
+		equip.poisonDamage = atoi(row[PoisonDamage]);
+		equip.elementalDefault = atoi(row[ElementalDefault]);
 		equip.traction = atof(row[Traction]);
-		equip.validslots = atoli(row[EquipSlots]);
+		equip.validSlots = atoli(row[EquipSlots]);
 
-		equips[id] = equip;
+		m_equipInfo[id] = equip;
 	}
 }
 
@@ -181,10 +181,10 @@ int16_t EquipDataProvider::getStatVariance(uint16_t amount) {
 
 bool EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) {
 	EquipInfo *e = getEquipInfo(itemId);
-	return (str >= e->reqstr && dex >= e->reqdex && intt >= e->reqint && luk >= e->reqluk && fame >= e->reqfame);
+	return (str >= e->reqStr && dex >= e->reqDex && intt >= e->reqInt && luk >= e->reqLuk && fame >= e->reqFame);
 }
 
-bool EquipDataProvider::validSlot(int32_t equipid, int16_t target) {
-	EquipInfo *e = getEquipInfo(equipid);
-	return ((e->validslots & (1LL << (target - 1))) != 0);
+bool EquipDataProvider::validSlot(int32_t equipId, int16_t target) {
+	EquipInfo *e = getEquipInfo(equipId);
+	return ((e->validSlots & (1LL << (target - 1))) != 0);
 }

@@ -124,12 +124,13 @@ int LuaExports::getNpcId(lua_State *luaVm) {
 int LuaExports::npcRunNpc(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, 1);
 	string script;
-	if (lua_type(luaVm, 2) == LUA_TSTRING) { // We already have our script name
+	if (lua_type(luaVm, 2) == LUA_TSTRING) {
+		// We already have our script name
 		string specified = lua_tostring(luaVm, 2);
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+		script = ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
 	}
 	getNpc(luaVm)->setEndScript(npcid, script);
 	return 0;
@@ -247,13 +248,13 @@ int LuaExports::askQuestion(lua_State *luaVm) {
 
 // Quest
 int LuaExports::addQuest(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getQuests()->addQuest(questid, getNpc(luaVm)->getNpcId());
+	int16_t questId = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getQuests()->addQuest(questId, getNpc(luaVm)->getNpcId());
 	return 0;
 }
 
 int LuaExports::endQuest(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getQuests()->finishQuest(questid, getNpc(luaVm)->getNpcId());
+	int16_t questId = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getQuests()->finishQuest(questId, getNpc(luaVm)->getNpcId());
 	return 0;
 }
