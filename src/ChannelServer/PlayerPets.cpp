@@ -42,7 +42,7 @@ Pet * PlayerPets::getSummoned(int8_t index) {
 }
 
 void PlayerPets::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	for (unordered_map<int64_t, Pet *>::iterator iter = m_playerpets.begin(); iter != m_playerpets.end(); iter++) {
 		query << "UPDATE pets SET "
 			<< "`index` = " << (int16_t) iter->second->getIndex() << ","

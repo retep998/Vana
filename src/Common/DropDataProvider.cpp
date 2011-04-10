@@ -47,7 +47,7 @@ namespace Functors {
 
 void DropDataProvider::loadDrops() {
 	dropdata.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM drop_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	DropInfo drop;
 	int32_t dropper;
@@ -114,7 +114,7 @@ namespace Functors {
 
 void DropDataProvider::loadGlobalDrops() {
 	globaldrops.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM drop_global_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_global_data");
 	mysqlpp::UseQueryResult res = query.use();
 	GlobalDrop drop;
 

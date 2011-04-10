@@ -49,7 +49,7 @@ namespace Functors {
 
 void ReactorDataProvider::loadReactors() {
 	m_reactorInfo.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ReactorData react;
 	int32_t id;
@@ -90,7 +90,7 @@ namespace Functors {
 }
 
 void ReactorDataProvider::loadStates() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	ReactorStateInfo revent;
 	int32_t id;
@@ -124,7 +124,7 @@ void ReactorDataProvider::loadStates() {
 }
 
 void ReactorDataProvider::loadTriggerSkills() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM reactor_event_trigger_skills");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_event_trigger_skills");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	int8_t state;

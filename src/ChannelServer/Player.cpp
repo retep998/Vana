@@ -240,7 +240,7 @@ void Player::playerConnect(PacketReader &packet) {
 	this->id = id;
 
 	// Character info
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT c.*, u.gm_level, u.admin FROM characters c "
 		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
 		<< "WHERE c.character_id = " << id;
@@ -559,7 +559,7 @@ bool Player::addWarning() {
 }
 
 void Player::saveStats() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE characters SET "
 		<< "level = " << static_cast<int16_t>(stats->getLevel()) << "," // Queries have problems with int8_t due to being derived from ostream
 		<< "job = " << stats->getJob() << ","
@@ -608,7 +608,7 @@ void Player::saveAll(bool savecooldowns) {
 
 void Player::setOnline(bool online) {
 	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE user_accounts u "
 			<< "INNER JOIN characters c ON u.user_id = c.user_id "
 			<< "SET "
@@ -619,7 +619,7 @@ void Player::setOnline(bool online) {
 }
 
 void Player::setLevelDate() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = " << id;
 	query.exec();
 }

@@ -27,31 +27,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma warning(pop)
 
 #include "Types.h"
-#include <boost/thread/tss.hpp> // thread_specific_ptr
+#include <boost/thread/tss.hpp>
+
+struct DbConfig;
 
 class Database {
 public:
 	typedef boost::thread_specific_ptr<mysqlpp::Connection> tsConn;
 
-	static void connectCharDB();
-	static void connectDataDB();
-	static mysqlpp::Connection & getCharDB();
-	static mysqlpp::Connection & getDataDB();
+	static void connectCharDb();
+	static void connectDataDb();
+	static mysqlpp::Connection & getCharDb();
+	static mysqlpp::Connection & getDataDb();
 private:
-	static tsConn chardb;
-	static tsConn datadb;
+	static tsConn m_chardb;
+	static tsConn m_datadb;
 };
 
 inline
-mysqlpp::Connection & Database::getCharDB() {
-	if (chardb.get() == nullptr)
-		connectCharDB();
-	return *chardb.get();
+mysqlpp::Connection & Database::getCharDb() {
+	if (m_chardb.get() == nullptr) {
+		connectCharDb();
+	}
+	return *m_chardb.get();
 }
 
 inline
-mysqlpp::Connection & Database::getDataDB() {
-	if (datadb.get() == nullptr)
-		connectDataDB();
-	return *datadb.get();
+mysqlpp::Connection & Database::getDataDb() {
+	if (m_datadb.get() == nullptr) {
+		connectDataDb();
+	}
+	return *m_datadb.get();
 }

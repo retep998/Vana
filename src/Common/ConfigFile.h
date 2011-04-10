@@ -31,6 +31,7 @@ extern "C" {
 using std::string;
 using std::vector;
 
+struct DbConfig;
 struct LogConfig;
 
 class ConfigFile {
@@ -51,6 +52,7 @@ public:
 	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
 	bool getBool(const string &value);
 	LogConfig getLogConfig(const string &server);
+	DbConfig getDbConfig(const string &prefix);
 private:
 	void keyMustExist(const string &value);
 

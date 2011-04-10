@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "DatabaseMigration.h"
 #include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 using std::string;
 using std::vector;

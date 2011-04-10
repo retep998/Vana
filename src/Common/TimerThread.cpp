@@ -28,9 +28,9 @@ using std::tr1::bind;
 Thread * Thread::singleton = nullptr;
 
 Thread::Thread() :
-m_resort_timer(false),
-m_terminate(false),
-m_container(new Container)
+	m_resortTimer(false),
+	m_terminate(false),
+	m_container(new Container)
 {
 	m_thread.reset(new boost::thread(bind(&Thread::runThread, this)));
 }
@@ -40,16 +40,16 @@ Thread::~Thread() {
 }
 
 void Thread::registerTimer(Timer *timer) {
-	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
-	m_resort_timer = true;
+	boost::recursive_mutex::scoped_lock l(m_timersMutex);
+	m_resortTimer = true;
 	m_timers.push_back(timer);
-	m_main_loop_condition.notify_one();
+	m_mainLoopCondition.notify_one();
 }
 
 void Thread::removeTimer(Timer *timer) {
-	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
+	boost::recursive_mutex::scoped_lock l(m_timersMutex);
 	m_timers.remove(timer);
-	m_main_loop_condition.notify_one();
+	m_mainLoopCondition.notify_one();
 }
 
 bool less_than (const Timer *t1, const Timer *t2) {
@@ -62,34 +62,34 @@ Timer * Thread::findMin() {
 		return nullptr;
 	}
 
-	if (m_resort_timer) {
+	if (m_resortTimer) {
 		m_timers.sort(less_than);
-		m_resort_timer = false;
+		m_resortTimer = false;
 	}
 
 	return *m_timers.begin();
 }
 
 void Thread::forceReSort() {
-	boost::recursive_mutex::scoped_lock l(m_timers_mutex);
-	m_resort_timer = true;
-	m_main_loop_condition.notify_one();
+	boost::recursive_mutex::scoped_lock l(m_timersMutex);
+	m_resortTimer = true;
+	m_mainLoopCondition.notify_one();
 }
 
 void Thread::runThread() {
-	boost::unique_lock<boost::recursive_mutex> l(m_timers_mutex);
+	boost::unique_lock<boost::recursive_mutex> l(m_timersMutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
-		int64_t msec = (minTimer == nullptr) ? 1000000000 : minTimer->getRunAt() - TimeUtilities::getTickCount(); // Be certain the time stays in milliseconds
+		// Be certain the time stays in milliseconds
+		int64_t msec = (minTimer == nullptr) ? 1000000000 : minTimer->getRunAt() - TimeUtilities::getTickCount();
 		if (msec <= 0) {
 			minTimer->run();
 			continue;
 		}
 
-		if (m_main_loop_condition.timed_wait(l,
-			boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
-				continue;
+		if (m_mainLoopCondition.timed_wait(l, boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
+			continue;
 		}
 
 		if (minTimer != nullptr) {

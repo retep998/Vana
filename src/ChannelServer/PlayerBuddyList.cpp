@@ -32,7 +32,7 @@ PlayerBuddyList::PlayerBuddyList(Player *player) :
 }
 
 void PlayerBuddyList::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
 		<< "FROM buddylist bl "
 		<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
@@ -73,7 +73,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		return BuddyListPacket::Errors::UserDoesNotExist;
 	}
 
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	enum TableColumns {
 		CharacterID, CharacterName, GM, BuddylistLimit, BuddylistSize
@@ -153,7 +153,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 }
 
 void PlayerBuddyList::removeBuddy(int32_t charid) {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	if (m_pendingBuddies.size() != 0 && m_sentRequest) {
 		BuddyInvite invite = m_pendingBuddies.front();
@@ -182,12 +182,12 @@ void PlayerBuddyList::removeBuddy(int32_t charid) {
 }
 
 void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	int32_t charid = atoi(row["buddy_charid"]);
 
 	if (!row["name"].is_null() && row["name"] != row["name_cache"]) {
 		// Outdated name cache, i.e. character renamed
-		mysqlpp::Query query = Database::getCharDB().query();
+		mysqlpp::Query query = Database::getCharDb().query();
 		query << "UPDATE buddylist SET name = " << mysqlpp::quote << row["name"] << " WHERE id = " << row["id"];
 		query.exec();
 	}
@@ -290,7 +290,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
 
-		mysqlpp::Query query = Database::getCharDB().query();
+		mysqlpp::Query query = Database::getCharDb().query();
 		query << "DELETE FROM buddylist_pending WHERE character_id = " << m_player->getId() << " AND inviter_character_id = " << id;
 		query.exec();
 	}

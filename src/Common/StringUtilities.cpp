@@ -47,7 +47,7 @@ void StringUtilities::runFlags(const string &flags, function<void (string)> func
 		separator sep(",");
 		tokenizer tokens(flags, sep);
 
-		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); iter++) {
+		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
 			func(*iter);
 		}
 	}

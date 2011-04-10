@@ -67,5 +67,7 @@ public:
 private:
 	LogReplacements();
 	static LogReplacements *singleton;
+
+	void add(const string &key, int32_t val);
 	map_t m_replacementMap;
 };

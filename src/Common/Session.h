@@ -42,12 +42,11 @@ public:
 	friend class ConnectionAcceptor;
 	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
 
-	tcp::socket & getSocket() { return m_socket; }
-
 	void disconnect();
 	void send(const PacketCreator &packet);
 	ip_t getIp() const;
 protected:
+	tcp::socket & getSocket() { return m_socket; }
 	void start();
 	void stop();
 	void handleStart();

@@ -64,7 +64,7 @@ namespace Functors {
 
 void EquipDataProvider::loadEquips() {
 	equips.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") FROM item_equip_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") FROM item_equip_data");
 	// Ugly hack to get the integers instead of scientific notation
 	// Note to users: This is MySQL's crappy behavior
 	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse

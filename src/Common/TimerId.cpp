@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-// For hashing Id
 size_t hash_value(Id const &id) {
 	size_t seed = 0;
 

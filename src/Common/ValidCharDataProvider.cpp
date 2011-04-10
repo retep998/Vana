@@ -38,7 +38,7 @@ void ValidCharDataProvider::loadData() {
 
 void ValidCharDataProvider::loadForbiddenNames() {
 	m_forbiddenNames.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_forbidden_names");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_forbidden_names");
 	mysqlpp::UseQueryResult res = query.use();
 	string name;
 
@@ -71,7 +71,7 @@ namespace Functors {
 void ValidCharDataProvider::loadCreationItems() {
 	m_adventurer.clear();
 	m_cygnus.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM character_creation_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_creation_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;
 	int8_t classId;

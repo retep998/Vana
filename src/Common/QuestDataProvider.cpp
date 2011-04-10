@@ -39,7 +39,7 @@ void QuestDataProvider::loadData() {
 
 void QuestDataProvider::loadQuestData() {
 	quests.clear();
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_data");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_data");
 	mysqlpp::UseQueryResult res = query.use();
 	Quest curquest;
 	int16_t questid;
@@ -74,7 +74,7 @@ namespace Functors {
 }
 
 void QuestDataProvider::loadRequests() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_requests");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_requests");
 	mysqlpp::UseQueryResult res = query.use();
 	int16_t questid;
 	int32_t reward;
@@ -103,7 +103,7 @@ void QuestDataProvider::loadRequests() {
 }
 
 void QuestDataProvider::loadRequiredJobs() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_required_jobs");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_required_jobs");
 	mysqlpp::UseQueryResult res = query.use();
 	int16_t questid;
 	Quest *cur;
@@ -252,7 +252,7 @@ namespace Functors {
 }
 
 void QuestDataProvider::loadRewards() {
-	mysqlpp::Query query = Database::getDataDB().query("SELECT * FROM quest_rewards");
+	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_rewards");
 	mysqlpp::UseQueryResult res = query.use();
 	string jobtracks;
 	int16_t questid;

@@ -35,7 +35,7 @@ PlayerQuests::PlayerQuests(Player *player) :
 }
 
 void PlayerQuests::save() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 
 	query << "DELETE FROM active_quests WHERE character_id = " << m_player->getId();
 	query.exec();
@@ -98,7 +98,7 @@ void PlayerQuests::save() {
 }
 
 void PlayerQuests::load() {
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	int16_t previous = -1;
 	int16_t current = 0;
 	ActiveQuest curquest;

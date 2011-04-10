@@ -53,7 +53,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT u.*, (u.ban_expire > NOW()) as `banned` FROM user_accounts u WHERE u.username = " << mysqlpp::quote << username << " LIMIT 1";
 	mysqlpp::StoreQueryResult res = query.store();
 
@@ -162,7 +162,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 		// getBool candidate?
 		player->setStatus(PlayerStatus::NotLoggedIn);
 		int8_t gender = packet.get<int8_t>();
-		mysqlpp::Query query = Database::getCharDB().query();
+		mysqlpp::Query query = Database::getCharDb().query();
 		query << "UPDATE user_accounts u SET u.gender = " << (int32_t) gender << " WHERE u.user_id = " << player->getUserId();
 		query.exec();
 		if (LoginServer::Instance()->getPinEnabled()) {
@@ -242,7 +242,7 @@ void Login::registerPin(Player *player, PacketReader &packet) {
 	}
 	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
 	player->setStatus(PlayerStatus::NotLoggedIn);
-	mysqlpp::Query query = Database::getCharDB().query();
+	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE user_accounts u SET u.pin = " << pin << " WHERE u.user_id = " << player->getUserId();
 	query.exec();
 	LoginPacket::pinAssigned(player);
