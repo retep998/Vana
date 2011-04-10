@@ -98,7 +98,7 @@ FileLogger::~FileLogger() {
 void FileLogger::log(LogTypes::LogTypes type, const string &identifier, const string &message) {
 	FileLog file;
 	file.message = Logger::getLogFormatted(type, this, identifier, message);
-	file.file = FileLogger::prepareFileName(type, this, time(0), identifier, message);
+	file.file = FileLogger::prepareFileName(type, this, time(nullptr), identifier, message);
 	m_buffer.push_back(file);
 	if (m_buffer.size() >= m_bufferSize) {
 		flush();

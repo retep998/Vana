@@ -33,7 +33,7 @@ void SqlLogger::log(LogTypes::LogTypes type, const string &identifier, const str
 	LogMessage m;
 	m.type = type;
 	m.message = message;
-	m.time = time(0);
+	m.time = time(nullptr);
 	m.identifier = identifier;
 	m_buffer.push_back(m);
 	if (m_buffer.size() >= m_bufferSize) {

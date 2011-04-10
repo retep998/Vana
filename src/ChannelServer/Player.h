@@ -103,7 +103,7 @@ public:
 	int32_t getSpecialSkill() const { return info.skillId; }
 	int32_t getTradeId() const { return trade_id; }
 	int64_t getConnectionTime() const { return online_time; }
-	int64_t getConnectedTime() const { return time(0) - online_time; }
+	int64_t getConnectedTime() const { return time(nullptr) - online_time; }
 	string getChalkboard() const { return chalkboard; }
 	string getMedalName();
 	string getName() const { return name; }

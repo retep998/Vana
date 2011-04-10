@@ -135,7 +135,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 
 		time_t qban =  atot(res[0]["quiet_ban_expire"]);
 		if (qban > 0) {
-			if (time(0) > qban) {
+			if (time(nullptr) > qban) {
 				query << "UPDATE user_accounts u SET u.quiet_ban_expire = '0000-00-00 00:00:00', u.quiet_ban_reason = 0 WHERE u.user_id = " << player->getUserId();
 				query.exec();
 			}
