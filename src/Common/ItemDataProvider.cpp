@@ -342,7 +342,7 @@ void ItemDataProvider::loadMonsterCardData() {
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		cardId = atoi(row[CardId]);
 		mobId = atoi(row[MobId]);
-		m_cards.insert(cardInfo(cardId, mobId));
+		m_cards.insert(CardInfo(cardId, mobId));
 	}
 }
 

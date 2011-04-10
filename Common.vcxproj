@@ -101,6 +101,7 @@
     <ClCompile Include="src\Common\InitializeCommon.cpp" />
     <ClCompile Include="src\Common\ItemDataProvider.cpp" />
     <ClCompile Include="src\Common\MobDataProvider.cpp" />
+    <ClCompile Include="src\Common\Quest.cpp" />
     <ClCompile Include="src\Common\QuestDataProvider.cpp" />
     <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
     <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\Common\NpcDataProvider.h" />
     <ClInclude Include="src\Common\PlayerObjects.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
+    <ClInclude Include="src\Common\Quest.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
     <ClInclude Include="src\Common\Timer.h" />
