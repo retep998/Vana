@@ -27,9 +27,9 @@ class PacketCreator;
 struct SkillLevelInfo;
 
 struct PlayerSkillInfo {
-	PlayerSkillInfo() : level(0), maxlevel(0) {}
+	PlayerSkillInfo() : level(0), maxLevel(0) {}
 	uint8_t level;
-	uint8_t maxlevel;
+	uint8_t maxLevel;
 };
 
 class PlayerSkills {
@@ -43,7 +43,7 @@ public:
 	bool addSkillLevel(int32_t skillId, uint8_t amount, bool sendpacket = true);
 	uint8_t getSkillLevel(int32_t skillId);
 	uint8_t getMaxSkillLevel(int32_t skillId);
-	void setMaxSkillLevel(int32_t skillId, uint8_t maxlevel, bool sendpacket = true);
+	void setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendpacket = true);
 	SkillLevelInfo * getSkillInfo(int32_t skillId);
 
 	bool hasElementalAmp();

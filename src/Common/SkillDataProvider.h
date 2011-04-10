@@ -31,10 +31,10 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct SkillLevelInfo {
-	int8_t mobcount;
-	int8_t hitcount;
+	int8_t mobCount;
+	int8_t hitCount;
 	int8_t mastery;
-	uint8_t criticaldamage;
+	uint8_t criticalDamage;
 	int16_t mp;
 	int16_t hp;
 	int16_t itemCount;
@@ -51,7 +51,7 @@ struct SkillLevelInfo {
 	int16_t mDef;
 	int16_t acc;
 	int16_t avo;
-	int16_t cooltime;
+	int16_t coolTime;
 	int16_t morph;
 	int16_t damage;
 	int16_t range;
@@ -61,7 +61,7 @@ struct SkillLevelInfo {
 	int32_t fixedDamage;
 	int32_t item;
 	int32_t time;
-	int32_t optionalitem;
+	int32_t optionalItem;
 	Pos lt;
 	Pos rb;
 };
@@ -191,16 +191,16 @@ public:
 	}
 	void loadData();
 
-	bool isSkill(int32_t skillId) { return (skills.find(skillId) != skills.end()); }
-	uint8_t getMaxLevel(int32_t skillId) { return (maxlevels.find(skillId) != maxlevels.end() ? maxlevels[skillId] : 0); }
+	bool isSkill(int32_t skillId) { return (m_skills.find(skillId) != m_skills.end()); }
+	uint8_t getMaxLevel(int32_t skillId) { return (m_skillMaxLevels.find(skillId) != m_skillMaxLevels.end() ? m_skillMaxLevels[skillId] : 0); }
 	SkillLevelInfo * getSkill(int32_t skill, uint8_t level);
 	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
 
-	bool hasBanishData(int32_t mobid) { return (banishinfo.find(mobid) != banishinfo.end()); }
-	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &banishinfo[mobid] : nullptr); }
+	bool hasBanishData(int32_t mobid) { return (m_banishInfo.find(mobid) != m_banishInfo.end()); }
+	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &m_banishInfo[mobid] : nullptr); }
 
-	bool hasMorphData(int16_t morph) { return (morphinfo.find(morph) != morphinfo.end()); }
-	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &morphinfo[morph] : nullptr); }
+	bool hasMorphData(int16_t morph) { return (m_morphInfo.find(morph) != m_morphInfo.end()); }
+	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &m_morphInfo[morph] : nullptr); }
 private:
 	SkillDataProvider() {}
 	static SkillDataProvider *singleton;
@@ -211,9 +211,9 @@ private:
 	void loadBanishData();
 	void loadMorphs();
 
-	unordered_map<uint8_t, MobSkillsLevelInfo> mobskills;
-	unordered_map<int32_t, SkillsLevelInfo> skills;
-	unordered_map<int32_t, uint8_t> maxlevels;
-	unordered_map<int32_t, BanishField> banishinfo;
-	unordered_map<int16_t, MorphData> morphinfo;
+	unordered_map<uint8_t, MobSkillsLevelInfo> m_mobSkills;
+	unordered_map<int32_t, SkillsLevelInfo> m_skills;
+	unordered_map<int32_t, uint8_t> m_skillMaxLevels;
+	unordered_map<int32_t, BanishField> m_banishInfo;
+	unordered_map<int16_t, MorphData> m_morphInfo;
 };

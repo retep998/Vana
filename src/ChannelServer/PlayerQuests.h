@@ -61,13 +61,13 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 
-	void addQuest(int16_t questid, int32_t npcid);
+	void addQuest(int16_t questId, int32_t npcid);
 	void updateQuestMob(int32_t mobid);
 	void checkDone(ActiveQuest &quest);
-	void finishQuest(int16_t questid, int32_t npcid);
-	void removeQuest(int16_t questid);
-	bool isQuestActive(int16_t questid);
-	bool isQuestComplete(int16_t questid);
+	void finishQuest(int16_t questId, int32_t npcid);
+	void removeQuest(int16_t questId);
+	bool isQuestActive(int16_t questId);
+	bool isQuestComplete(int16_t questId);
 	void setQuestData(int16_t id, const string &data);
 	string getQuestData(int16_t id);
 private:
@@ -76,9 +76,9 @@ private:
 	map<int16_t, ActiveQuest> m_quests;
 	map<int16_t, int64_t> m_completed;
 
-	bool giveRewards(int16_t questid, bool start);
+	bool giveRewards(int16_t questId, bool start);
 	bool giveRewards(const QuestRewardInfo &info);
-	bool checkRewards(int16_t questid, Rewards::iterator &begin, Rewards::iterator &end);
-	void addQuest(int16_t questid);
-	void addQuestMobs(int16_t questid);
+	bool checkRewards(int16_t questId, Rewards::iterator &begin, Rewards::iterator &end);
+	void addQuest(int16_t questId);
+	void addQuestMobs(int16_t questId);
 };

@@ -38,11 +38,11 @@ void QuestDataProvider::loadData() {
 }
 
 void QuestDataProvider::loadQuestData() {
-	quests.clear();
+	m_quests.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_data");
 	mysqlpp::UseQueryResult res = query.use();
-	Quest curquest;
-	int16_t questid;
+	Quest curQuest;
+	int16_t questId;
 
 	enum QuestData {
 		QuestId = 0,
@@ -51,24 +51,24 @@ void QuestDataProvider::loadQuestData() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		questid = atoi(row[QuestId]);
+		questId = atoi(row[QuestId]);
 
-		curquest.setNextQuest(atoi(row[NextQuest]));
-		curquest.setQuestId(questid);
+		curQuest.setNextQuest(atoi(row[NextQuest]));
+		curQuest.setQuestId(questId);
 
-		quests[questid] = curquest;
+		m_quests[questId] = curQuest;
 	}
 }
 
 namespace Functors {
 	struct RequestTypeFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "item") quest->addItemRequest(reqid, count);
-			else if (cmp == "mob") quest->addMobRequest(reqid, count);
-			else if (cmp == "quest") quest->addQuestRequest(static_cast<int16_t>(reqid), static_cast<int8_t>(count));
+			if (cmp == "item") quest->addItemRequest(reqId, count);
+			else if (cmp == "mob") quest->addMobRequest(reqId, count);
+			else if (cmp == "quest") quest->addQuestRequest(static_cast<int16_t>(reqId), static_cast<int8_t>(count));
 		}
 		Quest *quest;
-		int32_t reqid;
+		int32_t reqId;
 		int16_t count;
 	};
 }
@@ -76,7 +76,7 @@ namespace Functors {
 void QuestDataProvider::loadRequests() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_requests");
 	mysqlpp::UseQueryResult res = query.use();
-	int16_t questid;
+	int16_t questId;
 	int32_t reward;
 	int16_t count;
 	Quest *cur;
@@ -91,8 +91,8 @@ void QuestDataProvider::loadRequests() {
 	// TODO: Process the state when you add quest requests
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		questid = atoi(row[QuestId]);
-		cur = &quests[questid];
+		questId = atoi(row[QuestId]);
+		cur = &m_quests[questId];
 
 		reward = atoi(row[ObjectId]);
 		count = atoi(row[Count]);
@@ -105,7 +105,7 @@ void QuestDataProvider::loadRequests() {
 void QuestDataProvider::loadRequiredJobs() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_required_jobs");
 	mysqlpp::UseQueryResult res = query.use();
-	int16_t questid;
+	int16_t questId;
 	Quest *cur;
 
 	enum QuestData {
@@ -114,8 +114,8 @@ void QuestDataProvider::loadRequiredJobs() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		questid = atoi(row[QuestId]);
-		cur = &quests[questid];
+		questId = atoi(row[QuestId]);
+		cur = &m_quests[questId];
 
 		cur->addValidJob(atoi(row[JobId]));
 	}
@@ -234,18 +234,18 @@ namespace Functors {
 	};
 	struct RewardFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "master_level_only") reward->masterlevelonly = true;
+			if (cmp == "master_level_only") reward->masterLevelOnly = true;
 		}
 		QuestRewardInfo *reward;
 	};
 	struct RewardTypeFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "item") reward->isitem = true;
-			else if (cmp == "exp") reward->isexp = true;
-			else if (cmp == "mesos") reward->ismesos = true;
-			else if (cmp == "fame") reward->isfame = true;
-			else if (cmp == "skill") reward->isskill = true;
-			else if (cmp == "buff") reward->isbuff = true;
+			if (cmp == "item") reward->isItem = true;
+			else if (cmp == "exp") reward->isExp = true;
+			else if (cmp == "mesos") reward->isMesos = true;
+			else if (cmp == "fame") reward->isFame = true;
+			else if (cmp == "skill") reward->isSkill = true;
+			else if (cmp == "buff") reward->isBuff = true;
 		}
 		QuestRewardInfo *reward;
 	};
@@ -254,8 +254,8 @@ namespace Functors {
 void QuestDataProvider::loadRewards() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM quest_rewards");
 	mysqlpp::UseQueryResult res = query.use();
-	string jobtracks;
-	int16_t questid;
+	string jobTracks;
+	int16_t questId;
 	int16_t job;
 	bool start;
 	Quest *cur;
@@ -271,11 +271,11 @@ void QuestDataProvider::loadRewards() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		questid = atoi(row[QuestId]);
-		cur = &quests[questid];
+		questId = atoi(row[QuestId]);
+		cur = &m_quests[questId];
 		rwa = QuestRewardInfo();
 		job = atoi(row[Job]);
-		jobtracks = row[JobTrackFlags];
+		jobTracks = row[JobTrackFlags];
 		start = (static_cast<string>(row[State]) == "start");
 
 		RewardTypeFlags whoo = {&rwa};
@@ -285,23 +285,23 @@ void QuestDataProvider::loadRewards() {
 
 		rwa.id = atoi(row[ObjectId]);
 		rwa.count = atoi(row[Count]);
-		rwa.masterlevel = atoi(row[MasterLevel]);
+		rwa.masterLevel = atoi(row[MasterLevel]);
 		rwa.gender = GameLogicUtilities::getGenderId(row[Gender]);
 		rwa.prop = atoi(row[Prop]);
 
-		if (job != -1 || jobtracks.length() == 0) {
+		if (job != -1 || jobTracks.length() == 0) {
 			cur->addReward(start, rwa, job);
 		}
 		else {
 			QuestJobFlags ohyeah = {cur, &rwa, start};
-			runFlags(jobtracks, ohyeah);
+			runFlags(jobTracks, ohyeah);
 		}
 	}
 }
 
-int16_t QuestDataProvider::getItemRequest(int16_t questid, int32_t itemId) {
-	if (quests.find(questid) != quests.end()) {
-		return quests[questid].getItemRequestQuantity(itemId);
+int16_t QuestDataProvider::getItemRequest(int16_t questId, int32_t itemId) {
+	if (m_quests.find(questId) != m_quests.end()) {
+		return m_quests[questId].getItemRequestQuantity(itemId);
 	}
 	return 0;
 }
@@ -314,8 +314,8 @@ void Quest::addMobRequest(int32_t mobid, int16_t quantity) {
 	mobrequests[mobid] = quantity;
 }
 
-void Quest::addQuestRequest(int16_t questid, int8_t state) {
-	questrequests[questid] = state;
+void Quest::addQuestRequest(int16_t questId, int8_t state) {
+	questrequests[questId] = state;
 }
 
 void Quest::addValidJob(int16_t jobid) {

@@ -138,28 +138,28 @@ void PlayerQuests::load() {
 	}
 }
 
-void PlayerQuests::addQuest(int16_t questid, int32_t npcid) {
-	QuestsPacket::acceptQuest(m_player, questid, npcid);
+void PlayerQuests::addQuest(int16_t questId, int32_t npcid) {
+	QuestsPacket::acceptQuest(m_player, questId, npcid);
 
-	addQuest(questid);
-	giveRewards(questid, true);
-	checkDone(m_quests[questid]);
+	addQuest(questId);
+	giveRewards(questId, true);
+	checkDone(m_quests[questId]);
 }
 
-void PlayerQuests::addQuest(int16_t questid) {
+void PlayerQuests::addQuest(int16_t questId) {
 	ActiveQuest quest;
-	quest.id = questid;
-	m_quests[questid] = quest;
-	addQuestMobs(questid);
+	quest.id = questId;
+	m_quests[questId] = quest;
+	addQuestMobs(questId);
 }
 
-void PlayerQuests::addQuestMobs(int16_t questid) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
+void PlayerQuests::addQuestMobs(int16_t questId) {
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
 	if (questinfo->hasMobRequests()) {
 		size_t index = 0;
 		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
-			m_quests[questid].kills[i->first] = 0;
-			m_mobtoquest[i->first].push_back(questid);
+			m_quests[questId].kills[i->first] = 0;
+			m_mobtoquest[i->first].push_back(questId);
 		}
 	}
 }
@@ -218,10 +218,10 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 	}
 }
 
-void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
+void PlayerQuests::finishQuest(int16_t questId, int32_t npcid) {
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
 
-	if (!giveRewards(questid, false)) {
+	if (!giveRewards(questId, false)) {
 		// Failed, don't complete the quest yet
 		return;
 	}
@@ -229,7 +229,7 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 	if (questinfo->hasMobRequests()) {
 		for (MobRequests::iterator i = questinfo->getMobBegin(); i != questinfo->getMobEnd(); i++) {
 			for (size_t k = 0; k < m_mobtoquest[i->first].size(); k++) {
-				if (m_mobtoquest[i->first][k] == questid) {
+				if (m_mobtoquest[i->first][k] == questId) {
 					if (m_mobtoquest[i->first].size() == 1) {
 						// Only one quest for this mob
 						m_mobtoquest.erase(i->first);
@@ -242,14 +242,14 @@ void PlayerQuests::finishQuest(int16_t questid, int32_t npcid) {
 			}
 		}
 	}
-	m_quests.erase(questid);
+	m_quests.erase(questId);
 	int64_t endtime = TimeUtilities::getServerTime();
-	m_completed[questid] = endtime;
-	QuestsPacket::questFinish(m_player, questid, npcid, questinfo->getNextQuest(), endtime);
+	m_completed[questId] = endtime;
+	QuestsPacket::questFinish(m_player, questId, npcid, questinfo->getNextQuest(), endtime);
 }
 
-bool PlayerQuests::giveRewards(int16_t questid, bool start) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questid);
+bool PlayerQuests::giveRewards(int16_t questId, bool start) {
+	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
 
 	if (!questinfo->hasRewards()) {
 		return true;
@@ -284,11 +284,11 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 			jobrewards = true;
 		}
 	}
-	if (!checkRewards(questid, startiter, enditer) || (jobrewards && !checkRewards(questid, sjobiter, ejobiter))) {
+	if (!checkRewards(questId, startiter, enditer) || (jobrewards && !checkRewards(questId, sjobiter, ejobiter))) {
 		return false;
 	}
 	for (iter = startiter; iter != enditer; iter++) { // Give all applicable rewards
-		if (iter->isitem && iter->prop > 0) {
+		if (iter->isItem && iter->prop > 0) {
 			chance += iter->prop;
 			items.push_back(*iter);
 		}
@@ -298,7 +298,7 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	}
 	if (jobrewards) {
 		for (iter = sjobiter; iter != ejobiter; iter++) {
-			if (iter->isitem && iter->prop > 0) {
+			if (iter->isItem && iter->prop > 0) {
 				chance += iter->prop;
 				items.push_back(*iter);
 			}
@@ -330,12 +330,12 @@ bool PlayerQuests::giveRewards(int16_t questid, bool start) {
 	return true;
 }
 
-bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewards::iterator &end) {
+bool PlayerQuests::checkRewards(int16_t questId, Rewards::iterator &begin, Rewards::iterator &end) {
 	boost::array<uint8_t, Inventories::InventoryCount> neededslots = {0};
 	boost::array<bool, Inventories::InventoryCount> chanceitem = {false};
 
 	for (Rewards::iterator iter = begin; iter != end; iter++) { // Loop through rewards, make sure it can be done
-		if (iter->isitem) {
+		if (iter->isItem) {
 			uint8_t inv = GameLogicUtilities::getInventory(iter->id) - 1;
 			if (iter->count < 0) continue;
 
@@ -347,18 +347,18 @@ bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewar
 				neededslots[inv]++;
 			}
 		}
-		else if (iter->ismesos) {
+		else if (iter->isMesos) {
 			int32_t m = iter->id + m_player->getInventory()->getMesos();
 			if (m < 0) {
 				// Will trigger for both too low and too high
-				QuestsPacket::questError(m_player, questid, QuestsPacket::ErrorNotEnoughMesos);
+				QuestsPacket::questError(m_player, questId, QuestsPacket::ErrorNotEnoughMesos);
 				return false;
 			}
 		}
 	}
 	for (size_t i = 0; i < Inventories::InventoryCount; i++) {
 		if (neededslots[i] != 0 && m_player->getInventory()->getOpenSlotsNum(i + 1) < neededslots[i]) {
-			QuestsPacket::questError(m_player, questid, QuestsPacket::ErrorNoItemSpace);
+			QuestsPacket::questError(m_player, questId, QuestsPacket::ErrorNoItemSpace);
 			return false;
 		}
 	}
@@ -366,7 +366,7 @@ bool PlayerQuests::checkRewards(int16_t questid, Rewards::iterator &begin, Rewar
 }
 
 bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
-	if (info.isitem) {
+	if (info.isItem) {
 		if (info.count > 0) {
 			QuestsPacket::giveItem(m_player, info.id, info.count);
 			Inventory::addNewItem(m_player, info.id, info.count);
@@ -380,42 +380,42 @@ bool PlayerQuests::giveRewards(const QuestRewardInfo &info) {
 			Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
 		}
 	}
-	else if (info.isexp) {
+	else if (info.isExp) {
 		m_player->getStats()->giveExp(info.id * ChannelServer::Instance()->getQuestExpRate(), true);
 	}
-	else if (info.ismesos) {
+	else if (info.isMesos) {
 		m_player->getInventory()->modifyMesos(info.id);
 		QuestsPacket::giveMesos(m_player, info.id);
 	}
-	else if (info.isfame) {
+	else if (info.isFame) {
 		m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<int16_t>(info.id));
 		QuestsPacket::giveFame(m_player, info.id);
 	}
-	else if (info.isbuff) {
+	else if (info.isBuff) {
 		Inventory::useItem(m_player, info.id);
 	}
-	else if (info.isskill) {
-		m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterlevel), true);
-		if (!info.masterlevelonly && info.count) {
+	else if (info.isSkill) {
+		m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterLevel), true);
+		if (!info.masterLevelOnly && info.count) {
 			m_player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
 		}
 	}
 	return true;
 }
 
-void PlayerQuests::removeQuest(int16_t questid) {
-	if (isQuestActive(questid)) {
-		m_quests.erase(questid);
-		QuestsPacket::forfeitQuest(m_player, questid);
+void PlayerQuests::removeQuest(int16_t questId) {
+	if (isQuestActive(questId)) {
+		m_quests.erase(questId);
+		QuestsPacket::forfeitQuest(m_player, questId);
 	}
 }
 
-bool PlayerQuests::isQuestActive(int16_t questid) {
-	return m_quests.find(questid) != m_quests.end();
+bool PlayerQuests::isQuestActive(int16_t questId) {
+	return m_quests.find(questId) != m_quests.end();
 }
 
-bool PlayerQuests::isQuestComplete(int16_t questid) {
-	return m_completed.find(questid) != m_completed.end();
+bool PlayerQuests::isQuestComplete(int16_t questId) {
+	return m_completed.find(questId) != m_completed.end();
 }
 
 void PlayerQuests::connectData(PacketCreator &packet) {

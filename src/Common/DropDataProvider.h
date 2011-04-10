@@ -26,26 +26,26 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct DropInfo {
-	DropInfo() : ismesos(false), itemId(0), minamount(0), maxamount(0), questid(0), chance(0) { }
-	bool ismesos;
+	DropInfo() : isMesos(false), itemId(0), minAmount(0), maxAmount(0), questId(0), chance(0) { }
+	bool isMesos;
 	int32_t itemId;
-	int32_t minamount;
-	int32_t maxamount;
-	int16_t questid;
+	int32_t minAmount;
+	int32_t maxAmount;
+	int16_t questId;
 	uint32_t chance;
 };
 typedef vector<DropInfo> DropsInfo;
 
 struct GlobalDrop {
-	GlobalDrop() : ismesos(false), itemId(0), minamount(0), maxamount(0), minlevel(1), maxlevel(200), continent(-1), questid(0), chance(0) { }
-	bool ismesos;
+	GlobalDrop() : isMesos(false), itemId(0), minAmount(0), maxAmount(0), minLevel(1), maxLevel(200), continent(-1), questId(0), chance(0) { }
+	bool isMesos;
 	int32_t itemId;
-	int32_t minamount;
-	int32_t maxamount;
-	uint8_t minlevel;
-	uint8_t maxlevel;
+	int32_t minAmount;
+	int32_t maxAmount;
+	uint8_t minLevel;
+	uint8_t maxLevel;
 	int8_t continent;
-	int16_t questid;
+	int16_t questId;
 	uint32_t chance;
 };
 typedef vector<GlobalDrop> GlobalDrops;
@@ -59,9 +59,9 @@ public:
 	}
 	void loadData();
 
-	bool hasDrops(int32_t oid) { return (dropdata.find(oid) != dropdata.end()); }
-	DropsInfo getDrops(int32_t objectid) { return dropdata[objectid]; }
-	GlobalDrops * getGlobalDrops() { return (globaldrops.size() > 0 ? &globaldrops : nullptr); }
+	bool hasDrops(int32_t objectId) { return (m_dropInfo.find(objectId) != m_dropInfo.end()); }
+	DropsInfo getDrops(int32_t objectId) { return m_dropInfo[objectId]; }
+	GlobalDrops * getGlobalDrops() { return (m_globalDrops.size() > 0 ? &m_globalDrops : nullptr); }
 private:
 	DropDataProvider() {}
 	static DropDataProvider *singleton;
@@ -69,6 +69,6 @@ private:
 	void loadDrops();
 	void loadGlobalDrops();
 
-	unordered_map<int32_t, DropsInfo> dropdata;
-	GlobalDrops globaldrops;
+	unordered_map<int32_t, DropsInfo> m_dropInfo;
+	GlobalDrops m_globalDrops;
 };

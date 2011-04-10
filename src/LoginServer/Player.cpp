@@ -29,10 +29,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Player::Player() :
-	status(PlayerStatus::NotLoggedIn),
-	invalid_logins(0),
-	quiet_ban_time(0),
-	quiet_ban_reason(0)
+	m_status(PlayerStatus::NotLoggedIn),
+	m_invalidLogins(0),
+	m_quietBanTime(0),
+	m_quietBanReason(0)
 {
 }
 

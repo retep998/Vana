@@ -123,11 +123,11 @@ public:
 	}
 	void loadData();
 
-	bool mobExists(int32_t mobid) { return mobinfo.find(mobid) != mobinfo.end(); }
-	MobInfo getMobInfo(int32_t mobid) { return mobinfo[mobid]; }
-	MobAttackInfo * getMobAttack(int32_t mobid, uint8_t index);
-	MobSkillInfo * getMobSkill(int32_t mobid, uint8_t index);
-	uint8_t getSkillCount(int32_t mobid);
+	bool mobExists(int32_t mobId) { return m_mobInfo.find(mobId) != m_mobInfo.end(); }
+	MobInfo getMobInfo(int32_t mobId) { return m_mobInfo[mobId]; }
+	MobAttackInfo * getMobAttack(int32_t mobId, uint8_t index);
+	MobSkillInfo * getMobSkill(int32_t mobId, uint8_t index);
+	uint8_t getSkillCount(int32_t mobId);
 private:
 	MobDataProvider() {}
 	static MobDataProvider *singleton;
@@ -136,9 +136,9 @@ private:
 	void loadAttacks();
 	void loadSkills();
 	void loadSummons();
-	int8_t getElemModifier(const string &elemattr);
+	int8_t getElemModifier(const string &elemAttr);
 
-	unordered_map<int32_t, MobInfo> mobinfo;
-	unordered_map<int32_t, vector<MobAttackInfo>> attacks;
-	unordered_map<int32_t, vector<MobSkillInfo>> skills;
+	unordered_map<int32_t, MobInfo> m_mobInfo;
+	unordered_map<int32_t, vector<MobAttackInfo>> m_attacks;
+	unordered_map<int32_t, vector<MobSkillInfo>> m_skills;
 };

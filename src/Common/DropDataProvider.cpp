@@ -39,14 +39,14 @@ void DropDataProvider::loadData() {
 namespace Functors {
 	struct DropFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->ismesos = true;
+			if (cmp == "is_mesos") drop->isMesos = true;
 		}
 		DropInfo *drop;
 	};
 }
 
 void DropDataProvider::loadDrops() {
-	dropdata.clear();
+	m_dropInfo.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	DropInfo drop;
@@ -68,11 +68,11 @@ void DropDataProvider::loadDrops() {
 
 		dropper = atoi(row[DropperId]);
 		drop.itemId = atoi(row[ItemId]);
-		drop.minamount = atoi(row[Minimum]);
-		drop.maxamount = atoi(row[Maximum]);
-		drop.questid = atoi(row[Quest]);
+		drop.minAmount = atoi(row[Minimum]);
+		drop.maxAmount = atoi(row[Maximum]);
+		drop.questId = atoi(row[Quest]);
 		drop.chance = atoi(row[Chance]);
-		dropdata[dropper].push_back(drop);
+		m_dropInfo[dropper].push_back(drop);
 	}
 
 	query << "SELECT * FROM user_drop_data ORDER BY dropperid";
@@ -90,15 +90,15 @@ void DropDataProvider::loadDrops() {
 			dropped = false;
 		}
 		drop.itemId = atoi(row[ItemId]);
-		drop.minamount = atoi(row[Minimum]);
-		drop.maxamount = atoi(row[Maximum]);
-		drop.questid = atoi(row[Quest]);
+		drop.minAmount = atoi(row[Minimum]);
+		drop.maxAmount = atoi(row[Maximum]);
+		drop.questId = atoi(row[Quest]);
 		drop.chance = atoi(row[Chance]);
-		if (!dropped && dropdata.find(dropper) != dropdata.end()) {
-			dropdata.erase(dropper);
+		if (!dropped && m_dropInfo.find(dropper) != m_dropInfo.end()) {
+			m_dropInfo.erase(dropper);
 			dropped = true;
 		}
-		dropdata[dropper].push_back(drop);
+		m_dropInfo[dropper].push_back(drop);
 		lastdropperid = dropper;
 	}
 }
@@ -106,14 +106,14 @@ void DropDataProvider::loadDrops() {
 namespace Functors {
 	struct GlobalDropFlags {
 		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->ismesos = true;
+			if (cmp == "is_mesos") drop->isMesos = true;
 		}
 		GlobalDrop *drop;
 	};
 }
 
 void DropDataProvider::loadGlobalDrops() {
-	globaldrops.clear();
+	m_globalDrops.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_global_data");
 	mysqlpp::UseQueryResult res = query.use();
 	GlobalDrop drop;
@@ -133,12 +133,12 @@ void DropDataProvider::loadGlobalDrops() {
 
 		drop.continent = atoi(row[Continent]);
 		drop.itemId = atoi(row[ItemId]);
-		drop.minamount = atoi(row[Minimum]);
-		drop.maxamount = atoi(row[Maximum]);
-		drop.minlevel = atoi(row[MinLevel]);
-		drop.maxlevel = atoi(row[MaxLevel]);
-		drop.questid = atoi(row[Quest]);
+		drop.minAmount = atoi(row[Minimum]);
+		drop.maxAmount = atoi(row[Maximum]);
+		drop.minLevel = atoi(row[MinLevel]);
+		drop.maxLevel = atoi(row[MaxLevel]);
+		drop.questId = atoi(row[Quest]);
 		drop.chance = atoi(row[Chance]);
-		globaldrops.push_back(drop);
+		m_globalDrops.push_back(drop);
 	}
 }

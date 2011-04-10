@@ -32,7 +32,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(skillinfo.level); // Level
-	packet.add<int32_t>(skillinfo.maxlevel); // Master Level
+	packet.add<int32_t>(skillinfo.maxLevel); // Master Level
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }

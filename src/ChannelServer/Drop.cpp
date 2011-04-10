@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 
 Drop::Drop(int32_t mapid, int32_t mesos, const Pos &pos, int32_t owner, bool playerdrop) :
-questid(0),
+questId(0),
 owner(owner),
 mapid(mapid),
 mesos(mesos),
@@ -42,7 +42,7 @@ pos(pos)
 }
 
 Drop::Drop(int32_t mapid, const Item &item, const Pos &pos, int32_t owner, bool playerdrop) :
-questid(0),
+questId(0),
 owner(owner),
 mapid(mapid),
 mesos(0),

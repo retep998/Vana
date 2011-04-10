@@ -63,7 +63,7 @@ private:
 	void loadFaces();
 	ValidLook * getGender(int8_t gender);
 
-	ValidLook male;
-	ValidLook female;
-	vector<int8_t> skins;
+	ValidLook m_male;
+	ValidLook m_female;
+	vector<int8_t> m_skins;
 };

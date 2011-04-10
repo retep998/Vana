@@ -595,12 +595,13 @@ int LuaExports::removeNpc(lua_State *luaVm) {
 int LuaExports::runNpc(lua_State *luaVm) {
 	int32_t npcid = lua_tointeger(luaVm, -1);
 	string script;
-	if (lua_type(luaVm, 2) == LUA_TSTRING) { // We already have our script name
+	if (lua_type(luaVm, 2) == LUA_TSTRING) {
+		// We already have our script name
 		string specified = lua_tostring(luaVm, 2);
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+		script = ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
 	}
 	Npc *npc = new Npc(npcid, getPlayer(luaVm), script);
 	npc->run();
@@ -745,34 +746,34 @@ int LuaExports::setMaxSkillLevel(lua_State *luaVm) {
 
 // Quest
 int LuaExports::getQuestData(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, 1);
-	lua_pushstring(luaVm, getPlayer(luaVm)->getQuests()->getQuestData(questid).c_str());
+	int16_t questId = lua_tointeger(luaVm, 1);
+	lua_pushstring(luaVm, getPlayer(luaVm)->getQuests()->getQuestData(questId).c_str());
 	return 1;
 }
 
 int LuaExports::isQuestActive(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, -1);
-	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestActive(questid));
+	int16_t questId = lua_tointeger(luaVm, -1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestActive(questId));
 	return 1;
 }
 
 int LuaExports::isQuestInactive(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, -1);
-	bool active = !(getPlayer(luaVm)->getQuests()->isQuestActive(questid) || getPlayer(luaVm)->getQuests()->isQuestComplete(questid));
+	int16_t questId = lua_tointeger(luaVm, -1);
+	bool active = !(getPlayer(luaVm)->getQuests()->isQuestActive(questId) || getPlayer(luaVm)->getQuests()->isQuestComplete(questId));
 	lua_pushboolean(luaVm, active);
 	return 1;
 }
 
 int LuaExports::isQuestCompleted(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, -1);
-	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestComplete(questid));
+	int16_t questId = lua_tointeger(luaVm, -1);
+	lua_pushboolean(luaVm, getPlayer(luaVm)->getQuests()->isQuestComplete(questId));
 	return 1;
 }
 
 int LuaExports::setQuestData(lua_State *luaVm) {
-	int16_t questid = lua_tointeger(luaVm, 1);
+	int16_t questId = lua_tointeger(luaVm, 1);
 	string data = lua_tostring(luaVm, 2);
-	getPlayer(luaVm)->getQuests()->setQuestData(questid, data);
+	getPlayer(luaVm)->getQuests()->setQuestData(questId, data);
 	return 0;
 }
 

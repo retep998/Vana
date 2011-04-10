@@ -29,8 +29,8 @@ BeautyDataProvider * BeautyDataProvider::singleton = nullptr;
 void BeautyDataProvider::loadData() {
 	loadSkins();
 
-	male.clear();
-	female.clear();
+	m_male.clear();
+	m_female.clear();
 
 	loadHair();
 	loadFaces();
@@ -38,7 +38,7 @@ void BeautyDataProvider::loadData() {
 
 void BeautyDataProvider::loadSkins() {
 	std::cout << std::setw(outputWidth) << std::left << "Initializing Skins... ";
-	skins.clear();
+	m_skins.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_skin_data ORDER BY skinid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 
@@ -47,7 +47,7 @@ void BeautyDataProvider::loadSkins() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		skins.push_back(atoi(row[Id]));
+		m_skins.push_back(atoi(row[Id]));
 	}
 	std::cout << "DONE" << std::endl;
 }
@@ -97,7 +97,7 @@ void BeautyDataProvider::loadFaces() {
 }
 
 int8_t BeautyDataProvider::getRandomSkin() {
-	return skins[Randomizer::Instance()->randInt(skins.size() - 1)];
+	return m_skins[Randomizer::Instance()->randInt(m_skins.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomHair(int8_t gender) {
@@ -111,7 +111,7 @@ int32_t BeautyDataProvider::getRandomFace(int8_t gender) {
 }
 
 vector<int8_t> BeautyDataProvider::getSkins() {
-	return skins;
+	return m_skins;
 }
 
 vector<int32_t> BeautyDataProvider::getHair(int8_t gender) {
@@ -148,8 +148,8 @@ bool BeautyDataProvider::isValidFace(int8_t gender, int32_t face) {
 
 bool BeautyDataProvider::isValidSkin(int8_t skin) {
 	bool valid = false;
-	for (size_t i = 0; i < skins.size(); i++) {
-		if (skin == skins[i]) {
+	for (size_t i = 0; i < m_skins.size(); i++) {
+		if (skin == m_skins[i]) {
 			valid = true;
 			break;
 		}
@@ -158,7 +158,8 @@ bool BeautyDataProvider::isValidSkin(int8_t skin) {
 }
 
 ValidLook * BeautyDataProvider::getGender(int8_t gender) {
-	if (gender == Gender::Female)  // Female
-		return &female;
-	return &male;
+	if (gender == Gender::Female) {
+		return &m_female;
+	}
+	return &m_male;
 }

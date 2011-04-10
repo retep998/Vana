@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "RankingCalculator.h"
 #include "Database.h"
-#include "TimeUtilities.h"
 #include "Timer.h"
 #include "TimerThread.h"
 #include "TimeUtilities.h"
@@ -36,7 +35,7 @@ using std::tr1::bind;
 
 void RankingCalculator::setTimer() {
 	new Timer::Timer(RankingCalculator::runThread,
-		Timer::Id(Timer::Types::RankTimer, 0, 0), 0, TimeUtilities::nthSecondOfHour(0), 3600000);
+		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::nthSecondOfHour(0), 3600000);
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
@@ -50,12 +49,12 @@ void RankingCalculator::all() {
 	std::cout << std::setw(outputWidth) << std::left << "Calculating rankings... ";
 	clock_t startTime = TimeUtilities::getTickCount();
 
-	RankingCalculator::overall();
-	RankingCalculator::world();
-	RankingCalculator::job();
-	RankingCalculator::fame();
+	overall();
+	world();
+	job();
+	fame();
 
-	float loadingTime = (TimeUtilities::getTickCount() - startTime) / (float) 1000;
+	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
 	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
 }
 

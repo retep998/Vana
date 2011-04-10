@@ -26,18 +26,18 @@ using std::tr1::unordered_map;
 using std::vector;
 
 struct EquipInfo {
-	EquipInfo() : tradeblockonequip(false), validslots(0) { }
+	EquipInfo() : tradeBlockOnEquip(false), validSlots(0) { }
 
-	bool tradeblockonequip;
+	bool tradeBlockOnEquip;
 	int8_t slots;
-	int8_t attackspeed;
+	int8_t attackSpeed;
 	int8_t healing;
-	uint8_t tamingmob;
-	uint8_t icedamage;
-	uint8_t firedamage;
-	uint8_t lightningdamage;
-	uint8_t poisondamage;
-	uint8_t elementaldefault;
+	uint8_t tamingMob;
+	uint8_t iceDamage;
+	uint8_t fireDamage;
+	uint8_t lightningDamage;
+	uint8_t poisonDamage;
+	uint8_t elementalDefault;
 	int16_t istr;
 	int16_t idex;
 	int16_t iint;
@@ -53,13 +53,13 @@ struct EquipInfo {
 	int16_t ihand;
 	int16_t ijump;
 	int16_t ispeed;
-	int16_t reqstr;
-	int16_t reqdex;
-	int16_t reqint;
-	int16_t reqluk;
-	int16_t reqfame;
-	int64_t validslots;
-	vector<int8_t> validjobs;
+	int16_t reqStr;
+	int16_t reqDex;
+	int16_t reqInt;
+	int16_t reqLuk;
+	int16_t reqFame;
+	int64_t validSlots;
+	vector<int8_t> validJobs;
 	double traction;
 };
 
@@ -74,8 +74,8 @@ public:
 
 	void setEquipStats(Item *equip, bool random);
 	bool canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame);
-	bool validSlot(int32_t equipid, int16_t target);
-	int8_t getSlots(int32_t equipid) { return getEquipInfo(equipid)->slots; }
+	bool validSlot(int32_t equipId, int16_t target);
+	int8_t getSlots(int32_t equipId) { return getEquipInfo(equipId)->slots; }
 private:
 	EquipDataProvider() { }
 	static EquipDataProvider *singleton;
@@ -83,7 +83,7 @@ private:
 	void loadEquips();
 	int16_t getStatVariance(uint16_t amount);
 	int16_t getRandomStat(int16_t equipAmount, uint16_t variance);
-	EquipInfo * getEquipInfo(int32_t equipid) { return &equips[equipid]; }
+	EquipInfo * getEquipInfo(int32_t equipId) { return &m_equipInfo[equipId]; }
 
-	unordered_map<int32_t, EquipInfo> equips;
+	unordered_map<int32_t, EquipInfo> m_equipInfo;
 };

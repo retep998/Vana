@@ -36,18 +36,18 @@ struct Buff {
 };
 
 struct BuffInfo {
-	BuffInfo() : itemval(0), hasmapval(false), hasmapentry(false), useval(false) { }
+	BuffInfo() : itemVal(0), hasMapVal(false), hasmapentry(false), useVal(false) { }
 	Buff buff;
-	int16_t itemval;
-	bool hasmapval;
+	int16_t itemVal;
+	bool hasMapVal;
 	bool hasmapentry;
-	bool useval;
+	bool useVal;
 };
 
 struct BuffMapInfo {
-	BuffMapInfo() : useval(false) { }
+	BuffMapInfo() : useVal(false) { }
 	Buff buff;
-	bool useval;
+	bool useVal;
 };
 
 struct BuffAct {
@@ -80,14 +80,14 @@ public:
 	void loadData();
 	void addItemInfo(int32_t itemId, const ConsumeInfo &cons);
 
-	bool isBuff(int32_t skillId) { return (skillsinfo.find(skillId) != skillsinfo.end()); }
-	bool isDebuff(uint8_t skillId) { return (mobskillsinfo.find(skillId) != mobskillsinfo.end()); }
-	SkillInfo * getSkillInfo(int32_t skillId) { return &skillsinfo[skillId]; }
-	MobAilmentInfo * getMobSkillInfo(uint8_t skillId) { return (mobskillsinfo.find(skillId) != mobskillsinfo.end() ? &mobskillsinfo[skillId] : nullptr); }
+	bool isBuff(int32_t skillId) { return (m_skillInfo.find(skillId) != m_skillInfo.end()); }
+	bool isDebuff(uint8_t skillId) { return (m_mobSkillInfo.find(skillId) != m_mobSkillInfo.end()); }
+	SkillInfo * getSkillInfo(int32_t skillId) { return &m_skillInfo[skillId]; }
+	MobAilmentInfo * getMobSkillInfo(uint8_t skillId) { return (m_mobSkillInfo.find(skillId) != m_mobSkillInfo.end() ? &m_mobSkillInfo[skillId] : nullptr); }
 private:
 	BuffDataProvider() { }
 	static BuffDataProvider *singleton;
 
-	unordered_map<int32_t, SkillInfo> skillsinfo;
-	unordered_map<uint8_t, MobAilmentInfo> mobskillsinfo;
+	unordered_map<int32_t, SkillInfo> m_skillInfo;
+	unordered_map<uint8_t, MobAilmentInfo> m_mobSkillInfo;
 };

@@ -34,7 +34,7 @@ void PlayerSkills::load() {
 
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		skill.level = (uint8_t) res[i][1];
-		skill.maxlevel = (uint8_t) res[i][2];
+		skill.maxLevel = (uint8_t) res[i][2];
 		playerskills[res[i][0]] = skill;
 	}
 
@@ -61,7 +61,7 @@ void PlayerSkills::save(bool savecooldowns) {
 		else {
 			query << ",(";
 		}
-		query << player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxlevel << ")";
+		query << player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxLevel << ")";
 	}
 	if (!firstrun)
 		query.exec();
@@ -109,8 +109,8 @@ uint8_t PlayerSkills::getSkillLevel(int32_t skillId) {
 	return 0;
 }
 
-void PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxlevel, bool sendpacket) { // Set max level for 4th job skills
-	playerskills[skillId].maxlevel = maxlevel;
+void PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendpacket) { // Set max level for 4th job skills
+	playerskills[skillId].maxLevel = maxLevel;
 
 	if (sendpacket) {
 		player->getSkills()->addSkillLevel(skillId, 0);
@@ -120,7 +120,7 @@ void PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxlevel, bool send
 uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillId) {
 	// Get max level for 4th job skills
 	if (playerskills.find(skillId) != playerskills.end())
-		return playerskills[skillId].maxlevel;
+		return playerskills[skillId].maxLevel;
 	return 0;
 }
 
@@ -420,7 +420,7 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
 		if (GameLogicUtilities::isFourthJobSkill(iter->first))
-			packet.add<int32_t>(iter->second.maxlevel); // Max Level for 4th job skills
+			packet.add<int32_t>(iter->second.maxLevel); // Max Level for 4th job skills
 	}
 	// Cooldowns
 	packet.add<uint16_t>(cooldowns.size());

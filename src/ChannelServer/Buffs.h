@@ -45,7 +45,7 @@ struct ActiveMapBuff {
 	vector<uint8_t> bytes;
 	vector<int8_t> types;
 	vector<int16_t> values;
-	vector<bool> usevals;
+	vector<bool> useVals;
 	boost::array<uint8_t, BuffBytes::ByteQuantity> typelist;
 	bool debuff;
 };

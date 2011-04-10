@@ -91,14 +91,14 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						// Already did this item
 						continue;
 					}
-					int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(itemId);
+					int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId);
 					int32_t current_amount = target->getInventory()->getItemAmount(itemId);
-					int32_t last_slot = (current_amount % maxslot); // Get the number of items in the last slot
+					int32_t last_slot = (current_amount % maxSlot); // Get the number of items in the last slot
 					int32_t item_sum = last_slot + added[itemId];
 					bool needslots = false;
 					if (last_slot > 0) {
 						// Items in the last slot, potential for needing slots
-						if (item_sum > maxslot) {
+						if (item_sum > maxSlot) {
 							needslots = true;
 						}
 					}
@@ -107,8 +107,8 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						needslots = true;
 					}
 					if (needslots) {
-						uint8_t numslots = (uint8_t)(item_sum / maxslot);
-						uint8_t remainder = (uint8_t)(item_sum % maxslot);
+						uint8_t numslots = (uint8_t)(item_sum / maxSlot);
+						uint8_t remainder = (uint8_t)(item_sum % maxSlot);
 						if (remainder > 0) {
 							totals[inv - 1]++;
 						}

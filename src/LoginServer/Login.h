@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class Player;
 class PacketReader;
+class Player;
 
 namespace Login {
 	void loginUser(Player *player, PacketReader &packet);

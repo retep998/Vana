@@ -388,7 +388,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 
 void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalamp) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
-	int16_t cooltime = skill->cooltime;
+	int16_t coolTime = skill->coolTime;
 	int16_t mpuse = skill->mp;
 	int16_t hpuse = skill->hp;
 	int16_t moneyConsume = skill->moneyConsume;
@@ -412,8 +412,8 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 		player->getStats()->modifyHp(-hpuse);
 	if (item > 0)
 		Inventory::takeItem(player, item, skill->itemCount);
-	if (cooltime > 0 && skillId != Jobs::Corsair::Battleship)
-		startCooldown(player, skillId, cooltime);
+	if (coolTime > 0 && skillId != Jobs::Corsair::Battleship)
+		startCooldown(player, skillId, coolTime);
 	if (moneyConsume > 0) {
 		int16_t mesos_min = moneyConsume - (80 + level * 5);
 		int16_t mesos_max = moneyConsume + (80 + level * 5);
@@ -478,18 +478,18 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillId) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int32_t skillId, int16_t cooltime, bool initialload) {
+void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bool initialload) {
 	if (isCooling(player, skillId)) {
 		// Hacking
 		return;
 	}
 	if (!initialload) {
-		SkillsPacket::sendCooldown(player, skillId, cooltime);
-		player->getSkills()->addCooldown(skillId, cooltime);
+		SkillsPacket::sendCooldown(player, skillId, coolTime);
+		player->getSkills()->addCooldown(skillId, coolTime);
 	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillId),
 		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
-		player->getTimers(), TimeUtilities::fromNow(cooltime * 1000));
+		player->getTimers(), TimeUtilities::fromNow(coolTime * 1000));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillId) {
@@ -511,10 +511,10 @@ bool Skills::isCooling(Player *player, int32_t skillId) {
 }
 
 int16_t Skills::getCooldownTimeLeft(Player *player, int32_t skillId) {
-	int16_t cooltime = 0;
+	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
 		Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
-		cooltime = static_cast<int16_t>(player->getTimers()->checkTimer(id));
+		coolTime = static_cast<int16_t>(player->getTimers()->checkTimer(id));
 	}
-	return cooltime;
+	return coolTime;
 }

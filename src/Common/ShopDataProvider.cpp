@@ -39,11 +39,11 @@ void ShopDataProvider::loadData() {
 }
 
 void ShopDataProvider::loadShops() {
-	shops.clear();
+	m_shops.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
-	int32_t shopid;
+	int32_t shopId;
 	MYSQL_ROW row;
 
 	enum ShopData {
@@ -52,11 +52,11 @@ void ShopDataProvider::loadShops() {
 	};
 
 	while (row = res.fetch_raw_row()) {
-		shopid = atoi(row[ShopId]);
+		shopId = atoi(row[ShopId]);
 
 		shop.npc = atoi(row[NpcId]);
-		shop.rechargetier = atoi(row[RechargeTier]);
-		shops[shopid] = shop;
+		shop.rechargeTier = atoi(row[RechargeTier]);
+		m_shops[shopId] = shop;
 	}
 
 	query << "SELECT * FROM shop_items ORDER BY shopid, sort DESC";
@@ -69,13 +69,13 @@ void ShopDataProvider::loadShops() {
 	};
 
 	while (row = res.fetch_raw_row()) {
-		shopid = atoi(row[ItemShopId]);
+		shopId = atoi(row[ItemShopId]);
 
 		item.itemId = atoi(row[ItemId]);
 		item.quantity = atoi(row[Quantity]);
 		item.price = atoi(row[Price]);
 
-		shops[shopid].items.push_back(item);
+		m_shops[shopId].items.push_back(item);
 	}
 }
 
@@ -83,7 +83,7 @@ void ShopDataProvider::loadUserShops() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM user_shop_data");
 	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
-	int32_t shopid;
+	int32_t shopId;
 	MYSQL_ROW row;
 
 	enum ShopData {
@@ -92,14 +92,14 @@ void ShopDataProvider::loadUserShops() {
 	};
 
 	while (row = res.fetch_raw_row()) {
-		shopid = atoi(row[ShopId]);
+		shopId = atoi(row[ShopId]);
 
 		shop.npc = atoi(row[NpcId]);
-		shop.rechargetier = atoi(row[RechargeTier]);
-		if (shops.find(shopid) != shops.end()) {
-			shops.erase(shopid);
+		shop.rechargeTier = atoi(row[RechargeTier]);
+		if (m_shops.find(shopId) != m_shops.end()) {
+			m_shops.erase(shopId);
 		}
-		shops[shopid] = shop;
+		m_shops[shopId] = shop;
 	}
 
 	query << "SELECT * FROM user_shop_items ORDER BY shopid, sort DESC";
@@ -112,21 +112,21 @@ void ShopDataProvider::loadUserShops() {
 	};
 
 	while (row = res.fetch_raw_row()) {
-		shopid = atoi(row[ItemShopId]);
+		shopId = atoi(row[ItemShopId]);
 
 		item.itemId = atoi(row[ItemId]);
 		item.quantity = atoi(row[Quantity]);
 		item.price = atoi(row[Price]);
 
-		shops[shopid].items.push_back(item);
+		m_shops[shopId].items.push_back(item);
 	}
 }
 
 void ShopDataProvider::loadRechargeTiers() {
-	rechargecosts.clear();
+	m_rechargeCosts.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_recharge_data");
 	mysqlpp::UseQueryResult res = query.use();
-	int8_t rechargetier;
+	int8_t rechargeTier;
 	int32_t itemId;
 	double price;
 
@@ -136,20 +136,20 @@ void ShopDataProvider::loadRechargeTiers() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		rechargetier = atoi(row[TierId]);
+		rechargeTier = atoi(row[TierId]);
 		itemId = atoi(row[ItemId]);
 		price = atof(row[Price]);
 
-		rechargecosts[rechargetier][itemId] = price;
+		m_rechargeCosts[rechargeTier][itemId] = price;
 	}
 }
 
-void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCreator &packet) {
-	ShopInfo &info = shops[id];
-	int8_t rechargetier = info.rechargetier;
-	map<int32_t, double> &rechargables = rechargecosts[rechargetier];
-	int16_t shopcount = info.items.size() + rechargables.size();
-	unordered_map<int32_t, bool> idsdone;
+void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) {
+	ShopInfo &info = m_shops[id];
+	int8_t rechargeTier = info.rechargeTier;
+	map<int32_t, double> &rechargables = m_rechargeCosts[rechargeTier];
+	int16_t shopCount = info.items.size() + rechargables.size();
+	unordered_map<int32_t, bool> idsDone;
 
 	packet.addHeader(SMSG_SHOP);
 	packet.add<int32_t>(info.npc);
@@ -161,10 +161,10 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 		packet.add<int32_t>(item.itemId);
 		packet.add<int32_t>(item.price);
 		if (GameLogicUtilities::isRechargeable(item.itemId)) {
-			idsdone[item.itemId] = true;
+			idsDone[item.itemId] = true;
 			double cost = 0.0;
-			if (rechargetier != 0) {
-				shopcount--;
+			if (rechargeTier != 0) {
+				shopCount--;
 				if (rechargables.find(item.itemId) != rechargables.end()) {
 					cost = rechargables[item.itemId];
 				}
@@ -174,48 +174,48 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeablebonus, PacketCre
 		else {
 			packet.add<int16_t>(item.quantity); // Item amount
 		}
-		int16_t maxslot = ItemDataProvider::Instance()->getMaxSlot(item.itemId);
+		int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(item.itemId);
 		if (GameLogicUtilities::isRechargeable(item.itemId)) {
-			maxslot += rechargeablebonus;
+			maxSlot += rechargeableBonus;
 		}
-		packet.add<int16_t>(maxslot);
+		packet.add<int16_t>(maxSlot);
 	}
 
 	// Rechargables
 	for (map<int32_t, double>::iterator iter = rechargables.begin(); iter != rechargables.end(); ++iter) {
-		if (idsdone.find(iter->first) == idsdone.end()) {
+		if (idsDone.find(iter->first) == idsDone.end()) {
 			packet.add<int32_t>(iter->first);
 			packet.add<int32_t>(0);
 			packet.add<double>(iter->second);
-			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + rechargeablebonus);
+			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(iter->first) + rechargeableBonus);
 		}
 	}
 
-	packet.set<int16_t>(shopcount, 6);
+	packet.set<int16_t>(shopCount, 6);
 }
 
-int32_t ShopDataProvider::getPrice(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> &s = shops[shopid].items;
-	return (shopindex < s.size() ? s[shopindex].price : 0);
+int32_t ShopDataProvider::getPrice(int32_t shopId, uint16_t shopIndex) {
+	vector<ShopItemInfo> &s = m_shops[shopId].items;
+	return (shopIndex < s.size() ? s[shopIndex].price : 0);
 }
 
-int16_t ShopDataProvider::getAmount(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> &s = shops[shopid].items;
-	return (shopindex < s.size() ? s[shopindex].quantity : 0);
+int16_t ShopDataProvider::getAmount(int32_t shopId, uint16_t shopIndex) {
+	vector<ShopItemInfo> &s = m_shops[shopId].items;
+	return (shopIndex < s.size() ? s[shopIndex].quantity : 0);
 }
 
-int32_t ShopDataProvider::getItemId(int32_t shopid, uint16_t shopindex) {
-	vector<ShopItemInfo> &s = shops[shopid].items;
-	return (shopindex < s.size() ? s[shopindex].itemId : 0);
+int32_t ShopDataProvider::getItemId(int32_t shopId, uint16_t shopIndex) {
+	vector<ShopItemInfo> &s = m_shops[shopId].items;
+	return (shopIndex < s.size() ? s[shopIndex].itemId : 0);
 }
 
-int32_t ShopDataProvider::getRechargeCost(int32_t shopid, int32_t itemId, int16_t amount) {
+int32_t ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) {
 	int32_t cost = 1;
-	if (shops.find(shopid) != shops.end()) {
-		int8_t tier = shops[shopid].rechargetier;
-		if (rechargecosts.find(tier) != rechargecosts.end()) {
-			if (rechargecosts[tier].find(itemId) != rechargecosts[tier].end()) {
-				cost = -1 * static_cast<int32_t>(rechargecosts[tier][itemId] * amount);
+	if (m_shops.find(shopId) != m_shops.end()) {
+		int8_t tier = m_shops[shopId].rechargeTier;
+		if (m_rechargeCosts.find(tier) != m_rechargeCosts.end()) {
+			if (m_rechargeCosts[tier].find(itemId) != m_rechargeCosts[tier].end()) {
+				cost = -1 * static_cast<int32_t>(m_rechargeCosts[tier][itemId] * amount);
 			}
 		}
 	}

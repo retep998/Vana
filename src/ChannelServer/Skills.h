@@ -41,7 +41,7 @@ namespace Skills {
 	void heal(Player *player, int16_t value, int32_t skillId);
 	void hurt(Player *player, int16_t value, int32_t skillId);
 	void stopSkill(Player *player, int32_t skillId, bool fromTimer = false);
-	void startCooldown(Player *player, int32_t skillId, int16_t cooltime, bool initialload = false);
+	void startCooldown(Player *player, int32_t skillId, int16_t coolTime, bool initialload = false);
 	void stopCooldown(Player *player, int32_t skillId);
 	bool isCooling(Player *player, int32_t skillId);
 	int16_t getCooldownTimeLeft(Player *player, int32_t skillId);

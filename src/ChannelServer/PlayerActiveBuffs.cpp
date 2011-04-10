@@ -185,7 +185,7 @@ void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
 		if ((m_mapbuffs.types[byte] & buff.types[i]) == 0)
 			m_mapbuffs.types[byte] += buff.types[i];
 		MapEntryVals val;
-		val.use = buff.usevals[i];
+		val.use = buff.useVals[i];
 		if (val.use) {
 			if (buff.debuff) {
 				val.debuff = true;
@@ -260,8 +260,8 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	if (m_battleshiphp <= 0) {
 		m_battleshiphp = 0;
 		int32_t skillId = Jobs::Corsair::Battleship;
-		int16_t cooltime = getActiveSkillInfo(skillId)->cooltime;
-		Skills::startCooldown(m_player, skillId, cooltime);
+		int16_t coolTime = getActiveSkillInfo(skillId)->coolTime;
+		Skills::startCooldown(m_player, skillId, coolTime);
 		Skills::stopSkill(m_player, skillId);
 	}
 }

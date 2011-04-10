@@ -84,7 +84,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	// Party Quest data (quest needs to be added in the quests list)
 	packet.add<int16_t>(0); // Amount of pquests
-	// for every pquest: int16_t questid, string questdata
+	// for every pquest: int16_t questId, string questdata
 
 	packet.add<int16_t>(0);
 

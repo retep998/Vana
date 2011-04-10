@@ -27,18 +27,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-Npc::Npc(int32_t npcid, Player *player, int16_t questid, bool isstart) :
+Npc::Npc(int32_t npcid, Player *player, int16_t questId, bool isstart) :
 pos(Pos(0, 0))
 {
 	initData(player, npcid);
-	initScript(player, npcid, getScript(questid, isstart));
+	initScript(player, npcid, getScript(questId, isstart));
 }
 
-Npc::Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questid, bool isstart) :
+Npc::Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questId, bool isstart) :
 pos(pos)
 {
 	initData(player, npcid);
-	initScript(player, npcid, getScript(questid, isstart));
+	initScript(player, npcid, getScript(questId, isstart));
 }
 
 Npc::Npc(int32_t npcid, Player *player, const string &script) :
@@ -60,22 +60,22 @@ void Npc::initData(Player *p, int32_t id) {
 	cend = false;
 }
 
-bool Npc::hasScript(int32_t npcid, int16_t questid, bool start) {
+bool Npc::hasScript(int32_t npcid, int16_t questId, bool start) {
 	string script = "";
-	if (questid == 0) {
-		script = ScriptDataProvider::Instance()->getNpcScript(npcid);
+	if (questId == 0) {
+		script = ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
 	}
 	else {
-		script = ScriptDataProvider::Instance()->getQuestScript(questid, (start ? 0 : 1));
+		script = ScriptDataProvider::Instance()->getQuestScript(questId, (start ? 0 : 1));
 	}
 	return FileUtilities::fileExists(script);
 }
 
-string Npc::getScript(int16_t questid, bool start) {
-	if (questid == 0) {
-		return ScriptDataProvider::Instance()->getNpcScript(npcid);
+string Npc::getScript(int16_t questId, bool start) {
+	if (questId == 0) {
+		return ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
 	}
-	return ScriptDataProvider::Instance()->getQuestScript(questid, (start ? 0 : 1));
+	return ScriptDataProvider::Instance()->getQuestScript(questId, (start ? 0 : 1));
 }
 
 void Npc::initScript(Player *player, int32_t npcid, const string &filename) {
