@@ -29,7 +29,7 @@ class SkillMacros;
 
 namespace PlayerPacket {
 	namespace BlockMessages {
-		enum Messages {
+		enum Messages : int8_t {
 			CannotGo = 0x01,
 			NoCashShop = 0x02,
 			MtsUnavailable = 0x03,
@@ -38,7 +38,7 @@ namespace PlayerPacket {
 		};
 	}
 	namespace NoticeTypes {
-		enum Types {
+		enum Types : int8_t {
 			Notice = 0x00,
 			Box = 0x01,
 			Red = 0x05,

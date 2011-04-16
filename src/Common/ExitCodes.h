@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 namespace ExitCodes {
-	enum {
+	enum : int32_t {
 		Ok = 0,
 		ConfigError = 1,
 		ConfigFileMissing = 2,

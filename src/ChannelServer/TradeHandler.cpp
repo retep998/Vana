@@ -34,7 +34,7 @@ using std::tr1::bind;
 using std::string;
 
 namespace TradeOpcodes {
-	enum Opcodes {
+	enum Opcodes : int8_t {
 		OpenTrade = 0x00,
 		SendTradeRequest = 0x02,
 		DenyRequest = 0x03,
@@ -48,7 +48,7 @@ namespace TradeOpcodes {
 }
 
 namespace TradeSlots {
-	enum Slots {
+	enum Slots : int8_t {
 		One = 0x00,
 		Two = 0x01
 	};

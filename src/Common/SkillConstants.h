@@ -46,7 +46,7 @@ namespace BuffBytes {
 	const int8_t ByteQuantity = 16;
 	const int8_t EntryByteQuantity = 8;
 
-	enum ByteTypes {
+	enum ByteTypes : uint8_t {
 		Byte13,
 		Byte14,
 		Byte15,
@@ -70,7 +70,7 @@ namespace StatusEffects {
 	namespace Mob {
 		const uint8_t MaxVenomCount = 3;
 
-		enum MobStatus {
+		enum MobStatus : uint32_t {
 			// Groups of 5 for easier counting
 			Watk = 0x01,
 			Wdef = 0x02,
@@ -113,7 +113,7 @@ namespace StatusEffects {
 		};
 	}
 	namespace Player {
-		enum PlayerStatus {
+		enum PlayerStatus : int16_t {
 			Curse = 0x01,
 			Weakness = 0x02,
 			Darkness = 0x04,
@@ -129,7 +129,7 @@ namespace StatusEffects {
 }
 
 namespace MobSkills {
-	enum {
+	enum : uint8_t {
 		WeaponAttackUp = 100,
 		WeaponAttackUpAoe = 110,
 		MagicAttackUp = 101,
@@ -173,7 +173,7 @@ namespace MobSkills {
 
 namespace Jobs {
 	namespace JobTracks {
-		enum Tracks {
+		enum Tracks : int8_t {
 			Beginner = 0,
 			Warrior = 1,
 			Magician = 2,
@@ -202,7 +202,7 @@ namespace Jobs {
 		};
 	}
 	namespace JobIds {
-		enum Jobs {
+		enum Jobs : int16_t {
 			Beginner = 0,
 
 			Swordsman = 100,
@@ -324,12 +324,12 @@ namespace Jobs {
 		};
 	}
 	namespace All {
-		enum Skills {
+		enum Skills : int32_t {
 			RegularAttack = 0
 		};
 	}
 	namespace Beginner {
-		enum Skills {
+		enum Skills : int32_t {
 			BlessingOfTheFairy = 12,
 			EchoOfHero = 1005,
 			FollowTheLead = 8,
@@ -339,13 +339,13 @@ namespace Jobs {
 		};
 	}
 	namespace Swordsman {
-		enum Skills {
+		enum Skills : int32_t {
 			ImprovedMaxHpIncrease = 1000001,
 			IronBody = 1001003
 		};
 	}
 	namespace Fighter {
-		enum Skills {
+		enum Skills : int32_t {
 			AxeBooster = 1101005,
 			AxeMastery = 1100001,
 			PowerGuard = 1101007,
@@ -355,7 +355,7 @@ namespace Jobs {
 		};
 	}
 	namespace Crusader {
-		enum Skills {
+		enum Skills : int32_t {
 			ArmorCrash = 1111007,
 			AxeComa = 1111006,
 			AxePanic = 1111004,
@@ -366,7 +366,7 @@ namespace Jobs {
 		};
 	}
 	namespace Hero {
-		enum Skills {
+		enum Skills : int32_t {
 			Achilles = 1120004,
 			AdvancedComboAttack = 1120003,
 			Enrage = 1121010,
@@ -378,7 +378,7 @@ namespace Jobs {
 		};
 	}
 	namespace Page {
-		enum Skills {
+		enum Skills : int32_t {
 			BwBooster = 1201005,
 			BwMastery = 1200001,
 			PowerGuard = 1201007,
@@ -388,7 +388,7 @@ namespace Jobs {
 		};
 	}
 	namespace WhiteKnight {
-		enum Skills {
+		enum Skills : int32_t {
 			BwFireCharge = 1211004,
 			BwIceCharge = 1211006,
 			BwLitCharge = 1211008,
@@ -400,7 +400,7 @@ namespace Jobs {
 		};
 	}
 	namespace Paladin {
-		enum Skills {
+		enum Skills : int32_t {
 			Achilles = 1220005,
 			AdvancedCharge = 1220010,
 			BwHolyCharge = 1221004,
@@ -414,7 +414,7 @@ namespace Jobs {
 		};
 	}
 	namespace Spearman {
-		enum Skills {
+		enum Skills : int32_t {
 			HyperBody = 1301007,
 			IronWill = 1301006,
 			PolearmBooster = 1301005,
@@ -424,7 +424,7 @@ namespace Jobs {
 		};
 	}
 	namespace DragonKnight {
-		enum Skills {
+		enum Skills : int32_t {
 			DragonBlood = 1311008,
 			DragonRoar = 1311006,
 			ElementalResistance = 1310000,
@@ -433,7 +433,7 @@ namespace Jobs {
 		};
 	}
 	namespace DarkKnight {
-		enum Skills {
+		enum Skills : int32_t {
 			Achilles = 1320005,
 			AuraOfBeholder = 1320008,
 			Beholder = 1321007,
@@ -446,14 +446,14 @@ namespace Jobs {
 		};
 	}
 	namespace Magician {
-		enum Skills {
+		enum Skills : int32_t {
 			ImprovedMaxMpIncrease = 2000001,
 			MagicArmor = 2001003,
 			MagicGuard = 2001002
 		};
 	}
 	namespace FPWizard {
-		enum Skills {
+		enum Skills : int32_t {
 			Meditation = 2101001,
 			MpEater = 2100000,
 			PoisonBreath = 2101005,
@@ -461,7 +461,7 @@ namespace Jobs {
 		};
 	}
 	namespace FPMage {
-		enum Skills {
+		enum Skills : int32_t {
 			ElementAmplification = 2110001,
 			ElementComposition = 2111006,
 			PartialResistance = 2110000,
@@ -471,7 +471,7 @@ namespace Jobs {
 		};
 	}
 	namespace FPArchMage {
-		enum Skills {
+		enum Skills : int32_t {
 			BigBang = 2121001,
 			Elquines = 2121005,
 			FireDemon = 2121003,
@@ -483,7 +483,7 @@ namespace Jobs {
 		};
 	}
 	namespace ILWizard {
-		enum Skills {
+		enum Skills : int32_t {
 			ColdBeam = 2201004,
 			Meditation = 2201001,
 			MpEater = 2200000,
@@ -491,7 +491,7 @@ namespace Jobs {
 		};
 	}
 	namespace ILMage {
-		enum Skills {
+		enum Skills : int32_t {
 			ElementAmplification = 2210001,
 			ElementComposition = 2211006,
 			IceStrike = 2211002,
@@ -501,7 +501,7 @@ namespace Jobs {
 		};
 	}
 	namespace ILArchMage {
-		enum Skills {
+		enum Skills : int32_t {
 			BigBang = 2221001,
 			Blizzard = 2221007,
 			HerosWill = 2221008,
@@ -513,7 +513,7 @@ namespace Jobs {
 		};
 	}
 	namespace Cleric {
-		enum Skills {
+		enum Skills : int32_t {
 			Bless = 2301004,
 			Heal = 2301002,
 			Invincible = 2301003,
@@ -521,7 +521,7 @@ namespace Jobs {
 		};
 	}
 	namespace Priest {
-		enum Skills {
+		enum Skills : int32_t {
 			Dispel = 2311001,
 			Doom = 2311005,
 			ElementalResistance = 2310000,
@@ -531,7 +531,7 @@ namespace Jobs {
 		};
 	}
 	namespace Bishop {
-		enum Skills {
+		enum Skills : int32_t {
 			Bahamut = 2321003,
 			BigBang = 2321001,
 			HerosWill = 2321009,
@@ -543,13 +543,13 @@ namespace Jobs {
 		};
 	}
 	namespace Archer {
-		enum Skills {
+		enum Skills : int32_t {
 			CriticalShot = 3000001,
 			Focus = 3001003
 		};
 	}
 	namespace Hunter {
-		enum Skills {
+		enum Skills : int32_t {
 			ArrowBomb = 3101005,
 			BowBooster = 3101002,
 			BowMastery = 3100000,
@@ -557,14 +557,14 @@ namespace Jobs {
 		};
 	}
 	namespace Ranger {
-		enum Skills {
+		enum Skills : int32_t {
 			MortalBlow = 3110001,
 			Puppet = 3111002,
 			SilverHawk = 3111005
 		};
 	}
 	namespace Bowmaster {
-		enum Skills {
+		enum Skills : int32_t {
 			Concentrate = 3121008,
 			Hamstring = 3121007,
 			HerosWill = 3121009,
@@ -575,14 +575,14 @@ namespace Jobs {
 		};
 	}
 	namespace Crossbowman {
-		enum Skills {
+		enum Skills : int32_t {
 			CrossbowBooster = 3201002,
 			CrossbowMastery = 3200000,
 			SoulArrow = 3201004
 		};
 	}
 	namespace Sniper {
-		enum Skills {
+		enum Skills : int32_t {
 			Blizzard = 3211003,
 			GoldenEagle = 3211005,
 			MortalBlow = 3210001,
@@ -590,7 +590,7 @@ namespace Jobs {
 		};
 	}
 	namespace Marksman {
-		enum Skills {
+		enum Skills : int32_t {
 			Blind = 3221006,
 			Frostprey = 3221005,
 			HerosWill = 3221008,
@@ -601,7 +601,7 @@ namespace Jobs {
 		};
 	}
 	namespace Rogue {
-		enum Skills {
+		enum Skills : int32_t {
 			DarkSight = 4001003,
 			Disorder = 4001002,
 			DoubleStab = 4001334,
@@ -609,7 +609,7 @@ namespace Jobs {
 		};
 	}
 	namespace Assassin {
-		enum Skills {
+		enum Skills : int32_t {
 			ClawBooster = 4101003,
 			ClawMastery = 4100000,
 			CriticalThrow = 4100001,
@@ -618,7 +618,7 @@ namespace Jobs {
 		};
 	}
 	namespace Hermit {
-		enum Skills {
+		enum Skills : int32_t {
 			Alchemist = 4110000,
 			Avenger = 4111005,
 			MesoUp = 4111001,
@@ -628,7 +628,7 @@ namespace Jobs {
 		};
 	}
 	namespace NightLord {
-		enum Skills {
+		enum Skills : int32_t {
 			HerosWill = 4121009,
 			MapleWarrior = 4121000,
 			NinjaAmbush = 4121004,
@@ -641,7 +641,7 @@ namespace Jobs {
 		};
 	}
 	namespace Bandit {
-		enum Skills {
+		enum Skills : int32_t {
 			DaggerBooster = 4201002,
 			DaggerMastery = 4200000,
 			Haste = 4201003,
@@ -650,7 +650,7 @@ namespace Jobs {
 		};
 	}
 	namespace ChiefBandit {
-		enum Skills {
+		enum Skills : int32_t {
 			Assaulter = 4211002,
 			BandOfThieves = 4211004,
 			Chakra = 4211001,
@@ -660,7 +660,7 @@ namespace Jobs {
 		};
 	}
 	namespace Shadower {
-		enum Skills {
+		enum Skills : int32_t {
 			Assassinate = 4221001,
 			BoomerangStep = 4221007,
 			HerosWill = 4221008,
@@ -673,12 +673,12 @@ namespace Jobs {
 		};
 	}
 	namespace Pirate {
-		enum Skills {
+		enum Skills : int32_t {
 			Dash = 5001005
 		};
 	}
 	namespace Brawler {
-		enum Skills {
+		enum Skills : int32_t {
 			BackspinBlow = 5101002,
 			CorkscrewBlow = 5101004,
 			DoubleUppercut = 5101003,
@@ -690,7 +690,7 @@ namespace Jobs {
 		};
 	}
 	namespace Marauder {
-		enum Skills {
+		enum Skills : int32_t {
 			EnergyCharge = 5110001,
 			EnergyDrain = 5111004,
 			StunMastery = 5110000,
@@ -698,7 +698,7 @@ namespace Jobs {
 		};
 	}
 	namespace Buccaneer {
-		enum Skills {
+		enum Skills : int32_t {
 			Demolition = 5121004,
 			MapleWarrior = 5121000,
 			PiratesRage = 5121008, // Hero's Will
@@ -709,7 +709,7 @@ namespace Jobs {
 		};
 	}
 	namespace Gunslinger {
-		enum Skills {
+		enum Skills : int32_t {
 			BlankShot = 5201004,
 			Grenade = 5201002,
 			GunBooster = 5201003,
@@ -717,7 +717,7 @@ namespace Jobs {
 		};
 	}
 	namespace Outlaw {
-		enum Skills {
+		enum Skills : int32_t {
 			Flamethrower = 5211004,
 			Gaviota = 5211002,
 			HomingBeacon = 5211006,
@@ -726,7 +726,7 @@ namespace Jobs {
 		};
 	}
 	namespace Corsair {
-		enum Skills {
+		enum Skills : int32_t {
 			AerialStrike = 5221003,
 			Battleship = 5221006,
 			Bullseye = 5220011,
@@ -739,14 +739,14 @@ namespace Jobs {
 		};
 	}
 	namespace Gm {
-		enum Skills {
+		enum Skills : int32_t {
 			Haste = 9001000,
 			SuperDragonRoar = 9001001,
 			Teleport = 9001007
 		};
 	}
 	namespace SuperGm {
-		enum Skills {
+		enum Skills : int32_t {
 			Bless = 9101003,
 			Haste = 9101001,
 			HealPlusDispel = 9101000,
@@ -759,7 +759,7 @@ namespace Jobs {
 		};
 	}
 	namespace Noblesse {
-		enum Skills {
+		enum Skills : int32_t {
 			BlessingOfTheFairy = 10000012,
 			EchoOfHero = 10001005,
 			Maker = 10001007,
@@ -769,7 +769,7 @@ namespace Jobs {
 		};
 	}
 	namespace DawnWarrior {
-		enum Skills {
+		enum Skills : int32_t {
 			AdvancedCombo = 11110005,
 			Coma = 11111003,
 			ComboAttack = 11111001,
@@ -786,7 +786,7 @@ namespace Jobs {
 		};
 	}
 	namespace BlazeWizard {
-		enum Skills {
+		enum Skills : int32_t {
 			ElementalReset = 12101005,
 			ElementAmplification = 12110001,
 			FireStrike = 12111006,
@@ -803,7 +803,7 @@ namespace Jobs {
 		};
 	}
 	namespace WindArcher {
-		enum Skills {
+		enum Skills : int32_t {
 			EagleEye = 13111005,
 			BowBooster = 13101001,
 			BowMastery = 13100000,
@@ -820,7 +820,7 @@ namespace Jobs {
 		};
 	}
 	namespace NightWalker {
-		enum Skills {
+		enum Skills : int32_t {
 			Alchemist = 14110003,
 			Disorder = 14001002,
 			DarkSight = 14001003,
@@ -838,7 +838,7 @@ namespace Jobs {
 		};
 	}
 	namespace ThunderBreaker {
-		enum Skills {
+		enum Skills : int32_t {
 			CorkscrewBlow = 15101003,
 			Dash = 15001003,
 			EnergyCharge = 15100004,

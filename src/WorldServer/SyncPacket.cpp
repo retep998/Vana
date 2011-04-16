@@ -75,7 +75,7 @@ void SyncPacket::PlayerPacket::updatePlayerJob(int32_t playerId, int16_t job) {
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int32_t>(Sync::Player::UpdateBits::Job);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Job);
 	packet.add<int16_t>(job);
 	Channels::Instance()->sendToAll(packet);
 }
@@ -85,7 +85,7 @@ void SyncPacket::PlayerPacket::updatePlayerLevel(int32_t playerId, int16_t level
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int32_t>(Sync::Player::UpdateBits::Level);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Level);
 	packet.add<int16_t>(level);
 	Channels::Instance()->sendToAll(packet);
 }
@@ -95,7 +95,7 @@ void SyncPacket::PlayerPacket::updatePlayerMap(int32_t playerId, int32_t map) {
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int32_t>(Sync::Player::UpdateBits::Map);
+	packet.add<int8_t>(Sync::Player::UpdateBits::Map);
 	packet.add<int32_t>(map);
 	Channels::Instance()->sendToAll(packet);
 }

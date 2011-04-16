@@ -29,13 +29,13 @@ class Player;
 
 namespace InventoryPacket {
 	namespace RockModes {
-		enum Modes {
+		enum Modes : int8_t {
 			Delete = 0x02,
 			Add = 0x03
 		};
 	}
 	namespace RockErrors {
-		enum Errors {
+		enum Errors : int8_t {
 			Unk = 0x02, // Causes error 38 with current data
 			Unk2 = 0x03, // Causes error 38 with current data
 			CannotGo2 = 0x05, // This is unused
@@ -48,7 +48,7 @@ namespace InventoryPacket {
 		};
 	}
 	namespace RockTypes {
-		enum Types {
+		enum Types : int8_t {
 			Regular = 0x00,
 			Vip = 0x01
 		};

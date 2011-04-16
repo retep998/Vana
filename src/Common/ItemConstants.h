@@ -35,7 +35,7 @@ namespace Inventories {
 }
 
 namespace EquipSlots {
-	enum {
+	enum : int16_t {
 		Helm = 1,
 		Face = 2,
 		Eye = 3,
@@ -95,7 +95,7 @@ namespace Items {
 	const int32_t WeatherTime = 30;
 
 	namespace Types {
-		enum ItemTypes {
+		enum ItemTypes : int16_t {
 			ArmorHelm = 100,
 			ArmorFace = 101,
 			ArmorEye = 102,
@@ -137,7 +137,7 @@ namespace Items {
 	}
 
 	namespace ScrollTypes {
-		enum ScrollTypes {
+		enum ScrollTypes : int16_t {
 			Helm = 0,
 			Face = 100,
 			Eye = 200,
@@ -174,7 +174,8 @@ namespace Items {
 	}
 
 	namespace Flags {
-		enum ItemFlags {
+		enum ItemFlags : int16_t {
+			// TODO: Update flags to be unsigned
 			Lock = 0x01,
 			Spikes = 0x02,
 			ColdProtection = 0x04,
@@ -220,7 +221,7 @@ namespace Items {
 		const int16_t Jump = 23;
 	}
 
-	enum {
+	enum : int32_t {
 		// Equip
 		GmHat = 1002140,
 		GmTop = 1042003,
@@ -284,7 +285,7 @@ namespace Items {
 
 	namespace Cash {
 		namespace Serials {
-			enum {
+			enum : int32_t {
 				AddEquipSlots = 50200093,
 				AddUseSlots = 50200094,
 				AddEtcSlots = 50200095,
@@ -295,7 +296,7 @@ namespace Items {
 		}
 
 		namespace Flags {
-			enum {
+			enum : int16_t {
 				HasDiscount = 0x4,
 				RemoveAddItem = 0x400, // It has a byte/bool after it: don't show/show
 				ReplaceMark = 0x800

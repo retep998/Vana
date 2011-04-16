@@ -32,7 +32,7 @@ namespace Characters {
 }
 
 namespace Gender {
-	enum {
+	enum : int8_t {
 		Male = 0,
 		Female = 1,
 		Both = 2
@@ -109,7 +109,7 @@ namespace Stats {
 		const int16_t PirateAp = 14;
 		const int16_t GmAp = 10;
 	}
-	enum Constants {
+	enum Constants : int32_t {
 		Skin = 0x01,
 		Eyes = 0x02,
 		Hair = 0x04,
@@ -139,7 +139,7 @@ namespace MonsterCards {
 }
 
 namespace MobElements {
-	enum Modifiers {
+	enum Modifiers : int8_t {
 		Normal,
 		Immune,
 		Strong,

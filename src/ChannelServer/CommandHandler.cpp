@@ -40,14 +40,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 namespace CommandOpcodes {
-	enum Opcodes {
+	enum Opcodes : int8_t {
 		FindPlayer = 0x05,
 		Whisper = 0x06
 	};
 }
 
 namespace AdminOpcodes {
-	enum Opcodes {
+	enum Opcodes : int8_t {
 		CreateItem = 0x00,
 		DestroyFirstItem = 0x01,
 		GiveExp = 0x02,
@@ -58,9 +58,9 @@ namespace AdminOpcodes {
 		ShowMessageMap = 0x11,
 		Send = 0x12,
 		Summon = 0x17,
-		Snow = 0x1c,
-		Warn = 0x1d,
-		Log = 0x1e,
+		Snow = 0x1C,
+		Warn = 0x1D,
+		Log = 0x1E,
 		SetObjState = 0x22
 	};
 	/*

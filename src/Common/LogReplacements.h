@@ -26,7 +26,7 @@ using std::string;
 using std::tr1::unordered_map;
 
 namespace Replacements {
-	enum Replacements {
+	enum Replacements : int32_t {
 		Long = 0x01, // Long versions of strings or padded digits
 		Uppercase = Long << 1, // Primarily for AM/PM
 		String = Long << 2, // End of flags

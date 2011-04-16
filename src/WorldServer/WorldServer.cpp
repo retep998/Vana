@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "InitializeWorld.h"
 #include "IpUtilities.h"
+#include "VanaConstants.h"
 #include "WorldServerAcceptPacket.h"
 #include <boost/lexical_cast.hpp>
 

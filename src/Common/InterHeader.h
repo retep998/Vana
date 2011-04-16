@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 // Inter-server communication does not separate send and recv because the server does both
-enum AnyConnection {
+enum AnyConnection : uint16_t {
 	IMSG_PASSWORD = 0xff
 };
 
-enum LoginWorld {
+enum LoginWorld : uint16_t {
 	IMSG_WORLD_CONNECT = 0x1000,
 	IMSG_REGISTER_CHANNEL,
 	IMSG_UPDATE_CHANNEL_POP,
@@ -30,12 +30,12 @@ enum LoginWorld {
 	IMSG_NEW_PLAYER
 };
 
-enum LoginChannel {
+enum LoginChannel : uint16_t {
 	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000, // Get world server info
 	IMSG_CALCULATE_RANKING
 };
 
-enum WorldChannel {
+enum WorldChannel : uint16_t {
 	IMSG_CHANNEL_CONNECT = 0x3000,
 	IMSG_TO_PLAYERS, // Pass the content of the packet to player of all channel servers
 	IMSG_FIND, // "/find" command

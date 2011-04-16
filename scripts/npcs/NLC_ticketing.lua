@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2011 Vana Development Team and Biscuit
+Copyright (C) 2008-2011 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Bell, warps to/from Kerning and NLC
+-- Originally programmed by Biscuit
 
 map = getMap();
 cost = 5000;

@@ -17,9 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Types.h"
+
 // Specific packet constants that are shared between servers
 namespace PartyActions {
-	enum PartyActions {
+	enum PartyActions : int8_t {
 		Create = 0x01,
 		Leave = 0x02,
 		Join = 0x03,
@@ -33,7 +35,7 @@ namespace PartyActions {
 
 namespace Sync {
 	namespace SyncTypes {
-		enum SyncTypes {
+		enum SyncTypes : int8_t {
 			ChannelStart,
 			Update,
 			Player,
@@ -45,7 +47,7 @@ namespace Sync {
 		};
 	}
 	namespace Player {
-		enum SyncModes {
+		enum SyncModes : int8_t {
 			Connect,
 			Disconnect,
 			ChangeChannelRequest,
@@ -56,7 +58,7 @@ namespace Sync {
 			UpdatePlayer
 		};
 		namespace UpdateBits {
-			enum {
+			enum : int8_t {
 				Level = 0x01,
 				Job = 0x02,
 				Map = 0x04,
@@ -65,7 +67,7 @@ namespace Sync {
 		}
 	}
 	namespace Party {
-		enum SyncModes {
+		enum SyncModes : int8_t {
 			Disband,
 			Create,
 			SwitchLeader,
@@ -74,7 +76,7 @@ namespace Sync {
 		};
 	}
 	namespace Buddy {
-		enum SyncModes {
+		enum SyncModes : int8_t {
 			Invite,
 			OnlineOffline
 		};

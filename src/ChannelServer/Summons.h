@@ -39,7 +39,7 @@ namespace Summons {
 }
 
 namespace SummonMessages {
-	enum Messages {
+	enum Messages : int8_t {
 		OutOfTime = 0x01,
 		Disappearing = 0x03,
 		None = 0x04
@@ -48,7 +48,7 @@ namespace SummonMessages {
 
 class Summon : public MovableLife {
 public:
-	enum MovementPatterns {
+	enum MovementPatterns : int8_t {
 		Static = 0,
 		Follow = 1,
 		Flying = 3

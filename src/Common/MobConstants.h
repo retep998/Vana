@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 namespace Mobs {
-	enum {
+	enum : int32_t {
 		HighDarkstar = 8500003,
 		LowDarkstar = 8500004,
 
@@ -81,7 +81,7 @@ namespace Mobs {
 		InactiveMunin2 = 8820027
 	};
 	namespace ControlStatus {
-		enum {
+		enum : int8_t {
 			ControlNormal = 1,
 			ControlNone = 5
 		};

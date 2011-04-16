@@ -23,7 +23,7 @@ class Player;
 
 namespace FamePacket {
 	namespace Errors {
-		enum Errors {
+		enum Errors : int8_t {
 			IncorrectUser = 0x01,
 			LevelUnder15 = 0x02,
 			AlreadyFamedToday = 0x03,

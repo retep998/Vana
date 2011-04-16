@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeLogin.h"
 #include "MapleVersion.h"
 #include "RankingCalculator.h"
+#include "VanaConstants.h"
 #include "World.h"
 #include "Worlds.h"
 #include <boost/format.hpp>
