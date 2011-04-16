@@ -77,8 +77,8 @@ bool MapFunctions::timer(Player *player, const string &args) {
 
 bool MapFunctions::killMob(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t mobid = atoi(args.c_str());
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+		int32_t mobId = atoi(args.c_str());
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 		if (mob != nullptr) {
 			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". HP left: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
 			mob->applyDamage(player->getId(), mob->getHp());
@@ -93,11 +93,11 @@ bool MapFunctions::killMob(Player *player, const string &args) {
 
 bool MapFunctions::getMobHp(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t mobid = atoi(args.c_str());
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+		int32_t mobId = atoi(args.c_str());
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 		if (mob != nullptr) {
 			string message = "Mob ";
-			message += lexical_cast<string>(mobid);
+			message += lexical_cast<string>(mobId);
 			message += " HP: ";
 			message += lexical_cast<string>(mob->getHp());
 			message += "/";
@@ -160,16 +160,16 @@ bool MapFunctions::music(Player *player, const string &args) {
 bool MapFunctions::summon(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d+)?", matches)) {
-		int32_t mobid = atoi(string(matches[1]).c_str());
-		if (MobDataProvider::Instance()->mobExists(mobid)) {
+		int32_t mobId = atoi(string(matches[1]).c_str());
+		if (MobDataProvider::Instance()->mobExists(mobId)) {
 			string countstring = matches[2];
 			int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
 			if (count > 100) count = 100;
 			for (int32_t i = 0; i < count; i++) {
-				Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+				Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos());
 			}
 			if (count > 0) {
-				PlayerPacket::showMessage(player, "Spawned " + lexical_cast<string>(count) + " mobs with ID " + lexical_cast<string>(mobid) + ".", PlayerPacket::NoticeTypes::Blue);
+				PlayerPacket::showMessage(player, "Spawned " + lexical_cast<string>(count) + " mobs with ID " + lexical_cast<string>(mobId) + ".", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
 				PlayerPacket::showMessage(player, "No mobs spawned.", PlayerPacket::NoticeTypes::Red);

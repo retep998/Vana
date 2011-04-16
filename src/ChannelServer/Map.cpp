@@ -382,10 +382,10 @@ NpcSpawnInfo Map::getNpc(uint32_t id) const {
 }
 
 // Mobs
-int32_t Map::spawnMob(int32_t mobid, const Pos &pos, int16_t fh, Mob *owner, int8_t summonEffect) {
+int32_t Map::spawnMob(int32_t mobId, const Pos &pos, int16_t fh, Mob *owner, int8_t summonEffect) {
 	int32_t id = getObjectId();
 
-	Mob *mob = new Mob(id, getId(), mobid, pos, fh);
+	Mob *mob = new Mob(id, getId(), mobId, pos, fh);
 	m_mobs[id] = mob;
 	if (summonEffect != 0) {
 		mob->setOwner(owner);
@@ -406,10 +406,10 @@ int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
 	return id;
 }
 
-int32_t Map::spawnShell(int32_t mobid, const Pos &pos, int16_t fh) {
+int32_t Map::spawnShell(int32_t mobId, const Pos &pos, int16_t fh) {
 	int32_t id = getObjectId();
 
-	Mob *mob = new Mob(id, getId(), mobid, pos, fh, Mobs::ControlStatus::ControlNone);
+	Mob *mob = new Mob(id, getId(), mobId, pos, fh, Mobs::ControlStatus::ControlNone);
 	m_mobs[id] = mob;
 	updateMobControl(mob, true);
 	return id;
@@ -471,12 +471,12 @@ void Map::removeMob(int32_t id, int32_t spawnid) {
 	}
 }
 
-int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showpacket) {
+int32_t Map::killMobs(Player *player, int32_t mobId, bool playerkill, bool showpacket) {
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
 	int32_t mobskilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != nullptr) {
-			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
+			if ((mobId > 0 && iter->second->getMobId() == mobId) || mobId == 0) {
 				if (playerkill && player != nullptr) {
 					if (iter->second->getMobId() != Mobs::HorntailSponge) { // This will be taken care of by its parts
 						iter->second->applyDamage(player->getId(), iter->second->getHp());
@@ -492,12 +492,12 @@ int32_t Map::killMobs(Player *player, int32_t mobid, bool playerkill, bool showp
 	return mobskilled;
 }
 
-int32_t Map::countMobs(int32_t mobid) {
+int32_t Map::countMobs(int32_t mobId) {
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
 	int32_t mobCount = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
 		if (iter->second != nullptr) {
-			if ((mobid > 0 && iter->second->getMobId() == mobid) || mobid == 0) {
+			if ((mobId > 0 && iter->second->getMobId() == mobId) || mobId == 0) {
 				mobCount++;
 			}
 		}

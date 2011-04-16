@@ -196,8 +196,8 @@ public:
 	SkillLevelInfo * getSkill(int32_t skill, uint8_t level);
 	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
 
-	bool hasBanishData(int32_t mobid) { return (m_banishInfo.find(mobid) != m_banishInfo.end()); }
-	BanishField * getBanishData(int32_t mobid) { return (hasBanishData(mobid) ? &m_banishInfo[mobid] : nullptr); }
+	bool hasBanishData(int32_t mobId) { return (m_banishInfo.find(mobId) != m_banishInfo.end()); }
+	BanishField * getBanishData(int32_t mobId) { return (hasBanishData(mobId) ? &m_banishInfo[mobId] : nullptr); }
 
 	bool hasMorphData(int16_t morph) { return (m_morphInfo.find(morph) != m_morphInfo.end()); }
 	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &m_morphInfo[morph] : nullptr); }

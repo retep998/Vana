@@ -62,8 +62,8 @@ struct PartyExp {
 
 class Mob : public MovableLife {
 public:
-	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh = 0, int8_t controlstatus = 1);
-	Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh);
+	Mob(int32_t id, int32_t mapid, int32_t mobId, const Pos &pos, int16_t fh = 0, int8_t controlstatus = 1);
+	Mob(int32_t id, int32_t mapid, int32_t mobId, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh);
 
 	void applyDamage(int32_t playerid, int32_t damage, bool poison = false);
 	void applyWebDamage();
@@ -101,7 +101,7 @@ public:
 	int32_t getStatusValue(int32_t status);
 	int32_t getId() const { return id; }
 	int32_t getMapId() const { return mapid; }
-	int32_t getMobId() const { return mobid; }
+	int32_t getMobId() const { return mobId; }
 	int32_t getSpawnId() const { return spawnid; }
 	int32_t getHp() const { return hp; }
 	int32_t getMp() const { return mp; }
@@ -151,7 +151,7 @@ private:
 	int32_t id;
 	int32_t mapid;
 	int32_t spawnid;
-	int32_t mobid;
+	int32_t mobId;
 	int32_t hp;
 	int32_t mp;
 	int32_t status;

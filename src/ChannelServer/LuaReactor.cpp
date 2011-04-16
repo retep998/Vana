@@ -107,9 +107,9 @@ int LuaExports::getDistanceReactor(lua_State *luaVm) {
 
 // Mob
 int LuaExports::spawnMobReactor(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, -1);
+	int32_t mobId = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
-	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobid, reactor->getPos()));
+	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobId, reactor->getPos()));
 	return 1;
 }
 

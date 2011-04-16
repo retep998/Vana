@@ -80,30 +80,30 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int16_t mobskill, int16_t le
 {
 }
 
-Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int16_t fh, int8_t controlstatus) :
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobId, const Pos &pos, int16_t fh, int8_t controlstatus) :
 	MovableLife(fh, pos, 2),
 	originfh(fh),
 	id(id),
 	mapid(mapid),
 	spawnid(-1),
-	mobid(mobid),
+	mobId(mobId),
 	timers(new Timer::Container),
-	info(MobDataProvider::Instance()->getMobInfo(mobid)),
+	info(MobDataProvider::Instance()->getMobInfo(mobId)),
 	facingdirection(1),
 	controlstatus(controlstatus)
 {
 	initMob();
 }
 
-Mob::Mob(int32_t id, int32_t mapid, int32_t mobid, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh) :
+Mob::Mob(int32_t id, int32_t mapid, int32_t mobId, const Pos &pos, int32_t spawnid, int8_t direction, int16_t fh) :
 	MovableLife(fh, pos, 2),
 	originfh(fh),
 	id(id),
 	mapid(mapid),
 	spawnid(spawnid),
-	mobid(mobid),
+	mobId(mobId),
 	timers(new Timer::Container),
-	info(MobDataProvider::Instance()->getMobInfo(mobid)),
+	info(MobDataProvider::Instance()->getMobInfo(mobId)),
 	facingdirection(direction),
 	controlstatus(Mobs::ControlStatus::ControlNormal)
 {
@@ -133,7 +133,7 @@ void Mob::initMob() {
 	Map *map = Maps::getMap(mapid);
 	Instance *instance = map->getInstance();
 	if (instance != nullptr) {
-		instance->sendMessage(MobSpawn, mobid, id, mapid);
+		instance->sendMessage(MobSpawn, mobId, id, mapid);
 	}
 
 	status = StatusEffects::Mob::Empty;
@@ -152,7 +152,7 @@ void Mob::initMob() {
 	}
 	if (info->removeAfter > 0) {
 		new Timer::Timer(bind(&Mob::applyDamage, this, 0, info->hp, false),
-			Timer::Id(Timer::Types::MobRemoveTimer, mobid, id),
+			Timer::Id(Timer::Types::MobRemoveTimer, mobId, id),
 			map->getTimers(), TimeUtilities::fromNow(info->removeAfter * 1000));
 	}
 }
@@ -441,7 +441,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	endControl();
 
-	Timer::Id tid(Timer::Types::MobRemoveTimer, mobid, id);
+	Timer::Id tid(Timer::Types::MobRemoveTimer, mobId, id);
 	if (map->getTimers()->checkTimer(tid) > 0) {
 		map->getTimers()->removeTimer(tid);
 	}
@@ -456,18 +456,18 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	// Ending of death stuff
 	MobsPacket::dieMob(this, fromexplosion ? 4 : 1);
-	DropHandler::doDrops(highestdamager, mapid, getLevel(), mobid, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
+	DropHandler::doDrops(highestdamager, mapid, getLevel(), mobId, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
 
 	if (player != nullptr) {
 		Party *party = player->getParty();
 		if (party != nullptr) {
 			vector<Player *> members = party->getPartyMembers(mapid);
 			for (size_t memsize = 0; memsize < members.size(); memsize++) {
-				members[memsize]->getQuests()->updateQuestMob(mobid);
+				members[memsize]->getQuests()->updateQuestMob(mobId);
 			}
 		}
 		else {
-			player->getQuests()->updateQuestMob(mobid);
+			player->getQuests()->updateQuestMob(mobId);
 		}
 	}
 
@@ -477,7 +477,7 @@ void Mob::die(Player *player, bool fromexplosion) {
 
 	Instance *instance = map->getInstance();
 	if (instance != nullptr) {
-		instance->sendMessage(MobDeath, mobid, id, mapid);
+		instance->sendMessage(MobDeath, mobId, id, mapid);
 	}
 	map->removeMob(id, spawnid);
 
@@ -494,7 +494,7 @@ void Mob::die(bool showpacket) {
 		MobsPacket::dieMob(this);
 		Instance *instance = Maps::getMap(mapid)->getInstance();
 		if (instance != nullptr) {
-			instance->sendMessage(MobDeath, mobid, id);
+			instance->sendMessage(MobDeath, mobId, id);
 		}
 	}
 	Maps::getMap(mapid)->removeMob(id, spawnid);

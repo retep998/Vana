@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/tr1/functional.hpp>
 #include <iterator>
 #include <map>
 #include <string>
@@ -26,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::map;
 using std::tr1::unordered_map;
+using std::tr1::function;
 using std::vector;
 
 struct QuestRewardInfo {
@@ -67,49 +69,37 @@ typedef unordered_map<int16_t, int8_t> QuestRequests;
 
 class Quest {
 public:
-	Quest() : nextquest(0) { }
+	Quest();
 	void addReward(bool start, const QuestRewardInfo &info, int16_t job = -1);
-	void addValidJob(int16_t jobid);
-	void addMobRequest(int32_t mobid, int16_t quantity);
+	void addValidJob(int16_t jobId);
+	void addMobRequest(int32_t mobId, int16_t quantity);
 	void addItemRequest(int32_t itemId, int16_t quantity);
 	void addQuestRequest(int16_t questId, int8_t state);
-	void setNextQuest(int16_t questId) { nextquest = questId; }
-	void setQuestId(int16_t q) { id = q; }
+	void setNextQuest(int16_t questId) { m_nextQuest = questId; }
+	void setQuestId(int16_t questId) { m_id = questId; }
 
-	bool hasRequests() { return (hasMobRequests() || hasItemRequests() || hasQuestRequests()); }
-	bool hasMobRequests() { return (mobrequests.size() > 0); }
-	bool hasItemRequests() { return (itemrequests.size() > 0); }
-	bool hasQuestRequests() { return (questrequests.size() > 0); }
-	bool hasStartRewards() { return (startrewards.rewards.size() > 0 || startrewards.jobrewards.size() > 0); }
-	bool hasEndRewards() { return (endrewards.rewards.size() > 0 || endrewards.jobrewards.size() > 0); }
+	bool hasRequests() const { return (hasMobRequests() || hasItemRequests() || hasQuestRequests()); }
+	bool hasMobRequests() const { return (m_mobRequests.size() > 0); }
+	bool hasItemRequests() const { return (m_itemRequests.size() > 0); }
+	bool hasQuestRequests() const { return (m_questRequests.size() > 0); }
+	bool hasStartRewards() { return (m_startRewards.rewards.size() > 0 || m_startRewards.jobrewards.size() > 0); }
+	bool hasEndRewards() { return (m_endRewards.rewards.size() > 0 || m_endRewards.jobrewards.size() > 0); }
 	bool hasRewards() { return (hasStartRewards() || hasEndRewards()); }
-	bool hasStartJobRewards(int16_t job) { return (startrewards.jobrewards.find(job) != startrewards.jobrewards.end()); }
-	bool hasEndJobRewards(int16_t job) { return (endrewards.jobrewards.find(job) != endrewards.jobrewards.end()); }
-	int16_t getNextQuest() const { return nextquest; }
-	int16_t getQuestId() const { return id; }
-	int16_t getMobRequestQuantity(int32_t mobid) { return (mobrequests.find(mobid) != mobrequests.end() ? mobrequests[mobid] : 0); }
-	int16_t getItemRequestQuantity(int32_t itemId) { return (itemrequests.find(itemId) != itemrequests.end() ? itemrequests[itemId] : 0); }
-	MobRequests::iterator getMobBegin() { return mobrequests.begin(); }
-	MobRequests::iterator getMobEnd() { return mobrequests.end(); }
-	ItemRequests::iterator getItemBegin() { return itemrequests.begin(); }
-	ItemRequests::iterator getItemEnd() { return itemrequests.end(); }
-	QuestRequests::iterator getQuestBegin() { return questrequests.begin(); }
-	QuestRequests::iterator getQuestEnd() { return questrequests.end(); }
-	Rewards::iterator getStartRewardsBegin() { return startrewards.rewards.begin(); }
-	Rewards::iterator getStartRewardsEnd() { return startrewards.rewards.end(); }
-	Rewards::iterator getStartJobRewardsBegin(int16_t job) { return startrewards.jobrewards[job].begin(); }
-	Rewards::iterator getStartJobRewardsEnd(int16_t job) { return startrewards.jobrewards[job].end(); }
-	Rewards::iterator getEndRewardsBegin() { return endrewards.rewards.begin(); }
-	Rewards::iterator getEndRewardsEnd() { return endrewards.rewards.end(); }
-	Rewards::iterator getEndJobRewardsBegin(int16_t job) { return endrewards.jobrewards[job].begin(); }
-	Rewards::iterator getEndJobRewardsEnd(int16_t job) { return endrewards.jobrewards[job].end(); }
+	int16_t getNextQuest() const { return m_nextQuest; }
+	int16_t getQuestId() const { return m_id; }
+	int16_t getMobRequestQuantity(int32_t mobId) { return (m_mobRequests.find(mobId) != m_mobRequests.end() ? m_mobRequests[mobId] : 0); }
+	int16_t getItemRequestQuantity(int32_t itemId) { return (m_itemRequests.find(itemId) != m_itemRequests.end() ? m_itemRequests[itemId] : 0); }
+	void mobRequestFunc(function<bool (int32_t, int16_t)> func) const;
+	void itemRequestFunc(function<bool (int32_t, int16_t)> func) const;
+	void questRequestFunc(function<bool (int16_t, int8_t)> func) const;
+	bool rewardsFunc(function<bool (const QuestRewardInfo &)> func, bool start, int16_t job = -1);
 private:
-	MobRequests mobrequests;
-	ItemRequests itemrequests;
-	JobRequests jobrequests;
-	QuestRequests questrequests;
-	QuestRewardsInfo startrewards;
-	QuestRewardsInfo endrewards;
-	int16_t nextquest;
-	int16_t id;
+	MobRequests m_mobRequests;
+	ItemRequests m_itemRequests;
+	JobRequests m_jobRequests;
+	QuestRequests m_questRequests;
+	QuestRewardsInfo m_startRewards;
+	QuestRewardsInfo m_endRewards;
+	int16_t m_nextQuest;
+	int16_t m_id;
 };
