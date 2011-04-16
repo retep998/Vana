@@ -72,7 +72,7 @@ namespace AdminOpcodes {
 		Hide = /h (0 = off, 1 = on)
 		Log = /log (character name) (0 = off, 1 = on)
 		Send = /send (character name) (mapid)
-		Summon = /summon (mobid) (amount)
+		Summon = /summon (mobId) (amount)
 		VarSetGet = /varset (charactername) (variable name) (variable value)
 					/varget (charactername) (variable name)
 		Warn = /w (character name) (message)
@@ -143,11 +143,11 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::Summon: {
-			int32_t mobid = packet.get<int32_t>();
+			int32_t mobId = packet.get<int32_t>();
 			int32_t count = packet.get<int32_t>();
-			if (MobDataProvider::Instance()->mobExists(mobid)) {
+			if (MobDataProvider::Instance()->mobExists(mobId)) {
 				for (int32_t i = 0; i < count && i < 100; i++) {
-					Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos());
+					Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos());
 				}
 			}
 			else {

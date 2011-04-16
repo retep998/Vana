@@ -146,7 +146,7 @@ void SkillDataProvider::loadMobSummons() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_summons");
 	mysqlpp::UseQueryResult res = query.use();
 	uint8_t level;
-	int32_t mobid;
+	int32_t mobId;
 
 	enum MobSummons {
 		SkillLevel = 0,
@@ -155,9 +155,9 @@ void SkillDataProvider::loadMobSummons() {
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		level = atoi(row[SkillLevel]);
-		mobid = atoi(row[MobId]);
+		mobId = atoi(row[MobId]);
 
-		m_mobSkills[MobSkills::Summon][level].summons.push_back(mobid);
+		m_mobSkills[MobSkills::Summon][level].summons.push_back(mobId);
 	}
 }
 
@@ -166,7 +166,7 @@ void SkillDataProvider::loadBanishData() {
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_banish_data");
 	mysqlpp::UseQueryResult res = query.use();
 	BanishField banish;
-	int32_t mobid;
+	int32_t mobId;
 
 	enum BanishData {
 		MobId = 0,
@@ -174,13 +174,13 @@ void SkillDataProvider::loadBanishData() {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobid = atoi(row[MobId]);
+		mobId = atoi(row[MobId]);
 
 		banish.message = row[Message];
 		banish.field = atoi(row[Field]);
 		banish.portal = row[Portal];
 
-		m_banishInfo[mobid] = banish;
+		m_banishInfo[mobId] = banish;
 	}
 }
 

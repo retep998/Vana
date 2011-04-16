@@ -75,9 +75,9 @@ namespace GameLogicUtilities {
 	inline bool isCygnusJob(int32_t job) { return (job == Jobs::JobIds::Noblesse || job == Jobs::JobIds::DawnWarrior1 || job == Jobs::JobIds::DawnWarrior2 || job == Jobs::JobIds::DawnWarrior3 || job == Jobs::JobIds::BlazeWizard1 || job == Jobs::JobIds::BlazeWizard2 || job == Jobs::JobIds::BlazeWizard3 || job == Jobs::JobIds::WindArcher1 || job == Jobs::JobIds::WindArcher2 || job == Jobs::JobIds::WindArcher3 || job == Jobs::JobIds::NightWalker1 || job == Jobs::JobIds::NightWalker2 || job == Jobs::JobIds::NightWalker3 || job == Jobs::JobIds::ThunderBreaker1 || job == Jobs::JobIds::ThunderBreaker2 || job == Jobs::JobIds::ThunderBreaker3); }
 	inline bool isLegendJob(int32_t job) { return (job == Jobs::JobIds::Legend || Jobs::JobIds::Aran1 || Jobs::JobIds::Aran2 || Jobs::JobIds::Aran3 || Jobs::JobIds::Aran4 || job == Jobs::JobIds::Evan1 || job == Jobs::JobIds::Evan2 || job == Jobs::JobIds::Evan3 || job == Jobs::JobIds::Evan4 || job == Jobs::JobIds::Evan5 || job == Jobs::JobIds::Evan6 || job == Jobs::JobIds::Evan7 || job == Jobs::JobIds::Evan8 || job == Jobs::JobIds::Evan9 || job == Jobs::JobIds::Evan10); }
 	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job) || isCygnusJob(job) || isLegendJob(job)); }
-	inline bool isCygnus(int16_t jobid) { return (jobid >= 1000 && jobid < 2000); }
-	inline bool isLegend(int16_t jobid) { return (jobid >= 2000 && jobid < 3000); }
-	inline bool isBeginnerJob(int16_t jobid) { return (jobid == Jobs::JobIds::Beginner || jobid == Jobs::JobIds::Noblesse || jobid == Jobs::JobIds::Legend); }
+	inline bool isCygnus(int16_t jobId) { return (jobId >= 1000 && jobId < 2000); }
+	inline bool isLegend(int16_t jobId) { return (jobId >= 2000 && jobId < 3000); }
+	inline bool isBeginnerJob(int16_t jobId) { return (jobId == Jobs::JobIds::Beginner || jobId == Jobs::JobIds::Noblesse || jobId == Jobs::JobIds::Legend); }
 	inline int16_t getJobTrack(int16_t job, bool flatten = false) { return (flatten && !isRegularJob(job) ? ((job / 100) % 10) : (job / 100)); }
 
 	// Monster card

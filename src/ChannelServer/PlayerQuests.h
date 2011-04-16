@@ -63,7 +63,7 @@ public:
 	void connectData(PacketCreator &packet);
 
 	void addQuest(int16_t questId, int32_t npcid);
-	void updateQuestMob(int32_t mobid);
+	void updateQuestMob(int32_t mobId);
 	void checkDone(ActiveQuest &quest);
 	void finishQuest(int16_t questId, int32_t npcid);
 	void removeQuest(int16_t questId);
@@ -78,8 +78,6 @@ private:
 	map<int16_t, int64_t> m_completed;
 
 	bool giveRewards(int16_t questId, bool start);
-	bool giveRewards(const QuestRewardInfo &info);
-	bool checkRewards(int16_t questId, Rewards::iterator &begin, Rewards::iterator &end);
 	void addQuest(int16_t questId);
 	void addQuestMobs(int16_t questId);
 };

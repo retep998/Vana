@@ -39,8 +39,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
-	int32_t mobid = packet.get<int32_t>();
-	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+	int32_t mobId = packet.get<int32_t>();
+	Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 	if (player->getStats()->getHp() == 0 || mob == nullptr) {
 		return;
 	}
@@ -93,9 +93,9 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 }
 
 void MobHandler::monsterControl(Player *player, PacketReader &packet) {
-	int32_t mobid = packet.get<int32_t>();
+	int32_t mobId = packet.get<int32_t>();
 
-	Mob *mob = Maps::getMap(player->getMap())->getMob(mobid);
+	Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 
 	if (mob == nullptr || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		return;
@@ -185,9 +185,9 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			}
 		}
 	}
-	MobsPacket::moveMobResponse(player, mobid, moveid, useskill, mob->getMp(), realskill, level);
+	MobsPacket::moveMobResponse(player, mobId, moveid, useskill, mob->getMp(), realskill, level);
 	packet.reset(19);
-	MobsPacket::moveMob(player, mobid, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
+	MobsPacket::moveMob(player, mobId, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
 }
 
 namespace Functors {

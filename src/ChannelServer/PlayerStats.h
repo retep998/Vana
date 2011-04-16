@@ -108,7 +108,7 @@ public:
 	int16_t getX(int32_t skillId);
 	int16_t getY(int32_t skillId);
 	uint32_t getExp(uint8_t level);
-	uint8_t getMaxLevel(int16_t jobid);
+	uint8_t getMaxLevel(int16_t jobId);
 
 	// Data Acquisition
 	void connectData(PacketCreator &packet);

@@ -17,37 +17,94 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.h"
 
+Quest::Quest() :
+	m_nextQuest(0)
+{
+}
 void Quest::addItemRequest(int32_t itemId, int16_t quantity) {
-	itemrequests[itemId] = quantity;
+	m_itemRequests[itemId] = quantity;
 }
 
-void Quest::addMobRequest(int32_t mobid, int16_t quantity) {
-	mobrequests[mobid] = quantity;
+void Quest::addMobRequest(int32_t mobId, int16_t quantity) {
+	m_mobRequests[mobId] = quantity;
 }
 
 void Quest::addQuestRequest(int16_t questId, int8_t state) {
-	questrequests[questId] = state;
+	m_questRequests[questId] = state;
 }
 
-void Quest::addValidJob(int16_t jobid) {
-	jobrequests.push_back(jobid);
+void Quest::addValidJob(int16_t jobId) {
+	m_jobRequests.push_back(jobId);
 }
 
 void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
 	if (start) {
 		if (job == -1) {
-			startrewards.rewards.push_back(info);
+			m_startRewards.rewards.push_back(info);
 		}
 		else {
-			startrewards.jobrewards[job].push_back(info);
+			m_startRewards.jobrewards[job].push_back(info);
 		}
 	}
 	else {
 		if (job == -1) {
-			endrewards.rewards.push_back(info);
+			m_endRewards.rewards.push_back(info);
 		}
 		else {
-			endrewards.jobrewards[job].push_back(info);
+			m_endRewards.jobrewards[job].push_back(info);
 		}
 	}
+}
+
+void Quest::mobRequestFunc(function<bool (int32_t, int16_t)> func) const {
+	for (MobRequests::const_iterator iter = m_mobRequests.begin(); iter != m_mobRequests.end(); ++iter) {
+		if (func(iter->first, iter->second)) {
+			break;
+		}
+	}
+}
+
+void Quest::itemRequestFunc(function<bool (int32_t, int16_t)> func) const {
+	for (ItemRequests::const_iterator iter = m_itemRequests.begin(); iter != m_itemRequests.end(); ++iter) {
+		if (func(iter->first, iter->second)) {
+			break;
+		}
+	}
+}
+
+void Quest::questRequestFunc(function<bool (int16_t, int8_t)> func) const {
+	for (QuestRequests::const_iterator iter = m_questRequests.begin(); iter != m_questRequests.end(); ++iter) {
+		if (func(iter->first, iter->second)) {
+			break;
+		}
+	}
+}
+
+bool Quest::rewardsFunc(function<bool (const QuestRewardInfo &)> func, bool start, int16_t job) {
+	bool broken = false;
+	QuestRewardsInfo *rewMap = nullptr;
+	if (start) {
+		rewMap = &m_startRewards;
+	}
+	else {
+		rewMap = &m_endRewards;
+	}
+	for (Rewards::const_iterator iter = rewMap->rewards.begin(); iter != rewMap->rewards.end(); ++iter) {
+		if (func(*iter)) {
+			broken = true;
+			break;
+		}
+	}
+	if (!broken && job != -1) {
+		if (rewMap->jobrewards.find(job) != rewMap->jobrewards.end()) {
+			Rewards &rew = rewMap->jobrewards[job];
+			for (Rewards::const_iterator iter = rew.begin(); iter != rew.end(); ++iter) {
+				if (func(*iter)) {
+					broken = true;
+					break;
+				}
+			}
+		}
+	}
+	return !broken;
 }

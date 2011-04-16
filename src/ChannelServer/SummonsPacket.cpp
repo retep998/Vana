@@ -64,14 +64,14 @@ void SummonsPacket::removeSummon(Player *player, Summon *summon, int8_t message)
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobid) {
+void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_SUMMON_DAMAGE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summonid);
 	packet.add<int8_t>(notsure);
 	packet.add<int32_t>(damage);
-	packet.add<int32_t>(mobid);
+	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(0);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

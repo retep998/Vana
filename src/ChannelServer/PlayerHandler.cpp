@@ -72,23 +72,23 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	uint8_t level = 0;
 	uint16_t mpBurn = 0;
 	int32_t mapMobId = 0; // Map Mob ID
-	int32_t mobid = 0; // Actual Mob ID - i.e. 8800000 for Zakum
+	int32_t mobId = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t nodamageid = 0;
 	Mob *mob = nullptr;
 	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
-		mobid = packet.get<int32_t>();
+		mobId = packet.get<int32_t>();
 
 		mapMobId = packet.get<int32_t>();
 		mob = Maps::getMap(player->getMap())->getMob(mapMobId);
-		if (mob == nullptr || mob->getMobId() != mobid) {
+		if (mob == nullptr || mob->getMobId() != mobId) {
 			// Hacking
 			return;
 		}
 
 		if (type != BumpDamage) {
-			int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobid);
+			int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobId);
 			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
 			if (attack == nullptr) {
 				// Hacking, I think
@@ -247,7 +247,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
-	PlayersPacket::damagePlayer(player, damage, mobid, hit, type, stance, nodamageid, pgmr);
+	PlayersPacket::damagePlayer(player, damage, mobId, hit, type, stance, nodamageid, pgmr);
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
@@ -349,9 +349,9 @@ void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
 		return;
 	}
 	else if (cardid != 0) {
-		int32_t mobid = ItemDataProvider::Instance()->getMobId(cardid);
-		if (mobid != 0) {
-			player->getMonsterBook()->setCover(mobid);
+		int32_t mobId = ItemDataProvider::Instance()->getMobId(cardid);
+		if (mobId != 0) {
+			player->getMonsterBook()->setCover(mobId);
 			MonsterBookPacket::changeCover(player, cardid);
 		}
 	}
@@ -751,9 +751,9 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targettotal = 0;
-		int32_t mapmobid = i->first;
+		int32_t mapmobId = i->first;
 		int8_t connectedhits = 0;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobid);
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobId);
 		if (mob == nullptr) {
 			continue;
 		}

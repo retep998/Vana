@@ -26,6 +26,6 @@ struct Pos {
 	int16_t x;
 	int16_t y;
 	int32_t operator-(const Pos &p) {
-		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x-p.x), 2) + pow(static_cast<float>(y-p.y), 2)));
+		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 };

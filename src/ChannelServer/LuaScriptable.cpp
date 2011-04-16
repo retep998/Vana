@@ -1308,10 +1308,10 @@ int LuaExports::clearMobs(lua_State *luaVm) {
 
 int LuaExports::countMobs(lua_State *luaVm) {
 	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t mobid = 0;
+	int32_t mobId = 0;
 	if (lua_isnumber(luaVm, 2))
-		mobid = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->countMobs(mobid));
+		mobId = lua_tointeger(luaVm, 2);
+	lua_pushinteger(luaVm, Maps::getMap(mapid)->countMobs(mobId));
 	return 1;
 }
 
@@ -1351,12 +1351,12 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 }
 
 int LuaExports::killMobs(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, 1);
+	int32_t mobId = lua_tointeger(luaVm, 1);
 	int32_t mapid = getPlayer(luaVm)->getMap();
 	bool playerkill = true;
 	if (lua_isboolean(luaVm, 2))
 		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
-	int32_t killed = Maps::getMap(mapid)->killMobs(getPlayer(luaVm), mobid, playerkill, true);
+	int32_t killed = Maps::getMap(mapid)->killMobs(getPlayer(luaVm), mobId, playerkill, true);
 	lua_pushinteger(luaVm, killed);
 	return 1;
 }
@@ -1398,20 +1398,20 @@ int LuaExports::showMapTimer(lua_State *luaVm) {
 }
 
 int LuaExports::spawnMob(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, -1);
+	int32_t mobId = lua_tointeger(luaVm, -1);
 	Player *player = getPlayer(luaVm);
-	lua_pushinteger(luaVm, Maps::getMap(player->getMap())->spawnMob(mobid, player->getPos()));
+	lua_pushinteger(luaVm, Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos()));
 	return 1;
 }
 
 int LuaExports::spawnMobPos(lua_State *luaVm) {
-	int32_t mobid = lua_tointeger(luaVm, 1);
+	int32_t mobId = lua_tointeger(luaVm, 1);
 	int16_t x = lua_tointeger(luaVm, 2);
 	int16_t y = lua_tointeger(luaVm, 3);
 	int16_t fh = 0;
 	if (lua_isnumber(luaVm, 4))
 		fh = lua_tointeger(luaVm, 4);
-	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobid, Pos(x, y), fh));
+	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobId, Pos(x, y), fh));
 	return 1;
 }
 

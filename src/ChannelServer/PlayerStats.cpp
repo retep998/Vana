@@ -702,6 +702,6 @@ uint32_t PlayerStats::getExp(uint8_t level) {
 	return Levels::exps[level - 1];
 }
 
-uint8_t PlayerStats::getMaxLevel(int16_t jobid) {
-	return (GameLogicUtilities::isCygnus(jobid) ? Stats::CygnusLevels : Stats::PlayerLevels);
+uint8_t PlayerStats::getMaxLevel(int16_t jobId) {
+	return (GameLogicUtilities::isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels);
 }

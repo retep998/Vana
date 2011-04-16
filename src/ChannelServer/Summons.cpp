@@ -131,11 +131,11 @@ void Summons::damageSummon(Player *player, PacketReader &packet) {
 	int32_t summonid = packet.get<int32_t>();
 	int8_t notsure = packet.get<int8_t>();
 	int32_t damage = packet.get<int32_t>();
-	int32_t mobid = packet.get<int32_t>();
+	int32_t mobId = packet.get<int32_t>();
 
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);
-		//SummonsPacket::damageSummon(player, summonid, notsure, damage, mobid); // TODO: Find out if this packet even sends anymore
+		//SummonsPacket::damageSummon(player, summonid, notsure, damage, mobId); // TODO: Find out if this packet even sends anymore
 		if (summon->getHP() <= 0) {
 			removeSummon(player, true, false, SummonMessages::None, true);
 		}

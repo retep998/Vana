@@ -108,10 +108,10 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	}
 }
 
-void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, bool useskill, int32_t mp, uint8_t skill, uint8_t level) {
+void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveid, bool useskill, int32_t mp, uint8_t skill, uint8_t level) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_MOVEMENT);
-	packet.add<int32_t>(mobid);
+	packet.add<int32_t>(mobId);
 	packet.add<int16_t>(moveid);
 	packet.addBool(useskill);
 	packet.add<int16_t>(static_cast<int16_t>(mp));
@@ -120,10 +120,10 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobid, int16_t moveid, 
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobid, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
+void MobsPacket::moveMob(Player *player, int32_t mobId, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_CONTROL_MOVEMENT);
-	packet.add<int32_t>(mobid);
+	packet.add<int32_t>(mobId);
 	packet.addBool(useskill);
 	packet.add<int8_t>(skill);
 	packet.addPos(projectiletarget);
@@ -208,18 +208,18 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::showHp(Player *player, int32_t mobid, int8_t per) {
+void MobsPacket::showHp(Player *player, int32_t mobId, int8_t per) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_HP_DISPLAY);
-	packet.add<int32_t>(mobid);
+	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(per);
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::showHp(int32_t mapid, int32_t mobid, int8_t per) {
+void MobsPacket::showHp(int32_t mapid, int32_t mobId, int8_t per) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_HP_DISPLAY);
-	packet.add<int32_t>(mobid);
+	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(per);
 	Maps::getMap(mapid)->sendPacket(packet);
 }
