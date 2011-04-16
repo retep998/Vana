@@ -47,8 +47,9 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	mysqlpp::UseQueryResult res = query.use();
 	Player *p;
 
-	enum TableColumns {
-		CharacterId, Name
+	enum TableColumns : int32_t {
+		CharacterId = 0,
+		Name
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {

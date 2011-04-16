@@ -27,13 +27,13 @@ class Player;
 
 namespace TradesPacket {
 	namespace Messages {
-		enum DenyTradeMessages {
+		enum DenyTradeMessages : int8_t {
 			UnableToFind = 0x01,
 			DoingSomethingElse = 0x02,
 			Rejected = 0x03,
 			TradesDisabled = 0x04
 		};
-		enum ShopEntryMessages {
+		enum ShopEntryMessages : int8_t {
 			NoTradesWhileDead = 0x00, // This message uses the overload that takes 2 Player *s
 			RoomAlreadyClosed = 0x01, // ALL the others use the overload with 1
 			RoomAlreadyFull = 0x02,
@@ -55,7 +55,7 @@ namespace TradesPacket {
 			NotEnoughMesos = 0x13,
 			IncorrectPassword = 0x14
 		};
-		enum EndTradeMessages {
+		enum EndTradeMessages : int8_t {
 			Success = 0x06,
 			Failure = 0x07,
 			TradeHasLimitedItems = 0x08, // Can't carry more than 1
@@ -63,7 +63,7 @@ namespace TradesPacket {
 		};
 	}
 	namespace MessageTypes {
-		enum Types {
+		enum Types : int8_t {
 			DenyTrade = 0x03,
 			ShopEntryMessages = 0x05,
 			EndTrade = 0x0A

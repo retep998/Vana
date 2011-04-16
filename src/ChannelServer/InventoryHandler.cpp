@@ -731,7 +731,7 @@ void InventoryHandler::handleRockFunctions(Player *player, PacketReader &packet)
 	int8_t mode = packet.get<int8_t>();
 	int8_t type = packet.get<int8_t>();
 
-	enum Modes {
+	enum Modes : int8_t {
 		Remove = 0x00,
 		Add = 0x01
 	};
@@ -766,7 +766,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 	int8_t mode = packet.get<int8_t>();
 	int32_t targetmapid = -1;
 
-	enum Modes {
+	enum Modes : int8_t {
 		PresetMap = 0x00,
 		Ign = 0x01
 	};

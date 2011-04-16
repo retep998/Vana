@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 namespace BuddyOpcodes {
-	enum Opcodes {
+	enum Opcodes : int8_t {
 		Add = 0x01,
 		AcceptInvite = 0x02,
 		Remove = 0x03

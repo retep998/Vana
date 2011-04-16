@@ -25,7 +25,7 @@ using std::string;
 using std::tr1::unordered_map;
 
 namespace LogDestinations {
-	enum LogDestinations {
+	enum LogDestinations : int32_t {
 		None = 0x00,
 		File = 0x01,
 		Console = 0x02,

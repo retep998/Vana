@@ -112,7 +112,7 @@ private:
 };
 
 namespace NpcDialogs {
-	enum DialogOptions {
+	enum DialogOptions : int8_t {
 		Normal = 0x00,
 		YesNo = 0x01,
 		GetText = 0x02,

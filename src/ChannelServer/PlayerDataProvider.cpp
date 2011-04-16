@@ -152,7 +152,7 @@ void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
 void PlayerDataProvider::updatePlayer(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	if (PlayerData *player = getPlayerData(playerId)) {
-		int32_t updateBits = packet.get<int32_t>();
+		int8_t updateBits = packet.get<int8_t>();
 		bool updateParty = false;
 		bool updateGuild = false;
 		bool updateAlliance = false;

@@ -26,7 +26,7 @@ struct Pos;
 
 namespace DropsPacket {
 	namespace DropTypes {
-		enum DropTypes {
+		enum DropTypes : int8_t {
 			ShowDrop = 0,
 			DropAnimation = 1,
 			ShowExisting = 2,

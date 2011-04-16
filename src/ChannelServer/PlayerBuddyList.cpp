@@ -51,7 +51,8 @@ void PlayerBuddyList::load() {
 	res = query.store();
 
 	enum TableData {
-		CharID, InviterName, InviterId
+		CharId = 0,
+		InviterName, InviterId
 	};
 
 	BuddyInvite invite;
@@ -76,7 +77,8 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 	mysqlpp::Query query = Database::getCharDb().query();
 
 	enum TableColumns {
-		CharacterID, CharacterName, GM, BuddylistLimit, BuddylistSize
+		CharacterId = 0,
+		CharacterName, Gm, BuddylistLimit, BuddylistSize
 	};
 
 	query << "SELECT c.character_id, c.name, u.gm, c.buddylist_size AS buddylist_limit, ("
@@ -96,7 +98,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 
 	mysqlpp::Row row = res[0];
 
-	if (atoi(row[GM]) > 0 && !m_player->isGm()) {
+	if (atoi(row[Gm]) > 0 && !m_player->isGm()) {
 		// GM cannot be in buddy list unless the player is a GM
 		return BuddyListPacket::Errors::NoGms;
 	}
@@ -106,7 +108,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		return BuddyListPacket::Errors::TargetListFull;
 	}
 
-	int32_t charid = atoi(row[CharacterID]);
+	int32_t charid = atoi(row[CharacterId]);
 
 	if (m_buddies.find(charid) != m_buddies.end()) {
 		if (m_buddies[charid]->groupName == group) {

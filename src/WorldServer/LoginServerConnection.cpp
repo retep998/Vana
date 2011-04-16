@@ -19,11 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
+#include "VanaConstants.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include <iostream>
 
-LoginServerConnection::LoginServerConnection() {
+LoginServerConnection::LoginServerConnection()
+{
 	setType(ServerTypes::World);
 }
 

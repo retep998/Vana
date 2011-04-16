@@ -128,7 +128,7 @@ struct MorphData {
 };
 
 namespace SkillTypes {
-	enum {
+	enum : int8_t {
 		Melee,
 		Ranged,
 		Magic,

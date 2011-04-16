@@ -27,7 +27,7 @@ class Player;
 
 namespace PartyPacket {
 	namespace Errors {
-		enum {
+		enum : int8_t {
 			PlayerHasParty = 0x10,
 			PartyFull = 0x11,
 			DifferingChannel = 0x12

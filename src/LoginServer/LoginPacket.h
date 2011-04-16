@@ -30,7 +30,7 @@ struct Character;
 
 namespace LoginPacket {
 	namespace Errors {
-		enum Errors {
+		enum Errors : int8_t {
 			InvalidPin = 0x02,
 			InvalidPassword = 0x04,
 			InvalidUsername = 0x05,
@@ -38,7 +38,7 @@ namespace LoginPacket {
 		};
 	}
 	namespace WorldMessages {
-		enum Messages {
+		enum Messages : int8_t {
 			Normal = 0x00,
 			HeavyLoad = 0x01,
 			MaxLoad = 0x02

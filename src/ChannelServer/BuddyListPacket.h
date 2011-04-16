@@ -27,7 +27,7 @@ struct BuddyInvite;
 
 namespace BuddyListPacket {
 	namespace Errors {
-		enum Errors {
+		enum Errors : int8_t {
 			None = 0x00,
 			BuddyListFull = 0x0B,
 			TargetListFull = 0x0C,
@@ -37,7 +37,7 @@ namespace BuddyListPacket {
 		};
 	}
 	namespace ActionTypes {
-		enum Types {
+		enum Types : int8_t {
 			First = 0x07,
 			Add = 0x0A,
 			Remove = 0x12,
@@ -45,7 +45,7 @@ namespace BuddyListPacket {
 		};
 	}
 	namespace OppositeStatus {
-		enum Statuses {
+		enum Statuses : int8_t {
 			Registered = 0x00,
 			Requested = 0x01,
 			Unregistered = 0x02

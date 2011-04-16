@@ -23,7 +23,7 @@ class Player;
 struct ActiveQuest;
 
 namespace QuestsPacket {
-	enum ErrorCodes {
+	enum ErrorCodes : int8_t {
 		ErrorUnk = 0x09,
 		ErrorNoItemSpace = 0x0A,
 		ErrorNotEnoughMesos = 0x0B,

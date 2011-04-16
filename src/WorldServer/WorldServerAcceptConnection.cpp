@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SyncHandler.h"
 #include "SyncPacket.h"
+#include "VanaConstants.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"

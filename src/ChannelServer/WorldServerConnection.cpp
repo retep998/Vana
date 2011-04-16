@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "PartyHandler.h"
 #include "SyncHandler.h"
+#include "VanaConstants.h"
 #include "WorldServerConnectHandler.h"
 #include "WorldServerConnectPacket.h"
 #include <iostream>
 
-WorldServerConnection::WorldServerConnection() {
+WorldServerConnection::WorldServerConnection()
+{
 	setType(ServerTypes::Channel);
 }
 

@@ -28,7 +28,7 @@ void PacketReader::skipBytes(int32_t len) {
 	m_pos += len;
 }
 
-int16_t PacketReader::getHeader(bool advanceBuffer) {
+header_t PacketReader::getHeader(bool advanceBuffer) {
 	if (getSize() < sizeof(header_t)) {
 		throw std::range_error("Packet data longer than buffer allows");
 	}

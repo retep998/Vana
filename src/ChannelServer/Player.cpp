@@ -478,7 +478,7 @@ void Player::changeKey(PacketReader &packet) {
 	int32_t mode = packet.get<int32_t>();
 	int32_t howmany = packet.get<int32_t>();
 
-	enum KeyModes {
+	enum KeyModes : int32_t {
 		ChangeKeys = 0x00,
 		AutoHpPotion = 0x01,
 		AutoMpPotion = 0x02

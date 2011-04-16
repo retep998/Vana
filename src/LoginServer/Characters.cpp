@@ -289,7 +289,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	enum DeletionConstants {
+	enum DeletionConstants : int8_t {
 		Success = 0x00,
 		IncorrectBirthday = 0x12,
 		NoGuildMaster = 0x16,

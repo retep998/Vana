@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 
 namespace QuestOpcodes {
-	enum {
+	enum : int8_t {
 		RestoreLostQuestItem = 0x00,
 		StartQuest = 0x01,
 		FinishQuest = 0x02,

@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.h"
 
 namespace ShopOpcodes {
-	enum Opcodes {
+	enum Opcodes : int8_t {
 		Buy = 0x00,
 		Sell = 0x01,
 		Recharge = 0x02,

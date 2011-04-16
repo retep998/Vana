@@ -56,7 +56,7 @@ struct ClassValidItems {
 };
 
 namespace ValidItemType {
-	enum {
+	enum : int8_t {
 		Face = 1,
 		Hair = 2,
 		HairColor = 3,

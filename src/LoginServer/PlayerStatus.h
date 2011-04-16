@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 namespace PlayerStatus {
-	enum PlayerStatus {
+	enum PlayerStatus : int8_t {
 		LoggedIn = 0x00,
 		SetPin = 0x01,
 		CheckPin = 0x04,

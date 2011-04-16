@@ -22,3 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace VanaConstants {
 	const int32_t SaltSize = 10;
 }
+
+namespace ServerTypes {
+	enum ServerTypes : int16_t {
+		Login = 1, // Started at 1 so it's easy to do logging
+		World,
+		Channel,
+		Cash,
+		Mts
+	};
+}
