@@ -48,7 +48,7 @@ bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketR
 			return false;
 		}
 	}
-	else if (m_isAuthenticated == false) {
+	else if (!m_isAuthenticated) {
 		// Trying to do something while unauthenticated? DC!
 		getSession()->disconnect();
 		return false;
