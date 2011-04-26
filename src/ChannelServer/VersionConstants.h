@@ -17,11 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.h"
-
-namespace Levels {
-	extern uint32_t exps[Stats::PlayerLevels - 1];
-}
+#include "Types.h"
 
 namespace TradeHandler {
 	int32_t getTaxLevel(int32_t mesos);

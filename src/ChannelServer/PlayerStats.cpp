@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Summons.h"
 #include "SyncPacket.h"
-#include "VersionConstants.h"
 #include <boost/lexical_cast.hpp>
 #include <string>
 
@@ -699,7 +698,7 @@ int16_t PlayerStats::levelMp(int16_t val, int16_t bonus) {
 }
 
 uint32_t PlayerStats::getExp(uint8_t level) {
-	return Levels::exps[level - 1];
+	return Stats::PlayerExp[level - 1];
 }
 
 uint8_t PlayerStats::getMaxLevel(int16_t jobId) {
