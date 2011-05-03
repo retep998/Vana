@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <list>
 #include <string>
 #include <vector>
@@ -51,7 +52,7 @@ struct BuddyInvite {
 	int32_t id;
 };
 
-class PlayerBuddyList {
+class PlayerBuddyList : boost::noncopyable {
 public:
 	PlayerBuddyList(Player *player);
 	uint8_t addBuddy(const string &name, const string &group, bool invite = true);

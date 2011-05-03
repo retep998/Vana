@@ -111,7 +111,6 @@
     <ClCompile Include="src\ChannelServer\PetHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerModFunctions.cpp" />
-    <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -232,7 +231,6 @@
     <ClInclude Include="src\ChannelServer\PetHandler.h" />
     <ClInclude Include="src\ChannelServer\PlayerDataProvider.h" />
     <ClInclude Include="src\ChannelServer\PlayerModFunctions.h" />
-    <ClInclude Include="src\ChannelServer\PlayerRandomStream.h" />
     <ClInclude Include="src\ChannelServer\Quests.h" />
     <ClInclude Include="src\ChannelServer\Reactor.h" />
     <ClInclude Include="src\ChannelServer\ReactorHandler.h" />

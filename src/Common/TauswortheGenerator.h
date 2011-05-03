@@ -18,20 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/utility.hpp>
 
-class Player;
-class PacketCreator;
-
-class PlayerRandStream {
+class TauswortheGenerator : boost::noncopyable {
 public:
-	PlayerRandStream(Player *p);
+	TauswortheGenerator();
+	TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3);
 
 	void reset(uint32_t seed1, uint32_t seed2, uint32_t seed3);
 	uint32_t next();
-
-	void connectData(PacketCreator &packet);
 private:
-	Player *m_player;
 	uint32_t m_seed1;
 	uint32_t m_seed2;
 	uint32_t m_seed3;

@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using std::string;
-using std::tr1::unordered_map;
 
 class Variables {
 public:
@@ -29,6 +28,8 @@ public:
 	void setVariable(const string &name, const string &value);
 	string getVariable(const string &name);
 	void deleteVariable(const string &name);
+
+	string & operator[](const string &key) { return m_variables[key]; }
 protected:
-	unordered_map<string, string> m_variables;
+	std::tr1::unordered_map<string, string> m_variables;
 };

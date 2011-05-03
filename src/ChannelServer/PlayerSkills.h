@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
@@ -32,7 +33,7 @@ struct PlayerSkillInfo {
 	uint8_t maxLevel;
 };
 
-class PlayerSkills {
+class PlayerSkills : boost::noncopyable {
 public:
 	PlayerSkills(Player *player) : player(player) { load(); }
 

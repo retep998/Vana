@@ -48,7 +48,7 @@ void PlayerPacket::connectData(Player *player) {
 		}
 	}
 
-	player->getRandStream()->connectData(packet); // Seeding RNG
+	player->initializeRng(packet);
 
 	packet.add<int64_t>(-1);
 	packet.add<int32_t>(player->getId());

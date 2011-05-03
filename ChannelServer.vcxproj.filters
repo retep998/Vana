@@ -277,9 +277,6 @@
     <ClCompile Include="src\ChannelServer\TradeHandler.cpp">
       <Filter>Source\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerRandomStream.cpp">
-      <Filter>Source\Player</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\Pet.cpp">
       <Filter>Source\ChannelServer</Filter>
     </ClCompile>
@@ -596,9 +593,6 @@
       <Filter>Source\Player</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerQuests.h">
-      <Filter>Source\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerRandomStream.h">
       <Filter>Source\Player</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerSkills.h">

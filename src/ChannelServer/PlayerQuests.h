@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestDataProvider.h"
 #include "Quests.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <iomanip>
 #include <map>
 #include <sstream>
@@ -54,7 +55,7 @@ struct ActiveQuest {
 	map<int32_t, int16_t, std::less<int32_t>> kills;
 };
 
-class PlayerQuests {
+class PlayerQuests : boost::noncopyable {
 public:
 	PlayerQuests(Player *player);
 

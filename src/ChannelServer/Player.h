@@ -27,15 +27,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerMounts.h"
 #include "PlayerPets.h"
 #include "PlayerQuests.h"
-#include "PlayerRandomStream.h"
 #include "PlayerSkills.h"
 #include "PlayerStats.h"
 #include "PlayerStorage.h"
 #include "PlayerSummons.h"
 #include "PlayerVariables.h"
 #include "SkillDataProvider.h"
+#include "TauswortheGenerator.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/tr1/unordered_set.hpp>
+#include <boost/utility.hpp>
+
 #include <ctime>
 #include <string>
 #include <vector>
@@ -50,85 +52,84 @@ class PacketReader;
 class Party;
 struct PortalInfo;
 
-class Player : public AbstractConnection, public MovableLife {
+class Player : boost::noncopyable, public AbstractConnection, public MovableLife {
 public:
 	Player();
 	~Player();
 
 	void handleRequest(PacketReader &packet);
 
-	void setSaveOnDc(bool save) { save_on_dc = save; }
-	void setTrading(bool state) { trade_state = state; }
-	void setChangingChannel(bool v) { changing_channel = v; }
+	void setSaveOnDc(bool save) { m_saveOnDc = save; }
+	void setTrading(bool state) { m_tradeState = state; }
+	void setChangingChannel(bool v) { m_changingChannel = v; }
 	void setSkin(int8_t id);
-	void setFallCounter(int8_t falls) { fall_counter = falls; }
-	void setMapChair(int16_t s) { mapchair = s; }
+	void setFallCounter(int8_t falls) { m_fallCounter = falls; }
+	void setMapChair(int16_t s) { m_mapChair = s; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
 	void setMap(int32_t mapid, PortalInfo *portal = nullptr, bool instance = false);
 	void setBuddyListSize(uint8_t size);
-	void setConnectionTime(int64_t newtime) { online_time = newtime; }
-	void setTradeId(int32_t id) { this->trade_id = id; }
-	void setShop(int32_t shopid) { shop = shopid; }
-	void setChair(int32_t chair) { this->chair = chair; }
-	void setItemEffect(int32_t effect) { this->item_effect = effect; }
-	void setChalkboard(const string &msg) { this->chalkboard = msg; }
-	void setSpecialSkill(const SpecialSkillInfo &info) { this->info = info; }
-	void setNpc(Npc *npc) { this->npc.reset(npc); }
-	void setParty(Party *party) { this->party = party; }
-	void setInstance(Instance *instance) { this->instance = instance; }
+	void setConnectionTime(int64_t newtime) { m_onlineTime = newtime; }
+	void setTradeId(int32_t id) { m_tradeId = id; }
+	void setShop(int32_t shopid) { m_shop = shopid; }
+	void setChair(int32_t chair) { m_chair = chair; }
+	void setItemEffect(int32_t effect) { m_itemEffect = effect; }
+	void setChalkboard(const string &msg) { m_chalkboard = msg; }
+	void setSpecialSkill(const SpecialSkillInfo &info) { m_info = info; }
+	void setNpc(Npc *npc) { m_npc.reset(npc); }
+	void setParty(Party *party) { m_party = party; }
+	void setInstance(Instance *instance) { m_instance = instance; }
 
-	bool isGm() const { return gm_level > 0; }
-	bool isAdmin() const { return admin; }
-	bool isChangingChannel() const { return changing_channel; }
-	bool isTrading() const { return trade_state; }
+	bool isGm() const { return m_gmLevel > 0; }
+	bool isAdmin() const { return m_admin; }
+	bool isChangingChannel() const { return m_changingChannel; }
+	bool isTrading() const { return m_tradeState; }
 	bool hasGmEquip() const;
-	int8_t getWorldId() const { return world_id; }
-	int8_t getGender() const { return gender; }
-	int8_t getSkin() const { return skin; }
-	int8_t getMappos() const { return map_pos; }
-	int8_t getFallCounter() const { return fall_counter; }
-	uint8_t getBuddyListSize() const { return buddylist_size; }
+	int8_t getWorldId() const { return m_worldId; }
+	int8_t getGender() const { return m_gender; }
+	int8_t getSkin() const { return m_skin; }
+	int8_t getMappos() const { return m_mapPos; }
+	int8_t getFallCounter() const { return m_fallCounter; }
+	uint8_t getBuddyListSize() const { return m_buddylistSize; }
 	uint8_t getPortalCount(bool add = false);
-	int16_t getMapChair() const { return mapchair; }
-	int32_t getId() const { return id; }
-	int32_t getUserId() const { return user_id; }
-	int32_t getEyes() const { return eyes; }
-	int32_t getHair() const { return hair; }
-	int32_t getMap() const { return map; }
-	int32_t getShop() const { return shop; }
-	int32_t getChair() const { return chair; }
-	int32_t getItemEffect() const { return item_effect; }
-	int32_t getGmLevel() const { return gm_level; }
-	int32_t getSpecialSkill() const { return info.skillId; }
-	int32_t getTradeId() const { return trade_id; }
-	int64_t getConnectionTime() const { return online_time; }
-	int64_t getConnectedTime() const { return time(nullptr) - online_time; }
-	string getChalkboard() const { return chalkboard; }
+	int16_t getMapChair() const { return m_mapChair; }
+	int32_t getId() const { return m_id; }
+	int32_t getUserId() const { return m_userId; }
+	int32_t getEyes() const { return m_eyes; }
+	int32_t getHair() const { return m_hair; }
+	int32_t getMap() const { return m_map; }
+	int32_t getShop() const { return m_shop; }
+	int32_t getChair() const { return m_chair; }
+	int32_t getItemEffect() const { return m_itemEffect; }
+	int32_t getGmLevel() const { return m_gmLevel; }
+	int32_t getSpecialSkill() const { return m_info.skillId; }
+	int32_t getTradeId() const { return m_tradeId; }
+	int64_t getConnectionTime() const { return m_onlineTime; }
+	int64_t getConnectedTime() const { return time(nullptr) - m_onlineTime; }
+	string getChalkboard() const { return m_chalkboard; }
 	string getMedalName();
-	string getName() const { return name; }
-	SpecialSkillInfo getSpecialSkillInfo() const { return info; }
+	string getName() const { return m_name; }
+	SpecialSkillInfo getSpecialSkillInfo() const { return m_info; }
 
-	Npc * getNpc() const { return npc.get(); }
-	Party * getParty() const { return party; }
-	Instance * getInstance() const { return instance; }
-	PlayerActiveBuffs * getActiveBuffs() const { return activeBuffs.get(); }
-	PlayerBuddyList * getBuddyList() const { return buddyList.get(); }
-	PlayerInventory * getInventory() const { return inv.get(); }
-	PlayerMonsterBook * getMonsterBook() const { return monsterBook.get(); }
-	PlayerMounts * getMounts() const { return mounts.get(); }
-	PlayerPets * getPets() const { return pets.get(); }
-	PlayerQuests * getQuests() const { return quests.get(); }
-	PlayerRandStream * getRandStream() const { return randStream.get(); }
-	PlayerSkills * getSkills() const { return skills.get(); }
-	PlayerStats * getStats() const { return stats.get(); }
-	PlayerStorage * getStorage() const { return storage.get(); }
-	PlayerSummons * getSummons() const { return summons.get(); }
-	PlayerVariables * getVariables() const { return variables.get(); }
+	Npc * getNpc() const { return m_npc.get(); }
+	Party * getParty() const { return m_party; }
+	Instance * getInstance() const { return m_instance; }
+	PlayerActiveBuffs * getActiveBuffs() const { return m_activeBuffs.get(); }
+	PlayerBuddyList * getBuddyList() const { return m_buddyList.get(); }
+	PlayerInventory * getInventory() const { return m_inventory.get(); }
+	PlayerMonsterBook * getMonsterBook() const { return m_monsterBook.get(); }
+	PlayerMounts * getMounts() const { return m_mounts.get(); }
+	PlayerPets * getPets() const { return m_pets.get(); }
+	PlayerQuests * getQuests() const { return m_quests.get(); }
+	PlayerSkills * getSkills() const { return m_skills.get(); }
+	PlayerStats * getStats() const { return m_stats.get(); }
+	PlayerStorage * getStorage() const { return m_storage.get(); }
+	PlayerSummons * getSummons() const { return m_summons.get(); }
+	PlayerVariables * getVariables() const { return m_variables.get(); }
 
 	// For "onlyOnce" portals
-	void addUsedPortal(int8_t portalId) { used_portals.insert(portalId); }
-	bool usedPortal(int8_t portalId) const { return used_portals.find(portalId) != used_portals.end(); }
+	void addUsedPortal(int8_t portalId) { m_usedPortals.insert(portalId); }
+	bool usedPortal(int8_t portalId) const { return m_usedPortals.find(portalId) != m_usedPortals.end(); }
 
 	bool addWarning();
 	void changeChannel(int8_t channel);
@@ -136,58 +137,59 @@ public:
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath(bool wheel);
+	void initializeRng(PacketCreator &packet);
 private:
 	void playerConnect(PacketReader &packet);
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 	void saveStats();
 
-	bool trade_state;
-	bool save_on_dc;
-	bool is_connect;
-	bool changing_channel;
-	bool admin;
-	int8_t world_id;
-	int8_t map_pos;
-	int8_t gender;
-	int8_t skin;
-	int8_t fall_counter;
-	uint8_t buddylist_size;
+	bool m_tradeState;
+	bool m_saveOnDc;
+	bool m_isConnect;
+	bool m_changingChannel;
+	bool m_admin;
+	int8_t m_worldId;
+	int8_t m_mapPos;
+	int8_t m_gender;
+	int8_t m_skin;
+	int8_t m_fallCounter;
+	uint8_t m_buddylistSize;
 	uint8_t m_portalCount;
-	int16_t mapchair;
-	int32_t id;
-	int32_t user_id;
-	int32_t eyes;
-	int32_t hair;
-	int32_t map;
-	int32_t shop;
-	int32_t item_effect;
-	int32_t chair;
-	int32_t gm_level;
-	int32_t trade_id;
-	int64_t online_time;
-	string chalkboard;
-	string name;
-	unordered_set<int8_t> used_portals;
-	vector<int32_t> warnings;
-	SpecialSkillInfo info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
+	int16_t m_mapChair;
+	int32_t m_id;
+	int32_t m_userId;
+	int32_t m_eyes;
+	int32_t m_hair;
+	int32_t m_map;
+	int32_t m_shop;
+	int32_t m_itemEffect;
+	int32_t m_chair;
+	int32_t m_gmLevel;
+	int32_t m_tradeId;
+	int64_t m_onlineTime;
+	string m_chalkboard;
+	string m_name;
+	unordered_set<int8_t> m_usedPortals;
+	vector<int32_t> m_warnings;
+	SpecialSkillInfo m_info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
-	Instance *instance;
-	Party *party;
-	scoped_ptr<Npc> npc;
-	scoped_ptr<PlayerActiveBuffs> activeBuffs;
-	scoped_ptr<PlayerBuddyList> buddyList;
-	scoped_ptr<PlayerInventory> inv;
-	scoped_ptr<PlayerMonsterBook> monsterBook;
-	scoped_ptr<PlayerMounts> mounts;
-	scoped_ptr<PlayerPets> pets;
-	scoped_ptr<PlayerQuests> quests;
-	scoped_ptr<PlayerRandStream> randStream;
-	scoped_ptr<PlayerSkills> skills;
-	scoped_ptr<PlayerStats> stats;
-	scoped_ptr<PlayerStorage> storage;
-	scoped_ptr<PlayerSummons> summons;
-	scoped_ptr<PlayerVariables> variables;
+	Instance *m_instance;
+	Party *m_party;
+	scoped_ptr<Npc> m_npc;
+	scoped_ptr<PlayerActiveBuffs> m_activeBuffs;
+	scoped_ptr<PlayerBuddyList> m_buddyList;
+	scoped_ptr<PlayerInventory> m_inventory;
+	scoped_ptr<PlayerMonsterBook> m_monsterBook;
+	scoped_ptr<PlayerMounts> m_mounts;
+	scoped_ptr<PlayerPets> m_pets;
+	scoped_ptr<PlayerQuests> m_quests;
+	scoped_ptr<PlayerSkills> m_skills;
+	scoped_ptr<PlayerStats> m_stats;
+	scoped_ptr<PlayerStorage> m_storage;
+	scoped_ptr<PlayerSummons> m_summons;
+	scoped_ptr<PlayerVariables> m_variables;
+	scoped_ptr<TauswortheGenerator> m_randStream;
 };
 
 class PlayerFactory : public AbstractConnectionFactory {
