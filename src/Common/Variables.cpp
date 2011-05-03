@@ -28,5 +28,5 @@ void Variables::setVariable(const string &name, const string &val) {
 }
 
 string Variables::getVariable(const string &name) {
-	return (m_variables.find(name) == m_variables.end()) ? "" : m_variables[name];
+	return (m_variables.find(name) == m_variables.end() ? "" : m_variables[name]);
 }

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/utility.hpp>
 #include <vector>
 
 using std::vector;
@@ -25,7 +26,7 @@ using std::vector;
 class Item;
 class Player;
 
-class PlayerStorage {
+class PlayerStorage : boost::noncopyable {
 public:
 	PlayerStorage(Player *player);
 	~PlayerStorage();

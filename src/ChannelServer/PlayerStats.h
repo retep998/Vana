@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/utility.hpp>
 #include <map>
 
 using std::map;
@@ -45,7 +46,7 @@ struct EquipBonus : public BonusSet {
 };
 typedef map<int16_t, EquipBonus> EquipBonuses;
 
-class PlayerStats {
+class PlayerStats : boost::noncopyable {
 public:
 	PlayerStats(Player *player,
 		uint8_t level,

@@ -109,6 +109,7 @@
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
     <ClCompile Include="src\Common\SqlLogger.cpp" />
+    <ClCompile Include="src\Common\TauswortheGenerator.cpp" />
     <ClCompile Include="src\Common\Timer.cpp" />
     <ClCompile Include="src\Common\TimerContainer.cpp" />
     <ClCompile Include="src\Common\TimerId.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\Common\Quest.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
+    <ClInclude Include="src\Common\TauswortheGenerator.h" />
     <ClInclude Include="src\Common\Timer.h" />
     <ClInclude Include="src\Common\TimerContainer.h" />
     <ClInclude Include="src\Common\TimerId.h" />

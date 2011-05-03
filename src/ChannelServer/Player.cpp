@@ -51,6 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
 #include "Quests.h"
+#include "Randomizer.h"
 #include "ReactorHandler.h"
 #include "ServerPacket.h"
 #include "Session.h"
@@ -66,31 +67,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Player::Player() :
-	fall_counter(0),
-	shop(0),
-	item_effect(0),
-	chair(0),
-	mapchair(0),
-	trade_id(0),
+	m_fallCounter(0),
+	m_shop(0),
+	m_itemEffect(0),
+	m_chair(0),
+	m_mapChair(0),
+	m_tradeId(0),
 	m_portalCount(0),
-	trade_state(false),
-	save_on_dc(true),
-	is_connect(false),
-	npc(nullptr),
-	party(nullptr),
-	instance(nullptr),
-	changing_channel(false)
+	m_tradeState(false),
+	m_saveOnDc(true),
+	m_isConnect(false),
+	m_npc(nullptr),
+	m_party(nullptr),
+	m_instance(nullptr),
+	m_changingChannel(false)
 {
 }
 
 Player::~Player() {
-	if (is_connect) {
-		Map *curMap = Maps::getMap(map);
+	if (m_isConnect) {
+		Map *curMap = Maps::getMap(m_map);
 		if (getMapChair() != 0) {
 			curMap->playerSeated(getMapChair(), nullptr);
 		}
 		curMap->removePlayer(this);
-		is_connect = false;
+		m_isConnect = false;
 
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
@@ -110,10 +111,10 @@ Player::~Player() {
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
 		if (PortalInfo *closest =curMap->getNearestSpawnPoint(getPos())) {
-			map_pos = closest->id;
+			m_mapPos = closest->id;
 		}
 
-		if (save_on_dc) {
+		if (m_saveOnDc) {
 			saveAll(true);
 			setOnline(false);
 		}
@@ -122,7 +123,7 @@ Player::~Player() {
 				SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false);
 			}
 			// Do not connect to worldserver if the worldserver has disconnected
-			SyncPacket::PlayerPacket::disconnect(id);
+			SyncPacket::PlayerPacket::disconnect(getId());
 		}
 		PlayerDataProvider::Instance()->removePlayer(this);
 	}
@@ -131,7 +132,7 @@ Player::~Player() {
 void Player::handleRequest(PacketReader &packet) {
 	try {
 		header_t header = packet.getHeader();
-		if (!is_connect) {
+		if (!m_isConnect) {
 			// We don't want to accept any other packet than the one for loading the character
 			if (header == CMSG_PLAYER_LOAD) {
 				playerConnect(packet);
@@ -172,7 +173,7 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
 				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
 				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
-				case CMSG_MULTI_STAT_ADDITION: stats->addStatMulti(packet); break;
+				case CMSG_MULTI_STAT_ADDITION: getStats()->addStatMulti(packet); break;
 				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
@@ -202,7 +203,7 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_SKILL_USE: Skills::useSkill(this, packet); break;
 				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, packet); break;
 				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
-				case CMSG_STAT_ADDITION: stats->addStat(packet); break;
+				case CMSG_STAT_ADDITION: getStats()->addStat(packet); break;
 				case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
 				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
 				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
@@ -237,7 +238,7 @@ void Player::playerConnect(PacketReader &packet) {
 		getSession()->disconnect();
 		return;
 	}
-	this->id = id;
+	m_id = id;
 
 	// Character info
 	mysqlpp::Query query = Database::getCharDb().query();
@@ -252,21 +253,21 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 
-	res[0]["name"].to_string(name);
-	user_id		= res[0]["user_id"];
-	map			= res[0]["map"];
-	gm_level	= res[0]["gm_level"];
-	admin		= StringUtilities::atob(res[0]["admin"]);
-	eyes		= res[0]["eyes"];
-	hair		= res[0]["hair"];
-	world_id	= static_cast<int8_t>(res[0]["world_id"]);
-	gender		= static_cast<int8_t>(res[0]["gender"]);
-	skin		= static_cast<int8_t>(res[0]["skin"]);
-	map_pos		= static_cast<int8_t>(res[0]["pos"]);
-	buddylist_size = static_cast<uint8_t>(res[0]["buddylist_size"]);
+	res[0]["name"].to_string(m_name);
+	m_userId		= res[0]["user_id"];
+	m_map			= res[0]["map"];
+	m_gmLevel	= res[0]["gm_level"];
+	m_admin		= StringUtilities::atob(res[0]["admin"]);
+	m_eyes		= res[0]["eyes"];
+	m_hair		= res[0]["hair"];
+	m_worldId	= static_cast<int8_t>(res[0]["world_id"]);
+	m_gender		= static_cast<int8_t>(res[0]["gender"]);
+	m_skin		= static_cast<int8_t>(res[0]["skin"]);
+	m_mapPos		= static_cast<int8_t>(res[0]["pos"]);
+	m_buddylistSize = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Stats
-	stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
+	m_stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
 		static_cast<int16_t>(res[0]["job"]),
 		static_cast<int16_t>(res[0]["fame"]),
 		static_cast<int16_t>(res[0]["str"]),
@@ -283,23 +284,23 @@ void Player::playerConnect(PacketReader &packet) {
 		res[0]["exp"]));
 
 	// Inventory
-	mounts.reset(new PlayerMounts(this));
-	pets.reset(new PlayerPets(this));
+	m_mounts.reset(new PlayerMounts(this));
+	m_pets.reset(new PlayerPets(this));
 	boost::array<uint8_t, Inventories::InventoryCount> maxSlots;
 	maxSlots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
 	maxSlots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
 	maxSlots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
 	maxSlots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
 	maxSlots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
-	inv.reset(new PlayerInventory(this, maxSlots, res[0]["mesos"]));
-	storage.reset(new PlayerStorage(this));
+	m_inventory.reset(new PlayerInventory(this, maxSlots, res[0]["mesos"]));
+	m_storage.reset(new PlayerStorage(this));
 
 	// Skills
-	skills.reset(new PlayerSkills(this));
+	m_skills.reset(new PlayerSkills(this));
 
 	// Buffs/summons
-	activeBuffs.reset(new PlayerActiveBuffs(this));
-	summons.reset(new PlayerSummons(this));
+	m_activeBuffs.reset(new PlayerActiveBuffs(this));
+	m_summons.reset(new PlayerSummons(this));
 
 	// Packet transferring on channel switch
 	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
@@ -313,7 +314,7 @@ void Player::playerConnect(PacketReader &packet) {
 			int32_t skillId = getActiveBuffs()->getHyperBody();
 			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillId);
 			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
-			stats->setHyperBody(hb->x, hb->y);
+			getStats()->setHyperBody(hb->x, hb->y);
 		}
 
 		getSummons()->parseSummonTransferPacket(pack);
@@ -326,11 +327,10 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	// The rest
-	variables.reset(new PlayerVariables(this));
-	buddyList.reset(new PlayerBuddyList(this));
-	quests.reset(new PlayerQuests(this));
-	randStream.reset(new PlayerRandStream(this));
-	monsterBook.reset(new PlayerMonsterBook(this));
+	m_variables.reset(new PlayerVariables(this));
+	m_buddyList.reset(new PlayerBuddyList(this));
+	m_quests.reset(new PlayerQuests(this));
+	m_monsterBook.reset(new PlayerMonsterBook(this));
 
 	getMonsterBook()->setCover(res[0]["book_cover"]);
 
@@ -341,24 +341,24 @@ void Player::playerConnect(PacketReader &packet) {
 	SkillMacros skillMacros;
 	skillMacros.load(id);
 
-	stats->checkHpMp(); // Adjust down HP or MP if necessary
+	getStats()->checkHpMp(); // Adjust down HP or MP if necessary
 
 	if (isGm() || isAdmin()) {
 		if (!checked) {
-			map = Maps::GmMap;
-			map_pos = -1;
+			m_map = Maps::GmMap;
+			m_mapPos = -1;
 		}
 	}
-	else if (Maps::getMap(map)->getForcedReturn() != Maps::NoMap) {
-		map = Maps::getMap(map)->getForcedReturn();
-		map_pos = -1;
+	else if (Maps::getMap(m_map)->getForcedReturn() != Maps::NoMap) {
+		m_map = Maps::getMap(m_map)->getForcedReturn();
+		m_mapPos = -1;
 	}
 	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
-		map = Maps::getMap(map)->getReturnMap();
-		map_pos = -1;
+		m_map = Maps::getMap(m_map)->getReturnMap();
+		m_mapPos = -1;
 	}
 
-	m_pos = Maps::getMap(map)->getSpawnPoint(map_pos)->pos;
+	m_pos = Maps::getMap(m_map)->getSpawnPoint(m_mapPos)->pos;
 	m_stance = 0;
 	m_foothold = 0;
 
@@ -369,8 +369,8 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
-		if (Pet *pet = pets->getSummoned(i)) {
-			pet->setPos(Maps::getMap(map)->getSpawnPoint(map_pos)->pos);
+		if (Pet *pet = getPets()->getSummoned(i)) {
+			pet->setPos(Maps::getMap(m_map)->getSpawnPoint(m_mapPos)->pos);
 		}
 	}
 
@@ -381,14 +381,14 @@ void Player::playerConnect(PacketReader &packet) {
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
-	Maps::addPlayer(this, map);
+	Maps::addPlayer(this, m_map);
 
 	std::stringstream x;
 	x << getName() << " (" << getId() << ") connected from " << IpUtilities::ipToString(getIp());
 	ChannelServer::Instance()->log(LogTypes::Info, x.str());
 
 	setOnline(true);
-	is_connect = true;
+	m_isConnect = true;
 	SyncPacket::PlayerPacket::connect(this);
 	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
@@ -398,7 +398,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		MapPacket::portalBlocked(this);
 		return;
 	}
-	Map *oldmap = Maps::getMap(map);
+	Map *oldmap = Maps::getMap(m_map);
 	Map *newmap = Maps::getMap(mapid);
 
 	if (portal == nullptr)
@@ -408,17 +408,17 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
 		if (Instance *i = oldmap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+			i->sendMessage(PlayerChangeMap, getId(), mapid, m_map, ispartyleader);
 		}
 		if (Instance *i = newmap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, id, mapid, map, ispartyleader);
+			i->sendMessage(PlayerChangeMap, getId(), mapid, m_map, ispartyleader);
 		}
 	}
 
 	oldmap->removePlayer(this);
-	map = mapid;
-	map_pos = portal->id;
-	used_portals.clear();
+	m_map = mapid;
+	m_mapPos = portal->id;
+	m_usedPortals.clear();
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
 	setFh(0);
@@ -453,7 +453,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
 		setChalkboard("");
 	}
-	SyncPacket::PlayerPacket::updateMap(id, mapid);
+	SyncPacket::PlayerPacket::updateMap(getId(), mapid);
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapid);
 }
@@ -497,7 +497,7 @@ void Player::changeKey(PacketReader &packet) {
 		}
 
 		// Update to MySQL
-		keyMaps.save(this->id);
+		keyMaps.save(getId());
 	}
 	else if (mode == AutoHpPotion) {
 		getInventory()->setAutoHpPot(howmany);
@@ -522,35 +522,35 @@ void Player::changeSkillMacros(PacketReader &packet) {
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
-	skillMacros.save(id);
+	skillMacros.save(getId());
 }
 
 void Player::setHair(int32_t id) {
-	this->hair = id;
+	m_hair = id;
 	PlayerPacket::updateStatInt(this, Stats::Hair, id);
 }
 
 void Player::setEyes(int32_t id) {
-	this->eyes = id;
+	m_eyes = id;
 	PlayerPacket::updateStatInt(this, Stats::Eyes, id);
 }
 
 void Player::setSkin(int8_t id) {
-	this->skin = id;
+	m_skin = id;
 	PlayerPacket::updateStatInt(this, Stats::Skin, id);
 }
 
 bool Player::addWarning() {
 	int32_t t = TimeUtilities::getTickCount();
 	// Deleting old warnings
-	for (size_t i = 0; i < warnings.size(); i++) {
-		if (warnings[i] + 300000 < t) {
-			warnings.erase(warnings.begin() + i);
+	for (size_t i = 0; i < m_warnings.size(); i++) {
+		if (m_warnings[i] + 300000 < t) {
+			m_warnings.erase(m_warnings.begin() + i);
 			i--;
 		}
 	}
-	warnings.push_back(t);
-	if (warnings.size() > 50) {
+	m_warnings.push_back(t);
+	if (m_warnings.size() > 50) {
 		// Hacker - Temp DCing
 		getSession()->disconnect();
 		return true;
@@ -561,34 +561,34 @@ bool Player::addWarning() {
 void Player::saveStats() {
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE characters SET "
-		<< "level = " << static_cast<int16_t>(stats->getLevel()) << "," // Queries have problems with int8_t due to being derived from ostream
-		<< "job = " << stats->getJob() << ","
-		<< "str = " << stats->getStr() << ","
-		<< "dex = " << stats->getDex() << ","
-		<< "`int` = " << stats->getInt() << ","
-		<< "luk = " << stats->getLuk() << ","
-		<< "chp = " << stats->getHp() << ","
-		<< "mhp = " << stats->getMaxHp(true) << ","
-		<< "cmp = " << stats->getMp() << ","
-		<< "mmp = " << stats->getMaxMp(true) << ","
-		<< "hpmp_ap = " << stats->getHpMpAp() << ","
-		<< "ap = " << stats->getAp() << ","
-		<< "sp = " << stats->getSp() << ","
-		<< "exp = " << stats->getExp() << ","
-		<< "fame = " << stats->getFame() << ","
-		<< "map = " << map << ","
-		<< "pos = " << static_cast<int16_t>(map_pos) << ","
-		<< "gender = " << static_cast<int16_t>(gender) << ","
-		<< "skin = " << static_cast<int16_t>(skin) << ","
-		<< "eyes = " << eyes << ","
-		<< "hair = " << hair << ","
-		<< "mesos = " << inv->getMesos() << ","
-		<< "equip_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EquipInventory)) << ","
-		<< "use_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::UseInventory)) << ","
-		<< "setup_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::SetupInventory)) << ","
-		<< "etc_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::EtcInventory)) << ","
-		<< "cash_slots = " << static_cast<int16_t>(inv->getMaxSlots(Inventories::CashInventory)) << ","
-		<< "buddylist_size = " << static_cast<int16_t>(buddylist_size) << ","
+		<< "level = " << static_cast<int16_t>(getStats()->getLevel()) << "," // Queries have problems with int8_t due to being derived from ostream
+		<< "job = " << getStats()->getJob() << ","
+		<< "str = " << getStats()->getStr() << ","
+		<< "dex = " << getStats()->getDex() << ","
+		<< "`int` = " << getStats()->getInt() << ","
+		<< "luk = " << getStats()->getLuk() << ","
+		<< "chp = " << getStats()->getHp() << ","
+		<< "mhp = " << getStats()->getMaxHp(true) << ","
+		<< "cmp = " << getStats()->getMp() << ","
+		<< "mmp = " << getStats()->getMaxMp(true) << ","
+		<< "hpmp_ap = " << getStats()->getHpMpAp() << ","
+		<< "ap = " << getStats()->getAp() << ","
+		<< "sp = " << getStats()->getSp() << ","
+		<< "exp = " << getStats()->getExp() << ","
+		<< "fame = " << getStats()->getFame() << ","
+		<< "map = " << m_map << ","
+		<< "pos = " << static_cast<int16_t>(m_mapPos) << ","
+		<< "gender = " << static_cast<int16_t>(m_gender) << ","
+		<< "skin = " << static_cast<int16_t>(m_skin) << ","
+		<< "eyes = " << m_eyes << ","
+		<< "hair = " << m_hair << ","
+		<< "mesos = " << getInventory()->getMesos() << ","
+		<< "equip_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::EquipInventory)) << ","
+		<< "use_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::UseInventory)) << ","
+		<< "setup_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::SetupInventory)) << ","
+		<< "etc_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::EtcInventory)) << ","
+		<< "cash_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::CashInventory)) << ","
+		<< "buddylist_size = " << static_cast<int16_t>(m_buddylistSize) << ","
 		<< "book_cover = " << getMonsterBook()->getCover()
 		<< " WHERE character_id = " << getId();
 	query.exec();
@@ -614,22 +614,22 @@ void Player::setOnline(bool online) {
 			<< "SET "
 			<< "	u.online = " << onlineid <<	", "
 			<< "	c.online = " << online << " "
-			<< "WHERE c.character_id = " << id;
+			<< "WHERE c.character_id = " << getId();
 	query.exec();
 }
 
 void Player::setLevelDate() {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = " << id;
+	query << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = " << getId();
 	query.exec();
 }
 
 void Player::acceptDeath(bool wheel) {
-	int32_t tomap = (Maps::getMap(map) ? Maps::getMap(map)->getReturnMap() : map);
+	int32_t tomap = (Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map);
 	if (wheel) {
 		tomap = getMap();
 	}
-	stats->setHp(50, false);
+	getStats()->setHp(50, false);
 	getActiveBuffs()->removeBuff();
 	setMap(tomap);
 }
@@ -647,7 +647,7 @@ bool Player::hasGmEquip() const {
 }
 
 void Player::setBuddyListSize(uint8_t size) {
-	buddylist_size = size;
+	m_buddylistSize = size;
 	BuddyListPacket::showSize(this);
 }
 
@@ -656,4 +656,16 @@ uint8_t Player::getPortalCount(bool add) {
 		m_portalCount++;
 	}
 	return m_portalCount;
+}
+
+void Player::initializeRng(PacketCreator &packet) {
+	uint32_t seed1 = Randomizer::Instance()->randInt();
+	uint32_t seed2 = Randomizer::Instance()->randInt();
+	uint32_t seed3 = Randomizer::Instance()->randInt();
+
+	m_randStream.reset(new TauswortheGenerator(seed1, seed2, seed3));
+
+	packet.add<uint32_t>(seed1);
+	packet.add<uint32_t>(seed2);
+	packet.add<uint32_t>(seed3);
 }

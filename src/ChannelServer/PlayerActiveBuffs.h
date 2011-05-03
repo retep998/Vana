@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <list>
 #include <vector>
 
@@ -53,7 +54,7 @@ struct MapEntryBuffs {
 
 typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t>> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
-class PlayerActiveBuffs {
+class PlayerActiveBuffs : boost::noncopyable {
 public:
 	PlayerActiveBuffs(Player *player) :
 		m_player(player),

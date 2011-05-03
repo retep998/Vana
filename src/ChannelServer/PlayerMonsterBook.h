@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 
 using std::tr1::unordered_map;
 
@@ -33,7 +34,7 @@ struct MonsterCard {
 	uint8_t level; // 1 - 5
 };
 
-class PlayerMonsterBook {
+class PlayerMonsterBook : boost::noncopyable {
 public:
 	PlayerMonsterBook(Player *player);
 

@@ -30,7 +30,7 @@ using std::vector;
 
 class Player;
 
-typedef bool (*ChatHandlerFunction)(Player *, const std::string &args);
+typedef bool (*ChatHandlerFunction)(Player *, const string &args);
 struct ChatCommand {
 	ChatCommand addToMap() {
 		// Duplicates the command and then clears the data to ease addition syntax

@@ -205,6 +205,9 @@
     <ClCompile Include="src\Common\Quest.cpp">
       <Filter>Source\Data Structures</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\TauswortheGenerator.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -440,6 +443,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\Quest.h">
       <Filter>Source\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TauswortheGenerator.h">
+      <Filter>Source\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

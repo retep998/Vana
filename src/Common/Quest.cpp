@@ -21,6 +21,7 @@ Quest::Quest() :
 	m_nextQuest(0)
 {
 }
+
 void Quest::addItemRequest(int32_t itemId, int16_t quantity) {
 	m_itemRequests[itemId] = quantity;
 }
@@ -38,21 +39,18 @@ void Quest::addValidJob(int16_t jobId) {
 }
 
 void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
+	QuestRewardsInfo *rewMap = nullptr;
 	if (start) {
-		if (job == -1) {
-			m_startRewards.rewards.push_back(info);
-		}
-		else {
-			m_startRewards.jobrewards[job].push_back(info);
-		}
+		rewMap = &m_startRewards;
 	}
 	else {
-		if (job == -1) {
-			m_endRewards.rewards.push_back(info);
-		}
-		else {
-			m_endRewards.jobrewards[job].push_back(info);
-		}
+		rewMap = &m_endRewards;
+	}
+	if (job == -1) {
+		rewMap->rewards.push_back(info);
+	}
+	else {
+		rewMap->jobrewards[job].push_back(info);
 	}
 }
 

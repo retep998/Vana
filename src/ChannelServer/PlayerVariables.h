@@ -18,10 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Variables.h"
+#include <boost/utility.hpp>
 
 class Player;
 
-class PlayerVariables : public Variables {
+class PlayerVariables : boost::noncopyable, public Variables {
 public:
 	PlayerVariables(Player *p);
 	void save();

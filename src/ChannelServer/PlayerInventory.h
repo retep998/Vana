@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/array.hpp>
 #include <boost/tr1/unordered_map.hpp>
+#include <boost/utility.hpp>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,7 @@ using std::vector;
 class Player;
 class PacketCreator;
 
-class PlayerInventory {
+class PlayerInventory : boost::noncopyable {
 public:
 	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
 	~PlayerInventory();

@@ -18,13 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/utility.hpp>
 
 class PacketCreator;
 class PacketReader;
 class Player;
 class Summon;
 
-class PlayerSummons {
+class PlayerSummons : boost::noncopyable {
 public:
 	PlayerSummons(Player *player) : m_player(player), m_summon(nullptr), m_puppet(nullptr) { }
 
