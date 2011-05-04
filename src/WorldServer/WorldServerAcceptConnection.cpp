@@ -37,12 +37,12 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
 		if (getType() == ServerTypes::Channel) {
 			if (WorldServer::Instance()->isConnected()) {
-				LoginServerConnectPacket::removeChannel(channel);
+				LoginServerConnectPacket::removeChannel(m_channel);
 			}
-			PlayerDataProvider::Instance()->removeChannelPlayers(channel);
-			Channels::Instance()->removeChannel(channel);
+			PlayerDataProvider::Instance()->removeChannelPlayers(m_channel);
+			Channels::Instance()->removeChannel(m_channel);
 
-			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + boost::lexical_cast<string>(channel));
+			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + boost::lexical_cast<string>(m_channel));
 		}
 	}
 }
@@ -63,20 +63,20 @@ void WorldServerAcceptConnection::handleRequest(PacketReader &packet) {
 
 void WorldServerAcceptConnection::authenticated(int8_t type) {
 	if (type == ServerTypes::Channel) {
-		channel = Channels::Instance()->getAvailableChannel();
-		if (channel != -1) {
-			port_t port = WorldServer::Instance()->getInterPort() + channel + 1;
-			Channels::Instance()->registerChannel(this, channel, getIp(), getExternalIp(), port);
-			WorldServerAcceptPacket::connect(this, channel, port);
+		m_channel = Channels::Instance()->getAvailableChannel();
+		if (m_channel != -1) {
+			port_t port = WorldServer::Instance()->getInterPort() + m_channel + 1;
+			Channels::Instance()->registerChannel(this, m_channel, getIp(), getExternalIp(), port);
+			WorldServerAcceptPacket::connect(this, m_channel, port);
 
 			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::All);
 			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
 
 			SyncPacket::sendSyncData(this);
 
-			LoginServerConnectPacket::registerChannel(channel, getIp(), getExternalIp(), port);
+			LoginServerConnectPacket::registerChannel(m_channel, getIp(), getExternalIp(), port);
 
-			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + boost::lexical_cast<string>(channel));
+			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + boost::lexical_cast<string>(m_channel));
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);

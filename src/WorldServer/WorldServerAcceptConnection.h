@@ -29,9 +29,9 @@ public:
 	void handleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
-	uint16_t getChannel() const { return channel; }
+	uint16_t getChannel() const { return m_channel; }
 private:
-	uint16_t channel;
+	uint16_t m_channel;
 };
 
 class WorldServerAcceptConnectionFactory : public AbstractConnectionFactory {

@@ -18,23 +18,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "MapConstants.h"
 
-Player::Player() {
+Player::Player()
+{
 	initialize();
 }
 
-Player::Player(int32_t id) : id(id) {
+Player::Player(int32_t id) :
+	m_id(id)
+{
 	initialize();
 }
 
 void Player::initialize() {
-	online = false;
-	cashShop = false;
-	level = 0;
-	channel = -1;
-	job = -1;
-	map = Maps::NoMap;
-	ip = 0;
-	onlineTime = 0;
-	inviteTime = 0;
-	party = nullptr;
+	m_online = false;
+	m_cashShop = false;
+	m_level = 0;
+	m_channel = -1;
+	m_job = -1;
+	m_map = Maps::NoMap;
+	m_ip = 0;
+	m_onlineTime = 0;
+	m_inviteTime = 0;
+	m_party = nullptr;
 }

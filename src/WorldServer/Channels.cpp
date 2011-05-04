@@ -25,6 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Channels * Channels::singleton = nullptr;
 
+Channels::Channels()
+{
+}
+
 void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, ip_t ip, const IpMatrix &extIp, port_t port) {
 	shared_ptr<Channel> chan(new Channel());
 	chan->setConnection(connection);
@@ -32,19 +36,19 @@ void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t
 	chan->setIp(ip);
 	chan->setExternalIps(extIp);
 	chan->setPort(port);
-	channels[channel] = chan;
+	m_channels[channel] = chan;
 }
 
 void Channels::removeChannel(uint16_t channel) {
-	channels.erase(channel);
+	m_channels.erase(channel);
 }
 
 Channel * Channels::getChannel(uint16_t num) {
-	return channels.find(num) != channels.end() ? channels[num].get() : nullptr;
+	return m_channels.find(num) != m_channels.end() ? m_channels[num].get() : nullptr;
 }
 
 void Channels::sendToAll(PacketCreator &packet) {
-	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
+	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = m_channels.begin(); iter != m_channels.end(); iter++) {
 		sendToChannel(iter->first, packet);
 	}
 }
@@ -62,13 +66,13 @@ void Channels::decreasePopulation(uint16_t channel) {
 }
 
 uint16_t Channels::size() {
-	return channels.size();
+	return m_channels.size();
 }
 
 uint16_t Channels::getAvailableChannel() {
 	uint16_t channel = -1;
 	for (uint16_t i = 0; i < (uint16_t) WorldServer::Instance()->getMaxChannels(); i++) {
-		if (channels.find(i) == channels.end()) {
+		if (m_channels.find(i) == m_channels.end()) {
 			channel = i;
 			break;
 		}

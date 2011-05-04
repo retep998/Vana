@@ -27,13 +27,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include <boost/lexical_cast.hpp>
 
+LoginServerAcceptConnection::LoginServerAcceptConnection() :
+	m_worldId(-1)
+{
+}
+
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
-	if (worldId != -1) {
-		World *world = Worlds::Instance()->getWorld(worldId);
+	if (m_worldId != -1) {
+		World *world = Worlds::Instance()->getWorld(m_worldId);
 		world->setConnected(false);
 		world->clearChannels();
 
-		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(worldId)));
+		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(m_worldId)));
 	}
 }
 
