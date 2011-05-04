@@ -34,6 +34,11 @@ using Initializing::outputWidth;
 
 PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
+PlayerDataProvider::PlayerDataProvider() :
+	m_pid(0)
+{
+}
+
 void PlayerDataProvider::loadData() {
 	int16_t worldId = WorldServer::Instance()->getWorldId();
 	loadPlayers(worldId);
@@ -192,7 +197,7 @@ uint16_t PlayerDataProvider::getPendingPlayerChannel(int32_t id) {
 
 // Parties
 int32_t PlayerDataProvider::getPartyId() {
-	return ++pid;
+	return ++m_pid;
 }
 
 Party * PlayerDataProvider::getParty(int32_t id) {

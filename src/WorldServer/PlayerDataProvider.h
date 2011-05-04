@@ -66,7 +66,7 @@ public:
 	void disbandParty(int32_t id);
 	Party * getParty(int32_t id);
 private:
-	PlayerDataProvider() : pid(0) {}
+	PlayerDataProvider();
 	static PlayerDataProvider *singleton;
 	typedef unordered_map<int32_t, boost::shared_ptr<Party>> PartyMap;
 	typedef unordered_map<int32_t, boost::shared_ptr<Player>> PlayerMap;
@@ -75,7 +75,7 @@ private:
 	void loadAlliances(int16_t worldId);
 	void loadPlayers(int16_t worldId);
 
-	int32_t pid; // For assigning party IDs
+	int32_t m_pid; // For assigning party IDs
 	unordered_map<int32_t, uint16_t> m_channelSwitches; // Channel changes
 	PartyMap m_parties;
 	PlayerMap m_players;

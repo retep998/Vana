@@ -24,15 +24,15 @@ class PacketReader;
 
 class LoginServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
-	LoginServerAcceptConnection() : worldId(-1) { };
+	LoginServerAcceptConnection();
 	~LoginServerAcceptConnection();
 	void handleRequest(PacketReader &packet);
 	void authenticated(int8_t type);
 
-	void setWorldId(int8_t id) { worldId = id; }
-	int8_t getWorldId() const { return worldId; }
+	void setWorldId(int8_t id) { m_worldId = id; }
+	int8_t getWorldId() const { return m_worldId; }
 private:
-	int8_t worldId;
+	int8_t m_worldId;
 };
 
 class LoginServerAcceptConnectionFactory : public AbstractConnectionFactory {
