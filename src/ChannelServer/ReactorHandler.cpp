@@ -49,26 +49,27 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 			return;
 		}
 		if (reactor->getState() < (data->maxStates - 1)) {
-			ReactorStateInfo *revent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
-			if (revent->nextState < (data->maxStates - 1)) {
-				if (revent->type == 100)
+			ReactorStateInfo *reactorEvent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
+			if (reactorEvent->nextState < (data->maxStates - 1)) {
+				if (reactorEvent->type == 100)
 					return;
 
 				ReactorPacket::triggerReactor(reactor);
-				reactor->setState(revent->nextState, true);
+				reactor->setState(reactorEvent->nextState, true);
 				return;
 			}
 			else {
 				string filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
-				if (FileUtilities::fileExists(filename)) { // Script found
+				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
 				}
-				else { // Default action of dropping an item
+				else {
+					// Default action of dropping an item
 					reactor->drop(player);
 				}
 
-				reactor->setState(revent->nextState, false);
+				reactor->setState(reactorEvent->nextState, false);
 				reactor->kill();
 				Maps::getMap(reactor->getMapId())->removeReactor(id);
 				ReactorPacket::destroyReactor(reactor);
@@ -84,9 +85,9 @@ void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
-		int8_t newstate = reactor->getState() + (istouching ? 1 : -1);
+		int8_t newState = reactor->getState() + (istouching ? 1 : -1);
 		ReactorPacket::triggerReactor(reactor);
-		reactor->setState(newstate, true);
+		reactor->setState(newState, true);
 	}
 }
 
@@ -115,16 +116,16 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 			continue;
 		}
 		if (reactor->getState() < (data->maxStates - 1)) {
-			ReactorStateInfo *revent;
+			ReactorStateInfo *reactorEvent;
 			for (int8_t j = 0; j < static_cast<int8_t>(data->states[reactor->getState()].size()); j++) {
-				revent = &(data->states[reactor->getState()][j]);
-				if (revent->type == 100 && drop->getObjectId() == revent->itemId) {
-					if (GameLogicUtilities::isInBox(reactor->getPos(), revent->lt, revent->rb, drop->getPos())) {
+				reactorEvent = &(data->states[reactor->getState()][j]);
+				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
+					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->lt, reactorEvent->rb, drop->getPos())) {
 						Reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;
 						reaction.player = player;
-						reaction.state = revent->nextState;
+						reaction.state = reactorEvent->nextState;
 
 						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 						new Timer::Timer(reaction, id, 0, TimeUtilities::fromNow(3000));

@@ -24,17 +24,17 @@ using std::string;
 
 class PacketReader;
 class Summon;
-template<typename T> class LoopingId;
+template <typename T> class LoopingId;
 
 namespace Summons {
-	extern LoopingId<int32_t> summonids;
+	extern LoopingId<int32_t> summonIds;
 	void useSummon(Player *player, int32_t skillId, uint8_t level);
 	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
 	void showSummon(Player *player);
-	void showSummons(Player *ofplayer, Player *toplayer);
+	void showSummons(Player *fromPlayer, Player *toPlayer);
 	void moveSummon(Player *Player, PacketReader &packet);
 	void damageSummon(Player *player, PacketReader &packet);
-	string getSummonName(int32_t summonid);
+	string getSummonName(int32_t summonId);
 	int32_t loopId();
 }
 
@@ -55,18 +55,18 @@ public:
 	};
 
 	Summon() { }
-	Summon(int32_t id, int32_t summonid, uint8_t level);
+	Summon(int32_t id, int32_t summonId, uint8_t level);
 
-	int32_t getId() { return id; }
-	int32_t getSummonId() { return summonid; }
-	uint8_t getLevel() { return level; }
-	uint8_t getType() { return type; }
-	int32_t getHP() { return hp; }
-	void doDamage(int32_t damage) { hp -= damage; }
+	int32_t getId() { return m_id; }
+	int32_t getSummonId() { return m_summonId; }
+	uint8_t getLevel() { return m_level; }
+	uint8_t getType() { return m_type; }
+	int32_t getHP() { return m_hp; }
+	void doDamage(int32_t damage) { m_hp -= damage; }
 private:
-	int32_t id;
-	int32_t summonid;
-	uint8_t level;
-	uint8_t type;
-	int32_t hp; // For puppet
+	int32_t m_id;
+	int32_t m_summonId;
+	uint8_t m_level;
+	uint8_t m_type;
+	int32_t m_hp; // For puppet
 };

@@ -43,13 +43,13 @@ void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeid) {
+void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x02);
 	packet.add<int8_t>(0x03);
 	packet.addString(player->getName());
-	packet.add<int32_t>(tradeid);
+	packet.add<int32_t>(tradeId);
 	receiver->getSession()->send(packet);
 }
 

@@ -27,23 +27,23 @@ using boost::lexical_cast;
 namespace Functors {
 	struct WarpFunctor {
 		void operator() (Player *warpee) {
-			if (warpee->getMap() != mapid) {
-				warpee->setMap(mapid);
+			if (warpee->getMap() != mapId) {
+				warpee->setMap(mapId);
 			}
 		}
-		int32_t mapid;
+		int32_t mapId;
 		Player *player;
 	};
 }
 
 bool WarpFunctions::warpAll(Player *player, const string &args) {
-	int32_t mapid = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
+	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
 
-	if (Maps::getMap(mapid)) {
-		Functors::WarpFunctor func = {mapid, player};
+	if (Maps::getMap(mapId)) {
+		Functors::WarpFunctor func = {mapId, player};
 		PlayerDataProvider::Instance()->run(func);
 		if (args.length() > 0) {
-			PlayerPacket::showMessage(player, "Warped everyone in the server to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+			PlayerPacket::showMessage(player, "Warped everyone in the server to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Warped everyone in the server to yourself.", PlayerPacket::NoticeTypes::Blue);
@@ -61,11 +61,11 @@ bool WarpFunctions::warp(Player *player, const string &args) {
 		string targetname = matches[1];
 		if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetname)) {
 			string mapstring = matches[2];
-			int32_t mapid = mapstring.length() > 0 ? ChatHandlerFunctions::getMap(mapstring, player) : player->getMap();
+			int32_t mapId = mapstring.length() > 0 ? ChatHandlerFunctions::getMap(mapstring, player) : player->getMap();
 
-			if (Maps::getMap(mapid)) {
-				warpee->setMap(mapid);
-				PlayerPacket::showMessage(player, "Warped " + targetname + " to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+			if (Maps::getMap(mapId)) {
+				warpee->setMap(mapId);
+				PlayerPacket::showMessage(player, "Warped " + targetname + " to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
 				PlayerPacket::showMessage(player, "Cannot warp player; invalid map ID given.", PlayerPacket::NoticeTypes::Red);
@@ -80,13 +80,13 @@ bool WarpFunctions::warp(Player *player, const string &args) {
 }
 
 bool WarpFunctions::warpMap(Player *player, const string &args) {
-	int32_t mapid = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
+	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
 
-	if (Map *map = Maps::getMap(mapid)) {
-		Functors::WarpFunctor func = {mapid, player};
+	if (Map *map = Maps::getMap(mapId)) {
+		Functors::WarpFunctor func = {mapId, player};
 		Maps::getMap(player->getMap())->runFunctionPlayers(func);
 		if (args.length() > 0) {
-			PlayerPacket::showMessage(player, "Warped everyone in the map to map ID " + lexical_cast<string>(mapid) + ".", PlayerPacket::NoticeTypes::Blue);
+			PlayerPacket::showMessage(player, "Warped everyone in the map to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Warped everyone in the map to yourself.", PlayerPacket::NoticeTypes::Blue);

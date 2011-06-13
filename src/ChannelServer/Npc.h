@@ -35,11 +35,11 @@ class Player;
 
 class Npc {
 public:
-	Npc(int32_t npcid, Player *player, int16_t questId = 0, bool isstart = false);
-	Npc(int32_t npcid, Player *player, const Pos &pos, int16_t questId = 0, bool isstart = false);
-	Npc(int32_t npcid, Player *player, const string &script);
+	Npc(int32_t npcId, Player *player, int16_t questId = 0, bool isStart = false);
+	Npc(int32_t npcId, Player *player, const Pos &pos, int16_t questId = 0, bool isStart = false);
+	Npc(int32_t npcId, Player *player, const string &script);
 
-	static bool hasScript(int32_t npcid, int16_t questId, bool start);
+	static bool hasScript(int32_t npcId, int16_t questId, bool start);
 
 	void run();
 
@@ -55,8 +55,8 @@ public:
 	void sendStyle(int32_t styles[], uint8_t size);
 	void sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time);
 	void sendQuestion(const string &question, const string &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time);
-	void addText(const string &text) { this->text += text; }
-	void end() { cend = true; }
+	void addText(const string &text) { m_text += text; }
+	void end() { m_cend = true; }
 
 	void proceedBack();
 	void proceedNext();
@@ -64,17 +64,17 @@ public:
 	void proceedNumber(int32_t number); // sendGetNumber
 	void proceedText(const string &text); // sendGetText and sendQuiz
 
-	Player * getPlayer() const { return player; }
-	uint8_t getSentDialog() const { return sentDialog; }
-	int32_t getNpcId() const { return npcid; }
-	int32_t getNumber() const { return getnum; }
-	int32_t getSelected() const { return selected; }
-	string & getText() { return gettext; }
+	Player * getPlayer() const { return m_player; }
+	uint8_t getSentDialog() const { return m_sentDialog; }
+	int32_t getNpcId() const { return m_npcId; }
+	int32_t getNumber() const { return m_getNum; }
+	int32_t getSelected() const { return m_selected; }
+	string & getText() { return m_getText; }
 
-	bool isEnd() const { return cend; }
-	Pos getPos() const { return pos; }
+	bool isEnd() const { return m_cend; }
+	Pos getPos() const { return m_pos; }
 
-	void setEndScript(int32_t npcid, const string &fullscript);
+	void setEndScript(int32_t npcId, const string &fullscript);
 
 	bool checkEnd();
 	void showShop();
@@ -88,27 +88,26 @@ private:
 	typedef shared_ptr<State> StatePtr;
 
 	void sendDialog(StatePtr npcState);
-
-	bool cend;
-	uint8_t sentDialog; // Used to check if the user respond with the same type of the dialog sent
-	int32_t npcid;
-	uint8_t selected;
-	int32_t getnum;
-	string text;
-	string gettext;
-	string script;
-	int32_t nextnpc;
-	Player *player;
-	Pos pos;
-
-	uint32_t state; // For "back" button
-	vector<StatePtr> previousStates; // For "back" button
-
-	scoped_ptr<LuaNpc> luaNpc;
-
 	void initData(Player *p, int32_t id);
 	string getScript(int16_t questId, bool start);
-	void initScript(Player *player, int32_t npcid, const string &filename);
+	void initScript(Player *player, int32_t npcId, const string &filename);
+
+	bool m_cend;
+	uint8_t m_sentDialog; // Used to check if the user respond with the same type of the dialog sent
+	uint8_t m_selected;
+	int32_t m_nextNpc;
+	int32_t m_npcId;
+	int32_t m_getNum;
+	string m_text;
+	string m_getText;
+	string m_script;
+	Player *m_player;
+	Pos m_pos;
+
+	uint32_t m_state; // For "back" button
+	vector<StatePtr> m_previousStates; // For "back" button
+
+	scoped_ptr<LuaNpc> m_luaNpc;
 };
 
 namespace NpcDialogs {

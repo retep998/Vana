@@ -25,40 +25,40 @@ class Player;
 
 class Drop {
 public:
-	Drop(int32_t mapid, int32_t mesos, const Pos &pos, int32_t owner, bool playerdrop = false);
-	Drop(int32_t mapid, const Item &item, const Pos &pos, int32_t owner, bool playerdrop = false);
+	Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop = false);
+	Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop = false);
 
-	void setQuest(int16_t questId) { this->questId = questId; }
-	void setTradeable(bool istrade) { tradeable = istrade; }
-	void setItemAmount(int16_t amount) { this->item.setAmount(amount); }
-	void setId(int32_t id) { this->id = id; }
-	void setTime(int32_t time) { this->time = time; }
-	void setDropped(int32_t time) { dropped = time; }
-	void setPlayerId(int32_t playerid) { this->playerid = playerid; }
-	void setOwner(int32_t owner) { this->owner = owner; }
-	void setPos(Pos pos) { this->pos = pos; }
-	void setType(int8_t t) { type = t; }
+	void setQuest(int16_t questId) { m_questId = questId; }
+	void setTradeable(bool isTrade) { m_tradeable = isTrade; }
+	void setItemAmount(int16_t amount) { m_item.setAmount(amount); }
+	void setId(int32_t id) { m_id = id; }
+	void setTime(int32_t time) { m_time = time; }
+	void setDropped(int32_t time) { m_dropped = time; }
+	void setPlayerId(int32_t playerId) { m_playerId = playerId; }
+	void setOwner(int32_t owner) { m_owner = owner; }
+	void setPos(Pos pos) { m_pos = pos; }
+	void setType(int8_t t) { m_type = t; }
 
-	int8_t getType() const { return type; }
-	int16_t getQuest() const { return questId; }
-	int32_t getId() const { return id; }
-	int32_t getDropped() const { return dropped; }
-	int32_t getTime() const { return time; }
-	int32_t getOwner() const { return owner; }
-	int32_t getMap() const { return mapid; }
-	bool isPlayerDrop() const { return playerdrop; }
-	bool isMesos() const { return mesos > 0; }
-	bool isQuest() const { return questId > 0; }
-	bool isTradeable() const { return tradeable; }
-	Pos getPos() const { return pos; }
-	Item getItem() const { return item; }
+	int8_t getType() const { return m_type; }
+	int16_t getQuest() const { return m_questId; }
+	int32_t getId() const { return m_id; }
+	int32_t getDropped() const { return m_dropped; }
+	int32_t getTime() const { return m_time; }
+	int32_t getOwner() const { return m_owner; }
+	int32_t getMap() const { return m_mapId; }
+	bool isplayerDrop() const { return m_playerDrop; }
+	bool isMesos() const { return m_mesos > 0; }
+	bool isQuest() const { return m_questId > 0; }
+	bool isTradeable() const { return m_tradeable; }
+	Pos getPos() const { return m_pos; }
+	Item getItem() const { return m_item; }
 
 	int16_t getAmount();
 	int32_t getObjectId();
 
 	void doDrop(const Pos &origin);
 	void showDrop(Player *player);
-	void takeDrop(Player *player, int32_t petid);
+	void takeDrop(Player *player, int32_t petId);
 	void removeDrop(bool showPacket = true);
 
 	static const int8_t Explosive = 3;
@@ -66,17 +66,17 @@ public:
 	static const int8_t Party = 1;
 	static const int8_t Normal = 0;
 private:
-	int8_t type;
-	int16_t questId;
-	int32_t owner;
-	int32_t time;
-	int32_t mapid;
-	int32_t id;
-	int32_t mesos;
-	int32_t dropped;
-	int32_t playerid;
-	bool playerdrop;
-	bool tradeable;
-	Pos pos;
-	Item item;
+	int8_t m_type;
+	int16_t m_questId;
+	int32_t m_owner;
+	int32_t m_time;
+	int32_t m_mapId;
+	int32_t m_id;
+	int32_t m_mesos;
+	int32_t m_dropped;
+	int32_t m_playerId;
+	bool m_playerDrop;
+	bool m_tradeable;
+	Pos m_pos;
+	Item m_item;
 };

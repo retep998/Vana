@@ -56,5 +56,5 @@ namespace BuddyListPacket {
 	void update(Player *player, uint8_t type);
 	void showSize(Player *player);
 	void invitation(Player *player, const BuddyInvite &invite);
-	void online(Player *player, int32_t charid, int32_t channel);
+	void online(Player *player, int32_t charId, int32_t channel);
 }

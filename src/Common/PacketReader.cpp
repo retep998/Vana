@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketReader.h"
 #include "Pos.h"
+#include "StringUtilities.h"
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -82,18 +83,5 @@ bool PacketReader::getBool() {
 }
 
 string PacketReader::toString() const {
-	string ret;
-	if (getBufferLength() > 0) {
-		std::stringstream out;
-		unsigned char *p = getBuffer();
-		size_t buflen = getBufferLength() - 1;
-		for (size_t i = 0; i <= buflen; i++) {
-			out << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<int16_t>(p[i]);
-			if (i < buflen) {
-				out << " ";
-			}
-		}
-		ret = out.str();
-	}
-	return ret;
+	return StringUtilities::bytesToHex(getBuffer(), getBufferLength());
 }

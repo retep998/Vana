@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 using boost::lexical_cast;
 
@@ -45,30 +46,32 @@ bool MapFunctions::instruction(Player *player, const string &args) {
 bool MapFunctions::timer(Player *player, const string &args) {
 	if (args.length() != 0) {
 		int32_t time = atoi(args.c_str());
-		string msg = "Stopped map timer.";
+		std::ostringstream msg;
+		msg << "Stopped map timer.";
 		if (time > 0) {
 			int32_t seconds = time /= 60;
 			int32_t minutes = time /= 60;
 			int32_t hours = time /= 60;
-			msg = "Started map timer. Counting down from ";
+			msg.clear();
+			msg << "Started map timer. Counting down from ";
 			if (hours > 0) {
-				msg += lexical_cast<string>(hours) + " hours";
+				msg << hours << " hours";
 			}
 			if (minutes > 0) {
 				if (hours > 0) {
-					msg += ", ";
+					msg << ", ";
 				}
-				msg += lexical_cast<string>(minutes) + " minutes";
+				msg << minutes << " minutes";
 			}
 			if (seconds > 0) {
 				if (hours > 0 || minutes > 0) {
-					msg += " and ";
+					msg << " and ";
 				}
-				msg += lexical_cast<string>(seconds) + " seconds";
+				msg << seconds << " seconds";
 			}
-			msg += "!";
+			msg << "!";
 		}
-		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
+		PlayerPacket::showMessage(player, msg.str(), PlayerPacket::NoticeTypes::Blue);
 		Maps::getMap(player->getMap())->setMapTimer(time);
 		return true;
 	}
@@ -96,16 +99,12 @@ bool MapFunctions::getMobHp(Player *player, const string &args) {
 		int32_t mobId = atoi(args.c_str());
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 		if (mob != nullptr) {
-			string message = "Mob ";
-			message += lexical_cast<string>(mobId);
-			message += " HP: ";
-			message += lexical_cast<string>(mob->getHp());
-			message += "/";
-			message += lexical_cast<string>(mob->getMaxHp());
-			message += " (";
-			message += lexical_cast<string>(static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp());
-			message += "%)";
-			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+			std::ostringstream message;
+			message << "Mob " << mobId
+					<< " HP: " << mob->getHp() << "/" << mob->getMaxHp()
+					<< " (" << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp() << "%)";
+
+			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Mob does not exist.", PlayerPacket::NoticeTypes::Red);
@@ -117,20 +116,18 @@ bool MapFunctions::getMobHp(Player *player, const string &args) {
 
 bool MapFunctions::listMobs(Player *player, const string &args) {
 	if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
-		typedef unordered_map<int32_t, Mob *> mobmap;
-		mobmap mobs = Maps::getMap(player->getMap())->getMobs();
-		string message;
-		for (mobmap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
-			message = "Mob ";
-			message += lexical_cast<string>(iter->first);
-			message += " (ID: ";
-			message += lexical_cast<string>(iter->second->getMobId());
-			message += ", HP: ";
-			message += lexical_cast<string>(iter->second->getHp());
-			message += "/";
-			message += lexical_cast<string>(iter->second->getMaxHp());
-			message += ")";
-			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+		typedef unordered_map<int32_t, Mob *> MobMap;
+		MobMap mobs = Maps::getMap(player->getMap())->getMobs();
+		std::ostringstream message;
+		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+			message.clear();
+
+			message << "Mob " << iter->first
+					<< " (ID: " << lexical_cast<string>(iter->second->getMobId())
+					<< ", HP: " << lexical_cast<string>(iter->second->getHp())
+					<< "/" << lexical_cast<string>(iter->second->getMaxHp()) << ")";
+
+			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 		}
 	}
 	else {

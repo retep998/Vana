@@ -33,13 +33,13 @@ namespace MapPacket {
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, int8_t hour, int8_t min, int8_t sec);
-	void showTimer(int32_t mapid, int32_t sec); // Show timer like in PQs
+	void showTimer(int32_t mapId, int32_t sec); // Show timer like in PQs
 	void showTimer(Player *player, int32_t sec); // Show timer like in PQs
 	void forceMapEquip(Player *player);
-	void showEventInstructions(int32_t mapid);
+	void showEventInstructions(int32_t mapId);
 	void showMist(Player *player, Mist *mist);
-	void spawnMist(int32_t mapid, Mist *mist);
-	void removeMist(int32_t mapid, int32_t id);
-	void instantWarp(Player *player, int8_t pid);
-	void changeWeather(int32_t mapid, bool adminWeather, int32_t itemId = 0, const string &message = "");
+	void spawnMist(int32_t mapId, Mist *mist);
+	void removeMist(int32_t mapId, int32_t id);
+	void instantWarp(Player *player, int8_t portalId);
+	void changeWeather(int32_t mapId, bool adminWeather, int32_t itemId = 0, const string &message = "");
 }

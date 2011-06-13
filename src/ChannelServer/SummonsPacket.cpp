@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "Summons.h"
 
-void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toplayer) {
+void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toPlayer) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_SUMMON_SPAWN);
 	packet.add<int32_t>(player->getId());
@@ -37,21 +37,21 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int8_t>(summon->getType()); // Movement type
 	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())); // Attack or not
 	packet.addBool(!animated);
-	if (toplayer != nullptr) {
-		toplayer->getSession()->send(packet);
+	if (toPlayer != nullptr) {
+		toPlayer->getSession()->send(packet);
 	}
 	else {
 		Maps::getMap(player->getMap())->sendPacket(packet);
 	}
 }
 
-void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t buflen) {
+void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_SUMMON_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
 	packet.addPos(startPos);
-	packet.addBuffer(buf, buflen);
+	packet.addBuffer(buf, bufLen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -64,12 +64,12 @@ void SummonsPacket::removeSummon(Player *player, Summon *summon, int8_t message)
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void SummonsPacket::damageSummon(Player *player, int32_t summonid, int8_t notsure, int32_t damage, int32_t mobId) {
+void SummonsPacket::damageSummon(Player *player, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_SUMMON_DAMAGE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summonid);
-	packet.add<int8_t>(notsure);
+	packet.add<int32_t>(summonId);
+	packet.add<int8_t>(unk);
 	packet.add<int32_t>(damage);
 	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(0);

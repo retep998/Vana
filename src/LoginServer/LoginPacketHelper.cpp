@@ -74,10 +74,12 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 			equips[slot][0] = charc.equips[i].id;
 		}
 	}
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Shown items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+		// Shown items
 		if (equips[i][0] > 0) {
 			packet.add<int8_t>(i);
-			if (i == EquipSlots::Weapon && equips[i][1] > 0) { // Normal weapons always here
+			if (i == EquipSlots::Weapon && equips[i][1] > 0) {
+				// Normal weapons always here
 				packet.add<int32_t>(equips[i][1]);
 			}
 			else {
@@ -86,7 +88,8 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 		}
 	}
 	packet.add<int8_t>(-1);
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Covered items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+		// Covered items
 		if (equips[i][1] > 0 && i != EquipSlots::Weapon) {
 			packet.add<int8_t>(i);
 			packet.add<int32_t>(equips[i][1]);
@@ -99,8 +102,8 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.add<int32_t>(0);
 	// Rankings
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(charc.w_rank);
-	packet.add<int32_t>(charc.w_rankmove);
-	packet.add<int32_t>(charc.j_rank);
-	packet.add<int32_t>(charc.j_rankmove);
+	packet.add<int32_t>(charc.worldRank);
+	packet.add<int32_t>(charc.worldRankChange);
+	packet.add<int32_t>(charc.jobRank);
+	packet.add<int32_t>(charc.jobRankChange);
 }

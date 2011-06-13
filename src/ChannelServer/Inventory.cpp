@@ -28,42 +28,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
 
-int16_t Inventory::addItem(Player *player, Item *item, bool is) {
+int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 	int8_t inv = GameLogicUtilities::getInventory(item->getId());
-	int16_t freeslot = 0;
+	int16_t freeSlot = 0;
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
-		Item *olditem = player->getInventory()->getItem(inv, s);
-		if (olditem != nullptr) {
-			if (GameLogicUtilities::isStackable(item->getId()) && olditem->getId() == item->getId() && olditem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
-				if (item->getAmount() + olditem->getAmount() > ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
-					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->getId()) - olditem->getAmount();
+		Item *oldItem = player->getInventory()->getItem(inv, s);
+		if (oldItem != nullptr) {
+			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
+				if (item->getAmount() + oldItem->getAmount() > ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
+					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->getId()) - oldItem->getAmount();
 					item->decAmount(amount);
-					olditem->setAmount(ItemDataProvider::Instance()->getMaxSlot(item->getId()));
-					InventoryPacket::addItem(player, inv, s, olditem, is);
+					oldItem->setAmount(ItemDataProvider::Instance()->getMaxSlot(item->getId()));
+					InventoryPacket::addItem(player, inv, s, oldItem, fromDrop);
 				}
 				else {
-					item->incAmount(olditem->getAmount());
+					item->incAmount(oldItem->getAmount());
 					player->getInventory()->deleteItem(inv, s);
 					player->getInventory()->addItem(inv, s, item);
-					InventoryPacket::addItem(player, inv, s, item, is);
+					InventoryPacket::addItem(player, inv, s, item, fromDrop);
 					return 0;
 				}
 			}
 		}
-		else if (!freeslot) {
-			freeslot = s;
+		else if (!freeSlot) {
+			freeSlot = s;
 			if (GameLogicUtilities::isStackable(item->getId())) {
 				break;
 			}
 		}
 	}
-	if (freeslot != 0) {
-		player->getInventory()->addItem(inv, freeslot, item);
-		InventoryPacket::addNewItem(player, inv, freeslot, item, is);
+	if (freeSlot != 0) {
+		player->getInventory()->addItem(inv, freeSlot, item);
+		InventoryPacket::addNewItem(player, inv, freeSlot, item, fromDrop);
 		if (GameLogicUtilities::isPet(item->getId())) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
-			pet->setInventorySlot((int8_t) freeslot);
+			pet->setInventorySlot((int8_t) freeSlot);
 			PetsPacket::updatePet(player, pet);
 		}
 		return 0;
@@ -76,21 +76,21 @@ void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
 		return;
 
 	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemId);
-	int16_t thisamount = 0;
+	int16_t thisAmount = 0;
 	if (GameLogicUtilities::isRechargeable(itemId)) {
-		thisamount = max + player->getSkills()->getRechargeableBonus();
+		thisAmount = max + player->getSkills()->getRechargeableBonus();
 		amount -= 1;
 	}
 	else if (GameLogicUtilities::isEquip(itemId) || GameLogicUtilities::isPet(itemId)) {
-		thisamount = 1;
+		thisAmount = 1;
 		amount -= 1;
 	}
 	else if (amount > max) {
-		thisamount = max;
+		thisAmount = max;
 		amount -= max;
 	}
 	else {
-		thisamount = amount;
+		thisAmount = amount;
 		amount = 0;
 	}
 
@@ -102,23 +102,24 @@ void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
 		}
 	}
 	else {
-		item = new Item(itemId, thisamount);
+		item = new Item(itemId, thisAmount);
 	}
 	if (addItem(player, item, GameLogicUtilities::isPet(itemId)) == 0 && amount > 0) {
 		addNewItem(player, itemId, amount);
 	}
 }
 
-void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howmany) {
-	player->getInventory()->changeItemAmount(itemId, -howmany);
+void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) {
+	player->getInventory()->changeItemAmount(itemId, -howMany);
 	int8_t inv = GameLogicUtilities::getInventory(itemId);
 	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
-		if (item == nullptr)
+		if (item == nullptr) {
 			continue;
+		}
 		if (item->getId() == itemId) {
-			if (item->getAmount() >= howmany) {
-				item->decAmount(howmany);
+			if (item->getAmount() >= howMany) {
+				item->decAmount(howMany);
 				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
 					InventoryPacket::moveItem(player, inv, i, 0);
 					player->getInventory()->deleteItem(inv, i);
@@ -129,7 +130,7 @@ void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howmany) {
 				break;
 			}
 			else if (!GameLogicUtilities::isRechargeable(item->getId())) {
-				howmany -= item->getAmount();
+				howMany -= item->getAmount();
 				item->setAmount(0);
 				InventoryPacket::moveItem(player, inv, i, 0);
 				player->getInventory()->deleteItem(inv, i);
@@ -165,24 +166,30 @@ void Inventory::useItem(Player *player, int32_t itemId) {
 	int16_t potency = 100;
 	int32_t skillId = player->getSkills()->getAlchemist();
 
-	if (player->getSkills()->getSkillLevel(skillId) > 0)
+	if (player->getSkills()->getSkillLevel(skillId) > 0) {
 		potency = player->getSkills()->getSkillInfo(skillId)->x;
+	}
 
 	bool zombie = player->getActiveBuffs()->isZombified();
 
-	if (item->hp > 0)
+	if (item->hp > 0) {
 		player->getStats()->modifyHp(item->hp * (zombie ? (potency / 2) : potency) / 100);
-	if (item->mp > 0)
+	}
+	if (item->mp > 0) {
 		player->getStats()->modifyMp(item->mp * potency / 100);
-	else
+	}
+	else {
 		player->getStats()->setMp(player->getStats()->getMp(), true);
-	if (item->hpr != 0)
+	}
+	if (item->hpr != 0) {
 		player->getStats()->modifyHp(item->hpr * (zombie ? (player->getStats()->getMaxHp() / 2) : player->getStats()->getMaxHp()) / 100);
-	if (item->mpr != 0)
+	}
+	if (item->mpr != 0) {
 		player->getStats()->modifyMp(item->mpr * player->getStats()->getMaxMp() / 100);
-	if (item->ailment > 0)
+	}
+	if (item->ailment > 0) {
 		player->getActiveBuffs()->useDebuffHealingItem(item->ailment);
-
+	}
 	if (item->time > 0 && item->mcProb == 0) {
 		int32_t time = item->time * potency / 100;
 		Buffs::addBuff(player, itemId, time);

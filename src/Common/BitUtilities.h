@@ -18,15 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <iostream>
 
 namespace BitUtilities {
-	template<typename T> T RotateRight(T val, int32_t shifts) {
+	template <typename T> T RotateRight(T val, int32_t shifts) {
 		size_t size = sizeof(T) * 8;
 		shifts %= size;
 		return static_cast<T>((val >> shifts) | (val << (size - shifts)));
 	}
-	template<typename T> T RotateLeft(T val, int32_t shifts) {
+	template <typename T> T RotateLeft(T val, int32_t shifts) {
 		size_t size = sizeof(T) * 8;
 		shifts %= size;
 		return static_cast<T>((val << shifts) | (val >> (size - shifts)));

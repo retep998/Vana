@@ -27,20 +27,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonsPacket.h"
 
 // Summon Class
-Summon::Summon(int32_t id, int32_t summonid, uint8_t level) :
-	id(id),
-	summonid(summonid),
-	level(level),
-	hp(0)
+Summon::Summon(int32_t id, int32_t summonId, uint8_t level) :
+	m_id(id),
+	m_summonId(summonId),
+	m_level(level),
+	m_hp(0)
 {
-	switch (summonid) {
+	switch (summonId) {
 		case Jobs::Ranger::Puppet:
 		case Jobs::Sniper::Puppet:
 		case Jobs::WindArcher::Puppet:
-			hp = SkillDataProvider::Instance()->getSkill(summonid, level)->x; // Get HP for puppet
+			m_hp = SkillDataProvider::Instance()->getSkill(summonId, level)->x; // Get HP for puppet
 		case Jobs::Outlaw::Octopus:
 		case Jobs::Corsair::WrathOfTheOctopi:
-			type = Static;
+			m_type = Static;
 			break;
 		case Jobs::Priest::SummonDragon:
 		case Jobs::Ranger::SilverHawk:
@@ -48,26 +48,26 @@ Summon::Summon(int32_t id, int32_t summonid, uint8_t level) :
 		case Jobs::Bowmaster::Phoenix:
 		case Jobs::Marksman::Frostprey:
 		case Jobs::Outlaw::Gaviota:
-			type = Flying;
+			m_type = Flying;
 			break;
 		default:
-			type = Follow;
+			m_type = Follow;
 			break;
 	}
 }
 
 // Summons namespace
-LoopingId<int32_t> Summons::summonids;
+LoopingId<int32_t> Summons::summonIds;
 
 int32_t Summons::loopId() {
-	return summonids.next();
+	return summonIds.next();
 }
 
 void Summons::useSummon(Player *player, int32_t skillId, uint8_t level) {
 	Summon *summon = new Summon(loopId(), skillId, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	removeSummon(player, puppet, false, SummonMessages::None);
-	Pos ppos = player->getPos();
+	Pos &ppos = player->getPos();
 	Pos sumpos;
 	if (puppet) {
 		int16_t x = ppos.x + 200 * (player->isFacingRight() ? 1 : -1);
@@ -100,42 +100,42 @@ void Summons::showSummon(Player *player) {
 	}
 }
 
-void Summons::showSummons(Player *ofplayer, Player *toplayer) {
-	if (Summon *summon = ofplayer->getSummons()->getSummon()) {
-		SummonsPacket::showSummon(ofplayer, summon, false, toplayer);
+void Summons::showSummons(Player *fromPlayer, Player *toPlayer) {
+	if (Summon *summon = fromPlayer->getSummons()->getSummon()) {
+		SummonsPacket::showSummon(fromPlayer, summon, false, toPlayer);
 	}
-	if (Summon *puppet = ofplayer->getSummons()->getPuppet()) {
-		SummonsPacket::showSummon(ofplayer, puppet, false, toplayer);
+	if (Summon *puppet = fromPlayer->getSummons()->getPuppet()) {
+		SummonsPacket::showSummon(fromPlayer, puppet, false, toPlayer);
 	}
 }
 
 void Summons::moveSummon(Player *player, PacketReader &packet) {
-	int32_t summonid = packet.get<int32_t>();
+	int32_t summonId = packet.get<int32_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
 	packet.skipBytes(4);
 
-	Summon *summon = player->getSummons()->getSummon(summonid);
+	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon == nullptr || summon->getType() == Summon::Static) {
 		// Up to no good, lag, or something else
 		return;
 	}
 
-	Pos startPos = summon->getPos(); // Original gangsta
+	Pos &startPos = summon->getPos(); // Original gangsta
 	MovementHandler::parseMovement(summon, packet);
 	packet.reset(10);
 	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
 
 void Summons::damageSummon(Player *player, PacketReader &packet) {
-	int32_t summonid = packet.get<int32_t>();
-	int8_t notsure = packet.get<int8_t>();
+	int32_t summonId = packet.get<int32_t>();
+	int8_t unk = packet.get<int8_t>();
 	int32_t damage = packet.get<int32_t>();
 	int32_t mobId = packet.get<int32_t>();
 
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);
-		//SummonsPacket::damageSummon(player, summonid, notsure, damage, mobId); // TODO: Find out if this packet even sends anymore
+		//SummonsPacket::damageSummon(player, summonId, unk, damage, mobId); // TODO: Find out if this packet even sends anymore
 		if (summon->getHP() <= 0) {
 			removeSummon(player, true, false, SummonMessages::None, true);
 		}

@@ -47,6 +47,9 @@
     <Filter Include="Source\Packet Headers">
       <UniqueIdentifier>{635f429e-0bbc-4e1f-be81-7d434e9f6054}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Data Structures\Data Provider">
+      <UniqueIdentifier>{87342cf5-a5b4-41e1-a5cc-254699ab7d5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
@@ -182,9 +185,6 @@
       <Filter>Source\Timer</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\AuthenticationPacket.cpp">
-      <Filter>Source\Inter-Server</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ConfigurationPacket.cpp">
       <Filter>Source\Inter-Server</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Decoder.cpp">
@@ -402,9 +402,6 @@
     <ClInclude Include="src\Common\AuthenticationPacket.h">
       <Filter>Source\Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\ConfigurationPacket.h">
-      <Filter>Source\Inter-Server</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\InterHeader.h">
       <Filter>Source\Packet Headers</Filter>
     </ClInclude>
@@ -446,6 +443,21 @@
     </ClInclude>
     <ClInclude Include="src\Common\TauswortheGenerator.h">
       <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ItemDataObjects.h">
+      <Filter>Source\Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MobDataObjects.h">
+      <Filter>Source\Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SkillDataObjects.h">
+      <Filter>Source\Data Structures\Data Provider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IConfig.h">
+      <Filter>Source\Abstracts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IPacket.h">
+      <Filter>Source\Abstracts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

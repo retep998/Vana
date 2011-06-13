@@ -117,24 +117,24 @@ public:
 	}
 
 	void loadData();
-	Map * getMap(int32_t mapid);
-	int8_t getContinent(int32_t mapid);
+	Map * getMap(int32_t mapId);
+	int8_t getContinent(int32_t mapId);
 private:
 	MapDataProvider();
 	static MapDataProvider *singleton;
 	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t>> continent_map;
 	typedef continent_map::value_type continent_info;
 
-	int32_t loadMapData(int32_t mapid, Map *&map);
+	int32_t loadMapData(int32_t mapId, Map *&map);
 	void loadMapTimeMob(Map *map);
 	void loadFootholds(Map *map, int32_t link);
 	void loadMapLife(Map *map, int32_t link);
 	void loadPortals(Map *map, int32_t link);
 	void loadSeats(Map *map, int32_t link);
 
-	unordered_map<int32_t, Map *> maps;
-	continent_map continents;
-	boost::mutex loadmap_mutex;
+	unordered_map<int32_t, Map *> m_maps;
+	continent_map m_continents;
+	boost::mutex m_loadMutex;
 
-	void loadMap(int32_t mapid, Map *&map);
+	void loadMap(int32_t mapId, Map *&map);
 };

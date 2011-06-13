@@ -25,8 +25,8 @@ class Player;
 struct MobSkillLevelInfo;
 
 namespace MobHandler {
-	int32_t handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage = 0);
-	void handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillinfo);
+	int32_t handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage = 0);
+	void handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillInfo);
 	void handleBomb(Player *player, PacketReader &packet);
 	void monsterControl(Player *player, PacketReader &packet);
 	void friendlyDamaged(Player *player, PacketReader &packet);

@@ -32,9 +32,9 @@ namespace PlayersPacket {
 	void faceExpression(Player *player, int32_t face);
 	void showChat(Player *player, const string &msg, bool bubbleOnly);
 	void damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr);
-	void showInfo(Player *player, Player *getinfo, bool isself);
+	void showInfo(Player *player, Player *getInfo, bool isSelf);
 	void findPlayer(Player *player, const string &name, int32_t map, uint8_t is = 0, bool isChannel = false);
-	void whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message);
+	void whisperPlayer(Player *target, const string &whispererName, uint16_t channel, const string &message);
 	void sendToPlayers(unsigned char *data, int32_t len);
 	void useMeleeAttack(Player *player, const Attack &attack);
 	void useRangedAttack(Player *player, const Attack &attack);

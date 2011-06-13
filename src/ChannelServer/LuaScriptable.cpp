@@ -48,9 +48,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::vector;
 
-LuaScriptable::LuaScriptable(const string &filename, int32_t playerid) :
-	filename(filename),
-	playerid(playerid),
+LuaScriptable::LuaScriptable(const string &filename, int32_t playerId) :
+	m_filename(filename),
+	m_playerId(playerId),
 	luaVm(lua_open())
 {
 	initialize();
@@ -62,7 +62,7 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
-	setVariable("_playerid", playerid); // Pushing ID for reference from static functions
+	setVariable("_playerId", m_playerId); // Pushing ID for reference from static functions
 	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
 	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
 	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
@@ -325,7 +325,7 @@ void LuaScriptable::initialize() {
 }
 
 bool LuaScriptable::run() {
-	if (luaL_dofile(luaVm, filename.c_str())) {
+	if (luaL_dofile(luaVm, m_filename.c_str())) {
 		// Error in lua script
 		handleError();
 		return false;
@@ -350,10 +350,10 @@ void LuaScriptable::handleError() {
 void LuaScriptable::printError(const string &error) {
 	std::cout << error << std::endl;
 
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(m_playerId);
 
 	if (player == nullptr) {
-		std::cout << "Script error in " << filename << ": " << error << std::endl;
+		std::cout << "Script error in " << m_filename << ": " << error << std::endl;
 		return;
 	}
 
@@ -361,13 +361,13 @@ void LuaScriptable::printError(const string &error) {
 		PlayerPacket::showMessage(player, error, PlayerPacket::NoticeTypes::Blue);
 	}
 	else {
-		PlayerPacket::showMessage(player, "There is an error in the script '" + filename +"'", PlayerPacket::NoticeTypes::Blue);
+		PlayerPacket::showMessage(player, "There is an error in the script '" + m_filename +"'", PlayerPacket::NoticeTypes::Blue);
 	}
 }
 
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_playerid");
+	lua_getglobal(luaVm, "_playerId");
 	Player *p = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 	lua_pop(luaVm, 1);
 	return p;
@@ -586,14 +586,14 @@ int LuaExports::isBusy(lua_State *luaVm) {
 }
 
 int LuaExports::removeNpc(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	uint32_t index = lua_tointeger(luaVm, 2);
-	Maps::getMap(mapid)->removeNpc(index);
+	Maps::getMap(mapId)->removeNpc(index);
 	return 0;
 }
 
 int LuaExports::runNpc(lua_State *luaVm) {
-	int32_t npcid = lua_tointeger(luaVm, -1);
+	int32_t npcId = lua_tointeger(luaVm, -1);
 	string script;
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
@@ -601,33 +601,33 @@ int LuaExports::runNpc(lua_State *luaVm) {
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
+		script = ScriptDataProvider::Instance()->getScript(npcId, ScriptTypes::Npc);
 	}
-	Npc *npc = new Npc(npcid, getPlayer(luaVm), script);
+	Npc *npc = new Npc(npcId, getPlayer(luaVm), script);
 	npc->run();
 	return 0;
 }
 
 int LuaExports::showShop(lua_State *luaVm) {
-	int32_t shopid = lua_tointeger(luaVm, -1);
-	NpcHandler::showShop(getPlayer(luaVm), shopid);
+	int32_t shopId = lua_tointeger(luaVm, -1);
+	NpcHandler::showShop(getPlayer(luaVm), shopId);
 	return 0;
 }
 
 int LuaExports::spawnNpc(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	int32_t npcid = lua_tointeger(luaVm, 2);
+	int32_t mapId = lua_tointeger(luaVm, 1);
+	int32_t npcId = lua_tointeger(luaVm, 2);
 	int16_t x = lua_tointeger(luaVm, 3);
 	int16_t y = lua_tointeger(luaVm, 4);
 
 	NpcSpawnInfo npc;
-	npc.id = npcid;
+	npc.id = npcId;
 	npc.foothold = 0;
 	npc.pos = Pos(x, y);
 	npc.rx0 = x - 50;
 	npc.rx1 = x + 50;
 
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->addNpc(npc));
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->addNpc(npc));
 	return 1;
 }
 
@@ -1070,8 +1070,8 @@ int LuaExports::isOnline(lua_State *luaVm) {
 }
 
 int LuaExports::revertPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_oldplayerid");
-	lua_setglobal(luaVm, "_playerid");
+	lua_getglobal(luaVm, "_oldplayerId");
+	lua_setglobal(luaVm, "_playerId");
 	return 0;
 }
 
@@ -1126,15 +1126,15 @@ int LuaExports::setLuk(lua_State *luaVm) {
 int LuaExports::setMap(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;
 
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
-		portal = Maps::getMap(mapid)->getPortal(to);
+		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
-	if (Maps::getMap(mapid))
-		getPlayer(luaVm)->setMap(mapid, portal);
+	if (Maps::getMap(mapId))
+		getPlayer(luaVm)->setMap(mapId, portal);
 	return 0;
 }
 
@@ -1159,11 +1159,11 @@ int LuaExports::setMp(lua_State *luaVm) {
 int LuaExports::setPlayer(lua_State *luaVm) {
 	Player *player = getPlayerDeduced(-1, luaVm);
 	if (player != nullptr) {
-		lua_getglobal(luaVm, "_playerid");
-		lua_setglobal(luaVm, "_oldplayerid");
+		lua_getglobal(luaVm, "_playerId");
+		lua_setglobal(luaVm, "_oldplayerId");
 
 		lua_pushinteger(luaVm, player->getId());
-		lua_setglobal(luaVm, "_playerid");
+		lua_setglobal(luaVm, "_playerId");
 	}
 	lua_pushboolean(luaVm, player != nullptr);
 	return 1;
@@ -1251,18 +1251,18 @@ int LuaExports::playMinigameSound(lua_State *luaVm) {
 }
 
 int LuaExports::setMusic(lua_State *luaVm) {
-	int32_t mapid = -1;
+	int32_t mapId = -1;
 	string music = lua_tostring(luaVm, 1);
 
 	if (lua_isnumber(luaVm, 2)) {
-		mapid = lua_tointeger(luaVm, 2);
+		mapId = lua_tointeger(luaVm, 2);
 	}
 	else if (Player *player = getPlayer(luaVm)) {
-		mapid = player->getMap();
+		mapId = player->getMap();
 	}
 
-	if (mapid != -1) {
-		Maps::getMap(mapid)->setMusic(music);
+	if (mapId != -1) {
+		Maps::getMap(mapId)->setMusic(music);
 	}
 	return 0;
 }
@@ -1281,43 +1281,43 @@ int LuaExports::showMapEvent(lua_State *luaVm) {
 
 // Map
 int LuaExports::clearDrops(lua_State *luaVm) {
-	int32_t mapid = -1;
+	int32_t mapId = -1;
 	if (lua_type(luaVm, 1) == LUA_TNUMBER) {
-		mapid = lua_tointeger(luaVm, 1);
+		mapId = lua_tointeger(luaVm, 1);
 	}
 	else if (Player *player = getPlayer(luaVm)) {
-		mapid = getPlayer(luaVm)->getMap();
+		mapId = getPlayer(luaVm)->getMap();
 	}
-	if (mapid != -1) {
-		Maps::getMap(mapid)->clearDrops(false);
+	if (mapId != -1) {
+		Maps::getMap(mapId)->clearDrops(false);
 	}
 	return 0;
 }
 
 int LuaExports::clearMobs(lua_State *luaVm) {
-	int32_t mapid = 0;
+	int32_t mapId = 0;
 	if (lua_type(luaVm, 1) == LUA_TNUMBER) {
-		mapid = lua_tointeger(luaVm, 1);
+		mapId = lua_tointeger(luaVm, 1);
 	}
 	else {
-		mapid = getPlayer(luaVm)->getMap();
+		mapId = getPlayer(luaVm)->getMap();
 	}
-	Maps::getMap(mapid)->killMobs(nullptr, 0, false, false);
+	Maps::getMap(mapId)->killMobs(nullptr, 0, false, false);
 	return 0;
 }
 
 int LuaExports::countMobs(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mobId = 0;
 	if (lua_isnumber(luaVm, 2))
 		mobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->countMobs(mobId));
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->countMobs(mobId));
 	return 1;
 }
 
 int LuaExports::getAllMapPlayerIds(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	Map *map = Maps::getMap(mapid);
+	int32_t mapId = lua_tointeger(luaVm, 1);
+	Map *map = Maps::getMap(mapId);
 	if (map != nullptr) {
 		lua_newtable(luaVm);
 		int top = lua_gettop(luaVm);
@@ -1332,17 +1332,17 @@ int LuaExports::getAllMapPlayerIds(lua_State *luaVm) {
 }
 
 int LuaExports::getNumPlayers(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getNumPlayers());
+	int32_t mapId = lua_tointeger(luaVm, -1);
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getNumPlayers());
 	return 1;
 }
 
 int LuaExports::getReactorState(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -2);
+	int32_t mapId = lua_tointeger(luaVm, -2);
 	int32_t reactorId = lua_tointeger(luaVm, -1);
-	for (uint32_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		if (Maps::getMap(mapid)->getReactor(i)->getReactorId() == reactorId) {
-			lua_pushinteger(luaVm, Maps::getMap(mapid)->getReactor(i)->getState());
+	for (uint32_t i = 0; i < Maps::getMap(mapId)->getNumReactors(); i++) {
+		if (Maps::getMap(mapId)->getReactor(i)->getReactorId() == reactorId) {
+			lua_pushinteger(luaVm, Maps::getMap(mapId)->getReactor(i)->getState());
 			return 1;
 		}
 	}
@@ -1352,28 +1352,28 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 
 int LuaExports::killMobs(lua_State *luaVm) {
 	int32_t mobId = lua_tointeger(luaVm, 1);
-	int32_t mapid = getPlayer(luaVm)->getMap();
+	int32_t mapId = getPlayer(luaVm)->getMap();
 	bool playerkill = true;
 	if (lua_isboolean(luaVm, 2))
 		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
-	int32_t killed = Maps::getMap(mapid)->killMobs(getPlayer(luaVm), mobId, playerkill, true);
+	int32_t killed = Maps::getMap(mapId)->killMobs(getPlayer(luaVm), mobId, playerkill, true);
 	lua_pushinteger(luaVm, killed);
 	return 1;
 }
 
 int LuaExports::setMapSpawn(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t spawn = lua_tointeger(luaVm, 2);
-	Maps::getMap(mapid)->setMobSpawning(spawn);
+	Maps::getMap(mapId)->setMobSpawning(spawn);
 	return 0;
 }
 
 int LuaExports::setReactorState(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, -3);
+	int32_t mapId = lua_tointeger(luaVm, -3);
 	int32_t reactorId = lua_tointeger(luaVm, -2);
 	uint8_t state = lua_tointeger(luaVm, -1);
-	for (size_t i = 0; i < Maps::getMap(mapid)->getNumReactors(); i++) {
-		Reactor *reactor = Maps::getMap(mapid)->getReactor(i);
+	for (size_t i = 0; i < Maps::getMap(mapId)->getNumReactors(); i++) {
+		Reactor *reactor = Maps::getMap(mapId)->getReactor(i);
 		if (reactor->getReactorId() == reactorId) {
 			reactor->setState(state, true);
 			break;
@@ -1391,9 +1391,9 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 }
 
 int LuaExports::showMapTimer(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	Maps::getMap(mapid)->setMapTimer(time);
+	Maps::getMap(mapId)->setMapTimer(time);
 	return 0;
 }
 
@@ -1417,65 +1417,65 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 
 // Mob
 int LuaExports::getMobFh(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getFh());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getFh());
 	return 1;
 }
 
 int LuaExports::getMobHp(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getHp());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getHp());
 	return 1;
 }
 
 int LuaExports::getMobMaxHp(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMaxHp());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getMaxHp());
 	return 1;
 }
 
 int LuaExports::getMobMaxMp(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMaxMp());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getMaxMp());
 	return 1;
 }
 
 int LuaExports::getMobMp(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getMp());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getMp());
 	return 1;
 }
 
 int LuaExports::getMobPosX(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getPos().x);
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getPos().x);
 	return 1;
 }
 
 int LuaExports::getMobPosY(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getPos().y);
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getPos().y);
 	return 1;
 }
 
 int LuaExports::getRealMobId(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	lua_pushinteger(luaVm, Maps::getMap(mapid)->getMob(mapMobId)->getId());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->getMob(mapMobId)->getId());
 	return 1;
 }
 
 int LuaExports::killMob(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
-	Mob *m = Maps::getMap(mapid)->getMob(mapMobId);
+	Mob *m = Maps::getMap(mapId)->getMob(mapMobId);
 	if (m != nullptr) {
 		m->applyDamage(0, m->getHp());
 	}
@@ -1483,17 +1483,17 @@ int LuaExports::killMob(lua_State *luaVm) {
 }
 
 int LuaExports::mobDropItem(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mapMobId = lua_tointeger(luaVm, 2);
 	int32_t itemId = lua_tointeger(luaVm, 3);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 4)) {
 		amount = lua_tointeger(luaVm, 4);
 	}
-	Mob *m = Maps::getMap(mapid)->getMob(mapMobId);
+	Mob *m = Maps::getMap(mapId)->getMob(mapMobId);
 	if (m != nullptr) {
 		Item f(itemId, amount);
-		Drop *drop = new Drop(mapid, f, m->getPos(), 0);
+		Drop *drop = new Drop(mapId, f, m->getPos(), 0);
 		drop->setTime(0);
 		drop->doDrop(m->getPos());
 	}
@@ -1661,8 +1661,8 @@ int LuaExports::getPartyMapCount(lua_State *luaVm) {
 	Party *p = player->getParty();
 	int8_t members = 0;
 	if (p != nullptr) {
-		int32_t mapid = lua_tointeger(luaVm, 1);
-		members = p->getMemberCountOnMap(mapid);
+		int32_t mapId = lua_tointeger(luaVm, 1);
+		members = p->getMemberCountOnMap(mapId);
 	}
 	lua_pushinteger(luaVm, members);
 	return 1;
@@ -1717,7 +1717,7 @@ int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
 }
 
 int LuaExports::warpParty(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 	string to;
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
@@ -1725,15 +1725,15 @@ int LuaExports::warpParty(lua_State *luaVm) {
 	Player *player = getPlayer(luaVm);
 	Party *p = player->getParty();
 	if (p != nullptr) {
-		p->warpAllMembers(mapid, to);
+		p->warpAllMembers(mapId, to);
 	}
 	return 0;
 }
 
 // Instance
 int LuaExports::addInstanceMap(lua_State *luaVm) {
-	int32_t mapid = lua_tointeger(luaVm, 1);
-	getInstance(luaVm)->addMap(mapid);
+	int32_t mapId = lua_tointeger(luaVm, 1);
+	getInstance(luaVm)->addMap(mapId);
 	return 0;
 }
 
@@ -1909,28 +1909,28 @@ int LuaExports::markForDelete(lua_State *luaVm) {
 int LuaExports::moveAllPlayers(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;
 
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
-		portal = Maps::getMap(mapid)->getPortal(to);
+		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
-	getInstance(luaVm)->moveAllPlayers(mapid, true, portal);
+	getInstance(luaVm)->moveAllPlayers(mapId, true, portal);
 	return 0;
 }
 
 int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
 	PortalInfo *portal = nullptr;
 
-	int32_t mapid = lua_tointeger(luaVm, 1);
+	int32_t mapId = lua_tointeger(luaVm, 1);
 
 	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
-		portal = Maps::getMap(mapid)->getPortal(to);
+		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
-	getInstance(luaVm)->moveAllPlayers(mapid, false, portal);
+	getInstance(luaVm)->moveAllPlayers(mapId, false, portal);
 	return 0;
 }
 
@@ -1951,20 +1951,20 @@ int LuaExports::removePlayerSignUp(lua_State *luaVm) {
 }
 
 int LuaExports::respawnInstanceMobs(lua_State *luaVm) {
-	int32_t mapid = Maps::NoMap;
+	int32_t mapId = Maps::NoMap;
 	if (lua_isnumber(luaVm, 1)) {
-		mapid = lua_tointeger(luaVm, 1);
+		mapId = lua_tointeger(luaVm, 1);
 	}
-	getInstance(luaVm)->respawnMobs(mapid);
+	getInstance(luaVm)->respawnMobs(mapId);
 	return 0;
 }
 
 int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
-	int32_t mapid = Maps::NoMap;
+	int32_t mapId = Maps::NoMap;
 	if (lua_isnumber(luaVm, 1)) {
-		mapid = lua_tointeger(luaVm, 1);
+		mapId = lua_tointeger(luaVm, 1);
 	}
-	getInstance(luaVm)->respawnReactors(mapid);
+	getInstance(luaVm)->respawnReactors(mapId);
 	return 0;
 }
 

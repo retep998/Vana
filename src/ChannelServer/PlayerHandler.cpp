@@ -64,7 +64,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet.get<int32_t>();
-	bool applieddamage = false;
+	bool damageApplied = false;
 	bool deadlyAttack = false;
 	uint8_t hit = 0;
 	uint8_t stance = 0;
@@ -73,7 +73,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	uint16_t mpBurn = 0;
 	int32_t mapMobId = 0; // Map Mob ID
 	int32_t mobId = 0; // Actual Mob ID - i.e. 8800000 for Zakum
-	int32_t nodamageid = 0;
+	int32_t noDamageId = 0;
 	Mob *mob = nullptr;
 	ReturnDamageInfo pgmr;
 
@@ -134,7 +134,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			// Hacking
 			return;
 		}
-		nodamageid = player->getSkills()->getNoDamageSkill();
+		noDamageId = player->getSkills()->getNoDamageSkill();
 	}
 
 	if (disease > 0 && damage != 0) {
@@ -144,8 +144,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
-			int32_t sid = player->getActiveBuffs()->getMesoGuard();
-			int16_t mesorate = player->getActiveBuffs()->getActiveSkillInfo(sid)->x; // Meso Guard meso %
+			int32_t skillId = player->getActiveBuffs()->getMesoGuard();
+			int16_t mesorate = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x; // Meso Guard meso %
 			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
 			int32_t newmesos = mesos - mesoloss;
@@ -154,7 +154,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				// Special damage calculation for not having enough mesos
 				double reduction = 2.0 - ((double)(mesos / mesoloss)) / 2.0;
 				damage = (uint16_t)(damage / reduction);
-				// This puts us pretty close to the damage observed clientside, needs improvement
+				// This puts us pretty close to the damage observed clientskillIde, needs improvement
 				// TODO: Improve formula
 			}
 			else {
@@ -171,10 +171,11 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
 			}
-			applieddamage = true;
+			damageApplied = true;
 
-			SkillsPacket::showSkillEffect(player, sid);
+			SkillsPacket::showSkillEffect(player, skillId);
 		}
+
 		if (player->getActiveBuffs()->hasMagicGuard()) {
 			int16_t mp = player->getStats()->getMp();
 			int16_t hp = player->getStats()->getHp();
@@ -190,8 +191,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->getStats()->damageHp((uint16_t) damage);
 			}
 			else {
-				int32_t sid = player->getActiveBuffs()->getMagicGuard();
-				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(sid)->x;
+				int32_t skillId = player->getActiveBuffs()->getMagicGuard();
+				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x;
 				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
 				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
 
@@ -204,12 +205,12 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 					player->getStats()->damageHp(hpdamage + (mpdamage - mp));
 				}
 			}
-			applieddamage = true;
+			damageApplied = true;
 		}
 
 		if (player->getSkills()->hasAchilles()) {
-			int32_t sid = player->getSkills()->getAchilles();
-			double red = (2.0 - player->getSkills()->getSkillInfo(sid)->x / 1000.0);
+			int32_t skillId = player->getSkills()->getAchilles();
+			double red = (2.0 - player->getSkills()->getSkillInfo(skillId)->x / 1000.0);
 
 			player->getStats()->damageHp((uint16_t) (damage / red));
 
@@ -220,10 +221,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->getStats()->damageMp(mpBurn);
 			}
 
-			applieddamage = true;
+			damageApplied = true;
 		}
 
-		if (!applieddamage) {
+		if (!damageApplied) {
 			if (deadlyAttack) {
 				if (player->getStats()->getMp() > 0) {
 					player->getStats()->setMp(1);
@@ -247,7 +248,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
-	PlayersPacket::damagePlayer(player, damage, mobId, hit, type, stance, nodamageid, pgmr);
+	PlayersPacket::damagePlayer(player, damage, mobId, hit, type, stance, noDamageId, pgmr);
 }
 
 void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
@@ -287,16 +288,16 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 
 	if (player->getFh() == 0) {
 		// Player is floating in the air
-		int32_t mapid = player->getMap();
+		int32_t mapId = player->getMap();
 		Pos playerpos = player->getPos();
-		Map *map = Maps::getMap(mapid);
+		Map *map = Maps::getMap(mapId);
 
 		Pos floor = map->findFloor(playerpos);
 		if (floor.y == playerpos.y) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
 			if (count > 3) {
-				player->setMap(mapid);
+				player->setMap(mapId);
 			}
 			else {
 				player->setFallCounter(++count);
@@ -343,16 +344,16 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
-	int32_t cardid = packet.get<int32_t>();
-	if (cardid != 0 && player->getMonsterBook()->getCard(cardid) == 0) {
+	int32_t cardId = packet.get<int32_t>();
+	if (cardId != 0 && player->getMonsterBook()->getCard(cardId) == 0) {
 		// Hacking
 		return;
 	}
-	else if (cardid != 0) {
-		int32_t mobId = ItemDataProvider::Instance()->getMobId(cardid);
+	else if (cardId != 0) {
+		int32_t mobId = ItemDataProvider::Instance()->getMobId(cardId);
 		if (mobId != 0) {
 			player->getMonsterBook()->setCover(mobId);
-			MonsterBookPacket::changeCover(player, cardid);
+			MonsterBookPacket::changeCover(player, cardId);
 		}
 	}
 	else {
@@ -406,7 +407,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		return;
 	}
 	PlayersPacket::useMeleeAttack(player, attack);
-	int8_t damagedtargets = 0;
+	int8_t damagedTargets = 0;
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
 
@@ -415,15 +416,15 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	}
 
 	int32_t map = player->getMap();
-	uint8_t pplevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
-	bool ppok = !attack.isMesoExplosion && pplevel > 0;
-	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Jobs::ChiefBandit::Pickpocket, pplevel);
+	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
+	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
+	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Jobs::ChiefBandit::Pickpocket, ppLevel);
 	Pos origin;
-	vector<int32_t> ppdamages;
+	vector<int32_t> ppDamages;
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		int32_t targettotal = 0;
-		int8_t connectedhits = 0;
+		int32_t targetTotal = 0;
+		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(i->first);
 		if (mob == nullptr) {
 			continue;
@@ -432,12 +433,12 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
-				connectedhits++;
-				targettotal += damage;
+				connectedHits++;
+				targetTotal += damage;
 			}
 			if (ppok && Randomizer::Instance()->randInt(99) < picking->prop) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
-				ppdamages.push_back(damage);
+				ppDamages.push_back(damage);
 			}
 			if (mob == nullptr) {
 				if (ppok) {
@@ -459,33 +460,33 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				mob = nullptr;
 			}
 		}
-		if (targettotal > 0) {
+		if (targetTotal > 0) {
 			if (mob != nullptr && mob->getHp() > 0) {
-				MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+				MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
 				if (mob->getHp() < mob->getSelfDestructHp()) {
 					mob->explode();
 				}
 			}
-			damagedtargets++;
+			damagedTargets++;
 		}
-		uint8_t ppsize = ppdamages.size();
-		for (uint8_t pickpocket = 0; pickpocket < ppsize; pickpocket++) { // Drop stuff for Pickpocket
-			Pos pppos = origin;
-			pppos.x += (ppsize % 2 == 0 ? 5 : 0) + (ppsize / 2) - 20 * ((ppsize / 2) - pickpocket);
+		uint8_t ppSize = ppDamages.size();
+		for (uint8_t pickpocket = 0; pickpocket < ppSize; pickpocket++) { // Drop stuff for Pickpocket
+			Pos &ppPos = origin;
+			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
-			clock_t pptime = 175 * pickpocket;
-			int32_t ppmesos = ((ppdamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
-			Drop *ppdrop = new Drop(player->getMap(), ppmesos, pppos, player->getId(), true);
-			ppdrop->setTime(100);
-			new Timer::Timer(bind(&Drop::doDrop, ppdrop, origin),
+			clock_t ppTime = 175 * pickpocket;
+			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
+			Drop *ppDrop = new Drop(player->getMap(), ppMesos, ppPos, player->getId(), true);
+			ppDrop->setTime(100);
+			new Timer::Timer(bind(&Drop::doDrop, ppDrop, origin),
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				0, TimeUtilities::fromNow(pptime));
+				0, TimeUtilities::fromNow(ppTime));
 		}
-		ppdamages.clear();
+		ppDamages.clear();
 	}
 
 	if (player->getSkills()->hasEnergyCharge()) {
-		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedtargets);
+		player->getActiveBuffs()->increaseEnergyChargeLevel(damagedTargets);
 	}
 
 	switch (skillId) {
@@ -603,14 +604,14 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		if (mob == nullptr) {
 			continue;
 		}
-		int32_t targettotal = 0;
-		int8_t connectedhits = 0;
+		int32_t targetTotal = 0;
+		int8_t connectedHits = 0;
 
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
-				connectedhits++;
-				targettotal += damage;
+				connectedHits++;
+				targetTotal += damage;
 			}
 			if (firsthit == 0) {
 				firsthit = damage;
@@ -635,8 +636,8 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 				mob = nullptr;
 			}
 		}
-		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits, firsthit); // Mob status handler (freeze, stun, etc)
+		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
+			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firsthit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -696,9 +697,9 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	}
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		int32_t targettotal = 0;
+		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
-		int8_t connectedhits = 0;
+		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
@@ -711,8 +712,8 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
-				connectedhits++;
-				targettotal += damage;
+				connectedHits++;
+				targetTotal += damage;
 			}
 			if (damage != 0 && eater.level != 0 && !eater.used) { // MP Eater
 				mob->mpEat(player, &eater);
@@ -725,8 +726,8 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 				break;
 			}
 		}
-		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
+			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -750,9 +751,9 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	int8_t level = attack.skillLevel;
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		int32_t targettotal = 0;
+		int32_t targetTotal = 0;
 		int32_t mapmobId = i->first;
-		int8_t connectedhits = 0;
+		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobId);
 		if (mob == nullptr) {
 			continue;
@@ -761,8 +762,8 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
-				connectedhits++;
-				targettotal += damage;
+				connectedHits++;
+				targetTotal += damage;
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
@@ -772,8 +773,8 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 				break;
 			}
 		}
-		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
+			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -791,9 +792,9 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	PlayersPacket::useSummonAttack(player, attack);
 	int32_t skillId = summon->getSummonId();
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		int32_t targettotal = 0;
+		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
-		int8_t connectedhits = 0;
+		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
@@ -801,8 +802,8 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
-				connectedhits++;
-				targettotal += damage;
+				connectedHits++;
+				targetTotal += damage;
 			}
 			int32_t temphp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
@@ -812,8 +813,8 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 				break;
 			}
 		}
-		if (mob != nullptr && targettotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, player->getSkills()->getSkillLevel(skillId), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedhits); // Mob status handler (freeze, stun, etc)
+		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
+			MobHandler::handleMobStatus(player->getId(), mob, skillId, player->getSkills()->getSkillLevel(skillId), player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}

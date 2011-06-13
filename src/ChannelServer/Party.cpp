@@ -164,28 +164,28 @@ void Party::runFunction(function<void (Player *)> func) {
 }
 
 vector<int32_t> Party::getAllPlayerIds() {
-	vector<int32_t> playerids;
+	vector<int32_t> playerIds;
 	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); iter++) {
-		playerids.push_back(iter->first);
+		playerIds.push_back(iter->first);
 	}
-	return playerids;
+	return playerIds;
 }
 
 namespace Functors {
 	struct GetPartyMembers {
 		void operator()(Player *player) {
-			if (mapid == -1 || player->getMap() == mapid) {
+			if (mapId == -1 || player->getMap() == mapId) {
 				vec->push_back(player);
 			}
 		}
 		vector<Player *> *vec;
-		int32_t mapid;
+		int32_t mapId;
 	};
 }
 
-vector<Player *> Party::getPartyMembers(int32_t mapid) {
+vector<Player *> Party::getPartyMembers(int32_t mapId) {
 	vector<Player *> players;
-	Functors::GetPartyMembers func = {&players, mapid};
+	Functors::GetPartyMembers func = {&players, mapId};
 	runFunction(func);
 	return players;
 }
@@ -219,12 +219,12 @@ void Party::receiveHpBar(Player *player) {
 	runFunction(func);
 }
 
-int8_t Party::getMemberCountOnMap(int32_t mapid) {
+int8_t Party::getMemberCountOnMap(int32_t mapId) {
 	int8_t count = 0;
 	Player *test = nullptr;
 	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); iter++) {
 		test = iter->second;
-		if (test != nullptr && test->getMap() == mapid) {
+		if (test != nullptr && test->getMap() == mapId) {
 			count++;
 		}
 	}
@@ -232,17 +232,17 @@ int8_t Party::getMemberCountOnMap(int32_t mapid) {
 }
 
 bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
-	bool is = true;
+	bool ret = true;
 	Player *test = nullptr;
 	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); iter++) {
 		if (test = iter->second) {
 			if (test->getStats()->getLevel() < lowbound || test->getStats()->getLevel() > highbound) {
-				is = false;
+				ret = false;
 				break;
 			}
 		}
 	}
-	return is;
+	return ret;
 }
 
 namespace Functors {
@@ -255,13 +255,13 @@ namespace Functors {
 	};
 }
 
-void Party::warpAllMembers(int32_t mapid, const string &portalname) {
-	if (Maps::getMap(mapid)) {
+void Party::warpAllMembers(int32_t mapId, const string &portalname) {
+	if (Maps::getMap(mapId)) {
 		PortalInfo *portal = nullptr;
 		if (portalname != "") { // Optional portal parameter
-			portal = Maps::getMap(mapid)->getPortal(portalname);
+			portal = Maps::getMap(mapId)->getPortal(portalname);
 		}
-		Functors::WarpAllMembers func = {mapid, portal};
+		Functors::WarpAllMembers func = {mapId, portal};
 		runFunction(func);
 	}
 }

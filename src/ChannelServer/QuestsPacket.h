@@ -30,12 +30,12 @@ namespace QuestsPacket {
 		ErrorEquipWorn = 0x0D,
 		ErrorOnlyOne = 0x0E
 	};
-	void acceptQuest(Player *player, int16_t questId, int32_t npcid);
+	void acceptQuest(Player *player, int16_t questId, int32_t npcId);
 	void updateQuest(Player *player, const ActiveQuest &quest);
 	void doneQuest(Player *player, int16_t questId);
-	void questError(Player *player, int16_t questId, int8_t errorcode);
+	void questError(Player *player, int16_t questId, int8_t errorCode);
 	void questExpire(Player *player, int16_t questId);
-	void questFinish(Player *player, int16_t questId, int32_t npcid, int16_t nextquest, int64_t time);
+	void questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time);
 	void forfeitQuest(Player *player, int16_t questId);
 	void giveItem(Player *player, int32_t itemId, int32_t amount);
 	void giveMesos(Player *player, int32_t amount);

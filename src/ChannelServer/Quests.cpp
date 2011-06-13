@@ -91,7 +91,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t npcid = packet.get<int32_t>();
+	int32_t npcId = packet.get<int32_t>();
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
@@ -99,36 +99,36 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 			x << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
 				<< ") tried to perform an action with a non-started quest."
-				<< " (NPC ID: " << npcid
+				<< " (NPC ID: " << npcId
 				<< ", Quest ID: " << questId << ")";
 			ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 			return;
 		}
 	}
-	if (!NpcDataProvider::Instance()->isValidNpcId(npcid)) {
+	if (!NpcDataProvider::Instance()->isValidNpcId(npcId)) {
 		std::stringstream x;
 		x << "Player (ID: " << player->getId()
 			<< ", Name: " << player->getName()
 			<< ") tried to do a quest action with an invalid NPC ID."
-			<< " (NPC ID: " << npcid
+			<< " (NPC ID: " << npcId
 			<< ", Quest ID: " << questId << ")";
 		ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		return;
 	}
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
-			int32_t itemid = packet.get<int32_t>();
-			if (ItemDataProvider::Instance()->isQuest(itemid)) {
-				QuestsPacket::giveItem(player, itemid, 1);
-				Inventory::addNewItem(player, itemid, 1);
+			int32_t itemId = packet.get<int32_t>();
+			if (ItemDataProvider::Instance()->isQuest(itemId)) {
+				QuestsPacket::giveItem(player, itemId, 1);
+				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {
 				std::stringstream x;
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to restore a lost quest item which isn't a quest item."
-					<< " (Item ID: " << itemid
-					<< ", NPC ID: " << npcid
+					<< " (Item ID: " << itemId
+					<< ", NPC ID: " << npcId
 					<< ", Quest ID: " << questId << ")";
 				ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 			}
@@ -140,20 +140,20 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to start an already started quest."
-					<< " (NPC ID: " << npcid
+					<< " (NPC ID: " << npcId
 					<< ", Quest ID: " << questId << ")";
 				ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 			}
 			else {
-				player->getQuests()->addQuest(questId, npcid);
+				player->getQuests()->addQuest(questId, npcId);
 			}
 			break;
 		case QuestOpcodes::FinishQuest:
-			player->getQuests()->finishQuest(questId, npcid);
+			player->getQuests()->finishQuest(questId, npcId);
 			break;
 		case QuestOpcodes::StartNpcQuestChat:
 		case QuestOpcodes::EndNpcQuestChat:
-			NpcHandler::handleQuestNpc(player, npcid, act == QuestOpcodes::StartNpcQuestChat, questId);
+			NpcHandler::handleQuestNpc(player, npcId, act == QuestOpcodes::StartNpcQuestChat, questId);
 			break;
 	}
 }

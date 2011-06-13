@@ -127,13 +127,13 @@ void PlayerInventory::load() {
 
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		int8_t index = static_cast<int8_t>(res[i][0]);
-		int32_t mapid = res[i][1];
+		int32_t mapId = res[i][1];
 
 		if (index >= Inventories::TeleportRockMax) {
-			m_viplocations.push_back(mapid);
+			m_vipLocations.push_back(mapId);
 		}
 		else {
-			m_rocklocations.push_back(mapid);
+			m_rockLocations.push_back(mapId);
 		}
 	}
 }
@@ -143,14 +143,14 @@ void PlayerInventory::save() {
 	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << m_player->getId();
 	query.exec();
 
-	bool firstrun = true;
+	bool firstRun = true;
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		ItemInventory &itemsinv = m_items[i - 1];
 		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
 			Item *item = iter->second;
-			if (firstrun) {
+			if (firstRun) {
 				query << "INSERT INTO items VALUES (";
-				firstrun = false;
+				firstRun = false;
 			}
 			else {
 				query << ",(";
@@ -187,26 +187,26 @@ void PlayerInventory::save() {
 				<< item->getExpirationTime() << ")";
 		}
 	}
-	if (!firstrun) {
+	if (!firstRun) {
 		query.exec();
 	}
 	query << "DELETE FROM teleport_rock_locations WHERE character_id = " << m_player->getId();
 	query.exec();
 
-	for (size_t i = 0; i < m_rocklocations.size(); i++) {
-		int32_t mapid = m_rocklocations[i];
+	for (size_t i = 0; i < m_rockLocations.size(); i++) {
+		int32_t mapId = m_rockLocations[i];
 		query << "INSERT INTO teleport_rock_locations VALUES ("
 				<< m_player->getId() << ","
 				<< (uint16_t) i << ","
-				<< mapid << ")";
+				<< mapId << ")";
 		query.exec();
 	}
-	for (size_t i = 0; i < m_viplocations.size(); i++) {
-		int32_t mapid = m_viplocations[i];
+	for (size_t i = 0; i < m_vipLocations.size(); i++) {
+		int32_t mapId = m_vipLocations[i];
 		query << "INSERT INTO teleport_rock_locations VALUES ("
 				<< m_player->getId() << ","
 				<< (uint16_t) i + Inventories::TeleportRockMax << ","
-				<< mapid << ")";
+				<< mapId << ")";
 		query.exec();
 	}
 }
@@ -214,21 +214,25 @@ void PlayerInventory::save() {
 void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 	inventory -= 1;
 	m_maxSlots[inventory] += (rows * 4);
-	if (m_maxSlots[inventory] > 100)
+	if (m_maxSlots[inventory] > 100) {
 		m_maxSlots[inventory] = 100;
-	if (m_maxSlots[inventory] < 24) // Retard.
+	}
+	if (m_maxSlots[inventory] < 24) {
+		// Retard.
 		m_maxSlots[inventory] = 24;
+	}
 	InventoryPacket::updateSlots(m_player, inventory + 1, m_maxSlots[inventory]);
 }
 
-void PlayerInventory::setMesos(int32_t mesos, bool is) {
-	if (mesos < 0)
+void PlayerInventory::setMesos(int32_t mesos, bool sendPacket) {
+	if (mesos < 0) {
 		mesos = 0;
+	}
 	m_mesos = mesos;
-	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
+	PlayerPacket::updateStat(m_player, Stats::Mesos, m_mesos, sendPacket);
 }
 
-bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
+bool PlayerInventory::modifyMesos(int32_t mod, bool sendPacket) {
 	if (mod < 0) {
 		if (-mod > m_mesos) {
 			return false;
@@ -242,18 +246,18 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool is) {
 		}
 		m_mesos = mesotest;
 	}
-	PlayerPacket::updateStatInt(m_player, Stats::Mesos, m_mesos, is);
+	PlayerPacket::updateStat(m_player, Stats::Mesos, m_mesos, sendPacket);
 	return true;
 }
 
 void PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoading) {
 	m_items[inv - 1][slot] = item;
 	int32_t itemId = item->getId();
-	if (m_itemamounts.find(itemId) != m_itemamounts.end()) {
-		m_itemamounts[itemId] += item->getAmount();
+	if (m_itemAmounts.find(itemId) != m_itemAmounts.end()) {
+		m_itemAmounts[itemId] += item->getAmount();
 	}
 	else {
-		m_itemamounts[itemId] = item->getAmount();
+		m_itemAmounts[itemId] = item->getAmount();
 	}
 	if (slot < 0) {
 		addEquipped(slot, itemId);
@@ -277,7 +281,7 @@ void PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) {
 	if (m_items[inv].find(slot) != m_items[inv].end()) {
 		if (updateAmount) {
 			Item *x = m_items[inv][slot];
-			m_itemamounts[x->getId()] -= x->getAmount();
+			m_itemAmounts[x->getId()] -= x->getAmount();
 		}
 		if (slot < 0) {
 			addEquipped(slot, 0);
@@ -348,7 +352,7 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 }
 
 uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
-	return m_itemamounts.find(itemId) != m_itemamounts.end() ? m_itemamounts[itemId] : 0;
+	return m_itemAmounts.find(itemId) != m_itemAmounts.end() ? m_itemAmounts[itemId] : 0;
 }
 
 bool PlayerInventory::isEquippedItem(int32_t itemId) {
@@ -413,53 +417,53 @@ int32_t PlayerInventory::doShadowStars() {
 	}
 	return 0;
 }
-void PlayerInventory::addRockMap(int32_t mapid, int8_t type) {
+void PlayerInventory::addRockMap(int32_t mapId, int8_t type) {
 	const int8_t mode = InventoryPacket::RockModes::Add;
 	if (type == InventoryPacket::RockTypes::Regular) {
-		if (m_rocklocations.size() < Inventories::TeleportRockMax) {
-			m_rocklocations.push_back(mapid);
+		if (m_rockLocations.size() < Inventories::TeleportRockMax) {
+			m_rockLocations.push_back(mapId);
 		}
-		InventoryPacket::sendRockUpdate(m_player, mode, type, m_rocklocations);
+		InventoryPacket::sendRockUpdate(m_player, mode, type, m_rockLocations);
 	}
 	else if (type == InventoryPacket::RockTypes::Vip) {
-		if (m_viplocations.size() < Inventories::VipRockMax) {
-			m_viplocations.push_back(mapid);
+		if (m_vipLocations.size() < Inventories::VipRockMax) {
+			m_vipLocations.push_back(mapId);
 			// Want packet
 		}
-		InventoryPacket::sendRockUpdate(m_player, mode, type, m_viplocations);
+		InventoryPacket::sendRockUpdate(m_player, mode, type, m_vipLocations);
 	}
 }
 
-void PlayerInventory::delRockMap(int32_t mapid, int8_t type) {
+void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 	const int8_t mode = InventoryPacket::RockModes::Delete;
 	if (type == InventoryPacket::RockTypes::Regular) {
-		for (size_t k = 0; k < m_rocklocations.size(); k++) {
-			if (m_rocklocations[k] == mapid) {
-				m_rocklocations.erase(m_rocklocations.begin() + k);
-				InventoryPacket::sendRockUpdate(m_player, mode, type, m_rocklocations);
+		for (size_t k = 0; k < m_rockLocations.size(); k++) {
+			if (m_rockLocations[k] == mapId) {
+				m_rockLocations.erase(m_rockLocations.begin() + k);
+				InventoryPacket::sendRockUpdate(m_player, mode, type, m_rockLocations);
 				break;
 			}
 		}
 	}
 	else if (type == InventoryPacket::RockTypes::Vip) {
-		for (size_t k = 0; k < m_viplocations.size(); k++) {
-			if (m_viplocations[k] == mapid) {
-				m_viplocations.erase(m_viplocations.begin() + k);
-				InventoryPacket::sendRockUpdate(m_player, mode, type, m_viplocations);
+		for (size_t k = 0; k < m_vipLocations.size(); k++) {
+			if (m_vipLocations[k] == mapId) {
+				m_vipLocations.erase(m_vipLocations.begin() + k);
+				InventoryPacket::sendRockUpdate(m_player, mode, type, m_vipLocations);
 				break;
 			}
 		}
 	}
 }
 
-bool PlayerInventory::ensureRockDestination(int32_t mapid) {
-	for (size_t k = 0; k < m_rocklocations.size(); k++) {
-		if (m_rocklocations[k] == mapid) {
+bool PlayerInventory::ensureRockDestination(int32_t mapId) {
+	for (size_t k = 0; k < m_rockLocations.size(); k++) {
+		if (m_rockLocations[k] == mapId) {
 			return true;
 		}
 	}
-	for (size_t k = 0; k < m_viplocations.size(); k++) {
-		if (m_viplocations[k] == mapid) {
+	for (size_t k = 0; k < m_vipLocations.size(); k++) {
+		if (m_vipLocations[k] == mapId) {
 			return true;
 		}
 	}
@@ -519,8 +523,8 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 }
 
 void PlayerInventory::rockPacket(PacketCreator &packet) {
-	InventoryPacketHelper::fillRockPacket(packet, m_rocklocations, Inventories::TeleportRockMax);
-	InventoryPacketHelper::fillRockPacket(packet, m_viplocations, Inventories::VipRockMax);
+	InventoryPacketHelper::fillRockPacket(packet, m_rockLocations, Inventories::TeleportRockMax);
+	InventoryPacketHelper::fillRockPacket(packet, m_vipLocations, Inventories::VipRockMax);
 }
 
 void PlayerInventory::wishListPacket(PacketCreator &packet) {

@@ -40,24 +40,24 @@ void PlayerQuests::save() {
 	query << "DELETE FROM active_quests WHERE character_id = " << m_player->getId();
 	query.exec();
 
-	bool firstrun = true;
-	bool firstrun2 = true;
+	bool firstRun = true;
+	bool firstRun2 = true;
 	for (map<int16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); q++) {
-		if (firstrun) {
+		if (firstRun) {
 			query << "INSERT INTO active_quests (`chararcter_id`, `quest_id`, `mob_id`, `quantity_killed`, `data`) VALUES (";
-			firstrun = false;
+			firstRun = false;
 		}
 		else {
 			query << ",(";
 		}
 		if (q->second.kills.size()) {
-			firstrun2 = true;
+			firstRun2 = true;
 			for (map<int32_t, int16_t, std::less<int32_t>>::iterator v = q->second.kills.begin(); v != q->second.kills.end(); v++) {
-				if (!firstrun2) {
+				if (!firstRun2) {
 					query << ",(";
 				}
 				else {
-					firstrun2 = false;
+					firstRun2 = false;
 				}
 				query << m_player->getId() << ","
 					<< q->first << ","
@@ -74,17 +74,17 @@ void PlayerQuests::save() {
 				<< mysqlpp::quote << q->second.data << ")";
 		}
 	}
-	if (!firstrun)
+	if (!firstRun)
 		query.exec();
 
 	query << "DELETE FROM completed_quests WHERE character_id = " << m_player->getId();
 	query.exec();
 
-	firstrun = true;
+	firstRun = true;
 	for (map<int16_t, int64_t>::iterator q = m_completed.begin(); q != m_completed.end(); q++) {
-		if (firstrun) {
+		if (firstRun) {
 			query << "INSERT INTO completed_quests VALUES (";
-			firstrun = false;
+			firstRun = false;
 		}
 		else {
 			query << ",(";
@@ -93,7 +93,7 @@ void PlayerQuests::save() {
 			<< q->first << ","
 			<< q->second << ")";
 	}
-	if (!firstrun)
+	if (!firstRun)
 		query.exec();
 }
 
@@ -123,7 +123,7 @@ void PlayerQuests::load() {
 		if (mob != 0) {
 			int16_t kills = res[i]["quantity_killed"];
 			curquest.kills[mob] = kills;
-			m_mobtoquest[mob].push_back(current);
+			m_mobToQuestMapping[mob].push_back(current);
 		}
 		previous = current;
 	}
@@ -138,8 +138,8 @@ void PlayerQuests::load() {
 	}
 }
 
-void PlayerQuests::addQuest(int16_t questId, int32_t npcid) {
-	QuestsPacket::acceptQuest(m_player, questId, npcid);
+void PlayerQuests::addQuest(int16_t questId, int32_t npcId) {
+	QuestsPacket::acceptQuest(m_player, questId, npcId);
 
 	addQuest(questId);
 	giveRewards(questId, true);
@@ -169,18 +169,18 @@ namespace Functors {
 void PlayerQuests::addQuestMobs(int16_t questId) {
 	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
 	if (questinfo->hasMobRequests()) {
-		Functors::QuestAddMobFunc f = {m_quests, m_mobtoquest, questId};
+		Functors::QuestAddMobFunc f = {m_quests, m_mobToQuestMapping, questId};
 		questinfo->mobRequestFunc(f);
 	}
 }
 
 void PlayerQuests::updateQuestMob(int32_t mobId) {
-	if (m_mobtoquest.find(mobId) != m_mobtoquest.end()) {
+	if (m_mobToQuestMapping.find(mobId) != m_mobToQuestMapping.end()) {
 		int16_t qid = 0;
 		ActiveQuest q;
 		Quest *realquest;
-		for (size_t i = 0; i < m_mobtoquest[mobId].size(); i++) {
-			qid = m_mobtoquest[mobId][i];
+		for (size_t i = 0; i < m_mobToQuestMapping[mobId].size(); i++) {
+			qid = m_mobToQuestMapping[mobId][i];
 			q = m_quests[qid];
 			realquest = QuestDataProvider::Instance()->getInfo(qid);
 			int16_t maxcount = realquest->getMobRequestQuantity(mobId);
@@ -260,7 +260,7 @@ namespace Functors {
 	};
 }
 
-void PlayerQuests::finishQuest(int16_t questId, int32_t npcid) {
+void PlayerQuests::finishQuest(int16_t questId, int32_t npcId) {
 	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
 
 	if (!giveRewards(questId, false)) {
@@ -269,13 +269,13 @@ void PlayerQuests::finishQuest(int16_t questId, int32_t npcid) {
 	}
 
 	if (questinfo->hasMobRequests()) {
-		Functors::QuestRemoveMobFunc f = {m_mobtoquest, questId};
+		Functors::QuestRemoveMobFunc f = {m_mobToQuestMapping, questId};
 		questinfo->mobRequestFunc(f);
 	}
 	m_quests.erase(questId);
 	int64_t endtime = TimeUtilities::getServerTime();
 	m_completed[questId] = endtime;
-	QuestsPacket::questFinish(m_player, questId, npcid, questinfo->getNextQuest(), endtime);
+	QuestsPacket::questFinish(m_player, questId, npcId, questinfo->getNextQuest(), endtime);
 }
 
 namespace Functors {

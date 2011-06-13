@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 
 // LoopingId, keep track and returns a number between min and max, restarts when number reaches max
-template<typename T>
+template <typename T>
 class LoopingId {
 public:
 	explicit LoopingId(T minimum = 1, T maximum = std::numeric_limits<T>::max());
@@ -33,7 +33,7 @@ private:
 	T m_maximum;
 };
 
-template<typename T>
+template <typename T>
 LoopingId<T>::LoopingId(T minimum, T maximum) :
 	m_current(minimum),
 	m_minimum(minimum),
@@ -41,7 +41,7 @@ LoopingId<T>::LoopingId(T minimum, T maximum) :
 {
 }
 
-template<typename T>
+template <typename T>
 T LoopingId<T>::next() {
 	T ret = m_current;
 	if (m_current == m_maximum) {
@@ -53,7 +53,7 @@ T LoopingId<T>::next() {
 	return ret;
 }
 
-template<typename T>
+template <typename T>
 void LoopingId<T>::reset() {
 	m_current = m_minimum;
 }

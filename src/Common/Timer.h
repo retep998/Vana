@@ -34,7 +34,7 @@ public:
 	~Timer();
 
 	Id getId() const { return m_id; }
-	int64_t getRunAt() const { return m_run_at; }
+	int64_t getRunAt() const { return m_runAt; }
 	int64_t getTimeLeft() const;
 
 	void run();
@@ -42,7 +42,7 @@ public:
 private:
 	Id m_id;
 	Container *m_container;
-	int64_t m_run_at; // The time that this timer will run
+	int64_t m_runAt; // The time that this timer will run
 	clock_t m_repeat; // Repeat this timer x msec after the timer ran
 	function<void ()> m_function;
 };

@@ -35,8 +35,8 @@ public:
 	KeyMap * getKeyMap(int32_t pos);
 	int32_t getMax();
 
-	void load(int32_t charid);
-	void save(int32_t charid);
+	void load(int32_t charId);
+	void save(int32_t charId);
 
 	static const size_t size = 90;
 private:

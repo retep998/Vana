@@ -42,22 +42,22 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 
-	bool addCard(int32_t itemId, uint8_t level = 1, bool initialload = false);
+	bool addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false);
 	void calculateLevel();
 	void infoData(PacketCreator &packet);
 	void setCover(int32_t newcover) { m_cover = newcover; }
 
-	MonsterCard * getCard(int32_t cardid);
-	uint8_t getCardLevel(int32_t cardid);
-	int32_t getSpecials() const { return m_specialcount; }
-	int32_t getNormals() const { return m_normalcount; }
+	MonsterCard * getCard(int32_t cardId);
+	uint8_t getCardLevel(int32_t cardId);
+	int32_t getSpecials() const { return m_specialCount; }
+	int32_t getNormals() const { return m_normalCount; }
 	int32_t getSize() const { return (int32_t) m_cards.size(); }
 	int32_t getLevel() const { return m_level; }
 	int32_t getCover() const { return m_cover; }
-	bool isFull(int32_t cardid);
+	bool isFull(int32_t cardId);
 private:
-	int32_t m_specialcount;
-	int32_t m_normalcount;
+	int32_t m_specialCount;
+	int32_t m_normalCount;
 	int32_t m_level;
 	int32_t m_cover;
 	Player *m_player;

@@ -108,25 +108,25 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	}
 }
 
-void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveid, bool useskill, int32_t mp, uint8_t skill, uint8_t level) {
+void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, bool useSkill, int32_t mp, uint8_t skill, uint8_t level) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_MOVEMENT);
 	packet.add<int32_t>(mobId);
-	packet.add<int16_t>(moveid);
-	packet.addBool(useskill);
+	packet.add<int16_t>(moveId);
+	packet.addBool(useSkill);
 	packet.add<int16_t>(static_cast<int16_t>(mp));
 	packet.add<uint8_t>(skill);
 	packet.add<uint8_t>(level);
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobId, bool useskill, int8_t skill, const Pos &projectiletarget, unsigned char *buf, int32_t len) {
+void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t skill, const Pos &projectileTarget, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_CONTROL_MOVEMENT);
 	packet.add<int32_t>(mobId);
-	packet.addBool(useskill);
+	packet.addBool(useSkill);
 	packet.add<int8_t>(skill);
-	packet.addPos(projectiletarget);
+	packet.addPos(projectileTarget);
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -166,11 +166,11 @@ void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
+void MobsPacket::applyStatus(Mob *mob, int32_t statusMask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_STATUS_ADDITION);
 	packet.add<int32_t>(mob->getId());
-	packet.add<int32_t>(statusmask);
+	packet.add<int32_t>(statusMask);
 
 	for (size_t i = 0; i < info.size(); i++) {
 		packet.add<int16_t>(static_cast<int16_t>(info[i].val));
@@ -178,7 +178,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusmask, const vector<StatusIn
 			packet.add<int32_t>(info[i].skillId);
 		}
 		else {
-			packet.add<int16_t>(info[i].mobskill);
+			packet.add<int16_t>(info[i].mobSkill);
 			packet.add<int16_t>(info[i].level);
 		}
 		packet.add<int16_t>(-1); // Not sure what this is
@@ -208,20 +208,20 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::showHp(Player *player, int32_t mobId, int8_t per) {
+void MobsPacket::showHp(Player *player, int32_t mobId, int8_t percentage) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_HP_DISPLAY);
 	packet.add<int32_t>(mobId);
-	packet.add<int8_t>(per);
+	packet.add<int8_t>(percentage);
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::showHp(int32_t mapid, int32_t mobId, int8_t per) {
+void MobsPacket::showHp(int32_t mapId, int32_t mobId, int8_t percentage) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MOB_HP_DISPLAY);
 	packet.add<int32_t>(mobId);
-	packet.add<int8_t>(per);
-	Maps::getMap(mapid)->sendPacket(packet);
+	packet.add<int8_t>(percentage);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
 void MobsPacket::showBossHp(Mob *mob) {
@@ -244,11 +244,11 @@ void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::showSpawnEffect(int32_t mapid, int8_t summonEffect, const Pos &pos) {
+void MobsPacket::showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(summonEffect);
 	packet.addPos(pos, true);
-	Maps::getMap(mapid)->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }

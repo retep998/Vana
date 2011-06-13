@@ -29,11 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.h"
 
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
 	string message = packet.getString();
 	vector<int32_t> receivers = packet.getVector<int32_t>();
-	string sender = PlayerDataProvider::Instance()->getPlayer(playerid)->getName();
+	string sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
 	for (size_t i = 0; i < receivers.size(); i++) {
 		int32_t receiver = receivers[i];
 		if (Player *p = PlayerDataProvider::Instance()->getPlayer(receiver)) {
@@ -45,11 +45,11 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
-	string findee_name = packet.getString();
+	string findeeName = packet.getString();
 
-	Player *findee = PlayerDataProvider::Instance()->getPlayer(findee_name);
+	Player *findee = PlayerDataProvider::Instance()->getPlayer(findeeName);
 
-	WorldServerAcceptPacket::findPlayer(connection, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findee_name));
+	WorldServerAcceptPacket::findPlayer(connection, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findeeName));
 }
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {

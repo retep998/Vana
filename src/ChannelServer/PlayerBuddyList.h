@@ -56,9 +56,9 @@ class PlayerBuddyList : boost::noncopyable {
 public:
 	PlayerBuddyList(Player *player);
 	uint8_t addBuddy(const string &name, const string &group, bool invite = true);
-	void removeBuddy(int32_t charid);
+	void removeBuddy(int32_t charId);
 
-	BuddyPtr getBuddy(int32_t charid) { return m_buddies[charid]; }
+	BuddyPtr getBuddy(int32_t charId) { return m_buddies[charId]; }
 	uint8_t listSize() const { return m_buddies.size(); }
 	vector<int32_t> getBuddyIds(); // For sending the online packet to the players.
 	void addBuddyInvite(const BuddyInvite &invite) { m_pendingBuddies.push_back(invite); }

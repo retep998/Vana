@@ -27,26 +27,27 @@ using std::vector;
 class Player;
 
 struct ActiveBuff {
-	ActiveBuff() : hasmapbuff(false) {
+	ActiveBuff() : hasMapBuff(false) {
 		for (size_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 			types[i] = 0;
 		}
 	}
 	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
 	vector<int16_t> vals;
-	bool hasmapbuff;
+	bool hasMapBuff;
 };
 
 struct ActiveMapBuff {
 	ActiveMapBuff() : debuff(false) {
-		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++)
-			typelist[i] = 0;
+		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
+			typeList[i] = 0;
+		}
 	}
 	vector<uint8_t> bytes;
 	vector<int8_t> types;
 	vector<int16_t> values;
 	vector<bool> useVals;
-	boost::array<uint8_t, BuffBytes::ByteQuantity> typelist;
+	boost::array<uint8_t, BuffBytes::ByteQuantity> typeList;
 	bool debuff;
 };
 
@@ -60,7 +61,7 @@ struct MapEntryVals {
 
 namespace Buffs {
 	void addBuff(Player *player, int32_t itemId, int32_t time);
-	bool addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedinfo, int32_t mapMobId = 0);
+	bool addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedInfo, int32_t mapMobId = 0);
 	void endBuff(Player *player, int32_t skill);
 	void doAct(Player *player, int32_t skillId, uint8_t level);
 	void addDebuff(Player *player, uint8_t skillId, uint8_t level);

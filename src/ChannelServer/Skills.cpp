@@ -111,7 +111,7 @@ const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affe
 void Skills::useSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Ticks
 	int32_t skillId = packet.get<int32_t>();
-	int16_t addedinfo = 0;
+	int16_t addedInfo = 0;
 	uint8_t level = packet.get<uint8_t>();
 	uint8_t type = 0;
 	uint8_t direction = 0;
@@ -238,7 +238,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 
 			Party *party = player->getParty();
 			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
-			int32_t expIncreasement = 0;
+			int32_t expIncrease = 0;
 
 			int16_t heal = (healrate * player->getStats()->getMaxHp() / 100) / partyPlayers;
 
@@ -250,12 +250,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					if (chp > 0 && chp < cmem->getStats()->getMaxHp()) {
 						cmem->getStats()->modifyHp(heal);
 						if (player != cmem) {
-							expIncreasement += 20 * (cmem->getStats()->getHp() - chp) / (8 * cmem->getStats()->getLevel() + 190);
+							expIncrease += 20 * (cmem->getStats()->getHp() - chp) / (8 * cmem->getStats()->getLevel() + 190);
 						}
 					}
 				}
-				if (expIncreasement > 0) {
-					player->getStats()->giveExp(expIncreasement);
+				if (expIncrease > 0) {
+					player->getStats()->giveExp(expIncrease);
 				}
 			}
 			else {
@@ -307,7 +307,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true);
-						Buffs::addBuff(cmem, skillId, level, addedinfo);
+						Buffs::addBuff(cmem, skillId, level, addedInfo);
 						if (skillId == Jobs::Buccaneer::TimeLeap) {
 							cmem->getSkills()->removeAllCooldowns();
 						}
@@ -324,12 +324,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::SuperGm::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
-				int32_t playerid = packet.get<int32_t>();
-				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
+				int32_t playerId = packet.get<int32_t>();
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerId);
 				if (target != nullptr && target != player) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
-					Buffs::addBuff(target, skillId, level, addedinfo);
+					Buffs::addBuff(target, skillId, level, addedInfo);
 				}
 			}
 			break;
@@ -337,8 +337,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::SuperGm::HealPlusDispel: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
-				int32_t playerid = packet.get<int32_t>();
-				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
+				int32_t playerId = packet.get<int32_t>();
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerId);
 				if (target != nullptr && target != player && target->getStats()->getHp() > 0) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
@@ -352,8 +352,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::SuperGm::Resurrection: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
-				int32_t playerid = packet.get<int32_t>();
-				Player *target = PlayerDataProvider::Instance()->getPlayer(playerid);
+				int32_t playerId = packet.get<int32_t>();
+				Player *target = PlayerDataProvider::Instance()->getPlayer(playerId);
 				if (target != nullptr && target != player && target->getStats()->getHp() <= 0) {
 					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
 					SkillsPacket::showSkill(target, skillId, level, direction, true);
@@ -370,7 +370,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			type = packet.get<int8_t>();
 			switch (type) {
 				case 0x80:
-					addedinfo = packet.get<int16_t>();
+					addedInfo = packet.get<int16_t>();
 					break;
 			}
 			break;
@@ -378,7 +378,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	applySkillCosts(player, skillId, level);
 	SkillsPacket::showSkill(player, skillId, level, direction);
 
-	if (Buffs::addBuff(player, skillId, level, addedinfo)) {
+	if (Buffs::addBuff(player, skillId, level, addedInfo)) {
 		return;
 	}
 	if (GameLogicUtilities::isSummon(skillId)) {
@@ -386,7 +386,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	}
 }
 
-void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalamp) {
+void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
 	int16_t mpuse = skill->mp;
@@ -399,7 +399,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 			int16_t mploss = (mpuse * mprate) / 100;
 			player->getStats()->modifyMp(-mploss, true);
 		}
-		else if (elementalamp && player->getSkills()->hasElementalAmp()) {
+		else if (elementalAmp && player->getSkills()->hasElementalAmp()) {
 			player->getStats()->modifyMp(-1 * (mpuse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x / 100), true);
 		}
 		else {
@@ -478,12 +478,12 @@ void Skills::hurt(Player *player, int16_t value, int32_t skillId) {
 	}
 }
 
-void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bool initialload) {
+void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bool initialLoad) {
 	if (isCooling(player, skillId)) {
 		// Hacking
 		return;
 	}
-	if (!initialload) {
+	if (!initialLoad) {
 		SkillsPacket::sendCooldown(player, skillId, coolTime);
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}

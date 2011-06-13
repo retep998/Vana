@@ -69,7 +69,8 @@ void LoginServer::loadLogConfig() {
 
 	bool enabled = conf.getBool("log_login");
 	if (enabled) {
-		LogConfig log = conf.getLogConfig("login");
+		LogConfig log;
+		log = conf.getClass<LogConfig>("login");
 		createLogger(log);
 	}
 }

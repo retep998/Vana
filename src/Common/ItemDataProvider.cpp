@@ -491,7 +491,7 @@ int32_t ItemDataProvider::getMobId(int32_t cardId) {
 		return m_cards.left.at(cardId);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Card out of range for cardid " << cardId << std::endl;
+		std::cout << "Card out of range for cardId " << cardId << std::endl;
 	}
 	return 0;
 }

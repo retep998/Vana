@@ -40,7 +40,7 @@ void Worlds::showWorld(Player *player) {
 		return;
 	}
 
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->isConnected()) {
 			LoginPacket::showWorld(player, iter->second);
 		}
@@ -57,7 +57,7 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	uint8_t worldId = packet.get<uint8_t>();
+	int8_t worldId = packet.get<int8_t>();
 	if (World *world = getWorld(worldId)) {
 		player->setWorld(worldId);
 		int32_t maxLoad = world->getMaxPlayerLoad();
@@ -99,58 +99,60 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 
 int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	World *world = nullptr;
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (!iter->second->isConnected()) {
-			connection->setWorldId(iter->first);
 			world = iter->second;
-			iter->second->setConnected(true);
-			iter->second->setConnection(connection);
 			break;
 		}
 	}
 
+	int8_t worldId = -1;
 	if (world != nullptr) {
+		worldId = world->getId();
+		connection->setWorldId(worldId);
+		world->setConnected(true);
+		world->setConnection(connection);
+
 		LoginServerAcceptPacket::connect(connection, world);
 
-		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(world->getId())));
-
-		return world->getId();
+		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(worldId)));
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);
 		std::cout << "Error: No more worlds to assign." << std::endl;
 		connection->getSession()->disconnect();
-		return -1;
 	}
+	return worldId;
 }
 
 int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
-	int8_t worldid = -1;
-	port_t port;
-	AbstractServerAcceptConnection *worldConnection;
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		if (iter->second->getChannelCount() < iter->second->getMaxChannels() && iter->second->isConnected()) {
-			worldid = iter->second->getId();
-			port = iter->second->getPort();
-			worldConnection = iter->second->getConnection();
+	World *validWorld = nullptr;
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+		World *world = iter->second;
+		if (world->getChannelCount() < world->getMaxChannels() && world->isConnected()) {
+			validWorld = world;
 			break;
 		}
 	}
 
-	if (worldid != -1) {
-		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), worldConnection->getExternalIp(), worldConnection->getIp());
-		LoginServerAcceptPacket::connectChannel(connection, worldid, worldIp, port);
+	int8_t worldId = -1;
+	if (validWorld != nullptr) {
+		worldId = validWorld->getId();
+		LoginServerAcceptConnection *wConnection = validWorld->getConnection();
+
+		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), wConnection->getExternalIp(), wConnection->getIp());
+		LoginServerAcceptPacket::connectChannel(connection, worldId, worldIp, validWorld->getPort());
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(connection, worldid, 0, 0);
+		LoginServerAcceptPacket::connectChannel(connection, worldId, 0, 0);
 		std::cout << "Error: No more channels to assign." << std::endl;
 	}
 	connection->getSession()->disconnect();
-	return worldid;
+	return worldId;
 }
 
 void Worlds::toWorlds(PacketCreator &packet) {
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->isConnected()) {
 			iter->second->getConnection()->getSession()->send(packet);
 		}
@@ -158,7 +160,7 @@ void Worlds::toWorlds(PacketCreator &packet) {
 }
 
 void Worlds::runFunction(function<bool (World *)> func) {
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (func(iter->second)) {
 			break;
 		}
@@ -180,12 +182,12 @@ void Worlds::calculatePlayerLoad(World *world) {
 	world->runChannelFunction(load);
 }
 
-World * Worlds::getWorld(uint8_t id) {
+World * Worlds::getWorld(int8_t id) {
 	return m_worlds.find(id) == m_worlds.end() ? nullptr : m_worlds[id];
 }
 
 void Worlds::setEventMessages(const string &message) {
-	for (map<uint8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
+	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		iter->second->setEventMessage(message);
 	}
 }

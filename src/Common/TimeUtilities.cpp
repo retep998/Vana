@@ -27,25 +27,25 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 	if (time == -1) {
 		return -1;
 	}
-	struct tm *timeinfo;
-	timeinfo = localtime(&time);
-	if (timeinfo == nullptr) {
+	struct tm *timeInfo;
+	timeInfo = localtime(&time);
+	if (timeInfo == nullptr) {
 		// Couldn't parse the time, so return the given time
 		return time;
 	}
 	uint64_t ticks = 0;
 
 	// Calculate leap days
-	int32_t leapdays = 0;
-	int32_t years = timeinfo->tm_year + 299;
-	leapdays += (years/100)*24; // 24 more days for each 100 years
-	leapdays += (years/400); // and one more day for each 400 years
-	leapdays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
+	int32_t leapDays = 0;
+	int32_t years = timeInfo->tm_year + 299;
+	leapDays += (years/100)*24; // 24 more days for each 100 years
+	leapDays += (years/400); // and one more day for each 400 years
+	leapDays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
 
-	ticks += (timeinfo->tm_sec * 1);
-	ticks += (timeinfo->tm_min * 60);
-	ticks += (timeinfo->tm_hour * 3600);
-	ticks += (((int64_t) timeinfo->tm_yday + leapdays) * 86400);
+	ticks += (timeInfo->tm_sec * 1);
+	ticks += (timeInfo->tm_min * 60);
+	ticks += (timeInfo->tm_hour * 3600);
+	ticks += (((int64_t) timeInfo->tm_yday + leapDays) * 86400);
 	ticks += (int64_t) years * 86400 * 365; // Exluding leap years
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
@@ -64,20 +64,20 @@ int32_t TimeUtilities::tickToTick32(int64_t tick) {
 }
 
 int32_t TimeUtilities::getDate(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_mday;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_mday;
 	return result;
 }
 
 int32_t TimeUtilities::getMonth(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_mon + 1;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_mon + 1;
 	return result;
 }
 
 int32_t TimeUtilities::getYear(bool twoYear, time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_year + 1900;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_year + 1900;
 	if (twoYear) {
 		return result % 100;
 	}
@@ -85,8 +85,8 @@ int32_t TimeUtilities::getYear(bool twoYear, time_t ctime) {
 }
 
 int32_t TimeUtilities::getDay(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_wday + 1;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_wday + 1;
 	return result;
 }
 
@@ -124,8 +124,8 @@ string TimeUtilities::getMonthString(bool shortened, time_t ctime) {
 }
 
 int32_t TimeUtilities::getHour(bool nonMilitary, time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_hour;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_hour;
 	if (nonMilitary && result > 12) {
 		result -= 12;
 	}
@@ -133,33 +133,33 @@ int32_t TimeUtilities::getHour(bool nonMilitary, time_t ctime) {
 }
 
 int32_t TimeUtilities::getMinute(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_min;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_min;
 	return result;
 }
 
 int32_t TimeUtilities::getSecond(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = timeinfo->tm_sec;
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = timeInfo->tm_sec;
 	return result;
 }
 
 int32_t TimeUtilities::getWeek(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = ((timeinfo->tm_yday + 1) + (timeinfo->tm_wday + (timeinfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = ((timeInfo->tm_yday + 1) + (timeInfo->tm_wday + (timeInfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
 	return result;
 }
 
 int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 	// Returns the closest interval minute mark in seconds
-	tm *timeinfo = localtime(&ctime);
-	int32_t result = (((timeinfo->tm_min / interval) + 1) * interval * 60);
+	tm *timeInfo = localtime(&ctime);
+	int32_t result = (((timeInfo->tm_min / interval) + 1) * interval * 60);
 	return result;
 }
 
 bool TimeUtilities::isDst(time_t ctime) {
-	tm *timeinfo = localtime(&ctime);
-	return (timeinfo->tm_isdst > 0);
+	tm *timeInfo = localtime(&ctime);
+	return (timeInfo->tm_isdst > 0);
 }
 
 string TimeUtilities::getTimeZone() {

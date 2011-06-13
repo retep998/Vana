@@ -24,7 +24,7 @@ Database::tsConn Database::m_datadb;
 
 void Database::connectCharDb() {
 	ConfigFile config("conf/mysql.lua");
-	DbConfig conf = config.getDbConfig("chardb");
+	DbConfig conf = config.getClass<DbConfig>("chardb");
 	m_chardb.reset(new mysqlpp::Connection);
 	m_chardb->set_option(new mysqlpp::ReconnectOption(true));
 	m_chardb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);
@@ -32,7 +32,7 @@ void Database::connectCharDb() {
 
 void Database::connectDataDb() {
 	ConfigFile config("conf/mysql.lua");
-	DbConfig conf = config.getDbConfig("datadb");
+	DbConfig conf = config.getClass<DbConfig>("datadb");
 	m_datadb.reset(new mysqlpp::Connection);
 	m_datadb->set_option(new mysqlpp::ReconnectOption(true));
 	m_datadb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);

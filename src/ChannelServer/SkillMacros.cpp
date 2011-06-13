@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Database.h"
 
-void SkillMacros::load(int32_t charid) {
+void SkillMacros::load(int32_t charId) {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.* FROM skill_macros s WHERE s.character_id = " << charid;
+	query << "SELECT s.* FROM skill_macros s WHERE s.character_id = " << charId;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		int8_t pos = static_cast<int8_t>(res[i]["pos"]);
@@ -36,14 +36,14 @@ void SkillMacros::load(int32_t charid) {
 	}
 }
 
-void SkillMacros::save(int32_t charid) {
+void SkillMacros::save(int32_t charId) {
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "REPLACE INTO skill_macros VALUES ";
 	int8_t max = getMax();
 	for (int8_t i = 0; i <= max; i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != nullptr) {
-			query << "(" << charid << ", "
+			query << "(" << charId << ", "
 				<< (int16_t) i << ", "
 				<< mysqlpp::quote << macro->name << ", "
 				<< macro->shout << ", "

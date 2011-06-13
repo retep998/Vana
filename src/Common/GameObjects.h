@@ -21,8 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <boost/utility.hpp>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 struct GuildLogo {
 	GuildLogo() : logo(0), color(0), background(0), backgroundColor(0) { }

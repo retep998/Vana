@@ -77,8 +77,8 @@ void SyncHandler::handleBuddySync(PacketReader &packet) {
 }
 
 void SyncHandler::buddyInvite(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
-	if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerid)) {
+	int32_t playerId = packet.get<int32_t>();
+	if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerId)) {
 		BuddyInvite invite;
 		invite.id = packet.get<int32_t>();
 		invite.name = packet.getString();
@@ -88,15 +88,15 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 }
 
 void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>(); // The id of the player coming online
+	int32_t playerId = packet.get<int32_t>(); // The id of the player coming online
 	int32_t channel = packet.get<int32_t>();
 	vector<int32_t> players = packet.getVector<int32_t>(); // Holds the buddyids
 
 	for (size_t i = 0; i < players.size(); i++) {
 		if (Player *player = PlayerDataProvider::Instance()->getPlayer(players[i])) {
-			if (BuddyPtr ptr = player->getBuddyList()->getBuddy(playerid)) {
+			if (BuddyPtr ptr = player->getBuddyList()->getBuddy(playerId)) {
 				ptr->channel = channel;
-				BuddyListPacket::online(player, playerid, channel);
+				BuddyListPacket::online(player, playerId, channel);
 			}
 		}
 	}

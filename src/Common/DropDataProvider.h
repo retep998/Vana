@@ -17,38 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "ItemDataObjects.h"
 #include "Types.h"
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
-#include <vector>
 
 using std::tr1::unordered_map;
-using std::vector;
-
-struct DropInfo {
-	DropInfo() : isMesos(false), itemId(0), minAmount(0), maxAmount(0), questId(0), chance(0) { }
-	bool isMesos;
-	int32_t itemId;
-	int32_t minAmount;
-	int32_t maxAmount;
-	int16_t questId;
-	uint32_t chance;
-};
-typedef vector<DropInfo> DropsInfo;
-
-struct GlobalDrop {
-	GlobalDrop() : isMesos(false), itemId(0), minAmount(0), maxAmount(0), minLevel(1), maxLevel(200), continent(-1), questId(0), chance(0) { }
-	bool isMesos;
-	int32_t itemId;
-	int32_t minAmount;
-	int32_t maxAmount;
-	uint8_t minLevel;
-	uint8_t maxLevel;
-	int8_t continent;
-	int16_t questId;
-	uint32_t chance;
-};
-typedef vector<GlobalDrop> GlobalDrops;
 
 class DropDataProvider : boost::noncopyable {
 public:

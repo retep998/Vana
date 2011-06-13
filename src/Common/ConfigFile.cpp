@@ -167,25 +167,3 @@ bool ConfigFile::getBool(const string &value) {
 	lua_pop(getLuaState(), 1);
 	return ret;
 }
-
-LogConfig ConfigFile::getLogConfig(const string &server) {
-	LogConfig x;
-	string t = server + "_log_";
-	x.destination = get<int32_t>(t + "destination");
-	x.bufferSize = get<uint32_t>(t + "buffer_size");
-	x.format = getString(t + "format");
-	x.file = getString(t + "file");
-	x.timeFormat = getString("log_time_format");
-	return x;
-}
-
-DbConfig ConfigFile::getDbConfig(const string &prefix) {
-	DbConfig x;
-	string t = prefix + "_";
-	x.database = getString(t + "database");
-	x.host = getString(t + "host");
-	x.username = getString(t + "username");
-	x.password = getString(t + "password");
-	x.port = get<port_t>(t + "port");
-	return x;
-}

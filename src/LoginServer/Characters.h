@@ -56,15 +56,15 @@ struct Character {
 	int16_t fame;
 	int32_t map;
 	int8_t pos;
-	uint32_t w_rank;
-	int32_t w_rankmove;
-	uint32_t j_rank;
-	int32_t j_rankmove;
+	uint32_t worldRank;
+	int32_t worldRankChange;
+	uint32_t jobRank;
+	int32_t jobRankChange;
 	vector<CharEquip> equips;
 };
 
 namespace Characters {
-	void connectGame(Player *player, int32_t charid);
+	void connectGame(Player *player, int32_t charId);
 	void connectGame(Player *player, PacketReader &packet);
 	void connectGameWorld(Player *player, PacketReader &packet); // From "view all character"
 	void checkCharacterName(Player *player, PacketReader &packet);

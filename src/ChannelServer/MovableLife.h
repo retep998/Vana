@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class MovableLife {
 public:
 	MovableLife() { }
-	MovableLife(int16_t foothold, Pos pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
+	MovableLife(int16_t foothold, const Pos &pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
 	virtual ~MovableLife() { }
 
 	bool isFacingRight() const { return m_stance % 2 == 0; }

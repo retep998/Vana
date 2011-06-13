@@ -38,21 +38,21 @@ namespace Timer {
 }
 
 struct MapleTvMessage {
-	MapleTvMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneid(0), hasreceiver(false) { }
+	MapleTvMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneId(0), hasReceiver(false) { }
 	string msg1;
 	string msg2;
 	string msg3;
 	string msg4;
 	string msg5;
-	string sendname;
-	string recvname;
+	string sendName;
+	string recvName;
 	int32_t time;
-	int32_t megaphoneid;
-	int32_t senderid;
+	int32_t megaphoneId;
+	int32_t senderId;
 	uint32_t counter;
-	bool hasreceiver;
-	PacketCreator recvdisplay;
-	PacketCreator senddisplay;
+	bool hasReceiver;
+	PacketCreator recvDisplay;
+	PacketCreator sendDisplay;
 };
 
 class MapleTvs : boost::noncopyable {
@@ -65,11 +65,10 @@ public:
 
 	void addMap(Map *map);
 
-	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time);
+	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneId, int32_t time);
 	void getMapleTvEntryPacket(PacketCreator &packet);
-	bool isMapleTvNPC(int32_t id) const;
 	bool isMapleTvMap(int32_t id) const { return (m_maps.find(id) != m_maps.end()); }
-	bool hasMessage() const { return m_hasmessage; }
+	bool hasMessage() const { return m_hasMessage; }
 	uint32_t getCounter() { return ++m_counter; }
 private:
 	MapleTvs();
@@ -85,7 +84,7 @@ private:
 	boost::scoped_ptr<Timer::Container> m_timers;
 	unordered_map<int32_t, Map *> m_maps;
 	list<MapleTvMessage> m_buffer;
-	bool m_hasmessage;
+	bool m_hasMessage;
 	uint32_t m_counter;
-	MapleTvMessage m_currentmessage;
+	MapleTvMessage m_currentMessage;
 };

@@ -36,11 +36,11 @@ public:
 	SkillMacro * getSkillMacro(int8_t pos);
 	int8_t getMax();
 
-	void load(int32_t charid);
-	void save(int32_t charid);
+	void load(int32_t charId);
+	void save(int32_t charId);
 private:
-	unordered_map<int8_t, shared_ptr<SkillMacro>> skillMacros;
-	int8_t maxPos;
+	unordered_map<int8_t, shared_ptr<SkillMacro>> m_skillMacros;
+	int8_t m_maxPos;
 };
 
 struct SkillMacros::SkillMacro {
@@ -52,24 +52,33 @@ struct SkillMacros::SkillMacro {
 	int32_t skill3;
 };
 
-inline SkillMacros::SkillMacros() : maxPos(-1) { }
+inline SkillMacros::SkillMacros() : m_maxPos(-1)
+{
+}
 
 inline void SkillMacros::add(uint8_t pos, SkillMacro *macro) {
-	skillMacros[pos].reset(macro);
-	if (maxPos < pos) {
-		maxPos = pos;
+	m_skillMacros[pos].reset(macro);
+	if (m_maxPos < pos) {
+		m_maxPos = pos;
 	}
 }
 
 inline SkillMacros::SkillMacro * SkillMacros::getSkillMacro(int8_t pos) {
-	if (skillMacros.find(pos) != skillMacros.end()) {
-		return skillMacros[pos].get();
+	if (m_skillMacros.find(pos) != m_skillMacros.end()) {
+		return m_skillMacros[pos].get();
 	}
 	return nullptr;
 }
 
 inline int8_t SkillMacros::getMax() {
-	return maxPos;
+	return m_maxPos;
 }
 
-inline SkillMacros::SkillMacro::SkillMacro(const string &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3) : name(name), shout(shout), skill1(skill1), skill2(skill2), skill3(skill3) { }
+inline SkillMacros::SkillMacro::SkillMacro(const string &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3) :
+	name(name),
+	shout(shout),
+	skill1(skill1),
+	skill2(skill2),
+	skill3(skill3)
+{
+}

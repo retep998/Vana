@@ -58,10 +58,10 @@ void InventoryPacket::updatePlayer(Player *player) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
+void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
-	packet.addBool(is);
+	packet.addBool(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(inv);
@@ -69,10 +69,10 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool is) {
+void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_INVENTORY_ITEM_MOVE);
-	packet.addBool(is);
+	packet.addBool(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(inv);
@@ -99,7 +99,7 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sitChair(Player *player, int32_t chairid) {
+void InventoryPacket::sitChair(Player *player, int32_t chairId) {
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
 	}
@@ -111,15 +111,15 @@ void InventoryPacket::sitChair(Player *player, int32_t chairid) {
 	packet = PacketCreator();
 	packet.addHeader(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(chairid);
+	packet.add<int32_t>(chairId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void InventoryPacket::sitMapChair(Player *player, int16_t chairid) {
+void InventoryPacket::sitMapChair(Player *player, int16_t chairId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHAIR);
 	packet.add<int8_t>(1);
-	packet.add<int16_t>(chairid);
+	packet.add<int16_t>(chairId);
 	player->getSession()->send(packet);
 }
 
@@ -170,7 +170,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfo_size, int32_t itemId) {
+void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_TO_PLAYERS);
 	packet.addHeader(SMSG_AVATAR_MEGAPHONE);
@@ -181,7 +181,7 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	packet.addString(msg3);
 	packet.addString(msg4);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
-	packet.addBuffer(displayInfo, displayInfo_size);
+	packet.addBuffer(displayInfo, displayInfoSize);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
@@ -288,13 +288,13 @@ void InventoryPacket::sendMesobagFailed(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::useCharm(Player *player, uint8_t charmsleft, uint8_t daysleft) {
+void InventoryPacket::useCharm(Player *player, uint8_t charmsLeft, uint8_t daysLeft) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_THEATRICS);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(0x01);
-	packet.add<uint8_t>(charmsleft);
-	packet.add<uint8_t>(daysleft);
+	packet.add<uint8_t>(charmsLeft);
+	packet.add<uint8_t>(daysLeft);
 	player->getSession()->send(packet);
 }
 
@@ -341,11 +341,11 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playername) {
+void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playerName) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CASH_SONG);
 	packet.add<int32_t>(itemId);
-	packet.addString(playername);
+	packet.addString(playerName);
 	Maps::getMap(map)->sendPacket(packet);
 }
 

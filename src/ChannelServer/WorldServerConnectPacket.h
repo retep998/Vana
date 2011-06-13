@@ -29,10 +29,10 @@ class Player;
 class WorldServerConnection;
 
 namespace WorldServerConnectPacket {
-	void findPlayer(WorldServerConnection *player, int32_t playerid, const string &findee_name);
-	void whisperPlayer(WorldServerConnection *player, int32_t playerid, const string &whisperee, const string &message);
+	void findPlayer(WorldServerConnection *player, int32_t playerId, const string &findeeName);
+	void whisperPlayer(WorldServerConnection *player, int32_t playerId, const string &whisperee, const string &message);
 	void scrollingHeader(WorldServerConnection *player, const string &message);
-	void groupChat(WorldServerConnection *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat);
+	void groupChat(WorldServerConnection *player, int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat);
 	void rankingCalculation(WorldServerConnection *player);
 	void toChannels(WorldServerConnection *player, PacketCreator &packet);
 	void toWorlds(WorldServerConnection *player, PacketCreator &packet);

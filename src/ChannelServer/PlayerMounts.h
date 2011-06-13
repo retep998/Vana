@@ -40,11 +40,11 @@ public:
 	void load();
 
 	void mountInfoPacket(PacketCreator &packet);
-	int32_t getCurrentMount() const { return m_currentmount; }
+	int32_t getCurrentMount() const { return m_currentMount; }
 	int16_t getCurrentExp();
 	int8_t getCurrentLevel();
 	int8_t getCurrentTiredness();
-	void setCurrentMount(int32_t id) { m_currentmount = id; }
+	void setCurrentMount(int32_t id) { m_currentMount = id; }
 	void setCurrentExp(int16_t exp);
 	void setCurrentLevel(int8_t level);
 	void setCurrentTiredness(int8_t tiredness);
@@ -57,5 +57,5 @@ public:
 private:
 	Player *m_player;
 	unordered_map<int32_t, MountData> m_mounts;
-	int32_t m_currentmount;
+	int32_t m_currentMount;
 };

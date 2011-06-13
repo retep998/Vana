@@ -49,14 +49,14 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
-	uint32_t npcid = Map::makeNpcId(packet.get<uint32_t>());
+	uint32_t npcId = Map::makeNpcId(packet.get<uint32_t>());
 
-	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcid)) {
+	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcId)) {
 		// Shouldn't ever happen except in edited packets
 		return;
 	}
 
-	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcid);
+	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcId);
 	if (player->getNpc() == nullptr && Npc::hasScript(npcs.id, 0, false)) {
 		Npc *npc = new Npc(npcs.id, player, npcs.pos);
 		npc->run();
@@ -75,12 +75,12 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 }
 
-void NpcHandler::handleQuestNpc(Player *player, int32_t npcid, bool start, int16_t questId) {
+void NpcHandler::handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId) {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
 
-	Npc *npc = new Npc(npcid, player, questId, start);
+	Npc *npc = new Npc(npcId, player, questId, start);
 	npc->run();
 }
 
@@ -316,28 +316,28 @@ void NpcHandler::useStorage(Player *player, PacketReader &packet) {
 	}
 }
 
-bool NpcHandler::showShop(Player *player, int32_t shopid) {
-	if (ShopDataProvider::Instance()->isShop(shopid)) {
+bool NpcHandler::showShop(Player *player, int32_t shopId) {
+	if (ShopDataProvider::Instance()->isShop(shopId)) {
 		PacketCreator p;
-		ShopDataProvider::Instance()->showShop(shopid, player->getSkills()->getRechargeableBonus(), p);
-		player->setShop(shopid);
+		ShopDataProvider::Instance()->showShop(shopId, player->getSkills()->getRechargeableBonus(), p);
+		player->setShop(shopId);
 		player->getSession()->send(p);
 		return true;
 	}
 	return false;
 }
 
-bool NpcHandler::showStorage(Player *player, int32_t npcid) {
-	if (NpcDataProvider::Instance()->getStorageCost(npcid)) {
-		player->setShop(npcid);
-		StoragePacket::showStorage(player, npcid);
+bool NpcHandler::showStorage(Player *player, int32_t npcId) {
+	if (NpcDataProvider::Instance()->getStorageCost(npcId)) {
+		player->setShop(npcId);
+		StoragePacket::showStorage(player, npcId);
 		return true;
 	}
 	return false;
 }
 
-bool NpcHandler::showGuildRank(Player *player, int32_t npcid) {
-	if (NpcDataProvider::Instance()->isGuildRank(npcid)) {
+bool NpcHandler::showGuildRank(Player *player, int32_t npcId) {
+	if (NpcDataProvider::Instance()->isGuildRank(npcId)) {
 		// To be implemented later
 	}
 	return false;

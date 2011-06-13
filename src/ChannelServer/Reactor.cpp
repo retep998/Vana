@@ -21,19 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "ReactorPacket.h"
 
-Reactor::Reactor(int32_t mapid, int32_t reactorId, const Pos &pos) :
-	state(0),
-	reactorId(reactorId),
-	mapid(mapid),
-	alive(true),
-	pos(pos)
+Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos) :
+	m_state(0),
+	m_reactorId(reactorId),
+	m_mapId(mapId),
+	m_alive(true),
+	m_pos(pos)
 {
-	Maps::getMap(mapid)->addReactor(this);
+	Maps::getMap(mapId)->addReactor(this);
 }
 
-void Reactor::setState(int8_t state, bool is) {
-	this->state = state;
-	if (is) {
+void Reactor::setState(int8_t state, bool sendPacket) {
+	m_state = state;
+	if (sendPacket) {
 		ReactorPacket::triggerReactor(this);
 	}
 }
@@ -45,5 +45,5 @@ void Reactor::restore() {
 }
 
 void Reactor::drop(Player *player) {
-	DropHandler::doDrops(player->getId(), mapid, 0, reactorId, pos, false, false);
+	DropHandler::doDrops(player->getId(), m_mapId, 0, m_reactorId, m_pos, false, false);
 }

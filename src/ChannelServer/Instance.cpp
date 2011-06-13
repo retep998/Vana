@@ -36,16 +36,16 @@ using std::tr1::bind;
 
 Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t time, int32_t persistent, bool showTimer, bool appLaunch) :
 	m_name(name),
-	m_max_players(0),
-	m_timer_counter(0),
+	m_maxPlayers(0),
+	m_timerCounter(0),
 	m_persistent(persistent),
-	m_show_timer(showTimer),
+	m_showTimer(showTimer),
 	m_timers(new Timer::Container),
 	m_variables(new Variables),
-	m_luainstance(new LuaInstance(name, playerId)),
+	m_luaInstance(new LuaInstance(name, playerId)),
 	m_start(TimeUtilities::getTickCount()),
-	m_reset_on_destroy(true),
-	m_marked_for_delete(false)
+	m_resetOnDestroy(true),
+	m_markedForDeletion(false)
 {
 	if (!appLaunch) {
 		std::stringstream x;
@@ -64,7 +64,7 @@ Instance::~Instance() {
 		map->clearDrops(false);
 		map->killMobs(0, 0, false, false);
 		map->killReactors(false);
-		if (m_reset_on_destroy) { // Reset all mobs/reactors
+		if (m_resetOnDestroy) { // Reset all mobs/reactors
 			map->respawn();
 		}
 	}
@@ -142,31 +142,31 @@ void Instance::removeAllPlayers() {
 }
 
 void Instance::addPlayerSignUp(Player *player) {
-	m_players_order.push_back(player->getName());
+	m_playersOrder.push_back(player->getName());
 }
 
 void Instance::removePlayerSignUp(const string &name) {
-	for (size_t i = 0; i < m_players_order.size(); i++) {
-		if (m_players_order[i] == name) {
-			m_players_order.erase(m_players_order.begin() + i);
+	for (size_t i = 0; i < m_playersOrder.size(); i++) {
+		if (m_playersOrder[i] == name) {
+			m_playersOrder.erase(m_playersOrder.begin() + i);
 		}
 	}
 }
 
-void Instance::moveAllPlayers(int32_t mapid, bool respectInstances, PortalInfo *portal) {
-	if (!Maps::getMap(mapid))
+void Instance::moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal) {
+	if (!Maps::getMap(mapId))
 		return;
 
 	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
 	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); iter++) {
-		iter->second->setMap(mapid, portal, respectInstances);
+		iter->second->setMap(mapId, portal, respectInstances);
 
 	}
 }
 
 bool Instance::isPlayerSignedUp(const string &name) {
-	for (size_t i = 0; i < m_players_order.size(); i++) {
-		if (m_players_order[i] == name) {
+	for (size_t i = 0; i < m_playersOrder.size(); i++) {
+		if (m_playersOrder[i] == name) {
 			return true;
 		}
 	}
@@ -174,16 +174,16 @@ bool Instance::isPlayerSignedUp(const string &name) {
 }
 
 vector<int32_t> Instance::getAllPlayerIds() {
-	vector<int32_t> playerids;
+	vector<int32_t> playerIds;
 	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
-		playerids.push_back(iter->first);
+		playerIds.push_back(iter->first);
 	}
-	return playerids;
+	return playerIds;
 }
 
 const string Instance::getPlayerByIndex(uint32_t index) const {
 	index--;
-	return m_players_order[(index > m_players_order.size() ? m_players_order.size() : index)];
+	return m_playersOrder[(index > m_playersOrder.size() ? m_playersOrder.size() : index)];
 }
 
 bool Instance::instanceHasPlayers() const {
@@ -200,16 +200,16 @@ void Instance::addMap(Map *map) {
 	map->setInstance(this);
 }
 
-void Instance::addMap(int32_t mapid) {
-	Map *map = Maps::getMap(mapid);
+void Instance::addMap(int32_t mapId) {
+	Map *map = Maps::getMap(mapId);
 	addMap(map);
 }
 
-Map * Instance::getMap(int32_t mapid) {
+Map * Instance::getMap(int32_t mapId) {
 	Map *map = nullptr;
 	for (size_t i = 0; i < getMapNum(); i++) {
 		Map *tmap = m_maps[i];
-		if (tmap->getId() == mapid) {
+		if (tmap->getId() == mapId) {
 			map = tmap;
 			break;
 		}
@@ -226,16 +226,16 @@ void Instance::addParty(Party *party) {
 	party->setInstance(this);
 }
 
-bool Instance::addTimer(const string &timername, const TimerAction &timer) {
-	if (m_timer_actions.find(timername) == m_timer_actions.end()) {
-		m_timer_actions[timername] = timer;
+bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
+	if (m_timerActions.find(timerName) == m_timerActions.end()) {
+		m_timerActions[timerName] = timer;
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		if (timer.time > 0) { // Positive, occurs in the future
-			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
+			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
 				id, getTimers(), TimeUtilities::fromNow(timer.time * 1000), timer.persistent * 1000);
 		}
 		else { // Negative, occurs nth second of hour
-			new Timer::Timer(bind(&Instance::timerEnd, this, timername, true),
+			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
 				id, getTimers(), TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
 		}
 		return true;
@@ -243,30 +243,30 @@ bool Instance::addTimer(const string &timername, const TimerAction &timer) {
 	return false;
 }
 
-int32_t Instance::checkTimer(const string &timername) {
+int32_t Instance::checkTimer(const string &timerName) {
 	int32_t timeleft = 0;
-	if (m_timer_actions.find(timername) != m_timer_actions.end()) {
-		TimerAction timer = m_timer_actions[timername];
+	if (m_timerActions.find(timerName) != m_timerActions.end()) {
+		TimerAction timer = m_timerActions[timerName];
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 		timeleft = getTimers()->checkTimer(id);
 	}
 	return timeleft;
 }
 
-void Instance::removeTimer(const string &timername) {
-	if (m_timer_actions.find(timername) != m_timer_actions.end()) {
-		TimerAction timer = m_timer_actions[timername];
-		if (checkTimer(timername) > 0) {
+void Instance::removeTimer(const string &timerName) {
+	if (m_timerActions.find(timerName) != m_timerActions.end()) {
+		TimerAction timer = m_timerActions[timerName];
+		if (checkTimer(timerName) > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
 			getTimers()->removeTimer(id);
-			sendMessage(TimerEnd, timername, false);
+			sendMessage(TimerEnd, timerName, false);
 		}
-		m_timer_actions.erase(timername);
+		m_timerActions.erase(timerName);
 	}
 }
 
 void Instance::removeAllTimers() {
-	for (unordered_map<string, TimerAction>::iterator iter = m_timer_actions.begin(); iter != m_timer_actions.end(); iter++) {
+	for (unordered_map<string, TimerAction>::iterator iter = m_timerActions.begin(); iter != m_timerActions.end(); iter++) {
 		removeTimer(iter->first);
 	}
 	setInstanceTimer(0);
@@ -281,7 +281,7 @@ int32_t Instance::checkInstanceTimer() {
 	return timeleft;
 }
 
-void Instance::setInstanceTimer(int32_t time, bool firstrun) {
+void Instance::setInstanceTimer(int32_t time, bool firstRun) {
 	if (checkInstanceTimer() > 0) {
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
 		getTimers()->removeTimer(id);
@@ -301,7 +301,7 @@ void Instance::setInstanceTimer(int32_t time, bool firstrun) {
 			Timer::Id(Timer::Types::InstanceTimer, m_time, -1),
 			getTimers(), runat, m_persistent * 1000);
 
-		if (!firstrun && showTimer()) {
+		if (!firstRun && showTimer()) {
 			showTimer(true, true);
 		}
 	}
@@ -351,46 +351,46 @@ void Instance::instanceEnd(bool fromTimer) {
 }
 
 bool Instance::isTimerPersistent(const string &name) {
-	return (m_timer_actions.find(name) != m_timer_actions.end() ? (m_timer_actions[name].persistent > 0) : false);
+	return (m_timerActions.find(name) != m_timerActions.end() ? (m_timerActions[name].persistent > 0) : false);
 }
 
 int32_t Instance::getCounterId() {
-	return ++m_timer_counter;
+	return ++m_timerCounter;
 }
 
 void Instance::markForDelete() {
-	m_marked_for_delete = true;
+	m_markedForDeletion = true;
 }
 
-void Instance::respawnMobs(int32_t mapid) {
-	if (mapid == Maps::NoMap) {
+void Instance::respawnMobs(int32_t mapId) {
+	if (mapId == Maps::NoMap) {
 		for (size_t i = 0; i < getMapNum(); i++) {
 			m_maps[i]->respawn(SpawnTypes::Mob);
 		}
 	}
 	else {
-		Maps::getMap(mapid)->respawn(SpawnTypes::Mob);
+		Maps::getMap(mapId)->respawn(SpawnTypes::Mob);
 	}
 }
 
-void Instance::respawnReactors(int32_t mapid) {
-	if (mapid == Maps::NoMap) {
+void Instance::respawnReactors(int32_t mapId) {
+	if (mapId == Maps::NoMap) {
 		for (size_t i = 0; i < getMapNum(); i++) {
 			m_maps[i]->respawn(SpawnTypes::Reactor);
 		}
 	}
 	else {
-		Maps::getMap(mapid)->respawn(SpawnTypes::Reactor);
+		Maps::getMap(mapId)->respawn(SpawnTypes::Reactor);
 	}
 }
 
 void Instance::showTimer(bool show, bool doit) {
-	if (!show && (doit || m_show_timer)) {
+	if (!show && (doit || m_showTimer)) {
 		for (size_t i = 0; i < getMapNum(); i++) {
 			MapPacket::showTimer(m_maps[i]->getId(), 0);
 		}
 	}
-	else if (show && (doit || !m_show_timer)) {
+	else if (show && (doit || !m_showTimer)) {
 		for (size_t i = 0; i < getMapNum(); i++) {
 			MapPacket::showTimer(m_maps[i]->getId(), checkInstanceTimer());
 		}

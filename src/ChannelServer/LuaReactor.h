@@ -26,11 +26,11 @@ class Reactor;
 
 class LuaReactor : LuaScriptable {
 public:
-	LuaReactor(const string &filename, int32_t playerid, int32_t reactorId, int32_t mapid);
+	LuaReactor(const string &filename, int32_t playerId, int32_t reactorId, int32_t mapId);
 private:
-	int32_t reactorId;
-	int32_t mapid;
-	Reactor *reactor;
+	int32_t m_reactorId;
+	int32_t m_mapId;
+	Reactor *m_reactor;
 };
 
 namespace LuaExports {

@@ -75,3 +75,28 @@ string StringUtilities::replace(const string &input, const string &what, const s
 	}
 	return ret;
 }
+
+string StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase) {
+	string ret;
+	if (inputSize > 0) {
+		std::stringstream out;
+		size_t bufLen = inputSize - 1;
+
+		for (size_t i = 0; i <= bufLen; i++) {
+			out << std::hex;
+			if (uppercase) {
+				out << std::uppercase;
+			}
+			else {
+				out << std::nouppercase;
+			}
+			out << std::setw(2) << std::setfill('0') << static_cast<int16_t>(input[i]);
+			if (i < bufLen) {
+				out << " ";
+			}
+		}
+
+		ret = out.str();
+	}
+	return ret;
+}

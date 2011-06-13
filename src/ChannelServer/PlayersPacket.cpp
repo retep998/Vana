@@ -96,31 +96,31 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
-void PlayersPacket::showInfo(Player *player, Player *getinfo, bool isself) {
+void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_INFO);
-	packet.add<int32_t>(getinfo->getId());
-	packet.add<int8_t>(getinfo->getStats()->getLevel());
-	packet.add<int16_t>(getinfo->getStats()->getJob());
-	packet.add<int16_t>(getinfo->getStats()->getFame());
+	packet.add<int32_t>(getInfo->getId());
+	packet.add<int8_t>(getInfo->getStats()->getLevel());
+	packet.add<int16_t>(getInfo->getStats()->getJob());
+	packet.add<int16_t>(getInfo->getStats()->getFame());
 	packet.addBool(false); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
-	packet.addBool(isself); // Is 1 when the character is clicking themselves
+	packet.addBool(isSelf); // Is 1 when the character is clicking themselves
 
-	getinfo->getPets()->petInfoPacket(packet);
-	getinfo->getMounts()->mountInfoPacket(packet);
-	getinfo->getInventory()->wishListPacket(packet);
-	getinfo->getMonsterBook()->infoData(packet);
+	getInfo->getPets()->petInfoPacket(packet);
+	getInfo->getMounts()->mountInfoPacket(packet);
+	getInfo->getInventory()->wishListPacket(packet);
+	getInfo->getMonsterBook()->infoData(packet);
 
 	player->getSession()->send(packet);
 }
 
-void PlayersPacket::whisperPlayer(Player *target, const string &whisperer_name, uint16_t channel, const string &message) {
+void PlayersPacket::whisperPlayer(Player *target, const string &whispererName, uint16_t channel, const string &message) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_COMMAND);
 	packet.add<int8_t>(0x12);
-	packet.addString(whisperer_name);
+	packet.addString(whispererName);
 	packet.add<int16_t>(channel);
 	packet.addString(message);
 	target->getSession()->send(packet);

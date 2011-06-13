@@ -64,11 +64,10 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
 	packet.add<int16_t>(channel);
-
 	packet.add<int64_t>(info->getConnectionTime());
 
-	info->getActiveBuffs()->getBuffTransferPacket(packet);
-	info->getSummons()->getSummonTransferPacket(packet);
+	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());
+	packet.addClass<PlayerSummons>(*info->getSummons());
 
 	ChannelServer::Instance()->sendToWorld(packet);
 }
@@ -113,22 +112,22 @@ void SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::BuddyPacket::buddyInvite(int32_t playerid, int32_t inviteeid) {
+void SyncPacket::BuddyPacket::buddyInvite(int32_t playerId, int32_t inviteeId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::Invite);
-	packet.add<int32_t>(inviteeid);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(inviteeId);
+	packet.add<int32_t>(playerId);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::BuddyPacket::buddyOnline(int32_t playerid, const vector<int32_t> &players, bool online) {
+void SyncPacket::BuddyPacket::buddyOnline(int32_t playerId, const vector<int32_t> &players, bool online) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::OnlineOffline);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(playerId);
 	packet.addBool(online);
 	packet.addVector(players);
 	ChannelServer::Instance()->sendToWorld(packet);

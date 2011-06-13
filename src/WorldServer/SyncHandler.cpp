@@ -104,34 +104,34 @@ void SyncHandler::handlePartySync(PacketReader &packet) {
 }
 
 void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
 	if (chan) {
-		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerid, packet);
-		PlayerDataProvider::Instance()->addPendingPlayer(playerid, chan->getId());
+		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerId, packet);
+		PlayerDataProvider::Instance()->addPendingPlayer(playerId, chan->getId());
 	}
 	else {
 		// Channel doesn't exist (offline)
-		SyncPacket::PlayerPacket::playerChangeChannel(connection, playerid, 0, -1);
+		SyncPacket::PlayerPacket::playerChangeChannel(connection, playerId, 0, -1);
 	}
 }
 
 void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
-	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerid);
+	int32_t playerId = packet.get<int32_t>();
+	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerId);
 	if (gamePlayer) {
-		uint16_t chanid = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerid);
+		uint16_t chanid = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerId);
 		Channel *chan = Channels::Instance()->getChannel(chanid);
 		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
 		if (chan) {
-			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerid, gamePlayer->getIp());
+			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, gamePlayer->getIp());
 			ip_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, chanIp, chan->getPort());
+			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerId, chanIp, chan->getPort());
 		}
 		else {
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerid, 0, -1);
+			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerId, 0, -1);
 		}
-		PlayerDataProvider::Instance()->removePendingPlayer(playerid);
+		PlayerDataProvider::Instance()->removePendingPlayer(playerId);
 	}
 }
 
@@ -143,8 +143,8 @@ void SyncHandler::handleBuddyPacket(PacketReader &packet) {
 }
 
 void SyncHandler::buddyInvite(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
-	Player *inviter = PlayerDataProvider::Instance()->getPlayer(playerid);
+	int32_t playerId = packet.get<int32_t>();
+	Player *inviter = PlayerDataProvider::Instance()->getPlayer(playerId);
 	if (inviter == nullptr) {
 		// No idea how this would happen... take no risk and just return
 		return;
@@ -152,7 +152,7 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 
 	int32_t inviteeId = packet.get<int32_t>();
 	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
-		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, playerid, inviter->getName());
+		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, playerId, inviter->getName());
 	}
 	else {
 		// Make new pending buddy in the database
@@ -160,14 +160,14 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 		query << "INSERT INTO buddylist_pending VALUES ("
 			<< inviteeId << ", "
 			<< mysqlpp::quote << inviter->getName() << ", "
-			<< playerid << ")";
+			<< playerId << ")";
 		query.exec();
 	}
 }
 
 void SyncHandler::buddyOnline(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	int32_t playerId = packet.get<int32_t>();
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
 	if (player == nullptr) {
 		// No idea how this would happen... take no risk and just return
 		return;
@@ -190,7 +190,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 
 	for (unordered_map<int16_t, vector<int32_t>>::iterator iter = ids.begin(); iter != ids.end(); iter++) {
 		if (Channel *channel = Channels::Instance()->getChannel(iter->first)) {
-			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel->getConnection(), iter->second, playerid, (online ? player->getChannel() : -1));
+			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel->getConnection(), iter->second, playerId, (online ? player->getChannel() : -1));
 		}
 	}
 }

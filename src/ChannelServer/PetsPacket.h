@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class PacketCreator;
-class Player;
 class Pet;
+class Player;
 
 namespace PetsPacket {
 	void petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false, int8_t index = -1);
 	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
-	void showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen);
+	void showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen);
 	void showAnimation(Player *player, Pet *pet, int8_t animation);
 	void updatePet(Player *player, Pet *pet);
 	void levelUp(Player *player, Pet *pet);

@@ -28,106 +28,107 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PlayerSkills::load() {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = " << player->getId();
+	query << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	PlayerSkillInfo skill;
 
 	for (size_t i = 0; i < res.num_rows(); i++) {
 		skill.level = (uint8_t) res[i][1];
 		skill.maxLevel = (uint8_t) res[i][2];
-		playerskills[res[i][0]] = skill;
+		m_skills[res[i][0]] = skill;
 	}
 
-	query << "SELECT c.* FROM cooldowns c WHERE c.character_id = " << player->getId();
+	query << "SELECT c.* FROM cooldowns c WHERE c.character_id = " << m_player->getId();
 	res = query.store();
 
 	for (size_t i = 0; i < res.size(); i++) {
 		int32_t skillId = res[i]["skill_id"];
 		int16_t timeleft = static_cast<int16_t>(res[i]["remaining_time"]);
-		Skills::startCooldown(player, skillId, timeleft, true);
-		cooldowns[skillId] = timeleft;
+		Skills::startCooldown(m_player, skillId, timeleft, true);
+		m_cooldowns[skillId] = timeleft;
 	}
 }
 
-void PlayerSkills::save(bool savecooldowns) {
+void PlayerSkills::save(bool saveCooldowns) {
 	mysqlpp::Query query = Database::getCharDb().query();
 
-	bool firstrun = true;
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); iter++) {
-		if (firstrun) {
+	bool firstRun = true;
+	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); iter++) {
+		if (firstRun) {
 			query << "REPLACE INTO skills VALUES (";
-			firstrun = false;
+			firstRun = false;
 		}
 		else {
 			query << ",(";
 		}
-		query << player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxLevel << ")";
+		query << m_player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxLevel << ")";
 	}
-	if (!firstrun)
+	if (!firstRun)
 		query.exec();
 
-	if (savecooldowns) {
-		query << "DELETE FROM cooldowns WHERE character_id = " << player->getId();
+	if (saveCooldowns) {
+		query << "DELETE FROM cooldowns WHERE character_id = " << m_player->getId();
 		query.exec();
-		if (cooldowns.size() > 0) {
-			firstrun = true;
-			for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); iter++) {
-				if (firstrun) {
+		if (m_cooldowns.size() > 0) {
+			firstRun = true;
+			for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); iter++) {
+				if (firstRun) {
 					query << "INSERT INTO cooldowns (character_id, skill_id, remaining_time) VALUES (";
-					firstrun = false;
+					firstRun = false;
 				}
 				else {
 					query << ",(";
 				}
-				query << player->getId() << ","
+				query << m_player->getId() << ","
 						<< iter->first << ","
-						<< Skills::getCooldownTimeLeft(player, iter->first) << ")";
+						<< Skills::getCooldownTimeLeft(m_player, iter->first) << ")";
 			}
 			query.exec();
 		}
 	}
 }
 
-bool PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendpacket) {
+bool PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket) {
 	// Keep people from adding too much SP and prevent it from going negative
-	uint8_t newlevel = ((playerskills.find(skillId) != playerskills.end()) ? playerskills[skillId].level : 0) + amount;
+	uint8_t newlevel = ((m_skills.find(skillId) != m_skills.end()) ? m_skills[skillId].level : 0) + amount;
 	if (newlevel > SkillDataProvider::Instance()->getMaxLevel(skillId) || (GameLogicUtilities::isFourthJobSkill(skillId) && newlevel > getMaxSkillLevel(skillId))) {
 		return false; // Let the caller handle this
 	}
 
-	playerskills[skillId].level = newlevel;
-	if (sendpacket) {
-		SkillsPacket::addSkill(player, skillId, playerskills[skillId]);
+	m_skills[skillId].level = newlevel;
+	if (sendPacket) {
+		SkillsPacket::addSkill(m_player, skillId, m_skills[skillId]);
 	}
 	return true;
 }
 
 uint8_t PlayerSkills::getSkillLevel(int32_t skillId) {
-	if (playerskills.find(skillId) != playerskills.end()) {
-		return playerskills[skillId].level;
+	if (m_skills.find(skillId) != m_skills.end()) {
+		return m_skills[skillId].level;
 	}
 	return 0;
 }
 
-void PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendpacket) { // Set max level for 4th job skills
-	playerskills[skillId].maxLevel = maxLevel;
+void PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket) { // Set max level for 4th job skills
+	m_skills[skillId].maxLevel = maxLevel;
 
-	if (sendpacket) {
-		player->getSkills()->addSkillLevel(skillId, 0);
+	if (sendPacket) {
+		m_player->getSkills()->addSkillLevel(skillId, 0);
 	}
 }
 
 uint8_t PlayerSkills::getMaxSkillLevel(int32_t skillId) {
 	// Get max level for 4th job skills
-	if (playerskills.find(skillId) != playerskills.end())
-		return playerskills[skillId].maxLevel;
+	if (m_skills.find(skillId) != m_skills.end())
+		return m_skills[skillId].maxLevel;
 	return 0;
 }
 
 SkillLevelInfo * PlayerSkills::getSkillInfo(int32_t skillId) {
-	if (playerskills.find(skillId) == playerskills.end())
+	if (m_skills.find(skillId) == m_skills.end()) {
 		return nullptr;
-	return SkillDataProvider::Instance()->getSkill(skillId, playerskills[skillId].level);
+	}
+	return SkillDataProvider::Instance()->getSkill(skillId, m_skills[skillId].level);
 }
 
 bool PlayerSkills::hasElementalAmp() {
@@ -167,7 +168,7 @@ bool PlayerSkills::hasNoDamageSkill() {
 
 int32_t PlayerSkills::getElementalAmp() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
 			skillId = Jobs::FPMage::ElementAmplification;
@@ -185,7 +186,7 @@ int32_t PlayerSkills::getElementalAmp() {
 
 int32_t PlayerSkills::getAchilles() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero:
 			skillId = Jobs::Hero::Achilles;
 			break;
@@ -201,7 +202,7 @@ int32_t PlayerSkills::getAchilles() {
 
 int32_t PlayerSkills::getEnergyCharge() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer:
 			skillId = Jobs::Marauder::EnergyCharge;
@@ -216,7 +217,7 @@ int32_t PlayerSkills::getEnergyCharge() {
 
 int32_t PlayerSkills::getComboAttack() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Crusader:
 		case Jobs::JobIds::Hero:
 			skillId = Jobs::Crusader::ComboAttack;
@@ -231,7 +232,7 @@ int32_t PlayerSkills::getComboAttack() {
 
 int32_t PlayerSkills::getAdvancedCombo() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero:
 			skillId = Jobs::Hero::AdvancedComboAttack;
 			break;
@@ -245,7 +246,7 @@ int32_t PlayerSkills::getAdvancedCombo() {
 
 int32_t PlayerSkills::getAlchemist() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:
 			skillId = Jobs::Hermit::Alchemist;
@@ -259,7 +260,7 @@ int32_t PlayerSkills::getAlchemist() {
 
 int32_t PlayerSkills::getHpIncrease() {
 	int32_t skillId = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
 		case Jobs::JobTracks::Warrior:
 			skillId = Jobs::Swordsman::ImprovedMaxHpIncrease;
 			break;
@@ -270,7 +271,7 @@ int32_t PlayerSkills::getHpIncrease() {
 			skillId = Jobs::ThunderBreaker::ImproveMaxHp;
 			break;
 		case Jobs::JobTracks::Pirate:
-			if ((player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10))
+			if ((m_player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10))
 				skillId = Jobs::Brawler::ImproveMaxHp;
 			break;
 	}
@@ -279,7 +280,7 @@ int32_t PlayerSkills::getHpIncrease() {
 
 int32_t PlayerSkills::getMpIncrease() {
 	int32_t skillId = 0;
-	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
+	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
 		case Jobs::JobTracks::Magician:
 			skillId = Jobs::Magician::ImprovedMaxMpIncrease;
 			break;
@@ -292,10 +293,10 @@ int32_t PlayerSkills::getMpIncrease() {
 
 int32_t PlayerSkills::getMastery() {
 	int32_t masteryid = 0;
-	switch (GameLogicUtilities::getItemType(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
+	switch (GameLogicUtilities::getItemType(m_player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case Items::Types::Weapon1hSword:
 		case Items::Types::Weapon2hSword:
-			switch (player->getStats()->getJob()) {
+			switch (m_player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
 				case Jobs::JobIds::Hero:
@@ -330,7 +331,7 @@ int32_t PlayerSkills::getMastery() {
 
 int32_t PlayerSkills::getMpEater() {
 	int32_t skillId = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FPWizard:
 		case Jobs::JobIds::FPMage:
 		case Jobs::JobIds::FPArchMage:
@@ -352,7 +353,7 @@ int32_t PlayerSkills::getMpEater() {
 
 int32_t PlayerSkills::getVenomousWeapon() {
 	int32_t skill = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::NightLord:
 			skill = Jobs::NightLord::VenomousStar;
 			break;
@@ -364,19 +365,19 @@ int32_t PlayerSkills::getVenomousWeapon() {
 }
 
 int32_t PlayerSkills::getNoDamageSkill() {
-	int32_t nodamageid = 0;
-	switch (player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord: nodamageid = Jobs::NightLord::ShadowShifter; break;
-		case Jobs::JobIds::Shadower: nodamageid = Jobs::Shadower::ShadowShifter; break;
-		case Jobs::JobIds::Hero: nodamageid = Jobs::Hero::Guardian; break;
-		case Jobs::JobIds::Paladin: nodamageid = Jobs::Paladin::Guardian; break;
+	int32_t noDamageId = 0;
+	switch (m_player->getStats()->getJob()) {
+		case Jobs::JobIds::NightLord: noDamageId = Jobs::NightLord::ShadowShifter; break;
+		case Jobs::JobIds::Shadower: noDamageId = Jobs::Shadower::ShadowShifter; break;
+		case Jobs::JobIds::Hero: noDamageId = Jobs::Hero::Guardian; break;
+		case Jobs::JobIds::Paladin: noDamageId = Jobs::Paladin::Guardian; break;
 	}
-	return nodamageid;
+	return noDamageId;
 }
 
 int16_t PlayerSkills::getRechargeableBonus() {
 	int16_t bonus = 0;
-	switch (player->getStats()->getJob()) {
+	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord:
@@ -396,35 +397,36 @@ int16_t PlayerSkills::getRechargeableBonus() {
 }
 
 void PlayerSkills::addCooldown(int32_t skillId, int16_t time) {
-	cooldowns[skillId] = time;
+	m_cooldowns[skillId] = time;
 }
 
 void PlayerSkills::removeCooldown(int32_t skillId) {
-	if (cooldowns.find(skillId) != cooldowns.end())
-		cooldowns.erase(skillId);
+	if (m_cooldowns.find(skillId) != m_cooldowns.end()) {
+		m_cooldowns.erase(skillId);
+	}
 }
 
 void PlayerSkills::removeAllCooldowns() {
-	unordered_map<int32_t, int16_t> dupe = cooldowns;
+	unordered_map<int32_t, int16_t> dupe = m_cooldowns;
 	for (unordered_map<int32_t, int16_t>::iterator iter = dupe.begin(); iter != dupe.end(); ++iter) {
 		if (iter->first != Jobs::Buccaneer::TimeLeap) {
-			Skills::stopCooldown(player, iter->first);
+			Skills::stopCooldown(m_player, iter->first);
 		}
 	}
 }
 
 void PlayerSkills::connectData(PacketCreator &packet) {
 	// Skill levels
-	packet.add<uint16_t>(playerskills.size());
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = playerskills.begin(); iter != playerskills.end(); ++iter) {
+	packet.add<uint16_t>(m_skills.size());
+	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int32_t>(iter->second.level);
 		if (GameLogicUtilities::isFourthJobSkill(iter->first))
 			packet.add<int32_t>(iter->second.maxLevel); // Max Level for 4th job skills
 	}
 	// Cooldowns
-	packet.add<uint16_t>(cooldowns.size());
-	for (unordered_map<int32_t, int16_t>::iterator iter = cooldowns.begin(); iter != cooldowns.end(); ++iter) {
+	packet.add<uint16_t>(m_cooldowns.size());
+	for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); ++iter) {
 		packet.add<int32_t>(iter->first);
 		packet.add<int16_t>(iter->second);
 	}

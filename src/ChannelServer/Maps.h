@@ -24,9 +24,9 @@ class PacketReader;
 class Player;
 
 namespace Maps {
-	Map * getMap(int32_t mapid);
+	Map * getMap(int32_t mapId);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);
-	void addPlayer(Player *player, int32_t mapid);
+	void addPlayer(Player *player, int32_t mapId);
 }

@@ -29,14 +29,14 @@ using std::tr1::bind;
 Trades * Trades::singleton = nullptr;
 
 Trades::Trades() :
-	ids(0),
-	container(new Timer::Container)
+	m_tradeIds(1, 100000),
+	m_container(new Timer::Container)
 {
 }
 
 int32_t Trades::newTrade(Player *start, Player *recv) {
 	int32_t id = getNewId();
-	trades[id].reset(new ActiveTrade(start, recv, id));
+	m_trades[id].reset(new ActiveTrade(start, recv, id));
 	startTimeout(id, start);
 	return id;
 }
@@ -45,21 +45,21 @@ void Trades::removeTrade(int32_t id) {
 	if (checkTimer(id) != 0) {
 		stopTimeout(id);
 	}
-	Player *p = trades[id]->getSender();
+	Player *p = m_trades[id]->getSender();
 	if (p != nullptr) {
 		p->setTrading(false);
 		p->setTradeId(0);
 	}
-	p = trades[id]->getReceiver();
+	p = m_trades[id]->getReceiver();
 	if (p != nullptr) {
 		p->setTrading(false);
 		p->setTradeId(0);
 	}
-	trades.erase(id);
+	m_trades.erase(id);
 }
 
 ActiveTrade * Trades::getTrade(int32_t id) {
-	return (trades.find(id) != trades.end() ? trades[id].get() : nullptr);
+	return (m_trades.find(id) != m_trades.end() ? m_trades[id].get() : nullptr);
 }
 
 int32_t Trades::checkTimer(int32_t id) {

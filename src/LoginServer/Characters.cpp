@@ -70,17 +70,18 @@ void Characters::loadCharacter(Character &charc, const mysqlpp::Row &row) {
 	charc.map = row["map"];
 	charc.pos = (uint8_t) row["pos"];
 
-	if (GameLogicUtilities::getJobTrack(charc.job) == Jobs::JobTracks::Gm) { // GMs can't have their rank sent otherwise the client will crash
-		charc.w_rank = 0;
-		charc.w_rankmove = 0;
-		charc.j_rank = 0;
-		charc.j_rankmove = 0;
+	if (GameLogicUtilities::getJobTrack(charc.job) == Jobs::JobTracks::Gm) {
+		// GMs can't have their rank sent otherwise the client will crash
+		charc.worldRank = 0;
+		charc.worldRankChange = 0;
+		charc.jobRank = 0;
+		charc.jobRankChange = 0;
 	}
 	else {
-		charc.w_rank = row["world_cpos"];
-		charc.w_rankmove = (int32_t) row["world_cpos"] - row["world_opos"];
-		charc.j_rank = row["job_cpos"];
-		charc.j_rankmove = (int32_t) row["job_cpos"] - row["job_opos"];
+		charc.worldRank = row["world_cpos"];
+		charc.worldRankChange = (int32_t) row["world_cpos"] - row["world_opos"];
+		charc.jobRank = row["job_cpos"];
+		charc.jobRankChange = (int32_t) row["job_cpos"] - row["job_opos"];
 	}
 	loadEquips(charc.id, charc.equips);
 }
@@ -96,8 +97,8 @@ void Characters::showAllCharacters(Player *player) {
 	uint32_t charsNum = 0;
 	World *world;
 	for (size_t i = 0; i < res.num_rows(); ++i) {
-		uint8_t worldid = res[i]["world_id"];
-		world = Worlds::Instance()->getWorld(worldid);
+		uint8_t worldId = res[i]["world_id"];
+		world = Worlds::Instance()->getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
 			continue;
@@ -355,18 +356,18 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	LoginPacket::deleteCharacter(player, id, result);
 }
 
-void Characters::connectGame(Player *player, int32_t charid) {
+void Characters::connectGame(Player *player, int32_t charId) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
-	if (!ownerCheck(player, charid)) {
+	if (!ownerCheck(player, charId)) {
 		// Hacking
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charid, player->getIp());
-	LoginPacket::connectIp(player, charid);
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charId, player->getIp());
+	LoginPacket::connectIp(player, charId);
 }
 
 void Characters::connectGame(Player *player, PacketReader &packet) {
@@ -381,11 +382,11 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 		return;
 	}
 	int32_t id = packet.get<int32_t>();
-	int8_t worldid = (int8_t) packet.get<int32_t>();
-	player->setWorld(worldid);
+	int8_t worldId = (int8_t) packet.get<int32_t>();
+	player->setWorld(worldId);
 
 	// Take the player to a random channel
-	uint16_t channel = Worlds::Instance()->getWorld(worldid)->getRandomChannel();
+	uint16_t channel = Worlds::Instance()->getWorld(worldId)->getRandomChannel();
 	player->setChannel(channel);
 
 	connectGame(player, id);

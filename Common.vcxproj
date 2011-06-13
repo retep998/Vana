@@ -83,7 +83,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\ConfigurationPacket.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
@@ -144,26 +143,30 @@
     <ClInclude Include="src\Common\BitUtilities.h" />
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
-    <ClInclude Include="src\Common\ConfigurationPacket.h" />
     <ClInclude Include="src\Common\ConsoleLogger.h" />
     <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\IConfig.h" />
     <ClInclude Include="src\Common\InterHelper.h" />
     <ClInclude Include="src\Common\Ip.h" />
+    <ClInclude Include="src\Common\IPacket.h" />
     <ClInclude Include="src\Common\Item.h" />
     <ClInclude Include="src\Common\ItemConstants.h" />
+    <ClInclude Include="src\Common\ItemDataObjects.h" />
     <ClInclude Include="src\Common\Logger.h" />
     <ClInclude Include="src\Common\LogReplacements.h" />
     <ClInclude Include="src\Common\MapConstants.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\MapObjects.h" />
     <ClInclude Include="src\Common\MobConstants.h" />
+    <ClInclude Include="src\Common\MobDataObjects.h" />
     <ClInclude Include="src\Common\NpcDataProvider.h" />
     <ClInclude Include="src\Common\PlayerObjects.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\Quest.h" />
     <ClInclude Include="src\Common\SkillConstants.h" />
+    <ClInclude Include="src\Common\SkillDataObjects.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
     <ClInclude Include="src\Common\TauswortheGenerator.h" />
     <ClInclude Include="src\Common\Timer.h" />

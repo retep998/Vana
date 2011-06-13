@@ -98,22 +98,22 @@ void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t ti
 }
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
-	if (m_skill_acts.find(skill) == m_skill_acts.end()) {
-		m_skill_acts[skill] = shared_ptr<Timer::Container>(new Timer::Container);
+	if (m_skillActs.find(skill) == m_skillActs.end()) {
+		m_skillActs[skill] = shared_ptr<Timer::Container>(new Timer::Container);
 	}
-	return m_skill_acts[skill].get();
+	return m_skillActs[skill].get();
 }
 
 void PlayerActiveBuffs::removeAct(int32_t skill) {
-	m_skill_acts.erase(skill);
+	m_skillActs.erase(skill);
 }
 
 // Debuffs
 void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
 	if (m_player->getStats()->getHp() > 0 && !hasHolyShield() && !isUsingHide()) {
 		int32_t maskbit = calculateDebuffMaskBit(skill);
-		if (maskbit != 0 && (m_debuffmask & maskbit) == 0) { // Don't have the debuff, continue processing
-			m_debuffmask += maskbit;
+		if (maskbit != 0 && (m_debuffMask & maskbit) == 0) { // Don't have the debuff, continue processing
+			m_debuffMask += maskbit;
 			Buffs::addDebuff(m_player, skill, level);
 		}
 	}
@@ -121,8 +121,8 @@ void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
 
 void PlayerActiveBuffs::removeDebuff(uint8_t skill, bool fromTimer) {
 	int32_t maskbit = calculateDebuffMaskBit(skill);
-	if ((m_debuffmask & maskbit) != 0) {
-		m_debuffmask -= maskbit;
+	if ((m_debuffMask & maskbit) != 0) {
+		m_debuffMask -= maskbit;
 		Skills::stopSkill(m_player, skill, fromTimer);
 	}
 }
@@ -171,9 +171,9 @@ void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
 	size_t vals = 0;
 	for (size_t i = 0; i < buff.bytes.size(); i++) {
 		uint8_t byte = buff.bytes[i];
-		m_mapbuffs.types[byte] -= buff.types[i];
-		if (m_mapbuffs.values[byte].find(buff.types[i]) != m_mapbuffs.values[byte].end()) {
-			m_mapbuffs.values[byte].erase(buff.types[i]);
+		m_mapBuffs.types[byte] -= buff.types[i];
+		if (m_mapBuffs.values[byte].find(buff.types[i]) != m_mapBuffs.values[byte].end()) {
+			m_mapBuffs.values[byte].erase(buff.types[i]);
 		}
 	}
 }
@@ -182,8 +182,8 @@ void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
 	size_t vals = 0;
 	for (size_t i = 0; i < buff.bytes.size(); i++) {
 		uint8_t byte = buff.bytes[i];
-		if ((m_mapbuffs.types[byte] & buff.types[i]) == 0)
-			m_mapbuffs.types[byte] += buff.types[i];
+		if ((m_mapBuffs.types[byte] & buff.types[i]) == 0)
+			m_mapBuffs.types[byte] += buff.types[i];
 		MapEntryVals val;
 		val.use = buff.useVals[i];
 		if (val.use) {
@@ -196,26 +196,26 @@ void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
 				val.val = buff.values[vals++];
 			}
 		}
-		m_mapbuffs.values[byte][buff.types[i]] = val;
+		m_mapBuffs.values[byte][buff.types[i]] = val;
 	}
 }
 
 MapEntryBuffs PlayerActiveBuffs::getMapEntryBuffs() {
-	return m_mapbuffs;
+	return m_mapBuffs;
 }
 
-void PlayerActiveBuffs::setMountInfo(int32_t skillId, int32_t mountid) {
-	m_mapbuffs.mountskill = skillId;
-	m_mapbuffs.mountid = mountid;
+void PlayerActiveBuffs::setMountInfo(int32_t skillId, int32_t mountId) {
+	m_mapBuffs.mountSkill = skillId;
+	m_mapBuffs.mountId = mountId;
 }
 
 // Active skill levels
 uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillId) {
-	return m_activelevels.find(skillId) != m_activelevels.end() ? m_activelevels[skillId] : 0;
+	return m_activeLevels.find(skillId) != m_activeLevels.end() ? m_activeLevels[skillId] : 0;
 }
 
 void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillId, uint8_t level) {
-	m_activelevels[skillId] = level;
+	m_activeLevels[skillId] = level;
 }
 
 SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) {
@@ -227,7 +227,7 @@ SkillLevelInfo * PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) {
 void PlayerActiveBuffs::addBuffInfo(int32_t skillId, const vector<Buff> &buffs) {
 	for (size_t i = 0; i < buffs.size(); i++) {
 		Buff cur = buffs[i];
-		m_activebuffsbytype[cur.byte][cur.type] = skillId;
+		m_activeBuffsByType[cur.byte][cur.type] = skillId;
 	}
 }
 
@@ -235,8 +235,8 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillId, const vector<Buff>
 	ActiveBuff ret;
 	for (size_t i = 0; i < buffs.size(); i++) {
 		Buff cur = buffs[i];
-		if (m_activebuffsbytype[cur.byte][cur.type] == skillId) { // Make sure that the buff types are still affected by the skill
-			m_activebuffsbytype[cur.byte].erase(cur.type);
+		if (m_activeBuffsByType[cur.byte][cur.type] == skillId) { // Make sure that the buff types are still affected by the skill
+			m_activeBuffsByType[cur.byte].erase(cur.type);
 			ret.types[cur.byte] += cur.type;
 		}
 	}
@@ -246,7 +246,7 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillId, const vector<Buff>
 void PlayerActiveBuffs::dispelBuffs() {
 	if (isUsingHide())
 		return;
-	unordered_map<int32_t, uint8_t> activelevels = m_activelevels;
+	unordered_map<int32_t, uint8_t> activelevels = m_activeLevels;
 	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
 		if (iter->first > 0 && !GameLogicUtilities::isMobSkill(iter->first)) { // Only want active skills and skill buffs - no item buffs or debuffs
 			Skills::stopSkill(m_player, iter->first);
@@ -256,9 +256,9 @@ void PlayerActiveBuffs::dispelBuffs() {
 
 // Specific skill stuff
 void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
-	m_battleshiphp -= amount;
-	if (m_battleshiphp <= 0) {
-		m_battleshiphp = 0;
+	m_battleshipHp -= amount;
+	if (m_battleshipHp <= 0) {
+		m_battleshipHp = 0;
 		int32_t skillId = Jobs::Corsair::Battleship;
 		int16_t coolTime = getActiveSkillInfo(skillId)->coolTime;
 		Skills::startCooldown(m_player, skillId, coolTime);
@@ -269,7 +269,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 void PlayerActiveBuffs::resetBattleshipHp() {
 	uint8_t shipLevel = m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship);
 	uint8_t playerLevel = m_player->getStats()->getLevel();
-	m_battleshiphp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
+	m_battleshipHp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
 
 void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
@@ -278,9 +278,9 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 		int32_t skillId = m_player->getSkills()->getComboAttack();
 		int32_t timeleft = buffTimeLeft(skillId);
 		uint8_t level = getActiveSkillLevel(skillId);
-		ActiveBuff playerskill = Buffs::parseBuffInfo(m_player, skillId, level);
-		ActiveMapBuff mapskill = Buffs::parseBuffMapInfo(m_player, skillId, level);
-		BuffsPacket::useSkill(m_player, skillId, timeleft, playerskill, mapskill, 0);
+		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
+		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
+		BuffsPacket::useSkill(m_player, skillId, timeleft, playerSkill, mapSkill, 0);
 	}
 }
 
@@ -334,16 +334,16 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 }
 
 void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
-	if (m_energycharge != Stats::MaxEnergyChargeLevel && targets > 0) {
+	if (m_energyCharge != Stats::MaxEnergyChargeLevel && targets > 0) {
 		int32_t skillId = m_player->getSkills()->getEnergyCharge();
-		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed);
+		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
 		if (m_player->getTimers()->checkTimer(id) > 0) {
 			stopEnergyChargeTimer();
 		}
 		startEnergyChargeTimer();
-		m_energycharge += m_player->getSkills()->getSkillInfo(skillId)->x * targets;
-		if (m_energycharge > Stats::MaxEnergyChargeLevel) {
-			m_energycharge = Stats::MaxEnergyChargeLevel;
+		m_energyCharge += m_player->getSkills()->getSkillInfo(skillId)->x * targets;
+		if (m_energyCharge > Stats::MaxEnergyChargeLevel) {
+			m_energyCharge = Stats::MaxEnergyChargeLevel;
 			stopEnergyChargeTimer();
 		}
 		Buffs::addBuff(m_player, skillId, m_player->getSkills()->getSkillLevel(skillId), 0);
@@ -351,10 +351,10 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 }
 
 void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
-	m_energycharge -= Stats::EnergyChargeDecay;
+	m_energyCharge -= Stats::EnergyChargeDecay;
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
-	if (m_energycharge < 0) {
-		m_energycharge = 0;
+	if (m_energyCharge < 0) {
+		m_energyCharge = 0;
 	}
 	else {
 		startEnergyChargeTimer();
@@ -363,19 +363,19 @@ void PlayerActiveBuffs::decreaseEnergyChargeLevel() {
 }
 
 void PlayerActiveBuffs::resetEnergyChargeLevel() {
-	m_energycharge = 0;
+	m_energyCharge = 0;
 }
 
 void PlayerActiveBuffs::startEnergyChargeTimer() {
-	m_timeseed = static_cast<uint32_t>(clock());
+	m_timeSeed = static_cast<uint32_t>(clock());
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed); // Causes heap errors when it's a static number, but we need it for ID
+	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
 		id, m_player->getTimers(), TimeUtilities::fromNow(10 * 1000)); // 10 seconds
 }
 
 void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTimer) {
-	m_energycharge = chargelevel;
+	m_energyCharge = chargelevel;
 	if (startTimer) {
 		startEnergyChargeTimer();
 	}
@@ -383,19 +383,19 @@ void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargelevel, bool startTime
 
 void PlayerActiveBuffs::stopEnergyChargeTimer() {
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeseed);
+	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
 	m_player->getTimers()->removeTimer(id);
 }
 
 void PlayerActiveBuffs::stopBooster() {
-	if (m_activebooster != 0) {
-		Skills::stopSkill(m_player, m_activebooster);
+	if (m_activeBooster != 0) {
+		Skills::stopSkill(m_player, m_activeBooster);
 	}
 }
 
 void PlayerActiveBuffs::stopCharge() {
-	if (m_activecharge != 0) {
-		Skills::stopSkill(m_player, m_activecharge);
+	if (m_activeCharge != 0) {
+		Skills::stopSkill(m_player, m_activeCharge);
 	}
 }
 
@@ -415,7 +415,7 @@ bool PlayerActiveBuffs::hasBuff(int32_t skillId) {
 }
 
 bool PlayerActiveBuffs::hasIceCharge() const {
-	return (m_activecharge == Jobs::WhiteKnight::BwIceCharge || m_activecharge == Jobs::WhiteKnight::SwordIceCharge);
+	return (m_activeCharge == Jobs::WhiteKnight::BwIceCharge || m_activeCharge == Jobs::WhiteKnight::SwordIceCharge);
 }
 
 bool PlayerActiveBuffs::hasInfinity() {
@@ -467,11 +467,11 @@ bool PlayerActiveBuffs::hasHolyShield() {
 }
 
 bool PlayerActiveBuffs::isCursed() {
-	return ((m_debuffmask & StatusEffects::Player::Curse) > 0);
+	return ((m_debuffMask & StatusEffects::Player::Curse) > 0);
 }
 
 bool PlayerActiveBuffs::isZombified() {
-	return ((m_debuffmask & StatusEffects::Player::Zombify) > 0);
+	return ((m_debuffMask & StatusEffects::Player::Zombify) > 0);
 }
 
 int16_t PlayerActiveBuffs::getHolySymbolRate() {
@@ -543,8 +543,8 @@ int32_t PlayerActiveBuffs::getHomingBeacon() {
 
 int32_t PlayerActiveBuffs::getCurrentMorph() {
 	int32_t morphid = 0;
-	if (m_activebuffsbytype.find(BuffBytes::Byte5) != m_activebuffsbytype.end()) {
-		unordered_map<uint8_t, int32_t> byte = m_activebuffsbytype[BuffBytes::Byte5];
+	if (m_activeBuffsByType.find(BuffBytes::Byte5) != m_activeBuffsByType.end()) {
+		unordered_map<uint8_t, int32_t> byte = m_activeBuffsByType[BuffBytes::Byte5];
 		if (byte.find(0x02) != byte.end()) {
 			morphid = byte[0x02];
 		}
@@ -559,7 +559,7 @@ void PlayerActiveBuffs::endMorph() {
 	}
 }
 
-void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
+void PlayerActiveBuffs::write(PacketCreator &packet) {
 	// Map entry buff info
 	packet.add<int8_t>(getCombo());
 	packet.add<int16_t>(getEnergyChargeLevel());
@@ -567,12 +567,12 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	packet.add<int32_t>(getBooster());
 	packet.add<int32_t>(getBattleshipHp());
 	packet.add<int32_t>(getDebuffMask());
-	packet.add<int32_t>(m_mapbuffs.mountid);
-	packet.add<int32_t>(m_mapbuffs.mountskill);
+	packet.add<int32_t>(m_mapBuffs.mountId);
+	packet.add<int32_t>(m_mapBuffs.mountSkill);
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-		packet.add<uint8_t>(m_mapbuffs.types[i]);
-		packet.add<uint8_t>((uint8_t)(m_mapbuffs.values[i].size()));
-		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapbuffs.values[i].begin(); iter != m_mapbuffs.values[i].end(); iter++) {
+		packet.add<uint8_t>(m_mapBuffs.types[i]);
+		packet.add<uint8_t>((uint8_t)(m_mapBuffs.values[i].size()));
+		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapBuffs.values[i].begin(); iter != m_mapBuffs.values[i].end(); iter++) {
 			packet.add<uint8_t>(iter->first);
 			packet.addBool(iter->second.debuff);
 			if (iter->second.debuff) {
@@ -586,18 +586,18 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 		}
 	}
 	// Current buff info (IDs, times, levels)
-	packet.add<uint8_t>((uint8_t)(m_buffs.size()));
+	packet.add<uint8_t>(m_buffs.size());
 	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); iter++) {
-		int32_t buffid = *iter;
-		packet.add<int32_t>(buffid);
-		packet.add<int32_t>(buffTimeLeft(buffid));
-		packet.add<uint8_t>(getActiveSkillLevel(buffid));
+		int32_t buffId = *iter;
+		packet.add<int32_t>(buffId);
+		packet.add<int32_t>(buffTimeLeft(buffId));
+		packet.add<uint8_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
 	unordered_map<uint8_t, int32_t> currentbyte;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-		currentbyte = m_activebuffsbytype[i];
-		packet.add<uint8_t>((uint8_t)(currentbyte.size()));
+		currentbyte = m_activeBuffsByType[i];
+		packet.add<uint8_t>(currentbyte.size());
 		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
 			packet.add<uint8_t>(iter->first);
 			packet.add<int32_t>(iter->second);
@@ -605,7 +605,7 @@ void PlayerActiveBuffs::getBuffTransferPacket(PacketCreator &packet) {
 	}
 }
 
-void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
+void PlayerActiveBuffs::read(PacketReader &packet) {
 	// Map entry buff info
 	setCombo(packet.get<uint8_t>(), false);
 	setEnergyChargeLevel(packet.get<int16_t>());
@@ -613,11 +613,11 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 	setBooster(packet.get<int32_t>());
 	setBattleshipHp(packet.get<int32_t>());
 	setDebuffMask(packet.get<int32_t>());
-	m_mapbuffs.mountid = packet.get<int32_t>();
-	m_mapbuffs.mountskill = packet.get<int32_t>();
+	m_mapBuffs.mountId = packet.get<int32_t>();
+	m_mapBuffs.mountSkill = packet.get<int32_t>();
 	MapEntryVals values;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-		m_mapbuffs.types[i] = packet.get<uint8_t>();
+		m_mapBuffs.types[i] = packet.get<uint8_t>();
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t type = packet.get<uint8_t>();
@@ -630,7 +630,7 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 				values.use = packet.getBool();
 				values.val = packet.get<int16_t>();
 			}
-			m_mapbuffs.values[i][type] = values;
+			m_mapBuffs.values[i][type] = values;
 		}
 	}
 	// Current buff info
@@ -652,6 +652,6 @@ void PlayerActiveBuffs::parseBuffTransferPacket(PacketReader &packet) {
 			int32_t value = packet.get<int32_t>();
 			currentbyte[key] = value;
 		}
-		m_activebuffsbytype[i] = currentbyte;
+		m_activeBuffsByType[i] = currentbyte;
 	}
 }

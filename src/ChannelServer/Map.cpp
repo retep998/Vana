@@ -45,18 +45,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <ctime>
 #include <functional>
+#include <iostream>
 
 using std::tr1::bind;
 
 Map::Map(MapInfoPtr info, int32_t id) :
 	m_info(info),
 	m_id(id),
-	m_objectids(1000),
+	m_objectIds(1000),
 	m_instance(nullptr),
 	m_timer(0),
-	m_timerstart(0),
-	m_timemob(0),
-	m_spawnmobs(-1),
+	m_timerStart(0),
+	m_timeMob(0),
+	m_spawnMobs(-1),
 	m_music(info->defaultMusic),
 	m_timers(new Timer::Container)
 {
@@ -67,13 +68,13 @@ Map::Map(MapInfoPtr info, int32_t id) :
 }
 
 // Map info
-void Map::setMusic(const string &musicname) {
-	m_music = (musicname == "default" ? getInfo()->defaultMusic : musicname);
+void Map::setMusic(const string &musicName) {
+	m_music = (musicName == "default" ? getInfo()->defaultMusic : musicName);
 	EffectPacket::playMusic(getId(), m_music);
 }
 
 void Map::setMobSpawning(int32_t spawn) {
-	m_spawnmobs = spawn;
+	m_spawnMobs = spawn;
 }
 
 uint32_t Map::makeNpcId(uint32_t receivedId) {
@@ -81,7 +82,7 @@ uint32_t Map::makeNpcId(uint32_t receivedId) {
 }
 
 uint32_t Map::makeNpcId() {
-	return (m_npc_spawns.size() - 1 + NpcStart);
+	return (m_npcSpawns.size() - 1 + NpcStart);
 }
 
 uint32_t Map::makeReactorId(uint32_t receivedId) {
@@ -89,7 +90,7 @@ uint32_t Map::makeReactorId(uint32_t receivedId) {
 }
 
 uint32_t Map::makeReactorId() {
-	return (m_reactor_spawns.size() - 1 + ReactorStart);
+	return (m_reactorSpawns.size() - 1 + ReactorStart);
 }
 
 // Data initialization
@@ -102,31 +103,32 @@ void Map::addSeat(int16_t id, const SeatInfo &seat) {
 }
 
 int32_t Map::addNpc(const NpcSpawnInfo &npc) {
-	m_npc_spawns.push_back(npc);
+	m_npcSpawns.push_back(npc);
 	NpcPacket::showNpc(getId(), npc, makeNpcId());
 
-	if (NpcDataProvider::Instance()->isMapleTv(npc.id))
+	if (NpcDataProvider::Instance()->isMapleTv(npc.id)) {
 		MapleTvs::Instance()->addMap(this);
+	}
 
-	return m_npc_spawns.size() - 1;
+	return m_npcSpawns.size() - 1;
 }
 
 void Map::addReactorSpawn(const ReactorSpawnInfo &spawn) {
-	m_reactor_spawns.push_back(spawn);
-	m_reactor_spawns[m_reactor_spawns.size() - 1].spawned = true;
+	m_reactorSpawns.push_back(spawn);
+	m_reactorSpawns[m_reactorSpawns.size() - 1].spawned = true;
 	Reactor *reactor = new Reactor(getId(), spawn.id, spawn.pos);
 	ReactorPacket::spawnReactor(reactor);
 }
 
 void Map::addMobSpawn(const MobSpawnInfo &spawn) {
-	m_mob_spawns.push_back(spawn);
-	m_mob_spawns[m_mob_spawns.size() - 1].spawned = true;
-	spawnMob(m_mob_spawns.size() - 1, spawn);
+	m_mobSpawns.push_back(spawn);
+	m_mobSpawns[m_mobSpawns.size() - 1].spawned = true;
+	spawnMob(m_mobSpawns.size() - 1, spawn);
 }
 
 void Map::addPortal(const PortalInfo &portal) {
 	if (portal.name == "sp") {
-		m_spawn_points[portal.id] = portal;
+		m_spawnPoints[portal.id] = portal;
 	}
 	else if (portal.name == "tp") {
 		// Mystic Door portals
@@ -145,7 +147,7 @@ void Map::addTimeMob(TimeMobPtr info) {
 		Timer::Id(Timer::Types::MapTimer, getId(), 2),
 		getTimers(), TimeUtilities::fromNow(3 * 1000), 0); // First check
 
-	m_time_mob = info;
+	m_timeMobInfo = info;
 }
 
 // Players
@@ -161,7 +163,7 @@ void Map::addPlayer(Player *player) {
 		GmPacket::beginHide(player);
 	}
 	if (m_timer > 0) {
-		MapPacket::showTimer(player, m_timer - static_cast<int32_t>(time(nullptr) - m_timerstart));
+		MapPacket::showTimer(player, m_timer - static_cast<int32_t>(time(nullptr) - m_timerStart));
 	}
 	else if (Instance *i = getInstance()) {
 		if (i->showTimer() && i->checkInstanceTimer() > 0) {
@@ -189,13 +191,13 @@ Player * Map::getPlayer(uint32_t index) const {
 }
 
 string Map::getPlayerNames() {
-	string names = "";
+	std::ostringstream names;
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (Player *player = m_players[i]) {
-			names += player->getName() + " ";
+			names << player->getName() << " ";
 		}
 	}
-	return names;
+	return names.str();
 }
 
 void Map::removePlayer(Player *player) {
@@ -234,12 +236,12 @@ void Map::runFunctionPlayers(function<void (Player *)> successFunc) {
 	}
 }
 
-void Map::buffPlayers(int32_t buffid) {
+void Map::buffPlayers(int32_t buffId) {
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (Player *toy = m_players[i]) {
 			if (toy->getStats()->getHp() > 0) {
-				Inventory::useItem(toy, buffid);
-				EffectPacket::sendMobItemBuffEffect(toy, buffid);
+				Inventory::useItem(toy, buffId);
+				EffectPacket::sendMobItemBuffEffect(toy, buffId);
 			}
 		}
 	}
@@ -260,21 +262,21 @@ size_t Map::getNumReactors() const {
 }
 
 void Map::removeReactor(uint32_t id) {
-	ReactorSpawnInfo *info = &m_reactor_spawns[id];
+	ReactorSpawnInfo *info = &m_reactorSpawns[id];
 	if (info->time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
 		clock_t reactorRespawn = info->time * 1000 + TimeUtilities::getTickCount();
-		m_reactor_respawns.push_back(Respawnable(id, reactorRespawn));
+		m_reactorRespawns.push_back(Respawnable(id, reactorRespawn));
 	}
 }
 
-void Map::killReactors(bool showpacket) {
+void Map::killReactors(bool showPacket) {
 	Reactor *r;
 	for (size_t i = 0; i < m_reactors.size(); i++) {
 		r = m_reactors[i];
 		if (r->isAlive()) {
 			r->kill();
-			if (showpacket) {
+			if (showPacket) {
 				ReactorPacket::destroyReactor(r);
 			}
 
@@ -288,18 +290,20 @@ Pos Map::findFloor(const Pos &pos) {
 	// to check the platforms and find the correct one.
 	int16_t x = pos.x;
 	int16_t y = pos.y - 100;
-	int16_t maxy = pos.y;
+	int16_t maxY = pos.y;
 	bool firstcheck = true;
 	for (size_t i = 0; i < m_footholds.size(); i++) {
-		if ((x > m_footholds[i].pos1.x && x <= m_footholds[i].pos2.x) || (x > m_footholds[i].pos2.x && x <= m_footholds[i].pos1.x)) {
-			int16_t cmax = (int16_t)((float)(m_footholds[i].pos1.y - m_footholds[i].pos2.y) / (m_footholds[i].pos1.x - m_footholds[i].pos2.x) * (x - m_footholds[i].pos1.x) + m_footholds[i].pos1.y);
-			if ((cmax <= maxy || (maxy == pos.y && firstcheck)) && cmax >= y) {
-				maxy = cmax;
+		Pos &pos1 = m_footholds[i].pos1;
+		Pos &pos2 = m_footholds[i].pos2;
+		if ((x > pos1.x && x <= pos2.x) || (x > pos2.x && x <= pos1.x)) {
+			int16_t cMax = (int16_t)((float)(pos1.y - pos2.y) / (pos1.x - pos2.x) * (x - pos1.x) + pos1.y);
+			if ((cMax <= maxY || (maxY == pos.y && firstcheck)) && cMax >= y) {
+				maxY = cMax;
 				firstcheck = false;
 			}
 		}
 	}
-	return Pos(x, maxy);
+	return Pos(x, maxY);
 }
 
 Pos Map::findRandomPos() {
@@ -346,15 +350,15 @@ PortalInfo * Map::getPortal(const string &name) {
 	return m_portals.find(name) != m_portals.end() ? &m_portals[name] : nullptr;
 }
 
-PortalInfo * Map::getSpawnPoint(int8_t pid) {
-	int8_t id = (pid != -1 ? pid : Randomizer::Instance()->randChar(m_spawn_points.size() - 1));
-	return &m_spawn_points[id];
+PortalInfo * Map::getSpawnPoint(int8_t portalId) {
+	int8_t id = (portalId != -1 ? portalId : Randomizer::Instance()->randChar(m_spawnPoints.size() - 1));
+	return &m_spawnPoints[id];
 }
 
 PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 	int8_t id = -1;
 	int32_t distance = 200000;
-	for (unordered_map<int8_t, PortalInfo>::iterator i = m_spawn_points.begin(); i != m_spawn_points.end(); i++) {
+	for (unordered_map<int8_t, PortalInfo>::iterator i = m_spawnPoints.begin(); i != m_spawnPoints.end(); i++) {
 		int32_t cmp = i->second.pos - pos;
 		if (cmp < distance) {
 			id = i->first;
@@ -367,18 +371,18 @@ PortalInfo * Map::getNearestSpawnPoint(const Pos &pos) {
 // NPCs
 void Map::removeNpc(uint32_t index) {
 	if (isValidNpcIndex(index)) {
-		NpcSpawnInfo npc = m_npc_spawns[index];
+		NpcSpawnInfo npc = m_npcSpawns[index];
 		NpcPacket::showNpc(getId(), npc, makeNpcId(), false);
-		m_npc_spawns.erase(m_npc_spawns.begin() + index);
+		m_npcSpawns.erase(m_npcSpawns.begin() + index);
 	}
 }
 
 bool Map::isValidNpcIndex(uint32_t id) const {
-	return (id < m_npc_spawns.size());
+	return (id < m_npcSpawns.size());
 }
 
 NpcSpawnInfo Map::getNpc(uint32_t id) const {
-	return m_npc_spawns[id];
+	return m_npcSpawns[id];
 }
 
 // Mobs
@@ -396,10 +400,10 @@ int32_t Map::spawnMob(int32_t mobId, const Pos &pos, int16_t fh, Mob *owner, int
 	return id;
 }
 
-int32_t Map::spawnMob(int32_t spawnid, const MobSpawnInfo &info) {
+int32_t Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) {
 	int32_t id = getObjectId();
 
-	Mob *mob = new Mob(id, getId(), info.id, info.pos, spawnid, info.facesRight, info.foothold);
+	Mob *mob = new Mob(id, getId(), info.id, info.pos, spawnId, info.facesRight, info.foothold);
 	m_mobs[id] = mob;
 	MobsPacket::spawnMob(nullptr, mob, 0, nullptr, true);
 	updateMobControl(mob, true);
@@ -416,9 +420,9 @@ int32_t Map::spawnShell(int32_t mobId, const Pos &pos, int16_t fh) {
 }
 
 Mob * Map::getMob(int32_t id, bool isMapId) {
-	if (isMapId)
+	if (isMapId) {
 		return (m_mobs.find(id) != m_mobs.end() ? m_mobs[id] : nullptr);
-
+	}
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); iter++) {
 		if (iter->second != nullptr && iter->second->getMobId() == id) {
 			return iter->second;
@@ -454,26 +458,26 @@ void Map::updateMobControl(Mob *mob, bool spawn, Player *display) {
 	mob->setControl(p, spawn, display);
 }
 
-void Map::removeMob(int32_t id, int32_t spawnid) {
+void Map::removeMob(int32_t id, int32_t spawnId) {
 	if (m_mobs.find(id) != m_mobs.end()) {
-		if (spawnid >= 0 && m_mob_spawns[spawnid].time != -1) {
+		if (spawnId >= 0 && m_mobSpawns[spawnId].time != -1) {
 			// Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawnTime = m_mob_spawns[spawnid].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
+			clock_t spawnTime = m_mobSpawns[spawnId].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
 			// Randomly spawn between 1x and 2x the spawn time
 			spawnTime += TimeUtilities::getTickCount();
-			m_mob_respawns.push_back(Respawnable(spawnid, spawnTime));
-			m_mob_spawns[spawnid].spawned = false;
+			m_mobRespawns.push_back(Respawnable(spawnId, spawnTime));
+			m_mobSpawns[spawnId].spawned = false;
 		}
 		m_mobs.erase(id);
-		if (m_timemob == id) {
-			m_timemob = 0;
+		if (m_timeMob == id) {
+			m_timeMob = 0;
 		}
 	}
 }
 
-int32_t Map::killMobs(Player *player, int32_t mobId, bool playerkill, bool showpacket) {
+int32_t Map::killMobs(Player *player, int32_t mobId, bool playerkill, bool showPacket) {
 	unordered_map<int32_t, Mob *> mobs = m_mobs;
-	int32_t mobskilled = 0;
+	int32_t mobSkilled = 0;
 	for (unordered_map<int32_t, Mob *>::iterator iter = mobs.begin(); iter != mobs.end(); iter++) { // While loops cause problems
 		if (iter->second != nullptr) {
 			if ((mobId > 0 && iter->second->getMobId() == mobId) || mobId == 0) {
@@ -483,13 +487,13 @@ int32_t Map::killMobs(Player *player, int32_t mobId, bool playerkill, bool showp
 					}
 				}
 				else {
-					iter->second->die(showpacket);
+					iter->second->die(showPacket);
 				}
-				mobskilled++;
+				mobSkilled++;
 			}
 		}
 	}
-	return mobskilled;
+	return mobSkilled;
 }
 
 int32_t Map::countMobs(int32_t mobId) {
@@ -506,8 +510,8 @@ int32_t Map::countMobs(int32_t mobId) {
 }
 
 void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb) {
-	unordered_map<int32_t, Mob *> mobmap = m_mobs;
-	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+	unordered_map<int32_t, Mob *> mobMap = m_mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobMap.begin(); iter != mobMap.end(); iter++) {
 		if (iter->second != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
 			iter->second->skillHeal(hp, mp);
 		}
@@ -515,8 +519,8 @@ void Map::healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, con
 }
 
 void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb) {
-	unordered_map<int32_t, Mob *> mobmap = m_mobs;
-	for (unordered_map<int32_t, Mob *>::iterator iter = mobmap.begin(); iter != mobmap.end(); iter++) {
+	unordered_map<int32_t, Mob *> mobMap = m_mobs;
+	for (unordered_map<int32_t, Mob *>::iterator iter = mobMap.begin(); iter != mobMap.end(); iter++) {
 		if (iter->second != nullptr && GameLogicUtilities::isInBox(origin, lt, rb, iter->second->getPos())) {
 			iter->second->addStatus(0, statuses);
 		}
@@ -524,7 +528,7 @@ void Map::statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos 
 }
 
 void Map::spawnZakum(const Pos &pos, int16_t fh) {
-	int32_t pid = 0;
+	int32_t partId = 0;
 	Mob *p = nullptr;
 	Mob *body = getMob(spawnShell(Mobs::ZakumBody1, pos, fh));
 	int32_t parts[8] = {
@@ -533,10 +537,10 @@ void Map::spawnZakum(const Pos &pos, int16_t fh) {
 		Mobs::ZakumArm7, Mobs::ZakumArm8
 	};
 	for (int32_t g = 0; g < 8; g++) {
-		pid = spawnMob(parts[g], pos, fh);
-		p = getMob(pid);
+		partId = spawnMob(parts[g], pos, fh);
+		p = getMob(partId);
 		p->setOwner(body);
-		body->addSpawn(pid, p);
+		body->addSpawn(partId, p);
 	}
 }
 
@@ -554,7 +558,7 @@ unordered_map<int32_t, Mob *> Map::getMobs() const {
 
 // Drops
 void Map::addDrop(Drop *drop) {
-	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 	int32_t id = getObjectId();
 	drop->setId(id);
 	drop->setPos(findFloor(drop->getPos()));
@@ -562,19 +566,19 @@ void Map::addDrop(Drop *drop) {
 }
 
 void Map::removeDrop(int32_t id) {
-	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 	if (m_drops.find(id) != m_drops.end()) {
 		m_drops.erase(id);
 	}
 }
 
 Drop * Map::getDrop(int32_t id) {
-	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : nullptr);
 }
 
 void Map::clearDrops(bool showPacket) {
-	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
 		iter->second->removeDrop(showPacket);
@@ -601,7 +605,7 @@ void Map::addMist(Mist *mist) {
 	mist->setId(getMistId());
 
 	if (mist->isPoison() && !mist->isMobMist()) {
-		m_poison_mists[mist->getId()] = mist;
+		m_poisonMists[mist->getId()] = mist;
 	}
 	else {
 		m_mists[mist->getId()] = mist;
@@ -618,13 +622,13 @@ Mist * Map::getMist(int32_t id) {
 	if (m_mists.find(id) != m_mists.end()) {
 		return m_mists[id];
 	}
-	return (m_poison_mists.find(id) != m_poison_mists.end() ? m_poison_mists[id] : nullptr);
+	return (m_poisonMists.find(id) != m_poisonMists.end() ? m_poisonMists[id] : nullptr);
 }
 
 void Map::removeMist(Mist *mist) {
 	int32_t id = mist->getId();
 	if (mist->isPoison() && !mist->isMobMist()) {
-		m_poison_mists.erase(id);
+		m_poisonMists.erase(id);
 	}
 	else {
 		m_mists.erase(id);
@@ -639,7 +643,7 @@ void Map::clearMists(bool showPacket) {
 	for (iter = mistlist.begin(); iter != mistlist.end(); iter++) {
 		removeMist(iter->second);
 	}
-	mistlist = m_poison_mists;
+	mistlist = m_poisonMists;
 	for (iter = mistlist.begin(); iter != mistlist.end(); iter++) {
 		removeMist(iter->second);
 	}
@@ -648,10 +652,10 @@ void Map::clearMists(bool showPacket) {
 // Timer stuff
 void Map::respawn(int8_t types) {
 	if (types & SpawnTypes::Mob) {
-		m_mob_respawns.clear();
+		m_mobRespawns.clear();
 		MobSpawnInfo *info;
-		for (size_t i = 0; i < m_mob_spawns.size(); i++) {
-			info = &m_mob_spawns[i];
+		for (size_t i = 0; i < m_mobSpawns.size(); i++) {
+			info = &m_mobSpawns[i];
 			if (!info->spawned) {
 				info->spawned = true;
 				spawnMob(i, *info);
@@ -659,12 +663,12 @@ void Map::respawn(int8_t types) {
 		}
 	}
 	if (types & SpawnTypes::Reactor) {
-		m_reactor_respawns.clear();
+		m_reactorRespawns.clear();
 		Reactor *cur;
 		for (size_t i = 0; i < m_reactors.size(); i++) {
 			cur = m_reactors[i];
 			if (!cur->isAlive()) {
-				m_reactor_spawns[i].spawned = true;
+				m_reactorSpawns[i].spawned = true;
 				cur->restore();
 			}
 		}
@@ -674,24 +678,24 @@ void Map::respawn(int8_t types) {
 void Map::checkSpawn(clock_t time) {
 	Respawnable *respawn;
 
-	for (size_t i = 0; i < m_mob_respawns.size(); i++) {
-		respawn = &m_mob_respawns[i];
+	for (size_t i = 0; i < m_mobRespawns.size(); i++) {
+		respawn = &m_mobRespawns[i];
 		if (time > respawn->spawnAt) {
-			m_mob_spawns[respawn->spawnId].spawned = true;
-			spawnMob(respawn->spawnId, m_mob_spawns[respawn->spawnId]);
+			m_mobSpawns[respawn->spawnId].spawned = true;
+			spawnMob(respawn->spawnId, m_mobSpawns[respawn->spawnId]);
 
-			m_mob_respawns.erase(m_mob_respawns.begin() + i);
+			m_mobRespawns.erase(m_mobRespawns.begin() + i);
 			i--;
 		}
 	}
 
-	for (size_t i = 0; i < m_reactor_respawns.size(); i++) {
-		respawn = &m_reactor_respawns[i];
+	for (size_t i = 0; i < m_reactorRespawns.size(); i++) {
+		respawn = &m_reactorRespawns[i];
 		if (time > respawn->spawnAt) {
-			m_reactor_spawns[respawn->spawnId].spawned = true;
+			m_reactorSpawns[respawn->spawnId].spawned = true;
 			getReactor(respawn->spawnId)->restore();
 
-			m_reactor_respawns.erase(m_reactor_respawns.begin() + i);
+			m_reactorRespawns.erase(m_reactorRespawns.begin() + i);
 			i--;
 		}
 	}
@@ -706,7 +710,7 @@ void Map::checkShadowWeb() {
 }
 
 void Map::checkMists() {
-	if (m_poison_mists.size() == 0) {
+	if (m_poisonMists.size() == 0) {
 		return;
 	}
 
@@ -716,21 +720,25 @@ void Map::checkMists() {
 
 	for (unordered_map<int32_t, Mob *>::iterator iter = m_mobs.begin(); iter != m_mobs.end(); ++iter) {
 		mob = iter->second;
-		if (mob == nullptr || mob->hasStatus(StatusEffects::Mob::Poison) || mob->getHp() == 1)
+		if (mob == nullptr || mob->hasStatus(StatusEffects::Mob::Poison) || mob->getHp() == 1) {
 			continue;
-		for (miter = m_poison_mists.begin(); miter != m_poison_mists.end(); ++miter) {
+		}
+		for (miter = m_poisonMists.begin(); miter != m_poisonMists.end(); ++miter) {
 			mist = miter->second;
 			if (GameLogicUtilities::isInBox(mist->getOrigin(), mist->getSkillLt(), mist->getSkillRb(), mob->getPos())) {
 				bool poisoned = (MobHandler::handleMobStatus(mist->getOwnerId(), mob, mist->getSkillId(), mist->getSkillLevel(), 0, 0) > 0);
-				if (poisoned) // Mob is poisoned, don't need to check any more mists
+				if (poisoned) {
+					// Mob is poisoned, don't need to check any more mists
 					break;
+				}
 			}
 		}
 	}
 }
 
-void Map::clearDrops(clock_t time) { // Clear drops based on how long they have been in the map
-	boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+void Map::clearDrops(clock_t time) {
+	// Clear drops based on how long they have been in the map
+	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); iter++) {
@@ -753,33 +761,34 @@ void Map::runTimer() {
 }
 
 void Map::timeMob(bool firstLoad) {
-	int32_t chour = TimeUtilities::getHour(false);
+	int32_t cHour = TimeUtilities::getHour(false);
 	TimeMob *tm = getTimeMob();
 	if (firstLoad) {
-		if (chour >= tm->startHour && chour < tm->endHour) {
-			Pos p = findRandomPos();
-			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
+		if (cHour >= tm->startHour && cHour < tm->endHour) {
+			Pos &p = findRandomPos();
+			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
 			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}
 	}
 	else {
-		if (chour == tm->startHour) {
-			Pos p = findRandomPos();
-			m_timemob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
+		if (cHour == tm->startHour) {
+			Pos &p = findRandomPos();
+			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
 			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}
-		else if (chour == tm->endHour && m_timemob != 0) {
-			Mob *m = getMob(m_timemob);
+		else if (cHour == tm->endHour && m_timeMob != 0) {
+			Mob *m = getMob(m_timeMob);
 			m->applyDamage(0, m->getHp());
 		}
 	}
 }
 
 void Map::setMapTimer(int32_t t) {
-	if (t > 0 && m_timer != 0)
+	if (t > 0 && m_timer != 0) {
 		return;
+	}
 	m_timer = t;
-	m_timerstart = time(nullptr);
+	m_timerStart = time(nullptr);
 	MapPacket::showTimer(getId(), t);
 	if (t > 0) {
 		new Timer::Timer(bind(&Map::setMapTimer, this, 0),
@@ -813,8 +822,8 @@ void Map::showObjects(Player *player) {
 	}
 
 	// NPCs
-	for (size_t i = 0; i < m_npc_spawns.size(); i++) {
-		NpcPacket::showNpc(player, m_npc_spawns[i], i + Map::NpcStart);
+	for (size_t i = 0; i < m_npcSpawns.size(); i++) {
+		NpcPacket::showNpc(player, m_npcSpawns[i], i + Map::NpcStart);
 	}
 
 	// Reactors
@@ -838,7 +847,7 @@ void Map::showObjects(Player *player) {
 
 	// Drops
 	{
-		boost::recursive_mutex::scoped_lock l(m_drops_mutex);
+		boost::recursive_mutex::scoped_lock l(m_dropsMutex);
 		for (unordered_map<int32_t, Drop *>::iterator iter = m_drops.begin(); iter != m_drops.end(); iter++) {
 			if (iter->second != nullptr) {
 				iter->second->showDrop(player);
@@ -861,8 +870,8 @@ void Map::showObjects(Player *player) {
 	if (hasClock()) {
 		time_t rawtime;
 		time(&rawtime);
-		struct tm *timeinfo = localtime(&rawtime);
-		MapPacket::showClock(player, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+		struct tm *timeInfo = localtime(&rawtime);
+		MapPacket::showClock(player, timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
 	}
 }
 

@@ -35,16 +35,16 @@ struct PlayerSkillInfo {
 
 class PlayerSkills : boost::noncopyable {
 public:
-	PlayerSkills(Player *player) : player(player) { load(); }
+	PlayerSkills(Player *m_player) : m_player(m_player) { load(); }
 
 	void load();
-	void save(bool savecooldowns = false);
+	void save(bool saveCooldowns = false);
 	void connectData(PacketCreator &packet);
 
-	bool addSkillLevel(int32_t skillId, uint8_t amount, bool sendpacket = true);
+	bool addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true);
 	uint8_t getSkillLevel(int32_t skillId);
 	uint8_t getMaxSkillLevel(int32_t skillId);
-	void setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendpacket = true);
+	void setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket = true);
 	SkillLevelInfo * getSkillInfo(int32_t skillId);
 
 	bool hasElementalAmp();
@@ -72,7 +72,7 @@ public:
 	void removeCooldown(int32_t skillId);
 	void removeAllCooldowns();
 private:
-	unordered_map<int32_t, PlayerSkillInfo> playerskills;
-	unordered_map<int32_t, int16_t> cooldowns;
-	Player *player;
+	unordered_map<int32_t, PlayerSkillInfo> m_skills;
+	unordered_map<int32_t, int16_t> m_cooldowns;
+	Player *m_player;
 };

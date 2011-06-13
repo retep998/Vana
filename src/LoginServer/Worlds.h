@@ -51,7 +51,7 @@ public:
 	void runFunction(function<bool (World *)> func);
 	void setEventMessages(const string &message);
 
-	World * getWorld(uint8_t id);
+	World * getWorld(int8_t id);
 
 	// Inter-server
 	int8_t addWorldServer(LoginServerAcceptConnection *connection);
@@ -60,5 +60,5 @@ private:
 	Worlds() { }
 	static Worlds *singleton;
 
-	map<uint8_t, World *> m_worlds;
+	map<int8_t, World *> m_worlds;
 };

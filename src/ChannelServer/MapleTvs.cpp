@@ -31,7 +31,7 @@ MapleTvs * MapleTvs::singleton = nullptr;
 MapleTvs::MapleTvs() :
 	m_timers(new Timer::Container),
 	m_counter(0),
-	m_hasmessage(false)
+	m_hasMessage(false)
 {
 }
 
@@ -39,11 +39,11 @@ void MapleTvs::addMap(Map *map) {
 	m_maps[map->getId()] = map;
 }
 
-void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneid, int32_t time) {
+void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneId, int32_t time) {
 	MapleTvMessage message;
-	message.hasreceiver = (receiver != nullptr);
-	message.megaphoneid = megaphoneid;
-	message.senderid = sender->getId();
+	message.hasReceiver = (receiver != nullptr);
+	message.megaphoneId = megaphoneId;
+	message.senderId = sender->getId();
 	message.time = time;
 	message.counter = getCounter();
 	message.msg1 = msg;
@@ -51,18 +51,18 @@ void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, c
 	message.msg3 = msg3;
 	message.msg4 = msg4;
 	message.msg5 = msg5;
-	PlayerPacketHelper::addPlayerDisplay(message.senddisplay, sender); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
-	message.sendname = sender->getName();
+	PlayerPacketHelper::addPlayerDisplay(message.sendDisplay, sender); // We need to save the packet since it gets buffered and there's no guarantee the player will exist later
+	message.sendName = sender->getName();
 	if (receiver != nullptr) {
-		PlayerPacketHelper::addPlayerDisplay(message.recvdisplay, receiver);
-		message.recvname = receiver->getName();
+		PlayerPacketHelper::addPlayerDisplay(message.recvDisplay, receiver);
+		message.recvName = receiver->getName();
 	}
 
 	m_buffer.push_back(message);
 
-	if (!m_hasmessage) { // First element pushed
+	if (!m_hasMessage) { // First element pushed
 		parseBuffer();
-		m_hasmessage = true;
+		m_hasMessage = true;
 	}
 }
 
@@ -75,14 +75,14 @@ void MapleTvs::parseBuffer() {
 		getMapleTvPacket(message, packet);
 		sendPacket(packet);
 
-		m_currentmessage = message;
+		m_currentMessage = message;
 
-		Timer::Id id(Timer::Types::MapleTvTimer, message.senderid, message.counter);
+		Timer::Id id(Timer::Types::MapleTvTimer, message.senderId, message.counter);
 		new Timer::Timer(bind(&MapleTvs::parseBuffer, this),
 			id, getTimers(), TimeUtilities::fromNow(message.time * 1000));
 	}
 	else {
-		m_hasmessage = false;
+		m_hasMessage = false;
 		endMapleTvPacket(packet);
 		sendPacket(packet);
 	}
@@ -95,29 +95,29 @@ void MapleTvs::sendPacket(PacketCreator &packet) {
 }
 
 int32_t MapleTvs::checkMessageTimer() const {
-	Timer::Id id(Timer::Types::MapleTvTimer, m_currentmessage.senderid, m_currentmessage.counter);
+	Timer::Id id(Timer::Types::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter);
 	return getTimers()->checkTimer(id);
 }
 
 void MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) {
-	 getMapleTvPacket(m_currentmessage, packet, checkMessageTimer());
+	 getMapleTvPacket(m_currentMessage, packet, checkMessageTimer());
 }
 
 void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeleft) {
 	packet.addHeader(SMSG_MAPLETV_ON);
-	packet.add<int8_t>(message.hasreceiver ? 3 : 1);
-	packet.add<int8_t>((int8_t)(message.megaphoneid - 5075000)); // Positively will be within -128 to 127
-	packet.addBuffer(message.senddisplay);
-	packet.addString(message.sendname);
-	packet.addString(message.hasreceiver ? message.recvname : "");
+	packet.add<int8_t>(message.hasReceiver ? 3 : 1);
+	packet.add<int8_t>((int8_t)(message.megaphoneId - 5075000)); // Positively will be within -128 to 127
+	packet.addBuffer(message.sendDisplay);
+	packet.addString(message.sendName);
+	packet.addString(message.hasReceiver ? message.recvName : "");
 	packet.addString(message.msg1);
 	packet.addString(message.msg2);
 	packet.addString(message.msg3);
 	packet.addString(message.msg4);
 	packet.addString(message.msg5);
 	packet.add<int32_t>(timeleft == 0 ? message.time : timeleft);
-	if (message.hasreceiver) {
-		packet.addBuffer(message.recvdisplay);
+	if (message.hasReceiver) {
+		packet.addBuffer(message.recvDisplay);
 	}
 }
 

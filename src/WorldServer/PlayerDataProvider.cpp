@@ -35,7 +35,7 @@ using Initializing::outputWidth;
 PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
 PlayerDataProvider::PlayerDataProvider() :
-	m_pid(0)
+	m_partyIds(1, 100000)
 {
 }
 
@@ -173,13 +173,14 @@ void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
 }
 
 // Channel changes
-void PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelid) {
-	m_channelSwitches[id] = channelid;
+void PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelId) {
+	m_channelSwitches[id] = channelId;
 }
 
 void PlayerDataProvider::removePendingPlayer(int32_t id) {
-	if (m_channelSwitches.find(id) != m_channelSwitches.end())
+	if (m_channelSwitches.find(id) != m_channelSwitches.end()) {
 		m_channelSwitches.erase(id);
+	}
 }
 
 int16_t PlayerDataProvider::removePendingPlayerEarly(int32_t id) {
@@ -197,7 +198,7 @@ uint16_t PlayerDataProvider::getPendingPlayerChannel(int32_t id) {
 
 // Parties
 int32_t PlayerDataProvider::getPartyId() {
-	return ++m_pid;
+	return m_partyIds.next();
 }
 
 Party * PlayerDataProvider::getParty(int32_t id) {
@@ -242,8 +243,8 @@ void PlayerDataProvider::removePartyMember(int32_t playerId, int32_t target) {
 		return;
 	}
 
-	Player *tplayer = PlayerDataProvider::Instance()->getPlayer(target, true);
-	party->deleteMember(tplayer, true);
+	Player *targetPlayer = PlayerDataProvider::Instance()->getPlayer(target, true);
+	party->deleteMember(targetPlayer, true);
 }
 
 void PlayerDataProvider::addPartyMember(int32_t playerId) {

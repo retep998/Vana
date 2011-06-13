@@ -44,7 +44,7 @@ namespace LoginPacket {
 			MaxLoad = 0x02
 		};
 	}
-	void loginError(Player *player, int16_t errorid);
+	void loginError(Player *player, int16_t errorId);
 	void loginBan(Player *player, int8_t reason, int32_t expire);
 	void loginProcess(Player *player, int8_t id);
 	void loginConnect(Player *player, const string &username);
@@ -56,11 +56,11 @@ namespace LoginPacket {
 	void channelSelect(Player *player);
 	void channelOffline(Player *player);
 	void showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk);
-	void showCharactersWorld(Player *player, uint8_t worldid, const vector<Character> &chars); // Used for "view all characters"
-	void showCharacters(Player *player, const vector<Character> &chars, int32_t maxchars);
+	void showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars); // Used for "view all characters"
+	void showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars);
 	void showCharacter(Player *player, const Character &charc);
 	void checkName(Player *player, const string &name, bool taken);
 	void deleteCharacter(Player *player, int32_t id, uint8_t result);
-	void connectIp(Player *player, int32_t charid);
+	void connectIp(Player *player, int32_t charId);
 	void relogResponse(Player *player);
 }

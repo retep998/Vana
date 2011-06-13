@@ -56,7 +56,7 @@ public:
 	string getName() const { return m_name; }
 	uint32_t getStart() const { return m_start; }
 	int32_t getCounterId();
-	bool getMarkedForDelete() const { return m_marked_for_delete; }
+	bool getMarkedForDelete() const { return m_markedForDeletion; }
 	void markForDelete();
 	void instanceEnd(bool fromTimer = false);
 	Variables * getVariables() const { return m_variables.get(); }
@@ -65,7 +65,7 @@ public:
 	vector<int32_t> getAllPlayerIds();
 	const string getPlayerByIndex(uint32_t index) const;
 	const string getBannedPlayerByIndex(uint32_t index) const;
-	void setMaxPlayers(int32_t maxplayers) { m_max_players = maxplayers; }
+	void setMaxPlayers(int32_t maxplayers) { m_maxPlayers = maxplayers; }
 	void addPlayer(Player *player);
 	void removePlayer(Player *player);
 	void removePlayer(int32_t id);
@@ -73,34 +73,34 @@ public:
 	void setBanned(const string &name, bool isbanned);
 	void addPlayerSignUp(Player *player);
 	void removePlayerSignUp(const string &name);
-	void moveAllPlayers(int32_t mapid, bool respectInstances, PortalInfo *portal = nullptr);
+	void moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal = nullptr);
 	bool isPlayerSignedUp(const string &name);
 	bool isBanned(const string &name);
 	bool instanceHasPlayers() const;
-	int32_t getMaxPlayers() const { return m_max_players; }
+	int32_t getMaxPlayers() const { return m_maxPlayers; }
 	size_t getPlayerNum() const { return m_players.size(); }
-	size_t getPlayerSignupNum() const { return m_players_order.size(); } // Number of players for the instance (squads, etc.)
+	size_t getPlayerSignupNum() const { return m_playersOrder.size(); } // Number of players for the instance (squads, etc.)
 	size_t getBannedPlayerNum() const { return m_banned.size(); }
 
 	// Maps
 	void addMap(Map *map);
-	void addMap(int32_t mapid);
-	Map * getMap(int32_t mapid);
+	void addMap(int32_t mapId);
+	Map * getMap(int32_t mapId);
 	size_t getMapNum();
-	void setResetAtEnd(bool reset) { m_reset_on_destroy = reset; }
-	void respawnMobs(int32_t mapid);
-	void respawnReactors(int32_t mapid);
+	void setResetAtEnd(bool reset) { m_resetOnDestroy = reset; }
+	void respawnMobs(int32_t mapId);
+	void respawnReactors(int32_t mapId);
 
 	// Parties
 	void addParty(Party *party);
 
 	// Instance time
 	bool hasInstanceTimer() const { return m_time > 0; }
-	void setInstanceTimer(int32_t time, bool firstrun = false);
+	void setInstanceTimer(int32_t time, bool firstRun = false);
 	void setPersistence(int32_t p) { m_persistent = p; }
 	int32_t getPersistence() const { return m_persistent; }
 	int32_t checkInstanceTimer();
-	bool showTimer() const { return m_show_timer; }
+	bool showTimer() const { return m_showTimer; }
 	void showTimer(bool show, bool doit = false);
 
 	// Timers
@@ -123,25 +123,25 @@ public:
 private:
 	scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
 	scoped_ptr<Variables> m_variables;
-	scoped_ptr<LuaInstance> m_luainstance; // Lua instance for interacting with scripts
+	scoped_ptr<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
 
-	unordered_map<string, TimerAction> m_timer_actions; // Timers indexed by name
+	unordered_map<string, TimerAction> m_timerActions; // Timers indexed by name
 	unordered_map<int32_t, Player *> m_players;
 
 	vector<string> m_banned; // For squads
-	vector<string> m_players_order; // For squads
+	vector<string> m_playersOrder; // For squads
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
 
 	uint32_t m_start; // Tick count when instance started
 	string m_name; // Identification for the instance
-	int32_t m_max_players; // Maximum players allowed for instance
+	int32_t m_maxPlayers; // Maximum players allowed for instance
 	int32_t m_time; // Instance time
-	int32_t m_timer_counter; // Used for uniqueness of timer IDs
+	int32_t m_timerCounter; // Used for uniqueness of timer IDs
 	int32_t m_persistent; // How often does instance repeat?
-	bool m_show_timer; // Show timer
-	bool m_reset_on_destroy; // Reset reactors when done
-	bool m_marked_for_delete; // End of instance time
+	bool m_showTimer; // Show timer
+	bool m_resetOnDestroy; // Reset reactors when done
+	bool m_markedForDeletion; // End of instance time
 
-	LuaInstance * getLuaInstance() { return m_luainstance.get(); }
+	LuaInstance * getLuaInstance() { return m_luaInstance.get(); }
 };

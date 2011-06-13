@@ -28,8 +28,8 @@ struct MobSkillLevelInfo;
 
 class Mist {
 public:
-	Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool ispoison = false);
-	Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level);
+	Mist(int32_t mapId, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool isPoison = false);
+	Mist(int32_t mapId, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level);
 
 	void setId(int32_t id) { m_id = id; }
 	uint8_t getSkillLevel() const { return m_level; }
@@ -37,13 +37,13 @@ public:
 	int16_t getDelay() const { return m_delay; }
 	int32_t getSkillId() const { return m_skill; }
 	int32_t getId() const { return m_id; }
-	int32_t getOwnerId() const { return m_ownerid; }
-	bool isMobMist() const { return m_ismobmist; }
+	int32_t getOwnerId() const { return m_ownerId; }
+	bool isMobMist() const { return m_isMobMist; }
 	bool isPoison() const { return m_poison; }
 	Pos getLt() const { return m_lt; }
 	Pos getRb() const { return m_rb; }
-	Pos getSkillLt() const { return m_skilllt; }
-	Pos getSkillRb() const { return m_skillrb; }
+	Pos getSkillLt() const { return m_skillLt; }
+	Pos getSkillRb() const { return m_skillRb; }
 	Pos getOrigin() const { return m_origin; }
 	Map * getMap() const;
 private:
@@ -52,13 +52,13 @@ private:
 	int16_t m_delay;
 	int32_t m_id;
 	int32_t m_skill;
-	int32_t m_ownermap;
-	int32_t m_ownerid;
-	bool m_ismobmist;
+	int32_t m_ownerMap;
+	int32_t m_ownerId;
+	bool m_isMobMist;
 	bool m_poison;
 	Pos m_lt;
 	Pos m_rb;
-	Pos m_skilllt;
-	Pos m_skillrb;
+	Pos m_skillLt;
+	Pos m_skillRb;
 	Pos m_origin;
 };

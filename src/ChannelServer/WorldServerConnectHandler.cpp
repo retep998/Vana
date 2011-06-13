@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BeautyDataProvider.h"
 #include "ChannelServer.h"
 #include "Configuration.h"
-#include "ConfigurationPacket.h"
 #include "DropDataProvider.h"
 #include "ItemDataProvider.h"
 #include "MapDataProvider.h"
@@ -43,12 +42,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 
 void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) {
-	int8_t worldid = packet.get<int8_t>();
-	if (worldid != -1) {
-		ChannelServer::Instance()->setWorld(worldid);
+	int8_t worldId = packet.get<int8_t>();
+	if (worldId != -1) {
+		ChannelServer::Instance()->setWorld(worldId);
 		ChannelServer::Instance()->setWorldIp(packet.get<ip_t>());
 		ChannelServer::Instance()->setWorldPort(packet.get<port_t>());
-		std::cout << "Connecting to world " << (int16_t) worldid << std::endl;
+		std::cout << "Connecting to world " << (int16_t) worldId << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
 	else {
@@ -60,19 +59,19 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) {
 	int16_t channel = packet.get<int16_t>();
 	if (channel != -1) {
-		int8_t chid = channel + 1;
+		int8_t chId = channel + 1;
 		port_t port = packet.get<port_t>();
 		ChannelServer::Instance()->setChannel(channel);
 		ChannelServer::Instance()->setPort(port);
 
-		Configuration conf = ConfigurationPacket::getConfig(packet);
+		Configuration conf = packet.getClass<Configuration>();
 
 		ChannelServer::Instance()->setConfig(conf);
-		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianus.channels, chid));
-		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(conf.pap.channels, chid));
-		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(conf.zakum.channels, chid));
-		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntail.channels, chid));
-		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbean.channels, chid));
+		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianus.channels, chId));
+		ChannelServer::Instance()->setPapChannel(MiscUtilities::isBossChannel(conf.pap.channels, chId));
+		ChannelServer::Instance()->setZakumChannel(MiscUtilities::isBossChannel(conf.zakum.channels, chId));
+		ChannelServer::Instance()->setHorntailChannel(MiscUtilities::isBossChannel(conf.horntail.channels, chId));
+		ChannelServer::Instance()->setPinkBeanChannel(MiscUtilities::isBossChannel(conf.pinkbean.channels, chId));
 		ChannelServer::Instance()->listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 
@@ -113,9 +112,9 @@ void WorldServerConnectHandler::scrollingHeader(PacketReader &packet) {
 
 void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
 	PacketCreator ppacket;
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	ppacket.addBuffer(packet);
-	PlayerDataProvider::Instance()->getPlayer(playerid)->getSession()->send(ppacket);
+	PlayerDataProvider::Instance()->getPlayer(playerId)->getSession()->send(ppacket);
 }
 
 void WorldServerConnectHandler::setRates(PacketReader &packet) {

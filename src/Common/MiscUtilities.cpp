@@ -35,9 +35,9 @@ string MiscUtilities::hashPassword(const string &password, const string &salt) {
 	return digest;
 }
 
-bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelid) {
+bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {
 	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); iter++) {
-		if (*iter == channelid) {
+		if (*iter == channelId) {
 			return true;
 		}
 	}

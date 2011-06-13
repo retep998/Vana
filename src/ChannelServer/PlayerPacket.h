@@ -48,9 +48,7 @@ namespace PlayerPacket {
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void showSkillMacros(Player *player, SkillMacros *macros);
-	void updateStatInt(Player *player, int32_t id, int32_t value, bool is = false);
-	void updateStatShort(Player *player, int32_t id, int16_t value, bool is = false);
-	void updateStatChar(Player *player, int32_t id, int8_t value, bool is = false);
+	void updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false);
 	void changeChannel(Player *player, ip_t ip, port_t port);
 	void showMessage(Player *player, const string &msg, int8_t type);
 	void showMessageChannel(const string &msg, int8_t type);

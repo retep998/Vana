@@ -24,6 +24,6 @@ class Player;
 struct MonsterCard;
 
 namespace MonsterBookPacket {
-	void addCard(Player *player, int32_t cardid, uint8_t level, bool full);
-	void changeCover(Player *player, int32_t cardid);
+	void addCard(Player *player, int32_t cardId, uint8_t level, bool full);
+	void changeCover(Player *player, int32_t cardId);
 }

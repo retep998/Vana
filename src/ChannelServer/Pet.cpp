@@ -28,98 +28,98 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::tr1::bind;
 
 Pet::Pet(Player *player, Item *item) :
-	player(player),
-	itemId(item->getId()),
-	index(-1),
-	name(ItemDataProvider::Instance()->getItemName(itemId)),
-	level(1),
-	fullness(100),
-	closeness(0)
+	m_player(player),
+	m_itemId(item->getId()),
+	m_index(-1),
+	m_name(ItemDataProvider::Instance()->getItemName(m_itemId)),
+	m_level(1),
+	m_fullness(100),
+	m_closeness(0)
 {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << this->name << ")";
+	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << m_name << ")";
 	mysqlpp::SimpleResult res = query.execute();
-	this->id = (int64_t) res.insert_id();
-	item->setPetId(this->id);
+	m_id = (int64_t) res.insert_id();
+	item->setPetId(m_id);
 }
 
-Pet::Pet(Player *player, Item *item, int8_t index, string name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
-	player(player),
-	id(item->getPetId()),
-	itemId(item->getId()),
-	index(index),
-	name(name),
-	level(level),
-	fullness(fullness),
-	closeness(closeness),
-	inventorySlot(inventorySlot)
+Pet::Pet(Player *player, Item *item, int8_t index, const string &name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
+	m_player(player),
+	m_id(item->getPetId()),
+	m_itemId(item->getId()),
+	m_index(index),
+	m_name(name),
+	m_level(level),
+	m_fullness(fullness),
+	m_closeness(closeness),
+	m_inventorySlot(inventorySlot)
 {
 	if (isSummoned()) {
-		if (index == 1) {
+		if (m_index == 1) {
 			startTimer();
 		}
-		player->getPets()->setSummoned(index, id);
+		player->getPets()->setSummoned(m_index, m_id);
 	}
 }
 
 void Pet::levelUp() {
-	level += 1;
-	PetsPacket::levelUp(player, this);
+	m_level += 1;
+	PetsPacket::levelUp(m_player, this);
 }
 
 void Pet::setName(const string &name) {
-	this->name = name;
-	PetsPacket::changeName(player, this);
+	m_name = name;
+	PetsPacket::changeName(m_player, this);
 }
 
 void Pet::addCloseness(int16_t amount) {
-	closeness += amount;
-	if (closeness > Stats::MaxCloseness)
-		closeness = Stats::MaxCloseness;
-
-	while (closeness >= Stats::PetExp[level - 1] && level < Stats::PetLevels) {
+	m_closeness += amount;
+	if (m_closeness > Stats::MaxCloseness) {
+		m_closeness = Stats::MaxCloseness;
+	}
+	while (m_closeness >= Stats::PetExp[m_level - 1] && m_level < Stats::PetLevels) {
 		levelUp();
 	}
-	PetsPacket::updatePet(player, this);
+	PetsPacket::updatePet(m_player, this);
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
-	if (fullness + offset > Stats::MaxFullness) {
-		fullness = Stats::MaxFullness;
+	if (m_fullness + offset > Stats::MaxFullness) {
+		m_fullness = Stats::MaxFullness;
 	}
 	else {
-		fullness += offset;
+		m_fullness += offset;
 	}
 
-	if (fullness < Stats::MinFullness) {
-		fullness = Stats::MinFullness;
+	if (m_fullness < Stats::MinFullness) {
+		m_fullness = Stats::MinFullness;
 	}
 
 	if (sendPacket) {
-		PetsPacket::updatePet(player, this);
+		PetsPacket::updatePet(m_player, this);
 	}
 }
 
 void Pet::startTimer() {
 	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
-	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, player->getTimers(), 0, length);
+	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, m_player->getTimers(), 0, length);
 }
 
 bool Pet::hasNameTag() const {
-	switch (index) {
-		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
-		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
-		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+	switch (m_index) {
+		case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
+		case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
+		case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
 	}
 	return false;
 }
 
 bool Pet::hasQuoteItem() const {
-	switch (index) {
-		case 0: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
-		case 1: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
-		case 2: return player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+	switch (m_index) {
+		case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
+		case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
+		case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
 	}
 	return false;
 }

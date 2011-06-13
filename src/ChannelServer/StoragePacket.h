@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace StoragePacket {
-	void showStorage(Player *player, int32_t npcid);
+	void showStorage(Player *player, int32_t npcId);
 	void addItem(Player *player, int8_t inv);
 	void takeItem(Player *player, int8_t inv);
 	void changeMesos(Player *player, int32_t mesos);

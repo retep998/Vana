@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void StoragePacket::showStorage(Player *player, int32_t npcid) {
+void StoragePacket::showStorage(Player *player, int32_t npcId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_STORAGE);
 	packet.add<int8_t>(0x16); // Type of storage action
-	packet.add<int32_t>(npcid);
+	packet.add<int32_t>(npcId);
 	packet.add<int8_t>(player->getStorage()->getSlots());
 	packet.add<int32_t>(0x7e);
 	packet.add<int32_t>(0);

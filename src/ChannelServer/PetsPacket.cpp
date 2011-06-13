@@ -63,12 +63,12 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t buflen) {
+void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PET_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
-	packet.addBuffer(buf, buflen);
+	packet.addBuffer(buf, bufLen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 

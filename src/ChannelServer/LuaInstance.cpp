@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 
-LuaInstance::LuaInstance(const string &name, int32_t playerid) : LuaScriptable("scripts/instances/" + name + ".lua", playerid) {
+LuaInstance::LuaInstance(const string &name, int32_t playerId) : LuaScriptable("scripts/instances/" + name + ".lua", playerId) {
 	initialize();
 	setVariable("_instancename", name);
 

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "LoopingId.h"
 #include "Types.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -48,13 +49,13 @@ private:
 	static Trades *singleton;
 	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
 
-	boost::scoped_ptr<Timer::Container> container;
-	unordered_map<int32_t, boost::shared_ptr<ActiveTrade>> trades;
-	int32_t ids;
+	boost::scoped_ptr<Timer::Container> m_container;
+	unordered_map<int32_t, boost::shared_ptr<ActiveTrade>> m_trades;
+	LoopingId<int32_t> m_tradeIds;
 
-	Timer::Container * getTimers() const { return container.get(); }
-	int32_t getNewId() { return ++ids; }
-	int32_t checkTimer(int32_t id);
+	Timer::Container * getTimers() const { return m_container.get(); }
+	int32_t getNewId() { return m_tradeIds.next(); }
+	int32_t checkTimer(int32_t m_id);
 	void timeout(Player *sender);
 	void startTimeout(int32_t id, Player *sender);
 };

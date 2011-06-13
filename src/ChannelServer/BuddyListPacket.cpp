@@ -75,11 +75,11 @@ void BuddyListPacket::invitation(Player *player, const BuddyInvite &invite) {
 	player->getSession()->send(packet);
 }
 
-void BuddyListPacket::online(Player *player, int32_t charid, int32_t channel) {
+void BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_BUDDY);
 	packet.add<int8_t>(0x14);
-	packet.add<int32_t>(charid);
+	packet.add<int32_t>(charId);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(channel);
 	player->getSession()->send(packet);
