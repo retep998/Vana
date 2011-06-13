@@ -60,26 +60,26 @@ void KeyMaps::defaultMap() {
 	add(65, new KeyMap(6, 106));
 }
 
-void KeyMaps::load(int32_t charid) {
+void KeyMaps::load(int32_t charId) {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT k.* FROM keymap k WHERE k.character_id = " << charid;
+	query << "SELECT k.* FROM keymap k WHERE k.character_id = " << charId;
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.num_rows(); ++i) {
 		add(static_cast<int32_t>(res[i]["pos"]), new KeyMap(static_cast<signed char>(res[i]["type"]), static_cast<int32_t>(res[i]["action"])));
 	}
 	if (getMax() == -1) { // No keymaps, so let set the default one
 		defaultMap();
-		save(charid);
+		save(charId);
 	}
 }
 
-void KeyMaps::save(int32_t charid) {
+void KeyMaps::save(int32_t charId) {
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "REPLACE INTO keymap VALUES ";
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMap *keymap = getKeyMap(i);
 		if (keymap != nullptr) {
-			query << "(" << charid << ", "
+			query << "(" << charId << ", "
 				<< i << ", "
 				<< (int32_t) keymap->type << ", "
 				<< keymap->action << ")";

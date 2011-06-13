@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 
 void PetHandler::handleMovement(Player *player, PacketReader &packet) {
-	int64_t petid = packet.get<int64_t>();
-	Pet *pet = player->getPets()->getPet(petid);
+	int64_t petId = packet.get<int64_t>();
+	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
 		return;
@@ -43,15 +43,15 @@ void PetHandler::handleMovement(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleChat(Player *player, PacketReader &packet) {
-	int64_t petid = packet.get<int64_t>();
-	if (player->getPets()->getPet(petid) == nullptr) {
+	int64_t petId = packet.get<int64_t>();
+	if (player->getPets()->getPet(petId) == nullptr) {
 		// Hacking
 		return;
 	}
 	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
 	string message = packet.getString();
-	PetsPacket::showChat(player, player->getPets()->getPet(petid), message, act);
+	PetsPacket::showChat(player, player->getPets()->getPet(petId), message, act);
 }
 
 void PetHandler::handleSummon(Player *player, PacketReader &packet) {
@@ -153,8 +153,8 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleCommand(Player *player, PacketReader &packet) {
-	int64_t petid = packet.get<int64_t>();
-	Pet *pet = player->getPets()->getPet(petid);
+	int64_t petId = packet.get<int64_t>();
+	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
 		return;
@@ -174,8 +174,8 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
-	int64_t petid = packet.get<int64_t>();
-	Pet *pet = player->getPets()->getPet(petid);
+	int64_t petId = packet.get<int64_t>();
+	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
 		// Hacking
 		return;
@@ -183,27 +183,27 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
 	packet.skipBytes(4); // Ticks
 	int16_t slot = packet.get<int16_t>();
-	int32_t itemid = packet.get<int32_t>();
+	int32_t itemId = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemid);
-	if (item == nullptr || item->getId() != itemid) {
+	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemId);
+	if (item == nullptr || item->getId() != itemId) {
 		// Hacking
 		return;
 	}
 
 	// Check if the MP potion IS a MP potion set
-	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemid) {
+	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemId) {
 		// Hacking
 		return;
 	}
 
 	// Check if the HP potion IS a HP potion set
-	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemid) {
+	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemId) {
 		// Hacking
 		return;
 	}
 
-	Inventory::useItem(player, itemid);
+	Inventory::useItem(player, itemId);
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 }
 

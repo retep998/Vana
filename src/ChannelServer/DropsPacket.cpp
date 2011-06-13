@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin) {
+void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_DROP_ITEM);
 	packet.add<int8_t>(type);
@@ -44,7 +44,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	if (!drop->isMesos()) {
 		packet.add<int64_t>(Items::NoExpiration);
 	}
-	packet.addBool(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
+	packet.addBool(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
 
 	if (player != nullptr) {
 		player->getSession()->send(packet);
@@ -52,19 +52,19 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newdrop
 	else {
 		Maps::getMap(drop->getMap())->sendPacket(packet);
 	}
-	if (newdrop) {
+	if (newDrop) {
 		showDrop(player, drop, DropTypes::ShowDrop, false, origin);
 	}
 }
 
-void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t pet_index) {
+void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t petIndex) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_DROP_PICKUP);
-	packet.add<int8_t>(pet_index != -1 ? 5 : 2);
+	packet.add<int8_t>(petIndex != -1 ? 5 : 2);
 	packet.add<int32_t>(drop->getId());
 	packet.add<int32_t>(player->getId());
-	if (pet_index != -1) {
-		packet.add<int8_t>(pet_index);
+	if (petIndex != -1) {
+		packet.add<int8_t>(petIndex);
 	}
 	if (!drop->isQuest()) {
 		Maps::getMap(drop->getMap())->sendPacket(packet);

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "IPacket.h"
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <iostream>
@@ -34,12 +35,14 @@ public:
 	PacketReader();
 	PacketReader(unsigned char *buffer, size_t length);
 
-	template<typename T>
+	template <typename T>
 	T get();
-	template<typename T>
+	template <typename T>
 	vector<T> getVector();
-	template<typename T>
+	template <typename T>
 	vector<T> getVector(size_t size);
+	template <typename T>
+	T getClass();
 
 	void skipBytes(int32_t len);
 	header_t getHeader(bool advanceBuffer = true);
@@ -60,7 +63,7 @@ private:
 	size_t m_pos;
 };
 
-template<typename T>
+template <typename T>
 T PacketReader::get() {
 	if (sizeof(T) > getBufferLength()) {
 		throw std::range_error("Packet data longer than buffer allows");
@@ -70,7 +73,7 @@ T PacketReader::get() {
 	return val;
 }
 
-template<typename T>
+template <typename T>
 vector<T> PacketReader::getVector() {
 	vector<T> vec;
 	size_t size = get<uint32_t>();
@@ -80,13 +83,20 @@ vector<T> PacketReader::getVector() {
 	return vec;
 }
 
-template<typename T>
+template <typename T>
 vector<T> PacketReader::getVector(size_t size) {
 	vector<T> vec;
 	for (size_t i = 0; i < size; i++) {
 		vec.push_back(get<T>());
 	}
 	return vec;
+}
+
+template <typename T>
+T PacketReader::getClass() {
+	T obj;
+	obj.read(*this);
+	return obj;
 }
 
 inline

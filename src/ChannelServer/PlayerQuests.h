@@ -63,10 +63,10 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 
-	void addQuest(int16_t questId, int32_t npcid);
+	void addQuest(int16_t questId, int32_t npcId);
 	void updateQuestMob(int32_t mobId);
 	void checkDone(ActiveQuest &quest);
-	void finishQuest(int16_t questId, int32_t npcid);
+	void finishQuest(int16_t questId, int32_t npcId);
 	void removeQuest(int16_t questId);
 	bool isQuestActive(int16_t questId);
 	bool isQuestComplete(int16_t questId);
@@ -74,7 +74,7 @@ public:
 	string getQuestData(int16_t id);
 private:
 	Player *m_player;
-	unordered_map<int32_t, vector<int16_t>> m_mobtoquest;
+	unordered_map<int32_t, vector<int16_t>> m_mobToQuestMapping;
 	map<int16_t, ActiveQuest> m_quests;
 	map<int16_t, int64_t> m_completed;
 

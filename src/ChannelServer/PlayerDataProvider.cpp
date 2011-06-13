@@ -66,14 +66,14 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 
 // Stored packets
 void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 
 	size_t psize = packet.getBufferLength();
 	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
 	memcpy(buf, packet.getBuffer(), psize);
 
-	m_packets[playerid].reset(new PacketReader(buf, psize));
-	SyncPacket::PlayerPacket::buffsTransferred(playerid);
+	m_packets[playerId].reset(new PacketReader(buf, psize));
+	SyncPacket::PlayerPacket::buffsTransferred(playerId);
 }
 
 void PlayerDataProvider::removePacket(int32_t id) {
@@ -102,16 +102,16 @@ void PlayerDataProvider::removePlayer(Player *player) {
 }
 
 void PlayerDataProvider::changeChannel(PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	ip_t ip = packet.get<ip_t>();
 	port_t port = packet.get<port_t>();
 
-	if (Player *player = getPlayer(playerid)) {
+	if (Player *player = getPlayer(playerId)) {
 		if (ip == 0) {
-			PlayerPacket::sendBlockedMessage(player, 0x01);
+			PlayerPacket::sendBlockedMessage(player, PlayerPacket::BlockMessages::CannotGo);
 		}
 		else {
-			player->setOnline(0); // Set online to 0 BEFORE CC packet is sent to player
+			player->setOnline(false); // Set online to false BEFORE CC packet is sent to player
 			PlayerPacket::changeChannel(player, ip, port);
 			player->saveAll(true);
 			player->setSaveOnDc(false);

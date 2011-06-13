@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LogReplacements * LogReplacements::singleton = nullptr;
 
-LogReplacements::LogReplacements() {
+LogReplacements::LogReplacements()
+{
 	add("%yy", Replacements::Year);
 	add("%YY", Replacements::Year | Replacements::Long);
 	add("%mm", Replacements::IntegerMonth);

@@ -47,6 +47,7 @@ namespace Stats {
 	const uint8_t PlayerLevels = 200;
 	const uint8_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
+	const uint8_t MountLevels = 30;
 	const int16_t MaxMaxHp = 30000;
 	const int16_t MinMaxHp = 1;
 	const int16_t MaxMaxMp = 30000;
@@ -69,6 +70,12 @@ namespace Stats {
 		1, 3, 6, 14, 31, 60, 108, 181, 287, 434,
 		632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801,
 		8263, 9950, 11882, 14084, 16578, 19391, 22548, 26074, 30000
+	};
+
+	const int16_t MountExp[MountLevels - 1] = {
+		6, 25, 50, 105, 134, 196, 254, 263, 315, 367,
+		430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
+		2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550
 	};
 
 	const uint32_t PlayerExp[PlayerLevels - 1] = {

@@ -60,11 +60,11 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	}
 }
 
-Summon * PlayerSummons::getSummon(int32_t summonid) {
-	if (m_summon != nullptr && m_summon->getId() == summonid) {
+Summon * PlayerSummons::getSummon(int32_t summonId) {
+	if (m_summon != nullptr && m_summon->getId() == summonId) {
 		return m_summon;
 	}
-	if (m_puppet != nullptr && m_puppet->getId() == summonid) {
+	if (m_puppet != nullptr && m_puppet->getId() == summonId) {
 		return m_puppet;
 	}
 	return nullptr;
@@ -75,21 +75,21 @@ int32_t PlayerSummons::getSummonTimeRemaining() {
 	return m_player->getTimers()->checkTimer(id);
 }
 
-void PlayerSummons::getSummonTransferPacket(PacketCreator &packet) {
-	int32_t summonid = 0;
+void PlayerSummons::write(PacketCreator &packet) {
+	int32_t summonId = 0;
 	int32_t timeleft = 0;
 	uint8_t level = 0;
 	if (m_summon != nullptr) {
-		summonid = m_summon->getSummonId();
+		summonId = m_summon->getSummonId();
 		timeleft = getSummonTimeRemaining();
 		level = m_summon->getLevel();
 	}
-	packet.add<int32_t>(summonid);
+	packet.add<int32_t>(summonId);
 	packet.add<int32_t>(timeleft);
 	packet.add<uint8_t>(level);
 }
 
-void PlayerSummons::parseSummonTransferPacket(PacketReader &packet) {
+void PlayerSummons::read(PacketReader &packet) {
 	int32_t skillId = packet.get<int32_t>();
 	int32_t timeleft = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();

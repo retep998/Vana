@@ -30,7 +30,7 @@ namespace WorldServerAcceptPacket {
 	void findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
 	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
 	void scrollingHeader(const string &message);
-	void groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender);
+	void groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender);
 
 	// I have my eye on you...
 	void sendRates(WorldServerAcceptConnection *connection, int32_t setBit);

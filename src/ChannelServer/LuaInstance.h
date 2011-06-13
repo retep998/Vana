@@ -26,7 +26,7 @@ using std::string;
 
 class LuaInstance : public LuaScriptable {
 public:
-	LuaInstance(const string &name, int32_t playerid);
+	LuaInstance(const string &name, int32_t playerId);
 
 	bool run(InstanceMessages message);
 	bool run(InstanceMessages message, int32_t);

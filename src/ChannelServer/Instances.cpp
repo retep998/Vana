@@ -35,12 +35,12 @@ Instance * Instances::getInstance(const string &name) {
 
 bool Instances::isInstance(const string &name) {
 	string upCaseName = boost::to_upper_copy(name);
-	bool is = m_instances.find(upCaseName) != m_instances.end();
-	if (is && m_instances[upCaseName]->getMarkedForDelete()) {
-		is = false;
+	bool exists = m_instances.find(upCaseName) != m_instances.end();
+	if (exists && m_instances[upCaseName]->getMarkedForDelete()) {
+		exists = false;
 		Instance *instance = m_instances[upCaseName];
 		m_instances.erase(upCaseName);
 		delete instance;
 	}
-	return is;
+	return exists;
 }

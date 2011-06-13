@@ -71,7 +71,7 @@ namespace TradesPacket {
 	}
 
 	void sendOpenTrade(Player *player, Player *player1, Player *player2);
-	void sendTradeRequest(Player *player, Player *receiver, int32_t tradeid);
+	void sendTradeRequest(Player *player, Player *receiver, int32_t tradeId);
 	void sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message);
 	void sendTradeMessage(Player *receiver, int8_t type, int8_t message);
 	void sendTradeChat(Player *player, bool blue, const string &chat);

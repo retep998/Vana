@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcid) {
+void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -43,7 +43,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcid) {
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
 	packet.add<int16_t>(questId);
-	packet.add<int32_t>(npcid);
+	packet.add<int32_t>(npcId);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
@@ -65,10 +65,10 @@ void QuestsPacket::doneQuest(Player *player, int16_t questId) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questError(Player *player, int16_t questId, int8_t errorcode) {
+void QuestsPacket::questError(Player *player, int16_t questId, int8_t errorCode) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_QUEST_UPDATE);
-	packet.add<int8_t>(errorcode);
+	packet.add<int8_t>(errorCode);
 	packet.add<int16_t>(questId);
 	player->getSession()->send(packet);
 }
@@ -81,7 +81,7 @@ void QuestsPacket::questExpire(Player *player, int16_t questId) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcid, int16_t nextquest, int64_t time) {
+void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -94,8 +94,8 @@ void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcid, i
 	packet.addHeader(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(8);
 	packet.add<int16_t>(questId);
-	packet.add<int32_t>(npcid);
-	packet.add<int16_t>(nextquest);
+	packet.add<int32_t>(npcId);
+	packet.add<int16_t>(nextQuest);
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();

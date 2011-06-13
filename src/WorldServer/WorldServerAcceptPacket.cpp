@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.h"
 #include "Channels.h"
 #include "Configuration.h"
-#include "ConfigurationPacket.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
 #include "PacketCreator.h"
@@ -37,14 +36,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::map;
 using std::tr1::unordered_map;
 
-void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerid, int8_t type, const string &message, const string &sender) {
+void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FORWARD_TO);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(playerId);
 	packet.addHeader(SMSG_MESSAGE_GROUP);
 	packet.add<int8_t>(type);
 	packet.addString(sender);
 	packet.addString(message);
+
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
@@ -54,7 +54,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, u
 	packet.add<int16_t>(channel);
 	packet.add<port_t>(port);
 
-	ConfigurationPacket::addConfig(WorldServer::Instance()->getConfig(), packet);
+	packet.addClass<Configuration>(WorldServer::Instance()->getConfig());
 
 	connection->getSession()->send(packet);
 }

@@ -33,9 +33,9 @@ using boost::lexical_cast;
 
 bool ManagementFunctions::map(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t mapid = ChatHandlerFunctions::getMap(args, player);
-		if (Maps::getMap(mapid)) {
-			player->setMap(mapid);
+		int32_t mapId = ChatHandlerFunctions::getMap(args, player);
+		if (Maps::getMap(mapId)) {
+			player->setMap(mapId);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Map not found.", PlayerPacket::NoticeTypes::Red);
@@ -139,18 +139,18 @@ bool ManagementFunctions::storage(Player *player, const string &args) {
 
 bool ManagementFunctions::shop(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t shopid = -1;
-		if (args == "gear") shopid = 9999999;
-		else if (args == "scrolls") shopid = 9999998;
-		else if (args == "nx") shopid = 9999997;
-		else if (args == "face") shopid = 9999996;
-		else if (args == "ring") shopid = 9999995;
-		else if (args == "chair") shopid = 9999994;
-		else if (args == "mega") shopid = 9999993;
-		else if (args == "pet") shopid = 9999992;
-		else shopid = atoi(args.c_str());
+		int32_t shopId = -1;
+		if (args == "gear") shopId = 9999999;
+		else if (args == "scrolls") shopId = 9999998;
+		else if (args == "nx") shopId = 9999997;
+		else if (args == "face") shopId = 9999996;
+		else if (args == "ring") shopId = 9999995;
+		else if (args == "chair") shopId = 9999994;
+		else if (args == "mega") shopId = 9999993;
+		else if (args == "pet") shopId = 9999992;
+		else shopId = atoi(args.c_str());
 
-		if (NpcHandler::showShop(player, shopid)) {
+		if (NpcHandler::showShop(player, shopId)) {
 			return true;
 		}
 	}
@@ -176,8 +176,8 @@ bool ManagementFunctions::reload(Player *player, const string &args) {
 
 bool ManagementFunctions::npc(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t npcid = atoi(args.c_str());
-		Npc *npc = new Npc(npcid, player);
+		int32_t npcId = atoi(args.c_str());
+		Npc *npc = new Npc(npcId, player);
 		npc->run();
 		return true;
 	}

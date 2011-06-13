@@ -65,7 +65,7 @@ void ChannelServer::loadLogConfig() {
 
 	bool enabled = conf.getBool("log_channels");
 	if (enabled) {
-		LogConfig log = conf.getLogConfig("channel");
+		LogConfig log = conf.getClass<LogConfig>("channel");
 		createLogger(log);
 	}
 }

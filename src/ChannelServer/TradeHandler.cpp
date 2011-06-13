@@ -47,7 +47,7 @@ namespace TradeOpcodes {
 	};
 }
 
-namespace TradeSlots {
+namespace tradeSlots {
 	enum Slots : int8_t {
 		One = 0x00,
 		Two = 0x01
@@ -78,26 +78,26 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			break;
 		}
 		case TradeOpcodes::DenyRequest: {
-			int32_t tradeid = packet.get<int32_t>();
-			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
+			int32_t tradeId = packet.get<int32_t>();
+			ActiveTrade *trade = Trades::Instance()->getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
-				TradeHandler::removeTrade(tradeid);
+				TradeHandler::removeTrade(tradeId);
 				TradesPacket::sendTradeMessage(two, one, TradesPacket::MessageTypes::DenyTrade, packet.get<int8_t>());
 			}
 			break;
 		}
 		case TradeOpcodes::AcceptRequest: {
-			int32_t tradeid = packet.get<int32_t>();
-			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
+			int32_t tradeId = packet.get<int32_t>();
+			ActiveTrade *trade = Trades::Instance()->getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				two->setTrading(true);
-				TradesPacket::sendAddUser(one, two, TradeSlots::Two);
+				TradesPacket::sendAddUser(one, two, tradeSlots::Two);
 				TradesPacket::sendOpenTrade(player, two, one);
-				Trades::Instance()->stopTimeout(tradeid);
+				Trades::Instance()->stopTimeout(tradeId);
 			}
 			else {
 				// Pool's closed, AIDS
@@ -106,7 +106,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			break;
 		}
 		case TradeOpcodes::Chat: {
-			ActiveTrade *trade = Trades::Instance()->getTrade(player->getTradeId());
+			ActiveTrade *trade = Trades::Instance()->getTrade(player->gettradeId());
 			if (trade == nullptr) {
 				// Hacking
 				return;
@@ -127,8 +127,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 		case TradeOpcodes::AddItem:
 		case TradeOpcodes::AddMesos:
 		case TradeOpcodes::AcceptTrade: {
-			int32_t tradeid = player->getTradeId();
-			ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
+			int32_t tradeId = player->gettradeId();
+			ActiveTrade *trade = Trades::Instance()->getTrade(tradeId);
 			if (trade == nullptr) {
 				// Most likely hacking
 				return;
@@ -164,8 +164,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						amount = item->getAmount();
 					}
 					Item *use = trade->addItem(player, mod, item, addslot, slot, inventory, amount);
-					TradesPacket::sendAddItem(one, (isreceiver ? TradeSlots::Two : TradeSlots::One), addslot, use);
-					TradesPacket::sendAddItem(two, (isreceiver ? TradeSlots::One : TradeSlots::Two), addslot, use);
+					TradesPacket::sendAddItem(one, (isreceiver ? tradeSlots::Two : tradeSlots::One), addslot, use);
+					TradesPacket::sendAddItem(two, (isreceiver ? tradeSlots::One : tradeSlots::Two), addslot, use);
 					break;
 				}
 				case TradeOpcodes::AddMesos: {
@@ -175,8 +175,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						return;
 					}
 					int32_t mesos = trade->addMesos(player, mod, amount);
-					TradesPacket::sendAddMesos(one, (isreceiver ? TradeSlots::Two : TradeSlots::One), mesos);
-					TradesPacket::sendAddMesos(two, (isreceiver ? TradeSlots::One : TradeSlots::Two), mesos);
+					TradesPacket::sendAddMesos(one, (isreceiver ? tradeSlots::Two : tradeSlots::One), mesos);
+					TradesPacket::sendAddMesos(two, (isreceiver ? tradeSlots::One : tradeSlots::Two), mesos);
 					break;
 				}
 				case TradeOpcodes::AcceptTrade: {
@@ -195,7 +195,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 						int8_t message = (fail ? TradesPacket::Messages::Failure : TradesPacket::Messages::Success);
 						TradesPacket::sendTradeMessage(one, type, message);
 						TradesPacket::sendTradeMessage(two, type, message);
-						TradeHandler::removeTrade(tradeid);
+						TradeHandler::removeTrade(tradeId);
 					}
 					break;
 				}
@@ -206,18 +206,18 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 }
 
 void TradeHandler::cancelTrade(Player *player) {
-	int32_t tradeid = player->getTradeId();
-	ActiveTrade *trade = Trades::Instance()->getTrade(tradeid);
+	int32_t tradeId = player->gettradeId();
+	ActiveTrade *trade = Trades::Instance()->getTrade(tradeId);
 	if (trade != nullptr) {
 		Player *one = trade->getSender();
 		Player *two = trade->getReceiver();
 		bool isreceiver = (player == two);
-		if (isreceiver || (!isreceiver && two != nullptr && two->getTradeId() == one->getTradeId())) {
+		if (isreceiver || (!isreceiver && two != nullptr && two->gettradeId() == one->gettradeId())) {
 			// Left while in trade, give items back
 			TradesPacket::sendLeaveTrade(isreceiver ? one : two);
 			trade->returnTrade();
 		}
-		TradeHandler::removeTrade(tradeid);
+		TradeHandler::removeTrade(tradeId);
 	}
 }
 

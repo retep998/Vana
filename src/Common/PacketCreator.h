@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "IPacket.h"
 #include "Types.h"
 #include <boost/shared_array.hpp>
 #include <cstring>
@@ -41,6 +42,9 @@ public:
 	void set(T value, size_t pos);
 	template <typename T>
 	void addVector(const vector<T> &vec);
+	template <typename T>
+	void addClass(IPacketWritable &obj);
+
 	void addHeader(header_t value);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
@@ -84,6 +88,11 @@ void PacketCreator::addVector(const vector<T> &vec) {
 	for (typename vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
 		add(*iter);
 	}
+}
+
+template <typename T>
+void PacketCreator::addClass(IPacketWritable &obj) {
+	obj.write(*this);
 }
 
 inline

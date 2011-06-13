@@ -46,13 +46,13 @@ void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
 			break;
 		}
 		case BuddyOpcodes::AcceptInvite: {
-			int32_t charid = packet.get<int32_t>();
-			player->getBuddyList()->removePendingBuddy(charid, true);
+			int32_t charId = packet.get<int32_t>();
+			player->getBuddyList()->removePendingBuddy(charId, true);
 			break;
 		}
 		case BuddyOpcodes::Remove: {
-			int32_t charid = packet.get<int32_t>();
-			player->getBuddyList()->removeBuddy(charid);
+			int32_t charId = packet.get<int32_t>();
+			player->getBuddyList()->removeBuddy(charId);
 			break;
 		}
 	}

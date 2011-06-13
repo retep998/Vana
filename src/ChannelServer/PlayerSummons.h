@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include "IPacket.h"
 #include <boost/utility.hpp>
 
 class PacketCreator;
@@ -25,20 +26,19 @@ class PacketReader;
 class Player;
 class Summon;
 
-class PlayerSummons : boost::noncopyable {
+class PlayerSummons : public IPacketSerializable<PlayerSummons>, boost::noncopyable {
 public:
 	PlayerSummons(Player *player) : m_player(player), m_summon(nullptr), m_puppet(nullptr) { }
 
 	Summon * getSummon() { return m_summon; }
 	Summon * getPuppet() { return m_puppet; }
-	Summon * getSummon(int32_t summonid);
+	Summon * getSummon(int32_t summonId);
 
 	void addSummon(Summon *summon, int32_t time);
 	void removeSummon(bool puppet, bool fromTimer);
 
-	// Packet marshaling
-	void getSummonTransferPacket(PacketCreator &packet);
-	void parseSummonTransferPacket(PacketReader &packet);
+	void write(PacketCreator &packet);
+	void read(PacketReader &packet);
 private:
 	Player *m_player;
 	Summon *m_summon;

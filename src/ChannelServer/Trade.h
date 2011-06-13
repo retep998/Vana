@@ -61,8 +61,8 @@ public:
 	void swapTrade();
 	void accept(TradeInfo *unit);
 	int32_t addMesos(Player *holder, TradeInfo *unit, int32_t amount);
-	Item * addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount);
-	bool isItemInSlot(TradeInfo *unit, uint8_t tradeslot) { return (tradeslot > TradeInfo::TradeSize ? true : unit->slot[tradeslot - 1]); }
+	Item * addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount);
+	bool isItemInSlot(TradeInfo *unit, uint8_t tradeSlot) { return (tradeSlot > TradeInfo::TradeSize ? true : unit->slot[tradeSlot - 1]); }
 private:
 	scoped_ptr<TradeInfo> m_sender;
 	scoped_ptr<TradeInfo> m_receiver;

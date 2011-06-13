@@ -76,12 +76,12 @@ void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::hiredMerchantPlace(Player *player, int32_t mapid) {
+void GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_GM);
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x00); // Mode, 00 = map, 01 = channel
-	packet.add<int32_t>(mapid);
+	packet.add<int32_t>(mapId);
 
 	player->getSession()->send(packet);
 }

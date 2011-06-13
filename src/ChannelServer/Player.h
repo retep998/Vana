@@ -67,11 +67,11 @@ public:
 	void setMapChair(int16_t s) { m_mapChair = s; }
 	void setEyes(int32_t id);
 	void setHair(int32_t id);
-	void setMap(int32_t mapid, PortalInfo *portal = nullptr, bool instance = false);
+	void setMap(int32_t mapId, PortalInfo *portal = nullptr, bool instance = false);
 	void setBuddyListSize(uint8_t size);
 	void setConnectionTime(int64_t newtime) { m_onlineTime = newtime; }
 	void setTradeId(int32_t id) { m_tradeId = id; }
-	void setShop(int32_t shopid) { m_shop = shopid; }
+	void setShop(int32_t shopId) { m_shop = shopId; }
 	void setChair(int32_t chair) { m_chair = chair; }
 	void setItemEffect(int32_t effect) { m_itemEffect = effect; }
 	void setChalkboard(const string &msg) { m_chalkboard = msg; }
@@ -103,7 +103,7 @@ public:
 	int32_t getItemEffect() const { return m_itemEffect; }
 	int32_t getGmLevel() const { return m_gmLevel; }
 	int32_t getSpecialSkill() const { return m_info.skillId; }
-	int32_t getTradeId() const { return m_tradeId; }
+	int32_t gettradeId() const { return m_tradeId; }
 	int64_t getConnectionTime() const { return m_onlineTime; }
 	int64_t getConnectedTime() const { return time(nullptr) - m_onlineTime; }
 	string getChalkboard() const { return m_chalkboard; }
@@ -143,6 +143,7 @@ private:
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 	void saveStats();
+	bool equippedUtility(int16_t slot, int32_t itemId) const;
 
 	bool m_tradeState;
 	bool m_saveOnDc;

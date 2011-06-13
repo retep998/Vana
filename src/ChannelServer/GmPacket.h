@@ -32,6 +32,6 @@ namespace GmPacket {
 	void block(Player *player);
 	void invalidCharacterName(Player *player);
 	void hiredMerchantPlace(Player *player, int8_t channel);
-	void hiredMerchantPlace(Player *player, int32_t mapid);
+	void hiredMerchantPlace(Player *player, int32_t mapId);
 	void setGetVarResult(Player *player, const string &name, const string &variable, const string &value);
 }

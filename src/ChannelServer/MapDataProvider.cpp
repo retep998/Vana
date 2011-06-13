@@ -42,23 +42,24 @@ FieldLimit::FieldLimit() :
 {
 }
 
-MapDataProvider::MapDataProvider() {
+MapDataProvider::MapDataProvider()
+{
 	loadData();
 }
 
-Map * MapDataProvider::getMap(int32_t mapid) {
-	if (maps.find(mapid) != maps.end()) {
-		return maps[mapid];
+Map * MapDataProvider::getMap(int32_t mapId) {
+	if (m_maps.find(mapId) != m_maps.end()) {
+		return m_maps[mapId];
 	}
 	else {
 		Map *map = nullptr;
-		loadMap(mapid, map);
+		loadMap(mapId, map);
 		return map;
 	}
 }
 
 void MapDataProvider::loadData() {
-	continents.clear();
+	m_continents.clear();
 	mysqlpp::Query query = Database::getDataDb().query();
 	query << "SELECT * FROM map_continent_data";
 	mysqlpp::UseQueryResult res = query.use();
@@ -74,14 +75,14 @@ void MapDataProvider::loadData() {
 		mapcluster = atoi(row[MapCluster]);
 		continent = atoi(row[ContinentId]);
 
-		continents.insert(continent_info(mapcluster, continent));
+		m_continents.insert(continent_info(mapcluster, continent));
 	}
 }
 
-void MapDataProvider::loadMap(int32_t mapid, Map *&map) {
-	boost::mutex::scoped_lock l(loadmap_mutex);
+void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
+	boost::mutex::scoped_lock l(m_loadMutex);
 
-	int32_t checkmap = loadMapData(mapid, map);
+	int32_t checkmap = loadMapData(mapId, map);
 	if (checkmap != -1) {
 		loadSeats(map, checkmap);
 		loadPortals(map, checkmap);
@@ -131,9 +132,9 @@ namespace Functors {
 	};
 }
 
-int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
+int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = " << mapid;
+	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapId = " << mapId;
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t link = 0;
 
@@ -149,46 +150,48 @@ int32_t MapDataProvider::loadMapData(int32_t mapid, Map *&map) {
 	};
 
 	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		MapInfoPtr mapinfo(new MapInfo);
+		MapInfoPtr mapInfo(new MapInfo);
 		link = atoi(row[Link]);
-		mapinfo->link = link;
+		mapInfo->link = link;
 
-		FieldTypeFlags f = {mapinfo};
-		FieldLimitFlags limits = {&mapinfo->limitations};
-		MapFlags whoo = {mapinfo};
+		FieldTypeFlags f = {mapInfo};
+		FieldLimitFlags limits = {&mapInfo->limitations};
+		MapFlags whoo = {mapInfo};
 		runFlags(row[FieldType], f);
 		runFlags(row[FieldLimit], limits);
 		runFlags(row[Flags], whoo);
 
-		mapinfo->continent = getContinent(mapid);
-		mapinfo->rm = atoi(row[ReturnMap]);
-		mapinfo->forcedReturn = atoi(row[ForcedReturn]);
-		mapinfo->spawnRate = atof(row[MobRate]);
-		mapinfo->defaultMusic = row[Bgm];
-		mapinfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
-		mapinfo->rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		mapinfo->shuffleName = row[ShuffleName];
-		mapinfo->decHp = atoi(row[DecHp]);
-		mapinfo->dps = atoi(row[Dps]);
-		mapinfo->traction = atof(row[Traction]);
-		mapinfo->regenRate = atoi(row[RegenRate]);
-		mapinfo->minLevel = atoi(row[MinLevel]);
-		mapinfo->timeLimit = atoi(row[TimeLimit]);
-		mapinfo->protectItem = atoi(row[ProtectItem]);
-		mapinfo->shipKind = atoi(row[ShipKind]);
+		mapInfo->continent = getContinent(mapId);
+		mapInfo->rm = atoi(row[ReturnMap]);
+		mapInfo->forcedReturn = atoi(row[ForcedReturn]);
+		mapInfo->spawnRate = atof(row[MobRate]);
+		mapInfo->defaultMusic = row[Bgm];
+		mapInfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
+		mapInfo->rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
+		mapInfo->shuffleName = row[ShuffleName];
+		mapInfo->decHp = atoi(row[DecHp]);
+		mapInfo->dps = atoi(row[Dps]);
+		mapInfo->traction = atof(row[Traction]);
+		mapInfo->regenRate = atoi(row[RegenRate]);
+		mapInfo->minLevel = atoi(row[MinLevel]);
+		mapInfo->timeLimit = atoi(row[TimeLimit]);
+		mapInfo->protectItem = atoi(row[ProtectItem]);
+		mapInfo->shipKind = atoi(row[ShipKind]);
 
-		map = new Map(mapinfo, mapid);
+		map = new Map(mapInfo, mapId);
 	}
 
-	maps[mapid] = map;
-	if (map == nullptr) // Map does not exist, so no need to run the rest of the code
+	m_maps[mapId] = map;
+	if (map == nullptr) {
+		// Map does not exist, so no need to run the rest of the code
 		return -1;
-	return (link == 0 ? mapid : link);
+	}
+	return (link == 0 ? mapId : link);
 }
 
 void MapDataProvider::loadSeats(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * from map_seats WHERE mapid = " << link;
+	query << "SELECT * from map_seats WHERE mapId = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	SeatInfo chair;
 	int16_t id;
@@ -217,7 +220,7 @@ namespace Functors {
 
 void MapDataProvider::loadPortals(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_portals WHERE mapid = " << link;
+	query << "SELECT * FROM map_portals WHERE mapId = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	PortalInfo portal;
 
@@ -257,7 +260,7 @@ namespace Functors {
 
 void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_life WHERE mapid = " << link;
+	query << "SELECT * FROM map_life WHERE mapId = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	NpcSpawnInfo npc;
 	MobSpawnInfo spawn;
@@ -316,7 +319,7 @@ namespace Functors {
 
 void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_footholds WHERE mapid = " << link;
+	query << "SELECT * FROM map_footholds WHERE mapId = " << link;
 	mysqlpp::UseQueryResult res = query.use();
 	FootholdInfo foot;
 
@@ -345,7 +348,7 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 
 void MapDataProvider::loadMapTimeMob(Map *map) {
 	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_time_mob WHERE mapid = " << map->getId();
+	query << "SELECT * FROM map_time_mob WHERE mapId = " << map->getId();
 	mysqlpp::UseQueryResult res = query.use();
 
 	enum TimeMobFields {
@@ -363,13 +366,13 @@ void MapDataProvider::loadMapTimeMob(Map *map) {
 	}
 }
 
-int8_t MapDataProvider::getContinent(int32_t mapid) {
-	int8_t cluster = static_cast<int8_t>(mapid / 10000000); // Leave first two digits, that's our "map cluster"
+int8_t MapDataProvider::getContinent(int32_t mapId) {
+	int8_t cluster = static_cast<int8_t>(mapId / 10000000); // Leave first two digits, that's our "map cluster"
 	try {
-		return continents.left.at(cluster);
+		return m_continents.left.at(cluster);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Attempted to get a continent ID that does not exist for mapid " << mapid << std::endl;
+		std::cout << "Attempted to get a continent ID that does not exist for mapId " << mapId << std::endl;
 	}
 	return 0;
 }

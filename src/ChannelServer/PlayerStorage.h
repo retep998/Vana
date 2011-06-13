@@ -34,25 +34,26 @@ public:
 	void setSlots(int8_t slots);
 	void addItem(Item *item);
 	void takeItem(int8_t slot);
-	void setMesos(int32_t mesos) { this->mesos = mesos; }
+	void setMesos(int32_t mesos) { m_mesos = mesos; }
 	void changeMesos(int32_t mesos);
 
-	int8_t getSlots() const { return this->slots; }
-	int8_t getNumItems() const { return items.size(); }
-	int8_t getNumItems(int8_t inv);
-	int32_t getMesos() const { return mesos; }
-	bool isFull() const { return ((int8_t) items.size() == slots); }
+	int8_t getSlots() const { return m_slots; }
+	int8_t getNumItems() const { return m_items.size(); }
+	int8_t getNumItems(int8_t m_inv);
+	int32_t getMesos() const { return m_mesos; }
+	bool isFull() const { return ((int8_t) m_items.size() == m_slots); }
 	Item * getItem(int8_t slot) const {
-		if (slot < (int8_t) items.size())
-			return items[slot];
+		if (slot < (int8_t) m_items.size()) {
+			return m_items[slot];
+		}
 		return 0;
 	}
 
 	void load();
 	void save();
 private:
-	Player *player;
-	vector<Item *> items;
-	int8_t slots;
-	int32_t mesos;
+	Player *m_player;
+	vector<Item *> m_items;
+	int8_t m_slots;
+	int32_t m_mesos;
 };

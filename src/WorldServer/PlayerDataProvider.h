@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.h"
+#include "LoopingId.h"
 #include "Types.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/tr1/functional.hpp>
@@ -51,7 +52,7 @@ public:
 	int32_t getPlayerQuantity();
 
 	// Channel changes
-	void addPendingPlayer(int32_t id, uint16_t channelid);
+	void addPendingPlayer(int32_t id, uint16_t channelId);
 	void removePendingPlayer(int32_t id);
 	int16_t removePendingPlayerEarly(int32_t id);
 	uint16_t getPendingPlayerChannel(int32_t id);
@@ -75,8 +76,8 @@ private:
 	void loadAlliances(int16_t worldId);
 	void loadPlayers(int16_t worldId);
 
-	int32_t m_pid; // For assigning party IDs
 	unordered_map<int32_t, uint16_t> m_channelSwitches; // Channel changes
+	LoopingId<int32_t> m_partyIds;
 	PartyMap m_parties;
 	PlayerMap m_players;
 };

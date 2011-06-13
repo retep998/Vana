@@ -31,6 +31,7 @@ namespace StringUtilities {
 	bool atob(const char *str); // ASCII to bool
 	time_t atot(const char *str); // ASCII to time_t
 	string replace(const string &input, const string &what, const string &replacement);
+	string bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase = true);
 }
 
 inline

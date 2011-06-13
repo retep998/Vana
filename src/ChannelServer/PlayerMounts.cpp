@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentmount(0) {
+PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentMount(0) {
 	load();
 }
 
@@ -31,13 +31,13 @@ void PlayerMounts::save() {
 	query.exec();
 
 	if (m_mounts.size() > 0) {
-		bool firstrun = true;
+		bool firstRun = true;
 		MountData c;
 		for (unordered_map<int32_t, MountData>::iterator iter = m_mounts.begin(); iter != m_mounts.end(); iter++) {
 			c = iter->second;
-			if (firstrun) {
+			if (firstRun) {
 				query << "INSERT INTO mounts VALUES (";
-				firstrun = false;
+				firstRun = false;
 			}
 			else {
 				query << ",(";
@@ -66,15 +66,15 @@ void PlayerMounts::load() {
 }
 
 int16_t PlayerMounts::getCurrentExp() {
-	return (m_currentmount != 0 ? m_mounts[m_currentmount].exp : 0);
+	return (m_currentMount != 0 ? m_mounts[m_currentMount].exp : 0);
 }
 
 int8_t PlayerMounts::getCurrentLevel() {
-	return (m_currentmount != 0 ? m_mounts[m_currentmount].level : 0);
+	return (m_currentMount != 0 ? m_mounts[m_currentMount].level : 0);
 }
 
 int8_t PlayerMounts::getCurrentTiredness() {
-	return (m_currentmount != 0 ? m_mounts[m_currentmount].tiredness : 0);
+	return (m_currentMount != 0 ? m_mounts[m_currentMount].tiredness : 0);
 }
 
 int16_t PlayerMounts::getMountExp(int32_t id) {
@@ -98,26 +98,26 @@ void PlayerMounts::addMount(int32_t id) {
 }
 
 void PlayerMounts::setCurrentExp(int16_t exp) {
-	if (m_currentmount != 0) {
-		MountData c = m_mounts[m_currentmount];
+	if (m_currentMount != 0) {
+		MountData c = m_mounts[m_currentMount];
 		c.exp = exp;
-		m_mounts[m_currentmount] = c;
+		m_mounts[m_currentMount] = c;
 	}
 }
 
 void PlayerMounts::setCurrentLevel(int8_t level) {
-	if (m_currentmount != 0) {
-		MountData c = m_mounts[m_currentmount];
+	if (m_currentMount != 0) {
+		MountData c = m_mounts[m_currentMount];
 		c.level = level;
-		m_mounts[m_currentmount] = c;
+		m_mounts[m_currentMount] = c;
 	}
 }
 
 void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
-	if (m_currentmount != 0) {
-		MountData c = m_mounts[m_currentmount];
+	if (m_currentMount != 0) {
+		MountData c = m_mounts[m_currentMount];
 		c.tiredness = tiredness;
-		m_mounts[m_currentmount] = c;
+		m_mounts[m_currentMount] = c;
 	}
 }
 

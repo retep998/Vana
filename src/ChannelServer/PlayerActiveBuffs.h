@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Buffs.h"
+#include "IPacket.h"
 #include "Types.h"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/unordered_map.hpp>
@@ -40,7 +41,7 @@ namespace Timer {
 }
 
 struct MapEntryBuffs {
-	MapEntryBuffs() : mountid(0), mountskill(0) {
+	MapEntryBuffs() : mountId(0), mountSkill(0) {
 		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 			types[i] = 0;
 		}
@@ -48,24 +49,24 @@ struct MapEntryBuffs {
 	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
 	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals>> values;
 
-	int32_t mountid;
-	int32_t mountskill;
+	int32_t mountId;
+	int32_t mountSkill;
 };
 
 typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t>> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
-class PlayerActiveBuffs : boost::noncopyable {
+class PlayerActiveBuffs : public IPacketSerializable<PlayerActiveBuffs>, boost::noncopyable {
 public:
 	PlayerActiveBuffs(Player *player) :
 		m_player(player),
 		m_combo(0),
-		m_energycharge(0),
-		m_activecharge(0),
-		m_activebooster(0),
-		m_pickpocketcounter(0),
-		m_battleshiphp(0),
-		m_debuffmask(0),
-		m_markedmonster(0),
+		m_energyCharge(0),
+		m_activeCharge(0),
+		m_activeBooster(0),
+		m_pickpocketCounter(0),
+		m_battleshipHp(0),
+		m_debuffMask(0),
+		m_markedMob(0),
 		m_berserk(false)
 		{ }
 
@@ -82,13 +83,13 @@ public:
 	void setActiveSkillLevel(int32_t skillId, uint8_t level);
 	uint8_t getActiveSkillLevel(int32_t skillId);
 	ActiveBuff removeBuffInfo(int32_t skillId, const vector<Buff> &buffs);
-	ActiveBuffsByType getBuffTypes() const { return m_activebuffsbytype; }
+	ActiveBuffsByType getBuffTypes() const { return m_activeBuffsByType; }
 	SkillLevelInfo * getActiveSkillInfo(int32_t skillId);
 
 	// Buff map info
 	void addMapEntryBuffInfo(ActiveMapBuff &buff);
 	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
-	void setMountInfo(int32_t skillId, int32_t mountid);
+	void setMountInfo(int32_t skillId, int32_t mountId);
 	MapEntryBuffs getMapEntryBuffs();
 
 	// Skill "acts"
@@ -101,8 +102,8 @@ public:
 	void useDispel();
 	void useDebuffHealingItem(int32_t mask);
 	void removeDebuff(uint8_t skill, bool fromTimer = false);
-	int32_t getDebuffMask() const { return m_debuffmask; }
-	void setDebuffMask(int32_t newmask) { m_debuffmask = newmask; }
+	int32_t getDebuffMask() const { return m_debuffMask; }
+	void setDebuffMask(int32_t newmask) { m_debuffMask = newmask; }
 
 	// Combo Attack
 	void setCombo(uint8_t combo, bool sendPacket);
@@ -114,7 +115,7 @@ public:
 	void checkBerserk(bool display = false);
 
 	// Energy Charge
-	int16_t getEnergyChargeLevel() const { return m_energycharge; }
+	int16_t getEnergyChargeLevel() const { return m_energyCharge; }
 	void increaseEnergyChargeLevel(int8_t targets = 1);
 	void decreaseEnergyChargeLevel();
 	void setEnergyChargeLevel(int16_t chargelevel, bool startTimer = false);
@@ -123,32 +124,32 @@ public:
 	void stopEnergyChargeTimer();
 
 	// Boosters
-	void setBooster(int32_t skillId) { m_activebooster = skillId; }
+	void setBooster(int32_t skillId) { m_activeBooster = skillId; }
 	void stopBooster();
-	int32_t getBooster() const { return m_activebooster; }
+	int32_t getBooster() const { return m_activeBooster; }
 
 	// White Knight/Paladin charges
-	void setCharge(int32_t skillId) { m_activecharge = skillId; }
+	void setCharge(int32_t skillId) { m_activeCharge = skillId; }
 	void stopCharge();
 	bool hasIceCharge() const;
-	int32_t getCharge() const { return m_activecharge; }
+	int32_t getCharge() const { return m_activeCharge; }
 
 	// Soul Arrow/Shadow Stars
 	void stopBulletSkills();
 
 	// Pickpocket
-	int32_t getPickpocketCounter() { return ++m_pickpocketcounter; }
+	int32_t getPickpocketCounter() { return ++m_pickpocketCounter; }
 
 	// Battleship
-	int32_t getBattleshipHp() const { return m_battleshiphp; }
-	void setBattleshipHp(int32_t amount) { m_battleshiphp = amount; }
+	int32_t getBattleshipHp() const { return m_battleshipHp; }
+	void setBattleshipHp(int32_t amount) { m_battleshipHp = amount; }
 	void reduceBattleshipHp(uint16_t amount);
 	void resetBattleshipHp();
 
 	// Homing Beacon
-	int32_t getMarkedMonster() const { return m_markedmonster; }
-	bool hasMarkedMonster() const { return (m_markedmonster != 0); }
-	void setMarkedMonster(int32_t mapMobId) { m_markedmonster = mapMobId; }
+	int32_t getMarkedMonster() const { return m_markedMob; }
+	bool hasMarkedMonster() const { return (m_markedMob != 0); }
+	void setMarkedMonster(int32_t mapMobId) { m_markedMob = mapMobId; }
 
 	// Commonly referred to (de)buffs on the server end
 	bool hasInfinity();
@@ -176,28 +177,27 @@ public:
 
 	void endMorph();
 
-	// Packet marshaling
-	void getBuffTransferPacket(PacketCreator &packet);
-	void parseBuffTransferPacket(PacketReader &packet);
+	void write(PacketCreator &packet);
+	void read(PacketReader &packet);
 private:
 	bool hasBuff(int32_t skillId);
 
 	Player *m_player;
 	uint8_t m_combo;
-	int16_t m_energycharge;
-	int32_t m_activecharge;
-	int32_t m_activebooster;
-	int32_t m_pickpocketcounter;
-	int32_t m_battleshiphp;
-	int32_t m_markedmonster;
-	uint32_t m_timeseed;
-	uint32_t m_debuffmask;
+	int16_t m_energyCharge;
+	int32_t m_activeCharge;
+	int32_t m_activeBooster;
+	int32_t m_pickpocketCounter;
+	int32_t m_battleshipHp;
+	int32_t m_markedMob;
+	uint32_t m_timeSeed;
+	uint32_t m_debuffMask;
 	bool m_berserk;
 	list<int32_t> m_buffs;
-	ActiveBuffsByType m_activebuffsbytype;
-	MapEntryBuffs m_mapbuffs;
-	unordered_map<int32_t, uint8_t> m_activelevels;
-	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skill_acts;
+	ActiveBuffsByType m_activeBuffsByType;
+	MapEntryBuffs m_mapBuffs;
+	unordered_map<int32_t, uint8_t> m_activeLevels;
+	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skillActs;
 
 	int32_t calculateDebuffMaskBit(uint8_t skill);
 };

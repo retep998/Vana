@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "Channels.h"
 #include "Configuration.h"
-#include "ConfigurationPacket.h"
 #include "InitializeWorld.h"
 #include "LoginServerConnection.h"
 #include "PacketReader.h"
@@ -29,16 +28,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 void LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) {
-	int8_t worldid = packet.get<int8_t>();
-	if (worldid != -1) {
-		WorldServer::Instance()->setWorldId(worldid);
+	int8_t worldId = packet.get<int8_t>();
+	if (worldId != -1) {
+		WorldServer::Instance()->setWorldId(worldId);
 		WorldServer::Instance()->setInterPort(packet.get<port_t>());
 
-		Configuration conf = ConfigurationPacket::getConfig(packet);
+		Configuration conf = packet.getClass<Configuration>();
 		WorldServer::Instance()->setConfig(conf);
 
 		WorldServer::Instance()->listen();
-		std::cout << "Handling world " << (int32_t) worldid << std::endl;
+		std::cout << "Handling world " << (int32_t) worldId << std::endl;
 
 		Initializing::worldEstablished();
 
@@ -52,14 +51,14 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 
 void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	uint16_t channel = packet.get<int16_t>();
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	ip_t ip = packet.get<ip_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
-		if (PlayerDataProvider::Instance()->getPlayer(playerid) == nullptr) {
+		if (PlayerDataProvider::Instance()->getPlayer(playerId) == nullptr) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			SyncPacket::PlayerPacket::newConnectable(channel, playerid, ip);
+			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip);
 		}
 	}
 }

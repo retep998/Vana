@@ -37,7 +37,7 @@ namespace GameLogicUtilities {
 	inline bool isRechargeable(int32_t itemId) { return (isBullet(itemId) || isStar(itemId)); }
 	inline bool isEquip(int32_t itemId) { return (getInventory(itemId) == Inventories::EquipInventory); }
 	inline bool isPet(int32_t itemId) {	return ((itemId / 100 * 100) == 5000000); }
-	inline bool isStackable(int32_t itemid) { return !(isRechargeable(itemid) || isEquip(itemid) || isPet(itemid)); }
+	inline bool isStackable(int32_t itemId) { return !(isRechargeable(itemId) || isEquip(itemId) || isPet(itemId)); }
 	inline bool isOverall(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorOverall); }
 	inline bool isTop(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorTop); }
 	inline bool isBottom(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorBottom); }
@@ -82,14 +82,14 @@ namespace GameLogicUtilities {
 
 	// Monster card
 	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }
-	inline int16_t getCardShortId(int32_t cardid) { return (cardid % 10000); }
-	inline bool isSpecialCard(int32_t cardid) { return (getCardShortId(cardid) >= 8000); }
+	inline int16_t getCardShortId(int32_t cardId) { return (cardId % 10000); }
+	inline bool isSpecialCard(int32_t cardId) { return (getCardShortId(cardId) >= 8000); }
 
 	// Party
-	inline int8_t getPartyMember1(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 1 ? (0x40 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember2(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 2 ? (0x80 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember3(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 3 ? (0x100 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember4(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 4 ? (0x200 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember5(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 5 ? (0x400 >> totalmembers) : 0xFF); }
-	inline int8_t getPartyMember6(int8_t totalmembers) { return static_cast<int8_t>(totalmembers >= 6 ? (0x800 >> totalmembers) : 0xFF); }
+	inline int8_t getPartyMember1(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 1 ? (0x40 >> totalMembers) : 0xFF); }
+	inline int8_t getPartyMember2(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 2 ? (0x80 >> totalMembers) : 0xFF); }
+	inline int8_t getPartyMember3(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 3 ? (0x100 >> totalMembers) : 0xFF); }
+	inline int8_t getPartyMember4(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 4 ? (0x200 >> totalMembers) : 0xFF); }
+	inline int8_t getPartyMember5(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 5 ? (0x400 >> totalMembers) : 0xFF); }
+	inline int8_t getPartyMember6(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 6 ? (0x800 >> totalMembers) : 0xFF); }
 }

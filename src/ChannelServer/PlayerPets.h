@@ -35,13 +35,13 @@ public:
 	void petInfoPacket(PacketCreator &packet);
 	void connectData(PacketCreator &packet);
 
-	Pet * getPet(int64_t petid);
+	Pet * getPet(int64_t petId);
 	Pet * getSummoned(int8_t index);
 
 	void addPet(Pet *pet);
-	void setSummoned(int8_t index, int64_t petid);
+	void setSummoned(int8_t index, int64_t petId);
 private:
-	unordered_map<int64_t, Pet *> m_playerpets;
+	unordered_map<int64_t, Pet *> m_pets;
 	unordered_map<int8_t, int64_t> m_summoned;
 	Player *m_player;
 };

@@ -24,7 +24,7 @@ struct PlayerSkillInfo;
 struct SpecialSkillInfo;
 
 namespace SkillsPacket {
-	void addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillinfo);
+	void addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo);
 	void showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party = false, bool self = false);
 	void healHP(Player *player, int16_t hp);
 	void showSkillEffect(Player *player, int32_t skillId, uint8_t level = 0);

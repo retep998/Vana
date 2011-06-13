@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-Map * Maps::getMap(int32_t mapid) {
-	return MapDataProvider::Instance()->getMap(mapid);
+Map * Maps::getMap(int32_t mapId) {
+	return MapDataProvider::Instance()->getMap(mapId);
 }
 
 void Maps::usePortal(Player *player, PortalInfo *portal) {
@@ -137,10 +137,10 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	usePortal(player, portal);
 }
 
-void Maps::addPlayer(Player *player, int32_t mapid) {
+void Maps::addPlayer(Player *player, int32_t mapId) {
 	PlayerDataProvider::Instance()->addPlayer(player);
-	getMap(mapid)->addPlayer(player);
-	getMap(mapid)->showObjects(player);
+	getMap(mapId)->addPlayer(player);
+	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);
 	Summons::showSummon(player);
 	// Bug in global - would be fixed here:

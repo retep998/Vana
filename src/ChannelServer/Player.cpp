@@ -96,14 +96,14 @@ Player::~Player() {
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
-		int32_t isleader = 0;
+		int32_t isLeader = 0;
 		if (Party *party = getParty()) {
 			party->setMember(getId(), nullptr);
-			isleader = getParty()->isLeader(getId()) ? 1 : 0;
+			isLeader = getParty()->isLeader(getId()) ? 1 : 0;
 		}
 		if (Instance *instance = getInstance()) {
 			instance->removePlayer(getId());
-			instance->sendMessage(PlayerDisconnect, getId(), isleader);
+			instance->sendMessage(PlayerDisconnect, getId(), isLeader);
 		}
 		//if (this->getHp() == 0)
 		//	this->acceptDeath();
@@ -309,15 +309,17 @@ void Player::playerConnect(PacketReader &packet) {
 
 		setConnectionTime(pack.get<int64_t>());
 
-		getActiveBuffs()->parseBuffTransferPacket(pack);
-		if (getActiveBuffs()->hasHyperBody()) {
-			int32_t skillId = getActiveBuffs()->getHyperBody();
-			uint8_t hblevel = getActiveBuffs()->getActiveSkillLevel(skillId);
-			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
+		
+		PlayerActiveBuffs *buffs = getActiveBuffs();
+		buffs->read(pack);
+		if (buffs->hasHyperBody()) {
+			int32_t skillId = buffs->getHyperBody();
+			uint8_t hbLevel = buffs->getActiveSkillLevel(skillId);
+			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
 			getStats()->setHyperBody(hb->x, hb->y);
 		}
 
-		getSummons()->parseSummonTransferPacket(pack);
+		getSummons()->read(pack);
 
 		PlayerDataProvider::Instance()->removePacket(id);
 	}
@@ -393,30 +395,30 @@ void Player::playerConnect(PacketReader &packet) {
 	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
 
-void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
-	if (!Maps::getMap(mapid)) {
+void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
+	if (!Maps::getMap(mapId)) {
 		MapPacket::portalBlocked(this);
 		return;
 	}
-	Map *oldmap = Maps::getMap(m_map);
-	Map *newmap = Maps::getMap(mapid);
+	Map *oldMap = Maps::getMap(m_map);
+	Map *newMap = Maps::getMap(mapId);
 
 	if (portal == nullptr)
-		portal = newmap->getSpawnPoint();
+		portal = newMap->getSpawnPoint();
 
 	if (!instance) {
 		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
-		int32_t ispartyleader = (getParty() != nullptr ? (getParty()->isLeader(getId()) ? 1 : 0) : 0);
-		if (Instance *i = oldmap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapid, m_map, ispartyleader);
+		int32_t ispartyleader = (getParty() != nullptr && getParty()->isLeader(getId()) ? 1 : 0);
+		if (Instance *i = oldMap->getInstance()) {
+			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, ispartyleader);
 		}
-		if (Instance *i = newmap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapid, m_map, ispartyleader);
+		if (Instance *i = newMap->getInstance()) {
+			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, ispartyleader);
 		}
 	}
 
-	oldmap->removePlayer(this);
-	m_map = mapid;
+	oldMap->removePlayer(this);
+	m_map = mapId;
 	m_mapPos = portal->id;
 	m_usedPortals.clear();
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
@@ -426,7 +428,7 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 
 	// Prevent chair Denial of Service
 	if (getMapChair() != 0) {
-		oldmap->playerSeated(getMapChair(), nullptr);
+		oldMap->playerSeated(getMapChair(), nullptr);
 		setMapChair(0);
 	}
 	if (getChair() != 0) {
@@ -450,21 +452,19 @@ void Player::setMap(int32_t mapid, PortalInfo *portal, bool instance) {
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
 	}
-	if (!getChalkboard().empty() && !newmap->canChalkboard()) {
+	if (!getChalkboard().empty() && !newMap->canChalkboard()) {
 		setChalkboard("");
 	}
-	SyncPacket::PlayerPacket::updateMap(getId(), mapid);
+	SyncPacket::PlayerPacket::updateMap(getId(), mapId);
 	MapPacket::changeMap(this);
-	Maps::addPlayer(this, mapid);
+	Maps::addPlayer(this, mapId);
 }
 
 string Player::getMedalName() {
 	string ret;
 	if (int32_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
-		ret = "<";
-		ret += ItemDataProvider::Instance()->getItemName(itemId);
-		ret += "> ";
+		ret = "<" + ItemDataProvider::Instance()->getItemName(itemId) + "> ";
 	}
 	ret += getName();
 	return ret;
@@ -476,7 +476,7 @@ void Player::changeChannel(int8_t channel) {
 
 void Player::changeKey(PacketReader &packet) {
 	int32_t mode = packet.get<int32_t>();
-	int32_t howmany = packet.get<int32_t>();
+	int32_t howMany = packet.get<int32_t>();
 
 	enum KeyModes : int32_t {
 		ChangeKeys = 0x00,
@@ -485,11 +485,11 @@ void Player::changeKey(PacketReader &packet) {
 	};
 
 	if (mode == ChangeKeys) {
-		if (howmany == 0)
+		if (howMany == 0)
 			return;
 
 		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
-		for (int32_t i = 0; i < howmany; i++) {
+		for (int32_t i = 0; i < howMany; i++) {
 			int32_t pos = packet.get<int32_t>();
 			int8_t type = packet.get<int8_t>();
 			int32_t action = packet.get<int32_t>();
@@ -500,18 +500,18 @@ void Player::changeKey(PacketReader &packet) {
 		keyMaps.save(getId());
 	}
 	else if (mode == AutoHpPotion) {
-		getInventory()->setAutoHpPot(howmany);
+		getInventory()->setAutoHpPot(howMany);
 	}
 	else if (mode == AutoMpPotion) {
-		getInventory()->setAutoMpPot(howmany);
+		getInventory()->setAutoMpPot(howMany);
 	}
 }
 
 void Player::changeSkillMacros(PacketReader &packet) {
 	uint8_t num = packet.get<int8_t>();
-	if (num == 0)
+	if (num == 0) {
 		return;
-
+	}
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
 		string name = packet.getString();
@@ -527,17 +527,17 @@ void Player::changeSkillMacros(PacketReader &packet) {
 
 void Player::setHair(int32_t id) {
 	m_hair = id;
-	PlayerPacket::updateStatInt(this, Stats::Hair, id);
+	PlayerPacket::updateStat(this, Stats::Hair, id);
 }
 
 void Player::setEyes(int32_t id) {
 	m_eyes = id;
-	PlayerPacket::updateStatInt(this, Stats::Eyes, id);
+	PlayerPacket::updateStat(this, Stats::Eyes, id);
 }
 
 void Player::setSkin(int8_t id) {
 	m_skin = id;
-	PlayerPacket::updateStatInt(this, Stats::Skin, id);
+	PlayerPacket::updateStat(this, Stats::Skin, id);
 }
 
 bool Player::addWarning() {
@@ -607,12 +607,12 @@ void Player::saveAll(bool savecooldowns) {
 }
 
 void Player::setOnline(bool online) {
-	int32_t onlineid = online ? ChannelServer::Instance()->getOnlineId() : 0;
+	int32_t onlineId = online ? ChannelServer::Instance()->getOnlineId() : 0;
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE user_accounts u "
 			<< "INNER JOIN characters c ON u.user_id = c.user_id "
 			<< "SET "
-			<< "	u.online = " << onlineid <<	", "
+			<< "	u.online = " << onlineId <<	", "
 			<< "	c.online = " << online << " "
 			<< "WHERE c.character_id = " << getId();
 	query.exec();
@@ -625,24 +625,32 @@ void Player::setLevelDate() {
 }
 
 void Player::acceptDeath(bool wheel) {
-	int32_t tomap = (Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map);
+	int32_t toMap = (Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map);
 	if (wheel) {
-		tomap = getMap();
+		toMap = getMap();
 	}
 	getStats()->setHp(50, false);
 	getActiveBuffs()->removeBuff();
-	setMap(tomap);
+	setMap(toMap);
+}
+
+bool Player::equippedUtility(int16_t slot, int32_t itemId) const {
+	return getInventory()->getEquippedId(slot) == itemId;
 }
 
 bool Player::hasGmEquip() const {
-	if (getInventory()->getEquippedId(EquipSlots::Helm) == Items::GmHat)
+	if (equippedUtility(EquipSlots::Helm, Items::GmHat)) {
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Top) == Items::GmTop)
+	}
+	if (equippedUtility(EquipSlots::Top, Items::GmTop)) {
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Bottom) == Items::GmBottom)
+	}
+	if (equippedUtility(EquipSlots::Bottom, Items::GmBottom)) {
 		return true;
-	if (getInventory()->getEquippedId(EquipSlots::Weapon) == Items::GmWeapon)
+	}
+	if (equippedUtility(EquipSlots::Weapon, Items::GmWeapon)) {
 		return true;
+	}
 	return false;
 }
 

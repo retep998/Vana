@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_specialcount(0),  m_normalcount(0), m_level(1) {
+PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_specialCount(0),  m_normalCount(0), m_level(1) {
 	load();
 }
 
@@ -46,11 +46,11 @@ void PlayerMonsterBook::save() {
 	query << "DELETE FROM monster_book WHERE character_id = " << m_player->getId();
 	query.exec();
 
-	bool firstrun = true;
+	bool firstRun = true;
 	for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); iter++) {
-		if (firstrun) {
+		if (firstRun) {
 			query << "INSERT INTO monster_book VALUES (";
-			firstrun = false;
+			firstRun = false;
 		}
 		else {
 			query << ",(";
@@ -59,35 +59,35 @@ void PlayerMonsterBook::save() {
 			<< iter->second.id << ","
 			<< static_cast<int16_t>(iter->second.level) << ")";
 	}
-	if (!firstrun)
+	if (!firstRun)
 		query.exec();
 }
 
-uint8_t PlayerMonsterBook::getCardLevel(int32_t cardid) {
-	return m_cards[cardid].level;
+uint8_t PlayerMonsterBook::getCardLevel(int32_t cardId) {
+	return m_cards[cardId].level;
 }
 
-bool PlayerMonsterBook::addCard(int32_t cardid, uint8_t level, bool initialload) {
-	if (m_cards.find(cardid) == m_cards.end()) {
-		if (GameLogicUtilities::isSpecialCard(cardid)) {
-			m_specialcount++;
+bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad) {
+	if (m_cards.find(cardId) == m_cards.end()) {
+		if (GameLogicUtilities::isSpecialCard(cardId)) {
+			m_specialCount++;
 		}
 		else {
-			m_normalcount++;
+			m_normalCount++;
 		}
 	}
 
-	if (initialload) {
-		MonsterCard card = MonsterCard(cardid, level);
-		m_cards[cardid] = card;
+	if (initialLoad) {
+		MonsterCard card = MonsterCard(cardId, level);
+		m_cards[cardId] = card;
 	}
 	else {
-		MonsterCard card = (m_cards.find(cardid) != m_cards.end() ? m_cards[cardid] : MonsterCard(cardid, 0));
-		if (isFull(cardid)) {
+		MonsterCard card = (m_cards.find(cardId) != m_cards.end() ? m_cards[cardId] : MonsterCard(cardId, 0));
+		if (isFull(cardId)) {
 			return true;
 		}
 		card.level++;
-		m_cards[cardid] = card;
+		m_cards[cardId] = card;
 		if (card.level == 1) {
 			calculateLevel();
 		}
@@ -127,10 +127,10 @@ void PlayerMonsterBook::infoData(PacketCreator &packet) {
 	packet.add<int32_t>(getCover());
 }
 
-MonsterCard * PlayerMonsterBook::getCard(int32_t cardid) {
-	return (m_cards.find(cardid) != m_cards.end() ? &m_cards[cardid] : nullptr);
+MonsterCard * PlayerMonsterBook::getCard(int32_t cardId) {
+	return (m_cards.find(cardId) != m_cards.end() ? &m_cards[cardId] : nullptr);
 }
 
-bool PlayerMonsterBook::isFull(int32_t cardid) {
-	return (m_cards.find(cardid) != m_cards.end() ? (m_cards[cardid].level == MonsterCards::MaxCardLevel) : false);
+bool PlayerMonsterBook::isFull(int32_t cardId) {
+	return (m_cards.find(cardId) != m_cards.end() ? (m_cards[cardId].level == MonsterCards::MaxCardLevel) : false);
 }

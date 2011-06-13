@@ -33,8 +33,8 @@ namespace DropsPacket {
 			DisappearDuringDrop = 3
 		};
 	}
-	void showDrop(Player *player, Drop *drop, int8_t type, bool newdrop, const Pos &origin);
-	void takeDrop(Player *player, Drop *drop, int8_t pet_index = -1);
+	void showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin);
+	void takeDrop(Player *player, Drop *drop, int8_t petIndex = -1);
 	void dontTake(Player *player);
 	void removeDrop(Drop *drop);
 	void explodeDrop(Drop *drop);

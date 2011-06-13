@@ -26,7 +26,7 @@ class Npc;
 
 class LuaNpc : public LuaScriptable {
 public:
-	LuaNpc(const string &filename, int32_t playerid);
+	LuaNpc(const string &filename, int32_t playerId);
 
 	bool run();
 	bool proceedNext();
@@ -34,10 +34,10 @@ public:
 	bool proceedNumber(int32_t number);
 	bool proceedText(const string &text);
 protected:
-	bool resume(int32_t nargs);
+	bool resume(int32_t nArgs);
 	void handleError();
 
-	lua_State *luaThread; // For executing scripts (pausable)
+	lua_State *m_luaThread; // For executing scripts (pausable)
 };
 
 namespace LuaExports {

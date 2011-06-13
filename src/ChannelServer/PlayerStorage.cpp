@@ -26,42 +26,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 PlayerStorage::PlayerStorage(Player *player) :
-	player(player)
+	m_player(player)
 {
 	load();
 }
 
 PlayerStorage::~PlayerStorage() {
-	std::for_each(items.begin(), items.end(), MiscUtilities::DeleterSeq<Item>());
+	std::for_each(m_items.begin(), m_items.end(), MiscUtilities::DeleterSeq<Item>());
 }
 
 void PlayerStorage::takeItem(int8_t slot) {
-	vector<Item *>::iterator iter = items.begin() + slot;
+	vector<Item *>::iterator iter = m_items.begin() + slot;
 	delete *iter;
-	items.erase(iter);
+	m_items.erase(iter);
 }
 
 void PlayerStorage::setSlots(int8_t slots) {
 	if (slots < 4) slots = 4;
 	else if (slots > 100) slots = 100;
-	this->slots = slots;
+	m_slots = slots;
 }
 
 void PlayerStorage::addItem(Item *item) {
 	int8_t inv = GameLogicUtilities::getInventory(item->getId());
 	int8_t i;
-	for (i = 0; i < (int8_t) items.size(); i++) {
-		if (GameLogicUtilities::getInventory(items[i]->getId()) > inv) {
+	for (i = 0; i < (int8_t) m_items.size(); i++) {
+		if (GameLogicUtilities::getInventory(m_items[i]->getId()) > inv) {
 			break;
 		}
 	}
-	items.insert(items.begin() + i, item);
+	m_items.insert(m_items.begin() + i, item);
 }
 
 int8_t PlayerStorage::getNumItems(int8_t inv) {
 	int8_t itemNum = 0;
-	for (int8_t i = 0; i < (int8_t) items.size(); i++) {
-		if (GameLogicUtilities::getInventory(items[i]->getId()) == inv) {
+	for (int8_t i = 0; i < (int8_t) m_items.size(); i++) {
+		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
 			itemNum++;
 		}
 	}
@@ -69,31 +69,31 @@ int8_t PlayerStorage::getNumItems(int8_t inv) {
 }
 
 void PlayerStorage::changeMesos(int32_t mesos) {
-	this->mesos -= mesos;
-	StoragePacket::changeMesos(player, this->mesos);
+	m_mesos -= mesos;
+	StoragePacket::changeMesos(m_player, m_mesos);
 }
 
 void PlayerStorage::load() {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = " << player->getUserId() << " AND s.world_id = " << (int16_t) player->getWorldId();
+	query << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = " << m_player->getUserId() << " AND s.world_id = " << (int16_t) m_player->getWorldId();
 	mysqlpp::StoreQueryResult res = query.store();
 	if (res.num_rows() != 0) {
-		slots = (uint8_t) res[0][0];
-		mesos = res[0][1];
+		m_slots = (uint8_t) res[0][0];
+		m_mesos = res[0][1];
 	}
 	else {
-		slots = 4;
-		mesos = 0;
+		m_slots = 4;
+		m_mesos = 0;
 		// Make a row right away...
 		query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
-			<< player->getUserId() << ", "
-			<< (int16_t) player->getWorldId() << ", "
+			<< m_player->getUserId() << ", "
+			<< (int16_t) m_player->getWorldId() << ", "
 			<< (int16_t) getSlots() << ", "
 			<< getMesos() << ") ";
 		query.exec();
 	}
 
-	items.reserve(slots);
+	m_items.reserve(m_slots);
 
 	enum TableFields {
 		ItemCharId = 0,
@@ -109,8 +109,8 @@ void PlayerStorage::load() {
 			<< "FROM items i "
 			<< "WHERE "
 			<< "	i.location = " << mysqlpp::quote << "storage" << " "
-			<< "	AND i.user_id = " << player->getUserId() << " "
-			<< "	AND i.world_id = " << (int16_t) player->getWorldId() << " "
+			<< "	AND i.user_id = " << m_player->getUserId() << " "
+			<< "	AND i.world_id = " << (int16_t) m_player->getWorldId() << " "
 			<< "ORDER BY slot ASC";
 
 	res = query.store();
@@ -150,33 +150,33 @@ void PlayerStorage::save() {
 	mysqlpp::Query query = Database::getCharDb().query();
 	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
 	query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
-		<< player->getUserId() << ", "
-		<< (int16_t) player->getWorldId() << ", "
+		<< m_player->getUserId() << ", "
+		<< (int16_t) m_player->getWorldId() << ", "
 		<< (int16_t) getSlots() << ", "
 		<< getMesos() << ") "
 		<< "ON DUPLICATE KEY UPDATE slots = " << (int16_t) getSlots() << ", "
 		<< "mesos = " << getMesos();
 	query.exec();
 
-	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << player->getUserId() << " AND world_id = " << (int32_t) player->getWorldId();
+	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << m_player->getUserId() << " AND world_id = " << (int32_t) m_player->getWorldId();
 	query.exec();
 
-	bool firstrun = true;
+	bool firstRun = true;
 	for (int8_t i = 0; i < getNumItems(); i++) {
-		if (firstrun) {
+		if (firstRun) {
 			query << "INSERT INTO items VALUES (";
-			firstrun = false;
+			firstRun = false;
 		}
 		else {
 			query << ",(";
 		}
 		Item *item = getItem(i);
-		query << player->getId() << ","
+		query << m_player->getId() << ","
 				<< (int16_t) GameLogicUtilities::getInventory(item->getId()) << ","
 				<< (int16_t) i << ","
 				<< mysqlpp::quote << "storage" << ","
-				<< player->getUserId() << ","
-				<< (int16_t) player->getWorldId() << ","
+				<< m_player->getUserId() << ","
+				<< (int16_t) m_player->getWorldId() << ","
 				<< item->getId() << ","
 				<< item->getAmount() << ","
 				<< (int16_t) item->getSlots() << ","
@@ -202,7 +202,7 @@ void PlayerStorage::save() {
 				<< mysqlpp::quote << item->getName() << ","
 				<< item->getExpirationTime() << ")";
 	}
-	if (!firstrun) {
+	if (!firstRun) {
 		query.exec();
 	}
 }

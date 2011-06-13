@@ -24,22 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 
 void Fame::handleFame(Player *player, PacketReader &packet) {
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	uint8_t type = packet.get<uint8_t>();
 	if (player->getId() > 0) {
-		if (player->getId() == playerid) {
+		if (player->getId() == playerId) {
 			// Hacking
 			return;
 		}
-		int32_t checkResult = canFame(player, playerid);
+		int32_t checkResult = canFame(player, playerId);
 		if (checkResult != 0) {
 			FamePacket::sendError(player, checkResult);
 		}
 		else {
-			Player *famee = PlayerDataProvider::Instance()->getPlayer(playerid);
+			Player *famee = PlayerDataProvider::Instance()->getPlayer(playerId);
 			int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
 			famee->getStats()->setFame(newFame);
-			addFameLog(player->getId(), playerid);
+			addFameLog(player->getId(), playerId);
 			FamePacket::sendFame(player, famee, type, newFame);
 		}
 	}

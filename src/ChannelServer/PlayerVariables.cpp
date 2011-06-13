@@ -19,26 +19,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "Player.h"
 
-PlayerVariables::PlayerVariables(Player *p) : player(p) {
+PlayerVariables::PlayerVariables(Player *p) :
+	m_player(p)
+{
 	load();
 }
 
 void PlayerVariables::save() {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "DELETE FROM character_variables WHERE character_id = " << player->getId();
+	query << "DELETE FROM character_variables WHERE character_id = " << m_player->getId();
 	query.exec();
 
 	if (m_variables.size() > 0) {
-		bool firstrun = true;
+		bool firstRun = true;
 		for (unordered_map<string, string>::iterator iter = m_variables.begin(); iter != m_variables.end(); iter++) {
-			if (firstrun) {
+			if (firstRun) {
 				query << "INSERT INTO character_variables VALUES (";
-				firstrun = false;
+				firstRun = false;
 			}
 			else {
 				query << ",(";
 			}
-			query << player->getId() << ","
+			query << m_player->getId() << ","
 					<< mysqlpp::quote << iter->first << ","
 					<< mysqlpp::quote << iter->second << ")";
 		}
@@ -48,7 +50,7 @@ void PlayerVariables::save() {
 
 void PlayerVariables::load() {
 	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT * FROM character_variables WHERE character_id = " << player->getId();
+	query << "SELECT * FROM character_variables WHERE character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
 		m_variables[(string) res[i]["key"]] = string(res[i]["value"]);

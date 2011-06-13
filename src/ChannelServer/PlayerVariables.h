@@ -28,5 +28,5 @@ public:
 	void save();
 	void load();
 private:
-	Player *player;
+	Player *m_player;
 };

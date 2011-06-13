@@ -24,26 +24,26 @@ class Player;
 
 class Reactor {
 public:
-	Reactor(int32_t mapid, int32_t reactorId, const Pos &pos);
-	void kill() { this->alive = false; }
-	void revive() { this->alive = true; }
-	void setState(int8_t state, bool is);
-	void setId(int32_t id) { this->id = id; }
+	Reactor(int32_t mapId, int32_t reactorId, const Pos &pos);
+	void kill() { m_alive = false; }
+	void revive() { m_alive = true; }
+	void setState(int8_t state, bool sendPacket);
+	void setId(int32_t id) { m_id = id; }
 
-	int8_t getState() const { return this->state; }
-	int32_t getId() const { return this->id; }
-	int32_t getReactorId() const { return this->reactorId; }
-	int32_t getMapId() const { return this->mapid; }
-	bool isAlive() const { return this->alive; }
-	Pos getPos() const { return this->pos; }
+	int8_t getState() const { return m_state; }
+	int32_t getId() const { return m_id; }
+	int32_t getReactorId() const { return m_reactorId; }
+	int32_t getMapId() const { return m_mapId; }
+	bool isAlive() const { return m_alive; }
+	Pos getPos() const { return m_pos; }
 
 	void restore();
 	void drop(Player *player);
 private:
-	int8_t state;
-	int32_t id;
-	int32_t reactorId;
-	int32_t mapid;
-	bool alive;
-	Pos pos;
+	int8_t m_state;
+	int32_t m_id;
+	int32_t m_reactorId;
+	int32_t m_mapId;
+	bool m_alive;
+	Pos m_pos;
 };

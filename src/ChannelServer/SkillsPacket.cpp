@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillinfo) {
+void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_SKILL_ADD);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(skillId);
-	packet.add<int32_t>(skillinfo.level); // Level
-	packet.add<int32_t>(skillinfo.maxLevel); // Master Level
+	packet.add<int32_t>(skillInfo.level); // Level
+	packet.add<int32_t>(skillInfo.maxLevel); // Master Level
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }

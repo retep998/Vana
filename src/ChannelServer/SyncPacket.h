@@ -40,7 +40,7 @@ namespace SyncPacket {
 		void sync(int8_t type, int32_t playerId, int32_t target = 0);
 	}
 	namespace BuddyPacket {
-		void buddyInvite(int32_t playerid, int32_t inviteeid);
-		void buddyOnline(int32_t playerid, const vector<int32_t> &players, bool online);
+		void buddyInvite(int32_t playerId, int32_t inviteeId);
+		void buddyOnline(int32_t playerId, const vector<int32_t> &players, bool online);
 	}
 }

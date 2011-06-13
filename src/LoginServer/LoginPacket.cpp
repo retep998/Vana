@@ -28,10 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-void LoginPacket::loginError(Player *player, int16_t errorid) {
+void LoginPacket::loginError(Player *player, int16_t errorId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_AUTHENTICATION);
-	packet.add<int16_t>(errorid);
+	packet.add<int16_t>(errorId);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
@@ -149,7 +149,7 @@ void LoginPacket::channelSelect(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxchars) {
+void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(0);
@@ -157,7 +157,7 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
 	}
-	packet.add<int32_t>(maxchars);
+	packet.add<int32_t>(maxChars);
 	player->getSession()->send(packet);
 }
 
@@ -185,11 +185,11 @@ void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharactersWorld(Player *player, uint8_t worldid, const vector<Character> &chars) {
+void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(0);
-	packet.add<uint8_t>(worldid);
+	packet.add<uint8_t>(worldId);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);
@@ -213,7 +213,7 @@ void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::connectIp(Player *player, int32_t charid) {
+void LoginPacket::connectIp(Player *player, int32_t charId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(0);
@@ -228,7 +228,7 @@ void LoginPacket::connectIp(Player *player, int32_t charid) {
 		packet.add<ip_t>(0); // ip
 		packet.add<port_t>(-1); // port
 	}
-	packet.add<int32_t>(charid);
+	packet.add<int32_t>(charId);
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);

@@ -59,7 +59,7 @@ void ShopDataProvider::loadShops() {
 		m_shops[shopId] = shop;
 	}
 
-	query << "SELECT * FROM shop_items ORDER BY shopid, sort DESC";
+	query << "SELECT * FROM shop_items ORDER BY shopId, sort DESC";
 	res = query.use();
 	ShopItemInfo item;
 
@@ -102,7 +102,7 @@ void ShopDataProvider::loadUserShops() {
 		m_shops[shopId] = shop;
 	}
 
-	query << "SELECT * FROM user_shop_items ORDER BY shopid, sort DESC";
+	query << "SELECT * FROM user_shop_items ORDER BY shopId, sort DESC";
 	res = query.use();
 	ShopItemInfo item;
 

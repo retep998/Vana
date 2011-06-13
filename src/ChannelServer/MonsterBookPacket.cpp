@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SmsgHeader.h"
 
-void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, bool full) {
+void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, bool full) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MONSTER_BOOK_ADD);
 	packet.addBool(!full);
-	packet.add<int32_t>(cardid);
+	packet.add<int32_t>(cardId);
 	packet.add<int32_t>(level);
 	player->getSession()->send(packet);
 
@@ -48,9 +48,9 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardid, uint8_t level, b
 	}
 }
 
-void MonsterBookPacket::changeCover(Player *player, int32_t cardid) {
+void MonsterBookPacket::changeCover(Player *player, int32_t cardId) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MONSTER_BOOK_COVER);
-	packet.add<int32_t>(cardid);
+	packet.add<int32_t>(cardId);
 	player->getSession()->send(packet);
 }

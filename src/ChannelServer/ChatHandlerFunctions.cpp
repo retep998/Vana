@@ -41,7 +41,7 @@ void ChatHandlerFunctions::initialize() {
 	command.level = 3;
 
 	command.command = &ManagementFunctions::ban;
-	command.syntax = "<$playername> [#reason]";
+	command.syntax = "<$player name> [#reason]";
 	command.notes.push_back("Permanently bans a player by name.");
 	command.notes.push_back("Reason codes:");
 	command.notes.push_back("1 - Hacking");
@@ -60,19 +60,19 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["ban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::ipBan;
-	command.syntax = "<$playername> [#reason]";
+	command.syntax = "<$player name> [#reason]";
 	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
 	command.notes.push_back("Use !help ban to see the applicable reason codes.");
 	CommandList["ipban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::tempBan;
-	command.syntax = "<$playername> <#reason> <#length in days>";
+	command.syntax = "<$player name> <#reason> <#length in days>";
 	command.notes.push_back("Temporarily bans a player by name.");
 	command.notes.push_back("Use !help ban to see the applicable reason codes.");
 	CommandList["tempban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::unban;
-	command.syntax = "<$playername>";
+	command.syntax = "<$player name>";
 	command.notes.push_back("Removes a ban from the database.");
 	CommandList["unban"] = command.addToMap();
 
@@ -91,12 +91,12 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["timer"] = command.addToMap();
 
 	command.command = &MapFunctions::instruction;
-	command.syntax = "<$bubbletext>";
+	command.syntax = "<$bubble text>";
 	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players.");
 	CommandList["instruction"] = command.addToMap();
 
 	command.command = &ManagementFunctions::addNpc;
-	command.syntax = "<#npcid>";
+	command.syntax = "<#npc ID>";
 	command.notes.push_back("Permanently adds an NPC to a map.");
 	CommandList["addnpc"] = command.addToMap();
 
@@ -105,7 +105,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["dorankings"] = command.addToMap();
 
 	command.command = &MessageFunctions::globalMessage;
-	command.syntax = "<${notice | box | red | blue}> <$message string>";
+	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every channel on every world.");
 	CommandList["globalmessage"] = command.addToMap();
 	#pragma endregion
@@ -119,22 +119,22 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["me"] = command.addToMap();
 
 	command.command = &ManagementFunctions::kick;
-	command.syntax = "<$playername>";
+	command.syntax = "<$player name>";
 	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
 	CommandList["kick"] = command.addToMap();
 
 	command.command = &WarpFunctions::warp;
-	command.syntax = "<$playername> [#mapid]";
+	command.syntax = "<$player name> [#map ID]";
 	command.notes.push_back("Warps the specified player to your map or the map you specify.");
 	CommandList["warp"] = command.addToMap();
 
 	command.command = &WarpFunctions::warpAll;
-	command.syntax = "[#mapid]";
+	command.syntax = "[#map ID]";
 	command.notes.push_back("Warps all players to your map or the map you specify.");
 	CommandList["warpall"] = command.addToMap();
 
 	command.command = &WarpFunctions::warpMap;
-	command.syntax = "[#mapid]";
+	command.syntax = "[#map ID]";
 	command.notes.push_back("Warps all players in your current map to your map or the map you specify.");
 	CommandList["warpmap"] = command.addToMap();
 
@@ -147,7 +147,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["cleardrops"] = command.addToMap();
 
 	command.command = &MessageFunctions::worldMessage;
-	command.syntax = "<${notice | box | red | blue}> <$message string>";
+	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every channel on the current world.");
 	CommandList["worldmessage"] = command.addToMap();
 	#pragma endregion
@@ -156,19 +156,19 @@ void ChatHandlerFunctions::initialize() {
 	command.level = 1;
 
 	command.command = &ManagementFunctions::kill;
-	command.syntax = "<${players | gm | all | me} | $playername>";
+	command.syntax = "<${players | gm | all | me} | $player name>";
 	command.notes.push_back("If you are GM level 1, you can only kill yourself with this.");
 	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
 	CommandList["kill"] = command.addToMap();
 
 	command.command = &InfoFunctions::lookup;
-	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid}> <$search string | #id>";
+	command.syntax = "<${item | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid}> <$search | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup.");
 	CommandList["lookup"] = command.addToMap();
 
 	command.command = &ManagementFunctions::map;
-	command.syntax = "<${town | mapstring | bossmapstring} | #mapid>";
+	command.syntax = "<${town | map string | boss map string} | #map ID>";
 	command.notes.push_back("Warps you to a desired map.");
 	command.notes.push_back("-------------");
 	command.notes.push_back("Valid maps");
@@ -191,7 +191,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["map"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::job;
-	command.syntax = "<${jobstring} | #jobid>";
+	command.syntax = "<${job string} | #job ID>";
 	command.notes.push_back("Sets your job.");
 	command.notes.push_back("Valid job strings:");
 	command.notes.push_back("beginner | noblesse");
@@ -234,7 +234,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["sp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::addSp;
-	command.syntax = "<#skillId> [#skillpoints]";
+	command.syntax = "<#skill ID> [#skill points]";
 	command.notes.push_back("Adds SP to the desired skill.");
 	CommandList["addsp"] = command.addToMap();
 
@@ -268,17 +268,17 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["maxstats"] = command.addToMap();
 
 	command.command = &ManagementFunctions::npc;
-	command.syntax = "<#npcid>";
+	command.syntax = "<#npc ID>";
 	command.notes.push_back("Runs the NPC script of the NPC you specify.");
 	CommandList["npc"] = command.addToMap();
 
 	command.command = &ManagementFunctions::item;
-	command.syntax = "<#itemId> [#amount]";
+	command.syntax = "<#item ID> [#amount]";
 	command.notes.push_back("Gives you an item.");
 	CommandList["item"] = command.addToMap();
 
 	command.command = &MapFunctions::summon;
-	command.syntax = "<#mobid> [#amount]";
+	command.syntax = "<#mob ID> [#amount]";
 	command.notes.push_back("Spawns monsters.");
 	CommandList["summon"] = command;
 	CommandList["spawn"] = command.addToMap();
@@ -289,7 +289,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["notice"] = command.addToMap();
 
 	command.command = &ManagementFunctions::shop;
-	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shopid>";
+	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID>";
 	command.notes.push_back("Shows you the desired shop.");
 	CommandList["shop"] = command.addToMap();
 
@@ -310,7 +310,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["heal"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modMesos;
-	command.syntax = "<#mesosamount>";
+	command.syntax = "<#meso amount>";
 	command.notes.push_back("Sets your mesos to the specified amount.");
 	CommandList["mesos"] = command.addToMap();
 
@@ -319,7 +319,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["dc"] = command.addToMap();
 
 	command.command = &MapFunctions::music;
-	command.syntax = "[$musicname]";
+	command.syntax = "[$music name]";
 	command.notes.push_back("Sets the music for a given map.");
 	command.notes.push_back("Using \"default\" will reset the map to default music.");
 	CommandList["music"] = command.addToMap();
@@ -341,7 +341,7 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["save"] = command.addToMap();
 
 	command.command = &WarpFunctions::warpTo;
-	command.syntax = "<$playername>";
+	command.syntax = "<$player name>";
 	command.notes.push_back("Warps you to the specified player.");
 	CommandList["warpto"] = command.addToMap();
 
@@ -354,17 +354,17 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["listmobs"] = command.addToMap();
 
 	command.command = &MapFunctions::getMobHp;
-	command.syntax = "<#mapMobId>";
+	command.syntax = "<#map mob ID>";
 	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
 	CommandList["getmobhp"] = command.addToMap();
 
 	command.command = &MapFunctions::killMob;
-	command.syntax = "<#mapMobId>";
+	command.syntax = "<#map mob ID>";
 	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
 	CommandList["killmob"] = command.addToMap();
 
 	command.command = &ManagementFunctions::reload;
-	command.syntax = "<${all, items, drops, mobs, beauty, shops, scripts, reactors, pets, quests, skills}>";
+	command.syntax = "<${all | items | drops | mobs | beauty | shops | scripts | reactors | pets | quests | skills}>";
 	command.notes.push_back("Reloads data from the database.");
 	CommandList["reload"] = command.addToMap();
 
@@ -402,96 +402,96 @@ void ChatHandlerFunctions::initialize() {
 }
 
 int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
-	int32_t mapid = -1;
+	int32_t mapId = -1;
 	// Special
-	if (query == "here") mapid = player->getMap();
-	else if (query == "town") mapid = Maps::getMap(player->getMap())->getReturnMap();
-	else if (query == "gm") mapid = Maps::GmMap;
-	else if (query == "fm") mapid = 910000000;
-	else if (query == "4th") mapid = 240010501;
-	else if (query == "3rd") mapid = 211000001;
-	else if (query == "grendel") mapid = 101000003;
-	else if (query == "athena") mapid = 100000201;
-	else if (query == "darklord") mapid = 103000003;
-	else if (query == "danceswb") mapid = 102000003;
-	else if (query == "kyrin") mapid = 120000101;
-	else if (query == "happyville") mapid = 209000000;
+	if (query == "here") mapId = player->getMap();
+	else if (query == "town") mapId = Maps::getMap(player->getMap())->getReturnMap();
+	else if (query == "gm") mapId = Maps::GmMap;
+	else if (query == "fm") mapId = 910000000;
+	else if (query == "4th") mapId = 240010501;
+	else if (query == "3rd") mapId = 211000001;
+	else if (query == "grendel") mapId = 101000003;
+	else if (query == "athena") mapId = 100000201;
+	else if (query == "darklord") mapId = 103000003;
+	else if (query == "danceswb") mapId = 102000003;
+	else if (query == "kyrin") mapId = 120000101;
+	else if (query == "happyville") mapId = 209000000;
 	// Maple Island
-	else if (query == "southperry") mapid = 60000;
-	else if (query == "amherst") mapid = 1010000;
+	else if (query == "southperry") mapId = 60000;
+	else if (query == "amherst") mapId = 1010000;
 	// Victoria
-	else if (query == "henesys") mapid = 100000000;
-	else if (query == "perion") mapid = 102000000;
-	else if (query == "sharenian") mapid = 101030104;
-	else if (query == "ellinia") mapid = 101000000;
-	else if (query == "sleepywood") mapid = 105040300;
-	else if (query == "lith") mapid = 104000000;
-	else if (query == "florina") mapid = 110000000;
-	else if (query == "kerning") mapid = 103000000;
-	else if (query == "port") mapid = 120000000;
+	else if (query == "henesys") mapId = 100000000;
+	else if (query == "perion") mapId = 102000000;
+	else if (query == "sharenian") mapId = 101030104;
+	else if (query == "ellinia") mapId = 101000000;
+	else if (query == "sleepywood") mapId = 105040300;
+	else if (query == "lith") mapId = 104000000;
+	else if (query == "florina") mapId = 110000000;
+	else if (query == "kerning") mapId = 103000000;
+	else if (query == "port") mapId = 120000000;
 	// Ossyria
-	else if (query == "orbis") mapid = 200000000;
-	else if (query == "nath") mapid = 211000000;
-	else if (query == "leafre") mapid = 240000000;
-	else if (query == "mulung") mapid = 250000000;
-	else if (query == "herbtown") mapid = 251000000;
-	else if (query == "ariant") mapid = 260000000;
-	else if (query == "magatia") mapid = 261000000;
+	else if (query == "orbis") mapId = 200000000;
+	else if (query == "nath") mapId = 211000000;
+	else if (query == "leafre") mapId = 240000000;
+	else if (query == "mulung") mapId = 250000000;
+	else if (query == "herbtown") mapId = 251000000;
+	else if (query == "ariant") mapId = 260000000;
+	else if (query == "magatia") mapId = 261000000;
 	// Ludus Lake area
-	else if (query == "ludi") mapid = 220000000;
-	else if (query == "altaire") mapid = 300000000;
-	else if (query == "kft") mapid = 222000000;
-	else if (query == "aqua") mapid = 230000000;
-	else if (query == "omega") mapid = 221000000;
+	else if (query == "ludi") mapId = 220000000;
+	else if (query == "altaire") mapId = 300000000;
+	else if (query == "kft") mapId = 222000000;
+	else if (query == "aqua") mapId = 230000000;
+	else if (query == "omega") mapId = 221000000;
 	// Floating areas/not officially a part of other continents
-	else if (query == "temple") mapid = 270000000;
-	else if (query == "ereve") mapid = 130000200;
-	else if (query == "rien") mapid = 140000000;
+	else if (query == "temple") mapId = 270000000;
+	else if (query == "ereve") mapId = 130000200;
+	else if (query == "rien") mapId = 140000000;
 	// Masteria
-	else if (query == "nlc") mapid = 600000000;
-	else if (query == "amoria") mapid = 680000000;
-	else if (query == "crimsonwood") mapid = 610020006;
+	else if (query == "nlc") mapId = 600000000;
+	else if (query == "amoria") mapId = 680000000;
+	else if (query == "crimsonwood") mapId = 610020006;
 	// Dungeon areas
-	else if (query == "armory") mapid = 801040004;
-	else if (query == "mansion") mapid = 682000000;
-	else if (query == "dungeon") mapid = 105090200;
-	else if (query == "mine") mapid = 211041400;
+	else if (query == "armory") mapId = 801040004;
+	else if (query == "mansion") mapId = 682000000;
+	else if (query == "dungeon") mapId = 105090200;
+	else if (query == "mine") mapId = 211041400;
 	// World Tour
-	else if (query == "singapore") mapid = 540000000;
-	else if (query == "quay") mapid = 541000000;
-	else if (query == "malaysia") mapid = 550000000;
-	else if (query == "kampung") mapid = 551000000;
-	else if (query == "shrine") mapid = 800000000;
-	else if (query == "showa") mapid = 801000000;
+	else if (query == "singapore") mapId = 540000000;
+	else if (query == "quay") mapId = 541000000;
+	else if (query == "malaysia") mapId = 550000000;
+	else if (query == "kampung") mapId = 551000000;
+	else if (query == "shrine") mapId = 800000000;
+	else if (query == "showa") mapId = 801000000;
 	// Area boss maps
-	else if (query == "manon") mapid = 240020401;
-	else if (query == "griffey") mapid = 240020101;
-	else if (query == "jrbalrog") mapid = 105090900;
-	else if (query == "anego") mapid = 801040003;
-	else if (query == "tengu") mapid = 800020130;
-	else if (query == "lilynouch") mapid = 270020500;
-	else if (query == "dodo") mapid = 270010500;
-	else if (query == "lyka") mapid = 270030500;
+	else if (query == "manon") mapId = 240020401;
+	else if (query == "griffey") mapId = 240020101;
+	else if (query == "jrbalrog") mapId = 105090900;
+	else if (query == "anego") mapId = 801040003;
+	else if (query == "tengu") mapId = 800020130;
+	else if (query == "lilynouch") mapId = 270020500;
+	else if (query == "dodo") mapId = 270010500;
+	else if (query == "lyka") mapId = 270030500;
 	// PQ boss maps
-	else if (query == "ergoth") mapid = 990000900;
-	else if (query == "lordpirate") mapid = 925100500;
-	else if (query == "alishar") mapid = 922010900;
-	else if (query == "papapixie") mapid = 920010800;
-	else if (query == "kingslime") mapid = 103000804;
-	else if (query == "dunes") mapid = 926010000;
+	else if (query == "ergoth") mapId = 990000900;
+	else if (query == "lordpirate") mapId = 925100500;
+	else if (query == "alishar") mapId = 922010900;
+	else if (query == "papapixie") mapId = 920010800;
+	else if (query == "kingslime") mapId = 103000804;
+	else if (query == "dunes") mapId = 926010000;
 	// Boss maps
-	else if (query == "pap") mapid = 220080001;
-	else if (query == "zakum") mapid = 280030000;
-	else if (query == "horntail") mapid = 240060200;
-	else if (query == "pianus") mapid = 230040420;
-	else if (query == "grandpa") mapid = 801040100;
-	else if (query == "bean") mapid = 270050100;
+	else if (query == "pap") mapId = 220080001;
+	else if (query == "zakum") mapId = 280030000;
+	else if (query == "horntail") mapId = 240060200;
+	else if (query == "pianus") mapId = 230040420;
+	else if (query == "grandpa") mapId = 801040100;
+	else if (query == "bean") mapId = 270050100;
 	else {
 		char *endptr;
-		mapid = strtol(query.c_str(), &endptr, 0);
-		if (strlen(endptr) != 0) mapid = -1;
+		mapId = strtol(query.c_str(), &endptr, 0);
+		if (strlen(endptr) != 0) mapId = -1;
 	}
-	return mapid;
+	return mapId;
 }
 
 int16_t ChatHandlerFunctions::getJob(const string &query) {

@@ -34,5 +34,5 @@ namespace EffectPacket {
 	void sendFieldSound(Player *player, const string &sound);
 	void sendMinigameSound(int32_t mapId, const string &sound);
 	void sendMinigameSound(Player *player, const string &sound);
-	void sendMobItemBuffEffect(Player *player, int32_t itemid);
+	void sendMobItemBuffEffect(Player *player, int32_t itemId);
 }

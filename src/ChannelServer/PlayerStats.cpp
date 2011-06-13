@@ -36,59 +36,62 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summons.h"
 #include "SyncPacket.h"
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 #include <string>
+#include <limits>
 
 using std::string;
 
-PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpmp_ap, int16_t sp, int16_t hp, int16_t mhp, int16_t mp, int16_t mmp, int32_t exp) :
-	player(player),
-	level(level),
-	job(job),
-	fame(fame),
-	str(str),
-	dex(dex),
-	intt(intt),
-	luk(luk),
-	ap(ap),
-	hpmp_ap(hpmp_ap),
-	sp(sp),
-	hp(hp),
-	mhp(mhp),
-	mp(mp),
-	mmp(mmp),
-	exp(exp),
-	hbx(0),
-	hby(0),
-	mw(0)
+PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, int32_t exp) :
+	m_player(player),
+	m_level(level),
+	m_job(job),
+	m_fame(fame),
+	m_str(str),
+	m_dex(dex),
+	m_int(intt),
+	m_luk(luk),
+	m_ap(ap),
+	m_hpMpAp(hpMpAp),
+	m_sp(sp),
+	m_hp(hp),
+	m_maxHp(maxHp),
+	m_mp(mp),
+	m_maxMp(maxMp),
+	m_exp(exp),
+	m_hyperBodyX(0),
+	m_hyperBodyY(0),
+	m_mapleWarrior(0)
 {
-	if (this->hp == 0) {
-		this->hp = 50;
+	if (hp == 0) {
+		m_hp = 50;
 	}
 }
 
 // Equip stat bonus handling
 void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
-	if (mw > 0)
-		setMapleWarrior(mw);
-
+	if (m_mapleWarrior > 0) {
+		setMapleWarrior(m_mapleWarrior);
+	}
 	if (updateEquips) {
-		equipBonuses = BonusSet();
-		for (EquipBonuses::iterator iter = equipStats.begin(); iter != equipStats.end(); iter++) {
-			if (EquipDataProvider::Instance()->canEquip(iter->second.Id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
-				equipBonuses.Hp += iter->second.Hp;
-				equipBonuses.Mp += iter->second.Mp;
-				equipBonuses.Str += iter->second.Str;
-				equipBonuses.Dex += iter->second.Dex;
-				equipBonuses.Int += iter->second.Int;
-				equipBonuses.Luk += iter->second.Luk;
+		m_equipBonuses = BonusSet();
+		for (EquipBonuses::iterator iter = m_equipStats.begin(); iter != m_equipStats.end(); iter++) {
+			if (EquipDataProvider::Instance()->canEquip(iter->second.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
+				m_equipBonuses.hp += iter->second.hp;
+				m_equipBonuses.mp += iter->second.mp;
+				m_equipBonuses.str += iter->second.str;
+				m_equipBonuses.dex += iter->second.dex;
+				m_equipBonuses.intt += iter->second.intt;
+				m_equipBonuses.luk += iter->second.luk;
 			}
 		}
 	}
 
-	if (hbx > 0 && hby > 0) {
-		setHyperBody(hbx, hby);
+	if (m_hyperBodyX > 0 && m_hyperBodyY > 0) {
+		setHyperBody(m_hyperBodyX, m_hyperBodyY);
 	}
-	if (!isLoading) { // Adjust current HP/MP down if necessary
+	if (!isLoading) {
+		// Adjust current HP/MP down if necessary
 		if (getHp() > getMaxHp()) {
 			setHp(getHp());
 		}
@@ -101,22 +104,22 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 	slot = abs(slot);
 	if (equip != nullptr) {
-		equipStats[slot].Id = equip->getId();
-		equipStats[slot].Hp = equip->getHp();
-		equipStats[slot].Mp = equip->getMp();
-		equipStats[slot].Str = equip->getStr();
-		equipStats[slot].Dex = equip->getDex();
-		equipStats[slot].Int = equip->getInt();
-		equipStats[slot].Luk = equip->getLuk();
+		m_equipStats[slot].id = equip->getId();
+		m_equipStats[slot].hp = equip->getHp();
+		m_equipStats[slot].mp = equip->getMp();
+		m_equipStats[slot].str = equip->getStr();
+		m_equipStats[slot].dex = equip->getDex();
+		m_equipStats[slot].intt = equip->getInt();
+		m_equipStats[slot].luk = equip->getLuk();
 	}
 	else {
-		equipStats.erase(slot);
+		m_equipStats.erase(slot);
 	}
 
 	updateBonuses(true, isLoading);
 }
 
-// Data Acquisition
+// Data acquisition
 void PlayerStats::connectData(PacketCreator &packet) {
 	packet.add<int8_t>(getLevel());
 	packet.add<int16_t>(getJob());
@@ -134,277 +137,291 @@ void PlayerStats::connectData(PacketCreator &packet) {
 	packet.add<int16_t>(getFame());
 }
 
-int16_t PlayerStats::getMaxHp(bool withoutbonus) {
-	if (!withoutbonus) {
-		if ((mhp + equipBonuses.Hp + buffBonuses.Hp) > Stats::MaxMaxHp)
+int16_t PlayerStats::getMaxHp(bool withoutBonus) {
+	if (!withoutBonus) {
+		if ((m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp) > Stats::MaxMaxHp) {
 			return Stats::MaxMaxHp;
-		else
-			return (mhp + equipBonuses.Hp + buffBonuses.Hp);
+		}
+		return (m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp);
 	}
-	return mhp;
+	return m_maxHp;
 }
 
-int16_t PlayerStats::getMaxMp(bool withoutbonus) {
-	if (!withoutbonus) {
-		if ((mmp + equipBonuses.Mp + buffBonuses.Mp) > Stats::MaxMaxMp)
+int16_t PlayerStats::getMaxMp(bool withoutBonus) {
+	if (!withoutBonus) {
+		if ((m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp) > Stats::MaxMaxMp) {
 			return Stats::MaxMaxMp;
-		else
-			return (mmp + equipBonuses.Mp + buffBonuses.Mp);
+		}
+		return (m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp);
 	}
-	return mmp;
+	return m_maxMp;
 }
 
-int16_t PlayerStats::getStr(bool withbonus) {
-	if (withbonus)
-		return ((str + buffBonuses.Str + equipBonuses.Str) > SHRT_MAX ? SHRT_MAX : (str + buffBonuses.Str + equipBonuses.Str));
-
-	return str;
+int16_t PlayerStats::statUtility(int32_t test) {
+	int16_t max = std::numeric_limits<int16_t>::max();
+	return (test > max ? max : static_cast<int16_t>(test)); 
 }
 
-int16_t PlayerStats::getDex(bool withbonus) {
-	if (withbonus)
-		return ((dex + buffBonuses.Dex + equipBonuses.Dex) > SHRT_MAX ? SHRT_MAX : (dex + buffBonuses.Dex + equipBonuses.Dex));
-
-	return dex;
+int16_t PlayerStats::getStr(bool withBonus) {
+	if (withBonus) {
+		return statUtility(m_str + m_buffBonuses.str + m_equipBonuses.str);
+	}
+	return m_str;
 }
 
-int16_t PlayerStats::getInt(bool withbonus) {
-	if (withbonus)
-		return ((intt + buffBonuses.Int + equipBonuses.Int) > SHRT_MAX ? SHRT_MAX : (intt + buffBonuses.Int + equipBonuses.Int));
-
-	return intt;
+int16_t PlayerStats::getDex(bool withBonus) {
+	if (withBonus) {
+		return statUtility(m_dex + m_buffBonuses.dex + m_equipBonuses.dex);
+	}
+	return m_dex;
 }
 
-int16_t PlayerStats::getLuk(bool withbonus) {
-	if (withbonus)
-		return ((luk + buffBonuses.Luk + equipBonuses.Luk) > SHRT_MAX ? SHRT_MAX : (luk + buffBonuses.Luk + equipBonuses.Luk));
+int16_t PlayerStats::getInt(bool withBonus) {
+	if (withBonus) {
+		return statUtility(m_int + m_buffBonuses.intt + m_equipBonuses.intt);
+	}
+	return m_int;
+}
 
-	return luk;
+int16_t PlayerStats::getLuk(bool withBonus) {
+	if (withBonus) {
+		return statUtility(m_luk + m_buffBonuses.luk + m_equipBonuses.luk);
+	}
+	return m_luk;
 }
 
 // Data modification
 void PlayerStats::checkHpMp() {
-	if (this->hp > getMaxHp()) {
-		this->hp = getMaxHp();
+	if (m_hp > getMaxHp()) {
+		m_hp = getMaxHp();
 	}
-	if (this->mp > getMaxMp()) {
-		this->mp = getMaxMp();
+	if (m_mp > getMaxMp()) {
+		m_mp = getMaxMp();
 	}
 }
 
 void PlayerStats::setLevel(uint8_t level) {
-	this->level = level;
-	PlayerPacket::updateStatShort(player, Stats::Level, level);
-	LevelsPacket::levelUp(player);
-	SyncPacket::PlayerPacket::updateLevel(player->getId(), level);
+	m_level = level;
+	PlayerPacket::updateStat(m_player, Stats::Level, level);
+	LevelsPacket::levelUp(m_player);
+	SyncPacket::PlayerPacket::updateLevel(m_player->getId(), level);
 }
 
-void PlayerStats::setHp(int16_t shp, bool is) {
-	if (shp < 0) {
-		hp = 0;
+void PlayerStats::setHp(int16_t hp, bool sendPacket) {
+	if (hp < 0) {
+		m_hp = 0;
 	}
-	else if (shp > getMaxHp()) {
-		hp = getMaxHp();
+	else if (hp > getMaxHp()) {
+		m_hp = getMaxHp();
 	}
 	else {
-		hp = shp;
+		m_hp = hp;
 	}
-	if (is) {
-		PlayerPacket::updateStatShort(player, Stats::Hp, hp);
+	if (sendPacket) {
+		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
 	modifiedHp();
 }
 
-void PlayerStats::modifyHp(int16_t nhp, bool is) {
-	if ((hp + nhp) < 0) {
-		hp = 0;
+void PlayerStats::modifyHp(int16_t hpMod, bool sendPacket) {
+	if ((m_hp + hpMod) < 0) {
+		m_hp = 0;
 	}
-	else if ((hp + nhp) > getMaxHp()) {
-		hp = getMaxHp();
+	else if ((m_hp + hpMod) > getMaxHp()) {
+		m_hp = getMaxHp();
 	}
 	else {
-		hp = (hp + nhp);
+		m_hp += hpMod;
 	}
-	if (is) {
-		PlayerPacket::updateStatShort(player, Stats::Hp, hp);
+	if (sendPacket) {
+		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
 	modifiedHp();
 }
 
-void PlayerStats::damageHp(uint16_t dhp) {
-	hp = (dhp > hp ? 0 : hp - dhp);
-	PlayerPacket::updateStatShort(player, Stats::Hp, hp);
+void PlayerStats::damageHp(uint16_t damageHp) {
+	m_hp = (damageHp > m_hp ? 0 : m_hp - damageHp);
+	PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	modifiedHp();
 }
 
 void PlayerStats::modifiedHp() {
-	if (Party *p = player->getParty()) {
-		p->showHpBar(player);
+	if (Party *p = m_player->getParty()) {
+		p->showHpBar(m_player);
 	}
-	player->getActiveBuffs()->checkBerserk();
-	if (hp == 0) {
-		if (player->getInstance() != nullptr) {
-			player->getInstance()->sendMessage(PlayerDeath, player->getId());
+	m_player->getActiveBuffs()->checkBerserk();
+	if (m_hp == 0) {
+		if (m_player->getInstance() != nullptr) {
+			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
 		}
 		loseExp();
-		Summons::removeSummon(player, false, false, SummonMessages::Disappearing);
+		Summons::removeSummon(m_player, false, false, SummonMessages::Disappearing);
 	}
 }
 
-void PlayerStats::setMp(int16_t smp, bool is) {
-	if (!player->getActiveBuffs()->hasInfinity()) {
-		if (smp < 0) {
-			mp = 0;
+void PlayerStats::setMp(int16_t mp, bool sendPacket) {
+	if (!m_player->getActiveBuffs()->hasInfinity()) {
+		if (mp < 0) {
+			m_mp = 0;
 		}
-		else if (smp > getMaxMp()) {
-			mp = getMaxMp();
+		else if (mp > getMaxMp()) {
+			m_mp = getMaxMp();
 		}
 		else {
-			mp = smp;
+			m_mp = mp;
 		}
 	}
-	PlayerPacket::updateStatShort(player, Stats::Mp, mp, is);
+	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
-void PlayerStats::modifyMp(int16_t nmp, bool is) {
-	if (!player->getActiveBuffs()->hasInfinity()) {
-		if ((mp + nmp) < 0) {
-			mp = 0;
+void PlayerStats::modifyMp(int16_t mpMod, bool sendPacket) {
+	if (!m_player->getActiveBuffs()->hasInfinity()) {
+		if ((m_mp + mpMod) < 0) {
+			m_mp = 0;
 		}
-		else if ((mp + nmp) > getMaxMp()) {
-			mp = getMaxMp();
+		else if ((m_mp + mpMod) > getMaxMp()) {
+			m_mp = getMaxMp();
 		}
 		else {
-			mp = (mp + nmp);
+			m_mp += mpMod;
 		}
 	}
-	PlayerPacket::updateStatShort(player, Stats::Mp, mp, is);
+	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
-void PlayerStats::damageMp(uint16_t dmp) {
-	if (!player->getActiveBuffs()->hasInfinity()) {
-		mp = (dmp > mp ? 0 : mp - dmp);
+void PlayerStats::damageMp(uint16_t damageMp) {
+	if (!m_player->getActiveBuffs()->hasInfinity()) {
+		m_mp = (damageMp > m_mp ? 0 : m_mp - damageMp);
 	}
-	PlayerPacket::updateStatShort(player, Stats::Mp, mp, false);
+	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
 
 void PlayerStats::setSp(int16_t sp) {
-	this->sp = sp;
-	PlayerPacket::updateStatShort(player, Stats::Sp, sp);
+	m_sp = sp;
+	PlayerPacket::updateStat(m_player, Stats::Sp, sp);
 }
 
 void PlayerStats::setAp(int16_t ap) {
-	this->ap = ap;
-	PlayerPacket::updateStatShort(player, Stats::Ap, ap);
+	m_ap = ap;
+	PlayerPacket::updateStat(m_player, Stats::Ap, ap);
 }
 
 void PlayerStats::setJob(int16_t job) {
-	this->job = job;
-	PlayerPacket::updateStatShort(player, Stats::Job, job);
-	LevelsPacket::jobChange(player);
-	SyncPacket::PlayerPacket::updateJob(player->getId(), job);
+	m_job = job;
+	PlayerPacket::updateStat(m_player, Stats::Job, job);
+	LevelsPacket::jobChange(m_player);
+	SyncPacket::PlayerPacket::updateJob(m_player->getId(), job);
 }
 
 void PlayerStats::setStr(int16_t str) {
-	this->str = str;
-	PlayerPacket::updateStatShort(player, Stats::Str, str);
+	m_str = str;
+	PlayerPacket::updateStat(m_player, Stats::Str, str);
 }
 
 void PlayerStats::setDex(int16_t dex) {
-	this->dex = dex;
-	PlayerPacket::updateStatShort(player, Stats::Dex, dex);
+	m_dex = dex;
+	PlayerPacket::updateStat(m_player, Stats::Dex, dex);
 }
 
 void PlayerStats::setInt(int16_t intt) {
-	this->intt = intt;
-	PlayerPacket::updateStatShort(player, Stats::Int, intt);
+	m_int = intt;
+	PlayerPacket::updateStat(m_player, Stats::Int, intt);
 }
 
 void PlayerStats::setLuk(int16_t luk) {
-	this->luk = luk;
-	PlayerPacket::updateStatShort(player, Stats::Luk, luk);
+	m_luk = luk;
+	PlayerPacket::updateStat(m_player, Stats::Luk, luk);
 }
 
 void PlayerStats::setMapleWarrior(int16_t modx) {
-	buffBonuses.Str = (str * modx) / 100;
-	buffBonuses.Dex = (dex * modx) / 100;
-	buffBonuses.Int = (intt * modx) / 100;
-	buffBonuses.Luk = (luk * modx) / 100;
-	if (mw != modx) {
-		mw = modx;
+	m_buffBonuses.str = (m_str * modx) / 100;
+	m_buffBonuses.dex = (m_dex * modx) / 100;
+	m_buffBonuses.intt = (m_int * modx) / 100;
+	m_buffBonuses.luk = (m_luk * modx) / 100;
+	if (m_mapleWarrior != modx) {
+		m_mapleWarrior = modx;
 		updateBonuses();
 	}
 }
 
-void PlayerStats::setMaxHp(int16_t mhp) {
-	if (mhp > Stats::MaxMaxHp)
-		mhp = Stats::MaxMaxHp;
-	else if (mhp < Stats::MinMaxHp)
-		mhp = Stats::MinMaxHp;
-	this->mhp = mhp;
-	PlayerPacket::updateStatShort(player, Stats::MaxHp, mhp);
+void PlayerStats::setMaxHp(int16_t maxHp) {
+	if (maxHp > Stats::MaxMaxHp) {
+		maxHp = Stats::MaxMaxHp;
+	}
+	else if (maxHp < Stats::MinMaxHp) {
+		maxHp = Stats::MinMaxHp;
+	}
+	m_maxHp = maxHp;
+	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	modifiedHp();
 }
 
-void PlayerStats::setMaxMp(int16_t mmp) {
-	if (mmp > Stats::MaxMaxMp)
-		mmp = Stats::MaxMaxMp;
-	else if (mmp < Stats::MinMaxMp)
-		mmp = Stats::MinMaxMp;
-	this->mmp = mmp;
-	PlayerPacket::updateStatShort(player, Stats::MaxMp, mmp);
+void PlayerStats::setMaxMp(int16_t maxMp) {
+	if (maxMp > Stats::MaxMaxMp) {
+		maxMp = Stats::MaxMaxMp;
+	}
+	else if (maxMp < Stats::MinMaxMp) {
+		maxMp = Stats::MinMaxMp;
+	}
+	m_maxMp = maxMp;
+	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
 void PlayerStats::setHyperBody(int16_t modx, int16_t mody) {
-	hbx = modx;
-	hby = mody;
-	buffBonuses.Hp = (((mhp + equipBonuses.Hp) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (mhp + equipBonuses.Hp) * modx / 100);
-	buffBonuses.Mp = (((mmp + equipBonuses.Mp) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (mmp + equipBonuses.Mp) * mody / 100);
-	PlayerPacket::updateStatShort(player, Stats::MaxHp, mhp);
-	PlayerPacket::updateStatShort(player, Stats::MaxMp, mmp);
-	if (player->getParty())
-		player->getParty()->showHpBar(player);
-	player->getActiveBuffs()->checkBerserk();
+	m_hyperBodyX = modx;
+	m_hyperBodyY = mody;
+	m_buffBonuses.hp = (((m_maxHp + m_equipBonuses.hp) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (m_maxHp + m_equipBonuses.hp) * modx / 100);
+	m_buffBonuses.mp = (((m_maxMp + m_equipBonuses.mp) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (m_maxMp + m_equipBonuses.mp) * mody / 100);
+	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
+	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
+	if (Party *p = m_player->getParty()) { 
+		p->showHpBar(m_player);
+	}
+	m_player->getActiveBuffs()->checkBerserk();
 }
 
 void PlayerStats::modifyMaxHp(int16_t mod) {
-	mhp = (((mhp + mod) > Stats::MaxMaxHp) ? Stats::MaxMaxHp : (mhp + mod));
-	PlayerPacket::updateStatShort(player, Stats::MaxHp, mhp);
+	m_maxHp = (((m_maxHp + mod) > Stats::MaxMaxHp) ? Stats::MaxMaxHp : (m_maxHp + mod));
+	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 }
 
 void PlayerStats::modifyMaxMp(int16_t mod) {
-	mmp = (((mmp + mod) > Stats::MaxMaxMp) ? Stats::MaxMaxMp : (mmp + mod));
-	PlayerPacket::updateStatShort(player, Stats::MaxMp, mmp);
+	m_maxMp = (((m_maxMp + mod) > Stats::MaxMaxMp) ? Stats::MaxMaxMp : (m_maxMp + mod));
+	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
 void PlayerStats::setExp(int32_t exp) {
-	if (exp < 0)
+	if (exp < 0) {
 		exp = 0;
-	this->exp = exp;
-	PlayerPacket::updateStatInt(player, Stats::Exp, exp);
+	}
+	m_exp = exp;
+	PlayerPacket::updateStat(m_player, Stats::Exp, exp);
 }
 
 void PlayerStats::setFame(int16_t fame) {
-	if (fame < Stats::MinFame)
+	if (fame < Stats::MinFame) {
 		fame = Stats::MinFame;
-	else if (fame > Stats::MaxFame)
+	}
+	else if (fame > Stats::MaxFame) {
 		fame = Stats::MaxFame;
-	this->fame = fame;
-	PlayerPacket::updateStatInt(player, Stats::Fame, fame);
+	}
+	m_fame = fame;
+	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
 }
 
 void PlayerStats::loseExp() {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < getMaxLevel(getJob()) && player->getMap() != Maps::SorcerersRoom) {
-		uint16_t charms = player->getInventory()->getItemAmount(Items::SafetyCharm);
+	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < getMaxLevel(getJob()) && m_player->getMap() != Maps::SorcerersRoom) {
+		uint16_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
-			Inventory::takeItem(player, Items::SafetyCharm, 1);
+			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
 			charms--;
-			if (charms > 0xFF)
+			if (charms > 0xFF) {
 				charms = 0xFF;
-			InventoryPacket::useCharm(player, static_cast<uint8_t>(charms));
+			}
+			InventoryPacket::useCharm(m_player, static_cast<uint8_t>(charms));
 			return;
 		}
-		Map *loc = Maps::getMap(player->getMap());
+		Map *loc = Maps::getMap(m_player->getMap());
 		int8_t exploss = 10;
 		if (loc->loseOnePercent()) {
 			exploss = 1;
@@ -427,109 +444,115 @@ void PlayerStats::loseExp() {
 
 // Level related functions
 void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
-	int16_t fulljob = getJob();
-	if (getLevel() >= getMaxLevel(fulljob)) // Do not give EXP to characters of max level or over
+	int16_t fullJob = getJob();
+	uint8_t level = getLevel();
+	if (level >= getMaxLevel(fullJob)) {
+		// Do not give EXP to characters of max level or over
 		return;
+	}
 	uint32_t cexp = getExp() + exp;
 	if (exp != 0) {
-		LevelsPacket::showExp(player, exp, white, inChat);
+		LevelsPacket::showExp(m_player, exp, white, inChat);
 	}
-	uint8_t level = getLevel();
 	if (cexp >= getExp(level)) {
-		bool cygnus = GameLogicUtilities::isCygnus(fulljob);
-		uint8_t levelsgained = 0;
-		uint8_t levelsmax = ChannelServer::Instance()->getMaxMultiLevel();
-		int16_t apgain = 0;
-		int16_t spgain = 0;
-		int16_t hpgain = 0;
-		int16_t mpgain = 0;
-		int16_t job = GameLogicUtilities::getJobTrack(fulljob, true);
+		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
+		uint8_t levelsGained = 0;
+		uint8_t levelsMax = ChannelServer::Instance()->getMaxMultiLevel();
+		int16_t apGain = 0;
+		int16_t spGain = 0;
+		int16_t hpGain = 0;
+		int16_t mpGain = 0;
+		int16_t job = GameLogicUtilities::getJobTrack(fullJob, true);
 		int16_t intt = getInt(true) / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
-		while (cexp >= getExp(level) && levelsgained < levelsmax) {
+		while (cexp >= getExp(level) && levelsGained < levelsMax) {
 			cexp -= getExp(getLevel());
 			level++;
-			levelsgained++;
+			levelsGained++;
 			if (cygnus && level <= Stats::CygnusApCutoff) {
-				apgain += Stats::ApPerCygnusLevel;
+				apGain += Stats::ApPerCygnusLevel;
 			}
 			else {
-				apgain += Stats::ApPerLevel;
+				apGain += Stats::ApPerLevel;
 			}
 			switch (job) {
 				case Jobs::JobTracks::Beginner:
-					hpgain += levelHp(Stats::BaseHp::Beginner);
-					mpgain += levelMp(Stats::BaseMp::Beginner, intt);
+					hpGain += levelHp(Stats::BaseHp::Beginner);
+					mpGain += levelMp(Stats::BaseMp::Beginner, intt);
 					break;
 				case Jobs::JobTracks::Warrior:
-					if (levelsgained == 1 && player->getSkills()->hasHpIncrease())
-						x = getX(player->getSkills()->getHpIncrease());
-					hpgain += levelHp(Stats::BaseHp::Warrior, x);
-					mpgain += levelMp(Stats::BaseMp::Warrior, intt);
+					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
+						x = getX(m_player->getSkills()->getHpIncrease());
+					}
+					hpGain += levelHp(Stats::BaseHp::Warrior, x);
+					mpGain += levelMp(Stats::BaseMp::Warrior, intt);
 					break;
 				case Jobs::JobTracks::Magician:
-					if (levelsgained == 1 && player->getSkills()->hasMpIncrease())
-						x = getX(player->getSkills()->getMpIncrease());
-					hpgain += levelHp(Stats::BaseHp::Magician);
-					mpgain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
+					if (levelsGained == 1 && m_player->getSkills()->hasMpIncrease()) {
+						x = getX(m_player->getSkills()->getMpIncrease());
+					}
+					hpGain += levelHp(Stats::BaseHp::Magician);
+					mpGain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
 					break;
 				case Jobs::JobTracks::Bowman:
-					hpgain += levelHp(Stats::BaseHp::Bowman);
-					mpgain += levelMp(Stats::BaseMp::Bowman, intt);
+					hpGain += levelHp(Stats::BaseHp::Bowman);
+					mpGain += levelMp(Stats::BaseMp::Bowman, intt);
 					break;
 				case Jobs::JobTracks::Thief:
-					hpgain += levelHp(Stats::BaseHp::Thief);
-					mpgain += levelMp(Stats::BaseMp::Thief, intt);
+					hpGain += levelHp(Stats::BaseHp::Thief);
+					mpGain += levelMp(Stats::BaseMp::Thief, intt);
 					break;
 				case Jobs::JobTracks::Pirate:
-					if (levelsgained == 1 && player->getSkills()->hasHpIncrease())
-						x = getX(player->getSkills()->getHpIncrease());
-					hpgain += levelHp(Stats::BaseHp::Pirate, x);
-					mpgain += levelMp(Stats::BaseMp::Pirate, intt);
+					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
+						x = getX(m_player->getSkills()->getHpIncrease());
+					}
+					hpGain += levelHp(Stats::BaseHp::Pirate, x);
+					mpGain += levelMp(Stats::BaseMp::Pirate, intt);
 					break;
 				default: // GM
-					hpgain += Stats::BaseHp::Gm;
-					mpgain += Stats::BaseMp::Gm;
+					hpGain += Stats::BaseHp::Gm;
+					mpGain += Stats::BaseMp::Gm;
 			}
-			if (!GameLogicUtilities::isBeginnerJob(fulljob))
-				spgain += Stats::SpPerLevel;
-			if (level >= getMaxLevel(fulljob)) { // Do not let people level past the level cap
+			if (!GameLogicUtilities::isBeginnerJob(fullJob)) {
+				spGain += Stats::SpPerLevel;
+			}
+			if (level >= getMaxLevel(fullJob)) {
+				// Do not let people level past the level cap
 				cexp = 0;
 				break;
 			}
 		}
 
-		if (cexp >= getExp(level)) { // If the desired number of level ups have passed and they're still above, set it to where it should be
+		if (cexp >= getExp(level)) {
+			// If the desired number of level ups have passed and they're still above, set it to where it should be
 			cexp = getExp(level) - 1;
 		}
 
-		if (levelsgained) { // Check if the player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
-			modifyMaxHp(hpgain);
-			modifyMaxMp(mpgain);
+		if (levelsGained) {
+			// Check if the m_player has leveled up at all, it is possible that the user hasn't leveled up if multi-level limit is 0
+			modifyMaxHp(hpGain);
+			modifyMaxMp(mpGain);
 			setLevel(level);
-			setAp(getAp() + apgain);
-			setSp(getSp() + spgain);
-			// Let hyperbody remain on if on during a level up, as it should
-			if (player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillId = player->getActiveBuffs()->getHyperBody();
-				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
+			setAp(getAp() + apGain);
+			setSp(getSp() + spGain);
+			// Let Hyper Body remain on if on during a level up, as it should
+			if (m_player->getActiveBuffs()->hasHyperBody()) {
+				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
+				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
 			setHp(getMaxHp());
 			setMp(getMaxMp());
-			player->setLevelDate();
-			if (getLevel() == getMaxLevel(fulljob) && !player->isGm()) {
-				string message;
-				message = "[Congrats] ";
-				message += player->getName();
-				message += " has reached Level ";
-				message += boost::lexical_cast<string>((int16_t) getMaxLevel(fulljob));
-				message += "! Congratulate ";
-				message += player->getName();
-				message += " on such an amazing achievement!";
-				PlayerPacket::showMessageWorld(message, PlayerPacket::NoticeTypes::Blue);
+			m_player->setLevelDate();
+			if (getLevel() == getMaxLevel(fullJob) && !m_player->isGm()) {
+				std::ostringstream message;
+				message << "[Congrats] " << m_player->getName() << " has reached Level "
+						<< (int16_t) getMaxLevel(fullJob) << "! Congratulate "
+						<< m_player->getName() << " on such an amazing achievement!";
+
+				PlayerPacket::showMessageWorld(message.str(), PlayerPacket::NoticeTypes::Blue);
 			}
 		}
 	}
@@ -543,7 +566,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	LevelsPacket::statOk(player);
+	LevelsPacket::statOk(m_player);
 	addStat(type);
 }
 
@@ -551,7 +574,7 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	packet.skipBytes(4);
 	uint32_t amount = packet.get<uint32_t>();
 
-	LevelsPacket::statOk(player);
+	LevelsPacket::statOk(m_player);
 
 	for (uint32_t i = 0; i < amount; i++) {
 		int32_t type = packet.get<int32_t>();
@@ -566,89 +589,98 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	}
 }
 
-void PlayerStats::addStat(int32_t type, int16_t mod, bool isreset) {
-	int16_t maxstat = ChannelServer::Instance()->getMaxStats();
-	bool issubtract = mod < 0;
+void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
+	int16_t maxStat = ChannelServer::Instance()->getMaxStats();
+	bool isSubtract = mod < 0;
 	switch (type) {
 		case Stats::Str:
-			if (getStr() >= maxstat)
+			if (getStr() >= maxStat) {
 				return;
+			}
 			setStr(getStr() + mod);
 			break;
 		case Stats::Dex:
-			if (getDex() >= maxstat)
+			if (getDex() >= maxStat) {
 				return;
+			}
 			setDex(getDex() + mod);
 			break;
 		case Stats::Int:
-			if (getInt() >= maxstat)
+			if (getInt() >= maxStat) {
 				return;
+			}
 			setInt(getInt() + mod);
 			break;
 		case Stats::Luk:
-			if (getLuk() >= maxstat)
+			if (getLuk() >= maxStat) {
 				return;
+			}
 			setLuk(getLuk() + mod);
 			break;
 		case Stats::MaxHp:
 		case Stats::MaxMp: {
-			if (type == Stats::MaxHp && getMaxHp(true) >= Stats::MaxMaxHp)
+			if (type == Stats::MaxHp && getMaxHp(true) >= Stats::MaxMaxHp) {
 				return;
-			if (type == Stats::MaxMp && getMaxMp(true) >= Stats::MaxMaxMp)
+			}
+			if (type == Stats::MaxMp && getMaxMp(true) >= Stats::MaxMaxMp) {
 				return;
-			if (issubtract && getHpMpAp() == 0) {
+			}
+			if (isSubtract && getHpMpAp() == 0) {
 				// Hacking
 				return;
 			}
 			int16_t job = GameLogicUtilities::getJobTrack(getJob());
-			int16_t hpgain = 0;
-			int16_t mpgain = 0;
+			int16_t hpGain = 0;
+			int16_t mpGain = 0;
 			int16_t y = 0;
 			switch (job) {
 				case Jobs::JobTracks::Beginner: // Beginner
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BeginnerAp);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BeginnerAp);
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BeginnerAp);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::BeginnerAp);
 					break;
 				case Jobs::JobTracks::Warrior:
-					if (player->getSkills()->hasHpIncrease())
-						y = getY(player->getSkills()->getHpIncrease());
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::WarriorAp, y);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::WarriorAp);
+					if (m_player->getSkills()->hasHpIncrease()) {
+						y = getY(m_player->getSkills()->getHpIncrease());
+					}
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::WarriorAp, y);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::WarriorAp);
 					break;
 				case Jobs::JobTracks::Magician:
-					if (player->getSkills()->hasMpIncrease())
-						y = getY(player->getSkills()->getMpIncrease());
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::MagicianAp);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::MagicianAp, 2 * y);
+					if (m_player->getSkills()->hasMpIncrease()) {
+						y = getY(m_player->getSkills()->getMpIncrease());
+					}
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::MagicianAp);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::MagicianAp, 2 * y);
 					break;
 				case Jobs::JobTracks::Bowman:
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::BowmanAp);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::BowmanAp);
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BowmanAp);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::BowmanAp);
 					break;
 				case Jobs::JobTracks::Thief:
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::ThiefAp);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::ThiefAp);
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::ThiefAp);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::ThiefAp);
 					break;
 				case Jobs::JobTracks::Pirate:
-					if (player->getSkills()->hasHpIncrease())
-						y = getY(player->getSkills()->getHpIncrease());
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::PirateAp, y);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::PirateAp);
+					if (m_player->getSkills()->hasHpIncrease()) {
+						y = getY(m_player->getSkills()->getHpIncrease());
+					}
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::PirateAp, y);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::PirateAp);
 					break;
 				default: // GM
-					hpgain = apResetHp(isreset, issubtract, Stats::BaseHp::GmAp);
-					mpgain = apResetMp(isreset, issubtract, Stats::BaseMp::GmAp);
+					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::GmAp);
+					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::GmAp);
 					break;
 			}
 			setHpMpAp(getHpMpAp() + mod);
 			switch (type) {
-				case Stats::MaxHp: modifyMaxHp(hpgain); break;
-				case Stats::MaxMp: modifyMaxMp(mpgain); break;
+				case Stats::MaxHp: modifyMaxHp(hpGain); break;
+				case Stats::MaxMp: modifyMaxMp(mpGain); break;
 			}
-			if (player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillId = player->getActiveBuffs()->getHyperBody();
-				uint8_t hblevel = player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hblevel);
+			if (m_player->getActiveBuffs()->hasHyperBody()) {
+				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
+				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
+				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -660,8 +692,9 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isreset) {
 			// Hacking, one assumes
 			break;
 	}
-	if (!isreset)
+	if (!isReset) {
 		setAp(getAp() - mod);
+	}
 	updateBonuses();
 }
 
@@ -674,19 +707,19 @@ int16_t PlayerStats::randMp() {
 }
 
 int16_t PlayerStats::getX(int32_t skillId) {
-	return player->getSkills()->getSkillInfo(skillId)->x;
+	return m_player->getSkills()->getSkillInfo(skillId)->x;
 }
 
 int16_t PlayerStats::getY(int32_t skillId) {
-	return player->getSkills()->getSkillInfo(skillId)->y;
+	return m_player->getSkills()->getSkillInfo(skillId)->y;
 }
 
-int16_t PlayerStats::apResetHp(bool isreset, bool issubtract, int16_t val, int16_t sval) {
-	return (isreset ? (issubtract ? -(sval + val + Stats::BaseHp::Variation) : val) : levelHp(val, sval));
+int16_t PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sval) {
+	return (isReset ? (isSubtract ? -(sval + val + Stats::BaseHp::Variation) : val) : levelHp(val, sval));
 }
 
-int16_t PlayerStats::apResetMp(bool isreset, bool issubtract, int16_t val, int16_t sval) {
-	return (isreset ? (issubtract ? -(sval + val + Stats::BaseMp::Variation) : val) : levelMp(val, sval));
+int16_t PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sval) {
+	return (isReset ? (isSubtract ? -(sval + val + Stats::BaseMp::Variation) : val) : levelMp(val, sval));
 }
 
 int16_t PlayerStats::levelHp(int16_t val, int16_t bonus) {

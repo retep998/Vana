@@ -60,14 +60,14 @@ public:
 	void silentUpdate();
 	void runFunction(function<void (Player *)> func);
 
-	void warpAllMembers(int32_t mapid, const string &portalname = "");
+	void warpAllMembers(int32_t mapId, const string &portalname = "");
 	bool isWithinLevelRange(uint8_t lowbound, uint8_t highbound);
 	bool checkFootholds(int8_t membercount, const vector<vector<int16_t>> &footholds); // Determines if the players are properly arranged (e.g. 3 people on 3 different barrels in Kerning PQ)
 	bool verifyFootholds(const vector<vector<int16_t>> &footholds); // Determines if the players match your selected foothold groups
-	int8_t getMemberCountOnMap(int32_t mapid);
+	int8_t getMemberCountOnMap(int32_t mapId);
 	Player * getMemberByIndex(uint8_t index);
 	vector<int32_t> getAllPlayerIds();
-	vector<Player *> getPartyMembers(int32_t mapid = -1);
+	vector<Player *> getPartyMembers(int32_t mapId = -1);
 
 	void updatePacket(PacketCreator &packet);
 private:

@@ -33,7 +33,7 @@ class Player;
 
 class LuaScriptable {
 public:
-	LuaScriptable(const string &filename, int32_t playerid);
+	LuaScriptable(const string &filename, int32_t playerId);
 	virtual ~LuaScriptable();
 
 	void initialize();
@@ -45,8 +45,8 @@ protected:
 	virtual void handleError();
 	void printError(const string &error);
 
-	string filename;
-	int32_t playerid;
+	string m_filename;
+	int32_t m_playerId;
 	lua_State *luaVm;
 };
 

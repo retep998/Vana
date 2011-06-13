@@ -62,7 +62,7 @@ void WorldServer::loadLogConfig() {
 
 	bool enabled = conf.getBool("log_worlds");
 	if (enabled) {
-		LogConfig log = conf.getLogConfig("world");
+		LogConfig log = conf.getClass<LogConfig>("world");
 		createLogger(log);
 	}
 }

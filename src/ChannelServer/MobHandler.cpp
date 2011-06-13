@@ -53,7 +53,7 @@ void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 
 void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	int32_t mobfrom = packet.get<int32_t>();
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	int32_t mobto = packet.get<int32_t>();
 
 	Map *map = Maps::getMap(player->getMap());
@@ -68,7 +68,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 		int32_t mobHp = (damage > taker->getHp() ? 0 : taker->getHp() - damage);
 		int32_t maxHp = taker->getMaxHp();
 
-		taker->applyDamage(playerid, damage);
+		taker->applyDamage(playerId, damage);
 		if (map->getInstance() != nullptr) {
 			map->getInstance()->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
@@ -77,7 +77,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 
 void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	int32_t mobfrom = packet.get<int32_t>();
-	int32_t playerid = packet.get<int32_t>();
+	int32_t playerId = packet.get<int32_t>();
 	int32_t mobto = packet.get<int32_t>();
 	packet.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
 	int32_t damage = packet.get<int32_t>();
@@ -88,7 +88,7 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	Mob *damager = map->getMob(mobfrom);
 	Mob *taker = map->getMob(mobto);
 	if (damager != nullptr && taker != nullptr) {
-		taker->applyDamage(playerid, damage);
+		taker->applyDamage(playerId, damage);
 	}
 }
 
@@ -101,18 +101,18 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int16_t moveid = packet.get<int16_t>();
-	bool useskill = packet.getBool();
+	int16_t moveId = packet.get<int16_t>();
+	bool useSkill = packet.getBool();
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realskill = 0;
 	uint8_t level = 0;
-	Pos projectiletarget = packet.getPos();
+	Pos projectileTarget = packet.getPos();
 	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
 	Pos spot = packet.getPos();
 
 	MovementHandler::parseMovement(mob, packet);
 
-	if (useskill && (skill == -1 || skill == 0)) {
+	if (useSkill && (skill == -1 || skill == 0)) {
 		if (!(mob->hasStatus(StatusEffects::Mob::Freeze) || mob->hasStatus(StatusEffects::Mob::Stun) || mob->hasStatus(StatusEffects::Mob::ShadowWeb))) {
 			uint8_t size = mob->getSkillCount();
 			bool used = false;
@@ -122,7 +122,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realskill = info->skillId;
 				level = info->level;
-				MobSkillLevelInfo *mobskill = SkillDataProvider::Instance()->getMobSkill(realskill, level);
+				MobSkillLevelInfo *mobSkill = SkillDataProvider::Instance()->getMobSkill(realskill, level);
 				switch (realskill) {
 					case MobSkills::WeaponAttackUp:
 					case MobSkills::WeaponAttackUpAoe:
@@ -150,7 +150,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 						stop = mob->hasStatus(StatusEffects::Mob::Speed);
 						break;
 					case MobSkills::Summon: {
-						int16_t limit = mobskill->limit;
+						int16_t limit = mobSkill->limit;
 						if (limit == 5000) // Custom limit based on number of players on map
 							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
 						if (mob->getSpawnCount() >= limit)
@@ -161,16 +161,16 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 				if (!stop) {
 					time_t now = time(nullptr);
 					time_t ls = mob->getLastSkillUse(realskill);
-					if (ls == 0 || ((int32_t)(now - ls) > mobskill->interval)) {
+					if (ls == 0 || ((int32_t)(now - ls) > mobSkill->interval)) {
 						mob->setLastSkillUse(realskill, now);
 						int64_t reqhp = mob->getHp() * 100;
 						reqhp /= mob->getMaxHp();
-						if ((uint8_t)(reqhp) <= mobskill->hp) {
+						if ((uint8_t)(reqhp) <= mobSkill->hp) {
 							if (info->effectAfter == 0) {
-								handleMobSkill(mob, realskill, level, mobskill);
+								handleMobSkill(mob, realskill, level, mobSkill);
 							}
 							else {
-								new Timer::Timer(bind(&MobHandler::handleMobSkill, mob, realskill, level, mobskill),
+								new Timer::Timer(bind(&MobHandler::handleMobSkill, mob, realskill, level, mobSkill),
 									Timer::Id(Timer::Types::MobSkillTimer, mob->getMobId(), mob->getCounter()),
 									mob->getTimers(), TimeUtilities::fromNow(info->effectAfter));
 							}
@@ -185,9 +185,9 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			}
 		}
 	}
-	MobsPacket::moveMobResponse(player, mobId, moveid, useskill, mob->getMp(), realskill, level);
+	MobsPacket::moveMobResponse(player, mobId, moveId, useSkill, mob->getMp(), realskill, level);
 	packet.reset(19);
-	MobsPacket::moveMob(player, mobId, useskill, skill, projectiletarget, packet.getBuffer(), packet.getBufferLength());
+	MobsPacket::moveMob(player, mobId, useSkill, skill, projectileTarget, packet.getBuffer(), packet.getBufferLength());
 }
 
 namespace Functors {
@@ -216,7 +216,7 @@ namespace Functors {
 	};
 }
 
-void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillinfo) {
+void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillInfo) {
 	using namespace Functors;
 
 	Pos mobpos = mob->getPos();
@@ -227,25 +227,25 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 		case MobSkills::WeaponAttackUpAoe:
 			aoe = true;
 		case MobSkills::WeaponAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::MagicAttackUpAoe:
 			aoe = true;
 		case MobSkills::MagicAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::WeaponDefenseUpAoe:
 			aoe = true;
 		case MobSkills::WeaponDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::MagicDefenseUpAoe:
 			aoe = true;
 		case MobSkills::MagicDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::HealAoe:
-			map->healMobs(skillinfo->x, skillinfo->y, mobpos, skillinfo->lt, skillinfo->rb);
+			map->healMobs(skillInfo->x, skillInfo->y, mobpos, skillInfo->lt, skillInfo->rb);
 			break;
 		case MobSkills::Seal:
 		case MobSkills::Darkness:
@@ -258,12 +258,12 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 		case MobSkills::CrazySkull:
 		case MobSkills::Zombify: {
 			StatusPlayers func = {skillId, level};
-			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
+			map->runFunctionPlayers(func, mobpos, skillInfo->lt, skillInfo->rb, skillInfo->prop, skillInfo->count);
 			break;
 		}
 		case MobSkills::Dispel: {
 			DispelPlayers func;
-			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop);
+			map->runFunctionPlayers(func, mobpos, skillInfo->lt, skillInfo->rb, skillInfo->prop);
 			break;
 		}
 		case MobSkills::SendToTown: {
@@ -278,65 +278,65 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 				}
 			}
 			BanishPlayers func = {message, field, portal};
-			map->runFunctionPlayers(func, mobpos, skillinfo->lt, skillinfo->rb, skillinfo->prop, skillinfo->count);
+			map->runFunctionPlayers(func, mobpos, skillInfo->lt, skillInfo->rb, skillInfo->prop, skillInfo->count);
 			break;
 		}
 		case MobSkills::PoisonMist:
-			new Mist(mob->getMapId(), mob, mobpos, skillinfo, skillId, level);
+			new Mist(mob->getMapId(), mob, mobpos, skillInfo, skillId, level);
 			break;
 		case MobSkills::WeaponImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::MagicImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::WeaponDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillId, level, skillinfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo->x, skillId, level, skillinfo->y, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
 			break;
 		case MobSkills::MagicDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillId, level, skillinfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo->x, skillId, level, skillinfo->y, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
 			break;
 		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillinfo->x, skillId, level, skillinfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillinfo->x, skillId, level, skillinfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillinfo->x, skillId, level, skillinfo->y, skillinfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillinfo->x, skillId, level, skillinfo->y, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
 			break;
 		case MobSkills::McSpeedUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skillinfo->x, skillId, level, skillinfo->time));
+			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::Summon: {
 			int16_t minx, maxx;
-			int16_t miny = mobpos.y + skillinfo->lt.y;
-			int16_t maxy = mobpos.y + skillinfo->rb.y;
+			int16_t miny = mobpos.y + skillInfo->lt.y;
+			int16_t maxy = mobpos.y + skillInfo->rb.y;
 			int16_t d = 0;
 			if (mob->isFacingRight()) {
-				minx = mobpos.x + skillinfo->rb.x * -1;
-				maxx = mobpos.x + skillinfo->lt.x * -1;
+				minx = mobpos.x + skillInfo->rb.x * -1;
+				maxx = mobpos.x + skillInfo->lt.x * -1;
 			}
 			else {
-				minx = mobpos.x + skillinfo->lt.x;
-				maxx = mobpos.x + skillinfo->rb.x;
+				minx = mobpos.x + skillInfo->lt.x;
+				maxx = mobpos.x + skillInfo->rb.x;
 			}
-			for (size_t summonsize = 0; summonsize < skillinfo->summons.size(); summonsize++) {
-				int32_t spawnid = skillinfo->summons[summonsize];
+			for (size_t summonsize = 0; summonsize < skillInfo->summons.size(); summonsize++) {
+				int32_t spawnId = skillInfo->summons[summonsize];
 				int16_t mobx = Randomizer::Instance()->randShort(maxx, minx);
 				int16_t moby = Randomizer::Instance()->randShort(maxy, miny);
 				Pos floor;
 				if (mob->getMapId() == Maps::OriginOfClockTower) {
 					// Papulatus' map
-					if (spawnid == Mobs::HighDarkstar) {
+					if (spawnId == Mobs::HighDarkstar) {
 						// Keep High Darkstars high
-						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillinfo->lt, skillinfo->rb, floor)) {
+						while ((floor.y > -538 || floor.y == moby) || !GameLogicUtilities::isInBox(mob->getPos(), skillInfo->lt, skillInfo->rb, floor)) {
 							// Mobs spawn on the ground, we need them up top
 							mobx = Randomizer::Instance()->randShort(maxx, minx);
 							moby = -590;
 							floor = map->findFloor(Pos(mobx, moby));
 						}
 					}
-					else if (spawnid == Mobs::LowDarkstar) {
+					else if (spawnId == Mobs::LowDarkstar) {
 						// Keep Low Darkstars low
 						floor = map->findFloor(Pos(mobx, mobpos.y));
 					}
@@ -348,7 +348,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 						floor.y = mobpos.y;
 					}
 				}
-				map->spawnMob(spawnid, floor, 0, mob, skillinfo->summonEffect);
+				map->spawnMob(spawnId, floor, 0, mob, skillInfo->summonEffect);
 				d++;
 			}
 			break;
@@ -356,7 +356,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 	}
 	if (statuses.size() > 0) {
 		if (aoe) {
-			map->statusMobs(statuses, mob->getPos(), skillinfo->lt, skillinfo->rb);
+			map->statusMobs(statuses, mob->getPos(), skillInfo->lt, skillInfo->rb);
 		}
 		else {
 			mob->addStatus(0, statuses);
@@ -364,8 +364,8 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 	}
 }
 
-int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
@@ -551,7 +551,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerid, Mob *mob, int32_t skillId,
 	}
 
 	if (statuses.size() > 0) {
-		mob->addStatus(playerid, statuses);
+		mob->addStatus(playerId, statuses);
 	}
 	return statuses.size();
 }

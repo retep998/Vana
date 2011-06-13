@@ -38,13 +38,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include <algorithm>
 
-void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
+void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
 	GlobalDrops *gdrops = DropDataProvider::Instance()->getGlobalDrops();
 	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gdrops == nullptr) {
 		return;
 	}
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId); // Make a copy of the data so we can modify the object with global drops
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerid);
+	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
 	int16_t d = 0;
 	int32_t partyid = 0;
 	Pos pos;
@@ -57,7 +57,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 	if (droppingLevel != 0 && gdrops != nullptr) {
 		// Check for global drops, add to the vector if needed
 		DropInfo d;
-		int8_t continent = MapDataProvider::Instance()->getContinent(mapid);
+		int8_t continent = MapDataProvider::Instance()->getContinent(mapId);
 		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
 			if (droppingLevel >= i->minLevel && droppingLevel <= i->maxLevel) {
 				if (i->continent == 0 || (continent == i->continent)) {
@@ -95,8 +95,8 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 			pos.x = origin.x + ((d % 2) ? (mod * (d + 1) / 2) : -(mod * (d / 2)));
 			pos.y = origin.y;
 
-			if (Maps::getMap(mapid)->getFhAtPosition(pos) == 0) {
-				// pos = Maps::getMap(mapid)->findFloor(pos); // getFhAtPosition doesn't work correctly!
+			if (Maps::getMap(mapId)->getFhAtPosition(pos) == 0) {
+				// pos = Maps::getMap(mapId)->findFloor(pos); // getFhAtPosition doesn't work correctly!
 			}
 
 			if (!i->isMesos) {
@@ -115,10 +115,10 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 				}
 
 				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, true) : Item(itemId, amount));
-				drop = new Drop(mapid, f, pos, playerid);
+				drop = new Drop(mapId, f, pos, playerId);
 
 				if (questId > 0) {
-					drop->setPlayerId(playerid);
+					drop->setPlayerId(playerId);
 					drop->setQuest(questId);
 				}
 			}
@@ -131,7 +131,7 @@ void DropHandler::doDrops(int32_t playerid, int32_t mapid, int32_t droppingLevel
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Jobs::Hermit::MesoUp)->x) / 100;
 					}
 				}
-				drop = new Drop(mapid, mesos, pos, playerid);
+				drop = new Drop(mapId, mesos, pos, playerId);
 			}
 		}
 
@@ -172,7 +172,7 @@ void DropHandler::petLoot(Player *player, PacketReader &packet) {
 	lootItem(player, packet, petId);
 }
 
-void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) {
+void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) {
 	packet.skipBytes(5);
 	Pos playerPos = packet.getPos();
 	int32_t dropId = packet.get<int32_t>();
@@ -204,7 +204,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) 
 	if (drop->isMesos()) {
 		int32_t playerrate = 100;
 		int32_t mesos = drop->getObjectId();
-		if (player->getParty() != nullptr && !drop->isPlayerDrop()) {
+		if (player->getParty() != nullptr && !drop->isplayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
 			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
 			if (members.size() != 1) {
@@ -254,7 +254,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) 
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
 				Inventory::useItem(player, dropitem.getId());
 				DropsPacket::dontTake(player);
-				drop->takeDrop(player, petid);
+				drop->takeDrop(player, petId);
 				return;
 			}
 			Inventory::useItem(player, dropitem.getId());
@@ -276,5 +276,5 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petid) 
 		DropsPacket::pickupDrop(player, drop->getObjectId(), drop->getAmount());
 	}
 	ReactorHandler::checkLoot(drop);
-	drop->takeDrop(player, petid);
+	drop->takeDrop(player, petId);
 }

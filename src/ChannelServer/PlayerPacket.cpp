@@ -135,30 +135,38 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStatInt(Player *player, int32_t id, int32_t value, bool is) {
+void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_PLAYER_UPDATE);
-	packet.addBool(is);
-	packet.add<int32_t>(id);
+	packet.addBool(itemResponse);
+	packet.add<int32_t>(updateBits);
+	switch (updateBits) {
+		// For now it only accepts updateBits as a single unit, might be a collection later
+		case Stats::Pet:
+		case Stats::Level:
+		case Stats::Job:
+		case Stats::Str:
+		case Stats::Dex:
+		case Stats::Int:
+		case Stats::Luk:
+		case Stats::Hp:
+		case Stats::MaxHp:
+		case Stats::Mp:
+		case Stats::MaxMp:
+		case Stats::Ap:
+		case Stats::Sp:
+			packet.add<int16_t>(static_cast<int16_t>(value));
+			break;
+		case Stats::Skin:
+		case Stats::Eyes:
+		case Stats::Hair:
+		case Stats::Exp:
+		case Stats::Fame:
+		case Stats::Mesos:
+			packet.add<int32_t>(value);
+			break;
+	}
 	packet.add<int32_t>(value);
-	player->getSession()->send(packet);
-}
-
-void PlayerPacket::updateStatShort(Player *player, int32_t id, int16_t value, bool is) {
-	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_UPDATE);
-	packet.addBool(is);
-	packet.add<int32_t>(id);
-	packet.add<int16_t>(value);
-	player->getSession()->send(packet);
-}
-
-void PlayerPacket::updateStatChar(Player *player, int32_t id, int8_t value, bool is) {
-	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_UPDATE);
-	packet.addBool(is);
-	packet.add<int32_t>(id);
-	packet.add<int8_t>(value);
 	player->getSession()->send(packet);
 }
 

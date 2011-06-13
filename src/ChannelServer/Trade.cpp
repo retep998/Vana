@@ -92,13 +92,13 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						continue;
 					}
 					int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId);
-					int32_t current_amount = target->getInventory()->getItemAmount(itemId);
-					int32_t last_slot = (current_amount % maxSlot); // Get the number of items in the last slot
-					int32_t item_sum = last_slot + added[itemId];
+					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
+					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
+					int32_t itemSum = lastSlot + added[itemId];
 					bool needslots = false;
-					if (last_slot > 0) {
+					if (lastSlot > 0) {
 						// Items in the last slot, potential for needing slots
-						if (item_sum > maxSlot) {
+						if (itemSum > maxSlot) {
 							needslots = true;
 						}
 					}
@@ -107,12 +107,12 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 						needslots = true;
 					}
 					if (needslots) {
-						uint8_t numslots = (uint8_t)(item_sum / maxSlot);
-						uint8_t remainder = (uint8_t)(item_sum % maxSlot);
+						uint8_t numSlots = (uint8_t)(itemSum / maxSlot);
+						uint8_t remainder = (uint8_t)(itemSum % maxSlot);
 						if (remainder > 0) {
 							totals[inv - 1]++;
 						}
-						totals[inv - 1] += numslots;
+						totals[inv - 1] += numSlots;
 					}
 					added.erase(itemId);
 				}
@@ -207,22 +207,22 @@ int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
 	return unit->mesos;
 }
 
-Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeslot, int16_t inventoryslot, int8_t inventory, int16_t amount) {
+Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) {
 	Item *use = new Item(item);
 	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
-		holder->getInventory()->setItem(inventory, inventoryslot, nullptr);
-		InventoryPacket::moveItem(holder, inventory, inventoryslot, 0);
-		holder->getInventory()->deleteItem(inventory, inventoryslot);
+		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
+		InventoryPacket::moveItem(holder, inventory, inventorySlot, 0);
+		holder->getInventory()->deleteItem(inventory, inventorySlot);
 	}
 	else {
 		item->decAmount(amount);
 		holder->getInventory()->changeItemAmount(item->getId(), item->getAmount());
-		InventoryPacket::updateItemAmounts(holder, inventory, inventoryslot, item->getAmount(), 0, 0);
+		InventoryPacket::updateItemAmounts(holder, inventory, inventorySlot, item->getAmount(), 0, 0);
 		use->setAmount(amount);
 	}
 	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;
-	uint8_t index = tradeslot - 1;
+	uint8_t index = tradeSlot - 1;
 	unit->items[index] = use;
 	unit->slot[index] = true;
 	return use;

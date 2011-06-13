@@ -71,7 +71,7 @@ namespace AdminOpcodes {
 		Block = /block (character name) (duration) (sort)
 		Hide = /h (0 = off, 1 = on)
 		Log = /log (character name) (0 = off, 1 = on)
-		Send = /send (character name) (mapid)
+		Send = /send (character name) (mapId)
 		Summon = /summon (mobId) (amount)
 		VarSetGet = /varset (charactername) (variable name) (variable value)
 					/varget (charactername) (variable name)
@@ -131,10 +131,10 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 		}
 		case AdminOpcodes::Send: {
 			string name = packet.getString();
-			int32_t mapid = packet.get<int32_t>();
+			int32_t mapId = packet.get<int32_t>();
 
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(name)) {
-				receiver->setMap(mapid);
+				receiver->setMap(mapId);
 			}
 			else {
 				GmPacket::invalidCharacterName(player);
@@ -156,8 +156,8 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::CreateItem: {
-			int32_t itemid = packet.get<int32_t>();
-			Inventory::addNewItem(player, itemid, 1);
+			int32_t itemId = packet.get<int32_t>();
+			Inventory::addNewItem(player, itemId, 1);
 			break;
 		}
 		case AdminOpcodes::DestroyFirstItem: {

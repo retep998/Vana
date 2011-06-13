@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 
-class Player;
 class PacketReader;
+class Player;
 
 namespace Quests {
 	void getQuest(Player *player, PacketReader &packet);

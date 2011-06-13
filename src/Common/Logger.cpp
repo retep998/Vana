@@ -93,10 +93,10 @@ string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const st
 
 string Logger::getTimeFormatted(const string &fmt) {
 	// This function is gloriously unelegant
-	const LogReplacements::map_t &butts = LogReplacements::Instance()->getMap();
+	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
 	string ret = fmt;
 	time_t start = time(nullptr);
-	for (LogReplacements::map_t::const_iterator iter = butts.begin(); iter != butts.end(); ++iter) {
+	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {
 			std::stringstream strm;

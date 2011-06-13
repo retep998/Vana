@@ -46,13 +46,13 @@ public:
 	void rockPacket(PacketCreator &packet);
 	void wishListPacket(PacketCreator &packet);
 
-	void setMesos(int32_t mesos, bool is = false);
-	bool modifyMesos(int32_t mod, bool is = false);
+	void setMesos(int32_t mesos, bool sendPacket = false);
+	bool modifyMesos(int32_t mod, bool sendPacket = false);
 	void addMaxSlots(int8_t inventory, int8_t rows);
-	void addItem(int8_t inv, int16_t slot, Item *item, bool isLoading = false);
+	void addItem(int8_t inv, int16_t slot, Item *item, bool sendPacketLoading = false);
 	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
 	void setItem(int8_t inv, int16_t slot, Item *item);
-	void changeItemAmount(int32_t itemId, int16_t amount) { m_itemamounts[itemId] += amount; }
+	void changeItemAmount(int32_t itemId, int16_t amount) { m_itemAmounts[itemId] += amount; }
 	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
 	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
 
@@ -76,9 +76,9 @@ public:
 	int16_t getHammerSlot() const { return m_hammer; }
 	void setHammerSlot(int16_t hammer) { m_hammer = hammer; }
 
-	void addRockMap(int32_t mapid, int8_t type);
-	void delRockMap(int32_t mapid, int8_t type);
-	bool ensureRockDestination(int32_t mapid);
+	void addRockMap(int32_t mapId, int8_t type);
+	void delRockMap(int32_t mapId, int8_t type);
+	bool ensureRockDestination(int32_t mapId);
 
 	void addWishListItem(int32_t itemId);
 	void checkExpiredItems();
@@ -89,11 +89,11 @@ private:
 	boost::array<boost::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
 	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
 
-	vector<int32_t> m_viplocations;
-	vector<int32_t> m_rocklocations;
+	vector<int32_t> m_vipLocations;
+	vector<int32_t> m_rockLocations;
 	vector<int32_t> m_wishlist;
 
-	unordered_map<int32_t, uint16_t> m_itemamounts;
+	unordered_map<int32_t, uint16_t> m_itemAmounts;
 	int16_t m_hammer;
 	int32_t m_mesos;
 	int32_t m_autoHpPotId; // For checking the auto HP/MP potion ID

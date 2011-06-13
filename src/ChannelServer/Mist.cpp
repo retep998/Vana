@@ -21,16 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SkillDataProvider.h"
 
-Mist::Mist(int32_t mapid, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool ispoison) :
-m_ownermap(mapid),
-m_ownerid(owner->getId()),
-m_skill(skillId),
-m_level(level),
-m_origin(origin),
-m_time((int16_t)(skill->time)),
-m_delay(8),
-m_ismobmist(false),
-m_poison(ispoison)
+Mist::Mist(int32_t mapId, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool isPoison) :
+	m_ownerMap(mapId),
+	m_ownerId(owner->getId()),
+	m_skill(skillId),
+	m_level(level),
+	m_origin(origin),
+	m_time((int16_t)(skill->time)),
+	m_delay(8),
+	m_isMobMist(false),
+	m_poison(isPoison)
 {
 	if (owner->isFacingRight()) {
 		m_rb = Pos(skill->lt.x * -1 + origin.x, skill->rb.y + origin.y);
@@ -40,22 +40,22 @@ m_poison(ispoison)
 		m_lt = Pos(skill->lt.x + origin.x, skill->lt.y + origin.y);
 		m_rb = Pos(skill->rb.x + origin.x, skill->rb.y + origin.y);
 	}
-	m_skilllt = skill->lt;
-	m_skillrb = skill->rb;
+	m_skillLt = skill->lt;
+	m_skillRb = skill->rb;
 
-	Maps::getMap(mapid)->addMist(this);
+	Maps::getMap(mapId)->addMist(this);
 }
 
-Mist::Mist(int32_t mapid, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level) :
-m_ownermap(mapid),
-m_ownerid(owner->getId()),
-m_skill(skillId),
-m_level(level),
-m_origin(origin),
-m_time(skill->time),
-m_delay(0),
-m_ismobmist(true),
-m_poison(true)
+Mist::Mist(int32_t mapId, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level) :
+	m_ownerMap(mapId),
+	m_ownerId(owner->getId()),
+	m_skill(skillId),
+	m_level(level),
+	m_origin(origin),
+	m_time(skill->time),
+	m_delay(0),
+	m_isMobMist(true),
+	m_poison(true)
 {
 	if (owner->isFacingRight()) {
 		m_rb = Pos(skill->lt.x * -1 + origin.x, skill->rb.y + origin.y);
@@ -65,12 +65,12 @@ m_poison(true)
 		m_lt = Pos(skill->lt.x + origin.x, skill->lt.y + origin.y);
 		m_rb = Pos(skill->rb.x + origin.x, skill->rb.y + origin.y);
 	}
-	m_skilllt = skill->lt;
-	m_skillrb = skill->rb;
+	m_skillLt = skill->lt;
+	m_skillRb = skill->rb;
 
-	Maps::getMap(mapid)->addMist(this);
+	Maps::getMap(mapId)->addMist(this);
 }
 
 Map * Mist::getMap() const {
-	return Maps::getMap(m_ownermap);
+	return Maps::getMap(m_ownerMap);
 }

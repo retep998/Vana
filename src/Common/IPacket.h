@@ -17,30 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "LuaScriptable.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <string>
+#include "Types.h"
 
-using std::tr1::unordered_map;
-using std::string;
+class PacketCreator;
+class PacketReader;
 
-struct PortalInfo;
-
-class LuaPortal : public LuaScriptable {
+class IPacketWritable {
 public:
-	LuaPortal(const string &filename, int32_t playerId, PortalInfo *portal);
-private:
-	PortalInfo *m_portal;
+	virtual void write(PacketCreator &packet) = 0;
 };
 
-namespace LuaExports {
-	PortalInfo * getPortal(lua_State *luaVm);
-	extern unordered_map<int32_t, PortalInfo *> portals;
+template <typename T>
+class IPacketReadable {
+public:
+	virtual void read(PacketReader &packet) = 0;
+};
 
-	// Portal exports
-
-	// Portal
-	int getPortalName(lua_State *luaVm);
-	int instantWarp(lua_State *luaVm);
-	int playPortalSe(lua_State *luaVm);
-}
+template <typename T>
+class IPacketSerializable : public IPacketWritable, public IPacketReadable<T> { };

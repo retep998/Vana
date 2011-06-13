@@ -26,8 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::vector;
 
-LuaNpc::LuaNpc(const string &filename, int32_t playerid) : LuaScriptable(filename, playerid) {
-	luaThread = lua_newthread(luaVm);
+LuaNpc::LuaNpc(const string &filename, int32_t playerId) :
+	LuaScriptable(filename, playerId)
+{
+	m_luaThread = lua_newthread(luaVm);
 
 	// Miscellaneous
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
@@ -57,7 +59,7 @@ LuaNpc::LuaNpc(const string &filename, int32_t playerid) : LuaScriptable(filenam
 }
 
 bool LuaNpc::run() {
-	if (luaL_loadfile(luaThread, filename.c_str())) {
+	if (luaL_loadfile(m_luaThread, m_filename.c_str())) {
 		// Error in lua script
 		handleError();
 		return false;
@@ -65,12 +67,14 @@ bool LuaNpc::run() {
 	return resume(0); // Start running the script
 }
 
-bool LuaNpc::resume(int32_t nargs) {
-	int32_t ret = lua_resume(luaThread, nargs);
-	if (ret == 0) { // NPC finished
-		PlayerDataProvider::Instance()->getPlayer(playerid)->getNpc()->end();
+bool LuaNpc::resume(int32_t nArgs) {
+	int32_t ret = lua_resume(m_luaThread, nArgs);
+	if (ret == 0) {
+		// NPC finished
+		PlayerDataProvider::Instance()->getPlayer(m_playerId)->getNpc()->end();
 	}
-	else if (ret != LUA_YIELD) { // error, a working NPC returns either 0 or LUA_YIELD
+	else if (ret != LUA_YIELD) {
+		// Error, a working NPC returns either 0 or LUA_YIELD
 		handleError();
 		return false;
 	}
@@ -82,23 +86,23 @@ bool LuaNpc::proceedNext() {
 }
 
 bool LuaNpc::proceedSelection(uint8_t selected) {
-	lua_pushinteger(luaThread, selected);
+	lua_pushinteger(m_luaThread, selected);
 	return resume(1);
 }
 
 bool LuaNpc::proceedNumber(int32_t number) {
-	lua_pushinteger(luaThread, number);
+	lua_pushinteger(m_luaThread, number);
 	return resume(1);
 }
 
 bool LuaNpc::proceedText(const string &text) {
-	lua_pushstring(luaThread, text.c_str());
+	lua_pushstring(m_luaThread, text.c_str());
 	return resume(1);
 }
 
 void LuaNpc::handleError() {
-	printError(lua_tostring(luaThread, -1));
-	PlayerDataProvider::Instance()->getPlayer(playerid)->getNpc()->end();
+	printError(lua_tostring(m_luaThread, -1));
+	PlayerDataProvider::Instance()->getPlayer(m_playerId)->getNpc()->end();
 }
 
 Npc * LuaExports::getNpc(lua_State *luaVm) {
@@ -122,7 +126,7 @@ int LuaExports::getNpcId(lua_State *luaVm) {
 }
 
 int LuaExports::npcRunNpc(lua_State *luaVm) {
-	int32_t npcid = lua_tointeger(luaVm, 1);
+	int32_t npcId = lua_tointeger(luaVm, 1);
 	string script;
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
@@ -130,9 +134,9 @@ int LuaExports::npcRunNpc(lua_State *luaVm) {
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::Instance()->getScript(npcid, ScriptTypes::Npc);
+		script = ScriptDataProvider::Instance()->getScript(npcId, ScriptTypes::Npc);
 	}
-	getNpc(luaVm)->setEndScript(npcid, script);
+	getNpc(luaVm)->setEndScript(npcId, script);
 	return 0;
 }
 

@@ -29,9 +29,9 @@ class PacketReader;
 class Player;
 
 namespace Inventory {
-	int16_t addItem(Player *player, Item *item, bool is = false);
+	int16_t addItem(Player *player, Item *item, bool fromDrop = false);
 	void addNewItem(Player *player, int32_t itemId, int16_t amount);
-	void takeItem(Player *player, int32_t itemId, uint16_t howmany);
+	void takeItem(Player *player, int32_t itemId, uint16_t howMany);
 	void useItem(Player *player, int32_t itemId);
 	void takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false);
 }

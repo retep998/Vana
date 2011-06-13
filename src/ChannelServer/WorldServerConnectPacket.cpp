@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "WorldServerConnection.h"
 
-void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t type, int32_t playerid, const vector<int32_t> &receivers, const string &chat) {
+void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_GROUP_CHAT);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(playerId);
 	packet.add<int8_t>(type);
 	packet.addString(chat);
 	packet.addVector(receivers);
@@ -34,18 +34,18 @@ void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t t
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::findPlayer(WorldServerConnection *player, int32_t playerid, const string &findee_name) {
+void WorldServerConnectPacket::findPlayer(WorldServerConnection *player, int32_t playerId, const string &findeeName) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_FIND);
-	packet.add<int32_t>(playerid);
-	packet.addString(findee_name);
+	packet.add<int32_t>(playerId);
+	packet.addString(findeeName);
 	player->getSession()->send(packet);
 }
 
-void WorldServerConnectPacket::whisperPlayer(WorldServerConnection *player, int32_t playerid, const string &whisperee, const string &message) {
+void WorldServerConnectPacket::whisperPlayer(WorldServerConnection *player, int32_t playerId, const string &whisperee, const string &message) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_WHISPER);
-	packet.add<int32_t>(playerid);
+	packet.add<int32_t>(playerId);
 	packet.addString(whisperee);
 	packet.addString(message);
 	player->getSession()->send(packet);

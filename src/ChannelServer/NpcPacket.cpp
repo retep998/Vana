@@ -33,14 +33,14 @@ void NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, boo
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpc(int32_t mapid, const NpcSpawnInfo &npc, int32_t id, bool show) {
+void NpcPacket::showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show) {
 	PacketCreator packet;
 	showNpc(packet, npc, id, show);
-	Maps::getMap(mapid)->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 
 	packet = PacketCreator();
 	controlNpc(packet, npc, id, show);
-	Maps::getMap(mapid)->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
 void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
@@ -94,12 +94,12 @@ void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpcEffect(int32_t mapid, int32_t index, bool show) {
+void NpcPacket::showNpcEffect(int32_t mapId, int32_t index, bool show) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
 	packet.addBool(show);
-	Maps::getMap(mapid)->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
 void NpcPacket::bought(Player *player, uint8_t msg) {
