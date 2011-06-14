@@ -81,7 +81,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 			player->getQuests()->removeQuest(questId);
 		}
 		else {
-			std::stringstream x;
+			std::ostringstream x;
 			x << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
 				<< ") tried to forfeit a quest that wasn't started yet."
@@ -95,7 +95,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
-			std::stringstream x;
+			std::ostringstream x;
 			x << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
 				<< ") tried to perform an action with a non-started quest."
@@ -106,7 +106,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 		}
 	}
 	if (!NpcDataProvider::Instance()->isValidNpcId(npcId)) {
-		std::stringstream x;
+		std::ostringstream x;
 		x << "Player (ID: " << player->getId()
 			<< ", Name: " << player->getName()
 			<< ") tried to do a quest action with an invalid NPC ID."
@@ -123,7 +123,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {
-				std::stringstream x;
+				std::ostringstream x;
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to restore a lost quest item which isn't a quest item."
@@ -136,7 +136,7 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 		}
 		case QuestOpcodes::StartQuest:
 			if (player->getQuests()->isQuestActive(questId)) {
-				std::stringstream x;
+				std::ostringstream x;
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to start an already started quest."

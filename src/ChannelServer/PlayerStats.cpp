@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
-#include "Summons.h"
+#include "SummonHandler.h"
 #include "SyncPacket.h"
 #include <boost/lexical_cast.hpp>
 #include <iostream>
@@ -255,7 +255,7 @@ void PlayerStats::modifiedHp() {
 			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
 		}
 		loseExp();
-		Summons::removeSummon(m_player, false, false, SummonMessages::Disappearing);
+		SummonHandler::removeSummon(m_player, false, false, SummonMessages::Disappearing);
 	}
 }
 

@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ReactorPacket.h"
 #include "Reactor.h"
 #include "Session.h"
-#include "Summons.h"
+#include "SummonHandler.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
 #include <ctime>
@@ -207,8 +207,8 @@ void Map::removePlayer(Player *player) {
 			break;
 		}
 	}
-	Summons::removeSummon(player, true, false, SummonMessages::None);
-	Summons::removeSummon(player, false, true, SummonMessages::None);
+	SummonHandler::removeSummon(player, true, false, SummonMessages::None);
+	SummonHandler::removeSummon(player, false, true, SummonMessages::None);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
 }
@@ -814,7 +814,7 @@ void Map::showObjects(Player *player) {
 		if (player != m_players[i] && !m_players[i]->getActiveBuffs()->isUsingHide()) {
 			PacketCreator packet = MapPacket::playerPacket(m_players[i]);
 			player->getSession()->send(packet);
-			Summons::showSummons(m_players[i], player);
+			SummonHandler::showSummons(m_players[i], player);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()
@@ -828,8 +828,9 @@ void Map::showObjects(Player *player) {
 
 	// Reactors
 	for (size_t i = 0; i < m_reactors.size(); i++) {
-		if (m_reactors[i]->isAlive())
+		if (m_reactors[i]->isAlive()) {
 			ReactorPacket::showReactor(player, m_reactors[i]);
+		}
 	}
 
 	// Mobs

@@ -48,7 +48,7 @@ Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t ti
 	m_markedForDeletion(false)
 {
 	if (!appLaunch) {
-		std::stringstream x;
+		std::ostringstream x;
 		x << name << " started by player " << playerId;
 		ChannelServer::Instance()->log(LogTypes::InstanceBegin, x.str());
 	}

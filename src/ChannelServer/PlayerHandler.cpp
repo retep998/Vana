@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
-#include "Summons.h"
+#include "Summon.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
 #include <functional>

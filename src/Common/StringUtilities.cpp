@@ -79,7 +79,7 @@ string StringUtilities::replace(const string &input, const string &what, const s
 string StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase) {
 	string ret;
 	if (inputSize > 0) {
-		std::stringstream out;
+		std::ostringstream out;
 		size_t bufLen = inputSize - 1;
 
 		for (size_t i = 0; i <= bufLen; i++) {

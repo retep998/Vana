@@ -170,8 +170,7 @@ string TimeUtilities::getTimeZone() {
 		offset *= -1;
 	}
 
-	string ret;
-	std::stringstream t;
+	std::ostringstream t;
 	if (negative) {
 		t << "-";
 	}
@@ -179,8 +178,7 @@ string TimeUtilities::getTimeZone() {
 		t << "+";
 	}
 	t << std::setw(4) << std::setfill('0') << offset;
-	ret = t.str();
-	return ret;
+	return t.str();
 }
 
 int32_t TimeUtilities::getTimeZoneOffset() {

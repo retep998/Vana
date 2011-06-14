@@ -103,9 +103,6 @@
     <ClCompile Include="src\ChannelServer\Skills.cpp">
       <Filter>Source\ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Summons.cpp">
-      <Filter>Source\ChannelServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\Trade.cpp">
       <Filter>Source\ChannelServer</Filter>
     </ClCompile>
@@ -350,6 +347,12 @@
     <ClCompile Include="src\ChannelServer\PartyPacket.cpp">
       <Filter>Source\Packets</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\SummonHandler.cpp">
+      <Filter>Source\Handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\Summon.cpp">
+      <Filter>Source\ChannelServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -413,9 +416,6 @@
       <Filter>Source\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Skills.h">
-      <Filter>Source\ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Summons.h">
       <Filter>Source\ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Trade.h">
@@ -654,6 +654,12 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\PartyPacket.h">
       <Filter>Source\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\SummonHandler.h">
+      <Filter>Source\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\Summon.h">
+      <Filter>Source\ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

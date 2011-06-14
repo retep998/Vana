@@ -134,7 +134,8 @@
     <ClCompile Include="src\ChannelServer\ReactorHandler.cpp" />
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp" />
     <ClCompile Include="src\ChannelServer\Skills.cpp" />
-    <ClCompile Include="src\ChannelServer\Summons.cpp" />
+    <ClCompile Include="src\ChannelServer\SummonHandler.cpp" />
+    <ClCompile Include="src\ChannelServer\Summon.cpp" />
     <ClCompile Include="src\ChannelServer\SyncHandler.cpp" />
     <ClCompile Include="src\ChannelServer\SyncPacket.cpp" />
     <ClCompile Include="src\ChannelServer\Trade.cpp" />
@@ -236,7 +237,8 @@
     <ClInclude Include="src\ChannelServer\ReactorHandler.h" />
     <ClInclude Include="src\ChannelServer\SkillMacros.h" />
     <ClInclude Include="src\ChannelServer\Skills.h" />
-    <ClInclude Include="src\ChannelServer\Summons.h" />
+    <ClInclude Include="src\ChannelServer\SummonHandler.h" />
+    <ClInclude Include="src\ChannelServer\Summon.h" />
     <ClInclude Include="src\ChannelServer\SyncHandler.h" />
     <ClInclude Include="src\ChannelServer\SyncPacket.h" />
     <ClInclude Include="src\ChannelServer\Trade.h" />
