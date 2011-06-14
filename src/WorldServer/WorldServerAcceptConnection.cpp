@@ -80,7 +80,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);
-			std::cout << "Error: No more channels to assign." << std::endl;
+			std::cerr << "Error: No more channels to assign." << std::endl;
 			getSession()->disconnect();
 		}
 	}

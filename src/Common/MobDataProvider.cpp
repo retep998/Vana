@@ -216,7 +216,7 @@ MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) {
 		return &m_attacks[mobId].at(index);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Attack does not exist for mobId " << mobId << " at index " << index << std::endl;
+		std::cerr << "Attack does not exist for mobId " << mobId << " at index " << index << std::endl;
 	}
 	return nullptr;
 }
@@ -226,7 +226,7 @@ MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) {
 		return &m_skills[mobId].at(index);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Skill does not exist for mobId " << mobId << " at index " << index << std::endl;
+		std::cerr << "Skill does not exist for mobId " << mobId << " at index " << index << std::endl;
 	}
 	return nullptr;
 }

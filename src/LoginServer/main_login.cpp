@@ -53,7 +53,7 @@ int main() {
 #endif
 	}
 	catch (std::exception &e) {
-		std::cout << "ERROR: " << e.what() << std::endl;
+		std::cerr << "ERROR: " << e.what() << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 	}

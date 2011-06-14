@@ -65,7 +65,7 @@ void Session::handleStop() {
 	boost::system::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
-		std::cout << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message() << std::endl;
+		std::cerr << "FAILURE TO CLOSE SESSION (" << ec.value() << "): " << ec.message() << std::endl;
 	}
 }
 

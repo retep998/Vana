@@ -51,7 +51,7 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 		ChannelServer::Instance()->connectWorld();
 	}
 	else {
-		std::cout << "Error: No world server to connect" << std::endl;
+		std::cerr << "Error: No world server to connect" << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
 }
@@ -78,7 +78,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->displayLaunchTime();
 	}
 	else {
-		std::cout << "Error: No channel to handle" << std::endl;
+		std::cerr << "Error: No channel to handle" << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
 }

@@ -94,7 +94,7 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				stance = packet.get<int8_t>();
 				break;
 			default:
-				std::cout << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;
+				std::cerr << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;
 				break;
 		}
 	}

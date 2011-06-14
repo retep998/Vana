@@ -34,8 +34,8 @@ void DatabaseMigration::Runner::run() {
 		query << m_queries[i];
 
 		if (!query.exec()) {
-			std::cout << "\nERROR: " << Database::getCharDb().error() << std::endl;
-			std::cout << "File: " << m_filename << std::endl;
+			std::cerr << "\nERROR: " << Database::getCharDb().error() << std::endl;
+			std::cerr << "File: " << m_filename << std::endl;
 			// TODO: Handle the error
 		}
 	}
