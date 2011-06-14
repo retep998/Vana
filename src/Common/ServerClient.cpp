@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-using std::cout;
 using std::endl;
 
 ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection) :
@@ -52,16 +51,16 @@ void ServerClient::startConnect() {
 			start();
 		}
 		catch (std::range_error) {
-			cout << "Error: Malformed IV packet" << endl;
-			cout << "Press enter to quit ...";
+			std::cerr << "Error: Malformed IV packet" << endl;
+			std::cout << "Press enter to quit ...";
 			disconnect();
 			getchar();
 			exit(ExitCodes::ServerConnectionError);
 		}
 	}
 	else {
-		cout << "Error: " << error.message() << endl;
-		cout << "Press enter to quit ...";
+		std::cerr << "Error: " << error.message() << endl;
+		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(ExitCodes::ServerConnectionError);
 	}
@@ -95,10 +94,10 @@ void ServerClient::readConnectPacket() {
 	int8_t locale = packet.get<int8_t>();
 
 	if (version != MapleVersion::Version || locale != MapleVersion::Locale) {
-		cout << "ERROR: The server you are connecting to lacks the same MapleStory version." << endl;
-		cout << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << endl;
-		cout << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << endl;
-		cout << "Press enter to quit ...";
+		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << endl;
+		std::cout << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << endl;
+		std::cout << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << endl;
+		std::cout << "Press enter to quit ...";
 		disconnect();
 		getchar();
 		exit(ExitCodes::ServerVersionMismatch);

@@ -348,12 +348,12 @@ void LuaScriptable::handleError() {
 }
 
 void LuaScriptable::printError(const string &error) {
-	std::cout << error << std::endl;
+	std::cerr << error << std::endl;
 
 	Player *player = PlayerDataProvider::Instance()->getPlayer(m_playerId);
 
 	if (player == nullptr) {
-		std::cout << "Script error in " << m_filename << ": " << error << std::endl;
+		std::cerr << "Script error in " << m_filename << ": " << error << std::endl;
 		return;
 	}
 

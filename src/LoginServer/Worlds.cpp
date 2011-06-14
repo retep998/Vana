@@ -119,7 +119,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);
-		std::cout << "Error: No more worlds to assign." << std::endl;
+		std::cerr << "Error: No more worlds to assign." << std::endl;
 		connection->getSession()->disconnect();
 	}
 	return worldId;
@@ -145,7 +145,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	}
 	else {
 		LoginServerAcceptPacket::connectChannel(connection, worldId, 0, 0);
-		std::cout << "Error: No more channels to assign." << std::endl;
+		std::cerr << "Error: No more channels to assign." << std::endl;
 	}
 	connection->getSession()->disconnect();
 	return worldId;

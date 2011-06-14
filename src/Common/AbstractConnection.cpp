@@ -58,7 +58,7 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 		handleRequest(packet);
 	}
 	catch (std::exception &e) {
-		std::cout << "ERROR: " << e.what() << std::endl;
+		std::cerr << "ERROR: " << e.what() << std::endl;
 	}
 }
 

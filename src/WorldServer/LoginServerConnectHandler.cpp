@@ -44,7 +44,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::Instance()->displayLaunchTime();
 	}
 	else {
-		std::cout << "Error: No world to handle" << std::endl;
+		std::cerr << "Error: No world to handle" << std::endl;
 		WorldServer::Instance()->shutdown();
 	}
 }

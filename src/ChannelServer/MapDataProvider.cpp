@@ -372,7 +372,7 @@ int8_t MapDataProvider::getContinent(int32_t mapId) {
 		return m_continents.left.at(cluster);
 	}
 	catch (std::out_of_range) {
-		std::cout << "Attempted to get a continent ID that does not exist for mapId " << mapId << std::endl;
+		std::cerr << "Attempted to get a continent ID that does not exist for mapId " << mapId << std::endl;
 	}
 	return 0;
 }

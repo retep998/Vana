@@ -82,7 +82,7 @@ void DatabaseMigration::loadDatabaseInfo() {
 void DatabaseMigration::loadSqlFiles() {
 	fs::path fullPath = fs::system_complete(fs::path("sql", fs::native));
 	if (!fs::exists(fullPath)) {
-		std::cout << "SQL files not found: " << fullPath.native_file_string() << std::endl;
+		std::cerr << "SQL files not found: " << fullPath.native_file_string() << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(ExitCodes::InfoDatabaseError);
