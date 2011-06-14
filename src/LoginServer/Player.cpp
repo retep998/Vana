@@ -64,7 +64,7 @@ void Player::handleRequest(PacketReader &packet) {
 		// We may not process the structure properly
 
 		packet.reset();
-		std::stringstream x;
+		std::ostringstream x;
 		x << "User ID: " << getUserId() << "; Packet: " << packet;
 		LoginServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();

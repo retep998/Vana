@@ -75,7 +75,7 @@ string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const st
 	for (LogReplacements::map_t::const_iterator iter = butts.begin(); iter != butts.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {
-			std::stringstream strm;
+			std::ostringstream strm;
 			int32_t mask = iter->second & Replacements::RemoveFlagMask;
 			switch (mask) {
 				case Replacements::Time: strm << getTimeFormatted(logger->getTimeFormat()); break;
@@ -99,7 +99,7 @@ string Logger::getTimeFormatted(const string &fmt) {
 	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {
-			std::stringstream strm;
+			std::ostringstream strm;
 			int32_t mask = iter->second & Replacements::RemoveFlagMask;
 			int32_t flags = iter->second & Replacements::GetFlagMask;
 			if (!(flags & Replacements::String)) {

@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
 #include "PacketReader.h"
-#include "Summons.h"
+#include "SummonHandler.h"
 #include <string>
 
 using std::string;
@@ -142,7 +142,7 @@ void Maps::addPlayer(Player *player, int32_t mapId) {
 	getMap(mapId)->addPlayer(player);
 	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);
-	Summons::showSummon(player);
+	SummonHandler::showSummon(player);
 	// Bug in global - would be fixed here:
 	// Berserk doesn't display properly when switching maps with it activated - client displays, but no message is sent to any client
 	// player->getActiveBuffs()->checkBerserk(true) would override the default of only displaying changes

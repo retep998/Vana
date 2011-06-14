@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include "Summons.h"
+#include "Player.h"
+#include "Summon.h"
+#include "SummonHandler.h"
 #include "SummonsPacket.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
@@ -37,7 +39,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 		m_puppet = summon;
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	new Timer::Timer(bind(&Summons::removeSummon, m_player, puppet, false, SummonMessages::OutOfTime, true),
+	new Timer::Timer(bind(&SummonHandler::removeSummon, m_player, puppet, false, SummonMessages::OutOfTime, true),
 		id, m_player->getTimers(), TimeUtilities::fromNow(time * 1000));
 }
 
@@ -94,7 +96,7 @@ void PlayerSummons::read(PacketReader &packet) {
 	int32_t timeleft = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
 	if (skillId != 0) {
-		Summon *summon = new Summon(Summons::loopId(), skillId, level);
+		Summon *summon = new Summon(SummonHandler::loopId(), skillId, level);
 		summon->setPos(m_player->getPos());
 		addSummon(summon, timeleft);
 		SummonsPacket::showSummon(m_player, summon, true);

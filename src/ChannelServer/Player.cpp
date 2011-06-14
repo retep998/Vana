@@ -47,9 +47,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PartyHandler.h"
 #include "Pet.h"
 #include "PetHandler.h"
+#include "PlayerDataProvider.h"
 #include "PlayerHandler.h"
 #include "PlayerPacket.h"
-#include "PlayerDataProvider.h"
 #include "Quests.h"
 #include "Randomizer.h"
 #include "ReactorHandler.h"
@@ -58,7 +58,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillMacros.h"
 #include "Skills.h"
 #include "StringUtilities.h"
-#include "Summons.h"
+#include "Summon.h"
+#include "SummonHandler.h"
 #include "SyncPacket.h"
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
@@ -207,8 +208,8 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
 				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
 				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
-				case CMSG_SUMMON_DAMAGE: Summons::damageSummon(this, packet); break;
-				case CMSG_SUMMON_MOVEMENT: Summons::moveSummon(this, packet); break;
+				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(this, packet); break;
+				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(this, packet); break;
 				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, packet); break;
 				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
 				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
@@ -224,7 +225,7 @@ void Player::handleRequest(PacketReader &packet) {
 		// We may not process the structure properly
 
 		packet.reset();
-		std::stringstream x;
+		std::ostringstream x;
 		x << "Player ID: " << getId() << "; Packet: " << packet;
 		ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
@@ -385,7 +386,7 @@ void Player::playerConnect(PacketReader &packet) {
 
 	Maps::addPlayer(this, m_map);
 
-	std::stringstream x;
+	std::ostringstream x;
 	x << getName() << " (" << getId() << ") connected from " << IpUtilities::ipToString(getIp());
 	ChannelServer::Instance()->log(LogTypes::Info, x.str());
 
@@ -443,10 +444,10 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 
 	// Puppets and non-moving summons don't go with you
 	if (getSummons()->getPuppet() != nullptr) {
-		Summons::removeSummon(this, true, false, SummonMessages::None);
+		SummonHandler::removeSummon(this, true, false, SummonMessages::None);
 	}
 	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == Summon::Static) {
-		Summons::removeSummon(this, false, false, SummonMessages::None);
+		SummonHandler::removeSummon(this, false, false, SummonMessages::None);
 	}
 
 	if (getActiveBuffs()->hasMarkedMonster()) {

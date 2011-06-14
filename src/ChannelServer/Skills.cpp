@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 #include "SkillDataProvider.h"
 #include "SkillsPacket.h"
-#include "Summons.h"
+#include "SummonHandler.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
 #include <functional>
@@ -382,7 +382,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		return;
 	}
 	if (GameLogicUtilities::isSummon(skillId)) {
-		Summons::useSummon(player, skillId, level);
+		SummonHandler::useSummon(player, skillId, level);
 	}
 }
 

@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Ip.h"
 #include "Types.h"
-#include <vector>
 #include <boost/utility.hpp>
+#include <vector>
 
 using std::vector;
 

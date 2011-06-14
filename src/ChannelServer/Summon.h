@@ -17,34 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Player.h"
-#include <string>
-
-using std::string;
-
-class PacketReader;
-class Summon;
-template <typename T> class LoopingId;
-
-namespace Summons {
-	extern LoopingId<int32_t> summonIds;
-	void useSummon(Player *player, int32_t skillId, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
-	void showSummon(Player *player);
-	void showSummons(Player *fromPlayer, Player *toPlayer);
-	void moveSummon(Player *Player, PacketReader &packet);
-	void damageSummon(Player *player, PacketReader &packet);
-	string getSummonName(int32_t summonId);
-	int32_t loopId();
-}
-
-namespace SummonMessages {
-	enum Messages : int8_t {
-		OutOfTime = 0x01,
-		Disappearing = 0x03,
-		None = 0x04
-	};
-}
+#include "MovableLife.h"
+#include "Types.h"
 
 class Summon : public MovableLife {
 public:

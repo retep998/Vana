@@ -34,7 +34,7 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {
-			std::stringstream strm;
+			std::ostringstream strm;
 			int32_t mask = iter->second & Replacements::RemoveFlagMask;
 			int32_t flags = iter->second & Replacements::GetFlagMask;
 			if (!(flags & Replacements::String)) {
