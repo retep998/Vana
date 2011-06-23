@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using FileUtilities::fileExists;
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 ScriptDataProvider * ScriptDataProvider::singleton = nullptr;
 
 void ScriptDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Scripts... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Scripts... ";
 
 	m_npcScripts.clear();
 	m_reactorScripts.clear();
@@ -73,7 +73,7 @@ void ScriptDataProvider::loadData() {
 
 string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
 	if (hasScript(objectId, type)) {
-		string s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
+		string &s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
@@ -86,7 +86,7 @@ string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes 
 
 string ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) {
 	if (hasQuestScript(questId, state)) {
-		string s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
+		string &s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}

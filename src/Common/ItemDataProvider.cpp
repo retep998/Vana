@@ -31,13 +31,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::bimap;
 using std::string;
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 ItemDataProvider * ItemDataProvider::singleton = nullptr;
 
 void ItemDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Items... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Items... ";
 
 	loadItems();
 	loadConsumes();

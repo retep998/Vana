@@ -54,7 +54,7 @@ void Initializing::loadData() {
 };
 
 void Initializing::initializeChat() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Commands... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Commands... ";
 	ChatHandler::initializeCommands();
 	std::cout << "DONE" << std::endl;
 }

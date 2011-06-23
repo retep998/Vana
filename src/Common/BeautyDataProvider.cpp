@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "Randomizer.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 BeautyDataProvider * BeautyDataProvider::singleton = nullptr;
 
@@ -37,7 +37,7 @@ void BeautyDataProvider::loadData() {
 }
 
 void BeautyDataProvider::loadSkins() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Skins... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_skin_data ORDER BY skinid ASC");
 	mysqlpp::UseQueryResult res = query.use();
@@ -53,7 +53,7 @@ void BeautyDataProvider::loadSkins() {
 }
 
 void BeautyDataProvider::loadHair() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Hair... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Hair... ";
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_hair_data ORDER BY hairid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;
@@ -75,7 +75,7 @@ void BeautyDataProvider::loadHair() {
 }
 
 void BeautyDataProvider::loadFaces() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Faces... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Faces... ";
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_face_data ORDER BY faceid ASC");
 	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;

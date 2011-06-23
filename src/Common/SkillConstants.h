@@ -288,6 +288,7 @@ namespace Jobs {
 			ThunderBreaker4 = 1512,
 
 			Legend = 2000,
+			Evan = 2001,
 
 			Aran1 = 2100,
 			Aran2 = 2110,

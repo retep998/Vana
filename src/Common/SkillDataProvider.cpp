@@ -21,13 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 #include "StringUtilities.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 SkillDataProvider * SkillDataProvider::singleton = nullptr;
 
 void SkillDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Skills... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Skills... ";
 
 	loadPlayerSkills();
 	loadMobSkills();

@@ -26,14 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using std::string;
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::atoli;
 using StringUtilities::runFlags;
 
 EquipDataProvider * EquipDataProvider::singleton = nullptr;
 
 void EquipDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Equips... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Equips... ";
 
 	loadEquips();
 

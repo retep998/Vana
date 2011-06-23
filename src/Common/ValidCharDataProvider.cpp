@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "StringUtilities.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 ValidCharDataProvider * ValidCharDataProvider::singleton = nullptr;
 
 void ValidCharDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Char Info... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Char Info... ";
 
 	loadForbiddenNames();
 	loadCreationItems();

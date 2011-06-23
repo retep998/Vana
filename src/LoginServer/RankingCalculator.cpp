@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "RankingCalculator.h"
 #include "Database.h"
+#include "InitializeCommon.h"
+#include "GameConstants.h"
+#include "SkillConstants.h"
 #include "Timer.h"
 #include "TimerThread.h"
 #include "TimeUtilities.h"
@@ -30,12 +33,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using boost::scoped_ptr;
 using std::tr1::bind;
+using Initializing::OutputWidth;
 
-// Note: calculations are done on the MySQL server because it is faster that way
+namespace RankingCalculator {
+	// Consider moving some of this garbage to MySQL stored functions, maybe not because all the constants and stuff are here...
+	const string jobClause() {
+		std::ostringstream ret;
+		ret << "(((";
+		for (int32_t i = 0; i < BeginnerJobCount; i++) {
+			if (i != 0) {
+				ret << " OR ";
+			}
+			ret << "c.job = " << BeginnerJobs[i];
+		}
 
+		ret << ") AND c.level > 9) OR (";
+
+		for (int32_t i = 0; i < BeginnerJobCount; i++) {
+			if (i != 0) {
+				ret << " AND ";
+			}
+			ret << "c.job <> " << BeginnerJobs[i];
+		}
+		ret << "))";
+		return ret.str();
+	}
+	const string rankIfClause() {
+		std::ostringstream ret;
+		ret << "("
+			<< "	(job DIV 1000 <> 1 AND level <> " << Stats::PlayerLevels << ") "
+			<< "	OR (job DIV 1000 = 1 AND level <> " << Stats::CygnusLevels << ")"
+			<< ") "
+			<< "AND @level = level AND @exp = exp, @rank, @real_rank + 1";
+		return ret.str();
+	}
+
+	const int8_t JobTracks[JobTrackCount] = {
+		Jobs::JobTracks::Beginner, Jobs::JobTracks::Warrior, Jobs::JobTracks::Magician, Jobs::JobTracks::Bowman, Jobs::JobTracks::Thief, Jobs::JobTracks::Pirate,
+		Jobs::JobTracks::Noblesse, Jobs::JobTracks::DawnWarrior, Jobs::JobTracks::BlazeWizard, Jobs::JobTracks::WindArcher, Jobs::JobTracks::NightWalker, Jobs::JobTracks::ThunderBreaker,
+		Jobs::JobTracks::Legend, Jobs::JobTracks::Aran, Jobs::JobTracks::Evan,
+		Jobs::JobTracks::Citizen, Jobs::JobTracks::BattleMage, Jobs::JobTracks::WildHunter, Jobs::JobTracks::Mechanic
+	};
+	const int16_t BeginnerJobs[BeginnerJobCount] = {
+		Jobs::JobIds::Beginner, Jobs::JobIds::Noblesse, Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Citizen
+	};
+
+	const string VariableDefinition = "SET @rank := @real_rank := 0, @level := @exp := -1";
+	const string JobClause = jobClause();
+	const string RankIfClause = rankIfClause();
+	const int16_t EvanBeginner = Jobs::JobIds::Evan;
+}
+
+// Note: Calculations are done on the MySQL server because it is faster that way
 void RankingCalculator::setTimer() {
 	new Timer::Timer(RankingCalculator::runThread,
-		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::nthSecondOfHour(0), 3600000);
+		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::nthSecondOfHour(0), 60 * 60 * 1000);
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
@@ -46,7 +98,7 @@ void RankingCalculator::runThread() {
 }
 
 void RankingCalculator::all() {
-	std::cout << std::setw(outputWidth) << std::left << "Calculating rankings... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... ";
 	clock_t startTime = TimeUtilities::getTickCount();
 
 	overall();
@@ -62,7 +114,7 @@ void RankingCalculator::overall() {
 	mysqlpp::Query query = Database::getCharDb().query();
 
 	// Set the variables we're going to use later
-	query << "SET @rank := @real_rank := 0, @level := @exp := -1";
+	query << VariableDefinition;
 	query.exec();
 
 	// Calculate the rank
@@ -70,7 +122,7 @@ void RankingCalculator::overall() {
 			<< "	INNER JOIN ("
 			<< "		SELECT c.character_id,"
 			<< "			GREATEST("
-			<< "				@rank := IF(level <> 200 AND @level = level AND @exp = exp, @rank, @real_rank + 1),"
+			<< "				@rank := IF(" << RankIfClause << "),"
 			<< "				LEAST(0, @real_rank := @real_rank + 1),"
 			<< "				LEAST(0, @level := level),"
 			<< "				LEAST(0, @exp := exp)"
@@ -80,7 +132,7 @@ void RankingCalculator::overall() {
 			<< "		WHERE "
 			<< "			u.ban_expire < NOW()"
 			<< "			AND u.gm_level = 0"
-			<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
+			<< "			AND " << JobClause
 			<< "		ORDER BY"
 			<< "			c.level DESC,"
 			<< "			c.exp DESC,"
@@ -97,14 +149,14 @@ namespace Functors {
 		bool operator()(World *world) {
 			mysqlpp::Query query = Database::getCharDb().query();
 
-			query << "SET @rank := @real_rank := 0, @level := @exp := -1";
+			query << RankingCalculator::VariableDefinition;
 			query.exec();
 
 			query << "UPDATE characters target"
 				<< "	INNER JOIN ("
 				<< "		SELECT c.character_id,"
 				<< "			GREATEST("
-				<< "				@rank := IF(level <> 200 AND @level = level AND @exp = exp, @rank, @real_rank + 1),"
+				<< "				@rank := IF(" << RankingCalculator::RankIfClause << "),"
 				<< "				LEAST(0, @real_rank := @real_rank + 1),"
 				<< "				LEAST(0, @level := level),"
 				<< "				LEAST(0, @exp := exp)"
@@ -114,8 +166,8 @@ namespace Functors {
 				<< "		WHERE "
 				<< "			u.ban_expire < NOW()"
 				<< "			AND u.gm_level = 0"
-				<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
-				<< "			AND world_id = " << (int32_t) world->getId()
+				<< "			AND " << RankingCalculator::JobClause
+				<< "			AND world_id = " << static_cast<int32_t>(world->getId())
 				<< "		ORDER BY"
 				<< "			c.level DESC,"
 				<< "			c.exp DESC,"
@@ -138,10 +190,12 @@ void RankingCalculator::world() {
 void RankingCalculator::job() {
 	mysqlpp::Query query = Database::getCharDb().query();
 
-	// We will iterate through each job class
-	for (uint8_t j = 0; j < 6; j++) {
+	// We will iterate through each job track
+	for (int32_t j = 0; j < JobTrackCount; j++) {
+		const int16_t jobTrack = JobTracks[j];
+
 		// Set the variables we're going to use later
-		query << "SET @rank := @real_rank := 0, @level := @exp := -1";
+		query << VariableDefinition;
 		query.exec();
 
 		// Calculate the rank
@@ -149,7 +203,7 @@ void RankingCalculator::job() {
 				<< "	INNER JOIN ("
 				<< "		SELECT c.character_id,"
 				<< "			GREATEST("
-				<< "				@rank := IF(level <> 200 AND @level = level AND @exp = exp, @rank, @real_rank + 1),"
+				<< "				@rank := IF(" << RankIfClause << "),"
 				<< "				LEAST(0, @real_rank := @real_rank + 1),"
 				<< "				LEAST(0, @level := level),"
 				<< "				LEAST(0, @exp := exp)"
@@ -159,9 +213,15 @@ void RankingCalculator::job() {
 				<< "		WHERE "
 				<< "			u.ban_expire < NOW()"
 				<< "			AND u.gm_level = 0"
-				<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
-				<< "			AND (job DIV 100) = " << (int32_t) j
-				<< "		ORDER BY"
+				<< "			AND " << JobClause;
+
+		switch (jobTrack) {
+			case Jobs::JobTracks::Evan: query << "			AND (job = " << EvanBeginner << " OR job DIV 100 = " << jobTrack << ")"; break;
+			case Jobs::JobTracks::Aran: query << "			AND (job <> " << EvanBeginner << " AND job DIV 100 = " << jobTrack << ")"; break;
+			default:					query << "			AND job DIV 100 = " << jobTrack;
+		}
+
+		query << "		ORDER BY"
 				<< "			c.level DESC,"
 				<< "			c.exp DESC,"
 				<< "			c.time_level ASC"
@@ -188,7 +248,7 @@ void RankingCalculator::fame() {
 			<< "		WHERE "
 			<< "			u.ban_expire < NOW()"
 			<< "			AND u.gm_level = 0"
-			<< "			AND ((c.job = 0 AND c.level > 9) OR (c.job != 0))"
+			<< "			AND " << JobClause
 			<< "			AND fame > 0"
 			<< "		ORDER BY"
 			<< "			c.fame DESC,"

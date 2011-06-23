@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 ShopDataProvider * ShopDataProvider::singleton = nullptr;
 
 void ShopDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Shops... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Shops... ";
 
 	loadShops();
 	loadUserShops();
