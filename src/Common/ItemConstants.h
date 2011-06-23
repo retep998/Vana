@@ -93,6 +93,7 @@ namespace Items {
 	const int64_t NoExpiration = 150842304000000000LL;
 	const int32_t MaxHammers = 2;
 	const int32_t WeatherTime = 30;
+	const int16_t ShadowStarsCost = 200;
 
 	namespace Types {
 		enum ItemTypes : int16_t {

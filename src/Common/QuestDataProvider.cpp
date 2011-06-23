@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quest.h"
 #include "StringUtilities.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 QuestDataProvider * QuestDataProvider::singleton = nullptr;
 
 void QuestDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Quests... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Quests... ";
 
 	loadQuestData();
 	loadRequests();

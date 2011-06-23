@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "StringUtilities.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 NpcDataProvider * NpcDataProvider::singleton = nullptr;
@@ -38,7 +38,7 @@ namespace Functors {
 }
 
 void NpcDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing NPCs... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing NPCs... ";
 	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM npc_data");
 	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;

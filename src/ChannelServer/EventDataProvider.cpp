@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 using std::tr1::bind;
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 EventDataProvider * EventDataProvider::singleton = nullptr;
 
@@ -43,7 +43,7 @@ void EventDataProvider::loadData() {
 }
 
 void EventDataProvider::loadEvents() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Events... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Events... ";
 
 	// Declarations go here for regular server events or whatever you want to put on a timer
 
@@ -61,7 +61,7 @@ void EventDataProvider::loadEvents() {
 }
 
 void EventDataProvider::loadInstances() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Instances... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Instances... ";
 
 	int32_t nearestTen = TimeUtilities::getNearestMinuteMark(10); // Most common intervals with boats
 	int32_t nearestFifteen = TimeUtilities::getNearestMinuteMark(15);

@@ -25,10 +25,10 @@ using std::string;
 namespace Initializing {
 	void checkSchemaVersion(bool update = false);
 	void checkMcdbVersion();
-	void setUsersOffline(int32_t onlineid);
+	void setUsersOffline(int32_t onlineId);
 	string makeLocale(const string &locale, bool testServer);
 
-	const int32_t outputWidth = 26;
+	const int32_t OutputWidth = 26;
 	const int32_t McdbVersion = 4;
 	const int32_t McdbSubVersion = 3;
 }

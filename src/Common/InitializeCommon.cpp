@@ -36,11 +36,11 @@ void Initializing::checkMcdbVersion() {
 		exit(ExitCodes::McdbError);
 	}
 
-	int32_t version = (int32_t) res[0]["version"];
-	int32_t subversion = (int32_t) res[0]["subversion"];
-	int16_t mapleVersion = (int16_t) res[0]["maple_version"];
-	bool testServer = (bool) res[0]["test_server"];
-	string mapleLocale = (string) res[0]["maple_locale"];
+	int32_t version = static_cast<int32_t>(res[0]["version"]);
+	int32_t subversion = static_cast<int32_t>(res[0]["subversion"]);
+	int16_t mapleVersion = static_cast<int16_t>(res[0]["maple_version"]);
+	bool testServer = static_cast<bool>(res[0]["test_server"]);
+	string &mapleLocale = static_cast<string>(res[0]["maple_locale"]);
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		std::cerr << "ERROR: MCDB version incompatible." << endl;
@@ -88,7 +88,7 @@ void Initializing::checkSchemaVersion(bool update) {
 	}
 	else if (!succeed) {
 		// Failed, but we can update it
-		std::cout << std::setw(outputWidth) << "Updating database...";
+		std::cout << std::setw(OutputWidth) << "Updating database...";
 
 		dbMigration.update();
 
@@ -96,13 +96,13 @@ void Initializing::checkSchemaVersion(bool update) {
 	}
 }
 
-void Initializing::setUsersOffline(int32_t onlineid) {
+void Initializing::setUsersOffline(int32_t onlineId) {
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "UPDATE user_accounts u "
 			<< "INNER JOIN characters c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.online = 0,"
 			<< "	c.online = 0 "
-			<< "WHERE u.online = " << onlineid;
+			<< "WHERE u.online = " << onlineId;
 	query.exec();
 }

@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 BuffDataProvider * BuffDataProvider::singleton = nullptr;
 
 void BuffDataProvider::loadData() {
 	using namespace BuffBytes;
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Buffs... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Buffs... ";
 
 	Buff buff;
 	BuffAct act;

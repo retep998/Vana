@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using std::string;
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 using StringUtilities::runFlags;
 
 DropDataProvider * DropDataProvider::singleton = nullptr;
 
 void DropDataProvider::loadData() {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Drops... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Drops... ";
 
 	loadDrops();
 	loadGlobalDrops();

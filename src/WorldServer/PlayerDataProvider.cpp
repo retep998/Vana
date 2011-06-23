@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.h"
 #include "WorldServer.h"
 
-using Initializing::outputWidth;
+using Initializing::OutputWidth;
 
 PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
 
@@ -45,7 +45,7 @@ void PlayerDataProvider::loadData() {
 }
 
 void PlayerDataProvider::loadPlayers(int16_t worldId) {
-	std::cout << std::setw(outputWidth) << std::left << "Initializing Players... ";
+	std::cout << std::setw(OutputWidth) << std::left << "Initializing Players... ";
 
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "SELECT c.character_id, c.`name` FROM characters c WHERE c.world_id = " << worldId;
