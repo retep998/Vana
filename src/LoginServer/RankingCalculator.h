@@ -38,8 +38,10 @@ namespace RankingCalculator {
 	// Which will build out the constant using a stream so I can use my core constants for jobs and player levels
 	const string jobClause();
 	const string rankIfClause();
+	const string accountRequirements();
 	extern const string JobClause;
 	extern const string RankIfClause;
+	extern const string AccountRequirements;
 
 	const int32_t JobTrackCount = 19;
 	const int32_t BeginnerJobCount = 5;
