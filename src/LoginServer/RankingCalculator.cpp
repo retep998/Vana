@@ -222,8 +222,8 @@ void RankingCalculator::job() {
 
 		switch (jobTrack) {
 			case Jobs::JobTracks::Evan: query << "			AND (job = " << EvanBeginner << " OR job DIV 100 = " << jobTrack << ")"; break;
-			case Jobs::JobTracks::Aran: query << "			AND (job <> " << EvanBeginner << " AND job DIV 100 = " << jobTrack << ")"; break;
-			default:					query << "			AND job DIV 100 = " << jobTrack;
+			case Jobs::JobTracks::Legend: query << "			AND (job <> " << EvanBeginner << " AND job DIV 100 = " << jobTrack << ")"; break;
+			default: query << "			AND job DIV 100 = " << jobTrack;
 		}
 
 		query << "		ORDER BY"
