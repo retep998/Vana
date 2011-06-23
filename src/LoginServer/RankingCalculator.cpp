@@ -67,6 +67,13 @@ namespace RankingCalculator {
 			<< "AND @level = level AND @exp = exp, @rank, @real_rank + 1";
 		return ret.str();
 	}
+	const string accountRequirements() {
+		std::ostringstream ret;
+		ret << "u.ban_expire < NOW()"
+			<< "AND u.gm_level = 0"
+			<< "AND u.admin = 0";
+		return ret.str();
+	}
 
 	const int8_t JobTracks[JobTrackCount] = {
 		Jobs::JobTracks::Beginner, Jobs::JobTracks::Warrior, Jobs::JobTracks::Magician, Jobs::JobTracks::Bowman, Jobs::JobTracks::Thief, Jobs::JobTracks::Pirate,
@@ -81,6 +88,7 @@ namespace RankingCalculator {
 	const string VariableDefinition = "SET @rank := @real_rank := 0, @level := @exp := -1";
 	const string JobClause = jobClause();
 	const string RankIfClause = rankIfClause();
+	const string AccountRequirements = accountRequirements();
 	const int16_t EvanBeginner = Jobs::JobIds::Evan;
 }
 
@@ -130,8 +138,7 @@ void RankingCalculator::overall() {
 			<< "		FROM characters c"
 			<< "		LEFT JOIN user_accounts u ON u.user_id = c.user_id"
 			<< "		WHERE "
-			<< "			u.ban_expire < NOW()"
-			<< "			AND u.gm_level = 0"
+			<< "			" << AccountRequirements
 			<< "			AND " << JobClause
 			<< "		ORDER BY"
 			<< "			c.level DESC,"
@@ -164,8 +171,7 @@ namespace Functors {
 				<< "		FROM characters c"
 				<< "		LEFT JOIN user_accounts u ON u.user_id = c.user_id"
 				<< "		WHERE "
-				<< "			u.ban_expire < NOW()"
-				<< "			AND u.gm_level = 0"
+				<< "			" << RankingCalculator::AccountRequirements
 				<< "			AND " << RankingCalculator::JobClause
 				<< "			AND world_id = " << static_cast<int32_t>(world->getId())
 				<< "		ORDER BY"
@@ -211,8 +217,7 @@ void RankingCalculator::job() {
 				<< "		FROM characters c"
 				<< "		LEFT JOIN user_accounts u ON u.user_id = c.user_id"
 				<< "		WHERE "
-				<< "			u.ban_expire < NOW()"
-				<< "			AND u.gm_level = 0"
+				<< "			" << AccountRequirements
 				<< "			AND " << JobClause;
 
 		switch (jobTrack) {
@@ -246,8 +251,7 @@ void RankingCalculator::fame() {
 			<< "		SELECT c.character_id, (@rank := @rank + 1) AS rank FROM characters c"
 			<< "		LEFT JOIN user_accounts u ON u.user_id = c.user_id"
 			<< "		WHERE "
-			<< "			u.ban_expire < NOW()"
-			<< "			AND u.gm_level = 0"
+			<< "			" << AccountRequirements
 			<< "			AND " << JobClause
 			<< "			AND fame > 0"
 			<< "		ORDER BY"
