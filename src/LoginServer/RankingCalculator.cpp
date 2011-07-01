@@ -61,8 +61,8 @@ namespace RankingCalculator {
 	const string rankIfClause() {
 		std::ostringstream ret;
 		ret << "("
-			<< "	(job DIV 1000 <> 1 AND level <> " << Stats::PlayerLevels << ") "
-			<< "	OR (job DIV 1000 = 1 AND level <> " << Stats::CygnusLevels << ")"
+			<< "	(job DIV 1000 <> 1 AND level <> " << static_cast<int16_t>(Stats::PlayerLevels) << ") "
+			<< "	OR (job DIV 1000 = 1 AND level <> " << static_cast<int16_t>(Stats::CygnusLevels) << ")"
 			<< ") "
 			<< "AND @level = level AND @exp = exp, @rank, @real_rank + 1";
 		return ret.str();
