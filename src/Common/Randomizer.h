@@ -17,20 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4146)
-#pragma warning(disable : 4800)
-#pragma warning(disable : 4996)
-#include "MersenneTwister.h"
-#pragma warning(pop)
-
 #include "Types.h"
-#include <string>
 #include <boost/utility.hpp>
+#include <random>
+#include <string>
 
 using std::string;
-
-class MTRand;
+using std::tr1::mt19937;
+using std::tr1::uniform_int;
 
 class Randomizer : boost::noncopyable {
 public:
@@ -44,11 +38,11 @@ public:
 	uint32_t randInt();
 	uint16_t randShort(uint16_t max, uint16_t min = 0);
 	uint8_t randChar(uint8_t max, uint8_t min = 0);
-	double rand();
 	string generateSalt(size_t length);
 private:
-	Randomizer() {}
+	Randomizer() { m_engine.seed(std::rand()); }
 	static Randomizer *singleton;
 
-	MTRand mtrand;
+	mt19937 m_engine;
+	uniform_int<uint32_t> m_distribution;
 };

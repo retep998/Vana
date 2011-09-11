@@ -51,6 +51,8 @@ namespace GameLogicUtilities {
 	inline bool isMount(int32_t itemId) { return (getItemType(itemId) == Items::Types::Mount); }
 	inline bool isMedal(int32_t itemId) { return (getItemType(itemId) == Items::Types::Medal); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
+	inline bool isCashSlot(int16_t slot) { return (abs(slot) > 100); }
+	inline int16_t stripCashSlot(int16_t slot) { return (isCashSlot(slot) ? abs(slot) - 100 : slot); }
 
 	// Player
 	inline int8_t getGenderId(const string &gender) { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
@@ -73,11 +75,13 @@ namespace GameLogicUtilities {
 	// Jobs
 	inline bool isRegularJob(int32_t job) { return (job == Jobs::JobIds::Beginner || (job >= 100 && job <= 910)); }
 	inline bool isCygnusJob(int32_t job) { return (job == Jobs::JobIds::Noblesse || job == Jobs::JobIds::DawnWarrior1 || job == Jobs::JobIds::DawnWarrior2 || job == Jobs::JobIds::DawnWarrior3 || job == Jobs::JobIds::BlazeWizard1 || job == Jobs::JobIds::BlazeWizard2 || job == Jobs::JobIds::BlazeWizard3 || job == Jobs::JobIds::WindArcher1 || job == Jobs::JobIds::WindArcher2 || job == Jobs::JobIds::WindArcher3 || job == Jobs::JobIds::NightWalker1 || job == Jobs::JobIds::NightWalker2 || job == Jobs::JobIds::NightWalker3 || job == Jobs::JobIds::ThunderBreaker1 || job == Jobs::JobIds::ThunderBreaker2 || job == Jobs::JobIds::ThunderBreaker3); }
-	inline bool isLegendJob(int32_t job) { return (job == Jobs::JobIds::Legend || Jobs::JobIds::Aran1 || Jobs::JobIds::Aran2 || Jobs::JobIds::Aran3 || Jobs::JobIds::Aran4 || job == Jobs::JobIds::Evan1 || job == Jobs::JobIds::Evan2 || job == Jobs::JobIds::Evan3 || job == Jobs::JobIds::Evan4 || job == Jobs::JobIds::Evan5 || job == Jobs::JobIds::Evan6 || job == Jobs::JobIds::Evan7 || job == Jobs::JobIds::Evan8 || job == Jobs::JobIds::Evan9 || job == Jobs::JobIds::Evan10); }
-	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job) || isCygnusJob(job) || isLegendJob(job)); }
+	inline bool isLegendJob(int32_t job) { return (job == Jobs::JobIds::Legend || Jobs::JobIds::Aran1 || Jobs::JobIds::Aran2 || Jobs::JobIds::Aran3 || Jobs::JobIds::Aran4 || job == Jobs::JobIds::Evan || job == Jobs::JobIds::Evan1 || job == Jobs::JobIds::Evan2 || job == Jobs::JobIds::Evan3 || job == Jobs::JobIds::Evan4 || job == Jobs::JobIds::Evan5 || job == Jobs::JobIds::Evan6 || job == Jobs::JobIds::Evan7 || job == Jobs::JobIds::Evan8 || job == Jobs::JobIds::Evan9 || job == Jobs::JobIds::Evan10); }
+	inline bool isResistanceJob(int32_t job) { return (job == Jobs::JobIds::Citizen || Jobs::JobIds::BattleMage1 || Jobs::JobIds::BattleMage2 || Jobs::JobIds::BattleMage3 || Jobs::JobIds::BattleMage4 || Jobs::JobIds::WildHunter1 || Jobs::JobIds::WildHunter2 || Jobs::JobIds::WildHunter3 || Jobs::JobIds::WildHunter4 || Jobs::JobIds::Mechanic1 || Jobs::JobIds::Mechanic2 || Jobs::JobIds::Mechanic3 || Jobs::JobIds::Mechanic4); }
+	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job) || isCygnusJob(job) || isLegendJob(job) || isResistanceJob(job)); }
 	inline bool isCygnus(int16_t jobId) { return (jobId >= 1000 && jobId < 2000); }
 	inline bool isLegend(int16_t jobId) { return (jobId >= 2000 && jobId < 3000); }
-	inline bool isBeginnerJob(int16_t jobId) { return (jobId == Jobs::JobIds::Beginner || jobId == Jobs::JobIds::Noblesse || jobId == Jobs::JobIds::Legend); }
+	inline bool isResistance(int16_t jobId) { return (jobId >= 3000 && jobId < 4000); }
+	inline bool isBeginnerJob(int16_t jobId) { return (jobId == Jobs::JobIds::Beginner || jobId == Jobs::JobIds::Noblesse || jobId == Jobs::JobIds::Legend || jobId == Jobs::JobIds::Evan || jobId == Jobs::JobIds::Citizen); }
 	inline int16_t getJobTrack(int16_t job, bool flatten = false) { return (flatten && !isRegularJob(job) ? ((job / 100) % 10) : (job / 100)); }
 
 	// Monster card
