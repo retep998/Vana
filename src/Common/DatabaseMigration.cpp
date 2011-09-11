@@ -90,8 +90,8 @@ void DatabaseMigration::loadSqlFiles() {
 
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
-		string filename = dir->filename();
-		string filestring = dir->path().native_file_string();
+		string &filename = dir->filename();
+		string &filestring = dir->path().native_file_string();
 		if (filename.find(".sql") == string::npos) {
 			// Not an SQL file
 			continue;

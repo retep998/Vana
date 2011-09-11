@@ -276,11 +276,11 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
 		int32_t skillId = m_player->getSkills()->getComboAttack();
-		int32_t timeleft = buffTimeLeft(skillId);
+		int32_t timeLeft = buffTimeLeft(skillId);
 		uint8_t level = getActiveSkillLevel(skillId);
 		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
 		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
-		BuffsPacket::useSkill(m_player, skillId, timeleft, playerSkill, mapSkill, 0);
+		BuffsPacket::useSkill(m_player, skillId, timeLeft, playerSkill, mapSkill, 0);
 	}
 }
 
@@ -637,9 +637,9 @@ void PlayerActiveBuffs::read(PacketReader &packet) {
 	uint8_t nbuffs = packet.get<uint8_t>();
 	for (uint8_t i = 0; i < nbuffs; i++) {
 		int32_t skillId = packet.get<int32_t>();
-		int32_t timeleft = packet.get<int32_t>();
+		int32_t timeLeft = packet.get<int32_t>();
 		uint8_t level = packet.get<uint8_t>();
-		addBuff(skillId, timeleft);
+		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);
 		Buffs::doAct(m_player, skillId, level);
 	}

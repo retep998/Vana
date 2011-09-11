@@ -50,8 +50,9 @@ void SkillMacros::save(int32_t charId) {
 				<< macro->skill1 << ", "
 				<< macro->skill2<< ", "
 				<< macro->skill3 << ")";
-			if (i != max)
+			if (i != max) {
 				query << ",";
+			}
 		}
 	}
 	query.exec();

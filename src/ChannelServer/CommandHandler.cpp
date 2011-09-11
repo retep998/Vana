@@ -82,7 +82,7 @@ namespace AdminOpcodes {
 
 void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
-	string name = packet.getString();
+	string &name = packet.getString();
 	Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
@@ -95,7 +95,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 			}
 			break;
 		case CommandOpcodes::Whisper: {
-			string chat = packet.getString();
+			string &chat = packet.getString();
 			if (receiver) {
 				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
 				PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
@@ -110,8 +110,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 
 void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 	if (!player->isAdmin()) {
-		// Admin byte hacking!
-		player->addWarning();
+		// Hacking
 		return;
 	}
 	int8_t type = packet.get<int8_t>();
@@ -130,7 +129,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::Send: {
-			string name = packet.getString();
+			string &name = packet.getString();
 			int32_t mapId = packet.get<int32_t>();
 
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(name)) {
@@ -180,7 +179,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::Ban: {
-			string victim = packet.getString();
+			string &victim = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				receiver->getSession()->disconnect();
 			}
@@ -190,24 +189,24 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::Block: {
-			string victim = packet.getString();
+			string &victim = packet.getString();
 			int8_t reason = packet.get<int8_t>();
 			int32_t length = packet.get<int32_t>();
-			string reason_message = packet.getString();
+			string &reasonMessage = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
-				mysqlpp::Query accbanquery = Database::getCharDb().query();
-				accbanquery << "UPDATE user_accounts u "
+				mysqlpp::Query accountBanQuery = Database::getCharDb().query();
+				accountBanQuery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_reason = " << (int16_t) reason << ", "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY), "
-					<< "	u.ban_reason_message = " << mysqlpp::quote << reason_message << " "
+					<< "	u.ban_reasonMessage = " << mysqlpp::quote << reasonMessage << " "
 					<< "WHERE c.name = " << mysqlpp::quote << victim;
-				accbanquery.exec();
+				accountBanQuery.exec();
 
 				GmPacket::block(player);
-				string banmsg = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-				PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
+				string &banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
 			}
 			else {
 				GmPacket::invalidCharacterName(player);
@@ -222,15 +221,15 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = packet.get<int8_t>();
-			string PlayerName = packet.getString();
-			if (Player *victim = PlayerDataProvider::Instance()->getPlayer(PlayerName)) {
-				string VariableName = packet.getString();
+			string &playerName = packet.getString();
+			if (Player *victim = PlayerDataProvider::Instance()->getPlayer(playerName)) {
+				string &variableName = packet.getString();
 				if (type == 0x0a) {
-					string VariableValue = packet.getString();
-					victim->getVariables()->setVariable(VariableName, VariableValue);
+					string &variableValue = packet.getString();
+					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
-					GmPacket::setGetVarResult(player, PlayerName, VariableName, victim->getVariables()->getVariable(VariableName));
+					GmPacket::setGetVarResult(player, playerName, variableName, victim->getVariables()->getVariable(variableName));
 				}
 			}
 			else {
@@ -239,8 +238,8 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::Warn: {
-			string victim = packet.getString();
-			string message = packet.getString();
+			string &victim = packet.getString();
+			string &message = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
 				PlayerPacket::showMessage(receiver, message, PlayerPacket::NoticeTypes::Box);
 				GmPacket::warning(player, true);

@@ -103,7 +103,7 @@ public:
 	int32_t getItemEffect() const { return m_itemEffect; }
 	int32_t getGmLevel() const { return m_gmLevel; }
 	int32_t getSpecialSkill() const { return m_info.skillId; }
-	int32_t gettradeId() const { return m_tradeId; }
+	int32_t getTradeId() const { return m_tradeId; }
 	int64_t getConnectionTime() const { return m_onlineTime; }
 	int64_t getConnectedTime() const { return time(nullptr) - m_onlineTime; }
 	string getChalkboard() const { return m_chalkboard; }
@@ -131,9 +131,8 @@ public:
 	void addUsedPortal(int8_t portalId) { m_usedPortals.insert(portalId); }
 	bool usedPortal(int8_t portalId) const { return m_usedPortals.find(portalId) != m_usedPortals.end(); }
 
-	bool addWarning();
 	void changeChannel(int8_t channel);
-	void saveAll(bool savecooldowns = false);
+	void saveAll(bool saveCooldowns = false);
 	void setOnline(bool online);
 	void setLevelDate();
 	void acceptDeath(bool wheel);
@@ -172,7 +171,6 @@ private:
 	string m_chalkboard;
 	string m_name;
 	unordered_set<int8_t> m_usedPortals;
-	vector<int32_t> m_warnings;
 	SpecialSkillInfo m_info; // Hurricane/Pierce/Big Bang/Monster Magnet/etc.
 
 	Instance *m_instance;

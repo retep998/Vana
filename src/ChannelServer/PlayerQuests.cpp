@@ -74,8 +74,9 @@ void PlayerQuests::save() {
 				<< mysqlpp::quote << q->second.data << ")";
 		}
 	}
-	if (!firstRun)
+	if (!firstRun) {
 		query.exec();
+	}
 
 	query << "DELETE FROM completed_quests WHERE character_id = " << m_player->getId();
 	query.exec();
@@ -93,15 +94,16 @@ void PlayerQuests::save() {
 			<< q->first << ","
 			<< q->second << ")";
 	}
-	if (!firstRun)
+	if (!firstRun) {
 		query.exec();
+	}
 }
 
 void PlayerQuests::load() {
 	mysqlpp::Query query = Database::getCharDb().query();
 	int16_t previous = -1;
 	int16_t current = 0;
-	ActiveQuest curquest;
+	ActiveQuest curQuest;
 	string data;
 	query << "SELECT a.quest_id, a.mob_id, a.quantity_killed, a.data FROM active_quests a WHERE a.character_id = " << m_player->getId() << " ORDER BY a.quest_id ASC";
 	mysqlpp::StoreQueryResult res = query.store();
@@ -111,24 +113,24 @@ void PlayerQuests::load() {
 		res[i]["data"].to_string(data);
 
 		if (previous == -1) {
-			curquest.id = current;
-			curquest.data = data;
+			curQuest.id = current;
+			curQuest.data = data;
 		}
 		else if (previous != -1 && current != previous) {
-			m_quests[previous] = curquest;
-			curquest = ActiveQuest();
-			curquest.id = current;
-			curquest.data = data;
+			m_quests[previous] = curQuest;
+			curQuest = ActiveQuest();
+			curQuest.id = current;
+			curQuest.data = data;
 		}
 		if (mob != 0) {
 			int16_t kills = res[i]["quantity_killed"];
-			curquest.kills[mob] = kills;
+			curQuest.kills[mob] = kills;
 			m_mobToQuestMapping[mob].push_back(current);
 		}
 		previous = current;
 	}
 	if (previous != -1) {
-		m_quests[previous] = curquest;
+		m_quests[previous] = curQuest;
 	}
 
 	query << "SELECT c.quest_id, c.end_time FROM completed_quests c WHERE c.character_id = " << m_player->getId();
@@ -167,10 +169,10 @@ namespace Functors {
 }
 
 void PlayerQuests::addQuestMobs(int16_t questId) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
-	if (questinfo->hasMobRequests()) {
+	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
+	if (questInfo->hasMobRequests()) {
 		Functors::QuestAddMobFunc f = {m_quests, m_mobToQuestMapping, questId};
-		questinfo->mobRequestFunc(f);
+		questInfo->mobRequestFunc(f);
 	}
 }
 
@@ -221,18 +223,18 @@ namespace Functors {
 }
 
 void PlayerQuests::checkDone(ActiveQuest &quest) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(quest.id);
+	Quest *questInfo = QuestDataProvider::Instance()->getInfo(quest.id);
 	quest.done = true;
-	if (!questinfo->hasRequests()) {
+	if (!questInfo->hasRequests()) {
 		return;
 	}
-	if (questinfo->hasItemRequests()) {
+	if (questInfo->hasItemRequests()) {
 		Functors::QuestItemFunc f = {quest, m_player};
-		questinfo->itemRequestFunc(f);
+		questInfo->itemRequestFunc(f);
 	}
-	else if (questinfo->hasMobRequests()) {
+	else if (questInfo->hasMobRequests()) {
 		Functors::QuestMobFunc f = {quest};
-		questinfo->mobRequestFunc(f);
+		questInfo->mobRequestFunc(f);
 	}
 	if (quest.done) {
 		QuestsPacket::doneQuest(m_player, quest.id);
@@ -261,21 +263,21 @@ namespace Functors {
 }
 
 void PlayerQuests::finishQuest(int16_t questId, int32_t npcId) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
+	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 
 	if (!giveRewards(questId, false)) {
 		// Failed, don't complete the quest yet
 		return;
 	}
 
-	if (questinfo->hasMobRequests()) {
+	if (questInfo->hasMobRequests()) {
 		Functors::QuestRemoveMobFunc f = {m_mobToQuestMapping, questId};
-		questinfo->mobRequestFunc(f);
+		questInfo->mobRequestFunc(f);
 	}
 	m_quests.erase(questId);
-	int64_t endtime = TimeUtilities::getServerTime();
-	m_completed[questId] = endtime;
-	QuestsPacket::questFinish(m_player, questId, npcId, questinfo->getNextQuest(), endtime);
+	int64_t endTime = TimeUtilities::getServerTime();
+	m_completed[questId] = endTime;
+	QuestsPacket::questFinish(m_player, questId, npcId, questInfo->getNextQuest(), endTime);
 }
 
 namespace Functors {
@@ -359,9 +361,9 @@ namespace Functors {
 }
 
 bool PlayerQuests::giveRewards(int16_t questId, bool start) {
-	Quest *questinfo = QuestDataProvider::Instance()->getInfo(questId);
+	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 
-	if (!questinfo->hasRewards()) {
+	if (!questInfo->hasRewards()) {
 		return true;
 	}
 
@@ -370,7 +372,7 @@ bool PlayerQuests::giveRewards(int16_t questId, bool start) {
 	boost::array<bool, Inventories::InventoryCount> chanceItem = {false};
 
 	Functors::CheckRewards f = {questId, neededSlots, chanceItem, m_player};
-	if (!questinfo->rewardsFunc(f, start, job)) {
+	if (!questInfo->rewardsFunc(f, start, job)) {
 		return false;
 	}
 	for (size_t i = 0; i < Inventories::InventoryCount; i++) {
@@ -384,7 +386,7 @@ bool PlayerQuests::giveRewards(int16_t questId, bool start) {
 	int32_t chance = 0;
 
 	Functors::GiveRewards f2 = {chance, items, m_player};
-	questinfo->rewardsFunc(f2, start, job);
+	questInfo->rewardsFunc(f2, start, job);
 
 	if (chance > 0) {
 		int32_t random = Randomizer::Instance()->randInt(chance - 1);
@@ -440,7 +442,7 @@ void PlayerQuests::connectData(PacketCreator &packet) {
 
 void PlayerQuests::setQuestData(int16_t id, const string &data) {
 	if (isQuestActive(id)) {
-		ActiveQuest g = m_quests[id];
+		ActiveQuest &g = m_quests[id];
 		g.data = data;
 		m_quests[id] = g;
 		QuestsPacket::updateQuest(m_player, g);

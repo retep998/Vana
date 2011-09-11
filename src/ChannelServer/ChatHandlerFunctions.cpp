@@ -566,23 +566,23 @@ int16_t ChatHandlerFunctions::getJob(const string &query) {
 }
 
 string ChatHandlerFunctions::getBanString(int8_t reason) {
-	string banmsg = ".";
+	string banMessage = ".";
 	switch (reason) {
-		case 0x01: banmsg = " for hacking."; break;
-		case 0x02: banmsg = " for using macro/auto-keyboard."; break;
-		case 0x03: banmsg = " for illicit promotion or advertising."; break;
-		case 0x04: banmsg = " for harassment."; break;
-		case 0x05: banmsg = " for using profane language."; break;
-		case 0x06: banmsg = " for scamming."; break;
-		case 0x07: banmsg = " for misconduct."; break;
-		case 0x08: banmsg = " for illegal cash transaction."; break;
-		case 0x09: banmsg = " for illegal charging/funding."; break;
-		case 0x0A: banmsg = " for temporary request."; break;
-		case 0x0B: banmsg = " for impersonating GM."; break;
-		case 0x0C: banmsg = " for using illegal programs or violating the game policy."; break;
-		case 0x0D: banmsg = " for one of cursing, scamming, or illegal trading via Megaphones."; break;
+		case 0x01: banMessage = " for hacking."; break;
+		case 0x02: banMessage = " for using macro/auto-keyboard."; break;
+		case 0x03: banMessage = " for illicit promotion or advertising."; break;
+		case 0x04: banMessage = " for harassment."; break;
+		case 0x05: banMessage = " for using profane language."; break;
+		case 0x06: banMessage = " for scamming."; break;
+		case 0x07: banMessage = " for misconduct."; break;
+		case 0x08: banMessage = " for illegal cash transaction."; break;
+		case 0x09: banMessage = " for illegal charging/funding."; break;
+		case 0x0A: banMessage = " for temporary request."; break;
+		case 0x0B: banMessage = " for impersonating GM."; break;
+		case 0x0C: banMessage = " for using illegal programs or violating the game policy."; break;
+		case 0x0D: banMessage = " for one of cursing, scamming, or illegal trading via Megaphones."; break;
 	}
-	return banmsg;
+	return banMessage;
 }
 
 int8_t ChatHandlerFunctions::getMessageType(const string &query) {
@@ -605,7 +605,7 @@ bool ChatHandlerFunctions::runRegexPattern(const string &args, const string &pat
 void ChatHandlerFunctions::showSyntax(Player *player, const string &command, bool fromHelp) {
 	if (CommandList.find(command) != CommandList.end()) {
 		ChatCommand &cmd = CommandList[command];
-		string msg = "Usage: !" + command + " " + cmd.syntax;
+		string &msg = "Usage: !" + command + " " + cmd.syntax;
 		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 
 		if (fromHelp) {

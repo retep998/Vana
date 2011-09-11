@@ -72,8 +72,9 @@ int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 }
 
 void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
-	if (!ItemDataProvider::Instance()->itemExists(itemId))
+	if (!ItemDataProvider::Instance()->itemExists(itemId)) {
 		return;
+	}
 
 	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemId);
 	int16_t thisAmount = 0;

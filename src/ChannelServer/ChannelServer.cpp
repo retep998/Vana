@@ -53,8 +53,8 @@ void ChannelServer::loadData() {
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
-	string interPassword = getInterPassword();
-	IpMatrix externalIp = getExternalIp();
+	string &interPassword = getInterPassword();
+	IpMatrix &externalIp = getExternalIp();
 	loginPlayer->sendAuth(interPassword, externalIp);
 }
 
@@ -71,14 +71,16 @@ void ChannelServer::loadLogConfig() {
 }
 
 string ChannelServer::makeLogIdentifier() {
-	return "World: " + boost::lexical_cast<string>(static_cast<int16_t>(getWorld())) + "; ID: " + boost::lexical_cast<string>(getChannel());
+	std::ostringstream identifier;
+	identifier << "World: " << static_cast<int16_t>(getWorld()) << "; ID: " << getChannel();
+	return identifier.str();
 }
 
 void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_worldConnection);
-	string interPassword = getInterPassword();
-	IpMatrix externalIp = getExternalIp();
+	string &interPassword = getInterPassword();
+	IpMatrix &externalIp = getExternalIp();
 	getWorldConnection()->sendAuth(interPassword, externalIp);
 }
 

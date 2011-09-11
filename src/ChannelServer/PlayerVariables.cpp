@@ -53,6 +53,6 @@ void PlayerVariables::load() {
 	query << "SELECT * FROM character_variables WHERE character_id = " << m_player->getId();
 	mysqlpp::StoreQueryResult res = query.store();
 	for (size_t i = 0; i < res.size(); i++) {
-		m_variables[(string) res[i]["key"]] = string(res[i]["value"]);
+		m_variables[static_cast<string>(res[i]["key"])] = static_cast<string>(res[i]["value"]);
 	}
 }

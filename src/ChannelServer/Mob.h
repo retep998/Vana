@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "GameConstants.h"
 #include "MobDataProvider.h"
 #include "MovableLife.h"
 #include "Pos.h"
@@ -52,7 +53,7 @@ struct StatusInfo {
 };
 
 struct PartyExp {
-	PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(200) { }
+	PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) { }
 	uint8_t minHitLevel;
 	uint32_t totalExp;
 	uint64_t highestDamage;

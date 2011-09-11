@@ -88,8 +88,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 
 		if (type != BumpDamage) {
-			int32_t attackerid = (mob->hasLink() ? mob->getLink() : mobId);
-			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerid, type);
+			int32_t attackerId = (mob->hasLink() ? mob->getLink() : mobId);
+			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerId, type);
 			if (attack == nullptr) {
 				// Hacking, I think
 				return;
@@ -145,15 +145,15 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t skillId = player->getActiveBuffs()->getMesoGuard();
-			int16_t mesorate = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x; // Meso Guard meso %
-			int16_t mesoloss = (int16_t)(mesorate * damage / 2 / 100);
+			int16_t mesoRate = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x; // Meso Guard meso %
+			int16_t mesoLoss = static_cast<int16_t>(mesoRate * damage / 2 / 100);
 			int32_t mesos = player->getInventory()->getMesos();
-			int32_t newmesos = mesos - mesoloss;
+			int32_t newMesos = mesos - mesoLoss;
 
-			if (newmesos < 0) {
+			if (newMesos < 0) {
 				// Special damage calculation for not having enough mesos
-				double reduction = 2.0 - ((double)(mesos / mesoloss)) / 2.0;
-				damage = (uint16_t)(damage / reduction);
+				double reduction = 2.0 - ((double)(mesos / mesoLoss)) / 2.0;
+				damage = static_cast<uint16_t>(damage / reduction);
 				// This puts us pretty close to the damage observed clientskillIde, needs improvement
 				// TODO: Improve formula
 			}
@@ -162,8 +162,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				// Usually displays 1 below the actual damage but is sometimes accurate - no clue why
 			}
 
-			player->getInventory()->setMesos(newmesos);
-			player->getStats()->damageHp((uint16_t) damage);
+			player->getInventory()->setMesos(newMesos);
+			player->getStats()->damageHp(static_cast<uint16_t>(damage));
 
 			if (deadlyAttack && player->getStats()->getMp() > 0) {
 				player->getStats()->setMp(1);
@@ -188,21 +188,21 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			else if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
-				player->getStats()->damageHp((uint16_t) damage);
+				player->getStats()->damageHp(static_cast<uint16_t>(damage));
 			}
 			else {
 				int32_t skillId = player->getActiveBuffs()->getMagicGuard();
 				int16_t reduc = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x;
-				uint16_t mpdamage = (uint16_t)((damage * reduc) / 100);
-				uint16_t hpdamage = (uint16_t)(damage - mpdamage);
+				uint16_t mpDamage = static_cast<uint16_t>((damage * reduc) / 100);
+				uint16_t hpDamage = static_cast<uint16_t>(damage - mpDamage);
 
-				if (mpdamage < mp || player->getActiveBuffs()->hasInfinity()) {
-					player->getStats()->damageMp(mpdamage);
-					player->getStats()->damageHp(hpdamage);
+				if (mpDamage < mp || player->getActiveBuffs()->hasInfinity()) {
+					player->getStats()->damageMp(mpDamage);
+					player->getStats()->damageHp(hpDamage);
 				}
-				else if (mpdamage >= mp) {
+				else if (mpDamage >= mp) {
 					player->getStats()->setMp(0);
-					player->getStats()->damageHp(hpdamage + (mpdamage - mp));
+					player->getStats()->damageHp(hpDamage + (mpDamage - mp));
 				}
 			}
 			damageApplied = true;
@@ -212,7 +212,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			int32_t skillId = player->getSkills()->getAchilles();
 			double red = (2.0 - player->getSkills()->getSkillInfo(skillId)->x / 1000.0);
 
-			player->getStats()->damageHp((uint16_t) (damage / red));
+			player->getStats()->damageHp(static_cast<uint16_t>(damage / red));
 
 			if (deadlyAttack && player->getStats()->getMp() > 0) {
 				player->getStats()->setMp(1);
@@ -232,7 +232,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->getStats()->setHp(1);
 			}
 			else {
-				player->getStats()->damageHp((uint16_t) damage);
+				player->getStats()->damageHp(static_cast<uint16_t>(damage));
 			}
 
 			if (mpBurn > 0) {
@@ -240,7 +240,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 
 			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
-				player->getActiveBuffs()->reduceBattleshipHp((uint16_t) damage);
+				player->getActiveBuffs()->reduceBattleshipHp(static_cast<uint16_t>(damage));
 			}
 		}
 		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
@@ -289,11 +289,11 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	if (player->getFh() == 0) {
 		// Player is floating in the air
 		int32_t mapId = player->getMap();
-		Pos playerpos = player->getPos();
+		Pos &playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
-		Pos floor = map->findFloor(playerpos);
-		if (floor.y == playerpos.y) {
+		Pos &floor = map->findFloor(playerPos);
+		if (floor.y == playerPos.y) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
 			if (count > 3) {
@@ -365,7 +365,6 @@ void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
 void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 	if (!player->isAdmin()) {
 		// Hacking
-		player->addWarning();
 		return;
 	}
 	Player *receiver = nullptr;
@@ -379,11 +378,11 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string line1 = packet.getString();
-	string line2 = packet.getString();
-	string line3 = packet.getString();
-	string line4 = packet.getString();
-	string line5 = packet.getString();
+	string &line1 = packet.getString();
+	string &line2 = packet.getString();
+	string &line3 = packet.getString();
+	string &line4 = packet.getString();
+	string &line5 = packet.getString();
 	if (hasTarget) {
 		receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 	}
@@ -396,12 +395,14 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 
 	MapleTvs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1) {
-		InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + line1 + line2 + line3 + line4 + line5, useWhisper);
+		std::ostringstream output;
+		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
+		InventoryPacket::showSuperMegaphone(player, output.str(), useWhisper);
 	}
 }
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
-	Attack attack = compileAttack(player, packet, SkillTypes::Melee);
+	Attack &attack = compileAttack(player, packet, SkillTypes::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -453,9 +454,9 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			else if (skillId == Jobs::Bandit::Steal && !mob->isBoss()) {
 				DropHandler::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
-			int32_t temphp = mob->getHp();
+			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp <= damage) {
+			if (tempHp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 			}
@@ -470,7 +471,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			damagedTargets++;
 		}
 		uint8_t ppSize = ppDamages.size();
-		for (uint8_t pickpocket = 0; pickpocket < ppSize; pickpocket++) { // Drop stuff for Pickpocket
+		for (uint8_t pickpocket = 0; pickpocket < ppSize; pickpocket++) {
+			// Drop stuff for Pickpocket
 			Pos &ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
@@ -480,7 +482,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			ppDrop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, ppDrop, origin),
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				0, TimeUtilities::fromNow(ppTime));
+				nullptr, TimeUtilities::fromNow(ppTime));
 		}
 		ppDamages.clear();
 	}
@@ -499,7 +501,6 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				if (Drop *drop = Maps::getMap(map)->getDrop(objId)) {
 					if (!drop->isMesos()) {
 						// Hacking
-						player->addWarning();
 						return;
 					}
 					DropsPacket::explodeDrop(drop);
@@ -512,10 +513,12 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::Marauder::EnergyDrain:
 		case Jobs::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillId)->x / 100);
-			if (hpRecover > player->getStats()->getMaxHp())
+			if (hpRecover > player->getStats()->getMaxHp()) {
 				player->getStats()->setHp(player->getStats()->getMaxHp());
-			else
+			}
+			else {
 				player->getStats()->modifyHp((int16_t) hpRecover);
+			}
 			break;
 		}
 		case Jobs::Crusader::SwordPanic: // Crusader finishers
@@ -531,8 +534,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Jobs::SuperGm::SuperDragonRoar:
 			break;
 		case Jobs::DragonKnight::DragonRoar: {
-			int16_t x_value = SkillDataProvider::Instance()->getSkill(skillId, level)->x;
-			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * x_value;
+			int16_t xProperty = SkillDataProvider::Instance()->getSkill(skillId, level)->x;
+			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
 			if (reduction < player->getStats()->getHp()) {
 				player->getStats()->damageHp(reduction);
 			}
@@ -544,18 +547,18 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::DragonKnight::Sacrifice: {
-			int16_t hp_damage_x = player->getSkills()->getSkillInfo(skillId)->x;
-			uint16_t hp_damage = static_cast<uint16_t>(attack.totalDamage * hp_damage_x / 100);
-			player->getStats()->setHp(hp_damage > player->getStats()->getHp() ? 1 : hp_damage);
+			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
+			uint16_t hpDamage = static_cast<uint16_t>(attack.totalDamage * xProperty / 100);
+			player->getStats()->setHp(hpDamage > player->getStats()->getHp() ? 1 : hpDamage);
 			break;
 		}
 		case Jobs::WhiteKnight::ChargeBlow: {
-			int8_t acb_level = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
-			int16_t acb_x = 0;
-			if (acb_level > 0) {
-				acb_x = SkillDataProvider::Instance()->getSkill(Jobs::Paladin::AdvancedCharge, acb_level)->x;
+			int8_t skillLevel = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
+			int16_t xProperty = 0;
+			if (skillLevel > 0) {
+				xProperty = SkillDataProvider::Instance()->getSkill(Jobs::Paladin::AdvancedCharge, skillLevel)->x;
 			}
-			if ((acb_x != 100) && (acb_x == 0 || Randomizer::Instance()->randShort(99) > (acb_x - 1))) {
+			if ((xProperty != 100) && (xProperty == 0 || Randomizer::Instance()->randShort(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
 			}
 			break;
@@ -568,7 +571,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
-	Attack attack = compileAttack(player, packet, SkillTypes::Ranged);
+	Attack &attack = compileAttack(player, packet, SkillTypes::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -595,8 +598,8 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 	Skills::useAttackSkillRanged(player, skillId, attack.starPos);
 
-	int32_t mhp = 0;
-	int32_t firsthit = 0;
+	int32_t maxHp = 0;
+	int32_t firstHit = 0;
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t mapMobId = i->first;
@@ -613,31 +616,31 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 				connectedHits++;
 				targetTotal += damage;
 			}
-			if (firsthit == 0) {
-				firsthit = damage;
+			if (firstHit == 0) {
+				firstHit = damage;
 			}
 			if (mob == nullptr) {
 				continue;
 			}
-			mhp = mob->getMaxHp();
+			maxHp = mob->getMaxHp();
 			if (skillId == Jobs::Ranger::MortalBlow || skillId == Jobs::Sniper::MortalBlow) {
 				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillId);
-				int32_t hp_p = mhp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if ((mob->getHp() < hp_p) && (Randomizer::Instance()->randShort(99) < sk->y)) {
+				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
+				if ((mob->getHp() < hpPercentage) && (Randomizer::Instance()->randShort(99) < sk->y)) {
 					damage = mob->getHp();
 				}
 			}
 			else if (skillId == Jobs::Outlaw::HomingBeacon || skillId == Jobs::Corsair::Bullseye) {
 				Buffs::addBuff(player, skillId, level, 0, mapMobId);
 			}
-			int32_t temphp = mob->getHp();
+			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp <= damage) {
+			if (tempHp <= damage) {
 				mob = nullptr;
 			}
 		}
 		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firsthit); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits, firstHit); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -646,11 +649,11 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 	switch (skillId) {
 		case Jobs::Assassin::Drain: {
-			int16_t drain_x = player->getSkills()->getSkillInfo(skillId)->x;
-			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * drain_x / 100);
+			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
+			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
 			int16_t playerMaxHp = player->getStats()->getMaxHp();
-			if (hpRecover > mhp) {
-				hpRecover = mhp;
+			if (hpRecover > maxHp) {
+				hpRecover = maxHp;
 			}
 			if (hpRecover > (playerMaxHp / 2)) {
 				hpRecover = playerMaxHp / 2;
@@ -672,7 +675,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
-	Attack attack = compileAttack(player, packet, SkillTypes::Magic);
+	Attack &attack = compileAttack(player, packet, SkillTypes::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -715,12 +718,13 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 				connectedHits++;
 				targetTotal += damage;
 			}
-			if (damage != 0 && eater.level != 0 && !eater.used) { // MP Eater
+			if (damage != 0 && eater.level != 0 && !eater.used) {
+				// MP Eater
 				mob->mpEat(player, &eater);
 			}
-			int32_t temphp = mob->getHp();
+			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp <= damage) {
+			if (tempHp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
@@ -744,17 +748,17 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) {
-	Attack attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
+	Attack &attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
 	PlayersPacket::useEnergyChargeAttack(player, attack);
 
-	int32_t skillid = attack.skillId;
+	int32_t skillId = attack.skillId;
 	int8_t level = attack.skillLevel;
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targetTotal = 0;
-		int32_t mapmobId = i->first;
+		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapmobId);
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -765,16 +769,16 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 				connectedHits++;
 				targetTotal += damage;
 			}
-			int32_t temphp = mob->getHp();
+			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp <= damage) {
+			if (tempHp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;
 			}
 		}
 		if (mob != nullptr && targetTotal > 0 && mob->getHp() > 0) {
-			MobHandler::handleMobStatus(player->getId(), mob, skillid, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
+			MobHandler::handleMobStatus(player->getId(), mob, skillId, level, player->getInventory()->getEquippedId(EquipSlots::Weapon), connectedHits); // Mob status handler (freeze, stun, etc)
 			if (mob->getHp() < mob->getSelfDestructHp()) {
 				mob->explode();
 			}
@@ -783,7 +787,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 }
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
-	Attack attack = compileAttack(player, packet, SkillTypes::Summon);
+	Attack &attack = compileAttack(player, packet, SkillTypes::Summon);
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
@@ -805,9 +809,9 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 				connectedHits++;
 				targetTotal += damage;
 			}
-			int32_t temphp = mob->getHp();
+			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
-			if (temphp <= damage) {
+			if (tempHp <= damage) {
 				// Mob was killed, so set the Mob pointer to 0
 				mob = nullptr;
 				break;

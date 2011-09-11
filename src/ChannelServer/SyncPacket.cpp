@@ -63,7 +63,7 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
-	packet.add<int16_t>(channel);
+	packet.add<uint16_t>(channel);
 	packet.add<int64_t>(info->getConnectionTime());
 
 	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());

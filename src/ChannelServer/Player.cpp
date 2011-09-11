@@ -255,16 +255,16 @@ void Player::playerConnect(PacketReader &packet) {
 	}
 
 	res[0]["name"].to_string(m_name);
-	m_userId		= res[0]["user_id"];
-	m_map			= res[0]["map"];
-	m_gmLevel	= res[0]["gm_level"];
-	m_admin		= StringUtilities::atob(res[0]["admin"]);
-	m_eyes		= res[0]["eyes"];
-	m_hair		= res[0]["hair"];
-	m_worldId	= static_cast<int8_t>(res[0]["world_id"]);
-	m_gender		= static_cast<int8_t>(res[0]["gender"]);
-	m_skin		= static_cast<int8_t>(res[0]["skin"]);
-	m_mapPos		= static_cast<int8_t>(res[0]["pos"]);
+	m_userId = res[0]["user_id"];
+	m_map = res[0]["map"];
+	m_gmLevel = res[0]["gm_level"];
+	m_admin = StringUtilities::atob(res[0]["admin"]);
+	m_eyes = res[0]["eyes"];
+	m_hair = res[0]["hair"];
+	m_worldId = static_cast<int8_t>(res[0]["world_id"]);
+	m_gender = static_cast<int8_t>(res[0]["gender"]);
+	m_skin = static_cast<int8_t>(res[0]["skin"]);
+	m_mapPos = static_cast<int8_t>(res[0]["pos"]);
 	m_buddylistSize = static_cast<uint8_t>(res[0]["buddylist_size"]);
 
 	// Stats
@@ -303,16 +303,14 @@ void Player::playerConnect(PacketReader &packet) {
 	m_activeBuffs.reset(new PlayerActiveBuffs(this));
 	m_summons.reset(new PlayerSummons(this));
 
-	// Packet transferring on channel switch
-	bool checked = PlayerDataProvider::Instance()->checkPlayer(id);
-	if (checked) {
-		PacketReader pack = PlayerDataProvider::Instance()->getPacket(id);
+	bool checked = false;
+	if (PacketReader *pack = Connectable::Instance()->getPacket(id)) {
+		// Packet transferring on channel switch
+		checked = true;
+		setConnectionTime(pack->get<int64_t>());
 
-		setConnectionTime(pack.get<int64_t>());
-
-		
 		PlayerActiveBuffs *buffs = getActiveBuffs();
-		buffs->read(pack);
+		buffs->read(*pack);
 		if (buffs->hasHyperBody()) {
 			int32_t skillId = buffs->getHyperBody();
 			uint8_t hbLevel = buffs->getActiveSkillLevel(skillId);
@@ -320,14 +318,14 @@ void Player::playerConnect(PacketReader &packet) {
 			getStats()->setHyperBody(hb->x, hb->y);
 		}
 
-		getSummons()->read(pack);
-
-		PlayerDataProvider::Instance()->removePacket(id);
+		getSummons()->read(*pack);
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
 		setConnectionTime(time(nullptr));
 	}
+
+	Connectable::Instance()->playerEstablished(id);
 
 	// The rest
 	m_variables.reset(new PlayerVariables(this));
@@ -356,7 +354,7 @@ void Player::playerConnect(PacketReader &packet) {
 		m_map = Maps::getMap(m_map)->getForcedReturn();
 		m_mapPos = -1;
 	}
-	else if (static_cast<int16_t>(res[0]["chp"]) == 0) {
+	else if (getStats()->getHp() == 0) {
 		m_map = Maps::getMap(m_map)->getReturnMap();
 		m_mapPos = -1;
 	}
@@ -404,17 +402,18 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 	Map *oldMap = Maps::getMap(m_map);
 	Map *newMap = Maps::getMap(mapId);
 
-	if (portal == nullptr)
+	if (portal == nullptr) {
 		portal = newMap->getSpawnPoint();
+	}
 
 	if (!instance) {
 		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
-		int32_t ispartyleader = (getParty() != nullptr && getParty()->isLeader(getId()) ? 1 : 0);
+		int32_t isPartyLeader = (getParty() != nullptr && getParty()->isLeader(getId()) ? 1 : 0);
 		if (Instance *i = oldMap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, ispartyleader);
+			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
 		}
 		if (Instance *i = newMap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, ispartyleader);
+			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
 		}
 	}
 
@@ -462,13 +461,13 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 }
 
 string Player::getMedalName() {
-	string ret;
+	std::ostringstream ret;
 	if (int32_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
-		ret = "<" + ItemDataProvider::Instance()->getItemName(itemId) + "> ";
+		ret << "<" << ItemDataProvider::Instance()->getItemName(itemId) << "> ";
 	}
-	ret += getName();
-	return ret;
+	ret << getName();
+	return ret.str();
 }
 
 void Player::changeChannel(int8_t channel) {
@@ -515,7 +514,7 @@ void Player::changeSkillMacros(PacketReader &packet) {
 	}
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
-		string name = packet.getString();
+		string &name = packet.getString();
 		bool shout = packet.getBool();
 		int32_t skill1 = packet.get<int32_t>();
 		int32_t skill2 = packet.get<int32_t>();
@@ -539,24 +538,6 @@ void Player::setEyes(int32_t id) {
 void Player::setSkin(int8_t id) {
 	m_skin = id;
 	PlayerPacket::updateStat(this, Stats::Skin, id);
-}
-
-bool Player::addWarning() {
-	int32_t t = TimeUtilities::getTickCount();
-	// Deleting old warnings
-	for (size_t i = 0; i < m_warnings.size(); i++) {
-		if (m_warnings[i] + 300000 < t) {
-			m_warnings.erase(m_warnings.begin() + i);
-			i--;
-		}
-	}
-	m_warnings.push_back(t);
-	if (m_warnings.size() > 50) {
-		// Hacker - Temp DCing
-		getSession()->disconnect();
-		return true;
-	}
-	return false;
 }
 
 void Player::saveStats() {
@@ -595,7 +576,7 @@ void Player::saveStats() {
 	query.exec();
 }
 
-void Player::saveAll(bool savecooldowns) {
+void Player::saveAll(bool saveCooldowns) {
 	saveStats();
 	getInventory()->save();
 	getStorage()->save();
@@ -603,7 +584,7 @@ void Player::saveAll(bool savecooldowns) {
 	getMounts()->save();
 	getPets()->save();
 	getQuests()->save();
-	getSkills()->save(savecooldowns);
+	getSkills()->save(saveCooldowns);
 	getVariables()->save();
 }
 

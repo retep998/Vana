@@ -45,7 +45,7 @@ public:
 	bool addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false);
 	void calculateLevel();
 	void infoData(PacketCreator &packet);
-	void setCover(int32_t newcover) { m_cover = newcover; }
+	void setCover(int32_t newCover) { m_cover = newCover; }
 
 	MonsterCard * getCard(int32_t cardId);
 	uint8_t getCardLevel(int32_t cardId);

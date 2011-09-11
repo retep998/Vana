@@ -60,7 +60,8 @@ void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, c
 
 	m_buffer.push_back(message);
 
-	if (!m_hasMessage) { // First element pushed
+	if (!m_hasMessage) {
+		// First element pushed
 		parseBuffer();
 		m_hasMessage = true;
 	}
@@ -103,10 +104,10 @@ void MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) {
 	 getMapleTvPacket(m_currentMessage, packet, checkMessageTimer());
 }
 
-void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeleft) {
+void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeLeft) {
 	packet.addHeader(SMSG_MAPLETV_ON);
 	packet.add<int8_t>(message.hasReceiver ? 3 : 1);
-	packet.add<int8_t>((int8_t)(message.megaphoneId - 5075000)); // Positively will be within -128 to 127
+	packet.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000)); // Positively will be within -128 to 127
 	packet.addBuffer(message.sendDisplay);
 	packet.addString(message.sendName);
 	packet.addString(message.hasReceiver ? message.recvName : "");
@@ -115,7 +116,7 @@ void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, 
 	packet.addString(message.msg3);
 	packet.addString(message.msg4);
 	packet.addString(message.msg5);
-	packet.add<int32_t>(timeleft == 0 ? message.time : timeleft);
+	packet.add<int32_t>(timeLeft == 0 ? message.time : timeLeft);
 	if (message.hasReceiver) {
 		packet.addBuffer(message.recvDisplay);
 	}

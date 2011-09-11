@@ -50,7 +50,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			}
 		}
 
-		string filename = "scripts/portals/" + portal->script + ".lua";
+		string &filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
 			int32_t map = player->getMap();
@@ -75,15 +75,14 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 	else {
 		// Normal portal
-		Map *tomap = getMap(portal->toMap);
-		if (tomap == nullptr) {
-			string message = "Bzzt. The map you're attempting to travel to doesn't exist.";
-			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
+		Map *toMap = getMap(portal->toMap);
+		if (toMap == nullptr) {
+			PlayerPacket::showMessage(player, "Bzzt. The map you're attempting to travel to doesn't exist.", PlayerPacket::NoticeTypes::Red);
 			MapPacket::portalBlocked(player);
 			return;
 		}
-		PortalInfo *nextportal = tomap->getPortal(portal->toName);
-		player->setMap(portal->toMap, nextportal);
+		PortalInfo *nextPortal = toMap->getPortal(portal->toName);
+		player->setMap(portal->toMap, nextPortal);
 	}
 }
 
@@ -94,7 +93,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->getHp() == 0) {
-				string unk = packet.getString(); // Useless
+				string &unk = packet.getString(); // Useless
 				packet.skipBytes(1); // Useless
 				bool wheel = packet.getBool();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
@@ -106,19 +105,21 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			}
 			break;
 		case -1: {
-			string portalname = packet.getString();
+			string &portalName = packet.getString();
 
-			Map *tomap = getMap(player->getMap());
-			if (tomap == nullptr)
+			Map *toMap = getMap(player->getMap());
+			if (toMap == nullptr) {
 				return;
-			PortalInfo *portal = tomap->getPortal(portalname);
-			if (portal == nullptr) // Exit the function if portal is not found
+			}
+			PortalInfo *portal = toMap->getPortal(portalName);
+			if (portal == nullptr) {
 				return;
-
+			}
 			usePortal(player, portal);
 			break;
 		}
-		default: { // GM Map change (command "/m")
+		default: {
+			// GM Map change (command "/m")
 			if (player->isGm() && getMap(opcode)) {
 				player->setMap(opcode);
 			}
@@ -128,12 +129,12 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 
 void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
-	string portalname = packet.getString();
+	string &portalName = packet.getString();
 
-	PortalInfo *portal = getMap(player->getMap())->getPortal(portalname);
-	if (portal == nullptr) // Exit the function if portal is not found
+	PortalInfo *portal = getMap(player->getMap())->getPortal(portalName);
+	if (portal == nullptr) {
 		return;
-
+	}
 	usePortal(player, portal);
 }
 

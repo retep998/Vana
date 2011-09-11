@@ -40,9 +40,9 @@ using TimeUtilities::tickToTick32;
 using TimeUtilities::timeToTick;
 
 void Login::loginUser(Player *player, PacketReader &packet) {
-	string username = packet.getString();
-	string password = packet.getString();
-	string ip = IpUtilities::ipToString(player->getIp());
+	string &username = packet.getString();
+	string &password = packet.getString();
+	string &ip = IpUtilities::ipToString(player->getIp());
 
 	if (username.size() > Characters::MaxNameSize || username.size() < Characters::MinNameSize) {
 		// Hacking, the client doesn't actually allow this
@@ -71,16 +71,16 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		valid = false;
 	}
 	else if (res[0]["salt"].is_null()) {
-		// We have an unsalted password here
+		// We have an unsalted password
 		if (res[0]["password"] != password) {
 			LoginPacket::loginError(player, LoginPacket::Errors::InvalidPassword);
 			valid = false;
 		}
 		else {
-			// We have a valid password here, so let's hash the password
-			string salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
-			string hashed_pass = MiscUtilities::hashPassword(password, salt);
-			query << "UPDATE user_accounts u SET u.password = " << mysqlpp::quote << hashed_pass << ", u.salt = " << mysqlpp::quote << salt << " WHERE u.user_id = " << res[0]["user_id"];
+			// We have a valid password, so let's hash the password
+			string &salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
+			string &hashedPassword = MiscUtilities::hashPassword(password, salt);
+			query << "UPDATE user_accounts u SET u.password = " << mysqlpp::quote << hashedPassword << ", u.salt = " << mysqlpp::quote << salt << " WHERE u.user_id = " << res[0]["user_id"];
 			query.exec();
 		}
 	}

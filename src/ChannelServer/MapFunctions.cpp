@@ -159,8 +159,8 @@ bool MapFunctions::summon(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d+)?", matches)) {
 		int32_t mobId = atoi(string(matches[1]).c_str());
 		if (MobDataProvider::Instance()->mobExists(mobId)) {
-			string countstring = matches[2];
-			int32_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+			string countString = matches[2];
+			int32_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 			if (count > 100) count = 100;
 			for (int32_t i = 0; i < count; i++) {
 				Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos());

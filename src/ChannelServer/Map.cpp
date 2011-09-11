@@ -869,9 +869,9 @@ void Map::showObjects(Player *player) {
 	}
 
 	if (hasClock()) {
-		time_t rawtime;
-		time(&rawtime);
-		struct tm *timeInfo = localtime(&rawtime);
+		time_t rawTime;
+		time(&rawTime);
+		struct tm *timeInfo = localtime(&rawTime);
 		MapPacket::showClock(player, timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec);
 	}
 }

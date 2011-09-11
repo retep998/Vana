@@ -120,8 +120,8 @@ bool ManagementFunctions::item(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d*)?", matches)) {
 		int32_t itemId = atoi(string(matches[1]).c_str());
 		if (ItemDataProvider::Instance()->itemExists(itemId)) {
-			string countstring = matches[2];
-			uint16_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+			string countString = matches[2];
+			uint16_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 			Inventory::addNewItem(player, itemId, count);
 		}
 		else {
@@ -261,31 +261,31 @@ bool ManagementFunctions::kill(Player *player, const string &args) {
 bool ManagementFunctions::ban(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
-		string targetname = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname)) {
+		string targetName = matches[1];
+		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
 			target->getSession()->disconnect();
 		}
-		string reasonstring = matches[2];
-		int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+		string reasonString = matches[2];
+		int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 		// Ban account
-		mysqlpp::Query accbanquery = Database::getCharDb().query();
-		accbanquery << "UPDATE user_accounts u "
+		mysqlpp::Query accountBanQuery = Database::getCharDb().query();
+		accountBanQuery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_reason = " << (int16_t) reason << ","
 					<< "	u.ban_expire = " << mysqlpp::quote << "9000-00-00 00:00:00" << " "
-					<< "WHERE c.name = " << mysqlpp::quote << targetname;
-		accbanquery.exec();
+					<< "WHERE c.name = " << mysqlpp::quote << targetName;
+		accountBanQuery.exec();
 
-		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+		int32_t affects = static_cast<int32_t>(accountBanQuery.affected_rows());
 		if (affects != 0) {
-			string banmsg = targetname + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
+			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't ban " + targetname + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, "Couldn't ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
 		}
 		return true;
 	}
@@ -295,32 +295,32 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 bool ManagementFunctions::tempBan(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (\\d+) (\\d+)", matches)) {
-		string targetname = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname)) {
+		string targetName = matches[1];
+		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
 			target->getSession()->disconnect();
 		}
-		string reasonstring = matches[2];
+		string reasonString = matches[2];
 		string length = matches[3];
-		int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+		int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 		// Ban account
-		mysqlpp::Query accbanquery = Database::getCharDb().query();
-		accbanquery << "UPDATE user_accounts u "
+		mysqlpp::Query accountBanQuery = Database::getCharDb().query();
+		accountBanQuery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_reason = " << (int16_t) reason << ","
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY) "
-					<< "WHERE c.name = " << mysqlpp::quote << targetname;
-		accbanquery.exec();
+					<< "WHERE c.name = " << mysqlpp::quote << targetName;
+		accountBanQuery.exec();
 
-		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+		int32_t affects = static_cast<int32_t>(accountBanQuery.affected_rows());
 		if (affects != 0) {
-			string banmsg = targetname + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>((int16_t)reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetname);
+			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>((int16_t)reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetName);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't temporary ban " + targetname + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, "Couldn't temporary ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
 		}
 		return true;
 	}
@@ -330,27 +330,27 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 bool ManagementFunctions::ipBan(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
-		string targetname = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetname)) {
-			string targetip = IpUtilities::ipToString(target->getIp());
+		string targetName = matches[1];
+		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
+			string &targetIp = IpUtilities::ipToString(target->getIp());
 			target->getSession()->disconnect();
 
-			string reasonstring = matches[2];
-			int8_t reason = reasonstring.length() > 0 ? atoi(reasonstring.c_str()) : 1;
+			string reasonString = matches[2];
+			int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 			// Ip ban
-			mysqlpp::Query accipbanquery = Database::getCharDb().query();
-			accipbanquery << "INSERT INTO `ip_bans` (`id`, `ip`) VALUES (NULL, " << mysqlpp::quote << targetip << ")";
-			accipbanquery.exec();
+			mysqlpp::Query accountBanQuery = Database::getCharDb().query();
+			accountBanQuery << "INSERT INTO `ip_bans` (`id`, `ip`) VALUES (NULL, " << mysqlpp::quote << targetIp << ")";
+			accountBanQuery.exec();
 
-			int32_t affects = static_cast<int32_t>(accipbanquery.affected_rows());
+			int32_t affects = static_cast<int32_t>(accountBanQuery.affected_rows());
 			if (affects != 0) {
-				string banmsg = targetname + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
-				PlayerPacket::showMessageChannel(banmsg, PlayerPacket::NoticeTypes::Notice);
-				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetname);
+				string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
+				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 			}
 			else {
-				PlayerPacket::showMessage(player, "Couldn't IP ban " + targetip + ".", PlayerPacket::NoticeTypes::Red);
+				PlayerPacket::showMessage(player, "Couldn't IP ban " + targetIp + ".", PlayerPacket::NoticeTypes::Red);
 			}
 		}
 		return true;
@@ -361,19 +361,19 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 bool ManagementFunctions::unban(Player *player, const string &args) {
 	if (args.length() != 0) {
 		// Unban account
-		mysqlpp::Query accbanquery = Database::getCharDb().query();
-		accbanquery << "UPDATE user_accounts u "
+		mysqlpp::Query accountBanQuery = Database::getCharDb().query();
+		accountBanQuery << "UPDATE user_accounts u "
 					<< "INNER JOIN characters c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_expire = " << mysqlpp::quote << "0000-00-00 00:00:00" << " "
 					<< "WHERE c.name = " << mysqlpp::quote << args;
 
-		accbanquery.exec();
+		accountBanQuery.exec();
 
-		int32_t affects = static_cast<int32_t>(accbanquery.affected_rows());
+		int32_t affects = static_cast<int32_t>(accountBanQuery.affected_rows());
 		if (affects != 0) {
-			string banmsg = args + " has been unbanned.";
-			PlayerPacket::showMessage(player, banmsg, PlayerPacket::NoticeTypes::Blue);
+			string &banMessage = args + " has been unbanned.";
+			PlayerPacket::showMessage(player, banMessage, PlayerPacket::NoticeTypes::Blue);
 			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM unbanned a character. GM: " + player->getName() + ", Character: " + args);
 		}
 		else {
