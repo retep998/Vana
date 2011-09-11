@@ -45,11 +45,11 @@ void PlayerPets::save() {
 	mysqlpp::Query query = Database::getCharDb().query();
 	for (unordered_map<int64_t, Pet *>::iterator iter = m_pets.begin(); iter != m_pets.end(); iter++) {
 		query << "UPDATE pets SET "
-			<< "`index` = " << (int16_t) iter->second->getIndex() << ","
+			<< "`index` = " << static_cast<int16_t>(iter->second->getIndex()) << ","
 			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
-			<< "level = " << (int16_t) iter->second->getLevel() << ","
+			<< "level = " << static_cast<int16_t>(iter->second->getLevel()) << ","
 			<< "closeness = " << iter->second->getCloseness() << ","
-			<< "fullness = " << (int16_t) iter->second->getFullness()
+			<< "fullness = " << static_cast<int16_t>(iter->second->getFullness())
 			<< " WHERE pet_id = " << iter->second->getId();
 		query.exec();
 	}
@@ -66,7 +66,14 @@ void PlayerPets::petInfoPacket(PacketCreator &packet) {
 			packet.add<int16_t>(pet->getCloseness());
 			packet.add<int8_t>(pet->getFullness());
 			packet.add<int16_t>(0);
-			it = m_player->getInventory()->getItem(Inventories::EquipInventory, -114 - (i == 1 ? 16 : (i == 2 ? 24 : 0)));
+			int16_t slot = 0;
+			switch (i) {
+				case 0: slot = EquipSlots::PetEquip1;
+				case 1: slot = EquipSlots::PetEquip2;
+				case 2: slot = EquipSlots::PetEquip3;
+			}
+
+			it = m_player->getInventory()->getItem(Inventories::EquipInventory, slot);
 			packet.add<int32_t>(it != nullptr ? it->getId() : 0);
 		}
 	}

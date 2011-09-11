@@ -66,7 +66,7 @@ void DatabaseMigration::Runner::loadFile() {
 		tokenizer tokens(content, sep);
 
 		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
-			string query = boost::trim_copy(*iter);
+			string &query = boost::trim_copy(*iter);
 
 			if (query.size() > 0) {
 				m_queries.push_back(*iter);

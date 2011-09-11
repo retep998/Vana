@@ -1673,9 +1673,9 @@ int LuaExports::isPartyInLevelRange(lua_State *luaVm) {
 	Party *p = player->getParty();
 	bool iswithin = false;
 	if (p != nullptr) {
-		uint8_t lowbound = lua_tointeger(luaVm, 1);
-		uint8_t highbound = lua_tointeger(luaVm, 2);
-		iswithin = p->isWithinLevelRange(lowbound, highbound);
+		uint8_t lowBound = lua_tointeger(luaVm, 1);
+		uint8_t highBound = lua_tointeger(luaVm, 2);
+		iswithin = p->isWithinLevelRange(lowBound, highBound);
 	}
 	lua_pushboolean(luaVm, iswithin);
 	return 1;
@@ -1773,7 +1773,7 @@ int LuaExports::checkInstanceTimer(lua_State *luaVm) {
 int LuaExports::createInstance(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	bool showtimer = lua_toboolean(luaVm, 3) != 0;
+	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
 	Player *player = getPlayer(luaVm);
 	int32_t map = 0;
@@ -1785,7 +1785,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 		map = player->getMap();
 		id = player->getId();
 	}
-	Instance *instance = new Instance(name, map, id, time, persistent, showtimer);
+	Instance *instance = new Instance(name, map, id, time, persistent, showTimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 

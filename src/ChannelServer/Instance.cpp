@@ -244,13 +244,13 @@ bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 }
 
 int32_t Instance::checkTimer(const string &timerName) {
-	int32_t timeleft = 0;
+	int32_t timeLeft = 0;
 	if (m_timerActions.find(timerName) != m_timerActions.end()) {
 		TimerAction timer = m_timerActions[timerName];
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
-		timeleft = getTimers()->checkTimer(id);
+		timeLeft = getTimers()->checkTimer(id);
 	}
-	return timeleft;
+	return timeLeft;
 }
 
 void Instance::removeTimer(const string &timerName) {
@@ -273,12 +273,12 @@ void Instance::removeAllTimers() {
 }
 
 int32_t Instance::checkInstanceTimer() {
-	int32_t timeleft = 0;
+	int32_t timeLeft = 0;
 	if (m_time > 0) {
 		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		timeleft = getTimers()->checkTimer(id);
+		timeLeft = getTimers()->checkTimer(id);
 	}
-	return timeleft;
+	return timeLeft;
 }
 
 void Instance::setInstanceTimer(int32_t time, bool firstRun) {

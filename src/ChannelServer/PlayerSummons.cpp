@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Summon.h"
 #include "SummonHandler.h"
 #include "SummonsPacket.h"
-#include "TimeUtilities.h"
 #include "Timer.h"
+#include "TimeUtilities.h"
 #include <functional>
 
 using std::tr1::bind;
@@ -79,26 +79,26 @@ int32_t PlayerSummons::getSummonTimeRemaining() {
 
 void PlayerSummons::write(PacketCreator &packet) {
 	int32_t summonId = 0;
-	int32_t timeleft = 0;
+	int32_t timeLeft = 0;
 	uint8_t level = 0;
 	if (m_summon != nullptr) {
 		summonId = m_summon->getSummonId();
-		timeleft = getSummonTimeRemaining();
+		timeLeft = getSummonTimeRemaining();
 		level = m_summon->getLevel();
 	}
 	packet.add<int32_t>(summonId);
-	packet.add<int32_t>(timeleft);
+	packet.add<int32_t>(timeLeft);
 	packet.add<uint8_t>(level);
 }
 
 void PlayerSummons::read(PacketReader &packet) {
 	int32_t skillId = packet.get<int32_t>();
-	int32_t timeleft = packet.get<int32_t>();
+	int32_t timeLeft = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();
 	if (skillId != 0) {
 		Summon *summon = new Summon(SummonHandler::loopId(), skillId, level);
 		summon->setPos(m_player->getPos());
-		addSummon(summon, timeleft);
+		addSummon(summon, timeLeft);
 		SummonsPacket::showSummon(m_player, summon, true);
 	}
 }

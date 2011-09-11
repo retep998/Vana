@@ -35,8 +35,8 @@ void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case BuddyOpcodes::Add: {
-			string name = packet.getString();
-			string group = packet.getString();
+			string &name = packet.getString();
+			string &group = packet.getString();
 
 			uint8_t error = player->getBuddyList()->addBuddy(name, group);
 

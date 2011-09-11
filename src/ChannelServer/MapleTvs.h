@@ -75,7 +75,7 @@ private:
 	static MapleTvs *singleton;
 
 	void parseBuffer();
-	void getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeleft = 0);
+	void getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeLeft = 0);
 	void endMapleTvPacket(PacketCreator &packet);
 	void sendPacket(PacketCreator &packet);
 	int32_t checkMessageTimer() const;

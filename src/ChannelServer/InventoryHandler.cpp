@@ -58,8 +58,8 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			// Hacking
 			return;
 		}
-		Item droppeditem(item);
-		droppeditem.setAmount(amount);
+		Item droppedItem(item);
+		droppedItem.setAmount(amount);
 		if (item->getAmount() == amount) {
 			InventoryPacket::moveItem(player, inv, slot1, slot2);
 			player->getInventory()->deleteItem(inv, slot1);
@@ -69,10 +69,10 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 			player->getInventory()->changeItemAmount(item->getId(), -amount);
 			InventoryPacket::updateItemAmounts(player, inv, slot1, item->getAmount(), 0, 0);
 		}
-		Drop *drop = new Drop(player->getMap(), droppeditem, player->getPos(), player->getId(), true);
+		Drop *drop = new Drop(player->getMap(), droppedItem, player->getPos(), player->getId(), true);
 		drop->setTime(0);
 
-		bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppeditem.getId());
+		bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppedItem.getId());
 		drop->setTradeable(isTradeable);
 
 		drop->doDrop(player->getPos());
@@ -107,62 +107,62 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		else {
 			if (slot2 < 0) {
 				bool isCash = ItemDataProvider::Instance()->isCash(item1->getId());
-				uint8_t desiredslot = -(slot2 + (isCash ? 100 : 0));
-				if (!EquipDataProvider::Instance()->validSlot(item1->getId(), desiredslot)) {
+				uint8_t desiredSlot = -(slot2 + (isCash ? 100 : 0));
+				if (!EquipDataProvider::Instance()->validSlot(item1->getId(), desiredSlot)) {
 					// Hacking
 					return;
 				}
 				Item *remove = nullptr;
-				int16_t oldslot = 0;
+				int16_t oldSlot = 0;
 				bool weapon = -slot2 == EquipSlots::Weapon;
 				bool shield = -slot2 == EquipSlots::Shield;
 				bool top = -slot2 == EquipSlots::Top;
 				bool bottom = -slot2 == EquipSlots::Bottom;
 
 				if (weapon && GameLogicUtilities::is2hWeapon(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) {
-					oldslot = -EquipSlots::Shield;
+					oldSlot = -EquipSlots::Shield;
 				}
 				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-					oldslot = -EquipSlots::Weapon;
+					oldSlot = -EquipSlots::Weapon;
 				}
 				else if (top && GameLogicUtilities::isOverall(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0) {
-					oldslot = -EquipSlots::Bottom;
+					oldSlot = -EquipSlots::Bottom;
 				}
 				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedId(EquipSlots::Top))) {
-					oldslot = -EquipSlots::Top;
+					oldSlot = -EquipSlots::Top;
 				}
-				if (oldslot != 0) {
-					remove = player->getInventory()->getItem(inv, oldslot);
-					bool onlyswap = true;
+				if (oldSlot != 0) {
+					remove = player->getInventory()->getItem(inv, oldSlot);
+					bool onlySwap = true;
 					if ((player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Weapon) != 0)) {
-						onlyswap = false;
+						onlySwap = false;
 					}
 					else if ((player->getInventory()->getEquippedId(EquipSlots::Top) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0)) {
-						onlyswap = false;
+						onlySwap = false;
 					}
-					if (onlyswap) {
-						int16_t swapslot = 0;
+					if (onlySwap) {
+						int16_t swapSlot = 0;
 						if (weapon) {
-							swapslot = -EquipSlots::Shield;
+							swapSlot = -EquipSlots::Shield;
 							player->getActiveBuffs()->stopBooster();
 							player->getActiveBuffs()->stopCharge();
 						}
 						else if (shield) {
-							swapslot = -EquipSlots::Weapon;
+							swapSlot = -EquipSlots::Weapon;
 							player->getActiveBuffs()->stopBooster();
 							player->getActiveBuffs()->stopCharge();
 						}
 						else if (top) {
-							swapslot = -EquipSlots::Bottom;
+							swapSlot = -EquipSlots::Bottom;
 						}
 						else if (bottom) {
-							swapslot = -EquipSlots::Top;
+							swapSlot = -EquipSlots::Top;
 						}
-						player->getInventory()->setItem(inv, swapslot, nullptr);
+						player->getInventory()->setItem(inv, swapSlot, nullptr);
 						player->getInventory()->setItem(inv, slot1, remove);
 						player->getInventory()->setItem(inv, slot2, item1);
 						InventoryPacket::moveItem(player, inv, slot1, slot2);
-						InventoryPacket::moveItem(player, inv, swapslot, slot1);
+						InventoryPacket::moveItem(player, inv, swapSlot, slot1);
 						InventoryPacket::updatePlayer(player);
 						return;
 					}
@@ -180,8 +180,8 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 							}
 						}
 						player->getInventory()->setItem(inv, freeSlot, remove);
-						player->getInventory()->setItem(inv, oldslot, nullptr);
-						InventoryPacket::moveItem(player, inv, oldslot, freeSlot);
+						player->getInventory()->setItem(inv, oldSlot, nullptr);
+						InventoryPacket::moveItem(player, inv, oldSlot, freeSlot);
 					}
 				}
 			}
@@ -318,7 +318,8 @@ void InventoryHandler::handleChair(Player *player, PacketReader &packet) {
 		}
 		InventoryPacket::stopChair(player);
 	}
-	else { // Map chair
+	else {
+		// Map chair
 		if (map->seatOccupied(chair)) {
 			InventoryPacket::stopChair(player, false);
 		}
@@ -340,8 +341,8 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	Item *inventoryitem = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	if (inventoryitem == nullptr || inventoryitem->getId() != itemId) {
+	Item *inventoryItem = player->getInventory()->getItem(Inventories::UseInventory, slot);
+	if (inventoryItem == nullptr || inventoryItem->getId() != itemId) {
 		// Hacking
 		return;
 	}
@@ -349,9 +350,8 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
 	vector<SummonBag> *item = ItemDataProvider::Instance()->getItemSummons(itemId);
-	SummonBag s;
 	for (size_t i = 0; i < item->size(); i++) {
-		s = (*item)[i];
+		SummonBag &s = (*item)[i];
 		if (Randomizer::Instance()->randInt(99) < s.chance) {
 			if (MobDataProvider::Instance()->mobExists(s.mobId)) {
 				Maps::getMap(player->getMap())->spawnMob(s.mobId, player->getPos());
@@ -383,12 +383,12 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
-	int16_t eslot = packet.get<int16_t>();
-	bool wscroll = (packet.get<int16_t>() == 2);
+	int16_t equipSlot = packet.get<int16_t>();
+	bool whiteScroll = (packet.get<int16_t>() == 2);
 	bool legendarySpirit = packet.getBool();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, eslot);
+	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, equipSlot);
 	if (item == nullptr || equip == nullptr) {
 		// Most likely hacking
 		return;
@@ -397,21 +397,21 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	int32_t itemId = item->getId();
 	int8_t succeed = -1;
 	bool cursed = false;
-	ItemDataProvider::Instance()->scrollItem(itemId, equip, succeed, cursed, wscroll);
+	ItemDataProvider::Instance()->scrollItem(itemId, equip, succeed, cursed, whiteScroll);
 
 	if (succeed != -1) {
-		if (wscroll) {
+		if (whiteScroll) {
 			Inventory::takeItem(player, Items::WhiteScroll, 1);
 		}
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 		InventoryPacket::useScroll(player, succeed, cursed, legendarySpirit);
 		if (!cursed) {
-			player->getStats()->setEquip(eslot, equip);
-			InventoryPacket::addNewItem(player, Inventories::EquipInventory, eslot, equip, true);
+			player->getStats()->setEquip(equipSlot, equip);
+			InventoryPacket::addNewItem(player, Inventories::EquipInventory, equipSlot, equip, true);
 		}
 		else {
-			InventoryPacket::moveItem(player, Inventories::EquipInventory, eslot, 0);
-			player->getInventory()->deleteItem(Inventories::EquipInventory, eslot);
+			InventoryPacket::moveItem(player, Inventories::EquipInventory, equipSlot, 0);
+			player->getInventory()->deleteItem(Inventories::EquipInventory, equipSlot);
 		}
 		InventoryPacket::updatePlayer(player);
 	}
@@ -435,7 +435,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
-		string message = packet.getString();
+		string &message = packet.getString();
 		packet.skipBytes(4); // Ticks
 		if (message.length() <= 35) {
 			Map *map = Maps::getMap(player->getMap());
@@ -487,13 +487,13 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::Megaphone: {
-				string msg = player->getMedalName() + " : " + packet.getString();
+				string &msg = player->getMedalName() + " : " + packet.getString();
 				InventoryPacket::showMegaphone(player, msg);
 				used = true;
 				break;
 			}
 			case Items::SuperMegaphone: {
-				string msg = player->getMedalName() + " : " + packet.getString();
+				string &msg = player->getMedalName() + " : " + packet.getString();
 				bool whisper = packet.getBool();
 				InventoryPacket::showSuperMegaphone(player, msg, whisper);
 				used = true;
@@ -502,22 +502,22 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::DiabloMessenger:
 			case Items::Cloud9Messenger:
 			case Items::LoveholicMessenger: {
-				string msg = packet.getString();
-				string msg2 = packet.getString();
-				string msg3 = packet.getString();
-				string msg4 = packet.getString();
+				string &msg = packet.getString();
+				string &msg2 = packet.getString();
+				string &msg3 = packet.getString();
+				string &msg4 = packet.getString();
 
 				InventoryPacket::showMessenger(player, msg, msg2, msg3, msg4, packet.getBuffer(), packet.getBufferLength(), itemId);
 				used = true;
 				break;
 			}
 			case Items::ItemMegaphone: {
-				string msg = player->getMedalName() + " : " + packet.getString();
+				string &msg = player->getMedalName() + " : " + packet.getString();
 				bool whisper = packet.getBool();
 				Item *item = nullptr;
 				if (packet.getBool()) {
-					int8_t inv = (int8_t) packet.get<int32_t>();
-					int16_t slot = (int16_t) packet.get<int32_t>();
+					int8_t inv = static_cast<int8_t>(packet.get<int32_t>());
+					int16_t slot = static_cast<int16_t>(packet.get<int32_t>());
 					item = player->getInventory()->getItem(inv, slot);
 					if (item == nullptr) {
 						// Hacking
@@ -544,7 +544,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::PetNameTag: {
-				string name = packet.getString();
+				string &name = packet.getString();
 				PetHandler::changeName(player, name);
 				used = true;
 				break;
@@ -565,10 +565,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::ScissorsOfKarma:
 			case Items::ItemLock: {
-				int8_t inventory = (int8_t) packet.get<int32_t>();
-				int16_t slot = (int16_t) packet.get<int32_t>();
+				int8_t inv = static_cast<int8_t>(packet.get<int32_t>());
+				int16_t slot = static_cast<int16_t>(packet.get<int32_t>());
 				if (slot != 0) {
-					Item *item = player->getInventory()->getItem(inventory, slot);
+					Item *item = player->getInventory()->getItem(inv, slot);
 					if (item == nullptr) {
 						// Hacking or failure, dunno
 						return;
@@ -594,7 +594,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 							break;
 					}
 
-					InventoryPacket::addNewItem(player, inventory, slot, item, true);
+					InventoryPacket::addNewItem(player, inv, slot, item, true);
 					used = true;
 				}
 				break;
@@ -607,11 +607,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				int32_t time = 15;
 
 				if ((hasReceiver && receiver != nullptr) || (!hasReceiver && receiver == nullptr)) {
-					string msg = packet.getString();
-					string msg2 = packet.getString();
-					string msg3 = packet.getString();
-					string msg4 = packet.getString();
-					string msg5 = packet.getString();
+					string &msg = packet.getString();
+					string &msg2 = packet.getString();
+					string &msg3 = packet.getString();
+					string &msg4 = packet.getString();
+					string &msg5 = packet.getString();
 					packet.skipBytes(4); // Ticks
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
@@ -626,11 +626,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::StarMegassenger: {
 				int32_t time = 30;
 				bool showWhisper = (itemId == Items::StarMegassenger ? packet.getBool() : false);
-				string msg = packet.getString();
-				string msg2 = packet.getString();
-				string msg3 = packet.getString();
-				string msg4 = packet.getString();
-				string msg5 = packet.getString();
+				string &msg = packet.getString();
+				string &msg2 = packet.getString();
+				string &msg3 = packet.getString();
+				string &msg4 = packet.getString();
+				string &msg5 = packet.getString();
 				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
@@ -643,16 +643,16 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::MapleTvHeartMessenger:
 			case Items::HeartMegassenger: {
 				bool showWhisper = (itemId == Items::HeartMegassenger ? packet.getBool() : false);
-				string name = packet.getString();
+				string &name = packet.getString();
 				Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 				int32_t time = 60;
 
 				if (receiver != nullptr) {
-					string msg = packet.getString();
-					string msg2 = packet.getString();
-					string msg3 = packet.getString();
-					string msg4 = packet.getString();
-					string msg5 = packet.getString();
+					string &msg = packet.getString();
+					string &msg2 = packet.getString();
+					string &msg3 = packet.getString();
+					string &msg4 = packet.getString();
+					string &msg5 = packet.getString();
 					packet.skipBytes(4); // Ticks
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 					if (itemId == Items::HeartMegassenger) {
@@ -677,7 +677,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::Chalkboard:
 			case Items::Chalkboard2: {
-				string msg = packet.getString();
+				string &msg = packet.getString();
 				player->setChalkboard(msg);
 				InventoryPacket::sendChalkboardUpdate(player, msg);
 				break;
@@ -689,9 +689,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				used = true;
 				break;
 			case Items::ViciousHammer: {
-				int8_t inventory = (int8_t) packet.get<int32_t>(); // How pointless...
-				int16_t slot = (int16_t) packet.get<int32_t>();
-				Item *f = player->getInventory()->getItem(inventory, slot);
+				int8_t inv = static_cast<int8_t>(packet.get<int32_t>());
+				int16_t slot = static_cast<int16_t>(packet.get<int32_t>());
+				Item *f = player->getInventory()->getItem(inv, slot);
 				if (f == nullptr || f->getHammers() == Items::MaxHammers) {
 					// Hacking, probably
 					return;
@@ -764,24 +764,24 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 	}
 	bool used = false;
 	int8_t mode = packet.get<int8_t>();
-	int32_t targetmapId = -1;
+	int32_t targetMapId = -1;
 
 	enum Modes : int8_t {
 		PresetMap = 0x00,
 		Ign = 0x01
 	};
 	if (mode == PresetMap) {
-		targetmapId = packet.get<int32_t>();
-		if (!player->getInventory()->ensureRockDestination(targetmapId)) {
+		targetMapId = packet.get<int32_t>();
+		if (!player->getInventory()->ensureRockDestination(targetMapId)) {
 			// Hacking
 			return false;
 		}
 	}
 	else if (mode == Ign) {
-		string tname = packet.getString();
+		string &tname = packet.getString();
 		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
 		if (target != nullptr && target != player) {
-			targetmapId = target->getMap();
+			targetMapId = target->getMap();
 		}
 		else if (target == nullptr) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::DifficultToLocate, type);
@@ -791,8 +791,8 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 			return false;
 		}
 	}
-	if (targetmapId != -1) {
-		Map *destination = Maps::getMap(targetmapId);
+	if (targetMapId != -1) {
+		Map *destination = Maps::getMap(targetMapId);
 		Map *origin = Maps::getMap(player->getMap());
 		if (!destination->canVip()) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
@@ -800,7 +800,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 		else if (!origin->canVip()) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
 		}
-		else if (player->getMap() == targetmapId) {
+		else if (player->getMap() == targetMapId) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::AlreadyThere, type);
 		}
 		else if (type == 0 && destination->getContinent()!= origin->getContinent()) {
@@ -810,7 +810,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::NoobsCannotLeaveMapleIsland, type);
 		}
 		else {
-			player->setMap(targetmapId);
+			player->setMap(targetMapId);
 			used = true;
 		}
 	}
@@ -830,10 +830,10 @@ void InventoryHandler::handleHammerTime(Player *player) {
 		// Hacking
 		return;
 	}
-	int16_t hammerslot = player->getInventory()->getHammerSlot();
-	Item *item = player->getInventory()->getItem(Inventories::EquipInventory, hammerslot);
+	int16_t hammerSlot = player->getInventory()->getHammerSlot();
+	Item *item = player->getInventory()->getItem(Inventories::EquipInventory, hammerSlot);
 	InventoryPacket::sendHammerUpdate(player);
-	InventoryPacket::sendHulkSmash(player, hammerslot, item);
+	InventoryPacket::sendHulkSmash(player, hammerSlot, item);
 	player->getInventory()->setHammerSlot(-1);
 }
 
@@ -861,7 +861,7 @@ void InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
-	if (player->getNpc() != nullptr || player->getShop() != 0 || player->gettradeId() != 0) {
+	if (player->getNpc() != nullptr || player->getShop() != 0 || player->getTradeId() != 0) {
 		// Hacking
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
 		return;
@@ -878,7 +878,7 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string scriptName = ScriptDataProvider::Instance()->getScript(itemId, ScriptTypes::Item);
+	string &scriptName = ScriptDataProvider::Instance()->getScript(itemId, ScriptTypes::Item);
 	if (scriptName == "") {
 		// Hacking or no script for item found.
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?

@@ -106,7 +106,7 @@ void PlayerInventory::load() {
 		row[Name].to_string(temp);
 		item->setName(temp);
 
-		addItem((int8_t) row[Inv], row[Slot], item, true);
+		addItem(static_cast<int8_t>(row[Inv]), row[Slot], item, true);
 		if (item->getPetId() != 0) {
 			Pet *pet = new Pet(
 				m_player,
@@ -156,15 +156,15 @@ void PlayerInventory::save() {
 				query << ",(";
 			}
 			query << m_player->getId() << ","
-				<< (int16_t) i << ","
+				<< static_cast<int16_t>(i) << ","
 				<< iter->first << ","
 				<< mysqlpp::quote << "inventory" << ","
 				<< m_player->getUserId() << ","
-				<< (int16_t) m_player->getWorldId() << ","
+				<< static_cast<int16_t>(m_player->getWorldId()) << ","
 				<< item->getId() << ","
 				<< item->getAmount() << ","
-				<< (int16_t) item->getSlots() << ","
-				<< (int16_t) item->getScrolls() << ","
+				<< static_cast<int16_t>(item->getSlots()) << ","
+				<< static_cast<int16_t>(item->getScrolls()) << ","
 				<< item->getStr() << ","
 				<< item->getDex() << ","
 				<< item->getInt() << ","
@@ -197,7 +197,7 @@ void PlayerInventory::save() {
 		int32_t mapId = m_rockLocations[i];
 		query << "INSERT INTO teleport_rock_locations VALUES ("
 				<< m_player->getId() << ","
-				<< (uint16_t) i << ","
+				<< static_cast<uint16_t>(i) << ","
 				<< mapId << ")";
 		query.exec();
 	}
@@ -205,7 +205,7 @@ void PlayerInventory::save() {
 		int32_t mapId = m_vipLocations[i];
 		query << "INSERT INTO teleport_rock_locations VALUES ("
 				<< m_player->getId() << ","
-				<< (uint16_t) i + Inventories::TeleportRockMax << ","
+				<< static_cast<uint16_t>(i + Inventories::TeleportRockMax) << ","
 				<< mapId << ")";
 		query.exec();
 	}
@@ -218,7 +218,7 @@ void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 		m_maxSlots[inventory] = 100;
 	}
 	if (m_maxSlots[inventory] < 24) {
-		// Retard.
+		// Retard
 		m_maxSlots[inventory] = 24;
 	}
 	InventoryPacket::updateSlots(m_player, inventory + 1, m_maxSlots[inventory]);
@@ -316,14 +316,12 @@ int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 }
 
 void PlayerInventory::addEquipped(int16_t slot, int32_t itemId) {
-	slot = abs(slot);
-	if (slot == EquipSlots::Mount)
+	if (abs(slot) == EquipSlots::Mount) {
 		m_player->getMounts()->setCurrentMount(itemId);
+	}
 
-	if (slot > 100) // Cash items
-		m_equipped[slot - 100][1] = itemId;
-	else // Normal items
-		m_equipped[slot][0] = itemId;
+	int8_t cash = GameLogicUtilities::isCashSlot(slot) ? 1 : 0;
+	m_equipped[GameLogicUtilities::stripCashSlot(slot)][cash] = itemId;
 }
 
 int32_t PlayerInventory::getEquippedId(int16_t slot, bool cash) {
@@ -331,17 +329,22 @@ int32_t PlayerInventory::getEquippedId(int16_t slot, bool cash) {
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Shown items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+		// Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
 			packet.add<int8_t>(i);
-			if (m_equipped[i][1] <= 0 || (i == EquipSlots::Weapon && m_equipped[i][0] > 0)) // Normal weapons always here
+			if (m_equipped[i][1] <= 0 || (i == EquipSlots::Weapon && m_equipped[i][0] > 0)) {
+				// Normal weapons always here
 				packet.add<int32_t>(m_equipped[i][0]);
-			else
+			}
+			else {
 				packet.add<int32_t>(m_equipped[i][1]);
+			}
 		}
 	}
 	packet.add<int8_t>(-1);
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) { // Covered items
+	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+		// Covered items
 		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != EquipSlots::Weapon) {
 			packet.add<int8_t>(i);
 			packet.add<int32_t>(m_equipped[i][0]);
@@ -378,30 +381,36 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 		uint16_t existing = getItemAmount(itemId) % maxSlot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
-		if (canStack && existing > 0) { // If not, calculate how many slots necessary
+		if (canStack && existing > 0) {
+			// If not, calculate how many slots necessary
 			existing += amount;
-			if (existing > maxSlot) { // Only have to bother with required slots if it would put us over the limit of a slot
-				required = (int16_t) (existing / maxSlot);
-				if ((existing % maxSlot) > 0)
+			if (existing > maxSlot) {
+				// Only have to bother with required slots if it would put us over the limit of a slot
+				required = static_cast<int16_t>(existing / maxSlot);
+				if ((existing % maxSlot) > 0) {
 					required += 1;
+				}
 			}
 		}
-		else { // If it is, treat it as though no items exist at all
-			required = (int16_t) (amount / maxSlot);
-			if ((amount % maxSlot) > 0)
+		else {
+			// If it is, treat it as though no items exist at all
+			required = static_cast<int16_t>(amount / maxSlot);
+			if ((amount % maxSlot) > 0) {
 				required += 1;
+			}
 		}
 	}
 	return getOpenSlotsNum(inv) >= required;
 }
 
 int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
-	int16_t openslots = 0;
+	int16_t openSlots = 0;
 	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
-		if (getItem(inv, i) == nullptr)
-			openslots++;
+		if (getItem(inv, i) == nullptr) {
+			openSlots++;
+		}
 	}
-	return openslots;
+	return openSlots;
 }
 
 int32_t PlayerInventory::doShadowStars() {
@@ -410,8 +419,8 @@ int32_t PlayerInventory::doShadowStars() {
 		if (item == nullptr) {
 			continue;
 		}
-		if (GameLogicUtilities::isStar(item->getId()) && item->getAmount() >= 200) {
-			Inventory::takeItemSlot(m_player, Inventories::UseInventory, s, 200);
+		if (GameLogicUtilities::isStar(item->getId()) && item->getAmount() >= Items::ShadowStarsCost) {
+			Inventory::takeItemSlot(m_player, Inventories::UseInventory, s, Items::ShadowStarsCost);
 			return item->getId();
 		}
 	}
@@ -477,8 +486,9 @@ void PlayerInventory::addWishListItem(int32_t itemId) {
 void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int32_t>(m_mesos);
 
-	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++)
+	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
 		packet.add<int8_t>(getMaxSlots(i));
+	}
 
 	// Go through equips
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
@@ -514,7 +524,7 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 			}
 			else {
 				Pet *pet = m_player->getPets()->getPet(item->getPetId());
-				packet.add<int8_t>((int8_t) s);
+				packet.add<int8_t>(static_cast<int8_t>(s));
 				PetsPacket::addInfo(packet, pet);
 			}
 		}

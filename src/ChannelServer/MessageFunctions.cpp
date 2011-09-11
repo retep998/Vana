@@ -74,7 +74,7 @@ bool MessageFunctions::channelMessage(Player *player, const string &args) {
 
 bool MessageFunctions::gmMessage(Player *player, const string &args) {
 	if (args.length() != 0) {
-		string msg = player->getName() + " : " + args;
+		string &msg = player->getName() + " : " + args;
 		Functors::MeFunctor func = {msg};
 		PlayerDataProvider::Instance()->run(func);
 		return true;

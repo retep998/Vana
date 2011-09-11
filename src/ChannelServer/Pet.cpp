@@ -33,13 +33,13 @@ Pet::Pet(Player *player, Item *item) :
 	m_index(-1),
 	m_name(ItemDataProvider::Instance()->getItemName(m_itemId)),
 	m_level(1),
-	m_fullness(100),
+	m_fullness(Stats::MaxFullness),
 	m_closeness(0)
 {
 	mysqlpp::Query query = Database::getCharDb().query();
 	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << m_name << ")";
 	mysqlpp::SimpleResult res = query.execute();
-	m_id = (int64_t) res.insert_id();
+	m_id = static_cast<int64_t>(res.insert_id());
 	item->setPetId(m_id);
 }
 

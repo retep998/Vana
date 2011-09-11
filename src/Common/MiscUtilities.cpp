@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sha.h>
 
 string MiscUtilities::hashPassword(const string &password, const string &salt) {
-	string salted = salt + password;
+	string &salted = salt + password;
 	string digest;
 
 	CryptoPP::SHA512 hash;

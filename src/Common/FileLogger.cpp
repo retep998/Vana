@@ -76,7 +76,7 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 					break;
 				}
 			}
-			string y = strm.str();
+			string &y = strm.str();
 			ret.replace(x, iter->first.size(), y.c_str(), y.size());
 		}
 	}

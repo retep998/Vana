@@ -33,7 +33,7 @@ void ChatHandler::initializeCommands() {
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
-	string message = packet.getString();
+	string &message = packet.getString();
 	bool bubbleOnly = packet.getBool(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
@@ -51,7 +51,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat + 1, " ");
-		string args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
+		string &args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
 
 		boost::to_lower(command);
 
@@ -75,8 +75,8 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	int8_t type = packet.get<int8_t>();
 	uint8_t amount = packet.get<uint8_t>();
-	vector<int32_t> receivers = packet.getVector<int32_t>(amount);
-	string chat = packet.getString();
+	vector<int32_t> &receivers = packet.getVector<int32_t>(amount);
+	string &chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
 		WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), receivers, chat);

@@ -95,20 +95,20 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
 					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
 					int32_t itemSum = lastSlot + added[itemId];
-					bool needslots = false;
+					bool needSlots = false;
 					if (lastSlot > 0) {
 						// Items in the last slot, potential for needing slots
 						if (itemSum > maxSlot) {
-							needslots = true;
+							needSlots = true;
 						}
 					}
 					else {
 						// Full in the last slot, for sure need all slots
-						needslots = true;
+						needSlots = true;
 					}
-					if (needslots) {
-						uint8_t numSlots = (uint8_t)(itemSum / maxSlot);
-						uint8_t remainder = (uint8_t)(itemSum % maxSlot);
+					if (needSlots) {
+						uint8_t numSlots = static_cast<uint8_t>(itemSum / maxSlot);
+						uint8_t remainder = static_cast<uint8_t>(itemSum % maxSlot);
 						if (remainder > 0) {
 							totals[inv - 1]++;
 						}
@@ -161,7 +161,7 @@ void ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) {
 		int32_t taxlevel = TradeHandler::getTaxLevel(info->mesos);
 		if (traded && taxlevel != 0) {
 			int64_t mesos = info->mesos * taxlevel / 10000;
-			info->mesos -= (int32_t)(mesos);
+			info->mesos -= static_cast<int32_t>(mesos);
 		}
 		player->getInventory()->modifyMesos(info->mesos);
 	}

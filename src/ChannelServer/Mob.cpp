@@ -176,8 +176,9 @@ void Mob::naturalHealHp(int32_t amount) {
 void Mob::naturalHealMp(int32_t amount) {
 	if (getMp() < getMaxMp()) {
 		int32_t mp = getMp() + amount;
-		if (mp < 0 || mp > getMaxMp())
+		if (mp < 0 || mp > getMaxMp()) {
 			mp = getMaxMp();
+		}
 		setMp(mp);
 	}
 }

@@ -26,10 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 #include <boost/scoped_ptr.hpp>
-#include <ctime>
 #include <functional>
 #include <iostream>
-#include <map>
 
 using boost::scoped_ptr;
 using std::tr1::bind;
@@ -37,24 +35,20 @@ using Initializing::OutputWidth;
 
 namespace RankingCalculator {
 	// Consider moving some of this garbage to MySQL stored functions, maybe not because all the constants and stuff are here...
+	void jobUtility(std::ostringstream &str, const string &connector, const string &operation) {
+		for (int32_t i = 0; i < BeginnerJobCount; i++) {
+			if (i != 0) {
+				str << connector;
+			}
+			str << "c.job " << operation << " " << BeginnerJobs[i];
+		}
+	}
 	const string jobClause() {
 		std::ostringstream ret;
 		ret << "(((";
-		for (int32_t i = 0; i < BeginnerJobCount; i++) {
-			if (i != 0) {
-				ret << " OR ";
-			}
-			ret << "c.job = " << BeginnerJobs[i];
-		}
-
+		jobUtility(ret, " OR ", "=");
 		ret << ") AND c.level > 9) OR (";
-
-		for (int32_t i = 0; i < BeginnerJobCount; i++) {
-			if (i != 0) {
-				ret << " AND ";
-			}
-			ret << "c.job <> " << BeginnerJobs[i];
-		}
+		jobUtility(ret, " AND ", "<>");
 		ret << "))";
 		return ret.str();
 	}

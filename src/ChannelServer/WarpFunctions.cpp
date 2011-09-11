@@ -58,21 +58,21 @@ bool WarpFunctions::warpAll(Player *player, const string &args) {
 bool WarpFunctions::warp(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d*)?", matches)) {
-		string targetname = matches[1];
-		if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetname)) {
+		string targetName = matches[1];
+		if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetName)) {
 			string mapstring = matches[2];
 			int32_t mapId = mapstring.length() > 0 ? ChatHandlerFunctions::getMap(mapstring, player) : player->getMap();
 
 			if (Maps::getMap(mapId)) {
 				warpee->setMap(mapId);
-				PlayerPacket::showMessage(player, "Warped " + targetname + " to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
+				PlayerPacket::showMessage(player, "Warped " + targetName + " to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
 			}
 			else {
 				PlayerPacket::showMessage(player, "Cannot warp player; invalid map ID given.", PlayerPacket::NoticeTypes::Red);
 			}
 		}
 		else {
-			PlayerPacket::showMessage(player, targetname + " not found for warping.", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, targetName + " not found for warping.", PlayerPacket::NoticeTypes::Red);
 		}
 		return true;
 	}

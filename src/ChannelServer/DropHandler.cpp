@@ -39,26 +39,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) {
-	GlobalDrops *gdrops = DropDataProvider::Instance()->getGlobalDrops();
-	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gdrops == nullptr) {
+	GlobalDrops *gDrops = DropDataProvider::Instance()->getGlobalDrops();
+	if (!DropDataProvider::Instance()->hasDrops(droppingId) && gDrops == nullptr) {
 		return;
 	}
 	DropsInfo drops = DropDataProvider::Instance()->getDrops(droppingId); // Make a copy of the data so we can modify the object with global drops
 	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
 	int16_t d = 0;
-	int32_t partyid = 0;
+	int32_t partyId = 0;
 	Pos pos;
 
 	if (player != nullptr) {
 		if (Party *party = player->getParty()) {
-			partyid = party->getId();
+			partyId = party->getId();
 		}
 	}
-	if (droppingLevel != 0 && gdrops != nullptr) {
+	if (droppingLevel != 0 && gDrops != nullptr) {
 		// Check for global drops, add to the vector if needed
 		DropInfo d;
 		int8_t continent = MapDataProvider::Instance()->getContinent(mapId);
-		for (GlobalDrops::iterator i = gdrops->begin(); i != gdrops->end(); i++) {
+		for (GlobalDrops::iterator i = gDrops->begin(); i != gDrops->end(); i++) {
 			if (droppingLevel >= i->minLevel && droppingLevel <= i->maxLevel) {
 				if (i->continent == 0 || (continent == i->continent)) {
 					d = DropInfo();
@@ -142,9 +142,9 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			else if (ffa) {
 				drop->setType(Drop::FreeForAll);
 			}
-			else if (partyid > 0) {
+			else if (partyId > 0) {
 				drop->setType(Drop::Party);
-				drop->setOwner(partyid);
+				drop->setOwner(partyId);
 			}
 			drop->setTime(100);
 			drop->doDrop(origin);
@@ -168,7 +168,7 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petId = (int32_t)packet.get<int64_t>();
+	int32_t petId = static_cast<int32_t>(packet.get<int64_t>());
 	lootItem(player, packet, petId);
 }
 
@@ -202,14 +202,14 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) 
 		}
 	}
 	if (drop->isMesos()) {
-		int32_t playerrate = 100;
+		int32_t playerRate = 100;
 		int32_t mesos = drop->getObjectId();
 		if (player->getParty() != nullptr && !drop->isplayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
 			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
 			if (members.size() != 1) {
-				playerrate = 60;
-				mesos = mesos * playerrate / 100;
+				playerRate = 60;
+				mesos = mesos * playerRate / 100;
 
 				if (player->getInventory()->modifyMesos(mesos, true)) {
 					DropsPacket::pickupDrop(player, mesos, 0, true);
@@ -219,8 +219,8 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) 
 					return;
 				}
 
-				playerrate = 40 / (members.size() - 1);
-				mesos = drop->getObjectId() * playerrate / 100;
+				playerRate = 40 / (members.size() - 1);
+				mesos = drop->getObjectId() * playerRate / 100;
 				Player *p = nullptr;
 
 				for (uint8_t j = 0; j < members.size(); j++) {
@@ -236,7 +236,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) 
 				}
 			}
 		}
-		if (playerrate == 100) {
+		if (playerRate == 100) {
 			if (player->getInventory()->modifyMesos(mesos, true)) {
 				DropsPacket::pickupDrop(player, drop->getObjectId(), 0, true);
 			}
@@ -247,20 +247,20 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) 
 		}
 	}
 	else {
-		Item dropitem = drop->getItem();
-		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropitem.getId());
+		Item dropItem = drop->getItem();
+		ConsumeInfo *cons = ItemDataProvider::Instance()->getConsumeInfo(dropItem.getId());
 		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
-				Inventory::useItem(player, dropitem.getId());
+				Inventory::useItem(player, dropItem.getId());
 				DropsPacket::dontTake(player);
 				drop->takeDrop(player, petId);
 				return;
 			}
-			Inventory::useItem(player, dropitem.getId());
+			Inventory::useItem(player, dropItem.getId());
 		}
 		else {
-			Item *item = new Item(dropitem);
+			Item *item = new Item(dropItem);
 			int16_t dropAmount = drop->getAmount();
 			int16_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {

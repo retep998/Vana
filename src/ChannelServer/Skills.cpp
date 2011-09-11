@@ -83,28 +83,36 @@ void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 				GmPacket::endHide(player);
 			}
 			player->getActiveBuffs()->removeBuff(skillId, fromTimer);
-			if (GameLogicUtilities::isMobSkill(skillId))
-				Buffs::endDebuff(player, (uint8_t)(skillId));
-			else
+			if (GameLogicUtilities::isMobSkill(skillId)) {
+				Buffs::endDebuff(player, static_cast<uint8_t>(skillId));
+			}
+			else {
 				Buffs::endBuff(player, skillId);
+			}
 			break;
 	}
 }
 
 const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) {
 	vector<Player *> ret;
-	if (affected & GameLogicUtilities::getPartyMember1(members))
+	if (affected & GameLogicUtilities::getPartyMember1(members)) {
 		ret.push_back(party->getMemberByIndex(1));
-	if (affected & GameLogicUtilities::getPartyMember2(members))
+	}
+	if (affected & GameLogicUtilities::getPartyMember2(members)) {
 		ret.push_back(party->getMemberByIndex(2));
-	if (affected & GameLogicUtilities::getPartyMember3(members))
+	}
+	if (affected & GameLogicUtilities::getPartyMember3(members)) {
 		ret.push_back(party->getMemberByIndex(3));
-	if (affected & GameLogicUtilities::getPartyMember4(members))
+	}
+	if (affected & GameLogicUtilities::getPartyMember4(members)) {
 		ret.push_back(party->getMemberByIndex(4));
-	if (affected & GameLogicUtilities::getPartyMember5(members))
+	}
+	if (affected & GameLogicUtilities::getPartyMember5(members)) {
 		ret.push_back(party->getMemberByIndex(5));
-	if (affected & GameLogicUtilities::getPartyMember6(members))
+	}
+	if (affected & GameLogicUtilities::getPartyMember6(members)) {
 		ret.push_back(party->getMemberByIndex(6));
+	}
 	return ret;
 }
 
@@ -122,29 +130,30 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	switch (skillId) {
 		case Jobs::Brawler::MpRecovery: {
-			int16_t modhp = player->getStats()->getMaxHp() * skill->x / 100;
-			int16_t healmp = modhp * skill->y / 100;
-			player->getStats()->modifyHp(-modhp);
-			player->getStats()->modifyMp(healmp);
+			int16_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
+			int16_t healMp = modHp * skill->y / 100;
+			player->getStats()->modifyHp(-modHp);
+			player->getStats()->modifyMp(healMp);
 			break;
 		}
 		case Jobs::Shadower::Smokescreen: {
 			int16_t x = packet.get<int16_t>();
 			int16_t y = packet.get<int16_t>();
-			Pos origin = Pos(x, y);
+			Pos &origin = Pos(x, y);
 			Mist *m = new Mist(player->getMap(), player, origin, skill, skillId, level);
 			break;
 		}
 		case Jobs::Corsair::Battleship:
-			if (player->getActiveBuffs()->getBattleshipHp() == 0)
+			if (player->getActiveBuffs()->getBattleshipHp() == 0) {
 				player->getActiveBuffs()->resetBattleshipHp();
+			}
 			break;
 		case Jobs::Crusader::ArmorCrash:
 		case Jobs::WhiteKnight::MagicCrash:
 		case Jobs::DragonKnight::PowerCrash: {
 			packet.skipBytes(4); // Might be CRC too O.o?
-			int8_t mobs = packet.get<int8_t>();
-			for (int8_t k = 0; k < mobs; k++) {
+			uint8_t mobs = packet.get<uint8_t>();
+			for (uint8_t k = 0; k < mobs; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId)) {
 					if (Randomizer::Instance()->randShort(99) < skill->prop) {
@@ -179,7 +188,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::NightWalker::ShadowWeb:
 		case Jobs::Shadower::NinjaAmbush:
 		case Jobs::NightLord::NinjaAmbush: {
-			uint8_t mobs = packet.get<int8_t>();
+			uint8_t mobs = packet.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
 					MobHandler::handleMobStatus(player->getId(), mob, skillId, level, 0, 0);
@@ -204,8 +213,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Priest::Dispel: {
 			int8_t affected = packet.get<int8_t>();
 			player->getActiveBuffs()->useDispel();
-			Party *party = player->getParty();
-			if (party != nullptr) {
+			if (Party *party = player->getParty()) {
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
 				for (size_t i = 0; i < members.size(); i++) {
@@ -232,15 +240,15 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Cleric::Heal: {
-			uint16_t healrate = skill->hpProp;
-			if (healrate > 100)
-				healrate = 100;
-
+			uint16_t healRate = skill->hpProp;
+			if (healRate > 100) {
+				healRate = 100;
+			}
 			Party *party = player->getParty();
 			int8_t partyPlayers = (party != nullptr ? party->getMembersCount() : 1);
 			int32_t expIncrease = 0;
 
-			int16_t heal = (healrate * player->getStats()->getMaxHp() / 100) / partyPlayers;
+			int16_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
 
 			if (party != nullptr) {
 				vector<Player *> members = party->getPartyMembers(player->getMap());
@@ -295,10 +303,10 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Shadower::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior: {
-			Party *party = player->getParty();
-			if (skillId == Jobs::Buccaneer::TimeLeap)
+			if (skillId == Jobs::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();
-			if (party != nullptr) {
+			}
+			if (Party *party = player->getParty()) {
 				int8_t affected = packet.get<int8_t>();
 				int8_t pmembers = party->getMembersCount();
 				vector<Player *> members = getAffectedPartyMembers(party, affected, pmembers);
@@ -389,38 +397,43 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp) {
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
-	int16_t mpuse = skill->mp;
-	int16_t hpuse = skill->hp;
+	int16_t mpUse = skill->mp;
+	int16_t hpUse = skill->hp;
 	int16_t moneyConsume = skill->moneyConsume;
 	int32_t item = skill->item;
-	if (mpuse > 0) {
+	if (mpUse > 0) {
 		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) {
-			int16_t mprate = conc->x;
-			int16_t mploss = (mpuse * mprate) / 100;
-			player->getStats()->modifyMp(-mploss, true);
+			int16_t mpRate = conc->x;
+			int16_t mpLoss = (mpUse * mpRate) / 100;
+			player->getStats()->modifyMp(-mpLoss, true);
 		}
 		else if (elementalAmp && player->getSkills()->hasElementalAmp()) {
-			player->getStats()->modifyMp(-1 * (mpuse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x / 100), true);
+			player->getStats()->modifyMp(-1 * (mpUse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x / 100), true);
 		}
 		else {
-			player->getStats()->modifyMp(-mpuse, true);
+			player->getStats()->modifyMp(-mpUse, true);
 		}
 	}
-	else
+	else {
 		player->getStats()->setMp(player->getStats()->getMp(), true);
-	if (hpuse > 0)
-		player->getStats()->modifyHp(-hpuse);
-	if (item > 0)
+	}
+	if (hpUse > 0) {
+		player->getStats()->modifyHp(-hpUse);
+	}
+	if (item > 0) {
 		Inventory::takeItem(player, item, skill->itemCount);
-	if (coolTime > 0 && skillId != Jobs::Corsair::Battleship)
+	}
+	if (coolTime > 0 && skillId != Jobs::Corsair::Battleship) {
 		startCooldown(player, skillId, coolTime);
+	}
 	if (moneyConsume > 0) {
-		int16_t mesos_min = moneyConsume - (80 + level * 5);
-		int16_t mesos_max = moneyConsume + (80 + level * 5);
-		int16_t amount = Randomizer::Instance()->randShort(mesos_max, mesos_min);
+		int16_t minMesos = moneyConsume - (80 + level * 5);
+		int16_t maxMesos = moneyConsume + (80 + level * 5);
+		int16_t amount = Randomizer::Instance()->randShort(maxMesos, minMesos);
 		int32_t mesos = player->getInventory()->getMesos();
-		if (mesos - amount > -1)
+		if (mesos - amount > -1) {
 			player->getInventory()->modifyMesos(-amount);
+		}
 		else {
 			// Hacking
 			return;
@@ -431,8 +444,9 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 void Skills::useAttackSkill(Player *player, int32_t skillId) {
 	if (skillId != Jobs::All::RegularAttack) {
 		uint8_t level = player->getSkills()->getSkillLevel(skillId);
-		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0)
+		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0) {
 			return;
+		}
 		applySkillCosts(player, skillId, level, true);
 	}
 }
@@ -441,8 +455,9 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) 
 	uint8_t level = 0;
 	if (skillId != Jobs::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
-		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0)
+		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0) {
 			return;
+		}
 		applySkillCosts(player, skillId, level);
 	}
 	uint16_t hits = 1;

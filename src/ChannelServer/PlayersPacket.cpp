@@ -173,8 +173,8 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
 
-	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	int32_t masteryId = player->getSkills()->getMastery();
+	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 	packet.add<int32_t>(0);
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
@@ -206,8 +206,8 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
 
-	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	int32_t masteryId = player->getSkills()->getMastery();
+	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 	// Bug in global:
 	// The colored swoosh does not display as it should
 
@@ -297,8 +297,8 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 	packet.add<uint8_t>(attack.animation);
 	packet.add<uint8_t>(attack.weaponSpeed);
 
-	int32_t masteryid = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryid > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryid)) : 0);
+	int32_t masteryId = player->getSkills()->getMastery();
+	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 
 	packet.add<int32_t>(0);
 

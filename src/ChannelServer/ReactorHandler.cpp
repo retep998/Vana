@@ -59,7 +59,7 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 				return;
 			}
 			else {
-				string filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
@@ -80,12 +80,12 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 
 void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
-	bool istouching = packet.getBool();
+	bool isTouching = packet.getBool();
 
 	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
-		int8_t newState = reactor->getState() + (istouching ? 1 : -1);
+		int8_t newState = reactor->getState() + (isTouching ? 1 : -1);
 		ReactorPacket::triggerReactor(reactor);
 		reactor->setState(newState, true);
 	}
@@ -95,7 +95,7 @@ struct Reaction {
 	void operator()() {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		string filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+		string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
 		return;
 	}
@@ -117,7 +117,7 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 		}
 		if (reactor->getState() < (data->maxStates - 1)) {
 			ReactorStateInfo *reactorEvent;
-			for (int8_t j = 0; j < static_cast<int8_t>(data->states[reactor->getState()].size()); j++) {
+			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); j++) {
 				reactorEvent = &(data->states[reactor->getState()][j]);
 				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
 					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->lt, reactorEvent->rb, drop->getPos())) {

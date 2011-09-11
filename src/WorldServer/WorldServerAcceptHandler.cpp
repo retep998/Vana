@@ -31,9 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
-	string message = packet.getString();
-	vector<int32_t> receivers = packet.getVector<int32_t>();
-	string sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
+	string &message = packet.getString();
+	vector<int32_t> &receivers = packet.getVector<int32_t>();
+	string &sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
 	for (size_t i = 0; i < receivers.size(); i++) {
 		int32_t receiver = receivers[i];
 		if (Player *p = PlayerDataProvider::Instance()->getPlayer(receiver)) {
@@ -45,7 +45,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
-	string findeeName = packet.getString();
+	string &findeeName = packet.getString();
 
 	Player *findee = PlayerDataProvider::Instance()->getPlayer(findeeName);
 
@@ -54,16 +54,16 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connectio
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t whisperer = packet.get<int32_t>();
-	string whisperee_name = packet.getString();
-	string message = packet.getString();
+	string &whispereeName = packet.getString();
+	string &message = packet.getString();
 
-	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whisperee_name);
+	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whispereeName);
 	if (whisperee->isOnline()) {
 		WorldServerAcceptPacket::findPlayer(connection, whisperer, -1, whisperee->getName(), 1);
 		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::Instance()->getPlayer(whisperer)->getName(), connection->getChannel(),  message);
 	}
 	else {
-		WorldServerAcceptPacket::findPlayer(connection, whisperer, whisperee->getChannel(), whisperee_name);
+		WorldServerAcceptPacket::findPlayer(connection, whisperer, whisperee->getChannel(), whispereeName);
 	}
 }
 

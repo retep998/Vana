@@ -159,8 +159,9 @@ bool PlayerModFunctions::job(Player *player, const string &args) {
 		}
 	}
 	else {
-		string msg = "Current Job: " + lexical_cast<string>(player->getStats()->getJob());
-		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
+		std::ostringstream message;
+		message << "Current Job: " << player->getStats()->getJob();
+		PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 	}
 	return true;
 }
@@ -171,8 +172,8 @@ bool PlayerModFunctions::addSp(Player *player, const string &args) {
 		int32_t skillId = atoi(string(matches[1]).c_str());
 		if (SkillDataProvider::Instance()->isSkill(skillId)) {
 			// Don't allow skills that do not exist to be added
-			string countstring = matches[2];
-			uint8_t count = countstring.length() > 0 ? atoi(countstring.c_str()) : 1;
+			string countString = matches[2];
+			uint8_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 
 			player->getSkills()->addSkillLevel(skillId, count);
 		}

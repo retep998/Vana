@@ -178,18 +178,18 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			int16_t amount = ShopDataProvider::Instance()->getAmount(player->getShop(), itemindex);
 			int32_t itemId = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
-			uint32_t totalamount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
+			uint32_t totalAmount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
 			int32_t totalprice = quantity * price;
-			if (price == 0 || totalamount > ItemDataProvider::Instance()->getMaxSlot(itemId) || player->getInventory()->getMesos() < totalprice) {
+			if (price == 0 || totalAmount > ItemDataProvider::Instance()->getMaxSlot(itemId) || player->getInventory()->getMesos() < totalprice) {
 				// Hacking
 				return;
 			}
-			bool haveslot = player->getInventory()->hasOpenSlotsFor(itemId, static_cast<int16_t>(totalamount), true);
-			if (haveslot) {
-				Inventory::addNewItem(player, itemId, static_cast<int16_t>(totalamount));
+			bool haveSlot = player->getInventory()->hasOpenSlotsFor(itemId, static_cast<int16_t>(totalAmount), true);
+			if (haveSlot) {
+				Inventory::addNewItem(player, itemId, static_cast<int16_t>(totalAmount));
 				player->getInventory()->modifyMesos(-totalprice);
 			}
-			NpcPacket::bought(player, haveslot ? 0 : 3);
+			NpcPacket::bought(player, haveSlot ? 0 : 3);
 			break;
 		}
 		case ShopOpcodes::Sell: {

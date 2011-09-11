@@ -106,19 +106,20 @@ void LoginPacket::showWorld(Player *player, World *world) {
 	for (size_t i = 0; i < world->getMaxChannels(); i++) {
 		std::ostringstream cnStream;
 		cnStream << world->getName() << "-" << i + 1;
-		string channelname = cnStream.str();
-		packet.addString(channelname);
+		string &channelName = cnStream.str();
+		packet.addString(channelName);
 
 		if (Channel *channel = world->getChannel(i)) {
 			packet.add<int32_t>(channel->getPopulation());
 		}
-		else { // Channel doesn't exist
+		else {
+			// Channel doesn't exist
 			packet.add<int32_t>(0);
 		}
 
 		packet.add<int8_t>(world->getId());
 		packet.add<uint8_t>(i);
-		packet.add<uint8_t>(0); // Some sort of state O.o
+		packet.add<uint8_t>(0); // Some sort of state
 	}
 	packet.add<int16_t>(0); // Amount of messages
 	// packet.addPos(); // Pos of message

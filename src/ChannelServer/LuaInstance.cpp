@@ -160,12 +160,12 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 int LuaExports::createInstanceInstance(lua_State *luaVm) {
 	string name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	bool showtimer = lua_toboolean(luaVm, 3) != 0;
+	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
 	if (lua_isnumber(luaVm, 4)) {
 		persistent = lua_tointeger(luaVm, 4);
 	}
-	Instance *instance = new Instance(name, 0, 0, time, persistent, showtimer);
+	Instance *instance = new Instance(name, 0, 0, time, persistent, showTimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 

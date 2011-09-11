@@ -141,7 +141,7 @@ void Characters::showCharacters(Player *player) {
 }
 
 void Characters::checkCharacterName(Player *player, PacketReader &packet) {
-	string name = packet.getString();
+	string &name = packet.getString();
 	if (name.size() > Characters::MaxNameSize || name.size() < Characters::MinNameSize) {
 		return;
 	}
@@ -201,7 +201,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 		return;
 	}
 	Character charc;
-	string name = packet.getString();
+	string &name = packet.getString();
 	if (name.size() > Characters::MaxNameSize || name.size() < Characters::MinNameSize) {
 		return;
 	}

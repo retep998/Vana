@@ -231,12 +231,12 @@ int8_t Party::getMemberCountOnMap(int32_t mapId) {
 	return count;
 }
 
-bool Party::isWithinLevelRange(uint8_t lowbound, uint8_t highbound) {
+bool Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) {
 	bool ret = true;
 	Player *test = nullptr;
 	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); iter++) {
 		if (test = iter->second) {
-			if (test->getStats()->getLevel() < lowbound || test->getStats()->getLevel() > highbound) {
+			if (test->getStats()->getLevel() < lowBound || test->getStats()->getLevel() > highBound) {
 				ret = false;
 				break;
 			}
@@ -255,11 +255,11 @@ namespace Functors {
 	};
 }
 
-void Party::warpAllMembers(int32_t mapId, const string &portalname) {
+void Party::warpAllMembers(int32_t mapId, const string &portalName) {
 	if (Maps::getMap(mapId)) {
 		PortalInfo *portal = nullptr;
-		if (portalname != "") { // Optional portal parameter
-			portal = Maps::getMap(mapId)->getPortal(portalname);
+		if (portalName != "") { // Optional portal parameter
+			portal = Maps::getMap(mapId)->getPortal(portalName);
 		}
 		Functors::WarpAllMembers func = {mapId, portal};
 		runFunction(func);

@@ -77,13 +77,14 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (.+)", matches)) {
 		uint16_t type = 0;
 		string test = matches[1];
+		// These constants correspond to MCDB enum types
 		if (test == "item") type = 1;
 		else if (test == "skill") type = 2;
 		else if (test == "map") type = 3;
 		else if (test == "mob") type = 4;
 		else if (test == "npc") type = 5;
 		else if (test == "quest") type = 6;
-
+		// The rest of the constants don't, they're merely there for later processing
 		else if (test == "id") type = 100;
 
 		else if (test == "continent") type = 200;
@@ -109,7 +110,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				}
 				else {
 					for (size_t i = 0; i < res.num_rows(); i++) {
-						string msg = (string) res[i][0] + " : " + (string) res[i][1];
+						string &msg = static_cast<string>(res[i][0]) + " : " + static_cast<string>(res[i][1]);
 						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 					}
 				}
@@ -117,8 +118,9 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 			else if (type == 200) {
 				int32_t mapId = ChatHandlerFunctions::getMap(matches[2], player);
 				if (Maps::getMap(mapId) != nullptr) {
-					string message = lexical_cast<string>(mapId) + " : " + lexical_cast<string>((int32_t)(MapDataProvider::Instance()->getContinent(mapId)));
-					PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+					std::ostringstream message;
+					message << mapId << " : " << static_cast<int32_t>(MapDataProvider::Instance()->getContinent(mapId));
+					PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 				}
 				else {
 					PlayerPacket::showMessage(player, "Invalid map.", PlayerPacket::NoticeTypes::Red);
@@ -138,7 +140,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				}
 				else {
 					for (size_t i = 0; i < res.num_rows(); i++) {
-						string msg = (string) res[i][1] + " (" + (string) res[i][0] + "): " + (string) res[i][2];
+						string &msg = static_cast<string>(res[i][1]) + " (" + static_cast<string>(res[i][0]) + "): " + static_cast<string>(res[i][2]);
 						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 					}
 				}
