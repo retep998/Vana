@@ -120,11 +120,11 @@ unordered_map<int32_t, string> & ScriptDataProvider::resolve(ScriptTypes::Script
 
 string ScriptDataProvider::resolvePath(ScriptTypes::ScriptTypes type) {
 	switch (type) {
-		case ScriptTypes::Item: return "item"; break;
+		case ScriptTypes::Item: return "items"; break;
 		case ScriptTypes::MapEntry: return "map_entry"; break;
 		case ScriptTypes::FirstMapEntry: return "first_map_entry"; break;
-		case ScriptTypes::Npc: return "npc"; break;
-		case ScriptTypes::Reactor: return "reactor"; break;
+		case ScriptTypes::Npc: return "npcs"; break;
+		case ScriptTypes::Reactor: return "reactors"; break;
 	}
 	return "";
 }
