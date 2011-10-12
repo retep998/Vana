@@ -35,7 +35,7 @@ if x == 0 then
 else
 	if getNumPlayers(230040420) < 10 then
 		if enterBoss("Pianus", x) then
-			playPortalSE();
+			playPortalSe();
 			setMap(230040420, "out00");
 		else
 			showMessage("You may only enter the Cave of Pianus " .. x .. " " .. timeString(x) .. " per day.", m_red);

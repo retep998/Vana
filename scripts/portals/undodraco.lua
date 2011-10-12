@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Failure to fly to the Time Temple
 
 endMorph();
-playPortalSE();
+playPortalSe();
 setMap(240000110);

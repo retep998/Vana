@@ -20,6 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if countMobs(910500200, 9300092) > 0 then
 	showMessage("Portal is sealed now.", m_red);
 else
-	playPortalSE();
+	playPortalSe();
 	setMap(910500200, "pt00");
 end

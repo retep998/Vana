@@ -51,9 +51,9 @@ if yes == 1 then
 		setMap(maps[where]);
 	else
 		addText("You don't have enough mesos. Sorry to say this, but without them, you won't be able to ride this cab.");
-		sendOK();
+		sendOk();
 	end
 else
 	addText("There’s a lot to see in this town, too. Come back and find me when you need to go to a different town.");
-	sendOK();
+	sendOk();
 end

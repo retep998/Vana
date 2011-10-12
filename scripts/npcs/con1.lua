@@ -33,5 +33,5 @@ elseif what == 1 then
 	setMap(801040000);
 elseif what == 2 then
 	addText("I'm a busy person! Leave me alone if that's all you need!");
-	sendOK();
+	sendOk();
 end

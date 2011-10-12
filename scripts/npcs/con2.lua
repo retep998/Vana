@@ -22,7 +22,7 @@ yes = askYesNo();
 
 if yes == 0 then
 	addText("If you want to return to Showa Town, then talk to me.");
-	sendOK();
+	sendOk();
 else
 	setMap(801000000);
 end

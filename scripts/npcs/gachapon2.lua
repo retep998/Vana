@@ -57,5 +57,5 @@ if getItemAmount(5220000) >= 1 then
 	end
 else
 	addText("Here's Gachapon.");
-	sendOK();
+	sendOk();
 end

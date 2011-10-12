@@ -20,18 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/jobFunctions.lua");
 
 if isQuestActive(6108) then
-	if getPartyID() == 0 then
+	if getPartyId() == 0 then
 		addText("You don't have a  party. You can challenge with party.");
-		sendOK();
+		sendOk();
 	elseif isPartyLeader() then
-		members = getAllPartyPlayerIDs();
+		members = getAllPartyPlayerIds();
 		if #members ~= 2 then
 			addText("You can make a quest when you have a party with two. Please make your party with two members.");
-			sendOK();
+			sendOk();
 		else
 			if not isPartyInLevelRange(120, 200) then
 				addText("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.");
-				sendOK();
+				sendOk();
 			else
 				memberctr = 0
 				mapid = getMap();
@@ -46,27 +46,27 @@ if isQuestActive(6108) then
 				end
 				if memberctr ~= 2 then
 					addText("You can't enter. Your party member's job is not Bow Master or Marksman or Your party doesn't consist of two members.");
-					sendOK();
+					sendOk();
 				else
 					if not isInstance("snipe4th") then
 						createInstance("snipe4th", 20 * 60, true);
 						for i = 1, #members do
 							addInstancePlayer(members[i]);
 						end
-						addInstanceParty(getPartyID());
+						addInstanceParty(getPartyId());
 						warpParty(910500000);
 					else
 						addText("Other parties are challenging on quest clear now. Try again later.");
-						sendOK();
+						sendOk();
 					end
 				end
 			end
 		end
 	else
 		addText("After two Bowmans who made 4th advancement make a party, party leader can take to me.");
-		sendOK();
+		sendOk();
 	end
 else
 	addText("I don't know what you're talking about.");
-	sendOK();
+	sendOk();
 end

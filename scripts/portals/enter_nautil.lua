@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Entrance to Nautilus from Victoria
 
-playPortalSE();
+playPortalSe();
 setMap(120010000, "nt01");

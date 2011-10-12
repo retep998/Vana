@@ -18,4 +18,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Crimsonwood Keep statue
 
 addText("One of the only known Holy Archers, Lockewood is the one of the Keep's most famous heroes; both feared and respected for his ¡°Genesis Arrow¡± and ¡°Doom Phoenix¡±. Of particular note is his custom white and gold battle garb, said to be blessed by a powerful goddess. His impeccable aim was tremendously accurate over long distances. He once struck down six Typhons from the Valley of Heroes.");
-sendOK();
+sendOk();

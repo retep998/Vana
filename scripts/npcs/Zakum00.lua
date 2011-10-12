@@ -32,7 +32,7 @@ if choice == 1 then
 elseif choice == 4 then
 	if not isInstance("fireDemon") then
 		createInstance("fireDemon", 5 * 60, true);
-		addInstancePlayer(getID());
+		addInstancePlayer(getId());
 		setMap(921100000);
 	else
 		addText("Someone is currently using the room. Try again later.");

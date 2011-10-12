@@ -33,4 +33,4 @@ sendBackNext();
 endQuest(1021);
 giveItem(2010000, 3);
 giveItem(2010009, 3);
-giveEXP(10);
+giveExp(10);

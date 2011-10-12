@@ -23,8 +23,8 @@ if isQuestActive(6134) then
 	else
 		if not isInstance("resurrectionDark4th") then
 			createInstance("resurrectionDark4th", 20 * 60, true);
-			addInstancePlayer(getID());
-			playPortalSE();
+			addInstancePlayer(getId());
+			playPortalSe();
 			setMap(922020000);
 		else
 			showMessage("The door is locked. You can't enter.", m_red);

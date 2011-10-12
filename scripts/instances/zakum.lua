@@ -33,7 +33,7 @@ function changeMap(playerid, newmap, oldmap, ispartyleader)
 		removeInstancePlayer(playerid);
 		startInstanceTimer("clean", 1, false);
 	elseif setPlayer(playerid) then
-		if not isGM() then
+		if not isGm() then
 			addInstancePlayer(playerid);
 		end
 		revertPlayer();

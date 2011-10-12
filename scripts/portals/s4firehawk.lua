@@ -21,7 +21,7 @@ if getItemAmount(4001113) > 0 then
 	showMessage("You already have Phoenix's egg. You can't enter.", m_red);
 else
 	if (isQuestActive(6240) or isQuestActive(6241)) or (isQuestCompleted(6240) and isQuestInactive(6241)) then
-		playPortalSE();
+		playPortalSe();
 		setMap(921100200);
 	end
 end

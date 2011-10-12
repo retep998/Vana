@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- KFT portal at the entrance to Fox Ridge (quest portal, I think)
 
-playPortalSE();
+playPortalSe();
 setMap(222010200, "east00");

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NimaKIN, credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
 
-if isGM() == 1 then
+if isGm() == 1 then
 	addText("Hi #h #! What do you wish?\n");
 	addText("#bL1#I would like my inventory slots maxed#l\n");
 	addText("#L2#I would like my skills maxed#l");
@@ -30,7 +30,7 @@ if isGM() == 1 then
 		addSlots(4, 25);
 		addSlots(5, 25);
 		addText("There we go! Have fun!");
-		sendOK();
+		sendOk();
 	elseif choice == 2 then
 		-- Beginner
 		addSkillLevel(1003, 1);--	Legendary Spirit
@@ -533,12 +533,12 @@ if isGM() == 1 then
 		addSkillLevel(15111006, 20);-- Spark
 		addSkillLevel(15111007, 30);-- Shark Wave
 		addText("There we go! Have fun!");
-		sendOK();
+		sendOk();
 	else
 		addText("Okay, come back to me any time if you change your mind.")
-		sendOK();
+		sendOk();
 	end
 else
 	addText("You need to be a GM in order for me to max your skills, #h #!");
-	sendOK();
+	sendOk();
 end

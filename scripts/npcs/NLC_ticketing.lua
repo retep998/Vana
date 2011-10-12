@@ -42,7 +42,7 @@ if map == 103000100 then
 		end
 	else
 		addText("Ok, come talk to me again when you want to go to NLC.");
-		sendOK();
+		sendOk();
 	end
 elseif map == 600010001 then
 	addText("Hi, I can take you back to Kerning City for only #b" .. cost .. " mesos#k. Would you like to go?");
@@ -56,7 +56,7 @@ elseif map == 600010001 then
 		end
 	else
 		addText("Ok, come talk to me again when you want to go back to Kerning City.");
-		sendOK();
+		sendOk();
 	end
 elseif map == 600010004 then
 	addText("Do you want to go back to Kerning City subway station now?");
@@ -85,6 +85,6 @@ if item ~= 0 then
 		giveItem(item, 1);
 	else
 		addText("I'm sorry, but you don't have enough money. It costs #b" .. cost .. " Mesos#k. ");
-		sendOK();
+		sendOk();
 	end
 end

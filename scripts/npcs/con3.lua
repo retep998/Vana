@@ -23,7 +23,7 @@ if getItemAmount(4000141) == 0 then
 	
 	if yes == 0 then
 		addText("I really admire your toughness! Well, if you decide to return to Showa Town, let me know~!");
-		sendOK();
+		sendOk();
 	else
 		setMap(801040000);
 	end

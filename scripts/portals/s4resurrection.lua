@@ -23,8 +23,8 @@ if isQuestActive(6132) then
 	else
 		if not isInstance("resurrectionMix4th") then
 			createInstance("resurrectionMix4th", 5 * 60, true);
-			addInstancePlayer(getID());
-			playPortalSE();
+			addInstancePlayer(getId());
+			playPortalSe();
 			setMap(923000100);
 		else
 			showMessage("You feel someone is out there in the cold cave.", m_red);

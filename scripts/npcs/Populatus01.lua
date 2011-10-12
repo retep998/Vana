@@ -24,7 +24,7 @@ yes = askYesNo();
 if yes == 1 then
 	setMap(220080000);
 	if isInstance("papulatus") then
-		removeInstancePlayer(getID());
+		removeInstancePlayer(getId());
 		if getInstancePlayerCount() == 0 then
 			setReactorState(220080000, 2208001, 0);
 			setReactorState(220080000, 2208003, 0);

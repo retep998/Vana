@@ -124,10 +124,10 @@ else -- Please take me somewhere else.
 			setMap(maps[where]);
 		else
 			addText("You don't have enough mesos. With your abilities, you should have more than that!");
-			sendOK();
+			sendOk();
 		end
 	else
 		addText("There's alot to see in this town too. Let me know if you want to go somewhere else.");
-		sendOK();
+		sendOk();
 	end
 end

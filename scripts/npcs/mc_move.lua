@@ -116,7 +116,7 @@ option = askChoice();
 if option == 0 then
 	if getLevel() > 50 or getLevel() < 30 then
 		addText("I'm sorry, but only the users within Level 30~50 may participate in Monster Carnival.");
-		sendOK();
+		sendOk();
 	else
 		setPlayerVariable("mcout", getMap());
 		setMap(980000000, "st00"); -- Need code to determine where player came from

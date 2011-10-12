@@ -22,7 +22,7 @@ yes = askYesNo();
 
 if yes == 0 then
 	addText("Please come back some other time. ");
-	sendOK();
+	sendOk();
 else
 	if giveMesos(-300) then
 		if getGender() == 0 then

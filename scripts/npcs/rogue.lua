@@ -24,15 +24,15 @@ if isQuestActive(6141) then
 	yes = askYesNo();
 	if yes == 0 then
 		addText("Let me know when you want to enter.");
-		sendOK();
+		sendOk();
 	else
 		if not isInstance("ninjaAmbush") then
 			createInstance("ninjaAmbush", 5 * 60, true);
-			addInstancePlayer(getID());
+			addInstancePlayer(getId());
 			setMap(910300000);
 		else
 			addText("Someone is already inside. Try again later.");
-			sendOK();
+			sendOk();
 		end
 	end
 elseif getJob() == 0 then
@@ -58,9 +58,9 @@ elseif getJob() == 0 then
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
-				giveSP(1);
+				giveSp(1);
 			else 
-				giveSP((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
+				giveSp((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
 			end
 
 			setJob(400);
@@ -69,13 +69,13 @@ elseif getJob() == 0 then
 			giveItem(2070015, 3); -- Special subis
 			hpinc = 100 + getRandomNumber(50); -- Generate a random number from 0-50 to add to the base hp increase
 			mpinc = 25 + getRandomNumber(25); -- Generate a random number from 0-25 to add to the base mp increase
-			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setMaxMP(getRealMaxMP() + mpinc); -- Set MP to current MP plus full amount of mp increase
-			setSTR(4); -- Stat reset
-			setDEX(25);
-			setINT(4);
-			setLUK(4);
-			setAP((getLevel() - 1) * 5 - 12);
+			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMp(getRealMaxMp() + mpinc); -- Set MP to current MP plus full amount of mp increase
+			setStr(4); -- Stat reset
+			setDex(25);
+			setInt(4);
+			setLuk(4);
+			setAp((getLevel() - 1) * 5 - 12);
 			addSlots(1, 1); -- Add inventory slots
 			addSlots(4, 1);
 			addText("I've just created more slots for your equipment and etc. storage. Not only that, but you've also ");
@@ -259,19 +259,19 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(410);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated 
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright, from here on out you are the #bAssassin#k. Assassins revel in shadows and darkness, waiting until ");
 						addText("the right time comes for them to stick a dagger through the enemy's heart, suddenly and swiftly...please ");
 						addText("keep training. I'll make you even more powerful than you are right now!");
@@ -303,19 +303,19 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(420);
-						giveSP(1); -- Give necessary SP
+						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated 
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright from here on out, you're the #bBandit#k. Bandits have quick hands and quicker feet to ");
 						addText("dominate the enemies. Please keep training. I'll make you even more powerful than you are right now.");
 						sendNext();

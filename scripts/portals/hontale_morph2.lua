@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Cave of Life - Entrance -> Peak of the Big Nest
 
-playPortalSE();
+playPortalSe();
 setMap(240040600, "east00");

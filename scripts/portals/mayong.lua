@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Manon portal
 
 if getNumPlayers(240020401) < 6 then
-	playPortalSE();
+	playPortalSe();
 	setMap(240020401, "out00");
 else
 	showMessage("You may not enter Manon's Forest.", m_red);

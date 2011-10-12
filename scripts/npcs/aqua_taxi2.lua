@@ -29,5 +29,5 @@ if yes == 1 then
 	end
 else
 	addText("Hmmm ...too busy to do it right now? If you feel like doing it, though, come back and find me.");
-	sendOK();
+	sendOk();
 end

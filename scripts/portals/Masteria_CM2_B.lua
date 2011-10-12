@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- First warping statue in Valley of Heroes 2
 
 if getItemAmount(3992039) > 0 then -- Marker of Heroism
-	playPortalSE();
+	playPortalSe();
 	setMap(610020001, "CM2_C");
 end

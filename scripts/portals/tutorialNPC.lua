@@ -34,6 +34,6 @@ if getLevel() <= 10 and getJob() == 0 then
 	end
 
 	if npcid ~= 0 then
-		runNPC(npcid);
+		runNpc(npcid);
 	end
 end

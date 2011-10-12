@@ -21,7 +21,7 @@ if getItemAmount(4001114) > 0 then
 	showMessage("You already have Freezer's egg. You can't enter.", m_red);
 else
 	if (isQuestActive(6242) or isQuestActive(6243)) or (isQuestCompleted(6242) and isQuestInactive(6243)) then
-		playPortalSE();
+		playPortalSe();
 		setMap(921100210);
 	end
 end

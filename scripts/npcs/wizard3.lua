@@ -45,5 +45,5 @@ if getLevel() >= 50 then
 	end
 else
 	addText("Hmm... It seems like there is nothing I can help you with. Come to me again when you get stronger. Zakum Dungeon quest is available from #bLevel 50#k and 3rd Job Advancement at #bLevel 70#k");
-	sendOK();
+	sendOk();
 end

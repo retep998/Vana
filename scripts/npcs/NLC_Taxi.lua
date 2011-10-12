@@ -35,7 +35,7 @@ if getMap() == 600000000 then
 		setMap(682000000);
 	else
 		addText("Really? I don't blame you... Sounds like a pretty scary place to me too! If you change your mind, I'll be right here.");
-		sendOK();
+		sendOk();
 	end
 elseif getMap() == 682000000 then
 	addText("Hey, there. Hope you had fun here! Ready to head back to #bNew Leaf City#k?");
@@ -47,6 +47,6 @@ elseif getMap() == 682000000 then
 		setMap(600000000);
 	else
 		addText("Oh, you want to stay and look around some more? That's understandable. If you wish to go back to #bNew Leaf City#k, you know who to talk to!");
-		sendOK();
+		sendOk();
 	end
 end

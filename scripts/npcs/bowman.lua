@@ -41,9 +41,9 @@ if getJob() == 0 then
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
-				giveSP(1);
+				giveSp(1);
 			else
-				giveSP((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
+				giveSp((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
 			end
 
 			setJob(300);
@@ -51,13 +51,13 @@ if getJob() == 0 then
 			giveItem(2060000, 6000); -- Arrow for Bow
 			hpinc = 100 + getRandomNumber(50); -- Extra HP Given
 			mpinc = 25 + getRandomNumber(25); -- Extra MP Given
-			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setMaxMP(getRealMaxMP() + mpinc); -- Set MP to current MP plus full amount of hp increase
-			setSTR(4); -- Stat reset
-			setDEX(25);
-			setINT(4);
-			setLUK(4);
-			setAP((getLevel() - 1) * 5 - 12);
+			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMp(getRealMaxMp() + mpinc); -- Set MP to current MP plus full amount of hp increase
+			setStr(4); -- Stat reset
+			setDex(25);
+			setInt(4);
+			setLuk(4);
+			setAp((getLevel() - 1) * 5 - 12);
 			addSlots(1, 1);
 			addSlots(2, 1);
 
@@ -240,19 +240,19 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(310);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright, you're the #bHunter#k from here on out. Hunters are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");
@@ -286,19 +286,19 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else 
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(320);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
 						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright, you're the #bCrossbowman#k from here on out. Crossbowman are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");

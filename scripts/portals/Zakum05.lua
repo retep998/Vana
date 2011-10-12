@@ -44,7 +44,7 @@ else
 		showMessage("You may not enter the altar of Zakum at this time.", m_red);
 	else
 		if getEntryCount("Zakum", x) < x then
-			playPortalSE();
+			playPortalSe();
 			setMap(211042400, "west00");
 		else
 			showMessage("You can only enter the altar of Zakum" .. x .. " " .. timeString(x) .. " per day.", m_red);

@@ -19,4 +19,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 endQuest(3514);
 addText("Hah... I found that very amusing. Very well, I'll unfreeze your memories.");
-sendOK();
+sendOk();

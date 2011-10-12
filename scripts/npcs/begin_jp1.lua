@@ -46,5 +46,5 @@ elseif map == 1 then
 	sendNext();
 	
 	addText("Once you train hard enough, you will be entitled to occupy a job. You can become a Bowman in Henesys, a Magician in Ellinia, a Warrior in Perion, and a Thief in Kerning City..");
-	sendBackOK();
+	sendBackOk();
 end

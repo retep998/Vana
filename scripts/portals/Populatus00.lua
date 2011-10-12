@@ -37,7 +37,7 @@ if getItemAmount(4031172) > 0 then -- Medal
 				showMessage("You may not battle Papulatus at this time.", m_red);
 			else
 				if enterBoss("Papulatus", x) then
-					playPortalSE();
+					playPortalSe();
 					setMap(220080001, "st00");
 				else
 					showMessage("You can only enter The Origin of Clocktower " .. x .. " " .. timeString(x) .. " a day.", m_red);

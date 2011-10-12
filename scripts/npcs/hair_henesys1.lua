@@ -57,7 +57,7 @@ if getItemAmount(item) > 0 then
 		setStyle(newHair[style]);
 	end
 	addText("Enjoy your new and improved hairstyle!");
-	sendOK();
+	sendOk();
 else
 	addText("Hmmm...it looks like you don't have our designated coupon...I'm afraid I can't ");
 	if what == 0 or what == 2 then

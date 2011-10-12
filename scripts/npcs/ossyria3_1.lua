@@ -27,5 +27,5 @@ if getItemAmount(4001019) >= 1 then
 	end
 else
 	addText("There's a #b#p2012014##k that'll enable you to teleport to where #b#p2012015##k is, but you can't activate it without the scroll.");
-	sendOK();
+	sendOk();
 end

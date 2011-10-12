@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if isQuestActive(2073) then
 	if not isInstance("pigFarm") then
 		createInstance("pigFarm", 10 * 60, true);
-		addInstancePlayer(getID());
-		playPortalSE();
+		addInstancePlayer(getId());
+		playPortalSe();
 		setMap(900000000);
 	else
 		showMessage("It seems like someone already has visited Yoota's Farm.", m_red);

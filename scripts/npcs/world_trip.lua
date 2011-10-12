@@ -33,7 +33,7 @@ if getMap() == 800000000 then
 		deletePlayerVariable("wt_origin");
 	else
 		addText("OK. If you ever change your mind, please let me know.");
-		sendOK();
+		sendOk();
 	end
 else
 	addText("If you're tired of the monotonous daily life, how about getting out for a change? There's nothing quite like soaking up a new culture, learning something new by the minute! It's time for you to get out and travel. We, at the Maple Travel Agency recommend you going on a #bWorld Tour#k! Are you worried about the travel expense? ");
@@ -65,7 +65,7 @@ else
 			setMap(800000000);
 		else
 			addText("Please check and see if you have enough mesos to go.");
-			sendBackOK();
+			sendBackOk();
 		end
 	end
 end

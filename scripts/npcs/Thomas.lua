@@ -28,7 +28,7 @@ if getMap() == 100000000 then
 		setMap(680000000);
 	else
 		addText("Ok, feel free to hang around until you're ready to go!");
-		sendOK();
+		sendOk();
 	end
 else	
 	addText("I can take you back to your original location. Are you ready to go?");

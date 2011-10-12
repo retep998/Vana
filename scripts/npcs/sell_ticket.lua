@@ -35,7 +35,7 @@ else
 	if yes == 1 then
 		if getMesos() < price or not hasOpenSlotsFor(item) then
 			addText("Are you sure you have #b" .. price .. " mesos#k? If so, then I urge you to check your etc. inventory, and see if it's full or not.");
-			sendOK();
+			sendOk();
 		else
 			giveMesos(-price);
 			giveItem(item, 1);
