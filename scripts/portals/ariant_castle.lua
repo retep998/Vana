@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Entrance to Ariant Castle
 
-playPortalSE();
+playPortalSe();
 setMap(260000301, "out00");

@@ -43,7 +43,7 @@ else
 		addText("You can enter the premise once you have bought the ticket. ");
 		addText("I heard there are strange devices in there everywhere but in the end, rare precious items await you. ");
 		addText("So let me know if you ever decide to change your mind.");
-		sendOK();
+		sendOk();
 	else
 		item = 0;
 		text = "You can insert the ticket in the The Ticket Gate. I heard ";
@@ -66,6 +66,6 @@ else
 			text = text .. " has some precious items available but with so many traps all over the place most come back out early. Please be safe.";
 			addText(text);
 		end
-		sendOK();
+		sendOk();
 	end
 end

@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Entry to Horntail's Cave
 
 if not isBusy() then
-	runNPC(2081005);
+	runNpc(2081005);
 end

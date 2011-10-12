@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Annoying new scripted portal in Leafre's dock
 
-playPortalSE();
+playPortalSe();
 setMap(240000100, "east00");

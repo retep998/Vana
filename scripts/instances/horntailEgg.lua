@@ -47,7 +47,7 @@ end
 function removeTheNPC()
 	g = getInstanceVariable("npc", true);
 	if g then
-		removeNPC(240040611, g);
+		removeNpc(240040611, g);
 	end
 end
 

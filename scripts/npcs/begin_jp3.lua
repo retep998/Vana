@@ -29,5 +29,5 @@ if yes == 1 then
 else
 	addText("Haven't you finish the training program yet? ");
 	addText("If you want to leave this place, please do not hesitate to tell me.");
-	sendOK();
+	sendOk();
 end

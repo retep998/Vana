@@ -41,20 +41,20 @@ if getJob() == 0 then
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
-				giveSP(1);
+				giveSp(1);
 			else
-				giveSP((getLevel() - 10) * 3 + 1); -- Make up SP for any over-leveling like in GMS
+				giveSp((getLevel() - 10) * 3 + 1); -- Make up SP for any over-leveling like in GMS
 			end
 
 			setJob(100);
 			giveItem(1302077, 1); -- Give beginner warrior's sword
 			hpinc = 200 + getRandomNumber(50); -- Extra HP given
-			setMaxHP(getRealMaxHP() + hpinc); -- Set HP to current HP plus amount to be added for this job
-			setSTR(35); -- Stat reset
-			setDEX(4);
-			setINT(4);
-			setLUK(4);
-			setAP((getLevel() - 1) * 5 - (22));
+			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus amount to be added for this job
+			setStr(35); -- Stat reset
+			setDex(4);
+			setInt(4);
+			setLuk(4);
+			setAp((getLevel() - 1) * 5 - (22));
 			addSlots(1, 1); -- Add extra inventory rows
 			addSlots(2, 1);
 			addSlots(3, 1);
@@ -238,18 +238,18 @@ elseif getJob() == 100 and getLevel() >= 30 then
 					sendNext();
 
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(110);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newhp = 300 + getRandomNumber(50); -- Extra HP given
-						setMaxHP(getRealMaxHP() + newhp); -- Add to current HP
+						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
 						addText("Alright! You have now become the #bFighter#k! A fighter strives to become the strongest ");
 						addText("of the strong, and never stops fighting. Don't ever lose that will to fight, and push forward 24/7. ");
 						addText("It'll help you become even stronger than you already are.");
@@ -284,18 +284,18 @@ elseif getJob() == 100 and getLevel() >= 30 then
 					sendNext();
 
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(120);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright! You have now become the #bPage#k! The Pages have high intelligence and bravery for ");
 						addText("a Warrior...here's hoping that you'll take the right path with the right mindset...I'll help you ");
 						addText("become much stronger than you are right now.");
@@ -329,18 +329,18 @@ elseif getJob() == 100 and getLevel() >= 30 then
 					sendNext();
 
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(130);
-						giveSP(1);
+						giveSp(1);
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
 						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright! You have now become the #bSpearman#k! The spearman use the power of darkness to take out ");
 						addText("the enemies, always in shadows...please believe in yourself and your awesome power as you go on ");
 						addText("in your journey...I'll help you become much stronger than you are right now.");

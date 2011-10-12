@@ -24,10 +24,10 @@ if isActiveItem(2210003) then
 	endMorph();
 	setMap(240050000, "st00");
 else
-	if getHP() > 500 then
-		setHP(getHP() - 500);
-	elseif getHP() > 1 then
-		setHP(1);
+	if getHp() > 500 then
+		setHp(getHp() - 500);
+	elseif getHp() > 1 then
+		setHp(1);
 	end
 
 	addText("That's far enough, human! No one is allowed beyond this point. Get away from here!");

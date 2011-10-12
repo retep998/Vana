@@ -41,7 +41,7 @@ else
 			addBuddySlots(5);
 			
 			addText("Alright! Your buddy list will have 5 extra slots by now. Check and see for it yourself. And if you still need more room on your buddy list, you know who to find. Of course, it isn't going to be for free ... well, so long ...");
-			sendOK();
+			sendOk();
 		end
 	end
 end

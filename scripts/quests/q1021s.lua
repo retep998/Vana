@@ -36,14 +36,14 @@ addText("So.....  Let me just do this for fun! Abaracadabra~!");
 accept = askAcceptDecline();
 
 if accept == 1 then
-	setHP(getHP() / 2);
+	setHp(getHp() / 2);
 	giveItem(2010007, 1);
 	addQuest(1021);
 	addText("Surprised?  If HP becomes 0, then you are in trouble.  Now, I will give you #r#t2010007##k.  Please take it.  You will feel stronger.  Open the Item window and double click to consume.  Hey, It's very simple to open the Item window.  Just press #bI#k on your keyboard.#I");
 	sendNext();
 
 	addText("Please take all #t2010007#s that I gave you.  You will be able to see the HP bar increasing.  Please talk to me again when you recover your HP 100%#I ");
-	sendBackOK();
+	sendBackOk();
 else
 	if getGender() == 0 then
 		addText("I can't believe an attractive guy like myself, got turned down!");

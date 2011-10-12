@@ -21,8 +21,8 @@ if isQuestActive(6241) or isQuestActive(6243) then
 	if getItemAmount(4001113) > 0 or getItemAmount(4001114) > 0 then
 		if not isInstance("bird4th") then
 			createInstance("bird4th", 20 * 60, true);
-			playPortalSE();
-			addInstancePlayer(getID());
+			playPortalSe();
+			addInstancePlayer(getId());
 			setMap(924000100);
 		else
 			showMessage("Other characters are on request. You can't enter.", m_red);

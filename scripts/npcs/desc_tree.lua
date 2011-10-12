@@ -27,4 +27,4 @@ addText("Of course, the items you drop in the map will never disappear. When you
 sendBackNext();
 
 addText("Well then, go see #p2002001#, buy some christmas ornaments there, and then decorate the tree with those~ Oh yeah! The biggest and most beautiful ornament can't be bought from him. It's probably been... taken by a monster! Dum dum dum~");
-sendBackOK();
+sendBackOk();

@@ -24,8 +24,8 @@ if isQuestActive(6153) then
 		if getItemAmount(4031475) > 0 then
 			if not isInstance("berserk4th") then
 				createInstance("berserk4th", 20 * 60, true);
-				addInstancePlayer(getID());
-				playPortalSE();
+				addInstancePlayer(getId());
+				playPortalSe();
 				setMap(910500200, "in00");
 			else
 				showMessage("Other character is on the quest currently. Please try again later.", m_red);

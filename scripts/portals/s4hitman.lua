@@ -21,8 +21,8 @@ if isQuestActive(6201) then
 	if getItemAmount(4031452) == 0 then
 		if not isInstance("assassinate4th") then
 			createInstance("assassinate4th", 20 * 60, true);
-			addInstancePlayer(getID());
-			playPortalSE();
+			addInstancePlayer(getId());
+			playPortalSe();
 			maps = {910200000, 910200001, 910200002};
 			setMap(maps[getRandomNumber(#maps)]);
 		else

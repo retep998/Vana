@@ -41,20 +41,20 @@ if getJob() == 0 then
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
-				giveSP(1);
+				giveSp(1);
 			else
-				giveSP((getLevel() - 8) * 3 + 1); -- Make up SP for any over-leveling like in GMS
+				giveSp((getLevel() - 8) * 3 + 1); -- Make up SP for any over-leveling like in GMS
 			end
 
 			setJob(200);
 			giveItem(1372043, 1); 
 			mpinc = 100 + getRandomNumber(50); 
-			setMaxMP(getRealMaxMP() + mpinc); 
-			setSTR(4); -- Stat reset
-			setDEX(4);
-			setINT(20);
-			setLUK(4);
-			setAP((getLevel() - 1) * 5 - 7);
+			setMaxMp(getRealMaxMp() + mpinc); 
+			setStr(4); -- Stat reset
+			setDex(4);
+			setInt(20);
+			setLuk(4);
+			setAp((getLevel() - 1) * 5 - 7);
 			addText("You have just equipped yourself with much more magicial power. Please keep training and ");
 			addText("make yourself much better...I'll be watching you from here and there...");
 			sendNext();
@@ -250,17 +250,17 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(210);
-						giveSP(1); -- Give necessary SP
+						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slot
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Fire and Poison#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -292,17 +292,17 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(220);
-						giveSP(1); -- Give necessary SP
+						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Ice and Lightning#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -335,17 +335,17 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
 					sendNext();
 				else
-					if getSP() > ((getLevel() - 30) * 3) then
+					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
 						sendNext();
 					else
 						setJob(230);
-						giveSP(1); -- Necessary SP given
+						giveSp(1); -- Necessary SP given
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
 						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMP(getRealMaxMP() + newmp); -- Add to current MP
+						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
 						addText("Alright, you're a #bCleric#k from here on out. Clerics blow life into every living organism here ");
 						addText("with their undying faith in God. Never stop working on your faith...then one day, I'll help you ");
 						addText("become much more powerful...");

@@ -34,8 +34,8 @@ LuaNpc::LuaNpc(const string &filename, int32_t playerId) :
 	// Miscellaneous
 	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
 	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
-	lua_register(luaVm, "getNpcID", &LuaExports::getNpcId);
-	lua_register(luaVm, "runNPC", &LuaExports::npcRunNpc);
+	lua_register(luaVm, "getNpcId", &LuaExports::getNpcId);
+	lua_register(luaVm, "runNpc", &LuaExports::npcRunNpc);
 
 	// NPC interaction
 	lua_register(luaVm, "addText", &LuaExports::addText);

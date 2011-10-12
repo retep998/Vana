@@ -92,5 +92,5 @@ if a > 0 or b > 0 or c > 0 or d > 0 or e > 0 then
 	end
 else
 	addText("You are not allowed in without the ticket.");
-	sendOK();
+	sendOk();
 end

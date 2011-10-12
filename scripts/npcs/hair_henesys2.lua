@@ -44,7 +44,7 @@ if yes == 1 then
 		giveItem(item, -1);
 		giveRandomHair(hairs);
 		addText("Enjoy!");
-		sendOK();
+		sendOk();
 	else
 		addText("Hmmm...it looks like you don't have our designated coupon...I'm afraid I can't give you a haircut without it. I'm sorry.");
 		sendNext();

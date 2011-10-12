@@ -47,5 +47,5 @@ if getLevel() >= 20 and getLevel() <= 30 then
 	end
 else
 	addText("Your level is not proper to participate in the Ariant Coliseum Challenge. Only players between Level #b20~30#k may participate.");
-	sendOK();
+	sendOk();
 end

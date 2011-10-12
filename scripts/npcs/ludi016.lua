@@ -38,5 +38,5 @@ if getItemAmount(4001020) >= 1 then
 	end
 else
 	addText("There's a rock that will enable you to teleport to #b#p2040025# or #p2040027##k, but it cannot be activated without the scroll.");
-	sendOK();
+	sendOk();
 end

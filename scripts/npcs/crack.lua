@@ -62,7 +62,7 @@ end
 if tomap ~= 0 then
 	if not isInstance(instance) then
 		createInstance(instance, 20 * 60, true);
-		addInstancePlayer(getID());
+		addInstancePlayer(getId());
 		setMap(tomap);
 	else
 		addText("Someone is already fighting with #b#p" .. cloneid .. "##k's clone. Try again later.");

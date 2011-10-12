@@ -192,7 +192,7 @@ else
 			addText("Hmmm... are you sure you have #b" .. reqs[2] .. " #t" .. reqs[1] .."#s#k? If so, then please check and see if your item inventory is full or not.");
 			sendNext();
 		else
-			giveEXP(500 * getQuestEXPRate());
+			giveExp(500 * getQuestExpRate());
 			takeResources(reqs, 1);
 			giveItem(rew[1], rew[2]);
 			addText("For your #b" .. reqs[2] .. " #t" .. reqs[1] .. "#s#k, here's my #b" .. rew[2] .. " #t" .. rew[1] .. "#(s)#k. What do you think? Do you like the items I gave you in return? I plan on being here for a while, so if you gather up more items, I'm always open for a trade ...");

@@ -39,9 +39,9 @@ if yes == 1 then
 		setMap(map);
 	else
 		addText("I'm sorry. It looks like you don't have enough mesos. It will cost you " .. price .. " mesos to stay at our hotel.");
-		sendOK();
+		sendOk();
 	end
 else
 	addText("We offer other kinds of services, too, so please think carefully and then make your decision.");
-	sendOK();
+	sendOk();
 end

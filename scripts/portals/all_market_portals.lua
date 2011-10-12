@@ -19,5 +19,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 setPlayerVariable("fm_origin", getMap());
 setPlayerVariable("fm_origin_portal", getPortalName());
-playPortalSE();
+playPortalSe();
 setMap(910000000, "out00");

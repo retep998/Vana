@@ -80,15 +80,15 @@ function partyQuestWrong()
 end
 
 function giveAllPartyMembersEXP(exp, mapid)
-	members = getAllPartyPlayerIDs();
+	members = getAllPartyPlayerIds();
 	for i = 1, #members do
 		member = members[i];
 		if setPlayer(member) then
 			if mapid == nil then
-				giveEXP(exp);
+				giveExp(exp);
 			else
 				if getMap() == mapid then
-					giveEXP(exp);
+					giveExp(exp);
 				end
 			end
 			revertPlayer();
@@ -97,7 +97,7 @@ function giveAllPartyMembersEXP(exp, mapid)
 end
 
 function moveAllMapMembers(mapid, portalstring)
-	players = getAllMapPlayerIDs();
+	players = getAllMapPlayerIds();
 	for i = 1, #players do
 		player = players[i];
 		if setPlayer(player) then

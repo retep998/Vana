@@ -24,4 +24,4 @@ addText("If you want to get stronger, then go to #b#m60000##k where there's an h
 sendBackNext();
 
 addText("At the Victoria Island you can choose your job. Is it called #b#m102000000##k...? I heard there's a bare, desolate town where warriors live. A highland...what kind of a place would that be?");
-sendBackOK();
+sendBackOk();

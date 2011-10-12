@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getItemAmount(4001094) > 0 then
 	if not isInstance("horntailEgg") then
 		createInstance("horntailEgg", 5 * 60, true);
-		addInstancePlayer(getID());
-		playPortalSE();
+		addInstancePlayer(getId());
+		playPortalSe();
 		setMap(240040611);
 	else
 		showMessage("Someone else is already inside in an attempt to complete the quest. Please try again later.", m_red);

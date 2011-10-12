@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Dragon Gate at Swamp Bog
 
 if getItemAmount(3992040) > 0 then -- Map of Phantom Forest
-	playPortalSE();
+	playPortalSe();
 	setMap(610010201, "B2_1");
 end

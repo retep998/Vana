@@ -21,7 +21,7 @@ if getItemAmount(4031346) > 0 then
 	giveItem(4031346, -1);
 
 	showMessage("The Magical Seed is spent and you are transferred to somewhere.", m_red);
-	playPortalSE();
+	playPortalSe();
 
 	if getMap() == 240010100 then
 		setMap(101010000, "minar00");

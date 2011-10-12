@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/jobFunctions.lua");
 
 if isQuestActive(6110) then
-	if getPartyID() == 0 then
+	if getPartyId() == 0 then
 		showMessage("You don't have a  party. You can challenge with party.", m_red);
 	elseif isPartyLeader() then
-		members = getAllPartyPlayerIDs();
+		members = getAllPartyPlayerIds();
 		if #members ~= 2 then
 			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", m_red);
 		else
@@ -49,8 +49,8 @@ if isQuestActive(6110) then
 						for i = 1, #members do
 							addInstancePlayer(members[i]);
 						end
-						addInstanceParty(getPartyID());
-						playPortalSE();
+						addInstanceParty(getPartyId());
+						playPortalSe();
 						warpParty(910500100);
 					else
 						showMessage("Other parties are challenging on quest clear now. Try again later.", m_red);

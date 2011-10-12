@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if isQuestActive(6280) and getItemAmount(4031454) > 0 then
 	if getItemAmount(4031455) > 0 then
 		addText("You already have #bt4031455##k.");
-		sendOK();
+		sendOk();
 	else
 		giveItem(4031454, -1);
 		giveItem(4031455, 1);
 		addText("Holy water was contained from spring.");
-		sendOK();
+		sendOk();
 	end
 end

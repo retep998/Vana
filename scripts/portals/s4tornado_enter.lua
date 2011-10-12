@@ -27,7 +27,7 @@ if getJob() == 412 then
 		map = true;
 	end
 	if map then
-		playPortalSE();
+		playPortalSe();
 		setMap(922020200);
 	end
 end

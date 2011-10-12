@@ -33,7 +33,7 @@ end
 if jl == 3 and jp == 1 then
 	if getLevel() < 120 then
 		addText("You're still weak to go to bowman extreme road. If you get stronger, come back to me.");
-		sendOK();
+		sendOk();
 	elseif isQuestCompleted(6924) then
 		addText("You're qualified to be a true bowman. \r\nDo you want job advancement?\r\n");
 		addText("#b#L0# I want to advance to " .. title .. ".#l\r\n");
@@ -41,17 +41,17 @@ if jl == 3 and jp == 1 then
 		choice = askChoice();
 
 		if choice == 0 then
-			if getSP() > ((getLevel() - 120) * 3) then
+			if getSp() > ((getLevel() - 120) * 3) then
 				addText("Hmm...You have too many #bSP#k. You can't make the 4th job advancement with too many SP left.");
-				sendOK();
+				sendOk();
 			else
 				if getOpenSlots(2) < 1 then
 					addText("You can't proceed as you don't have an empty slot in your inventory. Please clear your inventory and try again.");
-					sendOK();
+					sendOk();
 				else
 					giveItem(2280003, 1);
-					giveSP(3);
-					giveAP(5);
+					giveSp(3);
+					giveAp(5);
 					setJob(getJob() + 1);
 
 					if jt == 1 then
@@ -76,21 +76,21 @@ if jl == 3 and jp == 1 then
 					end
 
 					addText("Don't forget that it all depends on how much you train.");
-					sendOK();
+					sendOk();
 				end
 			end
 		elseif choice == 1 then
 			addText("You don't have to hesitate....You passed all tests. Whenever you decide, talk to me. If you're ready, I'll let you make the 4th job advancement.");
-			sendOK();
+			sendOk();
 		end
 	else
 		addText("You're not ready to make 4th job advancement. When you're ready, talk to me.");
-		sendOK();
+		sendOk();
 	end
 elseif jl == 3 and jp == 2 then
 	addText("You became the best bowman, the position of #b" .. title .. "#k. Stronger power means more responsibility. Hope you get over all the tests you will have in future.");
-	sendOK();
+	sendOk();
 else
 	addText("Why do you want to see me? There is nothing you want to ask me.");
-	sendOK();
+	sendOk();
 end

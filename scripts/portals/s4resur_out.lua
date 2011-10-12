@@ -21,7 +21,7 @@ if isQuestActive(6134) then
 	if not giveItem(4031448, 1) then
 		showMessage("You can't proceed as you don't have an empty slot in your inventory. Please clear your inventory and try again.", m_red);
 	else
-		playPortalSE();
+		playPortalSe();
 		setMap(220070400, "pt00");
 	end
 end

@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Entrance to the Haunted Mansion
 
-playPortalSE();
+playPortalSe();
 setMap(682000100, "st00");

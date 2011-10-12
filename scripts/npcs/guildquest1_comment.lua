@@ -47,7 +47,7 @@ while true do
 		sendBackNext();
 	elseif what == 3 then
 		addText("Really? If you have anything else to ask, please feel free to talk to me.");
-		sendOK();
+		sendOk();
 		break;
 	end
 end

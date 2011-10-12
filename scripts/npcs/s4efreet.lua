@@ -28,22 +28,22 @@ elseif (isQuestCompleted(6316) and isQuestActive(6315)) then
 end
 
 if item ~= 0 then
-	if getPartyID() == 0 then
+	if getPartyId() == 0 then
 		addText("You don't have a  party. You can challenge with party.");
-		sendOK();
+		sendOk();
 	elseif isPartyLeader() then
 		if getItemAmount(item) > 0 then
 			addText("You already have #b#t" .. item .. "##k. You don't have to enter Tanatos's room.");
-			sendOK();
+			sendOk();
 		else
-			members = getAllPartyPlayerIDs();
+			members = getAllPartyPlayerIds();
 			if #members ~= 2 then
 				addText("You can make a quest when you have a party with two. Please make your party with two members.");
-				sendOK();
+				sendOk();
 			else
 				if not isPartyInLevelRange(120, 200) then
 					addText("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.");
-					sendOK();
+					sendOk();
 				else
 					memberctr = 0
 					mapid = getMap();
@@ -58,18 +58,18 @@ if item ~= 0 then
 					end
 					if memberctr ~= 2 then
 						addText("You can't enter. Your party member's job is not Arch Mage or Your party doesn't consist of two members.");
-						sendOK();
+						sendOk();
 					else
 						if not isInstance("elementalSummon4th") then
 							createInstance("elementalSummon4th", 20 * 60, true);
 							for i = 1, #members do
 								addInstancePlayer(members[i]);
 							end
-							addInstanceParty(getPartyID());
+							addInstanceParty(getPartyId());
 							warpParty(922020100);
 						else
 							addText("Other parties are challenging on quest clear now. Try again later.");
-							sendOK();
+							sendOk();
 						end
 					end
 				end
@@ -77,9 +77,9 @@ if item ~= 0 then
 		end
 	else
 		addText("Party leader can't apply for entering.");
-		sendOK();
+		sendOk();
 	end
 elseif getJob() == 212 or getJob() == 222 then
 	addText("I don't understand you.");
-	sendOK();
+	sendOk();
 end

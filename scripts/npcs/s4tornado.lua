@@ -24,5 +24,5 @@ if isQuestActive(6230) and getItemAmount(4031456) == 0 and getItemAmount(4031476
 	else
 		addText("Maple leaves were absorbed into sparkling glass marble.");
 	end
-	sendOK();
+	sendOk();
 end

@@ -23,7 +23,7 @@ if getItemAmount(4031450) > 0 then
 	if yes == 1 then
 		if not isInstance("iceDemon") then
 			createInstance("iceDemon", 5 * 60, true);
-			addInstancePlayer(getID());
+			addInstancePlayer(getId());
 			setMap(921100100);
 		else
 			addText("Someone is currently using the room. Try again later.");
@@ -40,7 +40,7 @@ else
 	addText("If you are thinking of going in, I suggest you change your mind. But if you really want to go in...I'm only letting in the ones that are strong enough to stay alive in there. I do not wish to see anyone else die. Let's see ... Hmmm ...");
 	if getLevel() < 50 then
 		addText(" you haven't reached Level 50 yet. I can't let you in, then, so forget it.");
-		sendBackOK();
+		sendBackOk();
 	else
 		addText("! You look pretty strong. All right, do you want to go in?");
 		yes = askYesNo();
