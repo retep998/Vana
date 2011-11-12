@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2009 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,33 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-namespace Timer {
+#include "Pos.h"
+#include "Types.h"
+#include <string>
 
-struct Types {
-	enum {
-		BuffTimer,
-		CoolTimer,
-		DoorTimer,
-		InstanceTimer,
-		MapleTvTimer,
-		MapTimer,
-		MistTimer,
-		MobHealTimer,
-		MobRemoveTimer,
-		MobStatusTimer,
-		MobSkillTimer,
-		PetTimer,
-		PickpocketTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		SpongeCleanupTimer,
-		TradeTimer,
-		WeatherTimer,
-		JukeboxTimer,
-		KiteTimer
-	};
+using std::string;
+
+class Player;
+
+struct Kite {
+	string ownerName;
+	string message;
+	int32_t itemid;
+	int32_t id;
+	int32_t ownerId;
+	int32_t lifeTime;
+	int32_t map;
+	Pos position;
 };
-
-}

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "Door.h"
 #include "Inventory.h"
+#include "Kite.h"
 #include "MapleSession.h"
 #include "Maps.h"
 #include "Mist.h"
@@ -427,4 +428,34 @@ void MapPacket::removePortal(int32_t source, int32_t destination) {
 	packet.add<int32_t>(Maps::NoMap);
 	Maps::getMap(source)->sendPacket(packet);
 	Maps::getMap(destination)->sendPacket(packet);
+}
+
+void MapPacket::spawnKite(Kite &kite) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_KITE_SPAWN);
+	packet.add<int32_t>(kite.id);
+	packet.add<int32_t>(kite.itemid);
+	packet.addString(kite.message);
+	packet.addString(kite.ownerName);
+	packet.addPos(kite.position);
+	Maps::getMap(kite.map)->sendPacket(packet);
+}
+
+void MapPacket::spawnKite(Player *player, Kite &kite) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_KITE_SPAWN);
+	packet.add<int32_t>(kite.id);
+	packet.add<int32_t>(kite.itemid);
+	packet.addString(kite.message);
+	packet.addString(kite.ownerName);
+	packet.addPos(kite.position);
+	player->getSession()->send(packet);
+}
+
+void MapPacket::despawnKite(Kite &kite, int8_t reason) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_KITE_DESPAWN);
+	packet.add<int8_t>(reason);
+	packet.add<int32_t>(kite.id);
+	Maps::getMap(kite.map)->sendPacket(packet);
 }

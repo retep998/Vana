@@ -746,6 +746,30 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				}
 				used = Maps::getMap(player->getMap())->playJukebox(player, itemid, 60 * 5); // 5 minutes is enough!
 				break;
+			case Items::KoreanKite:
+			case Items::HeartBalloon:
+			case Items::GraduationBanner:
+			case Items::AdmissionBanner: {
+				string message = packet.getString();
+				if (!player->updateTickCount(packet.get<int32_t>())) {
+					// Tickcount was the same or less than 100 of the difference.
+					return;
+				}
+
+				used = Maps::getMap(player->getMap())->createKite(player, itemid, message);
+				if (!used) {
+					InventoryPacket::sendCannotFlyHere(player);
+				}
+
+				break;
+			}
+			default: {
+				packet.reset();
+				std::stringstream x;
+				x << "Unknown cash item! ItemID: " << itemid << "; Player ID: " << player->getId() << "; Packet: " << packet;
+				ChannelServer::Instance()->log(LogTypes::Info, x.str());
+				break;
+			}
 		}
 	}
 	if (used) {

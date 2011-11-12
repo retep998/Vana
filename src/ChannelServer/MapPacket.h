@@ -27,6 +27,7 @@ class Mist;
 class PacketCreator;
 class Player;
 struct Pos;
+struct Kite;
 
 namespace MapPacket {
 	PacketCreator playerPacket(Player *player);
@@ -51,4 +52,7 @@ namespace MapPacket {
 	void removeDoor(Door *door, bool displace);
 	void spawnPortal(int32_t source, int32_t destination, const Pos &srcpos, const Pos &dstpos);
 	void removePortal(int32_t source, int32_t destination);
+	void spawnKite(Kite &kite);
+	void spawnKite(Player *player, Kite &kite);
+	void despawnKite(Kite &kite, int8_t reason);
 };

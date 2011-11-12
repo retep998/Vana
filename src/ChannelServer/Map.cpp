@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "Inventory.h"
 #include "InventoryPacket.h"
+#include "Kite.h"
 #include "MapPacket.h"
 #include "MapleSession.h"
 #include "MapleTvs.h"
@@ -216,6 +217,8 @@ void Map::removePlayer(Player *player) {
 	Summons::removeSummon(player, false, true, SummonMessages::None);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
+
+	removeKitesPlayer(player->getId());
 }
 
 void Map::runFunctionPlayers(function<void (Player *)> successFunc, const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count) {
@@ -919,6 +922,10 @@ void Map::showObjects(Player *player) { // Show all Map Objects
 	if (m_jukeboxItemid != 0) {
 		InventoryPacket::playCashSongPlayer(player, m_jukeboxItemid, m_jukeboxPlayer);
 	}
+	
+	for (unordered_map<int32_t, Kite>::iterator iter = m_kites.begin(); iter != m_kites.end(); iter++) {
+		MapPacket::spawnKite(player, iter->second);
+	}
 }
 
 void Map::sendPacket(PacketCreator &packet, Player *player) {
@@ -947,8 +954,40 @@ bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t
 	return true;
 }
 
+bool Map::createKite(Player *player, int32_t itemid, const string &message) {
+	int8_t minX = 60, minY = 80;
+	Pos &playerPos = player->getPos();
+	for (unordered_map<int32_t, Kite>::iterator iter = m_kites.begin(); iter != m_kites.end(); iter++) {
+		Kite &kite = iter->second;
+		if (abs(kite.position.y - playerPos.y) < minY) {
+			if (abs(kite.position.x - playerPos.x) < minX) {
+				return false;
+			}
+		}
+	}
+
+	// Create new kite!
+	Kite newKite;
+	newKite.itemid = itemid;
+	newKite.id = m_kiteids.next();
+	newKite.ownerName = player->getName();
+	newKite.ownerId = player->getId();
+	newKite.message = message;
+	newKite.lifeTime = 3600000; // BMS like...lol!
+	newKite.map = this->getId();
+	newKite.position = Pos(playerPos);
+	m_kites[newKite.id] = newKite;
+
+	Timer::Id timerId(Timer::Types::KiteTimer, newKite.id, 0);
+	new Timer::Timer(bind(&Map::removeKite, this, newKite.id, 1), timerId, getTimers(), Timer::Time::fromNow(newKite.lifeTime));
+
+	MapPacket::spawnKite(newKite);
+
+	return true;
+}
+
 bool Map::playJukebox(Player *player, int32_t itemid, int32_t time) {
-	Timer::Id timerId(Timer::Types::JukeboxTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
+	Timer::Id timerId(Timer::Types::JukeboxTimer, 0, 0); // Just to check if there's already a jukebox running and adding a new one
 	if (m_jukeboxItemid != 0 && getTimers()->checkTimer(timerId) != 0) {
 		// Someone plays the jukebox already.
 		return false;
@@ -975,4 +1014,35 @@ void Map::setJukebox(int32_t itemid, const string &user) {
 		// There's actually no way to stop the damn song other than rejoining the map.
 		InventoryPacket::playCashSong(getId(), itemid, user);
 	}
+}
+
+void Map::removeKite(int32_t id, int8_t reason) {
+	if (m_kites.find(id) != m_kites.end()) {
+		Timer::Id timerId(Timer::Types::KiteTimer, id, 0);
+		if (getTimers()->checkTimer(timerId)) {
+			getTimers()->removeTimer(timerId);
+		}
+
+		Kite kite = m_kites[id];
+		MapPacket::despawnKite(kite, reason);
+		m_kites.erase(id);
+	}
+}
+
+void Map::removeKitesPlayer(int32_t playerid) {
+	unordered_map<int32_t, Kite> tmp(m_kites);
+	
+	for (unordered_map<int32_t, Kite>::iterator iter = tmp.begin(); iter != tmp.end(); iter++) {
+		Kite &kite = iter->second;
+		if (kite.ownerId == playerid) {
+			Timer::Id timerId(Timer::Types::KiteTimer, kite.id, 0);
+			if (getTimers()->checkTimer(timerId)) {
+				getTimers()->removeTimer(timerId);
+			}
+
+			MapPacket::despawnKite(kite, 0);
+			m_kites.erase(kite.id);
+		}
+	}
+	tmp.clear();
 }
