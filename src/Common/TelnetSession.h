@@ -57,12 +57,18 @@ public:
 	void send(const string &data, bool newline = true, bool starttext = true);
 	void send();
 	uint32_t getIp() const;
+	void SetRemoveLastCharacter(bool on);
 protected:
 	void start_read();
 	void handle_write(const boost::system::error_code &error, size_t bytes_transferred);
 	void handle_read(const boost::system::error_code &error, size_t bytes_transferred);
 
 	static const size_t maxBufferLen = 65535;
+	static const int8_t Backspace = 0x08;
+	static const int8_t LineFeed = 0x0A;
+	static const int8_t CarriageReturn = 0x0D;
+
+	bool m_removeLastChar;
 
 	tcp::socket m_socket;
 	Decoder m_decoder;

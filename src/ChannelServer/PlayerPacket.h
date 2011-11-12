@@ -52,4 +52,5 @@ namespace PlayerPacket {
 	void showHpBar(Player *player, Player *target);
 	void sendBlockedMessage(Player *player, int8_t type);
 	void sendYellowMessage(Player *player, const string &msg);
+	void sendCannotFlyHere(Player *player);
 };

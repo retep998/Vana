@@ -26,7 +26,7 @@ void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
-	packet.add<int8_t>(1);
+	packet.addBool(true);
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }
@@ -35,7 +35,7 @@ void ServerPacket::changeScrollingHeader(const string &msg) {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
-	packet.add<int8_t>(1);
+	packet.addBool(true);
 	packet.addString(msg);
 	PlayerDataProvider::Instance()->sendPacket(packet);
 }
@@ -44,6 +44,6 @@ void ServerPacket::scrollingHeaderOff() {
 	PacketCreator packet;
 	packet.addHeader(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
-	packet.add<int8_t>(0);
+	packet.addBool(false);
 	PlayerDataProvider::Instance()->sendPacket(packet);
 }

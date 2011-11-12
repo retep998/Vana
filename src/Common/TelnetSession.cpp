@@ -28,7 +28,8 @@ TelnetSession::TelnetSession(boost::asio::io_service &io_service,
 						   AbstractTelnetConnection *player) :
 AbstractSession(sessionManager),
 m_socket(io_service),
-m_player(player)
+m_player(player),
+m_removeLastChar(false)
 {
 }
 
@@ -123,7 +124,7 @@ void TelnetSession::handle_write(const boost::system::error_code &error, size_t 
 
 void TelnetSession::handle_read(const boost::system::error_code &error, size_t bytes_transferred) {
 	if (!error) {
-		if (m_buffer[0] == 0x08) {
+		if (m_buffer[0] == Backspace) {
 			// Deleting a character.
 			if (m_inputStreamSize > 0) {
 				string data = m_inputStream.str();
@@ -132,9 +133,18 @@ void TelnetSession::handle_read(const boost::system::error_code &error, size_t b
 				m_inputStream.str("");
 				m_inputStream << data;
 				m_inputStreamSize--;
+				if (m_removeLastChar) {
+					// Enter space instead.
+					send(" ", false, false);
+				}
+			}
+			else {
+				// Lol ur doing it rong, nothing to delete!
+				// So let the user hear that he's doing it rong.
+				send("\a ", false, false);
 			}
 		}
-		else if (m_buffer[0] == 0x0A || m_buffer[0] == 0x10) {
+		else if (m_buffer[0] == LineFeed /*0x0A*/ || m_buffer[0] == CarriageReturn /*0x0D*/) {
 			// Windows sends: 0A 0D (\r\n)
 			// Mac sends: 0A 00 (\r)
 			// Linux sends: 0D 00 (\n)
@@ -154,6 +164,17 @@ void TelnetSession::handle_read(const boost::system::error_code &error, size_t b
 			if ((m_buffer[0] >= 0x20 && m_buffer[0] <= 0x7e) || (m_buffer[0] >= 0x80 && m_buffer[0] <= 0xa5)) {
 				++m_inputStreamSize;
 				m_inputStream << m_buffer[0];
+				if (m_removeLastChar) {
+					// Uncomment for star replacement:
+					//  send("\b*", false, false);
+					// This will remove the character and show nothing (safest)
+					send("\b \b", false, false);
+				}
+			}
+			else {
+				// Unknown character; remove.
+				// Let the user hear a beep, then remove the character.
+				send("\a\b ", false, false);
 			}
 		}
 		start_read();
@@ -165,4 +186,8 @@ void TelnetSession::handle_read(const boost::system::error_code &error, size_t b
 
 uint32_t TelnetSession::getIp() const {
 	return m_player->getIp();
+}
+
+void TelnetSession::SetRemoveLastCharacter(bool on) {
+	this->m_removeLastChar = on;
 }

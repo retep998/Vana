@@ -336,3 +336,14 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	}
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
+
+void PlayersPacket::usePirateGrenade(Player *player, int32_t posx, int32_t posy, int32_t charge, int32_t unknown) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_PIRATE_GRENADE);
+	packet.add<int32_t>(player->getId());
+	packet.add<int32_t>(posx);
+	packet.add<int32_t>(posy);
+	packet.add<int32_t>(charge);
+	packet.add<int32_t>(unknown);
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}

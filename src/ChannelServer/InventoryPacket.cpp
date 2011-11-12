@@ -389,3 +389,9 @@ void InventoryPacket::sendItemExpired(Player *player, vector<int32_t> *items) {
 	}
 	player->getSession()->send(packet);
 }
+
+void InventoryPacket::sendCannotFlyHere(Player *player) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MESSAGE_CANT_FLY_HERE);
+	player->getSession()->send(packet);
+}

@@ -676,6 +676,25 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	}
 }
 
+void PlayerHandler::usePirateGrenade(Player *player, PacketReader &packet) {
+	if (player->getSkills()->getSkillLevel(Jobs::Gunslinger::Grenade) == 0) {
+		// Player is not a gunslinger... LOL
+		return;
+	}
+
+	int32_t posx = packet.get<int32_t>();
+	int32_t posy = packet.get<int32_t>();
+	int32_t charge = packet.get<int32_t>();
+	int32_t unk = packet.get<int32_t>(); // Seems to be the same everytime (tested mapchange, pos change and skill lvl change)
+
+	if (charge <= 0 || charge > 1000) {
+		// !!! INVALID STUFF !!!
+		return;
+	}
+
+	PlayersPacket::usePirateGrenade(player, posx, posy, charge, unk);
+}
+
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	Attack attack = compileAttack(player, packet, SkillTypes::Magic);
 	if (!player->updateTickCount(attack.ticks) || attack.portals != player->getPortalCount(false)) {

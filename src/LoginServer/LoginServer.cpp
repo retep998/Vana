@@ -67,7 +67,7 @@ void LoginServer::loadConfig() {
 		m_telnetPort = config.getUnsignedShort("telnet_port");
 
 		if (m_telnetPassword == "changeme") {
-			std::cerr << "ERROR: telnet_password is not changed." << std::endl;
+			std::cerr << "ERROR: telnet_password is not changed (look inside loginserver.lua)." << std::endl;
 			std::cout << "Press enter to quit ...";
 			getchar();
 			exit(ExitCodes::ConfigError);

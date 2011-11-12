@@ -253,3 +253,9 @@ void PlayerPacket::sendYellowMessage(Player *player, const string &msg) {
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }
+
+void PlayerPacket::sendCannotFlyHere(Player *player) {
+	PacketCreator packet;
+	packet.addHeader(SMSG_MESSAGE_CANT_FLY_HERE);
+	player->getSession()->send(packet);
+}

@@ -41,4 +41,5 @@ namespace PlayersPacket {
 	void useSpellAttack(Player *player, const Attack &attack);
 	void useSummonAttack(Player *player, const Attack &attack);
 	void useEnergyChargeAttack(Player *player, const Attack &attack);
+	void usePirateGrenade(Player *player, int32_t posx, int32_t posy, int32_t charge, int32_t unknown);
 };

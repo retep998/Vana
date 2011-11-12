@@ -223,8 +223,18 @@ void Player::realHandleRequest(PacketReader &packet) {
 				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
 				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
 				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
+				case CMSG_USE_PIRATE_GRENADE: PlayerHandler::usePirateGrenade(this, packet); break;
 				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
 				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+#ifdef VANA_SHOW_UNKNOWN_PACKETS
+				default: {
+					packet.reset();
+					std::stringstream x;
+					x << "Unknown Packet. Player ID: " << getId() << "; Packet: " << packet;
+					ChannelServer::Instance()->log(LogTypes::Info, x.str());
+					break;
+				}
+#endif
 			}
 		}
 	}

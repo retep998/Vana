@@ -682,5 +682,8 @@
     <ClInclude Include="src\ChannelServer\Door.h">
       <Filter>Header Files\ChannelServer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ChannelServer\Kite.h">
+      <Filter>Header Files\ChannelServer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

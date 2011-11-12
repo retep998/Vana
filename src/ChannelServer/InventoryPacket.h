@@ -85,4 +85,5 @@ namespace InventoryPacket {
 	void sendRewardItemAnimation(Player *player, int32_t itemid, const string &effect);
 	void blankUpdate(Player *player);
 	void sendItemExpired(Player *player, vector<int32_t> *items);
+	void sendCannotFlyHere(Player *player);
 };

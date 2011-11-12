@@ -64,6 +64,7 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 			else {
 				m_username = username;
 				m_gotUsername = true;
+				getSession()->SetRemoveLastCharacter(true);
 				getSession()->send("Password: ", false);
 			}
 		}
@@ -86,8 +87,9 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 							string hashed_pass = MiscUtilities::hashPassword(password, password);
 							query << "UPDATE users SET password = " << mysqlpp::quote << hashed_pass << ", salt = " << mysqlpp::quote << salt << " WHERE id = " << res[0]["id"];
 							query.exec();
-
-							getSession()->send("Credentials accepted. Please provide the LoginServer telnet password: ");
+							
+							getSession()->send("Credentials accepted. Please provide the LoginServer telnet password.");
+							getSession()->send("Password: ", false);
 							m_gotPass = true;
 						}
 						else {
@@ -124,6 +126,7 @@ void TelnetPlayer::realHandleRequest(const string &data) {
 		else {
 			if (command == LoginServer::Instance()->getTelnetPassword()) {
 				m_loggedOn = true;
+				getSession()->SetRemoveLastCharacter(false);
 				getSession()->send("You are successfully logged on on the LoginServer telnet server!");
 				getSession()->send("What do you want to do?");
 				getSession()->send("> ", false, false);

@@ -140,7 +140,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PARTY_HP_DISPLAY 0xb7
 #define SMSG_GUILD_NAME 0xb8 // Updates guildname from character :D
 #define SMSG_GUILD_EMBLEM 0xb9 // Updates guildemblem from character :D
-#define SMSG_PIRATE_BOMB 0xba // Drops the bomb of the pirate skill at pos 0,0. The client disconnects right after it landed...
+#define SMSG_PIRATE_GRENADE 0xba
 #define SMSG_CHAIR 0xbb
 #define SMSG_THEATRICS 0xbc // Gain item notice in chat
 #define SMSG_MAP_TELEPORT 0xbd // Instantaneous transfer
@@ -167,7 +167,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_NPC_SHOW_EFFECT 0xe7
 #define SMSG_DROP_ITEM 0xee
 #define SMSG_DROP_PICKUP 0xef
-#define SMSG_MESSAGE_FLY_DISABLED 0xf0 // "You can't fly it here" O.o Might be from these kites
+#define SMSG_MESSAGE_CANT_FLY_HERE 0xf0 // "You can't fly it here" O.o Might be from these kites
+#define SMSG_KITE_SPAWN 0xf1
+#define SMSG_KITE_DESPAWN 0xf2
 #define SMSG_MIST_SPAWN 0xf3
 #define SMSG_MIST_DESPAWN 0xf4
 #define SMSG_MYSTIC_DOOR_SPAWN 0xf5

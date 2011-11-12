@@ -35,6 +35,7 @@ namespace PlayerHandler {
 	void handleMonsterBook(Player *player, PacketReader &packet);
 	void handleAdminMessenger(Player *player, PacketReader &packet);
 
+	void usePirateGrenade(Player *player, PacketReader &packet);
 	void useMeleeAttack(Player *player, PacketReader &packet);
 	void useRangedAttack(Player *player, PacketReader &packet);
 	void useSpellAttack(Player *player, PacketReader &packet);

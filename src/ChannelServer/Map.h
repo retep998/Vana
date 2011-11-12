@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "LoopingId.h"
 #include "Door.h"
+#include "Kite.h"
 #include "MapDataProvider.h"
 #include "MapObjects.h"
 #include "Mob.h"
@@ -50,6 +51,7 @@ class Mob;
 class PacketCreator;
 class Player;
 class Reactor;
+struct Kite;
 
 namespace Timer {
 	class Container;
@@ -192,9 +194,13 @@ public:
 
 	// Cash items
 	bool createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemid, const string &message);
+	bool createWeather(Player *player, int32_t time, int32_t itemid);
+	bool createKite(Player *player, int32_t itemid, const string &message);
 	bool playJukebox(Player *player, int32_t itemid, int32_t time);
 	void setWeather(bool adminWeather, int32_t itemid, const string &message); // For the timer...
 	void setJukebox(int32_t itemid, const string &user);
+	void removeKite(int32_t id, int8_t reason);
+	void removeKitesPlayer(int32_t playerid);
 private:
 	int32_t getMistId() { return m_mistids.next(); }
 	static const uint32_t NpcStart = 100;
@@ -221,6 +227,7 @@ private:
 	Instance *m_instance;
 	LoopingId m_objectids;
 	LoopingId m_mistids;
+	LoopingId m_kiteids;
 	MapInfoPtr m_info;
 	TimeMobPtr m_time_mob;
 	boost::recursive_mutex m_drops_mutex;
@@ -235,6 +242,7 @@ private:
 	unordered_map<string, Pos> m_reactor_positions;
 	vector<pair<PortalInfo, bool> > m_door_points;
 	unordered_map<int32_t, Door *> m_doors;
+	unordered_map<int32_t, Kite> m_kites;
 
 	// Shorter-lived objects
 	vector<Player *> m_players;
