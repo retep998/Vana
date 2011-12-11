@@ -207,14 +207,7 @@ void Item::setSpeed(int16_t speed) {
 }
 
 int16_t Item::testStat(int16_t stat, int16_t max) {
-	int16_t ret = stat;
-	if (ret < 0) {
-		ret = 0;
-	}
-	else if (ret > max) {
-		ret = max;
-	}
-	return ret;
+	return (stat < 0 ? 0 : (stat > max ? max : stat));
 }
 
 void Item::addStr(int16_t strength, bool onlyIfExists) {
@@ -308,8 +301,5 @@ void Item::addSpeed(int16_t speed, bool onlyIfExists) {
 }
 
 bool Item::testPerform(int16_t stat, bool onlyIfExists) {
-	if (onlyIfExists && stat == 0) {
-		return false;
-	}
-	return true;
+	return !onlyIfExists || stat != 0;
 }

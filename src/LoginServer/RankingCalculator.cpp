@@ -63,9 +63,9 @@ namespace RankingCalculator {
 	}
 	const string accountRequirements() {
 		std::ostringstream ret;
-		ret << "u.ban_expire < NOW()"
-			<< "AND u.gm_level = 0"
-			<< "AND u.admin = 0";
+		ret << "u.ban_expire < NOW() "
+			<< "AND u.gm_level = 0 "
+			<< "AND u.admin = 0 ";
 		return ret.str();
 	}
 

@@ -51,7 +51,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		if (item == nullptr) {
 			return;
 		}
-		if (GameLogicUtilities::isStackable(item->getId())) {
+		if (!GameLogicUtilities::isStackable(item->getId())) {
 			amount = item->getAmount();
 		}
 		else if (amount <= 0 || amount > item->getAmount()) {
