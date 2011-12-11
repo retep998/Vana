@@ -52,8 +52,10 @@ bool MapFunctions::timer(Player *player, const string &args) {
 			int32_t seconds = time /= 60;
 			int32_t minutes = time /= 60;
 			int32_t hours = time /= 60;
+			msg.str("");
 			msg.clear();
 			msg << "Started map timer. Counting down from ";
+
 			if (hours > 0) {
 				msg << hours << " hours";
 			}
@@ -120,12 +122,14 @@ bool MapFunctions::listMobs(Player *player, const string &args) {
 		MobMap mobs = Maps::getMap(player->getMap())->getMobs();
 		std::ostringstream message;
 		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+			message.str("");
 			message.clear();
 
 			message << "Mob " << iter->first
-					<< " (ID: " << lexical_cast<string>(iter->second->getMobId())
-					<< ", HP: " << lexical_cast<string>(iter->second->getHp())
-					<< "/" << lexical_cast<string>(iter->second->getMaxHp()) << ")";
+					<< " (ID: " << iter->second->getMobId()
+					<< ", HP: " << iter->second->getHp()
+					<< "/" << iter->second->getMaxHp()
+					<< ")";
 
 			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 		}

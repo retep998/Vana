@@ -21,7 +21,7 @@ Randomizer * Randomizer::singleton = nullptr;
 
 uint32_t Randomizer::randInt(uint32_t max, uint32_t min) {
 	uint32_t diff = max - min;
-	return (randInt() % diff) + min;
+	return (diff == 0 ? min : (randInt() % diff) + min);
 }
 
 uint32_t Randomizer::randInt() {
@@ -45,7 +45,7 @@ uint8_t Randomizer::randChar(uint8_t max, uint8_t min) {
 string Randomizer::generateSalt(size_t length) {
 	string salt(length, 0);
 	for (size_t i = 0; i < length; i++) {
-		salt[i] = randChar(126, 33);
+		salt[i] = randChar(126 , 33);
 	}
 	return salt;
 }

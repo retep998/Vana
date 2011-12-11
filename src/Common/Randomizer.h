@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <boost/utility.hpp>
+#include <limits>
 #include <random>
 #include <string>
 
@@ -40,7 +41,10 @@ public:
 	uint8_t randChar(uint8_t max, uint8_t min = 0);
 	string generateSalt(size_t length);
 private:
-	Randomizer() { m_engine.seed(std::rand()); }
+	Randomizer() {
+		m_engine.seed(std::rand());
+		m_distribution = uniform_int<uint32_t>(std::numeric_limits<uint32_t>::min(), std::numeric_limits<uint32_t>::max());
+	}
 	static Randomizer *singleton;
 
 	mt19937 m_engine;

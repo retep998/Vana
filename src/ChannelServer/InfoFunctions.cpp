@@ -60,6 +60,7 @@ bool InfoFunctions::help(Player *player, const string &args) {
 		for (unordered_map<string, ChatCommand>::iterator iter = CommandList.begin(); iter != CommandList.end(); iter++) {
 			if (player->getGmLevel() >= iter->second.level) {
 				if (!has) {
+					strm.str("");
 					strm.clear();
 					strm << "Available commands: ";
 					has = true;

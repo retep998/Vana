@@ -52,7 +52,7 @@ namespace GameLogicUtilities {
 	inline bool isMedal(int32_t itemId) { return (getItemType(itemId) == Items::Types::Medal); }
 	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
 	inline bool isCashSlot(int16_t slot) { return (abs(slot) > 100); }
-	inline int16_t stripCashSlot(int16_t slot) { return (isCashSlot(slot) ? abs(slot) - 100 : slot); }
+	inline int16_t stripCashSlot(int16_t slot) { return (isCashSlot(slot) ? abs(slot) - 100 : abs(slot)); }
 
 	// Player
 	inline int8_t getGenderId(const string &gender) { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
