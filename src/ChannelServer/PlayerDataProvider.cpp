@@ -64,32 +64,6 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	}
 }
 
-// Stored packets
-void PlayerDataProvider::parseIncomingPacket(PacketReader &packet) {
-	int32_t playerId = packet.get<int32_t>();
-
-	size_t psize = packet.getBufferLength();
-	unsigned char *buf = new unsigned char[psize]; // Prevent the packet memory from being freed by external sources
-	memcpy(buf, packet.getBuffer(), psize);
-
-	m_packets[playerId].reset(new PacketReader(buf, psize));
-	SyncPacket::PlayerPacket::buffsTransferred(playerId);
-}
-
-void PlayerDataProvider::removePacket(int32_t id) {
-	if (m_packets.find(id) != m_packets.end()) {
-		m_packets.erase(id);
-	}
-}
-
-bool PlayerDataProvider::checkPlayer(int32_t id) {
-	return m_packets.find(id) != m_packets.end();
-}
-
-PacketReader & PlayerDataProvider::getPacket(int32_t id) {
-	return *(m_packets[id].get());
-}
-
 // Players
 void PlayerDataProvider::addPlayer(Player *player) {
 	m_players[player->getId()] = player;
@@ -122,7 +96,12 @@ void PlayerDataProvider::changeChannel(PacketReader &packet) {
 void PlayerDataProvider::newConnectable(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	ip_t ip = packet.get<ip_t>();
-	Connectable::Instance()->newPlayer(playerId, ip);
+	Connectable::Instance()->newPlayer(playerId, ip, packet);
+	SyncPacket::PlayerPacket::connectableEstablished(playerId);
+}
+
+void PlayerDataProvider::deleteConnectable(int32_t id) {
+	Connectable::Instance()->playerEstablished(id);
 }
 
 Player * PlayerDataProvider::getPlayer(int32_t id) {
@@ -130,7 +109,7 @@ Player * PlayerDataProvider::getPlayer(int32_t id) {
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name) {
-	string upCaseName = boost::to_upper_copy(name);
+	string &upCaseName = boost::to_upper_copy(name);
 	return (m_playersByName.find(upCaseName) == m_playersByName.end()) ? nullptr : m_playersByName[upCaseName];
 }
 

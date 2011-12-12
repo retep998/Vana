@@ -41,10 +41,9 @@ namespace SyncPacket {
 		void disbandParty(int32_t partyId);
 	}
 	namespace PlayerPacket {
-		void sendPacketToChannelForHolding(uint16_t channel, int32_t playerId, PacketReader &buffer);
-		void sendHeldPacketRemoval(uint16_t channel, int32_t playerId);
 		void playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerId, ip_t ip, port_t port);
-		void newConnectable(uint16_t channel, int32_t playerId, ip_t ip);
+		void newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer);
+		void deleteConnectable(uint16_t channel, int32_t playerId);
 		void updatePlayerJob(int32_t playerId, int16_t job);
 		void updatePlayerMap(int32_t playerId, int32_t map);
 		void updatePlayerLevel(int32_t playerId, int16_t level);

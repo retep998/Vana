@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHelper.h"
 #include "MapConstants.h"
 #include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
@@ -30,31 +31,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
 
-void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip) {
+void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::NewConnectable);
 	packet.add<int32_t>(playerId);
 	packet.add<ip_t>(ip);
-	Channels::Instance()->sendToChannel(channel, packet);
-}
-
-void SyncPacket::PlayerPacket::sendPacketToChannelForHolding(uint16_t channel, int32_t playerId, PacketReader &buffer) {
-	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::PacketTransfer);
-	packet.add<int32_t>(playerId);
+	packet.add<uint16_t>(buffer.getBufferLength());
 	packet.addBuffer(buffer);
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::sendHeldPacketRemoval(uint16_t channel, int32_t playerId) {
+void SyncPacket::PlayerPacket::deleteConnectable(uint16_t channel, int32_t playerId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::RemovePacketTransfer);
+	packet.add<int8_t>(Sync::Player::DeleteConnectable);
 	packet.add<int32_t>(playerId);
 	Channels::Instance()->sendToChannel(channel, packet);
 }

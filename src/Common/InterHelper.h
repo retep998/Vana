@@ -52,9 +52,8 @@ namespace Sync {
 			Disconnect,
 			ChangeChannelRequest,
 			ChangeChannelGo,
-			PacketTransfer,
-			RemovePacketTransfer,
 			NewConnectable,
+			DeleteConnectable,
 			UpdatePlayer
 		};
 		namespace UpdateBits {

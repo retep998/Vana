@@ -18,14 +18,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/shared_ptr.hpp>
 #include <boost/tr1/unordered_map.hpp>
 #include <boost/utility.hpp>
+
+class PacketReader;
 
 using std::tr1::unordered_map;
 
 struct ConnectingPlayer {
 	ip_t connectIp;
 	uint32_t connectTime;
+	boost::shared_ptr<PacketReader> heldPacket;
 };
 
 typedef unordered_map<int32_t, ConnectingPlayer> ConnectableMap;
@@ -38,8 +42,10 @@ public:
 		return singleton;
 	}
 
-	void newPlayer(int32_t id, ip_t ip);
+	void newPlayer(int32_t id, ip_t ip, PacketReader &packet);
 	bool checkPlayer(int32_t id, ip_t ip);
+	PacketReader * getPacket(int32_t id);
+	void playerEstablished(int32_t id);
 private:
 	Connectable() {}
 	static Connectable *singleton;
