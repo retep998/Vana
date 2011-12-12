@@ -44,16 +44,11 @@ public:
 
 	void parseChannelConnectPacket(PacketReader &packet);
 
-	// Incoming packets
-	void parseIncomingPacket(PacketReader &packet);
-	void removePacket(int32_t id);
-	bool checkPlayer(int32_t id);
-	PacketReader & getPacket(int32_t id);
-
 	// Online players
 	void addPlayer(Player *player);
 	void changeChannel(PacketReader &packet);
 	void newConnectable(PacketReader &packet);
+	void deleteConnectable(int32_t id);
 	void removePlayer(Player *player);
 	Player * getPlayer(int32_t id);
 	Player * getPlayer(const string &name);
@@ -75,7 +70,6 @@ private:
 	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
-	unordered_map<int32_t, boost::shared_ptr<PacketReader>> m_packets;
 	unordered_map<int32_t, boost::shared_ptr<PlayerData>> m_playerData;
 	unordered_map<int32_t, boost::shared_ptr<Party>> m_parties;
 	unordered_map<int32_t, Player *> m_players;

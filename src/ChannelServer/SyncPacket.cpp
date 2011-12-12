@@ -64,6 +64,7 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
 	packet.add<uint16_t>(channel);
+	packet.add<ip_t>(info->getIp());
 	packet.add<int64_t>(info->getConnectionTime());
 
 	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());
@@ -91,7 +92,7 @@ void SyncPacket::PlayerPacket::disconnect(int32_t playerId) {
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 
-void SyncPacket::PlayerPacket::buffsTransferred(int32_t playerId) {
+void SyncPacket::PlayerPacket::connectableEstablished(int32_t playerId) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);

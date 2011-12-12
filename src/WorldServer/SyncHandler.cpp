@@ -88,7 +88,7 @@ void SyncHandler::playerDisconnect(int16_t channel, PacketReader &packet) {
 	PlayerDataProvider::Instance()->playerDisconnect(id, channel);
 	int16_t chan = PlayerDataProvider::Instance()->removePendingPlayerEarly(id);
 	if (chan != -1) {
-		SyncPacket::PlayerPacket::sendHeldPacketRemoval(chan, id);
+		SyncPacket::PlayerPacket::deleteConnectable(chan, id);
 	}
 }
 void SyncHandler::handlePartySync(PacketReader &packet) {
@@ -105,10 +105,10 @@ void SyncHandler::handlePartySync(PacketReader &packet) {
 
 void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
-	Channel *chan = Channels::Instance()->getChannel(packet.get<int16_t>());
+	Channel *chan = Channels::Instance()->getChannel(packet.get<uint16_t>());
 	if (chan) {
-		SyncPacket::PlayerPacket::sendPacketToChannelForHolding(chan->getId(), playerId, packet);
 		PlayerDataProvider::Instance()->addPendingPlayer(playerId, chan->getId());
+		SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, packet.get<ip_t>(), packet);
 	}
 	else {
 		// Channel doesn't exist (offline)
@@ -120,11 +120,10 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, P
 	int32_t playerId = packet.get<int32_t>();
 	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerId);
 	if (gamePlayer) {
-		uint16_t chanid = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerId);
-		Channel *chan = Channels::Instance()->getChannel(chanid);
+		uint16_t chanId = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerId);
+		Channel *chan = Channels::Instance()->getChannel(chanId);
 		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
 		if (chan) {
-			SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, gamePlayer->getIp());
 			ip_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
 			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerId, chanIp, chan->getPort());
 		}
@@ -175,8 +174,8 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 
 	bool online = packet.getBool();
 
-	vector<int32_t> tempIds = packet.getVector<int32_t>();
-	unordered_map<int16_t, vector<int32_t>> ids; // <channel, <ids>> , for sending less packets for a buddylist of 100 people
+	vector<int32_t> &tempIds = packet.getVector<int32_t>();
+	unordered_map<int16_t, vector<int32_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people
 
 	int32_t id = 0;
 	for (size_t i = 0; i < tempIds.size(); i++) {

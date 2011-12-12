@@ -58,7 +58,7 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 		if (PlayerDataProvider::Instance()->getPlayer(playerId) == nullptr) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip);
+			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip, packet);
 		}
 	}
 }

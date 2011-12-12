@@ -29,7 +29,7 @@ class Player;
 namespace SyncPacket {
 	namespace PlayerPacket {
 		void changeChannel(Player *info, uint16_t channel);
-		void buffsTransferred(int32_t playerId);
+		void connectableEstablished(int32_t playerId);
 		void connect(Player *player);
 		void disconnect(int32_t playerId);
 		void updateLevel(int32_t playerId, int32_t level);

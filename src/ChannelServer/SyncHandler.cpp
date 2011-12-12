@@ -46,9 +46,8 @@ void SyncHandler::handleChannelSync(PacketReader &packet) {
 void SyncHandler::handlePlayerSync(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::Player::NewConnectable: PlayerDataProvider::Instance()->newConnectable(packet); break;
+		case Sync::Player::DeleteConnectable: PlayerDataProvider::Instance()->deleteConnectable(packet.get<int32_t>()); break;
 		case Sync::Player::ChangeChannelGo: PlayerDataProvider::Instance()->changeChannel(packet); break;
-		case Sync::Player::PacketTransfer: PlayerDataProvider::Instance()->parseIncomingPacket(packet); break;
-		case Sync::Player::RemovePacketTransfer: PlayerDataProvider::Instance()->removePacket(packet.get<int32_t>()); break;
 		case Sync::Player::UpdatePlayer: PlayerDataProvider::Instance()->updatePlayer(packet); break;
 	}
 }
@@ -90,7 +89,7 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>(); // The id of the player coming online
 	int32_t channel = packet.get<int32_t>();
-	vector<int32_t> players = packet.getVector<int32_t>(); // Holds the buddyids
+	vector<int32_t> &players = packet.getVector<int32_t>(); // Holds the buddy IDs
 
 	for (size_t i = 0; i < players.size(); i++) {
 		if (Player *player = PlayerDataProvider::Instance()->getPlayer(players[i])) {
