@@ -25,22 +25,22 @@ function beginInstance()
 	setInstanceMax(30);
 end
 
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	b = isInstanceMap(newmap);
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	b = isInstanceMap(newMap);
 
 	if not b then
-		removeInstancePlayer(playerid);
+		removeInstancePlayer(playerId);
 	elseif b then
-		addInstancePlayer(playerid);
+		addInstancePlayer(playerId);
 	end
 end
 
-function instanceTimerEnd(fromtimer) end
-function playerDeath(playerid) end
-function playerDisconnect(playerid, ispartyleader) end
-function timerEnd(name, fromtimer) end
-function mobDeath(mobid, mapmobid, mapid) end
-function mobSpawn(mobid, mapmobid, mapid) end
-function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
-function partyDisband(partyid) end
-function partyRemoveMember(partyid, playerid) end
+function instanceTimerEnd(fromTimer) end
+function playerDeath(playerId) end
+function playerDisconnect(playerId, isPartyLeader) end
+function timerEnd(name, fromTimer) end
+function mobDeath(mobId, mapMobId, mapId) end
+function mobSpawn(mobId, mapMobId, mapId) end
+function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
+function partyDisband(partyId) end
+function partyRemoveMember(partyId, playerId) end

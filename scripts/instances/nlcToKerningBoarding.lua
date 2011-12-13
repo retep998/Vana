@@ -20,19 +20,19 @@ function beginInstance()
 	addInstanceMap(600010002);
 end
 
-function instanceTimerEnd(fromtimer)
+function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
 		createInstance("nlcToKerningTrip", 60, false);
 		passPlayersBetweenInstances(600010003);
 	end
 end
 
-function playerDisconnect(playerid) end
-function playerDeath(playerid) end
-function timerEnd(name, fromtimer) end
-function mobDeath(mobid, mapmobid) end
-function mobSpawn(mobid, mapmobid) end
-function changeMap(playerid, newmap, oldmap) end
-function partyDisband(partyid) end
-function partyRemoveMember(partyid, playerid) end
+function playerDisconnect(playerId) end
+function playerDeath(playerId) end
+function timerEnd(name, fromTimer) end
+function mobDeath(mobId, mapMobId) end
+function mobSpawn(mobId, mapMobId) end
+function changeMap(playerId, newMap, oldMap) end
+function partyDisband(partyId) end
+function partyRemoveMember(partyId, playerId) end
 

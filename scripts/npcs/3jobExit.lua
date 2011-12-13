@@ -21,18 +21,13 @@ addText("You can use the Sparkling Crystal to go back to the real world. Are you
 yes = askYesNo();
 
 if yes == 1 then
-	tomap = 0;
+	toMap = 0;
 	m = getMap();
-	if m == 108010101 then
-		tomap = 100000000;
-	elseif m == 108010201 then
-		tomap = 101000000;
-	elseif m == 108010301 then
-		tomap = 102000000;
-	elseif m == 108010401 then
-		tomap = 103000000;
-	elseif m == 108010501 then
-		tomap = 120000000;
+	if m == 108010101 then toMap = 100000000;
+	elseif m == 108010201 then toMap = 101000000;
+	elseif m == 108010301 then toMap = 102000000;
+	elseif m == 108010401 then toMap = 103000000;
+	elseif m == 108010501 then toMap = 120000000;
 	end
-	setMap(tomap);
+	setMap(toMap);
 end

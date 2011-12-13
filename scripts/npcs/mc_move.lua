@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Spiegelmann (every town one)
 
-warrioritems = {
+warriorItems = {
 	-- Page 1
 	{{1302004, 7},
 	{1402006, 7},
@@ -84,26 +84,26 @@ items = {
 };
 
 function giveWarriorReward(page)
-	local rewardgroup = warrioritems[page];
-	local rewardpair = rewardgroup[soption + 1];
-	if getItemAmount(4001129) < rewardpair[2] or getOpenSlots(1) < 1 then
+	local rewardGroup = warriorItems[page];
+	local rewardPair = rewardGroup[rewardChoice + 1];
+	if getItemAmount(4001129) < rewardPair[2] or getOpenSlots(1) < 1 then
 		addText("Check and see if you are either lacking #b#t4001129##k or if your Equipment inventory is full.");
 		sendNext();
 	else
-		giveItem(4001129, rewardpair[2] * -1);
-		giveItem(rewardpair[1], 1);
+		giveItem(4001129, rewardPair[2] * -1);
+		giveItem(rewardPair[1], 1);
 	end
 end
 
 function giveReward() -- For non-warriors
-	local rewardgroup = items[boption - 2]; -- -2 would make option 3 as index 1, which is what we want
-	local rewardpair = rewardgroup[soption + 1];
-	if getItemAmount(4001129) < rewardpair[2] or getOpenSlots(1) < 1 then
+	local rewardGroup = items[choice - 2]; -- -2 would make option 3 as index 1, which is what we want
+	local rewardPair = rewardGroup[rewardChoice + 1];
+	if getItemAmount(4001129) < rewardPair[2] or getOpenSlots(1) < 1 then
 		addText("Check and see if you are either lacking #b#t4001129##k or if your Equipment inventory is full.");
 		sendNext();
 	else
-		giveItem(4001129, rewardpair[2] * -1);
-		giveItem(rewardpair[1], 1);
+		giveItem(4001129, rewardPair[2] * -1);
+		giveItem(rewardPair[1], 1);
 	end
 end
 
@@ -128,9 +128,9 @@ elseif option == 1 then
 		addText("#L1# General overview of the Monster Carnival#l\r\n");
 		addText("#L2# Detailed instructions about the Monster Carnival#l\r\n");
 		addText("#L3# Nothing, really. I've changed my mind.#l");
-		foption = askChoice();
+		choice = askChoice();
 		
-		if foption == 0 then
+		if choice == 0 then
 			addText("Haha! I'm Spiegelmann, the leader of this traveling carnival. I started the 1st ever #bMonster Carnival#k here, waiting for travelers like you to participate in this extravaganza!");
 			sendNext();
 			
@@ -142,7 +142,7 @@ elseif option == 1 then
 			
 			addText("Of course, it's not as simple as that. There are different ways to prevent the other party from hunting monsters, and it's up to you to figure out how. What do you think? Interested in a little friendly (or not-so-friendly) competition?");
 			sendBackNext();
-		elseif foption == 1 then
+		elseif choice == 1 then
 			addText("#bMonster Carnival#k consists of 2 parties entering the battleground, and hunting the monsters summoned by the other party. It's a #bcombat quest that determines the victor by the amount of Carnival Points (CP) earned#k.");
 			sendNext();
 			
@@ -154,7 +154,7 @@ elseif option == 1 then
 			
 			addText("Please remember this, though. It's never a good idea to save up CP just for the sake of it. #bThe CP's you've used will also help determine the winner and the loser of the carnival#k.");
 			sendBackNext();
-		elseif foption == 2 then
+		elseif choice == 2 then
 			addText("Once you enter the Carnival Field, you'll see a Monster Carnival window appear. All you have to do is #bselect the ones you want to use, and press OK#k. Pretty easy, right?");
 			sendNext();
 			
@@ -185,12 +185,13 @@ elseif option == 2 then
 	addText("#L4# Weapon for Bowmen#l\r\n");
 	addText("#L5# Weapon for Thieves#l\r\n");
 	addText("#L6# Weapon for Pirates#l");
-	boption = askChoice();
+	choice = askChoice();
 	
-	if boption == 0 or boption == 1 then -- Necklace garbage
+	if choice == 0 or choice == 1 then
+		-- Necklace garbage
 		local requirement = 40;
 		local reward = 2041211;
-		if boption == 0 then
+		if choice == 0 then
 			requirement = 50;
 			reward = 1122007;
 		end
@@ -201,7 +202,7 @@ elseif option == 2 then
 			giveItem(4001129, requirement * -1);
 			giveItem(reward, 1);
 		end
-	elseif boption == 2 then
+	elseif choice == 2 then
 		local page = 1;
 		while true do
 			if page == 1 then
@@ -234,18 +235,18 @@ elseif option == 2 then
 				addText("#L11# #z1432004#(20 coins)#l\r\n");
 				addText("#L12# Back to First Page(2/2)#l");
 			end
-			soption = askChoice();
-			if soption ~= 12 then
+			rewardChoice = askChoice();
+			if rewardChoice ~= 12 then
 				giveWarriorReward(page);
 				break;
-			end -- else, keep looping through the pages
+			end
 			if page == 1 then
 				page = 2
 			else
 				page = 1
 			end
 		end
-	elseif boption == 3 then
+	elseif choice == 3 then
 		addText("Select the weapon you'd like to trade for. The weapons I have here are extremely appealing. See for yourself! \r\n");
 		addText("#b#L0# #z1372001#(7 coins)#l\r\n");
 		addText("#L1# #z1382018#(7 coins)#l\r\n");
@@ -253,9 +254,9 @@ elseif option == 2 then
 		addText("#L3# #z1382019#(10coins)#l\r\n");
 		addText("#L4# #z1382001#(20 coins)#l\r\n");
 		addText("#L5# #z1372007#(20 coins)#l");
-		soption = askChoice();
+		rewardChoice = askChoice();
 		giveReward();
-	elseif boption == 4 then
+	elseif choice == 4 then
 		addText("Select the weapon you'd like to trade for. The weapons I have here are highly appealing. See for yourself! \r\n");
 		addText("#b#L0# #z1452006#(7 coins)#l\r\n");
 		addText("#L1# #z1452007#(10 coins)#l\r\n");
@@ -263,9 +264,9 @@ elseif option == 2 then
 		addText("#L3# #z1462005#(7 coins)#l\r\n");
 		addText("#L4# #z1462006#(10 coins)#l\r\n");
 		addText("#L5# #z1462007#(20 coins)#l");
-		soption = askChoice();
+		rewardChoice = askChoice();
 		giveReward();
-	elseif boption == 5 then
+	elseif choice == 5 then
 		addText("Select the weapon you'd like to trade for. The weapons I have here are of the highest quality. Select what appeals to you! \r\n");
 		addText("#b#L0# #z1472013#(7 coins)#l\r\n");
 		addText("#L1# #z1472017#(10coins)#l\r\n");
@@ -275,9 +276,9 @@ elseif option == 2 then
 		addText("#L5# #z1332011#(10coins)#l\r\n");
 		addText("#L6# #z1332016#(20 coins)#l\r\n");
 		addText("#L7# #z1332003#(20 coins)#l");
-		soption = askChoice();
+		rewardChoice = askChoice();
 		giveReward();
-	elseif boption == 6 then
+	elseif choice == 6 then
 		addText("Select the weapon you'd like to trade for. The weapons I have here are of the highest quality. Select what appeals to you! \r\n");
 		addText("#b#L0# #z1482005#( 7coins)#l\r\n");
 		addText("#L1# #z1482006#( 10coins)#l\r\n");
@@ -285,7 +286,7 @@ elseif option == 2 then
 		addText("#L3# #z1492005#( 7coins)#l\r\n");
 		addText("#L4# #z1492006#( 10coins)#l\r\n");
 		addText("#L5# #z1492007#( 20coins)#l");
-		soption = askChoice();
+		rewardChoice = askChoice();
 		giveReward();
 	end
 end

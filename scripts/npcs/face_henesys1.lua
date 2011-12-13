@@ -28,17 +28,17 @@ eye = getEyes();
 
 addText("Let's see... I can totally transform your face into something new. Don't you want to try it? For #b#t5152001##k, you can get the face of your liking. Take your time in choosing the face of your preference...");
 current = eye - (eye % 10000);
-newface = {};
+newFace = {};
 for i = 0, #face do
 	if not (current + i == eye) then
-		newface[#newface + 1] = current + i;
+		newFace[#newFace + 1] = current + i;
 	end
 end
-style = askStyle(newface) + 1;
+style = askStyle(newFace) + 1;
 
 if getItemAmount(5152001) > 0 then
 	giveItem(5152001, -1);
-	setStyle(newface[style]);
+	setStyle(newFace[style]);
 	addText("Enjoy your new and improved face!");
 	sendNext();
 else

@@ -24,7 +24,7 @@ if getJob() == 0 then
 	addText("least #bLevel10#k. Let's see...hmm...");
 	sendNext();
 
-	if (getLevel() >= 10) then
+	if getLevel() >= 10 then
 		addText("You look qualified for this. With a great pair of eyes being able to spot the real monsters ");
 		addText("and have the coldhearted skills to shoot the arrow through them...we needed someone like that. ");
 		addText("Do you want to become a Bowman?");
@@ -49,10 +49,10 @@ if getJob() == 0 then
 			setJob(300);
 			giveItem(1452051, 1); -- Beginner Bow
 			giveItem(2060000, 6000); -- Arrow for Bow
-			hpinc = 100 + getRandomNumber(50); -- Extra HP Given
-			mpinc = 25 + getRandomNumber(25); -- Extra MP Given
-			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setMaxMp(getRealMaxMp() + mpinc); -- Set MP to current MP plus full amount of hp increase
+			hpInc = 100 + getRandomNumber(50); -- Extra HP Given
+			mpInc = 25 + getRandomNumber(25); -- Extra MP Given
+			setMaxHp(getRealMaxHp() + hpInc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMp(getRealMaxMp() + mpInc); -- Set MP to current MP plus full amount of hp increase
 			setStr(4); -- Stat reset
 			setDex(25);
 			setInt(4);
@@ -249,10 +249,10 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
-						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
-						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated
+						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
+						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright, you're the #bHunter#k from here on out. Hunters are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");
@@ -295,10 +295,10 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
-						newhp = 300 + getRandomNumber(50); -- Extra HP calculated
-						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated
+						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
+						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright, you're the #bCrossbowman#k from here on out. Crossbowman are the intelligent bunch with incredible vision, able to ");
 						addText("pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
 						addText("We'll help you become even stronger than you already are.");

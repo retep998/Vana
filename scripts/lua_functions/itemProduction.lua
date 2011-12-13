@@ -22,7 +22,7 @@ MESOS = -1
 -- displayResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
 -- Mesos are indicated by the constant MESOS
 -- Returns nothing, just displays the array
-function displayResources (items, multiplier)
+function displayResources(items, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end
@@ -44,7 +44,7 @@ end
 -- giveResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
 -- Mesos are indicated by the constant MESOS
 -- Returns nothing, just adds the items/mesos
-function giveResources (items, multiplier)
+function giveResources(items, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end
@@ -59,7 +59,7 @@ end
 
 -- hasResources takes an array of requirements in the form of {itemid, amount, itemid, amount} and a multiplier
 -- Returns true if the player has the resources or false if not
-function hasResources (requisites, multiplier)
+function hasResources(requisites, multiplier)
 	local has = true;
 	if multiplier == nil then
 		multiplier = 1;
@@ -82,7 +82,7 @@ end
 
 -- takeResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
 -- Returns nothing, just takes the items/mesos
-function takeResources (requisites, multiplier)
+function takeResources(requisites, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end

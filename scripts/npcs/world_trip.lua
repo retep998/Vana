@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Spinel (Tour Guide, teleports to/from Zipangu)
 
 if getMap() == 800000000 then
-	wt_origin = getPlayerVariable("wt_origin");
+	wtOrigin = getPlayerVariable("wt_origin");
 	addText("How's the traveling? Are you enjoying it?\r\n");
-	addText("#b#L0#Yes, I'm done with traveling. Can I go back to #m" .. wt_origin .."#? #l\r\n");
+	addText("#b#L0#Yes, I'm done with traveling. Can I go back to #m" .. wtOrigin .."#? #l\r\n");
 	addText("#b#L1#No, I'd like to continue exploring this place.#l");
 	what = askChoice();
     
@@ -28,8 +28,8 @@ if getMap() == 800000000 then
 		addText("Alright. I'll now take you back to where you were before the visit to Japan. If you ever feel like traveling again down the road, please let me know!");
 		sendNext();
 		
-		wt_origin = getPlayerVariable("wt_origin", true);
-		setMap(wt_origin);
+		wtOrigin = getPlayerVariable("wt_origin", true);
+		setMap(wtOrigin);
 		deletePlayerVariable("wt_origin");
 	else
 		addText("OK. If you ever change your mind, please let me know.");

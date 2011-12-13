@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/itemProduction.lua");
 
-wandids = {1372005, 1372006, 1372002, 1372004, 1372003, 1372001, 1372000, 1372007};
-wandlimits = {8, 13, 18, 23, 28, 33, 38, 48};
-wandjobs = {"all", "all", "all", "magician", "magician", "magician", "magician", "magician"};
-wandreqs = {
+wandIds = {1372005, 1372006, 1372002, 1372004, 1372003, 1372001, 1372000, 1372007};
+wandLimits = {8, 13, 18, 23, 28, 33, 38, 48};
+wandJobs = {"all", "all", "all", "magician", "magician", "magician", "magician", "magician"};
+wandReqs = {
 	{4003001, 5, MESOS, 1000},
 	{4003001, 10, 4000001, 50, MESOS, 3000},
 	{4011001, 1, 4000009, 30, 4003000, 5, MESOS, 5000},
@@ -33,9 +33,9 @@ wandreqs = {
 	{4011006, 4, 4021003, 3, 4021007, 2, 4021002, 1, 4003002, 1, 4003000, 30, MESOS, 200000}
 };
 
-staffids = {1382000, 1382003, 1382005, 1382004, 1382002, 1382001};
-stafflimits = {10, 15, 15, 20, 25 ,45};
-staffreqs = {
+staffIds = {1382000, 1382003, 1382005, 1382004, 1382002, 1382001};
+staffLimits = {10, 15, 15, 20, 25 ,45};
+staffReqs = {
 	{4003001, 5, MESOS, 2000},
 	{4021005, 1, 4011001, 1, 4003000, 5, MESOS, 2000},
 	{4021003, 1, 4011001, 1, 4003000, 5, MESOS, 2000},
@@ -44,10 +44,10 @@ staffreqs = {
 	{4011001, 8, 4021006, 5, 4021001, 5, 4021005, 5, 4003000, 30, 4000010, 50, 4003003, 1, MESOS, 180000}
 };
 
-gloveids = {1082019, 1082020, 1082026, 1082051, 1082054, 1082062, 1082081, 1082086};
-glovelimits = {15, 20, 25, 30, 35, 40, 50, 60};
-glovestats = {"none", "none", "none", "none", "none", "none", "INT + 1", "INT + 1, LUK + 1"};
-glovereqs = {
+gloveIds = {1082019, 1082020, 1082026, 1082051, 1082054, 1082062, 1082081, 1082086};
+gloveLimits = {15, 20, 25, 30, 35, 40, 50, 60};
+gloveStats = {nil, nil, nil, nil, nil, nil, "INT + 1", "INT + 1, LUK + 1"};
+gloveReqs = {
 	{4000021, 15, MESOS, 500},
 	{4000021, 30, 4011001, 1, MESOS, 300},
 	{4000021, 50, 4011006, 2, MESOS, 500},
@@ -58,10 +58,10 @@ glovereqs = {
 	{4011007, 1, 4011001, 8, 4021007, 1, 4000030, 50, 4003000, 50, MESOS, 1500}
 };
 
-upgloveids = {1082021, 1082022, 1082027, 1082028, 1082052, 1082053, 1082055, 1082056, 1082063, 1082064, 1082082, 1082080, 1082087, 1082088};
-upglovelimits = {20, 20, 25, 25, 30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
-upglovestats = {"INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 2", "INT + 3", "INT + 2, MP + 15", "INT + 3, MP + 30", "INT + 2, LUK + 1, MP + 15", "INT + 3, LUK + 1, MP + 30"};
-upglovereqs = {
+upgradeGloveIds = {1082021, 1082022, 1082027, 1082028, 1082052, 1082053, 1082055, 1082056, 1082063, 1082064, 1082082, 1082080, 1082087, 1082088};
+upgradeGloveLimits = {20, 20, 25, 25, 30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
+upgradeGloveStats = {"INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 2", "INT + 3", "INT + 2, MP + 15", "INT + 3, MP + 30", "INT + 2, LUK + 1, MP + 15", "INT + 3, LUK + 1, MP + 30"};
+upgradeGloveReqs = {
 	{1082020, 1, 4011001, 1, MESOS, 20000},
 	{1082020, 1, 4021001, 2, MESOS, 25000},
 	{1082026, 1, 4021000, 3, MESOS, 30000},
@@ -78,10 +78,10 @@ upglovereqs = {
 	{1082086, 1, 4021008, 2, 4011006, 3, MESOS, 80000}
 };
 
-hatids = {1002065,1002013};
-hatlimits = {30, 30};
-hatstats = {"INT + 1", "INT + 2"};
-hatreqs = {
+hatIds = {1002065,1002013};
+hatLimits = {30, 30};
+hatStats = {"INT + 1", "INT + 2"};
+hatReqs = {
 	{1002064, 1, 4011001, 3, MESOS, 40000},
 	{1002064, 1, 4011006, 3, MESOS, 50000}
 };
@@ -114,13 +114,13 @@ else
 		addText("you with my magical power. How... what kind of a wand do ");
 		addText("you want to make?");
 		for i = 1, 8 do
-			addText("\r\n#L" .. i .. "##b #t" .. wandids[i] .. "##k(Level limit : " .. wandlimits[i] .. ", " .. wandjobs[i] .. ")#l");
+			addText("\r\n#L" .. i .. "##b #t" .. wandIds[i] .. "##k(Level limit : " .. wandLimits[i] .. ", " .. wandJobs[i] .. ")#l");
 		end
 		what = askChoice();
 
-		item = wandids[what];
-		reqs = wandreqs[what];
-		limit = wandlimits[what];
+		item = wandIds[what];
+		reqs = wandReqs[what];
+		limit = wandLimits[what];
 		addText("To make one #t" .. item .. "#, you'll need these items below. ");
 		addText("The level limit for the item will be " .. limit .. " so please check and ");
 		addText("see if you really need the item, first of all. Are you sure you ");
@@ -133,13 +133,13 @@ else
 		addText("you with my magical power. How... what kind of a wand do ");
 		addText("you want to make?");
 		for i = 1, 6 do
-			addText("\r\n#L" .. i .. "##b #t" .. staffids[i] .. "##k(Level limit : " .. stafflimits[i] .. ", magician)#l");
+			addText("\r\n#L" .. i .. "##b #t" .. staffIds[i] .. "##k(Level limit : " .. staffLimits[i] .. ", magician)#l");
 		end
 		what = askChoice();
 
-		item = staffids[what];
-		reqs = staffreqs[what];
-		limit = stafflimits[what];
+		item = staffIds[what];
+		reqs = staffReqs[what];
+		limit = staffLimits[what];
 		addText("To make one #t" .. item .. "#, you'll need these items below. ");
 		addText("The level limit for the item will be " .. limit .. " so please check and ");
 		addText("see if you really need the item, first of all. ");
@@ -152,13 +152,13 @@ else
 		addText("you with my magical power. How... what kind of a wand do ");
 		addText("you want to make?");
 		for i = 1, 8 do
-			addText("\r\n#L" .. i .. "##b #t" .. gloveids[i] .. "##k#(Level limit : " .. glovelimits[i] .. ", magician)#l");
+			addText("\r\n#L" .. i .. "##b #t" .. gloveIds[i] .. "##k#(Level limit : " .. gloveLimits[i] .. ", magician)#l");
 		end
 		what = askChoice();
 
-		item = gloveids[what];
-		reqs = glovereqs[what];
-		limit = glovelimits[what];
+		item = gloveIds[what];
+		reqs = gloveReqs[what];
+		limit = gloveLimits[what];
 		addText("To make one #t" .. item .. "#, you'll need these items below. ");
 		addText("The level limit for the item will be " .. limit .. " so please check and ");
 		addText("see if you really need the item, first of all. ");
@@ -176,17 +176,17 @@ else
 
 		addText("Now .. which glove do you want to upgrade?");
 		for i = 1, 14 do
-			addText("\r\n#L" .. i .. "##b #t" .. upgloveids[i] .. "##k(Level limit : " .. upglovelimits[i] .. ", magician)#l");
+			addText("\r\n#L" .. i .. "##b #t" .. upgradeGloveIds[i] .. "##k(Level limit : " .. upgradeGloveLimits[i] .. ", magician)#l");
 		end
 		what = askChoice();
 		
-		item = upgloveids[what];
-		reqs = upglovereqs[what];
-		limit = upglovelimits[what];
-		stat = upglovestats[what];
+		item = upgradeGloveIds[what];
+		reqs = upgradeGloveReqs[what];
+		limit = upgradeGloveLimits[what];
+		stat = upgradeGloveStats[what];
 		addText("To upgrade one #t" .. item .. "#, you'll need these items below.");
 		addText("The level limit for the item is " .. limit .. ", ");
-		if not(stat == "none") then
+		if not stat == nil then
 			addText("with the item option of #r" .. stat .. "#k attached to it, ");
 		end
 		addText("so please check and see if you really need it. ");
@@ -205,17 +205,17 @@ else
 
 		addText("Alright, so which hat would you like to upgrade?");
 		for i = 1, 2 do
-			addText("\r\n#L" .. i .. "##b #t" .. hatids[i] .. "##k(Level limit : " .. hatlimits[i] .. ", wizard)#l");
+			addText("\r\n#L" .. i .. "##b #t" .. hatIds[i] .. "##k(Level limit : " .. hatLimits[i] .. ", wizard)#l");
 		end
 		what = askChoice();
 		
-		item = hatids[what];
-		reqs = hatreqs[what];
-		limit = hatlimits[what];
-		stat = hatstats[what];
+		item = hatIds[what];
+		reqs = hatReqs[what];
+		limit = hatLimits[what];
+		stat = hatStats[what];
 		addText("To upgrade one #t" .. item .. "#, you'll need these items below.");
 		addText("The level limit for the item is " .. limit .. ", ");
-		if not(stat == "none") then
+		if not stat == nil then
 			addText("with the item option of #r" .. stat .. "#k attached to it, ");
 		end
 		addText("so please check and see if you really need it. ");

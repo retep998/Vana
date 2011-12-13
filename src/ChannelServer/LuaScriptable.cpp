@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.h"
 #include "EffectPacket.h"
 #include "EventDataProvider.h"
+#include "GameLogicUtilities.h"
 #include "Instance.h"
 #include "Instances.h"
 #include "Inventory.h"
@@ -62,15 +63,17 @@ LuaScriptable::~LuaScriptable() {
 
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
-	setVariable("_playerId", m_playerId); // Pushing ID for reference from static functions
+	setVariable("system_playerId", m_playerId); // Pushing ID for reference from static functions
 	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
 	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
 	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
 	setVariable("m_box", PlayerPacket::NoticeTypes::Box);
+	setVariable("m_version", MapleVersion::Version);
+	setVariable("m_locale", MapleVersion::Locale);
 
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player != nullptr && player->getInstance() != nullptr) {
-		setVariable("_instancename", player->getInstance()->getName());
+		setVariable("system_instanceName", player->getInstance()->getName());
 	}
 
 	// Miscellanous
@@ -367,7 +370,7 @@ void LuaScriptable::printError(const string &error) {
 
 // Lua Exports
 Player * LuaExports::getPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_playerId");
+	lua_getglobal(luaVm, "system_playerId");
 	Player *p = PlayerDataProvider::Instance()->getPlayer(lua_tointeger(luaVm, -1));
 	lua_pop(luaVm, 1);
 	return p;
@@ -385,7 +388,7 @@ Player * LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) {
 }
 
 Instance * LuaExports::getInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_instancename");
+	lua_getglobal(luaVm, "system_instanceName");
 	Instance *i = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 	lua_pop(luaVm, 1);
 	return i;
@@ -495,7 +498,7 @@ int LuaExports::showChannelMessage(lua_State *luaVm) {
 
 // Bosses
 int LuaExports::getHorntailChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getHorntailChannels();
+	const vector<int8_t> &channels = ChannelServer::Instance()->getHorntailChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
@@ -532,7 +535,7 @@ int LuaExports::getMaxZakumBattles(lua_State *luaVm) {
 }
 
 int LuaExports::getPapChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getPapChannels();
+	const vector<int8_t> &channels = ChannelServer::Instance()->getPapChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
@@ -544,7 +547,7 @@ int LuaExports::getPapChannels(lua_State *luaVm) {
 }
 
 int LuaExports::getPianusChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getPianusChannels();
+	const vector<int8_t> &channels = ChannelServer::Instance()->getPianusChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
@@ -556,7 +559,7 @@ int LuaExports::getPianusChannels(lua_State *luaVm) {
 }
 
 int LuaExports::getPinkBeanChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getPinkBeanChannels();
+	const vector<int8_t> &channels = ChannelServer::Instance()->getPinkBeanChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
@@ -568,7 +571,7 @@ int LuaExports::getPinkBeanChannels(lua_State *luaVm) {
 }
 
 int LuaExports::getZakumChannels(lua_State *luaVm) {
-	vector<int8_t> channels = ChannelServer::Instance()->getZakumChannels();
+	const vector<int8_t> &channels = ChannelServer::Instance()->getZakumChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < channels.size(); i++) {
@@ -633,7 +636,7 @@ int LuaExports::spawnNpc(lua_State *luaVm) {
 
 // Beauty
 int LuaExports::getAllFaces(lua_State *luaVm) {
-	vector<int32_t> ids = BeautyDataProvider::Instance()->getFaces(getPlayer(luaVm)->getGender());
+	const vector<int32_t> &ids = BeautyDataProvider::Instance()->getFaces(getPlayer(luaVm)->getGender());
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
@@ -645,7 +648,7 @@ int LuaExports::getAllFaces(lua_State *luaVm) {
 }
 
 int LuaExports::getAllHair(lua_State *luaVm) {
-	vector<int32_t> ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getGender());
+	vector<int32_t> &ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getGender());
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
@@ -657,7 +660,7 @@ int LuaExports::getAllHair(lua_State *luaVm) {
 }
 
 int LuaExports::getAllSkins(lua_State *luaVm) {
-	vector<int8_t> ids = BeautyDataProvider::Instance()->getSkins();
+	const vector<int8_t> &ids = BeautyDataProvider::Instance()->getSkins();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
@@ -717,7 +720,8 @@ int LuaExports::addSkillLevel(lua_State *luaVm) {
 	int32_t skillId = lua_tointeger(luaVm, 1);
 	uint8_t level = lua_tointeger(luaVm, 2);
 
-	if (lua_isnumber(luaVm, 3)) { // Optional argument of increasing a skill's max level
+	if (lua_isnumber(luaVm, 3)) {
+		// Optional argument of increasing a skill's max level
 		getPlayer(luaVm)->getSkills()->setMaxSkillLevel(skillId, lua_tointeger(luaVm, 3));
 	}
 
@@ -835,8 +839,9 @@ int LuaExports::giveMesos(lua_State *luaVm) {
 int LuaExports::hasOpenSlotsFor(lua_State *luaVm) {
 	int32_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
-	if (lua_isnumber(luaVm, 2))
+	if (lua_isnumber(luaVm, 2)) {
 		amount = lua_tointeger(luaVm, 2);
+	}
 	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->hasOpenSlotsFor(itemId, amount));
 	return 1;
 }
@@ -1070,8 +1075,8 @@ int LuaExports::isOnline(lua_State *luaVm) {
 }
 
 int LuaExports::revertPlayer(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_oldplayerId");
-	lua_setglobal(luaVm, "_playerId");
+	lua_getglobal(luaVm, "system_oldPlayerId");
+	lua_setglobal(luaVm, "system_playerId");
 	return 0;
 }
 
@@ -1128,13 +1133,15 @@ int LuaExports::setMap(lua_State *luaVm) {
 
 	int32_t mapId = lua_tointeger(luaVm, 1);
 
-	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+	if (lua_isstring(luaVm, 2)) {
+		// Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
-	if (Maps::getMap(mapId))
+	if (Maps::getMap(mapId)) {
 		getPlayer(luaVm)->setMap(mapId, portal);
+	}
 	return 0;
 }
 
@@ -1159,11 +1166,11 @@ int LuaExports::setMp(lua_State *luaVm) {
 int LuaExports::setPlayer(lua_State *luaVm) {
 	Player *player = getPlayerDeduced(-1, luaVm);
 	if (player != nullptr) {
-		lua_getglobal(luaVm, "_playerId");
-		lua_setglobal(luaVm, "_oldplayerId");
+		lua_getglobal(luaVm, "system_playerId");
+		lua_setglobal(luaVm, "system_oldPlayerId");
 
 		lua_pushinteger(luaVm, player->getId());
-		lua_setglobal(luaVm, "_playerId");
+		lua_setglobal(luaVm, "system_playerId");
 	}
 	lua_pushboolean(luaVm, player != nullptr);
 	return 1;
@@ -1190,7 +1197,7 @@ int LuaExports::setStr(lua_State *luaVm) {
 
 int LuaExports::setStyle(lua_State *luaVm) {
 	int32_t id = lua_tointeger(luaVm, -1);
-	int32_t type = id / 10000;
+	int32_t type = GameLogicUtilities::getItemType(id);
 	if (type == 0) {
 		getPlayer(luaVm)->setSkin((int8_t)id);
 	}
@@ -1309,8 +1316,9 @@ int LuaExports::clearMobs(lua_State *luaVm) {
 int LuaExports::countMobs(lua_State *luaVm) {
 	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t mobId = 0;
-	if (lua_isnumber(luaVm, 2))
+	if (lua_isnumber(luaVm, 2)) {
 		mobId = lua_tointeger(luaVm, 2);
+	}
 	lua_pushinteger(luaVm, Maps::getMap(mapId)->countMobs(mobId));
 	return 1;
 }
@@ -1354,8 +1362,9 @@ int LuaExports::killMobs(lua_State *luaVm) {
 	int32_t mobId = lua_tointeger(luaVm, 1);
 	int32_t mapId = getPlayer(luaVm)->getMap();
 	bool playerkill = true;
-	if (lua_isboolean(luaVm, 2))
-		playerkill = (lua_toboolean(luaVm, 2) == 1 ? true : false);
+	if (lua_isboolean(luaVm, 2)) {
+		playerkill = lua_toboolean(luaVm, 2) == 1;
+	}
 	int32_t killed = Maps::getMap(mapId)->killMobs(getPlayer(luaVm), mobId, playerkill, true);
 	lua_pushinteger(luaVm, killed);
 	return 1;
@@ -1409,8 +1418,9 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	int16_t x = lua_tointeger(luaVm, 2);
 	int16_t y = lua_tointeger(luaVm, 3);
 	int16_t fh = 0;
-	if (lua_isnumber(luaVm, 4))
+	if (lua_isnumber(luaVm, 4)) {
 		fh = lua_tointeger(luaVm, 4);
+	}
 	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobId, Pos(x, y), fh));
 	return 1;
 }
@@ -1607,8 +1617,8 @@ int LuaExports::checkPartyFootholds(lua_State *luaVm) {
 			vector<int16_t> arr;
 			lua_pushnil(luaVm);
 			while (lua_next(luaVm, -2)) {
-				int16_t haaaaaaaaaaaaate = lua_tointeger(luaVm, -1);
-				arr.push_back(haaaaaaaaaaaaate);
+				int16_t val = lua_tointeger(luaVm, -1);
+				arr.push_back(val);
 				lua_pop(luaVm, 1);
 			}
 			footholds.push_back(arr);
@@ -1623,7 +1633,7 @@ int LuaExports::checkPartyFootholds(lua_State *luaVm) {
 int LuaExports::getAllPartyPlayerIds(lua_State *luaVm) {
 	Party *p = getPlayer(luaVm)->getParty();
 	if (p != nullptr) {
-		vector<int32_t> ids = p->getAllPlayerIds();
+		const vector<int32_t> &ids = p->getAllPlayerIds();
 		lua_newtable(luaVm);
 		int top = lua_gettop(luaVm);
 		for (size_t i = 0; i < ids.size(); i++) {
@@ -1719,7 +1729,8 @@ int LuaExports::verifyPartyFootholds(lua_State *luaVm) {
 int LuaExports::warpParty(lua_State *luaVm) {
 	int32_t mapId = lua_tointeger(luaVm, 1);
 	string to;
-	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+	if (lua_isstring(luaVm, 2)) {
+		// Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
 	}
 	Player *player = getPlayer(luaVm);
@@ -1775,9 +1786,9 @@ int LuaExports::createInstance(lua_State *luaVm) {
 	int32_t time = lua_tointeger(luaVm, 2);
 	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
-	Player *player = getPlayer(luaVm);
 	int32_t map = 0;
 	int32_t id = 0;
+	Player *player = getPlayer(luaVm);
 	if (lua_isnumber(luaVm, 4)) {
 		persistent = lua_tointeger(luaVm, 4);
 	}
@@ -1793,7 +1804,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 		instance->showTimer(true, true);
 	}
 	lua_pushstring(luaVm, name.c_str());
-	lua_setglobal(luaVm, "_instancename");
+	lua_setglobal(luaVm, "system_instanceName");
 	return 0;
 }
 
@@ -1803,7 +1814,7 @@ int LuaExports::deleteInstanceVariable(lua_State *luaVm) {
 }
 
 int LuaExports::getAllInstancePlayerIds(lua_State *luaVm) {
-	vector<int32_t> ids = getInstance(luaVm)->getAllPlayerIds();
+	const vector<int32_t> &ids = getInstance(luaVm)->getAllPlayerIds();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); i++) {
@@ -1911,7 +1922,8 @@ int LuaExports::moveAllPlayers(lua_State *luaVm) {
 
 	int32_t mapId = lua_tointeger(luaVm, 1);
 
-	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+	if (lua_isstring(luaVm, 2)) {
+		// Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
@@ -1925,7 +1937,8 @@ int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
 
 	int32_t mapId = lua_tointeger(luaVm, 1);
 
-	if (lua_isstring(luaVm, 2)) { // Optional portal parameter
+	if (lua_isstring(luaVm, 2)) {
+		// Optional portal parameter
 		string to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
@@ -1969,19 +1982,19 @@ int LuaExports::respawnInstanceReactors(lua_State *luaVm) {
 }
 
 int LuaExports::revertInstance(lua_State *luaVm) {
-	lua_getglobal(luaVm, "_oldinstancename");
-	lua_setglobal(luaVm, "_instancename");
+	lua_getglobal(luaVm, "system_oldInstanceName");
+	lua_setglobal(luaVm, "system_instanceName");
 	return 0;
 }
 
 int LuaExports::setInstance(lua_State *luaVm) {
 	Instance *instance = Instances::InstancePtr()->getInstance(lua_tostring(luaVm, -1));
 	if (instance != nullptr) {
-		lua_getglobal(luaVm, "_instancename");
-		lua_setglobal(luaVm, "_oldinstancename");
+		lua_getglobal(luaVm, "system_instanceName");
+		lua_setglobal(luaVm, "system_oldInstanceName");
 
 		lua_pushstring(luaVm, instance->getName().c_str());
-		lua_setglobal(luaVm, "_instancename");
+		lua_setglobal(luaVm, "system_instanceName");
 	}
 	lua_pushboolean(luaVm, instance != nullptr);
 	return 1;
@@ -2024,7 +2037,7 @@ int LuaExports::startInstanceTimer(lua_State *luaVm) {
 	if (lua_isnumber(luaVm, 3)) {
 		t.persistent = lua_tointeger(luaVm, 3);
 	}
-	t.counterid = getInstance(luaVm)->getCounterId();
+	t.counterId = getInstance(luaVm)->getCounterId();
 	lua_pushboolean(luaVm, getInstance(luaVm)->addTimer(name, t));
 	return 1;
 }

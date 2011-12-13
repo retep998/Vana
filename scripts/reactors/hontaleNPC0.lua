@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Nine Spirit's Egg
 
-npcid = spawnNpc(240040611, 2081008, -11, -227);
-setInstanceVariable("npc", npcid);
+npcId = spawnNpc(240040611, 2081008, -11, -227);
+setInstanceVariable("npc", npcId);

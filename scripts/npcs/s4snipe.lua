@@ -33,18 +33,18 @@ if isQuestActive(6108) then
 				addText("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.");
 				sendOk();
 			else
-				memberctr = 0
-				mapid = getMap();
+				memberCount = 0
+				mapId = getMap();
 				for i = 1, #members do
 					member = members[i];
 					if setPlayer(member) then
-						if getJobLine() == 3 and getJobProgression() == 2 and getMap() == mapid then -- Only want 4th job bowmen
-							memberctr = memberctr + 1;
+						if getJobLine() == 3 and getJobProgression() == 2 and getMap() == mapId then -- Only want 4th job bowmen
+							memberCount = memberCount + 1;
 						end
 						revertPlayer();
 					end
 				end
-				if memberctr ~= 2 then
+				if memberCount ~= 2 then
 					addText("You can't enter. Your party member's job is not Bow Master or Marksman or Your party doesn't consist of two members.");
 					sendOk();
 				else

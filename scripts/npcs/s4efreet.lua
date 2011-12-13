@@ -45,18 +45,18 @@ if item ~= 0 then
 					addText("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.");
 					sendOk();
 				else
-					memberctr = 0
-					mapid = getMap();
+					memberCount = 0
+					mapId = getMap();
 					for i = 1, #members do
 						member = members[i];
 						if setPlayer(member) then
-							if getJobLine() == 2 and getJobTrack() ~= 3 and getJobProgression() == 2 and getMap() == mapid then -- Only want IL/FP Arch Mages
-								memberctr = memberctr + 1;
+							if getJobLine() == 2 and getJobTrack() ~= 3 and getJobProgression() == 2 and getMap() == mapId then -- Only want IL/FP Arch Mages
+								memberCount = memberCount + 1;
 							end
 							revertPlayer();
 						end
 					end
-					if memberctr ~= 2 then
+					if memberCount ~= 2 then
 						addText("You can't enter. Your party member's job is not Arch Mage or Your party doesn't consist of two members.");
 						sendOk();
 					else

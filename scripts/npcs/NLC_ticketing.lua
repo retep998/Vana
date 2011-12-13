@@ -35,10 +35,8 @@ if map == 103000100 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		if isNoob() then
-			item = 4031711;
-		else
-			item = 4031712;
+		if isNoob() then item = 4031711;
+		else item = 4031712;
 		end
 	else
 		addText("Ok, come talk to me again when you want to go to NLC.");
@@ -49,10 +47,8 @@ elseif map == 600010001 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		if isNoob() then
-			item = 4031713;
-		else
-			item = 4031714;
+		if isNoob() then item = 4031713;
+		else item = 4031714;
 		end
 	else
 		addText("Ok, come talk to me again when you want to go back to Kerning City.");

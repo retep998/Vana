@@ -22,43 +22,43 @@ function beginInstance()
 	-- Message is sent the instant that you call createInstance
 end
 
-function playerDeath(playerid)
+function playerDeath(playerId)
 	-- Happens every time a player dies
 end
 
-function playerDisconnect(playerid, ispartyleader)
+function playerDisconnect(playerId, isPartyLeader)
 	-- Happens every time a player disconnects
 end
 
-function instanceTimerEnd(fromtimer)
+function instanceTimerEnd(fromTimer)
 	-- Happens when the instance timer ends
 end
 
-function timerEnd(name, fromtimer)
+function timerEnd(name, fromTimer)
 	-- Happens every time a timer started by startInstanceTimer ends
 end
 
-function mobDeath(mobid, mapmobid, mapid)
+function mobDeath(mobId, mapMobId, mapId)
 	-- Happens every time a mob dies
 end
 
-function mobSpawn(mobid, mapmobid, mapid)
+function mobSpawn(mobId, mapMobId, mapId)
 	-- Happens every time a mob is spawned
 end
 
-function friendlyHit(mobid, mapmobid, mapid, hp, maxhp)
+function friendlyHit(mobId, mapMobId, mapId, hp, maxHp)
 	-- Happens every time a friendly mob is damaged
 end
 
-function changeMap(playerid, newmap, oldmap, ispartyleader)
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	-- Happens every time a player switches to or from an instance map
 	-- Players need not be a part of the instance to trigger this
 end
 
-function partyDisband(partyid)
+function partyDisband(partyId)
 	-- Happens when a party added to an instance disbands
 end
 
-function partyRemoveMember(partyid, playerid)
+function partyRemoveMember(partyId, playerId)
 	-- Happens when a party added to an instance boots a member or one leaves
 end

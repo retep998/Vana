@@ -25,24 +25,15 @@ c = getItemAmount(4031038);
 d = getItemAmount(4031711);
 e = getItemAmount(4031710);
 
-
 addText("Here's the ticket reader. ");
 
 if a > 0 or b > 0 or c > 0 or d > 0 or e > 0 then
 	addText("You will be brought in immediately. Which ticket would you like to use?\r\n");
-	if a > 0 then
-		addText("#b#L0#Construction site B1#l#k\r\n");
-	end
-	if b > 0 then
-		addText("#b#L1#Construction site B2#l#k\r\n");
-	end
-	if c > 0 then
-		addText("#b#L2#Construction site B3#l#k\r\n");
-	end
-	if d > 0 then
-		addText("#b#L3#New Leaf city (Normal)#l#k\r\n");
-	elseif e > 0 then
-		addText("#b#L3#New Leaf city (Basic)#l#k\r\n");
+	if a > 0 then addText("#b#L0#Construction site B1#l#k\r\n"); end
+	if b > 0 then addText("#b#L1#Construction site B2#l#k\r\n"); end
+	if c > 0 then addText("#b#L2#Construction site B3#l#k\r\n"); end
+	if d > 0 then addText("#b#L3#New Leaf city (Normal)#l#k\r\n");
+	elseif e > 0 then addText("#b#L3#New Leaf city (Basic)#l#k\r\n");
 	end
 
 	choice = askChoice();
@@ -62,7 +53,7 @@ if a > 0 or b > 0 or c > 0 or d > 0 or e > 0 then
 			iTime = getInstanceMinutes();
 
 			if iTime <= 1 then
-	      			addText("This subway is getting ready for takeoff. I'm sorry, but you'll have to get on the next ride. The ride schedule is available through the usher at the ticketing booth.");
+	      		addText("This subway is getting ready for takeoff. I'm sorry, but you'll have to get on the next ride. The ride schedule is available through the usher at the ticketing booth.");
 				sendNext();
 			elseif iTime <= 5 then
 				addText("It looks like there's plenty of room for this ride. Please have your ticket ready so I can let you in. The ride will be long, but you'll get to your destination just fine. What do you think? Do you want to get on this ride?");

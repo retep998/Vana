@@ -20,21 +20,22 @@ function beginInstance()
 	addInstanceMap(280030000);
 end
 
-function playerDisconnect(playerid, ispartyleader)
+function playerDisconnect(playerId, isPartyLeader)
 	startInstanceTimer("clean", 1, false);
 end
 
-function timerEnd(name, fromtimer)
+function timerEnd(name, fromTimer)
 	cleanUpZakum();
 end
 
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	if not isInstanceMap(newmap) then -- Player probably died, want to make sure this doesn't keep the room full
-		removeInstancePlayer(playerid);
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if not isInstanceMap(newMap) then
+		-- Player probably died, want to make sure this doesn't keep the room full
+		removeInstancePlayer(playerId);
 		startInstanceTimer("clean", 1, false);
-	elseif setPlayer(playerid) then
+	elseif setPlayer(playerId) then
 		if not isGm() then
-			addInstancePlayer(playerid);
+			addInstancePlayer(playerId);
 		end
 		revertPlayer();
 	end
@@ -47,10 +48,10 @@ function cleanUpZakum()
 	end
 end
 
-function playerDeath(playerid) end
-function instanceTimerEnd(fromtimer) end
-function mobDeath(mobid, mapmobid, mapid) end -- Add a timer to this if holding becomes a problem
-function mobSpawn(mobid, mapmobid, mapid) end -- Remove timer here
-function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
-function partyDisband(partyid) end
-function partyRemoveMember(partyid, playerid) end
+function playerDeath(playerId) end
+function instanceTimerEnd(fromTimer) end
+function mobDeath(mobId, mapMobId, mapId) end -- Add a timer to this if holding becomes a problem
+function mobSpawn(mobId, mapMobId, mapId) end -- Remove timer here
+function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
+function partyDisband(partyId) end
+function partyRemoveMember(partyId, playerId) end

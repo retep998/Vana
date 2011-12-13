@@ -44,13 +44,11 @@ elseif what == 2 then
 end
 style = askStyle(newHair) + 1;
 
-if what == 0 then
-	item = 5150031;
-elseif what == 1 then
-	item = 5151026;
-elseif what == 2 then
-	item = 5420001;
+if what == 0 then item = 5150031;
+elseif what == 1 then item = 5151026;
+elseif what == 2 then item = 5420001;
 end
+
 if getItemAmount(item) > 0 then
 	giveItem(item, -1);
 	if newHair[style] > 0  then

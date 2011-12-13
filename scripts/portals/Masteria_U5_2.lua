@@ -17,7 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Bottom-right Dragon Gate at Dead Man's Gorge
 
-if getItemAmount(3992040) > 0 then -- Map of Phantom Forest
+-- Map of Phantom Forest
+if getItemAmount(3992040) > 0 then
 	playPortalSe();
 	setMap(610010004, "U5_1");
 end

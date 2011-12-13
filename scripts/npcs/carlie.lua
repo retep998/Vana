@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/itemProduction.lua");
 
-takereqs = {
+takeReqs = {
 	{4000073, 100}, -- Solid Horn
 	{4000059, 100}, -- Star Pixie's Starpiece
 	{4000076, 100}, -- Fly-Eye Wings
@@ -178,7 +178,7 @@ else
 	addText("#L24# 100 #t4000080#s#l");
 	what = askChoice() + 1;
 	
-	reqs = takereqs[what];
+	reqs = takeReqs[what];
 	addText("Let's see, you want to trade your #b" .. reqs[2] .. " #t" .. reqs[1] .. "#s#k with my stuff, right? Before trading make sure you have an empty slot available on your use or etc. inventory. Now, do you really want to trade with me?");
 	yes = askYesNo();
 	

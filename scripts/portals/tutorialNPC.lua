@@ -19,21 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if getLevel() <= 10 and getJob() == 0 then
 	m = getMap();
-	npcid = 0;
+	npcId = 0;
 
-	if m == 120000101 then -- Navigation Room, The Nautilus
-		npcid = 1072008; -- Maybe 1090000?
-	elseif m == 102000003 then -- Warrior's Sanctuary
-		npcid = 1022000;
-	elseif m == 103000003 then -- Thieves' Hideout
-		npcid = 1052001;
-	elseif m == 100000201 then -- Bowman Instructional School
-		npcid = 1012100;
-	elseif m == 101000003 then -- Magic Library
-		npcid = 1032001;
+	if m == 120000101 then npcId = 1072008; -- Navigation Room, The Nautilus, maybe NPC 1090000?
+	elseif m == 102000003 then npcId = 1022000; -- Warrior's Sanctuary
+	elseif m == 103000003 then npcId = 1052001; -- Thieves' Hideout
+	elseif m == 100000201 then npcId = 1012100; -- Bowman Instructional School
+	elseif m == 101000003 then npcId = 1032001; -- Magic Library
 	end
 
-	if npcid ~= 0 then
-		runNpc(npcid);
+	if npcId ~= 0 then
+		runNpc(npcId);
 	end
 end

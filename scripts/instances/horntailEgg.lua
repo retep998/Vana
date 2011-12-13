@@ -20,11 +20,11 @@ function beginInstance()
 	addInstanceMap(240040611);
 end
 
-function playerDisconnect(playerid, ispartyleader)
-	finish(playerid);
+function playerDisconnect(playerId, isPartyLeader)
+	finish(playerId);
 end
 
-function instanceTimerEnd(fromtimer)
+function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
 		moveAllPlayers(240040610);
 		removeAllInstancePlayers();
@@ -32,14 +32,14 @@ function instanceTimerEnd(fromtimer)
 	end
 end
 
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	if not isInstanceMap(newmap) then
-		finish(playerid);
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if not isInstanceMap(newMap) then
+		finish(playerId);
 	end
 end
 
-function finish(playerid)
-	removeInstancePlayer(playerid);
+function finish(playerId)
+	removeInstancePlayer(playerId);
 	removeTheNPC();
 	markForDelete();
 end
@@ -51,10 +51,10 @@ function removeTheNPC()
 	end
 end
 
-function playerDeath(playerid) end
-function timerEnd(name, fromtimer) end
-function mobDeath(mobid, mapmobid, mapid) end
-function mobSpawn(mobid, mapmobid, mapid) end
-function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
-function partyDisband(partyid) end
-function partyRemoveMember(partyid, playerid) end
+function playerDeath(playerId) end
+function timerEnd(name, fromTimer) end
+function mobDeath(mobId, mapMobId, mapId) end
+function mobSpawn(mobId, mapMobId, mapId) end
+function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
+function partyDisband(partyId) end
+function partyRemoveMember(partyId, playerId) end
