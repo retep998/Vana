@@ -25,7 +25,7 @@ if getJob() == 0 then
 	addText("#k. Let's see...");
 	sendNext();
 
-	if (getLevel() >= 10) then
+	if getLevel() >= 10 then
 		addText("You definitely have the look of a Warrior. You may not be ");
 		addText("there just yet, but I can see the Warrior in you.");
 		addText("What do you think? Do you want to become a Warrior?");
@@ -35,7 +35,8 @@ if getJob() == 0 then
 			addText("From here on out, you are going to be the Warrior! Please continue working hard...I'll enhance your abilities a bit with the hope of you training yourself to be even stronger than you're now. Haaaaaap!!");
 			sendNext();
 
-			if getLevel() >= 30 then -- For rare "too high level" instance.
+			if getLevel() >= 30 then
+				-- For rare "too high level" instance.
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
 				addText("that were late in making job advancements, we compensate them with lost Skill Points, ");
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
@@ -48,8 +49,8 @@ if getJob() == 0 then
 
 			setJob(100);
 			giveItem(1302077, 1); -- Give beginner warrior's sword
-			hpinc = 200 + getRandomNumber(50); -- Extra HP given
-			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus amount to be added for this job
+			hpInc = 200 + getRandomNumber(50); -- Extra HP given
+			setMaxHp(getRealMaxHp() + hpInc); -- Set HP to current HP plus amount to be added for this job
 			setStr(35); -- Stat reset
 			setDex(4);
 			setInt(4);
@@ -248,8 +249,8 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
-						newhp = 300 + getRandomNumber(50); -- Extra HP given
-						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
+						newHp = 300 + getRandomNumber(50); -- Extra HP given
+						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
 						addText("Alright! You have now become the #bFighter#k! A fighter strives to become the strongest ");
 						addText("of the strong, and never stops fighting. Don't ever lose that will to fight, and push forward 24/7. ");
 						addText("It'll help you become even stronger than you already are.");
@@ -294,8 +295,8 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
-						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newMp = 100 + getRandomNumber(50); -- Extra MP given
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright! You have now become the #bPage#k! The Pages have high intelligence and bravery for ");
 						addText("a Warrior...here's hoping that you'll take the right path with the right mindset...I'll help you ");
 						addText("become much stronger than you are right now.");
@@ -339,8 +340,8 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						giveItem(4031012, -1); -- Take away The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
 						addSlots(4, 1);
-						newmp = 100 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newMp = 100 + getRandomNumber(50); -- Extra MP given
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright! You have now become the #bSpearman#k! The spearman use the power of darkness to take out ");
 						addText("the enemies, always in shadows...please believe in yourself and your awesome power as you go on ");
 						addText("in your journey...I'll help you become much stronger than you are right now.");

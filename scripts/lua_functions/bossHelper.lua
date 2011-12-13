@@ -17,22 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Common code to determine how many times a player has been into a boss each day
 
-secondsinday = 60 * 60 * 24;
+SECONDS_PER_DAY = 60 * 60 * 24;
 
-function enterBoss(boss, maxentries)
-	if maxentries == -1 then
+function enterBoss(boss, maxEntries)
+	if maxEntries == -1 then
 		return true;
 	end
-	if maxentries == 0 then
+	if maxEntries == 0 then
 		return false;
 	end
 
 	time = getTime();
 	entered = false;
-	for i = 1, maxentries do
+	for i = 1, maxEntries do
 		var = boss .. i;
 		entry = getPlayerVariable(var, true);
-		if entry == nil or time > (entry + secondsinday) then
+		if entry == nil or time > (entry + SECONDS_PER_DAY) then
 			setPlayerVariable(var, time);
 			entered = true;
 			break;
@@ -41,20 +41,20 @@ function enterBoss(boss, maxentries)
 	return entered;
 end
 
-function getEntryCount(boss, maxentries)
-	if maxentries == -1 then
+function getEntryCount(boss, maxEntries)
+	if maxEntries == -1 then
 		return 32767;
 	end
-	if maxentries == 0 then
+	if maxEntries == 0 then
 		return 0;
 	end
 
 	time = getTime();
 	count = 0;
-	for i = 1, maxentries do
+	for i = 1, maxEntries do
 		var = boss .. i;
 		entry = getPlayerVariable(var, true);
-		if entry ~= nil and time < (entry + secondsinday) then
+		if entry ~= nil and time < (entry + SECONDS_PER_DAY) then
 			count = count + 1;
 		end
 	end

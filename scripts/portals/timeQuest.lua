@@ -18,88 +18,88 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Portals throughout the Time Temple
 
 map = getMap();
-tomapifdone = 0;
-tomap = 0;
+toMapIfDone = 0;
+toMap = 0;
 quest = 0;
 
 -- Memory/green area
 if map == 270010100 then
 	quest = 3501;
-	tomapifdone = 270010110;
-	tomap = 270010000;
+	toMapIfDone = 270010110;
+	toMap = 270010000;
 elseif map == 270010200 then
 	quest = 3502;
-	tomapifdone = 270010210;
-	tomap = 270010110;
+	toMapIfDone = 270010210;
+	toMap = 270010110;
 elseif map == 270010300 then
 	quest = 3503;
-	tomapifdone = 270010310;
-	tomap = 270010210;
+	toMapIfDone = 270010310;
+	toMap = 270010210;
 elseif map == 270010400 then
 	quest = 3504;
-	tomapifdone = 270010410;
-	tomap = 270010310;
+	toMapIfDone = 270010410;
+	toMap = 270010310;
 elseif map == 270010500 then
 	quest = 3507;
-	tomapifdone = 270020000;
-	tomap = 270010410;
+	toMapIfDone = 270020000;
+	toMap = 270010410;
 
 -- Regrets/blue area
 elseif map == 270020100 then
 	quest = 3508;
-	tomapifdone = 270020110;
-	tomap = 270020000;
+	toMapIfDone = 270020110;
+	toMap = 270020000;
 elseif map == 270020200 then
 	quest = 3509;
-	tomapifdone = 270020210;
-	tomap = 270020110;
+	toMapIfDone = 270020210;
+	toMap = 270020110;
 elseif map == 270020300 then
 	quest = 3510;
-	tomapifdone = 270020310;
-	tomap = 270020210;
+	toMapIfDone = 270020310;
+	toMap = 270020210;
 elseif map == 270020400 then
 	quest = 3511;
-	tomapifdone = 270020410;
-	tomap = 270020310;
+	toMapIfDone = 270020410;
+	toMap = 270020310;
 elseif map == 270020500 then
 	quest = 3514;
-	tomapifdone = 270030000;
-	tomap = 270020410;
+	toMapIfDone = 270030000;
+	toMap = 270020410;
 
 -- Oblivion/red area
 elseif map == 270030100 then
 	quest = 3515;
-	tomapifdone = 270030110;
-	tomap = 270030100;
+	toMapIfDone = 270030110;
+	toMap = 270030100;
 elseif map == 270030200 then
 	quest = 3516;
-	tomapifdone = 270030210;
-	tomap = 270030210;
+	toMapIfDone = 270030210;
+	toMap = 270030210;
 elseif map == 270030300 then
 	quest = 3517;
-	tomapifdone = 270030310;
-	tomap = 270030310;
+	toMapIfDone = 270030310;
+	toMap = 270030310;
 elseif map == 270030400 then
 	quest = 3518;
-	tomapifdone = 270030410;
-	tomap = 270030410;
+	toMapIfDone = 270030410;
+	toMap = 270030410;
 elseif map == 270030500 then
 	quest = 3521;
-	tomapifdone = 270040000;
-	tomap = 270030410;
+	toMapIfDone = 270040000;
+	toMap = 270030410;
 
 -- Deep palace
 elseif map == 270040000 then
 	quest = 3522;
-	tomapifdone = 270040100;
-	tomap = 270040000;
+	toMapIfDone = 270040100;
+	toMap = 270040000;
 end
 
 if isQuestCompleted(quest) then
 	playPortalSe();
-	setMap(tomapifdone, "out00");
+	setMap(toMapIfDone, "out00");
 else
 	showMessage("Those who have not received permission cannot walk against the flow of the temple and will return to the previous place.", m_red);
 	playPortalSe();
-	setMap(tomap);
+	setMap(toMap);
 end

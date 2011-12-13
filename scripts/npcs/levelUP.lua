@@ -33,16 +33,11 @@ if what == 5 then
 	setStyle(getRandomHair());
 else
 	styles = {};
-	if what == 0 then
-		getSkins(styles);
-	elseif what == 1 then
-		getHairs(styles);
-	elseif what == 2 then
-		getHairColours(styles);
-	elseif what == 3 then
-		getEyeStyles(styles);
-	elseif what == 4 then
-		getEyeColour(styles);
+	if what == 0 then getSkins(styles);
+	elseif what == 1 then getHairs(styles);
+	elseif what == 2 then getHairColours(styles);
+	elseif what == 3 then getEyeStyles(styles);
+	elseif what == 4 then getEyeColour(styles);
 	elseif what == 5 then
 		setStyle(getRandomFace());
 		setStyle(getRandomHair());

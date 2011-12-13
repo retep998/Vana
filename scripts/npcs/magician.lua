@@ -48,8 +48,8 @@ if getJob() == 0 then
 
 			setJob(200);
 			giveItem(1372043, 1); 
-			mpinc = 100 + getRandomNumber(50); 
-			setMaxMp(getRealMaxMp() + mpinc); 
+			mpInc = 100 + getRandomNumber(50); 
+			setMaxMp(getRealMaxMp() + mpInc); 
 			setStr(4); -- Stat reset
 			setDex(4);
 			setInt(20);
@@ -259,8 +259,8 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slot
-						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newMp = 450 + getRandomNumber(50); -- Extra MP given
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Fire and Poison#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -301,8 +301,8 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
-						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newMp = 450 + getRandomNumber(50); -- Extra MP given
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("From here on out, you have become the #bWizard of Ice and Lightning#k... Wizards use high intelligence ");
 						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
 						addText("for one day I may make you much more powerful with my own power...");
@@ -344,8 +344,8 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 						giveSp(1); -- Necessary SP given
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(4, 1); -- Add inventory slots
-						newmp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newMp = 450 + getRandomNumber(50); -- Extra MP given
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright, you're a #bCleric#k from here on out. Clerics blow life into every living organism here ");
 						addText("with their undying faith in God. Never stop working on your faith...then one day, I'll help you ");
 						addText("become much more powerful...");

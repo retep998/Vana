@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Paul, Jean, Martin, Tony (Event Assistants)
 
-n = getNPCID();
+n = getNpcId();
 addText("Hey, I'm #b#p" .. n .. "##k");
 if n == 9000000 then
 	addText(", if you're not busy and all ... then can I hang out with you? I heard there are people gathering up around here for an #revent#k but I don't want to go there by myself ... Well, do you want to go check it out with me?");

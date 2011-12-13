@@ -25,10 +25,8 @@ if yes == 0 then
 	sendOk();
 else
 	if giveMesos(-300) then
-		if getGender() == 0 then
-			setMap(801000100);
-		else
-			setMap(801000200);
+		if getGender() == 0 then setMap(801000100);
+		else setMap(801000200);
 		end
 	else
 		-- TODO: Find the text

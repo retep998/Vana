@@ -229,12 +229,14 @@ void Instance::addParty(Party *party) {
 bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 	if (m_timerActions.find(timerName) == m_timerActions.end()) {
 		m_timerActions[timerName] = timer;
-		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
-		if (timer.time > 0) { // Positive, occurs in the future
+		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
+		if (timer.time > 0) {
+			// Positive, occurs in the future
 			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
 				id, getTimers(), TimeUtilities::fromNow(timer.time * 1000), timer.persistent * 1000);
 		}
-		else { // Negative, occurs nth second of hour
+		else {
+			// Negative, occurs nth second of hour
 			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
 				id, getTimers(), TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
 		}
@@ -247,7 +249,7 @@ int32_t Instance::checkTimer(const string &timerName) {
 	int32_t timeLeft = 0;
 	if (m_timerActions.find(timerName) != m_timerActions.end()) {
 		TimerAction timer = m_timerActions[timerName];
-		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
+		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		timeLeft = getTimers()->checkTimer(id);
 	}
 	return timeLeft;
@@ -257,7 +259,7 @@ void Instance::removeTimer(const string &timerName) {
 	if (m_timerActions.find(timerName) != m_timerActions.end()) {
 		TimerAction timer = m_timerActions[timerName];
 		if (checkTimer(timerName) > 0) {
-			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterid);
+			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
 			sendMessage(TimerEnd, timerName, false);
 		}
@@ -266,7 +268,7 @@ void Instance::removeTimer(const string &timerName) {
 }
 
 void Instance::removeAllTimers() {
-	for (unordered_map<string, TimerAction>::iterator iter = m_timerActions.begin(); iter != m_timerActions.end(); iter++) {
+	for (unordered_map<string, TimerAction>::iterator iter = m_timerActions.begin(); iter != m_timerActions.end(); ++iter) {
 		removeTimer(iter->first);
 	}
 	setInstanceTimer(0);

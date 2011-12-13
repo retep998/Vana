@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/itemProduction.lua");
 
-makeids = {1082003, 1082000, 1082004, 1082001, 1082007, 1082008, 1082023, 1082009, 1082059};
-makelimits = {10, 15, 20, 25, 30, 35, 40, 50, 60};
-makereqs = {
+makeIds = {1082003, 1082000, 1082004, 1082001, 1082007, 1082008, 1082023, 1082009, 1082059};
+makeLimits = {10, 15, 20, 25, 30, 35, 40, 50, 60};
+makeReqs = {
 	{4000021, 15, 4011001, 1, MESOS, 1000},
 	{4011001, 2, MESOS, 2000},
 	{4000021, 40, 4011000, 2, MESOS, 5000},
@@ -33,9 +33,9 @@ makereqs = {
 	{4011007, 1, 4011000, 8, 4011006, 2, 4000030, 50, 4003000, 50, MESOS, 70000}
 };
 
-upgradeids = {1082005, 1082006, 1082035, 1082036, 1082024, 1082025, 1082010, 1082011, 1082060, 1082061};
-upgradelimits = {30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
-upgradereqs = {
+upgradeIds = {1082005, 1082006, 1082035, 1082036, 1082024, 1082025, 1082010, 1082011, 1082060, 1082061};
+upgradeLimits = {30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
+upgradeReqs = {
 	{1082007, 1, 4011001, 1, MESOS, 20000},
 	{1082007, 1, 4011005, 2, MESOS, 25000},
 	{1082008, 1, 4021006, 3, MESOS, 30000},
@@ -48,9 +48,9 @@ upgradereqs = {
 	{1082059, 1, 4021007, 2, 4021008, 2, MESOS, 80000}
 };
 
-materialids = {4003001, 4003001, 4003000};
-materialamts = {1, 1, 15};
-materialreqs = {
+materialIds = {4003001, 4003001, 4003000};
+materialAmounts = {1, 1, 15};
+materialReqs = {
 	{4000003, 10},
 	{4000018, 5},
 	{4011000, 1, 4011001, 1}
@@ -82,9 +82,9 @@ else
 		addText("#L8##b #t1082059##k(level limit : 60, warrior)#l");
 		what = askChoice() + 1;
 		
-		glove = makeids[what];
-		reqs = makereqs[what];
-		level = makelimits[what];
+		glove = makeIds[what];
+		reqs = makeReqs[what];
+		level = makeLimits[what];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
@@ -119,9 +119,9 @@ else
 		addText("#L9##b #t1082061##k(level limit : 60, warrior)#l");
 		what = askChoice();
 		
-		glove = upgradeids[what + 1];
-		reqs = upgradereqs[what + 1];
-		level = upgradelimits[what + 1];
+		glove = upgradeIds[what + 1];
+		reqs = upgradeReqs[what + 1];
+		level = upgradeLimits[what + 1];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
@@ -146,9 +146,9 @@ else
 		addText("#L2##bMake #t4003000#s#k#l");
 		what = askChoice();
 		
-		material = materialids[what + 1];
-		reqs = materialreqs[what + 1];
-		amt = materialamts[what + 1];
+		material = materialIds[what + 1];
+		reqs = materialReqs[what + 1];
+		amt = materialAmounts[what + 1];
 		if what == 0 then
 			addText("With #b10 #t4000003#es#k, I can make 1 #t4003001#(s). Be thankful, because this one's on me. What do you think? How many do you want?");
 		elseif what == 1 then

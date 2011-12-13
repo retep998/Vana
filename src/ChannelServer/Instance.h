@@ -43,7 +43,7 @@ namespace Timer {
 
 struct TimerAction {
 	TimerAction() : persistent(0) { }
-	int32_t counterid;
+	int32_t counterId;
 	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3600)
 	int32_t persistent; // How often does it repeat?
 };

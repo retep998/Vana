@@ -49,10 +49,13 @@ function isListFull()
 	return getInstanceSignupCount() >= getInstanceMax();
 end
 
-function messageAll(msg)
+function messageAll(msg, color)
+	if color == nil then
+		color = m_red;
+	end
 	for i = 1, getInstanceSignupCount() do
 		if setPlayer(getInstancePlayerByIndex(i)) then
-			showMessage(msg, m_red);
+			showMessage(msg, color);
 			revertPlayer();
 		end
 	end

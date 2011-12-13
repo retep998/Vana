@@ -18,20 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Camel Cab
 
 if getMap() == 260020700 then
-	tomap = 260000000;
+	toMap = 260000000;
 elseif getMap() == 260020000 then
-	tomap = 261000000;
+	toMap = 261000000;
 end
 
 addText("Will you move to #b#m260000000##k now? The price is #b1500 mesos#k.");
 yes = askYesNo();
 
 if yes == 0 then
-	addText("Will you ride the #b#p2110005##k and move to #b#m" .. tomap .. "##k now? The price is #b1500 mesos#k.");
+	addText("Will you ride the #b#p2110005##k and move to #b#m" .. toMap .. "##k now? The price is #b1500 mesos#k.");
 	sendNext();
 else
 	if giveMesos(-1500) then
-		setMap(tomap);
+		setMap(toMap);
 	else
 		addText("I am sorry, but I think you are short on mesos. I am afraid I can't let you ride this if you do not have enough money to do so. Please come back when you have enough money to use this.");
 		sendNext();

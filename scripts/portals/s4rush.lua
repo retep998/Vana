@@ -30,18 +30,19 @@ if isQuestActive(6110) then
 			if not isPartyInLevelRange(120, 200) then
 				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", m_red);
 			else
-				memberctr = 0
-				mapid = getMap();
+				memberCount = 0
+				mapId = getMap();
 				for i = 1, #members do
 					member = members[i];
 					if setPlayer(member) then
-						if getJobLine() == 1 and getJobProgression() == 2 and getMap() == mapid then -- Only want 4th job warriors
-							memberctr = memberctr + 1;
+						if getJobLine() == 1 and getJobProgression() == 2 and getMap() == mapId then
+							-- Only want 4th job warriors
+							memberCount = memberCount + 1;
 						end
 						revertPlayer();
 					end
 				end
-				if memberctr ~= 2 then
+				if memberCount ~= 2 then
 					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", m_red);
 				else
 					if not isInstance("rush4th") then

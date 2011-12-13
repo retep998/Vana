@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A subset of Lua functions that helps common party quest tasks
 
-function getRandomFootholds(desiredamount, tablefootholds)
+function getRandomFootholds(desiredAmount, tableFootholds)
 	i = 0;
-	correctfootholds = {};
-	while i < desiredamount do
-		n = getRandomNumber(#tablefootholds);
+	correctFootholds = {};
+	while i < desiredAmount do
+		n = getRandomNumber(#tableFootholds);
 		local add = true;
-		if correctfootholds ~= nil then
-			for v = 1, #correctfootholds do
-				if correctfootholds[v] == n then
+		if correctFootholds ~= nil then
+			for v = 1, #correctFootholds do
+				if correctFootholds[v] == n then
 					add = false;
 					break;
 				end
@@ -33,20 +33,20 @@ function getRandomFootholds(desiredamount, tablefootholds)
 		end
 		if add then
 			i = i + 1;
-			correctfootholds[i] = n;
+			correctFootholds[i] = n;
 		end
 	end
-	returnfootholds = {};
-	for m = 1, desiredamount do
-		returnfootholds[m] = tablefootholds[correctfootholds[m]];
+	returnFootholds = {};
+	for m = 1, desiredAmount do
+		returnFootholds[m] = tableFootholds[correctFootholds[m]];
 	end
-	return returnfootholds;
+	return returnFootholds;
 end
 
-function saveFootholds(tablefootholds)
-	setInstanceVariable("FootholdGroups", #tablefootholds);
-	for i = 1, #tablefootholds do
-		group = tablefootholds[i];
+function saveFootholds(tableFootholds)
+	setInstanceVariable("FootholdGroups", #tableFootholds);
+	for i = 1, #tableFootholds do
+		group = tableFootholds[i];
 		setInstanceVariable("FootholdGroup" .. i .. "Count", #group);
 		for k = 1, #group do
 			setInstanceVariable("FootholdGroup" .. i .. "Element" .. k, group[k]);
@@ -79,15 +79,15 @@ function partyQuestWrong()
 	playFieldSound("Party1/Failed", getMap());
 end
 
-function giveAllPartyMembersEXP(exp, mapid)
+function giveAllPartyMembersExp(exp, mapId)
 	members = getAllPartyPlayerIds();
 	for i = 1, #members do
 		member = members[i];
 		if setPlayer(member) then
-			if mapid == nil then
+			if mapId == nil then
 				giveExp(exp);
 			else
-				if getMap() == mapid then
+				if getMap() == mapId then
 					giveExp(exp);
 				end
 			end
@@ -96,15 +96,15 @@ function giveAllPartyMembersEXP(exp, mapid)
 	end
 end
 
-function moveAllMapMembers(mapid, portalstring)
+function moveAllMapMembers(mapId, portalString)
 	players = getAllMapPlayerIds();
 	for i = 1, #players do
 		player = players[i];
 		if setPlayer(player) then
-			if portalstring == nil then
-				setMap(mapid);
+			if portalString == nil then
+				setMap(mapId);
 			else
-				setMap(mapid, portalstring);
+				setMap(mapId, portalString);
 			end
 			revertPlayer();
 		end

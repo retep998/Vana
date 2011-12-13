@@ -41,7 +41,7 @@ elseif getJob() == 0 then
 	addText("Let's see...");
 	sendNext();
 
-	if (getLevel() >= 10) then
+	if getLevel() >= 10 then
 		addText("Oh...! You look like someone that can definitely be a part of us...all you need is ");
 		addText("a little sinister mind, and...yeah...so, what do you think? Wanna be the Rouge?");
 		yes = askYesNo();
@@ -67,10 +67,10 @@ elseif getJob() == 0 then
 			giveItem(1472061, 1); -- Beginners Garnier
 			giveItem(1332063, 1); -- Beginners Dagger
 			giveItem(2070015, 3); -- Special subis
-			hpinc = 100 + getRandomNumber(50); -- Generate a random number from 0-50 to add to the base hp increase
-			mpinc = 25 + getRandomNumber(25); -- Generate a random number from 0-25 to add to the base mp increase
-			setMaxHp(getRealMaxHp() + hpinc); -- Set HP to current HP plus full amount of hp increase
-			setMaxMp(getRealMaxMp() + mpinc); -- Set MP to current MP plus full amount of mp increase
+			hpInc = 100 + getRandomNumber(50); -- Generate a random number from 0-50 to add to the base hp increase
+			mpInc = 25 + getRandomNumber(25); -- Generate a random number from 0-25 to add to the base mp increase
+			setMaxHp(getRealMaxHp() + hpInc); -- Set HP to current HP plus full amount of hp increase
+			setMaxMp(getRealMaxMp() + mpInc); -- Set MP to current MP plus full amount of mp increase
 			setStr(4); -- Stat reset
 			setDex(25);
 			setInt(4);
@@ -268,10 +268,10 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
-						newhp = 300 + getRandomNumber(50); -- Extra HP calculated 
-						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated 
+						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
+						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright, from here on out you are the #bAssassin#k. Assassins revel in shadows and darkness, waiting until ");
 						addText("the right time comes for them to stick a dagger through the enemy's heart, suddenly and swiftly...please ");
 						addText("keep training. I'll make you even more powerful than you are right now!");
@@ -312,10 +312,10 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
-						newhp = 300 + getRandomNumber(50); -- Extra HP calculated 
-						newmp = 150 + getRandomNumber(50); -- Extra MP calculated
-						setMaxHp(getRealMaxHp() + newhp); -- Add to current HP
-						setMaxMp(getRealMaxMp() + newmp); -- Add to current MP
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated 
+						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
+						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
+						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
 						addText("Alright from here on out, you're the #bBandit#k. Bandits have quick hands and quicker feet to ");
 						addText("dominate the enemies. Please keep training. I'll make you even more powerful than you are right now.");
 						sendNext();

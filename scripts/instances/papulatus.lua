@@ -18,23 +18,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 function beginInstance()
 	addInstanceMap(220080001);
-	players = getAllMapPlayerIds(220080001);
+	players = getAllMapplayerIds(220080001);
 	for i = 1, #players do
 		addInstancePlayer(players[i]);
 	end
 end
 
-function playerDisconnect(playerid, ispartyleader)
+function playerDisconnect(playerId, isPartyLeader)
 	startInstanceTimer("clean", 1, false);
 end
 
-function timerEnd(name, fromtimer)
+function timerEnd(name, fromTimer)
 	cleanUpPap();
 end
 
-function changeMap(playerid, newmap, oldmap, ispartyleader)
-	if not isInstanceMap(newmap) then -- Player probably died, want to make sure this doesn't keep the room full
-		removeInstancePlayer(playerid);
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if not isInstanceMap(newMap) then
+		-- Player probably died, want to make sure this doesn't keep the room full
+		removeInstancePlayer(playerId);
 		startInstanceTimer("clean", 1, false);
 	end
 end
@@ -48,10 +49,10 @@ function cleanUpPap()
 	end
 end
 
-function playerDeath(playerid) end
-function instanceTimerEnd(fromtimer) end
-function mobDeath(mobid, mapmobid, mapid) end
-function mobSpawn(mobid, mapmobid, mapid) end
-function friendlyHit(mobid, mapmobid, mapid, hp, maxhp) end
-function partyDisband(partyid) end
-function partyRemoveMember(partyid, playerid) end
+function playerDeath(playerId) end
+function instanceTimerEnd(fromTimer) end
+function mobDeath(mobId, mapMobId, mapId) end
+function mobSpawn(mobId, mapMobId, mapId) end
+function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
+function partyDisband(partyId) end
+function partyRemoveMember(partyId, playerId) end

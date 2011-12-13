@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/itemProduction.lua");
 
-mineralids = {4011000, 4011001, 4011002, 4011003, 4011004, 4011005, 4011006};
-mineralreqs = {
+mineralIds = {4011000, 4011001, 4011002, 4011003, 4011004, 4011005, 4011006};
+mineralReqs = {
 	{4010000, 10, MESOS, 300},
 	{4010001, 10, MESOS, 300},
 	{4010002, 10, MESOS, 300},
@@ -30,8 +30,8 @@ mineralreqs = {
 	{4010006, 10, MESOS, 800}
 };
 
-jewelids = {4021000, 4021001, 4021002, 4021003, 4021004, 4021005, 4021006, 4021007, 4021008};
-jewelreqs = {
+jewelIds = {4021000, 4021001, 4021002, 4021003, 4021004, 4021005, 4021006, 4021007, 4021008};
+jewelReqs = {
 	{4020000, 10, MESOS, 500},
 	{4020001, 10, MESOS, 500},
 	{4020002, 10, MESOS, 500},
@@ -43,8 +43,8 @@ jewelreqs = {
 	{4020008, 10, MESOS, 3000}
 };
 
-helmetids = {1002042,1002041,1002002,1002044,1002003,1002040,1002007,1002052,1002011,1002058,1002009,1002056,1002087,1002088,1002049,1002050,1002047,1002048,1002099,1002098,1002085,1002028,1002022,1002101};
-helmetreqs = {
+helmetIds = {1002042,1002041,1002002,1002044,1002003,1002040,1002007,1002052,1002011,1002058,1002009,1002056,1002087,1002088,1002049,1002050,1002047,1002048,1002099,1002098,1002085,1002028,1002022,1002101};
+helmetReqs = {
 	{1002001, 1, 4011002, 1, MESOS, 500},
 	{1002001, 1, 4021006, 1, MESOS, 300},
 	{1002043, 1, 4011001, 1, MESOS, 500},
@@ -70,16 +70,16 @@ helmetreqs = {
 	{1002100, 1, 4011007, 1, 4011001, 7, MESOS, 30000},
 	{1002100, 1, 4011007, 1, 4011002, 7, MESOS, 30000}
 };
-helmetstats = {"none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "none", "HP + 10", "DEX + 1", "STR + 1", "STR + 2", "STR + 1", "STR + 2", "DEX + 1, MP + 30", "STR + 1, MP + 30"};
+helmetStats = {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "HP + 10", "DEX + 1", "STR + 1", "STR + 2", "STR + 1", "STR + 2", "DEX + 1, MP + 30", "STR + 1, MP + 30"};
 
-shieldids = {1092013, 1092014, 1092010, 1092011};
-shieldreqs = {
+shieldIds = {1092013, 1092014, 1092010, 1092011};
+shieldReqs = {
 	{1092012, 1, 4011002, 10, MESOS, 100000},
 	{1092012, 1, 4011003, 10, MESOS, 100000},
 	{1092009, 1, 4011007, 1, 4011004, 15, MESOS, 120000},
 	{1092009, 1, 4011007, 1, 4011003, 15, MESOS, 120000}
 };
-shieldstats = {"STR + 2", "DEX + 2", "DEX + 2", "STR + 2"};
+shieldStats = {"STR + 2", "DEX + 2", "DEX + 2", "STR + 2"};
 
 addText("Wait, do you have the ore of either a jewel or mineral? ");
 addText("With a little service fee, I can turn them into materials ");
@@ -114,8 +114,8 @@ else
 		addText("#L7##b #t4011006##k#l");
 		what = askChoice();
 		
-		mineral = mineralids[what];
-		reqs = mineralreqs[what];
+		mineral = mineralIds[what];
+		reqs = mineralReqs[what];
 		addText("To make a(n) #t" .. mineral .. "#, I need the following materials. How many would you like to make?\r\n\r\n");
 		displayResources(reqs);
 		amount = askNumber(0, 0, 100);
@@ -150,8 +150,8 @@ else
 		addText("#L9##b #t4021008##k#l");
 		what = askChoice();
 		
-		jewel = jewelids[what];
-		reqs = jewelreqs[what];
+		jewel = jewelIds[what];
+		reqs = jewelReqs[what];
 		addText("To make a(n) #t" .. jewel .. "#, I need the following materials. How many would you like to make?\r\n\r\n");
 		displayResources(reqs);
 		amount = askNumber(0, 0, 100);
@@ -209,11 +209,11 @@ else
 		addText("#L24##b #t1002101##k(level limit: 55, warrior)#l");
 		what = askChoice();
 		
-		helm = helmetids[what];
-		reqs = helmetreqs[what];
+		helm = helmetIds[what];
+		reqs = helmetReqs[what];
 		addText("To make one #t" .. helm .. "#, I need the following materials.");
-		if helmetstats[what] ~= "none" then 
-			addText("This item has an option of " .. helmetstats[what] ..". ");
+		if helmetStats[what] ~= nil then 
+			addText("This item has an option of " .. helmetStats[what] ..". ");
 		end
 		addText("Make sure you don't use an item that's been upgraded as a material for it.");
 		addText("What do you think? Do you want one?\r\n\r\n");
@@ -249,11 +249,11 @@ else
 		addText("#L4##b #t1092011##k(level limit: 60, warrior)#l\r\n");
 		what = askChoice();
 		
-		shield = shieldids[what];
-		reqs = shieldreqs[what];
+		shield = shieldIds[what];
+		reqs = shieldReqs[what];
 		addText("To make one #t" .. shield .. "#, I need the following materials. ");
-		if shieldstats[what] ~= "none" then 
-			addText("This item has an option of " .. shieldstats[what] ..". ");
+		if shieldStats[what] ~= nil then 
+			addText("This item has an option of " .. shieldStats[what] ..". ");
 		end
 		addText("Make sure you don't use an item that's been upgraded as a material for it. ");
 		addText("What do you think? Do you want one?\r\n\r\n");

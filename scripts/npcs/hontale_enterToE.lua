@@ -25,13 +25,13 @@ if isPartyLeader() then
 			warpParty(240050400);
 		else
 			addText("If you want to move, talk to me again.");
-			sendNext();
+			sendOk();
 		end
 	else
 		addText("You can't read the words on the slate. You have no idea where to use it.");
-		sendNext();
+		sendOk();
 	end
 else
 	addText("Please proceed through the Party Leader.");
-	sendNext();
+	sendOk();
 end
