@@ -177,7 +177,7 @@ else
 			end
 		elseif getReactorState(211042300, 2118002) == 1 then
 			addText("The battle has already begun.");
-			sendOk();				
+			sendOk();
 		else
 			addText("What would you like to do?\r\n#b");
 			addText("#L0# Enter the Zakum Expedition Squad#l\r\n");

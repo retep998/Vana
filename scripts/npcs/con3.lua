@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getItemAmount(4000141) == 0 then
 	addText("Once you eliminate the boss, you'll have to show me the boss's flashlight as evidence. I won't believe it until you show me the flashlight! What? You want to leave this room?");
 	yes = askYesNo();
-	
+
 	if yes == 0 then
 		addText("I really admire your toughness! Well, if you decide to return to Showa Town, let me know~!");
 		sendOk();

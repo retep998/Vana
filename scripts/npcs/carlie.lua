@@ -139,7 +139,7 @@ rewards = {
 -- Topaz Ore: 4020006
 -- Diamond Ore: 4020007
 -- Black Crystal Ore: 4020008
-	
+
 addText("Hey, got a little bit of time? Well, my job is to collect items here and sell them elsewhere, but these days the monsters have become much more hostile so it's been difficult getting good items ... What do you think? Do you want to do some business with me?");
 sendNext();
 
@@ -177,11 +177,11 @@ else
 	addText("#L23# 100 #t4000054#s#l\r\n");
 	addText("#L24# 100 #t4000080#s#l");
 	what = askChoice() + 1;
-	
+
 	reqs = takeReqs[what];
 	addText("Let's see, you want to trade your #b" .. reqs[2] .. " #t" .. reqs[1] .. "#s#k with my stuff, right? Before trading make sure you have an empty slot available on your use or etc. inventory. Now, do you really want to trade with me?");
 	yes = askYesNo();
-	
+
 	if yes == 0 then
 		addText("Hmmm ... it shouldn't be a bad deal for you at all. If you come at the right time I can hook you up with good items. Anyway if you feel like trading, feel free to come.");
 		sendNext();

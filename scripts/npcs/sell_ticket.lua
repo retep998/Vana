@@ -28,7 +28,7 @@ else
 		item = 4031045; -- Ticket to Orbis (Regular)
 		price = 5000;
 	end
-	
+
 	addText("Hello, I'm in charge of selling tickets for the ship ride to Orbis Station of Ossyria. The ride to Orbis takes off every 15 minutes, beginning on the hour, and it'll cost you #b" .. price .. " mesos#k. Are you sure you want to purchase #b#t" .. item .. "##k?");
 	yes = askYesNo();
 

@@ -22,7 +22,7 @@ if getItemAmount(4001020) >= 1 then
 	addText("#b#L0# #p2040024#(100th floor)#l\r\n");
 	addText("#b#L1# #p2040026#(41st floor)#l");
 	what = askChoice();
-	
+
 	if what == 0 then
 		map = 221024400;
 		addText("You can use #b#t4001020##k to activate #b#p2040025##k. Will you teleport to #b#p2040024##k at the 100st floor?");
@@ -31,7 +31,7 @@ if getItemAmount(4001020) >= 1 then
 		addText("You can use #b#t4001020##k to activate #b#p2040025##k. Will you teleport to #b#p2040026##k at the 41st floor?");
 	end
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		giveItem(4001020, -1);
 		setMap(map, "go00");

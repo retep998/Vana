@@ -23,11 +23,11 @@ if getMap() == 800000000 then
 	addText("#b#L0#Yes, I'm done with traveling. Can I go back to #m" .. wtOrigin .."#? #l\r\n");
 	addText("#b#L1#No, I'd like to continue exploring this place.#l");
 	what = askChoice();
-    
+
 	if what == 0 then
 		addText("Alright. I'll now take you back to where you were before the visit to Japan. If you ever feel like traveling again down the road, please let me know!");
 		sendNext();
-		
+
 		wtOrigin = getPlayerVariable("wt_origin", true);
 		setMap(wtOrigin);
 		deletePlayerVariable("wt_origin");
@@ -43,18 +43,18 @@ else
 		addText("You shouldn't be! We, the #bMaple Travel Agency#k, have carefully come up with a plan to let you travel for ONLY #b3,000 mesos!#k");
 	end
 	sendNext();
-    
+
 	addText("We currently offer this place for your traveling pleasure: #bMushroom Shrine of Japan#k. I'll be there serving you as the travel guide. Rest assured, the number of destinations will increase over time. Now, would you like to head over to the Mushroom Shrine?\r\n");
 	addText("#b#L0# Yes, take me to Mushroom Shrine (Japan)#k#l");
 	what = askChoice();
-    
+
 	if what == 0 then
 		addText("Would you like to travel to #bMushroom Shrine of Japan#k? If you desire to feel the essence of Japan, there's nothing like visiting the Shrine, a Japanese cultural melting pot. Mushroom Shrine is a mythical place that serves the incomparable Mushroom God from ancient times.");
 		sendNext();
-    
+
 		addText("Check out the female shaman serving the Mushroom God, and I strongly recommend trying Takoyaki, Yakisoba, and other delicious food sold in the streets of Japan. Now, let's head over to #bMushroom Shrine#k, a mythical place if there ever was one.");
 		sendBackNext();
-		
+
 		if getJob() == 0 then
 			price = 300;
 		else

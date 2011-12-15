@@ -129,47 +129,47 @@ elseif option == 1 then
 		addText("#L2# Detailed instructions about the Monster Carnival#l\r\n");
 		addText("#L3# Nothing, really. I've changed my mind.#l");
 		choice = askChoice();
-		
+
 		if choice == 0 then
 			addText("Haha! I'm Spiegelmann, the leader of this traveling carnival. I started the 1st ever #bMonster Carnival#k here, waiting for travelers like you to participate in this extravaganza!");
 			sendNext();
-			
+
 			addText("What's a #bMonster Carnival#k? Hahaha! let's just say that it's an experience you will never forget! It's a #bbattle against other travelers like yourself!#k");
 			sendBackNext();
-			
+
 			addText("I know that it is way too dangerous for you to fight one another using real weapons; nor would I suggest such a barbaric act. No my friend, what I offer is competition. The thrill of battle and the excitement of competing against people just as strong and motivated as yourself. I offer the premise that your party and the opposing party both #bsummon monsters, and defeat the monsters summoned by the opposing party. That's the essence of the Monster Carnival. Also, you can use Maple Coins earned during the Monster Carnival to obtain new items and weapons! #k");
 			sendBackNext();
-			
+
 			addText("Of course, it's not as simple as that. There are different ways to prevent the other party from hunting monsters, and it's up to you to figure out how. What do you think? Interested in a little friendly (or not-so-friendly) competition?");
 			sendBackNext();
 		elseif choice == 1 then
 			addText("#bMonster Carnival#k consists of 2 parties entering the battleground, and hunting the monsters summoned by the other party. It's a #bcombat quest that determines the victor by the amount of Carnival Points (CP) earned#k.");
 			sendNext();
-			
+
 			addText("Once you enter the Carnival Field, the task is to #bearn CP by hunting monsters from the opposing party, and use those CP's to distract the opposing party from hunting monsters.#k.");
 			sendBackNext();
-			
+
 			addText("There are three ways to distract the other party: #bSummon a Monster, Skill, and Protector#k. I'll give you a more in-depth look if you want to know more about 'Detailed Instructions'.");
 			sendBackNext();
-			
+
 			addText("Please remember this, though. It's never a good idea to save up CP just for the sake of it. #bThe CP's you've used will also help determine the winner and the loser of the carnival#k.");
 			sendBackNext();
 		elseif choice == 2 then
 			addText("Once you enter the Carnival Field, you'll see a Monster Carnival window appear. All you have to do is #bselect the ones you want to use, and press OK#k. Pretty easy, right?");
 			sendNext();
-			
+
 			addText("Once you get used to the commands, try using #bthe Hotkeys TAB and F1 ~  F12#k. #bTAB toggles between Summoning Monsters/Skill/Protector,#k and, #bF1~ F12 allows you to directly enter one of the windows#k.");
 			sendBackNext();
-			
+
 			addText("#bSummon a Monster#k calls a monster that attacks the opposing party, under your control. Use CP to bring out a Summoned Monster, and it'll appear in the same area, attacking the opposing party.");
 			sendBackNext();
-			
+
 			addText("#bSkill#k is an option of using skills such as Darkness, Weakness, and others to prevent the opposing party from defeating the monsters. It requires a lot of CP, but it's well worth it. The only problem is that it doesn't last that long. Use this tactic wisely!");
 			sendBackNext();
-			
+
 			addText("#bProtector#k is basically a summoned item that greatly boosts the abilities of the monster summoned by your party. Protector works as long as it's not demolished by the opposing party, so I suggest you summon a lot of monsters first, and then bring out the Protector.");
 			sendBackNext();
-			
+
 			addText("Lastly, while you're in the Monster Carnival, #byou cannot use the recovery items/potions that you carry around with you.#k However, the monsters will drop those items every once in a while, and #bas soon as you pick it up, the item will activate immediately#k. That's why it's just as important to know WHEN to pick up those items.");
 			sendBackNext();
 		else
@@ -186,7 +186,7 @@ elseif option == 2 then
 	addText("#L5# Weapon for Thieves#l\r\n");
 	addText("#L6# Weapon for Pirates#l");
 	choice = askChoice();
-	
+
 	if choice == 0 or choice == 1 then
 		-- Necklace garbage
 		local requirement = 40;

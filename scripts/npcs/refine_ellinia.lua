@@ -179,7 +179,7 @@ else
 			addText("\r\n#L" .. i .. "##b #t" .. upgradeGloveIds[i] .. "##k(Level limit : " .. upgradeGloveLimits[i] .. ", magician)#l");
 		end
 		what = askChoice();
-		
+
 		item = upgradeGloveIds[what];
 		reqs = upgradeGloveReqs[what];
 		limit = upgradeGloveLimits[what];
@@ -208,7 +208,7 @@ else
 			addText("\r\n#L" .. i .. "##b #t" .. hatIds[i] .. "##k(Level limit : " .. hatLimits[i] .. ", wizard)#l");
 		end
 		what = askChoice();
-		
+
 		item = hatIds[what];
 		reqs = hatReqs[what];
 		limit = hatLimits[what];

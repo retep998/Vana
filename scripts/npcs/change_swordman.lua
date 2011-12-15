@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Warrior Job Instructor (Outside)
 
-if (getItemAmount(4031008) > 0 and getItemAmount(4031013) == 0) then	
+if (getItemAmount(4031008) > 0 and getItemAmount(4031013) == 0) then
 	addText("Hmmm...it is definitely the letter from #b#p1022000##k...so you came all the way here to take ");
 	addText("the test and make the 2nd job advancement as the warrior. Alright, I'll explain the test to you. ");
 	addText("Don't sweat it too much, it's not that complicated.");

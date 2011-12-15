@@ -19,16 +19,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/jobFunctions.lua");
 
-if getJob() == 0 then
+questState = getPlayerVariable("third_job_advancement", true);
+if questState == 1 then
+	addText("Ah, I was waiting for you. ");
+	addText("I heard about you from #bRobeira#k in Ossyria, and I'd actually like to test your strength. ");
+	addText("There is a secret passage near the forest of Ellinia, in which only you are allowed to enter. ");
+	addText("There, you will meet my other self. ");
+	addText("Defeat him and bring the #b#t4031059##k to me.");
+	sendNext();
+
+	addText("My the other self is quite strong. ");
+	addText("He uses many special skills and you should fight with him 1 on 1. ");
+	addText("However, people cannot stay long in the secret passage, so it is important to beat him ASAP. ");
+	addText("Well... Good luck! I will look forward to you bringing #b#t4031059##k to me.");
+	sendBackNext();
+
+	setPlayerVariable("third_job_advancement", 2);
+elseif questState == 2 then
+	if getItemAmount(4031059) > 0 then
+		addText("Wow! You beat my other self and brought the #b#t4031059##k to me. ");
+		addText("This surely proves your strength and that you are ready to advance to the 3rd job. ");
+		addText("As I promised, I will give #b#t4031057##k to you. ");
+		sendNext();
+
+		giveItem(4031059, -1);
+		giveItem(4031057, 1);
+
+		addText("Give this necklace to #bRobeira#k in Ossyria and you will be able to take second test of the 3rd job advancement. Good luck!");
+		sendNext();
+	else
+		addText("Hmmm...weird. ");
+		addText("Are you sure that you have the #b#t4031059##k? ");
+		addText("If you do have it, make sure you have an empty slot in your Item Inventory.");
+		sendNext();
+	end
+elseif getJob() == 0 then
 	addText("Do you want to be a Magician? You need to meet some requirements in ");
 	addText("order to do so. You need to be at least at #bLevel 8#k. ");
 	addText("Let's see if you have what it takes to become a Magician...");
 	sendNext();
 
-	if (getLevel() >= 8) then
+	if getLevel() >= 8 then
 		addText("You definitely have the look of a Magician. You may not be there yet, but I can ");
 		addText("see the Magician in you...what do you think? Do you want to become the Magician?");
-		yes = askYesNo();
+		local yes = askYesNo();
 
 		if yes == 1 then
 			addText("Alright, you're a Magician from here on out, since I, Grendel the Really old, the ");
@@ -47,9 +81,9 @@ if getJob() == 0 then
 			end
 
 			setJob(200);
-			giveItem(1372043, 1); 
-			mpInc = 100 + getRandomNumber(50); 
-			setMaxMp(getRealMaxMp() + mpInc); 
+			giveItem(1372043, 1);
+			mpInc = 100 + getRandomNumber(50);
+			setMaxMp(getRealMaxMp() + mpInc);
 			setStr(4); -- Stat reset
 			setDex(4);
 			setInt(20);
@@ -86,13 +120,13 @@ if getJob() == 0 then
 		addText("yourself to be more powerful than you are right now. Please come back much stronger.");
 		sendBackNext();
 	end
-elseif (getJobLine() == 2 and getJobTrack() > 0) then
+elseif getJobLine() == 2 and getJobTrack() > 0 then
 	addText("Any questions about being a Magician?\r\n");
 	addText("#L0##bWhat are the basic characteristics of being a Magician?#k#l\r\n");
 	addText("#L1##bWhat are the weapons that the Magicians use?#k#l\r\n");
 	addText("#L2##bWhat are the armors the Magicians can wear?#k#l\r\n");
 	addText("#L3##bWhat are the skills available for Magicians?#k#l");
-	explain = askChoice();
+	local explain = askChoice();
 
 	if explain == 0 then
 		addText("I'll tell you more about being a Magician. Magicians put high levels of magic and intelligence to ");
@@ -141,12 +175,12 @@ elseif (getJobLine() == 2 and getJobTrack() > 0) then
 		addText("Energy Bolt once it's more than 1, so keep that in mind. Whatever you choose to do, it's all upto you...");
 		sendBackNext();
 	end
-elseif (getJob() == 200 and getLevel() >= 30) then
-	if (getItemAmount(4031009) == 0 and getItemAmount(4031012) == 0) then
+elseif getJob() == 200 and getLevel() >= 30 then
+	if getItemAmount(4031009) == 0 and getItemAmount(4031012) == 0 then
 		addText("Hmmm...you have grown quite a bit since last time. You look much different from before, where you looked weak and ");
 		addText("small...instead now I can definitely feel you presence as the Magician...so...what do you think? Do you want to ");
 		addText("get even stronger than you are right now? Pass a simple test and I can do that for you...do you want to do it?");
-		yes = askYesNo();
+		local yes = askYesNo();
 
 		if yes == 0 then
 			addText("Really? It will help you out a great deal on your journey if you get stronger fast...if you choose to ");
@@ -164,11 +198,11 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 			addText("Best of luck to you...");
 			sendBackNext();
 		end
-	elseif (getItemAmount(4031009) > 0 and getItemAmount(4031012) == 0) then
+	elseif getItemAmount(4031009) > 0 and getItemAmount(4031012) == 0 then
 		addText("Still haven't met the person yet? Find #b#p1072001##k who's around #b#m101020000#k ");
 		addText("near Ellinia. Give the letter to him and he may let you know what to do.");
 		sendNext();
-	elseif (getItemAmount(4031009) == 0 and getItemAmount(4031012) > 0) then
+	elseif getItemAmount(4031009) == 0 and getItemAmount(4031012) > 0 then
 		addText("You got back here safely. Well done. I knew you'd pass the tests very easily...alright, I'll make you much ");
 		addText("stronger now. Before that, though...you need to choose one of the three paths that will be given to you. ");
 		addText("It will be a tough decision for you to make, but...if you have any questions about it, feel free to ask.");
@@ -176,10 +210,10 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom...\r\n");
 		addText("#L0##bPlease explain the characteristics of the Wizard of Fire and Poison.#l#k\r\n");
-		addText("#L1##bPlease explain the characteristics of the Wizard of ICe and Lightning.#l#k\r\n");
-		addText("#L2##bPlease explain the characteristics of the Cleric.#l#k\r\n");		
+		addText("#L1##bPlease explain the characteristics of the Wizard of Ice and Lightning.#l#k\r\n");
+		addText("#L2##bPlease explain the characteristics of the Cleric.#l#k\r\n");
 		addText("#L3##bI'll choose my occupation!#l#k\r\n");
-		choice = askChoice();
+		local choice = askChoice();
 
 		if choice == 0 then
 			addText("Allow me to explain the Wizard of Fire and Poison. They specialize in fire and poision magic. Skills like ");
@@ -238,7 +272,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 			addText("#L0##bThe Wizard of Fire and Poison#l#k\r\n");
 			addText("#L1##bThe Wizard of Ice and Lightning#l#k\r\n");
 			addText("#L2##bCleric#l#k\r\n");
-			job = askChoice();
+			local job = askChoice();
 
 			if job == 0 then
 				addText("So you want to make the 2nd job advancement as the #bWizard of Fire and Poison#k? Once you have ");
@@ -247,7 +281,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 
 				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then
@@ -289,7 +323,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 
 				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then
@@ -332,7 +366,7 @@ elseif (getJob() == 200 and getLevel() >= 30) then
 
 				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then

@@ -44,7 +44,7 @@ else
 	else
 		addText("! You look pretty strong. All right, do you want to go in?");
 		yes = askYesNo();
-	
+
 		if yes == 1 then
 			setMap(211040300, "sp");
 		else

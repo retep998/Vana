@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getMap() == 251000000 then
 	addText("Hello there? I'm the crane that flies from #bOrbis#k to #bMu Lung#k and back. I fly around all the time, so I figured, why not make some money by taking travelers like you along for a small fee? It's good business for me. Anyway, what do you think? Do you want to fly to #bMu Lung#k right now? I only charge #b1500 mesos#k.");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		if giveMesos(-1500) then
 			setMap(250000100);
@@ -37,7 +37,7 @@ elseif getMap() == 250000100 then
 	addText("#b#L0# Orbis(6000 mesos)#l\r\n");
 	addText("#L1# Herb Town(1500 mesos)#l");
 	what = askChoice();
-	
+
 	if what == 0 then
 		if isInstance("hakToOrbis") then
 			addText("Someone else is on the way to Orbis right now. Talk to me in a little bit.");
@@ -55,7 +55,7 @@ elseif getMap() == 250000100 then
 	elseif what == 1 then
 		addText("Will you move to #b#m251000000##k now? If you have #b1500mesos#k, I'll take you there right now.");
 		yes = askYesNo();
-		
+
 		if yes == 1 then
 			if giveMesos(-1500) then
 				setMap(251000000);
@@ -72,7 +72,7 @@ elseif getMap() == 200000141 then
 	addText("Hello there? I'm the crane that flies from #bOrbis#k to #bMu Lung#k and back. I fly around all the time, so I figured, why not make some money by taking travelers like you along for a small fee? It's good business for me. Anyway, what do you think? \r\n");
 	addText("#b#L0# Mu Lung(6000 mesos)#l");
 	what = askChoice();
-	
+
 	if what == 0 then
 		if isInstance("hakToMuLung") then
 			addText("Someone else is on the way to Mu Lung right now. Talk to me in a little bit.");

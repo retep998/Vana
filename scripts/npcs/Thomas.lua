@@ -20,24 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getMap() == 100000000 then
 	addText("I can take you to Amoria Village. Are you ready to go?");
 	yes = askYesNo();
-    
+
 	if yes == 1 then
 		addText("I hope you had a great time! See you around!");
 		sendNext();
-		
+
 		setMap(680000000);
 	else
 		addText("Ok, feel free to hang around until you're ready to go!");
 		sendOk();
 	end
-else	
+else
 	addText("I can take you back to your original location. Are you ready to go?");
 	yes = askYesNo();
 
 	if yes == 1 then
 		addText("I hope you had a great time! See you around!");
 		sendNext();
-	
+
 		setMap(100000000);
 	else
 		addText("Ok, feel free to hang around until you're ready to go!");
