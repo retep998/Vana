@@ -29,7 +29,7 @@ getEyeColour(newEyes);
 if what == 0 then
 	addText("If you use the regular coupon, you'll be awarded a random pair of cosmetic lenses. Are you going to use #b#t5152010##k and really make the change to your eyes?");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		if getItemAmount(5152010) > 0 then
 			giveItem(5152010, -1);
@@ -47,7 +47,7 @@ if what == 0 then
 elseif what == 1 then
 	addText("With our specialized machine, you can see yourself after the treatment in advance. What kind of lens would you like to wear? Choose the style of your liking...");
 	style = askStyle(newEyes) + 1;
-	
+
 	if getItemAmount(5152013) > 0 then
 		giveItem(5152013, -1);
 		if newEyes[style] > 0 then

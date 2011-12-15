@@ -33,7 +33,7 @@ while true do
 	if what == 0 then
 		addText("Sharenian was a literate civilization from the past that had control over every area of the Victoria Island. The Temple of Golem, the Shrine in the deep part of the Dungeon, and other old architectural constructions where no one knows who built it are indeed made during the Sharenian times.");
 		sendNext();
-		
+
 		addText("The last king of Sharenian was a gentleman named Sharen III, and apparently he was a very wise and compassionate king. But one day, the whole kingdom collapsed, and there was no explanation made for it.");
 		sendBackNext();
 	elseif what == 1 then
@@ -42,7 +42,7 @@ while true do
 	elseif what == 2 then
 		addText("I've sent groups of the explorers to Sharenian before, but none of them ever came back, which prompted us to start the Guild Quest. We've been waiting for guilds that are strong enough to take on tough challenges, guilds like yours.");
 		sendNext();
-		
+
 		addText("The ultimate goal of this Guild Quest is to explore Sharenian and find #t4001024#. This is not a task where power solves everything. Teamwork is more important here.");
 		sendBackNext();
 	elseif what == 3 then

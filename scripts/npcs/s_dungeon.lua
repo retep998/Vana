@@ -23,14 +23,14 @@ if getItemAmount(4000138) == 0 then
 else
 	addText("Hey hey! That item you have there...isn't that our boss's comb!? Holy cow! I knew it! As soon as I saw you, I knew you would be the one defiant enough to take on the Boss. Are you sure? He's not going to give up without a fight--the evil spirit within him will ensure that. Do you want to take on the Boss?");
 	yes = askYesNo();
-	
+
 	if yes == 0 then
 		addText("Really? Then let me know if you ever change your mind. ");
 		sendNext();
 	else
 		addText("Are you sure you're going to enter this room? Just remember, you can't stay here forever, and if you place our boss's comb on top of the treasure chest, the thugs will pounce on you, so be careful! ");
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("Really? Then let me know if you ever change your mind. ");
 			sendNext();

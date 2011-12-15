@@ -27,9 +27,13 @@ end
 toMap = 0;
 cloneId = 0;
 instance = "";
+questState = getPlayerVariable("third_job_advancement", true);
 
-if getJobTrack() == 0 or getJobProgression() ~= 0 then
-	-- They are either Beginners or non-second job
+if getJobTrack() == 0 or getJobProgression() ~= 0 or questState == nil or questState ~= 2 then
+	-- Beginners, non-second job, not in the process of advancing, too far in the advancement
+	failText();
+elseif questState == 2 and (getItemAmount(4031059) > 0 or getItemAmount(4031057) > 0) then
+	-- Right stage but has an item, don't want them to be able to hoard
 	failText();
 else
 	m = getMap();

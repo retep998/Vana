@@ -31,16 +31,16 @@ reaction = askChoice();
 if reaction == 0 then
 	addText("To get married in the Cathedral, you'll need #ra Cathedral Wedding Ticket, any Engagement Ring or an Empty Engagement Ring Box and most of all, love#k. Soon as you have them, we'll be happy to assist with your Wedding plans! If you reserved the Cathedral don't forget to see High Priest John for the Officiator's permission.");
 	sendNext();
-elseif reaction == 1 then 
+elseif reaction == 1 then
 	addText("To make a Reservation, you'll need to be grouped with your fiancee or fiancee... ");
 	sendNext();
-elseif reaction == 2 then 
+elseif reaction == 2 then
 	addText("To make a Reservation, you'll need to be grouped with your fiance... ");
 	sendNext();
-elseif reaction == 3 then 
+elseif reaction == 3 then
 	addText("To receive some more invitations, you'll need to be grouped with your fiance... ");
 	sendNext();
-elseif reaction == 4 then 
+elseif reaction == 4 then
 	addText("If you cancel your wedding reservation, all items and quest information pertaining to weddings will disappear. Would you really like to cancel?");
 	yes = askYesNo();
 

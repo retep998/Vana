@@ -235,7 +235,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 
 				if yes == 0 then
 					addText("Really? So you need to think about it a little more? Take your time...this is not something ");
-					addText("that you should take lightly...let me know when you have made your decision, okay?");				
+					addText("that you should take lightly...let me know when you have made your decision, okay?");
 					sendNext();
 
 				else
@@ -281,7 +281,7 @@ elseif getJob() == 100 and getLevel() >= 30 then
 
 				if yes == 0 then
 					addText("Really? So you need to think about it a little more? Take your time...this is not something ");
-					addText("that you should take lightly...let me know when you have made your decision, okay?");				
+					addText("that you should take lightly...let me know when you have made your decision, okay?");
 					sendNext();
 
 				else
@@ -319,14 +319,14 @@ elseif getJob() == 100 and getLevel() >= 30 then
 						sendBackNext();
 					end
 				end
-			elseif choice == 2 then 
+			elseif choice == 2 then
 				addText("So you want to make the 2nd job advancement as the #bSpearman#k? Once you make that decision ");
 				addText("you can't go back and choose another job...do you still wanna do it?");
 				yes = askYesNo();
 
 				if yes == 0 then
 					addText("Really? So you need to think about it a little more? Take your time...this is not something ");
-					addText("that you should take lightly...let me know when you have made your decision, okay?");				
+					addText("that you should take lightly...let me know when you have made your decision, okay?");
 					sendNext();
 
 				else

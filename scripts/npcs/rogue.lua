@@ -52,14 +52,14 @@ elseif getJob() == 0 then
 			addText("ain't much, but I'll give you some of my abilities...HAAAHHH!!");
 			sendNext();
 
-			if getLevel() >= 30 then 
+			if getLevel() >= 30 then
 				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
 				addText("that were late in making job advancements, we compensate them with lost Skill Points, ");
 				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
 				giveSp(1);
-			else 
+			else
 				giveSp((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
 			end
 
@@ -180,7 +180,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 		addText("Pass a simple test and I'll do just that for you. Do you want to do it?");
 		yes = askYesNo();
 
-		if yes == 0 then 
+		if yes == 0 then
 			addText("Really? It will help you out a great deal on your journey if you get stronger fast...if you choose to ");
 			addText("change your mind in the future, please feel free to come back. Know that I'll make you much more ");
 			addText("powerful than you are right now.");
@@ -200,7 +200,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 		addText("Still haven't met the person yet? Find #b#p1072003##k who's around #b#m102040000##k ");
 		addText("near Kerning City. Give the letter to him and he may let you know what to do.");
 		sendNext();
-	elseif (getItemAmount(4031012) > 0 and getItemAmount(4031011) == 0) then 
+	elseif (getItemAmount(4031012) > 0 and getItemAmount(4031011) == 0) then
 		addText("Hmmm...so you got back here safely. I knew that test would be too easy for you. I admit, you are a great ");
 		addText("great thief. Now...I'll make you even more powerful than you already are. But, before all that...you need to ");
 		addText("choose one of two ways. It'll be a difficult decision for you to make, but...if you have any questions, please ask.");
@@ -211,7 +211,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 		addText("#L1##bPlease explain the characteristics of the Bandit.#k#l\r\n");
 		addText("#L2##bI'll choose my occupation!#k#l\r\n");
 		choice = askChoice();
-		if choice == 0 then 
+		if choice == 0 then
 			addText("Let me explain the role of the Assassin. Assassin is the Thief that uses throwing stars or daggers. Skills like ");
 			addText("#bClaw Mastery#k and #bCritical Throw#k will help you use your throwing stars better. Boost Claw Mastery up ");
 			addText("more and your maximum number of throwing stars increases, so it'll be best to learn it. Please remember that.");
@@ -254,9 +254,9 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 				addText("you can't go back and change your mind. You ARE sure about this, right?");
 				yes = askYesNo();
 
-				if yes == 0 then 
+				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then
@@ -268,7 +268,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveSp(1);
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
-						newHp = 300 + getRandomNumber(50); -- Extra HP calculated 
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated
 						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
 						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
 						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
@@ -293,14 +293,14 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						sendBackNext();
 					end
 				end
-			elseif job == 1 then 
+			elseif job == 1 then
 				addText("So you want to make the 2nd job advancement as the #bBandit#k? Once you have made the decision, ");
 				addText("you can't go back and change your mind. You ARE sure about this, right?");
 				yes = askYesNo();
 
-				if yes == 0 then 
+				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then
@@ -312,7 +312,7 @@ elseif (getJob() == 400 and getLevel() >= 30) then
 						giveSp(1); -- Give necessary SP
 						giveItem(4031012, -1); -- Take The Proof of a Hero
 						addSlots(2, 1); -- Add inventory slots
-						newHp = 300 + getRandomNumber(50); -- Extra HP calculated 
+						newHp = 300 + getRandomNumber(50); -- Extra HP calculated
 						newMp = 150 + getRandomNumber(50); -- Extra MP calculated
 						setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
 						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP

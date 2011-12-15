@@ -102,7 +102,7 @@ else
 	addText("#L2##b Upgrade a helmet#l\r\n");
 	addText("#L3##b Upgrade a shield#l\r\n");
 	what = askChoice();
-	
+
 	if what == 0 then
 		addText("Which mineral do you want to make?\r\n");
 		addText("#L1##b #t4011000##k#l\r\n");
@@ -113,7 +113,7 @@ else
 		addText("#L6##b #t4011005##k#l\r\n");
 		addText("#L7##b #t4011006##k#l");
 		what = askChoice();
-		
+
 		mineral = mineralIds[what];
 		reqs = mineralReqs[what];
 		addText("To make a(n) #t" .. mineral .. "#, I need the following materials. How many would you like to make?\r\n\r\n");
@@ -123,7 +123,7 @@ else
 		addText("To make #b" .. amount .. " #t" .. reqs[1] .. "#(s)#k, I need the following materials. Are you sure you want to make these?\r\n\r\n");
 		displayResources(reqs, amount);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("We have all kinds of items so don't panic, and choose the one you want to buy...");
 			sendNext();
@@ -149,7 +149,7 @@ else
 		addText("#L8##b #t4021007##k#l\r\n");
 		addText("#L9##b #t4021008##k#l");
 		what = askChoice();
-		
+
 		jewel = jewelIds[what];
 		reqs = jewelReqs[what];
 		addText("To make a(n) #t" .. jewel .. "#, I need the following materials. How many would you like to make?\r\n\r\n");
@@ -159,7 +159,7 @@ else
 		addText("To make #b" .. amount .. " #t" .. reqs[1] .. "#(s)#k, I need the following materials. Are you sure you want to make these?\r\n\r\n");
 		displayResources(reqs, amount);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("We have all kinds of items so don't panic, and choose the one you want to buy...");
 			sendNext();
@@ -208,18 +208,18 @@ else
 		addText("#L23##b #t1002022##k(level limit: 55, warrior)#l\r\n");
 		addText("#L24##b #t1002101##k(level limit: 55, warrior)#l");
 		what = askChoice();
-		
+
 		helm = helmetIds[what];
 		reqs = helmetReqs[what];
 		addText("To make one #t" .. helm .. "#, I need the following materials.");
-		if helmetStats[what] ~= nil then 
+		if helmetStats[what] ~= nil then
 			addText("This item has an option of " .. helmetStats[what] ..". ");
 		end
 		addText("Make sure you don't use an item that's been upgraded as a material for it.");
 		addText("What do you think? Do you want one?\r\n\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("Really? Sorry to hear that. Come back when you need me.");
 			sendNext();
@@ -248,18 +248,18 @@ else
 		addText("#L3##b #t1092010##k(level limit: 60, warrior)#l\r\n");
 		addText("#L4##b #t1092011##k(level limit: 60, warrior)#l\r\n");
 		what = askChoice();
-		
+
 		shield = shieldIds[what];
 		reqs = shieldReqs[what];
 		addText("To make one #t" .. shield .. "#, I need the following materials. ");
-		if shieldStats[what] ~= nil then 
+		if shieldStats[what] ~= nil then
 			addText("This item has an option of " .. shieldStats[what] ..". ");
 		end
 		addText("Make sure you don't use an item that's been upgraded as a material for it. ");
 		addText("What do you think? Do you want one?\r\n\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("Really? Sorry to hear that. Come back when you need me.");
 			sendNext();

@@ -26,13 +26,13 @@ if getItemAmount(4031013) >= 30 then
 	giveItem(4031010, -getItemAmount(4031010));
 	giveItem(4031012, 1);
 	setMap(100000000);
-elseif getItemAmount(4031013) < 30 then 
+elseif getItemAmount(4031013) < 30 then
 	addText("What's going on? Doesn't look like you have collected 30 #b#t4031013##k, yet...If you're having ");
 	addText("problems with it, then you can leave, come back and try it again. So...wanna give up ");
 	addText("and get out of here?");
 	yes = askYesNo();
 
-	if yes == 0 then 
+	if yes == 0 then
 		addText("That's right! Stop acting weak and start collecting the marbles. Talk to me when you have ");
 		addText("collected 30 #b#t4031013##k.");
 		sendNext();

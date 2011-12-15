@@ -148,8 +148,8 @@ elseif (getJobLine() == 3 and getJobTrack() > 0) then
 		sendBackNext();
 	end
 
-elseif (getJob() == 300 and getLevel() >= 30) then 
-	if (getItemAmount(4031010) == 0 and getItemAmount(4031012) == 0) then 
+elseif (getJob() == 300 and getLevel() >= 30) then
+	if (getItemAmount(4031010) == 0 and getItemAmount(4031012) == 0) then
 		addText("Hmmm...you have grown a lot since I last saw you. I don't see the weakling I saw before, and instead, look much ");
 		addText("more like a bowman now. Well, what do you think? Don't you want to get even more powerful than that? Pass a simple ");
 		addText("test and I'll do just that for you. Do you want to do it?");
@@ -237,7 +237,7 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 
 				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
 				else
 					if getSp() > ((getLevel() - 30) * 3) then
@@ -283,9 +283,9 @@ elseif (getJob() == 300 and getLevel() >= 30) then
 
 				if yes == 0 then
 					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");				
+					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 					sendNext();
-				else 
+				else
 					if getSp() > ((getLevel() - 30) * 3) then
 						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
 						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");

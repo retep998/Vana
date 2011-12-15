@@ -68,7 +68,7 @@ else
 	addText("#L1# Upgrade a glove#l\r\n");
 	addText("#L2# Create materials#l");
 	what = askChoice();
-	
+
 	if what == 0 then
 		addText("I'm the best glove-maker in this town!! Now...what kind of a glove do you want to make?\r\n");
 		addText("#L0##b #t1082003##k(level limit : 10, warrior)#l\r\n");
@@ -81,14 +81,14 @@ else
 		addText("#L7##b #t1082009##k(level limit : 50, warrior)#l\r\n");
 		addText("#L8##b #t1082059##k(level limit : 60, warrior)#l");
 		what = askChoice() + 1;
-		
+
 		glove = makeIds[what];
 		reqs = makeReqs[what];
 		level = makeLimits[what];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();
@@ -105,7 +105,7 @@ else
 	elseif what == 1 then
 		addText("So you want to upgrade the glove? Ok, then. A word of warning, though: All the items that will be used for upgrading will be gone, but if you use an item that has been #rupgraded#k with a scroll, the effect will disappear when upgraded. Please take that into consideration when making the decision, ok?");
 		sendNext();
-		
+
 		addText("So~~ what kind of a glove do you want to upgrade and create?\r\n");
 		addText("#L0##b #t1082005##k(level limit : 30, warrior)#l\r\n");
 		addText("#L1##b #t1082006##k(level limit : 30, warrior)#l\r\n");
@@ -118,14 +118,14 @@ else
 		addText("#L8##b #t1082060##k(level limit : 60, warrior)#l\r\n");
 		addText("#L9##b #t1082061##k(level limit : 60, warrior)#l");
 		what = askChoice();
-		
+
 		glove = upgradeIds[what + 1];
 		reqs = upgradeReqs[what + 1];
 		level = upgradeLimits[what + 1];
 		addText("To make one #t" .. glove .. "#, I need the following items. The level limit is " .. level .. " and please make sure you don't use an item that's been upgraded as a material for it. What do you think? Do you want one?\r\n");
 		displayResources(reqs);
 		yes = askYesNo();
-		
+
 		if yes == 0 then
 			addText("Lacking the materials? It's ok ... collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();
@@ -145,7 +145,7 @@ else
 		addText("#L1##bMake #t4003001# with #t4000018##k#l\r\n");
 		addText("#L2##bMake #t4003000#s#k#l");
 		what = askChoice();
-		
+
 		material = materialIds[what + 1];
 		reqs = materialReqs[what + 1];
 		amt = materialAmounts[what + 1];
@@ -157,7 +157,7 @@ else
 			addText("With #b1 #t4011001#(s) and #t4011000#(s) each#k, I can make 15 #t4003000#s. Be thankful, because this one's on me. What do you think? How many do you want?");
 		end
 		extra = askNumber(0, 0, 100);
-		
+
 		-- Output for this step is all messed up, thank Nexon
 		if what == 0 then
 			addText("You want to make #b#t4003001#(s)#k " .. extra .. " time(s)? I'll need  #r" .. reqs[2] * extra .. " #t4000003#es#k then.");
@@ -167,7 +167,7 @@ else
 			addText("You want to make #b#t4003000#s#k " .. extra .. " time(s)? I'll need  #r" .. reqs[2] * extra .. " #t4011001#(s) and #t4011000#(s) each#k then.");
 		end
 		yes = askYesNo();
-		
+
 		if 1 == 0 then
 			addText("Lacking the materials? It's all good...collect them all and then come find me, alright? I'll be waiting...");
 			sendNext();

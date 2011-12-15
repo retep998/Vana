@@ -55,7 +55,7 @@ items = {
 if getItemAmount(5220000) >= 1 then
 	addText("You have a #bGachapon Ticket#k. Would you like to use it?");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		giveItem(5220000, -1);
 		random = getRandomNumber(#items); -- generate random number between 1 and the amount of items in the items array

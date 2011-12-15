@@ -51,6 +51,6 @@ else
 	addText("Please make sure you know where you are going and then go to the platform through me.");
 	if selected == 0 or selected == 1 or selected == 2 then
 		addText(" The ride is on schedule so you better not miss it!");
-	end		
+	end
 	sendNext();
 end

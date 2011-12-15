@@ -21,7 +21,7 @@ if getItemAmount(4031450) > 0 then
 	if giveItem(2280011, 1) then
 		giveItem(4031450, -1);
 		addText("As you collect the ice, your hammer breaks.");
-		sendNext();		
+		sendNext();
 	else
 		addText("You have no inventory space.");
 		sendNext();

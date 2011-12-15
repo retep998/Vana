@@ -33,7 +33,7 @@ if yes == 1 then
 	elseif m == 260000110 then toMap = 260000100;
 	else consoleOutput("Unsupported goOutWaitingRoom map: " .. m);
 	end
-	
+
 	if toMap ~= 0 then
 		setMap(toMap, "sp");
 	end

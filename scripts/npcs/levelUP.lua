@@ -43,7 +43,7 @@ else
 		setStyle(getRandomHair());
 	end
 	style = askStyle(styles) + 1;
-	
+
 	if styles[style] >= 0 then
 		setStyle(styles[style]);
 	end

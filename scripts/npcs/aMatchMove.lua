@@ -38,7 +38,7 @@ if getLevel() >= 20 and getLevel() <= 30 then
 	addText("#b#L0# I'd love to participate in this great competition.#l");
 	what = askChoice();
 
-	if what == 0 then 
+	if what == 0 then
 		addText("Okay, now I'll send you to the battle arena. I'd like to see you emerge victorious!");
 		sendNext();
 

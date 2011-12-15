@@ -29,7 +29,7 @@ if what == 0 then
 elseif what == 1 then
 	addText("Oh, the brave one. I've been awaiting your arrival. If these thugs are left unchecked, there's no telling what going to happen in this neighborhood. Before that happens, I hope you take care of all of them and beat the boss, who resides on the 5th floor. You'll need to be on alert at all times, since the boss is too tough for even the wisemen to handle. Looking at your eyes, however, I can see that eye of the tiger, the eyes that tell me you can do this. Let's go!");
 	sendNext();
-	
+
 	setMap(801040000);
 elseif what == 2 then
 	addText("I'm a busy person! Leave me alone if that's all you need!");

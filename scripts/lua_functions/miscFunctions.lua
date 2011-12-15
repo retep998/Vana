@@ -17,6 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A subset of Lua functions that helps with miscellaneous tasks
 
+function getOrdinal(n)
+	n = tonumber(n);
+	local ending = "th";
+	local digit = n % 10;
+	if digit < 10 or digit > 14 then
+		if digit == 1 then ending = "st";
+		elseif digit == 2 then ending = "nd";
+		elseif digit == 3 then ending = "rd";
+		end
+	end
+	return ending;
+end
+
 function getInstanceMinutes()
 	local g = getInstanceTime();
 	g = (g - (g % 60)) / 60 + 1;

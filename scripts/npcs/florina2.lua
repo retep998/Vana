@@ -26,7 +26,7 @@ what = askChoice();
 if what == 0 then
 	addText("So you want to pay #b1500 mesos#k and leave for #m110000000#? Alright, then, but just be aware that you may be running into some monsters around there, too. Okay, would you like to head over to #m110000000# right now?");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		if giveMesos(-1500) then
 			setPlayerVariable("florina_origin", getMap());
@@ -42,7 +42,7 @@ if what == 0 then
 elseif what == 1 then
 	addText("So you have #b#b#t4031134##k? You can always head over to #m110000000# with that Alright, then, but just be aware that you may be running into some monsters there, too. Okay, would you like to head over to  #m110000000# right now?");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		if getItemAmount(4031134) >= 1 then
 			setPlayerVariable("florina_origin", getMap());
@@ -58,7 +58,7 @@ elseif what == 1 then
 elseif what == 2 then
 	addText("You must be curious about #b#t4031134##k. Haha, that's very understandable. #t4031134# is an item where as long as you have in possession, you may make your way to #m110000000# for free. It's such a rare item that even we had to buy those, but unfortunately I lost mine a few weeks ago during my precious summer break.");
 	sendNext();
-	
+
 	addText("I came back without it, and it just feels awful not having it. Hopefully someone picked it up and put it somewhere safe. Anyway this is my story and who knows, you may be able to pick it up and put it to good use. If you have any questions, feel free to ask.");
 	sendBackNext();
 end

@@ -28,7 +28,7 @@ if yes == 0 then
 else
 	addText("Alright, good call! It's not that expensive actually. For a special Ludibrium discount, #b240,000 mesos and I'll add 5 more slots to your buddy list#k. And no, I won't be selling them individually. Once you buy it, it's going to be permanently on your buddy list. So if you're one of those that needs more space there, then you might as well do it. What do you think? Will you spend 240,000 mesos for it?");
 	yes = askYesNo();
-	
+
 	if yes == 0 then
 		addText("I see... I don't think you don't have as many friends as I thought you would. If not, you just don't have 240,000 mesos with you right this minute? Anyway, if you ever change your mind, come back and we'll talk business. That is, of course, once you have get some financial relief ... hehe ...");
 		sendNext();

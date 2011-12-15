@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getItemAmount(4001020) >= 1 then
 	addText("You can use #b#t4001020##k to activate #b#p2040027##k. Will you head over to #b#p2040026##k at the 41st floor??");
 	yes = askYesNo();
-	
+
 	if yes == 1 then
 		giveItem(4001020, -1);
 		setMap(221021700, "go00");

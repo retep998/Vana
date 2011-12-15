@@ -59,7 +59,7 @@ if a > 0 or b > 0 or c > 0 or d > 0 or e > 0 then
 				addText("It looks like there's plenty of room for this ride. Please have your ticket ready so I can let you in. The ride will be long, but you'll get to your destination just fine. What do you think? Do you want to get on this ride?");
 				yes = askYesNo();
 
-				if yes == 1 then		
+				if yes == 1 then
 					map = 600010004;
 					item = 4031711;
 				elseif yes == 0 then
