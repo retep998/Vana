@@ -98,6 +98,7 @@ public:
 	int32_t getEyes() const { return m_eyes; }
 	int32_t getHair() const { return m_hair; }
 	int32_t getMap() const { return m_map; }
+	int32_t getLastMap() const { return m_lastMap; }
 	int32_t getShop() const { return m_shop; }
 	int32_t getChair() const { return m_chair; }
 	int32_t getItemEffect() const { return m_itemEffect; }
@@ -162,6 +163,7 @@ private:
 	int32_t m_eyes;
 	int32_t m_hair;
 	int32_t m_map;
+	int32_t m_lastMap;
 	int32_t m_shop;
 	int32_t m_itemEffect;
 	int32_t m_chair;

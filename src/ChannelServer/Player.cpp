@@ -358,6 +358,7 @@ void Player::playerConnect(PacketReader &packet) {
 		m_map = Maps::getMap(m_map)->getReturnMap();
 		m_mapPos = -1;
 	}
+	m_lastMap = m_map;
 
 	m_pos = Maps::getMap(m_map)->getSpawnPoint(m_mapPos)->pos;
 	m_stance = 0;
@@ -418,6 +419,7 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 	}
 
 	oldMap->removePlayer(this);
+	m_lastMap = m_map;
 	m_map = mapId;
 	m_mapPos = portal->id;
 	m_usedPortals.clear();

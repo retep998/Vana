@@ -77,7 +77,7 @@ void DropDataProvider::loadDrops() {
 
 	query << "SELECT * FROM user_drop_data ORDER BY dropperid";
 	res = query.use();
-	int32_t lastdropperid = -1;
+	int32_t lastDropperId = -1;
 	bool dropped = false;
 
 	while (row = res.fetch_raw_row()) {
@@ -86,7 +86,7 @@ void DropDataProvider::loadDrops() {
 		runFlags(row[Flags], whoo);
 
 		dropper = atoi(row[DropperId]);
-		if (dropper != lastdropperid) {
+		if (dropper != lastDropperId) {
 			dropped = false;
 		}
 		drop.itemId = atoi(row[ItemId]);
@@ -99,7 +99,7 @@ void DropDataProvider::loadDrops() {
 			dropped = true;
 		}
 		m_dropInfo[dropper].push_back(drop);
-		lastdropperid = dropper;
+		lastDropperId = dropper;
 	}
 }
 
