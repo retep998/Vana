@@ -173,7 +173,7 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("-------------");
 	command.notes.push_back("Valid maps");
 	command.notes.push_back("-------------");
-	command.notes.push_back("Special: gm | fm | happyville | town | here | 3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
+	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
 	command.notes.push_back("Maple Island: southperry | amherst");
 	command.notes.push_back("Victoria: henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
 	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
@@ -405,6 +405,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	int32_t mapId = -1;
 	// Special
 	if (query == "here") mapId = player->getMap();
+	else if (query == "back") mapId = player->getLastMap();
 	else if (query == "town") mapId = Maps::getMap(player->getMap())->getReturnMap();
 	else if (query == "gm") mapId = Maps::GmMap;
 	else if (query == "fm") mapId = 910000000;
