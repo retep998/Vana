@@ -75,8 +75,9 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 					move->setIndex(i - 1);
 					player->getPets()->setSummoned(move->getIndex(), move->getId());
 					player->getPets()->setSummoned(i, 0);
-					if (move->getIndex() == 0)
+					if (move->getIndex() == 0) {
 						move->startTimer();
+					}
 				}
 			}
 		}

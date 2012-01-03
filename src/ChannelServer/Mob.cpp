@@ -362,7 +362,7 @@ void Mob::removeStatus(int32_t status, bool fromTimer) {
 				m_webPlayerId = 0;
 				Maps::getMap(m_mapId)->removeWebbedMob(getId());
 				break;
-			case StatusEffects::Mob::MagicAttackUp:	
+			case StatusEffects::Mob::MagicAttackUp:
 				switch (stat->skillId) {
 					case Jobs::NightLord::Taunt:
 					case Jobs::Shadower::Taunt:

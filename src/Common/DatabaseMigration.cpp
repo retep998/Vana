@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigrationRunner.h"
 #include "ExitCodes.h"
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp> 
+#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <iostream>
 

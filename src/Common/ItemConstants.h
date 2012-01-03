@@ -30,8 +30,8 @@ namespace Inventories {
 
 	const uint8_t MinSlotsPerInventory = 24;
 	const uint8_t MaxSlotsPerInventory = 100;
-	const int8_t MinSlotsStorage = 4;
-	const int8_t MaxSlotsStorage = 100;
+	const uint8_t MinSlotsStorage = 4;
+	const uint8_t MaxSlotsStorage = 100;
 
 	const uint8_t EquippedSlots = 51;
 	const int8_t MaxPetCount = 3;

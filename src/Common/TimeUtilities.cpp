@@ -226,9 +226,9 @@ uint32_t TimeUtilities::getTickCount() {
 	// sysconf(_SC_CLK_TCK) is the current way of getting CLK_TCK
 	uint32_t clkTck = sysconf(_SC_CLK_TCK);
 
-	if (clkTck < 1000)
+	if (clkTck < 1000) {
 		return times(&tm) * (1000 / clkTck);
-	else
-		return times(&tm) * (clkTck / 1000);
+	}
+	return times(&tm) * (clkTck / 1000);
 }
 #endif

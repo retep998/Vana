@@ -25,7 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/bind.hpp>
 #include <iostream>
 
-Session::Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation) :
+namespace asio = boost::asio;
+
+Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation) :
 	// Apparently, "isServer" is true from sessions created by the server for the client
 	// In addition, it's false from sessions created for the server clients
 	AbstractSession(sessionManager, (!isServer || isEncrypted)),
@@ -84,10 +86,10 @@ void Session::send(const unsigned char *buf, int32_t len) {
 	m_decoder.createHeader(buffer, (int16_t) len);
 	m_decoder.encrypt(buffer + headerLen, len);
 
-	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, realLength),
+	asio::async_write(m_socket, asio::buffer(buffer, realLength),
 		boost::bind(&Session::handleWrite, shared_from_this(),
-		boost::asio::placeholders::error,
-		boost::asio::placeholders::bytes_transferred));
+		asio::placeholders::error,
+		asio::placeholders::bytes_transferred));
 }
 
 void Session::sendIv(const PacketCreator &packet) {
@@ -99,21 +101,21 @@ void Session::sendIv(const PacketCreator &packet) {
 
 	memcpy(buffer, packet.getBuffer(), len);
 
-	boost::asio::async_write(m_socket, boost::asio::buffer(buffer, len),
+	asio::async_write(m_socket, asio::buffer(buffer, len),
 		boost::bind(&Session::handleWrite, shared_from_this(),
-		boost::asio::placeholders::error,
-		boost::asio::placeholders::bytes_transferred));
+		asio::placeholders::error,
+		asio::placeholders::bytes_transferred));
 }
 
 void Session::startReadHeader() {
 	m_buffer.reset(new unsigned char[headerLen]);
 
-	boost::asio::async_read(m_socket,
-		boost::asio::buffer(m_buffer.get(), headerLen),
+	asio::async_read(m_socket,
+		asio::buffer(m_buffer.get(), headerLen),
 		boost::bind(
 			&Session::handleReadHeader, shared_from_this(),
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+			asio::placeholders::error,
+			asio::placeholders::bytes_transferred));
 }
 
 void Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) {
@@ -141,12 +143,12 @@ void Session::handleReadHeader(const boost::system::error_code &error, size_t by
 
 		m_buffer.reset(new unsigned char[len]);
 
-		boost::asio::async_read(m_socket,
-			boost::asio::buffer(m_buffer.get(), len),
+		asio::async_read(m_socket,
+			asio::buffer(m_buffer.get(), len),
 			boost::bind(
 				&Session::handleReadBody, shared_from_this(),
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+				asio::placeholders::error,
+				asio::placeholders::bytes_transferred));
 	}
 	else {
 		disconnect();

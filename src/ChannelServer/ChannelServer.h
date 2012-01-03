@@ -65,6 +65,7 @@ public:
 	bool useEncryption() const { return m_config.clientEncryption; }
 	int8_t getWorld() const { return m_world; }
 	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
+	uint8_t getDefaultStorageSlots() const { return m_config.defaultStorageSlots; }
 	int16_t getMaxStats() const { return m_config.maxStats; }
 	int16_t getChannel() const { return m_channel; }
 	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + m_channel; }

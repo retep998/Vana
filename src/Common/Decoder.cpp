@@ -61,20 +61,20 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 
 	int32_t pos = 0;
 	uint8_t first = 1;
-	int32_t tpos = 0;
+	int32_t tPos = 0;
 	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption;
 
 	while (size > pos) {
 		ofbEncryption.SetKeyWithIV(AesKey, AesKeySize, m_ivSend); // Need to set it before every encryption
 
-		tpos = 1460 - first * 4;
-		if (size > (pos + tpos)) {
-			ofbEncryption.ProcessData(buffer + pos, buffer + pos, tpos);
+		tPos = 1460 - first * 4;
+		if (size > (pos + tPos)) {
+			ofbEncryption.ProcessData(buffer + pos, buffer + pos, tPos);
 		}
 		else {
 			ofbEncryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
-		pos += tpos;
+		pos += tPos;
 		if (first) {
 			first = 0;
 		}
@@ -89,20 +89,20 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 	}
 	int32_t pos = 0;
 	uint8_t first = 1;
-	int32_t tpos = 0;
+	int32_t tPos = 0;
 	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption;
 
 	while (size > pos) {
 		ofbDecryption.SetKeyWithIV(AesKey, AesKeySize, m_ivRecv); // Need to set it before every decryption
 
-		tpos = 1460 - first * 4;
-		if (size > (pos + tpos)) {
-			ofbDecryption.ProcessData(buffer + pos, buffer + pos, tpos);
+		tPos = 1460 - first * 4;
+		if (size > (pos + tPos)) {
+			ofbDecryption.ProcessData(buffer + pos, buffer + pos, tPos);
 		}
 		else {
 			ofbDecryption.ProcessData(buffer + pos, buffer + pos, size - pos);
 		}
-		pos += tpos;
+		pos += tPos;
 		if (first) {
 			first = 0;
 		}
@@ -143,9 +143,9 @@ void Decoder::nextIv(unsigned char *vector) {
 void Decoder::mapleEncrypt(unsigned char *buf, int32_t size) {
 	int32_t j;
 	uint8_t a, c;
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; ++i) {
 		a = 0;
-		for (j = size; j > 0; j--) {
+		for (j = size; j > 0; --j) {
 			c = buf[size - j];
 			c = BitUtilities::RotateLeft(c, 3);
 			c = (uint8_t)(c + j); // Guess this is supposed to be right?
@@ -157,7 +157,7 @@ void Decoder::mapleEncrypt(unsigned char *buf, int32_t size) {
 			buf[size - j] = c;
 		}
 		a = 0;
-		for (j = size; j > 0; j--) {
+		for (j = size; j > 0; --j) {
 			c = buf[j - 1];
 			c = BitUtilities::RotateLeft(c, 4);
 			c = (uint8_t)(c + j); // Guess this is supposed to be right?

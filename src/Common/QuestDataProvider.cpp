@@ -79,7 +79,7 @@ void QuestDataProvider::loadRequests() {
 		runFlags(row.get<opt_string>("request_type"), [&cur, reward, count](const string &cmp) {
 			if (cmp == "item") cur->addItemRequest(reward, count);
 			else if (cmp == "mob") cur->addMobRequest(reward, count);
-			else if (cmp == "quest") cur->addQuestRequest(static_cast<int16_t>(reward), static_cast<int8_t>(count));	
+			else if (cmp == "quest") cur->addQuestRequest(static_cast<int16_t>(reward), static_cast<int8_t>(count));
 		});
 	}
 }

@@ -125,7 +125,7 @@ void RankingCalculator::all() {
 		out.overall.oldRank = row.get<int32_t>("overall_opos");
 		v.push_back(out);
 	}
-	
+
 	if (v.size() > 0) {
 		overall(v);
 		world(v);

@@ -33,6 +33,8 @@ typedef boost::int64_t int64_t;
 typedef boost::uint64_t uint64_t;
 
 // Types for use with database
+// Thin wrapper around time_t so we could write a SOCI extension for it
+// time_t on its own is defined as __int64_t on MSVC which was conflicting with the SOCI extension for int64_t
 class unix_time_t {
 public:
 	unix_time_t() { m_time = time(nullptr); }
@@ -67,8 +69,7 @@ typedef optional<double> opt_double;
 typedef optional<unix_time_t> opt_unix_time_t;
 typedef optional<std::string> opt_string;
 
-
-// Vana-specific types
+// Miscellaneous utility types
 typedef uint16_t header_t;
 typedef uint16_t port_t;
 typedef uint32_t ip_t;

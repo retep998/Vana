@@ -156,7 +156,7 @@ int16_t PlayerStats::getMaxMp(bool withoutBonus) {
 }
 
 int16_t PlayerStats::statUtility(int32_t test) {
-	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test)); 
+	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test));
 }
 
 int16_t PlayerStats::getStr(bool withBonus) {
@@ -327,7 +327,7 @@ void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
 	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
-	if (Party *p = m_player->getParty()) { 
+	if (Party *p = m_player->getParty()) {
 		p->showHpBar(m_player);
 	}
 	m_player->getActiveBuffs()->checkBerserk();

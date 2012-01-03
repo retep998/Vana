@@ -77,7 +77,7 @@ Player::~Player() {
 
 void Player::setOnline(bool online) {
 	Database::getCharDb() << "UPDATE user_accounts u " <<
-								"SET " << 
+								"SET " <<
 								"	u.online = :online," <<
 								"	u.last_login = NOW() " <<
 								"WHERE u.user_id = :id",

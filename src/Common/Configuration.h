@@ -47,6 +47,7 @@ struct Configuration : public IPacketSerializable<Configuration> {
 	bool clientEncryption;
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
+	uint8_t defaultStorageSlots;
 	int16_t maxStats;
 	int32_t expRate;
 	int32_t questExpRate;
@@ -70,6 +71,7 @@ struct Configuration : public IPacketSerializable<Configuration> {
 		packet.addBool(clientEncryption);
 		packet.add<int8_t>(ribbon);
 		packet.add<uint8_t>(maxMultiLevel);
+		packet.add<uint8_t>(defaultStorageSlots);
 		packet.add<int16_t>(maxStats);
 		packet.add<int32_t>(expRate);
 		packet.add<int32_t>(questExpRate);
@@ -93,6 +95,7 @@ struct Configuration : public IPacketSerializable<Configuration> {
 		clientEncryption = packet.getBool();
 		ribbon = packet.get<int8_t>();
 		maxMultiLevel = packet.get<uint8_t>();
+		defaultStorageSlots = packet.get<uint8_t>();
 		maxStats = packet.get<int16_t>();
 		expRate = packet.get<int32_t>();
 		questExpRate = packet.get<int32_t>();

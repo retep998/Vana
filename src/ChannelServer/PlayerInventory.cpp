@@ -274,7 +274,7 @@ void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 
 	uint8_t &inv = m_maxSlots[inventory];
 	inv += (rows * 4);
-	
+
 	inv = MiscUtilities::constrainToRange(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
 	InventoryPacket::updateSlots(m_player, inventory + 1, inv);
 }

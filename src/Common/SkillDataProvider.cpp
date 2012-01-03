@@ -107,7 +107,6 @@ void SkillDataProvider::loadMobSkills() {
 
 		skillId = row.get<int32_t>("skillid");
 		level = row.get<uint8_t>("skill_level");
-
 		mobLevel.time = row.get<int16_t>("buff_time");
 		mobLevel.mp = row.get<uint8_t>("mp_cost");
 		mobLevel.x = row.get<int32_t>("x_property");
@@ -162,7 +161,6 @@ void SkillDataProvider::loadBanishData() {
 		m_banishInfo[mobId] = banish;
 	}
 }
-
 
 void SkillDataProvider::loadMorphs() {
 	m_morphInfo.clear();
