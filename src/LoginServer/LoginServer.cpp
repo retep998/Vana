@@ -142,6 +142,9 @@ void LoginServer::loadWorlds() {
 		formatter % i % "max_characters";
 		conf.maxChars = config.get<int32_t>(formatter.str());
 
+		formatter % i % "default_storage";
+		conf.defaultStorageSlots = config.get<uint8_t>(formatter.str());
+
 		formatter % i % "fame_time";
 		conf.fameTime = config.get<int32_t>(formatter.str());
 

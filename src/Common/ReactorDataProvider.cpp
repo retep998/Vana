@@ -82,7 +82,7 @@ void ReactorDataProvider::loadStates() {
 			else if (cmp == "hit_from_left") state.type = 2;
 			else if (cmp == "hit_from_right") state.type = 3;
 			else if (cmp == "hit_by_skill") state.type = 5;
-			else if (cmp == "hit_by_item") state.type = 100;	
+			else if (cmp == "hit_by_item") state.type = 100;
 		});
 
 		state.itemId = row.get<int32_t>("itemid");

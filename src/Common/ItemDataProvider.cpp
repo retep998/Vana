@@ -76,7 +76,7 @@ void ItemDataProvider::loadItems() {
 			else if (cmp == "karma_scissorable") item.karmaScissors = true;
 			else if (cmp == "expire_on_logout") item.expireOnLogout = true;
 			else if (cmp == "block_pickup") item.blockPickup = true;
-			else if (cmp == "quest") item.quest = true;		
+			else if (cmp == "quest") item.quest = true;
 		});
 
 		itemId = row.get<int32_t>("itemid");

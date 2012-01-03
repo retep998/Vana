@@ -58,7 +58,7 @@ public:
 
 	void doDrop(const Pos &origin);
 	void showDrop(Player *player);
-	void takeDrop(Player *player, int32_t petId);
+	void takeDrop(Player *player, int64_t petId);
 	void removeDrop(bool showPacket = true);
 
 	static const int8_t Explosive = 3;

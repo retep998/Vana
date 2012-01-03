@@ -83,7 +83,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 					soci::row const &row = *i;
 					found = true;
-					
+
 					str.str("");
 					str.clear();
 					formatMessage(row, str);

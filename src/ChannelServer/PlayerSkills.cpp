@@ -44,7 +44,7 @@ void PlayerSkills::load() {
 	}
 
 	rs = (Database::getCharDb().prepare << "SELECT c.* FROM cooldowns c WHERE c.character_id = :char",
-											soci::use(playerId, "char")); 
+											soci::use(playerId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;

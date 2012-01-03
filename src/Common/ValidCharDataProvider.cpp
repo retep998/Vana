@@ -80,7 +80,7 @@ void ValidCharDataProvider::loadCreationItems() {
 			else if (cmp == "top") items->top.push_back(objectId);
 			else if (cmp == "bottom") items->bottom.push_back(objectId);
 			else if (cmp == "shoes") items->shoes.push_back(objectId);
-			else if (cmp == "weapon") items->weapons.push_back(objectId);			
+			else if (cmp == "weapon") items->weapons.push_back(objectId);
 		});
 	}
 }

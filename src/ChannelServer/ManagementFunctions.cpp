@@ -347,7 +347,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 
 			// IP ban
 			soci::session &sql = Database::getCharDb();
-			soci::statement st = (sql.prepare << "INSERT INTO ip_bans (ip) " 
+			soci::statement st = (sql.prepare << "INSERT INTO ip_bans (ip) "
 												<< "VALUES (:ip)",
 												soci::use(targetIp, "ip"));
 

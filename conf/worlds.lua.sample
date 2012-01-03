@@ -25,6 +25,8 @@ world0_drop_rate = 1;
 
 -- Max allowed character slots (between 1 and 6)
 world0_max_characters = 6;
+-- Default storage slots (between 4 and 100)
+world0_default_storage = 4;
 
 -- Max AP a user is allowed to put into their core stats (minimum 4, maximum 32767)
 world0_max_stats = 999;
@@ -85,6 +87,7 @@ world0_pinkbean_attempts = 1;
 -- world1_meso_rate = 1;
 -- world1_drop_rate = 1;
 -- world1_max_characters = 6;
+-- world1_default_storage = 4;
 -- world1_max_stats = 999;
 -- world1_max_multi_level = 1;
 -- world1_port = 7200;

@@ -323,7 +323,7 @@ void Party::updatePacket(PacketCreator &packet) {
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
-	
+
 	// Add party member names to packet
 	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
 		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
@@ -355,7 +355,7 @@ void Party::updatePacket(PacketCreator &packet) {
 	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
 		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
 		if (player->channel != -1) {
-			packet.add<int32_t>(player->channel); 
+			packet.add<int32_t>(player->channel);
 		}
 		else {
 			packet.add<int32_t>(-2);
@@ -364,14 +364,14 @@ void Party::updatePacket(PacketCreator &packet) {
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(-2);
 	}
-	
+
 	packet.add<int32_t>(getLeaderId());
 
 	// Add party member maps to packet
 	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
 		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
 		if (player->channel == channelId) {
-			packet.add<int32_t>(player->map); 
+			packet.add<int32_t>(player->map);
 		}
 		else {
 			packet.add<int32_t>(-2);

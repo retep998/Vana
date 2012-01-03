@@ -168,13 +168,13 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 }
 
 void DropHandler::petLoot(Player *player, PacketReader &packet) {
-	int32_t petId = static_cast<int32_t>(packet.get<int64_t>());
+	int64_t petId = packet.get<int64_t>();
 	lootItem(player, packet, petId);
 }
 
-void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) {
+void DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) {
 	packet.skipBytes(5);
-	Pos playerPos = packet.getPos();
+	Pos &playerPos = packet.getPos();
 	int32_t dropId = packet.get<int32_t>();
 	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropId);
 

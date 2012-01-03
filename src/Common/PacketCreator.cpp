@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-PacketCreator::PacketCreator() : 
+PacketCreator::PacketCreator() :
 	m_pos(0),
 	m_packet(new unsigned char[bufferLen]),
 	m_packetCapacity(bufferLen)

@@ -290,7 +290,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Bandit::Haste:
 		case Jobs::Buccaneer::SpeedInfusion:
 		case Jobs::ThunderBreaker::SpeedInfusion:
-		case Jobs::Buccaneer::TimeLeap: 
+		case Jobs::Buccaneer::TimeLeap:
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:

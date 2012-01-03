@@ -61,7 +61,6 @@ void PlayerMonsterBook::save() {
 												soci::use(charId, "char"),
 												soci::use(cardId, "card"),
 												soci::use(level, "level"));
-	
 
 		for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); ++iter) {
 			MonsterCard &c = iter->second;

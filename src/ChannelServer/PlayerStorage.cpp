@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStorage.h"
+#include "ChannelServer.h"
 #include "Database.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
@@ -35,18 +36,18 @@ PlayerStorage::~PlayerStorage() {
 	std::for_each(m_items.begin(), m_items.end(), MiscUtilities::DeleterSeq<Item>());
 }
 
-void PlayerStorage::takeItem(int8_t slot) {
+void PlayerStorage::takeItem(uint8_t slot) {
 	vector<Item *>::iterator iter = m_items.begin() + slot;
 	delete *iter;
 	m_items.erase(iter);
 }
 
-void PlayerStorage::setSlots(int8_t slots) {
+void PlayerStorage::setSlots(uint8_t slots) {
 	m_slots = MiscUtilities::constrainToRange(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
 }
 
 void PlayerStorage::addItem(Item *item) {
-	int8_t inv = GameLogicUtilities::getInventory(item->getId());
+	uint8_t inv = GameLogicUtilities::getInventory(item->getId());
 	uint8_t i;
 	for (i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) > inv) {
@@ -56,7 +57,7 @@ void PlayerStorage::addItem(Item *item) {
 	m_items.insert(m_items.begin() + i, item);
 }
 
-int8_t PlayerStorage::getNumItems(int8_t inv) {
+uint8_t PlayerStorage::getNumItems(uint8_t inv) {
 	int8_t itemNum = 0;
 	for (uint8_t i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
@@ -82,11 +83,11 @@ void PlayerStorage::load() {
 				soci::into(row);
 
 	if (sql.got_data()) {
-		m_slots = row.get<int8_t>("slots");
+		m_slots = row.get<uint8_t>("slots");
 		m_mesos = row.get<int32_t>("mesos");
 	}
 	else {
-		m_slots = 4;
+		m_slots = ChannelServer::Instance()->getDefaultStorageSlots();
 		m_mesos = 0;
 
 		sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos) "
@@ -158,10 +159,10 @@ void PlayerStorage::save() {
 				use(userId, "user"),
 				use(worldId, "world");
 
-	int8_t max = getNumItems();
+	uint8_t max = getNumItems();
 
 	if (max > 0) {
-		int8_t i = 0;
+		uint8_t i = 0;
 		int8_t slots = 0;
 		int8_t scrolls = 0;
 		uint8_t inv = 0;

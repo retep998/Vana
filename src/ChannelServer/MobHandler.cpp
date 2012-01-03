@@ -425,7 +425,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 			case Jobs::FpWizard::PoisonBreath:
 			case Jobs::FpMage::ElementComposition:
 			case Jobs::BlazeWizard::FlameGear:
-			case Jobs::NightWalker::PoisonBomb:	
+			case Jobs::NightWalker::PoisonBomb:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time));
 				}

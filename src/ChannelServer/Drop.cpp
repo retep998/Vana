@@ -90,7 +90,7 @@ void Drop::showDrop(Player *player) {
 	DropsPacket::showDrop(player, this, DropsPacket::DropTypes::ShowExisting, false, Pos());
 }
 
-void Drop::takeDrop(Player *player, int32_t petId) {
+void Drop::takeDrop(Player *player, int64_t petId) {
 	Maps::getMap(m_mapId)->removeDrop(m_id);
 	if (petId == 0) {
 		DropsPacket::takeDrop(player, this);

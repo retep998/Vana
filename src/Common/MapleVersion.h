@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-#define MAPLE_VERSION 75 // Kept in for VersionConstants.cpp
+#define MAPLE_LOCALE "global"
+// Used for MCDB verification but can also be used in combination with MAPLE_VERSION
+#define MAPLE_VERSION 75
 // Use ONLY for version-specific code purposes
 // Incidentally, your locale may have vastly different version-specific code
 
@@ -70,7 +72,7 @@ namespace PatchLocations {
 namespace MapleVersion {
 	const uint16_t Version = MAPLE_VERSION;
 	const int8_t Locale = Locales::Global;
-	const string LocaleString = "global"; // Used for MCDB verification
+	const string LocaleString = MAPLE_LOCALE;
 	const bool TestServer = false;
 
 	const string PatchLocation = PatchLocations::Global;

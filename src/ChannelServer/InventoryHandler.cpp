@@ -599,7 +599,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				}
 				break;
 			}
-			case Items::MapleTvMessenger: 
+			case Items::MapleTvMessenger:
 			case Items::Megassenger: {
 				bool hasReceiver = (packet.get<int8_t>() == 3);
 				bool showWhisper = (itemId == Items::Megassenger ? packet.getBool() : false);
@@ -622,7 +622,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				}
 				break;
 			}
-			case Items::MapleTvStarMessenger: 
+			case Items::MapleTvStarMessenger:
 			case Items::StarMegassenger: {
 				int32_t time = 30;
 				bool showWhisper = (itemId == Items::StarMegassenger ? packet.getBool() : false);
