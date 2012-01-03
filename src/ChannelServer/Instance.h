@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -101,7 +101,7 @@ public:
 	int32_t getPersistence() const { return m_persistent; }
 	int32_t checkInstanceTimer();
 	bool showTimer() const { return m_showTimer; }
-	void showTimer(bool show, bool doit = false);
+	void showTimer(bool show, bool doIt = false);
 
 	// Timers
 	void removeAllTimers();

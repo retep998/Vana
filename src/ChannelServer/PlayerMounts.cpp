@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,42 +26,50 @@ PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentMount(0) {
 }
 
 void PlayerMounts::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "DELETE FROM mounts WHERE character_id = " << m_player->getId();
-	query.exec();
+	soci::session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
+	int32_t itemId = 0;
+	int16_t exp = 0;
+	uint8_t tiredness = 0;
+	uint8_t level = 0;
+
+	sql.once << "DELETE FROM mounts WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_mounts.size() > 0) {
-		bool firstRun = true;
-		MountData c;
-		for (unordered_map<int32_t, MountData>::iterator iter = m_mounts.begin(); iter != m_mounts.end(); iter++) {
-			c = iter->second;
-			if (firstRun) {
-				query << "INSERT INTO mounts VALUES (";
-				firstRun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << m_player->getId() << ","
-					<< iter->first << ","
-					<< c.exp << ","
-					<< (int16_t) c.level << ","
-					<< (int16_t) c.tiredness << ")";
+		soci::statement st = (sql.prepare << "INSERT INTO mounts " <<
+												"VALUES (:char, :item, :exp, :level, :tiredness) ",
+												soci::use(charId, "char"),
+												soci::use(itemId, "item"),
+												soci::use(exp, "exp"),
+												soci::use(level, "level"),
+												soci::use(tiredness, "tiredness"));
+
+		for (unordered_map<int32_t, MountData>::iterator iter = m_mounts.begin(); iter != m_mounts.end(); ++iter) {
+			MountData &c = iter->second;
+			itemId = iter->first;
+			exp = c.exp;
+			level = c.level;
+			tiredness = c.tiredness;
+			st.execute(true);
 		}
-		query.exec();
 	}
 }
 
 void PlayerMounts::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT m.* FROM mounts m WHERE m.character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
+	soci::session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
 	MountData c;
-	for (size_t i = 0; i < res.size(); i++) {
-		c.exp = (int16_t) res[i]["exp"];
-		c.level = (int8_t) res[i]["level"];
-		c.tiredness = (int8_t) res[i]["tiredness"];
-		m_mounts[res[i]["mount_id"]] = c;
+
+	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM mounts m WHERE m.character_id = :char ", soci::use(charId, "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		c = MountData();
+		c.exp = row.get<int16_t>("exp");
+		c.level = row.get<int8_t>("level");
+		c.tiredness = row.get<int8_t>("tiredness");
+		m_mounts[row.get<int32_t>("mount_id")] = c;
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -90,7 +90,7 @@ void MapleTvs::parseBuffer() {
 }
 
 void MapleTvs::sendPacket(PacketCreator &packet) {
-	for (unordered_map<int32_t, Map *>::iterator iter = m_maps.begin(); iter != m_maps.end(); iter++) {
+	for (unordered_map<int32_t, Map *>::iterator iter = m_maps.begin(); iter != m_maps.end(); ++iter) {
 		iter->second->sendPacket(packet);
 	}
 }

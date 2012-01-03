@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,93 +40,68 @@ void EquipDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct EquipFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "wear_trade_block") item->tradeBlockOnEquip = true;
-		}
-		EquipInfo *item;
-	};
-	struct EquipJobFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "common") item->validJobs.push_back(-1);
-			else if (cmp == "beginner") item->validJobs.push_back(Jobs::JobTracks::Beginner); // Respective job tracks
-			else if (cmp == "warrior") item->validJobs.push_back(Jobs::JobTracks::Warrior);
-			else if (cmp == "magician") item->validJobs.push_back(Jobs::JobTracks::Magician);
-			else if (cmp == "bowman") item->validJobs.push_back(Jobs::JobTracks::Bowman);
-			else if (cmp == "thief") item->validJobs.push_back(Jobs::JobTracks::Thief);
-			else if (cmp == "pirate") item->validJobs.push_back(Jobs::JobTracks::Pirate);
-		}
-		EquipInfo *item;
-	};
-
-}
-
 void EquipDataProvider::loadEquips() {
 	m_equipInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") FROM item_equip_data");
-	// Ugly hack to get the integers instead of scientific notation
-	// Note to users: This is MySQL's crappy behavior
-	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	EquipInfo equip;
+	string flags;
+	// Ugly hack to get the integers instead of scientific notation
+	// Note: This is MySQL's crappy behavior
+	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
+	// We just use the string and send it to a translation function
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM item_equip_data");
 
-	using namespace Functors;
-
-	enum EquipData {
-		EquipId = 0,
-		Flags, Unused, AttackSpeed, Healing, ScrollSlots,
-		SpecialId, ReqStr, ReqDex, ReqInt, ReqLuk,
-		ReqFame, ReqJob, Hp, Mp, Str,
-		Dex, Int, Luk, Hands, Watk,
-		Wdef, Matk, Mdef, Acc, Avoid,
-		Jump, Speed, Traction, Recovery, Knockback,
-		TamingMob, LightningDamage, IceDamage, FireDamage, PoisonDamage,
-		ElementalDefault, EquipSlots
-	};
-
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 		equip = EquipInfo();
-		EquipFlags whoo = {&equip};
-		runFlags(row[Flags], whoo);
-		EquipJobFlags whoot = {&equip};
-		runFlags(row[ReqJob], whoot);
 
-		id = atoi(row[EquipId]);
-		equip.attackSpeed = atoi(row[AttackSpeed]);
-		equip.healing = atoi(row[Healing]);
-		equip.slots = atoi(row[ScrollSlots]);
-		equip.ihp = atoi(row[Hp]);
-		equip.imp = atoi(row[Mp]);
-		equip.reqStr = atoi(row[ReqStr]);
-		equip.reqDex = atoi(row[ReqDex]);
-		equip.reqInt = atoi(row[ReqInt]);
-		equip.reqLuk = atoi(row[ReqLuk]);
-		equip.reqFame = atoi(row[ReqFame]);
-		equip.istr = atoi(row[Str]);
-		equip.idex = atoi(row[Dex]);
-		equip.iint = atoi(row[Int]);
-		equip.iluk = atoi(row[Luk]);
-		equip.ihand = atoi(row[Hands]);
-		equip.iwatk = atoi(row[Watk]);
-		equip.iwdef = atoi(row[Wdef]);
-		equip.imatk = atoi(row[Matk]);
-		equip.imdef = atoi(row[Mdef]);
-		equip.iacc = atoi(row[Acc]);
-		equip.iavo = atoi(row[Avoid]);
-		equip.ijump = atoi(row[Jump]);
-		equip.ispeed = atoi(row[Speed]);
-		equip.tamingMob = atoi(row[TamingMob]);
-		equip.iceDamage = atoi(row[IceDamage]);
-		equip.fireDamage = atoi(row[FireDamage]);
-		equip.lightningDamage = atoi(row[LightningDamage]);
-		equip.poisonDamage = atoi(row[PoisonDamage]);
-		equip.elementalDefault = atoi(row[ElementalDefault]);
-		equip.traction = atof(row[Traction]);
-		equip.validSlots = atoli(row[EquipSlots]);
+		runFlags(row.get<opt_string>("flags"), [&equip](const string &cmp) {
+			if (cmp == "wear_trade_block") equip.tradeBlockOnEquip = true;
+		});
+		runFlags(row.get<opt_string>("req_job"), [&equip](const string &cmp) {
+			if (cmp == "common") equip.validJobs.push_back(-1);
+			else if (cmp == "beginner") equip.validJobs.push_back(Jobs::JobTracks::Beginner);
+			else if (cmp == "warrior") equip.validJobs.push_back(Jobs::JobTracks::Warrior);
+			else if (cmp == "magician") equip.validJobs.push_back(Jobs::JobTracks::Magician);
+			else if (cmp == "bowman") equip.validJobs.push_back(Jobs::JobTracks::Bowman);
+			else if (cmp == "thief") equip.validJobs.push_back(Jobs::JobTracks::Thief);
+			else if (cmp == "pirate") equip.validJobs.push_back(Jobs::JobTracks::Pirate);
+		});
 
-		m_equipInfo[id] = equip;
+		itemId = row.get<int32_t>("itemid");
+		equip.attackSpeed = row.get<int8_t>("attack_speed");
+		equip.healing = row.get<int8_t>("heal_hp");
+		equip.slots = row.get<int8_t>("scroll_slots");
+		equip.ihp = row.get<int16_t>("hp");
+		equip.imp = row.get<int16_t>("mp");
+		equip.reqStr = row.get<int16_t>("req_str");
+		equip.reqDex = row.get<int16_t>("req_dex");
+		equip.reqInt = row.get<int16_t>("req_int");
+		equip.reqLuk = row.get<int16_t>("req_luk");
+		equip.reqFame = row.get<int16_t>("req_fame");
+		equip.istr = row.get<int16_t>("strength");
+		equip.idex = row.get<int16_t>("dexterity");
+		equip.iint = row.get<int16_t>("intelligence");
+		equip.iluk = row.get<int16_t>("luck");
+		equip.ihand = row.get<int16_t>("hands");
+		equip.iwatk = row.get<int16_t>("weapon_attack");
+		equip.iwdef = row.get<int16_t>("weapon_defense");
+		equip.imatk = row.get<int16_t>("magic_attack");
+		equip.imdef = row.get<int16_t>("magic_defense");
+		equip.iacc = row.get<int16_t>("accuracy");
+		equip.iavo = row.get<int16_t>("avoid");
+		equip.ijump = row.get<int16_t>("jump");
+		equip.ispeed = row.get<int16_t>("speed");
+		equip.tamingMob = row.get<uint8_t>("taming_mob");
+		equip.iceDamage = row.get<uint8_t>("inc_ice_damage");
+		equip.fireDamage = row.get<uint8_t>("inc_fire_damage");
+		equip.lightningDamage = row.get<uint8_t>("inc_lightning_damage");
+		equip.poisonDamage = row.get<uint8_t>("inc_poison_damage");
+		equip.elementalDefault = row.get<uint8_t>("elemental_default");
+		equip.traction = row.get<double>("traction");
+		equip.validSlots = atoli(row.get<string>("equip_slot_flags").c_str());
+
+		m_equipInfo[itemId] = equip;
 	}
 }
 
@@ -186,5 +161,5 @@ bool EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16
 
 bool EquipDataProvider::validSlot(int32_t equipId, int16_t target) {
 	EquipInfo *e = getEquipInfo(equipId);
-	return ((e->validSlots & (1LL << (target - 1))) != 0);
+	return ((e->validSlots & (1ULL << (target - 1))) != 0);
 }

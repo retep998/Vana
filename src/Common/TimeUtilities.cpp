@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 	if (time == -1) {
 		return -1;
 	}
-	struct tm *timeInfo;
+	std::tm *timeInfo;
 	timeInfo = localtime(&time);
 	if (timeInfo == nullptr) {
 		// Couldn't parse the time, so return the given time
@@ -38,9 +38,9 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 	// Calculate leap days
 	int32_t leapDays = 0;
 	int32_t years = timeInfo->tm_year + 299;
-	leapDays += (years/100)*24; // 24 more days for each 100 years
-	leapDays += (years/400); // and one more day for each 400 years
-	leapDays += ((years%100)/4); // and of course, 1 day for each 4 years in the current century
+	leapDays += (years / 100) * 24; // 24 more days for each 100 years
+	leapDays += (years / 400); // and one more day for each 400 years
+	leapDays += ((years % 100) / 4); // and of course, 1 day for each 4 years in the current century
 
 	ticks += (timeInfo->tm_sec * 1);
 	ticks += (timeInfo->tm_min * 60);
@@ -50,6 +50,10 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
 	return ticks;
+}
+
+int32_t TimeUtilities::timeToTick32(time_t time) {
+	return tickToTick32(timeToTick(time));
 }
 
 int32_t TimeUtilities::tickToTick32(int64_t tick) {
@@ -64,19 +68,19 @@ int32_t TimeUtilities::tickToTick32(int64_t tick) {
 }
 
 int32_t TimeUtilities::getDate(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_mday;
 	return result;
 }
 
 int32_t TimeUtilities::getMonth(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_mon + 1;
 	return result;
 }
 
 int32_t TimeUtilities::getYear(bool twoYear, time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_year + 1900;
 	if (twoYear) {
 		return result % 100;
@@ -85,7 +89,7 @@ int32_t TimeUtilities::getYear(bool twoYear, time_t ctime) {
 }
 
 int32_t TimeUtilities::getDay(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_wday + 1;
 	return result;
 }
@@ -124,7 +128,7 @@ string TimeUtilities::getMonthString(bool shortened, time_t ctime) {
 }
 
 int32_t TimeUtilities::getHour(bool nonMilitary, time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_hour;
 	if (nonMilitary && result > 12) {
 		result -= 12;
@@ -133,32 +137,32 @@ int32_t TimeUtilities::getHour(bool nonMilitary, time_t ctime) {
 }
 
 int32_t TimeUtilities::getMinute(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_min;
 	return result;
 }
 
 int32_t TimeUtilities::getSecond(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = timeInfo->tm_sec;
 	return result;
 }
 
 int32_t TimeUtilities::getWeek(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = ((timeInfo->tm_yday + 1) + (timeInfo->tm_wday + (timeInfo->tm_yday % 7))) / 7; // Determine which day the year started on and start counting from the first full week
 	return result;
 }
 
 int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
 	// Returns the closest interval minute mark in seconds
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	int32_t result = (((timeInfo->tm_min / interval) + 1) * interval * 60);
 	return result;
 }
 
 bool TimeUtilities::isDst(time_t ctime) {
-	tm *timeInfo = localtime(&ctime);
+	std::tm *timeInfo = localtime(&ctime);
 	return (timeInfo->tm_isdst > 0);
 }
 
@@ -184,7 +188,7 @@ string TimeUtilities::getTimeZone() {
 int32_t TimeUtilities::getTimeZoneOffset() {
 	time_t ctime = time(nullptr);
 
-	tm *ts = localtime(&ctime);
+	std::tm *ts = localtime(&ctime);
 	int32_t ltime = ts->tm_hour * 100 + ts->tm_min;
 
 	ts = gmtime(&ctime);

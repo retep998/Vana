@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,13 +47,13 @@ Channel * Channels::getChannel(uint16_t num) {
 	return m_channels.find(num) != m_channels.end() ? m_channels[num].get() : nullptr;
 }
 
-void Channels::sendToAll(PacketCreator &packet) {
-	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = m_channels.begin(); iter != m_channels.end(); iter++) {
+void Channels::sendToAll(const PacketCreator &packet) {
+	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = m_channels.begin(); iter != m_channels.end(); ++iter) {
 		sendToChannel(iter->first, packet);
 	}
 }
 
-void Channels::sendToChannel(uint16_t channel, PacketCreator &packet) {
+void Channels::sendToChannel(uint16_t channel, const PacketCreator &packet) {
 	getChannel(channel)->getConnection()->getSession()->send(packet);
 }
 
@@ -71,7 +71,8 @@ uint16_t Channels::size() {
 
 uint16_t Channels::getAvailableChannel() {
 	uint16_t channel = -1;
-	for (uint16_t i = 0; i < (uint16_t) WorldServer::Instance()->getMaxChannels(); i++) {
+	uint16_t max = static_cast<uint16_t>(WorldServer::Instance()->getMaxChannels());
+	for (uint16_t i = 0; i < max; ++i) {
 		if (m_channels.find(i) == m_channels.end()) {
 			channel = i;
 			break;

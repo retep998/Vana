@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,60 +41,51 @@ void SkillDataProvider::loadData() {
 void SkillDataProvider::loadPlayerSkills() {
 	m_skillMaxLevels.clear();
 	m_skills.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_player_level_data");
-	mysqlpp::UseQueryResult res = query.use();
 	SkillLevelInfo level;
 	int32_t skillId;
 	uint8_t skillLevel;
 
-	enum SkillData {
-		SkillId = 0,
-		Level, MobCount, HitCount, Range, Time,
-		Mp, Hp, Damage, FixedDamage, CriticalDamage,
-		Mastery, OptionalItem, Item, ItemCount, BulletCon,
-		MoneyCon, X, Y, Speed, Jump,
-		Str, Watk, Wdef, Matk, Mdef,
-		Acc, Avoid, HpP, MpP, Prop,
-		Morph, LTX, LTY, RBX, RBY,
-		Cooldown
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_player_level_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		skillId = atoi(row[SkillId]);
-		skillLevel = atoi(row[Level]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		level.mobCount = atoi(row[MobCount]);
-		level.hitCount = atoi(row[HitCount]);
-		level.time = atoi(row[Time]);
-		level.range = atoi(row[Range]);
-		level.mp = atoi(row[Mp]);
-		level.hp = atoi(row[Hp]);
-		level.damage = atoi(row[Damage]);
-		level.fixedDamage = atoi(row[FixedDamage]);
-		level.criticalDamage = atoi(row[CriticalDamage]);
-		level.item = atoi(row[Item]);
-		level.optionalItem = atoi(row[OptionalItem]);
-		level.itemCount = atoi(row[ItemCount]);
-		level.bulletConsume = atoi(row[BulletCon]);
-		level.moneyConsume = atoi(row[MoneyCon]);
-		level.x = atoi(row[X]);
-		level.y = atoi(row[Y]);
-		level.speed = atoi(row[Speed]);
-		level.jump = atoi(row[Jump]);
-		level.str = atoi(row[Str]);
-		level.wAtk = atoi(row[Watk]);
-		level.wDef = atoi(row[Wdef]);
-		level.mAtk = atoi(row[Matk]);
-		level.mDef = atoi(row[Mdef]);
-		level.acc = atoi(row[Acc]);
-		level.avo = atoi(row[Avoid]);
-		level.hpProp = atoi(row[HpP]);
-		level.mpProp = atoi(row[MpP]);
-		level.prop = atoi(row[Prop]);
-		level.morph = atoi(row[Morph]);
-		level.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
-		level.rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		level.coolTime = atoi(row[Cooldown]);
+		skillId = row.get<int32_t>("skillid");
+		skillLevel = row.get<uint8_t>("skill_level");
+
+		level.mobCount = row.get<int8_t>("mob_count");
+		level.hitCount = row.get<int8_t>("hit_count");
+		level.range = row.get<int16_t>("range");
+		level.time = row.get<int32_t>("buff_time");
+		level.mp = row.get<int16_t>("mp_cost");
+		level.hp = row.get<int16_t>("hp_cost");
+		level.damage = row.get<int16_t>("damage");
+		level.fixedDamage = row.get<int32_t>("fixed_damage");
+		level.criticalDamage = row.get<uint8_t>("critical_damage");
+		level.mastery = row.get<int8_t>("mastery");
+		level.optionalItem = row.get<int32_t>("optional_item_cost");
+		level.item = row.get<int32_t>("item_cost");
+		level.itemCount = row.get<int32_t>("item_count");
+		level.bulletConsume = row.get<int16_t>("bullet_cost");
+		level.moneyConsume = row.get<int16_t>("money_cost");
+		level.x = row.get<int16_t>("x_property");
+		level.y = row.get<int16_t>("y_property");
+		level.speed = row.get<int16_t>("speed");
+		level.jump = row.get<int16_t>("jump");
+		level.str = row.get<int16_t>("str");
+		level.wAtk = row.get<int16_t>("weapon_atk");
+		level.wDef = row.get<int16_t>("weapon_def");
+		level.mAtk = row.get<int16_t>("magic_atk");
+		level.mDef = row.get<int16_t>("magic_def");
+		level.acc = row.get<int16_t>("accuracy");
+		level.avo = row.get<int16_t>("avoid");
+		level.hpProp = row.get<uint16_t>("hp");
+		level.mpProp = row.get<uint16_t>("mp");
+		level.prop = row.get<uint16_t>("prop");
+		level.morph = row.get<int16_t>("morph");
+		level.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
+		level.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		level.coolTime = row.get<int32_t>("cooldown_time");
 
 		m_skills[skillId][skillLevel] = level;
 		if (m_skillMaxLevels.find(skillId) == m_skillMaxLevels.end() || m_skillMaxLevels[skillId] < skillLevel) {
@@ -105,57 +96,48 @@ void SkillDataProvider::loadPlayerSkills() {
 
 void SkillDataProvider::loadMobSkills() {
 	m_mobSkills.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_data");
-	mysqlpp::UseQueryResult res = query.use();
 	uint8_t skillId;
 	uint8_t level;
-
 	MobSkillLevelInfo mobLevel;
 
-	enum MobSkills {
-		SkillId = 0,
-		SkillLevel, Time, Mp, X, Y,
-		Prop, Count, Interval, LTX, RBX,
-		LTY, RBY, Hp, Limit, SummonEffect
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		skillId = atoi(row[SkillId]);
-		level = atoi(row[SkillLevel]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		mobLevel.time = atoi(row[Time]);
-		mobLevel.mp = atoi(row[Mp]);
-		mobLevel.x = atoi(row[X]);
-		mobLevel.y = atoi(row[Y]);
-		mobLevel.prop = atoi(row[Prop]);
-		mobLevel.count = atoi(row[Count]);
-		mobLevel.interval = atoi(row[Interval]);
-		mobLevel.lt.x = atoi(row[LTX]);
-		mobLevel.rb.x = atoi(row[RBX]);
-		mobLevel.lt.y = atoi(row[LTY]);
-		mobLevel.rb.y = atoi(row[RBY]);
-		mobLevel.hp = atoi(row[Hp]);
-		mobLevel.limit = atoi(row[Limit]);
-		mobLevel.summonEffect = atoi(row[SummonEffect]);
+		skillId = row.get<int32_t>("skillid");
+		level = row.get<uint8_t>("skill_level");
+
+		mobLevel.time = row.get<int16_t>("buff_time");
+		mobLevel.mp = row.get<uint8_t>("mp_cost");
+		mobLevel.x = row.get<int32_t>("x_property");
+		mobLevel.y = row.get<int32_t>("y_property");
+		mobLevel.prop = row.get<int16_t>("chance");
+		mobLevel.count = row.get<uint8_t>("target_count");
+		mobLevel.interval = row.get<int32_t>("cooldown");
+		mobLevel.lt.x = row.get<int16_t>("ltx");
+		mobLevel.rb.x = row.get<int16_t>("rbx");
+		mobLevel.lt.y = row.get<int16_t>("lty");
+		mobLevel.rb.y = row.get<int16_t>("rby");
+		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
+		mobLevel.limit = row.get<int16_t>("summon_limit");
+		mobLevel.summonEffect = row.get<int8_t>("summon_effect");
 
 		m_mobSkills[skillId][level] = mobLevel;
 	}
 }
 
 void SkillDataProvider::loadMobSummons() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_summons");
-	mysqlpp::UseQueryResult res = query.use();
 	uint8_t level;
 	int32_t mobId;
 
-	enum MobSummons {
-		SkillLevel = 0,
-		MobId
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_summons");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		level = atoi(row[SkillLevel]);
-		mobId = atoi(row[MobId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		level = row.get<uint8_t>("level");
+		mobId = row.get<int32_t>("mobid");
 
 		m_mobSkills[MobSkills::Summon][level].summons.push_back(mobId);
 	}
@@ -163,61 +145,46 @@ void SkillDataProvider::loadMobSummons() {
 
 void SkillDataProvider::loadBanishData() {
 	m_banishInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM skill_mob_banish_data");
-	mysqlpp::UseQueryResult res = query.use();
 	BanishField banish;
 	int32_t mobId;
 
-	enum BanishData {
-		MobId = 0,
-		Message, Field, Portal
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_banish_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobId = atoi(row[MobId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		banish.message = row[Message];
-		banish.field = atoi(row[Field]);
-		banish.portal = row[Portal];
+		mobId = row.get<int32_t>("mobid");
+
+		banish.message = row.get<string>("message");
+		banish.field = row.get<int32_t>("destination");
+		banish.portal = row.get<string>("portal");
 
 		m_banishInfo[mobId] = banish;
 	}
 }
 
-namespace Functors {
-	struct MorphFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "superman") morph->superman = true;
-		}
-		MorphData *morph;
-	};
-}
 
 void SkillDataProvider::loadMorphs() {
 	m_morphInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM morph_data");
-	mysqlpp::UseQueryResult res = query.use();
 	MorphData morph;
 	int16_t morphId;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM morph_data");
 
-	enum MorphDataTable {
-		Id = 0,
-		Speed, Jump, Traction, Swim, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		morph = MorphData();
-		morphId = atoi(row[Id]);
+		morphId = row.get<int32_t>("morphid");
 
-		MorphFlags whoo = {&morph};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
+			if (cmp == "superman") morph.superman = true;
+		});
 
-		morph.speed = atoi(row[Speed]);
-		morph.jump = atoi(row[Jump]);
-		morph.traction = atof(row[Traction]);
-		morph.swim = atof(row[Swim]);
+		morph.speed = row.get<uint8_t>("speed");
+		morph.jump = row.get<uint8_t>("jump");
+		morph.traction = row.get<double>("traction");
+		morph.swim = row.get<double>("swim");
 
 		m_morphInfo[morphId] = morph;
 	}

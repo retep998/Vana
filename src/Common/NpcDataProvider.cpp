@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,37 +27,23 @@ using StringUtilities::runFlags;
 
 NpcDataProvider * NpcDataProvider::singleton = nullptr;
 
-namespace Functors {
-	struct FlagFunctor {
-		void operator()(const string &cmp) {
-			if (cmp == "maple_tv") npc->isMapleTv = true;
-			else if (cmp == "is_guild_rank") npc->isGuildRank = true;
-		}
-		NpcData *npc;
-	};
-}
-
 void NpcDataProvider::loadData() {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing NPCs... ";
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM npc_data");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	NpcData npc;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM npc_data");
 
-	enum NpcFields {
-		Id = 0,
-		StorageCost, Flags
-	};
-
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 		npc = NpcData();
-		FlagFunctor func = {&npc};
-		runFlags(row[Flags], func);
-		id = atoi(row[Id]);
 
-		npc.storageCost = atoi(row[StorageCost]);
+		id = row.get<int32_t>("npcid");
+		runFlags(row.get<opt_string>("flags"), [&npc](const string &cmp) {
+			if (cmp == "maple_tv") npc.isMapleTv = true;
+			else if (cmp == "is_guild_rank") npc.isGuildRank = true;
+		});
+		npc.storageCost = row.get<int32_t>("storage_cost");
 		m_data[id] = npc;
 	}
 

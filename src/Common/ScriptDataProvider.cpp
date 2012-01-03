@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using FileUtilities::fileExists;
 using Initializing::OutputWidth;
+using StringUtilities::runFlags;
 
 ScriptDataProvider * ScriptDataProvider::singleton = nullptr;
 
@@ -37,34 +38,27 @@ void ScriptDataProvider::loadData() {
 	m_mapEntryScripts.clear();
 	m_firstMapEntryScripts.clear();
 	m_itemScripts.clear();
-
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM scripts");
-	mysqlpp::UseQueryResult res = query.use();
 	int8_t modifier;
 	int32_t objectId;
 	string script;
-	string scriptType;
 
-	enum ScriptData {
-		ScriptType = 0,
-		Modifier, ObjectId, Script
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM scripts");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		objectId = atoi(row[ObjectId]);
-		scriptType = row[ScriptType];
-		script = row[Script];
-		modifier = atoi(row[Modifier]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		if (scriptType == "npc") m_npcScripts[objectId] = script;
-		else if (scriptType == "reactor") m_reactorScripts[objectId] = script;
-		else if (scriptType == "map_enter") m_mapEntryScripts[objectId] = script;
-		else if (scriptType == "map_first_enter") m_firstMapEntryScripts[objectId] = script;
-		else if (scriptType == "item") m_itemScripts[objectId] = script;
-		else if (scriptType == "quest") {
-			m_questScripts[static_cast<int16_t>(objectId)][modifier] = script;
-		}
+		objectId = row.get<int32_t>("objectid");
+		script = row.get<string>("script");
+		modifier = row.get<int8_t>("helper");
 
+		runFlags(row.get<opt_string>("script_type"), [&](const string &cmp) {
+			if (cmp == "npc") m_npcScripts[objectId] = script;
+			else if (cmp == "reactor") m_reactorScripts[objectId] = script;
+			else if (cmp == "map_enter") m_mapEntryScripts[objectId] = script;
+			else if (cmp == "map_first_enter") m_firstMapEntryScripts[objectId] = script;
+			else if (cmp == "item") m_itemScripts[objectId] = script;
+			else if (cmp == "quest") m_questScripts[static_cast<int16_t>(objectId)][modifier] = script;
+		});
 		m_scripts[script] = objectId;
 	}
 

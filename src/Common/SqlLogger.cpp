@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SqlLogger.h"
 #include "Database.h"
+#include <boost/tuple/tuple.hpp>
 
 SqlLogger::SqlLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),
@@ -43,19 +44,29 @@ void SqlLogger::log(LogTypes::LogTypes type, const string &identifier, const str
 
 void SqlLogger::flush() {
 	if (m_buffer.size() > 0) {
-		mysqlpp::Query query = Database::getCharDb().query("INSERT INTO logs VALUES ");
+		soci::session &sql = Database::getCharDb();
+		int16_t serverType = getServerType();
+		int32_t logType = 0;
+		string identifier = "";
+		string message = "";
+		unix_time_t logTime;
+
+		soci::statement st = (sql.prepare << "INSERT INTO logs (log_time, origin, info_type, identifier, message) " <<
+												"VALUES (:time, :origin, :infoType, :identifier, :message)",
+												soci::use(logTime, "time"),
+												soci::use(serverType, "origin"),
+												soci::use(logType, "infoType"),
+												soci::use(identifier, "identifier"),
+												soci::use(message, "message"));
+
 		for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
-			if (iter != m_buffer.begin()) {
-				query << ",";
-			}
-			query << "(DEFAULT, "
-				<< mysqlpp::quote << mysqlpp::DateTime(iter->time) << ","
-				<< getServerType() << ","
-				<< iter->type << ","
-				<< mysqlpp::quote << iter->identifier << ","
-				<< mysqlpp::quote << iter->message << ")";
+			logType = iter->type;
+			logTime = iter->time;
+			identifier = iter->identifier;
+			message = iter->message;
+			st.execute(true);
 		}
-		query.exec();
+
 		m_buffer.clear();
 	}
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,16 +42,39 @@ Pet * PlayerPets::getSummoned(int8_t index) {
 }
 
 void PlayerPets::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	for (unordered_map<int64_t, Pet *>::iterator iter = m_pets.begin(); iter != m_pets.end(); iter++) {
-		query << "UPDATE pets SET "
-			<< "`index` = " << static_cast<int16_t>(iter->second->getIndex()) << ","
-			<< "name = " << mysqlpp::quote << iter->second->getName() << ","
-			<< "level = " << static_cast<int16_t>(iter->second->getLevel()) << ","
-			<< "closeness = " << iter->second->getCloseness() << ","
-			<< "fullness = " << static_cast<int16_t>(iter->second->getFullness())
-			<< " WHERE pet_id = " << iter->second->getId();
-		query.exec();
+	if (m_pets.size() > 0) {
+		soci::session &sql = Database::getCharDb();
+		int8_t index = 0;
+		string name = "";
+		int8_t level = 0;
+		int16_t closeness = 0;
+		int8_t fullness = 0;
+		int64_t petId = 0;
+
+		soci::statement st = (sql.prepare << "UPDATE pets SET " <<
+												"`index` = :index, " <<
+												"name = :name, " <<
+												"level = :level, " <<
+												"closeness = :closeness, " <<
+												"fullness = :fullness " <<
+												"WHERE pet_id = :pet",
+												soci::use(petId, "pet"),
+												soci::use(index, "index"),
+												soci::use(name, "name"),
+												soci::use(level, "level"),
+												soci::use(closeness, "closeness"),
+												soci::use(fullness, "fullness"));
+
+		for (unordered_map<int64_t, Pet *>::iterator iter = m_pets.begin(); iter != m_pets.end(); ++iter) {
+			Pet *p = iter->second;
+			index = p->getIndex();
+			name = p->getName();
+			level = p->getLevel();
+			closeness = p->getCloseness();
+			fullness = p->getFullness();
+			petId = p->getId();
+			st.execute(true);
+		}
 	}
 }
 

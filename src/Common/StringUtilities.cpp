@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,12 @@ int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	return (l1 < l2) ? -1 : 1;
 }
 
+void StringUtilities::runFlags(const opt_string &flags, function<void (const string &)> func) {
+	if (flags.is_initialized()) {
+		runFlags(flags.get(), func);
+	}
+}
+
 void StringUtilities::runFlags(const string &flags, function<void (const string &)> func) {
 	if (flags.length() > 0) {
 		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
@@ -59,10 +65,6 @@ int64_t StringUtilities::atoli(const char *str) {
 		result = (result * 10) + (*str++ - '0');
 	}
 	return result;
-}
-
-time_t StringUtilities::atot(const char *ref) {
-	return (time_t) mysqlpp::DateTime(ref);
 }
 
 string StringUtilities::replace(const string &input, const string &what, const string &replacement) {

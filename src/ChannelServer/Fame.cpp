@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -63,11 +63,10 @@ int32_t Fame::canFame(Player *player, int32_t to) {
 }
 
 void Fame::addFameLog(int32_t from, int32_t to) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "INSERT INTO fame_log (`from_character_id`, `to_character_id`, `fame_time`) VALUES (" 
-			<< from << ","
-			<< to << ", NOW())";
-	query.exec();
+	Database::getCharDb().once << "INSERT INTO fame_log (from_character_id, to_character_id, fame_time) " <<
+									"VALUES (:from, :to, NOW())",
+									soci::use(from, "from"),
+									soci::use(to, "to");
 }
 
 bool Fame::getLastFameLog(int32_t from) {
@@ -78,13 +77,18 @@ bool Fame::getLastFameLog(int32_t from) {
 	if (fameTime == -1) {
 		return false;
 	}
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - " << fameTime << " ORDER BY `fame_time` DESC LIMIT 1";
-	mysqlpp::StoreQueryResult res = query.store();
-	if (!res.empty()) {
-		return (res.num_rows() != 0);
-	}
-	return false;
+
+	soci::session &sql = Database::getCharDb();
+	std::tm time;
+	soci::indicator ind;
+	sql.once << "SELECT fame_time FROM fame_log " <<
+				"WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime " <<
+				"ORDER BY fame_time DESC",
+				soci::use(from, "from"),
+				soci::use(fameTime, "fameTime"),
+				soci::into(time, ind);
+
+	return !(sql.got_data() && ind != soci::i_null);
 }
 
 bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
@@ -95,11 +99,17 @@ bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
 	if (fameResetTime == -1) {
 		return false;
 	}
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT `fame_time` FROM `fame_log` WHERE `from_character_id` = " << from << " AND `to_character_id` = " << to << " AND UNIX_TIMESTAMP(`fame_time`) > UNIX_TIMESTAMP() - " << fameResetTime << " ORDER BY `fame_time` DESC LIMIT 1";
-	mysqlpp::StoreQueryResult res = query.store();
-	if (!res.empty()) {
-		return (res.num_rows() != 0);
-	}
-	return false;
+
+	soci::session &sql = Database::getCharDb();
+	std::tm time;
+	soci::indicator ind;
+	sql.once << "SELECT fame_time FROM fame_log " <<
+				"WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime " <<
+				"ORDER BY fame_time DESC",
+				soci::use(from, "from"),
+				soci::use(to, "to"),
+				soci::use(fameResetTime, "fameResetTime"),
+				soci::into(time, ind);
+
+	return !(sql.got_data() && ind != soci::i_null);
 }

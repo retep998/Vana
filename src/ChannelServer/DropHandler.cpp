@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -75,7 +75,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	}
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
-	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); i++) {
+	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); ++i) {
 		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxAmount, i->minAmount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
@@ -203,45 +203,44 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int32_t petId) 
 	}
 	if (drop->isMesos()) {
 		int32_t playerRate = 100;
-		int32_t mesos = drop->getObjectId();
+		int32_t rawMesos = drop->getObjectId();
+		auto giveMesos = [](Player *p, int32_t mesos) -> bool {
+			if (p->getInventory()->modifyMesos(mesos, true)) {
+				DropsPacket::pickupDrop(p, mesos, 0, true);
+			}
+			else {
+				DropsPacket::dontTake(p);
+				return false;
+			}
+			return true;
+		};
+
 		if (player->getParty() != nullptr && !drop->isplayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
 			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
 			if (members.size() != 1) {
 				playerRate = 60;
-				mesos = mesos * playerRate / 100;
+				int32_t mesos = rawMesos * playerRate / 100;
 
-				if (player->getInventory()->modifyMesos(mesos, true)) {
-					DropsPacket::pickupDrop(player, mesos, 0, true);
-				}
-				else {
-					DropsPacket::dontTake(player);
+				if (!giveMesos(player, mesos)) {
+					// Can't pick up the mesos
 					return;
 				}
 
 				playerRate = 40 / (members.size() - 1);
-				mesos = drop->getObjectId() * playerRate / 100;
+				mesos = rawMesos * playerRate / 100;
 				Player *p = nullptr;
 
-				for (uint8_t j = 0; j < members.size(); j++) {
+				for (uint8_t j = 0; j < members.size(); ++j) {
 					p = members[j];
 					if (p != player) {
-						if (p->getInventory()->modifyMesos(mesos, true)) {
-							DropsPacket::pickupDrop(p, mesos, 0, true);
-						}
-						else {
-							DropsPacket::dontTake(p);
-						}
+						giveMesos(p, mesos);
 					}
 				}
 			}
 		}
 		if (playerRate == 100) {
-			if (player->getInventory()->modifyMesos(mesos, true)) {
-				DropsPacket::pickupDrop(player, drop->getObjectId(), 0, true);
-			}
-			else {
-				DropsPacket::dontTake(player);
+			if (!giveMesos(player, rawMesos)) {
 				return;
 			}
 		}

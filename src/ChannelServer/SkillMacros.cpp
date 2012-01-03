@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,41 +19,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 
 void SkillMacros::load(int32_t charId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.* FROM skill_macros s WHERE s.character_id = " << charId;
-	mysqlpp::StoreQueryResult res = query.store();
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		int8_t pos = static_cast<int8_t>(res[i]["pos"]);
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM skill_macros s WHERE s.character_id = :char", soci::use(charId, "char"));
 
-		string name;
-		res[i]["name"].to_string(name);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		bool shout = static_cast<bool>(res[i]["shout"]);
-		int32_t skill1 = static_cast<int32_t>(res[i]["skill_1"]);
-		int32_t skill2 = static_cast<int32_t>(res[i]["skill_2"]);
-		int32_t skill3 = static_cast<int32_t>(res[i]["skill_3"]);
-		add(pos, new SkillMacro(name, shout, skill1, skill2, skill3));
+		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string>("name"), row.get<bool>("shout"), row.get<int32_t>("skill1"), row.get<int32_t>("skill2"), row.get<int32_t>("skill3")));
 	}
 }
 
 void SkillMacros::save(int32_t charId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "REPLACE INTO skill_macros VALUES ";
-	int8_t max = getMax();
-	for (int8_t i = 0; i <= max; i++) {
+	int8_t i = 0;
+	string name = "";
+	bool shout = false;
+	int32_t skill1 = 0;
+	int32_t skill2 = 0;
+	int32_t skill3 = 0;
+
+	soci::statement st = (Database::getCharDb().prepare << "REPLACE INTO skill_macros " <<
+															"VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
+															soci::use(charId, "char"),
+															soci::use(i, "key"),
+															soci::use(name, "name"),
+															soci::use(shout, "shout"),
+															soci::use(skill1, "skill1"),
+															soci::use(skill1, "skill2"),
+															soci::use(skill1, "skill3"));
+
+	for (i = 0; i < getMax(); i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != nullptr) {
-			query << "(" << charId << ", "
-				<< (int16_t) i << ", "
-				<< mysqlpp::quote << macro->name << ", "
-				<< macro->shout << ", "
-				<< macro->skill1 << ", "
-				<< macro->skill2<< ", "
-				<< macro->skill3 << ")";
-			if (i != max) {
-				query << ",";
-			}
+			name = macro->name;
+			shout = macro->shout;
+			skill1 = macro->skill1;
+			skill2 = macro->skill2;
+			skill3 = macro->skill3;
+			st.execute(true);
 		}
 	}
-	query.exec();
 }

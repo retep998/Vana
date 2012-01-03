@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,33 +19,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 namespace RankingCalculator {
+	struct Rank {
+		int32_t oldRank;
+		int32_t newRank;
+	};
+	struct RankPlayer {
+		uint8_t levelStat;
+		uint8_t jobLevelMax;
+		uint8_t worldId;
+		int16_t jobStat;
+		int16_t fameStat;
+		int32_t expStat;
+		int32_t charId;
+		time_t levelTime;
+		Rank overall;
+		Rank world;
+		Rank job;
+		Rank fame;
+	};
+
 	void setTimer();
 	void runThread();
 	void all();
-	void overall();
-	void world();
-	void job();
-	void fame();
+	void overall(vector<RankPlayer> &v);
+	void world(vector<RankPlayer> &v);
+	void job(vector<RankPlayer> &v);
+	void fame(vector<RankPlayer> &v);
+	bool increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job);
+	bool baseCompare(const RankPlayer &t1, const RankPlayer &t2);
+	void updateRank(Rank &r, int32_t newRank);
 
-	extern const string VariableDefinition;
-
-	// I use a duplicate arrangement here to promote a balance of encapsulation and performance - but it's really ugly
-	// That is, JobClause just calls the jobClause function once (and RankIfClause will do the same)
-	// Which will build out the constant using a stream so I can use my core constants for jobs and player levels
-	const string jobClause();
-	const string rankIfClause();
-	const string accountRequirements();
-	extern const string JobClause;
-	extern const string RankIfClause;
-	extern const string AccountRequirements;
-
-	const int32_t JobTrackCount = 19;
-	const int32_t BeginnerJobCount = 5;
+	const int32_t JobTrackCount = 21;
+	const int32_t BeginnerJobCount = 7;
 	extern const int8_t JobTracks[JobTrackCount];
 	extern const int16_t BeginnerJobs[BeginnerJobCount];
 	extern const int16_t EvanBeginner;
+	extern const int16_t MercedesBeginner;
+	extern const int16_t DemonSlayerBeginner;
 }

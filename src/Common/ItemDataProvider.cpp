@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -54,425 +54,335 @@ void ItemDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct AllItemFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "time_limited") item->timeLimited = true;
-			else if (cmp == "cash_item") item->cash = true;
-			else if (cmp == "no_trade") item->noTrade = true;
-			else if (cmp == "no_sale") item->noSale = true;
-			else if (cmp == "karma_scissorable") item->karmaScissors = true;
-			else if (cmp == "expire_on_logout") item->expireOnLogout = true;
-			else if (cmp == "block_pickup") item->blockPickup = true;
-			else if (cmp == "quest") item->quest = true;
-		}
-		ItemInfo *item;
-	};
-}
-
 void ItemDataProvider::loadItems() {
 	m_itemInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT item_data.*, strings.label FROM item_data LEFT JOIN strings ON item_data.itemId = strings.objectid AND strings.object_type = \'item\'");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	ItemInfo item;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT id.*, s.label " <<
+															"FROM item_data id " <<
+															"LEFT JOIN strings s ON id.itemId = s.objectid AND s.object_type = :item",
+															soci::use(string("item"), "item"));
 
-	enum ItemData {
-		ItemId = 0,
-		Inventory, ItemPrice, SlotMax, MaxAtOnce, MinLevel,
-		MaxLevel, Experience, Mesos, StateChange, MakerLevel,
-		Npc, Flags, Name
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ItemInfo();
-		AllItemFlags whoo = {&item};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+			if (cmp == "time_limited") item.timeLimited = true;
+			else if (cmp == "cash_item") item.cash = true;
+			else if (cmp == "no_trade") item.noTrade = true;
+			else if (cmp == "no_sale") item.noSale = true;
+			else if (cmp == "karma_scissorable") item.karmaScissors = true;
+			else if (cmp == "expire_on_logout") item.expireOnLogout = true;
+			else if (cmp == "block_pickup") item.blockPickup = true;
+			else if (cmp == "quest") item.quest = true;		
+		});
 
-		id = atoi(row[ItemId]);
-		item.price = atoi(row[ItemPrice]);
-		item.maxSlot = atoi(row[SlotMax]);
-		item.makerLevel = atoi(row[MakerLevel]);
-		item.maxObtainable = atoi(row[MaxAtOnce]);
-		item.minLevel = atoi(row[MinLevel]);
-		item.maxLevel = atoi(row[MaxLevel]);
-		item.exp = atoi(row[Experience]);
-		item.mesos = atoi(row[Mesos]);
-		item.npc = atoi(row[Npc]);
-		if (row[Name]) {
-			item.name = row[Name];
-		}
-		m_itemInfo[id] = item;
+		itemId = row.get<int32_t>("itemid");
+		item.price = row.get<int32_t>("price");
+		item.maxSlot = row.get<uint16_t>("max_slot_quantity");
+		item.makerLevel = row.get<uint8_t>("level_for_maker");
+		item.maxObtainable = row.get<int32_t>("max_possession_count");
+		item.minLevel = row.get<uint8_t>("min_level");
+		item.maxLevel = row.get<uint8_t>("max_level");
+		item.exp = row.get<int32_t>("experience");
+		item.mesos = row.get<int32_t>("money");
+		item.npc = row.get<int32_t>("npc");
+		item.name = row.get<string>("label");
+
+		m_itemInfo[itemId] = item;
 	}
-}
-
-namespace Functors {
-	struct ScrollFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "rand_stat") item->randStat = true;
-			else if (cmp == "recover_slot") item->recover = true;
-			else if (cmp == "warm_support") item->warmSupport = true;
-			else if (cmp == "prevent_slip") item->preventSlip = true;
-		}
-		ScrollInfo *item;
-	};
 }
 
 void ItemDataProvider::loadScrolls() {
 	m_scrollInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_scroll_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	ScrollInfo item;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_scroll_data");
 
-	enum ScrollData {
-		ItemId = 0,
-		Success, Cursed, Flags, IncStr, IncDex,
-		IncInt, IncLuk, IncHp, IncMp, IncWatk,
-		IncMatk, IncWdef, IncMdef, IncAcc, IncAvo,
-		IncJump, IncSpeed
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ScrollInfo();
-		ScrollFlags whoo = {&item};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+			if (cmp == "rand_stat") item.randStat = true;
+			else if (cmp == "recover_slot") item.recover = 1;
+			else if (cmp == "warm_support") item.warmSupport = true;
+			else if (cmp == "prevent_slip") item.preventSlip = true;
+		});
 
-		id = atoi(row[ItemId]);
-		item.success = atoi(row[Success]);
-		item.cursed = atoi(row[Cursed]);
-		item.istr = atoi(row[IncStr]);
-		item.idex = atoi(row[IncDex]);
-		item.iint = atoi(row[IncInt]);
-		item.iluk = atoi(row[IncLuk]);
-		item.ihp = atoi(row[IncHp]);
-		item.imp = atoi(row[IncMp]);
-		item.iwatk = atoi(row[IncWatk]);
-		item.imatk = atoi(row[IncMatk]);
-		item.iwdef = atoi(row[IncWdef]);
-		item.imdef = atoi(row[IncMdef]);
-		item.iacc = atoi(row[IncAcc]);
-		item.iavo = atoi(row[IncAvo]);
-		item.ijump = atoi(row[IncJump]);
-		item.ispeed = atoi(row[IncSpeed]);
+		itemId = row.get<int32_t>("itemid");
+		item.success = row.get<uint16_t>("success");
+		item.cursed = row.get<uint16_t>("break_item");
+		item.istr = row.get<int16_t>("istr");
+		item.idex = row.get<int16_t>("idex");
+		item.iint = row.get<int16_t>("iint");
+		item.iluk = row.get<int16_t>("iluk");
+		item.ihp = row.get<int16_t>("ihp");
+		item.imp = row.get<int16_t>("imp");
+		item.iwatk = row.get<int16_t>("iwatk");
+		item.imatk = row.get<int16_t>("imatk");
+		item.iwdef = row.get<int16_t>("iwdef");
+		item.imdef = row.get<int16_t>("imdef");
+		item.iacc = row.get<int16_t>("iacc");
+		item.iavo = row.get<int16_t>("iavo");
+		item.ijump = row.get<int16_t>("ijump");
+		item.ispeed = row.get<int16_t>("ispeed");
 
-		m_scrollInfo[id] = item;
+		m_scrollInfo[itemId] = item;
 	}
-}
-
-namespace Functors {
-	struct ConsumeFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "auto_consume") item->autoConsume = true;
-			else if (cmp == "party_item") item->party = true;
-			else if (cmp == "meso_up") item->mesoUp = true;
-			else if (cmp == "ignore_physical_defense") item->ignoreWdef = true;
-			else if (cmp == "ignore_magical_defense") item->ignoreMdef = true;
-			else if (cmp == "no_mouse_cancel") item->mouseCancel = false;
-			else if (cmp == "ignore_continent") item->ignoreContinent = true;
-			else if (cmp == "ghost") item->ghost = true;
-			else if (cmp == "barrier") item->barrier = true;
-			else if (cmp == "prevent_drowning") item->preventDrown = true;
-			else if (cmp == "prevent_freezing") item->preventFreeze = true;
-			else if (cmp == "override_traction") item->overrideTraction = true;
-			else if (cmp == "drop_up_for_party") item->partyDropUp = true;
-		}
-		ConsumeInfo *item;
-	};
-
-	struct AilmentFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "darkness") item->darkness = true;
-			else if (cmp == "weakness") item->weakness = true;
-			else if (cmp == "curse") item->curse = true;
-			else if (cmp == "seal") item->seal = true;
-			else if (cmp == "poison") item->poison = true;
-		}
-		AilmentInfo *item;
-	};
 }
 
 void ItemDataProvider::loadConsumes() {
 	m_consumeInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_consume_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	int16_t morphId;
 	ConsumeInfo item;
-	AilmentInfo ailment;
 	Morph morph;
-	string dropUp;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_consume_data");
 
-	enum ConsumeableData {
-		ItemId = 0,
-		Flags, Ailments, Effect, Hp, Mp,
-		HpPercentage, MpPercentage, MoveTo, DecHunger, DecFatigue,
-		CarnivalPoints, CreateItem, Prob, Time, Watk,
-		Matk, Wdef, Mdef, Acc, Avo,
-		Speed, Jump, Morph, DropUp, DropUpItem,
-		DropUpItemRange, DropUpMapRanges, IceDef, FireDef, LightningDef,
-		PoisonDef, StunDef, WeaknessDef, CurseDef, DarknessDef,
-		SealDef
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		item = ConsumeInfo();
-		ailment = AilmentInfo();
-		ConsumeFlags whoot = {&item};
-		runFlags(row[Flags], whoot);
 
-		AilmentFlags whoo = {&ailment};
-		runFlags(row[Ailments], whoo);
-		if (ailment.darkness) item.ailment |= 0x01;
-		if (ailment.poison) item.ailment |= 0x02;
-		if (ailment.curse) item.ailment |= 0x04;
-		if (ailment.seal) item.ailment |= 0x08;
-		if (ailment.weakness) item.ailment |= 0x10;
+		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+			if (cmp == "auto_consume") item.autoConsume = true;
+			else if (cmp == "party_item") item.party = true;
+			else if (cmp == "meso_up") item.mesoUp = true;
+			else if (cmp == "ignore_physical_defense") item.ignoreWdef = true;
+			else if (cmp == "ignore_magical_defense") item.ignoreMdef = true;
+			else if (cmp == "no_mouse_cancel") item.mouseCancel = false;
+			else if (cmp == "ignore_continent") item.ignoreContinent = true;
+			else if (cmp == "ghost") item.ghost = true;
+			else if (cmp == "barrier") item.barrier = true;
+			else if (cmp == "prevent_drowning") item.preventDrown = true;
+			else if (cmp == "prevent_freezing") item.preventFreeze = true;
+			else if (cmp == "override_traction") item.overrideTraction = true;
+			else if (cmp == "drop_up_for_party") item.partyDropUp = true;
+		});
 
-		id = atoi(row[ItemId]);
-		item.hp = atoi(row[Hp]);
-		item.mp = atoi(row[Mp]);
-		item.hpr = atoi(row[HpPercentage]);
-		item.mpr = atoi(row[MpPercentage]);
-		item.decHunger = atoi(row[DecHunger]);
-		item.decFatigue = atoi(row[DecFatigue]);
-		item.cp = atoi(row[CarnivalPoints]);
-		item.time = atoi(row[Time]);
-		item.watk = atoi(row[Watk]);
-		item.effect = atoi(row[Effect]);
-		item.matk = atoi(row[Matk]);
-		item.wdef = atoi(row[Wdef]);
-		item.mdef = atoi(row[Mdef]);
-		item.acc = atoi(row[Acc]);
-		item.avo = atoi(row[Avo]);
-		item.jump = atoi(row[Jump]);
-		item.speed = atoi(row[Speed]);
-		item.moveTo = atoi(row[MoveTo]);
+		runFlags(row.get<opt_string>("cure_ailments"), [&item](const string &cmp) {
+			if (cmp == "darkness") item.ailment |= 0x01;
+			else if (cmp == "poison") item.ailment |= 0x02;
+			else if (cmp == "curse") item.ailment |= 0x04;
+			else if (cmp == "seal") item.ailment |= 0x08;
+			else if (cmp == "weakness") item.ailment |= 0x10;
+		});
 
-		morphId = atoi(row[Morph]);
+		itemId = row.get<int32_t>("itemid");
+		item.effect = row.get<uint8_t>("effect");
+		item.hp = row.get<int16_t>("hp");
+		item.mp = row.get<int16_t>("mp");
+		item.hpr = row.get<int16_t>("hp_percentage");
+		item.mpr = row.get<int16_t>("mp_percentage");
+		item.moveTo = row.get<int32_t>("move_to");
+		item.decHunger = row.get<uint8_t>("decrease_hunger");
+		item.decFatigue = row.get<uint8_t>("decrease_fatigue");
+		item.cp = row.get<uint8_t>("carnival_points");
+		item.mcProb = row.get<uint16_t>("prob");
+		item.time = row.get<int32_t>("buff_time");
+		item.watk = row.get<int16_t>("weapon_attack");
+		item.matk = row.get<int16_t>("magic_attack");
+		item.wdef = row.get<int16_t>("weapon_defense");
+		item.mdef = row.get<int16_t>("magic_defense");
+		item.acc = row.get<int16_t>("accuracy");
+		item.avo = row.get<int16_t>("avoid");
+		item.speed = row.get<int16_t>("speed");
+		item.jump = row.get<int16_t>("jump");
+
+		morphId = row.get<int16_t>("morph");
 		if (morphId) {
+			morph = Morph();
 			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
 		}
 
-		dropUp = row[DropUp];
-		if (dropUp != "none") {
+		runFlags(row.get<opt_string>("drop_up"), [&item, &row](const string &cmp) {
+			if (cmp == "none") return;
+
 			item.dropUp = true;
-			if (dropUp == "specific_item") {
-				item.dropUpitem = atoi(row[DropUpItem]);
-			}
-			else if (dropUp == "item_range") {
-				item.dropUpItemRange = atoi(row[DropUpItemRange]);
-			}
-		}
+			if (cmp == "specific_item") item.dropUpItem = row.get<int32_t>("drop_up_item");
+			else if (cmp == "item_range") item.dropUpItemRange = row.get<int16_t>("drop_up_item_range");
+		});
 
-		item.mcProb = atoi(row[Prob]);
-		item.iceResist = atoi(row[IceDef]);
-		item.fireResist = atoi(row[FireDef]);
-		item.lightningResist = atoi(row[LightningDef]);
-		item.poisonResist = atoi(row[PoisonDef]);
-		item.stunDef = atoi(row[StunDef]);
-		item.darknessDef = atoi(row[DarknessDef]);
-		item.weaknessDef = atoi(row[WeaknessDef]);
-		item.sealDef = atoi(row[SealDef]);
-		item.curseDef = atoi(row[CurseDef]);
+		item.iceResist = row.get<int16_t>("defense_vs_ice");
+		item.fireResist = row.get<int16_t>("defense_vs_fire");
+		item.lightningResist = row.get<int16_t>("defense_vs_lightning");
+		item.poisonResist = row.get<int16_t>("defense_vs_poison");
+		item.stunDef = row.get<int16_t>("defense_vs_stun");
+		item.darknessDef = row.get<int16_t>("defense_vs_darkness");
+		item.weaknessDef = row.get<int16_t>("defense_vs_weakness");
+		item.sealDef = row.get<int16_t>("defense_vs_seal");
+		item.curseDef = row.get<int16_t>("defense_vs_curse");
 
-		BuffDataProvider::Instance()->addItemInfo(id, item);
-		m_consumeInfo[id] = item;
+		BuffDataProvider::Instance()->addItemInfo(itemId, item);
+		m_consumeInfo[itemId] = item;
 	}
 }
 
 void ItemDataProvider::loadMapRanges() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_monster_card_map_ranges");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	CardMapRange range;
 
-	enum MapRangeData {
-		ItemId = 0,
-		StartMap, EndMap
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_monster_card_map_ranges");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[ItemId]);
-		range.startMap = atoi(row[StartMap]);
-		range.endMap = atoi(row[EndMap]);
-		m_consumeInfo[id].mapRanges.push_back(range);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		range = CardMapRange();
+		itemId = row.get<int32_t>("itemid");
+		range.startMap = row.get<int32_t>("start_map");
+		range.endMap = row.get<int32_t>("end_map");
+
+		m_consumeInfo[itemId].mapRanges.push_back(range);
 	}
 }
 
 void ItemDataProvider::loadMultiMorphs() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_random_morphs");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t id;
+	int32_t itemId;
 	Morph morph;
 
-	enum MorphsData {
-		Id = 0,
-		ItemId, Morph, Success
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_random_morphs");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[ItemId]);
-		morph.morph = atoi(row[Morph]);
-		morph.chance = atoi(row[Success]);
-		m_consumeInfo[id].morphs.push_back(morph);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		morph = Morph();
+		itemId = row.get<int32_t>("itemid");
+		morph.morph = row.get<int16_t>("morphid");
+		morph.chance = row.get<int8_t>("success");
+
+		m_consumeInfo[itemId].morphs.push_back(morph);
 	}
 }
 
 void ItemDataProvider::loadMonsterCardData() {
 	m_cards.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM monster_card_data");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t cardId;
 	int32_t mobId;
 
-	enum CardData {
-		CardId = 0,
-		MobId
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM monster_card_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		cardId = atoi(row[CardId]);
-		mobId = atoi(row[MobId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		cardId = row.get<int32_t>("cardid");
+		mobId = row.get<int32_t>("mobid");
+
 		m_cards.insert(CardInfo(cardId, mobId));
 	}
 }
 
 void ItemDataProvider::loadItemSkills() {
 	m_skillbooks.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_skills");
-	mysqlpp::UseQueryResult res = query.use();
 	Skillbook skill;
 	int32_t itemId;
 
-	enum SkillData {
-		ItemId = 0,
-		SkillId, ReqLevel, MasterLevel, Chance
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_skills");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemId = atoi(row[ItemId]);
-		skill.skillId = atoi(row[SkillId]);
-		skill.reqlevel = atoi(row[ReqLevel]);
-		skill.maxLevel = atoi(row[MasterLevel]);
-		skill.chance = atoi(row[Chance]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		skill = Skillbook();
+		itemId = row.get<int32_t>("itemid");
+		skill.skillId = row.get<int32_t>("skillid");
+		skill.reqLevel = row.get<uint8_t>("req_skill_level");
+		skill.maxLevel = row.get<uint8_t>("master_level");
+		skill.chance = row.get<int8_t>("chance");
+
 		m_skillbooks[itemId].push_back(skill);
 	}
 }
 
 void ItemDataProvider::loadSummonBags() {
 	m_summonBags.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_summons");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
 	SummonBag summon;
 
-	enum BagData {
-		Id = 0,
-		ItemId, MobId, Chance
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_summons");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemId = atoi(row[ItemId]);
-		summon.mobId = atoi(row[MobId]);
-		summon.chance = atoi(row[Chance]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		itemId = row.get<int32_t>("itemid");
+		summon.mobId = row.get<int32_t>("mobid");
+		summon.chance = row.get<uint16_t>("chance");
+
 		m_summonBags[itemId].push_back(summon);
 	}
 }
 
 void ItemDataProvider::loadItemRewards() {
 	m_itemRewards.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_reward_data");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t itemId;
 	ItemRewardInfo reward;
 
-	enum RewardData {
-		Id = 0,
-		ItemId, RewardId, Chance, Quantity, Effect
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_reward_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		itemId = atoi(row[ItemId]);
-		reward.rewardId = atoi(row[RewardId]);
-		reward.prob = atoi(row[Chance]);
-		reward.quantity = atoi(row[Quantity]);
-		reward.effect = row[Effect];
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		itemId = row.get<int32_t>("itemid");
+		reward.rewardId = row.get<int32_t>("rewardid");
+		reward.prob = row.get<uint16_t>("prob");
+		reward.quantity = row.get<int16_t>("quantity");
+		reward.effect = row.get<string>("effect");
+
 		m_itemRewards[itemId].push_back(reward);
 	}
 }
 
-namespace Functors {
-	struct PetFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "no_revive") item->noRevive = true;
-			else if (cmp == "no_move_to_cash_shop") item->noStoringInCashShop = true;
-			else if (cmp == "auto_react") item->autoReact = true;
-		}
-		PetInfo *item;
-	};
-}
-
 void ItemDataProvider::loadPets() {
 	m_petInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_data");
-	mysqlpp::UseQueryResult res = query.use();
 	PetInfo pet;
 	int32_t itemId;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_data");
 
-	enum PetData {
-		ItemId = 0,
-		Name, Hunger, Life, LimitedLife, EvoItem,
-		EvoLevel, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		pet = PetInfo();
-		PetFlags whoo = {&pet};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&pet](const string &cmp) {
+			if (cmp == "no_revive") pet.noRevive = true;
+			else if (cmp == "no_move_to_cash_shop") pet.noStoringInCashShop = true;
+			else if (cmp == "auto_react") pet.autoReact = true;
+		});
 
-		itemId = atoi(row[ItemId]);
-		pet.name = row[Name];
-		pet.hunger = atoi(row[Hunger]);
-		pet.life = atoi(row[Life]);
-		pet.limitedLife = atoi(row[LimitedLife]);
-		pet.evolveItem = atoi(row[EvoItem]);
-		pet.evolveLevel = atoi(row[EvoLevel]);
+		itemId = row.get<int32_t>("itemid");
+		pet.name = row.get<string>("default_name");
+		pet.hunger = row.get<int32_t>("hunger");
+		pet.life = row.get<int32_t>("life");
+		pet.limitedLife = row.get<int32_t>("limited_life");
+		pet.evolveItem = row.get<int32_t>("evolution_item");
+		pet.evolveLevel = row.get<int8_t>("req_level_for_evolution");
+
 		m_petInfo[itemId] = pet;
 	}
 }
 
 void ItemDataProvider::loadPetInteractions() {
 	m_petInteractInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM item_pet_interactions");
-	mysqlpp::UseQueryResult res = query.use();
-	PetInteractInfo petinteract;
-	int32_t petId;
+	PetInteractInfo interact;
+	int32_t itemId;
 	int32_t commandId;
 
-	enum PetInteractions {
-		ItemId = 0,
-		CommandId, Closeness, Success
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_interactions");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		petId = atoi(row[ItemId]);
-		commandId = atoi(row[CommandId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		petinteract.increase = atoi(row[Closeness]);
-		petinteract.prob = atoi(row[Success]);
+		interact = PetInteractInfo();
+		itemId = row.get<int32_t>("itemid");
+		interact.increase = row.get<int16_t>("closeness");
+		interact.prob = row.get<uint32_t>("success");
 
-		m_petInteractInfo[petId][commandId] = petinteract;
+		m_petInteractInfo[itemId][commandId] = interact;
 	}
 }
 
@@ -522,122 +432,119 @@ ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
 	return nullptr;
 }
 
-void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool wscroll) {
+void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool whiteScroll) {
 	if (m_scrollInfo.find(scrollId) == m_scrollInfo.end()) {
 		return;
 	}
 	ScrollInfo *itemInfo = &m_scrollInfo[scrollId];
-	if (itemInfo->randStat) {
-		if (equip->getSlots() > 0) {
-			succeed = 0;
-			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
-				int8_t n = -1;
-				if (Randomizer::Instance()->randShort(99) < 50U) {
-					// Increase stats
-					n = 1;
-				}
 
-				// Gives/takes stats on every stat on the item
-				equip->addStr(getStatVariance(n), true);
-				equip->addDex(getStatVariance(n), true);
-				equip->addInt(getStatVariance(n), true);
-				equip->addLuk(getStatVariance(n), true);
-				equip->addHp(getStatVariance(n), true);
-				equip->addMp(getStatVariance(n), true);
-				equip->addWatk(getStatVariance(n), true);
-				equip->addMatk(getStatVariance(n), true);
-				equip->addWdef(getStatVariance(n), true);
-				equip->addMdef(getStatVariance(n), true);
-				equip->addAvoid(getStatVariance(n), true);
-				equip->addAccuracy(getStatVariance(n), true);
-				equip->addHands(getStatVariance(n), true);
-				equip->addJump(getStatVariance(n), true);
-				equip->addSpeed(getStatVariance(n), true);
-
-				equip->incScrolls();
-				equip->decSlots();
-				succeed = 1;
-			}
-			else if (!wscroll) {
-				equip->decSlots();
-			}
-		}
-	}
-	else if (itemInfo->recover) {
-		int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
-		if ((maxSlots - equip->getScrolls()) > equip->getSlots()) {
-			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
-				// Give back a slot
-				equip->incSlots();
-				succeed = 1;
+	// Special scrolls
+	if (itemInfo->preventSlip || itemInfo->warmSupport) {
+		succeed = 0;
+		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+			if (itemInfo->preventSlip) {
+				equip->setPreventSlip(true);
 			}
 			else {
-				if (Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
-					cursed = true;
-				}
-				succeed = 0;
+				equip->setWarmSupport(true);
 			}
-		}
-	}
-	else if (itemInfo->preventSlip) {
-		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
-			equip->setPreventSlip(true);
 			succeed = 1;
-		}
-		else {
-			succeed = 0;
-		}
-	}
-	else if (itemInfo->warmSupport) {
-		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
-			equip->setWarmSupport(true);
-			succeed = 1;
-		}
-		else {
-			succeed = 0;
 		}
 	}
 	else {
-		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
-			// Hacking, equip slot different from the scroll slot
-			return;
-		}
-		if (equip->getSlots() > 0) {
-			if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
-				succeed = 1;
-				equip->addStr(itemInfo->istr);
-				equip->addDex(itemInfo->idex);
-				equip->addInt(itemInfo->iint);
-				equip->addLuk(itemInfo->iluk);
-				equip->addHp(itemInfo->ihp);
-				equip->addMp(itemInfo->imp);
-				equip->addWatk(itemInfo->iwatk);
-				equip->addMatk(itemInfo->imatk);
-				equip->addWdef(itemInfo->iwdef);
-				equip->addMdef(itemInfo->imdef);
-				equip->addAccuracy(itemInfo->iacc);
-				equip->addAvoid(itemInfo->iavo);
-				equip->addHands(itemInfo->ihand);
-				equip->addJump(itemInfo->ijump);
-				equip->addSpeed(itemInfo->ispeed);
-				equip->incScrolls();
-				equip->decSlots();
-			}
-			else {
+		// Anything that might have curse on it
+		if (itemInfo->randStat) {
+			if (equip->getSlots() > 0) {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
-					cursed = true;
+				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+					int8_t n = -1;
+					uint16_t variance = Items::StatVariance::Chaos::Normal;
+					if (Randomizer::Instance()->randShort(99) < 50U) {
+						// Increase stats
+						n = 1;
+					}
+
+					// Gives/takes stats on every stat on the item
+					equip->addStr(getStatVariance(n, variance), true);
+					equip->addDex(getStatVariance(n, variance), true);
+					equip->addInt(getStatVariance(n, variance), true);
+					equip->addLuk(getStatVariance(n, variance), true);
+					equip->addHp(getStatVariance(n, variance), true);
+					equip->addMp(getStatVariance(n, variance), true);
+					equip->addWatk(getStatVariance(n, variance), true);
+					equip->addMatk(getStatVariance(n, variance), true);
+					equip->addWdef(getStatVariance(n, variance), true);
+					equip->addMdef(getStatVariance(n, variance), true);
+					equip->addAvoid(getStatVariance(n, variance), true);
+					equip->addAccuracy(getStatVariance(n, variance), true);
+					equip->addHands(getStatVariance(n, variance), true);
+					equip->addJump(getStatVariance(n, variance), true);
+					equip->addSpeed(getStatVariance(n, variance), true);
+
+					equip->incScrolls();
+					equip->decSlots();
+					succeed = 1;
 				}
-				else if (!wscroll) {
+			}
+		}
+		else if (itemInfo->recover > 0) {
+			// Apparently global doesn't let you use these scrolls on hammer slots
+			//int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
+			int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId());
+			int8_t maxRecoverableSlots = maxSlots - equip->getScrolls();
+			int8_t recoverSlots = std::min(itemInfo->recover, maxRecoverableSlots);
+			if (recoverSlots > 0) {
+				succeed = 0;
+				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+					// Give back slot(s)
+					equip->incSlots(recoverSlots);
+					succeed = 1;
+				}
+			}
+		}
+		else {
+			if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
+				// Hacking, equip slot different from the scroll slot
+				return;
+			}
+			if (equip->getSlots() > 0) {
+				succeed = 0;
+				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+					succeed = 1;
+					equip->addStr(itemInfo->istr);
+					equip->addDex(itemInfo->idex);
+					equip->addInt(itemInfo->iint);
+					equip->addLuk(itemInfo->iluk);
+					equip->addHp(itemInfo->ihp);
+					equip->addMp(itemInfo->imp);
+					equip->addWatk(itemInfo->iwatk);
+					equip->addMatk(itemInfo->imatk);
+					equip->addWdef(itemInfo->iwdef);
+					equip->addMdef(itemInfo->imdef);
+					equip->addAccuracy(itemInfo->iacc);
+					equip->addAvoid(itemInfo->iavo);
+					equip->addHands(itemInfo->ihand);
+					equip->addJump(itemInfo->ijump);
+					equip->addSpeed(itemInfo->ispeed);
+					equip->incScrolls();
 					equip->decSlots();
 				}
+			}
+		}
+
+		if (succeed == 0) {
+			if (itemInfo->cursed > 0 && Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
+				cursed = true;
+			}
+			else if (!whiteScroll) {
+				equip->decSlots();
 			}
 		}
 	}
 }
 
-int16_t ItemDataProvider::getStatVariance(int8_t mod) {
-	int16_t s = Randomizer::Instance()->randShort(Items::StatVariance::RandScroll);
+int16_t ItemDataProvider::getStatVariance(int8_t mod, uint16_t variance) {
+	int16_t s = Randomizer::Instance()->randShort(variance);
 	s *= mod;
 	return s;
 }

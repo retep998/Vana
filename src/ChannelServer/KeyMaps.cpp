@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,11 +61,12 @@ void KeyMaps::defaultMap() {
 }
 
 void KeyMaps::load(int32_t charId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT k.* FROM keymap k WHERE k.character_id = " << charId;
-	mysqlpp::StoreQueryResult res = query.store();
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		add(static_cast<int32_t>(res[i]["pos"]), new KeyMap(static_cast<int8_t>(res[i]["type"]), static_cast<int32_t>(res[i]["action"])));
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT k.* FROM keymap k WHERE k.character_id = :char", soci::use(charId, "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		add(row.get<int32_t>("pos"), new KeyMap(row.get<int8_t>("type"), row.get<int32_t>("action")));
 	}
 	if (getMax() == -1) {
 		// No keymaps, set default map
@@ -75,19 +76,23 @@ void KeyMaps::load(int32_t charId) {
 }
 
 void KeyMaps::save(int32_t charId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "REPLACE INTO keymap VALUES ";
-	for (size_t i = 0; i < KeyMaps::size; i++) {
+	size_t i = 0;
+	int8_t type = 0;
+	int32_t action = 0;
+
+	soci::statement st = (Database::getCharDb().prepare << "REPLACE INTO keymap " <<
+															"VALUES (:char, :key, :type, :action)",
+															soci::use(charId, "char"),
+															soci::use(i, "key"),
+															soci::use(type, "type"),
+															soci::use(action, "action"));
+
+	for (i = 0; i < KeyMaps::size; i++) {
 		KeyMap *keymap = getKeyMap(i);
 		if (keymap != nullptr) {
-			query << "(" << charId << ", "
-				<< i << ", "
-				<< static_cast<int32_t>(keymap->type) << ", "
-				<< keymap->action << ")";
-			if (i != getMax()) {
-				query << ",";
-			}
+			type = keymap->type;
+			action = keymap->action;
+			st.execute(true);
 		}
 	}
-	query.exec();
 }

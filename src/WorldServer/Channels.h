@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,8 +44,8 @@ public:
 	Channel * getChannel(uint16_t num);
 	void increasePopulation(uint16_t channel);
 	void decreasePopulation(uint16_t channel);
-	void sendToChannel(uint16_t channel, PacketCreator &packet);
-	void sendToAll(PacketCreator &packet);
+	void sendToChannel(uint16_t channel, const PacketCreator &packet);
+	void sendToAll(const PacketCreator &packet);
 	uint16_t size();
 	uint16_t getAvailableChannel();
 private:

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,7 +45,7 @@ uint8_t Randomizer::randChar(uint8_t max, uint8_t min) {
 string Randomizer::generateSalt(size_t length) {
 	string salt(length, 0);
 	for (size_t i = 0; i < length; i++) {
-		salt[i] = randChar(126 , 33);
+		salt[i] = randChar(126, 33);
 	}
 	return salt;
 }

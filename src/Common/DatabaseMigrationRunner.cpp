@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,13 +28,14 @@ DatabaseMigration::Runner::Runner(const string &filename) :
 }
 
 void DatabaseMigration::Runner::run() {
-	mysqlpp::Query query = Database::getCharDb().query();
+	soci::session &sql = Database::getCharDb();
 
 	for (size_t i = 0; i < m_queries.size(); i++) {
-		query << m_queries[i];
-
-		if (!query.exec()) {
-			std::cerr << "\nERROR: " << Database::getCharDb().error() << std::endl;
+		try {
+			sql.once << m_queries[i];
+		}
+		catch (soci::soci_error &e) {
+			std::cerr << "\nERROR: " << e.what() << std::endl;
 			std::cerr << "File: " << m_filename << std::endl;
 			// TODO: Handle the error
 		}

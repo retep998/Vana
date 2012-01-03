@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,19 +76,23 @@ void LoginServer::loadLogConfig() {
 }
 
 string LoginServer::makeLogIdentifier() {
-	return ""; // Login needs no special identifier; there's only one
+	// Login needs no special identifier; there's only one
+	return "";
 }
 
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
 	MajorBoss boss;
 	Configuration conf;
-	boost::format formatter("world%i_%s"); // The formatter we'll be using
+	boost::format formatter("world%i_%s");
 	size_t i = 0;
+
 	while (true) {
 		formatter % i % "name";
-		if (!config.keyExists(formatter.str()))
-			break; // No more worlds
+		if (!config.keyExists(formatter.str())) {
+			// No more worlds
+			break;
+		}
 
 		World *world = new World();
 		conf.name = config.getString(formatter.str());

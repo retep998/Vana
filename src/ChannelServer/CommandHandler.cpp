@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -194,15 +194,17 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			int32_t length = packet.get<int32_t>();
 			string &reasonMessage = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
-				mysqlpp::Query accountBanQuery = Database::getCharDb().query();
-				accountBanQuery << "UPDATE user_accounts u "
-					<< "INNER JOIN characters c ON u.user_id = c.user_id "
-					<< "SET "
-					<< "	u.ban_reason = " << (int16_t) reason << ", "
-					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL " << length << " DAY), "
-					<< "	u.ban_reasonMessage = " << mysqlpp::quote << reasonMessage << " "
-					<< "WHERE c.name = " << mysqlpp::quote << victim;
-				accountBanQuery.exec();
+				Database::getCharDb().once << "UPDATE user_accounts u "
+											<< "INNER JOIN characters c ON u.user_id = c.user_id "
+											<< "SET "
+											<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
+											<< "	u.ban_reason = :reason,"
+											<< "	u.ban_reasonMessage = :reasonMessage "
+											<< "WHERE c.name = :name ",
+											soci::use(victim, "name"),
+											soci::use(length, "expire"),
+											soci::use(reason, "reason"),
+											soci::use(reasonMessage, "reasonMessage");
 
 				GmPacket::block(player);
 				string &banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuddyListPacket.h"
 #include "ChannelServer.h"
 #include "Database.h"
+#include "GameConstants.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "SyncPacket.h"
@@ -32,33 +34,34 @@ PlayerBuddyList::PlayerBuddyList(Player *player) :
 }
 
 void PlayerBuddyList::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
-		<< "FROM buddylist bl "
-		<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
-		<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
-		<< "WHERE bl.character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
+	soci::session &sql = Database::getCharDb();
 
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		addBuddy(res[i]);
+	soci::rowset<> rs = (sql.prepare << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online " <<
+										"FROM buddylist bl " <<
+										"LEFT JOIN characters c ON bl.buddy_character_id = c.character_id " <<
+										"LEFT JOIN user_accounts u ON c.user_id = u.user_id " <<
+										"WHERE bl.character_id = :char",
+										soci::use(m_player->getId(), "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		addBuddy(sql, row);
 	}
 
-	query << "SELECT p.* FROM buddylist_pending p "
-		<< "LEFT JOIN characters c ON c.character_id = p.inviter_character_id "
-		<< "WHERE c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld())
-		<< " AND p.character_id = " << m_player->getId();
-	res = query.store();
-
-	enum TableData {
-		CharId = 0,
-		InviterName, InviterId
-	};
+	rs = (sql.prepare << "SELECT p.* FROM buddylist_pending p " <<
+							"LEFT JOIN characters c ON c.character_id = p.inviter_character_id " <<
+							"WHERE c.world_id = :world AND p.character_id = :char ",
+							soci::use(m_player->getId(), "char"),
+							soci::use(ChannelServer::Instance()->getWorld(), "world"));
 
 	BuddyInvite invite;
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		invite.id = atoi(res[i][InviterId]);
-		res[i][InviterName].to_string(invite.name);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		invite = BuddyInvite();
+		invite.id = row.get<int32_t>("inviter_character_id");
+		invite.name = row.get<string>("inviter_name");
 		m_pendingBuddies.push_back(invite);
 	}
 }
@@ -69,46 +72,41 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		return BuddyListPacket::Errors::BuddyListFull;
 	}
 
-	if (name.size() < 4 || name.size() > 12 || group.size() > 13) {
-		// Invalid name or groupname length
+	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize) || group.size() > Buddies::MaxGroupNameSize) {
+		// Invalid name or group length
 		return BuddyListPacket::Errors::UserDoesNotExist;
 	}
 
-	mysqlpp::Query query = Database::getCharDb().query();
+	soci::session &sql = Database::getCharDb();
+	soci::row row;
 
-	enum TableColumns {
-		CharacterId = 0,
-		CharacterName, Gm, BuddylistLimit, BuddylistSize
-	};
+	sql.once << "SELECT c.character_id, c.name, u.gm, c.buddylist_size AS buddylist_limit, ("
+				<< "	SELECT COUNT(b.id) "
+				<< "	FROM buddylist b WHERE b.character_id = c.character_id"
+				<< ") AS buddylist_size "
+				<< "FROM characters c "
+				<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+				<< "WHERE c.name = :name AND c.world_id = :world ",
+				soci::use(name, "name"),
+				soci::use(ChannelServer::Instance()->getWorld(), "world"),
+				soci::into(row);
 
-	query << "SELECT c.character_id, c.name, u.gm, c.buddylist_size AS buddylist_limit, ("
-		<< "	SELECT COUNT(b.id) "
-		<< "	FROM buddylist b WHERE b.character_id = c.character_id"
-		<< ") AS buddylist_size "
-		<< "FROM characters c "
-		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
-		<< "WHERE c.name = " << mysqlpp::quote << name << " AND c.world_id = " << static_cast<int16_t>(ChannelServer::Instance()->getWorld());
-
-	mysqlpp::StoreQueryResult res = query.store();
-
-	if (res.size() == 0) {
+	if (!sql.got_data()) {
 		// Name does not exist
 		return BuddyListPacket::Errors::UserDoesNotExist;
 	}
 
-	mysqlpp::Row row = res[0];
-
-	if (atoi(row[Gm]) > 0 && !m_player->isGm()) {
+	if (row.get<int32_t>("gm") > 0 && !m_player->isGm()) {
 		// GM cannot be in buddy list unless the player is a GM
 		return BuddyListPacket::Errors::NoGms;
 	}
 
-	if (atoi(row[BuddylistSize]) >= atoi(row[BuddylistLimit])) {
+	if (row.get<int32_t>("buddylist_size") >= row.get<int32_t>("buddylist_limit")) {
 		// Opposite-end buddy list full
 		return BuddyListPacket::Errors::TargetListFull;
 	}
 
-	int32_t charId = atoi(row[CharacterId]);
+	int32_t charId = row.get<int32_t>("character_id");
 
 	if (m_buddies.find(charId) != m_buddies.end()) {
 		if (m_buddies[charId]->groupName == group) {
@@ -116,29 +114,40 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 			return BuddyListPacket::Errors::AlreadyInList;
 		}
 		else {
-			query << "UPDATE buddylist SET group_name = " << mysqlpp::quote << group << " WHERE buddy_character_id = " << charId << " AND character_id = " << m_player->getId();
-			query.exec();
+			sql.once << "UPDATE buddylist SET group_name = :name WHERE buddy_character_id = :buddy AND character_id = :owner ",
+						soci::use(group, "name"),
+						soci::use(charId, "buddy"),
+						soci::use(m_player->getId(), "owner");
 			m_buddies[charId]->groupName = group;
 		}
 	}
 	else {
-		query << "INSERT INTO buddylist (character_id, buddy_character_id, name, group_name) VALUES (" << m_player->getId() << ", " << charId << ", " << mysqlpp::quote << res[0][1] << ", " << mysqlpp::quote << group << ")";
-		mysqlpp::SimpleResult res2 = query.execute();
+		sql.once << "INSERT INTO buddylist (character_id, buddy_character_id, name, group_name) " <<
+					"VALUES (:owner, :buddy, :name, :group)",
+					soci::use(name, "name"),
+					soci::use(group, "group"),
+					soci::use(charId, "buddy"),
+					soci::use(m_player->getId(), "owner");
 
-		query << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
-			<< "FROM buddylist bl "
-			<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
-			<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
-			<< "WHERE bl.id = " << res2.insert_id();
+		int32_t rowId = 0;
+		sql.once << "SELECT LAST_INSERT_ID()", soci::into(rowId);
 
-		res = query.store();
+		sql.once << "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
+					<< "FROM buddylist bl "
+					<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
+					<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
+					<< "WHERE bl.id = :row",
+					soci::use(rowId, "row"),
+					soci::into(row);
 
-		addBuddy(res[0]);
+		addBuddy(sql, row);
 
-		query << "SELECT id FROM buddylist WHERE character_id = " << charId << " AND buddy_character_id = " << m_player->getId();
-		mysqlpp::StoreQueryResult res = query.store();
+		sql.once << "SELECT id FROM buddylist WHERE character_id = :char AND buddy_character_id = :buddy",
+					soci::use(charId, "char"),
+					soci::use(m_player->getId(), "buddy"),
+					soci::into(rowId);
 
-		if (res.num_rows() == 0) {
+		if (!sql.got_data()) {
 			if (invite) {
 				SyncPacket::BuddyPacket::buddyInvite(charId, m_player->getId());
 			}
@@ -150,13 +159,10 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		}
 	}
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add);
-
 	return BuddyListPacket::Errors::None;
 }
 
 void PlayerBuddyList::removeBuddy(int32_t charId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-
 	if (m_pendingBuddies.size() != 0 && m_sentRequest) {
 		BuddyInvite invite = m_pendingBuddies.front();
 		if (invite.id == charId) {
@@ -177,21 +183,25 @@ void PlayerBuddyList::removeBuddy(int32_t charId) {
 
 	m_buddies.erase(charId);
 
-	query << "DELETE FROM buddylist WHERE character_id = " << m_player->getId() << " AND buddy_character_id = " << charId;
-	query.exec();
+	Database::getCharDb().once << "DELETE FROM buddylist WHERE character_id = :char AND buddy_character_id = :buddy",
+									soci::use(m_player->getId(), "char"),
+									soci::use(charId, "buddy");
 
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Remove);
 }
 
-void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	int32_t charId = atoi(row["buddy_charId"]);
+void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
+	int32_t charId = row.get<int32_t>("buddy_character_id");
+	int32_t rowId = row.get<int32_t>("id");
+	opt_string name = row.get<opt_string>("name");
+	opt_string group = row.get<opt_string>("group_name");
+	string cache = row.get<string>("name_cache");
 
-	if (!row["name"].is_null() && row["name"] != row["name_cache"]) {
+	if (name.is_initialized() && name.get() != cache) {
 		// Outdated name cache, i.e. character renamed
-		mysqlpp::Query query = Database::getCharDb().query();
-		query << "UPDATE buddylist SET name = " << mysqlpp::quote << row["name"] << " WHERE id = " << row["id"];
-		query.exec();
+		sql.once << "UPDATE buddylist SET name = :name WHERE id = :id ",
+					soci::use(name.get(), "name"),
+					soci::use(rowId, "id");
 	}
 
 	BuddyPtr buddy(new Buddy);
@@ -199,34 +209,39 @@ void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
 
 	// Note that the cache is for displaying the character name when the
 	// character in question is deleted.
-	if (row["name"].is_null()) {
-		row["name_cache"].to_string(buddy->name); // Buddy's character deleted
+	if (!name.is_initialized()) {
+		// Buddy's character deleted
+		buddy->name = cache;
 	}
 	else {
-		row["name"].to_string(buddy->name);
+		buddy->name = name.get();
 	}
 
 	int32_t channelId = -1;
-	if (atoi(row["online"]) >= 20000) {
-		int32_t onlineId = atoi(row["online"]) - 20000;
-
-		channelId = onlineId % 100;
+	int32_t online = row.get<int32_t>("online");
+	if (online >= 20000) {
+		online -= 20000;
+		channelId = online % 100;
 	}
 
 	buddy->channel = channelId;
-	if (row["group_name"].is_null()) {
+	if (!group.is_initialized()) {
 		buddy->groupName = "Default Group";
-		query << "UPDATE buddylist SET group_name = " << mysqlpp::quote << buddy->groupName << " WHERE buddy_character_id = " << charId << " AND character_id = " << m_player->getId();
-		query.exec();
+		sql.once << "UPDATE buddylist SET group_name = :name WHERE buddy_character_id = :buddy AND character_id = :owner ",
+					soci::use(buddy->groupName, "name"),
+					soci::use(charId, "buddy"),
+					soci::use(m_player->getId(), "owner");
 	}
 	else {
-		row["group_name"].to_string(buddy->groupName);
+		buddy->groupName = group.get();
 	}
 
-	query << "SELECT id FROM buddylist WHERE character_id = " << charId << " AND buddy_character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
+	sql.once << "SELECT id FROM buddylist WHERE character_id = :char AND buddy_character_id = :buddy ",
+				soci::use(charId, "char"),
+				soci::use(m_player->getId(), "buddy"),
+				soci::into(rowId);
 
-	if (res.num_rows() != 0) {
+	if (sql.got_data()) {
 		buddy->oppositeStatus = BuddyListPacket::OppositeStatus::Registered;
 	}
 	else {
@@ -237,7 +252,7 @@ void PlayerBuddyList::addBuddy(const mysqlpp::Row &row) {
 }
 
 void PlayerBuddyList::addBuddies(PacketCreator &packet) {
-	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); iter++) {
+	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); ++iter) {
 		BuddyPtr buddy = iter->second;
 		packet.add<int32_t>(buddy->charId);
 		packet.addString(buddy->name, 13);
@@ -270,13 +285,13 @@ void PlayerBuddyList::checkForPendingBuddy() {
 
 void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 	if (m_pendingBuddies.size() == 0 || !m_sentRequest) {
-		// Hacking or something.
+		// Hacking
 		return;
 	}
 
 	BuddyInvite invite = m_pendingBuddies.front();
 	if (invite.id != id) {
-		// Hacking or something stupid
+		// Hacking
 		ChannelServer::Instance()->log(LogTypes::Warning, "Player tried to accept a player with playerId " + boost::lexical_cast<string>(id) + " but the sent playerId was " + boost::lexical_cast<string>(invite.id) + ". PlayerID: " + m_player->getName());
 		return;
 	}
@@ -292,9 +307,9 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
 
-		mysqlpp::Query query = Database::getCharDb().query();
-		query << "DELETE FROM buddylist_pending WHERE character_id = " << m_player->getId() << " AND inviter_character_id = " << id;
-		query.exec();
+		Database::getCharDb().once << "DELETE FROM buddylist_pending WHERE character_id = :char AND inviter_character_id = :buddy",
+										soci::use(m_player->getId(), "char"),
+										soci::use(id, "buddy");
 	}
 
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::First);
@@ -306,7 +321,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 
 vector<int32_t> PlayerBuddyList::getBuddyIds() {
 	vector<int32_t> ids;
-	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); iter++) {
+	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); ++iter) {
 		ids.push_back(iter->second->charId);
 	}
 

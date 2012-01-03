@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
-namespace mysqlpp { class Row; };
+namespace soci { class row; }
 class PacketReader;
 class Player;
 
@@ -36,11 +36,10 @@ struct CharEquip {
 struct Character {
 	int32_t id;
 	string name;
+	int8_t pos;
 	int8_t gender;
 	int8_t skin;
-	int32_t eyes;
-	int32_t hair;
-	int8_t level;
+	uint8_t level;
 	int16_t job;
 	int16_t str;
 	int16_t dex;
@@ -52,14 +51,15 @@ struct Character {
 	int16_t mmp;
 	int16_t ap;
 	int16_t sp;
-	int16_t exp;
 	int16_t fame;
 	int32_t map;
-	int8_t pos;
-	uint32_t worldRank;
+	int32_t eyes;
+	int32_t hair;
+	int32_t exp;
 	int32_t worldRankChange;
-	uint32_t jobRank;
 	int32_t jobRankChange;
+	uint32_t worldRank;
+	uint32_t jobRank;
 	vector<CharEquip> equips;
 };
 
@@ -72,7 +72,7 @@ namespace Characters {
 	void deleteCharacter(Player *player, PacketReader &packet);
 	void showAllCharacters(Player *player);
 	void showCharacters(Player *player);
-	void loadCharacter(Character &charc, const mysqlpp::Row &row);
+	void loadCharacter(Character &charc, const soci::row &row);
 	void loadEquips(int32_t id, vector<CharEquip> &vec);
 	void createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1);
 	bool ownerCheck(Player *player, int32_t id);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ using std::string;
 namespace TimeUtilities {
 	int64_t getServerTime();
 	int64_t timeToTick(time_t time);
+	int32_t timeToTick32(time_t time);
 	int32_t tickToTick32(int64_t tick);
 	int32_t getDate(time_t ctime = time(nullptr));
 	int32_t getMonth(time_t ctime = time(nullptr));

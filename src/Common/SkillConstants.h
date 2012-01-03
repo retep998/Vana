@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -172,6 +172,7 @@ namespace MobSkills {
 }
 
 namespace Jobs {
+	// Be sure to update rankings when you add job tracks or jobs
 	namespace JobTracks {
 		enum Tracks : int8_t {
 			Beginner = 0,
@@ -194,8 +195,10 @@ namespace Jobs {
 			Legend = 20,
 			Aran = 21,
 			Evan = 22,
+			Mercedes = 23,
 
 			Citizen = 30,
+			DemonSlayer = 31,
 			BattleMage = 32,
 			WildHunter = 33,
 			Mechanic = 35
@@ -217,12 +220,12 @@ namespace Jobs {
 			DarkKnight = 132,
 
 			Magician = 200,
-			FPWizard = 210,
-			FPMage = 211,
-			FPArchMage = 212,
-			ILWizard = 220,
-			ILMage = 221,
-			ILArchMage = 222,
+			FpWizard = 210,
+			FpMage = 211,
+			FpArchMage = 212,
+			IlWizard = 220,
+			IlMage = 221,
+			IlArchMage = 222,
 			Cleric = 230,
 			Priest = 231,
 			Bishop = 232,
@@ -249,12 +252,16 @@ namespace Jobs {
 			DualBlade5 = 434,
 
 			Pirate = 500,
+			CannoneerPirate = 501,
 			Brawler = 510,
 			Marauder = 511,
 			Buccaneer = 512,
 			Gunslinger = 520,
 			Outlaw = 521,
 			Corsair = 522,
+			Cannoneer = 530,
+			CannonTrooper = 531,
+			CannonMaster = 532,
 
 			JuniorGm = 800, // ??
 			Gm = 900,
@@ -289,6 +296,7 @@ namespace Jobs {
 
 			Legend = 2000,
 			Evan = 2001,
+			Mercedes = 2002,
 
 			Aran1 = 2100,
 			Aran2 = 2110,
@@ -306,7 +314,18 @@ namespace Jobs {
 			Evan9 = 2217,
 			Evan10 = 2218,
 
+			Mercedes1 = 2300,
+			Mercedes2 = 2310,
+			Mercedes3 = 2311,
+			Mercedes4 = 2312,
+
 			Citizen = 3000,
+			DemonSlayer = 3001,
+
+			DemonSlayer1 = 3100,
+			DemonSlayer2 = 3110,
+			DemonSlayer3 = 3111,
+			DemonSlayer4 = 3112,
 
 			BattleMage1 = 3200,
 			BattleMage2 = 3210,
@@ -453,7 +472,7 @@ namespace Jobs {
 			MagicGuard = 2001002
 		};
 	}
-	namespace FPWizard {
+	namespace FpWizard {
 		enum Skills : int32_t {
 			Meditation = 2101001,
 			MpEater = 2100000,
@@ -461,7 +480,7 @@ namespace Jobs {
 			Slow = 2101003
 		};
 	}
-	namespace FPMage {
+	namespace FpMage {
 		enum Skills : int32_t {
 			ElementAmplification = 2110001,
 			ElementComposition = 2111006,
@@ -471,7 +490,7 @@ namespace Jobs {
 			SpellBooster = 2111005
 		};
 	}
-	namespace FPArchMage {
+	namespace FpArchMage {
 		enum Skills : int32_t {
 			BigBang = 2121001,
 			Elquines = 2121005,
@@ -483,7 +502,7 @@ namespace Jobs {
 			Paralyze = 2121006
 		};
 	}
-	namespace ILWizard {
+	namespace IlWizard {
 		enum Skills : int32_t {
 			ColdBeam = 2201004,
 			Meditation = 2201001,
@@ -491,7 +510,7 @@ namespace Jobs {
 			Slow = 2201003
 		};
 	}
-	namespace ILMage {
+	namespace IlMage {
 		enum Skills : int32_t {
 			ElementAmplification = 2210001,
 			ElementComposition = 2211006,
@@ -501,7 +520,7 @@ namespace Jobs {
 			SpellBooster = 2211005
 		};
 	}
-	namespace ILArchMage {
+	namespace IlArchMage {
 		enum Skills : int32_t {
 			BigBang = 2221001,
 			Blizzard = 2221007,

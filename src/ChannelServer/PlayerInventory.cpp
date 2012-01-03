@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inv
 {
 	boost::array<int32_t, 2> g = {0};
 
-	for (size_t i = 0; i < Inventories::EquippedSlots; i++) {
+	for (size_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		m_equipped[i] = g;
 	}
 
@@ -50,84 +50,76 @@ PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inv
 
 PlayerInventory::~PlayerInventory() {
 	typedef boost::array<ItemInventory, Inventories::InventoryCount> ItemInvArr;
-	for (ItemInvArr::iterator iter = m_items.begin(); iter != m_items.end(); iter++) {
+	for (ItemInvArr::iterator iter = m_items.begin(); iter != m_items.end(); ++iter) {
 		std::for_each(iter->begin(), iter->end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
 	}
 }
 
 void PlayerInventory::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT i.*, p.* "
-			<< "FROM items i "
-			<< "LEFT JOIN pets p ON i.pet_id = p.pet_id "
-			<< "WHERE i.location = " << mysqlpp::quote << "inventory" << " AND i.character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
+	using namespace soci;
+	session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
+	string location = "inventory";
 
-	enum TableFields {
-		ItemCharId = 0,
-		Inv, Slot, Location, UserId, WorldId,
-		ItemId, Amount, Slots, Scrolls, iStr,
-		iDex, iInt, iLuk, iHp, iMp,
-		iWatk, iMatk, iWdef, iMdef, iAcc,
-		iAvo, iHand, iSpeed, iJump, Flags,
-		Hammers, PetId, Name, ExpirationTime,
-		// End of items, start of pets
-		PetsId, Index, PetName, Level, Closeness,
-		Fullness
-	};
+	soci::rowset<> rs = (sql.prepare << "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness " <<
+										"FROM items i " <<
+										"LEFT JOIN pets p ON i.pet_id = p.pet_id " <<
+										"WHERE i.location = :location AND i.character_id = :char",
+										soci::use(m_player->getId(), "char"),
+										soci::use(location, "location"));
 
-	Item *item;
-	string temp;
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		mysqlpp::Row &row = res[i];
-		item = new Item(row[ItemId]);
-		item->setAmount(row[Amount]);
-		item->setSlots(static_cast<int8_t>(row[Slots]));
-		item->setScrolls(static_cast<int8_t>(row[Scrolls]));
-		item->setStr(row[iStr]);
-		item->setDex(row[iDex]);
-		item->setInt(row[iInt]);
-		item->setLuk(row[iLuk]);
-		item->setHp(row[iHp]);
-		item->setMp(row[iMp]);
-		item->setWatk(row[iWatk]);
-		item->setMatk(row[iMatk]);
-		item->setWdef(row[iWdef]);
-		item->setMdef(row[iMdef]);
-		item->setAccuracy(row[iAcc]);
-		item->setAvoid(row[iAvo]);
-		item->setHands(row[iHand]);
-		item->setSpeed(row[iSpeed]);
-		item->setJump(row[iJump]);
-		item->setPetId(row[PetId]);
-		item->setFlags(static_cast<int16_t>(row[Flags]));
-		item->setHammers(row[Hammers]);
-		item->setExpirationTime(row[ExpirationTime]);
-		row[Name].to_string(temp);
-		item->setName(temp);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		addItem(static_cast<int8_t>(row[Inv]), row[Slot], item, true);
+		Item *item = new Item(row.get<int32_t>("item_id"));
+		item->setAmount(row.get<int16_t>("amount"));
+		item->setSlots(row.get<int8_t>("slots"));
+		item->setScrolls(row.get<int8_t>("scrolls"));
+		item->setStr(row.get<int16_t>("istr"));
+		item->setDex(row.get<int16_t>("idex"));
+		item->setInt(row.get<int16_t>("iint"));
+		item->setLuk(row.get<int16_t>("iluk"));
+		item->setHp(row.get<int16_t>("ihp"));
+		item->setMp(row.get<int16_t>("imp"));
+		item->setWatk(row.get<int16_t>("iwatk"));
+		item->setMatk(row.get<int16_t>("imatk"));
+		item->setWdef(row.get<int16_t>("iwdef"));
+		item->setMdef(row.get<int16_t>("imdef"));
+		item->setAccuracy(row.get<int16_t>("iacc"));
+		item->setAvoid(row.get<int16_t>("iavo"));
+		item->setHands(row.get<int16_t>("ihand"));
+		item->setSpeed(row.get<int16_t>("ispeed"));
+		item->setJump(row.get<int16_t>("ijump"));
+		item->setFlags(row.get<int16_t>("flags"));
+		item->setHammers(row.get<int32_t>("hammers"));
+		item->setPetId(row.get<int32_t>("pet_id"));
+		item->setName(row.get<string>("name"));
+		item->setExpirationTime(row.get<int64_t>("expiration"));
+
+		addItem(row.get<int8_t>("inv"), row.get<int16_t>("slot"), item, true);
 		if (item->getPetId() != 0) {
 			Pet *pet = new Pet(
 				m_player,
 				item,
-				static_cast<int8_t>(row[Index]),
-				static_cast<string>(row[PetName]),
-				static_cast<uint8_t>(row[Level]),
-				static_cast<int16_t>(row[Closeness]),
-				static_cast<uint8_t>(row[Fullness]),
-				static_cast<uint8_t>(row[Slot])
+				row.get<int8_t>("index"),
+				row.get<string>("pet_name"),
+				row.get<int8_t>("level"),
+				row.get<int16_t>("closeness"),
+				row.get<int8_t>("fullness"),
+				row.get<int8_t>("slot")
 			);
 			m_player->getPets()->addPet(pet);
 		}
 	}
 
-	query << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = " << m_player->getId();
-	res = query.store();
+	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = :char",
+							soci::use(m_player->getId(), "char"));
 
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		int8_t index = static_cast<int8_t>(res[i][0]);
-		int32_t mapId = res[i][1];
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		int8_t index = row.get<int8_t>("map_index");
+		int32_t mapId = row.get<int32_t>("map_id");
 
 		if (index >= Inventories::TeleportRockMax) {
 			m_vipLocations.push_back(mapId);
@@ -135,93 +127,156 @@ void PlayerInventory::load() {
 		else {
 			m_rockLocations.push_back(mapId);
 		}
+
 	}
 }
 
 void PlayerInventory::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "inventory" << " AND character_id = " << m_player->getId();
-	query.exec();
+	using namespace soci;
+	session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
+	string location = "inventory";
 
-	bool firstRun = true;
-	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
-		ItemInventory &itemsinv = m_items[i - 1];
-		for (ItemInventory::iterator iter = itemsinv.begin(); iter != itemsinv.end(); iter++) {
-			Item *item = iter->second;
-			if (firstRun) {
-				query << "INSERT INTO items VALUES (";
-				firstRun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << m_player->getId() << ","
-				<< static_cast<int16_t>(i) << ","
-				<< iter->first << ","
-				<< mysqlpp::quote << "inventory" << ","
-				<< m_player->getUserId() << ","
-				<< static_cast<int16_t>(m_player->getWorldId()) << ","
-				<< item->getId() << ","
-				<< item->getAmount() << ","
-				<< static_cast<int16_t>(item->getSlots()) << ","
-				<< static_cast<int16_t>(item->getScrolls()) << ","
-				<< item->getStr() << ","
-				<< item->getDex() << ","
-				<< item->getInt() << ","
-				<< item->getLuk() << ","
-				<< item->getHp() << ","
-				<< item->getMp() << ","
-				<< item->getWatk() << ","
-				<< item->getMatk() << ","
-				<< item->getWdef() << ","
-				<< item->getMdef() << ","
-				<< item->getAccuracy() << ","
-				<< item->getAvoid() << ","
-				<< item->getHands() << ","
-				<< item->getSpeed() << ","
-				<< item->getJump() << ","
-				<< item->getFlags() << ","
-				<< item->getHammers() << ","
-				<< item->getPetId() << ","
-				<< mysqlpp::quote << item->getName() << ","
-				<< item->getExpirationTime() << ")";
+	sql.once << "DELETE FROM items WHERE location = :inv AND character_id = :char",
+				use(charId, "char"),
+				use(location, "inv");
+
+	sql.once << "DELETE FROM teleport_rock_locations WHERE character_id = :char", use(charId, "char");
+
+	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
+		int32_t mapId = 0;
+		size_t i = 0;
+
+		statement st = (sql.prepare << "INSERT INTO teleport_rock_locations " <<
+												"VALUES (:char, :i, :map)",
+												use(charId, "char"),
+												use(mapId, "map"),
+												use(i, "i"));
+
+		for (i = 0; i < m_rockLocations.size(); ++i) {
+			mapId = m_rockLocations[i];
+			st.execute(true);
+		}
+
+		i = Inventories::TeleportRockMax;
+		for (size_t j = 0; j < m_vipLocations.size(); ++j) {
+			mapId = m_vipLocations[i];
+			st.execute(true);
+			++i;
 		}
 	}
-	if (!firstRun) {
-		query.exec();
-	}
-	query << "DELETE FROM teleport_rock_locations WHERE character_id = " << m_player->getId();
-	query.exec();
 
-	for (size_t i = 0; i < m_rockLocations.size(); i++) {
-		int32_t mapId = m_rockLocations[i];
-		query << "INSERT INTO teleport_rock_locations VALUES ("
-				<< m_player->getId() << ","
-				<< static_cast<uint16_t>(i) << ","
-				<< mapId << ")";
-		query.exec();
-	}
-	for (size_t i = 0; i < m_vipLocations.size(); i++) {
-		int32_t mapId = m_vipLocations[i];
-		query << "INSERT INTO teleport_rock_locations VALUES ("
-				<< m_player->getId() << ","
-				<< static_cast<uint16_t>(i + Inventories::TeleportRockMax) << ","
-				<< mapId << ")";
-		query.exec();
+	int8_t slots = 0;
+	int8_t scrolls = 0;
+	uint8_t inv = 0;
+	int16_t slot = 0;
+	int16_t amount = 0;
+	int16_t iStr = 0;
+	int16_t iDex = 0;
+	int16_t iInt = 0;
+	int16_t iLuk = 0;
+	int16_t iHp = 0;
+	int16_t iMp = 0;
+	int16_t iWatk = 0;
+	int16_t iMatk = 0;
+	int16_t iWdef = 0;
+	int16_t iMdef = 0;
+	int16_t iAcc = 0;
+	int16_t iAvo = 0;
+	int16_t iHands = 0;
+	int16_t iSpeed = 0;
+	int16_t iJump = 0;
+	int16_t flags = 0;
+	int32_t itemId = 0;
+	int32_t hammers = 0;
+	int64_t petId = 0;
+	int64_t expiration = 0;
+	string name = "";
+
+	statement st = (sql.prepare << "INSERT INTO items " <<
+									"VALUES (" <<
+									":char, :inv, :slot, :location, :user, " <<
+									":world, :item, :amount, :slots, :scrolls, " <<
+									":str, :dex, :int, :luk, :hp, " <<
+									":mp, :watk, :matk, :wdef, :mdef, " <<
+									":acc, :avo, :hands, :speed, :jump, " <<
+									":flags, :hammers, :pet, :name, :expiration" <<
+									")",
+									use(charId, "char"),
+									use(inv, "inv"),
+									use(slot, "slot"),
+									use(location, "location"),
+									use(m_player->getUserId(), "user"),
+									use(m_player->getWorldId(), "world"),
+									use(itemId, "item"),
+									use(amount, "amount"),
+									use(slots, "slots"),
+									use(scrolls, "scrolls"),
+									use(iStr, "str"),
+									use(iDex, "dex"),
+									use(iInt, "int"),
+									use(iLuk, "luk"),
+									use(iHp, "hp"),
+									use(iMp, "mp"),
+									use(iWatk, "watk"),
+									use(iMatk, "matk"),
+									use(iWdef, "wdef"),
+									use(iMdef, "mdef"),
+									use(iAcc, "acc"),
+									use(iAvo, "avo"),
+									use(iHands, "hands"),
+									use(iSpeed, "speed"),
+									use(iJump, "jump"),
+									use(flags, "flags"),
+									use(hammers, "hammers"),
+									use(petId, "pet"),
+									use(name, "name"),
+									use(expiration, "expiration"));
+
+	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
+		ItemInventory &itemsInv = m_items[i - 1];
+		for (ItemInventory::iterator iter = itemsInv.begin(); iter != itemsInv.end(); ++iter) {
+			Item *item = iter->second;
+			slot = iter->first;
+
+			inv = GameLogicUtilities::getInventory(item->getId());
+			itemId = item->getId();
+			amount = item->getAmount();
+			slots = item->getSlots();
+			scrolls = item->getScrolls();
+			iStr = item->getStr();
+			iDex = item->getDex();
+			iInt = item->getInt();
+			iLuk = item->getLuk();
+			iHp = item->getHp();
+			iMp = item->getMp();
+			iWatk = item->getWatk();
+			iMatk = item->getMatk();
+			iWdef = item->getWdef();
+			iMdef = item->getMdef();
+			iAcc = item->getAccuracy();
+			iAvo = item->getAvoid();
+			iHands = item->getHands();
+			iSpeed = item->getSpeed();
+			iJump = item->getJump();
+			flags = item->getFlags();
+			hammers = item->getHammers();
+			petId = item->getPetId();
+			name = item->getName();
+			expiration = item->getExpirationTime();
+			st.execute(true);
+		}
 	}
 }
 
 void PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) {
 	inventory -= 1;
-	m_maxSlots[inventory] += (rows * 4);
-	if (m_maxSlots[inventory] > 100) {
-		m_maxSlots[inventory] = 100;
-	}
-	if (m_maxSlots[inventory] < 24) {
-		// Retard
-		m_maxSlots[inventory] = 24;
-	}
-	InventoryPacket::updateSlots(m_player, inventory + 1, m_maxSlots[inventory]);
+
+	uint8_t &inv = m_maxSlots[inventory];
+	inv += (rows * 4);
+	
+	inv = MiscUtilities::constrainToRange(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
+	InventoryPacket::updateSlots(m_player, inventory + 1, inv);
 }
 
 void PlayerInventory::setMesos(int32_t mesos, bool sendPacket) {
@@ -240,11 +295,11 @@ bool PlayerInventory::modifyMesos(int32_t mod, bool sendPacket) {
 		m_mesos += mod;
 	}
 	else {
-		int32_t mesotest = m_mesos + mod;
-		if (mesotest < 0) {
+		int32_t mesoTest = m_mesos + mod;
+		if (mesoTest < 0) {
 			return false;
 		}
-		m_mesos = mesotest;
+		m_mesos = mesoTest;
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mesos, m_mesos, sendPacket);
 	return true;
@@ -329,7 +384,7 @@ int32_t PlayerInventory::getEquippedId(int16_t slot, bool cash) {
 }
 
 void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		// Shown items
 		if (m_equipped[i][0] > 0 || m_equipped[i][1] > 0) {
 			packet.add<int8_t>(i);
@@ -343,7 +398,7 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 		}
 	}
 	packet.add<int8_t>(-1);
-	for (int8_t i = 0; i < Inventories::EquippedSlots; i++) {
+	for (int8_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		// Covered items
 		if (m_equipped[i][1] > 0 && m_equipped[i][0] > 0 && i != EquipSlots::Weapon) {
 			packet.add<int8_t>(i);
@@ -361,7 +416,7 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
 bool PlayerInventory::isEquippedItem(int32_t itemId) {
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
 	bool has = false;
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); iter++) {
+	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); ++iter) {
 		if (iter->first == itemId) {
 			has = true;
 			break;
@@ -405,16 +460,16 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 
 int16_t PlayerInventory::getOpenSlotsNum(int8_t inv) {
 	int16_t openSlots = 0;
-	for (int16_t i = 1; i <= getMaxSlots(inv); i++) {
+	for (int16_t i = 1; i <= getMaxSlots(inv); ++i) {
 		if (getItem(inv, i) == nullptr) {
-			openSlots++;
+			++openSlots;
 		}
 	}
 	return openSlots;
 }
 
 int32_t PlayerInventory::doShadowStars() {
-	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); s++) {
+	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); ++s) {
 		Item *item = getItem(Inventories::UseInventory, s);
 		if (item == nullptr) {
 			continue;
@@ -446,7 +501,7 @@ void PlayerInventory::addRockMap(int32_t mapId, int8_t type) {
 void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 	const int8_t mode = InventoryPacket::RockModes::Delete;
 	if (type == InventoryPacket::RockTypes::Regular) {
-		for (size_t k = 0; k < m_rockLocations.size(); k++) {
+		for (size_t k = 0; k < m_rockLocations.size(); ++k) {
 			if (m_rockLocations[k] == mapId) {
 				m_rockLocations.erase(m_rockLocations.begin() + k);
 				InventoryPacket::sendRockUpdate(m_player, mode, type, m_rockLocations);
@@ -455,7 +510,7 @@ void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 		}
 	}
 	else if (type == InventoryPacket::RockTypes::Vip) {
-		for (size_t k = 0; k < m_vipLocations.size(); k++) {
+		for (size_t k = 0; k < m_vipLocations.size(); ++k) {
 			if (m_vipLocations[k] == mapId) {
 				m_vipLocations.erase(m_vipLocations.begin() + k);
 				InventoryPacket::sendRockUpdate(m_player, mode, type, m_vipLocations);
@@ -466,12 +521,12 @@ void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 }
 
 bool PlayerInventory::ensureRockDestination(int32_t mapId) {
-	for (size_t k = 0; k < m_rockLocations.size(); k++) {
+	for (size_t k = 0; k < m_rockLocations.size(); ++k) {
 		if (m_rockLocations[k] == mapId) {
 			return true;
 		}
 	}
-	for (size_t k = 0; k < m_vipLocations.size(); k++) {
+	for (size_t k = 0; k < m_vipLocations.size(); ++k) {
 		if (m_vipLocations[k] == mapId) {
 			return true;
 		}
@@ -486,7 +541,7 @@ void PlayerInventory::addWishListItem(int32_t itemId) {
 void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int32_t>(m_mesos);
 
-	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
+	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		packet.add<int8_t>(getMaxSlots(i));
 	}
 
@@ -513,8 +568,8 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int8_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
-	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; i++) {
-		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
+	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
+		for (int16_t s = 1; s <= getMaxSlots(i); ++s) {
 			Item *item = getItem(i, s);
 			if (item == nullptr) {
 				continue;
@@ -539,15 +594,15 @@ void PlayerInventory::rockPacket(PacketCreator &packet) {
 
 void PlayerInventory::wishListPacket(PacketCreator &packet) {
 	packet.add<uint8_t>(m_wishlist.size());
-	for (size_t i = 0; i < m_wishlist.size(); i++) {
+	for (size_t i = 0; i < m_wishlist.size(); ++i) {
 		packet.add<int32_t>(m_wishlist[i]);
 	}
 }
 
 void PlayerInventory::checkExpiredItems() {
 	vector<int32_t> expiredItemIds;
-	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; i++) {
-		for (int16_t s = 1; s <= getMaxSlots(i); s++) {
+	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
+		for (int16_t s = 1; s <= getMaxSlots(i); ++s) {
 			Item *item = getItem(i, s);
 
 			if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= TimeUtilities::getServerTime()) {

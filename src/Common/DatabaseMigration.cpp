@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ExitCodes.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp> 
+#include <boost/optional.hpp>
 #include <iostream>
 
 namespace fs = boost::filesystem;
@@ -60,29 +61,31 @@ void DatabaseMigration::update(size_t version) {
 
 void DatabaseMigration::loadDatabaseInfo() {
 	// vana_info table for checking database version
-	mysqlpp::Connection &conn = Database::getCharDb();
-	mysqlpp::StoreQueryResult res;
-	{
-		mysqlpp::NoExceptions ne(conn);
-		mysqlpp::Query query = Database::getCharDb().query("SELECT * FROM vana_info LIMIT 1");
-		res = query.store();
-	}
+	opt_int32_t version;
+	bool retrievedData = false;
 
-	if (res.size() == 0) {
+	try {
+		soci::session &sql = Database::getCharDb();
+		sql.once << "SELECT version FROM vana_info", soci::into(version);
+		retrievedData = sql.got_data();
+	}
+	catch (soci::soci_error) { }
+
+	if (!retrievedData) {
 		if (m_update) {
 			createInfoTable();
 		}
 		m_version = 0;
 	}
 	else {
-		m_version = res[0][0].is_null() ? 0 : (int32_t) res[0][0];
+		m_version = (!version.is_initialized() ? 0 : version.get());
 	}
 }
 
 void DatabaseMigration::loadSqlFiles() {
 	fs::path fullPath = fs::system_complete(fs::path("sql", fs::native));
 	if (!fs::exists(fullPath)) {
-		std::cerr << "SQL files not found: " << fullPath.native_file_string() << std::endl;
+		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(ExitCodes::InfoDatabaseError);
@@ -90,8 +93,8 @@ void DatabaseMigration::loadSqlFiles() {
 
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
-		string &filename = dir->filename();
-		string &filestring = dir->path().native_file_string();
+		const string &filename = dir->path().filename().generic_string();
+		const string &fileString = dir->path().generic_string();
 		if (filename.find(".sql") == string::npos) {
 			// Not an SQL file
 			continue;
@@ -107,27 +110,19 @@ void DatabaseMigration::loadSqlFiles() {
 
 		if (m_update) {
 			// Only record the SQL files if we're going to update the database
-			m_sqlFiles[v] = filestring;
+			m_sqlFiles[v] = fileString;
 		}
 	}
 }
 
 // Create the info table
 void DatabaseMigration::createInfoTable() {
-	mysqlpp::Query query = Database::getCharDb().query();
-
-	query << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
-	query.exec();
-
-	// Insert a default record of NULL
-	query << "INSERT INTO vana_info VALUES (NULL)";
-	query.exec();
+	Database::getCharDb().once
+		<< "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED); "
+		<< "INSERT INTO vana_info VALUES (NULL)";
 }
 
 // Set version number in the info table
 void DatabaseMigration::updateInfoTable(size_t version) {
-	mysqlpp::Query query = Database::getCharDb().query();
-
-	query << "UPDATE vana_info SET version = " << version;
-	query.exec();
+	Database::getCharDb().once << "UPDATE vana_info SET version = :version", soci::use(version, "version");
 }

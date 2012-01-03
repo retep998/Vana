@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,27 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
-
-using boost::lexical_cast;
-
-namespace Functors {
-	struct NameFunctor {
-		void operator() (Player *player) {
-			if (i < max) {
-				if (i != 0) {
-					names << ", ";
-				}
-				names << player->getName();
-				i++;
-			}
-		}
-		int32_t max;
-		int32_t &i;
-		std::ostringstream &names;
-	};
-}
 
 bool InfoFunctions::help(Player *player, const string &args) {
 	using ChatHandlerFunctions::CommandList;
@@ -57,7 +37,7 @@ bool InfoFunctions::help(Player *player, const string &args) {
 		bool has = false;
 		std::ostringstream strm;
 		strm << "You may not use any commands.";
-		for (unordered_map<string, ChatCommand>::iterator iter = CommandList.begin(); iter != CommandList.end(); iter++) {
+		for (unordered_map<string, ChatCommand>::iterator iter = CommandList.begin(); iter != CommandList.end(); ++iter) {
 			if (player->getGmLevel() >= iter->second.level) {
 				if (!has) {
 					strm.str("");
@@ -93,27 +73,45 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 		else if (test == "scriptbyid") type = 400;
 
 		if (type != 0) {
-			mysqlpp::Query query = Database::getDataDb().query();
-			mysqlpp::StoreQueryResult res;
+			soci::session &sql = Database::getDataDb();
+			auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function<void(const soci::row &row, std::ostringstream &str)> formatMessage) {
+				// Bug in the behavior of SOCI
+				// In the case where you use dynamic resultset binding, got_data() will not properly report that it got results
+
+				std::ostringstream str("");
+				bool found = false;
+				for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+					soci::row const &row = *i;
+					found = true;
+					
+					str.str("");
+					str.clear();
+					formatMessage(row, str);
+					PlayerPacket::showMessage(player, str.str(), PlayerPacket::NoticeTypes::Blue);
+				}
+
+				if (!found) {
+					PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
+				}
+			};
 
 			string q = matches[2];
 			if (type < 200) {
-				if (type == 100) {
-					query << "SELECT objectid, `label` FROM strings WHERE objectid = " << mysqlpp::quote << q;
-				}
-				else {
-					query << "SELECT objectid, `label` FROM strings WHERE object_type = " << type << " AND label LIKE " << mysqlpp::quote << ("%" + q + "%") ;
-				}
-				res = query.store();
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				};
 
-				if (res.num_rows() == 0) {
-					PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
+				if (type == 100) {
+					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE objectid = :q",
+														soci::use(q, "q"));
+					displayFunc(rs, format);
 				}
 				else {
-					for (size_t i = 0; i < res.num_rows(); i++) {
-						string &msg = static_cast<string>(res[i][0]) + " : " + static_cast<string>(res[i][1]);
-						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
-					}
+					q = "%" + q + "%";
+					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE object_type = :type AND label LIKE :q",
+														soci::use(q, "q"),
+														soci::use(type, "type"));
+					displayFunc(rs, format);
 				}
 			}
 			else if (type == 200) {
@@ -128,22 +126,21 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				}
 			}
 			else if (type > 200) {
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<int32_t>(1) << " (" << row.get<string>(0) << "): " << row.get<string>(2);
+				};
+
 				if (type == 300) {
-					query << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE " << mysqlpp::quote << ("%" + q + "%");
+					q = "%" + q + "%";
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE :q",
+														soci::use(q, "q"));
+
+					displayFunc(rs, format);
 				}
 				else if (type == 400) {
-					query << "SELECT script_type, objectid, script FROM scripts WHERE objectid = " << mysqlpp::quote << q;
-				}
-				res = query.store();
-
-				if (res.num_rows() == 0) {
-					PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
-				}
-				else {
-					for (size_t i = 0; i < res.num_rows(); i++) {
-						string &msg = static_cast<string>(res[i][1]) + " (" + static_cast<string>(res[i][0]) + "): " + static_cast<string>(res[i][2]);
-						PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
-					}
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE objectid = :q",
+														soci::use(q, "q"));
+					displayFunc(rs, format);
 				}
 			}
 		}
@@ -167,8 +164,16 @@ bool InfoFunctions::online(Player *player, const string &args) {
 	std::ostringstream igns;
 	igns << "IGNs: ";
 	int32_t i = 0;
-	Functors::NameFunctor func = {100, i, igns}; // Max of 100, may decide to change this in the future
-	PlayerDataProvider::Instance()->run(func);
+	const int32_t max = 100;
+	PlayerDataProvider::Instance()->run([&i, &max, &igns](Player *player) {
+		if (i < max) {
+			if (i != 0) {
+				igns << ", ";
+			}
+			igns << player->getName();
+			i++;
+		}
+	});
 	PlayerPacket::showMessage(player, igns.str(), PlayerPacket::NoticeTypes::Blue);
 	return true;
 }

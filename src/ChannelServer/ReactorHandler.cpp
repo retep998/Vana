@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,9 +51,9 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 		if (reactor->getState() < (data->maxStates - 1)) {
 			ReactorStateInfo *reactorEvent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
 			if (reactorEvent->nextState < (data->maxStates - 1)) {
-				if (reactorEvent->type == 100)
+				if (reactorEvent->type == 100) {
 					return;
-
+				}
 				ReactorPacket::triggerReactor(reactor);
 				reactor->setState(reactorEvent->nextState, true);
 				return;
@@ -108,7 +108,7 @@ struct Reaction {
 void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 	Reactor *reactor;
 	Map *map = Maps::getMap(drop->getMap());
-	for (size_t i = 0; i < map->getNumReactors(); i++) {
+	for (size_t i = 0; i < map->getNumReactors(); ++i) {
 		reactor = map->getReactor(i);
 		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
 		if (data == nullptr) {
@@ -117,7 +117,7 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 		}
 		if (reactor->getState() < (data->maxStates - 1)) {
 			ReactorStateInfo *reactorEvent;
-			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); j++) {
+			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); ++j) {
 				reactorEvent = &(data->states[reactor->getState()][j]);
 				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
 					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->lt, reactorEvent->rb, drop->getPos())) {

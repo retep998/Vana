@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -509,12 +509,12 @@ int16_t ChatHandlerFunctions::getJob(const string &query) {
 	else if (query == "dk") job  = Jobs::JobIds::DragonKnight;
 	else if (query == "drk") job = Jobs::JobIds::DarkKnight;
 	else if (query == "magician") job = Jobs::JobIds::Magician;
-	else if (query == "fpwiz") job = Jobs::JobIds::FPWizard;
-	else if (query == "fpmage") job = Jobs::JobIds::FPMage;
-	else if (query == "fparch") job = Jobs::JobIds::FPArchMage;
-	else if (query == "ilwiz") job = Jobs::JobIds::ILWizard;
-	else if (query == "ilmage") job = Jobs::JobIds::ILMage;
-	else if (query == "ilarch") job = Jobs::JobIds::ILArchMage;
+	else if (query == "fpwiz") job = Jobs::JobIds::FpWizard;
+	else if (query == "fpmage") job = Jobs::JobIds::FpMage;
+	else if (query == "fparch") job = Jobs::JobIds::FpArchMage;
+	else if (query == "ilwiz") job = Jobs::JobIds::IlWizard;
+	else if (query == "ilmage") job = Jobs::JobIds::IlMage;
+	else if (query == "ilarch") job = Jobs::JobIds::IlArchMage;
 	else if (query == "cleric") job = Jobs::JobIds::Cleric;
 	else if (query == "priest") job = Jobs::JobIds::Priest;
 	else if (query == "bishop") job = Jobs::JobIds::Bishop;

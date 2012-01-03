@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -114,13 +114,13 @@ Player * PlayerDataProvider::getPlayer(const string &name) {
 }
 
 void PlayerDataProvider::run(function<void (Player *)> func) {
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		func(iter->second);
 	}
 }
 
 void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		Player *p = iter->second;
 		if (p->getGmLevel() >= minGmLevel) {
 			p->getSession()->send(packet);

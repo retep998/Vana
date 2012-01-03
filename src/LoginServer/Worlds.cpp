@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -57,23 +57,25 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
+
 	int8_t worldId = packet.get<int8_t>();
 	if (World *world = getWorld(worldId)) {
 		player->setWorld(worldId);
+		int32_t load = world->getPlayerLoad();
 		int32_t maxLoad = world->getMaxPlayerLoad();
-		int32_t minMaxLoad = (maxLoad / 100) * 90; // 90% is enough for the many users warning, I think
+		int32_t minMaxLoad = (maxLoad / 100) * 90;
 		int8_t message = LoginPacket::WorldMessages::Normal;
 
-		if (world->getPlayerLoad() >= minMaxLoad && world->getPlayerLoad() < maxLoad) {
+		if (load >= minMaxLoad && load < maxLoad) {
 			message = LoginPacket::WorldMessages::HeavyLoad;
 		}
-		else if (world->getPlayerLoad() == maxLoad) {
+		else if (load == maxLoad) {
 			message = LoginPacket::WorldMessages::MaxLoad;
 		}
 		LoginPacket::showChannels(player, message);
 	}
 	else {
-		// Hacking of some sort...
+		// Hacking
 		return;
 	}
 }
@@ -88,6 +90,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 
 	LoginPacket::channelSelect(player);
 	World *world = m_worlds[player->getWorld()];
+
 	if (Channel *chan = m_worlds[player->getWorld()]->getChannel(channel)) {
 		player->setChannel(channel);
 		Characters::showCharacters(player);
@@ -167,19 +170,11 @@ void Worlds::runFunction(function<bool (World *)> func) {
 	}
 }
 
-namespace Functors {
-	struct PlayerLoad {
-		void operator()(Channel *channel) {
-			world->setPlayerLoad(world->getPlayerLoad() + channel->getPopulation());
-		}
-		World *world;
-	};
-}
-
 void Worlds::calculatePlayerLoad(World *world) {
 	world->setPlayerLoad(0);
-	Functors::PlayerLoad load = {world};
-	world->runChannelFunction(load);
+	world->runChannelFunction([&world](Channel *channel) {
+		world->setPlayerLoad(world->getPlayerLoad() + channel->getPopulation());
+	});
 }
 
 World * Worlds::getWorld(int8_t id) {

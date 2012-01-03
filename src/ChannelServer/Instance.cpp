@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -57,30 +57,30 @@ Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t ti
 
 Instance::~Instance() {
 	// Maps
-	for (size_t i = 0; i < getMapNum(); i++) {
+	for (size_t i = 0; i < getMapNum(); ++i) {
 		Map *map = m_maps[i];
 		map->setInstance(nullptr);
 		map->setMusic("default");
 		map->clearDrops(false);
 		map->killMobs(0, 0, false, false);
 		map->killReactors(false);
-		if (m_resetOnDestroy) { // Reset all mobs/reactors
+		if (m_resetOnDestroy) {
+			// Reset all mobs/reactors
 			map->respawn();
 		}
 	}
 	m_maps.clear();
 
 	// Parties
-	for (size_t k = 0; k < m_parties.size(); k++) {
-		Party *p = m_parties[k];
-		if (p != nullptr) {
+	for (size_t k = 0; k < m_parties.size(); ++k) {
+		if (Party *p = m_parties[k]) {
 			p->setInstance(nullptr);
 		}
 	}
 	m_parties.clear();
 
 	// Players
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		iter->second->setInstance(nullptr);
 	}
 	m_players.clear();
@@ -88,7 +88,7 @@ Instance::~Instance() {
 }
 
 const string Instance::getBannedPlayerByIndex(uint32_t index) const {
-	index--;
+	--index;
 	return m_banned[(index > m_banned.size() ? m_banned.size() : index)];
 }
 
@@ -98,7 +98,7 @@ void Instance::setBanned(const string &name, bool isbanned) {
 		removePlayerSignUp(name);
 	}
 	else {
-		for (size_t i = 0; i < m_banned.size(); i++) {
+		for (size_t i = 0; i < m_banned.size(); ++i) {
 			if (m_banned[i] == name) {
 				m_banned.erase(m_banned.begin() + i);
 				break;
@@ -108,7 +108,7 @@ void Instance::setBanned(const string &name, bool isbanned) {
 }
 
 bool Instance::isBanned(const string &name) {
-	for (size_t i = 0; i < m_banned.size(); i++) {
+	for (size_t i = 0; i < m_banned.size(); ++i) {
 		if (m_banned[i] == name) {
 			return true;
 		}
@@ -136,7 +136,7 @@ void Instance::removePlayer(int32_t id) {
 
 void Instance::removeAllPlayers() {
 	unordered_map<int32_t, Player *> temp = m_players;
-	for (unordered_map<int32_t, Player *>::iterator iter = temp.begin(); iter != temp.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = temp.begin(); iter != temp.end(); ++iter) {
 		removePlayer(iter->second);
 	}
 }
@@ -146,7 +146,7 @@ void Instance::addPlayerSignUp(Player *player) {
 }
 
 void Instance::removePlayerSignUp(const string &name) {
-	for (size_t i = 0; i < m_playersOrder.size(); i++) {
+	for (size_t i = 0; i < m_playersOrder.size(); ++i) {
 		if (m_playersOrder[i] == name) {
 			m_playersOrder.erase(m_playersOrder.begin() + i);
 		}
@@ -154,18 +154,18 @@ void Instance::removePlayerSignUp(const string &name) {
 }
 
 void Instance::moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal) {
-	if (!Maps::getMap(mapId))
+	if (!Maps::getMap(mapId)) {
 		return;
-
+	}
 	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
-	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); ++iter) {
 		iter->second->setMap(mapId, portal, respectInstances);
 
 	}
 }
 
 bool Instance::isPlayerSignedUp(const string &name) {
-	for (size_t i = 0; i < m_playersOrder.size(); i++) {
+	for (size_t i = 0; i < m_playersOrder.size(); ++i) {
 		if (m_playersOrder[i] == name) {
 			return true;
 		}
@@ -175,19 +175,19 @@ bool Instance::isPlayerSignedUp(const string &name) {
 
 vector<int32_t> Instance::getAllPlayerIds() {
 	vector<int32_t> playerIds;
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		playerIds.push_back(iter->first);
 	}
 	return playerIds;
 }
 
 const string Instance::getPlayerByIndex(uint32_t index) const {
-	index--;
+	--index;
 	return m_playersOrder[(index > m_playersOrder.size() ? m_playersOrder.size() : index)];
 }
 
 bool Instance::instanceHasPlayers() const {
-	for (size_t i = 0; i < m_maps.size(); i++) {
+	for (size_t i = 0; i < m_maps.size(); ++i) {
 		if (m_maps[i]->getNumPlayers() != 0) {
 			return true;
 		}
@@ -207,7 +207,7 @@ void Instance::addMap(int32_t mapId) {
 
 Map * Instance::getMap(int32_t mapId) {
 	Map *map = nullptr;
-	for (size_t i = 0; i < getMapNum(); i++) {
+	for (size_t i = 0; i < getMapNum(); ++i) {
 		Map *tmap = m_maps[i];
 		if (tmap->getId() == mapId) {
 			map = tmap;
@@ -366,7 +366,7 @@ void Instance::markForDelete() {
 
 void Instance::respawnMobs(int32_t mapId) {
 	if (mapId == Maps::NoMap) {
-		for (size_t i = 0; i < getMapNum(); i++) {
+		for (size_t i = 0; i < getMapNum(); ++i) {
 			m_maps[i]->respawn(SpawnTypes::Mob);
 		}
 	}
@@ -377,7 +377,7 @@ void Instance::respawnMobs(int32_t mapId) {
 
 void Instance::respawnReactors(int32_t mapId) {
 	if (mapId == Maps::NoMap) {
-		for (size_t i = 0; i < getMapNum(); i++) {
+		for (size_t i = 0; i < getMapNum(); ++i) {
 			m_maps[i]->respawn(SpawnTypes::Reactor);
 		}
 	}
@@ -386,14 +386,14 @@ void Instance::respawnReactors(int32_t mapId) {
 	}
 }
 
-void Instance::showTimer(bool show, bool doit) {
-	if (!show && (doit || m_showTimer)) {
-		for (size_t i = 0; i < getMapNum(); i++) {
+void Instance::showTimer(bool show, bool doIt) {
+	if (!show && (doIt || m_showTimer)) {
+		for (size_t i = 0; i < getMapNum(); ++i) {
 			MapPacket::showTimer(m_maps[i]->getId(), 0);
 		}
 	}
-	else if (show && (doit || !m_showTimer)) {
-		for (size_t i = 0; i < getMapNum(); i++) {
+	else if (show && (doIt || !m_showTimer)) {
+		for (size_t i = 0; i < getMapNum(); ++i) {
 			MapPacket::showTimer(m_maps[i]->getId(), checkInstanceTimer());
 		}
 	}

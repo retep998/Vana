@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /* Standard integers */
 #include <boost/cstdint.hpp>
+#include <boost/optional.hpp>
+#include <string>
 
 // Import the type from the boost namespace
 typedef boost::int8_t int8_t;
@@ -29,18 +31,44 @@ typedef boost::int32_t int32_t;
 typedef boost::uint32_t uint32_t;
 typedef boost::int64_t int64_t;
 typedef boost::uint64_t uint64_t;
-typedef boost::intmax_t intmax_t;
-typedef boost::uintmax_t uintmax_t;
 
-typedef uint16_t header_t; // Allows for easier transitioning when the header type isn't 2 bytes
+// Types for use with database
+class unix_time_t {
+public:
+	unix_time_t() { m_time = time(nullptr); }
+	unix_time_t(time_t t) { m_time = t; }
+	unix_time_t(const unix_time_t &t) { m_time = t.m_time; }
+	operator time_t() const { return m_time; }
+	unix_time_t & operator =(const time_t &t) { m_time = t; return *this; }
+	unix_time_t & operator =(const unix_time_t &right) { m_time = right.m_time; return *this; }
+	unix_time_t & operator +=(const time_t &t) { m_time += t; return *this; }
+	unix_time_t & operator +=(const unix_time_t &right) { m_time += right.m_time; return *this; }
+	unix_time_t & operator -=(const time_t &t) { m_time -= t; return *this; }
+	unix_time_t & operator -=(const unix_time_t &right) { m_time -= right.m_time; return *this; }
+	unix_time_t operator +(const time_t &t) { return unix_time_t(m_time + t); }
+	unix_time_t operator +(const unix_time_t &right) { return unix_time_t(m_time + right.m_time); }
+	unix_time_t operator -(const time_t &t) { return unix_time_t(m_time - t); }
+	unix_time_t operator -(const unix_time_t &right) { return unix_time_t(m_time - right.m_time); }
+private:
+	time_t m_time;
+};
+
+using boost::optional;
+typedef optional<bool> opt_bool;
+typedef optional<int8_t> opt_int8_t;
+typedef optional<uint8_t> opt_uint8_t;
+typedef optional<int16_t> opt_int16_t;
+typedef optional<uint16_t> opt_uint16_t;
+typedef optional<int32_t> opt_int32_t;
+typedef optional<uint32_t> opt_uint32_t;
+typedef optional<int64_t> opt_int64_t;
+typedef optional<uint64_t> opt_uint64_t;
+typedef optional<double> opt_double;
+typedef optional<unix_time_t> opt_unix_time_t;
+typedef optional<std::string> opt_string;
+
+
+// Vana-specific types
+typedef uint16_t header_t;
 typedef uint16_t port_t;
 typedef uint32_t ip_t;
-
-// Take out this ugliness when C++0x is widely supported, find other instances of "C++0x" and remove
-#include <boost/config.hpp>
-#if _MSC_VER < 1600
-// VS2010 (version 1600) supports nullptr (only when building in VC100 toolset), Boost 1.41 doesn't have this info
-# define nullptr 0
-#elif defined BOOST_NO_NULLPTR && _MSC_VER != 1600
-# define nullptr 0
-#endif

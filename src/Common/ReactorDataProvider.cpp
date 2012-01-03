@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,112 +37,82 @@ void ReactorDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct ReactorFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "remove_in_field_set") reactor->removeInFieldSet = true;
-			else if (cmp == "activate_by_touch") reactor->activateByTouch = true;
-		}
-		ReactorData *reactor;
-	};
-}
-
 void ReactorDataProvider::loadReactors() {
 	m_reactorInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_data");
-	mysqlpp::UseQueryResult res = query.use();
-	ReactorData react;
+	ReactorData reactor;
 	int32_t id;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_data");
 
-	enum Reactors {
-		ReactorId = 0,
-		MaxStates, Link, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[ReactorId]);
-		react = ReactorData();
-		ReactorFlags whoo = {&react};
-		runFlags(row[Flags], whoo);
+		id = row.get<int32_t>("reactorid");
+		reactor = ReactorData();
+		runFlags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
+			if (cmp == "remove_in_field_set") reactor.removeInFieldSet = true;
+			else if (cmp == "activate_by_touch") reactor.activateByTouch = true;
+		});
 
-		react.maxStates = atoi(row[MaxStates]);
-		react.link = atoi(row[Link]);
+		reactor.maxStates = row.get<int8_t>("max_states");
+		reactor.link = row.get<int32_t>("link");
 
-		m_reactorInfo[id] = react;
+		m_reactorInfo[id] = reactor;
 	}
 }
 
-namespace Functors {
-	struct StateTypeFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "plain_advance_state") reactor->type = 0;
-			else if (cmp == "no_clue") reactor->type = 0;
-			else if (cmp == "no_clue2") reactor->type = 0;
-			else if (cmp == "hit_from_left") reactor->type = 2;
-			else if (cmp == "hit_from_right") reactor->type = 3;
-			else if (cmp == "hit_by_skill") reactor->type = 5;
-			else if (cmp == "hit_by_item") reactor->type = 100;
-		}
-		ReactorStateInfo *reactor;
-	};
-}
-
 void ReactorDataProvider::loadStates() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
-	mysqlpp::UseQueryResult res = query.use();
-	ReactorStateInfo revent;
+	ReactorStateInfo state;
 	int32_t id;
-	int8_t state;
+	int8_t stateId;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
 
-	enum ReactorEvent {
-		ReactorId = 0,
-		State, Type, Timeout, ItemId, Quantity,
-		LTX, LTY, RBX, RBY, NextState
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[ReactorId]);
-		state = atoi(row[State]);
-		revent = ReactorStateInfo();
+		id = row.get<int32_t>("reactorid");
+		stateId = row.get<int8_t>("state");
+		state = ReactorStateInfo();
 
-		StateTypeFlags whoo = {&revent};
-		runFlags(row[Type], whoo);
+		runFlags(row.get<opt_string>("event_type"), [&state](const string &cmp) {
+			if (cmp == "plain_advance_state") state.type = 0;
+			else if (cmp == "no_clue") state.type = 0;
+			else if (cmp == "no_clue2") state.type = 0;
+			else if (cmp == "hit_from_left") state.type = 2;
+			else if (cmp == "hit_from_right") state.type = 3;
+			else if (cmp == "hit_by_skill") state.type = 5;
+			else if (cmp == "hit_by_item") state.type = 100;	
+		});
 
-		revent.itemId = atoi(row[ItemId]);
-		revent.itemQuantity = atoi(row[Quantity]);
-		revent.lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
-		revent.rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		revent.nextState = atoi(row[NextState]);
-		revent.timeout = atoi(row[Timeout]);
+		state.itemId = row.get<int32_t>("itemid");
+		state.itemQuantity = row.get<int16_t>("quantity");
+		state.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
+		state.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		state.nextState = row.get<int8_t>("next_state");
+		state.timeout = row.get<int32_t>("timeout");
 
-		m_reactorInfo[id].states[state].push_back(revent);
+		m_reactorInfo[id].states[stateId].push_back(state);
 	}
 }
 
 void ReactorDataProvider::loadTriggerSkills() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM reactor_event_trigger_skills");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t id;
 	int8_t state;
 	int32_t skillId;
-	size_t i;
+	size_t j;
 
-	enum ReactorEvent {
-		ReactorId = 0,
-		State, SkillId
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_event_trigger_skills");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[ReactorId]);
-		state = atoi(row[State]);
-		skillId = atoi(row[SkillId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		for (i = 0; i < m_reactorInfo[id].states[state].size(); i++) {
-			m_reactorInfo[id].states[state][i].triggerSkills.push_back(skillId);
+		id = row.get<int32_t>("reactorid");
+		state = row.get<int8_t>("state");
+		skillId = row.get<int32_t>("skillid");
+
+		for (j = 0; j < m_reactorInfo[id].states[state].size(); ++j) {
+			m_reactorInfo[id].states[state][j].triggerSkills.push_back(skillId);
 		}
 	}
 }

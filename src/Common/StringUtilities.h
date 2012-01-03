@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,15 +26,9 @@ using std::tr1::function;
 
 namespace StringUtilities {
 	int32_t noCaseCompare(const string &s1, const string &s2);
+	void runFlags(const opt_string &flags, function<void (const string &)> func);
 	void runFlags(const string &flags, function<void (const string &)> func);
 	int64_t atoli(const char *str); // ASCII to long int
-	bool atob(const char *str); // ASCII to bool
-	time_t atot(const char *str); // ASCII to time_t
 	string replace(const string &input, const string &what, const string &replacement);
 	string bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase = true);
-}
-
-inline
-bool StringUtilities::atob(const char *str) {
-	return atoi(str) != 0;
 }

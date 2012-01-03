@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int8_t>(charc.level);
+	packet.add<uint8_t>(charc.level);
 	packet.add<int16_t>(charc.job);
 	packet.add<int16_t>(charc.str);
 	packet.add<int16_t>(charc.dex);
@@ -59,8 +59,9 @@ void LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	int32_t equips[Inventories::EquippedSlots][2] = {0};
 	for (size_t i = 0; i < charc.equips.size(); i++) {
 		int16_t slot = -charc.equips[i].slot;
-		if (slot > 100)
+		if (slot > 100) {
 			slot -= 100;
+		}
 		if (equips[slot][0] > 0) {
 			if (charc.equips[i].slot < -100) {
 				equips[slot][1] = equips[slot][0];

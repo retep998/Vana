@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,19 +47,20 @@ void PlayerDataProvider::loadData() {
 void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Players... ";
 
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT c.character_id, c.`name` FROM characters c WHERE c.world_id = " << worldId;
-	mysqlpp::UseQueryResult res = query.use();
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT c.character_id, c.name FROM characters c WHERE c.world_id = :world",
+															soci::use(worldId, "world"));
+
 	Player *p;
 
 	enum TableColumns : int32_t {
 		CharacterId = 0,
 		Name
 	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		p = new Player(atoi(row[CharacterId]));
-		p->setName(static_cast<string>(row[Name]));
+		p = new Player(row.get<int32_t>(CharacterId));
+		p->setName(row.get<string>(Name));
 		p->setJob(-1);
 		p->setLevel(-1);
 		p->setMap(-1);
@@ -71,21 +72,10 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct PlayerCompile {
-		void operator()(Player *player) {
-			packet->add<int32_t>(player->getId());
-		}
-		PacketCreator *packet;
-	};
-}
-
 void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
-	Functors::PlayerCompile func = {&packet};
-
 	packet.add<uint32_t>(m_players.size());
 	Player *player;
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		player = iter->second.get();
 		packet.addBool(false);
 		packet.addBool(false);
@@ -98,13 +88,15 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 
 	packet.add<uint32_t>(m_parties.size());
 	Party *party;
-	for (PartyMap::iterator iter = m_parties.begin(); iter != m_parties.end(); iter++) {
+	for (PartyMap::iterator iter = m_parties.begin(); iter != m_parties.end(); ++iter) {
 		party = iter->second.get();
 		packet.add<int32_t>(party->getId());
 		packet.add<int32_t>(party->getLeaderId());
 		packet.add<int8_t>(party->getMemberCount());
 
-		party->runFunction(func);
+		party->runFunction([&packet](Player *player) {
+			packet.add<int32_t>(player->getId());
+		});
 	}
 }
 
@@ -135,7 +127,7 @@ void PlayerDataProvider::playerDisconnect(int32_t id, int16_t channel) {
 Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) {
 	Player *player = nullptr;
 	bool found = false;
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		if ((iter->second->isOnline() || includeOffline) && StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {
 			player = iter->second.get();
 			found = true;
@@ -164,7 +156,7 @@ Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 }
 
 void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); iter++) {
+	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		if (iter->second->getChannel() == channel) {
 			iter->second->setOnline(false);
 			removePendingPlayerEarly(iter->second->getId());

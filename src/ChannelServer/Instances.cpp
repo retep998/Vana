@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ void Instances::removeInstance(Instance *instance) {
 
 Instance * Instances::getInstance(const string &name) {
 	string &upCaseName = boost::to_upper_copy(name);
-	return (m_instances.find(upCaseName) == m_instances.end()) ? 0 : m_instances[upCaseName];
+	return (m_instances.find(upCaseName) == m_instances.end()) ? nullptr : m_instances[upCaseName];
 }
 
 bool Instances::isInstance(const string &name) {

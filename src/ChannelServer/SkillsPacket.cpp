@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -80,8 +80,8 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	packet.addHeader(SMSG_THEATRICS); // For the using player
 	bool send = false;
 	switch (skillId) {
-		case Jobs::FPWizard::MpEater:
-		case Jobs::ILWizard::MpEater:
+		case Jobs::FpWizard::MpEater:
+		case Jobs::IlWizard::MpEater:
 		case Jobs::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillId);
@@ -105,8 +105,8 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	packet.addHeader(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	switch (skillId) {
-		case Jobs::FPWizard::MpEater:
-		case Jobs::ILWizard::MpEater:
+		case Jobs::FpWizard::MpEater:
+		case Jobs::IlWizard::MpEater:
 		case Jobs::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillId);

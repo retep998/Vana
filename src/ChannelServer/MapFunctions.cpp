@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -121,7 +121,7 @@ bool MapFunctions::listMobs(Player *player, const string &args) {
 		typedef unordered_map<int32_t, Mob *> MobMap;
 		MobMap mobs = Maps::getMap(player->getMap())->getMobs();
 		std::ostringstream message;
-		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); iter++) {
+		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); ++iter) {
 			message.str("");
 			message.clear();
 
