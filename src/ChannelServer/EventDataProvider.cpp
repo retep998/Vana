@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "Instance.h"
 #include "Instances.h"
-#include "TimeUtilities.h"
 #include "Timer.h"
+#include "TimeUtilities.h"
 #include <cstdio>
 #include <functional>
 #include <iomanip>

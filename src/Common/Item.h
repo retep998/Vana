@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -106,8 +106,8 @@ public:
 	void incAmount(int16_t mod) { m_amount += mod; }
 	void decAmount(int16_t mod) { m_amount -= mod; }
 	void incHammers() { m_hammers++; }
-	void incSlots() { m_slots++; }
-	void decSlots() { m_slots--; }
+	void incSlots(int8_t inc = 1) { m_slots += inc; }
+	void decSlots(int8_t dec = 1) { m_slots -= dec; }
 	void incScrolls() { m_scrolls++; }
 private:
 	bool testPerform(int16_t stat, bool onlyIfExists);

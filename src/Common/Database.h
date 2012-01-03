@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,41 +21,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 # include <winsock2.h> // Prevent conflict with boost::asio
 #endif
 
-#pragma warning(push)
-#pragma warning(disable : 4275)
-#include "mysql++.h"
-#pragma warning(pop)
-
+#include "soci.h"
+#include "SociExtensions.h"
 #include "Types.h"
 #include <boost/thread/tss.hpp>
+#include <boost/type_traits.hpp>
+#include <string>
 
 struct DbConfig;
 
 class Database {
 public:
-	typedef boost::thread_specific_ptr<mysqlpp::Connection> tsConn;
+	typedef boost::thread_specific_ptr<soci::session> tsConn;
 
 	static void connectCharDb();
 	static void connectDataDb();
-	static mysqlpp::Connection & getCharDb();
-	static mysqlpp::Connection & getDataDb();
+	static soci::session & getCharDb();
+	static soci::session & getDataDb();
 private:
+	static soci::session & getConnection(tsConn &conn, std::function<void()> func);
 	static tsConn m_chardb;
 	static tsConn m_datadb;
+	static string buildConnectionString(const DbConfig &conf);
 };
 
 inline
-mysqlpp::Connection & Database::getCharDb() {
-	if (m_chardb.get() == nullptr) {
-		connectCharDb();
-	}
-	return *m_chardb.get();
+soci::session & Database::getCharDb() {
+	return getConnection(m_chardb, &connectCharDb);
 }
 
 inline
-mysqlpp::Connection & Database::getDataDb() {
-	if (m_datadb.get() == nullptr) {
-		connectDataDb();
+soci::session & Database::getDataDb() {
+	return getConnection(m_datadb, &connectDataDb);
+}
+
+inline
+soci::session & Database::getConnection(tsConn &conn, std::function<void()> func) {
+	if (conn.get() == nullptr) {
+		func();
 	}
-	return *m_datadb.get();
+	/* SOCI
+	// This will attempt to re-establish a connection if it's lost, but it costs a query every single time
+	// Consider re-architecting the system for better SQL failsafes
+	else {
+
+		try {
+			int32_t i = 0;
+			*conn.get() << "SELECT 1", soci::into(i);
+		}
+		catch (soci::soci_error) {
+			conn->reconnect();
+		}
+	}
+	*/
+	return *conn.get();
 }

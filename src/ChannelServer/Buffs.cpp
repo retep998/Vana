@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -339,8 +339,8 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 		case Jobs::Page::BwBooster:
 		case Jobs::Spearman::SpearBooster:
 		case Jobs::Spearman::PolearmBooster:
-		case Jobs::FPMage::SpellBooster:
-		case Jobs::ILMage::SpellBooster:
+		case Jobs::FpMage::SpellBooster:
+		case Jobs::IlMage::SpellBooster:
 		case Jobs::Hunter::BowBooster:
 		case Jobs::Crossbowman::CrossbowBooster:
 		case Jobs::Assassin::ClawBooster:
@@ -369,8 +369,8 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FPArchMage::MapleWarrior:
-		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::FpArchMage::MapleWarrior:
+		case Jobs::IlArchMage::MapleWarrior:
 		case Jobs::Bishop::MapleWarrior:
 		case Jobs::Bowmaster::MapleWarrior:
 		case Jobs::Marksman::MapleWarrior:
@@ -473,8 +473,8 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Page::BwBooster:
 		case Jobs::Spearman::SpearBooster:
 		case Jobs::Spearman::PolearmBooster:
-		case Jobs::FPMage::SpellBooster:
-		case Jobs::ILMage::SpellBooster:
+		case Jobs::FpMage::SpellBooster:
+		case Jobs::IlMage::SpellBooster:
 		case Jobs::Hunter::BowBooster:
 		case Jobs::Crossbowman::CrossbowBooster:
 		case Jobs::Assassin::ClawBooster:
@@ -507,8 +507,8 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FPArchMage::MapleWarrior:
-		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::FpArchMage::MapleWarrior:
+		case Jobs::IlArchMage::MapleWarrior:
 		case Jobs::Bishop::MapleWarrior:
 		case Jobs::Bowmaster::MapleWarrior:
 		case Jobs::Marksman::MapleWarrior:

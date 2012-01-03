@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,68 +38,50 @@ void ValidCharDataProvider::loadData() {
 
 void ValidCharDataProvider::loadForbiddenNames() {
 	m_forbiddenNames.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_forbidden_names");
-	mysqlpp::UseQueryResult res = query.use();
-	string name;
 
-	enum ForbiddenNameData {
-		Name
-	};
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		name = static_cast<string>(row[Name]);
-		m_forbiddenNames.push_back(name);
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_forbidden_names");
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		m_forbiddenNames.push_back(row.get<string>("forbidden_name"));
 	}
-}
-
-namespace Functors {
-	struct CreationItemFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "face") items->faces.push_back(objectid);
-			else if (cmp == "hair") items->hair.push_back(objectid);
-			else if (cmp == "haircolor") items->haircolor.push_back(objectid);
-			else if (cmp == "skin") items->skin.push_back(objectid);
-			else if (cmp == "top") items->top.push_back(objectid);
-			else if (cmp == "bottom") items->bottom.push_back(objectid);
-			else if (cmp == "shoes") items->shoes.push_back(objectid);
-			else if (cmp == "weapon") items->weapons.push_back(objectid);
-		}
-		ValidItems *items;
-		int32_t objectid;
-	};
 }
 
 void ValidCharDataProvider::loadCreationItems() {
 	m_adventurer.clear();
 	m_cygnus.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_creation_data");
-	mysqlpp::UseQueryResult res = query.use();
+
 	int8_t gender;
 	int8_t classId;
-	int32_t objectid;
+	int32_t objectId;
 	string className;
 	ValidItems *items;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_creation_data");
 
-	enum CreationData {
-		Id = 0,
-		CharacterType, Gender, ObjectType, ObjectId
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		gender = GameLogicUtilities::getGenderId(row[Gender]);
-		className = static_cast<string>(row[CharacterType]);
-		if (className == "regular") {
-			classId = Adventurer;
-		}
-		else if (className == "cygnus") {
-			classId = Cygnus;
-		}
-		objectid = atoi(row[ObjectId]);
+		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
+		runFlags(row.get<opt_string>("character_type"), [&classId](const string &cmp) {
+			if (cmp == "regular") classId = Adventurer;
+			else if (cmp == "cygnus") classId = Cygnus;
+		});
+
+		objectId = row.get<int32_t>("objectid");
 		items = getItems(gender, classId);
 
-		CreationItemFlags whoo = {items, objectid};
-		runFlags(row[ObjectType], whoo);
+		runFlags(row.get<opt_string>("object_type"), [&items, &objectId](const string &cmp) {
+			if (cmp == "face") items->faces.push_back(objectId);
+			else if (cmp == "hair") items->hair.push_back(objectId);
+			else if (cmp == "haircolor") items->haircolor.push_back(objectId);
+			else if (cmp == "skin") items->skin.push_back(objectId);
+			else if (cmp == "top") items->top.push_back(objectId);
+			else if (cmp == "bottom") items->bottom.push_back(objectId);
+			else if (cmp == "shoes") items->shoes.push_back(objectId);
+			else if (cmp == "weapon") items->weapons.push_back(objectId);			
+		});
 	}
 }
 
@@ -132,8 +114,9 @@ bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_
 bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) {
 	ValidItems *items = getItems(gender, classId);
 
-	if (items == nullptr)
+	if (items == nullptr) {
 		return false;
+	}
 
 	bool valid = false;
 	switch (type) {

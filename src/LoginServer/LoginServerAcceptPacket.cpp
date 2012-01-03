@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,7 +55,7 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connec
 void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_NEW_PLAYER);
-	packet.add<int16_t>(channel);
+	packet.add<uint16_t>(channel);
 	packet.add<int32_t>(charId);
 	packet.add<ip_t>(ip);
 	connection->getSession()->send(packet);

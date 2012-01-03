@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -230,7 +230,7 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
-	if (player->getStats()->getHp() == 0 || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
+	if (player->getStats()->isDead() || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
 		// Hacking
 		return;
 	}
@@ -279,7 +279,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 		newMaxLevel = s.maxLevel;
 		if (GameLogicUtilities::itemSkillMatchesJob(skillId, player->getStats()->getJob())) {
 			// Make sure the skill is for the person's job
-			if (player->getSkills()->getSkillLevel(skillId) >= s.reqlevel) {
+			if (player->getSkills()->getSkillLevel(skillId) >= s.reqLevel) {
 				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
 				if (player->getSkills()->getMaxSkillLevel(skillId) < newMaxLevel) {
 					// Don't want to break up this vertical spacing

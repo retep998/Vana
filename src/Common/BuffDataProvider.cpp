@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,8 +49,8 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Page::BwBooster].player.push_back(player);
 	m_skillInfo[Jobs::Spearman::SpearBooster].player.push_back(player);
 	m_skillInfo[Jobs::Spearman::PolearmBooster].player.push_back(player);
-	m_skillInfo[Jobs::FPMage::SpellBooster].player.push_back(player);
-	m_skillInfo[Jobs::ILMage::SpellBooster].player.push_back(player);
+	m_skillInfo[Jobs::FpMage::SpellBooster].player.push_back(player);
+	m_skillInfo[Jobs::IlMage::SpellBooster].player.push_back(player);
 	m_skillInfo[Jobs::Hunter::BowBooster].player.push_back(player);
 	m_skillInfo[Jobs::Crossbowman::CrossbowBooster].player.push_back(player);
 	m_skillInfo[Jobs::Assassin::ClawBooster].player.push_back(player);
@@ -79,8 +79,8 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Hero::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Paladin::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::DarkKnight::MapleWarrior].player.push_back(player);
-	m_skillInfo[Jobs::FPArchMage::MapleWarrior].player.push_back(player);
-	m_skillInfo[Jobs::ILArchMage::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::FpArchMage::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::IlArchMage::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Bishop::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Bowmaster::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Marksman::MapleWarrior].player.push_back(player);
@@ -174,8 +174,8 @@ void BuffDataProvider::loadData() {
 	buff.byte = Byte1;
 	buff.value = SkillMatk;
 	player.buff = buff;
-	m_skillInfo[Jobs::FPWizard::Meditation].player.push_back(player);
-	m_skillInfo[Jobs::ILWizard::Meditation].player.push_back(player);
+	m_skillInfo[Jobs::FpWizard::Meditation].player.push_back(player);
+	m_skillInfo[Jobs::IlWizard::Meditation].player.push_back(player);
 	m_skillInfo[Jobs::BlazeWizard::Meditation].player.push_back(player);
 
 	// Invincible
@@ -289,8 +289,8 @@ void BuffDataProvider::loadData() {
 	buff.byte = Byte6;
 	buff.value = SkillX;
 	player.buff = buff;
-	m_skillInfo[Jobs::FPArchMage::Infinity].player.push_back(player);
-	m_skillInfo[Jobs::ILArchMage::Infinity].player.push_back(player);
+	m_skillInfo[Jobs::FpArchMage::Infinity].player.push_back(player);
+	m_skillInfo[Jobs::IlArchMage::Infinity].player.push_back(player);
 	m_skillInfo[Jobs::Bishop::Infinity].player.push_back(player);
 
 	// Echo of Hero
@@ -314,8 +314,8 @@ void BuffDataProvider::loadData() {
 	buff.byte = Byte5;
 	buff.value = SkillLv;
 	player.buff = buff;
-	m_skillInfo[Jobs::FPArchMage::ManaReflection].player.push_back(player);
-	m_skillInfo[Jobs::ILArchMage::ManaReflection].player.push_back(player);
+	m_skillInfo[Jobs::FpArchMage::ManaReflection].player.push_back(player);
+	m_skillInfo[Jobs::IlArchMage::ManaReflection].player.push_back(player);
 	m_skillInfo[Jobs::Bishop::ManaReflection].player.push_back(player);
 
 	// Hamstring

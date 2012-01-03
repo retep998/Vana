@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,15 +42,13 @@ void PlayerStorage::takeItem(int8_t slot) {
 }
 
 void PlayerStorage::setSlots(int8_t slots) {
-	if (slots < 4) slots = 4;
-	else if (slots > 100) slots = 100;
-	m_slots = slots;
+	m_slots = MiscUtilities::constrainToRange(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
 }
 
 void PlayerStorage::addItem(Item *item) {
 	int8_t inv = GameLogicUtilities::getInventory(item->getId());
-	int8_t i;
-	for (i = 0; i < (int8_t) m_items.size(); i++) {
+	uint8_t i;
+	for (i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) > inv) {
 			break;
 		}
@@ -60,7 +58,7 @@ void PlayerStorage::addItem(Item *item) {
 
 int8_t PlayerStorage::getNumItems(int8_t inv) {
 	int8_t itemNum = 0;
-	for (int8_t i = 0; i < (int8_t) m_items.size(); i++) {
+	for (uint8_t i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
 			itemNum++;
 		}
@@ -74,135 +72,190 @@ void PlayerStorage::changeMesos(int32_t mesos) {
 }
 
 void PlayerStorage::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = " << m_player->getUserId() << " AND s.world_id = " << (int16_t) m_player->getWorldId();
-	mysqlpp::StoreQueryResult res = query.store();
-	if (res.num_rows() != 0) {
-		m_slots = (uint8_t) res[0][0];
-		m_mesos = res[0][1];
+	soci::session &sql = Database::getCharDb();
+	soci::row row;
+	int32_t userId = m_player->getUserId();
+	int8_t worldId = m_player->getWorldId();
+	sql.once << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = :user AND s.world_id = :world",
+				soci::use(userId, "user"),
+				soci::use(worldId, "world"),
+				soci::into(row);
+
+	if (sql.got_data()) {
+		m_slots = row.get<int8_t>("slots");
+		m_mesos = row.get<int32_t>("mesos");
 	}
 	else {
 		m_slots = 4;
 		m_mesos = 0;
-		// Make a row right away...
-		query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
-			<< m_player->getUserId() << ", "
-			<< (int16_t) m_player->getWorldId() << ", "
-			<< (int16_t) getSlots() << ", "
-			<< getMesos() << ") ";
-		query.exec();
+
+		sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos) "
+					<< "VALUES (:user, :world, :slots, :mesos)",
+						soci::use(userId, "user"),
+						soci::use(worldId, "world"),
+						soci::use(getSlots(), "slots"),
+						soci::use(getMesos(), "mesos");
 	}
 
 	m_items.reserve(m_slots);
 
-	enum TableFields {
-		ItemCharId = 0,
-		Inv, Slot, Location, UserId, WorldId,
-		ItemId, Amount, Slots, Scrolls, iStr,
-		iDex, iInt, iLuk, iHp, iMp,
-		iWatk, iMatk, iWdef, iMdef, iAcc,
-		iAvo, iHand, iSpeed, iJump, Flags,
-		Hammers, PetId, Name, ExpirationTime
-	};
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT i.* FROM items i " <<
+															"WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world " <<
+															"ORDER BY i.slot ASC",
+															soci::use(string("storage"), "location"),
+															soci::use(userId, "user"),
+															soci::use(worldId, "world"));
 
-	query << "SELECT i.* "
-			<< "FROM items i "
-			<< "WHERE "
-			<< "	i.location = " << mysqlpp::quote << "storage" << " "
-			<< "	AND i.user_id = " << m_player->getUserId() << " "
-			<< "	AND i.world_id = " << (int16_t) m_player->getWorldId() << " "
-			<< "ORDER BY slot ASC";
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	res = query.store();
-	string temp;
-	for (size_t i = 0; i < res.num_rows(); i++) {
-		mysqlpp::Row &row = res[i];
-		Item *item = new Item(row[ItemId]);
-		item->setAmount(row[Amount]);
-		item->setSlots(static_cast<int8_t>(row[Slots]));
-		item->setScrolls(static_cast<int8_t>(row[Scrolls]));
-		item->setStr(row[iStr]);
-		item->setDex(row[iDex]);
-		item->setInt(row[iInt]);
-		item->setLuk(row[iLuk]);
-		item->setHp(row[iHp]);
-		item->setMp(row[iMp]);
-		item->setWatk(row[iWatk]);
-		item->setMatk(row[iMatk]);
-		item->setWdef(row[iWdef]);
-		item->setMdef(row[iMdef]);
-		item->setAccuracy(row[iAcc]);
-		item->setAvoid(row[iAvo]);
-		item->setHands(row[iHand]);
-		item->setSpeed(row[iSpeed]);
-		item->setJump(row[iJump]);
-		item->setFlags(static_cast<int16_t>(row[Flags]));
-		item->setHammers(row[Hammers]);
-		item->setExpirationTime(row[ExpirationTime]);
-		row[Name].to_string(temp);
-		item->setName(temp);
-		item->setPetId(row[PetId]);
+		Item *item = new Item(row.get<int32_t>("item_id"));
+		item->setAmount(row.get<int16_t>("amount"));
+		item->setSlots(row.get<int8_t>("slots"));
+		item->setScrolls(row.get<int8_t>("scrolls"));
+		item->setStr(row.get<int16_t>("istr"));
+		item->setDex(row.get<int16_t>("idex"));
+		item->setInt(row.get<int16_t>("iint"));
+		item->setLuk(row.get<int16_t>("iluk"));
+		item->setHp(row.get<int16_t>("ihp"));
+		item->setMp(row.get<int16_t>("imp"));
+		item->setWatk(row.get<int16_t>("iwatk"));
+		item->setMatk(row.get<int16_t>("imatk"));
+		item->setWdef(row.get<int16_t>("iwdef"));
+		item->setMdef(row.get<int16_t>("imdef"));
+		item->setAccuracy(row.get<int16_t>("iacc"));
+		item->setAvoid(row.get<int16_t>("iavo"));
+		item->setHands(row.get<int16_t>("ihand"));
+		item->setSpeed(row.get<int16_t>("ispeed"));
+		item->setJump(row.get<int16_t>("ijump"));
+		item->setFlags(row.get<int16_t>("flags"));
+		item->setHammers(row.get<int8_t>("hammers"));
+		item->setExpirationTime(row.get<int64_t>("expiration"));
+		item->setName(row.get<string>("name"));
+		item->setPetId(row.get<int32_t>("pet_id"));
 		addItem(item);
 	}
 }
 
 void PlayerStorage::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	// Using MySQL's non-standard ON DUPLICATE KEY UPDATE extension
-	query << "INSERT INTO storage (user_id, world_id, slots, mesos) VALUES ("
-		<< m_player->getUserId() << ", "
-		<< (int16_t) m_player->getWorldId() << ", "
-		<< (int16_t) getSlots() << ", "
-		<< getMesos() << ") "
-		<< "ON DUPLICATE KEY UPDATE slots = " << (int16_t) getSlots() << ", "
-		<< "mesos = " << getMesos();
-	query.exec();
+	using namespace soci;
+	int8_t worldId = m_player->getWorldId();
+	int32_t userId = m_player->getUserId();
+	int32_t playerId = m_player->getId();
+	string location = "storage";
 
-	query << "DELETE FROM items WHERE location = " << mysqlpp::quote << "storage" << " AND user_id = " << m_player->getUserId() << " AND world_id = " << (int32_t) m_player->getWorldId();
-	query.exec();
+	session &sql = Database::getCharDb();
+	sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos) " <<
+				"VALUES (:user, :world, :slots, :mesos) " <<
+				"ON DUPLICATE KEY UPDATE slots = :slots, mesos = :mesos",
+				use(userId, "user"),
+				use(worldId, "world"),
+				use(m_slots, "slots"),
+				use(m_mesos, "mesos");
 
-	bool firstRun = true;
-	for (int8_t i = 0; i < getNumItems(); i++) {
-		if (firstRun) {
-			query << "INSERT INTO items VALUES (";
-			firstRun = false;
+	sql.once << "DELETE FROM items WHERE location = :location AND user_id = :user AND world_id = :world",
+				use(location, "location"),
+				use(userId, "user"),
+				use(worldId, "world");
+
+	int8_t max = getNumItems();
+
+	if (max > 0) {
+		int8_t i = 0;
+		int8_t slots = 0;
+		int8_t scrolls = 0;
+		uint8_t inv = 0;
+		int16_t amount = 0;
+		int16_t iStr = 0;
+		int16_t iDex = 0;
+		int16_t iInt = 0;
+		int16_t iLuk = 0;
+		int16_t iHp = 0;
+		int16_t iMp = 0;
+		int16_t iWatk = 0;
+		int16_t iMatk = 0;
+		int16_t iWdef = 0;
+		int16_t iMdef = 0;
+		int16_t iAcc = 0;
+		int16_t iAvo = 0;
+		int16_t iHands = 0;
+		int16_t iSpeed = 0;
+		int16_t iJump = 0;
+		int16_t flags = 0;
+		int32_t itemId = 0;
+		int32_t hammers = 0;
+		int64_t petId = 0;
+		int64_t expiration = 0;
+		string name = "";
+
+		statement st = (sql.prepare << "INSERT INTO items VALUES (" <<
+										":player, :inv, :i, :location, :user, " <<
+										":world, :item, :amount, :slots, :scrolls, " <<
+										":str, :dex, :int, :luk, :hp, " <<
+										":mp, :watk, :matk, :wdef, :mdef, " <<
+										":acc, :avo, :hands, :speed, :jump, " <<
+										":flags, :hammers, :pet, :name, :expiration" <<
+										")",
+										use(playerId, "player"),
+										use(inv, "inv"),
+										use(i, "i"),
+										use(location, "location"),
+										use(userId, "user"),
+										use(worldId, "world"),
+										use(itemId, "item"),
+										use(amount, "amount"),
+										use(slots, "slots"),
+										use(scrolls, "scrolls"),
+										use(iStr, "str"),
+										use(iDex, "dex"),
+										use(iInt, "int"),
+										use(iLuk, "luk"),
+										use(iHp, "hp"),
+										use(iMp, "mp"),
+										use(iWatk, "watk"),
+										use(iMatk, "matk"),
+										use(iWdef, "wdef"),
+										use(iMdef, "mdef"),
+										use(iAcc, "acc"),
+										use(iAvo, "avo"),
+										use(iHands, "hand"),
+										use(iSpeed, "speed"),
+										use(iJump, "jump"),
+										use(flags, "flags"),
+										use(hammers, "hammers"),
+										use(petId, "pet"),
+										use(name, "name"),
+										use(expiration, "expiration"));
+
+		for (i = 0; i < max; ++i) {
+			Item *item = getItem(i);
+
+			inv = GameLogicUtilities::getInventory(item->getId());
+			itemId = item->getId();
+			amount = item->getAmount();
+			slots = item->getSlots();
+			scrolls = item->getScrolls();
+			iStr = item->getStr();
+			iDex = item->getDex();
+			iInt = item->getInt();
+			iLuk = item->getLuk();
+			iHp = item->getHp();
+			iMp = item->getMp();
+			iWatk = item->getWatk();
+			iMatk = item->getMatk();
+			iWdef = item->getWdef();
+			iMdef = item->getMdef();
+			iAcc = item->getAccuracy();
+			iAvo = item->getAvoid();
+			iHands = item->getHands();
+			iSpeed = item->getSpeed();
+			iJump = item->getJump();
+			flags = item->getFlags();
+			hammers = item->getHammers();
+			petId = item->getPetId();
+			name = item->getName();
+			expiration = item->getExpirationTime();
+			st.execute(true);
 		}
-		else {
-			query << ",(";
-		}
-		Item *item = getItem(i);
-		query << m_player->getId() << ","
-				<< (int16_t) GameLogicUtilities::getInventory(item->getId()) << ","
-				<< (int16_t) i << ","
-				<< mysqlpp::quote << "storage" << ","
-				<< m_player->getUserId() << ","
-				<< (int16_t) m_player->getWorldId() << ","
-				<< item->getId() << ","
-				<< item->getAmount() << ","
-				<< (int16_t) item->getSlots() << ","
-				<< (int16_t) item->getScrolls() << ","
-				<< item->getStr() << ","
-				<< item->getDex() << ","
-				<< item->getInt() << ","
-				<< item->getLuk() << ","
-				<< item->getHp() << ","
-				<< item->getMp() << ","
-				<< item->getWatk() << ","
-				<< item->getMatk() << ","
-				<< item->getWdef() << ","
-				<< item->getMdef() << ","
-				<< item->getAccuracy() << ","
-				<< item->getAvoid() << ","
-				<< item->getHands() << ","
-				<< item->getSpeed() << ","
-				<< item->getJump() << ","
-				<< item->getFlags() << ","
-				<< item->getHammers() << ","
-				<< item->getPetId() << ","
-				<< mysqlpp::quote << item->getName() << ","
-				<< item->getExpirationTime() << ")";
-	}
-	if (!firstRun) {
-		query.exec();
 	}
 }

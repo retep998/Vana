@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -59,7 +59,7 @@ public:
 	string getItemName(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].name : ""); }
 	ItemRewardInfo * getRandomReward(int32_t itemId);
 
-	void scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool wscroll);
+	void scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool whiteScroll);
 	ItemInfo * getItemInfo(int32_t itemId) { return &m_itemInfo[itemId]; }
 	ConsumeInfo * getConsumeInfo(int32_t itemId) { return (consumeInfoExists(itemId) ? &m_consumeInfo[itemId] : nullptr); }
 	PetInfo * getPetInfo(int32_t itemId) { return &m_petInfo[itemId]; }
@@ -81,7 +81,7 @@ private:
 	void loadItemRewards();
 	void loadPets();
 	void loadPetInteractions();
-	int16_t getStatVariance(int8_t mod);
+	int16_t getStatVariance(int8_t mod, uint16_t variance);
 
 	typedef bimap<int32_t, int32_t> CardMap;
 	typedef CardMap::value_type CardInfo;

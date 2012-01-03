@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "ConfigFile.h"
 #include "Configuration.h"
+#include "soci-mysql.h"
 
 Database::tsConn Database::m_chardb;
 Database::tsConn Database::m_datadb;
@@ -25,15 +26,25 @@ Database::tsConn Database::m_datadb;
 void Database::connectCharDb() {
 	ConfigFile config("conf/mysql.lua");
 	DbConfig conf = config.getClass<DbConfig>("chardb");
-	m_chardb.reset(new mysqlpp::Connection);
-	m_chardb->set_option(new mysqlpp::ReconnectOption(true));
-	m_chardb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);
+	m_chardb.reset(new soci::session(soci::mysql, buildConnectionString(conf)));
+	m_chardb->reconnect();
 }
 
 void Database::connectDataDb() {
 	ConfigFile config("conf/mysql.lua");
 	DbConfig conf = config.getClass<DbConfig>("datadb");
-	m_datadb.reset(new mysqlpp::Connection);
-	m_datadb->set_option(new mysqlpp::ReconnectOption(true));
-	m_datadb->connect(conf.database.c_str(), conf.host.c_str(), conf.username.c_str(), conf.password.c_str(), conf.port);
+	m_datadb.reset(new soci::session(soci::mysql, buildConnectionString(conf)));
+	m_datadb->reconnect();
+}
+
+string Database::buildConnectionString(const DbConfig &conf) {
+	std::ostringstream str;
+
+	str << "dbname=" << conf.database
+		<< " user=" << conf.username
+		<< " password='" << conf.password << "'"
+		<< " host=" << conf.host
+		<< " port=" << conf.port;
+
+	return str.str();
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ string MiscUtilities::hashPassword(const string &password, const string &salt) {
 }
 
 bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {
-	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); iter++) {
+	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
 		if (*iter == channelId) {
 			return true;
 		}

@@ -249,7 +249,3 @@ CREATE TABLE `user_accounts` (
   PRIMARY KEY (`user_id`),
   KEY `username` (`username`)
 );
-
-CREATE TABLE `vana_info` (
-  `version` int(10) unsigned DEFAULT NULL
-);

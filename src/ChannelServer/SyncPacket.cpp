@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -107,7 +107,7 @@ void SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(playerId);
-	if (target != nullptr) {
+	if (target != 0) {
 		packet.add<int32_t>(target);
 	}
 	ChannelServer::Instance()->sendToWorld(packet);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,64 +36,56 @@ void DropDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct DropFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->isMesos = true;
-		}
-		DropInfo *drop;
-	};
-}
-
 void DropDataProvider::loadDrops() {
 	m_dropInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_data");
-	mysqlpp::UseQueryResult res = query.use();
 	DropInfo drop;
 	int32_t dropper;
-	MYSQL_ROW row;
 
-	using namespace Functors;
-
-	enum DropData {
-		Id = 0,
-		DropperId, Flags, ItemId, Minimum, Maximum,
-		Quest, Chance
+	auto dropFlags = [&drop](const opt_string &flags) {
+		// Inner lambda workaround for VS2010
+		auto &d = drop;
+		runFlags(flags, [&d](const string &cmp) {
+			if (cmp == "is_mesos") d.isMesos = true;
+		});
 	};
 
-	while (row = res.fetch_raw_row()) {
-		drop = DropInfo();
-		DropFlags whoo = {&drop};
-		runFlags(row[Flags], whoo);
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM drop_data");
 
-		dropper = atoi(row[DropperId]);
-		drop.itemId = atoi(row[ItemId]);
-		drop.minAmount = atoi(row[Minimum]);
-		drop.maxAmount = atoi(row[Maximum]);
-		drop.questId = atoi(row[Quest]);
-		drop.chance = atoi(row[Chance]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		drop = DropInfo();
+		dropFlags(row.get<opt_string>("flags"));
+
+		dropper = row.get<int32_t>("dropperid");
+		drop.itemId = row.get<int32_t>("itemid");
+		drop.minAmount = row.get<int32_t>("minimum_quantity");
+		drop.maxAmount = row.get<int32_t>("maximum_quantity");
+		drop.questId = row.get<int16_t>("questid");
+		drop.chance = row.get<uint32_t>("chance");
 		m_dropInfo[dropper].push_back(drop);
 	}
 
-	query << "SELECT * FROM user_drop_data ORDER BY dropperid";
-	res = query.use();
+	rs = (sql.prepare << "SELECT * FROM user_drop_data ORDER BY dropperid");
 	int32_t lastDropperId = -1;
 	bool dropped = false;
 
-	while (row = res.fetch_raw_row()) {
-		drop = DropInfo();
-		DropFlags whoo = {&drop};
-		runFlags(row[Flags], whoo);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		dropper = atoi(row[DropperId]);
+		drop = DropInfo();
+		dropFlags(row.get<opt_string>("flags"));
+
+		dropper = row.get<int32_t>("dropperid");
 		if (dropper != lastDropperId) {
 			dropped = false;
 		}
-		drop.itemId = atoi(row[ItemId]);
-		drop.minAmount = atoi(row[Minimum]);
-		drop.maxAmount = atoi(row[Maximum]);
-		drop.questId = atoi(row[Quest]);
-		drop.chance = atoi(row[Chance]);
+		drop.itemId = row.get<int32_t>("itemid");
+		drop.minAmount = row.get<int32_t>("minimum_quantity");
+		drop.maxAmount = row.get<int32_t>("maximum_quantity");
+		drop.questId = row.get<int16_t>("questid");
+		drop.chance = row.get<uint32_t>("chance");
 		if (!dropped && m_dropInfo.find(dropper) != m_dropInfo.end()) {
 			m_dropInfo.erase(dropper);
 			dropped = true;
@@ -103,42 +95,28 @@ void DropDataProvider::loadDrops() {
 	}
 }
 
-namespace Functors {
-	struct GlobalDropFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "is_mesos") drop->isMesos = true;
-		}
-		GlobalDrop *drop;
-	};
-}
-
 void DropDataProvider::loadGlobalDrops() {
 	m_globalDrops.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM drop_global_data");
-	mysqlpp::UseQueryResult res = query.use();
 	GlobalDrop drop;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM drop_global_data");
 
-	enum DropData {
-		Id = 0,
-		Continent, Flags, ItemId, MinLevel, MaxLevel,
-		Minimum, Maximum, Quest, Chance
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		drop = GlobalDrop();
-		GlobalDropFlags whoo = {&drop};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
+			if (cmp == "is_mesos") drop.isMesos = true;
+		});
 
-		drop.continent = atoi(row[Continent]);
-		drop.itemId = atoi(row[ItemId]);
-		drop.minAmount = atoi(row[Minimum]);
-		drop.maxAmount = atoi(row[Maximum]);
-		drop.minLevel = atoi(row[MinLevel]);
-		drop.maxLevel = atoi(row[MaxLevel]);
-		drop.questId = atoi(row[Quest]);
-		drop.chance = atoi(row[Chance]);
+		drop.continent = row.get<int8_t>("continent");
+		drop.itemId = row.get<int32_t>("itemid");
+		drop.minAmount = row.get<int16_t>("minimum_quantity");
+		drop.maxAmount = row.get<int16_t>("maximum_quantity");
+		drop.minLevel = row.get<uint8_t>("minimum_level");
+		drop.maxLevel = row.get<uint8_t>("maximum_level");
+		drop.questId = row.get<int16_t>("questid");
+		drop.chance = row.get<uint32_t>("chance");
 		m_globalDrops.push_back(drop);
 	}
 }

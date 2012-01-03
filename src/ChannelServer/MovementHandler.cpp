@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,30 +28,52 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 	int16_t x = 0;
 	int16_t y = 0;
 	uint8_t n = packet.get<uint8_t>();
-	for (uint8_t i = 0; i < n; i++) {
+
+	enum MovementTypes {
+		NormalMovement = 0,
+		Jump = 1,
+		JumpKb = 2,
+		Unk1 = 3,
+		Teleport = 4,
+		NormalMovement2 = 5,
+		FlashJump = 6,
+		Assaulter = 7,
+		Assassinate = 8,
+		Rush = 9,
+		Falling = 10,
+		Chair = 11,
+		ExcessiveKb = 12,
+		RecoilShot = 13,
+		Unk2 = 14,
+		JumpDown = 15,
+		Wings = 16,
+		WingsFalling = 17
+	};
+
+	for (uint8_t i = 0; i < n; ++i) {
 		int8_t type = packet.get<int8_t>();
 		switch (type) {
-			case 10: // Falling of some kind
+			case Falling:
 				packet.skipBytes(1);
 				break;
-			case 16: // Wings
+			case Wings:
 				packet.skipBytes(7);
 				break;
-			case 17: // Part of Wings, the falling, I believe
+			case WingsFalling:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				foothold = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
 				packet.skipBytes(6);
 				break;
-			case 12: // Horntail knockback
+			case ExcessiveKb:
 				packet.skipBytes(7);
 				break;
-			case 14:
+			case Unk2:
 				packet.skipBytes(9);
 				break;
-			case 0: // Normal up/down/left/right movement
-			case 5:
+			case NormalMovement:
+			case NormalMovement2:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				packet.skipBytes(4);
@@ -59,16 +81,16 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
-			case 1: // Jumping
-			case 2: // Jumping/knockback?
-			case 6: // Flash Jump
-			case 13: // Recoil Shot
+			case Jump:
+			case JumpKb:
+			case FlashJump:
+			case RecoilShot:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
 				foothold = packet.get<int16_t>();
 				break;
-			case 15: // Jump down
+			case JumpDown:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				packet.skipBytes(6);
@@ -76,18 +98,18 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
-			case 11: // Chair
+			case Chair:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				foothold = packet.get<int16_t>();
 				stance = packet.get<int8_t>();
 				packet.skipBytes(2);
 				break;
-			case 3:
-			case 4: // Teleport
-			case 7: // Assaulter
-			case 8: // Assassinate
-			case 9: // Rush
+			case Unk1:
+			case Teleport:
+			case Assaulter:
+			case Assassinate:
+			case Rush:
 				x = packet.get<int16_t>();
 				y = packet.get<int16_t>();
 				packet.skipBytes(4);

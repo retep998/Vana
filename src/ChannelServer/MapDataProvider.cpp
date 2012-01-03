@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapDataProvider.h"
 #include "Database.h"
+#include "GameLogicUtilities.h"
 #include "Map.h"
 #include "MapleTvs.h"
 #include "MapObjects.h"
@@ -60,61 +61,64 @@ Map * MapDataProvider::getMap(int32_t mapId) {
 
 void MapDataProvider::loadData() {
 	m_continents.clear();
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_continent_data";
-	mysqlpp::UseQueryResult res = query.use();
-	int8_t mapcluster;
+	int8_t mapCluster;
 	int8_t continent;
 
-	enum ContinentData {
-		MapCluster = 0,
-		ContinentId
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_continent_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mapcluster = atoi(row[MapCluster]);
-		continent = atoi(row[ContinentId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		m_continents.insert(continent_info(mapcluster, continent));
+		mapCluster = row.get<int8_t>("map_cluster");
+		continent = row.get<int8_t>("continent");
+
+		m_continents.insert(continent_info(mapCluster, continent));
 	}
 }
 
 void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
 	boost::mutex::scoped_lock l(m_loadMutex);
 
-	int32_t checkmap = loadMapData(mapId, map);
-	if (checkmap != -1) {
-		loadSeats(map, checkmap);
-		loadPortals(map, checkmap);
-		loadMapLife(map, checkmap);
-		loadFootholds(map, checkmap);
+	int32_t checkMap = loadMapData(mapId, map);
+	if (checkMap != -1) {
+		loadSeats(map, checkMap);
+		loadPortals(map, checkMap);
+		loadMapLife(map, checkMap);
+		loadFootholds(map, checkMap);
 		loadMapTimeMob(map);
 	}
 }
 
-namespace Functors {
-	struct MapFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "town") map->town = true;
-			else if (cmp == "clock") map->clock = true;
-			else if (cmp == "swim") map->swim = true;
-			else if (cmp == "fly") map->fly = true;
-			else if (cmp == "everlast") map->everlast = true;
-			else if (cmp == "no_party_leader_pass") map->noLeaderPass = true;
-			else if (cmp == "shop") map->shop = true;
-			else if (cmp == "scroll_disable") map->scrollDisable = true;
-			else if (cmp == "shuffle_reactors") map->shuffleReactors = true;
-		}
-		MapInfoPtr map;
-	};
-	struct FieldTypeFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "force_map_equip") map->forceMapEquip = true;
-		}
-		MapInfoPtr map;
-	};
-	struct FieldLimitFlags {
-		void operator()(const string &cmp) {
+int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
+	int32_t link = 0;
+
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		MapInfoPtr mapInfo(new MapInfo);
+		link = row.get<int32_t>("link");
+		mapInfo->link = link;
+
+		runFlags(row.get<opt_string>("flags"), [&mapInfo](const string &cmp) {
+			if (cmp == "town") mapInfo->town = true;
+			else if (cmp == "clock") mapInfo->clock = true;
+			else if (cmp == "swim") mapInfo->swim = true;
+			else if (cmp == "fly") mapInfo->fly = true;
+			else if (cmp == "everlast") mapInfo->everlast = true;
+			else if (cmp == "no_party_leader_pass") mapInfo->noLeaderPass = true;
+			else if (cmp == "shop") mapInfo->shop = true;
+			else if (cmp == "scroll_disable") mapInfo->scrollDisable = true;
+			else if (cmp == "shuffle_reactors") mapInfo->shuffleReactors = true;
+		});
+
+		runFlags(row.get<opt_string>("field_type"), [&mapInfo](const string &cmp) {
+			if (cmp == "force_map_equip") mapInfo->forceMapEquip = true;
+		});
+
+		runFlags(row.get<opt_string>("field_limitations"), [&mapInfo](const string &cmp) {
+			FieldLimit *limitations = &mapInfo->limitations;
 			if (cmp == "jump") limitations->jump = true;
 			else if (cmp == "movement_skills") limitations->movementSkills = true;
 			else if (cmp == "summoning_bag") limitations->summoningBag = true;
@@ -127,171 +131,104 @@ namespace Functors {
 			else if (cmp == "potion_use") limitations->potionUse = true;
 			else if (cmp == "drop_down") limitations->dropDown = true;
 			else if (cmp == "chalkboard") limitations->chalkboard = true;
-		}
-		FieldLimit *limitations;
-	};
-}
-
-int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapId = " << mapId;
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t link = 0;
-
-	using namespace Functors;
-
-	enum MapColumns {
-		MapId = 0,
-		Flags, ShuffleName, Bgm, MinLevel, TimeLimit,
-		RegenRate, Traction, LTX, LTY, RBX,
-		RBY, ReturnMap, ForcedReturn, FieldType, Unused,
-		DecHp, Dps, ProtectItem, ShipKind, MobRate,
-		Link, FieldLimit
-	};
-
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		MapInfoPtr mapInfo(new MapInfo);
-		link = atoi(row[Link]);
-		mapInfo->link = link;
-
-		FieldTypeFlags f = {mapInfo};
-		FieldLimitFlags limits = {&mapInfo->limitations};
-		MapFlags whoo = {mapInfo};
-		runFlags(row[FieldType], f);
-		runFlags(row[FieldLimit], limits);
-		runFlags(row[Flags], whoo);
+		});
 
 		mapInfo->continent = getContinent(mapId);
-		mapInfo->rm = atoi(row[ReturnMap]);
-		mapInfo->forcedReturn = atoi(row[ForcedReturn]);
-		mapInfo->spawnRate = atof(row[MobRate]);
-		mapInfo->defaultMusic = row[Bgm];
-		mapInfo->lt = Pos(atoi(row[LTX]), atoi(row[LTY]));
-		mapInfo->rb = Pos(atoi(row[RBX]), atoi(row[RBY]));
-		mapInfo->shuffleName = row[ShuffleName];
-		mapInfo->decHp = atoi(row[DecHp]);
-		mapInfo->dps = atoi(row[Dps]);
-		mapInfo->traction = atof(row[Traction]);
-		mapInfo->regenRate = atoi(row[RegenRate]);
-		mapInfo->minLevel = atoi(row[MinLevel]);
-		mapInfo->timeLimit = atoi(row[TimeLimit]);
-		mapInfo->protectItem = atoi(row[ProtectItem]);
-		mapInfo->shipKind = atoi(row[ShipKind]);
+		mapInfo->rm = row.get<int32_t>("return_map");
+		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map");
+		mapInfo->spawnRate = row.get<double>("mob_rate");
+		mapInfo->defaultMusic = row.get<string>("default_bgm");
+		mapInfo->lt = Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty"));
+		mapInfo->rb = Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby"));
+		mapInfo->shuffleName = row.get<string>("shuffle_name");
+		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
+		mapInfo->dps = row.get<uint16_t>("damage_per_second");
+		mapInfo->traction = row.get<double>("default_traction");
+		mapInfo->regenRate = row.get<int8_t>("regen_rate");
+		mapInfo->minLevel = row.get<uint8_t>("min_level_limit");
+		mapInfo->timeLimit = row.get<int32_t>("time_limit");
+		mapInfo->protectItem = row.get<int32_t>("protect_item");
+		mapInfo->shipKind = row.get<int8_t>("ship_kind");
 
 		map = new Map(mapInfo, mapId);
 	}
 
 	m_maps[mapId] = map;
 	if (map == nullptr) {
-		// Map does not exist, so no need to run the rest of the code
 		return -1;
 	}
 	return (link == 0 ? mapId : link);
 }
 
 void MapDataProvider::loadSeats(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * from map_seats WHERE mapId = " << link;
-	mysqlpp::UseQueryResult res = query.use();
 	SeatInfo chair;
 	int16_t id;
 
-	enum Seats {
-		MapId = 0,
-		Id, X, Y
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_seats WHERE mapid = :map", soci::use(link, "map"));
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		id = atoi(row[Id]);
-		chair.pos = Pos(atoi(row[X]), atoi(row[Y]));
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		id = row.get<int16_t>("seatid");
+		chair = SeatInfo();
+		chair.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
 
 		map->addSeat(id, chair);
 	}
 }
 
-namespace Functors {
-	struct PortalFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "only_once") p->onlyOnce = true;
-		}
-		PortalInfo *p;
-	};
-}
-
 void MapDataProvider::loadPortals(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_portals WHERE mapId = " << link;
-	mysqlpp::UseQueryResult res = query.use();
 	PortalInfo portal;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_portals WHERE mapid = :map", soci::use(link, "map"));
 
-	enum Portals {
-		MapId = 0,
-		Id, Name, X, Y, ToMap,
-		ToName, Script, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		portal = PortalInfo();
+		runFlags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
+			if (cmp == "only_once") portal.onlyOnce = true;
+		});
 
-		PortalFlags whoo = {&portal};
-		runFlags(row[Flags], whoo);
-
-		portal.id = atoi(row[Id]);
-		portal.name = row[Name];
-		portal.pos = Pos(atoi(row[X]), atoi(row[Y]));
-		portal.toMap = atoi(row[ToMap]);
-		portal.toName = row[ToName];
-		portal.script = row[Script];
+		portal.id = row.get<int32_t>("id");
+		portal.name = row.get<string>("label");
+		portal.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
+		portal.toMap = row.get<int32_t>("destination");
+		portal.toName = row.get<string>("destination_label");
+		portal.script = row.get<string>("script");
 
 		map->addPortal(portal);
 	}
 }
 
-namespace Functors {
-	struct LifeFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "faces_left") life->facesRight = false;
-		}
-		SpawnInfo *life;
-	};
-}
-
 void MapDataProvider::loadMapLife(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_life WHERE mapId = " << link;
-	mysqlpp::UseQueryResult res = query.use();
 	NpcSpawnInfo npc;
 	MobSpawnInfo spawn;
 	ReactorSpawnInfo reactor;
 	SpawnInfo life;
 	string type;
-	Pos pos;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_life WHERE mapid = :map", soci::use(link, "map"));
 
-	enum MapLife {
-		Id = 0,
-		MapId, LifeType, LifeId, Name, X,
-		Y, Foothold, MinClickPos, MaxClickPos, RespawnTime,
-		Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		life = SpawnInfo();
-		LifeFlags flags = {&life};
+		runFlags(row.get<opt_string>("flags"), [&life](const string &cmp) {
+			if (cmp == "faces_left") life.facesRight = false;
+		});
 
-		type = row[LifeType];
-		life.id = atoi(row[LifeId]);
-		life.pos = Pos(atoi(row[X]), atoi(row[Y]));
-		life.foothold = atoi(row[Foothold]);
-		life.time = atoi(row[RespawnTime]);
+		type = row.get<string>("life_type");
+		life.id = row.get<int32_t>("lifeid");
+		life.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
+		life.foothold = row.get<int16_t>("foothold");
+		life.time = row.get<int32_t>("respawn_time");
+
 		if (type == "npc") {
 			npc = NpcSpawnInfo();
 			npc.setSpawnInfo(life);
-			npc.rx0 = atoi(row[MinClickPos]);
-			npc.rx1 = atoi(row[MaxClickPos]);
+			npc.rx0 = row.get<int16_t>("min_click_pos");
+			npc.rx1 = row.get<int16_t>("max_click_pos");
 			map->addNpc(npc);
 		}
 		else if (type == "mob") {
@@ -302,72 +239,52 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		else if (type == "reactor") {
 			reactor = ReactorSpawnInfo();
 			reactor.setSpawnInfo(life);
-			reactor.name = (row[Name] != nullptr ? row[Name] : "");
+			reactor.name = row.get<string>("life_name");
 			map->addReactorSpawn(reactor);
 		}
 	}
 }
 
-namespace Functors {
-	struct FootholdFlags {
-		void operator()(const string &cmp) {
-			if (cmp == "forbid_downward_jump") foot->forbidJumpDown = true;
-		}
-		FootholdInfo *foot;
-	};
-}
-
 void MapDataProvider::loadFootholds(Map *map, int32_t link) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_footholds WHERE mapId = " << link;
-	mysqlpp::UseQueryResult res = query.use();
 	FootholdInfo foot;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_footholds WHERE mapid = :map", soci::use(link, "map"));
 
-	enum Footholds {
-		MapId = 0,
-		Id, X1, Y1, X2, Y2,
-		DragForce, Prev, Next, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		foot = FootholdInfo();
-		FootholdFlags whoo = {&foot};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
+			if (cmp == "forbid_downward_jump") foot.forbidJumpDown = true;
+		});
 
-		foot.id = atoi(row[Id]);
-		foot.pos1 = Pos(atoi(row[X1]), atoi(row[Y1]));
-		foot.pos2 = Pos(atoi(row[X2]), atoi(row[Y2]));
-		foot.dragForce = atoi(row[DragForce]);
-		foot.leftEdge = atoi(row[Prev]) == 0;
-		foot.rightEdge = atoi(row[Next]) == 0;
+		foot.id = row.get<int32_t>("id");
+		foot.pos1 = Pos(row.get<int16_t>("x1"), row.get<int16_t>("y1"));
+		foot.pos2 = Pos(row.get<int16_t>("x2"), row.get<int16_t>("y2"));
+		foot.dragForce = row.get<int16_t>("drag_force");
+		foot.leftEdge = row.get<int16_t>("previousid") == 0;
+		foot.rightEdge = row.get<int16_t>("nextid") == 0;
 		map->addFoothold(foot);
 	}
 }
 
 void MapDataProvider::loadMapTimeMob(Map *map) {
-	mysqlpp::Query query = Database::getDataDb().query();
-	query << "SELECT * FROM map_time_mob WHERE mapId = " << map->getId();
-	mysqlpp::UseQueryResult res = query.use();
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_time_mob WHERE mapid = :map", soci::use(map->getId(), "map"));
 
-	enum TimeMobFields {
-		MapId = 0,
-		MobId, StartHour, EndHour, Message
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		TimeMobPtr info(new TimeMob);
 
-		info->id = atoi(row[MobId]);
-		info->startHour = atoi(row[StartHour]);
-		info->endHour = atoi(row[EndHour]);
-		info->message = row[Message];
+		info->id = row.get<int32_t>("mobid");
+		info->startHour = row.get<int8_t>("start_hour");
+		info->endHour = row.get<int8_t>("end_hour");
+		info->message = row.get<string>("message");
 	}
 }
 
 int8_t MapDataProvider::getContinent(int32_t mapId) {
-	int8_t cluster = static_cast<int8_t>(mapId / 10000000); // Leave first two digits, that's our "map cluster"
+	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
 	try {
 		return m_continents.left.at(cluster);
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -142,6 +142,18 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		player->getActiveBuffs()->addDebuff(disease, level);
 	}
 
+	int16_t mp = player->getStats()->getMp();
+	int16_t hp = player->getStats()->getHp();
+
+	auto deadlyAttackFunc = [&player, &mp](bool setHp) {
+		if (mp > 0) {
+			player->getStats()->setMp(1);
+		}
+		if (setHp) {
+			player->getStats()->setHp(1);
+		}
+	};
+
 	if (damage > 0 && !player->hasGmEquip()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t skillId = player->getActiveBuffs()->getMesoGuard();
@@ -165,10 +177,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			player->getInventory()->setMesos(newMesos);
 			player->getStats()->damageHp(static_cast<uint16_t>(damage));
 
-			if (deadlyAttack && player->getStats()->getMp() > 0) {
-				player->getStats()->setMp(1);
+			if (deadlyAttack) {
+				deadlyAttackFunc(false);
 			}
-			if (mpBurn > 0) {
+			else if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
 			}
 			damageApplied = true;
@@ -177,14 +189,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 
 		if (player->getActiveBuffs()->hasMagicGuard()) {
-			int16_t mp = player->getStats()->getMp();
-			int16_t hp = player->getStats()->getHp();
-
 			if (deadlyAttack) {
-				if (mp > 0) {
-					player->getStats()->setMp(1);
-				}
-				player->getStats()->setHp(1);
+				deadlyAttackFunc(true);
 			}
 			else if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
@@ -214,10 +220,10 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 			player->getStats()->damageHp(static_cast<uint16_t>(damage / red));
 
-			if (deadlyAttack && player->getStats()->getMp() > 0) {
-				player->getStats()->setMp(1);
+			if (deadlyAttack) {
+				deadlyAttackFunc(false);
 			}
-			if (mpBurn > 0) {
+			else if (mpBurn > 0) {
 				player->getStats()->damageMp(mpBurn);
 			}
 
@@ -226,10 +232,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 		if (!damageApplied) {
 			if (deadlyAttack) {
-				if (player->getStats()->getMp() > 0) {
-					player->getStats()->setMp(1);
-				}
-				player->getStats()->setHp(1);
+				deadlyAttackFunc(true);
 			}
 			else {
 				player->getStats()->damageHp(static_cast<uint16_t>(damage));
@@ -244,7 +247,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 		}
 		int32_t morph = player->getActiveBuffs()->getCurrentMorph();
-		if (morph < 0 || (morph != 0 && player->getStats()->getHp() == 0)) {
+		if (morph < 0 || (morph != 0 && player->getStats()->isDead())) {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
@@ -268,7 +271,7 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
-	if (player->getStats()->getHp() == 0 || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
+	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// Hacking
 		return;
 	}
@@ -316,8 +319,8 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Jobs::Paladin::MonsterMagnet:
 		case Jobs::DarkKnight::MonsterMagnet:
 		case Jobs::Marksman::PiercingArrow:
-		case Jobs::FPArchMage::BigBang:
-		case Jobs::ILArchMage::BigBang:
+		case Jobs::FpArchMage::BigBang:
+		case Jobs::IlArchMage::BigBang:
 		case Jobs::Bishop::BigBang: {
 			SpecialSkillInfo info;
 			info.skillId = skillId;
@@ -349,17 +352,12 @@ void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	else if (cardId != 0) {
-		int32_t mobId = ItemDataProvider::Instance()->getMobId(cardId);
-		if (mobId != 0) {
-			player->getMonsterBook()->setCover(mobId);
-			MonsterBookPacket::changeCover(player, cardId);
-		}
+	int32_t newCover = 0;
+	if (cardId != 0) {
+		newCover = ItemDataProvider::Instance()->getMobId(cardId);
 	}
-	else {
-		player->getMonsterBook()->setCover(0);
-		MonsterBookPacket::changeCover(player, 0);
-	}
+	player->getMonsterBook()->setCover(newCover);
+	MonsterBookPacket::changeCover(player, cardId);
 }
 
 void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
@@ -471,7 +469,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			damagedTargets++;
 		}
 		uint8_t ppSize = ppDamages.size();
-		for (uint8_t pickpocket = 0; pickpocket < ppSize; pickpocket++) {
+		for (uint8_t pickpocket = 0; pickpocket < ppSize; ++pickpocket) {
 			// Drop stuff for Pickpocket
 			Pos &ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
@@ -739,7 +737,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	}
 
 	switch (skillId) {
-		case Jobs::FPMage::PoisonMist:
+		case Jobs::FpMage::PoisonMist:
 		case Jobs::BlazeWizard::FlameGear: {
 			Mist *mist = new Mist(player->getMap(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillId, level), skillId, level, true);
 			break;
@@ -836,10 +834,10 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 
 	if (skillType != SkillTypes::Summon) {
 		attack.portals = packet.get<uint8_t>();
-		uint8_t tbyte = packet.get<uint8_t>();
+		uint8_t tByte = packet.get<uint8_t>();
 		skillId = packet.get<int32_t>();
-		targets = tbyte / 0x10;
-		hits = tbyte % 0x10;
+		targets = tByte / 0x10;
+		hits = tByte % 0x10;
 
 		if (skillId != Jobs::All::RegularAttack) {
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
@@ -869,8 +867,8 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			case Jobs::Marksman::PiercingArrow:
 			case Jobs::NightWalker::PoisonBomb:
 			case Jobs::Corsair::RapidFire:
-			case Jobs::FPArchMage::BigBang:
-			case Jobs::ILArchMage::BigBang:
+			case Jobs::FpArchMage::BigBang:
+			case Jobs::IlArchMage::BigBang:
 			case Jobs::Bishop::BigBang:
 				attack.isChargeSkill = true;
 				attack.charge = packet.get<int32_t>();
@@ -918,7 +916,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	attack.hits = hits;
 	attack.skillId = skillId;
 
-	for (int8_t i = 0; i < targets; i++) {
+	for (int8_t i = 0; i < targets; ++i) {
 		int32_t mapMobId = packet.get<int32_t>();
 		packet.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
 		packet.skipBytes(8); // Mob pos, damage pos
@@ -928,7 +926,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		else {
 			hits = packet.get<int8_t>(); // Hits for Meso Explosion
 		}
-		for (int8_t k = 0; k < hits; k++) {
+		for (int8_t k = 0; k < hits; ++k) {
 			int32_t damage = packet.get<int32_t>();
 			attack.damages[mapMobId].push_back(damage);
 			attack.totalDamage += damage;

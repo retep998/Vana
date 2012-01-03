@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,11 +76,11 @@ Player::~Player() {
 }
 
 void Player::setOnline(bool online) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE user_accounts u "
-			<< "SET "
-			<< "	u.online = " << online << ","
-			<< "	u.last_login = NOW() "
-			<< "WHERE u.user_id = " << getUserId();
-	query.exec();
+	Database::getCharDb() << "UPDATE user_accounts u " <<
+								"SET " << 
+								"	u.online = :online," <<
+								"	u.last_login = NOW() " <<
+								"WHERE u.user_id = :id",
+								soci::use((online ? 1 : 0), "online"),
+								soci::use(getUserId(), "id");
 }

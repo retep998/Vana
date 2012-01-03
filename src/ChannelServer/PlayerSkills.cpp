@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,64 +27,72 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.h"
 
 void PlayerSkills::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
+	soci::session &sql = Database::getCharDb();
 	PlayerSkillInfo skill;
+	int32_t playerId = m_player->getId();
 
-	for (size_t i = 0; i < res.num_rows(); i++) {
-		skill.level = (uint8_t) res[i][1];
-		skill.maxLevel = (uint8_t) res[i][2];
-		m_skills[res[i][0]] = skill;
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.skill_id, s.points, s.max_level FROM skills s WHERE s.character_id = :char",
+															soci::use(playerId, "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		skill = PlayerSkillInfo();
+		skill.level = row.get<uint8_t>("points");
+		skill.maxLevel = row.get<int8_t>("max_level");
+		m_skills[row.get<int32_t>("skill_id")] = skill;
 	}
 
-	query << "SELECT c.* FROM cooldowns c WHERE c.character_id = " << m_player->getId();
-	res = query.store();
+	rs = (Database::getCharDb().prepare << "SELECT c.* FROM cooldowns c WHERE c.character_id = :char",
+											soci::use(playerId, "char")); 
 
-	for (size_t i = 0; i < res.size(); i++) {
-		int32_t skillId = res[i]["skill_id"];
-		int16_t timeLeft = static_cast<int16_t>(res[i]["remaining_time"]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		int32_t skillId = row.get<int32_t>("skill_id");
+		int16_t timeLeft = row.get<int16_t>("remaining_time");
 		Skills::startCooldown(m_player, skillId, timeLeft, true);
 		m_cooldowns[skillId] = timeLeft;
 	}
 }
 
 void PlayerSkills::save(bool saveCooldowns) {
-	mysqlpp::Query query = Database::getCharDb().query();
+	using namespace soci;
+	int32_t playerId = m_player->getId();
+	session &sql = Database::getCharDb();
 
-	bool firstRun = true;
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); iter++) {
-		if (firstRun) {
-			query << "REPLACE INTO skills VALUES (";
-			firstRun = false;
-		}
-		else {
-			query << ",(";
-		}
-		query << m_player->getId() << "," << iter->first << "," << (int16_t) iter->second.level << "," << (int16_t) iter->second.maxLevel << ")";
-	}
-	if (!firstRun) {
-		query.exec();
+	int32_t skillId = 0;
+	uint8_t level = 0;
+	uint8_t maxLevel = 0;
+	statement st = (sql.prepare << "REPLACE INTO skills VALUES (:player, :skill, :level, :maxLevel)",
+									use(playerId, "player"),
+									use(skillId, "skill"),
+									use(level, "level"),
+									use(maxLevel, "maxLevel"));
+
+	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
+		skillId = iter->first;
+		level = iter->second.level;
+		maxLevel = iter->second.maxLevel;
+		st.execute(true);
 	}
 
 	if (saveCooldowns) {
-		query << "DELETE FROM cooldowns WHERE character_id = " << m_player->getId();
-		query.exec();
+		sql.once << "DELETE FROM cooldowns WHERE character_id = :char",
+					soci::use(playerId, "char");
+
 		if (m_cooldowns.size() > 0) {
-			firstRun = true;
-			for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); iter++) {
-				if (firstRun) {
-					query << "INSERT INTO cooldowns (character_id, skill_id, remaining_time) VALUES (";
-					firstRun = false;
-				}
-				else {
-					query << ",(";
-				}
-				query << m_player->getId() << ","
-						<< iter->first << ","
-						<< Skills::getCooldownTimeLeft(m_player, iter->first) << ")";
+			int16_t remainingTime = 0;
+			st = (sql.prepare << "INSERT INTO cooldowns (character_id, skill_id, remaining_time) VALUES (:char, :skill, :time)",
+									use(playerId, "char"),
+									use(skillId, "skill"),
+									use(remainingTime, "time"));
+
+			for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); ++iter) {
+				skillId = iter->first;
+				remainingTime = Skills::getCooldownTimeLeft(m_player, iter->first);
+				st.execute(true);
 			}
-			query.exec();
 		}
 	}
 }
@@ -172,17 +180,11 @@ bool PlayerSkills::hasNoDamageSkill() {
 int32_t PlayerSkills::getElementalAmp() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::FPMage:
-		case Jobs::JobIds::FPArchMage:
-			skillId = Jobs::FPMage::ElementAmplification;
-			break;
-		case Jobs::JobIds::ILMage:
-		case Jobs::JobIds::ILArchMage:
-			skillId = Jobs::ILMage::ElementAmplification;
-			break;
-		case Jobs::JobIds::BlazeWizard3:
-			skillId = Jobs::BlazeWizard::ElementAmplification;
-			break;
+		case Jobs::JobIds::FpMage:
+		case Jobs::JobIds::FpArchMage: skillId = Jobs::FpMage::ElementAmplification; break;
+		case Jobs::JobIds::IlMage:
+		case Jobs::JobIds::IlArchMage: skillId = Jobs::IlMage::ElementAmplification; break;
+		case Jobs::JobIds::BlazeWizard3: skillId = Jobs::BlazeWizard::ElementAmplification; break;
 	}
 	return skillId;
 }
@@ -190,15 +192,9 @@ int32_t PlayerSkills::getElementalAmp() {
 int32_t PlayerSkills::getAchilles() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero:
-			skillId = Jobs::Hero::Achilles;
-			break;
-		case Jobs::JobIds::Paladin:
-			skillId = Jobs::Paladin::Achilles;
-			break;
-		case Jobs::JobIds::DarkKnight:
-			skillId = Jobs::DarkKnight::Achilles;
-			break;
+		case Jobs::JobIds::Hero: skillId = Jobs::Hero::Achilles; break;
+		case Jobs::JobIds::Paladin: skillId = Jobs::Paladin::Achilles; break;
+		case Jobs::JobIds::DarkKnight: skillId = Jobs::DarkKnight::Achilles; break;
 	}
 	return skillId;
 }
@@ -207,13 +203,9 @@ int32_t PlayerSkills::getEnergyCharge() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
-		case Jobs::JobIds::Buccaneer:
-			skillId = Jobs::Marauder::EnergyCharge;
-			break;
+		case Jobs::JobIds::Buccaneer: skillId = Jobs::Marauder::EnergyCharge; break;
 		case Jobs::JobIds::ThunderBreaker2:
-		case Jobs::JobIds::ThunderBreaker3:
-			skillId = Jobs::ThunderBreaker::EnergyCharge;
-			break;
+		case Jobs::JobIds::ThunderBreaker3: skillId = Jobs::ThunderBreaker::EnergyCharge; break;
 	}
 	return skillId;
 }
@@ -222,13 +214,9 @@ int32_t PlayerSkills::getComboAttack() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Crusader:
-		case Jobs::JobIds::Hero:
-			skillId = Jobs::Crusader::ComboAttack;
-			break;
+		case Jobs::JobIds::Hero: skillId = Jobs::Crusader::ComboAttack; break;
 		case Jobs::JobIds::DawnWarrior3:
-		case Jobs::JobIds::DawnWarrior4:
-			skillId = Jobs::DawnWarrior::ComboAttack;
-			break;
+		case Jobs::JobIds::DawnWarrior4: skillId = Jobs::DawnWarrior::ComboAttack; break;
 	}
 	return skillId;
 }
@@ -236,13 +224,9 @@ int32_t PlayerSkills::getComboAttack() {
 int32_t PlayerSkills::getAdvancedCombo() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::Hero:
-			skillId = Jobs::Hero::AdvancedComboAttack;
-			break;
+		case Jobs::JobIds::Hero: skillId = Jobs::Hero::AdvancedComboAttack; break;
 		case Jobs::JobIds::DawnWarrior3:
-		case Jobs::JobIds::DawnWarrior4:
-			skillId = Jobs::DawnWarrior::AdvancedCombo;
-			break;
+		case Jobs::JobIds::DawnWarrior4: skillId = Jobs::DawnWarrior::AdvancedCombo; break;
 	}
 	return skillId;
 }
@@ -251,12 +235,8 @@ int32_t PlayerSkills::getAlchemist() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord:
-			skillId = Jobs::Hermit::Alchemist;
-			break;
-		case Jobs::JobIds::NightWalker3:
-			skillId = Jobs::NightWalker::Alchemist;
-			break;
+		case Jobs::JobIds::NightLord: skillId = Jobs::Hermit::Alchemist; break;
+		case Jobs::JobIds::NightWalker3: skillId = Jobs::NightWalker::Alchemist; break;
 	}
 	return skillId;
 }
@@ -264,15 +244,9 @@ int32_t PlayerSkills::getAlchemist() {
 int32_t PlayerSkills::getHpIncrease() {
 	int32_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Warrior:
-			skillId = Jobs::Swordsman::ImprovedMaxHpIncrease;
-			break;
-		case Jobs::JobTracks::DawnWarrior:
-			skillId = Jobs::DawnWarrior::MaxHpEnhancement;
-			break;
-		case Jobs::JobTracks::ThunderBreaker:
-			skillId = Jobs::ThunderBreaker::ImproveMaxHp;
-			break;
+		case Jobs::JobTracks::Warrior: skillId = Jobs::Swordsman::ImprovedMaxHpIncrease; break;
+		case Jobs::JobTracks::DawnWarrior: skillId = Jobs::DawnWarrior::MaxHpEnhancement; break;
+		case Jobs::JobTracks::ThunderBreaker: skillId = Jobs::ThunderBreaker::ImproveMaxHp; break;
 		case Jobs::JobTracks::Pirate:
 			if ((m_player->getStats()->getJob() / 10) == (Jobs::JobIds::Brawler / 10)) {
 				skillId = Jobs::Brawler::ImproveMaxHp;
@@ -285,12 +259,8 @@ int32_t PlayerSkills::getHpIncrease() {
 int32_t PlayerSkills::getMpIncrease() {
 	int32_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
-		case Jobs::JobTracks::Magician:
-			skillId = Jobs::Magician::ImprovedMaxMpIncrease;
-			break;
-		case Jobs::JobTracks::BlazeWizard:
-			skillId = Jobs::BlazeWizard::IncreasingMaxMp;
-			break;
+		case Jobs::JobTracks::Magician: skillId = Jobs::Magician::ImprovedMaxMpIncrease; break;
+		case Jobs::JobTracks::BlazeWizard: skillId = Jobs::BlazeWizard::IncreasingMaxMp; break;
 	}
 	return skillId;
 }
@@ -303,24 +273,16 @@ int32_t PlayerSkills::getMastery() {
 			switch (m_player->getStats()->getJob()) {
 				case Jobs::JobIds::Fighter:
 				case Jobs::JobIds::Crusader:
-				case Jobs::JobIds::Hero:
-					masteryId = Jobs::Fighter::SwordMastery;
-					break;
+				case Jobs::JobIds::Hero: masteryId = Jobs::Fighter::SwordMastery; break;
 				case Jobs::JobIds::Page:
 				case Jobs::JobIds::WhiteKnight:
-				case Jobs::JobIds::Paladin:
-					masteryId = Jobs::Page::SwordMastery;
-					break;
+				case Jobs::JobIds::Paladin: masteryId = Jobs::Page::SwordMastery; break;
 			}
 			break;
 		case Items::Types::Weapon1hAxe:
-		case Items::Types::Weapon2hAxe:
-			masteryId = Jobs::Fighter::AxeMastery;
-			break;
+		case Items::Types::Weapon2hAxe: masteryId = Jobs::Fighter::AxeMastery; break;
 		case Items::Types::Weapon1hMace:
-		case Items::Types::Weapon2hMace:
-			masteryId = Jobs::Page::BwMastery;
-			break;
+		case Items::Types::Weapon2hMace: masteryId = Jobs::Page::BwMastery; break;
 		case Items::Types::WeaponSpear: masteryId = Jobs::Spearman::SpearMastery; break;
 		case Items::Types::WeaponPolearm: masteryId = Jobs::Spearman::PolearmMastery; break;
 		case Items::Types::WeaponDagger: masteryId = Jobs::Bandit::DaggerMastery; break;
@@ -336,21 +298,15 @@ int32_t PlayerSkills::getMastery() {
 int32_t PlayerSkills::getMpEater() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::FPWizard:
-		case Jobs::JobIds::FPMage:
-		case Jobs::JobIds::FPArchMage:
-			skillId = Jobs::FPWizard::MpEater;
-			break;
-		case Jobs::JobIds::ILWizard:
-		case Jobs::JobIds::ILMage:
-		case Jobs::JobIds::ILArchMage:
-			skillId = Jobs::ILWizard::MpEater;
-			break;
+		case Jobs::JobIds::FpWizard:
+		case Jobs::JobIds::FpMage:
+		case Jobs::JobIds::FpArchMage: skillId = Jobs::FpWizard::MpEater; break;
+		case Jobs::JobIds::IlWizard:
+		case Jobs::JobIds::IlMage:
+		case Jobs::JobIds::IlArchMage: skillId = Jobs::IlWizard::MpEater; break;
 		case Jobs::JobIds::Cleric:
 		case Jobs::JobIds::Priest:
-		case Jobs::JobIds::Bishop:
-			skillId = Jobs::Cleric::MpEater;
-			break;
+		case Jobs::JobIds::Bishop: skillId = Jobs::Cleric::MpEater; break;
 	}
 	return skillId;
 }
@@ -358,12 +314,8 @@ int32_t PlayerSkills::getMpEater() {
 int32_t PlayerSkills::getVenomousWeapon() {
 	int32_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
-		case Jobs::JobIds::NightLord:
-			skillId = Jobs::NightLord::VenomousStar;
-			break;
-		case Jobs::JobIds::Shadower:
-			skillId = Jobs::Shadower::VenomousStab;
-			break;
+		case Jobs::JobIds::NightLord: skillId = Jobs::NightLord::VenomousStar; break;
+		case Jobs::JobIds::Shadower: skillId = Jobs::Shadower::VenomousStab; break;
 	}
 	return skillId;
 }
@@ -384,18 +336,12 @@ int16_t PlayerSkills::getRechargeableBonus() {
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
-		case Jobs::JobIds::NightLord:
-			bonus = getSkillLevel(Jobs::Assassin::ClawMastery) * 10;
-			break;
+		case Jobs::JobIds::NightLord: bonus = getSkillLevel(Jobs::Assassin::ClawMastery) * 10; break;
 		case Jobs::JobIds::Gunslinger:
 		case Jobs::JobIds::Outlaw:
-		case Jobs::JobIds::Corsair:
-			bonus = getSkillLevel(Jobs::Gunslinger::GunMastery) * 10;
-			break;
+		case Jobs::JobIds::Corsair: bonus = getSkillLevel(Jobs::Gunslinger::GunMastery) * 10; break;
 		case Jobs::JobIds::NightWalker2:
-		case Jobs::JobIds::NightWalker3:
-			bonus = getSkillLevel(Jobs::NightWalker::ClawMastery) * 10;
-			break;
+		case Jobs::JobIds::NightWalker3: bonus = getSkillLevel(Jobs::NightWalker::ClawMastery) * 10; break;
 	}
 	return bonus;
 }

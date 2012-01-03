@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,8 +55,8 @@ namespace tradeSlots {
 }
 
 void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
-	int8_t subopcode = packet.get<int8_t>();
-	switch (subopcode) {
+	int8_t subOpcode = packet.get<int8_t>();
+	switch (subOpcode) {
 		case TradeOpcodes::OpenTrade: // Open trade - this usually comes with 03 00 - no clue why
 			TradesPacket::sendOpenTrade(player, player, nullptr);
 			break;
@@ -65,8 +65,8 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 				// Most likely hacking
 				return;
 			}
-			int32_t recvid = packet.get<int32_t>();
-			Player *receiver = PlayerDataProvider::Instance()->getPlayer(recvid);
+			int32_t recvId = packet.get<int32_t>();
+			Player *receiver = PlayerDataProvider::Instance()->getPlayer(recvId);
 			if (receiver != nullptr) {
 				if (!receiver->isTrading()) {
 					TradesPacket::sendTradeRequest(player, receiver, Trades::Instance()->newTrade(player, receiver));
@@ -139,7 +139,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			Player *two = trade->getReceiver();
 			bool isReceiver = (player == two);
 			TradeInfo *mod = (isReceiver ? trade->getReceiverTrade() : trade->getSenderTrade());
-			switch (subopcode) {
+			switch (subOpcode) {
 				case TradeOpcodes::AddItem: {
 					int8_t inventory = packet.get<int8_t>();
 					int16_t slot = packet.get<int16_t>();

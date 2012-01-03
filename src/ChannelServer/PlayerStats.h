@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -78,7 +78,7 @@ public:
 	void setMaxMp(int16_t maxMp);
 	void modifyMaxHp(int16_t mod);
 	void modifyMaxMp(int16_t mod);
-	void setHyperBody(int16_t modx, int16_t mody);
+	void setHyperBody(int16_t xMod, int16_t yMod);
 	void setHpMpAp(uint16_t ap) { m_hpMpAp = ap; }
 	void setExp(int32_t exp);
 	void setAp(int16_t ap);
@@ -90,7 +90,7 @@ public:
 	void setDex(int16_t dex);
 	void setInt(int16_t intt);
 	void setLuk(int16_t luk);
-	void setMapleWarrior(int16_t modx);
+	void setMapleWarrior(int16_t xMod);
 	void loseExp();
 
 	void setEquip(int16_t slot, Item *equip, bool isLoading = false);
@@ -104,8 +104,8 @@ public:
 	int16_t randMp();
 	int16_t levelHp(int16_t val, int16_t bonus = 0);
 	int16_t levelMp(int16_t val, int16_t bonus = 0);
-	int16_t apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sval = 0);
-	int16_t apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sval = 0);
+	int16_t apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0);
+	int16_t apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0);
 	int16_t getX(int32_t skillId);
 	int16_t getY(int32_t skillId);
 	uint32_t getExp(uint8_t level);
@@ -129,6 +129,7 @@ public:
 	int16_t getMaxHp(bool withoutBonus = false);
 	int16_t getMp() const { return m_mp; }
 	int16_t getMaxMp(bool withoutBonus = false);
+	bool isDead() const;
 private:
 	void updateBonuses(bool updateEquips = false, bool isLoading = false);
 	void modifiedHp();

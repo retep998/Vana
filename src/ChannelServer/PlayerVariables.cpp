@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,33 +26,35 @@ PlayerVariables::PlayerVariables(Player *p) :
 }
 
 void PlayerVariables::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "DELETE FROM character_variables WHERE character_id = " << m_player->getId();
-	query.exec();
+	soci::session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
+	
+	sql.once << "DELETE FROM character_variables WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_variables.size() > 0) {
-		bool firstRun = true;
-		for (unordered_map<string, string>::iterator iter = m_variables.begin(); iter != m_variables.end(); iter++) {
-			if (firstRun) {
-				query << "INSERT INTO character_variables VALUES (";
-				firstRun = false;
-			}
-			else {
-				query << ",(";
-			}
-			query << m_player->getId() << ","
-					<< mysqlpp::quote << iter->first << ","
-					<< mysqlpp::quote << iter->second << ")";
+		string key = "";
+		string value = "";
+
+		soci::statement st = (sql.prepare << "INSERT INTO character_variables " <<
+												"VALUES (:char, :key, :value)",
+												soci::use(charId, "char"),
+												soci::use(key, "key"),
+												soci::use(value, "value"));
+
+		for (unordered_map<string, string>::iterator iter = m_variables.begin(); iter != m_variables.end(); ++iter) {
+			key = iter->first;
+			value = iter->second;
+			st.execute(true);
 		}
-		query.exec();
 	}
 }
 
 void PlayerVariables::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT * FROM character_variables WHERE character_id = " << m_player->getId();
-	mysqlpp::StoreQueryResult res = query.store();
-	for (size_t i = 0; i < res.size(); i++) {
-		m_variables[static_cast<string>(res[i]["key"])] = static_cast<string>(res[i]["value"]);
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM character_variables WHERE character_id = :char", soci::use(m_player->getId(), "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		m_variables[row.get<string>("key")] = row.get<string>("value");
 	}
 }

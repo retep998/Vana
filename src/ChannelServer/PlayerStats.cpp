@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.h"
 #include "LevelsPacket.h"
 #include "Maps.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -35,10 +36,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "SummonHandler.h"
 #include "SyncPacket.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
-#include <string>
 #include <limits>
+#include <string>
 
 using std::string;
 
@@ -63,9 +63,13 @@ PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fam
 	m_hyperBodyY(0),
 	m_mapleWarrior(0)
 {
-	if (hp == 0) {
-		m_hp = 50;
+	if (isDead()) {
+		m_hp = Stats::DefaultHp;
 	}
+}
+
+bool PlayerStats::isDead() const {
+	return (m_hp == Stats::MinHp);
 }
 
 // Equip stat bonus handling
@@ -75,7 +79,7 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 	}
 	if (updateEquips) {
 		m_equipBonuses = BonusSet();
-		for (EquipBonuses::iterator iter = m_equipStats.begin(); iter != m_equipStats.end(); iter++) {
+		for (EquipBonuses::iterator iter = m_equipStats.begin(); iter != m_equipStats.end(); ++iter) {
 			if (EquipDataProvider::Instance()->canEquip(iter->second.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
 				m_equipBonuses.hp += iter->second.hp;
 				m_equipBonuses.mp += iter->second.mp;
@@ -139,27 +143,20 @@ void PlayerStats::connectData(PacketCreator &packet) {
 
 int16_t PlayerStats::getMaxHp(bool withoutBonus) {
 	if (!withoutBonus) {
-		if ((m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp) > Stats::MaxMaxHp) {
-			return Stats::MaxMaxHp;
-		}
-		return (m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp);
+		return static_cast<int16_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
 	}
 	return m_maxHp;
 }
 
 int16_t PlayerStats::getMaxMp(bool withoutBonus) {
 	if (!withoutBonus) {
-		if ((m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp) > Stats::MaxMaxMp) {
-			return Stats::MaxMaxMp;
-		}
-		return (m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp);
+		return static_cast<int16_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
 	}
 	return m_maxMp;
 }
 
 int16_t PlayerStats::statUtility(int32_t test) {
-	int16_t max = std::numeric_limits<int16_t>::max();
-	return (test > max ? max : static_cast<int16_t>(test)); 
+	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test)); 
 }
 
 int16_t PlayerStats::getStr(bool withBonus) {
@@ -208,15 +205,7 @@ void PlayerStats::setLevel(uint8_t level) {
 }
 
 void PlayerStats::setHp(int16_t hp, bool sendPacket) {
-	if (hp < 0) {
-		m_hp = 0;
-	}
-	else if (hp > getMaxHp()) {
-		m_hp = getMaxHp();
-	}
-	else {
-		m_hp = hp;
-	}
+	m_hp = MiscUtilities::constrainToRange<int16_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
@@ -224,15 +213,7 @@ void PlayerStats::setHp(int16_t hp, bool sendPacket) {
 }
 
 void PlayerStats::modifyHp(int16_t hpMod, bool sendPacket) {
-	if ((m_hp + hpMod) < 0) {
-		m_hp = 0;
-	}
-	else if ((m_hp + hpMod) > getMaxHp()) {
-		m_hp = getMaxHp();
-	}
-	else {
-		m_hp += hpMod;
-	}
+	m_hp = MiscUtilities::constrainToRange<int16_t>(m_hp + hpMod, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
@@ -240,7 +221,7 @@ void PlayerStats::modifyHp(int16_t hpMod, bool sendPacket) {
 }
 
 void PlayerStats::damageHp(uint16_t damageHp) {
-	m_hp = (damageHp > m_hp ? 0 : m_hp - damageHp);
+	m_hp = std::max<uint16_t>(Stats::MinHp, m_hp - damageHp);
 	PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	modifiedHp();
 }
@@ -250,9 +231,9 @@ void PlayerStats::modifiedHp() {
 		p->showHpBar(m_player);
 	}
 	m_player->getActiveBuffs()->checkBerserk();
-	if (m_hp == 0) {
-		if (m_player->getInstance() != nullptr) {
-			m_player->getInstance()->sendMessage(PlayerDeath, m_player->getId());
+	if (m_hp == Stats::MinHp) {
+		if (Instance *i = m_player->getInstance()) {
+			i->sendMessage(PlayerDeath, m_player->getId());
 		}
 		loseExp();
 		SummonHandler::removeSummon(m_player, false, false, SummonMessages::Disappearing);
@@ -261,37 +242,21 @@ void PlayerStats::modifiedHp() {
 
 void PlayerStats::setMp(int16_t mp, bool sendPacket) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		if (mp < 0) {
-			m_mp = 0;
-		}
-		else if (mp > getMaxMp()) {
-			m_mp = getMaxMp();
-		}
-		else {
-			m_mp = mp;
-		}
+		m_mp = MiscUtilities::constrainToRange<int16_t>(mp, Stats::MinMp, getMaxMp());
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
 void PlayerStats::modifyMp(int16_t mpMod, bool sendPacket) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		if ((m_mp + mpMod) < 0) {
-			m_mp = 0;
-		}
-		else if ((m_mp + mpMod) > getMaxMp()) {
-			m_mp = getMaxMp();
-		}
-		else {
-			m_mp += mpMod;
-		}
+		m_mp = MiscUtilities::constrainToRange<int16_t>(m_mp + mpMod, Stats::MinMp, getMaxMp());
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
 void PlayerStats::damageMp(uint16_t damageMp) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = (damageMp > m_mp ? 0 : m_mp - damageMp);
+		m_mp = std::max<uint16_t>(Stats::MinMp, m_mp - damageMp);
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
@@ -333,45 +298,33 @@ void PlayerStats::setLuk(int16_t luk) {
 	PlayerPacket::updateStat(m_player, Stats::Luk, luk);
 }
 
-void PlayerStats::setMapleWarrior(int16_t modx) {
-	m_buffBonuses.str = (m_str * modx) / 100;
-	m_buffBonuses.dex = (m_dex * modx) / 100;
-	m_buffBonuses.intt = (m_int * modx) / 100;
-	m_buffBonuses.luk = (m_luk * modx) / 100;
-	if (m_mapleWarrior != modx) {
-		m_mapleWarrior = modx;
+void PlayerStats::setMapleWarrior(int16_t xMod) {
+	m_buffBonuses.str = (m_str * xMod) / 100;
+	m_buffBonuses.dex = (m_dex * xMod) / 100;
+	m_buffBonuses.intt = (m_int * xMod) / 100;
+	m_buffBonuses.luk = (m_luk * xMod) / 100;
+	if (m_mapleWarrior != xMod) {
+		m_mapleWarrior = xMod;
 		updateBonuses();
 	}
 }
 
 void PlayerStats::setMaxHp(int16_t maxHp) {
-	if (maxHp > Stats::MaxMaxHp) {
-		maxHp = Stats::MaxMaxHp;
-	}
-	else if (maxHp < Stats::MinMaxHp) {
-		maxHp = Stats::MinMaxHp;
-	}
-	m_maxHp = maxHp;
+	m_maxHp = MiscUtilities::constrainToRange(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	modifiedHp();
 }
 
 void PlayerStats::setMaxMp(int16_t maxMp) {
-	if (maxMp > Stats::MaxMaxMp) {
-		maxMp = Stats::MaxMaxMp;
-	}
-	else if (maxMp < Stats::MinMaxMp) {
-		maxMp = Stats::MinMaxMp;
-	}
-	m_maxMp = maxMp;
+	m_maxMp = MiscUtilities::constrainToRange(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
-void PlayerStats::setHyperBody(int16_t modx, int16_t mody) {
-	m_hyperBodyX = modx;
-	m_hyperBodyY = mody;
-	m_buffBonuses.hp = (((m_maxHp + m_equipBonuses.hp) * modx / 100) > Stats::MaxMaxHp ? Stats::MaxMaxHp : (m_maxHp + m_equipBonuses.hp) * modx / 100);
-	m_buffBonuses.mp = (((m_maxMp + m_equipBonuses.mp) * mody / 100) > Stats::MaxMaxMp ? Stats::MaxMaxMp : (m_maxMp + m_equipBonuses.mp) * mody / 100);
+void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
+	m_hyperBodyX = xMod;
+	m_hyperBodyY = yMod;
+	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
+	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 	if (Party *p = m_player->getParty()) { 
@@ -381,12 +334,12 @@ void PlayerStats::setHyperBody(int16_t modx, int16_t mody) {
 }
 
 void PlayerStats::modifyMaxHp(int16_t mod) {
-	m_maxHp = (((m_maxHp + mod) > Stats::MaxMaxHp) ? Stats::MaxMaxHp : (m_maxHp + mod));
+	m_maxHp = std::min<int16_t>(m_maxHp + mod, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 }
 
 void PlayerStats::modifyMaxMp(int16_t mod) {
-	m_maxMp = (((m_maxMp + mod) > Stats::MaxMaxMp) ? Stats::MaxMaxMp : (m_maxMp + mod));
+	m_maxMp = std::min<int16_t>(m_maxMp + mod, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
@@ -399,13 +352,7 @@ void PlayerStats::setExp(int32_t exp) {
 }
 
 void PlayerStats::setFame(int16_t fame) {
-	if (fame < Stats::MinFame) {
-		fame = Stats::MinFame;
-	}
-	else if (fame > Stats::MaxFame) {
-		fame = Stats::MaxFame;
-	}
-	m_fame = fame;
+	m_fame = MiscUtilities::constrainToRange(fame, Stats::MinFame, Stats::MaxFame);
 	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
 }
 
@@ -414,30 +361,27 @@ void PlayerStats::loseExp() {
 		uint16_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
 			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
-			charms--;
-			if (charms > 0xFF) {
-				charms = 0xFF;
-			}
+			charms = std::min<uint16_t>(--charms, 0xFF);
 			InventoryPacket::useCharm(m_player, static_cast<uint8_t>(charms));
 			return;
 		}
 		Map *loc = Maps::getMap(m_player->getMap());
-		int8_t exploss = 10;
+		int8_t expLoss = 10;
 		if (loc->loseOnePercent()) {
-			exploss = 1;
+			expLoss = 1;
 		}
 		else {
 			switch (GameLogicUtilities::getJobTrack(getJob(), true)) {
 				case Jobs::JobTracks::Magician:
-					exploss = 7;
+					expLoss = 7;
 					break;
 				case Jobs::JobTracks::Thief:
-					exploss = 5;
+					expLoss = 5;
 					break;
 			}
 		}
 		int32_t exp = getExp();
-		exp -= static_cast<int32_t>(static_cast<int64_t>(getExp(getLevel())) * exploss / 100);
+		exp -= static_cast<int32_t>(static_cast<int64_t>(getExp(getLevel())) * expLoss / 100);
 		setExp(exp);
 	}
 }
@@ -450,14 +394,15 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 		// Do not give EXP to characters of max level or over
 		return;
 	}
-	uint32_t cexp = getExp() + exp;
+	uint32_t curExp = getExp() + exp;
 	if (exp != 0) {
 		LevelsPacket::showExp(m_player, exp, white, inChat);
 	}
-	if (cexp >= getExp(level)) {
+	if (curExp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
 		uint8_t levelsGained = 0;
 		uint8_t levelsMax = ChannelServer::Instance()->getMaxMultiLevel();
+		uint8_t jobMax = getMaxLevel(fullJob);
 		int16_t apGain = 0;
 		int16_t spGain = 0;
 		int16_t hpGain = 0;
@@ -465,8 +410,9 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 		int16_t job = GameLogicUtilities::getJobTrack(fullJob, true);
 		int16_t intt = getInt(true) / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
-		while (cexp >= getExp(level) && levelsGained < levelsMax) {
-			cexp -= getExp(getLevel());
+
+		while (curExp >= getExp(level) && levelsGained < levelsMax) {
+			curExp -= getExp(getLevel());
 			level++;
 			levelsGained++;
 			if (cygnus && level <= Stats::CygnusApCutoff) {
@@ -516,16 +462,16 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 			if (!GameLogicUtilities::isBeginnerJob(fullJob)) {
 				spGain += Stats::SpPerLevel;
 			}
-			if (level >= getMaxLevel(fullJob)) {
+			if (level >= jobMax) {
 				// Do not let people level past the level cap
-				cexp = 0;
+				curExp = 0;
 				break;
 			}
 		}
 
-		if (cexp >= getExp(level)) {
+		if (curExp >= getExp(level)) {
 			// If the desired number of level ups have passed and they're still above, set it to where it should be
-			cexp = getExp(level) - 1;
+			curExp = getExp(level) - 1;
 		}
 
 		if (levelsGained) {
@@ -546,17 +492,17 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 			setHp(getMaxHp());
 			setMp(getMaxMp());
 			m_player->setLevelDate();
-			if (getLevel() == getMaxLevel(fullJob) && !m_player->isGm()) {
+			if (getLevel() == jobMax && !m_player->isGm()) {
 				std::ostringstream message;
 				message << "[Congrats] " << m_player->getName() << " has reached Level "
-						<< (int16_t) getMaxLevel(fullJob) << "! Congratulate "
+						<< static_cast<int16_t>(jobMax) << "! Congratulate "
 						<< m_player->getName() << " on such an amazing achievement!";
 
 				PlayerPacket::showMessageWorld(message.str(), PlayerPacket::NoticeTypes::Blue);
 			}
 		}
 	}
-	setExp(cexp);
+	setExp(curExp);
 }
 
 void PlayerStats::addStat(PacketReader &packet) {
@@ -634,7 +580,7 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
 			int16_t mpGain = 0;
 			int16_t y = 0;
 			switch (job) {
-				case Jobs::JobTracks::Beginner: // Beginner
+				case Jobs::JobTracks::Beginner:
 					hpGain = apResetHp(isReset, isSubtract, Stats::BaseHp::BeginnerAp);
 					mpGain = apResetMp(isReset, isSubtract, Stats::BaseMp::BeginnerAp);
 					break;
@@ -714,12 +660,12 @@ int16_t PlayerStats::getY(int32_t skillId) {
 	return m_player->getSkills()->getSkillInfo(skillId)->y;
 }
 
-int16_t PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sval) {
-	return (isReset ? (isSubtract ? -(sval + val + Stats::BaseHp::Variation) : val) : levelHp(val, sval));
+int16_t PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) {
+	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseHp::Variation) : val) : levelHp(val, sVal));
 }
 
-int16_t PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sval) {
-	return (isReset ? (isSubtract ? -(sval + val + Stats::BaseMp::Variation) : val) : levelMp(val, sval));
+int16_t PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) {
+	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseMp::Variation) : val) : levelMp(val, sVal));
 }
 
 int16_t PlayerStats::levelHp(int16_t val, int16_t bonus) {

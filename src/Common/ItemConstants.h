@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,6 +27,11 @@ namespace Inventories {
 	const uint8_t SetupInventory = 3;
 	const uint8_t EtcInventory = 4;
 	const uint8_t CashInventory = 5;
+
+	const uint8_t MinSlotsPerInventory = 24;
+	const uint8_t MaxSlotsPerInventory = 100;
+	const int8_t MinSlotsStorage = 4;
+	const int8_t MaxSlotsStorage = 100;
 
 	const uint8_t EquippedSlots = 51;
 	const int8_t MaxPetCount = 3;
@@ -201,7 +206,11 @@ namespace Items {
 		const uint16_t Hands = 4;
 		const uint16_t Speed = 4;
 		const uint16_t Jump = 2;
-		const uint16_t RandScroll = 5;
+
+		namespace Chaos {
+			const uint16_t Normal = 5;
+			const uint16_t High = 10;
+		}
 	}
 
 	namespace MaxStats {

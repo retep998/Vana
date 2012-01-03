@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -78,7 +78,11 @@ void Quest::questRequestFunc(function<bool (int16_t, int8_t)> func) const {
 	}
 }
 
-bool Quest::rewardsFunc(function<bool (const QuestRewardInfo &)> func, bool start, int16_t job) {
+bool Quest::rewardsFunc(bool start, function<bool (const QuestRewardInfo &)> func) {
+	return rewardsFunc(start, -1, func);
+}
+
+bool Quest::rewardsFunc(bool start, int16_t job, function<bool (const QuestRewardInfo &)> func) {
 	bool broken = false;
 	QuestRewardsInfo *rewMap = nullptr;
 	if (start) {

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,10 +36,12 @@ Pet::Pet(Player *player, Item *item) :
 	m_fullness(Stats::MaxFullness),
 	m_closeness(0)
 {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "INSERT INTO pets (name) VALUES (" << mysqlpp::quote << m_name << ")";
-	mysqlpp::SimpleResult res = query.execute();
-	m_id = static_cast<int64_t>(res.insert_id());
+	soci::session &sql = Database::getCharDb();
+	sql.once << "INSERT INTO pets (name) VALUES (:name)",
+				soci::use(m_name, "name");
+
+	sql.once << "SELECT LAST_INSERT_ID()",
+				soci::into(m_id);
 	item->setPetId(m_id);
 }
 

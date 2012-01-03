@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -60,8 +60,8 @@ bool WarpFunctions::warp(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d*)?", matches)) {
 		string targetName = matches[1];
 		if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetName)) {
-			string mapstring = matches[2];
-			int32_t mapId = mapstring.length() > 0 ? ChatHandlerFunctions::getMap(mapstring, player) : player->getMap();
+			string mapString = matches[2];
+			int32_t mapId = mapString.length() > 0 ? ChatHandlerFunctions::getMap(mapString, player) : player->getMap();
 
 			if (Maps::getMap(mapId)) {
 				warpee->setMap(mapId);
@@ -100,8 +100,8 @@ bool WarpFunctions::warpMap(Player *player, const string &args) {
 
 bool WarpFunctions::warpTo(Player *player, const string &args) {
 	if (args.length() > 0) {
-		if (Player *warptoee = PlayerDataProvider::Instance()->getPlayer(args)) {
-			player->setMap(warptoee->getMap());
+		if (Player *warpTo = PlayerDataProvider::Instance()->getPlayer(args)) {
+			player->setMap(warpTo->getMap());
 		}
 		else {
 			PlayerPacket::showMessage(player, "Player not found: " + args, PlayerPacket::NoticeTypes::Red);

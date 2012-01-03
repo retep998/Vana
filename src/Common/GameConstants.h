@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 namespace Parties {
-	const int8_t MaxMembers = 6;
+	const uint8_t MaxMembers = 6;
 }
 
 namespace Characters {
-	const int8_t MaxNameSize = 12;
-	const int8_t MinNameSize = 4;
-	const int8_t MaxPasswordSize = 15;
-	const int8_t MinPasswordSize = 5;
+	const uint8_t MaxNameSize = 12;
+	const uint8_t MinNameSize = 4;
+	const uint8_t MaxPasswordSize = 15;
+	const uint8_t MinPasswordSize = 5;
 	const int32_t DefaultCharacterSlots = 3;
 }
 
@@ -37,6 +37,10 @@ namespace Gender {
 		Female = 1,
 		Both = 2
 	};
+}
+
+namespace Buddies {
+	const uint8_t MaxGroupNameSize = 13;
 }
 
 namespace GuildsAndAlliances {
@@ -54,6 +58,9 @@ namespace Stats {
 	const int16_t MinMaxMp = 1;
 	const int16_t MaxFame = 30000;
 	const int16_t MinFame = -30000;
+	const int16_t MinHp = 0;
+	const int16_t MinMp = 0;
+	const int16_t DefaultHp = 50;
 	const int16_t MaxCloseness = 30000;
 	const int16_t ApPerLevel = 5;
 	const int16_t ApPerCygnusLevel = 6;

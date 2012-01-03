@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,60 +39,55 @@ void BeautyDataProvider::loadData() {
 void BeautyDataProvider::loadSkins() {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Skins... ";
 	m_skins.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_skin_data ORDER BY skinid ASC");
-	mysqlpp::UseQueryResult res = query.use();
 
-	enum SkinData {
-		Id = 0
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_skin_data ORDER BY skinid ASC");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		m_skins.push_back(atoi(row[Id]));
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		m_skins.push_back(row.get<int8_t>("skinid"));
 	}
+
 	std::cout << "DONE" << std::endl;
 }
 
 void BeautyDataProvider::loadHair() {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Hair... ";
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_hair_data ORDER BY hairid ASC");
-	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;
 	int32_t hair;
 	ValidLook *look;
 
-	enum HairData {
-		Id = 0,
-		Gender
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_hair_data ORDER BY hairid ASC");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		gender = GameLogicUtilities::getGenderId(row[Gender]);
-		hair = atoi(row[Id]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
+		hair = row.get<int32_t>("hairid");
 		look = getGender(gender);
 		look->hair.push_back(hair);
 	}
+
 	std::cout << "DONE" << std::endl;
 }
 
 void BeautyDataProvider::loadFaces() {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Faces... ";
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM character_face_data ORDER BY faceid ASC");
-	mysqlpp::UseQueryResult res = query.use();
 	int8_t gender;
 	int32_t face;
 	ValidLook *look;
 
-	enum FaceData {
-		Id = 0,
-		Gender
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_face_data ORDER BY faceid ASC");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		gender = GameLogicUtilities::getGenderId(row[Gender]);
-		face = atoi(row[Id]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
+		face = row.get<int32_t>("faceid");
 		look = getGender(gender);
 		look->faces.push_back(face);
 	}
+
 	std::cout << "DONE" << std::endl;
 }
 

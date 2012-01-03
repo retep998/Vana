@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -155,12 +155,11 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 	}
 	else {
 		// Make new pending buddy in the database
-		mysqlpp::Query query = Database::getCharDb().query();
-		query << "INSERT INTO buddylist_pending VALUES ("
-			<< inviteeId << ", "
-			<< mysqlpp::quote << inviter->getName() << ", "
-			<< playerId << ")";
-		query.exec();
+		Database::getCharDb().once << "INSERT INTO buddylist_pending " <<
+										"VALUES (:invitee, :name, :player)",
+										soci::use(inviteeId, "invitee"),
+										soci::use(inviter->getName(), "inviter"),
+										soci::use(playerId, "player");
 	}
 }
 
@@ -187,7 +186,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 		}
 	}
 
-	for (unordered_map<int16_t, vector<int32_t>>::iterator iter = ids.begin(); iter != ids.end(); iter++) {
+	for (unordered_map<int16_t, vector<int32_t>>::iterator iter = ids.begin(); iter != ids.end(); ++iter) {
 		if (Channel *channel = Channels::Instance()->getChannel(iter->first)) {
 			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel->getConnection(), iter->second, playerId, (online ? player->getChannel() : -1));
 		}

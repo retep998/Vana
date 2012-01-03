@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,21 +26,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::endl;
 
 void Initializing::checkMcdbVersion() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mcdb_info LIMIT 1");
-	mysqlpp::StoreQueryResult res = query.store();
+	soci::session &sql = Database::getDataDb();
+	soci::indicator ind = soci::i_null;
+	soci::row row;
+	sql.once << "SELECT * FROM mcdb_info", soci::into(row);
 
-	if (res.num_rows() == 0) {
+	if (!sql.got_data()) {
 		std::cerr << "ERROR: mcdb_info is empty." << endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 		exit(ExitCodes::McdbError);
 	}
 
-	int32_t version = static_cast<int32_t>(res[0]["version"]);
-	int32_t subversion = static_cast<int32_t>(res[0]["subversion"]);
-	int16_t mapleVersion = static_cast<int16_t>(res[0]["maple_version"]);
-	bool testServer = static_cast<bool>(res[0]["test_server"]);
-	string &mapleLocale = static_cast<string>(res[0]["maple_locale"]);
+	int32_t version = row.get<int32_t>("version");
+	int32_t subversion = row.get<int32_t>("subversion");
+	int16_t mapleVersion = row.get<int16_t>("maple_version");
+	bool testServer = row.get<bool>("test_server");
+	string &mapleLocale = row.get<string>("maple_locale");
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		std::cerr << "ERROR: MCDB version incompatible." << endl;
@@ -97,12 +99,11 @@ void Initializing::checkSchemaVersion(bool update) {
 }
 
 void Initializing::setUsersOffline(int32_t onlineId) {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE user_accounts u "
-			<< "INNER JOIN characters c ON u.user_id = c.user_id "
-			<< "SET "
-			<< "	u.online = 0,"
-			<< "	c.online = 0 "
-			<< "WHERE u.online = " << onlineId;
-	query.exec();
+	Database::getCharDb().once << "UPDATE user_accounts u "
+								<< "INNER JOIN characters c ON u.user_id = c.user_id "
+								<< "SET "
+								<< "	u.online = 0,"
+								<< "	c.online = 0 "
+								<< "WHERE u.online = :online",
+								soci::use(onlineId, "online");
 }

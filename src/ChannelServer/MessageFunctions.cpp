@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,20 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
-#include <boost/lexical_cast.hpp>
-
-using boost::lexical_cast;
-
-namespace Functors {
-	struct MeFunctor {
-		void operator() (Player *gmplayer) {
-			if (gmplayer->isGm()) {
-				PlayerPacket::showMessage(gmplayer, msg, PlayerPacket::NoticeTypes::Blue);
-			}
-		}
-		string msg;
-	};
-}
 
 bool MessageFunctions::worldMessage(Player *player, const string &args) {
 	cmatch matches;
@@ -75,8 +61,11 @@ bool MessageFunctions::channelMessage(Player *player, const string &args) {
 bool MessageFunctions::gmMessage(Player *player, const string &args) {
 	if (args.length() != 0) {
 		string &msg = player->getName() + " : " + args;
-		Functors::MeFunctor func = {msg};
-		PlayerDataProvider::Instance()->run(func);
+		PlayerDataProvider::Instance()->run([&msg](Player *gmPlayer) {
+			if (gmPlayer->isGm()) {
+				PlayerPacket::showMessage(gmPlayer, msg, PlayerPacket::NoticeTypes::Blue);
+			}
+		});
 		return true;
 	}
 	return false;

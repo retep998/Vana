@@ -459,5 +459,8 @@
     <ClInclude Include="src\Common\IPacket.h">
       <Filter>Source\Abstracts</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\SociExtensions.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

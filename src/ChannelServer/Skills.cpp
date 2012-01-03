@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -66,8 +66,8 @@ void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 		case Jobs::Bowmaster::Hurricane:
 		case Jobs::WindArcher::Hurricane:
 		case Jobs::Marksman::PiercingArrow:
-		case Jobs::FPArchMage::BigBang:
-		case Jobs::ILArchMage::BigBang:
+		case Jobs::FpArchMage::BigBang:
+		case Jobs::IlArchMage::BigBang:
 		case Jobs::Bishop::BigBang:
 		case Jobs::Corsair::RapidFire:
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
@@ -175,13 +175,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			direction = packet.get<uint8_t>();
 			break;
 		}
-		case Jobs::FPWizard::Slow:
-		case Jobs::ILWizard::Slow:
+		case Jobs::FpWizard::Slow:
+		case Jobs::IlWizard::Slow:
 		case Jobs::BlazeWizard::Slow:
 		case Jobs::Page::Threaten:
 			packet.skipBytes(4); // Might be CRC too O.o?
-		case Jobs::FPMage::Seal:
-		case Jobs::ILMage::Seal:
+		case Jobs::FpMage::Seal:
+		case Jobs::IlMage::Seal:
 		case Jobs::BlazeWizard::Seal:
 		case Jobs::Priest::Doom:
 		case Jobs::Hermit::ShadowWeb:
@@ -197,8 +197,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Jobs::Bishop::HerosWill:
-		case Jobs::ILArchMage::HerosWill:
-		case Jobs::FPArchMage::HerosWill:
+		case Jobs::IlArchMage::HerosWill:
+		case Jobs::FpArchMage::HerosWill:
 		case Jobs::DarkKnight::HerosWill:
 		case Jobs::Hero::HerosWill:
 		case Jobs::Paladin::HerosWill:
@@ -275,8 +275,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::DawnWarrior::Rage:
 		case Jobs::Spearman::IronWill:
 		case Jobs::Spearman::HyperBody:
-		case Jobs::FPWizard::Meditation:
-		case Jobs::ILWizard::Meditation:
+		case Jobs::FpWizard::Meditation:
+		case Jobs::IlWizard::Meditation:
 		case Jobs::BlazeWizard::Meditation:
 		case Jobs::Cleric::Bless:
 		case Jobs::Priest::HolySymbol:
@@ -294,8 +294,8 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Hero::MapleWarrior:
 		case Jobs::Paladin::MapleWarrior:
 		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FPArchMage::MapleWarrior:
-		case Jobs::ILArchMage::MapleWarrior:
+		case Jobs::FpArchMage::MapleWarrior:
+		case Jobs::IlArchMage::MapleWarrior:
 		case Jobs::Bishop::MapleWarrior:
 		case Jobs::Bowmaster::MapleWarrior:
 		case Jobs::Marksman::MapleWarrior:

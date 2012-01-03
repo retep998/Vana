@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -92,7 +92,8 @@ public:
 	void mobRequestFunc(function<bool (int32_t, int16_t)> func) const;
 	void itemRequestFunc(function<bool (int32_t, int16_t)> func) const;
 	void questRequestFunc(function<bool (int16_t, int8_t)> func) const;
-	bool rewardsFunc(function<bool (const QuestRewardInfo &)> func, bool start, int16_t job = -1);
+	bool rewardsFunc(bool start, function<bool (const QuestRewardInfo &)> func);
+	bool rewardsFunc(bool start, int16_t job, function<bool (const QuestRewardInfo &)> func);
 private:
 	MobRequests m_mobRequests;
 	ItemRequests m_itemRequests;

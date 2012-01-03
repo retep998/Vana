@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ void ConnectionAcceptor::stop() {
 }
 
 void ConnectionAcceptor::startAccepting() {
-	SessionPtr newSession(new Session(m_acceptor.io_service(), m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
+	SessionPtr newSession(new Session(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
 	m_acceptor.async_accept(newSession->getSocket(), boost::bind(&ConnectionAcceptor::handleConnection, this, newSession, boost::asio::placeholders::error));
 }
 

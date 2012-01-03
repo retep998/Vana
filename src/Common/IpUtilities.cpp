@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ string IpUtilities::ipToString(ip_t ip) {
 ip_t IpUtilities::matchIpSubnet(ip_t ip, const IpMatrix &ipMatrix, ip_t defaultIp) {
 	ip_t ret = defaultIp;
 
-	for (IpMatrix::const_iterator iter = ipMatrix.begin(); iter != ipMatrix.end(); iter++) {
+	for (IpMatrix::const_iterator iter = ipMatrix.begin(); iter != ipMatrix.end(); ++iter) {
 		const IpArray &ipArray = *iter;
 		ip_t serverIp = ipArray[0];
 		ip_t subnet = ipArray[1];

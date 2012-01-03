@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,8 +32,9 @@ using std::vector;
 
 class PacketCreator;
 class Player;
-namespace mysqlpp {
-	class Row;
+namespace soci {
+	class row;
+	class session;
 }
 
 struct Buddy {
@@ -67,7 +68,7 @@ public:
 	void checkForPendingBuddy();
 	void removePendingBuddy(int32_t id, bool accepted);
 private:
-	void addBuddy(const mysqlpp::Row &row);
+	void addBuddy(soci::session &sql, const soci::row &row);
 	void load();
 
 	bool m_sentRequest;

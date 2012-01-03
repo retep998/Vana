@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ struct ActiveQuest {
 			return data;
 
 		std::ostringstream info;
-		for (map<int32_t, int16_t, std::less<int32_t>>::const_iterator iter = kills.begin(); iter != kills.end(); iter++) {
+		for (map<int32_t, int16_t, std::less<int32_t>>::const_iterator iter = kills.begin(); iter != kills.end(); ++iter) {
 			info << std::setw(3) << std::setfill('0') << iter->second;
 		}
 		return info.str();

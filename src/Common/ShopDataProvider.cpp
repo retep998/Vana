@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,83 +40,66 @@ void ShopDataProvider::loadData() {
 
 void ShopDataProvider::loadShops() {
 	m_shops.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_data");
-	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopId;
-	MYSQL_ROW row;
 
-	enum ShopData {
-		ShopId = 0,
-		NpcId, RechargeTier
-	};
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM shop_data");
 
-	while (row = res.fetch_raw_row()) {
-		shopId = atoi(row[ShopId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		shop.npc = atoi(row[NpcId]);
-		shop.rechargeTier = atoi(row[RechargeTier]);
+		shopId = row.get<int32_t>("shopid");
+		shop.npc = row.get<int32_t>("npcid");
+		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		m_shops[shopId] = shop;
 	}
 
-	query << "SELECT * FROM shop_items ORDER BY shopId, sort DESC";
-	res = query.use();
+	rs = (sql.prepare << "SELECT * FROM shop_items ORDER BY shopid, sort DESC");
 	ShopItemInfo item;
 
-	enum ShopItemData {
-		ItemShopId = 0,
-		ItemId, Quantity, Price, Sort
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (row = res.fetch_raw_row()) {
-		shopId = atoi(row[ItemShopId]);
-
-		item.itemId = atoi(row[ItemId]);
-		item.quantity = atoi(row[Quantity]);
-		item.price = atoi(row[Price]);
+		shopId = row.get<int32_t>("shopid");
+		item.itemId = row.get<int32_t>("itemid");
+		item.quantity = row.get<int16_t>("quantity");
+		item.price = row.get<int32_t>("price");
 
 		m_shops[shopId].items.push_back(item);
 	}
 }
 
 void ShopDataProvider::loadUserShops() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM user_shop_data");
-	mysqlpp::UseQueryResult res = query.use();
 	ShopInfo shop;
 	int32_t shopId;
-	MYSQL_ROW row;
 
-	enum ShopData {
-		ShopId = 0,
-		NpcId, RechargeTier
-	};
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM user_shop_data");
 
-	while (row = res.fetch_raw_row()) {
-		shopId = atoi(row[ShopId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		shop.npc = atoi(row[NpcId]);
-		shop.rechargeTier = atoi(row[RechargeTier]);
+		shopId = row.get<int32_t>("shopid");
+		shop.npc = row.get<int32_t>("npcid");
+		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		if (m_shops.find(shopId) != m_shops.end()) {
 			m_shops.erase(shopId);
 		}
+
 		m_shops[shopId] = shop;
 	}
 
-	query << "SELECT * FROM user_shop_items ORDER BY shopId, sort DESC";
-	res = query.use();
+	rs = (sql.prepare << "SELECT * FROM shop_items ORDER BY shopid, sort DESC");
 	ShopItemInfo item;
 
-	enum ShopItemData {
-		ItemShopId = 0,
-		ItemId, Quantity, Price, Sort
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (row = res.fetch_raw_row()) {
-		shopId = atoi(row[ItemShopId]);
-
-		item.itemId = atoi(row[ItemId]);
-		item.quantity = atoi(row[Quantity]);
-		item.price = atoi(row[Price]);
+		shopId = row.get<int32_t>("shopid");
+		item.itemId = row.get<int32_t>("itemid");
+		item.quantity = row.get<int16_t>("quantity");
+		item.price = row.get<int32_t>("price");
 
 		m_shops[shopId].items.push_back(item);
 	}
@@ -124,21 +107,18 @@ void ShopDataProvider::loadUserShops() {
 
 void ShopDataProvider::loadRechargeTiers() {
 	m_rechargeCosts.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM shop_recharge_data");
-	mysqlpp::UseQueryResult res = query.use();
 	int8_t rechargeTier;
 	int32_t itemId;
 	double price;
 
-	enum RechargeData {
-		TierId = 0,
-		ItemId, Price
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM shop_recharge_data");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		rechargeTier = atoi(row[TierId]);
-		itemId = atoi(row[ItemId]);
-		price = atof(row[Price]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		rechargeTier = row.get<int8_t>("tierid");
+		itemId = row.get<int32_t>("itemid");
+		price = row.get<double>("price");
 
 		m_rechargeCosts[rechargeTier][itemId] = price;
 	}

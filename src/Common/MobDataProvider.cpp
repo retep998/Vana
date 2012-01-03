@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,41 +40,27 @@ void MobDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-namespace Functors {
-	struct MobAttackFlags {
-		void operator() (const string &cmp) {
-			if (cmp == "deadly") attack->deadlyAttack = true;
-		}
-		MobAttackInfo *attack;
-	};
-}
-
 void MobDataProvider::loadAttacks() {
 	m_attacks.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_attacks");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobId;
 	MobAttackInfo mobAttack;
 
-	using namespace Functors;
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_attacks");
 
-	enum AttackData {
-		MobId = 0,
-		AttackId, MpCons, MpBurn, Disease, Level,
-		AttackType, Element, Flags
-	};
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
 		mobAttack = MobAttackInfo();
-		MobAttackFlags whoo = {&mobAttack};
-		runFlags(row[Flags], whoo);
+		runFlags(row.get<opt_string>("flags"), [&mobAttack](const string &cmp) {
+			if (cmp == "deadly") mobAttack.deadlyAttack = true;
+		});
 
-		mobId = atoi(row[MobId]);
-		mobAttack.id = atoi(row[AttackId]);
-		mobAttack.mpConsume = atoi(row[MpCons]);
-		mobAttack.mpBurn = atoi(row[MpBurn]);
-		mobAttack.disease = atoi(row[Disease]);
-		mobAttack.level = atoi(row[Level]);
+		mobId = row.get<int32_t>("mobid");
+		mobAttack.id = row.get<int8_t>("attackid");
+		mobAttack.mpConsume = row.get<uint8_t>("mp_cost");
+		mobAttack.mpBurn = row.get<uint16_t>("mp_burn");
+		mobAttack.disease = row.get<uint8_t>("mob_skillid");
+		mobAttack.level = row.get<uint8_t>("mob_skill_level");
 
 		m_attacks[mobId].push_back(mobAttack);
 	}
@@ -82,30 +68,35 @@ void MobDataProvider::loadAttacks() {
 
 void MobDataProvider::loadSkills() {
 	m_skills.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * FROM mob_skills");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobId;
 	MobSkillInfo mobSkill;
 
-	enum SkillData {
-		Id = 0,
-		MobId, SkillId, Level, EffectAfter
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_skills");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobId = atoi(row[MobId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
 
-		mobSkill.skillId = atoi(row[SkillId]);
-		mobSkill.level = atoi(row[Level]);
-		mobSkill.effectAfter = atoi(row[EffectAfter]);
+		mobId = row.get<int32_t>("mobid");
+		mobSkill.skillId = row.get<uint8_t>("skillid");
+		mobSkill.level = row.get<uint8_t>("skill_level");
+		mobSkill.effectAfter = row.get<int16_t>("effect_delay");
 
 		m_skills[mobId].push_back(mobSkill);
 	}
 }
 
-namespace Functors {
-	struct MobDataFlags {
-		void operator() (const string &cmp) {
+void MobDataProvider::loadMobs() {
+	m_mobInfo.clear();
+	int32_t mobId;
+	MobInfo mob;
+
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		mob.reset(new MobInfoRaw());
+		runFlags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
 			else if (cmp == "flying") mob->flying = true;
@@ -118,71 +109,43 @@ namespace Functors {
 			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
 			else if (cmp == "cannot_damage_player") mob->canDamage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
-		}
-		MobInfo mob;
-	};
-}
+		});
 
-void MobDataProvider::loadMobs() {
-	m_mobInfo.clear();
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_data");
-	mysqlpp::UseQueryResult res = query.use();
-	int32_t mobId;
-	MobInfo mob;
+		mobId = row.get<int32_t>("mobid");
+		mob->level = row.get<uint16_t>("mob_level");
+		mob->hp = row.get<uint32_t>("hp");
+		mob->mp = row.get<uint32_t>("mp");
+		mob->hpRecovery = row.get<uint32_t>("hp_recovery");
+		mob->mpRecovery = row.get<uint32_t>("mp_recovery");
+		mob->selfDestruction = row.get<int32_t>("explode_hp");
+		mob->exp = row.get<uint32_t>("experience");
+		mob->link = row.get<int32_t>("link");
+		mob->buff = row.get<int32_t>("death_buff");
+		mob->removeAfter = row.get<int32_t>("death_after");
+		mob->hpColor = row.get<int8_t>("hp_bar_color");
+		mob->hpBackgroundColor = row.get<int8_t>("hp_bar_bg_color");
+		mob->carnivalPoints = row.get<int8_t>("carnival_points");
+		mob->avo = row.get<int16_t>("avoidability");
+		mob->acc = row.get<int16_t>("accuracy");
+		mob->speed = row.get<int16_t>("speed");
+		mob->chaseSpeed = row.get<int16_t>("chase_speed");
+		mob->wAtk = row.get<int16_t>("physical_attack");
+		mob->wDef = row.get<int16_t>("physical_defense");
+		mob->mAtk = row.get<int16_t>("magical_attack");
+		mob->mDef = row.get<int16_t>("magical_defense");
+		mob->traction = row.get<double>("traction");
+		mob->damageSkill = row.get<int32_t>("damaged_by_skill_only");
+		mob->damageMob = row.get<int32_t>("damaged_by_mob_only");
+		mob->knockback = row.get<int32_t>("knockback");
+		mob->summonType = row.get<int16_t>("summon_type");
+		mob->fixedDamage = row.get<int32_t>("fixed_damage");
 
-	using namespace Functors;
-
-	enum MobData {
-		MobId = 0,
-		Level, Flags, Hp, Mp, HpRecovery,
-		MpRecovery, SelfDestruct, Exp, Link, SummonType,
-		Knockback, FixedDamage, DeathBuff, DeathAfter, Traction,
-		DamageSkill, DamageMob, DropPeriod, HpBar, HpBarBg,
-		CarnivalPoints, PhysicalAtt, PhysicalDef, MagicAtt, MagicDef,
-		Accuracy, Avoidability, Speed, ChaseSpeed, IceMod,
-		FireMod, PoisonMod, LightningMod, HolyMod, NonElementalMod
-	};
-
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mob.reset(new MobInfoRaw());
-		MobDataFlags whoo = {mob};
-		runFlags(row[Flags], whoo);
-
-		mobId = atoi(row[MobId]);
-		mob->level = atoi(row[Level]);
-		mob->hp = atoi(row[Hp]);
-		mob->mp = atoi(row[Mp]);
-		mob->hpRecovery = atoi(row[HpRecovery]);
-		mob->mpRecovery = atoi(row[MpRecovery]);
-		mob->selfDestruction = atoi(row[SelfDestruct]);
-		mob->exp = atoi(row[Exp]);
-		mob->link = atoi(row[Link]);
-		mob->buff = atoi(row[DeathBuff]);
-		mob->removeAfter = atoi(row[DeathAfter]);
-		mob->hpColor = atoi(row[HpBar]);
-		mob->hpBackgroundColor = atoi(row[HpBarBg]);
-		mob->carnivalPoints = atoi(row[CarnivalPoints]);
-		mob->avo = atoi(row[Avoidability]);
-		mob->acc = atoi(row[Accuracy]);
-		mob->speed = atoi(row[Speed]);
-		mob->chaseSpeed = atoi(row[ChaseSpeed]);
-		mob->wAtk = atoi(row[PhysicalAtt]);
-		mob->wDef = atoi(row[PhysicalDef]);
-		mob->mAtk = atoi(row[MagicAtt]);
-		mob->mDef = atoi(row[MagicDef]);
-		mob->traction = atof(row[Traction]);
-		mob->damageSkill = atoi(row[DamageSkill]);
-		mob->damageMob = atoi(row[DamageMob]);
-		mob->knockback = atoi(row[Knockback]);
-		mob->summonType = atoi(row[SummonType]);
-		mob->fixedDamage = atoi(row[FixedDamage]);
-
-		mob->iceAttr = getElemModifier(row[IceMod]);
-		mob->fireAttr = getElemModifier(row[FireMod]);
-		mob->poisonAttr = getElemModifier(row[PoisonMod]);
-		mob->lightningAttr = getElemModifier(row[LightningMod]);
-		mob->holyAttr = getElemModifier(row[HolyMod]);
-		mob->nonElemAttr = getElemModifier(row[NonElementalMod]);
+		mob->iceAttr = getElemModifier(row.get<string>("ice_modifier"));
+		mob->fireAttr = getElemModifier(row.get<string>("fire_modifier"));
+		mob->poisonAttr = getElemModifier(row.get<string>("poison_modifier"));
+		mob->lightningAttr = getElemModifier(row.get<string>("lightning_modifier"));
+		mob->holyAttr = getElemModifier(row.get<string>("holy_modifier"));
+		mob->nonElemAttr = getElemModifier(row.get<string>("nonelemental_modifier"));
 
 		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElements::Immune && mob->iceAttr != MobElements::Strong);
 		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElements::Immune && mob->poisonAttr != MobElements::Strong);
@@ -193,19 +156,16 @@ void MobDataProvider::loadMobs() {
 }
 
 void MobDataProvider::loadSummons() {
-	mysqlpp::Query query = Database::getDataDb().query("SELECT * from mob_summons");
-	mysqlpp::UseQueryResult res = query.use();
 	int32_t mobId;
 	int32_t summonId;
 
-	enum SummonData {
-		Id = 0,
-		MobId, SummonId
-	};
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_summons");
 
-	while (MYSQL_ROW row = res.fetch_raw_row()) {
-		mobId = atoi(row[MobId]);
-		summonId = atoi(row[SummonId]);
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		mobId = row.get<int32_t>("mobid");
+		summonId = row.get<int32_t>("summonid");
 
 		m_mobInfo[mobId]->summon.push_back(summonId);
 	}

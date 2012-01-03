@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,17 +31,17 @@ struct SummonBag {
 
 struct Skillbook {
 	int32_t skillId;
-	uint8_t reqlevel;
+	uint8_t reqLevel;
 	uint8_t maxLevel;
 	int8_t chance;
 };
 
 struct ScrollInfo {
-	ScrollInfo() : randStat(false), recover(false), warmSupport(false), preventSlip(false), ihand(0) { }
+	ScrollInfo() : randStat(false), warmSupport(false), preventSlip(false), recover(0), ihand(0) { }
 	bool warmSupport;
 	bool randStat;
-	bool recover;
 	bool preventSlip;
+	int8_t recover;
 	int16_t istr;
 	int16_t idex;
 	int16_t iint;
@@ -72,20 +72,11 @@ struct CardMapRange {
 	int32_t endMap;
 };
 
-struct AilmentInfo {
-	AilmentInfo() : darkness(false), weakness(false), poison(false), seal(false), curse(false) { }
-	bool darkness;
-	bool weakness;
-	bool poison;
-	bool seal;
-	bool curse;
-};
-
 struct ConsumeInfo {
 	ConsumeInfo() :
 		fireResist(0), iceResist(0), lightningResist(0), poisonResist(0),
 		curseDef(0), stunDef(0), weaknessDef(0), darknessDef(0), sealDef(0),
-		dropUpitem(0), dropUpItemRange(0),
+		dropUpItem(0), dropUpItemRange(0),
 		ailment(0),
 		autoConsume(false), ignoreWdef(false), ignoreMdef(false), party(false), mouseCancel(true),
 		ignoreContinent(false), ghost(false), barrier(false), overrideTraction(false), preventDrown(false),
@@ -133,7 +124,7 @@ struct ConsumeInfo {
 	int16_t sealDef;
 	int16_t dropUpItemRange;
 	uint16_t mcProb;
-	int32_t dropUpitem;
+	int32_t dropUpItem;
 	int32_t moveTo;
 	int32_t time;
 	int32_t ailment;
@@ -231,7 +222,7 @@ struct EquipInfo {
 	int16_t reqInt;
 	int16_t reqLuk;
 	int16_t reqFame;
-	int64_t validSlots;
+	uint64_t validSlots;
 	vector<int8_t> validJobs;
 	double traction;
 };

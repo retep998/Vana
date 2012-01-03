@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -69,7 +69,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 			player->getTimers()->removeTimer(id);
 		}
 		if (multipet) {
-			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; i++) {
+			for (int8_t i = pet->getIndex(); i < Inventories::MaxPetCount; ++i) {
 				// Shift around pets if using multipet
 				if (Pet *move = player->getPets()->getSummoned(i)) {
 					move->setIndex(i - 1);
@@ -90,7 +90,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 		if (!multipet || master) {
 			pet->setIndex(0);
 			if (multipet) {
-				for (int8_t i = Inventories::MaxPetCount - 1; i > 0; i--) {
+				for (int8_t i = Inventories::MaxPetCount - 1; i > 0; --i) {
 					if (player->getPets()->getSummoned(i - 1) && !player->getPets()->getSummoned(i)) {
 						Pet *move = player->getPets()->getSummoned(i - 1);
 						player->getPets()->setSummoned(i, move->getId());
@@ -113,7 +113,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 			pet->startTimer();
 		}
 		else {
-			for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
+			for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 				if (!player->getPets()->getSummoned(i)) {
 					player->getPets()->setSummoned(i, pet->getId());
 					pet->setIndex(i);
@@ -176,7 +176,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int64_t petId = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
-	if (pet == nullptr || !pet->isSummoned() || player->getStats()->getHp() == 0) {
+	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
 		// Hacking
 		return;
 	}
@@ -191,13 +191,13 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	// Check if the MP potion IS a MP potion set
+	// Check if the MP potion is an MP potion set
 	if ((info->mp != 0 || info->mpr != 0) && player->getInventory()->getAutoMpPot() != itemId) {
 		// Hacking
 		return;
 	}
 
-	// Check if the HP potion IS a HP potion set
+	// Check if the HP potion is an HP potion set
 	if ((info->hp != 0 || info->hpr != 0) && player->getInventory()->getAutoHpPot() != itemId) {
 		// Hacking
 		return;
@@ -214,7 +214,7 @@ void PetHandler::changeName(Player *player, const string &name) {
 }
 
 void PetHandler::showPets(Player *player) {
-	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
+	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());
 			PetsPacket::petSummoned(player, pet, false, true);

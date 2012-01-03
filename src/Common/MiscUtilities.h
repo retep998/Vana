@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,14 @@ using std::vector;
 namespace MiscUtilities {
 	string hashPassword(const string &password, const string &salt);
 	bool isBossChannel(const vector<int8_t> &vec, int8_t channelId);
+	template<class T>
+	bool inRangeInclusive(const T val, const T min, const T max) {
+		return !(val < min || val > max);
+	}
+	template<class T>
+	T constrainToRange(const T val, const T min, const T max) {
+		return std::min(std::max(val, min), max);
+	}
 
 	// The following methods are used for deleting (freeing) pointers in an array
 	template<class T>

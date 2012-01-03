@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ namespace GameLogicUtilities {
 	inline bool isBeginnerSkill(int32_t skillId) { return ((skillId / 1000000) == (skillId < 10000000 ? 0 : 10)); }
 	inline bool isFourthJobSkill(int32_t skillId) { return ((skillId / 10000) % 10 == 2); }
 	inline bool isPuppet(int32_t skillId) { return (skillId == Jobs::Sniper::Puppet || skillId == Jobs::Ranger::Puppet || skillId == Jobs::WindArcher::Puppet); }
-	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Jobs::Priest::SummonDragon || skillId == Jobs::Ranger::SilverHawk || skillId == Jobs::Sniper::GoldenEagle || skillId == Jobs::DarkKnight::Beholder || skillId == Jobs::FPArchMage::Elquines || skillId == Jobs::ILArchMage::Ifrit || skillId == Jobs::BlazeWizard::Ifrit || skillId == Jobs::Bishop::Bahamut || skillId == Jobs::Bowmaster::Phoenix || skillId == Jobs::Marksman::Frostprey || skillId == Jobs::Outlaw::Octopus || skillId == Jobs::Corsair::WrathOfTheOctopi || skillId == Jobs::Outlaw::Gaviota || skillId == Jobs::DawnWarrior::Soul || skillId == Jobs::BlazeWizard::Flame || skillId == Jobs::WindArcher::Storm || skillId == Jobs::NightWalker::Darkness || skillId == Jobs::ThunderBreaker::Lightning); }
+	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Jobs::Priest::SummonDragon || skillId == Jobs::Ranger::SilverHawk || skillId == Jobs::Sniper::GoldenEagle || skillId == Jobs::DarkKnight::Beholder || skillId == Jobs::FpArchMage::Elquines || skillId == Jobs::IlArchMage::Ifrit || skillId == Jobs::BlazeWizard::Ifrit || skillId == Jobs::Bishop::Bahamut || skillId == Jobs::Bowmaster::Phoenix || skillId == Jobs::Marksman::Frostprey || skillId == Jobs::Outlaw::Octopus || skillId == Jobs::Corsair::WrathOfTheOctopi || skillId == Jobs::Outlaw::Gaviota || skillId == Jobs::DawnWarrior::Soul || skillId == Jobs::BlazeWizard::Flame || skillId == Jobs::WindArcher::Storm || skillId == Jobs::NightWalker::Darkness || skillId == Jobs::ThunderBreaker::Lightning); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
 	inline bool isMaxDarkSight(int32_t skillId, uint8_t level) { return (skillId == Jobs::Rogue::DarkSight && level == 20 || skillId == Jobs::NightWalker::DarkSight && level == 10); }
 	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
@@ -88,6 +88,9 @@ namespace GameLogicUtilities {
 	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }
 	inline int16_t getCardShortId(int32_t cardId) { return (cardId % 10000); }
 	inline bool isSpecialCard(int32_t cardId) { return (getCardShortId(cardId) >= 8000); }
+
+	// Map
+	inline int8_t getMapCluster(int32_t mapId) { return static_cast<int8_t>(mapId / 10000000); }
 
 	// Party
 	inline int8_t getPartyMember1(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 1 ? (0x40 >> totalMembers) : 0xFF); }

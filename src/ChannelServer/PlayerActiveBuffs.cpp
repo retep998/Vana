@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -247,7 +247,7 @@ void PlayerActiveBuffs::dispelBuffs() {
 	if (isUsingHide())
 		return;
 	unordered_map<int32_t, uint8_t> activelevels = m_activeLevels;
-	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); iter++) {
+	for (unordered_map<int32_t, uint8_t>::iterator iter = activelevels.begin(); iter != activelevels.end(); ++iter) {
 		if (iter->first > 0 && !GameLogicUtilities::isMobSkill(iter->first)) { // Only want active skills and skill buffs - no item buffs or debuffs
 			Skills::stopSkill(m_player, iter->first);
 		}
@@ -419,7 +419,7 @@ bool PlayerActiveBuffs::hasIceCharge() const {
 }
 
 bool PlayerActiveBuffs::hasInfinity() {
-	return (hasBuff(Jobs::FPArchMage::Infinity) || hasBuff(Jobs::ILArchMage::Infinity) || hasBuff(Jobs::Bishop::Infinity));
+	return (hasBuff(Jobs::FpArchMage::Infinity) || hasBuff(Jobs::IlArchMage::Infinity) || hasBuff(Jobs::Bishop::Infinity));
 }
 
 bool PlayerActiveBuffs::hasMesoUp() {
@@ -572,7 +572,7 @@ void PlayerActiveBuffs::write(PacketCreator &packet) {
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		packet.add<uint8_t>(m_mapBuffs.types[i]);
 		packet.add<uint8_t>((uint8_t)(m_mapBuffs.values[i].size()));
-		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapBuffs.values[i].begin(); iter != m_mapBuffs.values[i].end(); iter++) {
+		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapBuffs.values[i].begin(); iter != m_mapBuffs.values[i].end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
 			packet.addBool(iter->second.debuff);
 			if (iter->second.debuff) {
@@ -587,7 +587,7 @@ void PlayerActiveBuffs::write(PacketCreator &packet) {
 	}
 	// Current buff info (IDs, times, levels)
 	packet.add<uint8_t>(m_buffs.size());
-	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); iter++) {
+	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); ++iter) {
 		int32_t buffId = *iter;
 		packet.add<int32_t>(buffId);
 		packet.add<int32_t>(buffTimeLeft(buffId));
@@ -598,7 +598,7 @@ void PlayerActiveBuffs::write(PacketCreator &packet) {
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
 		currentbyte = m_activeBuffsByType[i];
 		packet.add<uint8_t>(currentbyte.size());
-		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); iter++) {
+		for (unordered_map<uint8_t, int32_t>::iterator iter = currentbyte.begin(); iter != currentbyte.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
 			packet.add<int32_t>(iter->second);
 		}

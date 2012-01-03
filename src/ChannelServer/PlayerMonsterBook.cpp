@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,38 +29,47 @@ PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_spec
 }
 
 void PlayerMonsterBook::load() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT b.card_id, b.level FROM monster_book b WHERE b.character_id = " << m_player->getId() << " ORDER BY b.card_id ASC";
-	mysqlpp::StoreQueryResult res = query.store();
+	soci::session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
 
-	for (size_t i = 0; i < res.num_rows(); ++i) {
-		addCard(res[i][0], (uint8_t) res[i][1], true);
+	soci::rowset<> rs = (sql.prepare << "SELECT b.card_id, b.level FROM monster_book b " <<
+										"WHERE b.character_id = :char " <<
+										"ORDER BY b.card_id ASC",
+										soci::use(charId, "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+
+		addCard(row.get<int32_t>("card_id"), row.get<uint8_t>("level"), true);
 	}
 
 	calculateLevel();
 }
 
 void PlayerMonsterBook::save() {
-	mysqlpp::Query query = Database::getCharDb().query();
+	soci::session &sql = Database::getCharDb();
+	int32_t charId = m_player->getId();
 
-	query << "DELETE FROM monster_book WHERE character_id = " << m_player->getId();
-	query.exec();
+	sql.once << "DELETE FROM monster_book WHERE character_id = :char", soci::use(charId, "char");
 
-	bool firstRun = true;
-	for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); iter++) {
-		if (firstRun) {
-			query << "INSERT INTO monster_book VALUES (";
-			firstRun = false;
+	if (m_cards.size() > 0) {
+		int32_t cardId = 0;
+		uint8_t level = 0;
+
+		soci::statement st = (sql.prepare << "INSERT INTO monster_book " <<
+												"VALUES (:char, :card, :level) ",
+												soci::use(charId, "char"),
+												soci::use(cardId, "card"),
+												soci::use(level, "level"));
+	
+
+		for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); ++iter) {
+			MonsterCard &c = iter->second;
+			cardId = c.id;
+			level = c.level;
+			st.execute(true);
 		}
-		else {
-			query << ",(";
-		}
-		query << m_player->getId() << ","
-			<< iter->second.id << ","
-			<< static_cast<int16_t>(iter->second.level) << ")";
 	}
-	if (!firstRun)
-		query.exec();
 }
 
 uint8_t PlayerMonsterBook::getCardLevel(int32_t cardId) {
@@ -70,15 +79,15 @@ uint8_t PlayerMonsterBook::getCardLevel(int32_t cardId) {
 bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad) {
 	if (m_cards.find(cardId) == m_cards.end()) {
 		if (GameLogicUtilities::isSpecialCard(cardId)) {
-			m_specialCount++;
+			++m_specialCount;
 		}
 		else {
-			m_normalCount++;
+			++m_normalCount;
 		}
 	}
 
 	if (initialLoad) {
-		MonsterCard card = MonsterCard(cardId, level);
+		MonsterCard card(cardId, level);
 		m_cards[cardId] = card;
 	}
 	else {
@@ -86,7 +95,7 @@ bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 		if (isFull(cardId)) {
 			return true;
 		}
-		card.level++;
+		++card.level;
 		m_cards[cardId] = card;
 		if (card.level == 1) {
 			calculateLevel();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -64,7 +64,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 		for (int8_t i = 0; i < EntryByteQuantity; i++) {
 			int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 			if (enter.types[cbyte] != 0) {
-				for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); iter++) {
+				for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); ++iter) {
 					if (iter->second.debuff) {
 						if (!(iter->first == 0x01 && cbyte == Byte5)) { // Glitch in global, Slow doesn't display properly and if you try, it error 38s
 							packet.add<int16_t>(iter->second.skill);

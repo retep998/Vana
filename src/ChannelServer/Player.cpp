@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2011 Vana Development Team
+Copyright (C) 2008-2012 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -106,12 +106,13 @@ Player::~Player() {
 			instance->removePlayer(getId());
 			instance->sendMessage(PlayerDisconnect, getId(), isLeader);
 		}
-		//if (this->getHp() == 0)
+		//if (this->getStats()->isDead()) {
 		//	this->acceptDeath();
+		//}
 		// "Bug" in global, would be fixed here:
 		// When disconnecting and dead, you actually go back to forced return map before the death return map
 		// (that means that it's parsed while logging in, not while logging out)
-		if (PortalInfo *closest =curMap->getNearestSpawnPoint(getPos())) {
+		if (PortalInfo *closest = curMap->getNearestSpawnPoint(getPos())) {
 			m_mapPos = closest->id;
 		}
 
@@ -240,60 +241,65 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 	m_id = id;
+	soci::session &sql = Database::getCharDb();
+	soci::row row;
+	sql.once << "SELECT c.*, u.gm_level, u.admin FROM characters c " <<
+				"INNER JOIN user_accounts u ON c.user_id = u.user_id " <<
+				"WHERE c.character_id = :char",
+				soci::use(id, "char"),
+				soci::into(row);
 
-	// Character info
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "SELECT c.*, u.gm_level, u.admin FROM characters c "
-		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
-		<< "WHERE c.character_id = " << id;
-
-	mysqlpp::StoreQueryResult res = query.store();
-	if (res.empty()) {
+	if (!sql.got_data()) {
 		// Hacking
 		getSession()->disconnect();
 		return;
 	}
 
-	res[0]["name"].to_string(m_name);
-	m_userId = res[0]["user_id"];
-	m_map = res[0]["map"];
-	m_gmLevel = res[0]["gm_level"];
-	m_admin = StringUtilities::atob(res[0]["admin"]);
-	m_eyes = res[0]["eyes"];
-	m_hair = res[0]["hair"];
-	m_worldId = static_cast<int8_t>(res[0]["world_id"]);
-	m_gender = static_cast<int8_t>(res[0]["gender"]);
-	m_skin = static_cast<int8_t>(res[0]["skin"]);
-	m_mapPos = static_cast<int8_t>(res[0]["pos"]);
-	m_buddylistSize = static_cast<uint8_t>(res[0]["buddylist_size"]);
+	m_name = row.get<string>("name");
+	m_userId = row.get<int32_t>("user_id");
+	m_map = row.get<int32_t>("map");
+	m_gmLevel = row.get<int32_t>("gm_level");
+	m_admin = row.get<bool>("admin");
+	m_eyes = row.get<int32_t>("eyes");
+	m_hair = row.get<int32_t>("hair");
+	m_worldId = row.get<int8_t>("world_id");
+	m_gender = row.get<int8_t>("gender");
+	m_skin = row.get<int8_t>("skin");
+	m_mapPos = row.get<int8_t>("pos");
+	m_buddylistSize = row.get<uint8_t>("buddylist_size");
 
 	// Stats
-	m_stats.reset(new PlayerStats(this, static_cast<uint8_t>(res[0]["level"]),
-		static_cast<int16_t>(res[0]["job"]),
-		static_cast<int16_t>(res[0]["fame"]),
-		static_cast<int16_t>(res[0]["str"]),
-		static_cast<int16_t>(res[0]["dex"]),
-		static_cast<int16_t>(res[0]["int"]),
-		static_cast<int16_t>(res[0]["luk"]),
-		static_cast<int16_t>(res[0]["ap"]),
-		static_cast<uint16_t>(res[0]["hpmp_ap"]),
-		static_cast<int16_t>(res[0]["sp"]),
-		static_cast<int16_t>(res[0]["chp"]),
-		static_cast<int16_t>(res[0]["mhp"]),
-		static_cast<int16_t>(res[0]["cmp"]),
-		static_cast<int16_t>(res[0]["mmp"]),
-		res[0]["exp"]));
+	m_stats.reset(
+		new PlayerStats(
+			this,
+			row.get<uint8_t>("level"),
+			row.get<int16_t>("job"),
+			row.get<int16_t>("fame"),
+			row.get<int16_t>("str"),
+			row.get<int16_t>("dex"),
+			row.get<int16_t>("int"),
+			row.get<int16_t>("luk"),
+			row.get<int16_t>("ap"),
+			row.get<uint16_t>("hpmp_ap"),
+			row.get<int16_t>("sp"),
+			row.get<int16_t>("chp"),
+			row.get<int16_t>("mhp"),
+			row.get<int16_t>("cmp"),
+			row.get<int16_t>("mmp"),
+			row.get<int32_t>("exp")
+		)
+	);
 
 	// Inventory
 	m_mounts.reset(new PlayerMounts(this));
 	m_pets.reset(new PlayerPets(this));
 	boost::array<uint8_t, Inventories::InventoryCount> maxSlots;
-	maxSlots[0] = static_cast<uint8_t>(res[0]["equip_slots"]);
-	maxSlots[1] = static_cast<uint8_t>(res[0]["use_slots"]);
-	maxSlots[2] = static_cast<uint8_t>(res[0]["setup_slots"]);
-	maxSlots[3] = static_cast<uint8_t>(res[0]["etc_slots"]);
-	maxSlots[4] = static_cast<uint8_t>(res[0]["cash_slots"]);
-	m_inventory.reset(new PlayerInventory(this, maxSlots, res[0]["mesos"]));
+	maxSlots[0] = row.get<uint8_t>("equip_slots");
+	maxSlots[1] = row.get<uint8_t>("use_slots");
+	maxSlots[2] = row.get<uint8_t>("setup_slots");
+	maxSlots[3] = row.get<uint8_t>("etc_slots");
+	maxSlots[4] = row.get<uint8_t>("cash_slots");
+	m_inventory.reset(new PlayerInventory(this, maxSlots, row.get<int32_t>("mesos")));
 	m_storage.reset(new PlayerStorage(this));
 
 	// Skills
@@ -333,7 +339,7 @@ void Player::playerConnect(PacketReader &packet) {
 	m_quests.reset(new PlayerQuests(this));
 	m_monsterBook.reset(new PlayerMonsterBook(this));
 
-	getMonsterBook()->setCover(res[0]["book_cover"]);
+	getMonsterBook()->setCover(row.get<int32_t>("book_cover"));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -354,7 +360,7 @@ void Player::playerConnect(PacketReader &packet) {
 		m_map = Maps::getMap(m_map)->getForcedReturn();
 		m_mapPos = -1;
 	}
-	else if (getStats()->getHp() == 0) {
+	else if (getStats()->isDead()) {
 		m_map = Maps::getMap(m_map)->getReturnMap();
 		m_mapPos = -1;
 	}
@@ -543,39 +549,96 @@ void Player::setSkin(int8_t id) {
 }
 
 void Player::saveStats() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE characters SET "
-		<< "level = " << static_cast<int16_t>(getStats()->getLevel()) << "," // Queries have problems with int8_t due to being derived from ostream
-		<< "job = " << getStats()->getJob() << ","
-		<< "str = " << getStats()->getStr() << ","
-		<< "dex = " << getStats()->getDex() << ","
-		<< "`int` = " << getStats()->getInt() << ","
-		<< "luk = " << getStats()->getLuk() << ","
-		<< "chp = " << getStats()->getHp() << ","
-		<< "mhp = " << getStats()->getMaxHp(true) << ","
-		<< "cmp = " << getStats()->getMp() << ","
-		<< "mmp = " << getStats()->getMaxMp(true) << ","
-		<< "hpmp_ap = " << getStats()->getHpMpAp() << ","
-		<< "ap = " << getStats()->getAp() << ","
-		<< "sp = " << getStats()->getSp() << ","
-		<< "exp = " << getStats()->getExp() << ","
-		<< "fame = " << getStats()->getFame() << ","
-		<< "map = " << m_map << ","
-		<< "pos = " << static_cast<int16_t>(m_mapPos) << ","
-		<< "gender = " << static_cast<int16_t>(m_gender) << ","
-		<< "skin = " << static_cast<int16_t>(m_skin) << ","
-		<< "eyes = " << m_eyes << ","
-		<< "hair = " << m_hair << ","
-		<< "mesos = " << getInventory()->getMesos() << ","
-		<< "equip_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::EquipInventory)) << ","
-		<< "use_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::UseInventory)) << ","
-		<< "setup_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::SetupInventory)) << ","
-		<< "etc_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::EtcInventory)) << ","
-		<< "cash_slots = " << static_cast<int16_t>(getInventory()->getMaxSlots(Inventories::CashInventory)) << ","
-		<< "buddylist_size = " << static_cast<int16_t>(m_buddylistSize) << ","
-		<< "book_cover = " << getMonsterBook()->getCover()
-		<< " WHERE character_id = " << getId();
-	query.exec();
+	PlayerStats *s = getStats();
+	PlayerInventory *i = getInventory();
+	// Need local bindings
+	// Stats
+	uint8_t level = s->getLevel();
+	int16_t job = s->getJob();
+	int16_t str = s->getStr();
+	int16_t dex = s->getDex();
+	int16_t intt = s->getInt();
+	int16_t luk = s->getLuk();
+	int16_t hp = s->getHp();
+	int16_t maxHp = s->getMaxHp(true);
+	int16_t mp = s->getMp();
+	int16_t maxMp = s->getMaxMp(true);
+	uint16_t hpMpAp = s->getHpMpAp();
+	int16_t ap = s->getAp();
+	int16_t sp = s->getSp();
+	int16_t fame = s->getFame();
+	int32_t exp = s->getExp();
+	// Inventory
+	uint8_t equip = i->getMaxSlots(Inventories::EquipInventory);
+	uint8_t use = i->getMaxSlots(Inventories::UseInventory);
+	uint8_t setup = i->getMaxSlots(Inventories::SetupInventory);
+	uint8_t etc = i->getMaxSlots(Inventories::EtcInventory);
+	uint8_t cash = i->getMaxSlots(Inventories::CashInventory);
+	int32_t money = i->getMesos();
+	// Other
+	int32_t cover = getMonsterBook()->getCover();
+
+	Database::getCharDb().once << "UPDATE characters SET " <<
+									"level = :level, " <<
+									"job = :job, " <<
+									"str = :str, " <<
+									"dex = :dex, " <<
+									"`int` = :int, " <<
+									"luk = :luk, " <<
+									"chp = :hp, " <<
+									"mhp = :maxhp, " <<
+									"cmp = :mp, " <<
+									"mmp = :maxmp, " <<
+									"hpmp_ap = :hpmpap, " <<
+									"ap = :ap, " <<
+									"sp = :sp, " <<
+									"exp = :exp, " <<
+									"fame = :fame, " <<
+									"map = :map, " <<
+									"pos = :pos, " <<
+									"gender = :gender, " <<
+									"skin = :skin, " <<
+									"eyes = :eyes, " <<
+									"hair = :hair, " <<
+									"mesos = :money, " <<
+									"equip_slots = :equip, " <<
+									"use_slots = :use, " <<
+									"setup_slots = :setup, " <<
+									"etc_slots = :etc, " <<
+									"cash_slots = :cash, " <<
+									"buddylist_size = :buddylist, " <<
+									"book_cover = :cover " <<
+									"WHERE character_id = :char",
+									soci::use(m_id, "char"),
+									soci::use(level, "level"),
+									soci::use(job, "job"),
+									soci::use(str, "str"),
+									soci::use(dex, "dex"),
+									soci::use(intt, "int"),
+									soci::use(luk, "luk"),
+									soci::use(hp, "hp"),
+									soci::use(maxHp, "maxhp"),
+									soci::use(mp, "mp"),
+									soci::use(maxMp, "maxmp"),
+									soci::use(hpMpAp, "hpmpap"),
+									soci::use(ap, "ap"),
+									soci::use(sp, "sp"),
+									soci::use(exp, "exp"),
+									soci::use(fame, "fame"),
+									soci::use(m_map, "map"),
+									soci::use(m_mapPos, "pos"),
+									soci::use(m_gender, "gender"),
+									soci::use(m_skin, "skin"),
+									soci::use(m_eyes, "eyes"),
+									soci::use(m_hair, "hair"),
+									soci::use(money, "money"),
+									soci::use(equip, "equip"),
+									soci::use(use, "use"),
+									soci::use(setup, "setup"),
+									soci::use(etc, "etc"),
+									soci::use(cash, "cash"),
+									soci::use(m_buddylistSize, "buddylist"),
+									soci::use(cover, "cover");
 }
 
 void Player::saveAll(bool saveCooldowns) {
@@ -592,20 +655,19 @@ void Player::saveAll(bool saveCooldowns) {
 
 void Player::setOnline(bool online) {
 	int32_t onlineId = online ? ChannelServer::Instance()->getOnlineId() : 0;
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE user_accounts u "
-			<< "INNER JOIN characters c ON u.user_id = c.user_id "
-			<< "SET "
-			<< "	u.online = " << onlineId <<	", "
-			<< "	c.online = " << online << " "
-			<< "WHERE c.character_id = " << getId();
-	query.exec();
+	Database::getCharDb().once << "UPDATE user_accounts u " <<
+									"INNER JOIN characters c ON u.user_id = c.user_id " <<
+									"SET " <<
+									"	u.online = :onlineId, " <<
+									"	c.online = :online " <<
+									"WHERE c.character_id = :char",
+									soci::use(m_id, "char"),
+									soci::use(online, "online"),
+									soci::use(onlineId, "onlineId");
 }
 
 void Player::setLevelDate() {
-	mysqlpp::Query query = Database::getCharDb().query();
-	query << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = " << getId();
-	query.exec();
+	Database::getCharDb().once << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
 }
 
 void Player::acceptDeath(bool wheel) {
