@@ -42,7 +42,7 @@ namespace Timer {
 
 struct MapEntryBuffs {
 	MapEntryBuffs() : mountId(0), mountSkill(0) {
-		for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
+		for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 			types[i] = 0;
 		}
 	}
@@ -103,7 +103,7 @@ public:
 	void useDebuffHealingItem(int32_t mask);
 	void removeDebuff(uint8_t skill, bool fromTimer = false);
 	int32_t getDebuffMask() const { return m_debuffMask; }
-	void setDebuffMask(int32_t newmask) { m_debuffMask = newmask; }
+	void setDebuffMask(int32_t newMask) { m_debuffMask = newMask; }
 
 	// Combo Attack
 	void setCombo(uint8_t combo, bool sendPacket);
@@ -118,7 +118,7 @@ public:
 	int16_t getEnergyChargeLevel() const { return m_energyCharge; }
 	void increaseEnergyChargeLevel(int8_t targets = 1);
 	void decreaseEnergyChargeLevel();
-	void setEnergyChargeLevel(int16_t chargelevel, bool startTimer = false);
+	void setEnergyChargeLevel(int16_t chargeLevel, bool startTimer = false);
 	void resetEnergyChargeLevel();
 	void startEnergyChargeTimer();
 	void stopEnergyChargeTimer();
