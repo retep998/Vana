@@ -47,7 +47,7 @@ void PlayerQuests::save() {
 		int16_t killed = 0;
 		string data = "";
 
-		soci::statement st = (sql.prepare << "INSERT INTO active_quests (chararcter_id, quest_id, mob_id, quantity_killed, data) " <<
+		soci::statement st = (sql.prepare << "INSERT INTO active_quests (character_id, quest_id, mob_id, quantity_killed, data) " <<
 												"VALUES (:char, :quest, :mob, :killed, :data)",
 												soci::use(charId, "char"),
 												soci::use(questId, "quest"),
