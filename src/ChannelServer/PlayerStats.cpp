@@ -221,7 +221,7 @@ void PlayerStats::modifyHp(int16_t hpMod, bool sendPacket) {
 }
 
 void PlayerStats::damageHp(uint16_t damageHp) {
-	m_hp = std::max<uint16_t>(Stats::MinHp, m_hp - damageHp);
+	m_hp = std::max<int16_t>(Stats::MinHp, m_hp - damageHp);
 	PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	modifiedHp();
 }
@@ -256,7 +256,7 @@ void PlayerStats::modifyMp(int16_t mpMod, bool sendPacket) {
 
 void PlayerStats::damageMp(uint16_t damageMp) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = std::max<uint16_t>(Stats::MinMp, m_mp - damageMp);
+		m_mp = std::max<int16_t>(Stats::MinMp, m_mp - damageMp);
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
