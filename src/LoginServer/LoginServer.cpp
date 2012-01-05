@@ -81,11 +81,16 @@ string LoginServer::makeLogIdentifier() {
 
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
-	MajorBoss boss;
 	WorldConfig conf;
 	boost::format formatter("world%i_%s");
 	size_t i = 0;
 	bool added = false;
+	auto getBossConfig = [&formatter, &config, &i](MajorBoss &dest, const string &src, size_t maxChannels) {
+		formatter % i % (src + "_attempts");
+		dest.attempts = config.get<int16_t>(formatter.str());
+		formatter % i % (src + "_channels");
+		dest.channels = config.getBossChannels(formatter.str(), maxChannels);
+	};
 
 	while (true) {
 		formatter % i % "name";
@@ -150,35 +155,11 @@ void LoginServer::loadWorlds() {
 		formatter % i % "fame_reset_time";
 		conf.fameResetTime = config.get<int32_t>(formatter.str());
 
-		formatter % i % "pianus_attempts";
-		boss.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % "pianus_channels";
-		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
-		conf.pianus = boss;
-
-		formatter % i % "pap_attempts";
-		boss.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % "pap_channels";
-		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
-		conf.pap = boss;
-
-		formatter % i % "zakum_attempts";
-		boss.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % "zakum_channels";
-		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
-		conf.zakum = boss;
-
-		formatter % i % "horntail_attempts";
-		boss.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % "horntail_channels";
-		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
-		conf.horntail = boss;
-
-		formatter % i % "pinkbean_attempts";
-		boss.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % "pinkbean_channels";
-		boss.channels = config.getBossChannels(formatter.str(), conf.maxChannels);
-		conf.pinkbean = boss;
+		getBossConfig(conf.pianus, "pianus", conf.maxChannels);
+		getBossConfig(conf.pap, "pap", conf.maxChannels);
+		getBossConfig(conf.zakum, "zakum", conf.maxChannels);
+		getBossConfig(conf.horntail, "horntail", conf.maxChannels);
+		getBossConfig(conf.pinkbean, "pinkbean", conf.maxChannels);
 
 		world->setConfiguration(conf);
 		if (added) {
