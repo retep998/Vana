@@ -85,6 +85,7 @@ void LoginServer::loadWorlds() {
 	WorldConfig conf;
 	boost::format formatter("world%i_%s");
 	size_t i = 0;
+	bool added = false;
 
 	while (true) {
 		formatter % i % "name";
@@ -93,20 +94,18 @@ void LoginServer::loadWorlds() {
 			break;
 		}
 
-		World *world = new World();
+		World *world = Worlds::Instance()->getWorld(i);
+		added = (world == nullptr);
+		if (added) {
+			world = new World();
+		}
 		conf.name = config.getString(formatter.str());
 
 		formatter % i % "channels";
 		conf.maxChannels = config.get<int32_t>(formatter.str());
 
-		formatter % i % "id";
-		world->setId(config.get<int8_t>(formatter.str()));
-
 		formatter % i % "ribbon";
-		conf.ribbon = config.get<uint8_t>(formatter.str());
-
-		formatter % i % "port";
-		world->setPort(config.get<port_t>(formatter.str()));
+		conf.ribbon = config.get<int8_t>(formatter.str());
 
 		formatter % i % "exp_rate";
 		conf.expRate = config.get<int32_t>(formatter.str());
@@ -145,7 +144,7 @@ void LoginServer::loadWorlds() {
 		conf.fameTime = config.get<int32_t>(formatter.str());
 
 		formatter % i % "fame_reset_time";
-		conf.fameTime = config.get<int32_t>(formatter.str());
+		conf.fameResetTime = config.get<int32_t>(formatter.str());
 
 		formatter % i % "pianus_attempts";
 		boss.attempts = config.get<int16_t>(formatter.str());
@@ -178,7 +177,15 @@ void LoginServer::loadWorlds() {
 		conf.pinkbean = boss;
 
 		world->setConfiguration(conf);
-		Worlds::Instance()->addWorld(world);
+		if (added) {
+			formatter % i % "id";
+			world->setId(config.get<int8_t>(formatter.str()));
+
+			formatter % i % "port";
+			world->setPort(config.get<port_t>(formatter.str()));
+
+			Worlds::Instance()->addWorld(world);
+		}
 		++i;
 	}
 }
