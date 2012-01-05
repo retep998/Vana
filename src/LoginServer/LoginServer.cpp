@@ -94,12 +94,16 @@ void LoginServer::loadWorlds() {
 			break;
 		}
 
-		World *world = Worlds::Instance()->getWorld(i);
+		conf.name = config.getString(formatter.str());
+
+		formatter % i % "id";
+		int8_t worldId = config.get<int8_t>(formatter.str());
+
+		World *world = Worlds::Instance()->getWorld(worldId);
 		added = (world == nullptr);
 		if (added) {
 			world = new World();
 		}
-		conf.name = config.getString(formatter.str());
 
 		formatter % i % "channels";
 		conf.maxChannels = config.get<int32_t>(formatter.str());
@@ -178,8 +182,7 @@ void LoginServer::loadWorlds() {
 
 		world->setConfiguration(conf);
 		if (added) {
-			formatter % i % "id";
-			world->setId(config.get<int8_t>(formatter.str()));
+			world->setId(worldId);
 
 			formatter % i % "port";
 			world->setPort(config.get<port_t>(formatter.str()));
