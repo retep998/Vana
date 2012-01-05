@@ -59,10 +59,9 @@ public:
 	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }
 	void setDropRate(int32_t rate) { m_config.dropRate = rate; }
 	void setMesoRate(int32_t rate) { m_config.mesoRate = rate; }
-	void setConfig(const Configuration &config) { m_config = config; }
+	void setConfig(const WorldConfig &config) { m_config = config; }
 
 	bool isConnected() const { return m_channel != -1; }
-	bool useEncryption() const { return m_config.clientEncryption; }
 	int8_t getWorld() const { return m_world; }
 	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
 	uint8_t getDefaultStorageSlots() const { return m_config.defaultStorageSlots; }
@@ -115,5 +114,5 @@ private:
 	port_t m_port;
 	ip_t m_worldIp;
 	ip_t m_loginIp;
-	Configuration m_config;
+	WorldConfig m_config;
 };

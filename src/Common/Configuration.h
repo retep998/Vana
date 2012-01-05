@@ -43,8 +43,13 @@ struct MajorBoss : public IPacketSerializable<MajorBoss> {
 	}
 };
 
-struct Configuration : public IPacketSerializable<Configuration> {
+struct LoginConfig {
 	bool clientEncryption;
+	bool clientPing;
+	bool serverPing;
+};
+
+struct WorldConfig : public IPacketSerializable<WorldConfig> {
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
 	uint8_t defaultStorageSlots;
@@ -68,7 +73,6 @@ struct Configuration : public IPacketSerializable<Configuration> {
 	MajorBoss pinkbean;
 
 	void write(PacketCreator &packet) {
-		packet.addBool(clientEncryption);
 		packet.add<int8_t>(ribbon);
 		packet.add<uint8_t>(maxMultiLevel);
 		packet.add<uint8_t>(defaultStorageSlots);
@@ -92,7 +96,6 @@ struct Configuration : public IPacketSerializable<Configuration> {
 		packet.addClass<MajorBoss>(pinkbean);
 	}
 	void read(PacketReader &packet) {
-		clientEncryption = packet.getBool();
 		ribbon = packet.get<int8_t>();
 		maxMultiLevel = packet.get<uint8_t>();
 		defaultStorageSlots = packet.get<uint8_t>();

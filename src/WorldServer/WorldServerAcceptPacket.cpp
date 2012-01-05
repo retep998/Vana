@@ -54,7 +54,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, u
 	packet.add<int16_t>(channel);
 	packet.add<port_t>(port);
 
-	packet.addClass<Configuration>(WorldServer::Instance()->getConfig());
+	packet.addClass<WorldConfig>(WorldServer::Instance()->getConfig());
 
 	connection->getSession()->send(packet);
 }
@@ -94,7 +94,7 @@ void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *connection,
 	packet.add<int16_t>(IMSG_SET_RATES);
 	packet.add<int32_t>(setBit);
 
-	Configuration &conf = WorldServer::Instance()->getConfig();
+	WorldConfig &conf = WorldServer::Instance()->getConfig();
 
 	if (setBit & Rates::SetBits::Exp) {
 		packet.add<int32_t>(conf.expRate);

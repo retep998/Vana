@@ -31,6 +31,7 @@ using std::tr1::bind;
 AbstractConnection::AbstractConnection() :
 	m_isServer(false),
 	m_isPinged(false),
+	m_doesPing(true),
 	m_latency(InitialPing),
 	m_lastPing(InitialPing),
 	m_timers(new Timer::Container)
@@ -69,14 +70,17 @@ void AbstractConnection::setTimer() {
 }
 
 void AbstractConnection::ping() {
-	if (m_isPinged) {
-		// We have a timeout now
-		getSession()->disconnect();
-		return;
+	if (m_doesPing) {
+		if (m_isPinged) {
+			// We have a timeout now
+			getSession()->disconnect();
+			return;
+		}
+
+ 		m_isPinged = true;
+		m_lastPing = clock();
+		PingPacket::ping(this);
 	}
-	m_isPinged = true;
-	m_lastPing = clock();
-	PingPacket::ping(this);
 }
 
 void AbstractConnection::setSession(Session *val) {

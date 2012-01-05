@@ -42,7 +42,7 @@ public:
 	void setPort(port_t port) { m_port = port; }
 	void setPlayerLoad(int32_t load) { m_playerLoad = load; }
 	void setConnection(LoginServerAcceptConnection *connection) { m_connection = connection; }
-	void setConfiguration(Configuration &config) { m_config = config; }
+	void setConfiguration(const WorldConfig &config) { m_config = config; }
 	void setEventMessage(const string &message) { m_config.eventMsg = message; }
 	void runChannelFunction(function<void (Channel *)> func);
 	void clearChannels() { m_channels.clear(); }
@@ -61,7 +61,7 @@ public:
 	string getName() const { return m_config.name; }
 	string getEventMessage() const { return m_config.eventMsg; }
 	Channel * getChannel(int32_t id) { return (m_channels.find(id) != m_channels.end() ? m_channels[id].get() : nullptr); }
-	Configuration & getConfig() { return m_config; }
+	WorldConfig & getConfig() { return m_config; }
 	LoginServerAcceptConnection * getConnection() const { return m_connection; }
 private:
 	typedef std::tr1::unordered_map<int32_t, boost::shared_ptr<Channel>> ChannelMap;
@@ -70,7 +70,7 @@ private:
 	int8_t m_id;
 	port_t m_port;
 	int32_t m_playerLoad;
-	Configuration m_config;
+	WorldConfig m_config;
 	ChannelMap m_channels;
 	LoginServerAcceptConnection *m_connection;
 };

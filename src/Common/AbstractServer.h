@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Configuration.h"
 #include "Ip.h"
 #include "Logger.h"
 #include "Types.h"
@@ -60,6 +61,7 @@ protected:
 	int16_t m_serverType;
 	clock_t m_startTime;
 	bool m_toListen;
+	LoginConfig m_loginConfig;
 	string m_interPassword;
 	IpMatrix m_externalIp;
 	boost::scoped_ptr<Logger> m_logger;

@@ -45,14 +45,14 @@ public:
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(port_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
-	void setConfig(const Configuration &config) { m_config = config; }
+	void setConfig(const WorldConfig &config) { m_config = config; }
 
 	bool isConnected() const { return (m_worldId != -1); }
 	int8_t getWorldId() const { return m_worldId; }
 	port_t getInterPort() const { return m_port; }
 	int32_t getMaxChannels() const { return m_config.maxChannels; }
 	string getScrollingHeader() { return m_config.scrollingHeader.c_str(); }
-	Configuration & getConfig() { return m_config; }
+	WorldConfig & getConfig() { return m_config; }
 	LoginServerConnection * getLoginConnection() const { return m_loginConnection; }
 private:
 	WorldServer();
@@ -62,6 +62,6 @@ private:
 	port_t m_loginPort;
 	port_t m_port;
 	ip_t m_loginIp;
-	Configuration m_config;
+	WorldConfig m_config;
 	LoginServerConnection *m_loginConnection;
 };

@@ -37,7 +37,7 @@ ChannelServer::ChannelServer() :
 }
 
 void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), useEncryption());
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false);
 	Initializing::setUsersOffline(getOnlineId());
 }
 
@@ -52,7 +52,7 @@ void ChannelServer::loadData() {
 	Initializing::loadData();
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, loginPlayer);
+	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
 	string &interPassword = getInterPassword();
 	IpMatrix &externalIp = getExternalIp();
 	loginPlayer->sendAuth(interPassword, externalIp);
@@ -78,7 +78,7 @@ string ChannelServer::makeLogIdentifier() {
 
 void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_worldConnection);
+	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
 	string &interPassword = getInterPassword();
 	IpMatrix &externalIp = getExternalIp();
 	getWorldConnection()->sendAuth(interPassword, externalIp);

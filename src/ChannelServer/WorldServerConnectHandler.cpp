@@ -64,7 +64,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->setChannel(channel);
 		ChannelServer::Instance()->setPort(port);
 
-		Configuration conf = packet.getClass<Configuration>();
+		WorldConfig &conf = packet.getClass<WorldConfig>();
 
 		ChannelServer::Instance()->setConfig(conf);
 		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianus.channels, chId));

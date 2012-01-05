@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Configuration.h"
 #include "Session.h"
 #include "SessionManager.h"
 #include <string>
@@ -31,7 +32,7 @@ class AbstractConnectionFactory;
 
 class ConnectionAcceptor {
 public:
-	ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation);
+	ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation);
 	void stop();
 private:
 	void startAccepting();
@@ -41,7 +42,8 @@ private:
 	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
 	SessionManagerPtr m_sessionManager;
 	string m_patchLocation;
-	bool m_isEncrypted;
+	LoginConfig m_loginConfig;
+	bool m_isServer;
 };
 
 typedef boost::shared_ptr<ConnectionAcceptor> ConnectionAcceptorPtr;

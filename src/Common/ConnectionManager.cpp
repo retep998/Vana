@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ConnectionManager.h"
 #include "AbstractConnection.h"
+#include "Configuration.h"
 #include "ServerClient.h"
 #include <algorithm>
 #include <boost/bind.hpp>
@@ -29,13 +30,13 @@ ConnectionManager::ConnectionManager() :
 {
 }
 
-void ConnectionManager::accept(port_t port, AbstractConnectionFactory *acf, bool encrypted, const string &patchLocation) {
+void ConnectionManager::accept(port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) {
 	tcp::endpoint endpoint(tcp::v4(), port);
-	m_servers.push_back(ConnectionAcceptorPtr(new ConnectionAcceptor(m_ioService, endpoint, acf, encrypted, patchLocation)));
+	m_servers.push_back(ConnectionAcceptorPtr(new ConnectionAcceptor(m_ioService, endpoint, acf, loginConfig, isServer, patchLocation)));
 }
 
-void ConnectionManager::connect(ip_t serverIp, port_t serverPort, AbstractConnection *connection) {
-	ServerClientPtr c = ServerClientPtr(new ServerClient(m_ioService, serverIp, serverPort, m_clients, connection));
+void ConnectionManager::connect(ip_t serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) {
+	ServerClientPtr c = ServerClientPtr(new ServerClient(m_ioService, serverIp, serverPort, m_clients, connection, loginConfig.serverPing));
 	c->startConnect();
 }
 

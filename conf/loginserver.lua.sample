@@ -12,3 +12,9 @@ invalid_login_threshold = 5;
 
 -- Use encryption to communicate with clients?
 use_client_encryption = true;
+
+-- Ping inter-server connections? This should generally not be disabled, it's useful for using a debugger
+use_interserver_ping = true;
+
+-- Ping clients? This should generally not be disabled, it's useful for using a debugger
+use_client_ping = true;
