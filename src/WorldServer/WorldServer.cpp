@@ -33,7 +33,7 @@ WorldServer::WorldServer() :
 }
 
 void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory(), true);
+	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
 void WorldServer::loadData() {
@@ -41,7 +41,7 @@ void WorldServer::loadData() {
 	Initializing::loadData();
 
 	m_loginConnection = new LoginServerConnection;
-	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConnection);
+	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
 	string &interPassword = getInterPassword();
 	IpMatrix &externalIp = getExternalIp();
 	getLoginConnection()->sendAuth(interPassword, externalIp);

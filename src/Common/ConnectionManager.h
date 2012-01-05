@@ -40,8 +40,8 @@ public:
 		return singleton;
 	}
 
-	void accept(port_t port, AbstractConnectionFactory *acf, bool encrypted, const string &patchLocation = "");
-	void connect(ip_t serverIp, port_t serverPort, AbstractConnection *connection);
+	void accept(port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation = "");
+	void connect(ip_t serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection);
 	void stop();
 
 	void run();

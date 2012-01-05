@@ -27,15 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace asio = boost::asio;
 
-Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation) :
+Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation) :
 	// Apparently, "isServer" is true from sessions created by the server for the client
 	// In addition, it's false from sessions created for the server clients
-	AbstractSession(sessionManager, (!isServer || isEncrypted)),
+	AbstractSession(sessionManager, (!isForClient || isEncrypted)),
 	m_socket(ioService),
 	m_connection(connection),
-	m_isServer(isServer),
+	m_isForClient(isForClient),
 	m_patchLocation(patchLocation),
-	m_decoder(!isServer || isEncrypted)
+	m_decoder(!isForClient || isEncrypted),
+	m_usePing(usePing)
 {
 }
 
@@ -45,9 +46,10 @@ void Session::start() {
 
 void Session::handleStart() {
 	m_connection->setSession(this);
+	m_connection->setPinging(m_usePing);
 	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
-	if (m_isServer) {
+	if (m_isForClient) {
 		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
 		sendIv(connectPacket);
 	}

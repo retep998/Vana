@@ -33,11 +33,11 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::Instance()->setWorldId(worldId);
 		WorldServer::Instance()->setInterPort(packet.get<port_t>());
 
-		Configuration conf = packet.getClass<Configuration>();
+		WorldConfig &conf = packet.getClass<WorldConfig>();
 		WorldServer::Instance()->setConfig(conf);
 
 		WorldServer::Instance()->listen();
-		std::cout << "Handling world " << (int32_t) worldId << std::endl;
+		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
 
 		Initializing::worldEstablished();
 

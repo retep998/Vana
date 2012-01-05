@@ -31,7 +31,7 @@ class AbstractConnection;
 class ServerClient : public Session {
 public:
 	friend class ConnectionManager;
-	ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection);
+	ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping);
 private:
 	void startConnect();
 	void readConnectPacket();

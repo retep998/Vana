@@ -20,12 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include <boost/bind.hpp>
 
-ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, bool encrypted, const string &patchLocation) :
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) :
 	m_acceptor(ioService, endpoint),
 	m_apf(apf),
 	m_sessionManager(new SessionManager),
 	m_patchLocation(patchLocation),
-	m_isEncrypted(encrypted)
+	m_loginConfig(loginConfig),
+	m_isServer(isServer)
 {
 	startAccepting();
 }
@@ -36,7 +37,8 @@ void ConnectionAcceptor::stop() {
 }
 
 void ConnectionAcceptor::startAccepting() {
-	SessionPtr newSession(new Session(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_isEncrypted, m_patchLocation));
+	bool ping = (m_isServer ? m_loginConfig.serverPing : m_loginConfig.clientPing);
+	SessionPtr newSession(new Session(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation));
 	m_acceptor.async_accept(newSession->getSocket(), boost::bind(&ConnectionAcceptor::handleConnection, this, newSession, boost::asio::placeholders::error));
 }
 

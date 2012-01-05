@@ -40,6 +40,7 @@ public:
 	void setSession(Session *val);
 	ip_t getIp() const { return m_ip; }
 	void setIp(ip_t ip) { m_ip = ip; }
+	void setPinging(bool ping) { m_doesPing = ping; }
 	Timer::Container * getTimers() const { return m_timers.get(); }
 	uint32_t getLatency() const { return static_cast<uint32_t>(m_latency); }
 
@@ -50,6 +51,7 @@ protected:
 	Session *m_session;
 	ip_t m_ip;
 	bool m_isServer;
+	bool m_doesPing;
 private:
 	bool m_isPinged;
 	clock_t m_latency;

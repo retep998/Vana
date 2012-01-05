@@ -36,8 +36,8 @@ LoginServer::LoginServer()
 }
 
 void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_clientEncryption, MapleVersion::PatchLocation);
-	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory(), true);
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
+	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
 void LoginServer::loadData() {
@@ -56,7 +56,6 @@ void LoginServer::loadConfig() {
 	m_port = config.get<port_t>("port");
 	m_interPort = config.get<port_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
-	m_clientEncryption = config.getBool("use_client_encryption");
 	setListening(true);
 
 	loadWorlds();
@@ -83,7 +82,7 @@ string LoginServer::makeLogIdentifier() {
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
 	MajorBoss boss;
-	Configuration conf;
+	WorldConfig conf;
 	boost::format formatter("world%i_%s");
 	size_t i = 0;
 
@@ -96,9 +95,6 @@ void LoginServer::loadWorlds() {
 
 		World *world = new World();
 		conf.name = config.getString(formatter.str());
-
-		formatter % i % "client_encryption";
-		conf.clientEncryption = config.getBool(formatter.str());
 
 		formatter % i % "channels";
 		conf.maxChannels = config.get<int32_t>(formatter.str());
@@ -183,6 +179,6 @@ void LoginServer::loadWorlds() {
 
 		world->setConfiguration(conf);
 		Worlds::Instance()->addWorld(world);
-		i++;
+		++i;
 	}
 }

@@ -40,7 +40,7 @@ class PacketCreator;
 class Session : public AbstractSession, public boost::enable_shared_from_this<Session> {
 public:
 	friend class ConnectionAcceptor;
-	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isServer, bool isEncrypted, const string &patchLocation = "");
+	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation = "");
 
 	void disconnect();
 	void send(const PacketCreator &packet);
@@ -66,7 +66,8 @@ protected:
 	Decoder m_decoder;
 	std::tr1::shared_ptr<AbstractConnection> m_connection;
 	shared_array<unsigned char> m_buffer;
-	bool m_isServer;
+	bool m_isForClient;
+	bool m_usePing;
 	string m_patchLocation;
 
 	// Packet sending

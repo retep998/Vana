@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::endl;
 
-ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection) :
-	Session(ioService, sessionManager, connection, false, true),
+ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping) :
+	Session(ioService, sessionManager, connection, false, true, ping),
 	m_server(serverIp),
 	m_port(serverPort),
 	m_resolver(ioService)

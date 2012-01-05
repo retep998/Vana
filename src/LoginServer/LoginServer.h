@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.h"
 #include "ConfigFile.h"
+#include "Configuration.h"
 #include "InitializeLogin.h"
 #include "LoginServerAcceptConnection.h"
 #include "Player.h"
@@ -47,7 +48,6 @@ private:
 	static LoginServer *singleton;
 
 	bool m_pinEnabled;
-	bool m_clientEncryption;
 	port_t m_port;
 	port_t m_interPort;
 	int32_t m_maxInvalidLogins;

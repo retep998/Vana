@@ -52,6 +52,12 @@ void AbstractServer::initialize() {
 		exit(ExitCodes::ConfigError);
 	}
 
+	// We do this so we can get the client/server connection properties before a connection is established
+	ConfigFile configLogin("conf/loginserver.lua");
+	m_loginConfig.clientEncryption = configLogin.getBool("use_client_encryption");
+	m_loginConfig.clientPing = configLogin.getBool("use_client_ping");
+	m_loginConfig.serverPing = configLogin.getBool("use_interserver_ping");
+
 	loadConfig();
 	loadLogConfig();
 	loadData();

@@ -31,7 +31,7 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, W
 	packet.add<int8_t>(world->getId());
 	packet.add<port_t>(world->getPort());
 
-	packet.addClass<Configuration>(world->getConfig());
+	packet.addClass<WorldConfig>(world->getConfig());
 
 	connection->getSession()->send(packet);
 }
