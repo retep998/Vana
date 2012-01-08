@@ -55,19 +55,18 @@ private:
 	time_t m_time;
 };
 
-using boost::optional;
-typedef optional<bool> opt_bool;
-typedef optional<int8_t> opt_int8_t;
-typedef optional<uint8_t> opt_uint8_t;
-typedef optional<int16_t> opt_int16_t;
-typedef optional<uint16_t> opt_uint16_t;
-typedef optional<int32_t> opt_int32_t;
-typedef optional<uint32_t> opt_uint32_t;
-typedef optional<int64_t> opt_int64_t;
-typedef optional<uint64_t> opt_uint64_t;
-typedef optional<double> opt_double;
-typedef optional<unix_time_t> opt_unix_time_t;
-typedef optional<std::string> opt_string;
+typedef boost::optional<bool> opt_bool;
+typedef boost::optional<int8_t> opt_int8_t;
+typedef boost::optional<uint8_t> opt_uint8_t;
+typedef boost::optional<int16_t> opt_int16_t;
+typedef boost::optional<uint16_t> opt_uint16_t;
+typedef boost::optional<int32_t> opt_int32_t;
+typedef boost::optional<uint32_t> opt_uint32_t;
+typedef boost::optional<int64_t> opt_int64_t;
+typedef boost::optional<uint64_t> opt_uint64_t;
+typedef boost::optional<double> opt_double;
+typedef boost::optional<unix_time_t> opt_unix_time_t;
+typedef boost::optional<std::string> opt_string;
 
 // Miscellaneous utility types
 typedef uint16_t header_t;
