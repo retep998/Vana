@@ -46,7 +46,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Crypto++/include;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_48_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -58,6 +57,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -65,7 +65,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Crypto++/include;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_48_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -77,6 +76,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(LazurBeemz)/$(PlatformToolsetVersion)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
