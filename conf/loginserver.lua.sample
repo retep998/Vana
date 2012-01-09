@@ -1,20 +1,11 @@
--- Use the pin system?
+-- Use the PIN system?
 pin = true;
 
 -- What port should the login server run on?
 port = 8484;
 
--- What port should the login server accept inter-server connection?
+-- What port should the login server accept inter-server connections on?
 inter_port = 8485;
 
--- How many invalid login should the server handles before disconnecting the player? (0 to turn off this feature)
+-- How many invalid logins should the server handle before disconnecting the player? (0 will turn off this feature)
 invalid_login_threshold = 5;
-
--- Use encryption to communicate with clients?
-use_client_encryption = true;
-
--- Ping inter-server connections? This should generally not be disabled, it's useful for using a debugger
-use_interserver_ping = true;
-
--- Ping clients? This should generally not be disabled, it's useful for using a debugger
-use_client_ping = true;

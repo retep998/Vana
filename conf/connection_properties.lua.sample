@@ -1,0 +1,35 @@
+-- Inter-server password, change this or others will be able to hack your server
+inter_password = "changeme";
+
+-- Use encryption to communicate with clients?
+use_client_encryption = true;
+
+-- Ping inter-server connections? This should generally remain enabled, but it's useful for using a debugger
+use_inter_ping = true;
+
+-- Ping clients? This should generally remain enabled, but it's useful for using a debugger
+use_client_ping = true;
+
+-- External IP configuration
+-- The server will try to check if the client and the server are on the same subnet
+-- If the client is, the IP is sent to the client
+-- Otherwise, the next subnet is parsed from top-to-bottom
+
+-- The format of a subnet configuration is {"IP", "Subnet"}
+-- an example:
+--	external_ip = {
+--		{"127.0.0.1", "255.0.0.0"},
+--		{"192.168.1.2", "255.255.255.0"},
+--		{"your.wan.ip", "0.0.0.0"}
+--	};
+-- This rule reads:
+-- If the client is in the 127.x.x.x block, send 127.0.0.1 to the client
+-- If the client is in the 192.168.1.x block, send 192.168.1.2 to the client
+-- Otherwise, send your.wan.ip to the client
+
+-- The 127.0.0.1 rule is needed so that the ChannelServer knows how to connect to the WorldServer
+-- Domain names are supported in the IP field
+
+external_ip = {
+	{"127.0.0.1", "255.0.0.0"}
+};

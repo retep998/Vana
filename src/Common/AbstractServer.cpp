@@ -39,11 +39,8 @@ AbstractServer::AbstractServer()
 void AbstractServer::initialize() {
 	m_startTime = TimeUtilities::getTickCount();
 
-	ConfigFile config("conf/inter_password.lua");
+	ConfigFile config("conf/connection_properties.lua");
 	m_interPassword = config.getString("inter_password");
-
-	ConfigFile configExtIp("conf/external_ip.lua");
-	m_externalIp = configExtIp.getIpMatrix("external_ip");
 
 	if (m_interPassword == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
@@ -52,11 +49,10 @@ void AbstractServer::initialize() {
 		exit(ExitCodes::ConfigError);
 	}
 
-	// We do this so we can get the client/server connection properties before a connection is established
-	ConfigFile configLogin("conf/loginserver.lua");
-	m_loginConfig.clientEncryption = configLogin.getBool("use_client_encryption");
-	m_loginConfig.clientPing = configLogin.getBool("use_client_ping");
-	m_loginConfig.serverPing = configLogin.getBool("use_interserver_ping");
+	m_externalIp = config.getIpMatrix("external_ip");
+	m_loginConfig.clientEncryption = config.getBool("use_client_encryption");
+	m_loginConfig.clientPing = config.getBool("use_client_ping");
+	m_loginConfig.serverPing = config.getBool("use_inter_ping");
 
 	loadConfig();
 	loadLogConfig();
