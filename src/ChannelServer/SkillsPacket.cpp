@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_SKILL_ADD);
+	packet.add<header_t>(SMSG_SKILL_ADD);
 	packet.add<int8_t>(1);
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(skillId);
@@ -43,10 +43,10 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 	}
 	PacketCreator packet;
 	if (party && self) {
-		packet.addHeader(SMSG_THEATRICS);
+		packet.add<header_t>(SMSG_THEATRICS);
 	}
 	else {
-		packet.addHeader(SMSG_SKILL_SHOW);
+		packet.add<header_t>(SMSG_SKILL_SHOW);
 		packet.add<int32_t>(player->getId());
 	}
 	packet.add<int8_t>(party ? 2 : 1);
@@ -69,7 +69,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 
 void SkillsPacket::healHP(Player *player, int16_t hp) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_THEATRICS);
+	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0A);
 	packet.add<int16_t>(hp);
 	player->getSession()->send(packet);
@@ -77,7 +77,7 @@ void SkillsPacket::healHP(Player *player, int16_t hp) {
 
 void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t level) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_THEATRICS); // For the using player
+	packet.add<header_t>(SMSG_THEATRICS); // For the using player
 	bool send = false;
 	switch (skillId) {
 		case Jobs::FpWizard::MpEater:
@@ -102,7 +102,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	}
 	packet = PacketCreator();
 	send = false;
-	packet.addHeader(SMSG_SKILL_SHOW); // For others
+	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	switch (skillId) {
 		case Jobs::FpWizard::MpEater:
@@ -130,7 +130,7 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 		return;
 	}
 	PacketCreator packet;
-	packet.addHeader(SMSG_SPECIAL_SKILL);
+	packet.add<header_t>(SMSG_SPECIAL_SKILL);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(info.skillId);
 	packet.add<int8_t>(info.level);
@@ -144,7 +144,7 @@ void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info)
 		return;
 	}
 	PacketCreator packet;
-	packet.addHeader(SMSG_SPECIAL_SKILL_END);
+	packet.add<header_t>(SMSG_SPECIAL_SKILL_END);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(info.skillId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -152,7 +152,7 @@ void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info)
 
 void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_DRAGGED);
+	packet.add<header_t>(SMSG_MOB_DRAGGED);
 	packet.add<int32_t>(mapMobId);
 	packet.add<uint8_t>(success);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -160,7 +160,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t s
 
 void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_SKILL_COOLDOWN);
+	packet.add<header_t>(SMSG_SKILL_COOLDOWN);
 	packet.add<int32_t>(skillId);
 	packet.add<int16_t>(time);
 	player->getSession()->send(packet);
@@ -168,7 +168,7 @@ void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
 
 void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Sends to map/user
 	PacketCreator packet;
-	packet.addHeader(SMSG_THEATRICS);
+	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
@@ -178,7 +178,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 		return;
 	}
 	packet = PacketCreator();
-	packet.addHeader(SMSG_SKILL_SHOW); // For others
+	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Jobs::DarkKnight::Berserk);

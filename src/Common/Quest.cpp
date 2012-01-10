@@ -50,7 +50,7 @@ void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
 		rewMap->rewards.push_back(info);
 	}
 	else {
-		rewMap->jobrewards[job].push_back(info);
+		rewMap->jobRewards[job].push_back(info);
 	}
 }
 
@@ -98,8 +98,8 @@ bool Quest::rewardsFunc(bool start, int16_t job, function<bool (const QuestRewar
 		}
 	}
 	if (!broken && job != -1) {
-		if (rewMap->jobrewards.find(job) != rewMap->jobrewards.end()) {
-			Rewards &rew = rewMap->jobrewards[job];
+		if (rewMap->jobRewards.find(job) != rewMap->jobRewards.end()) {
+			Rewards &rew = rewMap->jobRewards[job];
 			for (Rewards::const_iterator iter = rew.begin(); iter != rew.end(); ++iter) {
 				if (func(*iter)) {
 					broken = true;

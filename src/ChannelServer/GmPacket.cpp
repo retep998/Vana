@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void GmPacket::beginHide(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(true);
 
@@ -32,7 +32,7 @@ void GmPacket::beginHide(Player *player) {
 
 void GmPacket::endHide(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
 	packet.addBool(false);
 
@@ -41,7 +41,7 @@ void GmPacket::endHide(Player *player) {
 
 void GmPacket::warning(Player *player, bool succeed) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x1d);
 	packet.addBool(succeed);
 
@@ -50,7 +50,7 @@ void GmPacket::warning(Player *player, bool succeed) {
 
 void GmPacket::block(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x04);
 	packet.add<int8_t>(0); // Might be something like succeed but it isn't displayed
 
@@ -59,7 +59,7 @@ void GmPacket::block(Player *player) {
 
 void GmPacket::invalidCharacterName(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(1);
 
@@ -68,7 +68,7 @@ void GmPacket::invalidCharacterName(Player *player) {
 
 void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x01); // Mode, 00 = map, 01 = channel
 	packet.add<int8_t>(channel); // 0xFE / -2 for 'Not found'
@@ -78,7 +78,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 
 void GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x13);
 	packet.add<int8_t>(0x00); // Mode, 00 = map, 01 = channel
 	packet.add<int32_t>(mapId);
@@ -88,7 +88,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) {
 
 void GmPacket::setGetVarResult(Player *player, const string &name, const string &variable, const string &value) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_GM);
+	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x09);
 	packet.addString(name);
 	packet.addString(variable);

@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void PingPacket::ping(AbstractConnection *connection) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PING);
+	packet.add<header_t>(SMSG_PING);
 	connection->getSession()->send(packet);
 }
 
 void PingPacket::pong(AbstractConnection *connection) {
 	PacketCreator packet;
-	packet.addHeader(CMSG_PONG);
+	packet.add<header_t>(CMSG_PONG);
 	connection->getSession()->send(packet);
 }

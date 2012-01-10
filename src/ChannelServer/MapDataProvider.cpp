@@ -92,7 +92,7 @@ void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
 int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 	int32_t link = 0;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, (field_limitations + 0) FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;

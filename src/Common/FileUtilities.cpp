@@ -19,6 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sys/stat.h>
 
 bool FileUtilities::fileExists(const string &file) {
-	struct stat fileinfo;
-	return (!stat(file.c_str(), &fileinfo));
+	struct stat fileInfo;
+	return (!stat(file.c_str(), &fileInfo));
 }

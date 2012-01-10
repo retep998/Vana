@@ -45,7 +45,6 @@ public:
 	template <typename T>
 	void addClass(IPacketWritable &obj);
 
-	void addHeader(header_t value);
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
 	void addPos(const Pos &pos); // Positions

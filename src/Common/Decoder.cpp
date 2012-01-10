@@ -228,7 +228,7 @@ PacketCreator Decoder::getConnectPacket(const string &patchLocation) {
 	setIvSend(m_ivSend);
 
 	PacketCreator packet;
-	packet.addHeader(patchLocation != "" ? IV_PATCH_LOCATION : IV_NO_PATCH_LOCATION);
+	packet.add<header_t>(patchLocation != "" ? IV_PATCH_LOCATION : IV_NO_PATCH_LOCATION);
 	packet.add<uint16_t>(MapleVersion::Version);
 	packet.addString(patchLocation);
 	packet.add<uint32_t>(*(uint32_t*) m_ivRecv);

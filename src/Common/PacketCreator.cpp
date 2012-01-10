@@ -57,7 +57,7 @@ void PacketCreator::addBuffer(PacketReader &packet) {
 
 void PacketCreator::addBytes(const char *hex) {
 	size_t x = 0;
-	for (size_t i = 0; i < strlen(hex) / 2; i++) {
+	for (size_t i = 0; i < strlen(hex) / 2; ++i) {
 		x = i * 2;
 		unsigned char byte1 = getHexByte(hex[x]);
 		unsigned char byte2 = getHexByte(hex[x + 1]);
@@ -78,10 +78,6 @@ unsigned char PacketCreator::getHexByte(unsigned char input) {
 		throw std::invalid_argument("addBytes used with a non-hex digit");
 	}
 	return input;
-}
-
-void PacketCreator::addHeader(header_t value) {
-	add<header_t>(value);
 }
 
 void PacketCreator::addString(const string &str, size_t len) {
