@@ -131,7 +131,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 	int16_t shopCount = info.items.size() + rechargables.size();
 	unordered_map<int32_t, bool> idsDone;
 
-	packet.addHeader(SMSG_SHOP);
+	packet.add<header_t>(SMSG_SHOP);
 	packet.add<int32_t>(info.npc);
 	packet.add<int16_t>(0); // To be set later
 

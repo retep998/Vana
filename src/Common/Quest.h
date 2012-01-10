@@ -59,7 +59,7 @@ typedef vector<QuestRewardInfo> Rewards;
 
 struct QuestRewardsInfo {
 	Rewards rewards;
-	unordered_map<int16_t, Rewards> jobrewards;
+	unordered_map<int16_t, Rewards> jobRewards;
 };
 
 typedef vector<int16_t> JobRequests;
@@ -82,8 +82,8 @@ public:
 	bool hasMobRequests() const { return (m_mobRequests.size() > 0); }
 	bool hasItemRequests() const { return (m_itemRequests.size() > 0); }
 	bool hasQuestRequests() const { return (m_questRequests.size() > 0); }
-	bool hasStartRewards() const { return (m_startRewards.rewards.size() > 0 || m_startRewards.jobrewards.size() > 0); }
-	bool hasEndRewards() const { return (m_endRewards.rewards.size() > 0 || m_endRewards.jobrewards.size() > 0); }
+	bool hasStartRewards() const { return (m_startRewards.rewards.size() > 0 || m_startRewards.jobRewards.size() > 0); }
+	bool hasEndRewards() const { return (m_endRewards.rewards.size() > 0 || m_endRewards.jobRewards.size() > 0); }
 	bool hasRewards() const { return (hasStartRewards() || hasEndRewards()); }
 	int16_t getNextQuest() const { return m_nextQuest; }
 	int16_t getQuestId() const { return m_id; }

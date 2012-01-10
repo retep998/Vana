@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, bool full) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MONSTER_BOOK_ADD);
+	packet.add<header_t>(SMSG_MONSTER_BOOK_ADD);
 	packet.addBool(!full);
 	packet.add<int32_t>(cardId);
 	packet.add<int32_t>(level);
@@ -32,7 +32,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, b
 
 	if (!full) {
 		packet = PacketCreator();
-		packet.addHeader(SMSG_THEATRICS);
+		packet.add<header_t>(SMSG_THEATRICS);
 		packet.add<int8_t>(0x0D);
 		player->getSession()->send(packet);
 
@@ -40,7 +40,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, b
 		// If you want to enable displaying it, just uncomment this VV
 		/*
 		packet = PacketCreator();
-		packet.addHeader(SMSG_SKILL_SHOW);
+		packet.add<header_t>(SMSG_SKILL_SHOW);
 		packet.add<int32_t>(player->getId());
 		packet.add<int8_t>(0x0D);
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
@@ -50,7 +50,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, b
 
 void MonsterBookPacket::changeCover(Player *player, int32_t cardId) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MONSTER_BOOK_COVER);
+	packet.add<header_t>(SMSG_MONSTER_BOOK_COVER);
 	packet.add<int32_t>(cardId);
 	player->getSession()->send(packet);
 }

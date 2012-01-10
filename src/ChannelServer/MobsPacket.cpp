@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_SHOW);
+	packet.add<header_t>(SMSG_MOB_SHOW);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
@@ -62,7 +62,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 
 void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *display) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_CONTROL);
+	packet.add<header_t>(SMSG_MOB_CONTROL);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
@@ -97,7 +97,7 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 
 void MobsPacket::endControlMob(Player *player, Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_CONTROL);
+	packet.add<header_t>(SMSG_MOB_CONTROL);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(mob->getId());
 	if (player != nullptr) {
@@ -110,7 +110,7 @@ void MobsPacket::endControlMob(Player *player, Mob *mob) {
 
 void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, bool useSkill, int32_t mp, uint8_t skill, uint8_t level) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_MOVEMENT);
+	packet.add<header_t>(SMSG_MOB_MOVEMENT);
 	packet.add<int32_t>(mobId);
 	packet.add<int16_t>(moveId);
 	packet.addBool(useSkill);
@@ -122,7 +122,7 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, 
 
 void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t skill, const Pos &projectileTarget, unsigned char *buf, int32_t len) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_CONTROL_MOVEMENT);
+	packet.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT);
 	packet.add<int32_t>(mobId);
 	packet.addBool(useSkill);
 	packet.add<int8_t>(skill);
@@ -133,7 +133,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 
 void MobsPacket::healMob(Mob *mob, int32_t amount) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_DAMAGE);
+	packet.add<header_t>(SMSG_MOB_DAMAGE);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(-amount);
@@ -145,7 +145,7 @@ void MobsPacket::healMob(Mob *mob, int32_t amount) {
 
 void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_DAMAGE);
+	packet.add<header_t>(SMSG_MOB_DAMAGE);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(amount);
@@ -157,7 +157,7 @@ void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
 
 void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_DAMAGE);
+	packet.add<header_t>(SMSG_MOB_DAMAGE);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(damage);
@@ -168,7 +168,7 @@ void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
 
 void MobsPacket::applyStatus(Mob *mob, int32_t statusMask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_STATUS_ADDITION);
+	packet.add<header_t>(SMSG_MOB_STATUS_ADDITION);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int32_t>(statusMask);
 
@@ -201,7 +201,7 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusMask, const vector<StatusIn
 
 void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_STATUS_REMOVE);
+	packet.add<header_t>(SMSG_MOB_STATUS_REMOVE);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int32_t>(status);
 	packet.add<int8_t>(1);
@@ -210,7 +210,7 @@ void MobsPacket::removeStatus(Mob *mob, int32_t status) {
 
 void MobsPacket::showHp(Player *player, int32_t mobId, int8_t percentage) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_HP_DISPLAY);
+	packet.add<header_t>(SMSG_MOB_HP_DISPLAY);
 	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(percentage);
 	player->getSession()->send(packet);
@@ -218,7 +218,7 @@ void MobsPacket::showHp(Player *player, int32_t mobId, int8_t percentage) {
 
 void MobsPacket::showHp(int32_t mapId, int32_t mobId, int8_t percentage) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_HP_DISPLAY);
+	packet.add<header_t>(SMSG_MOB_HP_DISPLAY);
 	packet.add<int32_t>(mobId);
 	packet.add<int8_t>(percentage);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -226,7 +226,7 @@ void MobsPacket::showHp(int32_t mapId, int32_t mobId, int8_t percentage) {
 
 void MobsPacket::showBossHp(Mob *mob) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MAP_EFFECT);
+	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x05);
 	packet.add<int32_t>(mob->getMobId());
 	packet.add<int32_t>(mob->getHp());
@@ -238,7 +238,7 @@ void MobsPacket::showBossHp(Mob *mob) {
 
 void MobsPacket::dieMob(Mob *mob, int8_t death) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MOB_DEATH);
+	packet.add<header_t>(SMSG_MOB_DEATH);
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(death);
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
@@ -246,7 +246,7 @@ void MobsPacket::dieMob(Mob *mob, int8_t death) {
 
 void MobsPacket::showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_MAP_EFFECT);
+	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(summonEffect);
 	packet.addPos(pos, true);

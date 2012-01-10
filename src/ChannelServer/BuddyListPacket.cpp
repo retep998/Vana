@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void BuddyListPacket::error(Player *player, uint8_t error) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_BUDDY);
+	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(error);
 
 	player->getSession()->send(packet);
@@ -33,7 +33,7 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 	uint8_t size = player->getBuddyList()->listSize();
 
 	PacketCreator packet;
-	packet.addHeader(SMSG_BUDDY);
+	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(type);
 	packet.add<uint8_t>(size);
 
@@ -48,7 +48,7 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 
 void BuddyListPacket::showSize(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_BUDDY);
+	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x15);
 	packet.add<uint8_t>(player->getBuddyListSize());
 	player->getSession()->send(packet);
@@ -56,7 +56,7 @@ void BuddyListPacket::showSize(Player *player) {
 
 void BuddyListPacket::invitation(Player *player, const BuddyInvite &invite) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_BUDDY);
+	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x09);
 	packet.add<int32_t>(invite.id);
 	packet.addString(invite.name);
@@ -77,7 +77,7 @@ void BuddyListPacket::invitation(Player *player, const BuddyInvite &invite) {
 
 void BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_BUDDY);
+	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x14);
 	packet.add<int32_t>(charId);
 	packet.add<int8_t>(0);

@@ -117,9 +117,9 @@ void DatabaseMigration::loadSqlFiles() {
 
 // Create the info table
 void DatabaseMigration::createInfoTable() {
-	Database::getCharDb().once
-		<< "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED); "
-		<< "INSERT INTO vana_info VALUES (NULL)";
+	soci::session &sql = Database::getCharDb();
+	sql.once << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
+	sql.once << "INSERT INTO vana_info VALUES (NULL)";
 }
 
 // Set version number in the info table

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginPacket::loginError(Player *player, int16_t errorId) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_AUTHENTICATION);
+	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int16_t>(errorId);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
@@ -38,7 +38,7 @@ void LoginPacket::loginError(Player *player, int16_t errorId) {
 
 void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_AUTHENTICATION);
+	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int16_t>(2);
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(reason);
@@ -49,7 +49,7 @@ void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 
 void LoginPacket::loginConnect(Player *player, const string &username) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_AUTHENTICATION);
+	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
 	packet.add<int32_t>(player->getUserId());
@@ -72,21 +72,21 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 
 void LoginPacket::loginProcess(Player *player, int8_t id) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PIN);
+	packet.add<header_t>(SMSG_PIN);
 	packet.add<int8_t>(id);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::pinAssigned(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PIN_ASSIGNED);
+	packet.add<header_t>(SMSG_PIN_ASSIGNED);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::genderDone(Player *player, int8_t gender) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_ACCOUNT_GENDER_DONE);
+	packet.add<header_t>(SMSG_ACCOUNT_GENDER_DONE);
 	packet.add<int8_t>(gender);
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
@@ -94,7 +94,7 @@ void LoginPacket::genderDone(Player *player, int8_t gender) {
 
 void LoginPacket::showWorld(Player *player, World *world) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_WORLD_LIST);
+	packet.add<header_t>(SMSG_WORLD_LIST);
 	packet.add<int8_t>(world->getId());
 	packet.addString(world->getName());
 	packet.add<int8_t>(world->getRibbon());
@@ -130,21 +130,21 @@ void LoginPacket::showWorld(Player *player, World *world) {
 
 void LoginPacket::worldEnd(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_WORLD_LIST);
+	packet.add<header_t>(SMSG_WORLD_LIST);
 	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::showChannels(Player *player, int8_t status) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_WORLD_STATUS);
+	packet.add<header_t>(SMSG_WORLD_STATUS);
 	packet.add<int16_t>(status);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::channelSelect(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_CHANNEL_SELECT);
+	packet.add<header_t>(SMSG_CHANNEL_SELECT);
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
@@ -152,7 +152,7 @@ void LoginPacket::channelSelect(Player *player) {
 
 void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_LIST);
+	packet.add<header_t>(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(0);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
@@ -164,14 +164,14 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 
 void LoginPacket::channelOffline(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_LIST);
+	packet.add<header_t>(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(8);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::checkName(Player *player, const string &name, bool taken) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_NAME_CHECK);
+	packet.add<header_t>(SMSG_PLAYER_NAME_CHECK);
 	packet.addString(name);
 	packet.addBool(taken);
 	player->getSession()->send(packet);
@@ -179,7 +179,7 @@ void LoginPacket::checkName(Player *player, const string &name, bool taken) {
 
 void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_GLOBAL_LIST);
+	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(1);
 	packet.add<uint32_t>(worlds);
 	packet.add<uint32_t>(unk);
@@ -188,7 +188,7 @@ void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_
 
 void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_GLOBAL_LIST);
+	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(0);
 	packet.add<uint8_t>(worldId);
 	packet.add<uint8_t>(chars.size());
@@ -200,7 +200,7 @@ void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vec
 
 void LoginPacket::showCharacter(Player *player, const Character &charc) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_CREATE);
+	packet.add<header_t>(SMSG_PLAYER_CREATE);
 	packet.add<int8_t>(0);
 	LoginPacketHelper::addCharacter(packet, charc);
 	player->getSession()->send(packet);
@@ -208,7 +208,7 @@ void LoginPacket::showCharacter(Player *player, const Character &charc) {
 
 void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_PLAYER_DELETE);
+	packet.add<header_t>(SMSG_PLAYER_DELETE);
 	packet.add<int32_t>(id);
 	packet.add<uint8_t>(result);
 	player->getSession()->send(packet);
@@ -216,7 +216,7 @@ void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
 
 void LoginPacket::connectIp(Player *player, int32_t charId) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_CHANNEL_CONNECT);
+	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(0);
 
 	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorld())->getChannel(player->getChannel())) {
@@ -237,7 +237,7 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 
 void LoginPacket::relogResponse(Player *player) {
 	PacketCreator packet;
-	packet.addHeader(SMSG_LOGIN_RETURN);
+	packet.add<header_t>(SMSG_LOGIN_RETURN);
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }

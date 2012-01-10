@@ -16,7 +16,7 @@ use_client_ping = true;
 -- Otherwise, the next subnet is parsed from top-to-bottom
 
 -- The format of a subnet configuration is {"IP", "Subnet"}
--- an example:
+-- An example:
 --	external_ip = {
 --		{"127.0.0.1", "255.0.0.0"},
 --		{"192.168.1.2", "255.255.255.0"},

@@ -27,7 +27,6 @@ using std::endl;
 
 void Initializing::checkMcdbVersion() {
 	soci::session &sql = Database::getDataDb();
-	soci::indicator ind = soci::i_null;
 	soci::row row;
 	sql.once << "SELECT * FROM mcdb_info", soci::into(row);
 
