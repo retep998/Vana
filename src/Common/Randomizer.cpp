@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Randomizer * Randomizer::singleton = nullptr;
 
 uint32_t Randomizer::randInt(uint32_t max, uint32_t min) {
-	uint32_t diff = max - min;
-	return (diff == 0 ? min : (randInt() % diff) + min);
+	uint32_t diff = (max - min) + 1;
+	return (randInt() % diff) + min;
 }
 
 uint32_t Randomizer::randInt() {
