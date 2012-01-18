@@ -49,6 +49,7 @@ void ShopDataProvider::loadShops() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
+		shop = ShopInfo();
 		shopId = row.get<int32_t>("shopid");
 		shop.npc = row.get<int32_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
@@ -61,6 +62,7 @@ void ShopDataProvider::loadShops() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
+		item = ShopItemInfo();
 		shopId = row.get<int32_t>("shopid");
 		item.itemId = row.get<int32_t>("itemid");
 		item.quantity = row.get<int16_t>("quantity");
@@ -80,6 +82,7 @@ void ShopDataProvider::loadUserShops() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
+		shop = ShopInfo();
 		shopId = row.get<int32_t>("shopid");
 		shop.npc = row.get<int32_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
@@ -90,12 +93,13 @@ void ShopDataProvider::loadUserShops() {
 		m_shops[shopId] = shop;
 	}
 
-	rs = (sql.prepare << "SELECT * FROM shop_items ORDER BY shopid, sort DESC");
+	rs = (sql.prepare << "SELECT * FROM user_shop_items ORDER BY shopid, sort DESC");
 	ShopItemInfo item;
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
+		item = ShopItemInfo();
 		shopId = row.get<int32_t>("shopid");
 		item.itemId = row.get<int32_t>("itemid");
 		item.quantity = row.get<int16_t>("quantity");
@@ -136,7 +140,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 	packet.add<int16_t>(0); // To be set later
 
 	// Items
-	for (size_t i = 0; i < info.items.size(); i++) {
+	for (size_t i = 0; i < info.items.size(); ++i) {
 		ShopItemInfo &item = info.items[i];
 		packet.add<int32_t>(item.itemId);
 		packet.add<int32_t>(item.price);

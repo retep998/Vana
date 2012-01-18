@@ -238,6 +238,11 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("Adds SP to the desired skill.");
 	CommandList["addsp"] = command.addToMap();
 
+	command.command = &PlayerModFunctions::maxSp;
+	command.syntax = "<#skill ID> [#skill points]";
+	command.notes.push_back("Sets the skill's max SP to the desired level.");
+	CommandList["maxsp"] = command.addToMap();
+
 	command.command = &PlayerModFunctions::modInt;
 	command.syntax = "<#int>";
 	command.notes.push_back("Sets your player's INT to the specified amount.");

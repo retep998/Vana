@@ -39,4 +39,5 @@ namespace PlayerModFunctions {
 	bool level(Player *player, const string &args);
 	bool job(Player *player, const string &args);
 	bool addSp(Player *player, const string &args);
+	bool maxSp(Player *player, const string &args);
 }
