@@ -184,3 +184,22 @@ bool PlayerModFunctions::addSp(Player *player, const string &args) {
 	}
 	return false;
 }
+
+bool PlayerModFunctions::maxSp(Player *player, const string &args) {
+	cmatch matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(-{0,1}\\d+)?", matches)) {
+		int32_t skillId = atoi(string(matches[1]).c_str());
+		if (SkillDataProvider::Instance()->isSkill(skillId)) {
+			// Don't allow skills that do not exist to be added
+			string max = matches[2];
+			uint8_t maxLevel = max.length() > 0 ? atoi(max.c_str()) : 1;
+
+			player->getSkills()->setMaxSkillLevel(skillId, maxLevel);
+		}
+		else {
+			PlayerPacket::showMessage(player, "Invalid Skill ID.", PlayerPacket::NoticeTypes::Red);
+		}
+		return true;
+	}
+	return false;
+}
