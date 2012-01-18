@@ -26,7 +26,7 @@ template <typename T> class LoopingId;
 
 namespace SummonMessages {
 	enum Messages : int8_t {
-		OutOfTime = 0x01,
+		OutOfTime = 0x00,
 		Disappearing = 0x03,
 		None = 0x04
 	};
