@@ -29,15 +29,18 @@ function timerEnd(name, fromTimer)
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
-	if not isInstanceMap(newMap) then
+	b = isInstanceMap(newMap);
+	if not b then
 		-- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerId);
 		startInstanceTimer("clean", 1, false);
-	elseif setPlayer(playerId) then
-		if not isGm() then
-			addInstancePlayer(playerId);
+	elseif b then
+		if setPlayer(playerId) then
+			if not isGM() then
+				addInstancePlayer(playerId);
+			end
+			revertPlayer();
 		end
-		revertPlayer();
 	end
 end
 
