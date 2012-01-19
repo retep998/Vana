@@ -46,28 +46,22 @@ if isQuestCompleted(3035) then
 	addText("It'll cost you #b" .. itemPrice .. " mesos#k per item. ");
 	addText("How many would you like to purchase?");
 	quantity = askNumber(1, 100);
-	quantity = tonumber(quantity);
 	
-	if quantity == nil or quantity < 1 or quantity > 100 then
-		addText("If you're not going to buy anything, then I've got nothing to sell neither.");
-		sendOk();
-	else
-		local totalCost = itemPrice * quantity;
-		addText("Are you sure you want to buy #r" .. quantity .. " #t" .. itemId .. "##k? ");
-		addText("It'll cost you " .. itemPrice .. " mesos per #t" .. itemId .. "#, which will cost you #r" .. totalCost .. "#k mesos total.");
-		choice = askYesNo();
-		
-		if choice == 1 then
-			if not hasOpenSlotsFor(itemId, quantity) or getMesos() < totalCost then
-				addText("Are you sure you have enough mesos?");
-				addText("Please check and see if your etc. or use inventory is full, or if you have at least #r" .. totalCost .. "#k mesos.");
-				sendNext();
-			else
-				giveMesos(-totalCost);
-				giveItem(itemId, quantity);
-				addText("Thank you. If you ever find yourself needing items down the road, make sure to drop by here. I may have gotten old over the years, but I can still make magic items with ease.");
-				sendNext();
-			end
+	local totalCost = itemPrice * quantity;
+	addText("Are you sure you want to buy #r" .. quantity .. " #t" .. itemId .. "##k? ");
+	addText("It'll cost you " .. itemPrice .. " mesos per #t" .. itemId .. "#, which will cost you #r" .. totalCost .. "#k mesos total.");
+	choice = askYesNo();
+	
+	if choice == 1 then
+		if not hasOpenSlotsFor(itemId, quantity) or getMesos() < totalCost then
+			addText("Are you sure you have enough mesos?");
+			addText("Please check and see if your etc. or use inventory is full, or if you have at least #r" .. totalCost .. "#k mesos.");
+			sendNext();
+		else
+			giveMesos(-totalCost);
+			giveItem(itemId, quantity);
+			addText("Thank you. If you ever find yourself needing items down the road, make sure to drop by here. I may have gotten old over the years, but I can still make magic items with ease.");
+			sendNext();
 		end
 	end
 else
