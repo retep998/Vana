@@ -47,7 +47,7 @@ namespace TimeUtilities {
 	uint32_t getTickCount(); // The relative value can be used like GetTickCount on windows
 
 	int64_t fromNow(clock_t msec);
-	clock_t nthSecondOfHour(uint16_t second);
+	int64_t nthSecondOfHour(uint16_t second);
 }
 
 inline
@@ -56,9 +56,9 @@ int64_t TimeUtilities::fromNow(clock_t msec) {
 }
 
 inline
-clock_t TimeUtilities::nthSecondOfHour(uint16_t second) {
-	clock_t secThisHour = time(nullptr) % 3600;
-	clock_t secDest;
+int64_t TimeUtilities::nthSecondOfHour(uint16_t second) {
+	int64_t secThisHour = time(nullptr) % 3600;
+	int64_t secDest;
 
 	if (secThisHour > second) {
 		// Already passed the time in this hour, try next hour
