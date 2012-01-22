@@ -54,13 +54,15 @@ if isQuestCompleted(3035) then
 	
 	if choice == 1 then
 		if not hasOpenSlotsFor(itemId, quantity) or getMesos() < totalCost then
-			addText("Are you sure you have enough mesos?");
+			addText("Are you sure you have enough mesos? ");
 			addText("Please check and see if your etc. or use inventory is full, or if you have at least #r" .. totalCost .. "#k mesos.");
 			sendNext();
 		else
 			giveMesos(-totalCost);
 			giveItem(itemId, quantity);
-			addText("Thank you. If you ever find yourself needing items down the road, make sure to drop by here. I may have gotten old over the years, but I can still make magic items with ease.");
+			addText("Thank you. ");
+			addText("If you ever find yourself needing items down the road, make sure to drop by here. ");
+			addText("I may have gotten old over the years, but I can still make magic items with ease.");
 			sendNext();
 		end
 	end
