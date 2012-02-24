@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "Session.h"
 #include "SyncPacket.h"
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 #include <cstring>
 
 PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
@@ -67,12 +67,14 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 // Players
 void PlayerDataProvider::addPlayer(Player *player) {
 	m_players[player->getId()] = player;
-	m_playersByName[boost::to_upper_copy(player->getName())] = player; // Store in upper case for easy non-case-sensitive search
+	string upper = StringUtilities::toUpper(player->getName());
+	m_playersByName[upper] = player; // Store in upper case for easy non-case-sensitive search
 }
 
 void PlayerDataProvider::removePlayer(Player *player) {
 	m_players.erase(player->getId());
-	m_playersByName.erase(boost::to_upper_copy(player->getName()));
+	string upper = StringUtilities::toUpper(player->getName());
+	m_playersByName.erase(upper);
 }
 
 void PlayerDataProvider::changeChannel(PacketReader &packet) {
@@ -109,8 +111,8 @@ Player * PlayerDataProvider::getPlayer(int32_t id) {
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name) {
-	string &upCaseName = boost::to_upper_copy(name);
-	return (m_playersByName.find(upCaseName) == m_playersByName.end()) ? nullptr : m_playersByName[upCaseName];
+	string upper = StringUtilities::toUpper(name);
+	return (m_playersByName.find(upper) == m_playersByName.end()) ? nullptr : m_playersByName[upper];
 }
 
 void PlayerDataProvider::run(function<void (Player *)> func) {
@@ -177,7 +179,7 @@ void PlayerDataProvider::newParty(int32_t id, int32_t leaderId) {
 		party->addMember(leader);
 	}
 	party->setLeader(leaderId);
-	boost::shared_ptr<Party> p(party);
+	std::shared_ptr<Party> p(party);
 	m_parties[id] = p;
 }
 

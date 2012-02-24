@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SqlLogger.h"
 #include "Database.h"
-#include <boost/tuple/tuple.hpp>
 
 SqlLogger::SqlLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),

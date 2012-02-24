@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 #ifdef _WIN32
-std::tr1::function<void()> console_ctrl_function;
+std::function<void()> console_ctrl_function;
 
 BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 	switch (ctrl_type) {

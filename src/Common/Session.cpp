@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "SessionManager.h"
-#include <boost/bind.hpp>
+#include <functional>
 #include <iostream>
 
 namespace asio = boost::asio;
@@ -89,9 +89,9 @@ void Session::send(const unsigned char *buf, int32_t len) {
 	m_decoder.encrypt(buffer + headerLen, len);
 
 	asio::async_write(m_socket, asio::buffer(buffer, realLength),
-		boost::bind(&Session::handleWrite, shared_from_this(),
-		asio::placeholders::error,
-		asio::placeholders::bytes_transferred));
+		std::bind(&Session::handleWrite, shared_from_this(),
+			std::placeholders::_1,
+			std::placeholders::_2));
 }
 
 void Session::sendIv(const PacketCreator &packet) {
@@ -104,9 +104,9 @@ void Session::sendIv(const PacketCreator &packet) {
 	memcpy(buffer, packet.getBuffer(), len);
 
 	asio::async_write(m_socket, asio::buffer(buffer, len),
-		boost::bind(&Session::handleWrite, shared_from_this(),
-		asio::placeholders::error,
-		asio::placeholders::bytes_transferred));
+		std::bind(&Session::handleWrite, shared_from_this(),
+			std::placeholders::_1,
+			std::placeholders::_2));
 }
 
 void Session::startReadHeader() {
@@ -114,10 +114,9 @@ void Session::startReadHeader() {
 
 	asio::async_read(m_socket,
 		asio::buffer(m_buffer.get(), headerLen),
-		boost::bind(
-			&Session::handleReadHeader, shared_from_this(),
-			asio::placeholders::error,
-			asio::placeholders::bytes_transferred));
+		std::bind(&Session::handleReadHeader, shared_from_this(),
+			std::placeholders::_1,
+			std::placeholders::_2));
 }
 
 void Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) {
@@ -147,10 +146,9 @@ void Session::handleReadHeader(const boost::system::error_code &error, size_t by
 
 		asio::async_read(m_socket,
 			asio::buffer(m_buffer.get(), len),
-			boost::bind(
-				&Session::handleReadBody, shared_from_this(),
-				asio::placeholders::error,
-				asio::placeholders::bytes_transferred));
+			std::bind(&Session::handleReadBody, shared_from_this(),
+				std::placeholders::_1,
+				std::placeholders::_2));
 	}
 	else {
 		disconnect();

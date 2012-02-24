@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/array.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <array>
+#include <memory>
 
-using boost::scoped_ptr;
+using std::unique_ptr;
 
 class Item;
 class Player;
@@ -39,8 +39,8 @@ struct TradeInfo {
 	int32_t mesos;
 	uint8_t count;
 	bool accepted;
-	boost::array<Item *, TradeSize> items;
-	boost::array<bool, TradeSize> slot;
+	std::array<Item *, TradeSize> items;
+	std::array<bool, TradeSize> slot;
 };
 
 class ActiveTrade {
@@ -64,8 +64,8 @@ public:
 	Item * addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount);
 	bool isItemInSlot(TradeInfo *unit, uint8_t tradeSlot) { return (tradeSlot > TradeInfo::TradeSize ? true : unit->slot[tradeSlot - 1]); }
 private:
-	scoped_ptr<TradeInfo> m_sender;
-	scoped_ptr<TradeInfo> m_receiver;
+	unique_ptr<TradeInfo> m_sender;
+	unique_ptr<TradeInfo> m_receiver;
 	int32_t m_id;
 	int32_t m_senderId;
 	int32_t m_receiverId;

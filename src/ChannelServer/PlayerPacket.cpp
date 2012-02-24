@@ -29,9 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.h"
 #include "SmsgHeader.h"
 #include "TimeUtilities.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;

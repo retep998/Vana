@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Logger.h"
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <string>
 
-using boost::scoped_ptr;
 using std::string;
+using std::unique_ptr;
 
 template<typename Logger1, typename Logger2>
 class DualLogger : public Logger {
@@ -39,8 +39,8 @@ public:
 private:
 	Logger1 * getLogger1() const { return m_logger1.get(); }
 	Logger2 * getLogger2() const { return m_logger2.get(); }
-	scoped_ptr<Logger1> m_logger1;
-	scoped_ptr<Logger2> m_logger2;
+	unique_ptr<Logger1> m_logger1;
+	unique_ptr<Logger2> m_logger2;
 };
 
 template<typename Logger1, typename Logger2, typename Logger3>
@@ -61,7 +61,7 @@ private:
 	Logger1 * getLogger1() const { return m_logger1.get(); }
 	Logger2 * getLogger2() const { return m_logger2.get(); }
 	Logger3 * getLogger3() const { return m_logger3.get(); }
-	scoped_ptr<Logger1> m_logger1;
-	scoped_ptr<Logger2> m_logger2;
-	scoped_ptr<Logger3> m_logger3;
+	unique_ptr<Logger1> m_logger1;
+	unique_ptr<Logger2> m_logger2;
+	unique_ptr<Logger3> m_logger3;
 };

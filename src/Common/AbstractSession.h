@@ -17,12 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/tr1/memory.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class SessionManager;
-typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
+typedef std::shared_ptr<SessionManager> SessionManagerPtr;
 
 class AbstractSession {
 public:
@@ -47,4 +45,4 @@ protected:
 	bool m_encrypt;
 };
 
-typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;
+typedef std::shared_ptr<AbstractSession> AbstractSessionPtr;

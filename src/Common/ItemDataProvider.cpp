@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include <iostream>
 #include <string>
+#include <utility>
 
-using boost::bimap;
 using std::string;
 using Initializing::OutputWidth;
 using StringUtilities::runFlags;
@@ -262,7 +262,8 @@ void ItemDataProvider::loadMultiMorphs() {
 }
 
 void ItemDataProvider::loadMonsterCardData() {
-	m_cards.clear();
+	m_cardsToMobs.clear();
+	m_mobsToCards.clear();
 	int32_t cardId;
 	int32_t mobId;
 
@@ -274,7 +275,8 @@ void ItemDataProvider::loadMonsterCardData() {
 		cardId = row.get<int32_t>("cardid");
 		mobId = row.get<int32_t>("mobid");
 
-		m_cards.insert(CardInfo(cardId, mobId));
+		m_cardsToMobs.insert(std::make_pair(cardId, mobId));
+		m_mobsToCards.insert(std::make_pair(mobId, cardId));
 	}
 }
 
@@ -387,23 +389,19 @@ void ItemDataProvider::loadPetInteractions() {
 }
 
 int32_t ItemDataProvider::getCardId(int32_t mobId) {
-	try {
-		return m_cards.right.at(mobId);
+	if (m_mobsToCards.find(mobId) == m_mobsToCards.end()) {
+		std::cerr << "Mob out of range for mob ID " << mobId << std::endl;
+		return 0;
 	}
-	catch (std::out_of_range) {
-		std::cerr << "Mob out of range for mobid " << mobId << std::endl;
-	}
-	return 0;
+	return m_mobsToCards[mobId];
 }
 
 int32_t ItemDataProvider::getMobId(int32_t cardId) {
-	try {
-		return m_cards.left.at(cardId);
+	if (m_cardsToMobs.find(cardId) == m_cardsToMobs.end()) {
+		std::cerr << "Card out of range for card ID " << cardId << std::endl;
+		return 0;
 	}
-	catch (std::out_of_range) {
-		std::cerr << "Card out of range for cardId " << cardId << std::endl;
-	}
-	return 0;
+	return m_cardsToMobs[cardId];
 }
 
 PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemId, int32_t action) {

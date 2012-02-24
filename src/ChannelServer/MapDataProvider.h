@@ -17,20 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/bimap.hpp>
-#include <boost/bimap/unordered_multiset_of.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+using std::shared_ptr;
 using std::string;
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::unordered_map;
 using std::vector;
 
 class Map;
@@ -122,8 +120,6 @@ public:
 private:
 	MapDataProvider();
 	static MapDataProvider *singleton;
-	typedef boost::bimap<int8_t, boost::bimaps::unordered_multiset_of<int8_t>> continent_map;
-	typedef continent_map::value_type continent_info;
 
 	int32_t loadMapData(int32_t mapId, Map *&map);
 	void loadMapTimeMob(Map *map);
@@ -133,7 +129,7 @@ private:
 	void loadSeats(Map *map, int32_t link);
 
 	unordered_map<int32_t, Map *> m_maps;
-	continent_map m_continents;
+	unordered_map<int8_t, int8_t> m_continents;
 	boost::mutex m_loadMutex;
 
 	void loadMap(int32_t mapId, Map *&map);

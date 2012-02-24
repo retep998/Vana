@@ -486,8 +486,8 @@ int32_t Map::killMobs(Player *player, int32_t mobId, bool playerkill, bool showP
 		if (iter->second != nullptr) {
 			if ((mobId > 0 && iter->second->getMobId() == mobId) || mobId == 0) {
 				if (playerkill && player != nullptr) {
-					if (iter->second->getMobId() != Mobs::HorntailSponge) {
-						// This will be taken care of by its parts
+					if (!iter->second->isSponge()) {
+						// Sponges will be taken care of by their parts
 						iter->second->applyDamage(player->getId(), iter->second->getHp());
 					}
 				}

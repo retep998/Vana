@@ -19,25 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractSession.h"
 #include "Decoder.h"
+#include "shared_array.hpp"
 #include "Types.h"
 #include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_array.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/tr1/memory.hpp>
+#include <memory>
 #include <queue>
 #include <string>
 
 using boost::asio::ip::tcp;
-using boost::shared_array;
 using std::queue;
 using std::string;
 
 class AbstractConnection;
 class PacketCreator;
 
-class Session : public AbstractSession, public boost::enable_shared_from_this<Session> {
+class Session : public AbstractSession, public std::enable_shared_from_this<Session> {
 public:
 	friend class ConnectionAcceptor;
 	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation = "");
@@ -64,15 +61,15 @@ protected:
 
 	tcp::socket m_socket;
 	Decoder m_decoder;
-	std::tr1::shared_ptr<AbstractConnection> m_connection;
-	shared_array<unsigned char> m_buffer;
+	std::shared_ptr<AbstractConnection> m_connection;
+	std::shared_array<unsigned char> m_buffer;
 	bool m_isForClient;
 	bool m_usePing;
 	string m_patchLocation;
 
 	// Packet sending
-	shared_array<unsigned char> m_sendPacket;
+	std::shared_array<unsigned char> m_sendPacket;
 	boost::mutex m_sendMutex;
 };
 
-typedef boost::shared_ptr<Session> SessionPtr;
+typedef std::shared_ptr<Session> SessionPtr;

@@ -33,13 +33,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.h"
 #include "TimeUtilities.h"
 
-PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos) :
+PlayerInventory::PlayerInventory(Player *player, const std::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos) :
 	m_maxSlots(maxSlots),
 	m_mesos(mesos),
 	m_hammer(-1),
 	m_player(player)
 {
-	boost::array<int32_t, 2> g = {0};
+	std::array<int32_t, 2> g = {0};
 
 	for (size_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		m_equipped[i] = g;
@@ -49,7 +49,7 @@ PlayerInventory::PlayerInventory(Player *player, const boost::array<uint8_t, Inv
 }
 
 PlayerInventory::~PlayerInventory() {
-	typedef boost::array<ItemInventory, Inventories::InventoryCount> ItemInvArr;
+	typedef std::array<ItemInventory, Inventories::InventoryCount> ItemInvArr;
 	for (ItemInvArr::iterator iter = m_items.begin(); iter != m_items.end(); ++iter) {
 		std::for_each(iter->begin(), iter->end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
 	}
@@ -63,7 +63,7 @@ void PlayerInventory::load() {
 
 	soci::rowset<> rs = (sql.prepare << "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness " <<
 										"FROM items i " <<
-										"LEFT JOIN pets p ON i.pet_id = p.pet_id " <<
+										"LEFT OUTER JOIN pets p ON i.pet_id = p.pet_id " <<
 										"WHERE i.location = :location AND i.character_id = :char",
 										soci::use(m_player->getId(), "char"),
 										soci::use(location, "location"));
@@ -443,7 +443,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 				// Only have to bother with required slots if it would put us over the limit of a slot
 				required = static_cast<int16_t>(existing / maxSlot);
 				if ((existing % maxSlot) > 0) {
-					required += 1;
+					++required;
 				}
 			}
 		}
@@ -451,7 +451,7 @@ bool PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 			// If it is, treat it as though no items exist at all
 			required = static_cast<int16_t>(amount / maxSlot);
 			if ((amount % maxSlot) > 0) {
-				required += 1;
+				++required;
 			}
 		}
 	}
@@ -601,17 +601,20 @@ void PlayerInventory::wishListPacket(PacketCreator &packet) {
 
 void PlayerInventory::checkExpiredItems() {
 	vector<int32_t> expiredItemIds;
+	int64_t serverTime = TimeUtilities::getServerTime();
+
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		for (int16_t s = 1; s <= getMaxSlots(i); ++s) {
-			Item *item = getItem(i, s);
-
-			if (item != nullptr && item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= TimeUtilities::getServerTime()) {
-				expiredItemIds.push_back(item->getId());
-				Inventory::takeItemSlot(m_player, i, s, item->getAmount());
+			if (Item *item = getItem(i, s)) {
+				if (item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= serverTime) {
+					expiredItemIds.push_back(item->getId());
+					Inventory::takeItemSlot(m_player, i, s, item->getAmount());
+				}
 			}
 		}
 	}
+
 	if (expiredItemIds.size() > 0) {
-		InventoryPacket::sendItemExpired(m_player, &expiredItemIds);
+		InventoryPacket::sendItemExpired(m_player, expiredItemIds);
 	}
 }

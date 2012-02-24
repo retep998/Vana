@@ -18,16 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include "noncopyable.hpp"
 #include <list>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using std::list;
 using std::string;
-using std::tr1::unordered_map;
+using std::unordered_map;
 using std::vector;
 
 class PacketCreator;
@@ -44,7 +44,7 @@ struct Buddy {
 	int32_t channel;
 	int32_t charId;
 };
-typedef std::tr1::shared_ptr<Buddy> BuddyPtr;
+typedef std::shared_ptr<Buddy> BuddyPtr;
 
 struct BuddyInvite {
 	BuddyInvite() : send(true) { }

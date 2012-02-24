@@ -26,10 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
+#include "StringUtilities.h"
 #include "WorldServerConnectPacket.h"
-#include <boost/lexical_cast.hpp>
 
-using boost::lexical_cast;
+using StringUtilities::lexical_cast;
 
 bool ManagementFunctions::map(Player *player, const string &args) {
 	if (args.length() != 0) {
@@ -286,7 +286,7 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 		if (st.get_affected_rows() > 0) {
 			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetName);
+			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Couldn't ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -323,7 +323,7 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 		if (st.get_affected_rows() > 0) {
 			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>((int16_t)reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetName);
+			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>(reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetName);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Couldn't temporary ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
@@ -354,7 +354,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 			if (st.get_affected_rows() > 0) {
 				string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>((int16_t)reason) + ". GM: " + player->getName() + ", Character: " + targetName);
+				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 			}
 			else {
 				PlayerPacket::showMessage(player, "Couldn't IP ban " + targetIp + ".", PlayerPacket::NoticeTypes::Red);

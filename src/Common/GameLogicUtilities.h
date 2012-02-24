@@ -83,6 +83,7 @@ namespace GameLogicUtilities {
 	inline bool isResistance(int16_t jobId) { return (jobId >= 3000 && jobId < 4000); }
 	inline bool isBeginnerJob(int16_t jobId) { return (jobId == Jobs::JobIds::Beginner || jobId == Jobs::JobIds::Noblesse || jobId == Jobs::JobIds::Legend || jobId == Jobs::JobIds::Evan || jobId == Jobs::JobIds::Citizen); }
 	inline int16_t getJobTrack(int16_t job, bool flatten = false) { return (flatten && !isRegularJob(job) ? ((job / 100) % 10) : (job / 100)); }
+	inline uint8_t getMaxLevel(int16_t job) { return (isCygnus(job) ? Stats::CygnusLevels : Stats::PlayerLevels); }
 
 	// Monster card
 	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }

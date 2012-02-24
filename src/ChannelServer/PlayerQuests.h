@@ -17,20 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
+#include "noncopyable.hpp"
 #include "Quest.h"
 #include "QuestDataProvider.h"
 #include "Quests.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include "Types.h"
 #include <iomanip>
 #include <map>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 
 using std::map;
 using std::string;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class PacketCreator;
 class Player;

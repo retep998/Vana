@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
-#include <boost/lexical_cast.hpp>
+#include "StringUtilities.h"
 
-using boost::lexical_cast;
+using StringUtilities::lexical_cast;
 
 namespace Functors {
 	struct WarpFunctor {

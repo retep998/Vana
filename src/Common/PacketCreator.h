@@ -18,14 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.h"
+#include "shared_array.hpp"
 #include "Types.h"
-#include <boost/shared_array.hpp>
 #include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
 
-using boost::shared_array;
 using std::string;
 using std::vector;
 
@@ -66,7 +65,7 @@ private:
 	unsigned char getHexByte(unsigned char input);
 
 	size_t m_pos;
-	shared_array<unsigned char> m_packet;
+	std::shared_array<unsigned char> m_packet;
 	size_t m_packetCapacity;
 };
 

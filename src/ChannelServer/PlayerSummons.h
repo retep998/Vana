@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
 #include "IPacket.h"
-#include <boost/utility.hpp>
+#include "noncopyable.hpp"
+#include "Types.h"
 
 class PacketCreator;
 class PacketReader;

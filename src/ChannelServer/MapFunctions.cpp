@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobConstants.h"
 #include "Player.h"
 #include "PlayerPacket.h"
-#include <boost/lexical_cast.hpp>
+#include "StringUtilities.h"
 #include <iostream>
 
-using boost::lexical_cast;
+using StringUtilities::lexical_cast;
 
 bool MapFunctions::eventInstruction(Player *player, const string &args) {
 	MapPacket::showEventInstructions(player->getMap());

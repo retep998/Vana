@@ -17,19 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <memory>
+#include <unordered_map>
 
 class PacketReader;
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 struct ConnectingPlayer {
 	ip_t connectIp;
 	uint32_t connectTime;
-	boost::shared_ptr<PacketReader> heldPacket;
+	std::shared_ptr<PacketReader> heldPacket;
 };
 
 typedef unordered_map<int32_t, ConnectingPlayer> ConnectableMap;

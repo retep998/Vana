@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Item.h"
 #include "ItemDataObjects.h"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class EquipDataProvider {
 public:

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "ServerClient.h"
 #include <algorithm>
-#include <boost/bind.hpp>
+#include <functional>
 
 ConnectionManager * ConnectionManager::singleton = nullptr;
 
@@ -42,11 +42,11 @@ void ConnectionManager::connect(ip_t serverIp, port_t serverPort, const LoginCon
 
 void ConnectionManager::stop() {
 	// Post a call to io_service so it is safe to call from all threads
-	m_ioService.post(boost::bind(&ConnectionManager::handleStop, this));
+	m_ioService.post(std::bind(&ConnectionManager::handleStop, this));
 }
 
 void ConnectionManager::run() {
-	m_thread.reset(new boost::thread(boost::bind(&ConnectionManager::handleRun, this)));
+	m_thread.reset(new boost::thread(std::bind(&ConnectionManager::handleRun, this)));
 }
 
 void ConnectionManager::join() {
@@ -58,7 +58,7 @@ void ConnectionManager::handleRun() {
 }
 
 void ConnectionManager::handleStop() {
-	std::for_each(m_servers.begin(), m_servers.end(), boost::bind(&ConnectionAcceptor::stop, _1));
+	std::for_each(m_servers.begin(), m_servers.end(), std::bind(&ConnectionAcceptor::stop, std::placeholders::_1));
 
 	m_clients->stopAll();
 

@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Item.h"
 #include "ItemConstants.h"
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/array.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <array>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using std::string;
-using std::tr1::unordered_map;
+using std::unordered_map;
 using std::vector;
 
 class Player;
@@ -35,7 +35,7 @@ class PacketCreator;
 
 class PlayerInventory : boost::noncopyable {
 public:
-	PlayerInventory(Player *player, const boost::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
+	PlayerInventory(Player *player, const std::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
 	~PlayerInventory();
 
 	void load();
@@ -85,9 +85,9 @@ public:
 private:
 	typedef unordered_map<int16_t, Item *> ItemInventory;
 
-	boost::array<uint8_t, Inventories::InventoryCount> m_maxSlots;
-	boost::array<boost::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
-	boost::array<ItemInventory, Inventories::InventoryCount> m_items;
+	std::array<uint8_t, Inventories::InventoryCount> m_maxSlots;
+	std::array<std::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
+	std::array<ItemInventory, Inventories::InventoryCount> m_items;
 
 	vector<int32_t> m_vipLocations;
 	vector<int32_t> m_rockLocations;

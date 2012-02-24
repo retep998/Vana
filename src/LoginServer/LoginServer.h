@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "InitializeLogin.h"
 #include "LoginServerAcceptConnection.h"
+#include "noncopyable.hpp"
 #include "Player.h"
 #include "Types.h"
-#include <boost/utility.hpp>
 
 class LoginServer : public AbstractServer, boost::noncopyable {
 public:

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ip.h"
 #include "Logger.h"
 #include "Types.h"
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -64,8 +64,8 @@ protected:
 	LoginConfig m_loginConfig;
 	string m_interPassword;
 	IpMatrix m_externalIp;
-	boost::scoped_ptr<Logger> m_logger;
+	std::unique_ptr<Logger> m_logger;
 private:
-	typedef std::tr1::unordered_map<string, int32_t> ConstantMap;
+	typedef std::unordered_map<string, int32_t> ConstantMap;
 	void loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const;
 };

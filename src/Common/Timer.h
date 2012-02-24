@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerId.h"
 #include "TimerTypes.h"
 #include <ctime>
-#include <boost/tr1/functional.hpp>
+#include <functional>
 
-using std::tr1::function;
+using std::function;
 
 namespace Timer {
 

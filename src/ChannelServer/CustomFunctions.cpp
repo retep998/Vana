@@ -17,9 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CustomFunctions.h"
 #include "Player.h"
-#include <boost/lexical_cast.hpp>
-
-using boost::lexical_cast;
 
 void CustomFunctions::initialize(CommandListType &commandList) {
 	// Define any custom functions you may have here, just like ChatHandlerFunctions::initialize

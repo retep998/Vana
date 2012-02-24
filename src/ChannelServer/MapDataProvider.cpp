@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapleTvs.h"
 #include "MapObjects.h"
 #include "StringUtilities.h"
+#include <utility>
 
 using StringUtilities::runFlags;
 
@@ -72,7 +73,7 @@ void MapDataProvider::loadData() {
 		mapCluster = row.get<int8_t>("map_cluster");
 		continent = row.get<int8_t>("continent");
 
-		m_continents.insert(continent_info(mapCluster, continent));
+		m_continents.insert(std::make_pair(mapCluster, continent));
 	}
 }
 
@@ -285,11 +286,9 @@ void MapDataProvider::loadMapTimeMob(Map *map) {
 
 int8_t MapDataProvider::getContinent(int32_t mapId) {
 	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
-	try {
-		return m_continents.left.at(cluster);
+	if (m_continents.find(cluster) == m_continents.end()) {
+		std::cerr << "Attempted to get a continent ID that does not exist for map ID " << mapId << std::endl;
+		return 0;
 	}
-	catch (std::out_of_range) {
-		std::cerr << "Attempted to get a continent ID that does not exist for mapId " << mapId << std::endl;
-	}
-	return 0;
+	return m_continents[cluster];
 }

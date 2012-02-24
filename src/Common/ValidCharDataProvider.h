@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/utility.hpp>
 #include <string>
 #include <vector>
 

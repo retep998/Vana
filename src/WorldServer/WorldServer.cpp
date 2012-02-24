@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "InitializeWorld.h"
 #include "IpUtilities.h"
+#include "StringUtilities.h"
 #include "VanaConstants.h"
 #include "WorldServerAcceptPacket.h"
-#include <boost/lexical_cast.hpp>
 
 WorldServer * WorldServer::singleton = nullptr;
 
@@ -68,7 +68,7 @@ void WorldServer::loadLogConfig() {
 }
 
 string WorldServer::makeLogIdentifier() {
-	return "World " + boost::lexical_cast<string>(static_cast<int16_t>(getWorldId()));
+	return "World " + StringUtilities::lexical_cast<string>(getWorldId());
 }
 
 void WorldServer::setScrollingHeader(const string &message) {

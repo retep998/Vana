@@ -111,7 +111,6 @@
     <ClCompile Include="src\Common\TauswortheGenerator.cpp" />
     <ClCompile Include="src\Common\Timer.cpp" />
     <ClCompile Include="src\Common\TimerContainer.cpp" />
-    <ClCompile Include="src\Common\TimerId.cpp" />
     <ClCompile Include="src\Common\TimerThread.cpp" />
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
     <ClCompile Include="src\Common\ConfigFile.cpp" />
@@ -147,6 +146,7 @@
     <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\hash_combine.hpp" />
     <ClInclude Include="src\Common\IConfig.h" />
     <ClInclude Include="src\Common\InterHelper.h" />
     <ClInclude Include="src\Common\Ip.h" />
@@ -161,10 +161,13 @@
     <ClInclude Include="src\Common\MapObjects.h" />
     <ClInclude Include="src\Common\MobConstants.h" />
     <ClInclude Include="src\Common\MobDataObjects.h" />
+    <ClInclude Include="src\Common\noncopyable.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.h" />
+    <ClInclude Include="src\Common\optional.hpp" />
     <ClInclude Include="src\Common\PlayerObjects.h" />
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\Quest.h" />
+    <ClInclude Include="src\Common\shared_array.hpp" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SkillDataObjects.h" />
     <ClInclude Include="src\Common\SociExtensions.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="src\Common\TimerId.h" />
     <ClInclude Include="src\Common\TimerThread.h" />
     <ClInclude Include="src\Common\TimerTypes.h" />
+    <ClInclude Include="src\Common\tokenizer.hpp" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\BeautyDataProvider.h" />
     <ClInclude Include="src\Common\BuffDataProvider.h" />

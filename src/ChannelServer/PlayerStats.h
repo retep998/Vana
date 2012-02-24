@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/utility.hpp>
 #include <map>
 
 using std::map;
@@ -29,12 +29,12 @@ class PacketReader;
 class Player;
 
 struct BonusSet {
-	uint16_t hp;
-	uint16_t mp;
-	uint16_t str;
-	uint16_t dex;
-	uint16_t intt;
-	uint16_t luk;
+	int32_t hp;
+	int32_t mp;
+	int32_t str;
+	int32_t dex;
+	int32_t intt;
+	int32_t luk;
 
 	BonusSet() : hp(0), mp(0), str(0), dex(0), intt(0), luk(0) {}
 };
@@ -68,10 +68,10 @@ public:
 	// Data modification
 	void checkHpMp();
 	void setLevel(uint8_t level);
-	void modifyHp(int16_t hpMod, bool sendPacket = true); // Bases its calculations on current HP/MP
-	void modifyMp(int16_t mpMod, bool sendPacket = false);
-	void damageHp(uint16_t damageHp); // Calculations done based on the fact that damage can range from 0 to ~55k
-	void damageMp(uint16_t damageMp);
+	void modifyHp(int32_t hpMod, bool sendPacket = true); // Bases its calculations on current HP/MP
+	void modifyMp(int32_t mpMod, bool sendPacket = false);
+	void damageHp(int32_t damageHp);
+	void damageMp(int32_t damageMp);
 	void setHp(int16_t hp, bool sendPacket = true); // Only use setHp/Mp if you're going to do checking, they fall easily to datatype issues
 	void setMp(int16_t mp, bool sendPacket = false); // For example, Power Elixir at 30k HP = 30k + 30k = 60k, but wait! That's > 32767, so it's negative
 	void setMaxHp(int16_t maxHp);
@@ -109,7 +109,6 @@ public:
 	int16_t getX(int32_t skillId);
 	int16_t getY(int32_t skillId);
 	uint32_t getExp(uint8_t level);
-	uint8_t getMaxLevel(int16_t jobId);
 
 	// Data acquisition
 	void connectData(PacketCreator &packet);

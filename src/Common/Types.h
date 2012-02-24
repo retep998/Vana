@@ -17,22 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-/* Standard integers */
-#include <boost/cstdint.hpp>
-#include <boost/optional.hpp>
+#include "optional.hpp"
+#include <algorithm>
+#include <cstdint>
 #include <string>
 
-// Import the type from the boost namespace
-typedef boost::int8_t int8_t;
-typedef boost::uint8_t uint8_t;
-typedef boost::int16_t int16_t;
-typedef boost::uint16_t uint16_t;
-typedef boost::int32_t int32_t;
-typedef boost::uint32_t uint32_t;
-typedef boost::int64_t int64_t;
-typedef boost::uint64_t uint64_t;
-
-// Types for use with database
 // Thin wrapper around time_t so we could write a SOCI extension for it
 // time_t on its own is defined as __int64_t on MSVC which was conflicting with the SOCI extension for int64_t
 class unix_time_t {
@@ -55,18 +44,19 @@ private:
 	time_t m_time;
 };
 
-typedef boost::optional<bool> opt_bool;
-typedef boost::optional<int8_t> opt_int8_t;
-typedef boost::optional<uint8_t> opt_uint8_t;
-typedef boost::optional<int16_t> opt_int16_t;
-typedef boost::optional<uint16_t> opt_uint16_t;
-typedef boost::optional<int32_t> opt_int32_t;
-typedef boost::optional<uint32_t> opt_uint32_t;
-typedef boost::optional<int64_t> opt_int64_t;
-typedef boost::optional<uint64_t> opt_uint64_t;
-typedef boost::optional<double> opt_double;
-typedef boost::optional<unix_time_t> opt_unix_time_t;
-typedef boost::optional<std::string> opt_string;
+// Useful DB-related aliases
+typedef std::optional<bool> opt_bool;
+typedef std::optional<int8_t> opt_int8_t;
+typedef std::optional<uint8_t> opt_uint8_t;
+typedef std::optional<int16_t> opt_int16_t;
+typedef std::optional<uint16_t> opt_uint16_t;
+typedef std::optional<int32_t> opt_int32_t;
+typedef std::optional<uint32_t> opt_uint32_t;
+typedef std::optional<int64_t> opt_int64_t;
+typedef std::optional<uint64_t> opt_uint64_t;
+typedef std::optional<double> opt_double;
+typedef std::optional<unix_time_t> opt_unix_time_t;
+typedef std::optional<std::string> opt_string;
 
 // Miscellaneous utility types
 typedef uint16_t header_t;

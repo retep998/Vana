@@ -18,8 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameConstants.h"
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/utility.hpp>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -36,4 +37,4 @@ struct GuildLogo {
 	int16_t background;
 };
 
-typedef boost::array<string, GuildsAndAlliances::RankQuantity> GuildRanks;
+typedef std::array<string, GuildsAndAlliances::RankQuantity> GuildRanks;

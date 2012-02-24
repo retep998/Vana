@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.h"
+#include "noncopyable.hpp"
 #include "Types.h"
+#include <memory>
 #include <string>
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <unordered_map>
 
+using std::shared_ptr;
 using std::string;
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class Channel;
 class PacketCreator;

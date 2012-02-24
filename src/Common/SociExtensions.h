@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "optional.hpp"
 #include "soci.h"
 #include "Types.h"
 #include <string>
@@ -279,6 +280,31 @@ namespace soci {
 		static void to_base(const target_type &in, base_type &out, indicator &ind) {
 			out = in;
 			ind = i_ok;
+		}
+	};
+
+	template <typename T>
+	struct type_conversion<std::optional<T>> {
+		typedef typename type_conversion<T>::base_type base_type;
+
+		static void from_base(const base_type &in, indicator ind, std::optional<T> &out) {
+			if (ind == i_null) {
+				out.reset();
+			}
+			else {
+				T tmp;
+				type_conversion<T>::from_base(in, ind, tmp);
+				out = tmp;
+			}
+		}
+
+		static void to_base(const std::optional<T> &in, base_type &out, indicator &ind) {
+			if (in.is_initialized()) {
+				type_conversion<T>::to_base(in.get(), out, ind);
+			}
+			else {
+				ind = i_null;
+			}
 		}
 	};
 }

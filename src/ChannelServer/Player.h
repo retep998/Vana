@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractConnection.h"
 #include "MovableLife.h"
+#include "noncopyable.hpp"
 #include "Npc.h"
 #include "PlayerActiveBuffs.h"
 #include "PlayerBuddyList.h"
@@ -34,18 +35,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerVariables.h"
 #include "SkillDataProvider.h"
 #include "TauswortheGenerator.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/tr1/unordered_set.hpp>
-#include <boost/utility.hpp>
-
 #include <ctime>
+#include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
-using boost::scoped_ptr;
 using std::string;
+using std::unique_ptr;
+using std::unordered_set;
 using std::vector;
-using std::tr1::unordered_set;
 
 class Instance;
 class PacketReader;
@@ -177,20 +176,20 @@ private:
 
 	Instance *m_instance;
 	Party *m_party;
-	scoped_ptr<Npc> m_npc;
-	scoped_ptr<PlayerActiveBuffs> m_activeBuffs;
-	scoped_ptr<PlayerBuddyList> m_buddyList;
-	scoped_ptr<PlayerInventory> m_inventory;
-	scoped_ptr<PlayerMonsterBook> m_monsterBook;
-	scoped_ptr<PlayerMounts> m_mounts;
-	scoped_ptr<PlayerPets> m_pets;
-	scoped_ptr<PlayerQuests> m_quests;
-	scoped_ptr<PlayerSkills> m_skills;
-	scoped_ptr<PlayerStats> m_stats;
-	scoped_ptr<PlayerStorage> m_storage;
-	scoped_ptr<PlayerSummons> m_summons;
-	scoped_ptr<PlayerVariables> m_variables;
-	scoped_ptr<TauswortheGenerator> m_randStream;
+	unique_ptr<Npc> m_npc;
+	unique_ptr<PlayerActiveBuffs> m_activeBuffs;
+	unique_ptr<PlayerBuddyList> m_buddyList;
+	unique_ptr<PlayerInventory> m_inventory;
+	unique_ptr<PlayerMonsterBook> m_monsterBook;
+	unique_ptr<PlayerMounts> m_mounts;
+	unique_ptr<PlayerPets> m_pets;
+	unique_ptr<PlayerQuests> m_quests;
+	unique_ptr<PlayerSkills> m_skills;
+	unique_ptr<PlayerStats> m_stats;
+	unique_ptr<PlayerStorage> m_storage;
+	unique_ptr<PlayerSummons> m_summons;
+	unique_ptr<PlayerVariables> m_variables;
+	unique_ptr<TauswortheGenerator> m_randStream;
 };
 
 class PlayerFactory : public AbstractConnectionFactory {

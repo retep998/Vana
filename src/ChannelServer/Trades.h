@@ -18,13 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "LoopingId.h"
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <memory>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class ActiveTrade;
 class Player;
@@ -49,8 +48,8 @@ private:
 	static Trades *singleton;
 	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
 
-	boost::scoped_ptr<Timer::Container> m_container;
-	unordered_map<int32_t, boost::shared_ptr<ActiveTrade>> m_trades;
+	std::unique_ptr<Timer::Container> m_container;
+	unordered_map<int32_t, std::shared_ptr<ActiveTrade>> m_trades;
 	LoopingId<int32_t> m_tradeIds;
 
 	Timer::Container * getTimers() const { return m_container.get(); }

@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "TimerContainer.h"
 #include "Types.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
 #include <map>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 using std::map;
-using std::tr1::unordered_map;
+using std::unordered_map;
 using std::vector;
 
 class Party;
@@ -129,6 +129,8 @@ public:
 	bool hasWeaponReflect() const;
 	bool hasMagicReflect() const;
 	bool hasStatus(int32_t status) const;
+	bool canCastSkills() const;
+	bool isSponge() const { return isSponge(getMobId()); }
 	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return m_owner; }
 	Mob * getSponge() const { return m_sponge; }
@@ -142,6 +144,9 @@ public:
 
 	void die(bool showPacket = false); // Removes mob, no EXP, no summoning
 private:
+	static bool isSponge(int32_t mobId);
+	static bool spawnsSponge(int32_t mobId);
+
 	void initMob();
 	void die(Player *player, bool fromExplosion = false);
 	int32_t giveExp(Player *killer);
@@ -173,5 +178,5 @@ private:
 	unordered_map<uint8_t, time_t> m_skillUse;
 	unordered_map<int32_t, Mob *> m_spawns;
 	Player *m_controller;
-	boost::scoped_ptr<Timer::Container> m_timers;
+	std::unique_ptr<Timer::Container> m_timers;
 };

@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "LuaScriptable.h"
-#include <boost/tr1/unordered_map.hpp>
 #include <string>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
 using std::string;
+using std::unordered_map;
 
 struct PortalInfo;
 

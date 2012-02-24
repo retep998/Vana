@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 #include <vector>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 using std::vector;
 
 class Item;
