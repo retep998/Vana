@@ -19,11 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Database.h"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
 #include <string>
+#include <unordered_map>
 
 using std::string;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 namespace LogDestinations {
 	enum LogDestinations : int32_t {
@@ -64,7 +64,9 @@ namespace LogTypes {
 		Chat,
 		Whisper,
 		MalformedPacket,
-		ScriptLog
+		ScriptLog,
+		Ban,
+		Unban
 	};
 }
 

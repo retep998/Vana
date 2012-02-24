@@ -25,6 +25,14 @@ class PacketReader;
 struct NpcSpawnInfo;
 
 namespace NpcPacket {
+	namespace BoughtMessages {
+		enum {
+			Success = 0,
+			NotEnoughInStock = 1,
+			NotEnoughMesos = 2,
+			NoSlots = 3
+		};
+	}
 	void showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show = true);
 	void showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show = true);
 	void showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);

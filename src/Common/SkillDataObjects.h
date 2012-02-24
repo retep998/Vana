@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapConstants.h"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using std::string;
+using std::unordered_map;
 using std::vector;
-using std::tr1::unordered_map;
 
 struct SkillLevelInfo {
 	int8_t mobCount;

@@ -64,7 +64,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "TradeHandler.h"
 #include "WorldServerConnection.h"
-#include <boost/array.hpp>
+#include <array>
 #include <stdexcept>
 
 Player::Player() :
@@ -293,7 +293,7 @@ void Player::playerConnect(PacketReader &packet) {
 	// Inventory
 	m_mounts.reset(new PlayerMounts(this));
 	m_pets.reset(new PlayerPets(this));
-	boost::array<uint8_t, Inventories::InventoryCount> maxSlots;
+	std::array<uint8_t, Inventories::InventoryCount> maxSlots;
 	maxSlots[0] = row.get<uint8_t>("equip_slots");
 	maxSlots[1] = row.get<uint8_t>("use_slots");
 	maxSlots[2] = row.get<uint8_t>("setup_slots");

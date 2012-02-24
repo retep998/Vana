@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 #include <string>
 
 using std::string;
@@ -31,5 +31,5 @@ public:
 
 	string & operator[](const string &key) { return m_variables[key]; }
 protected:
-	std::tr1::unordered_map<string, string> m_variables;
+	std::unordered_map<string, string> m_variables;
 };

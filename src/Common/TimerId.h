@@ -17,8 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "hash_combine.hpp"
 #include "TimerTypes.h"
 #include "Types.h"
+#include <algorithm>
+#include <functional>
 
 namespace Timer {
 
@@ -29,7 +32,6 @@ struct Id {
 	uint32_t id2;
 
 	bool operator==(Id const &other) const;
-	friend size_t hash_value(Id const &id);
 };
 
 inline
@@ -45,4 +47,19 @@ bool Id::operator==(Id const &other) const {
 	return type == other.type && id == other.id && id2 == other.id2;
 }
 
+}
+
+namespace std {
+	template <>
+	struct std::hash<Timer::Id> : public std::unary_function<Timer::Id, size_t> {
+		size_t operator()(const Timer::Id &v) const {
+			size_t seed = 0;
+
+			std::hash_combine(seed, v.type);
+			std::hash_combine(seed, v.id);
+			std::hash_combine(seed, v.id2);
+
+			return seed;
+		}
+	};
 }

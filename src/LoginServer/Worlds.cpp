@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerStatus.h"
 #include "Session.h"
+#include "StringUtilities.h"
 #include "World.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 Worlds * Worlds::singleton = nullptr;
@@ -118,7 +118,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 
 		LoginServerAcceptPacket::connect(connection, world);
 
-		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(worldId)));
+		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string>(worldId));
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);

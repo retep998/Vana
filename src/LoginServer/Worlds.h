@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/tr1/functional.hpp>
-#include <boost/utility.hpp>
+#include <functional>
 #include <map>
 #include <string>
 
+using std::function;
 using std::map;
 using std::string;
-using std::tr1::function;
 
 class Channel;
 class LoginServerAcceptConnection;

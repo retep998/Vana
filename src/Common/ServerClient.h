@@ -41,4 +41,4 @@ private:
 	tcp::resolver m_resolver;
 };
 
-typedef boost::shared_ptr<ServerClient> ServerClientPtr;
+typedef std::shared_ptr<ServerClient> ServerClientPtr;

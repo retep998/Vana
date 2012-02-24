@@ -19,16 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TimerId.h"
 #include "TimerTypes.h"
-#include <boost/functional/hash.hpp>
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <functional>
+#include <memory>
+#include <unordered_map>
 
 namespace Timer {
 
 class Timer;
 
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::shared_ptr;
+using std::unordered_map;
 
 class Container {
 public:
@@ -37,7 +37,7 @@ public:
 	void registerTimer(Timer *timer);
 	void removeTimer(const Id &id);
 private:
-	unordered_map<Id, shared_ptr<Timer>, boost::hash<Id>> m_timers;
+	unordered_map<Id, shared_ptr<Timer>, std::hash<Id>> m_timers;
 };
 
 }

@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptConnection.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
+#include "StringUtilities.h"
 #include "World.h"
 #include "Worlds.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 
-using boost::lexical_cast;
+using StringUtilities::lexical_cast;
 
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
@@ -36,7 +36,7 @@ void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 	IpUtilities::extractExternalIp(packet, chan->getExternalIps());
 	chan->setPort(packet.get<port_t>());
 	Worlds::Instance()->getWorld(connection->getWorldId())->addChannel(channel, chan);
-	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(static_cast<int16_t>(connection->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
+	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));
 }
 
 void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) {
@@ -52,7 +52,7 @@ void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connec
 	int32_t channel = packet.get<int32_t>();
 
 	Worlds::Instance()->getWorld(connection->getWorldId())->removeChannel(channel);
-	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(static_cast<int16_t>(connection->getWorldId())) + "; Channel " + lexical_cast<string>(channel));
+	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));
 }
 
 void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) {

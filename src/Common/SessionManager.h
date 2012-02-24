@@ -17,13 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/memory.hpp>
+#include "noncopyable.hpp"
+#include <memory>
 #include <set>
 
 class AbstractSession;
-typedef boost::shared_ptr<AbstractSession> AbstractSessionPtr;
+typedef std::shared_ptr<AbstractSession> AbstractSessionPtr;
 
 class SessionManager : private boost::noncopyable {
 public:
@@ -34,4 +33,4 @@ private:
 	std::set<AbstractSessionPtr> m_sessions;
 };
 
-typedef std::tr1::shared_ptr<SessionManager> SessionManagerPtr;
+typedef std::shared_ptr<SessionManager> SessionManagerPtr;

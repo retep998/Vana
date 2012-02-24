@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/memory.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -108,5 +108,7 @@ struct MobInfoRaw {
 	bool onlyNormalAttacks;
 	double traction;
 	vector<int32_t> summon;
+
+	bool hasHpBar() const { return hpColor > 0; }
 };
-typedef std::tr1::shared_ptr<MobInfoRaw> MobInfo;
+typedef std::shared_ptr<MobInfoRaw> MobInfo;

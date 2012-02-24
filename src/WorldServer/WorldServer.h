@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConfigFile.h"
 #include "Configuration.h"
 #include "LoginServerConnection.h"
+#include "noncopyable.hpp"
 #include "Types.h"
 #include "WorldServerAcceptConnection.h"
-#include <boost/utility.hpp>
 #include <string>
 
 using std::string;

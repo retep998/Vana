@@ -179,17 +179,20 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			int32_t itemId = ShopDataProvider::Instance()->getItemId(player->getShop(), itemindex);
 			int32_t price = ShopDataProvider::Instance()->getPrice(player->getShop(), itemindex);
 			uint32_t totalAmount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
-			int32_t totalprice = quantity * price;
-			if (price == 0 || totalAmount > ItemDataProvider::Instance()->getMaxSlot(itemId) || player->getInventory()->getMesos() < totalprice) {
+			int32_t totalPrice = quantity * price;
+			if (price == 0 || totalAmount > ItemDataProvider::Instance()->getMaxSlot(itemId) || player->getInventory()->getMesos() < totalPrice) {
 				// Hacking
+				NpcPacket::bought(player, NpcPacket::BoughtMessages::NotEnoughMesos); // Hacking
 				return;
 			}
 			bool haveSlot = player->getInventory()->hasOpenSlotsFor(itemId, static_cast<int16_t>(totalAmount), true);
-			if (haveSlot) {
-				Inventory::addNewItem(player, itemId, static_cast<int16_t>(totalAmount));
-				player->getInventory()->modifyMesos(-totalprice);
+			if (!haveSlot) {
+				NpcPacket::bought(player, NpcPacket::BoughtMessages::NoSlots);
+				return;
 			}
-			NpcPacket::bought(player, haveSlot ? 0 : 3);
+			Inventory::addNewItem(player, itemId, static_cast<int16_t>(totalAmount));
+			player->getInventory()->modifyMesos(-totalPrice);
+			NpcPacket::bought(player, NpcPacket::BoughtMessages::Success);
 			break;
 		}
 		case ShopOpcodes::Sell: {
@@ -199,7 +202,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			int8_t inv = GameLogicUtilities::getInventory(itemId);
 			Item *item = player->getInventory()->getItem(inv, slot);
 			if (item == nullptr || (!GameLogicUtilities::isRechargeable(itemId) && amount > item->getAmount())) {
-				NpcPacket::bought(player, 1); // Hacking
+				NpcPacket::bought(player, NpcPacket::BoughtMessages::NotEnoughInStock); // Hacking
 				return;
 			}
 			int32_t price = ItemDataProvider::Instance()->getPrice(itemId);
@@ -211,7 +214,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 			else {
 				Inventory::takeItemSlot(player, inv, slot, amount, true);
 			}
-			NpcPacket::bought(player, 0);
+			NpcPacket::bought(player, NpcPacket::BoughtMessages::Success);
 			break;
 		}
 		case ShopOpcodes::Recharge: {
@@ -230,7 +233,7 @@ void NpcHandler::useShop(Player *player, PacketReader &packet) {
 				player->getInventory()->modifyMesos(modifiedmesos);
 				InventoryPacket::updateItemAmounts(player, Inventories::UseInventory, slot, maxSlot, 0, 0);
 				item->setAmount(maxSlot);
-				NpcPacket::bought(player, 0);
+				NpcPacket::bought(player, NpcPacket::BoughtMessages::Success);
 			}
 			break;
 		}

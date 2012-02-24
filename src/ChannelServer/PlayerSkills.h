@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class Player;
 class PacketCreator;

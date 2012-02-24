@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "SkillConstants.h"
 #include "Types.h"
-#include <boost/array.hpp>
+#include <array>
 
 class PacketCreator;
 
 namespace BuffsPacketHelper {
-	void addBytes(PacketCreator &packet, const boost::array<uint8_t, BuffBytes::ByteQuantity> &bytes);
+	void addBytes(PacketCreator &packet, const std::array<uint8_t, BuffBytes::ByteQuantity> &bytes);
 }

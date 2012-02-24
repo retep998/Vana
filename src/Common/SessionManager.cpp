@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SessionManager.h"
 #include "AbstractSession.h"
 #include <algorithm>
-#include <boost/bind.hpp>
+#include <functional>
 
 void SessionManager::start(AbstractSessionPtr session) {
 	m_sessions.insert(session);
@@ -31,6 +31,6 @@ void SessionManager::stop(AbstractSessionPtr session) {
 }
 
 void SessionManager::stopAll() {
-	std::for_each(m_sessions.begin(), m_sessions.end(), boost::bind(&AbstractSession::handleStop, _1));
+	std::for_each(m_sessions.begin(), m_sessions.end(), std::bind(&AbstractSession::handleStop, std::placeholders::_1));
 	m_sessions.clear();
 }

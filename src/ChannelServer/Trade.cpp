@@ -55,7 +55,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 		yes = false;
 	}
 	if (yes && unit->count > 0) {
-		boost::array<int8_t, Inventories::InventoryCount> totals = {0};
+		std::array<int8_t, Inventories::InventoryCount> totals = {0};
 		unordered_map<int32_t, int16_t> added;
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
 			// Create item structure to determine needed slots among stackable items

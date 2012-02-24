@@ -106,20 +106,20 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realSkill = 0;
 	uint8_t level = 0;
-	Pos projectileTarget = packet.getPos();
+	Pos &projectileTarget = packet.getPos();
 	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
-	Pos spot = packet.getPos();
+	Pos &spot = packet.getPos();
 
 	MovementHandler::parseMovement(mob, packet);
 
 	if (useSkill && (skill == -1 || skill == 0)) {
-		if (!(mob->hasStatus(StatusEffects::Mob::Freeze) || mob->hasStatus(StatusEffects::Mob::Stun) || mob->hasStatus(StatusEffects::Mob::ShadowWeb))) {
+		if (mob->canCastSkills()) {
 			uint8_t size = mob->getSkillCount();
 			bool used = false;
-			if (size) {
+			if (size > 0) {
 				bool stop = false;
 				uint8_t rand = Randomizer::Instance()->randChar(size - 1);
-				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
+ 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realSkill = info->skillId;
 				level = info->level;
 				MobSkillLevelInfo *mobSkill = SkillDataProvider::Instance()->getMobSkill(realSkill, level);

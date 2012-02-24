@@ -16,30 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Instances.h"
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 
 Instances * Instances::singleton = nullptr;
 
 void Instances::addInstance(Instance *instance) {
-	m_instances[boost::to_upper_copy(instance->getName())] = instance;
+	string upper = StringUtilities::toUpper(instance->getName());
+	m_instances[upper] = instance;
 }
 
 void Instances::removeInstance(Instance *instance) {
-	m_instances.erase(boost::to_upper_copy(instance->getName()));
+	string upper = StringUtilities::toUpper(instance->getName());
+	m_instances.erase(upper);
 }
 
 Instance * Instances::getInstance(const string &name) {
-	string &upCaseName = boost::to_upper_copy(name);
-	return (m_instances.find(upCaseName) == m_instances.end()) ? nullptr : m_instances[upCaseName];
+	string upper = StringUtilities::toUpper(name);
+	return (m_instances.find(upper) == m_instances.end()) ? nullptr : m_instances[upper];
 }
 
 bool Instances::isInstance(const string &name) {
-	string &upCaseName = boost::to_upper_copy(name);
-	bool exists = m_instances.find(upCaseName) != m_instances.end();
-	if (exists && m_instances[upCaseName]->getMarkedForDelete()) {
+	string upper = StringUtilities::toUpper(name);
+	bool exists = m_instances.find(upper) != m_instances.end();
+	if (exists && m_instances[upper]->getMarkedForDelete()) {
 		exists = false;
-		Instance *instance = m_instances[upCaseName];
-		m_instances.erase(upCaseName);
+		Instance *instance = m_instances[upper];
+		m_instances.erase(upper);
 		delete instance;
 	}
 	return exists;

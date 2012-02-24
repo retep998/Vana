@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SociExtensions.h"
 #include "Types.h"
 #include <boost/thread/tss.hpp>
-#include <boost/type_traits.hpp>
 #include <string>
 
 struct DbConfig;

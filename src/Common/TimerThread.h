@@ -17,10 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
+#include "noncopyable.hpp"
 #include <boost/thread.hpp>
-#include <boost/utility.hpp>
 #include <list>
+#include <memory>
 
 namespace Timer {
 
@@ -56,10 +56,10 @@ private:
 	list<Timer *> m_timers;
 	boost::recursive_mutex m_timersMutex;
 
-	boost::scoped_ptr<boost::thread> m_thread;
+	std::unique_ptr<boost::thread> m_thread;
 	boost::condition_variable_any m_mainLoopCondition;
 
-	boost::scoped_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
+	std::unique_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
 };
 
 }

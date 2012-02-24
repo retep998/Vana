@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/regex.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <regex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using std::string;
@@ -44,7 +44,7 @@ struct ChatCommand {
 	string syntax;
 	vector<string> notes;
 };
-typedef std::tr1::unordered_map<string, ChatCommand> CommandListType;
+typedef std::unordered_map<string, ChatCommand> CommandListType;
 
 namespace ChatHandlerFunctions {
 	extern CommandListType CommandList;

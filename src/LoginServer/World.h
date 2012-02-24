@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channel.h"
 #include "Configuration.h"
 #include "Types.h"
-#include <boost/tr1/functional.hpp>
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <memory>
+#include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using std::string;
-using std::tr1::function;
+using std::function;
 using std::vector;
 
 class Channel;
@@ -64,7 +64,7 @@ public:
 	WorldConfig & getConfig() { return m_config; }
 	LoginServerAcceptConnection * getConnection() const { return m_connection; }
 private:
-	typedef std::tr1::unordered_map<int32_t, boost::shared_ptr<Channel>> ChannelMap;
+	typedef std::unordered_map<int32_t, std::shared_ptr<Channel>> ChannelMap;
 
 	bool m_connected;
 	int8_t m_id;

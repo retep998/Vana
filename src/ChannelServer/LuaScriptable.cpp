@@ -42,12 +42,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactor.h"
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
+#include "StringUtilities.h"
 #include "TimeUtilities.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <vector>
 
 using std::vector;
+using StringUtilities::lexical_cast;
 
 LuaScriptable::LuaScriptable(const string &filename, int32_t playerId) :
 	m_filename(filename),
@@ -173,7 +174,7 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "getInt", &LuaExports::getInt);
 	lua_register(luaVm, "getJob", &LuaExports::getJob);
 	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
-	lua_register(luaVm, "getLUK", &LuaExports::getLuk);
+	lua_register(luaVm, "getLuk", &LuaExports::getLuk);
 	lua_register(luaVm, "getMap", &LuaExports::getMap);
 	lua_register(luaVm, "getMaxHp", &LuaExports::getMaxHp);
 	lua_register(luaVm, "getMaxMp", &LuaExports::getMaxMp);
@@ -442,13 +443,13 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string val = EventDataProvider::InstancePtr()->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string &val = EventDataProvider::InstancePtr()->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
 		}
 		else {
-			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+			lua_pushinteger(luaVm, lexical_cast<int32_t>(val));
 		}
 	}
 	else {
@@ -483,8 +484,8 @@ int LuaExports::isZakumChannel(lua_State *luaVm) {
 }
 
 int LuaExports::setChannelVariable(lua_State *luaVm) {
-	string value = string(lua_tostring(luaVm, -1));
-	string key = string(lua_tostring(luaVm, -2));
+	string &value = string(lua_tostring(luaVm, -1));
+	string &key = string(lua_tostring(luaVm, -2));
 	EventDataProvider::InstancePtr()->getVariables()->setVariable(key, value);
 	return 0;
 }
@@ -501,7 +502,7 @@ int LuaExports::getHorntailChannels(lua_State *luaVm) {
 	const vector<int8_t> &channels = ChannelServer::Instance()->getHorntailChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
+	for (size_t i = 0; i < channels.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
@@ -538,7 +539,7 @@ int LuaExports::getPapChannels(lua_State *luaVm) {
 	const vector<int8_t> &channels = ChannelServer::Instance()->getPapChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
+	for (size_t i = 0; i < channels.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
@@ -550,7 +551,7 @@ int LuaExports::getPianusChannels(lua_State *luaVm) {
 	const vector<int8_t> &channels = ChannelServer::Instance()->getPianusChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
+	for (size_t i = 0; i < channels.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
@@ -562,7 +563,7 @@ int LuaExports::getPinkBeanChannels(lua_State *luaVm) {
 	const vector<int8_t> &channels = ChannelServer::Instance()->getPinkBeanChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
+	for (size_t i = 0; i < channels.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
@@ -574,7 +575,7 @@ int LuaExports::getZakumChannels(lua_State *luaVm) {
 	const vector<int8_t> &channels = ChannelServer::Instance()->getZakumChannels();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); i++) {
+	for (size_t i = 0; i < channels.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, channels[i]);
 		lua_settable(luaVm, top);
@@ -639,7 +640,7 @@ int LuaExports::getAllFaces(lua_State *luaVm) {
 	const vector<int32_t> &ids = BeautyDataProvider::Instance()->getFaces(getPlayer(luaVm)->getGender());
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); i++) {
+	for (size_t i = 0; i < ids.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
@@ -651,7 +652,7 @@ int LuaExports::getAllHair(lua_State *luaVm) {
 	vector<int32_t> &ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getGender());
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); i++) {
+	for (size_t i = 0; i < ids.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
@@ -663,7 +664,7 @@ int LuaExports::getAllSkins(lua_State *luaVm) {
 	const vector<int8_t> &ids = BeautyDataProvider::Instance()->getSkins();
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); i++) {
+	for (size_t i = 0; i < ids.size(); ++i) {
 		lua_pushinteger(luaVm, i + 1);
 		lua_pushinteger(luaVm, ids[i]);
 		lua_settable(luaVm, top);
@@ -980,13 +981,13 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string &val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
 		}
 		else {
-			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+			lua_pushinteger(luaVm, lexical_cast<int32_t>(val));
 		}
 	}
 	else {
@@ -1877,7 +1878,7 @@ int LuaExports::getInstanceVariable(lua_State *luaVm) {
 			lua_pushnil(luaVm);
 		}
 		else {
-			lua_pushinteger(luaVm, boost::lexical_cast<int32_t>(val));
+			lua_pushinteger(luaVm, lexical_cast<int32_t>(val));
 		}
 	}
 	else {

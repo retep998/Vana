@@ -30,11 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 #include <map>
 
 using std::map;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;

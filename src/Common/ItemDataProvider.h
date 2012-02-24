@@ -19,15 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ItemDataObjects.h"
 #include "Types.h"
-#include <boost/bimap.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <vector>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
-using boost::bimap;
-using std::tr1::unordered_map;
-using std::vector;
 using std::string;
+using std::unordered_map;
+using std::vector;
 
 class Item;
 
@@ -83,9 +81,6 @@ private:
 	void loadPetInteractions();
 	int16_t getStatVariance(int8_t mod, uint16_t variance);
 
-	typedef bimap<int32_t, int32_t> CardMap;
-	typedef CardMap::value_type CardInfo;
-
 	unordered_map<int32_t, ItemInfo> m_itemInfo;
 	unordered_map<int32_t, ScrollInfo> m_scrollInfo;
 	unordered_map<int32_t, ConsumeInfo> m_consumeInfo;
@@ -94,5 +89,6 @@ private:
 	unordered_map<int32_t, vector<ItemRewardInfo>> m_itemRewards;
 	unordered_map<int32_t, PetInfo> m_petInfo;
 	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> m_petInteractInfo;
-	CardMap m_cards; // Left, card ID; right, mob ID
+	unordered_map<int32_t, int32_t> m_cardsToMobs;
+	unordered_map<int32_t, int32_t> m_mobsToCards;
 };

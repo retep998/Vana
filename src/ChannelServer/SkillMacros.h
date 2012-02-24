@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 using std::string;
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::shared_ptr;
+using std::unordered_map;
 
 class SkillMacros {
 public:

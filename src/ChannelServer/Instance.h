@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InstanceMessageConstants.h"
 #include "Types.h"
 #include "Variables.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-using boost::scoped_ptr;
 using std::string;
-using std::tr1::unordered_map;
+using std::unique_ptr;
+using std::unordered_map;
 using std::vector;
 
 class LuaInstance;
@@ -121,9 +121,9 @@ public:
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
-	scoped_ptr<Timer::Container> m_timers; // Timer container for the instance
-	scoped_ptr<Variables> m_variables;
-	scoped_ptr<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
+	unique_ptr<Timer::Container> m_timers; // Timer container for the instance
+	unique_ptr<Variables> m_variables;
+	unique_ptr<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
 
 	unordered_map<string, TimerAction> m_timerActions; // Timers indexed by name
 	unordered_map<int32_t, Player *> m_players;

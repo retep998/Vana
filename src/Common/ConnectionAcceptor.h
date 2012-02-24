@@ -22,8 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SessionManager.h"
 #include <string>
 #include <boost/asio.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 using std::string;
 using boost::asio::ip::tcp;
@@ -39,11 +38,11 @@ private:
 	void handleConnection(SessionPtr newSession, const boost::system::error_code &error);
 
 	tcp::acceptor m_acceptor;
-	boost::scoped_ptr<AbstractConnectionFactory> m_apf;
+	std::unique_ptr<AbstractConnectionFactory> m_apf;
 	SessionManagerPtr m_sessionManager;
 	string m_patchLocation;
 	LoginConfig m_loginConfig;
 	bool m_isServer;
 };
 
-typedef boost::shared_ptr<ConnectionAcceptor> ConnectionAcceptorPtr;
+typedef std::shared_ptr<ConnectionAcceptor> ConnectionAcceptorPtr;

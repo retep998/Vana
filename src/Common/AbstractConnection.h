@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Session.h"
 #include "TimerContainer.h"
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <string>
 
 using std::string;
@@ -56,7 +56,7 @@ private:
 	bool m_isPinged;
 	clock_t m_latency;
 	clock_t m_lastPing;
-	boost::scoped_ptr<Timer::Container> m_timers;
+	std::unique_ptr<Timer::Container> m_timers;
 };
 
 class AbstractConnectionFactory {

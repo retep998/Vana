@@ -20,14 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaNpc.h"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/tr1/memory.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
-using boost::scoped_ptr;
+using std::shared_ptr;
 using std::string;
-using std::tr1::shared_ptr;
+using std::unique_ptr;
 using std::vector;
 
 class PacketCreator;
@@ -107,7 +106,7 @@ private:
 	uint32_t m_state; // For "back" button
 	vector<StatePtr> m_previousStates; // For "back" button
 
-	scoped_ptr<LuaNpc> m_luaNpc;
+	unique_ptr<LuaNpc> m_luaNpc;
 };
 
 namespace NpcDialogs {

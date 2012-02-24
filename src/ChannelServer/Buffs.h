@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include "BuffDataProvider.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 
 using std::vector;
@@ -32,7 +32,7 @@ struct ActiveBuff {
 			types[i] = 0;
 		}
 	}
-	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
+	std::array<uint8_t, BuffBytes::ByteQuantity> types;
 	vector<int16_t> vals;
 	bool hasMapBuff;
 };
@@ -47,7 +47,7 @@ struct ActiveMapBuff {
 	vector<int8_t> types;
 	vector<int16_t> values;
 	vector<bool> useVals;
-	boost::array<uint8_t, BuffBytes::ByteQuantity> typeList;
+	std::array<uint8_t, BuffBytes::ByteQuantity> typeList;
 	bool debuff;
 };
 

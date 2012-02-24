@@ -18,16 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/tr1/functional.hpp>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+using std::function;
 using std::map;
-using std::tr1::unordered_map;
-using std::tr1::function;
+using std::unordered_map;
 using std::vector;
 
 struct QuestRewardInfo {

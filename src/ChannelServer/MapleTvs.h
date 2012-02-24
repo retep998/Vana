@@ -17,19 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "PacketCreator.h"
 #include "Types.h"
 #include <list>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include <boost/scoped_ptr.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
 
 using std::list;
 using std::string;
+using std::unordered_map;
 using std::vector;
-using std::tr1::unordered_map;
 
 class Map;
 class Player;
@@ -81,7 +81,7 @@ private:
 	int32_t checkMessageTimer() const;
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
-	boost::scoped_ptr<Timer::Container> m_timers;
+	std::unique_ptr<Timer::Container> m_timers;
 	unordered_map<int32_t, Map *> m_maps;
 	list<MapleTvMessage> m_buffer;
 	bool m_hasMessage;

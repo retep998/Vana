@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayersPacket.h"
 #include "Session.h"
 #include "WorldServerConnectPacket.h"
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 
 using std::vector;
 
@@ -52,8 +52,7 @@ bool ChatHandler::handleCommand(Player *player, const string &message) {
 		char *chat = const_cast<char *>(message.c_str());
 		string command = strtok(chat + 1, " ");
 		string &args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
-
-		boost::to_lower(command);
+		command = StringUtilities::toLower(command);
 
 		if (CommandList.find(command) == CommandList.end()) {
 			PlayerPacket::showMessage(player, "Command \"" + command + "\" does not exist.", PlayerPacket::NoticeTypes::Red);

@@ -23,8 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
+#include "StringUtilities.h"
 #include "SyncPacket.h"
 #include <algorithm>
+
+using StringUtilities::lexical_cast;
 
 PlayerBuddyList::PlayerBuddyList(Player *player) :
 	m_player(player),
@@ -292,7 +295,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 	BuddyInvite invite = m_pendingBuddies.front();
 	if (invite.id != id) {
 		// Hacking
-		ChannelServer::Instance()->log(LogTypes::Warning, "Player tried to accept a player with playerId " + boost::lexical_cast<string>(id) + " but the sent playerId was " + boost::lexical_cast<string>(invite.id) + ". PlayerID: " + m_player->getName());
+		ChannelServer::Instance()->log(LogTypes::Warning, "Player tried to accept a player with player ID " + lexical_cast<string>(id) + " but the sent player ID was " + lexical_cast<string>(invite.id) + ". Player: " + m_player->getName());
 		return;
 	}
 

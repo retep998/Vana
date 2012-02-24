@@ -19,16 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Buffs.h"
 #include "IPacket.h"
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
 #include <list>
+#include <memory>
 #include <vector>
+#include <unordered_map>
 
 using std::list;
-using std::tr1::shared_ptr;
-using std::tr1::unordered_map;
+using std::shared_ptr;
+using std::unordered_map;
 using std::vector;
 
 class PacketCreator;
@@ -46,7 +46,7 @@ struct MapEntryBuffs {
 			types[i] = 0;
 		}
 	}
-	boost::array<uint8_t, BuffBytes::ByteQuantity> types;
+	std::array<uint8_t, BuffBytes::ByteQuantity> types;
 	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals>> values;
 
 	int32_t mountId;

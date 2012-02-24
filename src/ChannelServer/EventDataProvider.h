@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "TimerContainer.h"
 #include "Types.h"
 #include "Variables.h"
-#include <boost/scoped_ptr.hpp>
-#include <boost/utility.hpp>
+#include <memory>
 #include <string>
 
 using std::string;
@@ -50,6 +50,6 @@ private:
 	void loadInstances();
 	void startInstance(const string &name, int32_t time, int32_t repeat = 0);
 
-	boost::scoped_ptr<Timer::Container> m_timers;
-	boost::scoped_ptr<Variables> m_variables;
+	std::unique_ptr<Timer::Container> m_timers;
+	std::unique_ptr<Variables> m_variables;
 };

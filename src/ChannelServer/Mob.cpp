@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DropHandler.h"
 #include "Instance.h"
 #include "Maps.h"
+#include "MiscUtilities.h"
 #include "MobConstants.h"
 #include "MobsPacket.h"
 #include "PacketCreator.h"
@@ -160,15 +161,15 @@ void Mob::initMob() {
 void Mob::naturalHealHp(int32_t amount) {
 	if (getHp() < getMaxHp()) {
 		int32_t hp = getHp() + amount;
-		int32_t sponge = amount;
+		int32_t spongeHp = amount;
 		if (hp < 0 || hp > getMaxHp()) {
-			sponge = getMaxHp() - getHp(); // This is the amount for the sponge
+			spongeHp = getMaxHp() - getHp(); // This is the amount for the sponge
 			hp = getMaxHp();
 		}
 		setHp(hp);
-		m_totalHealth += sponge;
-		if (Mob *spongey = getSponge()) {
-			spongey->setHp(spongey->getHp() + sponge);
+		m_totalHealth += spongeHp;
+		if (Mob *sponge = getSponge()) {
+			sponge->setHp(sponge->getHp() + spongeHp);
 		}
 	}
 }
@@ -184,9 +185,7 @@ void Mob::naturalHealMp(int32_t amount) {
 }
 
 void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
-	if (damage < 0) {
-		damage = 0;
-	}
+	damage = std::max(damage, 0);
 	if (damage > m_hp) {
 		damage = m_hp - poison; // Keep HP from hitting 0 for poison and from going below 0
 	}
@@ -200,7 +199,7 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 
 		uint8_t percent = static_cast<uint8_t>(m_hp * 100 / m_info->hp);
 
-		if (m_info->hpColor > 0) {
+		if (m_info->hasHpBar()) {
 			// Boss HP bars - Horntail's damage sponge isn't a boss in the data
 			MobsPacket::showBossHp(this);
 		}
@@ -216,29 +215,32 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 		}
 
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
-		if (m_hp == 0) { // Time to die
-			switch (getMobId()) {
-				case Mobs::HorntailSponge:
-					for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
-						new Timer::Timer(bind(&Mob::die, spawnIter->second, true),
-							Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
-							0, TimeUtilities::fromNow(400));
-					}
-					break;
-				case Mobs::ZakumArm1:
-				case Mobs::ZakumArm2:
-				case Mobs::ZakumArm3:
-				case Mobs::ZakumArm4:
-				case Mobs::ZakumArm5:
-				case Mobs::ZakumArm6:
-				case Mobs::ZakumArm7:
-				case Mobs::ZakumArm8:
-					if (getOwner() != nullptr && getOwner()->getSpawnCount() == 1) {
-						// Last linked arm died
-						int8_t cStatus = Mobs::ControlStatus::ControlNormal;
-						getOwner()->setControlStatus(cStatus);
-					}
-					break;
+		if (m_hp == Stats::MinHp) {
+			// Time to die
+			if (isSponge()) {
+				for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
+					new Timer::Timer(bind(&Mob::die, spawnIter->second, true),
+						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
+						nullptr, TimeUtilities::fromNow(400));
+				}
+			}
+			else {
+				switch (getMobId()) {
+					case Mobs::ZakumArm1:
+					case Mobs::ZakumArm2:
+					case Mobs::ZakumArm3:
+					case Mobs::ZakumArm4:
+					case Mobs::ZakumArm5:
+					case Mobs::ZakumArm6:
+					case Mobs::ZakumArm7:
+					case Mobs::ZakumArm8:
+						if (getOwner() != nullptr && getOwner()->getSpawnCount() == 1) {
+							// Last linked arm died
+							int8_t cStatus = Mobs::ControlStatus::ControlNormal;
+							getOwner()->setControlStatus(cStatus);
+						}
+						break;
+				}
 			}
 			die(player);
 		}
@@ -270,9 +272,9 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 	int32_t addedStatus = 0;
 	vector<int32_t> reflection;
 	for (size_t i = 0; i < statusInfo.size(); i++) {
-		int32_t cstatus = statusInfo[i].status;
-		bool alreadyHas = (m_statuses.find(cstatus) != m_statuses.end());
-		switch (cstatus) {
+		int32_t cStatus = statusInfo[i].status;
+		bool alreadyHas = (m_statuses.find(cStatus) != m_statuses.end());
+		switch (cStatus) {
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
 				if (alreadyHas) {
@@ -297,7 +299,7 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 			case StatusEffects::Mob::VenomousWeapon:
 				setVenomCount(getVenomCount() + 1);
 				if (alreadyHas) {
-					statusInfo[i].val += m_statuses[cstatus].val; // Increase the damage
+					statusInfo[i].val += m_statuses[cStatus].val; // Increase the damage
 				}
 				break;
 			case StatusEffects::Mob::WeaponDamageReflect:
@@ -306,22 +308,22 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				break;
 		}
 
-		m_statuses[cstatus] = statusInfo[i];
-		addedStatus += cstatus;
+		m_statuses[cStatus] = statusInfo[i];
+		addedStatus += cStatus;
 
-		switch (cstatus) {
+		switch (cStatus) {
 			case StatusEffects::Mob::Poison:
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
 				// Damage timer for poison(s)
 				new Timer::Timer(bind(&Mob::applyDamage, this, playerId, statusInfo[i].val, true),
-					Timer::Id(Timer::Types::MobStatusTimer, cstatus, 1),
+					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
 					getTimers(), 0, 1000);
 				break;
 		}
 
-		new Timer::Timer(bind(&Mob::removeStatus, this, cstatus, true),
-			Timer::Id(Timer::Types::MobStatusTimer, cstatus, 0),
+		new Timer::Timer(bind(&Mob::removeStatus, this, cStatus, true),
+			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
 			getTimers(), TimeUtilities::fromNow(statusInfo[i].time * 1000));
 	}
 	// Calculate new status mask
@@ -526,20 +528,20 @@ int32_t Mob::giveExp(Player *killer) {
 
 			uint32_t exp = static_cast<uint32_t>(getExp() * ((8 * iter->second / m_totalHealth) + (damager == killer ? 2 : 0)) / 10);
 			if (damagerParty != nullptr) {
-				int32_t pid = damagerParty->getId();
-				if (parties.find(pid) != parties.end()) {
-					parties[pid].totalExp += exp;
+				int32_t pId = damagerParty->getId();
+				if (parties.find(pId) != parties.end()) {
+					parties[pId].totalExp += exp;
 				}
 				else {
-					parties[pid].totalExp = exp;
-					parties[pid].party = damagerParty;
+					parties[pId].totalExp = exp;
+					parties[pId].party = damagerParty;
 				}
-				if (damagerLevel < parties[pid].minHitLevel) {
-					parties[pid].minHitLevel = damagerLevel;
+				if (damagerLevel < parties[pId].minHitLevel) {
+					parties[pId].minHitLevel = damagerLevel;
 				}
-				if (iter->second > parties[pid].highestDamage) {
-					parties[pid].highestDamager = damager;
-					parties[pid].highestDamage = iter->second;
+				if (iter->second > parties[pId].highestDamage) {
+					parties[pId].highestDamager = damager;
+					parties[pId].highestDamage = iter->second;
 				}
 			}
 			else {
@@ -557,14 +559,14 @@ int32_t Mob::giveExp(Player *killer) {
 				damagerParty = partyIter->second.party;
 				partyMembers = damagerParty->getPartyMembers(getMapId());
 				uint16_t totalLevel = 0;
-				uint16_t leechcount = 0;
+				uint16_t leechCount = 0;
 				for (size_t i = 0; i < partyMembers.size(); i++) {
 					damager = partyMembers[i];
 					if (damagerLevel < (partyIter->second.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
 						continue;
 					}
 					totalLevel += damagerLevel;
-					leechcount++;
+					leechCount++;
 				}
 				for (size_t i = 0; i < partyMembers.size(); i++) {
 					damager = partyMembers[i];
@@ -585,33 +587,34 @@ int32_t Mob::giveExp(Player *killer) {
 }
 
 void Mob::spawnDeathMobs(Map *map) {
-	if (getMobId() == Mobs::SummonHorntail) {
-		// Special Horntail logic to keep Horntail units linked
+	if (Mob::spawnsSponge(getMobId())) {
+		// Special logic to keep units linked
 		int32_t spongeId = 0;
 		vector<int32_t> parts;
 		for (size_t i = 0; i < m_info->summon.size(); i++) {
 			int32_t spawnId = m_info->summon[i];
-			if (spawnId == Mobs::HorntailSponge)
+			if (isSponge(spawnId)) {
 				spongeId = map->spawnMob(spawnId, m_pos, getFh(), this);
+			}
 			else {
 				int32_t identifier = map->spawnMob(spawnId, m_pos, getFh(), this);
 				parts.push_back(identifier);
 			}
 		}
-		Mob *htSponge = Maps::getMap(m_mapId)->getMob(spongeId);
+		Mob *sponge = Maps::getMap(m_mapId)->getMob(spongeId);
 		for (size_t m = 0; m < parts.size(); m++) {
 			Mob *f = map->getMob(parts[m]);
-			f->setSponge(htSponge);
-			htSponge->addSpawn(parts[m], f);
+			f->setSponge(sponge);
+			sponge->addSpawn(parts[m], f);
 		}
 	}
-	else if (getSponge() != nullptr) {
-		// More special Horntail logic to keep units linked
-		getSponge()->removeSpawn(getId());
+	else if (Mob *sponge = getSponge()) {
+		// More special logic to keep units linked
+		sponge->removeSpawn(getId());
 		for (size_t i = 0; i < m_info->summon.size(); i++) {
 			int32_t ident = map->spawnMob(m_info->summon[i], m_pos, getFh(), this);
 			Mob *mob = map->getMob(ident);
-			getSponge()->addSpawn(ident, mob);
+			sponge->addSpawn(ident, mob);
 		}
 	}
 	else {
@@ -633,7 +636,7 @@ void Mob::updateSpawnLinks() {
 }
 
 void Mob::skillHeal(int32_t healHp, int32_t healRange) {
-	if (getMobId() == Mobs::HorntailSponge) {
+	if (isSponge()) {
 		return;
 	}
 	int32_t min = (healHp - (healRange / 2));
@@ -650,11 +653,9 @@ void Mob::skillHeal(int32_t healHp, int32_t healRange) {
 	}
 	m_totalHealth += amount;
 
-	if (getSponge() != nullptr) {
-		healHp = getSponge()->getHp() + amount;
-		if (healHp < 0 || healHp > getSponge()->getMaxHp()) {
-			healHp = getSponge()->getMaxHp();
-		}
+	if (Mob *sponge = getSponge()) {
+		healHp = sponge->getHp() + amount;
+		healHp = MiscUtilities::constrainToRange<int32_t>(healHp, Stats::MinHp, sponge->getMaxHp());
 		getSponge()->setHp(healHp);
 	}
 
@@ -682,17 +683,13 @@ void Mob::doCrashSkill(int32_t skillId) {
 void Mob::mpEat(Player *player, MpEaterInfo *mp) {
 	if ((m_mpEaterCount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
 		mp->used = true;
-		int32_t emp = getMaxMp() * mp->x / 100;
+		int32_t eatenMp = getMaxMp() * mp->x / 100;
 
-		if (emp > getMp()) {
-			emp = getMp();
-		}
-		setMp(getMp() - emp);
+		eatenMp = std::min<int32_t>(eatenMp, getMp());
+		setMp(getMp() - eatenMp);
 
-		if (emp > 30000) {
-			emp = 30000;
-		}
-		player->getStats()->modifyMp(static_cast<int16_t>(emp));
+		eatenMp = std::min<int32_t>(eatenMp, Stats::MaxMaxMp);
+		player->getStats()->modifyMp(eatenMp);
 
 		SkillsPacket::showSkillEffect(player, mp->skillId);
 		m_mpEaterCount++;
@@ -704,4 +701,22 @@ void Mob::setControlStatus(int8_t newStat) {
 	MobsPacket::spawnMob(nullptr, this, 0, nullptr);
 	m_controlStatus = newStat;
 	Maps::getMap(getMapId())->updateMobControl(this);
+}
+
+bool Mob::canCastSkills() const {
+	return !(hasStatus(StatusEffects::Mob::Freeze) || hasStatus(StatusEffects::Mob::Stun) || hasStatus(StatusEffects::Mob::ShadowWeb) || hasStatus(StatusEffects::Mob::Seal));
+}
+
+bool Mob::isSponge(int32_t mobId) {
+	switch (mobId) {
+		case Mobs::HorntailSponge: return true; break;
+	}
+	return false;
+}
+
+bool Mob::spawnsSponge(int32_t mobId) {
+	switch (mobId) {
+		case Mobs::SummonHorntail: return true; break;
+	}
+	return false;
 }

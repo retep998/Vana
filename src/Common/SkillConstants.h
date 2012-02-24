@@ -172,38 +172,6 @@ namespace MobSkills {
 }
 
 namespace Jobs {
-	// Be sure to update rankings when you add job tracks or jobs
-	namespace JobTracks {
-		enum Tracks : int8_t {
-			Beginner = 0,
-			Warrior = 1,
-			Magician = 2,
-			Bowman = 3,
-			Thief = 4,
-			Pirate = 5,
-
-			JuniorGm = 8, // ??
-			Gm = 9,
-
-			Noblesse = 10,
-			DawnWarrior = 11,
-			BlazeWizard = 12,
-			WindArcher = 13,
-			NightWalker = 14,
-			ThunderBreaker = 15,
-
-			Legend = 20,
-			Aran = 21,
-			Evan = 22,
-			Mercedes = 23,
-
-			Citizen = 30,
-			DemonSlayer = 31,
-			BattleMage = 32,
-			WildHunter = 33,
-			Mechanic = 35
-		};
-	}
 	namespace JobIds {
 		enum Jobs : int16_t {
 			Beginner = 0,
@@ -343,6 +311,53 @@ namespace Jobs {
 			Mechanic4 = 3512
 		};
 	}
+	namespace JobTracks {
+		enum Tracks : int8_t {
+			Beginner = 0,
+			Warrior = 1,
+			Magician = 2,
+			Bowman = 3,
+			Thief = 4,
+			Pirate = 5,
+
+			JuniorGm = 8, // ??
+			Gm = 9,
+
+			Noblesse = 10,
+			DawnWarrior = 11,
+			BlazeWizard = 12,
+			WindArcher = 13,
+			NightWalker = 14,
+			ThunderBreaker = 15,
+
+			Legend = 20,
+			Aran = 21,
+			Evan = 22,
+			Mercedes = 23,
+
+			Citizen = 30,
+			DemonSlayer = 31,
+			BattleMage = 32,
+			WildHunter = 33,
+			Mechanic = 35
+		};
+
+		const int32_t JobTrackCount = 21;
+		const int32_t BeginnerJobCount = 7;
+		const int8_t JobTracks[JobTrackCount] = {
+			Beginner, Warrior, Magician, Bowman, Thief, Pirate,
+			Noblesse, DawnWarrior, BlazeWizard, WindArcher, NightWalker, ThunderBreaker,
+			Legend, Aran, Evan, Mercedes,
+			Citizen, DemonSlayer, BattleMage, WildHunter, Mechanic
+		};
+		const int16_t BeginnerJobs[BeginnerJobCount] = {
+			Jobs::JobIds::Beginner,
+			Jobs::JobIds::Noblesse,
+			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes,
+			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer
+		};
+	}
+
 	namespace All {
 		enum Skills : int32_t {
 			RegularAttack = 0

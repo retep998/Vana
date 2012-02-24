@@ -18,13 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "ConnectionAcceptor.h"
+#include "noncopyable.hpp"
 #include "SessionManager.h"
 #include "Types.h"
-#include <boost/noncopyable.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
-#include <boost/tr1/memory.hpp>
 #include <list>
+#include <memory>
 #include <string>
 
 using std::string;
@@ -53,9 +52,9 @@ private:
 	ConnectionManager();
 	static ConnectionManager *singleton;
 
-	boost::scoped_ptr<boost::thread> m_thread;
+	std::unique_ptr<boost::thread> m_thread;
 	boost::asio::io_service m_ioService;
 	SessionManagerPtr m_clients;
 	std::list<ConnectionAcceptorPtr> m_servers;
-	boost::scoped_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
+	std::unique_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };

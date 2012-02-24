@@ -23,20 +23,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/scoped_ptr.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/tr1/functional.hpp>
-#include <boost/tr1/unordered_map.hpp>
 #include <ctime>
+#include <functional>
 #include <map>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
+using std::function;
 using std::map;
 using std::string;
+using std::unordered_map;
 using std::vector;
-using std::tr1::function;
-using std::tr1::unordered_map;
 
 class Drop;
 class Instance;
@@ -207,7 +207,7 @@ private:
 	MapInfoPtr m_info;
 	TimeMobPtr m_timeMobInfo;
 	boost::recursive_mutex m_dropsMutex;
-	boost::shared_ptr<Timer::Container> m_timers;
+	std::shared_ptr<Timer::Container> m_timers;
 	vector<FootholdInfo> m_footholds;
 	vector<ReactorSpawnInfo> m_reactorSpawns;
 	vector<NpcSpawnInfo> m_npcSpawns;

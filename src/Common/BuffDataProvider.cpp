@@ -269,18 +269,12 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	m_skillInfo[Jobs::Bowmaster::Concentrate].player.push_back(player);
 
-	// Pickpocket
+	// Pickpocket/Meso Up
 	buff.type = 0x08;
 	buff.byte = Byte4;
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Jobs::ChiefBandit::Pickpocket].player.push_back(player);
-
-	// Meso Up
-	buff.type = 0x08;
-	buff.byte = Byte4;
-	buff.value = SkillX;
-	player.buff = buff;
 	m_skillInfo[Jobs::Hermit::MesoUp].player.push_back(player);
 
 	// Infinity
@@ -682,19 +676,13 @@ void BuffDataProvider::loadData() {
 	// Begin very unusual buffs
 	player = BuffInfo(); // Placed to clear any previous value pushes
 
-	// Homing Beacon
+	// Homing Beacon/Bullseye
 	buff.type = 0x01;
 	buff.byte = Byte10;
 	buff.value = SkillNone;
 	player.buff = buff;
 	player.itemVal = 1;
 	m_skillInfo[Jobs::Outlaw::HomingBeacon].player.push_back(player);
-	// Bullseye
-	buff.type = 0x01;
-	buff.byte = Byte10;
-	buff.value = SkillNone;
-	player.buff = buff;
-	player.itemVal = 1;
 	m_skillInfo[Jobs::Corsair::Bullseye].player.push_back(player);
 	// End very unusual buffs
 
@@ -920,7 +908,8 @@ void BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) {
 
 		itemId *= -1;
 
-		if (isBuff(itemId)) { // Already loaded, don't want doubles
+		if (isBuff(itemId)) {
+			// Already loaded, don't want doubles
 			m_skillInfo[itemId].player.clear();
 			m_skillInfo[itemId].map.clear();
 		}

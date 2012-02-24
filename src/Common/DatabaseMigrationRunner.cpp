@@ -17,9 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Database.h"
 #include "DatabaseMigrationRunner.h"
+#include "tokenizer.hpp"
 #include <sstream>
-#include <boost/algorithm/string.hpp>
-#include <boost/tokenizer.hpp>
 
 DatabaseMigration::Runner::Runner(const string &filename) :
 	m_filename(filename)
@@ -60,17 +59,13 @@ void DatabaseMigration::Runner::loadFile() {
 
 	// Parse each SQL statement
 	{
-		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-		typedef boost::char_separator<char> separator;
+		std::tokenizer tokens(content, ";");
 
-		separator sep(";");
-		tokenizer tokens(content, sep);
-
-		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
-			string &query = boost::trim_copy(*iter);
-
-			if (query.size() > 0) {
-				m_queries.push_back(*iter);
+		for (std::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
+			string q = *iter;
+			q = StringUtilities::trim(q);
+			if (q.size() > 0) {
+				m_queries.push_back(q);
 			}
 		}
 	}

@@ -16,18 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
+
 #include "GameObjects.h"
+#include "noncopyable.hpp"
 #include "PlayerObjects.h"
 #include "Types.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/functional.hpp>
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
+#include <functional>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 using std::string;
-using std::tr1::function;
-using std::tr1::unordered_map;
+using std::function;
+using std::unordered_map;
 
 class PacketCreator;
 class PacketReader;
@@ -70,8 +71,8 @@ private:
 	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
 
-	unordered_map<int32_t, boost::shared_ptr<PlayerData>> m_playerData;
-	unordered_map<int32_t, boost::shared_ptr<Party>> m_parties;
+	unordered_map<int32_t, std::shared_ptr<PlayerData>> m_playerData;
+	unordered_map<int32_t, std::shared_ptr<Party>> m_parties;
 	unordered_map<int32_t, Player *> m_players;
 	unordered_map<string, Player *> m_playersByName;
 };

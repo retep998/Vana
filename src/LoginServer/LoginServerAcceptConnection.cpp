@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "RankingCalculator.h"
 #include "Session.h"
+#include "StringUtilities.h"
 #include "VanaConstants.h"
 #include "World.h"
 #include "Worlds.h"
-#include <boost/lexical_cast.hpp>
 
 LoginServerAcceptConnection::LoginServerAcceptConnection() :
 	m_worldId(-1)
@@ -38,7 +38,7 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 		world->setConnected(false);
 		world->clearChannels();
 
-		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + boost::lexical_cast<string>(static_cast<int16_t>(m_worldId)));
+		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string>(m_worldId));
 	}
 }
 

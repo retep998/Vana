@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameObjects.h"
 #include "LoopingId.h"
 #include "Types.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/tr1/functional.hpp>
-#include <boost/tr1/unordered_map.hpp>
+#include <functional>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
+using std::function;
 using std::string;
-using std::tr1::function;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 class PacketCreator;
 class Party;
@@ -69,8 +69,8 @@ public:
 private:
 	PlayerDataProvider();
 	static PlayerDataProvider *singleton;
-	typedef unordered_map<int32_t, boost::shared_ptr<Party>> PartyMap;
-	typedef unordered_map<int32_t, boost::shared_ptr<Player>> PlayerMap;
+	typedef unordered_map<int32_t, std::shared_ptr<Party>> PartyMap;
+	typedef unordered_map<int32_t, std::shared_ptr<Player>> PlayerMap;
 
 	void loadGuilds(int16_t worldId);
 	void loadAlliances(int16_t worldId);

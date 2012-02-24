@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "QuestsPacket.h"
 #include "Randomizer.h"
 #include "TimeUtilities.h"
-#include <boost/array.hpp>
+#include <array>
 
 PlayerQuests::PlayerQuests(Player *player) :
 	m_player(player)
@@ -256,8 +256,8 @@ bool PlayerQuests::giveRewards(int16_t questId, bool start) {
 	}
 
 	int16_t job = m_player->getStats()->getJob();
-	boost::array<uint8_t, Inventories::InventoryCount> neededSlots = {0};
-	boost::array<bool, Inventories::InventoryCount> chanceItem = {false};
+	std::array<uint8_t, Inventories::InventoryCount> neededSlots = {0};
+	std::array<bool, Inventories::InventoryCount> chanceItem = {false};
 	auto player = m_player;
 
 	auto checkRewards = [&questId, &neededSlots, &chanceItem, &player](const QuestRewardInfo &info) -> bool {

@@ -24,13 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "Rates.h"
 #include "Session.h"
+#include "StringUtilities.h"
 #include "SyncHandler.h"
 #include "SyncPacket.h"
 #include "VanaConstants.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
 #include "WorldServerAcceptPacket.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {
@@ -42,7 +42,7 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 			PlayerDataProvider::Instance()->removeChannelPlayers(m_channel);
 			Channels::Instance()->removeChannel(m_channel);
 
-			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + boost::lexical_cast<string>(m_channel));
+			WorldServer::Instance()->log(LogTypes::ServerDisconnect, "Channel " + StringUtilities::lexical_cast<string>(m_channel));
 		}
 	}
 }
@@ -76,7 +76,7 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 
 			LoginServerConnectPacket::registerChannel(m_channel, getIp(), getExternalIp(), port);
 
-			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + boost::lexical_cast<string>(m_channel));
+			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + StringUtilities::lexical_cast<string>(m_channel));
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);

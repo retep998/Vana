@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/tr1/unordered_map.hpp>
-#include <boost/utility.hpp>
 #include <string>
+#include <unordered_map>
 
 using std::string;
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 namespace Replacements {
 	enum Replacements : int32_t {

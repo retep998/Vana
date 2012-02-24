@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "StringUtilities.h"
 #include "Database.h"
-#include <boost/tokenizer.hpp>
+#include "tokenizer.hpp"
 
 int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	string::const_iterator iter1 = s1.begin();
@@ -47,13 +47,8 @@ void StringUtilities::runFlags(const opt_string &flags, function<void (const str
 
 void StringUtilities::runFlags(const string &flags, function<void (const string &)> func) {
 	if (flags.length() > 0) {
-		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-		typedef boost::char_separator<char> separator;
-
-		separator sep(",");
-		tokenizer tokens(flags, sep);
-
-		for (tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
+		std::tokenizer tokens(flags, ",");
+		for (std::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
 			func(*iter);
 		}
 	}
