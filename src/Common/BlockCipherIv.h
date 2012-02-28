@@ -15,30 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MiscUtilities.h"
-#include <filters.h>
-#include <hex.h>
-#include <sha.h>
+#pragma once
 
-string MiscUtilities::hashPassword(const string &password, const string &salt) {
-	string &salted = salt + password;
-	string digest;
+#include "Types.h"
 
-	CryptoPP::SHA512 hash;
+class BlockCipherIv {
+	// Friended because the Decoder has a legit need for bytes (to do encryption) while nothing else does
+	friend class Decoder;
+public:
+	BlockCipherIv();
+	BlockCipherIv(uint32_t iv);
 
-	CryptoPP::StringSource(salted, true,
-		new CryptoPP::HashFilter(hash,
-			new CryptoPP::HexEncoder(
-				new CryptoPP::StringSink(digest))));
-
-	return digest;
-}
-
-bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {
-	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
-		if (*iter == channelId) {
-			return true;
+	void updateIv(uint32_t iv);
+	void shuffle();
+	uint32_t getIv() const { return *(uint32_t*) m_iv; }
+private:
+	unsigned char * getBytes() { return m_iv; }
+	inline void setIv(unsigned char *dest, unsigned char *source) {
+		// The 16 byte IV is the 4 byte IV repeated 4 times
+		for (uint8_t i = 0; i < 4; ++i) {
+			memcpy(dest + i * 4, source, 4);
 		}
 	}
-	return false;
-}
+	unsigned char m_iv[16];
+};

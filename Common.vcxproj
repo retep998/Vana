@@ -86,6 +86,7 @@
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
+    <ClCompile Include="src\Common\BlockCipherIv.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
     <ClCompile Include="src\Common\LogReplacements.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="src\Common\Item.h" />
     <ClInclude Include="src\Common\ItemConstants.h" />
     <ClInclude Include="src\Common\ItemDataObjects.h" />
+    <ClInclude Include="src\Common\BlockCipherIv.h" />
     <ClInclude Include="src\Common\Logger.h" />
     <ClInclude Include="src\Common\LogReplacements.h" />
     <ClInclude Include="src\Common\MapConstants.h" />

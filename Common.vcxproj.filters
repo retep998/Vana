@@ -208,6 +208,9 @@
     <ClCompile Include="src\Common\TauswortheGenerator.cpp">
       <Filter>Source\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\BlockCipherIv.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -476,6 +479,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\optional.hpp">
       <Filter>Source\Boost</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\BlockCipherIv.h">
+      <Filter>Source\Connection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
