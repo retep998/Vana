@@ -87,7 +87,7 @@ void ServerClient::readConnectPacket() {
 	int16_t version = packet.get<int16_t>();
 	uint16_t stringSize = packet.get<uint16_t>();
 	packet.skipBytes(stringSize); // Patch location, unimportant for the same reason as header
-	uint32_t sendIv = packet.get<uint32_t>(); // Using the packet buffer directly is unsafe
+	uint32_t sendIv = packet.get<uint32_t>();
 	uint32_t recvIv = packet.get<uint32_t>();
 	int8_t locale = packet.get<int8_t>();
 
@@ -100,6 +100,6 @@ void ServerClient::readConnectPacket() {
 		getchar();
 		exit(ExitCodes::ServerVersionMismatch);
 	}
-	m_decoder.setIvSend(reinterpret_cast<unsigned char*>(&sendIv));
-	m_decoder.setIvRecv(reinterpret_cast<unsigned char*>(&recvIv));
+	m_decoder.setSendIv(sendIv);
+	m_decoder.setRecvIv(recvIv);
 }
