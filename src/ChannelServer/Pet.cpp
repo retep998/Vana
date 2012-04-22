@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::tr1::bind;
+using std::bind;
 
 Pet::Pet(Player *player, Item *item) :
 	m_player(player),

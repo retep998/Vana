@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <functional>
 
-using std::tr1::bind;
+using std::bind;
 
 void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());

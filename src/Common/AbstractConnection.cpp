@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
-using std::tr1::bind;
+using std::bind;
 
 AbstractConnection::AbstractConnection() :
 	m_isServer(false),

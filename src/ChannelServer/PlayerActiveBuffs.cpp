@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.h"
 #include <functional>
 
-using std::tr1::bind;
+using std::bind;
 
 // Buff skills
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
