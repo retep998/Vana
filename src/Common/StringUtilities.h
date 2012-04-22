@@ -135,7 +135,8 @@ inline Dst StringUtilities::lexical_cast(const Src &arg) {
 
 inline
 string StringUtilities::trim(string &s) {
-	return leftTrim(rightTrim(s));
+	string r = rightTrim(s);
+	return leftTrim(r);
 }
 
 inline
