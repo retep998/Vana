@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "SkillConstants.h"
 #include "StringUtilities.h"
+#include <iomanip>
 
 using Initializing::OutputWidth;
 using StringUtilities::runFlags;

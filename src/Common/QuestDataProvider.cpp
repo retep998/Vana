@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Quest.h"
 #include "StringUtilities.h"
 #include <initializer_list>
+#include <iomanip>
 
 using Initializing::OutputWidth;
 using StringUtilities::runFlags;

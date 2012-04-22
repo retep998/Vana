@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "Randomizer.h"
+#include <iomanip>
 
 using Initializing::OutputWidth;
 
