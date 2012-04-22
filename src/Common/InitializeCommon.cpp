@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ExitCodes.h"
 #include "MapleVersion.h"
 #include <cstdio>
+#include <iomanip>
 #include <iostream>
 
 using std::endl;
