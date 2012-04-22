@@ -413,14 +413,14 @@ int LuaExports::log(lua_State *luaVm) {
 }
 
 int LuaExports::showGlobalMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
+	const string &msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageGlobal(msg, type);
 	return 0;
 }
 
 int LuaExports::showWorldMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
+	const string &msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageWorld(msg, type);
 	return 0;
@@ -428,7 +428,7 @@ int LuaExports::showWorldMessage(lua_State *luaVm) {
 
 // Channel
 int LuaExports::deleteChannelVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
+	const string &key = string(lua_tostring(luaVm, -1));
 	EventDataProvider::InstancePtr()->getVariables()->deleteVariable(key);
 	return 0;
 }
@@ -443,7 +443,7 @@ int LuaExports::getChannelVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string &val = EventDataProvider::InstancePtr()->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	const string &val = EventDataProvider::InstancePtr()->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
@@ -484,14 +484,14 @@ int LuaExports::isZakumChannel(lua_State *luaVm) {
 }
 
 int LuaExports::setChannelVariable(lua_State *luaVm) {
-	string &value = string(lua_tostring(luaVm, -1));
-	string &key = string(lua_tostring(luaVm, -2));
+	const string &value = string(lua_tostring(luaVm, -1));
+	const string &key = string(lua_tostring(luaVm, -2));
 	EventDataProvider::InstancePtr()->getVariables()->setVariable(key, value);
 	return 0;
 }
 
 int LuaExports::showChannelMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
+	const string &msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageChannel(msg, type);
 	return 0;
@@ -601,7 +601,7 @@ int LuaExports::runNpc(lua_State *luaVm) {
 	string script;
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
-		string specified = lua_tostring(luaVm, 2);
+		const string &specified = lua_tostring(luaVm, 2);
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
@@ -649,7 +649,7 @@ int LuaExports::getAllFaces(lua_State *luaVm) {
 }
 
 int LuaExports::getAllHair(lua_State *luaVm) {
-	vector<int32_t> &ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getGender());
+	const vector<int32_t> &ids = BeautyDataProvider::Instance()->getHair(getPlayer(luaVm)->getGender());
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (size_t i = 0; i < ids.size(); ++i) {
@@ -777,7 +777,7 @@ int LuaExports::isQuestCompleted(lua_State *luaVm) {
 
 int LuaExports::setQuestData(lua_State *luaVm) {
 	int16_t questId = lua_tointeger(luaVm, 1);
-	string data = lua_tostring(luaVm, 2);
+	const string &data = lua_tostring(luaVm, 2);
 	getPlayer(luaVm)->getQuests()->setQuestData(questId, data);
 	return 0;
 }
@@ -861,7 +861,7 @@ int LuaExports::useItem(lua_State *luaVm) {
 
 // Player
 int LuaExports::deletePlayerVariable(lua_State *luaVm) {
-	string key = string(lua_tostring(luaVm, -1));
+	const string &key = string(lua_tostring(luaVm, -1));
 	getPlayer(luaVm)->getVariables()->deleteVariable(key);
 	return 0;
 }
@@ -981,7 +981,7 @@ int LuaExports::getPlayerVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string &val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	const string &val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
@@ -1136,7 +1136,7 @@ int LuaExports::setMap(lua_State *luaVm) {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		string to = lua_tostring(luaVm, 2);
+		const string &to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -1178,8 +1178,8 @@ int LuaExports::setPlayer(lua_State *luaVm) {
 }
 
 int LuaExports::setPlayerVariable(lua_State *luaVm) {
-	string value = string(lua_tostring(luaVm, -1));
-	string key = string(lua_tostring(luaVm, -2));
+	const string &value = string(lua_tostring(luaVm, -1));
+	const string &key = string(lua_tostring(luaVm, -2));
 	getPlayer(luaVm)->getVariables()->setVariable(key, value);
 	return 0;
 }
@@ -1213,7 +1213,7 @@ int LuaExports::setStyle(lua_State *luaVm) {
 }
 
 int LuaExports::showInstructionBubble(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, 1);
+	const string &msg = lua_tostring(luaVm, 1);
 	int16_t width = lua_tointeger(luaVm, 2);
 	int16_t height = lua_tointeger(luaVm, 3);
 
@@ -1229,7 +1229,7 @@ int LuaExports::showInstructionBubble(lua_State *luaVm) {
 }
 
 int LuaExports::showMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
+	const string &msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
 	return 0;
@@ -1237,7 +1237,7 @@ int LuaExports::showMessage(lua_State *luaVm) {
 
 // Effects
 int LuaExports::playFieldSound(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, 1);
+	const string &val = lua_tostring(luaVm, 1);
 	if (lua_isnumber(luaVm, 2)) {
 		EffectPacket::sendFieldSound(lua_tointeger(luaVm, 2), val);
 	}
@@ -1248,7 +1248,7 @@ int LuaExports::playFieldSound(lua_State *luaVm) {
 }
 
 int LuaExports::playMinigameSound(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, 1);
+	const string &val = lua_tostring(luaVm, 1);
 	if (lua_isnumber(luaVm, 2)) {
 		EffectPacket::sendMinigameSound(lua_tointeger(luaVm, 2), val);
 	}
@@ -1260,7 +1260,7 @@ int LuaExports::playMinigameSound(lua_State *luaVm) {
 
 int LuaExports::setMusic(lua_State *luaVm) {
 	int32_t mapId = -1;
-	string music = lua_tostring(luaVm, 1);
+	const string &music = lua_tostring(luaVm, 1);
 
 	if (lua_isnumber(luaVm, 2)) {
 		mapId = lua_tointeger(luaVm, 2);
@@ -1276,13 +1276,13 @@ int LuaExports::setMusic(lua_State *luaVm) {
 }
 
 int LuaExports::showMapEffect(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
+	const string &val = lua_tostring(luaVm, -1);
 	EffectPacket::sendEffect(getPlayer(luaVm)->getMap(), val);
 	return 0;
 }
 
 int LuaExports::showMapEvent(lua_State *luaVm) {
-	string val = lua_tostring(luaVm, -1);
+	const string &val = lua_tostring(luaVm, -1);
 	EffectPacket::sendEvent(getPlayer(luaVm)->getMap(), val);
 	return 0;
 }
@@ -1393,7 +1393,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 }
 
 int LuaExports::showMapMessage(lua_State *luaVm) {
-	string msg = lua_tostring(luaVm, -2);
+	const string &msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
 	int32_t map = getPlayer(luaVm)->getMap();
 	Maps::getMap(map)->showMessage(msg, type);
@@ -1777,13 +1777,13 @@ int LuaExports::banInstancePlayer(lua_State *luaVm) {
 }
 
 int LuaExports::checkInstanceTimer(lua_State *luaVm) {
-	string name = lua_tostring(luaVm, 1);
+	const string &name = lua_tostring(luaVm, 1);
 	lua_pushinteger(luaVm, getInstance(luaVm)->checkTimer(name));
 	return 1;
 }
 
 int LuaExports::createInstance(lua_State *luaVm) {
-	string name = lua_tostring(luaVm, 1);
+	const string &name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
 	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
@@ -1872,7 +1872,7 @@ int LuaExports::getInstanceVariable(lua_State *luaVm) {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	const string &val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	if (integral) {
 		if (val == "") {
 			lua_pushnil(luaVm);
@@ -1925,7 +1925,7 @@ int LuaExports::moveAllPlayers(lua_State *luaVm) {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		string to = lua_tostring(luaVm, 2);
+		const string &to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -1940,7 +1940,7 @@ int LuaExports::passPlayersBetweenInstances(lua_State *luaVm) {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		string to = lua_tostring(luaVm, 2);
+		const string &to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -2032,7 +2032,7 @@ int LuaExports::showInstanceTime(lua_State *luaVm) {
 }
 
 int LuaExports::startInstanceTimer(lua_State *luaVm) {
-	string name = lua_tostring(luaVm, 1);
+	const string &name = lua_tostring(luaVm, 1);
 	TimerAction t;
 	t.time = lua_tointeger(luaVm, 2);
 	if (lua_isnumber(luaVm, 3)) {
@@ -2049,7 +2049,7 @@ int LuaExports::stopAllInstanceTimers(lua_State *luaVm) {
 }
 
 int LuaExports::stopInstanceTimer(lua_State *luaVm) {
-	string name = lua_tostring(luaVm, 1);
+	const string &name = lua_tostring(luaVm, 1);
 	getInstance(luaVm)->removeTimer(name);
 	return 0;
 }

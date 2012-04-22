@@ -173,7 +173,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 
 	bool online = packet.getBool();
 
-	vector<int32_t> &tempIds = packet.getVector<int32_t>();
+	const vector<int32_t> &tempIds = packet.getVector<int32_t>();
 	unordered_map<int16_t, vector<int32_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people
 
 	int32_t id = 0;

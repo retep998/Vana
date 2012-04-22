@@ -2,20 +2,23 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Vana)
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
+add_definitions(-std=c++11)
+
+set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/lib")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/bin")
 
 #### Finding libraries
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.37.0 REQUIRED COMPONENTS filesystem regex system thread)
+find_package(Boost 1.49.0 REQUIRED COMPONENTS filesystem system thread)
 
 find_package(MySQL REQUIRED)
 include_directories(${MYSQL_INCLUDE_DIR})
 
-find_package(MySQL++ REQUIRED)
-include_directories(${MYSQL++_INCLUDE_DIR})
+find_package(SOCI REQUIRED)
+include_directories(${SOCI_CORE_INCLUDE_DIR})
+include_directories(${SOCI_MYSQL_INCLUDE_DIR})
 
 find_package(Lua51 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})

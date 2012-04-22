@@ -50,7 +50,7 @@ void PetHandler::handleChat(Player *player, PacketReader &packet) {
 	}
 	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
-	string &message = packet.getString();
+	const string &message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petId), message, act);
 }
 

@@ -175,7 +175,7 @@ int32_t PlayerActiveBuffs::calculateDebuffMaskBit(uint8_t skill) {
 }
 
 // Map entry stuff
-void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
+void PlayerActiveBuffs::deleteMapEntryBuffInfo(const ActiveMapBuff &buff) {
 	size_t vals = 0;
 	for (size_t i = 0; i < buff.bytes.size(); ++i) {
 		uint8_t byte = buff.bytes[i];
@@ -186,7 +186,7 @@ void PlayerActiveBuffs::deleteMapEntryBuffInfo(ActiveMapBuff &buff) {
 	}
 }
 
-void PlayerActiveBuffs::addMapEntryBuffInfo(ActiveMapBuff &buff) {
+void PlayerActiveBuffs::addMapEntryBuffInfo(const ActiveMapBuff &buff) {
 	size_t vals = 0;
 	for (size_t i = 0; i < buff.bytes.size(); ++i) {
 		uint8_t byte = buff.bytes[i];

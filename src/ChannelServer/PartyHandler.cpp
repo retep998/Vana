@@ -49,7 +49,7 @@ void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 			break;
 		}
 		case PartyActions::Invite: {
-			string &invName = packet.getString();
+			const string &invName = packet.getString();
 			if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
 					PartyPacket::error(player, PartyPacket::Errors::PlayerHasParty);

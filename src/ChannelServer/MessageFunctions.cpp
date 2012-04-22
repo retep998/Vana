@@ -60,7 +60,7 @@ bool MessageFunctions::channelMessage(Player *player, const string &args) {
 
 bool MessageFunctions::gmMessage(Player *player, const string &args) {
 	if (args.length() != 0) {
-		string &msg = player->getName() + " : " + args;
+		const string &msg = player->getName() + " : " + args;
 		PlayerDataProvider::Instance()->run([&msg](Player *gmPlayer) {
 			if (gmPlayer->isGm()) {
 				PlayerPacket::showMessage(gmPlayer, msg, PlayerPacket::NoticeTypes::Blue);

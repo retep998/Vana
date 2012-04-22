@@ -151,14 +151,14 @@ void QuestDataProvider::loadRewards() {
 				Quest *&q = cur;
 				QuestRewardInfo &r = reward;
 				bool s = start;
-				auto func = [&](std::initializer_list<int16_t> jobArr) {
-					for (std::initializer_list<int16_t>::iterator i = jobArr.begin(); i != jobArr.end(); ++i) {
-						q->addReward(s, r, *i);
+				auto func = [&](int16_t jobArr[], size_t arrSize) {
+					for (size_t i = 0; i != arrSize; ++i) {
+						q->addReward(s, r, jobArr[i]);
 					}
 				};
 				if (cmp == "beginner") {
 					int16_t arr[] = {Jobs::JobIds::Beginner};
-					func(std::initializer_list<int16_t>(arr, arr + 1));
+					func(arr, 1);
 				}
 				else if (cmp == "warrior") {
 					int16_t arr[] = {
@@ -167,7 +167,7 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::Page, Jobs::JobIds::WhiteKnight, Jobs::JobIds::Paladin,
 						Jobs::JobIds::Spearman, Jobs::JobIds::DragonKnight, Jobs::JobIds::DarkKnight
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 10));
+					func(arr, 10);
 				}
 				else if (cmp == "magician") {
 					int16_t arr[] = {
@@ -176,7 +176,7 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::IlWizard, Jobs::JobIds::IlMage, Jobs::JobIds::IlArchMage,
 						Jobs::JobIds::Cleric, Jobs::JobIds::Priest, Jobs::JobIds::Bishop
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 10));
+					func(arr, 10);
 				}
 				else if (cmp == "bowman") {
 					int16_t arr[] = {
@@ -184,7 +184,7 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::Hunter, Jobs::JobIds::Ranger, Jobs::JobIds::Bowmaster,
 						Jobs::JobIds::Crossbowman, Jobs::JobIds::Sniper, Jobs::JobIds::Marksman
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 7));
+					func(arr, 7);
 				}
 				else if (cmp == "thief") {
 					int16_t arr[] = {
@@ -192,7 +192,7 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::Assassin, Jobs::JobIds::Hermit, Jobs::JobIds::NightLord,
 						Jobs::JobIds::Bandit, Jobs::JobIds::ChiefBandit, Jobs::JobIds::Shadower
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 7));
+					func(arr, 7);
 				}
 				else if (cmp == "pirate") {
 					int16_t arr[] = {
@@ -200,39 +200,39 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::Brawler, Jobs::JobIds::Marauder, Jobs::JobIds::Buccaneer,
 						Jobs::JobIds::Gunslinger, Jobs::JobIds::Outlaw, Jobs::JobIds::Corsair
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 7));
+					func(arr, 7);
 				}
 				else if (cmp == "cygnus_beginner") {
 					int16_t arr[] = {Jobs::JobIds::Noblesse};
-					func(std::initializer_list<int16_t>(arr, arr + 1));
+					func(arr, 1);
 				}
 				else if (cmp == "cygnus_warrior") {
 					int16_t arr[] = {Jobs::JobIds::DawnWarrior1, Jobs::JobIds::DawnWarrior2, Jobs::JobIds::DawnWarrior3};
-					func(std::initializer_list<int16_t>(arr, arr + 3));
+					func(arr, 3);
 				}
 				else if (cmp == "cygnus_magician") {
 					int16_t arr[] = {Jobs::JobIds::BlazeWizard1, Jobs::JobIds::BlazeWizard2, Jobs::JobIds::BlazeWizard3};
-					func(std::initializer_list<int16_t>(arr, arr + 3));
+					func(arr, 3);
 				}
 				else if (cmp == "cygnus_bowman") {
 					int16_t arr[] = {Jobs::JobIds::WindArcher1, Jobs::JobIds::WindArcher2, Jobs::JobIds::WindArcher3};
-					func(std::initializer_list<int16_t>(arr, arr + 3));
+					func(arr, 3);
 				}
 				else if (cmp == "cygnus_thief") {
 					int16_t arr[] = {Jobs::JobIds::NightWalker1, Jobs::JobIds::NightWalker2, Jobs::JobIds::NightWalker3};
-					func(std::initializer_list<int16_t>(arr, arr + 3));
+					func(arr, 3);
 				}
 				else if (cmp == "cygnus_pirate") {
 					int16_t arr[] = {Jobs::JobIds::ThunderBreaker1, Jobs::JobIds::ThunderBreaker2, Jobs::JobIds::ThunderBreaker3};
-					func(std::initializer_list<int16_t>(arr, arr + 3));
+					func(arr, 3);
 				}
 				else if (cmp == "episode2_beginner") {
 					int16_t arr[] = {Jobs::JobIds::Legend};
-					func(std::initializer_list<int16_t>(arr, arr + 1));
+					func(arr, 1);
 				}
 				else if (cmp == "episode2_warrior") {
 					int16_t arr[] = {Jobs::JobIds::Aran1, Jobs::JobIds::Aran2, Jobs::JobIds::Aran3, Jobs::JobIds::Aran4};
-					func(std::initializer_list<int16_t>(arr, arr + 4));
+					func(arr, 4);
 				}
 				else if (cmp == "episode2_magician") {
 					int16_t arr[] = {
@@ -241,7 +241,7 @@ void QuestDataProvider::loadRewards() {
 						Jobs::JobIds::Evan5, Jobs::JobIds::Evan6, Jobs::JobIds::Evan7,
 						Jobs::JobIds::Evan8, Jobs::JobIds::Evan9, Jobs::JobIds::Evan10
 					};
-					func(std::initializer_list<int16_t>(arr, arr + 10));
+					func(arr, 10);
 				}
 			});
 		}

@@ -105,7 +105,7 @@ void PlayerQuests::load() {
 
 		current = row.get<int16_t>("quest_id");
 		int32_t mob = row.get<int32_t>("mob_id");
-		string &data = row.get<string>("data");
+		const string &data = row.get<string>("data");
 
 		if (previous == -1) {
 			curQuest.id = current;

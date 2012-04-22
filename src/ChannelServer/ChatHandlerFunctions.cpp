@@ -611,7 +611,7 @@ bool ChatHandlerFunctions::runRegexPattern(const string &args, const string &pat
 void ChatHandlerFunctions::showSyntax(Player *player, const string &command, bool fromHelp) {
 	if (CommandList.find(command) != CommandList.end()) {
 		ChatCommand &cmd = CommandList[command];
-		string &msg = "Usage: !" + command + " " + cmd.syntax;
+		const string &msg = "Usage: !" + command + " " + cmd.syntax;
 		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
 
 		if (fromHelp) {

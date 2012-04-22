@@ -50,7 +50,7 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			}
 		}
 
-		string &filename = "scripts/portals/" + portal->script + ".lua";
+		const string &filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
 			int32_t map = player->getMap();
@@ -93,7 +93,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->isDead()) {
-				string &unk = packet.getString(); // Useless
+				const string &unk = packet.getString(); // Useless
 				packet.skipBytes(1); // Useless
 				bool wheel = packet.getBool();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
@@ -105,7 +105,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			}
 			break;
 		case -1: {
-			string &portalName = packet.getString();
+			const string &portalName = packet.getString();
 
 			Map *toMap = getMap(player->getMap());
 			if (toMap == nullptr) {
@@ -129,7 +129,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 
 void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
-	string &portalName = packet.getString();
+	const string &portalName = packet.getString();
 
 	PortalInfo *portal = getMap(player->getMap())->getPortal(portalName);
 	if (portal == nullptr) {

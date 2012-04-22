@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncHandler.h"
 #include "SyncPacket.h"
 #include "WorldServer.h"
+#include <iomanip>
+#include <iostream>
 
 using Initializing::OutputWidth;
 
