@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::tr1::bind;
+using std::bind;
 
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobId = packet.get<int32_t>();
