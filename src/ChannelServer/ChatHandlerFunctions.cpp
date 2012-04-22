@@ -605,7 +605,7 @@ bool ChatHandlerFunctions::runRegexPattern(const string &args, const string &pat
 	re = pattern; // Why, C++, why?
 	// Compiles matches if successful and will return true
 	// Otherwise returns false
-	return std::tr1::regex_match(args.c_str(), matches, re);
+	return std::regex_match(args.c_str(), matches, re);
 }
 
 void ChatHandlerFunctions::showSyntax(Player *player, const string &command, bool fromHelp) {

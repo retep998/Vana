@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 using std::string;
-using std::tr1::mt19937;
-using std::tr1::uniform_int;
+using std::mt19937;
+using std::uniform_int;
 
 class Randomizer : boost::noncopyable {
 public:
