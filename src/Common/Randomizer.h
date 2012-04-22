@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 using std::mt19937;
-using std::uniform_int;
+using std::uniform_int_distribution;
 
 class Randomizer : boost::noncopyable {
 public:
@@ -43,10 +43,10 @@ public:
 private:
 	Randomizer() {
 		m_engine.seed(std::rand());
-		m_distribution = uniform_int<uint32_t>(std::numeric_limits<uint32_t>::min(), std::numeric_limits<uint32_t>::max());
+		m_distribution = uniform_int_distribution<uint32_t>(std::numeric_limits<uint32_t>::min(), std::numeric_limits<uint32_t>::max());
 	}
 	static Randomizer *singleton;
 
 	mt19937 m_engine;
-	uniform_int<uint32_t> m_distribution;
+	uniform_int_distribution<uint32_t> m_distribution;
 };
