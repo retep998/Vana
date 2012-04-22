@@ -106,32 +106,6 @@ namespace soci {
 	};
 
 	template <>
-	struct type_conversion<uint8_t> {
-		typedef int base_type;
-		typedef uint8_t target_type;
-
-		static void from_base(const base_type &in, indicator &ind, target_type &out) {
-			if (ind == i_null) {
-				out = 0;
-			}
-			else {
-				const base_type max = (std::numeric_limits<target_type>::max)();
-				const base_type min = (std::numeric_limits<target_type>::min)();
-				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
-				}
-
-				out = static_cast<target_type>(in);
-			}
-		}
-
-		static void to_base(const target_type &in, base_type &out, indicator &ind) {
-			out = in;
-			ind = i_ok;
-		}
-	};
-
-	template <>
 	struct type_conversion<int16_t> {
 		typedef int base_type;
 		typedef int16_t target_type;
@@ -158,55 +132,9 @@ namespace soci {
 	};
 
 	template <>
-	struct type_conversion<uint16_t> {
-		typedef int base_type;
-		typedef uint16_t target_type;
-
-		static void from_base(const base_type &in, indicator &ind, target_type &out) {
-			if (ind == i_null) {
-				out = 0;
-			}
-			else {
-				const base_type max = (std::numeric_limits<target_type>::max)();
-				const base_type min = (std::numeric_limits<target_type>::min)();
-				if (in < min || in >  max) {
-					throw soci_error("Value outside of allowed range");
-				}
-
-				out = static_cast<target_type>(in);
-			}
-		}
-
-		static void to_base(const target_type &in, base_type &out, indicator &ind) {
-			out = in;
-			ind = i_ok;
-		}
-	};
-
-	template <>
 	struct type_conversion<int32_t> {
 		typedef int base_type;
 		typedef int32_t target_type;
-
-		static void from_base(const base_type &in, indicator &ind, target_type &out) {
-			if (ind == i_null) {
-				out = 0;
-			}
-			else {
-				out = static_cast<target_type>(in);
-			}
-		}
-
-		static void to_base(const target_type &in, base_type &out, indicator &ind) {
-			out = in;
-			ind = i_ok;
-		}
-	};
-
-	template <>
-	struct type_conversion<uint32_t> {
-		typedef int base_type;
-		typedef uint32_t target_type;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
