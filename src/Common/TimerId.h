@@ -51,13 +51,13 @@ bool Id::operator==(Id const &other) const {
 
 namespace std {
 	template <>
-	struct std::hash<Timer::Id> : public std::unary_function<Timer::Id, size_t> {
+	struct hash<Timer::Id> {
 		size_t operator()(const Timer::Id &v) const {
 			size_t seed = 0;
 
-			std::hash_combine(seed, v.type);
-			std::hash_combine(seed, v.id);
-			std::hash_combine(seed, v.id2);
+			hash_combine(seed, v.type);
+			hash_combine(seed, v.id);
+			hash_combine(seed, v.id2);
 
 			return seed;
 		}

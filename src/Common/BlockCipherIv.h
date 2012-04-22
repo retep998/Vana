@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <cstring>
 
 class BlockCipherIv {
 	// Friended because the Decoder has a legit need for bytes (to do encryption) while nothing else does

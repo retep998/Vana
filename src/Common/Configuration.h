@@ -128,7 +128,7 @@ struct LogConfig : IConfigReadable<LogConfig> {
 	string file;
 
 	void read(ConfigFile &conf, const string &prefix) {
-		string &t = prefix + "_log_";
+		string t = prefix + "_log_";
 		destination = conf.get<int32_t>(t + "destination");
 		bufferSize = conf.get<uint32_t>(t + "buffer_size");
 		format = conf.getString(t + "format");
@@ -145,7 +145,7 @@ struct DbConfig : IConfigReadable<DbConfig> {
 	port_t port;
 
 	void read(ConfigFile &conf, const string &prefix) {
-		string &t = prefix + "_";
+		string t = prefix + "_";
 		database = conf.getString(t + "database");
 		host = conf.getString(t + "host");
 		username = conf.getString(t + "username");
