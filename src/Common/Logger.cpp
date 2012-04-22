@@ -84,7 +84,7 @@ string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const st
 				case Replacements::Id: strm << id; break;
 				case Replacements::Message: strm << message; break;
 			}
-			string &y = strm.str();
+			string y = strm.str();
 			ret.replace(x, iter->first.size(), y.c_str(), y.size());
 		}
 	}
@@ -136,7 +136,7 @@ string Logger::getTimeFormatted(const string &fmt) {
 					break;
 				}
 			}
-			string &y = strm.str();
+			string y = strm.str();
 			ret.replace(x, iter->first.size(), y.c_str(), y.size());
 		}
 	}

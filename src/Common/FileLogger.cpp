@@ -75,7 +75,7 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 					break;
 				}
 			}
-			string &y = strm.str();
+			string y = strm.str();
 			ret.replace(x, iter->first.size(), y.c_str(), y.size());
 		}
 	}
@@ -107,7 +107,7 @@ void FileLogger::log(LogTypes::LogTypes type, const string &identifier, const st
 void FileLogger::flush() {
 	for (vector<FileLog>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
 		const string &file = iter->file;
-		fs::path fullPath = fs::system_complete(fs::path(file.substr(0, file.find_last_of("/")), fs::native));
+		fs::path fullPath = fs::system_complete(fs::path(file.substr(0, file.find_last_of("/"))));
 		if (!fs::exists(fullPath)) {
 			fs::create_directories(fullPath);
 		}

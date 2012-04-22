@@ -24,9 +24,9 @@ namespace std {
 	template<typename T>
 	class shared_array {
 	private:
-		template<typename T>
+		template<typename U>
 		struct array_deleter {
-			void operator()(T *p) {
+			void operator()(U *p) {
 				delete[] p;
 			}
 		};

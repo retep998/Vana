@@ -103,7 +103,7 @@ void AbstractServer::loggerOptions(const ConstantMap &constants, ConfigFile &con
 	for (ConstantMap::const_iterator iter = constants.begin(); iter != constants.end(); ++iter) {
 		if (base.find(iter->first) != string::npos) continue;
 
-		string &newBase = base + "_" + iter->first;
+		string newBase = base + "_" + iter->first;
 		val |= iter->second;
 		conf.setVariable(newBase, val);
 
