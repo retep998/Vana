@@ -59,7 +59,7 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 				return;
 			}
 			else {
-				string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				const string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
@@ -95,7 +95,7 @@ struct Reaction {
 	void operator()() {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+		const string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
 		return;
 	}

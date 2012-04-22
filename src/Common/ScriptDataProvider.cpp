@@ -68,7 +68,7 @@ void ScriptDataProvider::loadData() {
 
 string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
 	if (hasScript(objectId, type)) {
-		string &s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
+		const string &s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}
@@ -81,7 +81,7 @@ string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes 
 
 string ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) {
 	if (hasQuestScript(questId, state)) {
-		string &s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
+		const string &s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
 		if (fileExists(s)) {
 			return s;
 		}

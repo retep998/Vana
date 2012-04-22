@@ -435,7 +435,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
-		string &message = packet.getString();
+		string message = packet.getString();
 		packet.skipBytes(4); // Ticks
 		if (message.length() <= 35) {
 			Map *map = Maps::getMap(player->getMap());
@@ -487,13 +487,13 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::Megaphone: {
-				string &msg = player->getMedalName() + " : " + packet.getString();
+				const string &msg = player->getMedalName() + " : " + packet.getString();
 				InventoryPacket::showMegaphone(player, msg);
 				used = true;
 				break;
 			}
 			case Items::SuperMegaphone: {
-				string &msg = player->getMedalName() + " : " + packet.getString();
+				const string &msg = player->getMedalName() + " : " + packet.getString();
 				bool whisper = packet.getBool();
 				InventoryPacket::showSuperMegaphone(player, msg, whisper);
 				used = true;
@@ -502,17 +502,17 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::DiabloMessenger:
 			case Items::Cloud9Messenger:
 			case Items::LoveholicMessenger: {
-				string &msg = packet.getString();
-				string &msg2 = packet.getString();
-				string &msg3 = packet.getString();
-				string &msg4 = packet.getString();
+				const string &msg = packet.getString();
+				const string &msg2 = packet.getString();
+				const string &msg3 = packet.getString();
+				const string &msg4 = packet.getString();
 
 				InventoryPacket::showMessenger(player, msg, msg2, msg3, msg4, packet.getBuffer(), packet.getBufferLength(), itemId);
 				used = true;
 				break;
 			}
 			case Items::ItemMegaphone: {
-				string &msg = player->getMedalName() + " : " + packet.getString();
+				const string &msg = player->getMedalName() + " : " + packet.getString();
 				bool whisper = packet.getBool();
 				Item *item = nullptr;
 				if (packet.getBool()) {
@@ -544,7 +544,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::PetNameTag: {
-				string &name = packet.getString();
+				const string &name = packet.getString();
 				PetHandler::changeName(player, name);
 				used = true;
 				break;
@@ -607,11 +607,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				int32_t time = 15;
 
 				if ((hasReceiver && receiver != nullptr) || (!hasReceiver && receiver == nullptr)) {
-					string &msg = packet.getString();
-					string &msg2 = packet.getString();
-					string &msg3 = packet.getString();
-					string &msg4 = packet.getString();
-					string &msg5 = packet.getString();
+					const string &msg = packet.getString();
+					const string &msg2 = packet.getString();
+					const string &msg3 = packet.getString();
+					const string &msg4 = packet.getString();
+					const string &msg5 = packet.getString();
 					packet.skipBytes(4); // Ticks
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
@@ -626,11 +626,11 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::StarMegassenger: {
 				int32_t time = 30;
 				bool showWhisper = (itemId == Items::StarMegassenger ? packet.getBool() : false);
-				string &msg = packet.getString();
-				string &msg2 = packet.getString();
-				string &msg3 = packet.getString();
-				string &msg4 = packet.getString();
-				string &msg5 = packet.getString();
+				const string &msg = packet.getString();
+				const string &msg2 = packet.getString();
+				const string &msg3 = packet.getString();
+				const string &msg4 = packet.getString();
+				const string &msg5 = packet.getString();
 				packet.skipBytes(4); // Ticks
 				MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
@@ -643,16 +643,16 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::MapleTvHeartMessenger:
 			case Items::HeartMegassenger: {
 				bool showWhisper = (itemId == Items::HeartMegassenger ? packet.getBool() : false);
-				string &name = packet.getString();
+				const string &name = packet.getString();
 				Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 				int32_t time = 60;
 
 				if (receiver != nullptr) {
-					string &msg = packet.getString();
-					string &msg2 = packet.getString();
-					string &msg3 = packet.getString();
-					string &msg4 = packet.getString();
-					string &msg5 = packet.getString();
+					const string &msg = packet.getString();
+					const string &msg2 = packet.getString();
+					const string &msg3 = packet.getString();
+					const string &msg4 = packet.getString();
+					const string &msg5 = packet.getString();
 					packet.skipBytes(4); // Ticks
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 					if (itemId == Items::HeartMegassenger) {
@@ -677,7 +677,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::Chalkboard:
 			case Items::Chalkboard2: {
-				string &msg = packet.getString();
+				const string &msg = packet.getString();
 				player->setChalkboard(msg);
 				InventoryPacket::sendChalkboardUpdate(player, msg);
 				break;
@@ -778,8 +778,8 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 		}
 	}
 	else if (mode == Ign) {
-		string &tname = packet.getString();
-		Player *target = PlayerDataProvider::Instance()->getPlayer(tname);
+		const string &targetName = packet.getString();
+		Player *target = PlayerDataProvider::Instance()->getPlayer(targetName);
 		if (target != nullptr && target != player) {
 			targetMapId = target->getMap();
 		}
@@ -878,7 +878,7 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string &scriptName = ScriptDataProvider::Instance()->getScript(itemId, ScriptTypes::Item);
+	const string &scriptName = ScriptDataProvider::Instance()->getScript(itemId, ScriptTypes::Item);
 	if (scriptName == "") {
 		// Hacking or no script for item found.
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?

@@ -284,7 +284,7 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 											soci::use(reason, "reason"));
 
 		if (st.get_affected_rows() > 0) {
-			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
 			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 		}
@@ -321,7 +321,7 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 											soci::use(reason, "reason"));
 
 		if (st.get_affected_rows() > 0) {
-			string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
 			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>(reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetName);
 		}
@@ -339,7 +339,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
 		string targetName = matches[1];
 		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
-			string &targetIp = IpUtilities::ipToString(target->getIp());
+			const string &targetIp = IpUtilities::ipToString(target->getIp());
 			target->getSession()->disconnect();
 
 			string reasonString = matches[2];
@@ -352,7 +352,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 												soci::use(targetIp, "ip"));
 
 			if (st.get_affected_rows() > 0) {
-				string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
+				const string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
 				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
 			}
@@ -379,7 +379,7 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 											soci::use(expire, "expire"));
 
 		if (st.get_affected_rows() > 0) {
-			string &banMessage = args + " has been unbanned.";
+			const string &banMessage = args + " has been unbanned.";
 			PlayerPacket::showMessage(player, banMessage, PlayerPacket::NoticeTypes::Blue);
 			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM unbanned a character. GM: " + player->getName() + ", Character: " + args);
 		}

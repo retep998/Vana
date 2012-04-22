@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 #include "SmsgHeader.h"
 
-void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, ActiveBuff &playerSkill, ActiveMapBuff &mapSkill, int16_t addedInfo) {
+void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
@@ -71,7 +71,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, Active
 	}
 }
 
-void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int16_t time, int16_t delay, ActiveBuff &playerSkill, ActiveMapBuff &mapSkill) {
+void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int16_t time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
@@ -109,7 +109,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::endDebuff(Player *player, ActiveBuff &playerSkill) {
+void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_CANCEL);
 
@@ -129,7 +129,7 @@ void BuffsPacket::endDebuff(Player *player, ActiveBuff &playerSkill) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::endSkill(Player *player, ActiveBuff &playerSkill) {
+void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_CANCEL);
 
@@ -149,7 +149,7 @@ void BuffsPacket::endSkill(Player *player, ActiveBuff &playerSkill) {
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, ActiveBuff &playerSkill, ActiveMapBuff &mapSkill) {
+void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
 	PacketCreator packet;
 	int16_t castedtime = static_cast<int16_t>(time);
 	packet.add<header_t>(SMSG_SKILL_USE);
@@ -190,7 +190,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, A
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time, ActiveBuff &playerSkill, ActiveMapBuff &mapSkill, int16_t addedInfo) {
+void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
 	int32_t castedvalue = static_cast<int32_t>(playerSkill.vals[0]);
 	int16_t castedtime = static_cast<int16_t>(time);
 	PacketCreator packet;
@@ -227,7 +227,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, ActiveBuff &playerSkill, ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId) {
+void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId) {
 	time *= 1000;
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
@@ -261,7 +261,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, Active
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, ActiveBuff &playerSkill, int32_t mapMobId) {
+void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
 

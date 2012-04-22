@@ -770,14 +770,14 @@ void Map::timeMob(bool firstLoad) {
 	TimeMob *tm = getTimeMob();
 	if (firstLoad) {
 		if (cHour >= tm->startHour && cHour < tm->endHour) {
-			Pos &p = findRandomPos();
+			const Pos &p = findRandomPos();
 			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
 			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}
 	}
 	else {
 		if (cHour == tm->startHour) {
-			Pos &p = findRandomPos();
+			const Pos &p = findRandomPos();
 			m_timeMob = spawnMob(tm->id, p, getFhAtPosition(p), nullptr, 0);
 			showMessage(tm->message, PlayerPacket::NoticeTypes::Blue);
 		}

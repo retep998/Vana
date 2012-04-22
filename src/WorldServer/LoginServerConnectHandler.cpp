@@ -33,7 +33,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::Instance()->setWorldId(worldId);
 		WorldServer::Instance()->setInterPort(packet.get<port_t>());
 
-		WorldConfig &conf = packet.getClass<WorldConfig>();
+		const WorldConfig &conf = packet.getClass<WorldConfig>();
 		WorldServer::Instance()->setConfig(conf);
 
 		WorldServer::Instance()->listen();

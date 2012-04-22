@@ -292,10 +292,10 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	if (player->getFh() == 0) {
 		// Player is floating in the air
 		int32_t mapId = player->getMap();
-		Pos &playerPos = player->getPos();
+		const Pos &playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
-		Pos &floor = map->findFloor(playerPos);
+		const Pos &floor = map->findFloor(playerPos);
 		if (floor.y == playerPos.y) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
@@ -376,11 +376,11 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string &line1 = packet.getString();
-	string &line2 = packet.getString();
-	string &line3 = packet.getString();
-	string &line4 = packet.getString();
-	string &line5 = packet.getString();
+	const string &line1 = packet.getString();
+	const string &line2 = packet.getString();
+	const string &line3 = packet.getString();
+	const string &line4 = packet.getString();
+	const string &line5 = packet.getString();
 	if (hasTarget) {
 		receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 	}
@@ -400,7 +400,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
-	Attack &attack = compileAttack(player, packet, SkillTypes::Melee);
+	const Attack &attack = compileAttack(player, packet, SkillTypes::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -471,7 +471,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		uint8_t ppSize = ppDamages.size();
 		for (uint8_t pickpocket = 0; pickpocket < ppSize; ++pickpocket) {
 			// Drop stuff for Pickpocket
-			Pos &ppPos = origin;
+			Pos ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
 			clock_t ppTime = 175 * pickpocket;
@@ -569,7 +569,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
-	Attack &attack = compileAttack(player, packet, SkillTypes::Ranged);
+	const Attack &attack = compileAttack(player, packet, SkillTypes::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -673,7 +673,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
-	Attack &attack = compileAttack(player, packet, SkillTypes::Magic);
+	const Attack &attack = compileAttack(player, packet, SkillTypes::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -746,7 +746,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 }
 
 void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) {
-	Attack &attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
+	const Attack &attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
 	PlayersPacket::useEnergyChargeAttack(player, attack);
 
 	int32_t skillId = attack.skillId;
@@ -785,7 +785,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 }
 
 void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
-	Attack &attack = compileAttack(player, packet, SkillTypes::Summon);
+	const Attack &attack = compileAttack(player, packet, SkillTypes::Summon);
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery

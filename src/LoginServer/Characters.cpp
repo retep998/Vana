@@ -31,9 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 #include "ValidCharDataProvider.h"
-#include <boost/tr1/unordered_map.hpp>
+#include <unordered_map>
 
-using std::tr1::unordered_map;
+using std::unordered_map;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT i.item_id, i.slot " <<
@@ -160,7 +160,7 @@ void Characters::showCharacters(Player *player) {
 }
 
 void Characters::checkCharacterName(Player *player, PacketReader &packet) {
-	string &name = packet.getString();
+	const string &name = packet.getString();
 	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
@@ -224,7 +224,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	string &name = packet.getString();
+	string name = packet.getString();
 	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}

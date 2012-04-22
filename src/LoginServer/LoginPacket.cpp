@@ -106,7 +106,7 @@ void LoginPacket::showWorld(Player *player, World *world) {
 	for (size_t i = 0; i < world->getMaxChannels(); i++) {
 		std::ostringstream cnStream;
 		cnStream << world->getName() << "-" << i + 1;
-		string &channelName = cnStream.str();
+		const string &channelName = cnStream.str();
 		packet.addString(channelName);
 
 		if (Channel *channel = world->getChannel(i)) {

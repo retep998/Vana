@@ -87,8 +87,8 @@ public:
 	SkillLevelInfo * getActiveSkillInfo(int32_t skillId);
 
 	// Buff map info
-	void addMapEntryBuffInfo(ActiveMapBuff &buff);
-	void deleteMapEntryBuffInfo(ActiveMapBuff &buff);
+	void addMapEntryBuffInfo(const ActiveMapBuff &buff);
+	void deleteMapEntryBuffInfo(const ActiveMapBuff &buff);
 	void setMountInfo(int32_t skillId, int32_t mountId);
 	MapEntryBuffs getMapEntryBuffs();
 

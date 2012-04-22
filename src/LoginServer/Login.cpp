@@ -40,9 +40,9 @@ using TimeUtilities::timeToTick32;
 using TimeUtilities::timeToTick;
 
 void Login::loginUser(Player *player, PacketReader &packet) {
-	string &username = packet.getString();
-	string &password = packet.getString();
-	string &ip = IpUtilities::ipToString(player->getIp());
+	const string &username = packet.getString();
+	const string &password = packet.getString();
+	const string &ip = IpUtilities::ipToString(player->getIp());
 
 	if (!MiscUtilities::inRangeInclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking
@@ -83,8 +83,8 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		}
 		else {
 			userId = row.get<int32_t>("user_id");
-			string &dbPassword = row.get<string>("password");
-			string &salt = row.get<string>("salt");
+			const string &dbPassword = row.get<string>("password");
+			string salt = row.get<string>("salt");
 			ind = row.get_indicator("salt");
 
 			if (ind == soci::i_null) {
@@ -96,7 +96,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				else {
 					// We have a valid password, so let's hash the password
 					salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
-					string &hashedPassword = MiscUtilities::hashPassword(password, salt);
+					const string &hashedPassword = MiscUtilities::hashPassword(password, salt);
 					sql.once << "UPDATE user_accounts u " <<
 								"SET u.password = :password, u.salt = :salt " <<
 								"WHERE u.user_id = :user",

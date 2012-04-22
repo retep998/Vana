@@ -31,9 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
-	string &message = packet.getString();
-	vector<int32_t> &receivers = packet.getVector<int32_t>();
-	string &sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
+	const string &message = packet.getString();
+	const vector<int32_t> &receivers = packet.getVector<int32_t>();
+	const string &sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
 	for (size_t i = 0; i < receivers.size(); i++) {
 		int32_t receiver = receivers[i];
 		if (Player *p = PlayerDataProvider::Instance()->getPlayer(receiver)) {
@@ -45,7 +45,7 @@ void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection
 
 void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
-	string &findeeName = packet.getString();
+	const string &findeeName = packet.getString();
 
 	Player *findee = PlayerDataProvider::Instance()->getPlayer(findeeName);
 
@@ -54,8 +54,8 @@ void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connectio
 
 void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t whisperer = packet.get<int32_t>();
-	string &whispereeName = packet.getString();
-	string &message = packet.getString();
+	const string &whispereeName = packet.getString();
+	const string &message = packet.getString();
 
 	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whispereeName);
 	if (whisperee->isOnline()) {
@@ -68,7 +68,7 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connec
 }
 
 void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	string message = packet.getString();
+	const string &message = packet.getString();
 	WorldServer::Instance()->setScrollingHeader(message);
 }
 

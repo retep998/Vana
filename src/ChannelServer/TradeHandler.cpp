@@ -114,7 +114,7 @@ void TradeHandler::tradeHandler(Player *player, PacketReader &packet) {
 			Player *one = trade->getSender();
 			Player *two = trade->getReceiver();
 			bool blue = (player == two);
-			string &chat = player->getName() + " : " + packet.getString();
+			const string &chat = player->getName() + " : " + packet.getString();
 			TradesPacket::sendTradeChat(one, blue, chat);
 			if (two != nullptr) {
 				TradesPacket::sendTradeChat(two, blue, chat);

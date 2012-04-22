@@ -42,7 +42,7 @@ void Initializing::checkMcdbVersion() {
 	int32_t subversion = row.get<int32_t>("subversion");
 	int16_t mapleVersion = row.get<int16_t>("maple_version");
 	bool testServer = row.get<bool>("test_server");
-	string &mapleLocale = row.get<string>("maple_locale");
+	const string &mapleLocale = row.get<string>("maple_locale");
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		std::cerr << "ERROR: MCDB version incompatible." << endl;

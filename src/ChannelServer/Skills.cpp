@@ -139,7 +139,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Shadower::Smokescreen: {
 			int16_t x = packet.get<int16_t>();
 			int16_t y = packet.get<int16_t>();
-			Pos &origin = Pos(x, y);
+			const Pos &origin = Pos(x, y);
 			Mist *m = new Mist(player->getMap(), player, origin, skill, skillId, level);
 			break;
 		}

@@ -106,9 +106,9 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realSkill = 0;
 	uint8_t level = 0;
-	Pos &projectileTarget = packet.getPos();
+	const Pos &projectileTarget = packet.getPos();
 	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
-	Pos &spot = packet.getPos();
+	const Pos &spot = packet.getPos();
 
 	MovementHandler::parseMovement(mob, packet);
 
@@ -194,7 +194,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 }
 
 void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillInfo) {
-	Pos &mobPos = mob->getPos();
+	const Pos &mobPos = mob->getPos();
 	Map *map = Maps::getMap(mob->getMapId());
 	vector<StatusInfo> statuses;
 	bool aoe = false;

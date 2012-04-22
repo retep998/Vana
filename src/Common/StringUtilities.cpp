@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include "Database.h"
 #include "tokenizer.hpp"
+#include <iomanip>
+#include <iostream>
 
 int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 	string::const_iterator iter1 = s1.begin();

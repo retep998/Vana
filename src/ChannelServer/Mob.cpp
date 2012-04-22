@@ -34,8 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::bind;
-
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t time) :
 	status(status),
 	val(val),
@@ -142,17 +140,17 @@ void Mob::initMob() {
 	m_statuses[empty.status] = empty;
 
 	if (m_info->hpRecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealHp, this, m_info->hpRecovery),
+		new Timer::Timer(std::bind(&Mob::naturalHealHp, this, m_info->hpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
 			getTimers(), 0, 10 * 1000);
 	}
 	if (m_info->mpRecovery > 0) {
-		new Timer::Timer(bind(&Mob::naturalHealMp, this, m_info->mpRecovery),
+		new Timer::Timer(std::bind(&Mob::naturalHealMp, this, m_info->mpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
 			getTimers(), 0, 10 * 1000);
 	}
 	if (m_info->removeAfter > 0) {
-		new Timer::Timer(bind(&Mob::applyDamage, this, 0, m_info->hp, false),
+		new Timer::Timer(std::bind(&Mob::applyDamage, this, 0, m_info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, m_mobId, m_id),
 			map->getTimers(), TimeUtilities::fromNow(m_info->removeAfter * 1000));
 	}
@@ -218,8 +216,13 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 		if (m_hp == Stats::MinHp) {
 			// Time to die
 			if (isSponge()) {
+				// Workaround for GCC
+				// In particular, it was not selecting overloads properly in the timer statement
+				// It had to choose between (Player *, Player * + bool, bool, or no args)
+				// It couldn't manage that simple task in a context where it's obvious which one
+				void (Mob::* properOverload)(bool) = &Mob::die;
 				for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
-					new Timer::Timer(bind(&Mob::die, spawnIter->second, true),
+					new Timer::Timer(std::bind(properOverload, spawnIter->second, true),
 						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
 						nullptr, TimeUtilities::fromNow(400));
 				}
@@ -316,13 +319,13 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
 				// Damage timer for poison(s)
-				new Timer::Timer(bind(&Mob::applyDamage, this, playerId, statusInfo[i].val, true),
+				new Timer::Timer(std::bind(&Mob::applyDamage, this, playerId, statusInfo[i].val, true),
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
 					getTimers(), 0, 1000);
 				break;
 		}
 
-		new Timer::Timer(bind(&Mob::removeStatus, this, cStatus, true),
+		new Timer::Timer(std::bind(&Mob::removeStatus, this, cStatus, true),
 			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
 			getTimers(), TimeUtilities::fromNow(statusInfo[i].time * 1000));
 	}

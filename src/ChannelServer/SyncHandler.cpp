@@ -89,7 +89,7 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>(); // The id of the player coming online
 	int32_t channel = packet.get<int32_t>();
-	vector<int32_t> &players = packet.getVector<int32_t>(); // Holds the buddy IDs
+	const vector<int32_t> &players = packet.getVector<int32_t>(); // Holds the buddy IDs
 
 	for (size_t i = 0; i < players.size(); i++) {
 		if (Player *player = PlayerDataProvider::Instance()->getPlayer(players[i])) {

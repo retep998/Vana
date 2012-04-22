@@ -64,7 +64,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->setChannel(channel);
 		ChannelServer::Instance()->setPort(port);
 
-		WorldConfig &conf = packet.getClass<WorldConfig>();
+		const WorldConfig &conf = packet.getClass<WorldConfig>();
 
 		ChannelServer::Instance()->setConfig(conf);
 		ChannelServer::Instance()->setPianusChannel(MiscUtilities::isBossChannel(conf.pianus.channels, chId));
@@ -86,7 +86,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 	int32_t finder = packet.get<int32_t>();
 	int16_t channel = packet.get<int16_t>();
-	string &name = packet.getString();
+	const string &name = packet.getString();
 	int8_t is = packet.get<int8_t>();
 	if (channel == -1) {
 		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, -1, is);
@@ -98,15 +98,15 @@ void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
 
 void WorldServerConnectHandler::whisperPlayer(PacketReader &packet) {
 	int32_t whisperee = packet.get<int32_t>();
-	string &whisperer = packet.getString();
+	const string &whisperer = packet.getString();
 	uint16_t channel = packet.get<int16_t>();
-	string &message = packet.getString();
+	const string &message = packet.getString();
 
 	PlayersPacket::whisperPlayer(PlayerDataProvider::Instance()->getPlayer(whisperee), whisperer, channel, message);
 }
 
 void WorldServerConnectHandler::scrollingHeader(PacketReader &packet) {
-	string &message = packet.getString();
+	const string &message = packet.getString();
 	ChannelServer::Instance()->setScrollingHeader(message);
 }
 
@@ -138,7 +138,7 @@ void WorldServerConnectHandler::sendToPlayers(PacketReader &packet) {
 }
 
 void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
-	string &args = packet.getString();
+	const string &args = packet.getString();
 	if (args == "all") {
 		ItemDataProvider::Instance()->loadData();
 		DropDataProvider::Instance()->loadData();
