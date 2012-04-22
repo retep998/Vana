@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 using std::string;
-using std::tr1::cmatch;
-using std::tr1::regex;
+using std::cmatch;
+using std::regex;
 using std::vector;
 
 class Player;
