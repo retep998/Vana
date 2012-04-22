@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <boost/scoped_ptr.hpp>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 
 using boost::scoped_ptr;
