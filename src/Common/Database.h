@@ -41,7 +41,7 @@ private:
 	static soci::session & getConnection(tsConn &conn, std::function<void()> func);
 	static tsConn m_chardb;
 	static tsConn m_datadb;
-	static string buildConnectionString(const DbConfig &conf);
+	static std::string buildConnectionString(const DbConfig &conf);
 };
 
 inline
