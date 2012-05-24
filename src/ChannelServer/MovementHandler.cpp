@@ -29,6 +29,105 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 	int16_t y = 0;
 	uint8_t n = packet.get<uint8_t>();
 
+	for (uint8_t i = 0; i < n; i++) {
+		uint8_t currentType = packet.get<uint8_t>();
+		switch (currentType) {
+        case 0:
+        case 7:
+        case 14:
+        case 16:
+        case 45:
+        case 46:
+			{
+				x = packet.get<int16_t>(); // X
+				y = packet.get<int16_t>(); // Y
+				packet.get<int16_t>(); // UNK1
+				packet.get<int16_t>(); // UNK2
+				foothold = packet.get<int16_t>();
+				if (currentType == 14)
+					packet.get<int16_t>();
+				packet.get<int16_t>(); // ??
+				packet.get<int16_t>(); // ???
+
+				stance = packet.get<int8_t>();
+				packet.get<int16_t>(); // Time between last node
+			}
+			break;
+		case 44:
+			{
+				x = packet.get<int16_t>(); // X
+				y = packet.get<int16_t>(); // Y
+				packet.get<int16_t>(); // UNK1
+				packet.get<int16_t>(); // UNK2
+				foothold = packet.get<int16_t>(); // FH?
+
+				stance = packet.get<int8_t>();
+				packet.get<int16_t>(); // Time between last node
+				break;
+			}
+		case 1:
+        case 2:
+        case 15:
+        case 18:
+        case 19:
+        case 21:
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+			{
+				packet.get<int16_t>(); // UNK1
+				packet.get<int16_t>(); // UNK2
+				if (currentType == 18 || currentType == 19)
+					packet.get<int16_t>(); // UNK4
+
+				stance = packet.get<int8_t>();
+				packet.get<int16_t>(); // Time between last node
+				break;
+			}
+		case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+        case 12:
+			{
+				x = packet.get<int16_t>(); // X
+				y = packet.get<int16_t>(); // Y
+				foothold = packet.get<int16_t>(); // FH?
+
+				stance = packet.get<int8_t>();
+				packet.get<int16_t>(); // Time between last node
+				break;
+			}
+		case 13:
+			{
+				packet.get<int16_t>(); // UNK1
+				packet.get<int16_t>(); // UNK2
+				packet.get<int16_t>(); // UNK3
+
+				stance = packet.get<int8_t>();
+				packet.get<int16_t>(); // Time between last node
+				break;
+			}
+		case 20:
+			{
+				x = packet.get<int16_t>(); // X
+				y = packet.get<int16_t>(); // Y
+				packet.get<int16_t>(); // UNK1
+				break;
+			}
+		case 11:
+			{
+				packet.get<int8_t>();
+				break;
+			}
+		}
+	}
+
+	/*
 	enum MovementTypes {
 		NormalMovement = 0,
 		Jump = 1,
@@ -120,6 +219,7 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				break;
 		}
 	}
+	*/
 	Pos pos(x, y);
 	life->setPos(pos);
 	life->setFh(foothold);

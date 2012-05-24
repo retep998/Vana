@@ -53,8 +53,10 @@ void LevelsPacket::levelUp(Player *player) {
 void LevelsPacket::statOk(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<int16_t>(1);
-	packet.add<int32_t>(0);
+	packet.add<int8_t>(1);
+	packet.add<int64_t>(0);
+	packet.addBool(false);
+	packet.addBool(false);
 	player->getSession()->send(packet);
 }
 

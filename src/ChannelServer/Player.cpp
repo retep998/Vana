@@ -179,7 +179,8 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
 				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
 				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
-				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
+				case CMSG_NPC_TALK_CONT:
+				case CMSG_NPC_TALK_CONT_2: NpcHandler::handleNpcIn(this, packet); break;
 				case CMSG_PARTY: PartyHandler::handleRequest(this, packet); break;
 				case CMSG_PET_CHAT: PetHandler::handleChat(this, packet); break;
 				case CMSG_PET_COMMAND: PetHandler::handleCommand(this, packet); break;
@@ -217,6 +218,13 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
 				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
 				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+				default: {
+					packet.reset();
+					std::ostringstream x;
+					x << "UNK PACKET Player ID: " << getId() << "; Packet: " << packet;
+					ChannelServer::Instance()->log(LogTypes::Info, x.str());
+					break;
+					}
 			}
 		}
 	}
@@ -235,11 +243,17 @@ void Player::handleRequest(PacketReader &packet) {
 
 void Player::playerConnect(PacketReader &packet) {
 	int32_t id = packet.get<int32_t>();
-	if (!Connectable::Instance()->checkPlayer(id, getIp())) {
+	packet.get<int64_t>(); // Random 1
+	packet.get<int64_t>(); // Random 2
+	packet.get<int8_t>();
+	int64_t loginKey = packet.get<int64_t>();
+	/*
+	if (!Connectable::Instance()->checkPlayer(id, getIp(), loginKey)) {
 		// Hacking
 		getSession()->disconnect();
 		return;
 	}
+	*/
 	m_id = id;
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
@@ -274,21 +288,39 @@ void Player::playerConnect(PacketReader &packet) {
 			this,
 			row.get<uint8_t>("level"),
 			row.get<int16_t>("job"),
-			row.get<int16_t>("fame"),
+			row.get<int8_t>("job_type"),
+			row.get<int32_t>("fame"),
 			row.get<int16_t>("str"),
 			row.get<int16_t>("dex"),
 			row.get<int16_t>("int"),
 			row.get<int16_t>("luk"),
 			row.get<int16_t>("ap"),
 			row.get<uint16_t>("hpmp_ap"),
-			row.get<int16_t>("sp"),
-			row.get<int16_t>("chp"),
-			row.get<int16_t>("mhp"),
-			row.get<int16_t>("cmp"),
-			row.get<int16_t>("mmp"),
+			row.get<int32_t>("chp"),
+			row.get<int32_t>("mhp"),
+			row.get<int32_t>("cmp"),
+			row.get<int32_t>("mmp"),
 			row.get<int32_t>("exp")
 		)
 	);
+
+	// SP Table
+	{
+		if (GameLogicUtilities::isExtendedSpJob(getStats()->getJob())) {
+			soci::row row2;
+			soci::rowset<> rs = (sql.prepare << "SELECT job_id, points FROM character_sp WHERE character_id = :id ORDER BY job_id ASC",
+					soci::use(id, "id"));
+
+			for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+				soci::row const &row = *i;
+				getStats()->setSp(row.get<int8_t>(1), row.get<int8_t>(0));
+			}
+		}
+		else {
+			// Load normal value
+			getStats()->setSp((int8_t)row.get<int16_t>("sp")); // Slot 0 is default slot.
+		}
+	}
 
 	// Inventory
 	m_mounts.reset(new PlayerMounts(this));

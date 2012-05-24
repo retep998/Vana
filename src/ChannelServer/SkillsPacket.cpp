@@ -29,10 +29,12 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_ADD);
 	packet.add<int8_t>(1);
+	packet.add<int8_t>(0);
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(skillInfo.level); // Level
 	packet.add<int32_t>(skillInfo.maxLevel); // Master Level
+	packet.add<int64_t>(Items::NoExpiration);
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
@@ -158,11 +160,11 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t s
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
+void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int32_t time) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_COOLDOWN);
 	packet.add<int32_t>(skillId);
-	packet.add<int16_t>(time);
+	packet.add<int32_t>(time); // O 3o
 	player->getSession()->send(packet);
 }
 

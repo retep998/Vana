@@ -390,3 +390,24 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 	}
 	return false;
 }
+
+bool ManagementFunctions::packet(Player *player, const string &args) {
+	// Remove all spaces
+	string str(args);
+	str.erase (std::remove (str.begin(), str.end(), ' '), str.end());
+
+	if (str.size() % 2 == 1) {
+		PlayerPacket::showMessage(player, "Packet data size is incorrect.", PlayerPacket::NoticeTypes::Red);
+		return true;
+	}
+	if (str.size() < sizeof(header_t) * 2) { // Need at least a header!
+		PlayerPacket::showMessage(player, "Packet data is smaller than the size of a header!", PlayerPacket::NoticeTypes::Red);
+		return true;
+	}
+
+	// Create Packet
+	PacketCreator packet;
+	packet.addBytes(str.c_str());
+	player->getSession()->send(packet);
+	return true;
+}

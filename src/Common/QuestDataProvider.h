@@ -33,9 +33,9 @@ public:
 	}
 	void loadData();
 
-	bool isQuest(int16_t questId) { return (m_quests.find(questId) != m_quests.end()); }
-	int16_t getItemRequest(int16_t questId, int32_t itemId);
-	Quest * getInfo(int16_t questId) { return &m_quests[questId]; }
+	bool isQuest(uint16_t questId) { return (m_quests.find(questId) != m_quests.end()); }
+	int16_t getItemRequest(uint16_t questId, int32_t itemId);
+	Quest * getInfo(uint16_t questId) { return &m_quests[questId]; }
 private:
 	QuestDataProvider() {}
 	static QuestDataProvider *singleton;
@@ -45,5 +45,5 @@ private:
 	void loadRequiredJobs();
 	void loadRewards();
 
-	unordered_map<int16_t, Quest> m_quests;
+	unordered_map<uint16_t, Quest> m_quests;
 };

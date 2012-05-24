@@ -407,6 +407,8 @@ void PlayerInventory::addEquippedPacket(PacketCreator &packet) {
 	}
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
+
+	packet.add<int8_t>(0);
 }
 
 uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
@@ -541,31 +543,51 @@ void PlayerInventory::addWishListItem(int32_t itemId) {
 void PlayerInventory::connectData(PacketCreator &packet) {
 	packet.add<int32_t>(m_mesos);
 
+	// New V.100+
+	{
+		size_t amount = 0;
+		packet.add<int32_t>(amount);
+		for (size_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(0); // I have no idea!
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+		}
+	}
+
 	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		packet.add<int8_t>(getMaxSlots(i));
 	}
 
+	packet.add<int64_t>(94354848000000000); // New in V.83+?
+
 	// Go through equips
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
-	ItemInventory::iterator iter;
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
+	ItemInventory::reverse_iterator iter;
+	for (iter = equips.rbegin(); iter != equips.rend(); ++iter) {
 		if (iter->first < 0 && iter->first > -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
+	packet.add<int16_t>(0);
+	for (iter = equips.rbegin(); iter != equips.rend(); ++iter) {
 		if (iter->first < -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
+	packet.add<int16_t>(0);
+	for (iter = equips.rbegin(); iter != equips.rend(); ++iter) {
 		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second, true);
 		}
 	}
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
+
+	packet.add<int16_t>(0);
+
+	packet.add<int16_t>(0);
+
+	packet.add<int16_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
 	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
@@ -590,6 +612,10 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 void PlayerInventory::rockPacket(PacketCreator &packet) {
 	InventoryPacketHelper::fillRockPacket(packet, m_rockLocations, Inventories::TeleportRockMax);
 	InventoryPacketHelper::fillRockPacket(packet, m_vipLocations, Inventories::VipRockMax);
+	vector<int32_t> empty;
+	InventoryPacketHelper::fillRockPacket(packet, empty, Inventories::HyperRockMax);
+	InventoryPacketHelper::fillRockPacket(packet, empty, Inventories::HyperRockMax);
+
 }
 
 void PlayerInventory::wishListPacket(PacketCreator &packet) {

@@ -43,22 +43,45 @@ enum SkillValues {
 };
 
 namespace BuffBytes {
-	const int8_t ByteQuantity = 16;
-	const int8_t EntryByteQuantity = 8;
+	const int8_t ByteQuantity = 32;
+	const int8_t EntryByteQuantity = 32;
 
 	enum ByteTypes : uint8_t {
+		Byte29,
+		Byte30,
+		Byte31,
+		Byte32,
+
+		Byte25,
+		Byte26,
+		Byte27,
+		Byte28,
+
+		Byte21,
+		Byte22,
+		Byte23,
+		Byte24,
+
+		Byte17,
+		Byte18,
+		Byte19,
+		Byte20,
+
 		Byte13,
 		Byte14,
 		Byte15,
 		Byte16,
+
 		Byte9,
 		Byte10,
 		Byte11,
 		Byte12,
+
 		Byte5,
 		Byte6,
 		Byte7,
 		Byte8,
+
 		Byte1,
 		Byte2,
 		Byte3,
@@ -76,21 +99,22 @@ namespace StatusEffects {
 			Wdef = 0x02,
 			Matk = 0x04,
 			Mdef = 0x08,
-			Acc = 0x10,
 
+			Acc = 0x10,
 			Avoid = 0x20,
 			Speed = 0x40,
 			Stun = 0x80,
+
 			Freeze = 0x100,
 			Poison = 0x200,
-
 			Seal = 0x400,
 			NoClue1 = 0x800,
+
 			WeaponAttackUp = 0x1000,
 			WeaponDefenseUp = 0x2000,
 			MagicAttackUp = 0x4000,
-
 			MagicDefenseUp = 0x8000,
+
 			Doom = 0x10000,
 			ShadowWeb = 0x20000,
 			WeaponImmunity = 0x40000,
@@ -100,17 +124,19 @@ namespace StatusEffects {
 			NoClue3 = 0x200000,
 			NinjaAmbush = 0x400000,
 			NoClue4 = 0x800000,
-			VenomousWeapon = 0x1000000,
 
+			VenomousWeapon = 0x1000000,
 			NoClue5 = 0x2000000,
 			NoClue6 = 0x4000000,
 			Empty = 0x8000000, // All mobs have this when they spawn
+
 			Hypnotize = 0x10000000,
 			WeaponDamageReflect = 0x20000000,
 
 			MagicDamageReflect = 0x40000000,
 			NoClue7 = 0x80000000 // Not any more bits you can use with 4 bytes
 		};
+		const int32_t MobStatusBytes = 32;
 	}
 	namespace Player {
 		enum PlayerStatus : int16_t {
@@ -231,7 +257,7 @@ namespace Jobs {
 			CannonTrooper = 531,
 			CannonMaster = 532,
 
-			JuniorGm = 800, // ??
+			Manager = 800, // ??
 			Gm = 900,
 			SuperGm = 910,
 
@@ -265,6 +291,7 @@ namespace Jobs {
 			Legend = 2000,
 			Evan = 2001,
 			Mercedes = 2002,
+			PhantomJr = 2003,
 
 			Aran1 = 2100,
 			Aran2 = 2110,
@@ -356,6 +383,8 @@ namespace Jobs {
 			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes,
 			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer
 		};
+
+		const int32_t LegendJobTrack = 3; // Citizen, DS, BM, WH and Mech ID / 1000
 	}
 
 	namespace All {
@@ -621,7 +650,8 @@ namespace Jobs {
 			Blizzard = 3211003,
 			GoldenEagle = 3211005,
 			MortalBlow = 3210001,
-			Puppet = 3211002
+			Puppet = 3211002,
+			Strafe = 3211006
 		};
 	}
 	namespace Marksman {

@@ -21,5 +21,10 @@ class PacketCreator;
 struct Character;
 
 namespace LoginPacketHelper {
-	void addCharacter(PacketCreator &packet, const Character &charc);
+	enum CharacterAddModus {
+		Normal,
+		ViewAllCharacters,
+		AddedNewCharacter
+	};
+	void addCharacter(PacketCreator &packet, const Character &charc, CharacterAddModus cam);
 }

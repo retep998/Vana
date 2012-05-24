@@ -33,10 +33,11 @@ namespace Inventories {
 	const uint8_t MinSlotsStorage = 4;
 	const uint8_t MaxSlotsStorage = 100;
 
-	const uint8_t EquippedSlots = 51;
+	const uint8_t EquippedSlots = 56;
 	const int8_t MaxPetCount = 3;
 	const uint8_t VipRockMax = 10;
 	const uint8_t TeleportRockMax = 5;
+	const uint8_t HyperRockMax = 13;
 }
 
 namespace EquipSlots {
@@ -90,7 +91,9 @@ namespace EquipSlots {
 		PetItemIgnore2 = 47,
 		PetItemIgnore3 = 48,
 		Medal = 49,
-		Belt = 50
+		Belt = 50,
+
+		CrusaderCodex = 55,
 	};
 }
 
@@ -238,6 +241,7 @@ namespace Items {
 		GmBottom = 1062007,
 		GmWeapon = 1322013,
 		BattleshipMount = 1932000,
+		CrusaderCodex = 1172000,
 
 		// Use
 		ShoeSpikes = 2040727,
@@ -251,6 +255,11 @@ namespace Items {
 		GoldenBell = 4031191,
 		RedRibbon = 4031192,
 		BeginnersGuidebook = 4161001,
+		NoblesseGuidebook = 4161047,
+		LegendGuidebook = 4161048,
+		EvanGuidebook = 4161052,
+		CitizenGuidebook = 4161054,
+		MercedesGuidebook = 4161079,
 
 		// Cash
 		TeleportRock = 5040000,

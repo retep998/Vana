@@ -29,6 +29,7 @@ using std::unordered_map;
 struct ConnectingPlayer {
 	ip_t connectIp;
 	uint32_t connectTime;
+	int64_t loginKey;
 	std::shared_ptr<PacketReader> heldPacket;
 };
 
@@ -43,7 +44,7 @@ public:
 	}
 
 	void newPlayer(int32_t id, ip_t ip, PacketReader &packet);
-	bool checkPlayer(int32_t id, ip_t ip);
+	bool checkPlayer(int32_t id, ip_t ip, int64_t loginKey);
 	PacketReader * getPacket(int32_t id);
 	void playerEstablished(int32_t id);
 private:

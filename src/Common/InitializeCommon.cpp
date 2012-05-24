@@ -40,9 +40,11 @@ void Initializing::checkMcdbVersion() {
 
 	int32_t version = row.get<int32_t>("version");
 	int32_t subversion = row.get<int32_t>("subversion");
-	int16_t mapleVersion = row.get<int16_t>("maple_version");
+	int16_t mapleVersion = row.get<int16_t>("wz_version");
 	bool testServer = row.get<bool>("test_server");
 	const string &mapleLocale = row.get<string>("maple_locale");
+	const string &mapleVersionString = row.get<string>("maple_version");
+	const string &mcdbDistributor = row.get<string>("distributor");
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		std::cerr << "ERROR: MCDB version incompatible." << endl;
@@ -66,6 +68,9 @@ void Initializing::checkMcdbVersion() {
 		std::cerr << "Vana: " << MapleVersion::Version << endl;
 		std::cerr << "MCDB: " << mapleVersion << endl;
 	}
+
+	std::cout << "-- Running MCDB " << version << "." << subversion << " for MapleStory V" << mapleVersionString << std::endl;
+	std::cout << "-- This MCDB has been distributed by " << mcdbDistributor << std::endl;
 }
 
 string Initializing::makeLocale(const string &locale, bool testServer) {

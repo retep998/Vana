@@ -483,5 +483,8 @@
     <ClInclude Include="src\Common\BlockCipherIv.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\Buffset.h">
+      <Filter>Source\Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

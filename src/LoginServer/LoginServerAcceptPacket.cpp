@@ -52,11 +52,12 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connec
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip) {
+void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip, int64_t loginKey) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_NEW_PLAYER);
 	packet.add<uint16_t>(channel);
 	packet.add<int32_t>(charId);
 	packet.add<ip_t>(ip);
+	packet.add<int64_t>(loginKey);
 	connection->getSession()->send(packet);
 }

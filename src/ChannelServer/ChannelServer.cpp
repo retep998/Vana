@@ -36,7 +36,7 @@ ChannelServer::ChannelServer() :
 }
 
 void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false);
+	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
 	Initializing::setUsersOffline(getOnlineId());
 }
 

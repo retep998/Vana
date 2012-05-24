@@ -65,6 +65,7 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	packet.add<int32_t>(info->getId());
 	packet.add<uint16_t>(channel);
 	packet.add<ip_t>(info->getIp());
+	packet.add<int64_t>(info->getLoginKey()); // TODO: IMPLEMENT loginkey
 	packet.add<int64_t>(info->getConnectionTime());
 
 	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());

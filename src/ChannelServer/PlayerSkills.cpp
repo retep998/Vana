@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 #include "Skills.h"
 #include "SkillsPacket.h"
+#include <map>
 
 void PlayerSkills::load() {
 	soci::session &sql = Database::getCharDb();
@@ -366,15 +367,85 @@ void PlayerSkills::removeAllCooldowns() {
 }
 
 void PlayerSkills::connectData(PacketCreator &packet) {
-	// Skill levels
-	packet.add<uint16_t>(m_skills.size());
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
-		packet.add<int32_t>(iter->first);
-		packet.add<int32_t>(iter->second.level);
-		if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
-			packet.add<int32_t>(iter->second.maxLevel); // Max Level for 4th job skills
+	bool useOld = m_skills.size() < 500;
+	packet.addBool(useOld); // To handle the old skill system or something?
+	
+	if (useOld) {
+		// Skill levels
+		packet.add<uint16_t>(m_skills.size());
+		for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
+			packet.add<int32_t>(iter->first);
+			packet.add<int32_t>(iter->second.level);
+			packet.add<int64_t>(Items::NoExpiration); // Expiration time for skills
+			if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
+				packet.add<int32_t>(iter->second.maxLevel); // Max Level for 4th job skills
+			}
 		}
 	}
+	else {
+		vector<std::pair<int32_t, int32_t>> skillsWithMax;
+		vector<int32_t> skillsWithoutMax;
+		vector<std::pair<int32_t, int64_t>> skillsWithExpiration;
+
+		// Fill in these vectors
+		for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
+			if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
+				skillsWithMax.push_back(std::pair<int32_t, int32_t>(iter->first, iter->second.maxLevel));
+			}
+			// Todo: implement expiring skills.
+			/*if (iter->second.expires > 0) {
+				skillsWithExpiration.push_back(std::pair<int32_t, int64_t>(iter->first, Items::NoExpiration));
+			}*/
+			else {
+				skillsWithMax.push_back(std::pair<int32_t, int32_t>(iter->first, 0));
+				//skillsWithoutMax.push_back(iter->first);
+			}
+			skillsWithExpiration.push_back(std::pair<int32_t, int64_t>(iter->first, Items::NoExpiration));
+		}
+
+
+		int16_t amount = skillsWithMax.size();
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithMax[i].first);
+			packet.add<int32_t>(skillsWithMax[i].second);
+		}
+
+		amount = skillsWithoutMax.size();
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithoutMax[i]);
+		}
+
+		amount = skillsWithExpiration.size();
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithExpiration[i].first);
+			packet.add<int64_t>(skillsWithExpiration[i].second); // Probably expiring skills here
+		}
+		// TEST
+		amount = skillsWithoutMax.size();
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithoutMax[i]);
+		}
+
+		amount = skillsWithMax.size(); // TEST
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithMax[i].first);
+			packet.add<int32_t>(skillsWithMax[i].second);
+		}
+		
+		// TEST
+		amount = 0;// skillsWithoutMax.size();
+		packet.add<int16_t>(amount);
+		for (int16_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(skillsWithoutMax[i]);
+		}
+
+	}
+
 	// Cooldowns
 	packet.add<uint16_t>(m_cooldowns.size());
 	for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); ++iter) {

@@ -99,7 +99,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 		soci::row const &row = *i;
 
 		MapInfoPtr mapInfo(new MapInfo);
-		link = row.get<int32_t>("link");
+		link = row.get<int32_t>("link", 0);
 		mapInfo->link = link;
 
 		runFlags(row.get<opt_string>("flags"), [&mapInfo](const string &cmp) {
@@ -114,9 +114,11 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 			else if (cmp == "shuffle_reactors") mapInfo->shuffleReactors = true;
 		});
 
+		/*
 		runFlags(row.get<opt_string>("field_type"), [&mapInfo](const string &cmp) {
 			if (cmp == "force_map_equip") mapInfo->forceMapEquip = true;
 		});
+		*/
 
 		runFlags(row.get<opt_string>("field_limitations"), [&mapInfo](const string &cmp) {
 			FieldLimit *limitations = &mapInfo->limitations;
@@ -135,28 +137,43 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 		});
 
 		mapInfo->continent = getContinent(mapId);
-		mapInfo->rm = row.get<int32_t>("return_map");
-		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map");
-		mapInfo->spawnRate = row.get<double>("mob_rate");
-		mapInfo->defaultMusic = row.get<string>("default_bgm");
+		mapInfo->rm = row.get<int32_t>("return_map", 999999999);
+		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map", 999999999);
+		mapInfo->spawnRate = row.get<double>("mob_rate", 1.0f);
+		mapInfo->defaultMusic = row.get<string>("default_bgm", "");
 		mapInfo->lt = Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty"));
 		mapInfo->rb = Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby"));
-		mapInfo->shuffleName = row.get<string>("shuffle_name");
-		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
-		mapInfo->dps = row.get<uint16_t>("damage_per_second");
-		mapInfo->traction = row.get<double>("default_traction");
-		mapInfo->regenRate = row.get<int8_t>("regen_rate");
-		mapInfo->minLevel = row.get<uint8_t>("min_level_limit");
-		mapInfo->timeLimit = row.get<int32_t>("time_limit");
-		mapInfo->protectItem = row.get<int32_t>("protect_item");
-		mapInfo->shipKind = row.get<int8_t>("ship_kind");
+		mapInfo->shuffleName = row.get<string>("shuffle_name", "");
+		mapInfo->decHp = row.get<uint8_t>("decrease_hp", 0);
+		mapInfo->dps = row.get<uint16_t>("damage_per_second", 0);
+		mapInfo->traction = row.get<double>("default_traction", 1.0f);
+		mapInfo->regenRate = row.get<int8_t>("regen_rate", 1);
+		mapInfo->minLevel = row.get<uint8_t>("min_level_limit", 0);
+		mapInfo->timeLimit = row.get<int32_t>("time_limit", 0);
+		mapInfo->protectItem = row.get<int32_t>("protect_item", 0);
+		mapInfo->shipKind = row.get<int8_t>("ship_kind", 0);
 
 		map = new Map(mapInfo, mapId);
 	}
 
+
 	m_maps[mapId] = map;
 	if (map == nullptr) {
 		return -1;
+	}
+	else {
+		rs = (Database::getDataDb().prepare << "SELECT script_type, script FROM scripts WHERE objectid = :map", soci::use(link != 0 ? link : mapId, "map"));
+		string scriptEnter, scriptFirstEnter;
+
+		for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+			soci::row const &row = *i;
+
+			const string &type = row.get<string>("script_type");
+			const string &script = row.get<string>("script");
+			if (type == "map_enter") scriptEnter = script;
+			else if (type == "map_first_enter") scriptFirstEnter = script;
+		}
+		map->setEnterScripts(scriptEnter, scriptFirstEnter);
 	}
 	return (link == 0 ? mapId : link);
 }

@@ -58,10 +58,10 @@ void MobDataProvider::loadAttacks() {
 
 		mobId = row.get<int32_t>("mobid");
 		mobAttack.id = row.get<int8_t>("attackid");
-		mobAttack.mpConsume = row.get<uint8_t>("mp_cost");
-		mobAttack.mpBurn = row.get<uint16_t>("mp_burn");
-		mobAttack.disease = row.get<uint8_t>("mob_skillid");
-		mobAttack.level = row.get<uint8_t>("mob_skill_level");
+		mobAttack.mpConsume = (uint8_t)row.get<uint16_t>("mp_cost", 0);
+		mobAttack.mpBurn = row.get<uint16_t>("mp_burn", 0);
+		mobAttack.disease = row.get<uint8_t>("mob_skillid", 0);
+		mobAttack.level = row.get<uint8_t>("mob_skill_level", 0);
 
 		m_attacks[mobId].push_back(mobAttack);
 	}
@@ -113,33 +113,33 @@ void MobDataProvider::loadMobs() {
 		});
 
 		mobId = row.get<int32_t>("mobid");
-		mob->level = row.get<uint16_t>("mob_level");
-		mob->hp = row.get<uint32_t>("hp");
-		mob->mp = row.get<uint32_t>("mp");
-		mob->hpRecovery = row.get<uint32_t>("hp_recovery");
-		mob->mpRecovery = row.get<uint32_t>("mp_recovery");
-		mob->selfDestruction = row.get<int32_t>("explode_hp");
-		mob->exp = row.get<uint32_t>("experience");
-		mob->link = row.get<int32_t>("link");
-		mob->buff = row.get<int32_t>("death_buff");
-		mob->removeAfter = row.get<int32_t>("death_after");
-		mob->hpColor = row.get<int8_t>("hp_bar_color");
-		mob->hpBackgroundColor = row.get<int8_t>("hp_bar_bg_color");
-		mob->carnivalPoints = row.get<int8_t>("carnival_points");
-		mob->avo = row.get<int16_t>("avoidability");
-		mob->acc = row.get<int16_t>("accuracy");
-		mob->speed = row.get<int16_t>("speed");
-		mob->chaseSpeed = row.get<int16_t>("chase_speed");
-		mob->wAtk = row.get<int16_t>("physical_attack");
-		mob->wDef = row.get<int16_t>("physical_defense");
-		mob->mAtk = row.get<int16_t>("magical_attack");
-		mob->mDef = row.get<int16_t>("magical_defense");
-		mob->traction = row.get<double>("traction");
-		mob->damageSkill = row.get<int32_t>("damaged_by_skill_only");
-		mob->damageMob = row.get<int32_t>("damaged_by_mob_only");
-		mob->knockback = row.get<int32_t>("knockback");
-		mob->summonType = row.get<int16_t>("summon_type");
-		mob->fixedDamage = row.get<int32_t>("fixed_damage");
+		mob->level = row.get<uint16_t>("mob_level", 1);
+		mob->hp = row.get<uint32_t>("hp", 0);
+		mob->mp = row.get<uint32_t>("mp", 0);
+		mob->hpRecovery = row.get<uint32_t>("hp_recovery", 0);
+		mob->mpRecovery = row.get<uint32_t>("mp_recovery", 0);
+		mob->selfDestruction = row.get<int32_t>("explode_hp", 0);
+		mob->exp = row.get<uint32_t>("experience", 0);
+		mob->link = row.get<int32_t>("link", 0);
+		mob->buff = row.get<int32_t>("death_buff", 0);
+		mob->removeAfter = row.get<int32_t>("death_after", 0);
+		mob->hpColor = row.get<int8_t>("hp_bar_color", 0);
+		mob->hpBackgroundColor = row.get<int8_t>("hp_bar_bg_color", 0);
+		mob->carnivalPoints = row.get<uint8_t>("carnival_points", 0);
+		mob->avo = row.get<int32_t>("avoidability", 0);
+		mob->acc = row.get<int32_t>("accuracy", 0);
+		mob->speed = row.get<int16_t>("speed", 0);
+		mob->chaseSpeed = row.get<int16_t>("chase_speed", 0);
+		mob->wAtk = (int16_t)row.get<int32_t>("physical_attack", 0);
+		mob->wDef = (int16_t)row.get<int32_t>("physical_defense", 0);
+		mob->mAtk = (int16_t)row.get<int32_t>("magical_attack", 0);
+		mob->mDef = (int16_t)row.get<int32_t>("magical_defense", 0);
+		mob->traction = row.get<double>("traction", 0.0f);
+		mob->damageSkill = row.get<int32_t>("damaged_by_skill_only", 0);
+		mob->damageMob = row.get<int32_t>("damaged_by_mob_only", 0);
+		mob->knockback = row.get<int32_t>("knockback", 0);
+		mob->summonType = row.get<int16_t>("summon_type", 0);
+		mob->fixedDamage = row.get<int32_t>("fixed_damage", 0);
 
 		mob->iceAttr = getElemModifier(row.get<string>("ice_modifier"));
 		mob->fireAttr = getElemModifier(row.get<string>("fire_modifier"));
@@ -168,7 +168,8 @@ void MobDataProvider::loadSummons() {
 		mobId = row.get<int32_t>("mobid");
 		summonId = row.get<int32_t>("summonid");
 
-		m_mobInfo[mobId]->summon.push_back(summonId);
+		if (m_mobInfo.find(mobId) != m_mobInfo.end())
+			m_mobInfo[mobId]->summon.push_back(summonId);
 	}
 }
 

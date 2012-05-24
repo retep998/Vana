@@ -140,8 +140,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(0);
-	packet.add<int16_t>(Stats::Pet);
-	packet.add<int16_t>(0x18);
+	packet.add<int64_t>(Stats::Pet);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.add<int64_t>(pet->getId());
@@ -150,7 +149,8 @@ void PetsPacket::updateSummonedPets(Player *player) {
 			packet.add<int64_t>(0);
 		}
 	}
-	packet.add<int8_t>(0);
+	packet.addBool(false);
+	packet.addBool(false);
 	player->getSession()->send(packet);
 }
 
@@ -158,7 +158,9 @@ void PetsPacket::blankUpdate(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(0);
+	packet.add<int64_t>(0);
+	packet.addBool(false);
+	packet.addBool(false);
 	player->getSession()->send(packet);
 }
 

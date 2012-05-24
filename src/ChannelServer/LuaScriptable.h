@@ -203,6 +203,10 @@ namespace LuaExports {
 	int setMusic(lua_State *luaVm);
 	int showMapEffect(lua_State *luaVm);
 	int showMapEvent(lua_State *luaVm);
+	int showEffect(lua_State *luaVm);
+	int showEvent(lua_State *luaVm);
+	int showTopMessage(lua_State *luaVm);
+	int showPlayerInfoBox(lua_State *luaVm);
 
 	// Map
 	int clearDrops(lua_State *luaVm);

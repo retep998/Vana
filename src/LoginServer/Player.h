@@ -41,6 +41,7 @@ public:
 	void setQuietBanReason(int8_t reason) { m_quietBanReason = reason; }
 	void setQuietBanTime(int64_t t) { m_quietBanTime = t; }
 	void setCreationTime(int64_t t) { m_userCreation = t; }
+	void setUsername(const string &val) { m_username = val; }
 
 	int8_t getGender() const { return m_gender; }
 	int8_t getWorld() const { return m_world; }
@@ -53,9 +54,12 @@ public:
 	int8_t getQuietBanReason() const { return m_quietBanReason; }
 	int64_t getQuietBanTime() const { return m_quietBanTime; }
 	int64_t getCreationTime() const { return m_userCreation; }
+	int64_t getConnectKey() const { return m_connectKey; }
+	string getUsername() const { return m_username; }
 
 	int32_t addInvalidLogin() {	return ++m_invalidLogins; }
 	void setOnline(bool online);
+	void handleClientVersion(PacketReader &packet);
 private:
 	int8_t m_gender;
 	int8_t m_world;
@@ -67,8 +71,10 @@ private:
 	int32_t m_charDeletePassword;
 	int64_t m_quietBanTime;
 	int64_t m_userCreation;
+	int64_t m_connectKey;
 	bool m_admin;
 	bool m_checkedPin;
+	string m_username;
 	PlayerStatus::PlayerStatus m_status;
 };
 

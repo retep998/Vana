@@ -99,8 +99,8 @@ struct ConsumeInfo {
 	bool partyDropUp;
 	uint8_t effect;
 	uint8_t decHunger;
-	uint8_t decFatigue;
 	uint8_t cp;
+	int16_t decFatigue;
 	int16_t hp;
 	int16_t mp;
 	int16_t hpr;
@@ -141,7 +141,9 @@ struct ItemInfo {
 		blockPickup(false),
 		noTrade(false),
 		cash(false),
-		quest(false)
+		quest(false),
+		platinumScissors(false),
+		accountShareable(false)
 		{ }
 
 	string name;
@@ -157,11 +159,13 @@ struct ItemInfo {
 	bool timeLimited;
 	bool noSale;
 	bool karmaScissors;
+	bool platinumScissors;
 	bool expireOnLogout;
 	bool blockPickup;
 	bool noTrade;
 	bool quest;
 	bool cash;
+	bool accountShareable;
 };
 
 struct PetInfo {

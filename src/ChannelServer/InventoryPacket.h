@@ -69,6 +69,7 @@ namespace InventoryPacket {
 	void showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId);
 	void showItemMegaphone(Player *player, const string &msg, bool whisper = false, Item *item = nullptr);
 	void showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper);
+	void showGachaponItemReceived(Player *player, const string &gachaponName, int32_t val1, int32_t val2, Item *item);
 	void useItemEffect(Player *player, int32_t itemId);
 	void updateSlots(Player *player, int8_t inventory, int8_t slots);
 	void sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps);

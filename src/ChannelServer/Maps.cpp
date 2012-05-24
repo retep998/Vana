@@ -105,6 +105,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			}
 			break;
 		case -1: {
+			packet.skipBytes(4); // unk
 			const string &portalName = packet.getString();
 
 			Map *toMap = getMap(player->getMap());

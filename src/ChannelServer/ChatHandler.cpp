@@ -34,6 +34,8 @@ void ChatHandler::initializeCommands() {
 }
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
+	packet.get<int32_t>(); // Tickcount
+
 	const string &message = packet.getString();
 	bool bubbleOnly = packet.getBool(); // Skill macros only display chat bubbles
 

@@ -115,11 +115,11 @@ namespace NpcDialogs {
 		YesNo = 0x01,
 		GetText = 0x02,
 		GetNumber = 0x03,
-		Simple = 0x04,
-		Question = 0x05,
-		Quiz = 0x06,
-		Style = 0x07,
-		AcceptDecline = 0x0C,
-		AcceptDeclineNoExit = 0x0D
+		Simple = 0x05,
+		Question = 0x06,
+		Quiz = 0x07,
+		Style = 0x09, // 0x15 same
+		AcceptDecline = 0x0F,
+		AcceptDeclineNoExit = 0x010
 	};
 }

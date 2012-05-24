@@ -134,6 +134,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
 
 		player->setUserId(userId);
+		player->setUsername(username);
 
 		if (LoginServer::Instance()->getPinEnabled()) {
 			int32_t pin = row.get<int32_t>("pin");

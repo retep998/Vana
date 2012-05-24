@@ -23,13 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 
 class PacketReader;
+class PacketCreator;
 class Player;
 struct Attack;
 struct ReturnDamageInfo;
 
 namespace PlayersPacket {
 	void showMoving(Player *player, unsigned char *buf, size_t size);
-	void faceExpression(Player *player, int32_t face);
+	void faceExpression(Player *player, int32_t face, int32_t unk, int8_t unk2);
 	void showChat(Player *player, const string &msg, bool bubbleOnly);
 	void damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr);
 	void showInfo(Player *player, Player *getInfo, bool isSelf);
@@ -41,4 +42,5 @@ namespace PlayersPacket {
 	void useSpellAttack(Player *player, const Attack &attack);
 	void useSummonAttack(Player *player, const Attack &attack);
 	void useEnergyChargeAttack(Player *player, const Attack &attack);
+	void createAttackPacket(Player *player, PacketCreator &packet, const Attack &attack);
 }

@@ -51,8 +51,9 @@ void ValidCharDataProvider::loadForbiddenNames() {
 }
 
 void ValidCharDataProvider::loadCreationItems() {
-	m_adventurer.clear();
-	m_cygnus.clear();
+	for (int8_t i = 0; i < ValidClass::MaxClass; i++) {
+		m_validItems[i].clear();
+	}
 
 	int8_t gender;
 	int8_t classId;
@@ -67,8 +68,14 @@ void ValidCharDataProvider::loadCreationItems() {
 
 		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
 		runFlags(row.get<opt_string>("character_type"), [&classId](const string &cmp) {
-			if (cmp == "regular") classId = Adventurer;
-			else if (cmp == "cygnus") classId = Cygnus;
+			if (cmp == "explorer") classId = ValidClass::Adventurer;
+			else if (cmp == "cygnus") classId = ValidClass::Cygnus;
+			else if (cmp == "aran") classId = ValidClass::Aran;
+			else if (cmp == "evan") classId = ValidClass::Evan;
+			else if (cmp == "mercedes") classId = ValidClass::Mercedes;
+			else if (cmp == "resistance") classId = ValidClass::Resistance;
+			else if (cmp == "demon_slayer") classId = ValidClass::DemonSlayer;
+			else if (cmp == "ultimate_explorer") classId = ValidClass::UltimateExplorer;
 		});
 
 		objectId = row.get<int32_t>("objectid");
@@ -131,6 +138,9 @@ bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classI
 		case ValidItemType::Shoes: valid = iterateTest(id, &(items->shoes)); break;
 		case ValidItemType::Weapon: valid = iterateTest(id, &(items->weapons)); break;
 	}
+	if (!valid) {
+		std::cout << " !!! Non-valid item: " << id << "; gender: " << (int16_t)gender << "; classId: " << (int16_t)classId << "; Type: " << (int16_t)type << std::endl;
+	}
 	return valid;
 }
 
@@ -144,18 +154,16 @@ bool ValidCharDataProvider::iterateTest(int32_t id, vector<int32_t> *test) {
 }
 
 ValidItems * ValidCharDataProvider::getItems(int8_t gender, int8_t classId) {
+	if (classId < 0 || classId >= ValidClass::MaxClass) {
+		throw std::exception("Can't get class items when the classId is incorrect");
+	}
+
 	ValidItems *vec = nullptr;
 	if (gender == Gender::Male) {
-		switch (classId) {
-			case Adventurer: vec = &m_adventurer.male; break;
-			case Cygnus: vec = &m_cygnus.male; break;
-		}
+		return &m_validItems[classId].male;
 	}
 	else if (gender == Gender::Female) {
-		switch (classId) {
-			case Adventurer: vec = &m_adventurer.female; break;
-			case Cygnus: vec = &m_cygnus.female; break;
-		}
+		return &m_validItems[classId].female;
 	}
 	return vec;
 }

@@ -129,6 +129,14 @@ void QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) {
 	player->getSession()->send(packet);
 }
 
+void QuestsPacket::giveFame(Player *player, int32_t amount) {
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_NOTICE);
+	packet.add<int8_t>(4);
+	packet.add<int32_t>(amount);
+	player->getSession()->send(packet);
+}
+
 void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
@@ -137,10 +145,10 @@ void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveFame(Player *player, int32_t amount) {
+void QuestsPacket::showTopMessage(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(4);
-	packet.add<int32_t>(amount);
+	packet.add<int8_t>(0x0B);
+	packet.addString(msg);
 	player->getSession()->send(packet);
 }

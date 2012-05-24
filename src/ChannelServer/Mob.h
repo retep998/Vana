@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Buffset.h"
 #include "GameConstants.h"
 #include "MobDataProvider.h"
 #include "MovableLife.h"
@@ -179,4 +180,6 @@ private:
 	unordered_map<int32_t, Mob *> m_spawns;
 	Player *m_controller;
 	std::unique_ptr<Timer::Container> m_timers;
+
+	Buffset<32> m_buffs;
 };

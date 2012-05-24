@@ -29,6 +29,20 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
+	packet.addBool(false); // Unk? Does run some other things
+	if (false) {
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addPos(mob->getPos());
@@ -50,8 +64,12 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 	else {
 		packet.add<int8_t>(spawn ? -2 : -1);
 	}
+
+
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(-1);
 	if (show && player != nullptr) {
 		player->getSession()->send(packet);
 	}
@@ -67,6 +85,20 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
+	packet.addBool(false); // Unk? Does run some other things
+	if (false) {
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
 
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
@@ -84,6 +116,9 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.add<int8_t>(spawn ? -2 : -1);
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(-1);
+
 	if (player != nullptr) {
 		player->getSession()->send(packet);
 	}
@@ -117,6 +152,7 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, 
 	packet.add<int16_t>(static_cast<int16_t>(mp));
 	packet.add<uint8_t>(skill);
 	packet.add<uint8_t>(level);
+	packet.add<int32_t>(0); // ?
 	player->getSession()->send(packet);
 }
 
@@ -124,6 +160,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT);
 	packet.add<int32_t>(mobId);
+	packet.add<uint8_t>(0xFF);
 	packet.addBool(useSkill);
 	packet.add<int8_t>(skill);
 	packet.addPos(projectileTarget);

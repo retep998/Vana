@@ -49,7 +49,7 @@ struct ActiveQuest {
 		return info.str();
 	}
 
-	int16_t id;
+	uint16_t id;
 	bool done;
 	string data;
 	map<int32_t, int16_t, std::less<int32_t>> kills;
@@ -63,22 +63,22 @@ public:
 	void save();
 	void connectData(PacketCreator &packet);
 
-	void addQuest(int16_t questId, int32_t npcId);
+	void addQuest(uint16_t questId, int32_t npcId);
 	void updateQuestMob(int32_t mobId);
 	void checkDone(ActiveQuest &quest);
-	void finishQuest(int16_t questId, int32_t npcId);
-	void removeQuest(int16_t questId);
-	bool isQuestActive(int16_t questId);
-	bool isQuestComplete(int16_t questId);
-	void setQuestData(int16_t id, const string &data);
-	string getQuestData(int16_t id);
+	void finishQuest(uint16_t questId, int32_t npcId);
+	void removeQuest(uint16_t questId);
+	bool isQuestActive(uint16_t questId);
+	bool isQuestComplete(uint16_t questId);
+	void setQuestData(uint16_t id, const string &data);
+	string getQuestData(uint16_t id);
 private:
 	Player *m_player;
 	unordered_map<int32_t, vector<int16_t>> m_mobToQuestMapping;
-	map<int16_t, ActiveQuest> m_quests;
-	map<int16_t, int64_t> m_completed;
+	map<uint16_t, ActiveQuest> m_quests;
+	map<uint16_t, int64_t> m_completed;
 
-	bool giveRewards(int16_t questId, bool start);
-	void addQuest(int16_t questId);
-	void addQuestMobs(int16_t questId);
+	bool giveRewards(uint16_t questId, bool start);
+	void addQuest(uint16_t questId);
+	void addQuestMobs(uint16_t questId);
 };

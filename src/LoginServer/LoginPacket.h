@@ -48,6 +48,7 @@ namespace LoginPacket {
 	void loginBan(Player *player, int8_t reason, int32_t expire);
 	void loginProcess(Player *player, int8_t id);
 	void loginConnect(Player *player, const string &username);
+	void accountInfo(Player *player);
 	void pinAssigned(Player *player);
 	void genderDone(Player *player, int8_t gender);
 	void showWorld(Player *player, World *world);
@@ -63,4 +64,5 @@ namespace LoginPacket {
 	void deleteCharacter(Player *player, int32_t id, uint8_t result);
 	void connectIp(Player *player, int32_t charId);
 	void relogResponse(Player *player);
+	void specialCharacterCreation(Player *player, bool enabled);
 }

@@ -122,6 +122,7 @@ PacketCreator Npc::npcPacket(int8_t type, bool addText) {
 	packet.add<int8_t>(4);
 	packet.add<int32_t>(m_npcId);
 	packet.add<int8_t>(type);
+	packet.add<int8_t>(0); // |0x02 = Player, |0x04 = different NPC (+new NPC id after this)
 	if (addText) {
 		packet.addString(m_text);
 		m_text = "";

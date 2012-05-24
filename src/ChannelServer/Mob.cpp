@@ -136,7 +136,12 @@ void Mob::initMob() {
 	}
 
 	m_status = StatusEffects::Mob::Empty;
+	m_status |= StatusEffects::Mob::NoClue7;
+
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
+	m_statuses[empty.status] = empty;
+
+	empty = StatusInfo(StatusEffects::Mob::NoClue7, 0, 0, 0);
 	m_statuses[empty.status] = empty;
 
 	if (m_info->hpRecovery > 0) {
@@ -338,7 +343,18 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
-	packet.add<int32_t>(m_status);
+	//m_buffs.AppendBytes(packet);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0x07C0); // C0 07 00 00
+	packet.add<int32_t>(m_status); // Fuck.
 	for (map<int32_t, StatusInfo>::iterator iter = m_statuses.begin(); iter != m_statuses.end(); ++iter) {
 		// Val/skillId pairs must be ordered in the packet by status value ascending, this is done for us by std::map
 		if (iter->first != StatusEffects::Mob::Empty) {

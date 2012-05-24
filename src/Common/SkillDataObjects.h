@@ -38,8 +38,6 @@ struct SkillLevelInfo {
 	int16_t itemCount;
 	int16_t bulletConsume;
 	int16_t moneyConsume;
-	int16_t x;
-	int16_t y;
 	int16_t speed;
 	int16_t jump;
 	int16_t str;
@@ -56,6 +54,8 @@ struct SkillLevelInfo {
 	uint16_t hpProp;
 	uint16_t mpProp;
 	uint16_t prop;
+	int32_t x;
+	int32_t y;
 	int32_t fixedDamage;
 	int32_t item;
 	int32_t time;
@@ -101,7 +101,7 @@ struct MobSkillLevelInfo {
 	int16_t interval;
 	int16_t prop;
 	int16_t limit;
-	int16_t time;
+	int32_t time;
 	int32_t x;
 	int32_t y;
 	Pos lt;
@@ -161,21 +161,24 @@ struct Attack {
 	bool isChargeSkill;
 	bool isPiercingArrow;
 	bool isHeal;
+	bool isRanged;
 	int8_t targets;
 	int8_t hits;
+	int8_t unk_val;
+	int8_t strafeByte;
 	uint8_t display;
-	uint8_t weaponSpeed;
-	uint8_t animation;
 	uint8_t weaponClass;
 	uint8_t skillLevel;
 	uint8_t portals;
 	int16_t starPos;
 	int16_t cashStarPos;
+	uint16_t animationAndSpeed; // Not sure, it's a short
 	int32_t skillId;
 	int32_t summonId;
 	int32_t charge;
 	int32_t ticks;
 	int32_t starId;
+	int32_t strafeInt;
 	int64_t totalDamage;
 	Pos projectilePos;
 	Pos playerPos;

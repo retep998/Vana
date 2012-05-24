@@ -39,7 +39,9 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 #endif
 
 int main() {
+#ifndef _DEBUG
 	try {
+#endif
 		LoginServer *server = LoginServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();
 
@@ -51,11 +53,13 @@ int main() {
 		connMan->run();
 		connMan->join();
 #endif
+#ifndef _DEBUG
 	}
 	catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		std::cout << "Press enter to quit ...";
 		getchar();
 	}
+#endif
 	return 0;
 }

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.h"
+#include "CmsgHeader.h"
 #include "Drop.h"
 #include "DropHandler.h"
 #include "DropsPacket.h"
@@ -59,11 +60,9 @@ void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
 void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
-
-	packet.skipBytes(4); // Ticks
-	int8_t type = packet.get<int8_t>();
-	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-	int32_t damage = packet.get<int32_t>();
+	const int8_t UnkDamage1 = -3;
+	const int8_t UnkDamage2 = -4;
+	
 	bool damageApplied = false;
 	bool deadlyAttack = false;
 	uint8_t hit = 0;
@@ -76,6 +75,14 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	int32_t noDamageId = 0;
 	Mob *mob = nullptr;
 	ReturnDamageInfo pgmr;
+
+	packet.skipBytes(4); // RAANDOMIZEED
+	packet.skipBytes(4); // Ticks
+	int8_t type = packet.get<int8_t>();
+	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+	int32_t damage = packet.get<int32_t>();
+	packet.skipBytes(1); // 0 ?
+	packet.skipBytes(1); // ?
 
 	if (type != MapDamage) {
 		mobId = packet.get<int32_t>();
@@ -101,7 +108,8 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 		hit = packet.get<uint8_t>(); // Knock direction
 		pgmr.reduction = packet.get<uint8_t>();
-		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		packet.skipBytes(3); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		// NOW ITS AN INT OMG
 		if (pgmr.reduction != 0) {
 			pgmr.isPhysical = packet.getBool();
 			pgmr.mapMobId = packet.get<int32_t>();
@@ -256,7 +264,9 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
 	int32_t face = packet.get<int32_t>();
-	PlayersPacket::faceExpression(player, face);
+	int32_t unk = packet.get<int32_t>();
+	int8_t unk2 = packet.get<int8_t>();
+	PlayersPacket::faceExpression(player, face, unk, unk2);
 }
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
@@ -284,7 +294,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
-	packet.reset(11);
+	packet.reset(19); // Contains position?
 	MovementHandler::parseMovement(player, packet);
 	packet.reset(11);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
@@ -585,8 +595,8 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			if (player->getSpecialSkill() == 0) {
 				SpecialSkillInfo info;
 				info.skillId = skillId;
-				info.direction = attack.animation;
-				info.weaponSpeed = attack.weaponSpeed;
+				info.direction = 0;//attack.animation;
+				info.weaponSpeed = 0;//attack.weaponSpeed;
 				info.level = level;
 				player->setSpecialSkill(info);
 				SkillsPacket::showSpecialSkill(player, info);
@@ -831,22 +841,25 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	int32_t skillId = 0;
 	bool mesoExplosion = false;
 	bool shadowMeso = false;
+	packet.reset(0);
+	attack.isRanged = packet.get<uint16_t>() == CMSG_ATTACK_RANGED;
 
 	if (skillType != SkillTypes::Summon) {
+		//  [4F 00] [01] [01] [E8 03 00 00] [00 29 62 85] [65 29 62 85] [65] [00] [2C] [00] [3C F3 E8 75] 01 06 DA 12 A9 02 00 00 00 00 00 00 5F 00 00
 		attack.portals = packet.get<uint8_t>();
 		uint8_t tByte = packet.get<uint8_t>();
-		skillId = packet.get<int32_t>();
 		targets = tByte / 0x10;
 		hits = tByte % 0x10;
 
+		skillId = packet.get<int32_t>();
 		if (skillId != Jobs::All::RegularAttack) {
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
-		packet.skipBytes(4); // Unk, strange constant that doesn't seem to change
-		// Things atttemped: Map changes, character changes, job changes, skill changes, position changes, hitting enemies
-		// It appears as 0xF9B16E60 which is 4189154912 unsigned, -105812384 signed, doesn't seem to be a size, probably a CRC
-		packet.skipBytes(4); // Unk, strange constant dependent on skill, probably a CRC
+		attack.unk_val = packet.get<int8_t>();
+
+		packet.skipBytes(4); // Skill CRC's
+		packet.skipBytes(4);
 
 		switch (skillId) {
 			case Jobs::Hermit::ShadowMeso:
@@ -876,15 +889,20 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		}
 
 		attack.display = packet.get<uint8_t>();
-		attack.animation = packet.get<uint8_t>();
+		attack.animationAndSpeed = packet.get<uint16_t>();
+
+		packet.skipBytes(4); // More CRC
+
 		attack.weaponClass = packet.get<uint8_t>();
-		attack.weaponSpeed = packet.get<uint8_t>();
+		packet.skipBytes(1); // Temp stat + ?
+
 		attack.ticks = packet.get<int32_t>();
+		packet.skipBytes(4); // Unk
 	}
 	else {
 		attack.summonId = packet.get<int32_t>(); // Summon ID, not to be confused with summon skill ID
 		attack.ticks = packet.get<int32_t>();
-		attack.animation = packet.get<uint8_t>();
+		attack.display = packet.get<uint8_t>();
 		targets = packet.get<int8_t>();
 		hits = 1;
 	}
@@ -919,7 +937,8 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	for (int8_t i = 0; i < targets; ++i) {
 		int32_t mapMobId = packet.get<int32_t>();
 		packet.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
-		packet.skipBytes(8); // Mob pos, damage pos
+		packet.skipBytes(4); // Mob pos
+		packet.skipBytes(4); // Damage pos
 		if (!mesoExplosion) {
 			packet.skipBytes(2); // Distance
 		}
@@ -932,7 +951,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			attack.totalDamage += damage;
 		}
 		if (skillType != SkillTypes::Summon) {
-			packet.skipBytes(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
+			packet.skipBytes(4); // Mob CRC
 		}
 	}
 

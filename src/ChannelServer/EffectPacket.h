@@ -28,11 +28,14 @@ namespace EffectPacket {
 	void playMusic(int32_t mapId, const string &music);
 	void playMusic(Player *player, const string &music);
 	void sendEvent(int32_t mapId, const string &id);
+	void sendEvent(Player *player, const string &id);
 	void sendEffect(int32_t mapId, const string &effect);
+	void sendEffect(Player *player, const string &effect);
 	void playPortalSoundEffect(Player *player);
 	void sendFieldSound(int32_t mapId, const string &sound);
 	void sendFieldSound(Player *player, const string &sound);
 	void sendMinigameSound(int32_t mapId, const string &sound);
 	void sendMinigameSound(Player *player, const string &sound);
 	void sendMobItemBuffEffect(Player *player, int32_t itemId);
+	void sendPlayerInfoBox(Player *player, const string &effect);
 }

@@ -38,6 +38,7 @@ namespace QuestsPacket {
 	void questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time);
 	void forfeitQuest(Player *player, int16_t questId);
 	void giveItem(Player *player, int32_t itemId, int32_t amount);
-	void giveMesos(Player *player, int32_t amount);
 	void giveFame(Player *player, int32_t amount);
+	void giveMesos(Player *player, int32_t amount);
+	void showTopMessage(Player *player, const string &msg);
 }

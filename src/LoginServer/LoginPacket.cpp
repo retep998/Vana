@@ -50,23 +50,57 @@ void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 void LoginPacket::loginConnect(Player *player, const string &username) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_AUTHENTICATION);
-	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+	packet.add<int32_t>(0);
 	packet.add<int32_t>(player->getUserId());
 	switch (player->getStatus()) {
 		case PlayerStatus::SetGender: packet.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
 		case PlayerStatus::SetPin: packet.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
-	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<uint8_t>(0xFF); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0x95); // V.109 update
 	packet.addString(username);
+	packet.add<int8_t>(3); // 0x03?
+	packet.add<int8_t>(player->getQuietBanReason());
+	packet.add<int64_t>(player->getQuietBanTime());
+	packet.add<int8_t>(1); // V.109 update
+	packet.add<int64_t>(player->getCreationTime());
+	packet.add<int32_t>(75); // 75?
+	packet.add<int8_t>(1); // V.83+, PIC is set
+	packet.add<int8_t>(1); // V.83+, PIC modus
+	packet.add<int64_t>(player->getConnectKey());
+	player->getSession()->send(packet);
+
+	
+	packet = PacketCreator();
+	packet.add<header_t>(0x00BD);
 	packet.add<int8_t>(0);
+	player->getSession()->send(packet);
+}
+
+void LoginPacket::accountInfo(Player *player) { // V.106+
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_AUTHENTICATION_2);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(player->getUserId());
+	switch (player->getStatus()) {
+		case PlayerStatus::SetGender: packet.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
+		case PlayerStatus::SetPin: packet.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
+		default: packet.add<int8_t>(player->getGender()); break;
+	}
+	packet.add<uint8_t>(0xFF); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0x95);
+	packet.addString(player->getUsername());
+	packet.add<int8_t>(3); // 0x03?
 	packet.add<int8_t>(player->getQuietBanReason());
 	packet.add<int64_t>(player->getQuietBanTime());
 	packet.add<int64_t>(player->getCreationTime());
-	packet.add<int32_t>(0);
+	packet.add<int32_t>(75); // 75?
+	packet.add<int64_t>(player->getConnectKey());
+	packet.add<int8_t>(1); // ???
 	player->getSession()->send(packet);
 }
 
@@ -125,6 +159,8 @@ void LoginPacket::showWorld(Player *player, World *world) {
 	// packet.addPos(); // Pos of message
 	// packet.addString("message"); // message
 	// When you set a pos of (0, 0), the message will be on the Scania/first world tab.
+
+	packet.add<int32_t>(0); // V.93+
 	player->getSession()->send(packet);
 }
 
@@ -132,6 +168,18 @@ void LoginPacket::worldEnd(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_WORLD_LIST);
 	packet.add<int8_t>(-1);
+	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.add<header_t>(0x001B); // Last World
+	packet.add<int32_t>(0);
+	player->getSession()->send(packet);
+
+	packet = PacketCreator();
+	packet.add<header_t>(0x001C); // Recommended Worlds
+	packet.add<int8_t>(1);
+	packet.add<int32_t>(0);
+	packet.addString("Hallo");
 	player->getSession()->send(packet);
 }
 
@@ -143,11 +191,7 @@ void LoginPacket::showChannels(Player *player, int8_t status) {
 }
 
 void LoginPacket::channelSelect(Player *player) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANNEL_SELECT);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+	accountInfo(player);
 }
 
 void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars) {
@@ -156,16 +200,19 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	packet.add<int8_t>(0);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
-		LoginPacketHelper::addCharacter(packet, chars[i]);
+		LoginPacketHelper::addCharacter(packet, chars[i], LoginPacketHelper::Normal);
 	}
+	packet.add<int8_t>(1); // PIC
+	packet.add<int8_t>(0); // ???
 	packet.add<int32_t>(maxChars);
+	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
 void LoginPacket::channelOffline(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_LIST);
-	packet.add<int8_t>(8);
+	packet.add<int8_t>(9);
 	player->getSession()->send(packet);
 }
 
@@ -193,8 +240,9 @@ void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vec
 	packet.add<uint8_t>(worldId);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
-		LoginPacketHelper::addCharacter(packet, chars[i]);
+		LoginPacketHelper::addCharacter(packet, chars[i], LoginPacketHelper::ViewAllCharacters);
 	}
+	packet.add<int8_t>(1); // PIC
 	player->getSession()->send(packet);
 }
 
@@ -202,7 +250,7 @@ void LoginPacket::showCharacter(Player *player, const Character &charc) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_CREATE);
 	packet.add<int8_t>(0);
-	LoginPacketHelper::addCharacter(packet, charc);
+	LoginPacketHelper::addCharacter(packet, charc, LoginPacketHelper::AddedNewCharacter);
 	player->getSession()->send(packet);
 }
 
@@ -217,7 +265,8 @@ void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
 void LoginPacket::connectIp(Player *player, int32_t charId) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
-	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
 
 	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorld())->getChannel(player->getChannel())) {
 		ip_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->getExternalIps(), channel->getIp());
@@ -230,14 +279,25 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 		packet.add<port_t>(-1); // port
 	}
 	packet.add<int32_t>(charId);
+	packet.add<int8_t>(0); // ??
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(0);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::relogResponse(Player *player) {
+void LoginPacket::relogResponse(Player *player) { // Is this even used anymore?
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_LOGIN_RETURN);
 	packet.add<int8_t>(1);
+	player->getSession()->send(packet);
+}
+
+void LoginPacket::specialCharacterCreation(Player *player, bool enabled) {
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_PLAYER_CREATE_SPECIAL_ENABLE);
+	packet.add<int32_t>(player->getUserId());
+	packet.addBool(enabled);
 	player->getSession()->send(packet);
 }

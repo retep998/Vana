@@ -42,4 +42,5 @@ namespace ManagementFunctions {
 	bool tempBan(Player *player, const string &args);
 	bool ipBan(Player *player, const string &args);
 	bool unban(Player *player, const string &args);
+	bool packet(Player *player, const string &args);
 }

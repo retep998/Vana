@@ -78,19 +78,21 @@ void ItemDataProvider::loadItems() {
 			else if (cmp == "expire_on_logout") item.expireOnLogout = true;
 			else if (cmp == "block_pickup") item.blockPickup = true;
 			else if (cmp == "quest") item.quest = true;
+			else if (cmp == "platinum_karma_scissorable") item.platinumScissors = true;
+			else if (cmp == "account_share") item.accountShareable = true;
 		});
 
 		itemId = row.get<int32_t>("itemid");
 		item.price = row.get<int32_t>("price");
 		item.maxSlot = row.get<uint16_t>("max_slot_quantity");
-		item.makerLevel = row.get<uint8_t>("level_for_maker");
-		item.maxObtainable = row.get<int32_t>("max_possession_count");
-		item.minLevel = row.get<uint8_t>("min_level");
-		item.maxLevel = row.get<uint8_t>("max_level");
-		item.exp = row.get<int32_t>("experience");
-		item.mesos = row.get<int32_t>("money");
-		item.npc = row.get<int32_t>("npc");
-		item.name = row.get<string>("label");
+		item.makerLevel = row.get<uint8_t>("level_for_maker", 0);
+		item.maxObtainable = row.get<int32_t>("max_possession_count", 0);
+		item.minLevel = row.get<uint8_t>("min_level", 1);
+		item.maxLevel = row.get<uint8_t>("max_level", 200);
+		item.exp = row.get<int32_t>("experience", 0);
+		item.mesos = row.get<int32_t>("money", 0);
+		item.npc = row.get<int32_t>("npc", 0);
+		item.name = row.get<string>("label", "NO_LABEL");
 
 		m_itemInfo[itemId] = item;
 	}
@@ -115,22 +117,22 @@ void ItemDataProvider::loadScrolls() {
 		});
 
 		itemId = row.get<int32_t>("itemid");
-		item.success = row.get<uint16_t>("success");
-		item.cursed = row.get<uint16_t>("break_item");
-		item.istr = row.get<int16_t>("istr");
-		item.idex = row.get<int16_t>("idex");
-		item.iint = row.get<int16_t>("iint");
-		item.iluk = row.get<int16_t>("iluk");
-		item.ihp = row.get<int16_t>("ihp");
-		item.imp = row.get<int16_t>("imp");
-		item.iwatk = row.get<int16_t>("iwatk");
-		item.imatk = row.get<int16_t>("imatk");
-		item.iwdef = row.get<int16_t>("iwdef");
-		item.imdef = row.get<int16_t>("imdef");
-		item.iacc = row.get<int16_t>("iacc");
-		item.iavo = row.get<int16_t>("iavo");
-		item.ijump = row.get<int16_t>("ijump");
-		item.ispeed = row.get<int16_t>("ispeed");
+		item.success = row.get<uint16_t>("success", 0);
+		item.cursed = row.get<uint16_t>("break_item", 0);
+		item.istr = row.get<int16_t>("istr", 0);
+		item.idex = row.get<int16_t>("idex", 0);
+		item.iint = row.get<int16_t>("iint", 0);
+		item.iluk = row.get<int16_t>("iluk", 0);
+		item.ihp = row.get<int16_t>("ihp", 0);
+		item.imp = row.get<int16_t>("imp", 0);
+		item.iwatk = row.get<int16_t>("iwatk", 0);
+		item.imatk = row.get<int16_t>("imatk", 0);
+		item.iwdef = row.get<int16_t>("iwdef", 0);
+		item.imdef = row.get<int16_t>("imdef", 0);
+		item.iacc = row.get<int16_t>("iacc", 0);
+		item.iavo = row.get<int16_t>("iavo", 0);
+		item.ijump = row.get<int16_t>("ijump", 0);
+		item.ispeed = row.get<int16_t>("ispeed", 0);
 
 		m_scrollInfo[itemId] = item;
 	}
@@ -175,27 +177,27 @@ void ItemDataProvider::loadConsumes() {
 		});
 
 		itemId = row.get<int32_t>("itemid");
-		item.effect = row.get<uint8_t>("effect");
-		item.hp = row.get<int16_t>("hp");
-		item.mp = row.get<int16_t>("mp");
-		item.hpr = row.get<int16_t>("hp_percentage");
-		item.mpr = row.get<int16_t>("mp_percentage");
-		item.moveTo = row.get<int32_t>("move_to");
-		item.decHunger = row.get<uint8_t>("decrease_hunger");
-		item.decFatigue = row.get<uint8_t>("decrease_fatigue");
-		item.cp = row.get<uint8_t>("carnival_points");
-		item.mcProb = row.get<uint16_t>("prob");
-		item.time = row.get<int32_t>("buff_time");
-		item.watk = row.get<int16_t>("weapon_attack");
-		item.matk = row.get<int16_t>("magic_attack");
-		item.wdef = row.get<int16_t>("weapon_defense");
-		item.mdef = row.get<int16_t>("magic_defense");
-		item.acc = row.get<int16_t>("accuracy");
-		item.avo = row.get<int16_t>("avoid");
-		item.speed = row.get<int16_t>("speed");
-		item.jump = row.get<int16_t>("jump");
+		item.effect = row.get<uint8_t>("effect", 0);
+		item.hp = row.get<int16_t>("hp", 0);
+		item.mp = row.get<int16_t>("mp", 0);
+		item.hpr = row.get<int16_t>("hp_percentage", 0);
+		item.mpr = row.get<int16_t>("mp_percentage", 0);
+		item.moveTo = row.get<int32_t>("move_to", 999999999);
+		item.decHunger = row.get<uint8_t>("decrease_hunger", 0);
+		item.decFatigue = row.get<int16_t>("decrease_fatigue", 0);
+		item.cp = row.get<uint8_t>("carnival_points", 0);
+		item.mcProb = row.get<uint16_t>("prob", 0);
+		item.time = row.get<int32_t>("buff_time", 0);
+		item.watk = row.get<int16_t>("weapon_attack", 0);
+		item.matk = row.get<int16_t>("magic_attack", 0);
+		item.wdef = row.get<int16_t>("weapon_defense", 0);
+		item.mdef = row.get<int16_t>("magic_defense", 0);
+		item.acc = row.get<int16_t>("accuracy", 0);
+		item.avo = row.get<int16_t>("avoid", 0);
+		item.speed = row.get<int16_t>("speed", 0);
+		item.jump = row.get<int16_t>("jump", 0);
 
-		morphId = row.get<int16_t>("morph");
+		morphId = row.get<int16_t>("morph", 0);
 		if (morphId) {
 			morph = Morph();
 			morph.morph = morphId;
@@ -211,15 +213,15 @@ void ItemDataProvider::loadConsumes() {
 			else if (cmp == "item_range") item.dropUpItemRange = row.get<int16_t>("drop_up_item_range");
 		});
 
-		item.iceResist = row.get<int16_t>("defense_vs_ice");
-		item.fireResist = row.get<int16_t>("defense_vs_fire");
-		item.lightningResist = row.get<int16_t>("defense_vs_lightning");
-		item.poisonResist = row.get<int16_t>("defense_vs_poison");
-		item.stunDef = row.get<int16_t>("defense_vs_stun");
-		item.darknessDef = row.get<int16_t>("defense_vs_darkness");
-		item.weaknessDef = row.get<int16_t>("defense_vs_weakness");
-		item.sealDef = row.get<int16_t>("defense_vs_seal");
-		item.curseDef = row.get<int16_t>("defense_vs_curse");
+		item.iceResist = row.get<int16_t>("defense_vs_ice", 0);
+		item.fireResist = row.get<int16_t>("defense_vs_fire", 0);
+		item.lightningResist = row.get<int16_t>("defense_vs_lightning", 0);
+		item.poisonResist = row.get<int16_t>("defense_vs_poison", 0);
+		item.stunDef = row.get<int16_t>("defense_vs_stun", 0);
+		item.darknessDef = row.get<int16_t>("defense_vs_darkness", 0);
+		item.weaknessDef = row.get<int16_t>("defense_vs_weakness", 0);
+		item.sealDef = row.get<int16_t>("defense_vs_seal", 0);
+		item.curseDef = row.get<int16_t>("defense_vs_curse", 0);
 
 		BuffDataProvider::Instance()->addItemInfo(itemId, item);
 		m_consumeInfo[itemId] = item;
@@ -237,8 +239,8 @@ void ItemDataProvider::loadMapRanges() {
 
 		range = CardMapRange();
 		itemId = row.get<int32_t>("itemid");
-		range.startMap = row.get<int32_t>("start_map");
-		range.endMap = row.get<int32_t>("end_map");
+		range.startMap = row.get<int32_t>("start_map", 0);
+		range.endMap = row.get<int32_t>("end_map", 0);
 
 		m_consumeInfo[itemId].mapRanges.push_back(range);
 	}
@@ -255,8 +257,8 @@ void ItemDataProvider::loadMultiMorphs() {
 
 		morph = Morph();
 		itemId = row.get<int32_t>("itemid");
-		morph.morph = row.get<int16_t>("morphid");
-		morph.chance = row.get<int8_t>("success");
+		morph.morph = row.get<int16_t>("morphid", 0);
+		morph.chance = row.get<int8_t>("success", 0);
 
 		m_consumeInfo[itemId].morphs.push_back(morph);
 	}
@@ -294,9 +296,9 @@ void ItemDataProvider::loadItemSkills() {
 		skill = Skillbook();
 		itemId = row.get<int32_t>("itemid");
 		skill.skillId = row.get<int32_t>("skillid");
-		skill.reqLevel = row.get<uint8_t>("req_skill_level");
-		skill.maxLevel = row.get<uint8_t>("master_level");
-		skill.chance = row.get<int8_t>("chance");
+		skill.reqLevel = row.get<uint8_t>("req_skill_level", 0);
+		skill.maxLevel = row.get<uint8_t>("master_level", 0);
+		skill.chance = row.get<int8_t>("chance", 0);
 
 		m_skillbooks[itemId].push_back(skill);
 	}
@@ -313,8 +315,8 @@ void ItemDataProvider::loadSummonBags() {
 		soci::row const &row = *i;
 
 		itemId = row.get<int32_t>("itemid");
-		summon.mobId = row.get<int32_t>("mobid");
-		summon.chance = row.get<uint16_t>("chance");
+		summon.mobId = row.get<int32_t>("mobid", 0);
+		summon.chance = row.get<uint16_t>("chance", 0);
 
 		m_summonBags[itemId].push_back(summon);
 	}
@@ -331,10 +333,10 @@ void ItemDataProvider::loadItemRewards() {
 		soci::row const &row = *i;
 
 		itemId = row.get<int32_t>("itemid");
-		reward.rewardId = row.get<int32_t>("rewardid");
-		reward.prob = row.get<uint16_t>("prob");
-		reward.quantity = row.get<int16_t>("quantity");
-		reward.effect = row.get<string>("effect");
+		reward.rewardId = row.get<int32_t>("rewardid", 0);
+		reward.prob = row.get<uint16_t>("prob", 0);
+		reward.quantity = row.get<int16_t>("quantity", 0);
+		reward.effect = row.get<string>("effect", "");
 
 		m_itemRewards[itemId].push_back(reward);
 	}
@@ -358,12 +360,12 @@ void ItemDataProvider::loadPets() {
 		});
 
 		itemId = row.get<int32_t>("itemid");
-		pet.name = row.get<string>("default_name");
-		pet.hunger = row.get<int32_t>("hunger");
-		pet.life = row.get<int32_t>("life");
-		pet.limitedLife = row.get<int32_t>("limited_life");
-		pet.evolveItem = row.get<int32_t>("evolution_item");
-		pet.evolveLevel = row.get<int8_t>("req_level_for_evolution");
+		pet.name = row.get<string>("default_name", "NO_NAME");
+		pet.hunger = row.get<int32_t>("hunger", 0);
+		pet.life = row.get<int32_t>("life", 0);
+		pet.limitedLife = row.get<int32_t>("limited_life", 0);
+		pet.evolveItem = row.get<int32_t>("evolution_item", 0);
+		pet.evolveLevel = row.get<int8_t>("req_level_for_evolution", 0);
 
 		m_petInfo[itemId] = pet;
 	}
@@ -382,8 +384,8 @@ void ItemDataProvider::loadPetInteractions() {
 
 		interact = PetInteractInfo();
 		itemId = row.get<int32_t>("itemid");
-		interact.increase = row.get<int16_t>("closeness");
-		interact.prob = row.get<uint32_t>("success");
+		interact.increase = row.get<int16_t>("closeness", 0);
+		interact.prob = row.get<uint32_t>("success", 0);
 
 		m_petInteractInfo[itemId][commandId] = interact;
 	}

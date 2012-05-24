@@ -46,6 +46,15 @@ void EffectPacket::sendEvent(int32_t mapId, const string &id) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
+void EffectPacket::sendEvent(Player *player, const string &id) {
+	// Look in Map.wz/Effect.img to find valid strings
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_MAP_EFFECT);
+	packet.add<int8_t>(0x03);
+	packet.addString(id);
+	player->getSession()->send(packet);
+}
+
 void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
 	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
 	PacketCreator packet;
@@ -53,6 +62,15 @@ void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
 	packet.add<int8_t>(0x02);
 	packet.addString(effect);
 	Maps::getMap(mapId)->sendPacket(packet);
+}
+
+void EffectPacket::sendEffect(Player *player, const string &effect) {
+	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_MAP_EFFECT);
+	packet.add<int8_t>(0x02);
+	packet.addString(effect);
+	player->getSession()->send(packet);
 }
 
 void EffectPacket::playPortalSoundEffect(Player *player) {
@@ -107,4 +125,13 @@ void EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemId) {
 	packet.add<int8_t>(0x0B);
 	packet.add<int32_t>(itemId);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void EffectPacket::sendPlayerInfoBox(Player *player, const string &effect) {
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_THEATRICS);
+	packet.add<int8_t>(0x1A);
+	packet.addString(effect);
+	packet.add<int32_t>(1); // Unknown!
+	player->getSession()->send(packet);
 }

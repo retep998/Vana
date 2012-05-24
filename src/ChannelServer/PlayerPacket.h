@@ -45,10 +45,28 @@ namespace PlayerPacket {
 			Blue = 0x06
 		};
 	}
+	namespace MulticolorMessage {
+		enum Colors : uint16_t {
+			White = 0,
+			Green,
+			Pink,
+			Orange,
+			Purple,
+			LightGreen,
+			DarkPink,
+			Gray,
+			Yellow,
+			Beige,
+			SkyBlue,
+			BlackWithWhiteBG,
+			Something,
+			BlackWithLightBlueBG,
+		};
+	}
 	void connectData(Player *player);
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void showSkillMacros(Player *player, SkillMacros *macros);
-	void updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false);
+	void updateStat(Player *player, int64_t updateBits, int64_t value, bool itemResponse = false);
 	void changeChannel(Player *player, ip_t ip, port_t port);
 	void showMessage(Player *player, const string &msg, int8_t type);
 	void showMessageChannel(const string &msg, int8_t type);
@@ -59,4 +77,5 @@ namespace PlayerPacket {
 	void showHpBar(Player *player, Player *target);
 	void sendBlockedMessage(Player *player, int8_t type);
 	void sendYellowMessage(Player *player, const string &msg);
+	void sendMulticolorMessage(Player *player, MulticolorMessage::Colors color, const string &msg);
 }

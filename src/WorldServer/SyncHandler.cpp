@@ -108,7 +108,7 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, P
 	Channel *chan = Channels::Instance()->getChannel(packet.get<uint16_t>());
 	if (chan) {
 		PlayerDataProvider::Instance()->addPendingPlayer(playerId, chan->getId());
-		SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, packet.get<ip_t>(), packet);
+		SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, packet.get<ip_t>(), packet.get<int64_t>(), packet);
 	}
 	else {
 		// Channel doesn't exist (offline)

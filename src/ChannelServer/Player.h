@@ -78,6 +78,7 @@ public:
 	void setNpc(Npc *npc) { m_npc.reset(npc); }
 	void setParty(Party *party) { m_party = party; }
 	void setInstance(Instance *instance) { m_instance = instance; }
+	void setLoginKey(int64_t key) { m_loginKey = key; }
 
 	bool isGm() const { return m_gmLevel > 0; }
 	bool isAdmin() const { return m_admin; }
@@ -106,6 +107,7 @@ public:
 	int32_t getTradeId() const { return m_tradeId; }
 	int64_t getConnectionTime() const { return m_onlineTime; }
 	int64_t getConnectedTime() const { return time(nullptr) - m_onlineTime; }
+	int64_t getLoginKey() const { return m_loginKey; }
 	string getChalkboard() const { return m_chalkboard; }
 	string getMedalName();
 	string getName() const { return m_name; }
@@ -169,6 +171,7 @@ private:
 	int32_t m_gmLevel;
 	int32_t m_tradeId;
 	int64_t m_onlineTime;
+	int64_t m_loginKey;
 	string m_chalkboard;
 	string m_name;
 	unordered_set<int8_t> m_usedPortals;

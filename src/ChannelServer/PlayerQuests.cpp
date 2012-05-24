@@ -37,7 +37,7 @@ PlayerQuests::PlayerQuests(Player *player) :
 void PlayerQuests::save() {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
-	int16_t questId = 0;
+	uint16_t questId = 0;
 
 	sql.once << "DELETE FROM active_quests WHERE character_id = :char", soci::use(charId, "char");
 	sql.once << "DELETE FROM completed_quests WHERE character_id = :char", soci::use(charId, "char");
@@ -55,7 +55,7 @@ void PlayerQuests::save() {
 												soci::use(killed, "killed"),
 												soci::use(data, "data"));
 
-		for (map<int16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); ++q) {
+		for (map<uint16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); ++q) {
 			questId = q->first;
 			data = q->second.data;
 
@@ -83,7 +83,7 @@ void PlayerQuests::save() {
 												soci::use(questId, "quest"),
 												soci::use(time, "time"));
 
-		for (map<int16_t, int64_t>::iterator q = m_completed.begin(); q != m_completed.end(); ++q) {
+		for (map<uint16_t, int64_t>::iterator q = m_completed.begin(); q != m_completed.end(); ++q) {
 			questId = q->first;
 			time = q->second;
 			st.execute(true);
@@ -94,7 +94,7 @@ void PlayerQuests::save() {
 void PlayerQuests::load() {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
-	int16_t previous = -1;
+	uint16_t previous = -1;
 	int16_t current = 0;
 	ActiveQuest curQuest;
 
@@ -103,7 +103,7 @@ void PlayerQuests::load() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
-		current = row.get<int16_t>("quest_id");
+		current = row.get<uint16_t>("quest_id");
 		int32_t mob = row.get<int32_t>("mob_id");
 		const string &data = row.get<string>("data");
 
@@ -133,11 +133,11 @@ void PlayerQuests::load() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
-		m_completed[row.get<int16_t>("quest_id")] = row.get<int64_t>("end_time");
+		m_completed[row.get<uint16_t>("quest_id")] = row.get<int64_t>("end_time");
 	}
 }
 
-void PlayerQuests::addQuest(int16_t questId, int32_t npcId) {
+void PlayerQuests::addQuest(uint16_t questId, int32_t npcId) {
 	QuestsPacket::acceptQuest(m_player, questId, npcId);
 
 	addQuest(questId);
@@ -145,14 +145,14 @@ void PlayerQuests::addQuest(int16_t questId, int32_t npcId) {
 	checkDone(m_quests[questId]);
 }
 
-void PlayerQuests::addQuest(int16_t questId) {
+void PlayerQuests::addQuest(uint16_t questId) {
 	ActiveQuest quest;
 	quest.id = questId;
 	m_quests[questId] = quest;
 	addQuestMobs(questId);
 }
 
-void PlayerQuests::addQuestMobs(int16_t questId) {
+void PlayerQuests::addQuestMobs(uint16_t questId) {
 	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 	if (questInfo->hasMobRequests()) {
 		auto quest = m_quests;
@@ -167,7 +167,7 @@ void PlayerQuests::addQuestMobs(int16_t questId) {
 
 void PlayerQuests::updateQuestMob(int32_t mobId) {
 	if (m_mobToQuestMapping.find(mobId) != m_mobToQuestMapping.end()) {
-		int16_t qid = 0;
+		uint16_t qid = 0;
 		ActiveQuest q;
 		Quest *realquest;
 		for (size_t i = 0; i < m_mobToQuestMapping[mobId].size(); i++) {
@@ -217,7 +217,7 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 	}
 }
 
-void PlayerQuests::finishQuest(int16_t questId, int32_t npcId) {
+void PlayerQuests::finishQuest(uint16_t questId, int32_t npcId) {
 	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 
 	if (!giveRewards(questId, false)) {
@@ -248,7 +248,7 @@ void PlayerQuests::finishQuest(int16_t questId, int32_t npcId) {
 	QuestsPacket::questFinish(m_player, questId, npcId, questInfo->getNextQuest(), endTime);
 }
 
-bool PlayerQuests::giveRewards(int16_t questId, bool start) {
+bool PlayerQuests::giveRewards(uint16_t questId, bool start) {
 	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 
 	if (!questInfo->hasRewards()) {
@@ -362,36 +362,69 @@ bool PlayerQuests::giveRewards(int16_t questId, bool start) {
 	return true;
 }
 
-void PlayerQuests::removeQuest(int16_t questId) {
+void PlayerQuests::removeQuest(uint16_t questId) {
 	if (isQuestActive(questId)) {
 		m_quests.erase(questId);
 		QuestsPacket::forfeitQuest(m_player, questId);
 	}
 }
 
-bool PlayerQuests::isQuestActive(int16_t questId) {
+bool PlayerQuests::isQuestActive(uint16_t questId) {
 	return m_quests.find(questId) != m_quests.end();
 }
 
-bool PlayerQuests::isQuestComplete(int16_t questId) {
+bool PlayerQuests::isQuestComplete(uint16_t questId) {
 	return m_completed.find(questId) != m_completed.end();
 }
 
 void PlayerQuests::connectData(PacketCreator &packet) {
+	packet.addBool(true); // Val1
+
 	packet.add<uint16_t>(m_quests.size());
-	for (map<int16_t, ActiveQuest>::iterator iter = m_quests.begin(); iter != m_quests.end(); ++iter) {
-		packet.add<int16_t>(iter->first);
+	for (map<uint16_t, ActiveQuest>::iterator iter = m_quests.begin(); iter != m_quests.end(); ++iter) {
+		packet.add<uint16_t>(iter->first);
 		packet.addString(iter->second.getQuestData());
 	}
 
+	/*
+		if (!Val1) {
+			int16_t amount = 0;
+			packet.add<int16_t>(amount);
+			for (int16_t i = 0; i < amount; i++) {
+				packet.add<int16_t>(0);
+			}
+		}
+
+	*/
+
+	packet.add<int16_t>(0);
+	/*
+		Foreach:
+			packet.addString();
+			packet.addString();
+
+	*/
+	packet.addBool(true); // Val2
+
 	packet.add<uint16_t>(m_completed.size());
-	for (map<int16_t, int64_t>::iterator iter = m_completed.begin(); iter != m_completed.end(); ++iter) {
-		packet.add<int16_t>(iter->first);
+	for (map<uint16_t, int64_t>::iterator iter = m_completed.begin(); iter != m_completed.end(); ++iter) {
+		packet.add<uint16_t>(iter->first);
 		packet.add<int64_t>(iter->second);
 	}
+
+	/*
+		if (!Val2) {
+			int16_t amount = 0;
+			packet.add<int16_t>(amount);
+			for (int16_t i = 0; i < amount; i++) {
+				packet.add<int16_t>(0);
+			}
+		}
+
+	*/
 }
 
-void PlayerQuests::setQuestData(int16_t id, const string &data) {
+void PlayerQuests::setQuestData(uint16_t id, const string &data) {
 	if (isQuestActive(id)) {
 		ActiveQuest &g = m_quests[id];
 		g.data = data;
@@ -400,6 +433,6 @@ void PlayerQuests::setQuestData(int16_t id, const string &data) {
 	}
 }
 
-string PlayerQuests::getQuestData(int16_t id) {
+string PlayerQuests::getQuestData(uint16_t id) {
 	return (isQuestActive(id) ? m_quests[id].data : "");
 }

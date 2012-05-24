@@ -36,11 +36,12 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int8_t>(inv);
 	packet.add<int16_t>(slot1);
 	packet.add<int16_t>(slot2);
-	packet.add<int8_t>(1);
+	// packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
@@ -64,6 +65,7 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 	packet.addBool(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(0);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(inv);
 	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
 	player->getSession()->send(packet);
@@ -75,6 +77,7 @@ void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *it
 	packet.addBool(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(inv);
 	packet.add<int16_t>(slot);
 	packet.add<int16_t>(item->getAmount());
@@ -86,6 +89,7 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>((slot2 > 0) + 1);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(inv);
 	packet.add<int16_t>(slot1);
@@ -105,9 +109,12 @@ void InventoryPacket::sitChair(Player *player, int32_t chairId) {
 	}
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<int16_t>(1);
-	packet.add<int32_t>(0);
+	packet.add<int8_t>(1);
+	packet.add<int64_t>(0);
+	packet.addBool(false);
+	packet.addBool(false);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<header_t>(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
@@ -217,6 +224,19 @@ void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const st
 	}
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
 	packet.addBool(whisper);
+	ChannelServer::Instance()->sendToWorld(packet);
+}
+
+void InventoryPacket::showGachaponItemReceived(Player *player, const string &gachaponName, int32_t val1, int32_t val2, Item *item) {
+	const string &namemsg = player->getMedalName() + " : got a(n)"; // >_>
+	PacketCreator packet;
+	packet.add<int16_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(SMSG_MESSAGE);
+	packet.add<int8_t>(0x0D);
+	packet.addString(namemsg);
+	packet.add<int64_t>(0); // Unknown
+	packet.addString(gachaponName); // "Maple World" gachapon
+	PlayerPacketHelper::addItemInfo(packet, 0, item);
 	ChannelServer::Instance()->sendToWorld(packet);
 }
 

@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 #include <vector>
+#include <utility>
 
 using std::string;
 using std::vector;
+using std::pair;
 
 namespace soci { class row; }
 class PacketReader;
@@ -39,27 +41,29 @@ struct Character {
 	int8_t pos;
 	int8_t gender;
 	int8_t skin;
+	int8_t jobType;
 	uint8_t level;
 	int16_t job;
 	int16_t str;
 	int16_t dex;
 	int16_t intt;
 	int16_t luk;
-	int16_t hp;
-	int16_t mhp;
-	int16_t mp;
-	int16_t mmp;
 	int16_t ap;
 	int16_t sp;
-	int16_t fame;
 	int32_t map;
 	int32_t eyes;
 	int32_t hair;
 	int32_t exp;
+	int32_t hp;
+	int32_t mhp;
+	int32_t mp;
+	int32_t mmp;
+	int32_t fame;
 	int32_t worldRankChange;
 	int32_t jobRankChange;
 	uint32_t worldRank;
 	uint32_t jobRank;
+	vector<pair<int8_t, int8_t>> sp_table;
 	vector<CharEquip> equips;
 };
 
@@ -74,6 +78,7 @@ namespace Characters {
 	void showCharacters(Player *player);
 	void loadCharacter(Character &charc, const soci::row &row);
 	void loadEquips(int32_t id, vector<CharEquip> &vec);
+	void loadSP(Character &charc);
 	void createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1);
 	bool ownerCheck(Player *player, int32_t id);
 	bool nameIllegal(Player *player, const string &name); // Name is taken or not valid

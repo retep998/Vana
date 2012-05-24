@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChannelServer", "ChannelServer.vcxproj", "{F07865A8-3A41-48D8-809C-056CC906A50B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer.vcxproj", "{B7FA2720-4A56-49D7-986E-FF358C398C72}"
@@ -8,6 +8,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldServer", "WorldServer.vcxproj", "{045746E8-6588-437D-B8F7-5B5E9E42B9EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common.vcxproj", "{CFFE2EE8-4188-4E42-B76C-8005041C2877}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9F2B7716-65EC-4CCF-9FBE-66E0A6FB0EC3}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

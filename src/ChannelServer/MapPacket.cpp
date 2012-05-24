@@ -37,29 +37,68 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
 	packet.add<header_t>(SMSG_MAP_PLAYER_SPAWN);
 	packet.add<int32_t>(player->getId());
+	packet.add<uint8_t>(player->getStats()->getLevel()); // New
 	packet.addString(player->getName());
-	packet.addString(""); // Guild
+	packet.addString("HERP"); // New
+	packet.addString("DERP"); // Guild
 	packet.add<int16_t>(0); // Guild icon garbage
 	packet.add<int8_t>(0); // Guild icon garbage
 	packet.add<int16_t>(0); // Guild icon garbage
 	packet.add<int8_t>(0); // Guild icon garbage
 
-	packet.add<int32_t>(0);
-	packet.add<uint8_t>(0xf8);
-	packet.add<int8_t>(3);
-	packet.add<int16_t>(0);
 	{
-		using namespace BuffBytes;
+		using namespace BuffBytes; // 32 bytes the fuck
+
+		packet.add<uint8_t>(enter.types[Byte29]);
+		packet.add<uint8_t>(enter.types[Byte30]);
+		packet.add<uint8_t>(enter.types[Byte31]);
+		packet.add<uint8_t>(enter.types[Byte32]);
+
+		packet.add<uint8_t>(enter.types[Byte25]);
+		packet.add<uint8_t>(enter.types[Byte26]);
+		packet.add<uint8_t>(enter.types[Byte27]);
+		packet.add<uint8_t>(enter.types[Byte28]);
+
+		packet.add<uint8_t>(enter.types[Byte21]);
+		packet.add<uint8_t>(enter.types[Byte22]);
+		packet.add<uint8_t>(enter.types[Byte23]);
+		packet.add<uint8_t>(enter.types[Byte24]);
+
+		packet.add<uint8_t>(enter.types[Byte17]);
+		packet.add<uint8_t>(enter.types[Byte18]);
+		packet.add<uint8_t>(enter.types[Byte19]);
+		packet.add<uint8_t>(enter.types[Byte20]);
+
+		packet.add<uint8_t>(enter.types[Byte13]);
+		packet.add<uint8_t>(enter.types[Byte14]);
+		packet.add<uint8_t>(enter.types[Byte15]);
+		packet.add<uint8_t>(enter.types[Byte16]);
+
+		packet.add<uint8_t>(enter.types[Byte9]); // 0x10, 0x20, 0x40, 0x80, 0x08
+		packet.add<uint8_t>(enter.types[Byte10]); // 0x01, 0x02
+		packet.add<uint8_t>(enter.types[Byte11]);
+		packet.add<uint8_t>(enter.types[Byte12]);
+
 		packet.add<uint8_t>(enter.types[Byte5]);
 		packet.add<uint8_t>(enter.types[Byte6]);
 		packet.add<uint8_t>(enter.types[Byte7]);
 		packet.add<uint8_t>(enter.types[Byte8]);
+
 		packet.add<uint8_t>(enter.types[Byte1]);
 		packet.add<uint8_t>(enter.types[Byte2]);
 		packet.add<uint8_t>(enter.types[Byte3]);
 		packet.add<uint8_t>(enter.types[Byte4]);
 
-		const int8_t byteorder[EntryByteQuantity] = { Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7, Byte8 };
+		const int8_t byteorder[EntryByteQuantity] = { 
+		Byte1,		Byte2,		Byte3,		Byte4,
+		Byte5,		Byte6,		Byte7,		Byte8,
+		Byte9,		Byte10,		Byte11,		Byte12,
+		Byte13,		Byte14,		Byte15,		Byte16,
+		Byte17,		Byte18,		Byte19,		Byte20,
+		Byte21,		Byte22,		Byte23,		Byte24,
+		Byte25,		Byte26,		Byte27,		Byte28,
+		Byte29,		Byte30,		Byte31,		Byte32
+		};
 
 		for (int8_t i = 0; i < EntryByteQuantity; i++) {
 			int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
@@ -91,55 +130,94 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 				}
 			}
 		}
+
+		packet.add<int8_t>(0);
+
+		packet.add<int8_t>(0);
+
+		packet.add<int8_t>(0);
+
+		/*
+		packet.add<int16_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850); // Server tick count or something
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850);
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850);
+		packet.add<int16_t>(0);
+		packet.add<int8_t>(0);
+
+
+		packet.add<int32_t>(enter.mountId); // No point to having an if, these are 0 when not in use
+		packet.add<int32_t>(enter.mountSkill);
+		packet.add<int32_t>(1065638850);
+		packet.add<int8_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850);
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+		packet.add<int16_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850);
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+
+		packet.add<int16_t>(0);
+
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(1065638850);
+		packet.add<int8_t>(0);
+		packet.add<int16_t>(0);
+		*/
 	}
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
-	packet.add<int32_t>(1065638850); // Unknown
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
 
-	packet.add<int32_t>(enter.mountId); // No point to having an if, these are 0 when not in use
-	packet.add<int32_t>(enter.mountSkill);
-
-	packet.add<int32_t>(1065638850);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(1065638850);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
+	packet.add<int16_t>(0); // New
+	
+	
 	packet.add<int16_t>(player->getStats()->getJob());
 
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 
 	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0); // Foreach -> decode 2 ints?
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
 	packet.add<int32_t>(player->getItemEffect());
 	packet.add<int32_t>(player->getChair());
+	packet.add<int32_t>(0);
 	packet.addPos(player->getPos());
 	packet.add<int8_t>(player->getStance());
 	packet.add<int16_t>(player->getFh());
 	packet.add<int8_t>(0);
+
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			packet.add<int8_t>(1);
@@ -153,13 +231,86 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.addBool(pet->hasQuoteItem());
 		}
 	}
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
-	packet.addBool(!player->getChalkboard().empty());
-	packet.addString(player->getChalkboard());
+	
+	{
+		packet.add<int8_t>(1);
+
+		packet.addBool(false);
+		/*
+		Foreach:
+			if (Bool) {
+				INT
+				INT
+				INT
+				STR
+				??????
+				SHRT
+				SHRT
+				BYTE
+				SHRT
+			}
+		*/
+	}
+
+	packet.add<int32_t>(1);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.addBool(false);
+	/*
+	// MINIROOM
+	if (Bool) {
+	INT
+	STR
+	BYTE
+	BYTE
+	BYTE
+	BYTE
+	BYTE
+
+	}
+	*/
+
+	if (!player->getChalkboard().empty()) {
+		packet.addBool(true);
+		packet.addString(player->getChalkboard());
+	}
+	else {
+		packet.addBool(false);
+	}
+	packet.addBool(false); // LONG LONG
+	packet.addBool(false); // LONG LONG
+
+	packet.addBool(false); // INT INT INT 
+
+	packet.add<int8_t>(0); // FLAG
+	/*
+	if (flag & 0x01) ???
+	if (flag & 0x02) ???
+	if (flag & 0x04) ???
+	if (flag & 0x08) INT + get_update_time()
+	if (flag & 0x10) INT + get_update_time()
+	if (flag & 0x20) INT (if < 5000 -> do something??)
+	*/
+
+	packet.add<int32_t>(0);
+
+	packet.addBool(false);
+	/*
+	if (Bool) {
+	val1 = INT
+	for (0..val1) {
+	INT
+	}
+	}
+
+	*/
+
+	packet.add<int32_t>(0);
+
+	// End?
+
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
@@ -168,6 +319,21 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 	packet.add<int16_t>(0);
+
+	
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
 	return packet;
 }
 
@@ -186,8 +352,21 @@ void MapPacket::removePlayer(Player *player) {
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
+	{
+		packet.add<int16_t>(2); // Options
+		packet.add<int32_t>(1);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(2); // This one is actually used
+		packet.add<int32_t>(0);
+	}
+
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<uint8_t>(0);
+	packet.add<int32_t>(0);
 	packet.add<uint8_t>(player->getPortalCount(true));
+
+	packet.add<int32_t>(0); // New
+
 	packet.addBool(false); // Not a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
 	if (false) {
@@ -197,19 +376,31 @@ void MapPacket::changeMap(Player *player) {
 			packet.addString("Line");
 		}
 	}
+
+	packet.addBool(false);
+
 	packet.add<int32_t>(player->getMap());
 	packet.add<int8_t>(player->getMappos());
-	packet.add<int16_t>(player->getStats()->getHp());
-	packet.add<int8_t>(0x00);
+	packet.add<int32_t>(player->getStats()->getHp());
+	packet.addBool(false);
+	if (false) {
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
 	packet.add<int64_t>(TimeUtilities::getServerTime());
+	packet.add<int32_t>(100);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
 void MapPacket::portalBlocked(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<int8_t>(0x01);
-	packet.add<int32_t>(0x00);
+	packet.add<int8_t>(1);
+	packet.add<int64_t>(0);
+	packet.addBool(false);
+	packet.addBool(false);
 	player->getSession()->send(packet);
 }
 

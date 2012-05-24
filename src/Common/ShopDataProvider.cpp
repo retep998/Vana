@@ -138,7 +138,10 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 	unordered_map<int32_t, bool> idsDone;
 
 	packet.add<header_t>(SMSG_SHOP);
+	packet.add<int32_t>(0); // New in V.??
 	packet.add<int32_t>(info.npc);
+	packet.add<int8_t>(0); // New
+	size_t amountOffset = packet.getSize();
 	packet.add<int16_t>(0); // To be set later
 
 	// Items
@@ -177,7 +180,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 		}
 	}
 
-	packet.set<int16_t>(shopCount, 6);
+	packet.set<int16_t>(shopCount, amountOffset);
 }
 
 int32_t ShopDataProvider::getPrice(int32_t shopId, uint16_t shopIndex) {

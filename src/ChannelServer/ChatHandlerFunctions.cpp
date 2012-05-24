@@ -150,6 +150,11 @@ void ChatHandlerFunctions::initialize() {
 	command.syntax = "<${notice | box | red | blue}> <$message>";
 	command.notes.push_back("Displays a message to every channel on the current world.");
 	CommandList["worldmessage"] = command.addToMap();
+
+	command.command = &ManagementFunctions::packet;
+	command.syntax = "<$buffer>";
+	command.notes.push_back("Sends the buffer to your client");
+	CommandList["packet"] = command.addToMap();
 	#pragma endregion
 
 	#pragma region GM Level 1

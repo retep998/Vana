@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "PlayersPacket.h"
 #include "Quests.h"
+#include "QuestsPacket.h"
 #include "Randomizer.h"
 #include "Reactor.h"
 #include "ScriptDataProvider.h"
@@ -223,6 +224,10 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
 	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
 	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
+	lua_register(luaVm, "showEffect", &LuaExports::showEffect);
+	lua_register(luaVm, "showEvent", &LuaExports::showEvent);
+	lua_register(luaVm, "showTopMessage", &LuaExports::showTopMessage);
+	lua_register(luaVm, "showPlayerInfoBox", &LuaExports::showPlayerInfoBox);
 
 	// Map
 	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
@@ -1185,8 +1190,12 @@ int LuaExports::setPlayerVariable(lua_State *luaVm) {
 }
 
 int LuaExports::setSp(lua_State *luaVm) {
-	int16_t sp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getStats()->setSp(sp);
+	int8_t sp = lua_tointeger(luaVm, -1);
+	int8_t slot = 0;
+	if (lua_isnumber(luaVm, -2)) {
+		slot = lua_tointeger(luaVm, -2);
+	}
+	getPlayer(luaVm)->getStats()->setSp(sp, slot);
 	return 0;
 }
 
@@ -1284,6 +1293,30 @@ int LuaExports::showMapEffect(lua_State *luaVm) {
 int LuaExports::showMapEvent(lua_State *luaVm) {
 	const string &val = lua_tostring(luaVm, -1);
 	EffectPacket::sendEvent(getPlayer(luaVm)->getMap(), val);
+	return 0;
+}
+
+int LuaExports::showEffect(lua_State *luaVm) {
+	const string &val = lua_tostring(luaVm, -1);
+	EffectPacket::sendEffect(getPlayer(luaVm), val);
+	return 0;
+}
+
+int LuaExports::showEvent(lua_State *luaVm) {
+	const string &val = lua_tostring(luaVm, -1);
+	EffectPacket::sendEvent(getPlayer(luaVm), val);
+	return 0;
+}
+
+int LuaExports::showTopMessage(lua_State *luaVm) {
+	const string &val = lua_tostring(luaVm, -1);
+	QuestsPacket::showTopMessage(getPlayer(luaVm), val);
+	return 0;
+}
+
+int LuaExports::showPlayerInfoBox(lua_State *luaVm) {
+	const string &val = lua_tostring(luaVm, -1);
+	EffectPacket::sendPlayerInfoBox(getPlayer(luaVm), val);
 	return 0;
 }
 

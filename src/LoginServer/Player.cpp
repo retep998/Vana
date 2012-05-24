@@ -23,10 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
+#include "MapleVersion.h"
 #include "PacketReader.h"
+#include "Randomizer.h"
 #include "Worlds.h"
 #include <iostream>
 #include <stdexcept>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 Player::Player() :
 	m_status(PlayerStatus::NotLoggedIn),
@@ -34,6 +38,11 @@ Player::Player() :
 	m_quietBanTime(0),
 	m_quietBanReason(0)
 {
+	// Random long lol
+	boost::random::mt19937 gen;
+	gen.seed(time(0));
+	boost::random::uniform_int_distribution<long> dist;
+	m_connectKey = dist(gen);
 }
 
 void Player::handleRequest(PacketReader &packet) {
@@ -45,17 +54,28 @@ void Player::handleRequest(PacketReader &packet) {
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
-			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
+			case CMSG_CHANNEL_CONNECT: 
+			case CMSG_CHANNEL_CONNECT_PIC: Characters::connectGame(this, packet); break;
 			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
 			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + IpUtilities::ipToString(this->getIp())); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
-			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
+			case CMSG_PLAYER_CREATE: 
+			case CMSG_PLAYER_CREATE_SPECIAL: Characters::createCharacter(this, packet); break;
 			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
 			case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
-			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
+			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this); break;
+			case CMSG_REQUEST_SPECIAL_CHAR_CREATION: LoginPacket::specialCharacterCreation(this, true); break; // TODO: Find out when you are eligable for the new jobs
+			case CMSG_CLIENT_VERSION: handleClientVersion(packet); break;
+			default: {
+					packet.reset();
+					std::ostringstream x;
+					x << "UNK PACKET: " << packet;
+					LoginServer::Instance()->log(LogTypes::Info, x.str());
+					break;
+				}
 		}
 	}
 	catch (std::range_error) {
@@ -73,6 +93,16 @@ void Player::handleRequest(PacketReader &packet) {
 
 Player::~Player() {
 	setOnline(false);
+}
+
+void Player::handleClientVersion(PacketReader &packet) {
+	uint8_t locale = packet.get<uint8_t>();
+	uint16_t version = packet.get<uint16_t>();
+	uint16_t subversion = packet.get<uint16_t>();
+	if (locale != MapleVersion::Locale || version != MapleVersion::Version) {
+		LoginServer::Instance()->log(LogTypes::Error, "Client disconnected: incorrect client version!");
+		getSession()->disconnect();
+	}
 }
 
 void Player::setOnline(bool online) {

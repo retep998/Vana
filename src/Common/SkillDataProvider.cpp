@@ -55,39 +55,39 @@ void SkillDataProvider::loadPlayerSkills() {
 		skillId = row.get<int32_t>("skillid");
 		skillLevel = row.get<uint8_t>("skill_level");
 
-		level.mobCount = row.get<int8_t>("mob_count");
-		level.hitCount = row.get<int8_t>("hit_count");
-		level.range = row.get<int16_t>("range");
-		level.time = row.get<int32_t>("buff_time");
-		level.mp = row.get<int16_t>("mp_cost");
-		level.hp = row.get<int16_t>("hp_cost");
-		level.damage = row.get<int16_t>("damage");
-		level.fixedDamage = row.get<int32_t>("fixed_damage");
-		level.criticalDamage = row.get<uint8_t>("critical_damage");
-		level.mastery = row.get<int8_t>("mastery");
-		level.optionalItem = row.get<int32_t>("optional_item_cost");
-		level.item = row.get<int32_t>("item_cost");
-		level.itemCount = row.get<int32_t>("item_count");
-		level.bulletConsume = row.get<int16_t>("bullet_cost");
-		level.moneyConsume = row.get<int16_t>("money_cost");
-		level.x = row.get<int16_t>("x_property");
-		level.y = row.get<int16_t>("y_property");
-		level.speed = row.get<int16_t>("speed");
-		level.jump = row.get<int16_t>("jump");
-		level.str = row.get<int16_t>("str");
-		level.wAtk = row.get<int16_t>("weapon_atk");
-		level.wDef = row.get<int16_t>("weapon_def");
-		level.mAtk = row.get<int16_t>("magic_atk");
-		level.mDef = row.get<int16_t>("magic_def");
-		level.acc = row.get<int16_t>("accuracy");
-		level.avo = row.get<int16_t>("avoid");
-		level.hpProp = row.get<uint16_t>("hp");
-		level.mpProp = row.get<uint16_t>("mp");
-		level.prop = row.get<uint16_t>("prop");
-		level.morph = row.get<int16_t>("morph");
-		level.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		level.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
-		level.coolTime = row.get<int32_t>("cooldown_time");
+		level.mobCount = row.get<int8_t>("mob_count", 0);
+		level.hitCount = row.get<int8_t>("hit_count", 0);
+		level.range = row.get<int16_t>("range", 0);
+		level.time = row.get<int32_t>("buff_time", 0);
+		level.mp = row.get<int16_t>("mp_cost", 0);
+		level.hp = row.get<int16_t>("hp_cost", 0);
+		level.damage = row.get<int16_t>("damage", 0);
+		level.fixedDamage = row.get<int32_t>("fixed_damage", 0);
+		level.criticalDamage = row.get<uint8_t>("critical_damage", 0);
+		level.mastery = row.get<int8_t>("mastery", 0);
+		level.optionalItem = row.get<int32_t>("optional_item_cost", 0);
+		level.item = row.get<int32_t>("item_cost", 0);
+		level.itemCount = row.get<int32_t>("item_count", 0);
+		level.bulletConsume = row.get<int16_t>("bullet_cost", 0);
+		level.moneyConsume = row.get<int16_t>("money_cost", 0);
+		level.x = row.get<int32_t>("x_property", 0);
+		level.y = row.get<int32_t>("y_property", 0);
+		level.speed = row.get<int16_t>("speed", 0);
+		level.jump = row.get<int16_t>("jump", 0);
+		level.str = row.get<int16_t>("str", 0);
+		level.wAtk = row.get<int16_t>("weapon_atk", 0);
+		level.wDef = row.get<int16_t>("weapon_def", 0);
+		level.mAtk = row.get<int16_t>("magic_atk", 0);
+		level.mDef = row.get<int16_t>("magic_def", 0);
+		level.acc = row.get<int16_t>("accuracy", 0);
+		level.avo = row.get<int16_t>("avoid", 0);
+		level.hpProp = row.get<uint16_t>("hp", 0);
+		level.mpProp = row.get<uint16_t>("mp", 0);
+		level.prop = row.get<uint16_t>("prop", 0);
+		level.morph = row.get<int16_t>("morph", 0);
+		level.lt = Pos(row.get<int16_t>("ltx", 0), row.get<int16_t>("lty", 0));
+		level.rb = Pos(row.get<int16_t>("rbx", 0), row.get<int16_t>("rby", 0));
+		level.coolTime = row.get<int32_t>("cooldown_time", 0);
 
 		m_skills[skillId][skillLevel] = level;
 		if (m_skillMaxLevels.find(skillId) == m_skillMaxLevels.end() || m_skillMaxLevels[skillId] < skillLevel) {
@@ -109,20 +109,20 @@ void SkillDataProvider::loadMobSkills() {
 
 		skillId = row.get<int32_t>("skillid");
 		level = row.get<uint8_t>("skill_level");
-		mobLevel.time = row.get<int16_t>("buff_time");
-		mobLevel.mp = row.get<uint8_t>("mp_cost");
-		mobLevel.x = row.get<int32_t>("x_property");
-		mobLevel.y = row.get<int32_t>("y_property");
-		mobLevel.prop = row.get<int16_t>("chance");
-		mobLevel.count = row.get<uint8_t>("target_count");
-		mobLevel.interval = row.get<int32_t>("cooldown");
-		mobLevel.lt.x = row.get<int16_t>("ltx");
-		mobLevel.rb.x = row.get<int16_t>("rbx");
-		mobLevel.lt.y = row.get<int16_t>("lty");
-		mobLevel.rb.y = row.get<int16_t>("rby");
-		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
-		mobLevel.limit = row.get<int16_t>("summon_limit");
-		mobLevel.summonEffect = row.get<int8_t>("summon_effect");
+		mobLevel.time = row.get<int32_t>("buff_time");
+		mobLevel.mp = row.get<uint8_t>("mp_cost", 0);
+		mobLevel.x = row.get<int32_t>("x_property", 0);
+		mobLevel.y = row.get<int32_t>("y_property", 0);
+		mobLevel.prop = row.get<int16_t>("chance", 0);
+		mobLevel.count = row.get<uint8_t>("target_count", 0);
+		mobLevel.interval = row.get<int32_t>("cooldown", 0);
+		mobLevel.lt.x = row.get<int16_t>("ltx", 0);
+		mobLevel.rb.x = row.get<int16_t>("rbx", 0);
+		mobLevel.lt.y = row.get<int16_t>("lty", 0);
+		mobLevel.rb.y = row.get<int16_t>("rby", 0);
+		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage", 0);
+		mobLevel.limit = row.get<int16_t>("summon_limit", 0);
+		mobLevel.summonEffect = row.get<int8_t>("summon_effect", 0);
 
 		m_mobSkills[skillId][level] = mobLevel;
 	}
@@ -181,10 +181,10 @@ void SkillDataProvider::loadMorphs() {
 			if (cmp == "superman") morph.superman = true;
 		});
 
-		morph.speed = row.get<uint8_t>("speed");
-		morph.jump = row.get<uint8_t>("jump");
-		morph.traction = row.get<double>("traction");
-		morph.swim = row.get<double>("swim");
+		morph.speed = row.get<uint8_t>("speed", 100);
+		morph.jump = row.get<uint8_t>("jump", 100);
+		morph.traction = row.get<double>("traction", 10.0f);
+		morph.swim = row.get<double>("swim", 100.0f);
 
 		m_morphInfo[morphId] = morph;
 	}

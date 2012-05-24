@@ -52,14 +52,14 @@ namespace Stats {
 	const uint8_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
 	const uint8_t MountLevels = 30;
-	const int16_t MaxMaxHp = 30000;
-	const int16_t MinMaxHp = 1;
-	const int16_t MaxMaxMp = 30000;
-	const int16_t MinMaxMp = 1;
-	const int16_t MaxFame = 30000;
-	const int16_t MinFame = -30000;
-	const int16_t MinHp = 0;
-	const int16_t MinMp = 0;
+	const int32_t MaxMaxHp = 999999;
+	const int32_t MinMaxHp = 1;
+	const int32_t MaxMaxMp = 999999;
+	const int32_t MinMaxMp = 1;
+	const int32_t MaxFame = 30000;
+	const int32_t MinFame = -30000;
+	const int32_t MinHp = 0;
+	const int32_t MinMp = 0;
 	const int16_t DefaultHp = 50;
 	const int16_t MaxCloseness = 30000;
 	const int16_t ApPerLevel = 5;
@@ -69,7 +69,7 @@ namespace Stats {
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
-	const int32_t MaxDamage = 199999;
+	const int32_t MaxDamage = 1999999;
 	const int16_t EnergyChargeDecay = 200;
 	const int16_t MaxEnergyChargeLevel = 10000;
 
@@ -192,7 +192,7 @@ namespace Stats {
 		const int16_t PirateAp = 14;
 		const int16_t GmAp = 10;
 	}
-	enum Constants : int32_t {
+	enum Constants : int64_t {
 		Skin = 0x01,
 		Eyes = 0x02,
 		Hair = 0x04,

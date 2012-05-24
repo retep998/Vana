@@ -21,9 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 #include <vector>
+#include <array>
 
 using std::string;
 using std::vector;
+using std::array;
 
 struct ValidItems {
 	void clear() {
@@ -68,6 +70,20 @@ namespace ValidItemType {
 	};
 }
 
+namespace ValidClass {
+	enum : int8_t {
+		Adventurer,
+		Cygnus,
+		Aran,
+		Evan,
+		Mercedes,
+		Resistance,
+		DemonSlayer,
+		UltimateExplorer,
+		MaxClass // Used for array
+	};
+}
+
 class ValidCharDataProvider : boost::noncopyable {
 public:
 	static ValidCharDataProvider * Instance() {
@@ -78,10 +94,8 @@ public:
 	void loadData();
 
 	bool isForbiddenName(const string &cmp);
-	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer);
+	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId);
 
-	const static int8_t Adventurer = 1;
-	const static int8_t Cygnus = 2;
 private:
 	ValidCharDataProvider() {}
 	static ValidCharDataProvider *singleton;
@@ -94,6 +108,5 @@ private:
 	ValidItems * getItems(int8_t gender, int8_t classId);
 
 	vector<string> m_forbiddenNames;
-	ClassValidItems m_adventurer;
-	ClassValidItems m_cygnus;
+	array<ClassValidItems, ValidClass::MaxClass> m_validItems;
 };

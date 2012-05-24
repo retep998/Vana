@@ -36,9 +36,23 @@ using std::unordered_map;
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
+	{
+		packet.add<int16_t>(2); // Options
+		packet.add<int32_t>(1);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(2); // This one is actually used
+		packet.add<int32_t>(0);
+	}
+
 	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<uint8_t>(0);
+	packet.add<int32_t>(0);
 	packet.add<uint8_t>(player->getPortalCount(true));
+
+	packet.add<int32_t>(0); // New
+
 	packet.addBool(true); // Is a connect packet
+
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
 	if (false) {
 		size_t lineAmount = 0;
@@ -50,7 +64,47 @@ void PlayerPacket::connectData(Player *player) {
 
 	player->initializeRng(packet);
 
-	packet.add<int64_t>(-1);
+	packet.addBytes("FFFFFFFFFDFFFFFF"); // No more -1!
+
+	{
+		packet.add<int8_t>(0);
+
+		int8_t amount = 0;
+		packet.add<int8_t>(amount);
+		for (int8_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(0);
+		}
+	}
+
+	{
+		size_t amount = 0;
+		packet.add<int32_t>(amount);
+		for (size_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(0);
+			packet.add<int64_t>(0);
+		}
+	}
+
+	{
+		bool value = false;
+		packet.addBool(value);
+		if (value) {
+			packet.add<int8_t>(0); // Not used
+
+			size_t amount = 0;
+			packet.add<int32_t>(amount);
+			for (size_t i = 0; i < amount; i++) {
+				packet.add<int64_t>(0);
+			}
+
+			amount = 0;
+			packet.add<int32_t>(amount);
+			for (size_t i = 0; i < amount; i++) {
+				packet.add<int64_t>(0);
+			}
+		}
+	}
+
 	packet.add<int32_t>(player->getId());
 	packet.addString(player->getName(), 13);
 	packet.add<int8_t>(player->getGender());
@@ -59,7 +113,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(player->getHair());
 
 	player->getPets()->connectData(packet);
-	player->getStats()->connectData(packet); // Stats
+	player->getStats()->connectData(packet);
 
 	packet.add<int32_t>(0); // Gachapon EXP
 
@@ -68,27 +122,199 @@ void PlayerPacket::connectData(Player *player) {
 
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
+	// New
+	packet.add<int16_t>(0);//player->getStats()->getJobType()); // For Cannoneer and Dual Blader
+	// TODO: Implement
+	if (player->getStats()->getJob() / 100 == Jobs::JobTracks::DemonSlayer || player->getStats()->getJob() == Jobs::JobIds::DemonSlayer) {
+		packet.add<int32_t>(1012280);
+	}
+
 	packet.add<uint8_t>(player->getBuddyListSize());
 
+	{
+		time_t rawtime = time(NULL);
+		struct tm * timeinfo;
+		timeinfo = localtime ( &rawtime );
+
+		char buff[15];
+		sprintf(buff, "%04d%02d%02d%02d", (timeinfo->tm_year + 1900), (timeinfo->tm_mon + 1), timeinfo->tm_mday, timeinfo->tm_hour);
+		packet.add<int32_t>(atoi(buff)); // YYYYMMDDHH
+	}
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	// 12 bytes?
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+	
+	packet.add<int32_t>(0);
+
+	packet.add<int8_t>(10);
+	packet.add<int32_t>(0);
+	packet.add<int8_t>(5);
+	packet.add<int32_t>(0);
+
+	packet.add<uint64_t>(18293692055145101115); // Filetime thing?
+
+	// BACK TO THE MAIN FUNC
+
+	packet.add<int8_t>(20);
+	{
+		bool value = true;
+		packet.addBool(value);
+		if (value) {
+			packet.addString("Meerchars4");
+		}
+	}
+	{
+		bool value = true;
+		packet.addBool(value);
+		if (value) {
+			packet.addString("Meerchars4");
+		}
+	}
+	{
+		bool value = false;
+		packet.addBool(value);
+		if (value) {
+			packet.addString("?????????");
+		}
+	}
+
 	player->getInventory()->connectData(packet); // Inventory data
+
+	{
+		packet.add<int32_t>(-1); // END IT ALREADY (It's a loop
+	}
+	
+	{
+		size_t amount = 0;
+		packet.add<int32_t>(amount);
+		for (size_t i = 0; i < amount; i++) {
+			packet.add<int32_t>(0);
+			packet.add<int64_t>(0);
+		}
+	}
+	
+	{
+		size_t amount = 0;
+		packet.add<int32_t>(amount);
+		for (size_t i = 0; i < amount; i++) {
+			packet.add<int64_t>(0);
+			packet.add<int64_t>(0);
+		}
+	}
+
+	{
+		{
+			/*
+			packet.add<int8_t>(!0);
+
+			packet.add<int32_t>(0);
+			packet.add<int8_t>(0);
+			packet.add<int8_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int8_t>(0);
+			packet.add<int32_t>(0);
+			packet.add<int64_t>(0);
+			packet.add<int64_t>(0);
+			packet.add<int64_t>(0);
+			packet.add<int64_t>(0);
+			*/
+		}
+		packet.add<int8_t>(0);
+	}
+
 	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
 	player->getQuests()->connectData(packet); // Quests
 
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	packet.add<int16_t>(0); // Match Record
+	packet.add<int16_t>(0); // Couple Record
+	packet.add<int16_t>(0); // 'Friend' Record
+	packet.add<int16_t>(0); // Marriage Record
 
-	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
+	player->getInventory()->rockPacket(packet); // Teleport Rock maps
 	player->getMonsterBook()->connectData(packet);
+	
+	packet.add<uint32_t>(0xFFFFFFFF); // ??
 
 	packet.add<int16_t>(0);
+	// Foreach: short
+
+	packet.add<int16_t>(0); // Newyear giftcard data
+	/*
+	Foreach
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.addString("Probably Name");
+		packet.add<int8_t>(0);
+		packet.add<int64_t>(0); // Sent time?
+		packet.add<int32_t>(0);
+		packet.addString("Message?");
+		packet.add<int8_t>(0);
+		packet.add<int8_t>(0);
+		packet.add<int64_t>(0);
+		packet.addString("????");
+
+	*/
 
 	// Party Quest data (quest needs to be added in the quests list)
 	packet.add<int16_t>(0); // Amount of pquests
-	// for every pquest: int16_t questId, string questdata
+	// Foreach: Short (questid) + String (content)
+
+	if (GameLogicUtilities::isWildHunter(player->getStats()->getJob())) {
+		packet.add<int8_t>(0); // ?
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(0);
+	}
+
+	packet.add<int16_t>(0);
+	// Foreach: Short + Long (filetime) ?
+	
+	packet.add<int16_t>(0);
+	/*
+	Foreach:
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(0);
+		????
+	*/
+
+	packet.add<int16_t>(0);
+	
+	for (int i = 0; i < 17; i++) {
+		packet.add<int32_t>(0); // UNKNOWN
+	}
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int8_t>(0);
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(0);
 
 	packet.add<int16_t>(0);
 
+	packet.add<int32_t>(0);
+
 	packet.add<int64_t>(TimeUtilities::getServerTime());
+	packet.add<int32_t>(100);
+	packet.add<int8_t>(0);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 
@@ -135,38 +361,57 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) {
+void PlayerPacket::updateStat(Player *player, int64_t updateBits, int64_t value, bool itemResponse) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.addBool(itemResponse);
-	packet.add<int32_t>(updateBits);
+	packet.add<int64_t>(updateBits);
 	switch (updateBits) {
 		// For now it only accepts updateBits as a single unit, might be a collection later
-		case Stats::Pet:
+		case Stats::Skin:
 		case Stats::Level:
+		case 0x400000:
+		case 0x80000000:
+			packet.add<int8_t>(static_cast<int8_t>(value));
+			break;
+
 		case Stats::Job:
 		case Stats::Str:
 		case Stats::Dex:
 		case Stats::Int:
 		case Stats::Luk:
-		case Stats::Hp:
-		case Stats::MaxHp:
-		case Stats::Mp:
-		case Stats::MaxMp:
 		case Stats::Ap:
-		case Stats::Sp:
 			packet.add<int16_t>(static_cast<int16_t>(value));
 			break;
-		case Stats::Skin:
-		case Stats::Eyes:
-		case Stats::Hair:
-		case Stats::Exp:
-		case Stats::Fame:
-		case Stats::Mesos:
-			packet.add<int32_t>(value);
+
+		case Stats::Pet:
+		case 0x80000:
+		case 0x100000:
+		case 0x20000000:
+			packet.add<int64_t>(value);
+			break;
+
+		case Stats::Sp:
+			player->getStats()->addSpData(packet);
+			break;
+
+		case 0: break;
+		default:
+			packet.add<int32_t>(static_cast<int32_t>(value));
 			break;
 	}
-	packet.add<int32_t>(value);
+	
+	packet.addBool(false);
+	if (false) {
+		packet.add<int8_t>(0);
+	}
+
+	packet.addBool(false);
+	if (false) {
+		packet.add<int32_t>(0); // Battle Record
+		packet.add<int32_t>(0);
+	}
+
 	player->getSession()->send(packet);
 }
 
@@ -176,6 +421,7 @@ void PlayerPacket::changeChannel(Player *player, ip_t ip, port_t port) {
 	packet.addBool(true);
 	packet.add<ip_t>(htonl(ip)); // MapleStory accepts IP addresses in big-endian
 	packet.add<port_t>(port);
+	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
@@ -261,6 +507,14 @@ void PlayerPacket::sendYellowMessage(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_YELLOW_MESSAGE);
 	packet.addBool(true);
+	packet.addString(msg);
+	player->getSession()->send(packet);
+}
+
+void PlayerPacket::sendMulticolorMessage(Player *player, MulticolorMessage::Colors color, const string &msg) {
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_CHAT_MULTICOLOR);
+	packet.add<uint16_t>(color);
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }

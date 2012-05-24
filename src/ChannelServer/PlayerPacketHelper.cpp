@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 
 void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
+	slot = abs(slot);
 	if (slot != 0) {
 		if (shortSlot) {
 			packet.add<int16_t>(slot);
@@ -47,6 +48,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int8_t>(0);
 	}
 	packet.add<int64_t>(item->getExpirationTime());
+	packet.add<uint32_t>(0xFFFFFFFF);
 	if (equip) {
 		packet.add<int8_t>(item->getSlots());
 		packet.add<int8_t>(item->getScrolls());
@@ -67,6 +69,25 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		packet.add<int16_t>(item->getJump());
 		packet.addString(item->getName()); // Owner string
 		packet.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
+
+		packet.add<int8_t>(0);
+		packet.add<int8_t>(0);
+		packet.add<int32_t>(0);
+		packet.add<int32_t>(-1);
+		packet.add<int32_t>(item->getHammers());
+		packet.add<int16_t>(0);
+		packet.add<int8_t>(1); // Is a potential
+		packet.add<int8_t>(6); // Amount of stars
+		packet.add<int16_t>(0); // Rare
+		packet.add<int16_t>(0); // Epic
+		packet.add<int16_t>(0); // Unique
+		packet.add<int16_t>(0); // Legendary
+		packet.add<int16_t>(0); // HP Rate
+		packet.add<int16_t>(0); // MP Rate
+		packet.add<int16_t>(-1);
+		packet.add<int16_t>(-1);
+		packet.add<int16_t>(-1);
+		/*
 		if (false) { //item->getCashId() != 0) {
 			packet.addBytes("91174826F700"); // Always the same for cash equips
 			packet.add<int32_t>(0);
@@ -79,6 +100,10 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 			packet.add<int32_t>(item->getHammers()); // Vicious' Hammer
 			packet.add<int64_t>(-1);
 		}
+		*/
+
+		packet.add<int64_t>(-1);
+
 		packet.addBytes("0040E0FD3B374F01"); // Always the same?
 		packet.add<int32_t>(-1);
 	}
@@ -93,10 +118,12 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 }
 
 void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) {
+	int16_t jobid = player->getStats()->getJob();
 	packet.add<int8_t>(player->getGender());
 	packet.add<int8_t>(player->getSkin());
 	packet.add<int32_t>(player->getEyes());
-	packet.add<int8_t>(1);
+	packet.add<int32_t>(jobid); // New
+	packet.add<int8_t>(0);
 	packet.add<int32_t>(player->getHair());
 	player->getInventory()->addEquippedPacket(packet);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
@@ -106,5 +133,10 @@ void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player)
 		else {
 			packet.add<int32_t>(0);
 		}
+	}
+	
+
+	if (jobid / 100 == Jobs::JobTracks::DemonSlayer || jobid == Jobs::JobIds::DemonSlayer) {
+		packet.add<int32_t>(1012280);
 	}
 }

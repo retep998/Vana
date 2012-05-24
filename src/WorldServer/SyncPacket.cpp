@@ -31,13 +31,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
 
-void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer) {
+void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip, int64_t loginKey, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<int16_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::NewConnectable);
 	packet.add<int32_t>(playerId);
 	packet.add<ip_t>(ip);
+	packet.add<int64_t>(loginKey);
 	packet.add<uint16_t>(buffer.getBufferLength());
 	packet.addBuffer(buffer);
 	Channels::Instance()->sendToChannel(channel, packet);

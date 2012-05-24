@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Map.h"
 #include "Drop.h"
 #include "EffectPacket.h"
+#include "FileUtilities.h"
 #include "GameLogicUtilities.h"
 #include "GmPacket.h"
 #include "Instance.h"
 #include "Inventory.h"
+#include "LuaScriptable.h"
 #include "MapPacket.h"
 #include "MapleTvs.h"
 #include "Maps.h"
@@ -170,8 +172,29 @@ void Map::addPlayer(Player *player) {
 			MapPacket::showTimer(player, i->checkInstanceTimer());
 		}
 	}
+
 	if (m_ship) {
 		// Boat packet, need to change this section slightly...
+	}
+
+	if (!m_scriptFirstEnter.empty()) {
+		const string &filename = "scripts/map_first_enter/" + m_scriptFirstEnter + ".lua";
+		if (FileUtilities::fileExists(filename)) {
+			LuaScriptable(filename, player->getId()).run();
+		}
+		else if (player->isAdmin()) {
+			PlayerPacket::sendMulticolorMessage(player, PlayerPacket::MulticolorMessage::White, "This map has an FirstEnter script, but that script isn't found! Script: " + m_scriptEnter);
+		}
+	}
+
+	if (!m_scriptEnter.empty()) {
+		const string &filename = "scripts/map_enter/" + m_scriptEnter + ".lua";
+		if (FileUtilities::fileExists(filename)) {
+			LuaScriptable(filename, player->getId()).run();
+		}
+		else if (player->isAdmin()) {
+			PlayerPacket::sendMulticolorMessage(player, PlayerPacket::MulticolorMessage::White, "This map has an Enter script, but that script isn't found! Script: " + m_scriptEnter);
+		}
 	}
 }
 
@@ -819,7 +842,7 @@ void Map::showObjects(Player *player) {
 		if (player != m_players[i] && !m_players[i]->getActiveBuffs()->isUsingHide()) {
 			PacketCreator packet = MapPacket::playerPacket(m_players[i]);
 			player->getSession()->send(packet);
-			SummonHandler::showSummons(m_players[i], player);
+			//SummonHandler::showSummons(m_players[i], player);
 			// Bug in global; would be fixed here:
 			// Hurricane/Pierce do not display properly if using when someone enters the map
 			// Berserk does not display properly either - players[i]->getActiveBuffs()->getBerserk()

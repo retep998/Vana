@@ -34,18 +34,19 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_MOVEMENT);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(0);
 	packet.addBuffer(buf, size);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
-void PlayersPacket::faceExpression(Player *player, int32_t face) {
+void PlayersPacket::faceExpression(Player *player, int32_t face, int32_t unk, int8_t unk2) {
 	if (player->getActiveBuffs()->isUsingHide())
 		return;
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_EMOTE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(face);
+	packet.add<int32_t>(unk); // -1? Both new
+	packet.add<int8_t>(unk2); // 0?
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -102,16 +103,49 @@ void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
 	packet.add<int32_t>(getInfo->getId());
 	packet.add<int8_t>(getInfo->getStats()->getLevel());
 	packet.add<int16_t>(getInfo->getStats()->getJob());
-	packet.add<int16_t>(getInfo->getStats()->getFame());
+	packet.add<int8_t>(0); // ???
+	packet.add<int32_t>(getInfo->getStats()->getFame());
 	packet.addBool(false); // Married
+	packet.add<int8_t>(0); // ???
+	// Foreach: short
+
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
 	packet.addBool(isSelf); // Is 1 when the character is clicking themselves
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
 
 	getInfo->getPets()->petInfoPacket(packet);
 	getInfo->getMounts()->mountInfoPacket(packet);
 	getInfo->getInventory()->wishListPacket(packet);
-	getInfo->getMonsterBook()->infoData(packet);
+	//getInfo->getMonsterBook()->infoData(packet);
+
+	// Medals
+	{
+		packet.add<int32_t>(0);
+		size_t medals = 0;
+		packet.add<int16_t>(medals);
+		for (size_t i = 0; i < medals; i++) {
+			packet.add<int16_t>(0); // ID
+			packet.add<int64_t>(0); // Gain Filetime
+		}
+	}
+	
+	// The fuck
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
+	packet.add<int8_t>(0); // ???
+
+	{
+		size_t something = 0;
+		packet.add<int32_t>(something);
+		for (size_t i = 0; i < something; i++) {
+			packet.add<int32_t>(0); // ????
+		}
+	}
 
 	player->getSession()->send(packet);
 }
@@ -153,115 +187,25 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 }
 
 void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-	bool mesoexplosion = attack.isMesoExplosion;
-	if (mesoexplosion) {
-		tbyte = (attack.targets * 0x10) + 0x0A;
-	}
-
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ATTACK_MELEE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<uint8_t>(attack.skillLevel);
-	if (skillId != Jobs::All::RegularAttack) {
-		packet.add<int32_t>(skillId);
-	}
-
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-
-	int32_t masteryId = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
-	packet.add<int32_t>(0);
-
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		packet.add<int32_t>(i->first);
-		packet.add<int8_t>(0x06);
-		if (mesoexplosion) {
-			packet.add<uint8_t>(i->second.size());
-		}
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
-			packet.add<int32_t>(*j);
-		}
-	}
+	createAttackPacket(player, packet, attack);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ATTACK_RANGED);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<uint8_t>(attack.skillLevel);
-	if (skillId != Jobs::All::RegularAttack) {
-		packet.add<int32_t>(skillId);
-	}
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-
-	int32_t masteryId = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
-	// Bug in global:
-	// The colored swoosh does not display as it should
-
-	packet.add<int32_t>(attack.starId);
-
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		packet.add<int32_t>(i->first);
-		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
-			int32_t damage = *j;
-			switch (skillId) {
-				case Jobs::Marksman::Snipe: // Snipe is always crit
-					damage += 0x80000000; // Critical damage = 0x80000000 + damage
-					break;
-				default:
-					break;
-			}
-			packet.add<int32_t>(damage);
-		}
-	}
-	packet.addPos(attack.projectilePos);
+	createAttackPacket(player, packet, attack);
 
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
 void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ATTACK_MAGIC);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<uint8_t>(attack.skillLevel);
-	packet.add<int32_t>(skillId);
+	createAttackPacket(player, packet, attack);
 
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-	packet.add<uint8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
-
-	packet.add<int32_t>(0); // No clue
-
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
-		packet.add<int32_t>(i->first);
-		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
-			packet.add<int32_t>(*j);
-		}
-	}
-
-	if (attack.charge > 0) {
-		packet.add<int32_t>(attack.charge);
-	}
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -270,7 +214,7 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	packet.add<header_t>(SMSG_SUMMON_ATTACK);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(attack.summonId);
-	packet.add<int8_t>(attack.animation);
+	packet.add<int8_t>(attack.display);
 	packet.add<int8_t>(attack.targets);
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
@@ -283,32 +227,64 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 }
 
 void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ATTACK_ENERGYCHARGE);
+	createAttackPacket(player, packet, attack);
+
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
+}
+
+void PlayersPacket::createAttackPacket(Player *player, PacketCreator &packet, const Attack &attack) {
+	int8_t tbyte = (attack.targets * 0x10) + (attack.isMesoExplosion ? 0x0A : attack.hits);
+	int32_t skillId = attack.skillId;
+
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(attack.unk_val);
 	packet.add<int8_t>(attack.skillLevel);
-	packet.add<int32_t>(skillId);
+	if (attack.skillLevel != 0) {
+		packet.add<int32_t>(skillId);
+	}
+
+	if (skillId == Jobs::Sniper::Strafe) {
+		packet.add<int8_t>(attack.strafeByte);
+		packet.add<int32_t>(attack.strafeInt);
+	}
 
 	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
+	packet.add<uint16_t>(attack.animationAndSpeed);
+	packet.add<int8_t>(attack.weaponClass);
+
+	if ((attack.animationAndSpeed & 0x7FFF) > 423)
+		return;
 
 	int32_t masteryId = player->getSkills()->getMastery();
 	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 
-	packet.add<int32_t>(0);
+	packet.add<int32_t>(attack.starId);
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
+		if (i->first == 0) continue; // >_>
+
 		packet.add<int8_t>(0x06);
+		if (skillId == Jobs::ChiefBandit::MesoExplosion) {
+			// Hits per mob is random
+			packet.add<uint8_t>(i->second.size());
+		}
 		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
-			packet.add<int32_t>(*j);
+			if (skillId == Jobs::Marksman::Snipe)
+				packet.add<int32_t>(*j + 0x80000000);
+			else
+				packet.add<int32_t>(*j);
 		}
 	}
-
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	
+	if (attack.charge > 0) {
+		packet.add<int32_t>(attack.charge);
+	}
+	
+	if (attack.isRanged) {
+		packet.addPos(attack.projectilePos);
+	}
 }

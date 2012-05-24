@@ -29,6 +29,6 @@ namespace Initializing {
 	string makeLocale(const string &locale, bool testServer);
 
 	const int32_t OutputWidth = 26;
-	const int32_t McdbVersion = 4;
-	const int32_t McdbSubVersion = 3;
+	const int32_t McdbVersion = 5;
+	const int32_t McdbSubVersion = 0;
 }

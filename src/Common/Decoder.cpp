@@ -179,12 +179,13 @@ PacketCreator Decoder::getConnectPacket(const string &patchLocation) {
 	m_send.updateIv(Randomizer::Instance()->randInt());
 
 	PacketCreator packet;
-	packet.add<header_t>(patchLocation != "" ? IV_PATCH_LOCATION : IV_NO_PATCH_LOCATION);
+	packet.add<header_t>(0); // Length of packet
 	packet.add<uint16_t>(MapleVersion::Version);
 	packet.addString(patchLocation);
 	packet.add<uint32_t>(m_recv.getIv());
 	packet.add<uint32_t>(m_send.getIv());
 	packet.add<int8_t>(MapleVersion::Locale);
+	packet.set<header_t>(packet.getSize() - 2, 0);
 
 	return packet;
 }

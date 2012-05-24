@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "StringUtilities.h"
 #include "Types.h"
 #include <string>
 
@@ -24,7 +25,7 @@ using std::string;
 
 #define MAPLE_LOCALE "global"
 // Used for MCDB verification but can also be used in combination with MAPLE_VERSION
-#define MAPLE_VERSION 75
+#define MAPLE_VERSION 110
 // Use ONLY for version-specific code purposes
 // Incidentally, your locale may have vastly different version-specific code
 
@@ -48,32 +49,21 @@ namespace Locales {
 	const int8_t JapanTest = 0x00; // Unk
 }
 
-namespace PatchLocations {
-	const string None = "";
-	const string Global = "0";
-	const string Korea = ""; // Unk
-	const string Japan = ""; // Unk
-	const string China = ""; // Unk
-	const string Sea = ""; // Unk
-	const string Thailand = ""; // Unk
-	const string Europe = ""; // Unk
-	const string Brazil = ""; // Unk
-	const string Taiwan = ""; // Unk
-	const string Vietnam = ""; // Unk
-
-	const string GlobalTest = "0";
-	const string KoreaTest = ""; // Unk
-	const string ChinaTest = ""; // Unk
-	const string TaiwanTest = ""; // Unk
-	const string EuropeTest = ""; // Unk
-	const string JapanTest = ""; // Unk
-}
-
 namespace MapleVersion {
 	const uint16_t Version = MAPLE_VERSION;
 	const int8_t Locale = Locales::Global;
 	const string LocaleString = MAPLE_LOCALE;
 	const bool TestServer = false;
 
-	const string PatchLocation = PatchLocations::Global;
+	const string PatchLocation = "1";
+	// This is the subversion number, for example: V109.1
+	// In KMS they use an algorithm to create this.
+
+	inline string GenerateKoreanPatchLocation(uint16_t version, int8_t subversion, bool removeCookie) {
+		int32_t ret = 0;
+		ret ^= (version & 0x7FFF);
+		ret ^= ((((int8_t)removeCookie) & 0x01) << 15);
+		ret ^= ((subversion & 0xFF) << 16);
+		return StringUtilities::lexical_cast<string>(ret);
+	}
 }

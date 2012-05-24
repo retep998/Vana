@@ -31,6 +31,6 @@ namespace SkillsPacket {
 	void showSpecialSkill(Player *player, const SpecialSkillInfo &info); // Hurricane/Pierce/Big Bang/Monster Magnet
 	void endSpecialSkill(Player *player, const SpecialSkillInfo &info);
 	void showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success); // New packet in .56
-	void sendCooldown(Player *player, int32_t skillId, int16_t time);
+	void sendCooldown(Player *player, int32_t skillId, int32_t time);
 	void showBerserk(Player *player, uint8_t level, bool on);
 }

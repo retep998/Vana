@@ -85,8 +85,9 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
+	packet.skipBytes(1); // Always 0x02
 	int8_t channel = packet.get<int8_t>();
+	packet.get<int8_t>(); // World ID
 
 	LoginPacket::channelSelect(player);
 	World *world = m_worlds[player->getWorld()];

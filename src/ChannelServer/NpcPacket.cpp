@@ -71,18 +71,17 @@ void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32
 void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_ANIMATE);
-
+	packet.add<int32_t>(pack.get<int32_t>());
 	size_t len = pack.getBufferLength();
 	if (len == 6) {
 		// NPC talking
-		packet.add<int32_t>(pack.get<int32_t>());
 		packet.add<int16_t>(pack.get<int16_t>());
+		packet.add<int32_t>(pack.get<int32_t>());
 	}
-	else if (len > 6) {
+	else if (len > 2) {
 		// NPC moving
 		packet.addBuffer(pack.getBuffer(), len - 9);
 	}
-
 	player->getSession()->send(packet);
 }
 

@@ -59,7 +59,6 @@ struct MobInfoRaw {
 		damageable(true),
 		canDamage(true)
 		{ }
-	int8_t carnivalPoints;
 	int8_t iceAttr;
 	int8_t fireAttr;
 	int8_t poisonAttr;
@@ -68,17 +67,18 @@ struct MobInfoRaw {
 	int8_t nonElemAttr;
 	int8_t hpColor;
 	int8_t hpBackgroundColor;
+	uint8_t carnivalPoints;
 	uint8_t skillCount;
 	int16_t wAtk;
 	int16_t wDef;
 	int16_t mAtk;
 	int16_t mDef;
-	int16_t acc;
-	int16_t avo;
 	int16_t speed;
 	int16_t chaseSpeed;
 	int16_t summonType;
 	uint16_t level;
+	int32_t acc;
+	int32_t avo;
 	int32_t selfDestruction;
 	int32_t buff;
 	int32_t link;

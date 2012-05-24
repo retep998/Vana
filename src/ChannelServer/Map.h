@@ -80,6 +80,8 @@ public:
 	int32_t getReturnMap() const { return getInfo()->rm; }
 	const string & getMusic() const { return m_music; }
 	const string & getDefaultMusic() const { return getInfo()->defaultMusic; }
+	const string & getEnterScript() const { return m_scriptEnter; }
+	const string & getFirstEnterScript() const { return m_scriptFirstEnter; }
 	const Pos & getMapLeftTop() const { return getInfo()->lt; }
 	const Pos & getMapRightBottom() const { return getInfo()->rb; }
 	int32_t getObjectId() { return m_objectIds.next(); }
@@ -93,6 +95,7 @@ public:
 	void addMobSpawn(const MobSpawnInfo &spawn);
 	void addReactorSpawn(const ReactorSpawnInfo &spawn);
 	void addTimeMob(TimeMobPtr info);
+	void setEnterScripts(const string &enterScript, const string &firstEnterScript) { m_scriptEnter = enterScript; m_scriptFirstEnter = firstEnterScript; }
 
 	// Footholds
 	Pos findFloor(const Pos &pos);
@@ -201,6 +204,8 @@ private:
 	int32_t m_spawnMobs;
 	time_t m_timerStart;
 	string m_music;
+	string m_scriptEnter;
+	string m_scriptFirstEnter;
 	Instance *m_instance;
 	LoopingId<int32_t> m_objectIds;
 	LoopingId<int32_t> m_mistIds;

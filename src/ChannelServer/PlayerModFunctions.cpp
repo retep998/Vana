@@ -91,7 +91,7 @@ bool PlayerModFunctions::maxStats(Player *player, const string &args) {
 
 bool PlayerModFunctions::hp(Player *player, const string &args) {
 	if (args.length() != 0) {
-		uint16_t amount = atoi(args.c_str());
+		int32_t amount = atoi(args.c_str());
 		player->getStats()->setMaxHp(amount);
 		if (player->getStats()->getHp() > amount) {
 			player->getStats()->setHp(player->getStats()->getMaxHp());
@@ -103,7 +103,7 @@ bool PlayerModFunctions::hp(Player *player, const string &args) {
 
 bool PlayerModFunctions::mp(Player *player, const string &args) {
 	if (args.length() != 0) {
-		uint16_t amount = atoi(args.c_str());
+		int32_t amount = atoi(args.c_str());
 		player->getStats()->setMaxMp(amount);
 		if (player->getStats()->getMp() > amount) {
 			player->getStats()->setMp(player->getStats()->getMaxMp());

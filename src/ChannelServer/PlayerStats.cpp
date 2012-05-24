@@ -42,10 +42,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, int32_t exp) :
+PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int8_t jobType, int32_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int32_t hp, int32_t maxHp, int32_t mp, int32_t maxMp, int32_t exp) :
 	m_player(player),
 	m_level(level),
 	m_job(job),
+	m_jobType(jobType),
 	m_fame(fame),
 	m_str(str),
 	m_dex(dex),
@@ -53,7 +54,6 @@ PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fam
 	m_luk(luk),
 	m_ap(ap),
 	m_hpMpAp(hpMpAp),
-	m_sp(sp),
 	m_hp(hp),
 	m_maxHp(maxHp),
 	m_mp(mp),
@@ -131,32 +131,55 @@ void PlayerStats::connectData(PacketCreator &packet) {
 	packet.add<int16_t>(getDex());
 	packet.add<int16_t>(getInt());
 	packet.add<int16_t>(getLuk());
-	packet.add<int16_t>(getHp());
-	packet.add<int16_t>(getMaxHp(true));
-	packet.add<int16_t>(getMp());
-	packet.add<int16_t>(getMaxMp(true));
+	packet.add<int32_t>(getHp());
+	packet.add<int32_t>(getMaxHp(true));
+	packet.add<int32_t>(getMp());
+	packet.add<int32_t>(getMaxMp(true));
 	packet.add<int16_t>(getAp());
-	packet.add<int16_t>(getSp());
+
+	addSpData(packet);
+
 	packet.add<int32_t>(getExp());
-	packet.add<int16_t>(getFame());
+	packet.add<int32_t>(getFame());
 }
 
-int16_t PlayerStats::getMaxHp(bool withoutBonus) {
+void PlayerStats::addSpData(PacketCreator &packet) {
+	if (GameLogicUtilities::isExtendedSpJob(getJob())) {
+		packet.add<int8_t>(m_spTable.size());
+		for (map<int8_t, int8_t>::iterator iter = m_spTable.begin(); iter != m_spTable.end(); iter++) {
+			packet.add<int8_t>(iter->first);
+			packet.add<int8_t>(iter->second);
+		}
+	}
+	else {
+		packet.add<int16_t>(getSp());
+	}
+
+}
+
+int32_t PlayerStats::getMaxHp(bool withoutBonus) {
 	if (!withoutBonus) {
-		return static_cast<int16_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
+		return static_cast<int32_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
 	}
 	return m_maxHp;
 }
 
-int16_t PlayerStats::getMaxMp(bool withoutBonus) {
+int32_t PlayerStats::getMaxMp(bool withoutBonus) {
 	if (!withoutBonus) {
-		return static_cast<int16_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
+		return static_cast<int32_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
 	}
 	return m_maxMp;
 }
 
 int16_t PlayerStats::statUtility(int32_t test) {
 	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test));
+}
+
+int8_t PlayerStats::getSp(int8_t slot) { 
+	if (m_spTable.size() < slot) {
+		m_spTable[slot] = 0;
+	}
+	return m_spTable[slot];
 }
 
 int16_t PlayerStats::getStr(bool withBonus) {
@@ -204,8 +227,8 @@ void PlayerStats::setLevel(uint8_t level) {
 	SyncPacket::PlayerPacket::updateLevel(m_player->getId(), level);
 }
 
-void PlayerStats::setHp(int16_t hp, bool sendPacket) {
-	m_hp = MiscUtilities::constrainToRange<int16_t>(hp, Stats::MinHp, getMaxHp());
+void PlayerStats::setHp(int32_t hp, bool sendPacket) {
+	m_hp = MiscUtilities::constrainToRange<int32_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
@@ -215,7 +238,7 @@ void PlayerStats::setHp(int16_t hp, bool sendPacket) {
 void PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) {
 	int32_t tempHp = m_hp + hpMod;
 	tempHp = MiscUtilities::constrainToRange<int32_t>(tempHp, Stats::MinHp, getMaxHp());
-	m_hp = static_cast<int16_t>(tempHp);
+	m_hp = static_cast<int32_t>(tempHp);
 
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
@@ -243,9 +266,9 @@ void PlayerStats::modifiedHp() {
 	}
 }
 
-void PlayerStats::setMp(int16_t mp, bool sendPacket) {
+void PlayerStats::setMp(int32_t mp, bool sendPacket) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = MiscUtilities::constrainToRange<int16_t>(mp, Stats::MinMp, getMaxMp());
+		m_mp = MiscUtilities::constrainToRange<int32_t>(mp, Stats::MinMp, getMaxMp());
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
@@ -266,8 +289,8 @@ void PlayerStats::damageMp(int32_t damageMp) {
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
 
-void PlayerStats::setSp(int16_t sp) {
-	m_sp = sp;
+void PlayerStats::setSp(int8_t sp, int8_t slot) {
+	m_spTable[slot] = sp;
 	PlayerPacket::updateStat(m_player, Stats::Sp, sp);
 }
 
@@ -314,13 +337,13 @@ void PlayerStats::setMapleWarrior(int16_t xMod) {
 	}
 }
 
-void PlayerStats::setMaxHp(int16_t maxHp) {
+void PlayerStats::setMaxHp(int32_t maxHp) {
 	m_maxHp = MiscUtilities::constrainToRange(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	modifiedHp();
 }
 
-void PlayerStats::setMaxMp(int16_t maxMp) {
+void PlayerStats::setMaxMp(int32_t maxMp) {
 	m_maxMp = MiscUtilities::constrainToRange(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
@@ -328,8 +351,8 @@ void PlayerStats::setMaxMp(int16_t maxMp) {
 void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
 	m_hyperBodyX = xMod;
 	m_hyperBodyY = yMod;
-	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
-	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
+	m_buffBonuses.hp = std::min<uint32_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
+	m_buffBonuses.mp = std::min<uint32_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 	if (Party *p = m_player->getParty()) {
@@ -338,13 +361,13 @@ void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
 	m_player->getActiveBuffs()->checkBerserk();
 }
 
-void PlayerStats::modifyMaxHp(int16_t mod) {
-	m_maxHp = std::min<int16_t>(m_maxHp + mod, Stats::MaxMaxHp);
+void PlayerStats::modifyMaxHp(int32_t mod) {
+	m_maxHp = std::min<int32_t>(m_maxHp + mod, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 }
 
-void PlayerStats::modifyMaxMp(int16_t mod) {
-	m_maxMp = std::min<int16_t>(m_maxMp + mod, Stats::MaxMaxMp);
+void PlayerStats::modifyMaxMp(int32_t mod) {
+	m_maxMp = std::min<int32_t>(m_maxMp + mod, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
@@ -353,7 +376,7 @@ void PlayerStats::setExp(int32_t exp) {
 	PlayerPacket::updateStat(m_player, Stats::Exp, exp);
 }
 
-void PlayerStats::setFame(int16_t fame) {
+void PlayerStats::setFame(int32_t fame) {
 	m_fame = MiscUtilities::constrainToRange(fame, Stats::MinFame, Stats::MaxFame);
 	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
 }
@@ -646,11 +669,11 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
 	updateBonuses();
 }
 
-int16_t PlayerStats::randHp() {
+int32_t PlayerStats::randHp() {
 	return Randomizer::Instance()->randShort(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
-int16_t PlayerStats::randMp() {
+int32_t PlayerStats::randMp() {
 	return Randomizer::Instance()->randShort(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
@@ -670,11 +693,11 @@ int16_t PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16
 	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseMp::Variation) : val) : levelMp(val, sVal));
 }
 
-int16_t PlayerStats::levelHp(int16_t val, int16_t bonus) {
+int32_t PlayerStats::levelHp(int16_t val, int16_t bonus) {
 	return randHp() + val + bonus;
 }
 
-int16_t PlayerStats::levelMp(int16_t val, int16_t bonus) {
+int32_t PlayerStats::levelMp(int16_t val, int16_t bonus) {
 	return randMp() + val + bonus;
 }
 

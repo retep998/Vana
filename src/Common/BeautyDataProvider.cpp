@@ -66,6 +66,7 @@ void BeautyDataProvider::loadHair() {
 
 		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
 		hair = row.get<int32_t>("hairid");
+		// New addition: flags (contains either NULL or 'royal')
 		look = getGender(gender);
 		look->hair.push_back(hair);
 	}

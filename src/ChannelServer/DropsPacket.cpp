@@ -45,6 +45,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop
 		packet.add<int64_t>(Items::NoExpiration);
 	}
 	packet.addBool(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
+	packet.add<int8_t>(0); // New
 
 	if (player != nullptr) {
 		player->getSession()->send(packet);

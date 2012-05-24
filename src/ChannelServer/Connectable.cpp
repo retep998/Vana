@@ -29,6 +29,7 @@ void Connectable::newPlayer(int32_t id, ip_t ip, PacketReader &packet) {
 	ConnectingPlayer player;
 	player.connectIp = ip;
 	player.connectTime = getTickCount();
+	player.loginKey = packet.get<int64_t>();
 
 	uint16_t pSize = packet.get<uint16_t>();
 	if (pSize > 0) {
@@ -44,11 +45,11 @@ void Connectable::newPlayer(int32_t id, ip_t ip, PacketReader &packet) {
 	m_map[id] = player;
 }
 
-bool Connectable::checkPlayer(int32_t id, ip_t ip) {
+bool Connectable::checkPlayer(int32_t id, ip_t ip, int64_t loginKey) {
 	bool correct = false;
 	if (m_map.find(id) != m_map.end()) {
 		ConnectingPlayer &t = m_map[id];
-		if (t.connectIp == ip && (getTickCount() - t.connectTime) < MaxMilliseconds) {
+		if (t.connectIp == ip && (getTickCount() - t.connectTime) < MaxMilliseconds && t.loginKey == loginKey) {
 			correct = true;
 		}
 	}

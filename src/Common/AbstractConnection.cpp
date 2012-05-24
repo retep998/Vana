@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.h"
 #include "Session.h"
 #include "SmsgHeader.h"
+#include "StringUtilities.h"
 #include "Timer.h"
 #include "TimeUtilities.h"
 #include <functional>
@@ -39,8 +40,10 @@ AbstractConnection::AbstractConnection() :
 }
 
 void AbstractConnection::baseHandleRequest(PacketReader &packet) {
+#ifndef _DEBUG
 	try {
-		switch (packet.getHeader(false)) {
+#endif
+		switch (packet.getHeader()) {
 			case SMSG_PING:
 				if (m_isServer) {
 					PingPacket::pong(this);
@@ -55,12 +58,32 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 				m_isPinged = false;
 				m_latency = (clock() - m_lastPing) / 2; // This is for the trip to and from, so latency is averaged between them
 				break;
+			case CMSG_BACKUP_PACKET: { // Sent from the client as identification that it crashed with this packet... lol!
+				int16_t type = packet.get<int16_t>();
+				string type_str = "";
+				if (type == 0x01) type_str = "SendBackupPacket";
+				else if (type == 0x02) type_str = "Crash Report";
+				else if (type == 0x03) type_str = "Exception";
+				else type_str = "Unknown?!";
+				int32_t unk = packet.get<int32_t>();
+				uint16_t data_length = packet.get<uint16_t>();
+				std::cout << "Client sent crashing packet: Type: " << type_str << 
+					"; Error code: " << StringUtilities::lexical_cast<string>(unk) <<
+					"; Length: " << StringUtilities::lexical_cast<string>(data_length) << std::endl <<
+					packet.toString() << std::endl;
+				break;
+				}
 		}
+
+		packet.reset();
+
 		handleRequest(packet);
+#ifndef _DEBUG
 	}
 	catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 	}
+#endif
 }
 
 void AbstractConnection::setTimer() {

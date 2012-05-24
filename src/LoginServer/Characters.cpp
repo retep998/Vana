@@ -62,7 +62,7 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 	charc.skin = row.get<int8_t>("skin");
 	charc.eyes = row.get<int32_t>("eyes");
 	charc.hair = row.get<int32_t>("hair");
-	charc.level = row.get<uint8_t>("level");
+	charc.level = row.get<int8_t>("level");
 	charc.job = row.get<int16_t>("job");
 	charc.str = row.get<int16_t>("str");
 	charc.dex = row.get<int16_t>("dex");
@@ -73,11 +73,11 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 	charc.mp = row.get<int16_t>("cmp");
 	charc.mmp = row.get<int16_t>("mmp");
 	charc.ap = row.get<int16_t>("ap");
-	charc.sp = row.get<int16_t>("sp");
 	charc.exp = row.get<int32_t>("exp");
 	charc.fame = row.get<int16_t>("fame");
 	charc.map = row.get<int32_t>("map");
 	charc.pos = row.get<int8_t>("pos");
+	charc.jobType = row.get<int8_t>("job_type");
 
 	if (GameLogicUtilities::getJobTrack(charc.job) == Jobs::JobTracks::Gm) {
 		// GMs can't have their rank sent otherwise the client will crash
@@ -93,6 +93,24 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 		charc.jobRankChange = charc.jobRank - row.get<int32_t>("job_opos");
 	}
 	loadEquips(charc.id, charc.equips);
+
+	if (GameLogicUtilities::isExtendedSpJob(charc.job)) {
+		loadSP(charc);
+	}
+	else {
+		// Load normal value
+		charc.sp = row.get<int16_t>("sp");
+	}
+}
+
+void Characters::loadSP(Character &charc) {
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT job_id, points FROM character_sp WHERE character_id = :id ORDER BY job_id ASC",
+		soci::use(charc.id, "id"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		soci::row const &row = *i;
+		charc.sp_table.push_back(pair<int8_t, int8_t>(row.get<int8_t>(0), row.get<int8_t>(1)));
+	}
 }
 
 void Characters::showAllCharacters(Player *player) {
@@ -108,7 +126,7 @@ void Characters::showAllCharacters(Player *player) {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
 
-		uint8_t worldId = row.get<uint8_t>("world_id");
+		uint8_t worldId = row.get<int8_t>("world_id");
 		world = Worlds::Instance()->getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
@@ -235,6 +253,83 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 		return;
 	}
 
+	enum CreateTypes : int32_t {
+		Resistance = 0,
+		Explorers,
+		KnightsOfCygnus,
+		Aran,
+		Evan,
+		Mercedes,
+		DemonSlayer
+	};
+
+	int32_t startmap = 0;
+	int16_t job = 0;
+
+	int32_t jobtype = packet.get<int32_t>();
+	int16_t jobsubtype = packet.get<int16_t>();
+	int8_t gender = packet.get<int8_t>();
+	packet.get<int8_t>();
+	packet.get<int8_t>();
+
+	int8_t classId = 0;
+	int32_t guideItem = 0;
+
+	vector<pair<int32_t, int32_t>> addItems;
+
+	auto addItem = [&](int32_t itemid, int32_t slot){ addItems.push_back(pair<int32_t, int32_t>(slot, itemid)); };
+
+	if (jobtype == Explorers) {
+		startmap = 0;
+		guideItem = Items::BeginnersGuidebook;
+		classId = ValidClass::Adventurer;
+	}
+	else if (jobtype == Aran) {
+		startmap = 914000000;
+		job = Jobs::JobIds::Legend;
+		guideItem = Items::LegendGuidebook;
+		classId = ValidClass::Aran;
+	}
+	else if (jobtype == Evan) {
+		startmap = 900010000;
+		job = Jobs::JobIds::Evan;
+		guideItem = Items::EvanGuidebook;
+		classId = ValidClass::Evan;
+	}
+	else if (jobtype == KnightsOfCygnus) {
+		startmap = 130030000;
+		job = Jobs::JobIds::Noblesse;
+		guideItem = Items::NoblesseGuidebook;
+		classId = ValidClass::Cygnus;
+	}
+	else if (jobtype == Resistance) {
+		startmap = 931000000;
+		job = Jobs::JobIds::Citizen;
+		guideItem = Items::CitizenGuidebook;
+		classId = ValidClass::Resistance;
+	}
+	else if (jobtype == Mercedes) {
+		startmap = 910150000;
+		job = Jobs::JobIds::Mercedes;
+		guideItem = Items::MercedesGuidebook;
+		classId = ValidClass::Mercedes;
+	}
+	else if (jobtype == DemonSlayer) {
+		startmap = 924010000; // 931050310 ?
+		job = Jobs::JobIds::DemonSlayer;
+		classId = ValidClass::DemonSlayer;
+		// DS doesn't have a guidebook.
+	}
+	else {
+		std::stringstream ss;
+		ss << "Unknown Job! JobType: ";
+		ss << jobtype;
+		ss << "; SubType: ";
+		ss << jobsubtype;
+		LoginServer::Instance()->log(LogTypes::Error, ss.str());
+		return;
+	}
+
 	int32_t eyes = packet.get<int32_t>();
 	int32_t hair = packet.get<int32_t>();
 	int32_t hairColor = packet.get<int32_t>();
@@ -243,14 +338,13 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	int32_t bottom = packet.get<int32_t>();
 	int32_t shoes = packet.get<int32_t>();
 	int32_t weapon = packet.get<int32_t>();
-	int8_t gender = packet.get<int8_t>();
-
-	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
+	
+	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, classId)) {
 		// Hacking
 		player->getSession()->disconnect();
 		return;
 	}
-
+	
 	uint16_t str = 12;
 	uint16_t dex = 5;
 	uint16_t intt = 4;
@@ -258,11 +352,14 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 
 	soci::session &sql = Database::getCharDb();
 
-	sql.once << "INSERT INTO characters (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) " <<
-				"VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
+	sql.once << "INSERT INTO characters (name, user_id, world_id, map, job, job_type, eyes, hair, skin, gender, str, dex, `int`, luk) " <<
+				"VALUES (:name, :user, :world, :map, :job, :jobtype, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 				soci::use(name, "name"),
 				soci::use(player->getUserId(), "user"),
 				soci::use(player->getWorld(), "world"),
+				soci::use(startmap, "map"),
+				soci::use(job, "job"),
+				soci::use(jobtype, "jobtype"),
 				soci::use(eyes, "eyes"),
 				soci::use(hair + hairColor, "hair"),
 				soci::use(skin, "skin"),
@@ -271,7 +368,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 				soci::use(dex, "dex"),
 				soci::use(intt, "int"),
 				soci::use(luk, "luk");
-
+	
 	int32_t id = 0;
 	sql.once << "SELECT LAST_INSERT_ID()", soci::into(id);
 
@@ -279,7 +376,9 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	createItem(bottom, player, id, -EquipSlots::Bottom);
 	createItem(shoes, player, id, -EquipSlots::Shoe);
 	createItem(weapon, player, id, -EquipSlots::Weapon);
-	createItem(Items::BeginnersGuidebook, player, id, 1);
+	if (guideItem != 0)
+		createItem(guideItem, player, id, 1);
+	createItem(Items::CrusaderCodex, player, id, -EquipSlots::CrusaderCodex);
 
 	soci::row row;
 	sql.once << "SELECT * FROM characters c WHERE c.character_id = :id",
@@ -296,13 +395,15 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	int32_t data = packet.get<int32_t>();
+	string pic = packet.getString();
+
 	int32_t id = packet.get<int32_t>();
 
 	if (!ownerCheck(player, id)) {
 		// Hacking
 		return;
 	}
+
 	enum DeletionConstants : int8_t {
 		Success = 0x00,
 		IncorrectBirthday = 0x12,
@@ -325,7 +426,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	}
 
 	bool success = false;
-	if (data == player->getCharDeletePassword()) {
+	//if (data == player->getCharDeletePassword()) {
 		Worlds::Instance()->runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
 				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
@@ -349,10 +450,10 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 		sql.once << "DELETE FROM mounts WHERE character_id = :char ", soci::use(id, "char");
 		sql.once << "DELETE p FROM pets p INNER JOIN items i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
 		sql.once << "DELETE FROM items WHERE character_id = :char ", soci::use(id, "char");
-	}
-	else {
-		result = IncorrectBirthday;
-	}
+	//}
+	//else {
+	//	result = IncorrectBirthday;
+	//}
 	LoginPacket::deleteCharacter(player, id, result);
 }
 
@@ -366,12 +467,15 @@ void Characters::connectGame(Player *player, int32_t charId) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charId, player->getIp());
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charId, player->getIp(), player->getConnectKey());
 	LoginPacket::connectIp(player, charId);
 }
 
 void Characters::connectGame(Player *player, PacketReader &packet) {
+	packet.getString();
 	int32_t id = packet.get<int32_t>();
+	packet.getString(); // MAC
+	packet.getString(); // MAC with HDD Serial (XFD)
 
 	connectGame(player, id);
 }
@@ -383,6 +487,10 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 	}
 	int32_t id = packet.get<int32_t>();
 	int8_t worldId = (int8_t) packet.get<int32_t>();
+	
+	packet.getString(); // MAC
+	packet.getString(); // MAC with HDD Serial (XFD)
+
 	player->setWorld(worldId);
 
 	// Take the player to a random channel

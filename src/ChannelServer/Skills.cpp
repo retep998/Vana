@@ -41,6 +41,7 @@ using std::bind;
 
 void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
+
 	int32_t skillId = packet.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
 		if (player->getStats()->getSp() == 0) {
@@ -117,6 +118,7 @@ const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affe
 }
 
 void Skills::useSkill(Player *player, PacketReader &packet) {
+	// [A0 00] [BF FC 70 01] [2B 1A 40 00] [14] 7B FF 5F 00 80 00 00 00
 	packet.skipBytes(4); // Ticks
 	int32_t skillId = packet.get<int32_t>();
 	int16_t addedInfo = 0;
