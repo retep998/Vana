@@ -1,0 +1,1 @@
+ALTER TABLE characters ADD COLUMN job_type TINYINT(3) NOT NULL DEFAULT '0' AFTER job;

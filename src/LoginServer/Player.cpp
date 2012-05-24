@@ -46,6 +46,11 @@ Player::Player() :
 }
 
 void Player::handleRequest(PacketReader &packet) {
+	std::ostringstream x;
+	x << "INBOUND: " << packet;
+	LoginServer::Instance()->log(LogTypes::Info, x.str());
+	packet.reset();
+
 	try {
 		switch (packet.getHeader()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
