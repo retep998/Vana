@@ -132,7 +132,6 @@ namespace StatusEffects {
 
 			Hypnotize = 0x10000000,
 			WeaponDamageReflect = 0x20000000,
-
 			MagicDamageReflect = 0x40000000,
 			NoClue7 = 0x80000000 // Not any more bits you can use with 4 bytes
 		};
@@ -399,7 +398,15 @@ namespace Jobs {
 			FollowTheLead = 8,
 			MonsterRider = 1004,
 			NimbleFeet = 1002,
-			Recovery = 1001
+			Recovery = 1001,
+
+			DecentHaste = 8000,
+			DecentMysticDoor = 8001,
+			DecentSharpEyes = 8002,
+			DecentHyperBody = 8003,
+			DecentCombatOrders = 8004,
+			DecentAdvancedBlessing = 8005,
+			DecentSpeedInfusion = 8006,
 		};
 	}
 	namespace Swordsman {
@@ -737,6 +744,38 @@ namespace Jobs {
 			VenomousStab = 4220005
 		};
 	}
+
+	namespace BladeRecruit {
+		enum Skills : int32_t {
+			KataraBooster = 4301002,
+		};
+	}
+	
+	namespace BladeAcolyte {
+		enum Skills : int32_t {
+			SelfHaste = 4311001,
+		};
+	}
+	
+	namespace BladeSpecialist {
+		enum Skills : int32_t {
+			TornadoSpin = 4321000,
+		};
+	}
+	
+	namespace BladeLord {
+		enum Skills : int32_t {
+			MirrorImage = 4331002,
+		};
+	}
+	
+	namespace BladeMaster {
+		enum Skills : int32_t {
+			MapleWarrior = 4341000,
+			HerosWill = 4341008,
+		};
+	}
+
 	namespace Pirate {
 		enum Skills : int32_t {
 			Dash = 5001005
@@ -803,6 +842,11 @@ namespace Jobs {
 			WrathOfTheOctopi = 5220002
 		};
 	}
+	namespace CannonMaster {
+		enum Skills : int32_t {
+			HerosWill = 5321006,
+		};
+	}
 	namespace Gm {
 		enum Skills : int32_t {
 			Haste = 9001000,
@@ -823,6 +867,8 @@ namespace Jobs {
 			Teleport = 9101007
 		};
 	}
+
+
 	namespace Noblesse {
 		enum Skills : int32_t {
 			BlessingOfTheFairy = 10000012,
@@ -830,7 +876,15 @@ namespace Jobs {
 			Maker = 10001007,
 			MonsterRider = 10001004,
 			NimbleFeet = 10001002,
-			Recovery = 10001001
+			Recovery = 10001001,
+
+			DecentHaste = 10008000,
+			DecentMysticDoor = 10008001,
+			DecentSharpEyes = 10008002,
+			DecentHyperBody = 10008003,
+			DecentCombatOrders = 10008004,
+			DecentAdvancedBlessing = 10008005,
+			DecentSpeedInfusion = 10008006,
 		};
 	}
 	namespace DawnWarrior {
@@ -916,6 +970,106 @@ namespace Jobs {
 			Spark = 15111006,
 			SpeedInfusion = 15111005,
 			Transformation = 15111002
+		};
+	}
+	
+	namespace Legend {
+		enum Skills : int32_t {
+			BlessingOfTheFairy = 20000012,
+			EchoOfHero = 20001005,
+			Maker = 20001007,
+			MonsterRider = 20001004,
+
+			AgileBody = 20001002,
+			Recovery = 20001001,
+
+			DecentHaste = 20008000,
+			DecentMysticDoor = 20008001,
+			DecentSharpEyes = 20008002,
+			DecentHyperBody = 20008003,
+			DecentCombatOrders = 20008004,
+			DecentAdvancedBlessing = 20008005,
+			DecentSpeedInfusion = 20008006,
+		};
+	}
+	
+	
+	namespace Aran4 {
+		enum Skills : int32_t {
+			HerosWill = 21121008,
+		};
+	}
+	
+	namespace Evan1 {
+		enum Skills : int32_t {
+			BlessingOfTheFairy = 20010012,
+			EchoOfHero = 20011005,
+			Maker = 20011007,
+			MonsterRider = 20011004,
+
+			AgileBody = 20011002,
+			Recovery = 20011001,
+
+			DecentHaste = 20018000,
+			DecentMysticDoor = 20018001,
+			DecentSharpEyes = 20018002,
+			DecentHyperBody = 20018003,
+			DecentCombatOrders = 20018004,
+			DecentAdvancedBlessing = 20018005,
+			DecentSpeedInfusion = 20018006,
+		};
+	}
+	
+	namespace Evan17 {
+		enum Skills : int32_t {
+			HerosWill = 22171004,
+		};
+	}
+
+	namespace Citizen {
+		enum Skills : int32_t {
+			BlessingOfTheFairy = 30000012,
+			EchoOfHero = 30001005,
+			Maker = 30001007,
+			MonsterRider = 30001004,
+
+			Infiltrate = 30001002,
+			Recovery = 30001001,
+
+			DecentHaste = 30008000,
+			DecentMysticDoor = 30008001,
+			DecentSharpEyes = 30008002,
+			DecentHyperBody = 30008003,
+			DecentCombatOrders = 30008004,
+			DecentAdvancedBlessing = 30008005,
+			DecentSpeedInfusion = 30008006,
+		};
+	}
+	
+	namespace DemonSlayer4 {
+		enum Skills : int32_t {
+			MapleWarrior = 31121004,
+		};
+	}
+	
+	namespace BattleMage4 {
+		enum Skills : int32_t {
+			MapleWarrior = 32121007,
+			HerosWill = 32121008,
+		};
+	}
+	
+	namespace WildHunter4 {
+		enum Skills : int32_t {
+			MapleWarrior = 33121007,
+			HerosWill = 33121008,
+		};
+	}
+	
+	namespace Mechanic4 {
+		enum Skills : int32_t {
+			MapleWarrior = 35121007,
+			HerosWill = 35121008,
 		};
 	}
 }

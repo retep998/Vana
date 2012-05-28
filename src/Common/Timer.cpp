@@ -49,13 +49,19 @@ Timer::~Timer() {
 }
 
 void Timer::run() {
-	m_function();
+	try {
+		m_function();
 
-	if (m_repeat) {
-		reset();
+		if (m_repeat) {
+			reset();
+		}
+		else {
+			m_container->removeTimer(getId());
+		}
 	}
-	else {
-		m_container->removeTimer(getId());
+	catch (std::exception &ex) {
+		std::cout << "[TIMER] Exception in timer " << m_id.toString() << "!!!" << std::endl;
+		std::cout << "Exception: " << ex.what() << std::endl;
 	}
 }
 

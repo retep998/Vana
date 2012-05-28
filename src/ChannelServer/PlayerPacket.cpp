@@ -167,15 +167,16 @@ void PlayerPacket::connectData(Player *player) {
 	// BACK TO THE MAIN FUNC
 
 	packet.add<int8_t>(20);
+
 	{
-		bool value = true;
+		bool value = false;
 		packet.addBool(value);
 		if (value) {
 			packet.addString("Meerchars4");
 		}
 	}
 	{
-		bool value = true;
+		bool value = false;
 		packet.addBool(value);
 		if (value) {
 			packet.addString("Meerchars4");
@@ -192,7 +193,7 @@ void PlayerPacket::connectData(Player *player) {
 	player->getInventory()->connectData(packet); // Inventory data
 
 	{
-		packet.add<int32_t>(-1); // END IT ALREADY (It's a loop
+		packet.add<int32_t>(-1); // END IT ALREADY (It's a loop)
 	}
 	
 	{

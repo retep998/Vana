@@ -84,7 +84,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // 0 ?
 	packet.skipBytes(1); // ?
 
-	if (type != MapDamage) {
+	if (type != MapDamage && type != UnkDamage1) {
 		mobId = packet.get<int32_t>();
 
 		mapMobId = packet.get<int32_t>();
@@ -852,7 +852,12 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		hits = tByte % 0x10;
 
 		skillId = packet.get<int32_t>();
-		if (skillId != Jobs::All::RegularAttack) {
+		if (skillId == 31121010) {
+			uint8_t infernalConcussionLevel = player->getSkills()->getSkillLevel(31121000);
+
+			attack.skillLevel = infernalConcussionLevel * 3;
+		}
+		else if (skillId != Jobs::All::RegularAttack) {
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 

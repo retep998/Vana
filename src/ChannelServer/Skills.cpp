@@ -119,6 +119,7 @@ const vector<Player *> Skills::getAffectedPartyMembers(Party *party, int8_t affe
 
 void Skills::useSkill(Player *player, PacketReader &packet) {
 	// [A0 00] [BF FC 70 01] [2B 1A 40 00] [14] 7B FF 5F 00 80 00 00 00
+	// [A0 00] [9C EC E4 00] [4B 51 2F 00] [0A] 00 00 00 // Double Jump
 	packet.skipBytes(4); // Ticks
 	int32_t skillId = packet.get<int32_t>();
 	int16_t addedInfo = 0;
@@ -210,6 +211,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Marksman::HerosWill:
 		case Jobs::Buccaneer::PiratesRage:
 		case Jobs::Corsair::SpeedInfusion:
+		case Jobs::CannonMaster::HerosWill:
+		case Jobs::Aran4::HerosWill:
+		case Jobs::Evan17::HerosWill:
+		case Jobs::BattleMage4::HerosWill:
+		case Jobs::WildHunter4::HerosWill:
+		case Jobs::Mechanic4::HerosWill:
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 			break;
 		case Jobs::Priest::Dispel: {
@@ -303,8 +310,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Jobs::Marksman::MapleWarrior:
 		case Jobs::NightLord::MapleWarrior:
 		case Jobs::Shadower::MapleWarrior:
+		case Jobs::BladeMaster::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior: {
+		case Jobs::Corsair::MapleWarrior:
+		case Jobs::DemonSlayer4::MapleWarrior:
+		case Jobs::BattleMage4::MapleWarrior:
+		case Jobs::WildHunter4::MapleWarrior:
+		case Jobs::Mechanic4::MapleWarrior: {
 			if (skillId == Jobs::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();
 			}
@@ -328,6 +340,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		}
 		case Jobs::Beginner::EchoOfHero:
 		case Jobs::Noblesse::EchoOfHero:
+		case Jobs::Legend::EchoOfHero:
+		case Jobs::Evan1::EchoOfHero:
+		case Jobs::Citizen::EchoOfHero:
 		case Jobs::SuperGm::Haste:
 		case Jobs::SuperGm::HolySymbol:
 		case Jobs::SuperGm::Bless:

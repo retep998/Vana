@@ -56,9 +56,13 @@ public:
 	// Inter-server
 	int8_t addWorldServer(LoginServerAcceptConnection *connection);
 	int8_t addChannelServer(LoginServerAcceptConnection *connection);
+
+	void assignRecommendedWorlds(const map<int8_t, string> &input) { m_recommended = input; }
+	const map<int8_t, string> & getRecommendedWorlds() { return m_recommended; }
 private:
 	Worlds() { }
 	static Worlds *singleton;
 
 	map<int8_t, World *> m_worlds;
+	map<int8_t, string> m_recommended;
 };

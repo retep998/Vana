@@ -82,7 +82,7 @@ public:
 	void setHpMpAp(uint16_t ap) { m_hpMpAp = ap; }
 	void setExp(int32_t exp);
 	void setAp(int16_t ap);
-	void setSp(int8_t sp, int8_t slot = 0);
+	void setSp(int8_t sp, int8_t slot = 0, bool init = false);
 
 	void setFame(int32_t fame);
 	void setJob(int16_t job);

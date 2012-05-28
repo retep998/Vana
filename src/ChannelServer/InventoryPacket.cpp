@@ -41,7 +41,7 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 	packet.add<int8_t>(inv);
 	packet.add<int16_t>(slot1);
 	packet.add<int16_t>(slot2);
-	// packet.add<int8_t>(1);
+	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
 

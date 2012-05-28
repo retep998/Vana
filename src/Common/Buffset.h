@@ -19,47 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include "PacketCreator.h"
-#include <bitset>
 #include <map>
 
-
-template<size_t _Bytes>
-class Buffset : public std::bitset<_Bytes * 8> {
-typedef std::bitset<_Bytes * 8> base_class;
+class Buffset {
 public:
-	Buffset() : base_class() {}
+	Buffset(int8_t pIntegers) {}
 
 	void AppendBytes(PacketCreator &packet) {
-		// Loop through every set of integers...
-		// Loop through every byte of these integers
-		// Loop through every bit of these bytes
 
-		/*
-		_Bytes = 8
-		Bits set: 31 and 27
-		> Int _Bytes - 0
-		-> 00000000 
-		-> 00000000
-		-> 00000000
-		-> 00010001
-		
-		> Int _Bytes - 1
-		-> 00000000
-		-> 00000000
-		-> 00000000
-		-> 00000000
-		Result: 00 00 00 00 
-		        00 00 00 88
-		*/
-
-		for (size_t i = 0; i < _Bytes; i++) {
-			uint32_t currentInt = 0;
-			for (size_t j = 3; j >= 0; j++) {
-				for (size_t bit = 0; bit < 8; bit++) {
-					currentInt |= (1 << (j * 8) + bit);
-				}
-			}
-			packet.add<uint32_t>(currentInt);
-		}
 	}
+private:
 };

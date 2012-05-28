@@ -61,6 +61,7 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::WindArcher::BowBooster].player.push_back(player);
 	m_skillInfo[Jobs::NightWalker::ClawBooster].player.push_back(player);
 	m_skillInfo[Jobs::ThunderBreaker::KnucklerBooster].player.push_back(player);
+	m_skillInfo[Jobs::BladeRecruit::KataraBooster].player.push_back(player);
 
 	// Speed Infusion
 	buff.type = 0x80;
@@ -85,8 +86,13 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Marksman::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::NightLord::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Shadower::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::BladeMaster::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Buccaneer::MapleWarrior].player.push_back(player);
 	m_skillInfo[Jobs::Corsair::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::DemonSlayer4::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::BattleMage4::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::WildHunter4::MapleWarrior].player.push_back(player);
+	m_skillInfo[Jobs::Mechanic4::MapleWarrior].player.push_back(player);
 
 	// Magic Guard
 	buff.type = 0x02;
@@ -179,7 +185,7 @@ void BuffDataProvider::loadData() {
 
 	// Invincible
 	buff.type = 0x80;
-	buff.byte = Byte2;
+	buff.byte = Byte1;
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Jobs::Cleric::Invincible].player.push_back(player);
@@ -292,6 +298,10 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Jobs::Beginner::EchoOfHero].player.push_back(player);
+	m_skillInfo[Jobs::Noblesse::EchoOfHero].player.push_back(player);
+	m_skillInfo[Jobs::Legend::EchoOfHero].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::EchoOfHero].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::EchoOfHero].player.push_back(player);
 
 	// Power Stance
 	buff.type = 0x10;
@@ -351,10 +361,16 @@ void BuffDataProvider::loadData() {
 	player.hasmapentry = true;
 	m_skillInfo[Jobs::Beginner::NimbleFeet].player.push_back(player);
 	m_skillInfo[Jobs::Noblesse::NimbleFeet].player.push_back(player);
+	m_skillInfo[Jobs::Legend::AgileBody].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::AgileBody].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::Infiltrate].player.push_back(player);
 	map.buff = buff;
 	map.useVal = true;
 	m_skillInfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
 	m_skillInfo[Jobs::Noblesse::NimbleFeet].map.push_back(map);
+	m_skillInfo[Jobs::Legend::AgileBody].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::AgileBody].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::Infiltrate].player.push_back(player);
 
 	// Shadow Stars
 	buff.type = 0x01;
@@ -465,6 +481,12 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Gm::Haste].player.push_back(player);
 	m_skillInfo[Jobs::SuperGm::Haste].player.push_back(player);
 	m_skillInfo[Jobs::NightWalker::Haste].player.push_back(player);
+	m_skillInfo[Jobs::Beginner::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Noblesse::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Legend::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::BladeAcolyte::SelfHaste].player.push_back(player);
 	map.buff = buff;
 	map.useVal = true;
 	m_skillInfo[Jobs::Assassin::Haste].map.push_back(map);
@@ -472,6 +494,13 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Gm::Haste].map.push_back(map);
 	m_skillInfo[Jobs::SuperGm::Haste].map.push_back(map);
 	m_skillInfo[Jobs::NightWalker::Haste].map.push_back(map);
+	m_skillInfo[Jobs::Beginner::DecentHaste].map.push_back(map);
+	m_skillInfo[Jobs::Noblesse::DecentHaste].map.push_back(map);
+	m_skillInfo[Jobs::Legend::DecentHaste].map.push_back(map);
+	m_skillInfo[Jobs::Evan1::DecentHaste].map.push_back(map);
+	m_skillInfo[Jobs::Citizen::DecentHaste].map.push_back(map);
+	m_skillInfo[Jobs::BladeAcolyte::SelfHaste].map.push_back(map);
+
 	buff.type = 0x01;
 	buff.byte = Byte2;
 	buff.value = SkillJump;
@@ -483,6 +512,12 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Gm::Haste].player.push_back(player);
 	m_skillInfo[Jobs::SuperGm::Haste].player.push_back(player);
 	m_skillInfo[Jobs::NightWalker::Haste].player.push_back(player);
+	m_skillInfo[Jobs::Beginner::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Noblesse::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Legend::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::DecentHaste].player.push_back(player);
+	m_skillInfo[Jobs::BladeAcolyte::SelfHaste].player.push_back(player);
 
 	// Dark Sight
 	buff.type = 0x80;
@@ -656,10 +691,16 @@ void BuffDataProvider::loadData() {
 	player.hasMapVal = true;
 	m_skillInfo[Jobs::Beginner::MonsterRider].player.push_back(player);
 	m_skillInfo[Jobs::Noblesse::MonsterRider].player.push_back(player);
+	m_skillInfo[Jobs::Legend::MonsterRider].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::MonsterRider].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::MonsterRider].player.push_back(player);
 	buff.type = 0x40;
 	map.buff = buff;
 	m_skillInfo[Jobs::Beginner::MonsterRider].map.push_back(map);
 	m_skillInfo[Jobs::Noblesse::MonsterRider].map.push_back(map);
+	m_skillInfo[Jobs::Legend::MonsterRider].map.push_back(map);
+	m_skillInfo[Jobs::Evan1::MonsterRider].map.push_back(map);
+	m_skillInfo[Jobs::Citizen::MonsterRider].map.push_back(map);
 
 	// Battleship
 	buff.type = 0x40;
@@ -694,6 +735,9 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	m_skillInfo[Jobs::Beginner::Recovery].player.push_back(player);
 	m_skillInfo[Jobs::Noblesse::Recovery].player.push_back(player);
+	m_skillInfo[Jobs::Legend::Recovery].player.push_back(player);
+	m_skillInfo[Jobs::Evan1::Recovery].player.push_back(player);
+	m_skillInfo[Jobs::Citizen::Recovery].player.push_back(player);
 	act.type = ActHeal;
 	act.time = 4900;
 	act.value = SkillX;
@@ -701,6 +745,12 @@ void BuffDataProvider::loadData() {
 	m_skillInfo[Jobs::Beginner::Recovery].bact = true;
 	m_skillInfo[Jobs::Noblesse::Recovery].act = act;
 	m_skillInfo[Jobs::Noblesse::Recovery].bact = true;
+	m_skillInfo[Jobs::Legend::Recovery].act = act;
+	m_skillInfo[Jobs::Legend::Recovery].bact = true;
+	m_skillInfo[Jobs::Evan1::Recovery].act = act;
+	m_skillInfo[Jobs::Evan1::Recovery].act = act;
+	m_skillInfo[Jobs::Citizen::Recovery].bact = true;
+	m_skillInfo[Jobs::Citizen::Recovery].bact = true;
 
 	// Dragon Blood
 	buff.type = 0x01;
@@ -800,6 +850,36 @@ void BuffDataProvider::loadData() {
 	player.buff = buff;
 	m_mobSkillInfo[MobSkills::CrazySkull].mob.push_back(player);
 	m_mobSkillInfo[MobSkills::CrazySkull].delay = 900;
+
+
+
+	// Dual Blader
+	
+	// Self Haste
+	buff.type = 0x80;
+	buff.byte = Byte1;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Jobs::BladeAcolyte::SelfHaste].player.push_back(player);
+	
+	// Mirror Image
+	buff.type = 0x04;
+	buff.byte = Byte4;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Jobs::BladeLord::MirrorImage].player.push_back(player);
+	
+	// Mirror Image
+	buff.type = 0x08;
+	buff.byte = Byte32;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Jobs::BladeSpecialist::TornadoSpin].player.push_back(player);
+	buff.type = 0x04;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Jobs::BladeSpecialist::TornadoSpin].player.push_back(player);
+
 
 	std::cout << "DONE" << std::endl;
 }

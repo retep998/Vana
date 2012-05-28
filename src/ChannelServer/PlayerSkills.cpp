@@ -384,11 +384,13 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 	}
 	else {
 		vector<std::pair<int32_t, int32_t>> skillsWithMax;
-		vector<int32_t> skillsWithoutMax;
+		vector<std::pair<int32_t, int32_t>> skillsWithoutMax;
 		vector<std::pair<int32_t, int64_t>> skillsWithExpiration;
 
 		// Fill in these vectors
 		for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
+			skillsWithoutMax.push_back(std::pair<int32_t, int32_t>(iter->first, iter->second.level));
+
 			if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
 				skillsWithMax.push_back(std::pair<int32_t, int32_t>(iter->first, iter->second.maxLevel));
 			}
@@ -396,25 +398,20 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 			/*if (iter->second.expires > 0) {
 				skillsWithExpiration.push_back(std::pair<int32_t, int64_t>(iter->first, Items::NoExpiration));
 			}*/
-			else {
-				skillsWithMax.push_back(std::pair<int32_t, int32_t>(iter->first, 0));
-				//skillsWithoutMax.push_back(iter->first);
-			}
-			skillsWithExpiration.push_back(std::pair<int32_t, int64_t>(iter->first, Items::NoExpiration));
 		}
 
 
-		int16_t amount = skillsWithMax.size();
+		int16_t amount = skillsWithoutMax.size();
 		packet.add<int16_t>(amount);
 		for (int16_t i = 0; i < amount; i++) {
-			packet.add<int32_t>(skillsWithMax[i].first);
-			packet.add<int32_t>(skillsWithMax[i].second);
+			packet.add<int32_t>(skillsWithoutMax[i].first);
+			packet.add<int32_t>(skillsWithoutMax[i].second);
 		}
 
-		amount = skillsWithoutMax.size();
+		amount = 0;
 		packet.add<int16_t>(amount);
 		for (int16_t i = 0; i < amount; i++) {
-			packet.add<int32_t>(skillsWithoutMax[i]);
+			packet.add<int32_t>(0);
 		}
 
 		amount = skillsWithExpiration.size();
@@ -423,25 +420,24 @@ void PlayerSkills::connectData(PacketCreator &packet) {
 			packet.add<int32_t>(skillsWithExpiration[i].first);
 			packet.add<int64_t>(skillsWithExpiration[i].second); // Probably expiring skills here
 		}
-		// TEST
-		amount = skillsWithoutMax.size();
+
+		amount = 0;
 		packet.add<int16_t>(amount);
 		for (int16_t i = 0; i < amount; i++) {
-			packet.add<int32_t>(skillsWithoutMax[i]);
+			packet.add<int32_t>(0);
 		}
 
-		amount = skillsWithMax.size(); // TEST
+		amount = skillsWithMax.size();
 		packet.add<int16_t>(amount);
 		for (int16_t i = 0; i < amount; i++) {
 			packet.add<int32_t>(skillsWithMax[i].first);
 			packet.add<int32_t>(skillsWithMax[i].second);
 		}
 		
-		// TEST
-		amount = 0;// skillsWithoutMax.size();
+		amount = 0;
 		packet.add<int16_t>(amount);
 		for (int16_t i = 0; i < amount; i++) {
-			packet.add<int32_t>(skillsWithoutMax[i]);
+			packet.add<int32_t>(0); //skillsWithoutMax[i]);
 		}
 
 	}

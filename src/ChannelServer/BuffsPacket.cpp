@@ -40,6 +40,11 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, const 
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(addedInfo);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -67,6 +72,11 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, const 
 		}
 		packet.add<int16_t>(0);
 		packet.add<int16_t>(addedInfo);
+
+		// This is actually a byte... lol
+		packet.add<int32_t>(0); // FUUUUUUUUUUUU
+		packet.add<int32_t>(0); // FUUUUUUUUUUUU
+		packet.add<int32_t>(0); // FUUUUUUUUUUUU
 		Maps::getMap(player->getMap())->sendPacket(packet, player);
 	}
 }
@@ -87,6 +97,11 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(delay);
 	packet.add<int8_t>(0);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -106,6 +121,11 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	}
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(delay);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -167,6 +187,11 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, c
 	}
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -187,6 +212,11 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, c
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -206,6 +236,11 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedInfo);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -224,6 +259,11 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedInfo);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -241,6 +281,11 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, const 
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -258,6 +303,11 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, const 
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
 
@@ -277,5 +327,53 @@ void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, const ActiveB
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(mapMobId);
 	packet.add<int16_t>(0);
+
+	// This is actually a byte... lol
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
+	packet.add<int32_t>(0); // FUUUUUUUUUUUU
 	player->getSession()->send(packet);
+}
+
+void BuffsPacket::useTornadoSpin(Player *player, int32_t skillId, const ActiveBuff &playerSkill) {
+	PacketCreator packet;
+	packet.add<header_t>(SMSG_SKILL_USE);
+
+	BuffsPacketHelper::addBytes(packet, playerSkill.types);
+	
+	packet.add<int8_t>(0);
+	for (size_t i = 0; i < playerSkill.vals.size(); i++) {
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(playerSkill.vals[i]);
+		packet.add<int32_t>(skillId);
+		packet.add<int8_t>(0);
+		packet.add<int32_t>(0);
+	}
+	packet.add<int32_t>(1);
+	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
+	player->getSession()->send(packet);
+
+
+	if (player->getActiveBuffs()->isUsingHide()) {
+		return;
+	}
+
+	packet = PacketCreator();
+	packet.add<header_t>(SMSG_3RD_PARTY_SKILL);
+	packet.add<int32_t>(player->getId());
+
+	BuffsPacketHelper::addBytes(packet, playerSkill.types);
+	
+	packet.add<int8_t>(0);
+	for (size_t i = 0; i < playerSkill.vals.size(); i++) {
+		packet.add<int16_t>(0);
+		packet.add<int32_t>(playerSkill.vals[i]);
+		packet.add<int32_t>(skillId);
+		packet.add<int8_t>(0);
+		packet.add<int32_t>(0);
+	}
+	packet.add<int32_t>(1);
+	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
+	
+	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

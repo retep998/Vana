@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_CLIENT_ERROR 0x2f
 #define CMSG_LOGIN_RETURN 0xF1d
 #define CMSG_CHANNEL_CONNECT_PIC 0x33
+#define CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT_PIC 0x35
 #define CMSG_CLIENT_STARTED 0x38
 #define CMSG_REQUEST_SPECIAL_CHAR_CREATION 0x3e // For enabling 'special character creation'
 #define CMSG_PLAYER_CREATE_SPECIAL 0x3f
@@ -67,9 +68,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_NPC_TALK_CONT_2 0x69
 #define CMSG_SHOP 0xF3c
 #define CMSG_STORAGE 0xF3d
-#define CMSG_ITEM_MOVE 0xF46
-#define CMSG_ITEM_USE 0xF47
-#define CMSG_ITEM_CANCEL 0xF48
+#define CMSG_ITEM_MOVE 0x75
+#define CMSG_ITEM_USE 0x76
+#define CMSG_ITEM_CANCEL 0x77
 #define CMSG_SUMMON_BAG_USE 0xF4a
 #define CMSG_PET_FOOD_USE 0xF4b
 #define CMSG_USE_SCRIPT_ITEM 0xF4d // For items that runs scripts
@@ -83,7 +84,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_PLAYER_HEAL 0xF58
 #define CMSG_SKILL_ADD 0x9F
 #define CMSG_SKILL_USE 0xA0
-#define CMSG_SKILL_CANCEL 0xF5b
+#define CMSG_SKILL_CANCEL 0xA1
 #define CMSG_SPECIAL_SKILL 0xF5c // Chakra, Pierce, Monster Magnet, Big Bang
 #define CMSG_DROP_MESOS 0xF5d
 #define CMSG_FAME 0xF5e
@@ -91,20 +92,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_PET_SUMMON 0xF61
 #define CMSG_MAP_CHANGE_SPECIAL 0xAF
 #define CMSG_MAP_TELEPORT 0xF64
-#define CMSG_TELEPORT_ROCK 0xF65
-#define CMSG_QUEST_OBTAIN 0xF6a
-#define CMSG_MACRO_LIST 0xF6d
+#define CMSG_TELEPORT_ROCK 0xB2
+#define CMSG_QUEST_OBTAIN 0xB8
+#define CMSG_MACRO_LIST 0xBC
 #define CMSG_USE_REWARD_ITEM 0xF6f
 #define CMSG_MESSAGE_GROUP 0xF75 // Party, buddy and guild chat
 #define CMSG_COMMAND 0xF76 // / commands like "/find"
 #define CMSG_PLAYER_ROOM 0xF79 // Trades, player shops, minigames, etc.
-#define CMSG_PARTY 0xF7a
+#define CMSG_PARTY 0xE2
 #define CMSG_ADMIN_COMMAND 0xE8
 #define CMSG_ADMIN_COMMAND_LOG 0xE9 // '/(command) (parameters)'
-#define CMSG_BUDDY 0xF80
+#define CMSG_BUDDY 0xEB
 #define CMSG_SEND_NOTE 0xF81
 #define CMSG_MYSTIC_DOOR_ENTRY 0xF83
-#define CMSG_KEYMAP 0xF85
+#define CMSG_KEYMAP 0xF1
 #define CMSG_MTS 0xF9a
 #define CMSG_PET_MOVEMENT 0xFa1
 #define CMSG_PET_CHAT 0xFa2
@@ -114,8 +115,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_SUMMON_MOVEMENT 0xFa9
 #define CMSG_SUMMON_ATTACK 0xFaa
 #define CMSG_SUMMON_DAMAGE 0xFab
-#define CMSG_MOB_CONTROL 0xFb2
-#define CMSG_PLAYER_MOB_DISTANCE 0xFb3
+#define CMSG_MOB_CONTROL 0x14F
+#define CMSG_PLAYER_MOB_DISTANCE 0x150
 #define CMSG_FRIENDLY_MOB_DAMAGE 0xFb6
 #define CMSG_MOB_EXPLOSION 0xFb7
 #define CMSG_MOB_TURNCOAT_DAMAGE 0xFb8 // For Hypnotize

@@ -82,6 +82,9 @@ string LoginServer::makeLogIdentifier() {
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
 	WorldConfig conf;
+
+	std::map<int8_t, std::string> recommendedWorlds;
+
 	boost::format formatter("world%i_%s");
 	size_t i = 0;
 	bool added = false;
@@ -115,6 +118,12 @@ void LoginServer::loadWorlds() {
 
 		formatter % i % "ribbon";
 		conf.ribbon = config.get<int8_t>(formatter.str());
+
+		formatter % i % "recommended_msg";
+		const std::string &msg = config.getString(formatter.str());
+		if (!msg.empty()) {
+			recommendedWorlds.insert(std::pair<int8_t, std::string>(worldId, msg));
+		}
 
 		formatter % i % "exp_rate";
 		conf.expRate = config.get<int32_t>(formatter.str());
@@ -172,4 +181,6 @@ void LoginServer::loadWorlds() {
 		}
 		++i;
 	}
+
+	Worlds::Instance()->assignRecommendedWorlds(recommendedWorlds);
 }

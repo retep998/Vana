@@ -377,8 +377,13 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 		case Jobs::Marksman::MapleWarrior:
 		case Jobs::NightLord::MapleWarrior:
 		case Jobs::Shadower::MapleWarrior:
+		case Jobs::BladeMaster::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior:
+		case Jobs::DemonSlayer4::MapleWarrior:
+		case Jobs::BattleMage4::MapleWarrior:
+		case Jobs::WildHunter4::MapleWarrior:
+		case Jobs::Mechanic4::MapleWarrior:
 			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
 			break;
 	}
@@ -412,6 +417,9 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 				}
 				player->getActiveBuffs()->setMarkedMonster(mapMobId);
 				BuffsPacket::useHomingBeacon(player, skillId, playerSkill, mapMobId);
+				break;
+			case Jobs::BladeSpecialist::TornadoSpin:
+				BuffsPacket::useTornadoSpin(player, skillId, playerSkill);
 				break;
 			default:
 				BuffsPacket::useSkill(player, skillId, time, playerSkill, mapSkill, addedInfo);
@@ -515,8 +523,13 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 		case Jobs::Marksman::MapleWarrior:
 		case Jobs::NightLord::MapleWarrior:
 		case Jobs::Shadower::MapleWarrior:
+		case Jobs::BladeMaster::MapleWarrior:
 		case Jobs::Buccaneer::MapleWarrior:
 		case Jobs::Corsair::MapleWarrior:
+		case Jobs::DemonSlayer4::MapleWarrior:
+		case Jobs::BattleMage4::MapleWarrior:
+		case Jobs::WildHunter4::MapleWarrior:
+		case Jobs::Mechanic4::MapleWarrior:
 			player->getStats()->setMapleWarrior(0);
 			break;
 	}

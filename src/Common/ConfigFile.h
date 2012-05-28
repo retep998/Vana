@@ -28,9 +28,11 @@ extern "C" {
 #include "Types.h"
 #include <string>
 #include <vector>
+#include <map>
 
 using std::string;
 using std::vector;
+using std::map;
 
 struct DbConfig;
 struct LogConfig;

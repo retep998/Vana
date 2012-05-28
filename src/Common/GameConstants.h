@@ -52,9 +52,9 @@ namespace Stats {
 	const uint8_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
 	const uint8_t MountLevels = 30;
-	const int32_t MaxMaxHp = 999999;
+	const int32_t MaxMaxHp = 99999;
 	const int32_t MinMaxHp = 1;
-	const int32_t MaxMaxMp = 999999;
+	const int32_t MaxMaxMp = 99999;
 	const int32_t MinMaxMp = 1;
 	const int32_t MaxFame = 30000;
 	const int32_t MinFame = -30000;

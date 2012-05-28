@@ -34,4 +34,5 @@ namespace BuffsPacket {
 	void useSpeedInfusion(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
 	void useMount(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId);
 	void useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId);
+	void useTornadoSpin(Player *player, int32_t skillId, const ActiveBuff &playerSkill);
 }

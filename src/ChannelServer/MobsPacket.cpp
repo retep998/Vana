@@ -29,20 +29,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
-	packet.addBool(false); // Unk? Does run some other things
-	if (false) {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-	}
+
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addPos(mob->getPos());
@@ -85,20 +72,6 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	packet.add<int32_t>(mob->getId());
 	packet.add<int8_t>(mob->getControlStatus());
 	packet.add<int32_t>(mob->getMobId());
-	packet.addBool(false); // Unk? Does run some other things
-	if (false) {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
-	}
 
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
@@ -160,10 +133,12 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT);
 	packet.add<int32_t>(mobId);
-	packet.add<uint8_t>(0xFF);
 	packet.addBool(useSkill);
 	packet.add<int8_t>(skill);
 	packet.addPos(projectileTarget);
+
+	packet.add<int16_t>(0);
+
 	packet.addBuffer(buf, len);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }

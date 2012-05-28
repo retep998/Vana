@@ -17,7 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Spinel (Tour Guide, teleports to/from Zipangu)
 
-if getMap() == 800000000 then
+if getMap() == 950000100 then -- Spinel's Forest (GMS Map Tranfer Fuckup map)
+	addText("Soo, this is fucked up. Here, I'll transfer you to Henesys!");
+	sendOk();
+	setMap(100000000);
+
+elseif getMap() == 800000000 then
 	wtOrigin = getPlayerVariable("wt_origin");
 	addText("How's the traveling? Are you enjoying it?\r\n");
 	addText("#b#L0#Yes, I'm done with traveling. Can I go back to #m" .. wtOrigin .."#? #l\r\n");

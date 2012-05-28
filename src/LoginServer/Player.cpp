@@ -59,12 +59,13 @@ void Player::handleRequest(PacketReader &packet) {
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
-			case CMSG_CHANNEL_CONNECT: 
-			case CMSG_CHANNEL_CONNECT_PIC: Characters::connectGame(this, packet); break;
+			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet, false, false); break;
+			case CMSG_CHANNEL_CONNECT_PIC: Characters::connectGame(this, packet, true, false); break;
 			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
 			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + IpUtilities::ipToString(this->getIp())); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
-			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGame(this, packet, false, true); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT_PIC: Characters::connectGame(this, packet, true, true); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
 			case CMSG_PLAYER_CREATE: 
 			case CMSG_PLAYER_CREATE_SPECIAL: Characters::createCharacter(this, packet); break;

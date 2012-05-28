@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractConnection.h"
 #include "ConnectionAcceptor.h"
+#include "ExitCodes.h"
 #include "Session.h"
 #include <functional>
 
@@ -38,8 +39,16 @@ void ConnectionAcceptor::stop() {
 
 void ConnectionAcceptor::startAccepting() {
 	bool ping = (m_isServer ? m_loginConfig.serverPing : m_loginConfig.clientPing);
-	SessionPtr newSession(new Session(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation));
-	m_acceptor.async_accept(newSession->getSocket(), std::bind(&ConnectionAcceptor::handleConnection, this, newSession, std::placeholders::_1));
+	try {
+		SessionPtr newSession(new Session(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation));
+		m_acceptor.async_accept(newSession->getSocket(), std::bind(&ConnectionAcceptor::handleConnection, this, newSession, std::placeholders::_1));
+	}
+	catch (std::exception &ex) {
+		std::cerr << "[ERROR] Could not start accepting socket on port " << m_acceptor.local_endpoint().port() << ": " << ex.what() << std::endl;
+		std::cerr << "Press enter to quit." << std::endl;
+		getchar();
+		exit(ExitCodes::ListenError);
+	}
 }
 
 void ConnectionAcceptor::handleConnection(SessionPtr newSession, const boost::system::error_code &error) {

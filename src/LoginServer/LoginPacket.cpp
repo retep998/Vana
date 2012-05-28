@@ -171,15 +171,21 @@ void LoginPacket::worldEnd(Player *player) {
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
-	packet.add<header_t>(0x001B); // Last World
+	packet.add<header_t>(SMSG_LAST_SELECTED_WORLD); // Last World
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 
+	const map<int8_t, string> &recommendedWorlds = Worlds::Instance()->getRecommendedWorlds();
+
 	packet = PacketCreator();
-	packet.add<header_t>(0x001C); // Recommended Worlds
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(0);
-	packet.addString("Hallo");
+	packet.add<header_t>(SMSG_RECOMMENDED_WORLDS); // Recommended Worlds
+	packet.add<int8_t>(recommendedWorlds.size());
+
+	for (map<int8_t, string>::const_iterator iter = recommendedWorlds.begin(); iter != recommendedWorlds.end(); iter++) {
+		packet.add<int32_t>(iter->first);
+		packet.addString(iter->second);
+	}
+
 	player->getSession()->send(packet);
 }
 
@@ -192,6 +198,7 @@ void LoginPacket::showChannels(Player *player, int8_t status) {
 
 void LoginPacket::channelSelect(Player *player) {
 	accountInfo(player);
+	specialCharacterCreation(player, true);
 }
 
 void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars) {
@@ -205,7 +212,7 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	packet.add<int8_t>(1); // PIC
 	packet.add<int8_t>(0); // ???
 	packet.add<int32_t>(maxChars);
-	packet.add<int32_t>(0);
+	packet.add<int32_t>(0); // Derp bugged cash character slots (GG Nexon Korea!)
 	player->getSession()->send(packet);
 }
 
@@ -290,6 +297,7 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 void LoginPacket::relogResponse(Player *player) { // Is this even used anymore?
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_LOGIN_RETURN);
+	packet.add<int8_t>(0);
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }

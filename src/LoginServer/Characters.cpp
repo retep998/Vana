@@ -62,19 +62,19 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 	charc.skin = row.get<int8_t>("skin");
 	charc.eyes = row.get<int32_t>("eyes");
 	charc.hair = row.get<int32_t>("hair");
-	charc.level = row.get<int8_t>("level");
+	charc.level = row.get<uint8_t>("level");
 	charc.job = row.get<int16_t>("job");
 	charc.str = row.get<int16_t>("str");
 	charc.dex = row.get<int16_t>("dex");
 	charc.intt = row.get<int16_t>("int");
 	charc.luk = row.get<int16_t>("luk");
-	charc.hp = row.get<int16_t>("chp");
-	charc.mhp = row.get<int16_t>("mhp");
-	charc.mp = row.get<int16_t>("cmp");
-	charc.mmp = row.get<int16_t>("mmp");
+	charc.hp = row.get<int32_t>("chp");
+	charc.mhp = row.get<int32_t>("mhp");
+	charc.mp = row.get<int32_t>("cmp");
+	charc.mmp = row.get<int32_t>("mmp");
 	charc.ap = row.get<int16_t>("ap");
 	charc.exp = row.get<int32_t>("exp");
-	charc.fame = row.get<int16_t>("fame");
+	charc.fame = row.get<int32_t>("fame");
 	charc.map = row.get<int32_t>("map");
 	charc.pos = row.get<int8_t>("pos");
 	charc.jobType = row.get<int8_t>("job_type");
@@ -457,47 +457,35 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	LoginPacket::deleteCharacter(player, id, result);
 }
 
-void Characters::connectGame(Player *player, int32_t charId) {
+void Characters::connectGame(Player *player, PacketReader &packet, bool PIC, bool VAC) {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
+	if (PIC) {
+		const string &pic = packet.getString();
+	}
+	int32_t charId = packet.get<int32_t>();
+	int8_t worldId = VAC ? (int8_t)packet.get<int32_t>() : player->getWorld();
+
 	if (!ownerCheck(player, charId)) {
 		// Hacking
 		return;
 	}
 
+	packet.getString(); // MAC
+	packet.getString(); // MAC with HDD Serial (XFD)
+
+	if (VAC) {
+		player->setWorld(worldId);
+
+		// Take the player to a random channel
+		uint16_t channel = Worlds::Instance()->getWorld(worldId)->getRandomChannel();
+		player->setChannel(channel);
+	}
+
 	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charId, player->getIp(), player->getConnectKey());
 	LoginPacket::connectIp(player, charId);
-}
-
-void Characters::connectGame(Player *player, PacketReader &packet) {
-	packet.getString();
-	int32_t id = packet.get<int32_t>();
-	packet.getString(); // MAC
-	packet.getString(); // MAC with HDD Serial (XFD)
-
-	connectGame(player, id);
-}
-
-void Characters::connectGameWorld(Player *player, PacketReader &packet) {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
-		// Hacking
-		return;
-	}
-	int32_t id = packet.get<int32_t>();
-	int8_t worldId = (int8_t) packet.get<int32_t>();
-	
-	packet.getString(); // MAC
-	packet.getString(); // MAC with HDD Serial (XFD)
-
-	player->setWorld(worldId);
-
-	// Take the player to a random channel
-	uint16_t channel = Worlds::Instance()->getWorld(worldId)->getRandomChannel();
-	player->setChannel(channel);
-
-	connectGame(player, id);
 }
 
 bool Characters::ownerCheck(Player *player, int32_t id) {

@@ -136,11 +136,10 @@ void Mob::initMob() {
 	}
 
 	m_status = StatusEffects::Mob::Empty;
-	m_status |= StatusEffects::Mob::NoClue7;
-
 	StatusInfo empty = StatusInfo(StatusEffects::Mob::Empty, 0, 0, 0);
 	m_statuses[empty.status] = empty;
 
+	m_status |= StatusEffects::Mob::NoClue7;
 	empty = StatusInfo(StatusEffects::Mob::NoClue7, 0, 0, 0);
 	m_statuses[empty.status] = empty;
 
@@ -343,9 +342,22 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
+	packet.addBool(false); // Stat Changer
+	if (false) {
+		packet.add<int32_t>(0); // HP
+		packet.add<int32_t>(0); // MP
+		packet.add<int32_t>(0); // EXP
+		packet.add<int32_t>(0); // WATK
+		packet.add<int32_t>(0); // MATK
+		packet.add<int32_t>(0); // WATTRATE
+		packet.add<int32_t>(0); // MATTRATE
+		packet.add<int32_t>(0); // ACC
+		packet.add<int32_t>(0); // EVA
+		packet.add<int32_t>(0); // Pushed
+		packet.add<int32_t>(0); // Level
+	}
+
 	//m_buffs.AppendBytes(packet);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
 
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
@@ -353,11 +365,17 @@ void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
 
-	packet.add<int32_t>(0x07C0); // C0 07 00 00
+	packet.add<int32_t>(0);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0x07C0); // C0 07 00 00 == 80 00 00 00 + 40 00 00 00 + 04 00 00 + 02 00 00 + 01 00 00 
 	packet.add<int32_t>(m_status); // Fuck.
+
+	packet.add<int32_t>(0); // ???
+
 	for (map<int32_t, StatusInfo>::iterator iter = m_statuses.begin(); iter != m_statuses.end(); ++iter) {
 		// Val/skillId pairs must be ordered in the packet by status value ascending, this is done for us by std::map
-		if (iter->first != StatusEffects::Mob::Empty) {
+		if (iter->first != StatusEffects::Mob::Empty && iter->first != StatusEffects::Mob::NoClue7) {
 			packet.add<int16_t>(static_cast<int16_t>(iter->second.val));
 			if (iter->second.skillId >= 0) {
 				packet.add<int32_t>(iter->second.skillId);
@@ -370,8 +388,33 @@ void Mob::statusPacket(PacketCreator &packet) {
 		}
 		else {
 			packet.add<int32_t>(0);
+			packet.add<int16_t>(0x2A01);
+			packet.add<int32_t>(0);
 		}
 	}
+
+	packet.add<int32_t>(0); // 0x0001
+	packet.add<int16_t>(0x2A01);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0); // 0x0002
+	packet.add<int16_t>(0x2A01);
+	packet.add<int32_t>(0);
+
+	/*
+	packet.add<int32_t>(0); // 0x0004
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0); // 0x4000
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
+
+	packet.add<int32_t>(0); // 0x8000
+	packet.add<int16_t>(1);
+	packet.add<int32_t>(0);
+	*/
+
 }
 
 void Mob::removeStatus(int32_t status, bool fromTimer) {

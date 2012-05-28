@@ -106,9 +106,14 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realSkill = 0;
 	uint8_t level = 0;
+
+	packet.skipBytes(3);
+
 	const Pos &projectileTarget = packet.getPos();
-	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
+	packet.skipBytes(17);
 	const Pos &spot = packet.getPos();
+	
+	packet.skipBytes(4); // To be filled in... NOT haha
 
 	MovementHandler::parseMovement(mob, packet);
 
@@ -189,7 +194,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 		}
 	}
 	MobsPacket::moveMobResponse(player, mobId, moveId, useSkill, mob->getMp(), realSkill, level);
-	packet.reset(19);
+	packet.reset(34);
 	MobsPacket::moveMob(player, mobId, useSkill, skill, projectileTarget, packet.getBuffer(), packet.getBufferLength());
 }
 

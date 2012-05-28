@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #define SMSG_AUTHENTICATION 0x00
+// 0x01 = Trial Auth
 #define SMSG_AUTHENTICATION_2 0x02
 #define SMSG_WORLD_STATUS 0x03
 #define SMSG_ACCOUNT_GENDER_DONE 0x04
@@ -25,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PIN 0x06
 #define SMSG_PIN_ASSIGNED 0x07
 #define SMSG_PLAYER_GLOBAL_LIST 0x08
+// 0x09 = Errors + connect to server?
 #define SMSG_WORLD_LIST 0x0a
 #define SMSG_PLAYER_LIST 0x0b
 #define SMSG_CHANNEL_CONNECT 0x0c
@@ -33,8 +35,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PLAYER_DELETE 0x0f
 #define SMSG_CHANNEL_CHANGE 0x10
 #define SMSG_PING 0x11
-#define SMSG_LOGIN_RETURN 0x16
-#define SMSG_PLAYER_CREATE_SPECIAL_ENABLE 0x1e
+#define SMSG_LOGIN_RETURN 0x18
+#define SMSG_LAST_SELECTED_WORLD 0x1B
+#define SMSG_RECOMMENDED_WORLDS 0x1C
+#define SMSG_PLAYER_CREATE_SPECIAL_ENABLE 0x1D // 0x1E?
 #define SMSG_INVENTORY_ITEM_MOVE 0x20
 #define SMSG_INVENTORY_SLOT_UPDATE 0x21
 #define SMSG_PLAYER_UPDATE 0x22
@@ -87,8 +91,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_FAILED_RECEIVING_REWARD 0xB7
 #define SMSG_MACRO_LIST 0xB8
 #define SMSG_CHANGE_MAP 0xB9
-#define SMSG_CONNECT_CASHSHOP 0xBA
-#define SMSG_CONNECT_ITC 0xBB
+#define SMSG_CONNECT_ITC 0xBA
+#define SMSG_CONNECT_CASHSHOP 0xBB
+// 0xBC = Back Effect: BYTE INT BYTE INT
+// 0xBD = Map Object Visible: BYTE foreach [STRING BYTE]
 #define SMSG_PORTAL_BLOCKED 0xc0
 #define SMSG_CHANNEL_BLOCKED 0xc1 // For messages like 'This server is unavailable'
 #define SMSG_MAP_FORCE_EQUIPMENT 0xc2 // Wear apple suit on training maps, all equips except bathrobe off for Showa spa, etc.
@@ -189,7 +195,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_CASHSHOP_NX 0xF122
 #define SMSG_CASHSHOP_OPERATION 0xF123
 #define SMSG_CASHSHOP_NAMECHANGE_RESULT 0xF125
-#define SMSG_KEYMAP 0xF12a
+#define SMSG_KEYMAP 0x22E
 #define SMSG_MAPLETV_ON 0xF130
 #define SMSG_MAPLETV_OFF 0xF131
 #define SMSG_HAMMER 0xF13d

@@ -218,6 +218,7 @@ void Player::handleRequest(PacketReader &packet) {
 				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
 				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
 				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+				case CMSG_PLAYER_MOB_DISTANCE: break; // [INT, mobid] [INT, distance]
 				default: {
 					packet.reset();
 					std::ostringstream x;
@@ -313,12 +314,12 @@ void Player::playerConnect(PacketReader &packet) {
 
 			for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 				soci::row const &row = *i;
-				getStats()->setSp(row.get<int8_t>(1), row.get<int8_t>(0));
+				getStats()->setSp(row.get<int8_t>(1), row.get<int8_t>(0), true);
 			}
 		}
 		else {
 			// Load normal value
-			getStats()->setSp((int8_t)row.get<int16_t>("sp")); // Slot 0 is default slot.
+			getStats()->setSp((int8_t)row.get<int16_t>("sp"), 0, true); // Slot 0 is default slot.
 		}
 	}
 
@@ -591,14 +592,14 @@ void Player::saveStats() {
 	int16_t dex = s->getDex();
 	int16_t intt = s->getInt();
 	int16_t luk = s->getLuk();
-	int16_t hp = s->getHp();
-	int16_t maxHp = s->getMaxHp(true);
-	int16_t mp = s->getMp();
-	int16_t maxMp = s->getMaxMp(true);
+	int32_t hp = s->getHp();
+	int32_t maxHp = s->getMaxHp(true);
+	int32_t mp = s->getMp();
+	int32_t maxMp = s->getMaxMp(true);
 	uint16_t hpMpAp = s->getHpMpAp();
 	int16_t ap = s->getAp();
 	int16_t sp = s->getSp();
-	int16_t fame = s->getFame();
+	int32_t fame = s->getFame();
 	int32_t exp = s->getExp();
 	// Inventory
 	uint8_t equip = i->getMaxSlots(Inventories::EquipInventory);
@@ -671,6 +672,20 @@ void Player::saveStats() {
 									soci::use(cash, "cash"),
 									soci::use(m_buddylistSize, "buddylist"),
 									soci::use(cover, "cover");
+	
+	Database::getCharDb().once << "DELETE FROM character_sp WHERE character_id = :id", soci::use(m_id, "id");
+	if (GameLogicUtilities::isExtendedSpJob(getStats()->getJob())) {
+
+		std::stringstream ss;
+		ss << "INSERT INTO character_sp VALUES ";
+		for (int8_t i = 0; i <= 12; i++) {
+			ss << "(" << m_id << ", " << (int32_t)i << ", " << (int32_t)getStats()->getSp(i) << ")";
+			if (i != 12)
+				ss << ",";
+		}
+
+		Database::getCharDb().once << ss.str();
+	}
 }
 
 void Player::saveAll(bool saveCooldowns) {

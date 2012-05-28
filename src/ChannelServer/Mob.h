@@ -181,5 +181,5 @@ private:
 	Player *m_controller;
 	std::unique_ptr<Timer::Container> m_timers;
 
-	Buffset<32> m_buffs;
+	//Buffset<32> m_buffs;
 };

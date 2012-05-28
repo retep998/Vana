@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <algorithm>
 #include <functional>
+#include <sstream>
 
 namespace Timer {
 
@@ -32,6 +33,11 @@ struct Id {
 	uint32_t id2;
 
 	bool operator==(Id const &other) const;
+	std::string toString() {
+		std::stringstream ss;
+		ss << "Type: " << type << "; ID: " << id << "; ID2: " << id2;
+		return ss.str();
+	}
 };
 
 inline

@@ -289,9 +289,10 @@ void PlayerStats::damageMp(int32_t damageMp) {
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
 
-void PlayerStats::setSp(int8_t sp, int8_t slot) {
+void PlayerStats::setSp(int8_t sp, int8_t slot, bool init) {
 	m_spTable[slot] = sp;
-	PlayerPacket::updateStat(m_player, Stats::Sp, sp);
+	if (!init)
+		PlayerPacket::updateStat(m_player, Stats::Sp, sp);
 }
 
 void PlayerStats::setAp(int16_t ap) {
