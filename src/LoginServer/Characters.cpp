@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include "ValidCharDataProvider.h"
 #include <unordered_map>
+#include <tuple>
 
 using std::unordered_map;
 
@@ -187,6 +188,8 @@ void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 }
 
 void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) {
+	if (itemId == 0) return;
+
 	using namespace soci;
 
 	session &sql = Database::getCharDb();
@@ -272,53 +275,101 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	packet.get<int8_t>();
 	packet.get<int8_t>();
 
+	if ((uint8_t)gender > 1) {
+		std::stringstream ss;
+		ss << "User [" << player->getUsername() << "] tried to create a character with an invalid gender!!! Disconnected." << std::endl;
+		LoginServer::Instance()->log(LogTypes::Warning, ss.str());
+		player->getSession()->disconnect();
+		return;
+	}
+
 	int8_t classId = 0;
 	int32_t guideItem = 0;
 
-	vector<pair<int32_t, int32_t>> addItems;
+	typedef std::tuple<int32_t, int16_t, int8_t, bool> item_data_tuple;
 
-	auto addItem = [&](int32_t itemid, int32_t slot){ addItems.push_back(pair<int32_t, int32_t>(slot, itemid)); };
+	vector<item_data_tuple> addItems;
+
+	auto addItem = [&](int32_t itemid, int16_t slot, int8_t type, bool isItem){ addItems.push_back(item_data_tuple(itemid, slot, type, isItem)); };
+	
+	int32_t face = packet.get<int32_t>();
+	int32_t hair = packet.get<int32_t>();
+	int32_t haircolor = packet.get<int32_t>();
+	int32_t skin = packet.get<int32_t>();
+
+	addItem(face, 0, ValidItemType::Face, false);
+	addItem(hair, 0, ValidItemType::Hair, false);
+	addItem(haircolor, 0, ValidItemType::HairColor, false);
+	addItem(skin, 0, ValidItemType::Skin, false);
 
 	if (jobtype == Explorers) {
 		startmap = 0;
 		guideItem = Items::BeginnersGuidebook;
 		classId = ValidClass::Adventurer;
+		addItem(packet.get<int32_t>(), -EquipSlots::Top, ValidItemType::Top, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Bottom, ValidItemType::Bottom, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == Aran) {
 		startmap = 914000000;
 		job = Jobs::JobIds::Legend;
 		guideItem = Items::LegendGuidebook;
 		classId = ValidClass::Aran;
+		addItem(packet.get<int32_t>(), -EquipSlots::Top, ValidItemType::Top, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Bottom, ValidItemType::Bottom, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == Evan) {
 		startmap = 900010000;
 		job = Jobs::JobIds::Evan;
 		guideItem = Items::EvanGuidebook;
 		classId = ValidClass::Evan;
+		addItem(packet.get<int32_t>(), -EquipSlots::Top, ValidItemType::Top, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Bottom, ValidItemType::Bottom, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == KnightsOfCygnus) {
 		startmap = 130030000;
 		job = Jobs::JobIds::Noblesse;
 		guideItem = Items::NoblesseGuidebook;
 		classId = ValidClass::Cygnus;
+		addItem(packet.get<int32_t>(), -EquipSlots::Top, ValidItemType::Top, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Bottom, ValidItemType::Bottom, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == Resistance) {
 		startmap = 931000000;
 		job = Jobs::JobIds::Citizen;
 		guideItem = Items::CitizenGuidebook;
 		classId = ValidClass::Resistance;
+		addItem(packet.get<int32_t>(), 0, ValidItemType::Overall, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == Mercedes) {
 		startmap = 910150000;
 		job = Jobs::JobIds::Mercedes;
 		guideItem = Items::MercedesGuidebook;
 		classId = ValidClass::Mercedes;
+		addItem(packet.get<int32_t>(), 0, ValidItemType::Overall, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
 	}
 	else if (jobtype == DemonSlayer) {
 		startmap = 924010000; // 931050310 ?
 		job = Jobs::JobIds::DemonSlayer;
 		classId = ValidClass::DemonSlayer;
 		// DS doesn't have a guidebook.
+
+		addItem(packet.get<int32_t>(), 0, ValidItemType::FaceAccessory, false); // hmm?
+		addItem(packet.get<int32_t>(), -EquipSlots::Top, ValidItemType::Overall, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shoe, ValidItemType::Shoes, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Weapon, ValidItemType::Weapon, true);
+		addItem(packet.get<int32_t>(), -EquipSlots::Shield, ValidItemType::Shield, true);
 	}
 	else {
 		std::stringstream ss;
@@ -330,19 +381,16 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	int32_t eyes = packet.get<int32_t>();
-	int32_t hair = packet.get<int32_t>();
-	int32_t hairColor = packet.get<int32_t>();
-	int32_t skin = packet.get<int32_t>();
-	int32_t top = packet.get<int32_t>();
-	int32_t bottom = packet.get<int32_t>();
-	int32_t shoes = packet.get<int32_t>();
-	int32_t weapon = packet.get<int32_t>();
-	
-	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, classId)) {
-		// Hacking
-		player->getSession()->disconnect();
-		return;
+	for (size_t i = 0; i < addItems.size(); ++i) {
+		const item_data_tuple &item = addItems[i];
+		bool ok = ValidCharDataProvider::Instance()->isValidItem((int32_t)std::get<0>(item), gender, classId, (int8_t)std::get<2>(item));
+		if (!ok) {
+			std::stringstream ss;
+			ss << "User [" << player->getUsername() << "] tried to create a character with an invalid item!!! ItemID: " << (int32_t)std::get<0>(item) << ". Disconnected." << std::endl;
+			LoginServer::Instance()->log(LogTypes::Warning, ss.str());
+			player->getSession()->disconnect();
+			return;
+		}
 	}
 	
 	uint16_t str = 12;
@@ -360,8 +408,8 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 				soci::use(startmap, "map"),
 				soci::use(job, "job"),
 				soci::use(jobtype, "jobtype"),
-				soci::use(eyes, "eyes"),
-				soci::use(hair + hairColor, "hair"),
+				soci::use(face, "eyes"),
+				soci::use(hair + haircolor, "hair"),
 				soci::use(skin, "skin"),
 				soci::use(gender, "gender"),
 				soci::use(str, "str"),
@@ -372,10 +420,13 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	int32_t id = 0;
 	sql.once << "SELECT LAST_INSERT_ID()", soci::into(id);
 
-	createItem(top, player, id, -EquipSlots::Top);
-	createItem(bottom, player, id, -EquipSlots::Bottom);
-	createItem(shoes, player, id, -EquipSlots::Shoe);
-	createItem(weapon, player, id, -EquipSlots::Weapon);
+	
+	for (size_t i = 0; i < addItems.size(); ++i) {
+		const item_data_tuple &item = addItems[i];
+		if (!(bool)std::get<3>(item)) continue;
+		createItem(std::get<0>(item), player, id, std::get<1>(item));
+	}
+
 	if (guideItem != 0)
 		createItem(guideItem, player, id, 1);
 	createItem(Items::CrusaderCodex, player, id, -EquipSlots::CrusaderCodex);

@@ -38,4 +38,5 @@ namespace EffectPacket {
 	void sendMinigameSound(Player *player, const string &sound);
 	void sendMobItemBuffEffect(Player *player, int32_t itemId);
 	void sendPlayerInfoBox(Player *player, const string &effect);
+	void sendPlayerCinematics(Player *player, const string &effect, int32_t val1, int32_t val2, int32_t val3, int32_t npcId = -1);
 }

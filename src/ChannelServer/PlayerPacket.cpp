@@ -123,13 +123,13 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
 	// New
-	packet.add<int16_t>(0);//player->getStats()->getJobType()); // For Cannoneer and Dual Blader
+	packet.add<int16_t>(0);//player->getStats()->getJobType()); // For Cannoneer (2) and Dual Blader (1)
 	// TODO: Implement
 	if (player->getStats()->getJob() / 100 == Jobs::JobTracks::DemonSlayer || player->getStats()->getJob() == Jobs::JobIds::DemonSlayer) {
 		packet.add<int32_t>(1012280);
 	}
 
-	packet.add<uint8_t>(player->getBuddyListSize());
+	packet.add<uint8_t>(0); // Fatigue
 
 	{
 		time_t rawtime = time(NULL);
@@ -141,52 +141,59 @@ void PlayerPacket::connectData(Player *player) {
 		packet.add<int32_t>(atoi(buff)); // YYYYMMDDHH
 	}
 
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	// TRAITS
+	{
+		packet.add<int32_t>(0); // Ambition
+		packet.add<int32_t>(0); // Insight
+		packet.add<int32_t>(0); // Willpower
+		packet.add<int32_t>(0); // Diligence
+		packet.add<int32_t>(0); // Empathy
+		packet.add<int32_t>(0); // Charm
 
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+		packet.add<int16_t>(0); // Today's Ambition
+		packet.add<int16_t>(0); // Today's Insight
+		packet.add<int16_t>(0); // Today's Willpower
+		packet.add<int16_t>(0); // Today's Diligence
+		packet.add<int16_t>(0); // Today's Empathy
+		packet.add<int16_t>(0); // Today's Charm
+	}
 
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
+	// BATTLE SYSTEM
+	{
+		packet.add<int32_t>(0); // Battle EXP
 
-	// 12 bytes?
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	
-	packet.add<int32_t>(0);
+		packet.add<int8_t>(10); // Battle Rank
+		packet.add<int32_t>(0); // Battle Points
 
-	packet.add<int8_t>(10);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(5);
-	packet.add<int32_t>(0);
+		packet.add<int8_t>(5);
+		packet.add<int32_t>(0);
+	}
 
 	packet.add<uint64_t>(18293692055145101115); // Filetime thing?
 
 	// BACK TO THE MAIN FUNC
 
-	packet.add<int8_t>(20);
+	packet.add<int8_t>(player->getBuddyListSize());
 
 	{
 		bool value = false;
-		packet.addBool(value);
+		packet.addBool(value); // Blessing of the Fairy Origin
 		if (value) {
-			packet.addString("Meerchars4");
+			packet.addString("CHARNAME HERE");
 		}
 	}
 	{
 		bool value = false;
-		packet.addBool(value);
+		packet.addBool(value); // Blessing of the Empress Origin
 		if (value) {
-			packet.addString("Meerchars4");
+			packet.addString("CHARNAME HERE");
 		}
 	}
 	{
 		bool value = false;
-		packet.addBool(value);
+		packet.addBool(value); // Ultimate Explorer Origin
 		if (value) {
-			packet.addString("?????????");
+			packet.addString("CHARNAME HERE");
 		}
 	}
 

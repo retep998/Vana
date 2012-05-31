@@ -38,7 +38,7 @@ using std::bind;
 void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
 	if (time > 0) {
 		// Only bother with timers when there is a time
-		clock_t skillExpire = time * 1000;
+		clock_t skillExpire = time; // * 1000;
 		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 
 		if (GameLogicUtilities::isMobSkill(skill)) {

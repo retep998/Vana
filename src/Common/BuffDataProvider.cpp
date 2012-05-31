@@ -368,9 +368,9 @@ void BuffDataProvider::loadData() {
 	map.useVal = true;
 	m_skillInfo[Jobs::Beginner::NimbleFeet].map.push_back(map);
 	m_skillInfo[Jobs::Noblesse::NimbleFeet].map.push_back(map);
-	m_skillInfo[Jobs::Legend::AgileBody].player.push_back(player);
-	m_skillInfo[Jobs::Evan1::AgileBody].player.push_back(player);
-	m_skillInfo[Jobs::Citizen::Infiltrate].player.push_back(player);
+	m_skillInfo[Jobs::Legend::AgileBody].map.push_back(map);
+	m_skillInfo[Jobs::Evan1::AgileBody].map.push_back(map);
+	m_skillInfo[Jobs::Citizen::Infiltrate].map.push_back(map);
 
 	// Shadow Stars
 	buff.type = 0x01;
@@ -851,8 +851,8 @@ void BuffDataProvider::loadData() {
 	m_mobSkillInfo[MobSkills::CrazySkull].mob.push_back(player);
 	m_mobSkillInfo[MobSkills::CrazySkull].delay = 900;
 
-
-
+	
+	// -----------------------------------
 	// Dual Blader
 	
 	// Self Haste
@@ -879,6 +879,16 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	m_skillInfo[Jobs::BladeSpecialist::TornadoSpin].player.push_back(player);
+
+
+	// -----------------------------------
+	// Mechanic
+	
+	buff.type = 0x10;
+	buff.byte = Byte32;
+	buff.value = SkillX;
+	player.buff = buff;
+	m_skillInfo[Jobs::Mechanic1::Prototype].player.push_back(player);
 
 
 	std::cout << "DONE" << std::endl;

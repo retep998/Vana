@@ -36,9 +36,9 @@ void PetHandler::handleMovement(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(4); // Ticks?
+	packet.skipBytes(9); // Pos
 	MovementHandler::parseMovement(pet, packet);
-	packet.reset(10);
+	packet.reset(15);
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
@@ -48,7 +48,7 @@ void PetHandler::handleChat(Player *player, PacketReader &packet) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
+	packet.skipBytes(5);
 	int8_t act = packet.get<int8_t>();
 	const string &message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petId), message, act);

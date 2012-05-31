@@ -114,8 +114,26 @@ bool PlayerModFunctions::mp(Player *player, const string &args) {
 }
 
 bool PlayerModFunctions::sp(Player *player, const string &args) {
-	if (args.length() != 0) {
-		player->getStats()->setSp(atoi(args.c_str()));
+	cmatch matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d*)?", matches)) {
+		int8_t amount = (int8_t)atoi(string(matches[0]).c_str());
+		if (GameLogicUtilities::isExtendedSpJob(player->getStats()->getJob())) {
+			string slotString = matches[2];
+			int8_t slot = slotString.size() > 0 ? (int8_t)atoi(slotString.c_str()) : 0;
+			if (slot != 0) {
+				player->getStats()->setSp(amount, slot);
+			}
+			else {
+				// Just do all, xd
+				for (int8_t i = 1; i < 17; i++) {
+					player->getStats()->setSp(amount, i, true);
+				}
+				player->getStats()->setSp(amount, 17); // Last does the complete update...!
+			}
+		}
+		else {
+			player->getStats()->setSp(amount);
+		}
 		return true;
 	}
 	return false;

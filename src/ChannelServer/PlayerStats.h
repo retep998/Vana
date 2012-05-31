@@ -99,7 +99,7 @@ public:
 	void giveExp(uint32_t exp, bool inChat = false, bool white = true);
 	void addStat(PacketReader &packet);
 	void addStatMulti(PacketReader &packet);
-	void addStat(int32_t type, int16_t mod = 1, bool isReset = false);
+	void addStat(int64_t type, int16_t mod = 1, bool isReset = false);
 	int32_t randHp();
 	int32_t randMp();
 	int32_t levelHp(int16_t val, int16_t bonus = 0);

@@ -82,14 +82,25 @@ void ValidCharDataProvider::loadCreationItems() {
 		items = getItems(gender, classId);
 
 		runFlags(row.get<opt_string>("object_type"), [&items, &objectId](const string &cmp) {
-			if (cmp == "face") items->faces.push_back(objectId);
-			else if (cmp == "hair") items->hair.push_back(objectId);
-			else if (cmp == "haircolor") items->haircolor.push_back(objectId);
-			else if (cmp == "skin") items->skin.push_back(objectId);
-			else if (cmp == "top") items->top.push_back(objectId);
-			else if (cmp == "bottom") items->bottom.push_back(objectId);
-			else if (cmp == "shoes") items->shoes.push_back(objectId);
-			else if (cmp == "weapon") items->weapons.push_back(objectId);
+			vector<int32_t> *itemlist;
+			if (cmp == "face") itemlist = &items->data[ValidItemType::Face];
+			else if (cmp == "hair") itemlist = &items->data[ValidItemType::Hair];
+			else if (cmp == "hair_color") itemlist = &items->data[ValidItemType::HairColor];
+			else if (cmp == "skin") itemlist = &items->data[ValidItemType::Skin];
+			else if (cmp == "hat") itemlist = &items->data[ValidItemType::Hat];
+			else if (cmp == "face_accessory") itemlist = &items->data[ValidItemType::FaceAccessory];
+			else if (cmp == "top") itemlist = &items->data[ValidItemType::Top];
+			else if (cmp == "bottom") itemlist = &items->data[ValidItemType::Bottom];
+			else if (cmp == "overall") itemlist = &items->data[ValidItemType::Overall];
+			else if (cmp == "shoes") itemlist = &items->data[ValidItemType::Shoes];
+			else if (cmp == "gloves") itemlist = &items->data[ValidItemType::Gloves];
+			else if (cmp == "shield") itemlist = &items->data[ValidItemType::Shield];
+			else if (cmp == "weapon") itemlist = &items->data[ValidItemType::Weapon];
+			else {
+				std::cout << "[WARN] Could not find ValidItemType for '" << cmp << "'!!!" << std::endl;
+				return;
+			}
+			itemlist->push_back(objectId);
 		});
 	}
 }
@@ -121,23 +132,16 @@ bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_
 }
 
 bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) {
+	if (id == 0) return true;
+
 	ValidItems *items = getItems(gender, classId);
 
 	if (items == nullptr) {
 		return false;
 	}
 
-	bool valid = false;
-	switch (type) {
-		case ValidItemType::Face: valid = iterateTest(id, &(items->faces)); break;
-		case ValidItemType::Hair: valid = iterateTest(id, &(items->hair)); break;
-		case ValidItemType::HairColor: valid = iterateTest(id, &(items->haircolor)); break;
-		case ValidItemType::Skin: valid = iterateTest(id, &(items->skin)); break;
-		case ValidItemType::Top: valid = iterateTest(id, &(items->top)); break;
-		case ValidItemType::Bottom: valid = iterateTest(id, &(items->bottom)); break;
-		case ValidItemType::Shoes: valid = iterateTest(id, &(items->shoes)); break;
-		case ValidItemType::Weapon: valid = iterateTest(id, &(items->weapons)); break;
-	}
+	bool valid = iterateTest(id, &items->data[type]);
+
 	if (!valid) {
 		std::cout << " !!! Non-valid item: " << id << "; gender: " << (int16_t)gender << "; classId: " << (int16_t)classId << "; Type: " << (int16_t)type << std::endl;
 	}

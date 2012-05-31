@@ -234,8 +234,8 @@ void ChatHandlerFunctions::initialize() {
 	CommandList["ap"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::sp;
-	command.syntax = "<#sp>";
-	command.notes.push_back("Sets your player's SP to the specified amount.");
+	command.syntax = "<#sp> [#slot]";
+	command.notes.push_back("Sets your player's SP to the specified amount. Slot is only needed for 'extended SP' jobs, such as Evan and Demon Slayer.");
 	CommandList["sp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::addSp;

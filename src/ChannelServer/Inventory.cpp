@@ -105,7 +105,7 @@ void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
 	else {
 		item = new Item(itemId, thisAmount);
 	}
-	if (addItem(player, item, GameLogicUtilities::isPet(itemId)) == 0 && amount > 0) {
+	if (addItem(player, item) == 0 && amount > 0) {
 		addNewItem(player, itemId, amount);
 	}
 }

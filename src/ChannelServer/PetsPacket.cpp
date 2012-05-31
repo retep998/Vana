@@ -68,6 +68,7 @@ void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int3
 	packet.add<header_t>(SMSG_PET_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
+	packet.addPos(player->getPos());
 	packet.addBuffer(buf, bufLen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -132,7 +133,8 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->getIndex());
 	packet.add<int64_t>(pet->getId());
-	packet.addBool(pet->hasNameTag());
+	packet.add<int8_t>(0); // Amount of exlusion list
+	// Foreach: INT, itemid
 	player->getSession()->send(packet);
 }
 
@@ -167,14 +169,22 @@ void PetsPacket::blankUpdate(Player *player) {
 void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(3);
 	packet.add<int32_t>(pet->getItemId());
+
 	packet.add<int8_t>(1);
 	packet.add<int64_t>(pet->getId());
-	packet.add<int64_t>(0LL);
+
+	packet.add<int64_t>(Items::NoExpiration);
+	packet.add<uint32_t>(0xFFFFFFFF);
 	packet.addString(pet->getName(), 13);
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());
 	packet.add<int8_t>(pet->getFullness());
-	packet.add<int64_t>(Items::NoExpiration);
+	packet.add<int64_t>(149129150600000000LL);
+	packet.add<int16_t>(0);
+	packet.add<int16_t>(0);
 	packet.add<int32_t>(0);
-	packet.add<int32_t>(0); // Time to expire (for trial pet)
+	packet.add<int16_t>(0);
+	packet.add<int8_t>(0);
+	packet.add<int32_t>(0);
+	return;
 }

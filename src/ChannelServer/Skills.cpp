@@ -43,8 +43,28 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
 
 	int32_t skillId = packet.get<int32_t>();
+	int8_t slot = 0;
 	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
-		if (player->getStats()->getSp() == 0) {
+		int16_t jobID = skillId / 10000;
+
+		if (jobID == Jobs::JobIds::DemonSlayer1) slot = 1;
+		else if (jobID == Jobs::JobIds::DemonSlayer2) slot = 2;
+		else if (jobID == Jobs::JobIds::DemonSlayer3) slot = 3;
+		else if (jobID == Jobs::JobIds::DemonSlayer4) slot = 4;
+
+		else if (jobID == Jobs::JobIds::Evan1) slot = 1;
+		else if (jobID == Jobs::JobIds::Evan2) slot = 2;
+		else if (jobID == Jobs::JobIds::Evan3) slot = 3;
+		else if (jobID == Jobs::JobIds::Evan4) slot = 4;
+		else if (jobID == Jobs::JobIds::Evan5) slot = 5;
+		else if (jobID == Jobs::JobIds::Evan6) slot = 6;
+		else if (jobID == Jobs::JobIds::Evan7) slot = 7;
+		else if (jobID == Jobs::JobIds::Evan8) slot = 8;
+		else if (jobID == Jobs::JobIds::Evan9) slot = 9;
+		else if (jobID == Jobs::JobIds::Evan10) slot = 10;
+
+
+		if (player->getStats()->getSp(slot) == 0) {
 			// Hacking
 			return;
 		}
@@ -54,7 +74,7 @@ void Skills::addSkill(Player *player, PacketReader &packet) {
 		}
 	}
 	if (player->getSkills()->addSkillLevel(skillId, 1) && !GameLogicUtilities::isBeginnerSkill(skillId)) {
-		player->getStats()->setSp(player->getStats()->getSp() - 1);
+		player->getStats()->setSp(player->getStats()->getSp(slot) - 1, slot);
 	}
 }
 
@@ -521,7 +541,7 @@ void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillId),
 		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
-		player->getTimers(), TimeUtilities::fromNow(coolTime * 1000));
+		player->getTimers(), TimeUtilities::fromNow(coolTime));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillId) {

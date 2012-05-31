@@ -852,13 +852,19 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		hits = tByte % 0x10;
 
 		skillId = packet.get<int32_t>();
-		if (skillId == 31121010) {
-			uint8_t infernalConcussionLevel = player->getSkills()->getSkillLevel(31121000);
 
-			attack.skillLevel = infernalConcussionLevel * 3;
-		}
-		else if (skillId != Jobs::All::RegularAttack) {
-			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
+		switch (skillId) {
+			case Jobs::DemonSlayer4::InfernalConcussionCont:
+				attack.skillLevel = player->getSkills()->getSkillLevel(Jobs::DemonSlayer4::InfernalConcussion);
+				break;
+			case Jobs::DemonSlayer1::DemonLashCont1:
+			case Jobs::DemonSlayer1::DemonLashCont2:
+			case Jobs::DemonSlayer1::DemonLashCont3:
+				attack.skillLevel = player->getSkills()->getSkillLevel(Jobs::DemonSlayer1::DemonLash);
+				break;
+			default:
+				attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
+				break;
 		}
 
 		attack.unk_val = packet.get<int8_t>();
@@ -888,6 +894,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 			case Jobs::FpArchMage::BigBang:
 			case Jobs::IlArchMage::BigBang:
 			case Jobs::Bishop::BigBang:
+			case Jobs::DemonSlayer3::CarrionBreath:
 				attack.isChargeSkill = true;
 				attack.charge = packet.get<int32_t>();
 				break;
@@ -901,8 +908,8 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		attack.weaponClass = packet.get<uint8_t>();
 		packet.skipBytes(1); // Temp stat + ?
 
-		attack.ticks = packet.get<int32_t>();
 		packet.skipBytes(4); // Unk
+		attack.ticks = packet.get<int32_t>();
 	}
 	else {
 		attack.summonId = packet.get<int32_t>(); // Summon ID, not to be confused with summon skill ID

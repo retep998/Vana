@@ -19,54 +19,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "noncopyable.hpp"
 #include "Types.h"
+#include <array>
 #include <string>
 #include <vector>
-#include <array>
 
 using std::string;
 using std::vector;
 using std::array;
 
-struct ValidItems {
-	void clear() {
-		hair.clear();
-		haircolor.clear();
-		faces.clear();
-		skin.clear();
-		top.clear();
-		bottom.clear();
-		shoes.clear();
-		weapons.clear();
-	}
-	vector<int32_t> hair;
-	vector<int32_t> haircolor;
-	vector<int32_t> faces;
-	vector<int32_t> skin;
-	vector<int32_t> top;
-	vector<int32_t> bottom;
-	vector<int32_t> shoes;
-	vector<int32_t> weapons;
-};
-
-struct ClassValidItems {
-	void clear() {
-		male.clear();
-		female.clear();
-	}
-	ValidItems male;
-	ValidItems female;
-};
-
 namespace ValidItemType {
 	enum : int8_t {
-		Face = 1,
-		Hair = 2,
-		HairColor = 3,
-		Skin = 4,
-		Top = 5,
-		Bottom = 6,
-		Shoes = 7,
-		Weapon = 8
+		Face,
+		Hair,
+		HairColor,
+		Skin,
+		Hat,
+		FaceAccessory,
+		Top,
+		Bottom,
+		Overall,
+		Shoes,
+		Gloves,
+		Shield,
+		Weapon,
+		MaxItems // Counted ;)
 	};
 }
 
@@ -84,6 +60,24 @@ namespace ValidClass {
 	};
 }
 
+struct ValidItems {
+	array<vector<int32_t>, ValidItemType::MaxItems> data;
+
+	void clear() {
+		for (size_t i = 0; i < ValidItemType::MaxItems; ++i)
+			data[i].clear();
+	}
+};
+
+struct ClassValidItems {
+	void clear() {
+		male.clear();
+		female.clear();
+	}
+	ValidItems male;
+	ValidItems female;
+};
+
 class ValidCharDataProvider : boost::noncopyable {
 public:
 	static ValidCharDataProvider * Instance() {
@@ -95,7 +89,7 @@ public:
 
 	bool isForbiddenName(const string &cmp);
 	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId);
-
+	bool isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type);
 private:
 	ValidCharDataProvider() {}
 	static ValidCharDataProvider *singleton;
@@ -103,7 +97,6 @@ private:
 	void loadForbiddenNames();
 	void loadCreationItems();
 
-	bool isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type);
 	bool iterateTest(int32_t id, vector<int32_t> *test);
 	ValidItems * getItems(int8_t gender, int8_t classId);
 

@@ -277,7 +277,7 @@ void PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		int32_t tempMp = m_mp + mpMod;
 		tempMp = MiscUtilities::constrainToRange<int32_t>(tempMp, Stats::MinMp, getMaxMp());
-		m_mp = static_cast<int16_t>(tempMp);
+		m_mp = static_cast<int32_t>(tempMp);
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
@@ -533,7 +533,7 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 
 void PlayerStats::addStat(PacketReader &packet) {
 	packet.skipBytes(4);
-	int32_t type = packet.get<int32_t>();
+	int64_t type = packet.get<int64_t>();
 	if (getAp() == 0) {
 		// Hacking
 		return;
@@ -549,7 +549,7 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	LevelsPacket::statOk(m_player);
 
 	for (uint32_t i = 0; i < amount; i++) {
-		int32_t type = packet.get<int32_t>();
+		int64_t type = packet.get<int64_t>();
 		int32_t value = packet.get<int32_t>();
 
 		if (value < 0 || getAp() < value) {
@@ -561,7 +561,7 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	}
 }
 
-void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
+void PlayerStats::addStat(int64_t type, int16_t mod, bool isReset) {
 	int16_t maxStat = ChannelServer::Instance()->getMaxStats();
 	bool isSubtract = mod < 0;
 	switch (type) {

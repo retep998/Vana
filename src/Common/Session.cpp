@@ -74,7 +74,13 @@ void Session::handleStop() {
 }
 
 void Session::send(const PacketCreator &packet) {
-	send(packet.getBuffer(), packet.getSize());
+	try {
+		send(packet.getBuffer(), packet.getSize());
+	}
+	catch (std::exception &ex) {
+		std::cerr << "FAILURE TO SEND PACKET: " << ex.what() << std::endl;
+		disconnect(); // Just to be sure...
+	}
 }
 
 void Session::send(const unsigned char *buf, int32_t len) {

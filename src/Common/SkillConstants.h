@@ -1046,8 +1046,25 @@ namespace Jobs {
 		};
 	}
 	
+	namespace DemonSlayer1 {
+		enum Skills : int32_t {
+			DemonLash = 31000004,
+			DemonLashCont1 = 31001006, // These 3 are used for the Demon Lash skill combo
+			DemonLashCont2 = 31001007,
+			DemonLashCont3 = 31001008,
+		};
+	}
+	
+	namespace DemonSlayer3 {
+		enum Skills : int32_t {
+			CarrionBreath = 31111005,
+		};
+	}
+	
 	namespace DemonSlayer4 {
 		enum Skills : int32_t {
+			InfernalConcussion = 31121000,
+			InfernalConcussionCont = 31121010,
 			MapleWarrior = 31121004,
 		};
 	}
@@ -1063,6 +1080,12 @@ namespace Jobs {
 		enum Skills : int32_t {
 			MapleWarrior = 33121007,
 			HerosWill = 33121008,
+		};
+	}
+	
+	namespace Mechanic1 {
+		enum Skills : int32_t {
+			Prototype = 35001002, // GO GO GADGET ROBOT
 		};
 	}
 	

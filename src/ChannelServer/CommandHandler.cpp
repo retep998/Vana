@@ -50,18 +50,18 @@ namespace AdminOpcodes {
 	enum Opcodes : int8_t {
 		CreateItem = 0x00,
 		DestroyFirstItem = 0x01,
-		GiveExp = 0x02,
-		Ban = 0x03,
-		Block = 0x04,
-		VarSetGet = 0x09,
-		Hide = 0x10,
+		GiveExp = 0x07,
+		Ban = 0x0E,
+		Block = 0x0F,
+		VarSetGet = 0x16,
+		Hide = 0x1D,
 		ShowMessageMap = 0x11,
-		Send = 0x12,
+		Send = 0xF3, // REMOVED?
 		Summon = 0x17,
-		Snow = 0x1C,
-		Warn = 0x1D,
-		Log = 0x1E,
-		SetObjState = 0x22
+		Snow = 0xF2, // REMOVED?
+		Warn = 0x38,
+		Log = 0xF0, // REMOVED?
+		SetObjState = 0xF1 // REMOVED?
 	};
 	/*
 		Opcode syntax:
