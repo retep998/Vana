@@ -63,13 +63,13 @@ void Skills::cancelSkill(Player *player, PacketReader &packet) {
 
 void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 	switch (skillId) {
-		case Jobs::Bowmaster::Hurricane:
-		case Jobs::WindArcher::Hurricane:
-		case Jobs::Marksman::PiercingArrow:
-		case Jobs::FpArchMage::BigBang:
-		case Jobs::IlArchMage::BigBang:
-		case Jobs::Bishop::BigBang:
-		case Jobs::Corsair::RapidFire:
+		case Skills::Bowmaster::Hurricane:
+		case Skills::WindArcher::Hurricane:
+		case Skills::Marksman::PiercingArrow:
+		case Skills::FpArchMage::BigBang:
+		case Skills::IlArchMage::BigBang:
+		case Skills::Bishop::BigBang:
+		case Skills::Corsair::RapidFire:
 			SkillsPacket::endSpecialSkill(player, player->getSpecialSkillInfo());
 			player->setSpecialSkill(SpecialSkillInfo());
 			break;
@@ -78,7 +78,7 @@ void Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) {
 				// Hacking
 				return;
 			}
-			if (skillId == Jobs::SuperGm::Hide) {
+			if (skillId == Skills::SuperGm::Hide) {
 				MapPacket::showPlayer(player);
 				GmPacket::endHide(player);
 			}
@@ -129,28 +129,28 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 	}
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	switch (skillId) {
-		case Jobs::Brawler::MpRecovery: {
+		case Skills::Brawler::MpRecovery: {
 			int16_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
 			int16_t healMp = modHp * skill->y / 100;
 			player->getStats()->modifyHp(-modHp);
 			player->getStats()->modifyMp(healMp);
 			break;
 		}
-		case Jobs::Shadower::Smokescreen: {
+		case Skills::Shadower::Smokescreen: {
 			int16_t x = packet.get<int16_t>();
 			int16_t y = packet.get<int16_t>();
 			const Pos &origin = Pos(x, y);
 			Mist *m = new Mist(player->getMap(), player, origin, skill, skillId, level);
 			break;
 		}
-		case Jobs::Corsair::Battleship:
+		case Skills::Corsair::Battleship:
 			if (player->getActiveBuffs()->getBattleshipHp() == 0) {
 				player->getActiveBuffs()->resetBattleshipHp();
 			}
 			break;
-		case Jobs::Crusader::ArmorCrash:
-		case Jobs::WhiteKnight::MagicCrash:
-		case Jobs::DragonKnight::PowerCrash: {
+		case Skills::Crusader::ArmorCrash:
+		case Skills::WhiteKnight::MagicCrash:
+		case Skills::DragonKnight::PowerCrash: {
 			packet.skipBytes(4); // Might be CRC too O.o?
 			uint8_t mobs = packet.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
@@ -163,9 +163,9 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Hero::MonsterMagnet:
-		case Jobs::Paladin::MonsterMagnet:
-		case Jobs::DarkKnight::MonsterMagnet: {
+		case Skills::Hero::MonsterMagnet:
+		case Skills::Paladin::MonsterMagnet:
+		case Skills::DarkKnight::MonsterMagnet: {
 			int32_t mobs = packet.get<int32_t>();
 			for (int8_t k = 0; k < mobs; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
@@ -175,19 +175,19 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			direction = packet.get<uint8_t>();
 			break;
 		}
-		case Jobs::FpWizard::Slow:
-		case Jobs::IlWizard::Slow:
-		case Jobs::BlazeWizard::Slow:
-		case Jobs::Page::Threaten:
+		case Skills::FpWizard::Slow:
+		case Skills::IlWizard::Slow:
+		case Skills::BlazeWizard::Slow:
+		case Skills::Page::Threaten:
 			packet.skipBytes(4); // Might be CRC too O.o?
-		case Jobs::FpMage::Seal:
-		case Jobs::IlMage::Seal:
-		case Jobs::BlazeWizard::Seal:
-		case Jobs::Priest::Doom:
-		case Jobs::Hermit::ShadowWeb:
-		case Jobs::NightWalker::ShadowWeb:
-		case Jobs::Shadower::NinjaAmbush:
-		case Jobs::NightLord::NinjaAmbush: {
+		case Skills::FpMage::Seal:
+		case Skills::IlMage::Seal:
+		case Skills::BlazeWizard::Seal:
+		case Skills::Priest::Doom:
+		case Skills::Hermit::ShadowWeb:
+		case Skills::NightWalker::ShadowWeb:
+		case Skills::Shadower::NinjaAmbush:
+		case Skills::NightLord::NinjaAmbush: {
 			uint8_t mobs = packet.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
@@ -196,21 +196,21 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Bishop::HerosWill:
-		case Jobs::IlArchMage::HerosWill:
-		case Jobs::FpArchMage::HerosWill:
-		case Jobs::DarkKnight::HerosWill:
-		case Jobs::Hero::HerosWill:
-		case Jobs::Paladin::HerosWill:
-		case Jobs::NightLord::HerosWill:
-		case Jobs::Shadower::HerosWill:
-		case Jobs::Bowmaster::HerosWill:
-		case Jobs::Marksman::HerosWill:
-		case Jobs::Buccaneer::PiratesRage:
-		case Jobs::Corsair::SpeedInfusion:
+		case Skills::Bishop::HerosWill:
+		case Skills::IlArchMage::HerosWill:
+		case Skills::FpArchMage::HerosWill:
+		case Skills::DarkKnight::HerosWill:
+		case Skills::Hero::HerosWill:
+		case Skills::Paladin::HerosWill:
+		case Skills::NightLord::HerosWill:
+		case Skills::Shadower::HerosWill:
+		case Skills::Bowmaster::HerosWill:
+		case Skills::Marksman::HerosWill:
+		case Skills::Buccaneer::PiratesRage:
+		case Skills::Corsair::SpeedInfusion:
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 			break;
-		case Jobs::Priest::Dispel: {
+		case Skills::Priest::Dispel: {
 			int8_t affected = packet.get<int8_t>();
 			player->getActiveBuffs()->useDispel();
 			if (Party *party = player->getParty()) {
@@ -239,7 +239,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Cleric::Heal: {
+		case Skills::Cleric::Heal: {
 			uint16_t healRate = skill->hpProp;
 			if (healRate > 100) {
 				healRate = 100;
@@ -271,39 +271,39 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Fighter::Rage:
-		case Jobs::DawnWarrior::Rage:
-		case Jobs::Spearman::IronWill:
-		case Jobs::Spearman::HyperBody:
-		case Jobs::FpWizard::Meditation:
-		case Jobs::IlWizard::Meditation:
-		case Jobs::BlazeWizard::Meditation:
-		case Jobs::Cleric::Bless:
-		case Jobs::Priest::HolySymbol:
-		case Jobs::Bishop::Resurrection:
-		case Jobs::Bishop::HolyShield:
-		case Jobs::Bowmaster::SharpEyes:
-		case Jobs::Marksman::SharpEyes:
-		case Jobs::Assassin::Haste:
-		case Jobs::NightWalker::Haste:
-		case Jobs::Hermit::MesoUp:
-		case Jobs::Bandit::Haste:
-		case Jobs::Buccaneer::SpeedInfusion:
-		case Jobs::ThunderBreaker::SpeedInfusion:
-		case Jobs::Buccaneer::TimeLeap:
-		case Jobs::Hero::MapleWarrior:
-		case Jobs::Paladin::MapleWarrior:
-		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FpArchMage::MapleWarrior:
-		case Jobs::IlArchMage::MapleWarrior:
-		case Jobs::Bishop::MapleWarrior:
-		case Jobs::Bowmaster::MapleWarrior:
-		case Jobs::Marksman::MapleWarrior:
-		case Jobs::NightLord::MapleWarrior:
-		case Jobs::Shadower::MapleWarrior:
-		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior: {
-			if (skillId == Jobs::Buccaneer::TimeLeap) {
+		case Skills::Fighter::Rage:
+		case Skills::DawnWarrior::Rage:
+		case Skills::Spearman::IronWill:
+		case Skills::Spearman::HyperBody:
+		case Skills::FpWizard::Meditation:
+		case Skills::IlWizard::Meditation:
+		case Skills::BlazeWizard::Meditation:
+		case Skills::Cleric::Bless:
+		case Skills::Priest::HolySymbol:
+		case Skills::Bishop::Resurrection:
+		case Skills::Bishop::HolyShield:
+		case Skills::Bowmaster::SharpEyes:
+		case Skills::Marksman::SharpEyes:
+		case Skills::Assassin::Haste:
+		case Skills::NightWalker::Haste:
+		case Skills::Hermit::MesoUp:
+		case Skills::Bandit::Haste:
+		case Skills::Buccaneer::SpeedInfusion:
+		case Skills::ThunderBreaker::SpeedInfusion:
+		case Skills::Buccaneer::TimeLeap:
+		case Skills::Hero::MapleWarrior:
+		case Skills::Paladin::MapleWarrior:
+		case Skills::DarkKnight::MapleWarrior:
+		case Skills::FpArchMage::MapleWarrior:
+		case Skills::IlArchMage::MapleWarrior:
+		case Skills::Bishop::MapleWarrior:
+		case Skills::Bowmaster::MapleWarrior:
+		case Skills::Marksman::MapleWarrior:
+		case Skills::NightLord::MapleWarrior:
+		case Skills::Shadower::MapleWarrior:
+		case Skills::Buccaneer::MapleWarrior:
+		case Skills::Corsair::MapleWarrior: {
+			if (skillId == Skills::Buccaneer::TimeLeap) {
 				player->getSkills()->removeAllCooldowns();
 			}
 			if (Party *party = player->getParty()) {
@@ -316,7 +316,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true, true);
 						SkillsPacket::showSkill(cmem, skillId, level, direction, true);
 						Buffs::addBuff(cmem, skillId, level, addedInfo);
-						if (skillId == Jobs::Buccaneer::TimeLeap) {
+						if (skillId == Skills::Buccaneer::TimeLeap) {
 							cmem->getSkills()->removeAllCooldowns();
 						}
 					}
@@ -324,12 +324,12 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Beginner::EchoOfHero:
-		case Jobs::Noblesse::EchoOfHero:
-		case Jobs::SuperGm::Haste:
-		case Jobs::SuperGm::HolySymbol:
-		case Jobs::SuperGm::Bless:
-		case Jobs::SuperGm::HyperBody: {
+		case Skills::Beginner::EchoOfHero:
+		case Skills::Noblesse::EchoOfHero:
+		case Skills::SuperGm::Haste:
+		case Skills::SuperGm::HolySymbol:
+		case Skills::SuperGm::Bless:
+		case Skills::SuperGm::HyperBody: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerId = packet.get<int32_t>();
@@ -342,7 +342,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::SuperGm::HealPlusDispel: {
+		case Skills::SuperGm::HealPlusDispel: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerId = packet.get<int32_t>();
@@ -357,7 +357,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::SuperGm::Resurrection: {
+		case Skills::SuperGm::Resurrection: {
 			uint8_t players = packet.get<int8_t>();
 			for (uint8_t i = 0; i < players; i++) {
 				int32_t playerId = packet.get<int32_t>();
@@ -370,7 +370,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::SuperGm::Hide:
+		case Skills::SuperGm::Hide:
 			MapPacket::removePlayer(player);
 			GmPacket::beginHide(player);
 			break;
@@ -402,7 +402,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 	int16_t moneyConsume = skill->moneyConsume;
 	int32_t item = skill->item;
 	if (mpUse > 0) {
-		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Concentrate)) {
+		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Concentrate)) {
 			int16_t mpRate = conc->x;
 			int16_t mpLoss = (mpUse * mpRate) / 100;
 			player->getStats()->modifyMp(-mpLoss, true);
@@ -423,7 +423,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 	if (item > 0) {
 		Inventory::takeItem(player, item, skill->itemCount);
 	}
-	if (coolTime > 0 && skillId != Jobs::Corsair::Battleship) {
+	if (coolTime > 0 && skillId != Skills::Corsair::Battleship) {
 		startCooldown(player, skillId, coolTime);
 	}
 	if (moneyConsume > 0) {
@@ -442,7 +442,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 }
 
 void Skills::useAttackSkill(Player *player, int32_t skillId) {
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		uint8_t level = player->getSkills()->getSkillLevel(skillId);
 		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0) {
 			return;
@@ -453,7 +453,7 @@ void Skills::useAttackSkill(Player *player, int32_t skillId) {
 
 void Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) {
 	uint8_t level = 0;
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
 		if (!SkillDataProvider::Instance()->isSkill(skillId) || level == 0) {
 			return;
@@ -461,7 +461,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) 
 		applySkillCosts(player, skillId, level);
 	}
 	uint16_t hits = 1;
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		uint16_t bullets = SkillDataProvider::Instance()->getSkill(skillId, level)->bulletConsume;
 		if (bullets > 0) {
 			hits = bullets;
@@ -510,7 +510,7 @@ void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 void Skills::stopCooldown(Player *player, int32_t skillId) {
 	player->getSkills()->removeCooldown(skillId);
 	SkillsPacket::sendCooldown(player, skillId, 0);
-	if (skillId == Jobs::Corsair::Battleship) {
+	if (skillId == Skills::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}
 

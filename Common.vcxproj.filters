@@ -483,5 +483,8 @@
     <ClInclude Include="src\Common\SociExtensions.h">
       <Filter>Source\Lib</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\JobConstants.h">
+      <Filter>Source\Game Constants</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

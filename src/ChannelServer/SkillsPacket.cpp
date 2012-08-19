@@ -53,9 +53,9 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 	packet.add<int32_t>(skillId);
 	packet.add<int8_t>(level); // TODO
 	switch (skillId) {
-		case Jobs::Hero::MonsterMagnet: // Monster Magnet processing
-		case Jobs::Paladin::MonsterMagnet:
-		case Jobs::DarkKnight::MonsterMagnet:
+		case Skills::Hero::MonsterMagnet: // Monster Magnet processing
+		case Skills::Paladin::MonsterMagnet:
+		case Skills::DarkKnight::MonsterMagnet:
 			packet.add<uint8_t>(direction);
 			break;
 	}
@@ -80,15 +80,15 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	packet.add<header_t>(SMSG_THEATRICS); // For the using player
 	bool send = false;
 	switch (skillId) {
-		case Jobs::FpWizard::MpEater:
-		case Jobs::IlWizard::MpEater:
-		case Jobs::Cleric::MpEater:
+		case Skills::FpWizard::MpEater:
+		case Skills::IlWizard::MpEater:
+		case Skills::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillId);
 			packet.add<int8_t>(1);
 			send = true;
 			break;
-		case Jobs::DragonKnight::DragonBlood: // Dragon Blood
+		case Skills::DragonKnight::DragonBlood: // Dragon Blood
 			packet.add<int8_t>(5);
 			packet.add<int32_t>(skillId);
 			send = true;
@@ -105,16 +105,16 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	switch (skillId) {
-		case Jobs::FpWizard::MpEater:
-		case Jobs::IlWizard::MpEater:
-		case Jobs::Cleric::MpEater:
+		case Skills::FpWizard::MpEater:
+		case Skills::IlWizard::MpEater:
+		case Skills::Cleric::MpEater:
 			packet.add<int8_t>(1);
 			packet.add<int32_t>(skillId);
 			packet.add<int8_t>(1);
 			send = true;
 			break;
-		case Jobs::ChiefBandit::MesoGuard:
-		case Jobs::DragonKnight::DragonBlood:
+		case Skills::ChiefBandit::MesoGuard:
+		case Skills::DragonKnight::DragonBlood:
 			packet.add<int8_t>(5);
 			packet.add<int32_t>(skillId);
 			send = true;
@@ -170,7 +170,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
+	packet.add<int32_t>(Skills::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
 	packet.addBool(on);
 	player->getSession()->send(packet);
@@ -181,7 +181,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(Jobs::DarkKnight::Berserk);
+	packet.add<int32_t>(Skills::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
 	packet.addBool(on);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);

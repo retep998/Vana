@@ -373,11 +373,11 @@ void PlayerStats::loseExp() {
 			expLoss = 1;
 		}
 		else {
-			switch (GameLogicUtilities::getJobTrack(getJob(), true)) {
-				case Jobs::JobTracks::Magician:
+			switch (GameLogicUtilities::getJobLine(getJob())) {
+				case Jobs::JobLines::Magician:
 					expLoss = 7;
 					break;
-				case Jobs::JobTracks::Thief:
+				case Jobs::JobLines::Thief:
 					expLoss = 5;
 					break;
 			}
@@ -409,7 +409,7 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 		int16_t spGain = 0;
 		int16_t hpGain = 0;
 		int16_t mpGain = 0;
-		int16_t job = GameLogicUtilities::getJobTrack(fullJob, true);
+		int16_t jobLine = GameLogicUtilities::getJobLine(fullJob);
 		int16_t intt = getInt(true) / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 
@@ -423,34 +423,34 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 			else {
 				apGain += Stats::ApPerLevel;
 			}
-			switch (job) {
-				case Jobs::JobTracks::Beginner:
+			switch (jobLine) {
+				case Jobs::JobLines::Beginner:
 					hpGain += levelHp(Stats::BaseHp::Beginner);
 					mpGain += levelMp(Stats::BaseMp::Beginner, intt);
 					break;
-				case Jobs::JobTracks::Warrior:
+				case Jobs::JobLines::Warrior:
 					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
 						x = getX(m_player->getSkills()->getHpIncrease());
 					}
 					hpGain += levelHp(Stats::BaseHp::Warrior, x);
 					mpGain += levelMp(Stats::BaseMp::Warrior, intt);
 					break;
-				case Jobs::JobTracks::Magician:
+				case Jobs::JobLines::Magician:
 					if (levelsGained == 1 && m_player->getSkills()->hasMpIncrease()) {
 						x = getX(m_player->getSkills()->getMpIncrease());
 					}
 					hpGain += levelHp(Stats::BaseHp::Magician);
 					mpGain += levelMp(Stats::BaseMp::Magician, 2 * x + intt);
 					break;
-				case Jobs::JobTracks::Bowman:
+				case Jobs::JobLines::Bowman:
 					hpGain += levelHp(Stats::BaseHp::Bowman);
 					mpGain += levelMp(Stats::BaseMp::Bowman, intt);
 					break;
-				case Jobs::JobTracks::Thief:
+				case Jobs::JobLines::Thief:
 					hpGain += levelHp(Stats::BaseHp::Thief);
 					mpGain += levelMp(Stats::BaseMp::Thief, intt);
 					break;
-				case Jobs::JobTracks::Pirate:
+				case Jobs::JobLines::Pirate:
 					if (levelsGained == 1 && m_player->getSkills()->hasHpIncrease()) {
 						x = getX(m_player->getSkills()->getHpIncrease());
 					}

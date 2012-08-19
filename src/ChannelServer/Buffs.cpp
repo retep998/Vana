@@ -59,11 +59,11 @@ int16_t Buffs::getMobSkillValue(int8_t value, uint8_t skillId, uint8_t level) {
 int32_t Buffs::parseMountInfo(Player *player, int32_t skillId, uint8_t level) {
 	int32_t mountId = 0;
 	switch (skillId) {
-		case Jobs::Beginner::MonsterRider:
-		case Jobs::Noblesse::MonsterRider:
+		case Skills::Beginner::MonsterRider:
+		case Skills::Noblesse::MonsterRider:
 			mountId = player->getInventory()->getEquippedId(EquipSlots::Mount);
 			break;
-		case Jobs::Corsair::Battleship:
+		case Skills::Corsair::Battleship:
 			mountId = Items::BattleshipMount;
 			break;
 	}
@@ -93,30 +93,30 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) 
 		}
 		else {
 			switch (skillId) {
-				case Jobs::Bowmaster::SharpEyes:
-				case Jobs::Marksman::SharpEyes:
-				case Jobs::Hermit::ShadowPartner:
-				case Jobs::NightWalker::ShadowPartner:
+				case Skills::Bowmaster::SharpEyes:
+				case Skills::Marksman::SharpEyes:
+				case Skills::Hermit::ShadowPartner:
+				case Skills::NightWalker::ShadowPartner:
 					value = skill->x * 256 + skill->y;
 					break;
-				case Jobs::Crusader::ComboAttack:
-				case Jobs::DawnWarrior::ComboAttack:
+				case Skills::Crusader::ComboAttack:
+				case Skills::DawnWarrior::ComboAttack:
 					value = player->getActiveBuffs()->getCombo() + 1;
 					break;
-				case Jobs::NightLord::ShadowStars:
+				case Skills::NightLord::ShadowStars:
 					value = (player->getInventory()->doShadowStars() % 10000) + 1;
 					break;
-				case Jobs::Marauder::Transformation:
-				case Jobs::Buccaneer::SuperTransformation:
-				case Jobs::WindArcher::EagleEye:
-				case Jobs::ThunderBreaker::Transformation:
+				case Skills::Marauder::Transformation:
+				case Skills::Buccaneer::SuperTransformation:
+				case Skills::WindArcher::EagleEye:
+				case Skills::ThunderBreaker::Transformation:
 					value = getValue(val, skillId, level);
 					if (val == SkillMorph) {
 						value += (player->getGender() * 100); // Females are +100
 					}
 					break;
-				case Jobs::Marauder::EnergyCharge:
-				case Jobs::ThunderBreaker::EnergyCharge:
+				case Skills::Marauder::EnergyCharge:
+				case Skills::ThunderBreaker::EnergyCharge:
 					value = player->getActiveBuffs()->getEnergyChargeLevel();
 					break;
 				default:
@@ -158,8 +158,8 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t l
 			}
 			else {
 				switch (skillId) {
-					case Jobs::Crusader::ComboAttack:
-					case Jobs::DawnWarrior::ComboAttack:
+					case Skills::Crusader::ComboAttack:
+					case Skills::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
@@ -202,8 +202,8 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint
 			}
 			else {
 				switch (skillId) {
-					case Jobs::Crusader::ComboAttack:
-					case Jobs::DawnWarrior::ComboAttack:
+					case Skills::Crusader::ComboAttack:
+					case Skills::DawnWarrior::ComboAttack:
 						value = player->getActiveBuffs()->getCombo() + 1;
 						break;
 					default:
@@ -241,7 +241,7 @@ ActiveBuff Buffs::parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t leve
 		int8_t val = cur.buff.value;
 		playerSkill.types[cur.buff.byte] += cur.buff.type;
 		playerSkill.hasMapBuff = true;
-		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
+		int16_t value = (val == SkillNone ? (skillId == MobSkills::Seal ? 2 : 1) : getMobSkillValue(val, skillId, level));
 		playerSkill.vals.push_back(value);
 	}
 	return playerSkill;
@@ -305,80 +305,80 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	int32_t time = skill->time;
 	switch (skillId) {
-		case Jobs::DragonKnight::DragonRoar:
+		case Skills::DragonKnight::DragonRoar:
 			time = skill->y;
 			break;
-		case Jobs::Beginner::MonsterRider:
-		case Jobs::Noblesse::MonsterRider:
-		case Jobs::Corsair::Battleship:
+		case Skills::Beginner::MonsterRider:
+		case Skills::Noblesse::MonsterRider:
+		case Skills::Corsair::Battleship:
 			if (mountId == 0) {
 				// Hacking
 				return true;
 			}
 			player->getActiveBuffs()->setMountInfo(skillId, mountId);
 			break;
-		case Jobs::SuperGm::Hide:
+		case Skills::SuperGm::Hide:
 			time = 2100000; // Make sure that it doesn't end any time soon
 			break;
-		case Jobs::Spearman::HyperBody:
-		case Jobs::SuperGm::HyperBody:
+		case Skills::Spearman::HyperBody:
+		case Skills::SuperGm::HyperBody:
 			player->getStats()->setHyperBody(skill->x, skill->y);
 			break;
-		case Jobs::Crusader::ComboAttack:
-		case Jobs::DawnWarrior::ComboAttack:
+		case Skills::Crusader::ComboAttack:
+		case Skills::DawnWarrior::ComboAttack:
 			player->getActiveBuffs()->setCombo(0, false);
 			break;
-		case Jobs::Hero::Enrage:
+		case Skills::Hero::Enrage:
 			if (player->getActiveBuffs()->getCombo() != 10) {
 				return true;
 			}
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
-		case Jobs::Fighter::SwordBooster:
-		case Jobs::Fighter::AxeBooster:
-		case Jobs::Page::SwordBooster:
-		case Jobs::Page::BwBooster:
-		case Jobs::Spearman::SpearBooster:
-		case Jobs::Spearman::PolearmBooster:
-		case Jobs::FpMage::SpellBooster:
-		case Jobs::IlMage::SpellBooster:
-		case Jobs::Hunter::BowBooster:
-		case Jobs::Crossbowman::CrossbowBooster:
-		case Jobs::Assassin::ClawBooster:
-		case Jobs::Bandit::DaggerBooster:
-		case Jobs::Brawler::KnucklerBooster:
-		case Jobs::Gunslinger::GunBooster:
-		case Jobs::DawnWarrior::SwordBooster:
-		case Jobs::BlazeWizard::SpellBooster:
-		case Jobs::WindArcher::BowBooster:
-		case Jobs::NightWalker::ClawBooster:
-		case Jobs::ThunderBreaker::KnucklerBooster:
+		case Skills::Fighter::SwordBooster:
+		case Skills::Fighter::AxeBooster:
+		case Skills::Page::SwordBooster:
+		case Skills::Page::BwBooster:
+		case Skills::Spearman::SpearBooster:
+		case Skills::Spearman::PolearmBooster:
+		case Skills::FpMage::SpellBooster:
+		case Skills::IlMage::SpellBooster:
+		case Skills::Hunter::BowBooster:
+		case Skills::Crossbowman::CrossbowBooster:
+		case Skills::Assassin::ClawBooster:
+		case Skills::Bandit::DaggerBooster:
+		case Skills::Brawler::KnucklerBooster:
+		case Skills::Gunslinger::GunBooster:
+		case Skills::DawnWarrior::SwordBooster:
+		case Skills::BlazeWizard::SpellBooster:
+		case Skills::WindArcher::BowBooster:
+		case Skills::NightWalker::ClawBooster:
+		case Skills::ThunderBreaker::KnucklerBooster:
 			player->getActiveBuffs()->setBooster(skillId); // Makes switching equips MUCH easier
 			break;
-		case Jobs::WhiteKnight::BwFireCharge:
-		case Jobs::WhiteKnight::BwIceCharge:
-		case Jobs::WhiteKnight::BwLitCharge:
-		case Jobs::WhiteKnight::SwordFireCharge:
-		case Jobs::WhiteKnight::SwordIceCharge:
-		case Jobs::WhiteKnight::SwordLitCharge:
-		case Jobs::Paladin::BwHolyCharge:
-		case Jobs::Paladin::SwordHolyCharge:
-		case Jobs::DawnWarrior::SoulCharge:
-		case Jobs::ThunderBreaker::LightningCharge:
+		case Skills::WhiteKnight::BwFireCharge:
+		case Skills::WhiteKnight::BwIceCharge:
+		case Skills::WhiteKnight::BwLitCharge:
+		case Skills::WhiteKnight::SwordFireCharge:
+		case Skills::WhiteKnight::SwordIceCharge:
+		case Skills::WhiteKnight::SwordLitCharge:
+		case Skills::Paladin::BwHolyCharge:
+		case Skills::Paladin::SwordHolyCharge:
+		case Skills::DawnWarrior::SoulCharge:
+		case Skills::ThunderBreaker::LightningCharge:
 			player->getActiveBuffs()->setCharge(skillId); // Makes switching equips/Charged Blow easier
 			break;
-		case Jobs::Hero::MapleWarrior:
-		case Jobs::Paladin::MapleWarrior:
-		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FpArchMage::MapleWarrior:
-		case Jobs::IlArchMage::MapleWarrior:
-		case Jobs::Bishop::MapleWarrior:
-		case Jobs::Bowmaster::MapleWarrior:
-		case Jobs::Marksman::MapleWarrior:
-		case Jobs::NightLord::MapleWarrior:
-		case Jobs::Shadower::MapleWarrior:
-		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior:
+		case Skills::Hero::MapleWarrior:
+		case Skills::Paladin::MapleWarrior:
+		case Skills::DarkKnight::MapleWarrior:
+		case Skills::FpArchMage::MapleWarrior:
+		case Skills::IlArchMage::MapleWarrior:
+		case Skills::Bishop::MapleWarrior:
+		case Skills::Bowmaster::MapleWarrior:
+		case Skills::Marksman::MapleWarrior:
+		case Skills::NightLord::MapleWarrior:
+		case Skills::Shadower::MapleWarrior:
+		case Skills::Buccaneer::MapleWarrior:
+		case Skills::Corsair::MapleWarrior:
 			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
 			break;
 	}
@@ -392,20 +392,20 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	}
 	else {
 		switch (skillId) {
-			case Jobs::Pirate::Dash:
-			case Jobs::ThunderBreaker::Dash:
+			case Skills::Pirate::Dash:
+			case Skills::ThunderBreaker::Dash:
 				BuffsPacket::usePirateBuff(player, skillId, time, playerSkill, mapSkill);
 				break;
-			case Jobs::Marauder::EnergyCharge:
-			case Jobs::ThunderBreaker::EnergyCharge:
+			case Skills::Marauder::EnergyCharge:
+			case Skills::ThunderBreaker::EnergyCharge:
 				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : 0), playerSkill, mapSkill);
 				break;
-			case Jobs::Buccaneer::SpeedInfusion:
-			case Jobs::ThunderBreaker::SpeedInfusion:
+			case Skills::Buccaneer::SpeedInfusion:
+			case Skills::ThunderBreaker::SpeedInfusion:
 				BuffsPacket::useSpeedInfusion(player, skillId, time, playerSkill, mapSkill, addedInfo);
 				break;
-			case Jobs::Outlaw::HomingBeacon:
-			case Jobs::Corsair::Bullseye:
+			case Skills::Outlaw::HomingBeacon:
+			case Skills::Corsair::Bullseye:
 				if (player->getActiveBuffs()->hasMarkedMonster()) {
 					// Otherwise the animation appears above numerous
 					BuffsPacket::endSkill(player, playerSkill);
@@ -449,74 +449,74 @@ void Buffs::addBuff(Player *player, int32_t itemId, int32_t time) {
 void Buffs::endBuff(Player *player, int32_t skill) {
 	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
 	switch (skill) {
-		case Jobs::Beginner::MonsterRider:
-		case Jobs::Noblesse::MonsterRider:
-		case Jobs::Corsair::Battleship:
+		case Skills::Beginner::MonsterRider:
+		case Skills::Noblesse::MonsterRider:
+		case Skills::Corsair::Battleship:
 			playerBuffs->setMountInfo(0, 0);
 			break;
-		case Jobs::Crusader::ComboAttack:
-		case Jobs::DawnWarrior::ComboAttack:
+		case Skills::Crusader::ComboAttack:
+		case Skills::DawnWarrior::ComboAttack:
 			playerBuffs->setCombo(0, false);
 			break;
-		case Jobs::Spearman::HyperBody:
-		case Jobs::SuperGm::HyperBody:
+		case Skills::Spearman::HyperBody:
+		case Skills::SuperGm::HyperBody:
 			player->getStats()->setHyperBody(0, 0);
 			player->getStats()->setHp(player->getStats()->getHp());
 			player->getStats()->setMp(player->getStats()->getMp());
 			break;
-		case Jobs::Marauder::EnergyCharge:
-		case Jobs::ThunderBreaker::EnergyCharge:
+		case Skills::Marauder::EnergyCharge:
+		case Skills::ThunderBreaker::EnergyCharge:
 			playerBuffs->resetEnergyChargeLevel();
 			break;
-		case Jobs::Fighter::SwordBooster:
-		case Jobs::Fighter::AxeBooster:
-		case Jobs::Page::SwordBooster:
-		case Jobs::Page::BwBooster:
-		case Jobs::Spearman::SpearBooster:
-		case Jobs::Spearman::PolearmBooster:
-		case Jobs::FpMage::SpellBooster:
-		case Jobs::IlMage::SpellBooster:
-		case Jobs::Hunter::BowBooster:
-		case Jobs::Crossbowman::CrossbowBooster:
-		case Jobs::Assassin::ClawBooster:
-		case Jobs::Bandit::DaggerBooster:
-		case Jobs::Brawler::KnucklerBooster:
-		case Jobs::Gunslinger::GunBooster:
-		case Jobs::DawnWarrior::SwordBooster:
-		case Jobs::BlazeWizard::SpellBooster:
-		case Jobs::WindArcher::BowBooster:
-		case Jobs::NightWalker::ClawBooster:
-		case Jobs::ThunderBreaker::KnucklerBooster:
+		case Skills::Fighter::SwordBooster:
+		case Skills::Fighter::AxeBooster:
+		case Skills::Page::SwordBooster:
+		case Skills::Page::BwBooster:
+		case Skills::Spearman::SpearBooster:
+		case Skills::Spearman::PolearmBooster:
+		case Skills::FpMage::SpellBooster:
+		case Skills::IlMage::SpellBooster:
+		case Skills::Hunter::BowBooster:
+		case Skills::Crossbowman::CrossbowBooster:
+		case Skills::Assassin::ClawBooster:
+		case Skills::Bandit::DaggerBooster:
+		case Skills::Brawler::KnucklerBooster:
+		case Skills::Gunslinger::GunBooster:
+		case Skills::DawnWarrior::SwordBooster:
+		case Skills::BlazeWizard::SpellBooster:
+		case Skills::WindArcher::BowBooster:
+		case Skills::NightWalker::ClawBooster:
+		case Skills::ThunderBreaker::KnucklerBooster:
 			playerBuffs->setBooster(0);
 			break;
-		case Jobs::WhiteKnight::BwFireCharge:
-		case Jobs::WhiteKnight::BwIceCharge:
-		case Jobs::WhiteKnight::BwLitCharge:
-		case Jobs::WhiteKnight::SwordFireCharge:
-		case Jobs::WhiteKnight::SwordIceCharge:
-		case Jobs::WhiteKnight::SwordLitCharge:
-		case Jobs::Paladin::BwHolyCharge:
-		case Jobs::Paladin::SwordHolyCharge:
-		case Jobs::DawnWarrior::SoulCharge:
-		case Jobs::ThunderBreaker::LightningCharge:
+		case Skills::WhiteKnight::BwFireCharge:
+		case Skills::WhiteKnight::BwIceCharge:
+		case Skills::WhiteKnight::BwLitCharge:
+		case Skills::WhiteKnight::SwordFireCharge:
+		case Skills::WhiteKnight::SwordIceCharge:
+		case Skills::WhiteKnight::SwordLitCharge:
+		case Skills::Paladin::BwHolyCharge:
+		case Skills::Paladin::SwordHolyCharge:
+		case Skills::DawnWarrior::SoulCharge:
+		case Skills::ThunderBreaker::LightningCharge:
 			playerBuffs->setCharge(0);
 			break;
-		case Jobs::Outlaw::HomingBeacon:
-		case Jobs::Corsair::Bullseye:
+		case Skills::Outlaw::HomingBeacon:
+		case Skills::Corsair::Bullseye:
 			playerBuffs->setMarkedMonster(0);
 			break;
-		case Jobs::Hero::MapleWarrior:
-		case Jobs::Paladin::MapleWarrior:
-		case Jobs::DarkKnight::MapleWarrior:
-		case Jobs::FpArchMage::MapleWarrior:
-		case Jobs::IlArchMage::MapleWarrior:
-		case Jobs::Bishop::MapleWarrior:
-		case Jobs::Bowmaster::MapleWarrior:
-		case Jobs::Marksman::MapleWarrior:
-		case Jobs::NightLord::MapleWarrior:
-		case Jobs::Shadower::MapleWarrior:
-		case Jobs::Buccaneer::MapleWarrior:
-		case Jobs::Corsair::MapleWarrior:
+		case Skills::Hero::MapleWarrior:
+		case Skills::Paladin::MapleWarrior:
+		case Skills::DarkKnight::MapleWarrior:
+		case Skills::FpArchMage::MapleWarrior:
+		case Skills::IlArchMage::MapleWarrior:
+		case Skills::Bishop::MapleWarrior:
+		case Skills::Bowmaster::MapleWarrior:
+		case Skills::Marksman::MapleWarrior:
+		case Skills::NightLord::MapleWarrior:
+		case Skills::Shadower::MapleWarrior:
+		case Skills::Buccaneer::MapleWarrior:
+		case Skills::Corsair::MapleWarrior:
 			player->getStats()->setMapleWarrior(0);
 			break;
 	}

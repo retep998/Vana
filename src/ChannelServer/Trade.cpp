@@ -49,15 +49,15 @@ bool ActiveTrade::bothCanTrade() {
 }
 
 bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
-	bool yes = true;
-	int32_t cmesos = unit->mesos + target->getInventory()->getMesos();
-	if (cmesos < 0) {
-		yes = false;
+	bool canTrade = true;
+	int32_t currentMesos = unit->mesos + target->getInventory()->getMesos();
+	if (currentMesos < 0) {
+		canTrade = false;
 	}
-	if (yes && unit->count > 0) {
+	if (canTrade && unit->count > 0) {
 		std::array<int8_t, Inventories::InventoryCount> totals = {0};
 		unordered_map<int32_t, int16_t> added;
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			// Create item structure to determine needed slots among stackable items
 			// Also, determine needed slots for nonstackables
 			if (unit->slot[i]) {
@@ -79,7 +79,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 				}
 			}
 		}
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			// Determine precisely how many slots are needed for stackables
 			if (unit->slot[i]) {
 				Item *check = unit->items[i];
@@ -118,11 +118,11 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 				}
 			}
 		}
-		for (uint8_t i = 0; i < Inventories::InventoryCount; i++) {
+		for (uint8_t i = 0; i < Inventories::InventoryCount; ++i) {
 			// Determine if needed slots are available
 			if (totals[i] > 0) {
 				int8_t incrementor = 0;
-				for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); g++) {
+				for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); ++g) {
 					if (target->getInventory()->getItem(i + 1, g) == nullptr) {
 						incrementor++;
 					}
@@ -131,18 +131,18 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 					}
 				}
 				if (incrementor < totals[i]) {
-					yes = false;
+					canTrade = false;
 					break;
 				}
 			}
 		}
 	}
-	return yes;
+	return canTrade;
 }
 
 void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 	if (info->count > 0) {
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; i++) {
+		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			if (info->slot[i]) {
 				Item *item = info->items[i];
 				if (item->hasKarma()) {
@@ -158,9 +158,9 @@ void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 
 void ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) {
 	if (info->mesos > 0) {
-		int32_t taxlevel = TradeHandler::getTaxLevel(info->mesos);
-		if (traded && taxlevel != 0) {
-			int64_t mesos = info->mesos * taxlevel / 10000;
+		int32_t taxLevel = TradeHandler::getTaxLevel(info->mesos);
+		if (traded && taxLevel != 0) {
+			int64_t mesos = info->mesos * taxLevel / 10000;
 			info->mesos -= static_cast<int32_t>(mesos);
 		}
 		player->getInventory()->modifyMesos(info->mesos);

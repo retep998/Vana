@@ -166,7 +166,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				// Special damage calculation for not having enough mesos
 				double reduction = 2.0 - ((double)(mesos / mesoLoss)) / 2.0;
 				damage = static_cast<uint16_t>(damage / reduction);
-				// This puts us pretty close to the damage observed clientskillIde, needs improvement
+				// This puts us pretty close to the damage observed clientside, needs improvement
 				// TODO: Improve formula
 			}
 			else {
@@ -242,7 +242,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 				player->getStats()->damageMp(mpBurn);
 			}
 
-			if (player->getActiveBuffs()->getActiveSkillLevel(Jobs::Corsair::Battleship) > 0) {
+			if (player->getActiveBuffs()->getActiveSkillLevel(Skills::Corsair::Battleship) > 0) {
 				player->getActiveBuffs()->reduceBattleshipHp(static_cast<uint16_t>(damage));
 			}
 		}
@@ -315,13 +315,13 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	int32_t skillId = packet.get<int32_t>();
 	switch (skillId) {
-		case Jobs::Hero::MonsterMagnet:
-		case Jobs::Paladin::MonsterMagnet:
-		case Jobs::DarkKnight::MonsterMagnet:
-		case Jobs::Marksman::PiercingArrow:
-		case Jobs::FpArchMage::BigBang:
-		case Jobs::IlArchMage::BigBang:
-		case Jobs::Bishop::BigBang: {
+		case Skills::Hero::MonsterMagnet:
+		case Skills::Paladin::MonsterMagnet:
+		case Skills::DarkKnight::MonsterMagnet:
+		case Skills::Marksman::PiercingArrow:
+		case Skills::FpArchMage::BigBang:
+		case Skills::IlArchMage::BigBang:
+		case Skills::Bishop::BigBang: {
 			SpecialSkillInfo info;
 			info.skillId = skillId;
 			info.level = packet.get<uint8_t>();
@@ -331,7 +331,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			SkillsPacket::showSpecialSkill(player, info);
 			break;
 		}
-		case Jobs::ChiefBandit::Chakra: {
+		case Skills::ChiefBandit::Chakra: {
 			int16_t dex = player->getStats()->getDex(true);
 			int16_t luk = player->getStats()->getLuk(true);
 			int16_t recovery = player->getSkills()->getSkillInfo(skillId)->y;
@@ -410,14 +410,14 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
 
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		Skills::useAttackSkill(player, skillId);
 	}
 
 	int32_t map = player->getMap();
-	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Jobs::ChiefBandit::Pickpocket); // Check for active pickpocket level
+	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
-	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Jobs::ChiefBandit::Pickpocket, ppLevel);
+	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
 	Pos origin;
 	vector<int32_t> ppDamages;
 
@@ -446,10 +446,10 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				}
 				break;
 			}
-			if (skillId == Jobs::Paladin::HeavensHammer) {
+			if (skillId == Skills::Paladin::HeavensHammer) {
 				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
-			else if (skillId == Jobs::Bandit::Steal && !mob->isBoss()) {
+			else if (skillId == Skills::Bandit::Steal && !mob->isBoss()) {
 				DropHandler::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t tempHp = mob->getHp();
@@ -490,7 +490,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	}
 
 	switch (skillId) {
-		case Jobs::ChiefBandit::MesoExplosion: {
+		case Skills::ChiefBandit::MesoExplosion: {
 			uint8_t items = packet.get<int8_t>();
 			int32_t map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
@@ -508,8 +508,8 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Marauder::EnergyDrain:
-		case Jobs::ThunderBreaker::EnergyDrain: {
+		case Skills::Marauder::EnergyDrain:
+		case Skills::ThunderBreaker::EnergyDrain: {
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * player->getSkills()->getSkillInfo(skillId)->x / 100);
 			if (hpRecover > player->getStats()->getMaxHp()) {
 				player->getStats()->setHp(player->getStats()->getMaxHp());
@@ -519,19 +519,19 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::Crusader::SwordPanic: // Crusader finishers
-		case Jobs::Crusader::SwordComa:
-		case Jobs::Crusader::AxePanic:
-		case Jobs::Crusader::AxeComa:
-		case Jobs::DawnWarrior::Panic:
-		case Jobs::DawnWarrior::Coma:
+		case Skills::Crusader::SwordPanic: // Crusader finishers
+		case Skills::Crusader::SwordComa:
+		case Skills::Crusader::AxePanic:
+		case Skills::Crusader::AxeComa:
+		case Skills::DawnWarrior::Panic:
+		case Skills::DawnWarrior::Coma:
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
-		case Jobs::Crusader::Shout:
-		case Jobs::Gm::SuperDragonRoar:
-		case Jobs::SuperGm::SuperDragonRoar:
+		case Skills::Crusader::Shout:
+		case Skills::Gm::SuperDragonRoar:
+		case Skills::SuperGm::SuperDragonRoar:
 			break;
-		case Jobs::DragonKnight::DragonRoar: {
+		case Skills::DragonKnight::DragonRoar: {
 			int16_t xProperty = SkillDataProvider::Instance()->getSkill(skillId, level)->x;
 			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
 			if (reduction < player->getStats()->getHp()) {
@@ -541,20 +541,20 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				// Hacking
 				return;
 			}
-			Buffs::addBuff(player, Jobs::DragonKnight::DragonRoar, level, 0);
+			Buffs::addBuff(player, Skills::DragonKnight::DragonRoar, level, 0);
 			break;
 		}
-		case Jobs::DragonKnight::Sacrifice: {
+		case Skills::DragonKnight::Sacrifice: {
 			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 			uint16_t hpDamage = static_cast<uint16_t>(attack.totalDamage * xProperty / 100);
 			player->getStats()->setHp(hpDamage > player->getStats()->getHp() ? 1 : hpDamage);
 			break;
 		}
-		case Jobs::WhiteKnight::ChargeBlow: {
-			int8_t skillLevel = player->getSkills()->getSkillLevel(Jobs::Paladin::AdvancedCharge);
+		case Skills::WhiteKnight::ChargeBlow: {
+			int8_t skillLevel = player->getSkills()->getSkillLevel(Skills::Paladin::AdvancedCharge);
 			int16_t xProperty = 0;
 			if (skillLevel > 0) {
-				xProperty = SkillDataProvider::Instance()->getSkill(Jobs::Paladin::AdvancedCharge, skillLevel)->x;
+				xProperty = SkillDataProvider::Instance()->getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
 			if ((xProperty != 100) && (xProperty == 0 || Randomizer::Instance()->randShort(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
@@ -579,9 +579,9 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	uint8_t level = attack.skillLevel;
 
 	switch (skillId) {
-		case Jobs::Bowmaster::Hurricane:
-		case Jobs::WindArcher::Hurricane:
-		case Jobs::Corsair::RapidFire:
+		case Skills::Bowmaster::Hurricane:
+		case Skills::WindArcher::Hurricane:
+		case Skills::Corsair::RapidFire:
 			if (player->getSpecialSkill() == 0) {
 				SpecialSkillInfo info;
 				info.skillId = skillId;
@@ -621,14 +621,14 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 				continue;
 			}
 			maxHp = mob->getMaxHp();
-			if (skillId == Jobs::Ranger::MortalBlow || skillId == Jobs::Sniper::MortalBlow) {
+			if (skillId == Skills::Ranger::MortalBlow || skillId == Skills::Sniper::MortalBlow) {
 				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillId);
 				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
 				if ((mob->getHp() < hpPercentage) && (Randomizer::Instance()->randShort(99) < sk->y)) {
 					damage = mob->getHp();
 				}
 			}
-			else if (skillId == Jobs::Outlaw::HomingBeacon || skillId == Jobs::Corsair::Bullseye) {
+			else if (skillId == Skills::Outlaw::HomingBeacon || skillId == Skills::Corsair::Bullseye) {
 				Buffs::addBuff(player, skillId, level, 0, mapMobId);
 			}
 			int32_t tempHp = mob->getHp();
@@ -646,7 +646,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	}
 
 	switch (skillId) {
-		case Jobs::Assassin::Drain: {
+		case Skills::Assassin::Drain: {
 			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
 			int32_t hpRecover = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
 			int16_t playerMaxHp = player->getStats()->getMaxHp();
@@ -664,7 +664,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			}
 			break;
 		}
-		case Jobs::DawnWarrior::SoulBlade:
+		case Skills::DawnWarrior::SoulBlade:
 			if (attack.totalDamage > 0) {
 				player->getActiveBuffs()->addCombo();
 			}
@@ -737,8 +737,8 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	}
 
 	switch (skillId) {
-		case Jobs::FpMage::PoisonMist:
-		case Jobs::BlazeWizard::FlameGear: {
+		case Skills::FpMage::PoisonMist:
+		case Skills::BlazeWizard::FlameGear: {
 			Mist *mist = new Mist(player->getMap(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillId, level), skillId, level, true);
 			break;
 		}
@@ -839,7 +839,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		targets = tByte / 0x10;
 		hits = tByte % 0x10;
 
-		if (skillId != Jobs::All::RegularAttack) {
+		if (skillId != Skills::All::RegularAttack) {
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
@@ -849,27 +849,27 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		packet.skipBytes(4); // Unk, strange constant dependent on skill, probably a CRC
 
 		switch (skillId) {
-			case Jobs::Hermit::ShadowMeso:
+			case Skills::Hermit::ShadowMeso:
 				attack.isShadowMeso = true;
 				shadowMeso = true;
 				break;
-			case Jobs::ChiefBandit::MesoExplosion:
+			case Skills::ChiefBandit::MesoExplosion:
 				attack.isMesoExplosion = true;
 				mesoExplosion = true;
 				break;
-			case Jobs::Cleric::Heal:
+			case Skills::Cleric::Heal:
 				attack.isHeal = true;
 				break;
-			case Jobs::Gunslinger::Grenade:
-			case Jobs::Brawler::CorkscrewBlow:
-			case Jobs::Bowmaster::Hurricane:
-			case Jobs::WindArcher::Hurricane:
-			case Jobs::Marksman::PiercingArrow:
-			case Jobs::NightWalker::PoisonBomb:
-			case Jobs::Corsair::RapidFire:
-			case Jobs::FpArchMage::BigBang:
-			case Jobs::IlArchMage::BigBang:
-			case Jobs::Bishop::BigBang:
+			case Skills::Gunslinger::Grenade:
+			case Skills::Brawler::CorkscrewBlow:
+			case Skills::Bowmaster::Hurricane:
+			case Skills::WindArcher::Hurricane:
+			case Skills::Marksman::PiercingArrow:
+			case Skills::NightWalker::PoisonBomb:
+			case Skills::Corsair::RapidFire:
+			case Skills::FpArchMage::BigBang:
+			case Skills::IlArchMage::BigBang:
+			case Skills::Bishop::BigBang:
 				attack.isChargeSkill = true;
 				attack.charge = packet.get<int32_t>();
 				break;
@@ -896,7 +896,7 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		attack.cashStarPos = csStar;
 		packet.skipBytes(1); // 0x00 = AoE?
 		if (!shadowMeso) {
-			if (player->getActiveBuffs()->hasShadowStars() && skillId != Jobs::NightLord::Taunt) {
+			if (player->getActiveBuffs()->hasShadowStars() && skillId != Skills::NightLord::Taunt) {
 				attack.starId = packet.get<int32_t>();
 			}
 			else if (csStar > 0) {

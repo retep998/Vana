@@ -165,7 +165,7 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<uint8_t>(attack.skillLevel);
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		packet.add<int32_t>(skillId);
 	}
 
@@ -199,7 +199,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(tbyte);
 	packet.add<uint8_t>(attack.skillLevel);
-	if (skillId != Jobs::All::RegularAttack) {
+	if (skillId != Skills::All::RegularAttack) {
 		packet.add<int32_t>(skillId);
 	}
 	packet.add<uint8_t>(attack.display);
@@ -219,7 +219,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
 			int32_t damage = *j;
 			switch (skillId) {
-				case Jobs::Marksman::Snipe: // Snipe is always crit
+				case Skills::Marksman::Snipe: // Snipe is always crit
 					damage += 0x80000000; // Critical damage = 0x80000000 + damage
 					break;
 				default:

@@ -45,12 +45,12 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t tim
 {
 	switch (val) {
 		case StatusEffects::Mob::Freeze:
-			if (skillId == Jobs::FpArchMage::Paralyze) {
+			if (skillId == Skills::FpArchMage::Paralyze) {
 				break;
 			}
 		case StatusEffects::Mob::Stun:
 			this->time = time + 1 + Randomizer::Instance()->randInt(time * 2); // The 1 accounts for the skill cast time
-			if (skillId == Jobs::IlArchMage::Blizzard) {
+			if (skillId == Skills::IlArchMage::Blizzard) {
 				time += 2; // Account for skill cast time, ideally we'd like to remove both these additions with MCDB suport for cast times
 			}
 			break;
@@ -291,8 +291,8 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (statusInfo[i].skillId) {
-					case Jobs::NightLord::Taunt:
-					case Jobs::Shadower::Taunt: {
+					case Skills::NightLord::Taunt:
+					case Skills::Shadower::Taunt: {
 						m_tauntEffect = (100 - statusInfo[i].val) + 100;
 						// Value passed as 100 - x, so 100 - value will = x
 						break;
@@ -369,8 +369,8 @@ void Mob::removeStatus(int32_t status, bool fromTimer) {
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (stat->skillId) {
-					case Jobs::NightLord::Taunt:
-					case Jobs::Shadower::Taunt:
+					case Skills::NightLord::Taunt:
+					case Skills::Shadower::Taunt:
 						m_tauntEffect = 100;
 						break;
 				}
@@ -677,9 +677,9 @@ void Mob::dispelBuffs() {
 
 void Mob::doCrashSkill(int32_t skillId) {
 	switch (skillId) {
-		case Jobs::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
-		case Jobs::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
-		case Jobs::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
+		case Skills::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
+		case Skills::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
+		case Skills::DragonKnight::PowerCrash: removeStatus(StatusEffects::Mob::Watk); break;
 	}
 }
 

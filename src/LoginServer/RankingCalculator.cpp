@@ -17,113 +17,84 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "RankingCalculator.h"
 #include "Database.h"
-#include "InitializeCommon.h"
 #include "GameConstants.h"
 #include "GameLogicUtilities.h"
-#include "SkillConstants.h"
+#include "InitializeCommon.h"
+#include "JobConstants.h"
+#include "StringUtilities.h"
 #include "Timer.h"
 #include "TimerThread.h"
 #include "TimeUtilities.h"
 #include "World.h"
 #include "Worlds.h"
 #include <algorithm>
-#include <boost/scoped_ptr.hpp>
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
-using boost::scoped_ptr;
-using std::bind;
+using std::unique_ptr;
+using std::tr1::bind;
 using Initializing::OutputWidth;
 
-namespace RankingCalculator {
-	const int8_t JobTracks[JobTrackCount] = {
-		Jobs::JobTracks::Beginner, Jobs::JobTracks::Warrior, Jobs::JobTracks::Magician, Jobs::JobTracks::Bowman, Jobs::JobTracks::Thief, Jobs::JobTracks::Pirate,
-		Jobs::JobTracks::Noblesse, Jobs::JobTracks::DawnWarrior, Jobs::JobTracks::BlazeWizard, Jobs::JobTracks::WindArcher, Jobs::JobTracks::NightWalker, Jobs::JobTracks::ThunderBreaker,
-		Jobs::JobTracks::Legend, Jobs::JobTracks::Aran, Jobs::JobTracks::Evan, Jobs::JobTracks::Mercedes,
-		Jobs::JobTracks::Citizen, Jobs::JobTracks::DemonSlayer, Jobs::JobTracks::BattleMage, Jobs::JobTracks::WildHunter, Jobs::JobTracks::Mechanic
-	};
-	const int16_t BeginnerJobs[BeginnerJobCount] = {
-		Jobs::JobIds::Beginner,
-		Jobs::JobIds::Noblesse,
-		Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes,
-		Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer
-	};
-
-	const int16_t EvanBeginner = Jobs::JobIds::Evan;
-	const int16_t MercedesBeginner = Jobs::JobIds::Mercedes;
-	const int16_t DemonSlayerBeginner = Jobs::JobIds::DemonSlayer;
-}
+boost::mutex RankingCalculator::RankingsMutex;
 
 void RankingCalculator::setTimer() {
-	new Timer::Timer(RankingCalculator::runThread,
-		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::nthSecondOfHour(0), 60 * 60 * 1000);
+	/*
+	new Timer::Timer(&RankingCalculator::runThread,
+		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::fromNow(TimeUtilities::getNearestMinuteMark(5)), 5 * 60 * 1000);
+ 	*/
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
 void RankingCalculator::runThread() {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
 	// The boost::thread object will be deleted immediately, but the thread will continue to run
-	scoped_ptr<boost::thread>(new boost::thread(bind(&RankingCalculator::all)));
+	unique_ptr<boost::thread>(new boost::thread(bind(&RankingCalculator::all)));
 }
 
 void RankingCalculator::all() {
-	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... ";
+	// There's no guarantee what effect running two at once will have, but it's likely to be bad
+	boost::unique_lock<boost::mutex> l(RankingsMutex, boost::try_to_lock);
+	if (!l) return;
+
+	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... " << std::endl;
 	clock_t startTime = TimeUtilities::getTickCount();
-	auto func = [](const string &connector, const string &operation) -> string {
-		std::ostringstream q("");
-		for (int32_t i = 0; i < BeginnerJobCount; ++i) {
-			if (i != 0) {
-				q << connector;
-			}
-			q << "c.job " << operation << " " << BeginnerJobs[i];
-		}
-		return q.str();
-	};
 
 	soci::session &sql = Database::getCharDb();
-	soci::rowset<> rs = (sql.prepare << "SELECT * " <<
-										"FROM characters c " <<
-										"INNER JOIN user_accounts u ON u.user_id = c.user_id " <<
-										"WHERE " <<
-										"	(u.ban_expire IS NULL OR u.ban_expire = 0 OR u.ban_expire >= NOW()) " <<
-										"	AND u.gm_level = 0 " <<
-										"	AND u.admin = 0 " <<
-										"	AND (" <<
-										"		(" <<
-										"			(" << func(" OR ", "=") << ")" <<
-										"			AND c.level > 9" <<
-										"		)" <<
-										"		OR (" << func(" AND ", "<>") << ")" <<
-										"	) " <<
-										"ORDER BY c.overall_cpos DESC");
+	RankPlayer out;
+	soci::statement statement = (sql.prepare << "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos " <<
+												"FROM characters c " <<
+												"INNER JOIN user_accounts u ON u.user_id = c.user_id " <<
+												"WHERE " <<
+												"	(u.banned = 0 OR u.ban_expire >= NOW()) " <<
+												"	AND u.gm_level IS NULL " <<
+												"	AND u.admin IS NULL " <<
+												"	AND (" <<
+												"		(" <<
+												"			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")" <<
+												"			AND c.level > 9" <<
+												"		)" <<
+												"		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")" <<
+												"	) " <<
+												"ORDER BY c.overall_cpos DESC",
+												soci::into(out.charId),
+												soci::into(out.expStat),
+												soci::into(out.fameStat),
+												soci::into(out.jobStat),
+												soci::into(out.levelStat),
+												soci::into(out.worldId),
+												soci::into(out.levelTime),
+												soci::into(out.fame.newRank),
+												soci::into(out.world.newRank),
+												soci::into(out.job.newRank),
+												soci::into(out.overall.newRank));
 
 	vector<RankPlayer> v;
-	RankPlayer out;
-	auto maxLevel = [](int16_t job) -> uint8_t {
-		bool c = GameLogicUtilities::isCygnus(job);
-		return (c ? Stats::CygnusLevels : Stats::PlayerLevels);
-	};
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+	statement.execute();
 
-		out = RankPlayer();
-		out.charId = row.get<int32_t>("character_id");
-		out.expStat = row.get<int32_t>("exp");
-		out.fameStat = row.get<int16_t>("fame");
-		out.jobStat = row.get<int16_t>("job");
-		out.jobLevelMax = maxLevel(out.jobStat);
-		out.levelStat = row.get<uint8_t>("level");
-		out.worldId = row.get<uint8_t>("world_id");
-		out.levelTime = row.get<unix_time_t>("time_level");
-		out.fame.newRank = row.get<int32_t>("fame_cpos");
-		out.fame.oldRank = row.get<int32_t>("fame_opos");
-		out.world.newRank = row.get<int32_t>("world_cpos");
-		out.world.oldRank = row.get<int32_t>("world_opos");
-		out.job.newRank = row.get<int32_t>("job_cpos");
-		out.job.oldRank = row.get<int32_t>("job_opos");
-		out.overall.newRank = row.get<int32_t>("overall_cpos");
-		out.overall.oldRank = row.get<int32_t>("overall_opos");
+	while (statement.fetch()) {
+		out.jobLevelMax = GameLogicUtilities::getMaxLevel(out.jobStat);
 		v.push_back(out);
 	}
 
@@ -179,7 +150,9 @@ void RankingCalculator::all() {
 	}
 
 	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
-	std::cout << "DONE in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
+	std::cout << "Calculating rankings completed in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
+
+	l.unlock();
 }
 
 bool RankingCalculator::increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) {
@@ -244,7 +217,6 @@ void RankingCalculator::world(vector<RankPlayer> &v) {
 		return t1.worldId > t2.worldId;
 	});
 
-	int i = 0;
  	Worlds::Instance()->runFunction([&v](World *world) -> bool {
 		uint8_t worldId = world->getId();
 		uint8_t lastLevel = 0;
@@ -286,8 +258,8 @@ void RankingCalculator::job(vector<RankPlayer> &v) {
 	});
 
 	// We will iterate through each job track
-	for (int32_t j = 0; j < JobTrackCount; ++j) {
-		const int16_t jobTrack = JobTracks[j];
+	for (int32_t j = 0; j < Jobs::JobTracks::JobTrackCount; ++j) {
+		const int16_t jobTrack = Jobs::JobTracks::JobTracks[j];
 		uint8_t lastLevel = 0;
 		time_t lastTime = 0;
 		int32_t lastExp = 0;
@@ -302,11 +274,11 @@ void RankingCalculator::job(vector<RankPlayer> &v) {
 			// These exceptions have beginner jobs that are not in their tracks ID-wise
 			// Which means we also need to account for them within the tracks they aren't supposed to be in as well
 			switch (jobTrack) {
-				case Jobs::JobTracks::Legend: valid = (p.jobStat != EvanBeginner && p.jobStat != MercedesBeginner && isTrack); break;
-				case Jobs::JobTracks::Evan: valid = (p.jobStat == EvanBeginner || isTrack); break;
-				case Jobs::JobTracks::Mercedes: valid = (p.jobStat == MercedesBeginner || isTrack); break;
-				case Jobs::JobTracks::Citizen: valid = (p.jobStat != DemonSlayerBeginner && isTrack); break;
-				case Jobs::JobTracks::DemonSlayer: valid = (p.jobStat == DemonSlayerBeginner || isTrack); break;
+				case Jobs::JobTracks::Legend: valid = (p.jobStat != Jobs::JobIds::Evan && p.jobStat != Jobs::JobIds::Mercedes && isTrack); break;
+				case Jobs::JobTracks::Evan: valid = (p.jobStat == Jobs::JobIds::Evan || isTrack); break;
+				case Jobs::JobTracks::Mercedes: valid = (p.jobStat == Jobs::JobIds::Mercedes || isTrack); break;
+				case Jobs::JobTracks::Citizen: valid = (p.jobStat != Jobs::JobIds::DemonSlayer && isTrack); break;
+				case Jobs::JobTracks::DemonSlayer: valid = (p.jobStat == Jobs::JobIds::DemonSlayer || isTrack); break;
 				default: valid = isTrack;
 			}
 
