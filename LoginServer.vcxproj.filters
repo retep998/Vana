@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source\LoginServer">
-      <UniqueIdentifier>{715533c6-c5a1-4b19-8e5c-d607947f8451}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Packets">
       <UniqueIdentifier>{87f933d4-af45-42ea-91de-b989fb659acb}</UniqueIdentifier>
     </Filter>
@@ -19,6 +16,9 @@
     </Filter>
     <Filter Include="Source\Database Loading">
       <UniqueIdentifier>{f4456596-7abe-459a-ae8b-d15ea3b08d02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\LoginServer">
+      <UniqueIdentifier>{715533c6-c5a1-4b19-8e5c-d607947f8451}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -21,21 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Randomizer.h"
 #include "SmsgHeader.h"
-#include <aes.h>
-#include <modes.h>
 
 const uint8_t AesKeySize = 32;
 const uint8_t AesKey[AesKeySize] = {
 	0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0xB4, 0x00, 0x00, 0x00,
 	0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00
 };
+const int32_t BlockSize = 1460;
 
 Decoder::Decoder(bool encrypted) :
 	m_encrypted(encrypted)
 {
+	m_botanKey = Botan::SymmetricKey(AesKey, AesKeySize);
 }
 
-void Decoder::encrypt(unsigned char *buffer, int32_t size) {
+void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 	if (!isEncrypted()) {
 		return;
 	}
@@ -73,18 +73,21 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	int32_t pos = 0;
 	uint8_t first = 1;
 	int32_t tPos = 0;
-	CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption ofbEncryption;
+	int32_t writeAmount = 0;
+	Botan::InitializationVector iv(m_send.getBytes(), 16);
 
 	while (size > pos) {
-		ofbEncryption.SetKeyWithIV(AesKey, AesKeySize, m_send.getBytes()); // Need to set it before every encryption
+		tPos = BlockSize - first * headerLen;
+		writeAmount = (size > (pos + tPos) ? tPos : (size - pos));
 
-		tPos = 1460 - first * 4;
-		if (size > (pos + tPos)) {
-			ofbEncryption.ProcessData(buffer + pos, buffer + pos, tPos);
-		}
-		else {
-			ofbEncryption.ProcessData(buffer + pos, buffer + pos, size - pos);
-		}
+		Botan::Pipe pipe(Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::ENCRYPTION));
+		pipe.start_msg();
+		pipe.write(buffer + pos, writeAmount);
+		pipe.end_msg();
+
+		// Process the message and write it into the buffer
+		size_t bytesRead = pipe.read(buffer + pos, writeAmount);
+
 		pos += tPos;
 		if (first) {
 			first = 0;
@@ -94,7 +97,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size) {
 	m_send.shuffle();
 }
 
-void Decoder::decrypt(unsigned char *buffer, int32_t size) {
+void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 	if (!isEncrypted()) {
 		return;
 	}
@@ -103,21 +106,24 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size) {
 	int32_t pos = 0;
 	uint8_t first = 1;
 	int32_t tPos = 0;
-	CryptoPP::OFB_Mode<CryptoPP::AES>::Decryption ofbDecryption;
+	int32_t readAmount = 0;
+	Botan::InitializationVector iv(m_recv.getBytes(), 16);
 
 	while (size > pos) {
-		ofbDecryption.SetKeyWithIV(AesKey, AesKeySize, m_recv.getBytes()); // Need to set it before every decryption
+		tPos = BlockSize - first * headerLen;
+		readAmount = (size > (pos + tPos) ? tPos : (size - pos));
 
-		tPos = 1460 - first * 4;
-		if (size > (pos + tPos)) {
-			ofbDecryption.ProcessData(buffer + pos, buffer + pos, tPos);
-		}
-		else {
-			ofbDecryption.ProcessData(buffer + pos, buffer + pos, size - pos);
-		}
+		Botan::Pipe pipe(Botan::get_cipher("AES-256/OFB/NoPadding", m_botanKey, iv, Botan::DECRYPTION));
+		pipe.start_msg();
+		pipe.write(buffer + pos, readAmount);
+		pipe.end_msg();
+
+		// Process the message and write it into the buffer
+		size_t bytesRead = pipe.read(buffer + pos, readAmount);
+
 		pos += tPos;
 		if (first) {
-			first = 0;
+			first = 0; 
 		}
 	}
 

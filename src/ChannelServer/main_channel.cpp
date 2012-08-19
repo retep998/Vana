@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChannelServer.h"
 #include "ConnectionManager.h"
+#include <botan/botan.h>
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -39,6 +40,7 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 #endif
 
 int main() {
+	Botan::LibraryInitializer init;
 	try {
 		ChannelServer *server = ChannelServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();

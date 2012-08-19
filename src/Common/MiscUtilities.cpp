@@ -16,22 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MiscUtilities.h"
-#include <filters.h>
-#include <hex.h>
-#include <sha.h>
+#include <botan/pipe.h>
+#include <botan/filters.h>
 
 string MiscUtilities::hashPassword(const string &password, const string &salt) {
 	const string &salted = salt + password;
-	string digest;
+	Botan::Pipe pipe(
+		new Botan::Chain(
+			new Botan::Hash_Filter("SHA-512"),
+			new Botan::Hex_Encoder()));
 
-	CryptoPP::SHA512 hash;
-
-	CryptoPP::StringSource(salted, true,
-		new CryptoPP::HashFilter(hash,
-			new CryptoPP::HexEncoder(
-				new CryptoPP::StringSink(digest))));
-
-	return digest;
+	pipe.process_msg(salted);
+	return pipe.read_all_as_string();
 }
 
 bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {

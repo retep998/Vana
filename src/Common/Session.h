@@ -40,7 +40,7 @@ public:
 	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation = "");
 
 	void disconnect();
-	void send(const PacketCreator &packet);
+	void send(const PacketCreator &packet, bool encrypt = true);
 	ip_t getIp() const;
 protected:
 	tcp::socket & getSocket() { return m_socket; }
@@ -53,8 +53,7 @@ protected:
 	void handleWrite(const boost::system::error_code &error, size_t bytesTransferred);
 	void handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred);
 	void handleReadBody(const boost::system::error_code &error, size_t bytesTransferred);
-	void send(const unsigned char *buf, int32_t len);
-	void sendIv(const PacketCreator &packet);
+	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;

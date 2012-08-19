@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BlockCipherIv.h"
 #include "MapleVersion.h"
 #include "Types.h"
+#include <botan/pipe.h>
+#include <botan/filters.h>
+#include <botan/lookup.h>
 #include <string>
 
 using std::string;
@@ -37,8 +40,8 @@ public:
 
 	PacketCreator getConnectPacket(const string &patchLocation = "");
 
-	void encrypt(unsigned char *buffer, int32_t size);
-	void decrypt(unsigned char *buffer, int32_t size);
+	void encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
+	void decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
 	void setRecvIv(uint32_t iv) { m_recv.updateIv(iv); }
 	void setSendIv(uint32_t iv) { m_send.updateIv(iv); }
 private:
@@ -48,6 +51,7 @@ private:
 	BlockCipherIv m_recv;
 	BlockCipherIv m_send;
 	bool m_encrypted;
+	Botan::OctetString m_botanKey;
 };
 
 inline
