@@ -28,8 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace asio = boost::asio;
 
 Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation) :
-	// Apparently, "isServer" is true from sessions created by the server for the client
-	// In addition, it's false from sessions created for the server clients
 	AbstractSession(sessionManager, (!isForClient || isEncrypted)),
 	m_socket(ioService),
 	m_connection(connection),
@@ -50,8 +48,8 @@ void Session::handleStart() {
 	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_isForClient) {
-		PacketCreator connectPacket = m_decoder.getConnectPacket(m_patchLocation);
-		sendIv(connectPacket);
+		PacketCreator &connectPacket = m_decoder.getConnectPacket(m_patchLocation);
+		send(connectPacket, false);
 	}
 
 	startReadHeader();
@@ -73,37 +71,33 @@ void Session::handleStop() {
 	}
 }
 
-void Session::send(const PacketCreator &packet) {
-	send(packet.getBuffer(), packet.getSize());
+void Session::send(const PacketCreator &packet, bool encrypt) {
+	send(packet.getBuffer(), packet.getSize(), encrypt);
 }
 
-void Session::send(const unsigned char *buf, int32_t len) {
+void Session::send(const unsigned char *buf, int32_t len, bool encrypt) {
 	boost::mutex::scoped_lock l(m_sendMutex);
 
-	size_t realLength = len + headerLen;
-	unsigned char *buffer = new unsigned char[realLength];
-	m_sendPacket.reset(buffer);
+	unsigned char *sendBuffer;
+	size_t realLength = len;
 
-	memcpy(buffer + headerLen, buf, len);
-	m_decoder.createHeader(buffer, (int16_t) len);
-	m_decoder.encrypt(buffer + headerLen, len);
+	if (encrypt) {
+		realLength += headerLen;
+		sendBuffer = new unsigned char[realLength];
+		m_sendPacket.reset(sendBuffer);
 
-	asio::async_write(m_socket, asio::buffer(buffer, realLength),
-		std::bind(&Session::handleWrite, shared_from_this(),
-			std::placeholders::_1,
-			std::placeholders::_2));
-}
+		memcpy(sendBuffer + headerLen, buf, len);
+		m_decoder.createHeader(sendBuffer, static_cast<int16_t>(len));
+		m_decoder.encrypt(sendBuffer + headerLen, len, headerLen);
+	}
+	else {
+		sendBuffer = new unsigned char[realLength];
+		m_sendPacket.reset(sendBuffer);
 
-void Session::sendIv(const PacketCreator &packet) {
-	boost::mutex::scoped_lock l(m_sendMutex);
+		memcpy(sendBuffer, buf, len);
+	}
 
-	int32_t len = packet.getSize();
-	unsigned char *buffer = new unsigned char[len];
-	m_sendPacket.reset(buffer);
-
-	memcpy(buffer, packet.getBuffer(), len);
-
-	asio::async_write(m_socket, asio::buffer(buffer, len),
+	asio::async_write(m_socket, asio::buffer(sendBuffer, realLength),
 		std::bind(&Session::handleWrite, shared_from_this(),
 			std::placeholders::_1,
 			std::placeholders::_2));
@@ -157,7 +151,7 @@ void Session::handleReadHeader(const boost::system::error_code &error, size_t by
 
 void Session::handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) {
 	if (!error) {
-		m_decoder.decrypt(m_buffer.get(), bytesTransferred);
+		m_decoder.decrypt(m_buffer.get(), bytesTransferred, headerLen);
 
 		PacketReader packet(m_buffer.get(), bytesTransferred);
 		m_connection->baseHandleRequest(packet);

@@ -50,7 +50,7 @@
     <Filter Include="Source\Data Structures\Data Provider">
       <UniqueIdentifier>{87342cf5-a5b4-41e1-a5cc-254699ab7d5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Boost">
+    <Filter Include="Source\Lib">
       <UniqueIdentifier>{535f2c2a-4a21-4fd2-93c0-ca6d3e13da45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -462,26 +462,26 @@
     <ClInclude Include="src\Common\IPacket.h">
       <Filter>Source\Abstracts</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SociExtensions.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\noncopyable.hpp">
-      <Filter>Source\Boost</Filter>
+      <Filter>Source\Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\hash_combine.hpp">
-      <Filter>Source\Boost</Filter>
+      <Filter>Source\Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\shared_array.hpp">
-      <Filter>Source\Boost</Filter>
+      <Filter>Source\Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\tokenizer.hpp">
-      <Filter>Source\Boost</Filter>
+      <Filter>Source\Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\optional.hpp">
-      <Filter>Source\Boost</Filter>
+      <Filter>Source\Lib</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\BlockCipherIv.h">
       <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SociExtensions.h">
+      <Filter>Source\Lib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

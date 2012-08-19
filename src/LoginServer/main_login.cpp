@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
 #include "ConnectionManager.h"
+#include <botan/botan.h>
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -32,13 +33,13 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 		case CTRL_SHUTDOWN_EVENT:
 			console_ctrl_function();
 			return TRUE;
-		default:
-			return FALSE;
 	}
+	return FALSE;
 }
 #endif
 
 int main() {
+	Botan::LibraryInitializer init;
 	try {
 		LoginServer *server = LoginServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 # include <winsock2.h> // Prevent conflict with boost::asio
 #endif
 
-#include "soci.h"
+#include <soci.h>
 #include "SociExtensions.h"
 #include "Types.h"
 #include <boost/thread/tss.hpp>
