@@ -26,20 +26,20 @@ Summon::Summon(int32_t id, int32_t summonId, uint8_t level) :
 	m_hp(0)
 {
 	switch (summonId) {
-		case Jobs::Ranger::Puppet:
-		case Jobs::Sniper::Puppet:
-		case Jobs::WindArcher::Puppet:
+		case Skills::Ranger::Puppet:
+		case Skills::Sniper::Puppet:
+		case Skills::WindArcher::Puppet:
 			m_hp = SkillDataProvider::Instance()->getSkill(summonId, level)->x; // Get HP for puppet
-		case Jobs::Outlaw::Octopus:
-		case Jobs::Corsair::WrathOfTheOctopi:
+		case Skills::Outlaw::Octopus:
+		case Skills::Corsair::WrathOfTheOctopi:
 			m_type = Static;
 			break;
-		case Jobs::Priest::SummonDragon:
-		case Jobs::Ranger::SilverHawk:
-		case Jobs::Sniper::GoldenEagle:
-		case Jobs::Bowmaster::Phoenix:
-		case Jobs::Marksman::Frostprey:
-		case Jobs::Outlaw::Gaviota:
+		case Skills::Priest::SummonDragon:
+		case Skills::Ranger::SilverHawk:
+		case Skills::Sniper::GoldenEagle:
+		case Skills::Bowmaster::Phoenix:
+		case Skills::Marksman::Frostprey:
+		case Skills::Outlaw::Gaviota:
 			m_type = Flying;
 			break;
 		default:

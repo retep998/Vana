@@ -356,21 +356,21 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 	if (mob->canFreeze()) {
 		// Freezing stuff
 		switch (skillId) {
-			case Jobs::IlWizard::ColdBeam:
-			case Jobs::IlMage::IceStrike:
-			case Jobs::IlMage::ElementComposition:
-			case Jobs::Sniper::Blizzard:
-			case Jobs::IlArchMage::Blizzard:
+			case Skills::IlWizard::ColdBeam:
+			case Skills::IlMage::IceStrike:
+			case Skills::IlMage::ElementComposition:
+			case Skills::Sniper::Blizzard:
+			case Skills::IlArchMage::Blizzard:
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time));
 				break;
-			case Jobs::Outlaw::IceSplitter:
-				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Jobs::Corsair::ElementalBoost)) {
+			case Skills::Outlaw::IceSplitter:
+				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = eBoost->y;
 				}
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time + y));
 				break;
-			case Jobs::FpArchMage::Elquines:
-			case Jobs::Marksman::Frostprey:
+			case Skills::FpArchMage::Elquines:
+			case Skills::Marksman::Frostprey:
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x));
 				break;
 		}
@@ -383,16 +383,16 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 	if (mob->canPoison() && mob->getHp() > 1) {
 		// Poisoning stuff
 		switch (skillId) {
-			case Jobs::All::RegularAttack: // Venomous Star/Stab
-			case Jobs::Rogue::LuckySeven:
-			case Jobs::Hermit::Avenger:
-			case Jobs::NightLord::TripleThrow:
-			case Jobs::Rogue::DoubleStab:
-			case Jobs::Rogue::Disorder:
-			case Jobs::Bandit::SavageBlow:
-			case Jobs::ChiefBandit::Assaulter:
-			case Jobs::Shadower::Assassinate:
-			case Jobs::Shadower::BoomerangStep:
+			case Skills::All::RegularAttack: // Venomous Star/Stab
+			case Skills::Rogue::LuckySeven:
+			case Skills::Hermit::Avenger:
+			case Skills::NightLord::TripleThrow:
+			case Skills::Rogue::DoubleStab:
+			case Skills::Rogue::Disorder:
+			case Skills::Bandit::SavageBlow:
+			case Skills::ChiefBandit::Assaulter:
+			case Skills::Shadower::Assassinate:
+			case Skills::Shadower::BoomerangStep:
 				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
@@ -417,15 +417,15 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 					}
 				}
 				break;
-			case Jobs::FpMage::PoisonMist:
+			case Skills::FpMage::PoisonMist:
 				if (damage != 0) {
 					// The attack itself doesn't poison them
 					break;
 				}
-			case Jobs::FpWizard::PoisonBreath:
-			case Jobs::FpMage::ElementComposition:
-			case Jobs::BlazeWizard::FlameGear:
-			case Jobs::NightWalker::PoisonBomb:
+			case Skills::FpWizard::PoisonBreath:
+			case Skills::FpMage::ElementComposition:
+			case Skills::BlazeWizard::FlameGear:
+			case Skills::NightWalker::PoisonBomb:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time));
 				}
@@ -435,71 +435,71 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 	if (!mob->isBoss()) {
 		// Seal, Stun, etc
 		switch (skillId) {
-			case Jobs::Corsair::Hypnotize:
+			case Skills::Corsair::Hypnotize:
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Hypnotize, 1, skillId, skill->time));
 				break;
-			case Jobs::Brawler::BackspinBlow:
-			case Jobs::Brawler::DoubleUppercut:
-			case Jobs::Buccaneer::Demolition:
-			case Jobs::Buccaneer::Snatch:
+			case Skills::Brawler::BackspinBlow:
+			case Skills::Brawler::DoubleUppercut:
+			case Skills::Buccaneer::Demolition:
+			case Skills::Buccaneer::Snatch:
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time));
 				break;
-			case Jobs::Hunter::ArrowBomb:
-			case Jobs::Crusader::SwordComa:
-			case Jobs::DawnWarrior::Coma:
-			case Jobs::Crusader::AxeComa:
-			case Jobs::Crusader::Shout:
-			case Jobs::WhiteKnight::ChargeBlow:
-			case Jobs::ChiefBandit::Assaulter:
-			case Jobs::Shadower::BoomerangStep:
-			case Jobs::Gunslinger::BlankShot:
-			case Jobs::NightLord::NinjaStorm:
+			case Skills::Hunter::ArrowBomb:
+			case Skills::Crusader::SwordComa:
+			case Skills::DawnWarrior::Coma:
+			case Skills::Crusader::AxeComa:
+			case Skills::Crusader::Shout:
+			case Skills::WhiteKnight::ChargeBlow:
+			case Skills::ChiefBandit::Assaulter:
+			case Skills::Shadower::BoomerangStep:
+			case Skills::Gunslinger::BlankShot:
+			case Skills::NightLord::NinjaStorm:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time));
 				}
 				break;
-			case Jobs::Ranger::SilverHawk:
-			case Jobs::Sniper::GoldenEagle:
+			case Skills::Ranger::SilverHawk:
+			case Skills::Sniper::GoldenEagle:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->x));
 				}
 				break;
-			case Jobs::FpMage::Seal:
-			case Jobs::IlMage::Seal:
-			case Jobs::BlazeWizard::Seal:
+			case Skills::FpMage::Seal:
+			case Skills::IlMage::Seal:
+			case Skills::BlazeWizard::Seal:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->time));
 				}
 				break;
-			case Jobs::Priest::Doom:
+			case Skills::Priest::Doom:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->time));
 				}
 				break;
-			case Jobs::Hermit::ShadowWeb:
-			case Jobs::NightWalker::ShadowWeb:
+			case Skills::Hermit::ShadowWeb:
+			case Skills::NightWalker::ShadowWeb:
 				if (success) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillId, skill->time));
 				}
 				break;
-			case Jobs::FpArchMage::Paralyze:
+			case Skills::FpArchMage::Paralyze:
 				if (mob->canPoison()) {
 					statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time));
 				}
 				break;
-			case Jobs::IlArchMage::IceDemon:
-			case Jobs::FpArchMage::FireDemon:
+			case Skills::IlArchMage::IceDemon:
+			case Skills::FpArchMage::FireDemon:
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time));
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x));
 				break;
-			case Jobs::Shadower::Taunt:
-			case Jobs::NightLord::Taunt:
+			case Skills::Shadower::Taunt:
+			case Skills::NightLord::Taunt:
 				// I know, these status effect types make no sense, that's just how it works
 				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->time));
 				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->time));
 				break;
-			case Jobs::Outlaw::Flamethrower:
-				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Jobs::Corsair::ElementalBoost)) {
+			case Skills::Outlaw::Flamethrower:
+				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = eBoost->x;
 				}
 				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillId, skill->time));
@@ -507,36 +507,36 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 		}
 	}
 	switch (skillId) {
-		case Jobs::Shadower::NinjaAmbush:
-		case Jobs::NightLord::NinjaAmbush:
+		case Skills::Shadower::NinjaAmbush:
+		case Skills::NightLord::NinjaAmbush:
 			damage = 2 * (player->getStats()->getStr(true) + player->getStats()->getLuk(true)) * skill->damage / 100;
 			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->time));
 			break;
-		case Jobs::Rogue::Disorder:
-		case Jobs::NightWalker::Disorder:
-		case Jobs::Page::Threaten:
+		case Skills::Rogue::Disorder:
+		case Skills::NightWalker::Disorder:
+		case Skills::Page::Threaten:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skill->x, skillId, skill->time));
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skill->y, skillId, skill->time));
 			break;
-		case Jobs::FpWizard::Slow:
-		case Jobs::IlWizard::Slow:
-		case Jobs::BlazeWizard::Slow:
+		case Skills::FpWizard::Slow:
+		case Skills::IlWizard::Slow:
+		case Skills::BlazeWizard::Slow:
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skill->x, skillId, skill->time));
 			break;
 	}
 	if (GameLogicUtilities::isBow(weapon)) {
-		if (SkillLevelInfo *hamstring = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Bowmaster::Hamstring)) {
+		if (SkillLevelInfo *hamstring = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Hamstring)) {
 			// Only triggers if player has the buff
-			if (skillId != Jobs::Bowmaster::Phoenix && skillId != Jobs::Ranger::SilverHawk) {
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, hamstring->x, Jobs::Bowmaster::Hamstring, hamstring->y));
+			if (skillId != Skills::Bowmaster::Phoenix && skillId != Skills::Ranger::SilverHawk) {
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, hamstring->x, Skills::Bowmaster::Hamstring, hamstring->y));
 			}
 		}
 	}
 	else if (GameLogicUtilities::isCrossbow(weapon)) {
-		if (SkillLevelInfo *blind = player->getActiveBuffs()->getActiveSkillInfo(Jobs::Marksman::Blind)) {
+		if (SkillLevelInfo *blind = player->getActiveBuffs()->getActiveSkillInfo(Skills::Marksman::Blind)) {
 			// Only triggers if player has the buff
-			if (skillId != Jobs::Marksman::Frostprey && skillId != Jobs::Sniper::GoldenEagle) {
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -(blind->x), Jobs::Marksman::Blind, blind->y));
+			if (skillId != Skills::Marksman::Frostprey && skillId != Skills::Sniper::GoldenEagle) {
+				statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -(blind->x), Skills::Marksman::Blind, blind->y));
 			}
 		}
 	}

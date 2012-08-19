@@ -128,7 +128,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 					mesos *= ChannelServer::Instance()->getMesoRate();
 					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
 						// Account for Meso Up
-						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Jobs::Hermit::MesoUp)->x) / 100;
+						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Skills::Hermit::MesoUp)->x) / 100;
 					}
 				}
 				drop = new Drop(mapId, mesos, pos, playerId);

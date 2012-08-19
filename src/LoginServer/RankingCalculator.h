@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <boost/thread/recursive_mutex.hpp>
 #include <string>
 #include <vector>
 
@@ -55,11 +56,5 @@ namespace RankingCalculator {
 	bool baseCompare(const RankPlayer &t1, const RankPlayer &t2);
 	void updateRank(Rank &r, int32_t newRank);
 
-	const int32_t JobTrackCount = 21;
-	const int32_t BeginnerJobCount = 7;
-	extern const int8_t JobTracks[JobTrackCount];
-	extern const int16_t BeginnerJobs[BeginnerJobCount];
-	extern const int16_t EvanBeginner;
-	extern const int16_t MercedesBeginner;
-	extern const int16_t DemonSlayerBeginner;
+	extern boost::mutex RankingsMutex;
 }

@@ -271,7 +271,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 	m_battleshipHp -= amount;
 	if (m_battleshipHp <= 0) {
 		m_battleshipHp = 0;
-		int32_t skillId = Jobs::Corsair::Battleship;
+		int32_t skillId = Skills::Corsair::Battleship;
 		int16_t coolTime = getActiveSkillInfo(skillId)->coolTime;
 		Skills::startCooldown(m_player, skillId, coolTime);
 		Skills::stopSkill(m_player, skillId);
@@ -279,7 +279,7 @@ void PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) {
 }
 
 void PlayerActiveBuffs::resetBattleshipHp() {
-	uint8_t shipLevel = m_player->getSkills()->getSkillLevel(Jobs::Corsair::Battleship);
+	uint8_t shipLevel = m_player->getSkills()->getSkillLevel(Skills::Corsair::Battleship);
 	uint8_t playerLevel = m_player->getStats()->getLevel();
 	m_battleshipHp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
@@ -331,7 +331,7 @@ void PlayerActiveBuffs::addCombo() {
 void PlayerActiveBuffs::checkBerserk(bool display) {
 	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) {
 		// Berserk calculations
-		int32_t skillId = Jobs::DarkKnight::Berserk;
+		int32_t skillId = Skills::DarkKnight::Berserk;
 		int8_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
 			int16_t hpPercentage = m_player->getStats()->getMaxHp() * SkillDataProvider::Instance()->getSkill(skillId, level)->x / 100;
@@ -421,17 +421,17 @@ void PlayerActiveBuffs::stopCharge() {
 }
 
 void PlayerActiveBuffs::stopBulletSkills() {
-	if (hasBuff(Jobs::Hunter::SoulArrow)) {
-		Skills::stopSkill(m_player, Jobs::Hunter::SoulArrow);
+	if (hasBuff(Skills::Hunter::SoulArrow)) {
+		Skills::stopSkill(m_player, Skills::Hunter::SoulArrow);
 	}
-	else if (hasBuff(Jobs::Crossbowman::SoulArrow)) {
-		Skills::stopSkill(m_player, Jobs::Crossbowman::SoulArrow);
+	else if (hasBuff(Skills::Crossbowman::SoulArrow)) {
+		Skills::stopSkill(m_player, Skills::Crossbowman::SoulArrow);
 	}
-	else if (hasBuff(Jobs::WindArcher::SoulArrow)) {
-		Skills::stopSkill(m_player, Jobs::WindArcher::SoulArrow);
+	else if (hasBuff(Skills::WindArcher::SoulArrow)) {
+		Skills::stopSkill(m_player, Skills::WindArcher::SoulArrow);
 	}
-	else if (hasBuff(Jobs::NightLord::ShadowStars)) {
-		Skills::stopSkill(m_player, Jobs::NightLord::ShadowStars);
+	else if (hasBuff(Skills::NightLord::ShadowStars)) {
+		Skills::stopSkill(m_player, Skills::NightLord::ShadowStars);
 	}
 }
 
@@ -440,15 +440,15 @@ bool PlayerActiveBuffs::hasBuff(int32_t skillId) {
 }
 
 bool PlayerActiveBuffs::hasIceCharge() const {
-	return (m_activeCharge == Jobs::WhiteKnight::BwIceCharge || m_activeCharge == Jobs::WhiteKnight::SwordIceCharge);
+	return (m_activeCharge == Skills::WhiteKnight::BwIceCharge || m_activeCharge == Skills::WhiteKnight::SwordIceCharge);
 }
 
 bool PlayerActiveBuffs::hasInfinity() {
-	return (hasBuff(Jobs::FpArchMage::Infinity) || hasBuff(Jobs::IlArchMage::Infinity) || hasBuff(Jobs::Bishop::Infinity));
+	return (hasBuff(Skills::FpArchMage::Infinity) || hasBuff(Skills::IlArchMage::Infinity) || hasBuff(Skills::Bishop::Infinity));
 }
 
 bool PlayerActiveBuffs::hasMesoUp() {
-	return hasBuff(Jobs::Hermit::MesoUp);
+	return hasBuff(Skills::Hermit::MesoUp);
 }
 
 bool PlayerActiveBuffs::hasMagicGuard() {
@@ -472,23 +472,23 @@ bool PlayerActiveBuffs::hasHyperBody() {
 }
 
 bool PlayerActiveBuffs::isUsingHide() {
-	return (hasBuff(Jobs::SuperGm::Hide));
+	return (hasBuff(Skills::SuperGm::Hide));
 }
 
 bool PlayerActiveBuffs::hasShadowPartner() {
-	return (hasBuff(Jobs::Hermit::ShadowPartner) || hasBuff(Jobs::NightWalker::ShadowPartner));
+	return (hasBuff(Skills::Hermit::ShadowPartner) || hasBuff(Skills::NightWalker::ShadowPartner));
 }
 
 bool PlayerActiveBuffs::hasShadowStars() {
-	return (hasBuff(Jobs::NightLord::ShadowStars));
+	return (hasBuff(Skills::NightLord::ShadowStars));
 }
 
 bool PlayerActiveBuffs::hasSoulArrow() {
-	return (hasBuff(Jobs::Hunter::SoulArrow) || hasBuff(Jobs::Crossbowman::SoulArrow) || hasBuff(Jobs::WindArcher::SoulArrow));
+	return (hasBuff(Skills::Hunter::SoulArrow) || hasBuff(Skills::Crossbowman::SoulArrow) || hasBuff(Skills::WindArcher::SoulArrow));
 }
 
 bool PlayerActiveBuffs::hasHolyShield() {
-	return (hasBuff(Jobs::Bishop::HolyShield));
+	return (hasBuff(Skills::Bishop::HolyShield));
 }
 
 bool PlayerActiveBuffs::isCursed() {
@@ -510,72 +510,72 @@ int16_t PlayerActiveBuffs::getHolySymbolRate() {
 
 int32_t PlayerActiveBuffs::getMagicGuard() {
 	int32_t id = 0;
-	if (hasBuff(Jobs::Magician::MagicGuard)) {
-		id = Jobs::Magician::MagicGuard;
+	if (hasBuff(Skills::Magician::MagicGuard)) {
+		id = Skills::Magician::MagicGuard;
 	}
-	else if (hasBuff(Jobs::BlazeWizard::MagicGuard)) {
-		id = Jobs::BlazeWizard::MagicGuard;
+	else if (hasBuff(Skills::BlazeWizard::MagicGuard)) {
+		id = Skills::BlazeWizard::MagicGuard;
 	}
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getMesoGuard() {
 	int32_t id = 0;
-	if (hasBuff(Jobs::ChiefBandit::MesoGuard)) {
-		id = Jobs::ChiefBandit::MesoGuard;
+	if (hasBuff(Skills::ChiefBandit::MesoGuard)) {
+		id = Skills::ChiefBandit::MesoGuard;
 	}
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getHolySymbol() {
 	int32_t id = 0;
-	if (hasBuff(Jobs::Priest::HolySymbol)) {
-		id = Jobs::Priest::HolySymbol;
+	if (hasBuff(Skills::Priest::HolySymbol)) {
+		id = Skills::Priest::HolySymbol;
 	}
-	else if (hasBuff(Jobs::SuperGm::HolySymbol)) {
-		id = Jobs::SuperGm::HolySymbol;
+	else if (hasBuff(Skills::SuperGm::HolySymbol)) {
+		id = Skills::SuperGm::HolySymbol;
 	}
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getPowerStance() {
 	int32_t skillId = 0;
-	if (hasBuff(Jobs::Hero::PowerStance)) {
-		skillId = Jobs::Hero::PowerStance;
+	if (hasBuff(Skills::Hero::PowerStance)) {
+		skillId = Skills::Hero::PowerStance;
 	}
-	else if (hasBuff(Jobs::Paladin::PowerStance)) {
-		skillId = Jobs::Paladin::PowerStance;
+	else if (hasBuff(Skills::Paladin::PowerStance)) {
+		skillId = Skills::Paladin::PowerStance;
 	}
-	else if (hasBuff(Jobs::DarkKnight::PowerStance)) {
-		skillId = Jobs::DarkKnight::PowerStance;
+	else if (hasBuff(Skills::DarkKnight::PowerStance)) {
+		skillId = Skills::DarkKnight::PowerStance;
 	}
-	else if (hasBuff(Jobs::Marauder::EnergyCharge)) {
-		skillId = Jobs::Marauder::EnergyCharge;
+	else if (hasBuff(Skills::Marauder::EnergyCharge)) {
+		skillId = Skills::Marauder::EnergyCharge;
 	}
-	else if (hasBuff(Jobs::ThunderBreaker::EnergyCharge)) {
-		skillId = Jobs::ThunderBreaker::EnergyCharge;
+	else if (hasBuff(Skills::ThunderBreaker::EnergyCharge)) {
+		skillId = Skills::ThunderBreaker::EnergyCharge;
 	}
 	return skillId;
 }
 
 int32_t PlayerActiveBuffs::getHyperBody() {
 	int32_t id = 0;
-	if (hasBuff(Jobs::Spearman::HyperBody)) {
-		id = Jobs::Spearman::HyperBody;
+	if (hasBuff(Skills::Spearman::HyperBody)) {
+		id = Skills::Spearman::HyperBody;
 	}
-	else if (hasBuff(Jobs::SuperGm::HyperBody)) {
-		id = Jobs::SuperGm::HyperBody;
+	else if (hasBuff(Skills::SuperGm::HyperBody)) {
+		id = Skills::SuperGm::HyperBody;
 	}
 	return id;
 }
 
 int32_t PlayerActiveBuffs::getHomingBeacon() {
 	int32_t id = 0;
-	if (hasBuff(Jobs::Outlaw::HomingBeacon)) {
-		id = Jobs::Outlaw::HomingBeacon;
+	if (hasBuff(Skills::Outlaw::HomingBeacon)) {
+		id = Skills::Outlaw::HomingBeacon;
 	}
-	else if (hasBuff(Jobs::Corsair::Bullseye)) {
-		id = Jobs::Corsair::Bullseye;
+	else if (hasBuff(Skills::Corsair::Bullseye)) {
+		id = Skills::Corsair::Bullseye;
 	}
 	return id;
 }

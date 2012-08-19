@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GameConstants.h"
 #include "ItemConstants.h"
+#include "JobConstants.h"
 #include "Pos.h"
 #include "SkillConstants.h"
 #include <string>
@@ -60,10 +61,10 @@ namespace GameLogicUtilities {
 	// Player skills
 	inline bool isBeginnerSkill(int32_t skillId) { return ((skillId / 1000000) == (skillId < 10000000 ? 0 : 10)); }
 	inline bool isFourthJobSkill(int32_t skillId) { return ((skillId / 10000) % 10 == 2); }
-	inline bool isPuppet(int32_t skillId) { return (skillId == Jobs::Sniper::Puppet || skillId == Jobs::Ranger::Puppet || skillId == Jobs::WindArcher::Puppet); }
-	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Jobs::Priest::SummonDragon || skillId == Jobs::Ranger::SilverHawk || skillId == Jobs::Sniper::GoldenEagle || skillId == Jobs::DarkKnight::Beholder || skillId == Jobs::FpArchMage::Elquines || skillId == Jobs::IlArchMage::Ifrit || skillId == Jobs::BlazeWizard::Ifrit || skillId == Jobs::Bishop::Bahamut || skillId == Jobs::Bowmaster::Phoenix || skillId == Jobs::Marksman::Frostprey || skillId == Jobs::Outlaw::Octopus || skillId == Jobs::Corsair::WrathOfTheOctopi || skillId == Jobs::Outlaw::Gaviota || skillId == Jobs::DawnWarrior::Soul || skillId == Jobs::BlazeWizard::Flame || skillId == Jobs::WindArcher::Storm || skillId == Jobs::NightWalker::Darkness || skillId == Jobs::ThunderBreaker::Lightning); }
+	inline bool isPuppet(int32_t skillId) { return (skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet); }
+	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
-	inline bool isMaxDarkSight(int32_t skillId, uint8_t level) { return (skillId == Jobs::Rogue::DarkSight && level == 20 || skillId == Jobs::NightWalker::DarkSight && level == 10); }
+	inline bool isMaxDarkSight(int32_t skillId, uint8_t level) { return (skillId == Skills::Rogue::DarkSight && level == 20 || skillId == Skills::NightWalker::DarkSight && level == 10); }
 	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
 	inline bool itemSkillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 10000) == job); }
 	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
@@ -73,17 +74,35 @@ namespace GameLogicUtilities {
 	inline bool isMobSkill(int32_t skillId) { return (skillId >= 100 && skillId <= 200); }
 
 	// Jobs
-	inline bool isRegularJob(int32_t job) { return (job == Jobs::JobIds::Beginner || (job >= 100 && job <= 910)); }
-	inline bool isCygnusJob(int32_t job) { return (job == Jobs::JobIds::Noblesse || job == Jobs::JobIds::DawnWarrior1 || job == Jobs::JobIds::DawnWarrior2 || job == Jobs::JobIds::DawnWarrior3 || job == Jobs::JobIds::BlazeWizard1 || job == Jobs::JobIds::BlazeWizard2 || job == Jobs::JobIds::BlazeWizard3 || job == Jobs::JobIds::WindArcher1 || job == Jobs::JobIds::WindArcher2 || job == Jobs::JobIds::WindArcher3 || job == Jobs::JobIds::NightWalker1 || job == Jobs::JobIds::NightWalker2 || job == Jobs::JobIds::NightWalker3 || job == Jobs::JobIds::ThunderBreaker1 || job == Jobs::JobIds::ThunderBreaker2 || job == Jobs::JobIds::ThunderBreaker3); }
-	inline bool isLegendJob(int32_t job) { return (job == Jobs::JobIds::Legend || Jobs::JobIds::Aran1 || Jobs::JobIds::Aran2 || Jobs::JobIds::Aran3 || Jobs::JobIds::Aran4 || job == Jobs::JobIds::Evan || job == Jobs::JobIds::Evan1 || job == Jobs::JobIds::Evan2 || job == Jobs::JobIds::Evan3 || job == Jobs::JobIds::Evan4 || job == Jobs::JobIds::Evan5 || job == Jobs::JobIds::Evan6 || job == Jobs::JobIds::Evan7 || job == Jobs::JobIds::Evan8 || job == Jobs::JobIds::Evan9 || job == Jobs::JobIds::Evan10); }
-	inline bool isResistanceJob(int32_t job) { return (job == Jobs::JobIds::Citizen || Jobs::JobIds::BattleMage1 || Jobs::JobIds::BattleMage2 || Jobs::JobIds::BattleMage3 || Jobs::JobIds::BattleMage4 || Jobs::JobIds::WildHunter1 || Jobs::JobIds::WildHunter2 || Jobs::JobIds::WildHunter3 || Jobs::JobIds::WildHunter4 || Jobs::JobIds::Mechanic1 || Jobs::JobIds::Mechanic2 || Jobs::JobIds::Mechanic3 || Jobs::JobIds::Mechanic4); }
-	inline bool isNonBitJob(int32_t job) { return (isRegularJob(job) || isCygnusJob(job) || isLegendJob(job) || isResistanceJob(job)); }
-	inline bool isCygnus(int16_t jobId) { return (jobId >= 1000 && jobId < 2000); }
-	inline bool isLegend(int16_t jobId) { return (jobId >= 2000 && jobId < 3000); }
+	inline bool isAdventurer(int16_t jobId) { return (jobId != 128 && jobId != 256 && (jobId == Jobs::JobIds::Beginner || (jobId >= 100 && jobId <= 910))); }
+	inline bool isCygnus(int16_t jobId) { return (jobId != 1024 && jobId >= 1000 && jobId < 2000); }
+	inline bool isLegend(int16_t jobId) { return (jobId != 2048 && jobId >= 2000 && jobId < 3000); }
 	inline bool isResistance(int16_t jobId) { return (jobId >= 3000 && jobId < 4000); }
-	inline bool isBeginnerJob(int16_t jobId) { return (jobId == Jobs::JobIds::Beginner || jobId == Jobs::JobIds::Noblesse || jobId == Jobs::JobIds::Legend || jobId == Jobs::JobIds::Evan || jobId == Jobs::JobIds::Citizen); }
-	inline int16_t getJobTrack(int16_t job, bool flatten = false) { return (flatten && !isRegularJob(job) ? ((job / 100) % 10) : (job / 100)); }
-	inline uint8_t getMaxLevel(int16_t job) { return (isCygnus(job) ? Stats::CygnusLevels : Stats::PlayerLevels); }
+	inline bool isBeginnerJob(int16_t jobId) {
+		for (int32_t i = 0; i < Jobs::Beginners::JobCount; ++i) {
+			if (jobId == Jobs::Beginners::Jobs[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
+	inline int16_t getJobTrack(int16_t jobId) { return (isAdventurer(jobId) ? (jobId / 10) : (jobId / 100)); }
+	inline int16_t getJobLine(int16_t jobId) { return (isAdventurer(jobId) ? (jobId / 100) : ((jobId / 100) % 10)); }
+	inline int16_t getJobProgression(int16_t jobId) {
+		if (isBeginnerJob(jobId)) {
+			return Jobs::JobProgressions::Beginner;
+		}
+
+		int16_t jobProgression = (jobId % 10);
+		if (jobProgression == 0) {
+			// Might be first job or second job
+			if (getJobTrack(jobId) == 0) {
+				return Jobs::JobProgressions::FirstJob;
+			}
+		}
+		return Jobs::JobProgressions::SecondJob + (jobId % 10);
+	}
+	inline uint8_t getMaxLevel(int16_t jobId) { return (isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels); }
 
 	// Monster card
 	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }

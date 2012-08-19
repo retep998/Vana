@@ -50,6 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include "MapleVersion.h"
 #include "GameConstants.h"
+#include "JobConstants.h"
 #include "SkillConstants.h"
 #include "GameLogicUtilities.h"
 #include "PacketCreator.h"

@@ -65,12 +65,7 @@ LuaScriptable::~LuaScriptable() {
 void LuaScriptable::initialize() {
 	luaopen_base(luaVm);
 	setVariable("system_playerId", m_playerId); // Pushing ID for reference from static functions
-	setVariable("m_blue", PlayerPacket::NoticeTypes::Blue);
-	setVariable("m_red", PlayerPacket::NoticeTypes::Red);
-	setVariable("m_notice", PlayerPacket::NoticeTypes::Notice);
-	setVariable("m_box", PlayerPacket::NoticeTypes::Box);
-	setVariable("m_version", MapleVersion::Version);
-	setVariable("m_locale", MapleVersion::Locale);
+	setEnvironmentVariables();
 
 	Player *player = LuaExports::getPlayer(luaVm);
 	if (player != nullptr && player->getInstance() != nullptr) {
@@ -326,6 +321,15 @@ void LuaScriptable::initialize() {
 	lua_register(luaVm, "stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
 	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
 	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
+}
+
+void LuaScriptable::setEnvironmentVariables() {
+	setVariable("env_blueMessage", PlayerPacket::NoticeTypes::Blue);
+	setVariable("env_redMessage", PlayerPacket::NoticeTypes::Red);
+	setVariable("env_noticeMessage", PlayerPacket::NoticeTypes::Notice);
+	setVariable("env_boxMessage", PlayerPacket::NoticeTypes::Box);
+	setVariable("env_mapleVersion", MapleVersion::Version);
+	setVariable("env_mapleLocale", MapleVersion::Locale);
 }
 
 bool LuaScriptable::run() {

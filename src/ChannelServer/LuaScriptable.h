@@ -48,6 +48,8 @@ protected:
 	string m_filename;
 	int32_t m_playerId;
 	lua_State *luaVm;
+private:
+	void setEnvironmentVariables();
 };
 
 namespace LuaExports {

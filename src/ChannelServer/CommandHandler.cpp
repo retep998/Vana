@@ -121,10 +121,10 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			if (hide) {
 				MapPacket::removePlayer(player);
 				GmPacket::beginHide(player);
-				Buffs::addBuff(player, Jobs::SuperGm::Hide, player->getSkills()->getSkillLevel(Jobs::SuperGm::Hide), 0);
+				Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0);
 			}
 			else {
-				Skills::stopSkill(player, Jobs::SuperGm::Hide);
+				Skills::stopSkill(player, Skills::SuperGm::Hide);
 			}
 			break;
 		}

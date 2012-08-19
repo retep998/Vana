@@ -158,6 +158,7 @@
     <ClInclude Include="src\Common\ItemConstants.h" />
     <ClInclude Include="src\Common\ItemDataObjects.h" />
     <ClInclude Include="src\Common\BlockCipherIv.h" />
+    <ClInclude Include="src\Common\JobConstants.h" />
     <ClInclude Include="src\Common\Logger.h" />
     <ClInclude Include="src\Common\LogReplacements.h" />
     <ClInclude Include="src\Common\MapConstants.h" />
