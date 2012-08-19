@@ -77,7 +77,8 @@ void PlayerStorage::load() {
 	soci::row row;
 	int32_t userId = m_player->getUserId();
 	int8_t worldId = m_player->getWorldId();
-	sql.once << "SELECT s.slots, s.mesos FROM storage s WHERE s.user_id = :user AND s.world_id = :world",
+
+	sql.once << "SELECT s.slots, s.mesos, s.char_slots FROM storage s WHERE s.user_id = :user AND s.world_id = :world LIMIT 1",
 				soci::use(userId, "user"),
 				soci::use(worldId, "world"),
 				soci::into(row);
@@ -85,27 +86,31 @@ void PlayerStorage::load() {
 	if (sql.got_data()) {
 		m_slots = row.get<uint8_t>("slots");
 		m_mesos = row.get<int32_t>("mesos");
+		m_charSlots = row.get<int32_t>("char_slots");
 	}
 	else {
 		m_slots = ChannelServer::Instance()->getDefaultStorageSlots();
 		m_mesos = 0;
-
-		sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos) "
-					<< "VALUES (:user, :world, :slots, :mesos)",
-						soci::use(userId, "user"),
-						soci::use(worldId, "world"),
-						soci::use(getSlots(), "slots"),
-						soci::use(getMesos(), "mesos");
+		m_charSlots = ChannelServer::Instance()->getDefaultChars();
+		sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos, char_slots) " <<
+					"VALUES (:user, :world, :slots, :mesos, :chars)",
+					soci::use(userId, "user"),
+					soci::use(worldId, "world"),
+					soci::use(m_slots, "slots"),
+					soci::use(m_mesos, "mesos"),
+					soci::use(m_charSlots, "chars");
 	}
 
 	m_items.reserve(m_slots);
 
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT i.* FROM items i " <<
-															"WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world " <<
-															"ORDER BY i.slot ASC",
-															soci::use(string("storage"), "location"),
-															soci::use(userId, "user"),
-															soci::use(worldId, "world"));
+	string location = "storage";
+
+	soci::rowset<> rs = (sql.prepare << "SELECT i.* FROM items i " <<
+										"WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world " <<
+										"ORDER BY i.slot ASC",
+										soci::use(location, "location"),
+										soci::use(userId, "user"),
+										soci::use(worldId, "world"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
@@ -146,13 +151,14 @@ void PlayerStorage::save() {
 	string location = "storage";
 
 	session &sql = Database::getCharDb();
-	sql.once << "INSERT INTO storage (user_id, world_id, slots, mesos) " <<
-				"VALUES (:user, :world, :slots, :mesos) " <<
-				"ON DUPLICATE KEY UPDATE slots = :slots, mesos = :mesos",
+	sql.once << "UPDATE storage " <<
+				"SET slots = :slots, mesos = :mesos, char_slots = :chars " <<
+				"WHERE user_id = :user AND world_id = :world",
 				use(userId, "user"),
 				use(worldId, "world"),
 				use(m_slots, "slots"),
-				use(m_mesos, "mesos");
+				use(m_mesos, "mesos"),
+				use(m_charSlots, "chars");
 
 	sql.once << "DELETE FROM items WHERE location = :location AND user_id = :user AND world_id = :world",
 				use(location, "location"),
@@ -167,6 +173,7 @@ void PlayerStorage::save() {
 		int8_t scrolls = 0;
 		uint8_t inv = 0;
 		int16_t amount = 0;
+		int32_t itemId = 0;
 		int16_t iStr = 0;
 		int16_t iDex = 0;
 		int16_t iInt = 0;
@@ -183,7 +190,6 @@ void PlayerStorage::save() {
 		int16_t iSpeed = 0;
 		int16_t iJump = 0;
 		int16_t flags = 0;
-		int32_t itemId = 0;
 		int32_t hammers = 0;
 		int64_t petId = 0;
 		int64_t expiration = 0;
@@ -219,7 +225,7 @@ void PlayerStorage::save() {
 										use(iMdef, "mdef"),
 										use(iAcc, "acc"),
 										use(iAvo, "avo"),
-										use(iHands, "hand"),
+										use(iHands, "hands"),
 										use(iSpeed, "speed"),
 										use(iJump, "jump"),
 										use(flags, "flags"),
@@ -256,6 +262,7 @@ void PlayerStorage::save() {
 			petId = item->getPetId();
 			name = item->getName();
 			expiration = item->getExpirationTime();
+
 			st.execute(true);
 		}
 	}

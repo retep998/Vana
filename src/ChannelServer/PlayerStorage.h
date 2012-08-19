@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/utility.hpp>
 #include <vector>
 
 using std::vector;
@@ -56,4 +56,5 @@ private:
 	vector<Item *> m_items;
 	uint8_t m_slots;
 	int32_t m_mesos;
+	int32_t m_charSlots;
 };

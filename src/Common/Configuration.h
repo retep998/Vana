@@ -58,6 +58,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 	int32_t questExpRate;
 	int32_t mesoRate;
 	int32_t dropRate;
+	int32_t defaultChars;
 	int32_t maxChars;
 	int32_t maxPlayerLoad;
 	int32_t fameTime;
@@ -81,6 +82,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		packet.add<int32_t>(questExpRate);
 		packet.add<int32_t>(mesoRate);
 		packet.add<int32_t>(dropRate);
+		packet.add<int32_t>(defaultChars);
 		packet.add<int32_t>(maxChars);
 		packet.add<int32_t>(maxPlayerLoad);
 		packet.add<int32_t>(maxChannels);
@@ -104,6 +106,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		questExpRate = packet.get<int32_t>();
 		mesoRate = packet.get<int32_t>();
 		dropRate = packet.get<int32_t>();
+		defaultChars = packet.get<int32_t>();
 		maxChars = packet.get<int32_t>();
 		maxPlayerLoad = packet.get<int32_t>();
 		maxChannels = packet.get<int32_t>();

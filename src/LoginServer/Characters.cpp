@@ -153,7 +153,8 @@ void Characters::showCharacters(Player *player) {
 				soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
-		max = Characters::DefaultCharacterSlots;
+		WorldConfig &world = Worlds::Instance()->getWorld(worldId)->getConfig();
+		max = world.defaultChars;
 	}
 
 	LoginPacket::showCharacters(player, chars, max.get());

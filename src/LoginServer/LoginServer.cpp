@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VanaConstants.h"
 #include "World.h"
 #include "Worlds.h"
-#include <boost/format.hpp>
+#include <sstream>
 #include <iostream>
 
 LoginServer * LoginServer::singleton = nullptr;
@@ -82,27 +82,29 @@ string LoginServer::makeLogIdentifier() {
 void LoginServer::loadWorlds() {
 	ConfigFile config("conf/worlds.lua");
 	WorldConfig conf;
-	boost::format formatter("world%i_%s");
+	std::ostringstream stream;
 	size_t i = 0;
 	bool added = false;
-	auto getBossConfig = [&formatter, &config, &i](MajorBoss &dest, const string &src, size_t maxChannels) {
-		formatter % i % (src + "_attempts");
-		dest.attempts = config.get<int16_t>(formatter.str());
-		formatter % i % (src + "_channels");
-		dest.channels = config.getBossChannels(formatter.str(), maxChannels);
+	auto getKey = [&stream, &i](const string &key) -> string {
+		stream.clear();
+		stream.str("");
+		stream << "world" << i << "_" << key;
+		return stream.str();
+	};
+	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string &src, size_t maxChannels) {
+		dest.attempts = config.get<int16_t>(getKey(src + "_attempts"));
+		dest.channels = config.getBossChannels(getKey(src + "_channels"), maxChannels);
 	};
 
 	while (true) {
-		formatter % i % "name";
-		if (!config.keyExists(formatter.str())) {
+		string &key = getKey("name");
+		if (!config.keyExists(key)) {
 			// No more worlds
 			break;
 		}
 
-		conf.name = config.getString(formatter.str());
-
-		formatter % i % "id";
-		int8_t worldId = config.get<int8_t>(formatter.str());
+		conf.name = config.getString(key);
+		int8_t worldId = config.get<int8_t>(getKey("id"));
 
 		World *world = Worlds::Instance()->getWorld(worldId);
 		added = (world == nullptr);
@@ -110,50 +112,22 @@ void LoginServer::loadWorlds() {
 			world = new World();
 		}
 
-		formatter % i % "channels";
-		conf.maxChannels = config.get<int32_t>(formatter.str());
-
-		formatter % i % "ribbon";
-		conf.ribbon = config.get<int8_t>(formatter.str());
-
-		formatter % i % "exp_rate";
-		conf.expRate = config.get<int32_t>(formatter.str());
-
-		formatter % i % "quest_exp_rate";
-		conf.questExpRate = config.get<int32_t>(formatter.str());
-
-		formatter % i % "meso_rate";
-		conf.mesoRate = config.get<int32_t>(formatter.str());
-
-		formatter % i % "drop_rate";
-		conf.dropRate = config.get<int32_t>(formatter.str());
-
-		formatter % i % "max_stats";
-		conf.maxStats = config.get<int16_t>(formatter.str());
-
-		formatter % i % "max_multi_level";
-		conf.maxMultiLevel = config.get<uint8_t>(formatter.str());
-
-		formatter % i % "event_message";
-		conf.eventMsg = config.getString(formatter.str());
-
-		formatter % i % "scrolling_header";
-		conf.scrollingHeader = config.getString(formatter.str());
-
-		formatter % i % "max_player_load";
-		conf.maxPlayerLoad = config.get<int32_t>(formatter.str());
-
-		formatter % i % "max_characters";
-		conf.maxChars = config.get<int32_t>(formatter.str());
-
-		formatter % i % "default_storage";
-		conf.defaultStorageSlots = config.get<uint8_t>(formatter.str());
-
-		formatter % i % "fame_time";
-		conf.fameTime = config.get<int32_t>(formatter.str());
-
-		formatter % i % "fame_reset_time";
-		conf.fameResetTime = config.get<int32_t>(formatter.str());
+		conf.maxChannels = config.get<int32_t>(getKey("channels"));
+		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
+		conf.expRate = config.get<int32_t>(getKey("exp_rate"));
+		conf.questExpRate = config.get<int32_t>(getKey("quest_exp_rate"));
+		conf.mesoRate = config.get<int32_t>(getKey("meso_rate"));
+		conf.dropRate = config.get<int32_t>(getKey("drop_rate"));
+		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
+		conf.maxMultiLevel = config.get<uint8_t>(getKey("max_multi_level"));
+		conf.eventMsg = config.getString(getKey("event_message"));
+		conf.scrollingHeader = config.getString(getKey("scrolling_header"));
+		conf.maxPlayerLoad = config.get<int32_t>(getKey("max_player_load"));
+		conf.maxChars = config.get<int32_t>(getKey("max_characters"));
+		conf.defaultChars = config.get<int32_t>(getKey("default_characters"));
+		conf.defaultStorageSlots = config.get<uint8_t>(getKey("default_storage"));
+		conf.fameTime = config.get<int32_t>(getKey("fame_time"));
+		conf.fameResetTime = config.get<int32_t>(getKey("fame_reset_time"));
 
 		getBossConfig(conf.pianus, "pianus", conf.maxChannels);
 		getBossConfig(conf.pap, "pap", conf.maxChannels);
@@ -164,9 +138,7 @@ void LoginServer::loadWorlds() {
 		world->setConfiguration(conf);
 		if (added) {
 			world->setId(worldId);
-
-			formatter % i % "port";
-			world->setPort(config.get<port_t>(formatter.str()));
+			world->setPort(config.get<port_t>(getKey("port")));
 
 			Worlds::Instance()->addWorld(world);
 		}

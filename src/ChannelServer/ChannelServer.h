@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.h"
 #include "Configuration.h"
+#include "noncopyable.hpp"
 #include "Types.h"
-#include <boost/utility.hpp>
 #include <string>
 
 using std::string;
@@ -72,6 +72,7 @@ public:
 	int32_t getQuestExpRate() const { return m_config.questExpRate; }
 	int32_t getMesoRate() const { return m_config.mesoRate; }
 	int32_t getDropRate() const { return m_config.dropRate; }
+	int32_t getDefaultChars() const { return m_config.defaultChars; }
 	int32_t getMaxChars() const { return m_config.maxChars; }
 	int32_t getFameTime() const { return m_config.fameTime; }
 	int32_t getFameResetTime() const { return m_config.fameResetTime; }
