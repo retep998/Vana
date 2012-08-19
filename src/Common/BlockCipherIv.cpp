@@ -51,7 +51,7 @@ void BlockCipherIv::updateIv(uint32_t iv) {
 }
 
 void BlockCipherIv::shuffle() {
-	uint8_t x[4] = {0xF2, 0x53, 0x50, 0xC6};
+	uint8_t newIv[4] = {0xF2, 0x53, 0x50, 0xC6};
 	uint8_t input;
 	uint8_t valueInput;
 	uint32_t fullIv;
@@ -61,19 +61,19 @@ void BlockCipherIv::shuffle() {
 		input = m_iv[i];
 		valueInput = ivTable[input];
 
-		x[0] += (ivTable[x[1]] - input);
-		x[1] -= (x[2] ^ valueInput);
-		x[2] ^= (ivTable[x[3]] + input);
-		x[3] -= (x[0] - valueInput);
+		newIv[0] += (ivTable[newIv[1]] - input);
+		newIv[1] -= (newIv[2] ^ valueInput);
+		newIv[2] ^= (ivTable[newIv[3]] + input);
+		newIv[3] -= (newIv[0] - valueInput);
 
-		fullIv = (x[3] << 24) | (x[2] << 16) | (x[1] << 8) | x[0];
+		fullIv = (newIv[3] << 24) | (newIv[2] << 16) | (newIv[1] << 8) | newIv[0];
 		shift = (fullIv >> 0x1D) | (fullIv << 0x03);
 
-		x[0] = static_cast<uint8_t>(shift & 0xFFu);
-		x[1] = static_cast<uint8_t>((shift >> 8) & 0xFFu);
-		x[2] = static_cast<uint8_t>((shift >> 16) & 0xFFu);
-		x[3] = static_cast<uint8_t>((shift >> 24) & 0xFFu);
+		newIv[0] = static_cast<uint8_t>(shift & 0xFFu);
+		newIv[1] = static_cast<uint8_t>((shift >> 8) & 0xFFu);
+		newIv[2] = static_cast<uint8_t>((shift >> 16) & 0xFFu);
+		newIv[3] = static_cast<uint8_t>((shift >> 24) & 0xFFu);
 	}
 
-	setIv(m_iv, x);
+	setIv(m_iv, newIv);
 }
