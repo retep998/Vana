@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigration.h"
 #include "ExitCodes.h"
 #include "MapleVersion.h"
+#include "TimeUtilities.h"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -99,6 +100,9 @@ void Initializing::checkSchemaVersion(bool update) {
 }
 
 void Initializing::setUsersOffline(int32_t onlineId) {
+	std::cout << "Resetting online status of players..." << std::endl;
+	clock_t startTime = TimeUtilities::getTickCount();
+
 	Database::getCharDb().once << "UPDATE user_accounts u "
 								<< "INNER JOIN characters c ON u.user_id = c.user_id "
 								<< "SET "
@@ -106,4 +110,7 @@ void Initializing::setUsersOffline(int32_t onlineId) {
 								<< "	c.online = 0 "
 								<< "WHERE u.online = :online",
 								soci::use(onlineId, "online");
+
+	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
+	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
 }
