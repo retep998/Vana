@@ -22,6 +22,8 @@ world0_drop_rate = 1;
 
 -- Max allowed character slots (between 1 and 6)
 world0_max_characters = 6;
+-- Default character slots (default 3, should be <= max chars)
+world0_default_characters = 3;
 -- Default storage slots (between 4 and 100)
 world0_default_storage = 4;
 
@@ -44,7 +46,7 @@ world0_event_message = "";
 -- Scrolling header
 world0_scrolling_header = "";
 
--- Maximum player load on the worldserver
+-- Maximum player load on the WorldServer
 world0_max_player_load = 1000;
 
 -- Fame
@@ -83,6 +85,7 @@ world0_pinkbean_attempts = 1;
 -- world1_meso_rate = 1;
 -- world1_drop_rate = 1;
 -- world1_max_characters = 6;
+-- world1_default_characters = 3;
 -- world1_default_storage = 4;
 -- world1_max_stats = 999;
 -- world1_max_multi_level = 1;
