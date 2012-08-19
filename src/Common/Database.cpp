@@ -24,14 +24,14 @@ Database::tsConn Database::m_chardb;
 Database::tsConn Database::m_datadb;
 
 void Database::connectCharDb() {
-	ConfigFile config("conf/mysql.lua");
+	ConfigFile config("conf/database.lua");
 	DbConfig conf = config.getClass<DbConfig>("chardb");
 	m_chardb.reset(new soci::session(soci::mysql, buildConnectionString(conf)));
 	m_chardb->reconnect();
 }
 
 void Database::connectDataDb() {
-	ConfigFile config("conf/mysql.lua");
+	ConfigFile config("conf/database.lua");
 	DbConfig conf = config.getClass<DbConfig>("datadb");
 	m_datadb.reset(new soci::session(soci::mysql, buildConnectionString(conf)));
 	m_datadb->reconnect();
