@@ -42,6 +42,7 @@ namespace StringUtilities {
 	inline string rightTrim(string &s);
 	inline string toUpper(const string &s);
 	inline string toLower(const string &s);
+	inline string removeSpaces(const string &s);
 }
 
 namespace _impl {
@@ -162,5 +163,12 @@ inline
 string StringUtilities::toLower(const string &s) {
 	string ret = s;
 	std::for_each(ret.begin(), ret.end(), [](char x) -> char { return std::tolower(x); });
+	return ret;
+}
+
+inline
+string StringUtilities::removeSpaces(const string &s) {
+	string ret = s;
+	ret.erase(std::remove_if(ret.begin(), ret.end(), ::isspace), ret.end());
 	return ret;
 }

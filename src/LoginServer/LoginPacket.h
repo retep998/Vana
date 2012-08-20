@@ -29,8 +29,16 @@ class World;
 struct Character;
 
 namespace LoginPacket {
+	namespace CheckNameErrors {
+		enum Errors : uint8_t {
+			None = 0x00,
+			Taken = 0x01,
+			Invalid = 0x04,
+			UnknownReason = 0xFF
+		};
+	}
 	namespace Errors {
-		enum Errors : int8_t {
+		enum Errors : uint8_t {
 			InvalidPin = 0x02,
 			InvalidPassword = 0x04,
 			InvalidUsername = 0x05,
@@ -38,7 +46,7 @@ namespace LoginPacket {
 		};
 	}
 	namespace WorldMessages {
-		enum Messages : int8_t {
+		enum Messages : uint8_t {
 			Normal = 0x00,
 			HeavyLoad = 0x01,
 			MaxLoad = 0x02
@@ -59,7 +67,7 @@ namespace LoginPacket {
 	void showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars); // Used for "view all characters"
 	void showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars);
 	void showCharacter(Player *player, const Character &charc);
-	void checkName(Player *player, const string &name, bool taken);
+	void checkName(Player *player, const string &name, uint8_t message);
 	void deleteCharacter(Player *player, int32_t id, uint8_t result);
 	void connectIp(Player *player, int32_t charId);
 	void relogResponse(Player *player);

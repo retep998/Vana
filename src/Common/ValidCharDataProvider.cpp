@@ -88,13 +88,12 @@ void ValidCharDataProvider::loadCreationItems() {
 }
 
 bool ValidCharDataProvider::isForbiddenName(const string &cmp) {
-	bool forbidden = false;
-	for (size_t i = 0; i < m_forbiddenNames.size(); i++) {
-		if (cmp.find(m_forbiddenNames[i], 0) != string::npos) {
-			forbidden = true;
-			break;
-		}
-	}
+	string c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
+	bool forbidden = (m_forbiddenNames.end() != std::find_if(m_forbiddenNames.begin(), m_forbiddenNames.end(),
+		[&c](const string &s) -> bool {
+			return c.find(s, 0) != string::npos;
+		})
+	);
 	return forbidden;
 }
 

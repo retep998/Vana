@@ -167,7 +167,15 @@ void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	LoginPacket::checkName(player, name, nameIllegal(player, name));
+	if (nameInvalid(name)) {
+		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Invalid);
+	}
+	else if (nameTaken(name)) {
+		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Taken);
+	}
+	else {
+		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::None);
+	}
 }
 
 void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) {
@@ -232,8 +240,12 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	}
 
 	// Let's check our char name again just to be sure
-	if (nameIllegal(player, name)) {
-		LoginPacket::checkName(player, name, true);
+	if (nameInvalid(name)) {
+		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Invalid);
+		return;
+	}
+	if (nameTaken(name)) {
+		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Taken);
 		return;
 	}
 
@@ -404,12 +416,17 @@ bool Characters::ownerCheck(Player *player, int32_t id) {
 	return sql.got_data() && exists.is_initialized();
 }
 
-bool Characters::nameIllegal(Player *player, const string &name) {
+bool Characters::nameTaken(const string &name) {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
 	sql.once << "SELECT 1 FROM characters c WHERE c.name = :name ",
 									soci::use(name, "name"),
 									soci::into(exists);
 
-	return (sql.got_data() && exists.is_initialized() ? true : ValidCharDataProvider::Instance()->isForbiddenName(name) || CurseDataProvider::Instance()->isCurseWord(name));
+	return sql.got_data() && exists.is_initialized();
 }
+
+bool Characters::nameInvalid(const string &name) {
+	return ValidCharDataProvider::Instance()->isForbiddenName(name) || CurseDataProvider::Instance()->isCurseWord(name);
+}
+

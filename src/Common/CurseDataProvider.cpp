@@ -17,10 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CurseDataProvider.h"
 #include "Database.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "StringUtilities.h"
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 
@@ -45,12 +44,11 @@ void CurseDataProvider::loadData() {
 }
 
 bool CurseDataProvider::isCurseWord(const string &cmp) {
-	bool curse = false;
-	for (size_t i = 0; i < m_curseWords.size(); ++i) {
-		if (cmp.find(m_curseWords[i], 0) != string::npos) {
-			curse = true;
-			break;
-		}
-	}
+	string c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
+	bool curse = (m_curseWords.end() != std::find_if(m_curseWords.begin(), m_curseWords.end(),
+		[&c](const string &s) -> bool {
+			return c.find(s, 0) != string::npos;
+		})
+	);
 	return curse;
 }

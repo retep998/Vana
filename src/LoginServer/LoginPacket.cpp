@@ -169,11 +169,11 @@ void LoginPacket::channelOffline(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::checkName(Player *player, const string &name, bool taken) {
+void LoginPacket::checkName(Player *player, const string &name, uint8_t message) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_NAME_CHECK);
 	packet.addString(name);
-	packet.addBool(taken);
+	packet.add<uint8_t>(message);
 	player->getSession()->send(packet);
 }
 
