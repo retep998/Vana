@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandlerFunctions.h"
 #include "CustomFunctions.h"
 #include "InfoFunctions.h"
+#include "JobConstants.h"
 #include "MapFunctions.h"
 #include "Maps.h"
 #include "ManagementFunctions.h"

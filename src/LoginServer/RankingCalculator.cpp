@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 
 using std::unique_ptr;
-using std::tr1::bind;
+using std::bind;
 using Initializing::OutputWidth;
 
 boost::mutex RankingCalculator::RankingsMutex;

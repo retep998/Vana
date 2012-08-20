@@ -48,7 +48,7 @@ void Session::handleStart() {
 	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
 
 	if (m_isForClient) {
-		PacketCreator &connectPacket = m_decoder.getConnectPacket(m_patchLocation);
+		const PacketCreator &connectPacket = m_decoder.getConnectPacket(m_patchLocation);
 		send(connectPacket, false);
 	}
 
