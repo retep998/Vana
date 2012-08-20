@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace BitUtilities {
 	template <typename T> inline T RotateRight(T val, int32_t shifts) {
 		const size_t size = sizeof(T) * 8;
-		shifts %= size;
+		shifts &= size - 1;
 		return static_cast<T>((val >> shifts) | (val << (size - shifts)));
 	}
 	template <typename T> inline T RotateLeft(T val, int32_t shifts) {
 		const size_t size = sizeof(T) * 8;
-		shifts %= size;
+		shifts &= size - 1;
 		return static_cast<T>((val << shifts) | (val >> (size - shifts)));
 	}
 }
