@@ -17,18 +17,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
-namespace Initializing {
-	void checkSchemaVersion(bool update = false);
-	void checkMcdbVersion();
-	void setUsersOffline(int32_t onlineId);
-	string makeLocale(const string &locale, bool testServer);
+class CurseDataProvider : boost::noncopyable {
+public:
+	static CurseDataProvider * Instance() {
+		if (singleton == nullptr)
+			singleton = new CurseDataProvider();
+		return singleton;
+	}
+	void loadData();
 
-	const int32_t OutputWidth = 27;
-	const int32_t McdbVersion = 4;
-	const int32_t McdbSubVersion = 3;
-}
+	bool isCurseWord(const string &cmp);
+private:
+	CurseDataProvider() {}
+	static CurseDataProvider *singleton;
+
+	vector<string> m_curseWords;
+};

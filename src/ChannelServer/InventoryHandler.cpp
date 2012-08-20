@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryHandler.h"
+#include "CurseDataProvider.h"
 #include "Drop.h"
 #include "EquipDataProvider.h"
 #include "GameLogicUtilities.h"
@@ -38,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "StoragePacket.h"
+#include "ValidCharDataProvider.h"
 
 void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	packet.skipBytes(4);
@@ -545,8 +547,14 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::PetNameTag: {
 				const string &name = packet.getString();
-				PetHandler::changeName(player, name);
-				used = true;
+				if (ValidCharDataProvider::Instance()->isForbiddenName(name) || CurseDataProvider::Instance()->isCurseWord(name)) {
+					// Don't think it's hacking, but it should be forbidden
+					return;
+				}
+				else {
+					PetHandler::changeName(player, name);
+					used = true;
+				}
 				break;
 			}
 			case Items::ItemNameTag: {

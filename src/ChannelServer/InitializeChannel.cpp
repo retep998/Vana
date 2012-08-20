@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BeautyDataProvider.h"
 #include "BuffDataProvider.h"
 #include "ChatHandler.h"
+#include "CurseDataProvider.h"
 #include "DropDataProvider.h"
 #include "EquipDataProvider.h"
 #include "EventDataProvider.h"
@@ -31,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ScriptDataProvider.h"
 #include "ShopDataProvider.h"
 #include "SkillDataProvider.h"
+#include "ValidCharDataProvider.h"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -48,6 +50,8 @@ void Initializing::loadData() {
 	SkillDataProvider::Instance()->loadData();
 	QuestDataProvider::Instance()->loadData();
 	ReactorDataProvider::Instance()->loadData();
+	ValidCharDataProvider::Instance()->loadData();
+	CurseDataProvider::Instance()->loadData();
 
 	EventDataProvider::InstancePtr()->loadData();
 	initializeChat();
