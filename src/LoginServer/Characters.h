@@ -76,5 +76,6 @@ namespace Characters {
 	void loadEquips(int32_t id, vector<CharEquip> &vec);
 	void createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1);
 	bool ownerCheck(Player *player, int32_t id);
-	bool nameIllegal(Player *player, const string &name); // Name is taken or not valid
+	bool nameTaken(const string &name);
+	bool nameInvalid(const string &name);
 }
