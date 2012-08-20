@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Characters.h"
+#include "CurseDataProvider.h"
 #include "Database.h"
 #include "EquipDataProvider.h"
 #include "GameConstants.h"
@@ -410,5 +411,5 @@ bool Characters::nameIllegal(Player *player, const string &name) {
 									soci::use(name, "name"),
 									soci::into(exists);
 
-	return (sql.got_data() && exists.is_initialized() ? true : ValidCharDataProvider::Instance()->isForbiddenName(name));
+	return (sql.got_data() && exists.is_initialized() ? true : ValidCharDataProvider::Instance()->isForbiddenName(name) || CurseDataProvider::Instance()->isCurseWord(name));
 }

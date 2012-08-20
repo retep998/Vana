@@ -17,9 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeLogin.h"
 #include "EquipDataProvider.h"
+#include "CurseDataProvider.h"
 #include "ValidCharDataProvider.h"
 
 void Initializing::loadData() {
 	EquipDataProvider::Instance()->loadData();
 	ValidCharDataProvider::Instance()->loadData();
+	CurseDataProvider::Instance()->loadData();
 }

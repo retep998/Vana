@@ -211,6 +211,9 @@
     <ClCompile Include="src\Common\BlockCipherIv.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\CurseDataProvider.cpp">
+      <Filter>Source\Database Loading\MCDB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -485,6 +488,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\JobConstants.h">
       <Filter>Source\Game Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CurseDataProvider.h">
+      <Filter>Source\Database Loading\MCDB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

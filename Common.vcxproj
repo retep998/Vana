@@ -86,6 +86,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
+    <ClCompile Include="src\Common\CurseDataProvider.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
     <ClCompile Include="src\Common\BlockCipherIv.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
     <ClInclude Include="src\Common\ConsoleLogger.h" />
+    <ClInclude Include="src\Common\CurseDataProvider.h" />
     <ClInclude Include="src\Common\ExitCodes.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
