@@ -97,7 +97,7 @@ void LoginServer::loadWorlds() {
 	};
 
 	while (true) {
-		string &key = getKey("name");
+		const string &key = getKey("name");
 		if (!config.keyExists(key)) {
 			// No more worlds
 			break;

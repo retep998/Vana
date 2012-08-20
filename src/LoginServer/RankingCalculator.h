@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/mutex.hpp>
 #include <string>
 #include <vector>
 
@@ -38,7 +38,7 @@ namespace RankingCalculator {
 		int16_t fameStat;
 		int32_t expStat;
 		int32_t charId;
-		time_t levelTime;
+		unix_time_t levelTime;
 		Rank overall;
 		Rank world;
 		Rank job;

@@ -23,8 +23,8 @@ include_directories(${SOCI_MYSQL_INCLUDE_DIR})
 find_package(Lua51 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 
-find_package(Crypto++ REQUIRED)
-include_directories(${CRYPTO++_INCLUDE_DIR})
+find_package(Botan REQUIRED)
+include_directories(${BOTAN_INCLUDE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/src/Common)
 
