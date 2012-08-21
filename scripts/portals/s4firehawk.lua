@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Portal to pick up egg for Phoenix
 
 if getItemAmount(4001113) > 0 then
-	showMessage("You already have Phoenix's egg. You can't enter.", m_red);
+	showMessage("You already have Phoenix's egg. You can't enter.", env_redMessage);
 else
 	if (isQuestActive(6240) or isQuestActive(6241)) or (isQuestCompleted(6240) and isQuestInactive(6241)) then
 		playPortalSe();

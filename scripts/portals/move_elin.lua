@@ -17,6 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Portal to Altaire Camp
 
-showMessage("Now moving past Gate of Time.", m_red);
+showMessage("Now moving past Gate of Time.", env_redMessage);
 playPortalSe();
 setMap(300000100, "out00");

@@ -22,25 +22,25 @@ dofile("scripts/lua_functions/bossHelper.lua");
 if not isPianusChannel() then
 	channels = getPianusChannels();
 	if #channels == 0 then
-		showMessage("You may not battle Pianus at this time.", m_red);
+		showMessage("You may not battle Pianus at this time.", env_redMessage);
 	else
-		showMessage("You may only battle Pianus on " .. getChannelString(channels) .. ".", m_red);
+		showMessage("You may only battle Pianus on " .. getChannelString(channels) .. ".", env_redMessage);
 	end
 	return;
 end
 
 x = getMaxPianusBattles();
 if x == 0 then
-	showMessage("You may not battle Pianus at this time.", m_red);
+	showMessage("You may not battle Pianus at this time.", env_redMessage);
 else
 	if getNumPlayers(230040420) < 10 then
 		if enterBoss("Pianus", x) then
 			playPortalSe();
 			setMap(230040420, "out00");
 		else
-			showMessage("You may only enter the Cave of Pianus " .. x .. " " .. timeString(x) .. " per day.", m_red);
+			showMessage("You may only enter the Cave of Pianus " .. x .. " " .. timeString(x) .. " per day.", env_redMessage);
 		end
 	else
-		showMessage("The Cave of Pianus is currently full. Please come back later.", m_red);
+		showMessage("The Cave of Pianus is currently full. Please come back later.", env_redMessage);
 	end
 end

@@ -99,7 +99,7 @@ if isQuestCompleted(quest) then
 	playPortalSe();
 	setMap(toMapIfDone, "out00");
 else
-	showMessage("Those who have not received permission cannot walk against the flow of the temple and will return to the previous place.", m_red);
+	showMessage("Those who have not received permission cannot walk against the flow of the temple and will return to the previous place.", env_redMessage);
 	playPortalSe();
 	setMap(toMap);
 end
