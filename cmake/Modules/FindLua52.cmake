@@ -1,6 +1,6 @@
 # Locate Lua library
 # This module defines
-#  LUA51_FOUND, if false, do not try to link to Lua 
+#  LUA52_FOUND, if false, do not try to link to Lua 
 #  LUA_LIBRARIES
 #  LUA_INCLUDE_DIR, where to find lua.h 
 #
@@ -15,7 +15,7 @@
 FIND_PATH(LUA_INCLUDE_DIR lua.h
   HINTS
   $ENV{LUA_DIR}
-  PATH_SUFFIXES include/lua51 include/lua5.1 include/lua include
+  PATH_SUFFIXES include/lua52 include/lua5.2 include/lua include
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
@@ -28,7 +28,7 @@ FIND_PATH(LUA_INCLUDE_DIR lua.h
 )
 
 FIND_LIBRARY(LUA_LIBRARY 
-  NAMES lua51 lua5.1 lua
+  NAMES lua52 lua5.2 lua
   HINTS
   $ENV{LUA_DIR}
   PATH_SUFFIXES lib64 lib
@@ -57,7 +57,7 @@ ENDIF(LUA_LIBRARY)
 INCLUDE(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LUA_FOUND to TRUE if 
 # all listed variables are TRUE
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Lua51  DEFAULT_MSG  LUA_LIBRARIES LUA_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Lua52  DEFAULT_MSG  LUA_LIBRARIES LUA_INCLUDE_DIR)
 
 MARK_AS_ADVANCED(LUA_INCLUDE_DIR LUA_LIBRARIES LUA_LIBRARY LUA_MATH_LIBRARY)
 

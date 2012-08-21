@@ -68,7 +68,7 @@ bool LuaNpc::run() {
 }
 
 bool LuaNpc::resume(int32_t nArgs) {
-	int32_t ret = lua_resume(m_luaThread, nArgs);
+	int32_t ret = lua_resume(m_luaThread, luaVm, nArgs);
 	if (ret == 0) {
 		// NPC finished
 		PlayerDataProvider::Instance()->getPlayer(m_playerId)->getNpc()->end();
