@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.1/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_48_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.1/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -80,7 +80,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.1/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_48_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.1/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
