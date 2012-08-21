@@ -17,4 +17,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Snail reactor in Pumpkin Vault (Haunted House)
 
-showMessage("Nothing happens...", m_red);
+showMessage("Nothing happens...", env_redMessage);

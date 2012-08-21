@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Horntail summon reactor script
 
 setMusic("Bgm14/HonTale");
-showMapMessage("As the cave shakes and rattles, here comes Horntail.", m_red);
+showMapMessage("As the cave shakes and rattles, here comes Horntail.", env_redMessage);
 spawnMobPos(8810026, 92, 250);

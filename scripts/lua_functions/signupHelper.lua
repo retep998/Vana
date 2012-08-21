@@ -51,7 +51,7 @@ end
 
 function messageAll(msg, color)
 	if color == nil then
-		color = m_red;
+		color = env_redMessage;
 	end
 	for i = 1, getInstanceSignupCount() do
 		if setPlayer(getInstancePlayerByIndex(i)) then

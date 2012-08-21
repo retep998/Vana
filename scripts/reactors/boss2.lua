@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Papulatus summon reactor
 
-showMapMessage("The crack of dimension was filled by the <Piece of Cracked Dimension>.", m_red);
+showMapMessage("The crack of dimension was filled by the <Piece of Cracked Dimension>.", env_redMessage);
 setMusic("Bgm09/TimeAttack");
 spawnMobPos(8500000, -410, -385);
 setReactorState(220080000, 2208001, 1);

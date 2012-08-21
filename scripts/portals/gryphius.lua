@@ -21,5 +21,5 @@ if getNumPlayers(240020102) < 6 then
 	playPortalSe();
 	setMap(240020102, "out00");
 else
-	showMessage("You may not enter the Griffey Forest.", m_red);
+	showMessage("You may not enter the Griffey Forest.", env_redMessage);
 end
