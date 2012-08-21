@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.h"
 #include "ConnectionManager.h"
+#include "ExitCodes.h"
 #include <botan/botan.h>
 #include <exception>
 #include <functional>
@@ -57,9 +58,8 @@ int main() {
 	}
 	catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
+		ExitCodes::exit(ExitCodes::ProgramException);
 	}
 
-	return 0;
+	return ExitCodes::Ok;
 }

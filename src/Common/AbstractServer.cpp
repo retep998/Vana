@@ -44,9 +44,7 @@ void AbstractServer::initialize() {
 
 	if (m_interPassword == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::ConfigError);
+		ExitCodes::exit(ExitCodes::ConfigError);
 	}
 
 	m_externalIp = config.getIpMatrix("external_ip");

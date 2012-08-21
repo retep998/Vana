@@ -34,9 +34,7 @@ void Initializing::checkMcdbVersion() {
 
 	if (!sql.got_data()) {
 		std::cerr << "ERROR: mcdb_info is empty." << endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::McdbError);
+		ExitCodes::exit(ExitCodes::McdbError);
 	}
 
 	int32_t version = row.get<int32_t>("version");
@@ -49,18 +47,14 @@ void Initializing::checkMcdbVersion() {
 		std::cerr << "ERROR: MCDB version incompatible." << endl;
 		std::cerr << "Vana: " << McdbVersion << "." << McdbSubVersion << endl;
 		std::cerr << "MCDB: " << version << "." << subversion << endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::McdbIncompatible);
+		ExitCodes::exit(ExitCodes::McdbIncompatible);
 	}
 
 	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
 		std::cerr << "ERROR: Your MCDB is designed for different locale." << endl;
 		std::cerr << "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << endl;
 		std::cerr << "MCDB: " << makeLocale(mapleLocale, testServer) << endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::McdbIncompatible);
+		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);
 	}
 	if (mapleVersion != MapleVersion::Version) {
 		std::cerr << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << endl;
@@ -84,10 +78,8 @@ void Initializing::checkSchemaVersion(bool update) {
 
 	if (!succeed && !update) {
 		// Wrong version and we're not allowed to update, so let's quit
-		std::cerr << "ERROR: Wrong version of database, please run Login Server to update." << endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::InfoDatabaseError);
+		std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << endl;
+		ExitCodes::exit(ExitCodes::InfoDatabaseError);
 	}
 	else if (!succeed) {
 		// Failed, but we can update it

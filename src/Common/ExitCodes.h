@@ -17,6 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include <iostream>
+#include <iomanip>
+
 namespace ExitCodes {
 	enum : int32_t {
 		Ok = 0,
@@ -24,11 +27,24 @@ namespace ExitCodes {
 		ConfigFileMissing = 2,
 		McdbError = 3,
 		McdbIncompatible = 4,
-		InfoDatabaseError = 5,
-		ServerVersionMismatch = 6,
-		ServerConnectionError = 7
+		McdbLocaleIncompatible = 5,
+		InfoDatabaseError = 6,
+		SqlDirectoryNotFound = 7,
+		ServerVersionMismatch = 8,
+		ServerMalformedIvPacket = 9,
+		ServerConnectionError = 10,
+		ProgramException = 11
 	};
 	// Comments for easy searching
 	// exit(0) exit(1) exit(2) exit(3) exit(4)
-	// exit(5) exit(6) exit(7)
+	// exit(5) exit(6) exit(7) exit(8) exit(9)
+	// exit(10) exit(11)
+
+	inline void exit(int32_t code) {
+#ifndef DAEMON
+		std::cout << "Please press enter to quit..." << std::endl;
+		getchar();
+#endif
+		::exit(code);
+	}
 }

@@ -45,9 +45,7 @@ ConfigFile::~ConfigFile() {
 void ConfigFile::loadFile(const string &filename) {
 	if (!FileUtilities::fileExists(filename)) {
 		cerr << "ERROR: Configuration file " << filename << " does not exist!" << endl;
-		cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::ConfigFileMissing);
+		ExitCodes::exit(ExitCodes::ConfigFileMissing);
 	}
 
 	m_file = filename;
@@ -83,9 +81,7 @@ void ConfigFile::keyMustExist(const string &value) {
 		cerr << "ERROR: Couldn't get a value from config file." << endl;
 		cerr << "File: " << m_file << endl;
 		cerr << "Value: " << value << endl;
-		cout << "Press enter to quit ..." << endl;
-		getchar();
-		exit(ExitCodes::ConfigError);
+		ExitCodes::exit(ExitCodes::ConfigError);
 	}
 }
 
@@ -124,10 +120,8 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 		}
 
 		if (arr.size() != 2) {
-			std::cerr << "ERROR: external_ip configuration is malformed!" << endl;
-			cout << "Press enter to quit ...";
-			getchar();
-			exit(ExitCodes::ConfigError);
+			std::cerr << "ERROR: " << value << " configuration is malformed!" << endl;
+			ExitCodes::exit(ExitCodes::ConfigError);
 		}
 
 		matrix.push_back(arr);

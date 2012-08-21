@@ -85,9 +85,7 @@ void DatabaseMigration::loadSqlFiles() {
 	fs::path fullPath = fs::system_complete(fs::path("sql"));
 	if (!fs::exists(fullPath)) {
 		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::InfoDatabaseError);
+		ExitCodes::exit(ExitCodes::SqlDirectoryNotFound);
 	}
 
 	fs::directory_iterator end;
