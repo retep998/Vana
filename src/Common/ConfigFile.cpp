@@ -51,7 +51,7 @@ void ConfigFile::loadFile(const string &filename) {
 	}
 
 	m_file = filename;
-	m_luaVm = lua_open();
+	m_luaVm = luaL_newstate();
 	luaopen_base(getLuaState());
 }
 

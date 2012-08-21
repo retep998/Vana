@@ -53,7 +53,7 @@ using StringUtilities::lexical_cast;
 LuaScriptable::LuaScriptable(const string &filename, int32_t playerId) :
 	m_filename(filename),
 	m_playerId(playerId),
-	luaVm(lua_open())
+	luaVm(luaL_newstate())
 {
 	initialize();
 }
