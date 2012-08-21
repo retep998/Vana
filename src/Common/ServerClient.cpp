@@ -50,17 +50,13 @@ void ServerClient::startConnect() {
 		}
 		catch (std::range_error) {
 			std::cerr << "Error: Malformed IV packet" << endl;
-			std::cout << "Press enter to quit ...";
 			disconnect();
-			getchar();
-			exit(ExitCodes::ServerConnectionError);
+			ExitCodes::exit(ExitCodes::ServerMalformedIvPacket);
 		}
 	}
 	else {
 		std::cerr << "Error: " << error.message() << endl;
-		std::cout << "Press enter to quit ...";
-		getchar();
-		exit(ExitCodes::ServerConnectionError);
+		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }
 
@@ -95,10 +91,8 @@ void ServerClient::readConnectPacket() {
 		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << endl;
 		std::cout << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << endl;
 		std::cout << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << endl;
-		std::cout << "Press enter to quit ...";
 		disconnect();
-		getchar();
-		exit(ExitCodes::ServerVersionMismatch);
+		ExitCodes::exit(ExitCodes::ServerVersionMismatch);
 	}
 	m_decoder.setSendIv(sendIv);
 	m_decoder.setRecvIv(recvIv);
