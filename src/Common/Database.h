@@ -77,7 +77,7 @@ soci::session & Database::getConnection(tsConn &conn, std::function<void()> func
 }
 
 template<typename T>
-static T Database::getLastId(soci::session &sql) {
+T Database::getLastId(soci::session &sql) {
 	T val;
 	sql.once << "SELECT LAST_INSERT_ID()", soci::into(val);
 	return val;

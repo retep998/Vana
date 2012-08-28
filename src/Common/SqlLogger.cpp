@@ -46,7 +46,9 @@ void SqlLogger::flush() {
 		soci::session &sql = Database::getCharDb();
 		int16_t serverType = getServerType();
 		int32_t logType = 0;
-		opt_string identifier = "";
+		opt_string identifier;
+		// For GCC, GCC doesn't interpret operators very well
+		identifier = "";
 		string message = "";
 		unix_time_t logTime;
 

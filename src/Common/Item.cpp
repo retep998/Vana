@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "ItemConstants.h"
 #include "MiscUtilities.h"
+#include "SociExtensions.h"
+#include <soci.h>
 
 const string Item::Inventory = "inventory";
 const string Item::Storage = "storage";
