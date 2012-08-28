@@ -18,13 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <soci.h>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
 
+namespace soci {
+	class row;
+	class session;
+}
 class Item;
 
 struct ItemDbInformation {

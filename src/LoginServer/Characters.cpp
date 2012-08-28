@@ -321,7 +321,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	}
 
 	bool success = false;
-	opt_int32_t &delPassword = player->getCharDeletePassword();
+	const opt_int32_t &delPassword = player->getCharDeletePassword();
 	if (!delPassword.is_initialized() || delPassword.get() == data) {
 		Worlds::Instance()->runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {

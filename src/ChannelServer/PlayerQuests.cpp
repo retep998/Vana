@@ -46,7 +46,9 @@ void PlayerQuests::save() {
 		int32_t mobId = 0;
 		int16_t killed = 0;
 		int64_t id = 0;
-		opt_string data = "";
+		opt_string data;
+		// GCC, as usual, bad with operators
+		data = "";
 
 		soci::statement st = (sql.prepare
 			<< "INSERT INTO active_quests (character_id, quest_id, data) "
