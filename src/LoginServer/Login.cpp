@@ -30,14 +30,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include "TimeUtilities.h"
 #include "VanaConstants.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <iostream>
 
-using TimeUtilities::timeToTick32;
 using TimeUtilities::timeToTick;
+using TimeUtilities::timeToTick32;
 
 void Login::loginUser(Player *player, PacketReader &packet) {
 	const string &username = packet.getString();
@@ -54,13 +50,14 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	}
 
 	soci::session &sql = Database::getCharDb();
-	soci::indicator ind = soci::i_null;
 	soci::row row;
-	sql.once << "SELECT u.*, CAST(u.ban_expire IS NOT NULL AND u.ban_expire > 0 AND u.ban_expire >= NOW() AS SIGNED) AS banned " <<
-				"FROM user_accounts u " <<
-				"WHERE u.username = :user",
-					soci::use(username, "user"),
-					soci::into(row);
+
+	sql.once
+		<< "SELECT u.* "
+		<< "FROM user_accounts u "
+		<< "WHERE u.username = :user",
+		soci::use(username, "user"),
+		soci::into(row);
 
 	bool valid = true;
 	int32_t userId = 0;
@@ -71,23 +68,28 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	else {
 		opt_int32_t ipBanned;
 
-		sql.once << "SELECT i.ip_ban_id FROM ip_bans i WHERE i.ip = :ip",
-					soci::use(ip, "ip"),
-					soci::into(ipBanned);
+		sql.once
+			<< "SELECT i.ip_ban_id "
+			<< "FROM ip_bans i "
+			<< "WHERE i.ip = :ip",
+			soci::use(ip, "ip"),
+			soci::into(ipBanned);
 
 		if (sql.got_data() && ipBanned.is_initialized()) {
-			//namespace pt = boost::posix_time;
-			//int32_t time = timeToTick32(mktime(&pt::to_tm(pt::time_from_string("9000-01-01"))));
-			//LoginPacket::loginBan(player, 0, time);
+			std::tm banTime;
+			banTime.tm_year = 7100;
+			banTime.tm_mon = 0;
+			banTime.tm_mday = 1;
+			int32_t time = timeToTick32(mktime(&banTime));
+			LoginPacket::loginBan(player, 0, time);
 			valid = false;
 		}
 		else {
 			userId = row.get<int32_t>("user_id");
 			const string &dbPassword = row.get<string>("password");
-			string salt = row.get<string>("salt");
-			ind = row.get_indicator("salt");
+			opt_string salt = row.get<opt_string>("salt");
 
-			if (ind == soci::i_null) {
+			if (!salt.is_initialized()) {
 				// We have an unsalted password
 				if (dbPassword != password) {
 					LoginPacket::loginError(player, LoginPacket::Errors::InvalidPassword);
@@ -96,16 +98,18 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				else {
 					// We have a valid password, so let's hash the password
 					salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
-					const string &hashedPassword = MiscUtilities::hashPassword(password, salt);
-					sql.once << "UPDATE user_accounts u " <<
-								"SET u.password = :password, u.salt = :salt " <<
-								"WHERE u.user_id = :user",
-								soci::use(hashedPassword, "password"),
-								soci::use(salt, "salt"),
-								soci::use(userId, "user");
+					const string &hashedPassword = MiscUtilities::hashPassword(password, salt.get());
+
+					sql.once
+						<< "UPDATE user_accounts u "
+						<< "SET u.password = :password, u.salt = :salt "
+						<< "WHERE u.user_id = :user",
+						soci::use(hashedPassword, "password"),
+						soci::use(salt.get(), "salt"),
+						soci::use(userId, "user");
 				}
 			}
-			else if (dbPassword != MiscUtilities::hashPassword(password, salt)) {
+			else if (dbPassword != MiscUtilities::hashPassword(password, salt.get())) {
 				LoginPacket::loginError(player, LoginPacket::Errors::InvalidPassword);
 				valid = false;
 			}
@@ -113,14 +117,11 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				LoginPacket::loginError(player, LoginPacket::Errors::AlreadyLoggedIn);
 				valid = false;
 			}
-			/* SOCI
-			// SOCI and MySQL do NOT play well with computed columns, consider revision of schema
 			else if (row.get<bool>("banned")) {
 				int32_t time = timeToTick32(row.get<unix_time_t>("ban_expire"));
 				LoginPacket::loginBan(player, row.get<int8_t>("ban_reason"), time);
 				valid = false;
 			}
-			*/
 		}
 	}
 	if (!valid) {
@@ -136,13 +137,12 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		player->setUserId(userId);
 
 		if (LoginServer::Instance()->getPinEnabled()) {
-			int32_t pin = row.get<int32_t>("pin");
-			ind = row.get_indicator("pin");
-			if (ind == soci::i_null) {
+			opt_int32_t pin = row.get<opt_int32_t>("pin");
+			if (!pin.is_initialized()) {
 				player->setPin(-1);
 			}
 			else {
-				player->setPin(pin);
+				player->setPin(pin.get());
 			}
 
 			player->setStatus(player->getPin() == -1 ? PlayerStatus::SetPin : PlayerStatus::AskPin);
@@ -159,21 +159,24 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 			player->setGender(gender.get());
 		}
 
-		time_t quietBan = row.get<unix_time_t>("quiet_ban_expire");
-		if (quietBan > 0) {
-			if (time(nullptr) > quietBan) {
-				sql.once << "UPDATE user_accounts u " <<
-							"SET u.quiet_ban_expire = '0000-00-00 00:00:00', u.quiet_ban_reason = 0 " <<
-							"WHERE u.user_id = :user", soci::use(userId, "user");
+		opt_unix_time_t quietBan = row.get<opt_unix_time_t>("quiet_ban_expire");
+		if (quietBan.is_initialized()) {
+			time_t banTime = quietBan.get();
+			if (time(nullptr) > banTime) {
+				sql.once
+					<< "UPDATE user_accounts u "
+					<< "SET u.quiet_ban_expire = NULL, u.quiet_ban_reason = NULL "
+					<< "WHERE u.user_id = :user",
+					soci::use(userId, "user");
 			}
 			else {
-				player->setQuietBanTime(timeToTick(quietBan));
+				player->setQuietBanTime(timeToTick(banTime));
 				player->setQuietBanReason(row.get<int8_t>("quiet_ban_reason"));
 			}
 		}
 
 		player->setCreationTime(timeToTick(row.get<unix_time_t>("creation_date")));
-		player->setCharDeletePassword(row.get<int32_t>("char_delete_password"));
+		player->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		player->setAdmin(row.get<bool>("admin"));
 
 		LoginPacket::loginConnect(player, username);
@@ -187,13 +190,22 @@ void Login::setGender(Player *player, PacketReader &packet) {
 	}
 	if (packet.get<int8_t>() == 1) {
 		// getBool candidate?
-		player->setStatus(PlayerStatus::NotLoggedIn);
 		int8_t gender = packet.get<int8_t>();
-		Database::getCharDb().once << "UPDATE user_accounts u " <<
-										"SET u.gender = :gender " <<
-										"WHERE u.user_id = :user",
-										soci::use(gender, "gender"),
-										soci::use(player->getUserId(), "user");
+		if (gender != Gender::Male && gender != Gender::Female) {
+			// Hacking
+			return;
+		}
+
+		player->setStatus(PlayerStatus::NotLoggedIn);
+
+		Database::getCharDb().once
+			<< "UPDATE user_accounts u "
+			<< "SET u.gender = :gender "
+			<< "WHERE u.user_id = :user",
+			soci::use(gender, "gender"),
+			soci::use(player->getUserId(), "user");
+
+		player->setGender(gender);
 
 		if (LoginServer::Instance()->getPinEnabled()) {
 			player->setStatus(PlayerStatus::SetPin);
@@ -236,7 +248,7 @@ void Login::checkPin(Player *player, PacketReader &packet) {
 		player->setStatus(PlayerStatus::AskPin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
 		int32_t current = player->getPin();
 		if (pin == current) {
 			player->setStatus(PlayerStatus::LoggedIn);
@@ -247,7 +259,7 @@ void Login::checkPin(Player *player, PacketReader &packet) {
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
 		if (pin == player->getPin()) {
 			player->setStatus(PlayerStatus::SetPin);
 			handleLogin(player, packet);
@@ -269,13 +281,14 @@ void Login::registerPin(Player *player, PacketReader &packet) {
 		}
 		return;
 	}
-	int32_t pin = boost::lexical_cast<int32_t>(packet.getString());
+	int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
 	player->setStatus(PlayerStatus::NotLoggedIn);
-	Database::getCharDb().once << "UPDATE user_accounts u " <<
-									"SET u.pin = :pin" <<
-									"WHERE u.user_id = :user",
-									soci::use(pin, "pin"),
-									soci::use(player->getUserId(), "user");
+	Database::getCharDb().once
+		<< "UPDATE user_accounts u "
+		<< "SET u.pin = :pin"
+		<< "WHERE u.user_id = :user",
+		soci::use(pin, "pin"),
+		soci::use(player->getUserId(), "user");
 
 	LoginPacket::pinAssigned(player);
 }

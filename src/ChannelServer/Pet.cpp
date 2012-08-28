@@ -30,37 +30,32 @@ using std::bind;
 Pet::Pet(Player *player, Item *item) :
 	m_player(player),
 	m_itemId(item->getId()),
-	m_index(-1),
 	m_name(ItemDataProvider::Instance()->getItemName(m_itemId)),
 	m_level(1),
 	m_fullness(Stats::MaxFullness),
-	m_closeness(0)
+	m_closeness(0),
+	m_item(item)
 {
 	soci::session &sql = Database::getCharDb();
-	sql.once << "INSERT INTO pets (name) VALUES (:name)",
-				soci::use(m_name, "name");
 
-	sql.once << "SELECT LAST_INSERT_ID()",
-				soci::into(m_id);
+	sql.once << "INSERT INTO pets (name) VALUES (:name)", soci::use(m_name, "name");
+
+	m_id = Database::getLastId<int64_t>(sql);
 	item->setPetId(m_id);
 }
 
-Pet::Pet(Player *player, Item *item, int8_t index, const string &name, int8_t level, int16_t closeness, int8_t fullness, int8_t inventorySlot) :
+Pet::Pet(Player *player, Item *item, const soci::row &row) :
 	m_player(player),
 	m_id(item->getPetId()),
 	m_itemId(item->getId()),
-	m_index(index),
-	m_name(name),
-	m_level(level),
-	m_fullness(fullness),
-	m_closeness(closeness),
-	m_inventorySlot(inventorySlot)
+	m_item(item)
 {
+	initializePet(row);
 	if (isSummoned()) {
-		if (m_index == 1) {
+		if (m_index.is_initialized() && m_index.get() == 1) {
 			startTimer();
 		}
-		player->getPets()->setSummoned(m_index, m_id);
+		player->getPets()->setSummoned(m_index.get(), m_id);
 	}
 }
 
@@ -82,7 +77,7 @@ void Pet::addCloseness(int16_t amount) {
 	while (m_closeness >= Stats::PetExp[m_level - 1] && m_level < Stats::PetLevels) {
 		levelUp();
 	}
-	PetsPacket::updatePet(m_player, this);
+	PetsPacket::updatePet(m_player, this, m_item);
 }
 
 void Pet::modifyFullness(int8_t offset, bool sendPacket) {
@@ -98,30 +93,43 @@ void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 	}
 
 	if (sendPacket) {
-		PetsPacket::updatePet(m_player, this);
+		PetsPacket::updatePet(m_player, this, m_item);
 	}
 }
 
 void Pet::startTimer() {
-	Timer::Id id(Timer::Types::PetTimer, getIndex(), 0); // The timer will automatically stop if another pet gets inserted into this index
+	Timer::Id id(Timer::Types::PetTimer, getIndex().get(), 0); // The timer will automatically stop if another pet gets inserted into this index
 	clock_t length = (6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60000; // TODO: Better formula
 	new Timer::Timer(bind(&Pet::modifyFullness, this, -1, true), id, m_player->getTimers(), 0, length);
 }
 
 bool Pet::hasNameTag() const {
-	switch (m_index) {
-		case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
-		case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
-		case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+	if (m_index.is_initialized()) {
+		switch (m_index.get()) {
+			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
+			case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing2, true) != 0;
+			case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing3, true) != 0;
+		}
 	}
 	return false;
 }
 
 bool Pet::hasQuoteItem() const {
-	switch (m_index) {
-		case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
-		case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
-		case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+	if (m_index.is_initialized()) {
+		switch (m_index.get()) {
+			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
+			case 1: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing2, true) != 0;
+			case 2: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing3, true) != 0;
+		}
 	}
 	return false;
+}
+
+void Pet::initializePet(const soci::row &row) {
+	m_index = row.get<opt_int8_t>("index");
+	m_name = row.get<string>("pet_name");
+	m_level = row.get<int8_t>("level");
+	m_closeness = row.get<int16_t>("closeness");
+	m_fullness = row.get<int8_t>("fullness");
+	m_inventorySlot = row.get<int8_t>("slot");
 }

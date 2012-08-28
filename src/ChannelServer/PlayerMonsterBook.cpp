@@ -32,10 +32,11 @@ void PlayerMonsterBook::load() {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
-	soci::rowset<> rs = (sql.prepare << "SELECT b.card_id, b.level FROM monster_book b " <<
-										"WHERE b.character_id = :char " <<
-										"ORDER BY b.card_id ASC",
-										soci::use(charId, "char"));
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT b.card_id, b.level FROM monster_book b "
+		<< "WHERE b.character_id = :char "
+		<< "ORDER BY b.card_id ASC",
+		soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
@@ -56,11 +57,12 @@ void PlayerMonsterBook::save() {
 		int32_t cardId = 0;
 		uint8_t level = 0;
 
-		soci::statement st = (sql.prepare << "INSERT INTO monster_book " <<
-												"VALUES (:char, :card, :level) ",
-												soci::use(charId, "char"),
-												soci::use(cardId, "card"),
-												soci::use(level, "level"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO monster_book "
+			<< "VALUES (:char, :card, :level) ",
+			soci::use(charId, "char"),
+			soci::use(cardId, "card"),
+			soci::use(level, "level"));
 
 		for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); ++iter) {
 			MonsterCard &c = iter->second;

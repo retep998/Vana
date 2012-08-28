@@ -42,7 +42,7 @@ public:
 	void listen();
 	void shutdown();
 	void connectWorld();
-	string makeLogIdentifier();
+	opt_string makeLogIdentifier();
 
 	void setPianusChannel(bool isChannel) { m_pianusChannel = isChannel; }
 	void setPapChannel(bool isChannel) { m_papChannel = isChannel; }

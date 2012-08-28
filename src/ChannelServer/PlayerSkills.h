@@ -28,9 +28,10 @@ class PacketCreator;
 struct SkillLevelInfo;
 
 struct PlayerSkillInfo {
-	PlayerSkillInfo() : level(0), maxLevel(0) {}
+	PlayerSkillInfo() : level(0), maxSkillLevel(0), playerMaxSkillLevel(0) {}
 	uint8_t level;
-	uint8_t maxLevel;
+	uint8_t maxSkillLevel;
+	uint8_t playerMaxSkillLevel;
 };
 
 class PlayerSkills : boost::noncopyable {
@@ -72,6 +73,8 @@ public:
 	void removeCooldown(int32_t skillId);
 	void removeAllCooldowns();
 private:
+	bool hasSkill(int32_t skillId);
+
 	unordered_map<int32_t, PlayerSkillInfo> m_skills;
 	unordered_map<int32_t, int16_t> m_cooldowns;
 	Player *m_player;

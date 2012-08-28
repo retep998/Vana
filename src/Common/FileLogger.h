@@ -34,11 +34,11 @@ public:
 	FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	~FileLogger();
 
-	void log(LogTypes::LogTypes type, const string &identifier, const string &message);
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message);
 	void flush();
 	const string & getFilenameFormat() const { return m_filenameFormat; }
 private:
-	static string prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const string &id, const string &message);
+	static string prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const opt_string &id, const string &message);
 	string m_filenameFormat;
 	size_t m_bufferSize;
 	vector<FileLog> m_buffer;

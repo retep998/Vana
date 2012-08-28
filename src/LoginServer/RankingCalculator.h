@@ -27,8 +27,8 @@ using std::vector;
 
 namespace RankingCalculator {
 	struct Rank {
-		int32_t oldRank;
-		int32_t newRank;
+		opt_int32_t oldRank;
+		opt_int32_t newRank;
 	};
 	struct RankPlayer {
 		uint8_t levelStat;

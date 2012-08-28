@@ -74,7 +74,7 @@ struct LogMessage {
 	LogTypes::LogTypes type;
 	time_t time;
 	string message;
-	string identifier;
+	opt_string identifier;
 };
 
 // Base logger
@@ -82,14 +82,14 @@ class Logger {
 public:
 	Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	virtual ~Logger();
-	virtual void log(LogTypes::LogTypes type, const string &identifier, const string &message);
+	virtual void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message);
 
 	int16_t getServerType() const { return m_serverType; }
 	const string & getFormat() const { return m_format; }
 	const string & getTimeFormat() const { return m_timeFormat; }
 protected:
 	Logger() { }
-	static string getLogFormatted(LogTypes::LogTypes type, Logger *logger, const string &id, const string &message);
+	static string getLogFormatted(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message);
 	static string getLevelString(LogTypes::LogTypes type);
 	static string getTimeFormatted(const string &fmt);
 	static string getServerTypeString(int16_t serverType);

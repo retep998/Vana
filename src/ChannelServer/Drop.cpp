@@ -96,7 +96,12 @@ void Drop::takeDrop(Player *player, int64_t petId) {
 		DropsPacket::takeDrop(player, this);
 	}
 	else {
-		DropsPacket::takeDrop(player, this, player->getPets()->getPet(petId)->getIndex());
+		Pet *pet = player->getPets()->getPet(petId);
+		if (pet == nullptr || !pet->isSummoned()) {
+			// nullptr = definitely hacking. Otherwise may be lag.
+			return;
+		}
+		DropsPacket::takeDrop(player, this, pet->getIndex().get());
 	}
 	delete this;
 }

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetsPacket.h"
 #include "GameConstants.h"
+#include "Item.h"
 #include "ItemConstants.h"
 #include "Maps.h"
 #include "PacketCreator.h"
@@ -30,7 +31,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_SUMMON);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(index != -1 ? index : pet->getIndex());
+	packet.add<int8_t>(index != -1 ? index : (pet->isSummoned() ? pet->getIndex().get() : -1));
 	packet.addBool(pet->isSummoned());
 	packet.addBool(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {
@@ -55,7 +56,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_MESSAGE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(act);
 	packet.addString(message);
@@ -67,7 +68,7 @@ void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int3
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_MOVEMENT);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.addBuffer(buf, bufLen);
 	Maps::getMap(player->getMap())->sendPacket(packet, player);
 }
@@ -76,7 +77,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(pet->getIndex()); // Index for multiple pets
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.addBool(animation == 1);
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(0);
@@ -84,7 +85,7 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::updatePet(Player *player, Pet *pet) {
+void PetsPacket::updatePet(Player *player, Pet *pet, Item *petItem) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
 	packet.add<int8_t>(0);
@@ -96,7 +97,7 @@ void PetsPacket::updatePet(Player *player, Pet *pet) {
 	packet.add<int8_t>(5);
 	packet.add<int8_t>(pet->getInventorySlot());
 	packet.add<int8_t>(0);
-	addInfo(packet, pet);
+	addInfo(packet, pet, petItem);
 	player->getSession()->send(packet);
 }
 
@@ -105,14 +106,14 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(0);
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	player->getSession()->send(packet);
 
 	packet = PacketCreator();
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int16_t>(4);
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	Maps::getMap(player->getMap())->sendPacket(packet);
 }
 
@@ -120,7 +121,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_NAME_CHANGE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.addString(pet->getName());
 	packet.addBool(pet->hasNameTag());
 	Maps::getMap(player->getMap())->sendPacket(packet);
@@ -130,7 +131,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_SHOW);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(pet->getIndex());
+	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.add<int64_t>(pet->getId());
 	packet.addBool(pet->hasNameTag());
 	player->getSession()->send(packet);
@@ -162,7 +163,7 @@ void PetsPacket::blankUpdate(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
+void PetsPacket::addInfo(PacketCreator &packet, Pet *pet, Item *petItem) {
 	packet.add<int8_t>(3);
 	packet.add<int32_t>(pet->getItemId());
 	packet.add<int8_t>(1);
@@ -172,7 +173,7 @@ void PetsPacket::addInfo(PacketCreator &packet, Pet *pet) {
 	packet.add<int8_t>(pet->getLevel());
 	packet.add<int16_t>(pet->getCloseness());
 	packet.add<int8_t>(pet->getFullness());
-	packet.add<int64_t>(Items::NoExpiration);
+	packet.add<int64_t>(petItem->getExpirationTime());
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0); // Time to expire (for trial pet)
 }

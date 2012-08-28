@@ -80,12 +80,13 @@ void KeyMaps::save(int32_t charId) {
 	int8_t type = 0;
 	int32_t action = 0;
 
-	soci::statement st = (Database::getCharDb().prepare << "REPLACE INTO keymap " <<
-															"VALUES (:char, :key, :type, :action)",
-															soci::use(charId, "char"),
-															soci::use(i, "key"),
-															soci::use(type, "type"),
-															soci::use(action, "action"));
+	soci::statement st = (Database::getCharDb().prepare
+		<< "REPLACE INTO keymap "
+		<< "VALUES (:char, :key, :type, :action)",
+		soci::use(charId, "char"),
+		soci::use(i, "key"),
+		soci::use(type, "type"),
+		soci::use(action, "action"));
 
 	for (i = 0; i < KeyMaps::size; i++) {
 		KeyMap *keymap = getKeyMap(i);

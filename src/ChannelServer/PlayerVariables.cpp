@@ -35,11 +35,12 @@ void PlayerVariables::save() {
 		string key = "";
 		string value = "";
 
-		soci::statement st = (sql.prepare << "INSERT INTO character_variables " <<
-												"VALUES (:char, :key, :value)",
-												soci::use(charId, "char"),
-												soci::use(key, "key"),
-												soci::use(value, "value"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO character_variables "
+			<< "VALUES (:char, :key, :value)",
+			soci::use(charId, "char"),
+			soci::use(key, "key"),
+			soci::use(value, "value"));
 
 		for (unordered_map<string, string>::iterator iter = m_variables.begin(); iter != m_variables.end(); ++iter) {
 			key = iter->first;

@@ -119,7 +119,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			if (size > 0) {
 				bool stop = false;
 				uint8_t rand = Randomizer::Instance()->randChar(size - 1);
- 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
+				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realSkill = info->skillId;
 				level = info->level;
 				MobSkillLevelInfo *mobSkill = SkillDataProvider::Instance()->getMobSkill(realSkill, level);

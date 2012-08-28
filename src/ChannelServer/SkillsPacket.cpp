@@ -32,7 +32,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(skillInfo.level); // Level
-	packet.add<int32_t>(skillInfo.maxLevel); // Master Level
+	packet.add<int32_t>(skillInfo.playerMaxSkillLevel); // Master Level
 	packet.add<int8_t>(1);
 	player->getSession()->send(packet);
 }
@@ -67,7 +67,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 	}
 }
 
-void SkillsPacket::healHP(Player *player, int16_t hp) {
+void SkillsPacket::healHp(Player *player, int16_t hp) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0A);

@@ -38,7 +38,7 @@ public:
 	void loadLogConfig();
 	void loadWorlds();
 	void listen();
-	string makeLogIdentifier();
+	opt_string makeLogIdentifier();
 
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }

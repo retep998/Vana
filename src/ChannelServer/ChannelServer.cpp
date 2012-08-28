@@ -69,7 +69,7 @@ void ChannelServer::loadLogConfig() {
 	}
 }
 
-string ChannelServer::makeLogIdentifier() {
+opt_string ChannelServer::makeLogIdentifier() {
 	std::ostringstream identifier;
 	identifier << "World: " << static_cast<int16_t>(getWorld()) << "; ID: " << getChannel();
 	return identifier.str();

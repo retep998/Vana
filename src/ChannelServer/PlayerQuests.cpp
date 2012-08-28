@@ -45,31 +45,41 @@ void PlayerQuests::save() {
 	if (m_quests.size() > 0) {
 		int32_t mobId = 0;
 		int16_t killed = 0;
-		string data = "";
+		int64_t id = 0;
+		opt_string data = "";
 
-		soci::statement st = (sql.prepare << "INSERT INTO active_quests (character_id, quest_id, mob_id, quantity_killed, data) " <<
-												"VALUES (:char, :quest, :mob, :killed, :data)",
-												soci::use(charId, "char"),
-												soci::use(questId, "quest"),
-												soci::use(mobId, "mob"),
-												soci::use(killed, "killed"),
-												soci::use(data, "data"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO active_quests (character_id, quest_id, data) "
+			<< "VALUES (:char, :quest, :mob, :killed, :data)",
+			soci::use(charId, "char"),
+			soci::use(questId, "quest"),
+			soci::use(data, "data"));
+
+		soci::statement stMobs = (sql.prepare
+			<< "INSERT INTO active_quests_mobs (active_quest_id, mob_id, quantity_killed) "
+			<< "VALUES (:id, :mob, :killed)",
+			soci::use(id, "id"),
+			soci::use(mobId, "mob"),
+			soci::use(killed, "killed"));
 
 		for (map<int16_t, ActiveQuest>::iterator q = m_quests.begin(); q != m_quests.end(); ++q) {
+			const string &d = q->second.data;
 			questId = q->first;
-			data = q->second.data;
+			if (d.empty()) {
+				data.reset();
+			}
+			else {
+				data = d;
+			}
+			st.execute(true);
 
 			if (q->second.kills.size()) {
+				id = Database::getLastId<int64_t>(sql);
 				for (map<int32_t, int16_t, std::less<int32_t>>::iterator v = q->second.kills.begin(); v != q->second.kills.end(); ++v) {
 					mobId = v->first;
 					killed = v->second;
-					st.execute(true);
+					stMobs.execute(true);
 				}
-			}
-			else {
-				mobId = 0;
-				killed = 0;
-				st.execute(true);
 			}
 		}
 	}
@@ -77,11 +87,12 @@ void PlayerQuests::save() {
 	if (m_completed.size() > 0) {
 		int64_t time = 0;
 
-		soci::statement st = (sql.prepare << "INSERT INTO completed_quests " <<
-												"VALUES (:char, :quest, :time)",
-												soci::use(charId, "char"),
-												soci::use(questId, "quest"),
-												soci::use(time, "time"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO completed_quests "
+			<< "VALUES (:char, :quest, :time)",
+			soci::use(charId, "char"),
+			soci::use(questId, "quest"),
+			soci::use(time, "time"));
 
 		for (map<int16_t, int64_t>::iterator q = m_completed.begin(); q != m_completed.end(); ++q) {
 			questId = q->first;
@@ -98,7 +109,12 @@ void PlayerQuests::load() {
 	int16_t current = 0;
 	ActiveQuest curQuest;
 
-	soci::rowset<> rs = (sql.prepare << "SELECT a.quest_id, a.mob_id, a.quantity_killed, a.data FROM active_quests a WHERE a.character_id = :char ORDER BY a.quest_id ASC", soci::use(charId, "char"));
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT a.quest_id, ma.mob_id, am.quantity_killed, a.data "
+		<< "FROM active_quests a "
+		<< "LEFT OUTER JOIN active_quest_mobs am ON am.active_quest_id = a.id "
+		<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
+		soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;

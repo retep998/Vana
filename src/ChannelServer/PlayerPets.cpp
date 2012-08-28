@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 void PlayerPets::addPet(Pet *pet) {
 	m_pets[pet->getId()] = pet;
 
-	if (pet->getIndex() != -1) {
-		setSummoned(pet->getIndex(), pet->getId());
+	if (pet->isSummoned()) {
+		setSummoned(pet->getIndex().get(), pet->getId());
 	}
 }
 
@@ -44,26 +44,28 @@ Pet * PlayerPets::getSummoned(int8_t index) {
 void PlayerPets::save() {
 	if (m_pets.size() > 0) {
 		soci::session &sql = Database::getCharDb();
-		int8_t index = 0;
+		opt_int8_t index = 0;
 		string name = "";
 		int8_t level = 0;
 		int16_t closeness = 0;
 		int8_t fullness = 0;
 		int64_t petId = 0;
 
-		soci::statement st = (sql.prepare << "UPDATE pets SET " <<
-												"`index` = :index, " <<
-												"name = :name, " <<
-												"level = :level, " <<
-												"closeness = :closeness, " <<
-												"fullness = :fullness " <<
-												"WHERE pet_id = :pet",
-												soci::use(petId, "pet"),
-												soci::use(index, "index"),
-												soci::use(name, "name"),
-												soci::use(level, "level"),
-												soci::use(closeness, "closeness"),
-												soci::use(fullness, "fullness"));
+		soci::statement st = (sql.prepare
+			<< "UPDATE pets "
+			<< "SET "
+			<< "	`index` = :index, "
+			<< "	name = :name, "
+			<< "	level = :level, "
+			<< "	closeness = :closeness, "
+			<< "	fullness = :fullness "
+			<< "WHERE pet_id = :pet",
+			soci::use(petId, "pet"),
+			soci::use(index, "index"),
+			soci::use(name, "name"),
+			soci::use(level, "level"),
+			soci::use(closeness, "closeness"),
+			soci::use(fullness, "fullness"));
 
 		for (unordered_map<int64_t, Pet *>::iterator iter = m_pets.begin(); iter != m_pets.end(); ++iter) {
 			Pet *p = iter->second;

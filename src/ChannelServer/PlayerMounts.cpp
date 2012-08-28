@@ -36,13 +36,14 @@ void PlayerMounts::save() {
 	sql.once << "DELETE FROM mounts WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_mounts.size() > 0) {
-		soci::statement st = (sql.prepare << "INSERT INTO mounts " <<
-												"VALUES (:char, :item, :exp, :level, :tiredness) ",
-												soci::use(charId, "char"),
-												soci::use(itemId, "item"),
-												soci::use(exp, "exp"),
-												soci::use(level, "level"),
-												soci::use(tiredness, "tiredness"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO mounts "
+			<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
+			soci::use(charId, "char"),
+			soci::use(itemId, "item"),
+			soci::use(exp, "exp"),
+			soci::use(level, "level"),
+			soci::use(tiredness, "tiredness"));
 
 		for (unordered_map<int32_t, MountData>::iterator iter = m_mounts.begin(); iter != m_mounts.end(); ++iter) {
 			MountData &c = iter->second;

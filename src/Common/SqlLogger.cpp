@@ -29,7 +29,7 @@ SqlLogger::~SqlLogger() {
 	flush();
 }
 
-void SqlLogger::log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+void SqlLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 	LogMessage m;
 	m.type = type;
 	m.message = message;
@@ -46,17 +46,18 @@ void SqlLogger::flush() {
 		soci::session &sql = Database::getCharDb();
 		int16_t serverType = getServerType();
 		int32_t logType = 0;
-		string identifier = "";
+		opt_string identifier = "";
 		string message = "";
 		unix_time_t logTime;
 
-		soci::statement st = (sql.prepare << "INSERT INTO logs (log_time, origin, info_type, identifier, message) " <<
-												"VALUES (:time, :origin, :infoType, :identifier, :message)",
-												soci::use(logTime, "time"),
-												soci::use(serverType, "origin"),
-												soci::use(logType, "infoType"),
-												soci::use(identifier, "identifier"),
-												soci::use(message, "message"));
+		soci::statement st = (sql.prepare
+			<< "INSERT INTO logs (log_time, origin, info_type, identifier, message) "
+			<< "VALUES (:time, :origin, :infoType, :identifier, :message)",
+			soci::use(logTime, "time"),
+			soci::use(serverType, "origin"),
+			soci::use(logType, "infoType"),
+			soci::use(identifier, "identifier"),
+			soci::use(message, "message"));
 
 		for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
 			logType = iter->type;

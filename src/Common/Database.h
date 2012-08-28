@@ -37,6 +37,7 @@ public:
 	static void connectDataDb();
 	static soci::session & getCharDb();
 	static soci::session & getDataDb();
+	template <typename T> static T getLastId(soci::session &sql);
 private:
 	static soci::session & getConnection(tsConn &conn, std::function<void()> func);
 	static tsConn m_chardb;
@@ -63,7 +64,6 @@ soci::session & Database::getConnection(tsConn &conn, std::function<void()> func
 	// This will attempt to re-establish a connection if it's lost, but it costs a query every single time
 	// Consider re-architecting the system for better SQL failsafes
 	else {
-
 		try {
 			int32_t i = 0;
 			*conn.get() << "SELECT 1", soci::into(i);
@@ -74,4 +74,11 @@ soci::session & Database::getConnection(tsConn &conn, std::function<void()> func
 	}
 	*/
 	return *conn.get();
+}
+
+template<typename T>
+static T Database::getLastId(soci::session &sql) {
+	T val;
+	sql.once << "SELECT LAST_INSERT_ID()", soci::into(val);
+	return val;
 }

@@ -77,7 +77,7 @@ void AbstractConnection::ping() {
 			return;
 		}
 
- 		m_isPinged = true;
+		m_isPinged = true;
 		m_lastPing = clock();
 		PingPacket::ping(this);
 	}

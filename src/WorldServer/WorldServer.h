@@ -40,7 +40,7 @@ public:
 	void loadConfig();
 	void loadLogConfig();
 	void listen();
-	string makeLogIdentifier();
+	opt_string makeLogIdentifier();
 
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(port_t port) { m_port = port; }

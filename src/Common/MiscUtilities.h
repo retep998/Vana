@@ -26,15 +26,44 @@ using std::string;
 using std::vector;
 
 namespace MiscUtilities {
+	enum NullableMode {
+		NullIfFound = 1,
+		ForceNotNull = 2,
+		ForceNull = 3
+	};
+
 	string hashPassword(const string &password, const string &salt);
 	bool isBossChannel(const vector<int8_t> &vec, int8_t channelId);
+
 	template<class T>
 	bool inRangeInclusive(const T val, const T min, const T max) {
 		return !(val < min || val > max);
 	}
+
 	template<class T>
 	T constrainToRange(const T val, const T min, const T max) {
 		return std::min(std::max(val, min), max);
+	}
+
+	template<class T>
+	std::optional<T> getOptional(const T &testVal, NullableMode mode, const T nullableVals[], const size_t nullableValCount = 1) {
+		std::optional<T> ret;
+		if (mode == NullIfFound) {
+			bool found = false;
+			for (size_t i = 0; i < nullableValCount; ++i) {
+				if (testVal == nullableVals[i]) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				ret = testVal;
+			}
+		}
+		else if (mode == ForceNotNull) {
+			ret = testVal;
+		}
+		return ret;
 	}
 
 	// The following methods are used for deleting (freeing) pointers in an array

@@ -24,6 +24,6 @@ ConsoleLogger::ConsoleLogger(const string &filename, const string &format, const
 {
 }
 
-void ConsoleLogger::log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+void ConsoleLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 	std::cout << Logger::getLogFormatted(type, this, identifier, message) << std::endl;
 }

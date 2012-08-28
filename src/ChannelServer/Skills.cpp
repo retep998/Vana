@@ -479,7 +479,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) 
 void Skills::heal(Player *player, int16_t value, int32_t skillId) {
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		player->getStats()->modifyHp(value);
-		SkillsPacket::healHP(player, value);
+		SkillsPacket::healHp(player, value);
 	}
 }
 
