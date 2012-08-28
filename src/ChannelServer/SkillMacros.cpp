@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SkillMacros.h"
 #include "Database.h"
+#include "MiscUtilities.h"
 
 void SkillMacros::load(int32_t charId) {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM skill_macros s WHERE s.character_id = :char", soci::use(charId, "char"));
@@ -29,31 +30,37 @@ void SkillMacros::load(int32_t charId) {
 }
 
 void SkillMacros::save(int32_t charId) {
+	using MiscUtilities::getOptional;
+
+	static int32_t nullsInt32[] = {0};
+	MiscUtilities::NullableMode nulls = MiscUtilities::NullIfFound;
+
 	int8_t i = 0;
 	string name = "";
 	bool shout = false;
-	int32_t skill1 = 0;
-	int32_t skill2 = 0;
-	int32_t skill3 = 0;
+	opt_int32_t skill1 = 0;
+	opt_int32_t skill2 = 0;
+	opt_int32_t skill3 = 0;
 
-	soci::statement st = (Database::getCharDb().prepare << "REPLACE INTO skill_macros " <<
-															"VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
-															soci::use(charId, "char"),
-															soci::use(i, "key"),
-															soci::use(name, "name"),
-															soci::use(shout, "shout"),
-															soci::use(skill1, "skill1"),
-															soci::use(skill1, "skill2"),
-															soci::use(skill1, "skill3"));
+	soci::statement st = (Database::getCharDb().prepare
+		<< "REPLACE INTO skill_macros "
+		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
+		soci::use(charId, "char"),
+		soci::use(i, "key"),
+		soci::use(name, "name"),
+		soci::use(shout, "shout"),
+		soci::use(skill1, "skill1"),
+		soci::use(skill2, "skill2"),
+		soci::use(skill3, "skill3"));
 
 	for (i = 0; i < getMax(); i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = macro->skill1;
-			skill2 = macro->skill2;
-			skill3 = macro->skill3;
+			skill1 = getOptional(macro->skill1, nulls, nullsInt32);
+			skill2 = getOptional(macro->skill2, nulls, nullsInt32);
+			skill3 = getOptional(macro->skill3, nulls, nullsInt32);
 			st.execute(true);
 		}
 	}

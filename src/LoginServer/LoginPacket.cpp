@@ -219,7 +219,7 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(0);
 
-	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorld())->getChannel(player->getChannel())) {
+	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorldId())->getChannel(player->getChannel())) {
 		ip_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->getExternalIps(), channel->getIp());
 		packet.add<ip_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
 		packet.add<port_t>(channel->getPort());

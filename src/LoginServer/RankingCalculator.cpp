@@ -43,7 +43,7 @@ void RankingCalculator::setTimer() {
 	/*
 	new Timer::Timer(&RankingCalculator::runThread,
 		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::fromNow(TimeUtilities::getNearestMinuteMark(5)), 5 * 60 * 1000);
- 	*/
+	*/
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
@@ -63,32 +63,33 @@ void RankingCalculator::all() {
 
 	soci::session &sql = Database::getCharDb();
 	RankPlayer out;
-	soci::statement statement = (sql.prepare << "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos " <<
-												"FROM characters c " <<
-												"INNER JOIN user_accounts u ON u.user_id = c.user_id " <<
-												"WHERE " <<
-												"	(u.banned = 0 OR u.ban_expire >= NOW()) " <<
-												"	AND u.gm_level IS NULL " <<
-												"	AND u.admin IS NULL " <<
-												"	AND (" <<
-												"		(" <<
-												"			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")" <<
-												"			AND c.level > 9" <<
-												"		)" <<
-												"		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")" <<
-												"	) " <<
-												"ORDER BY c.overall_cpos DESC",
-												soci::into(out.charId),
-												soci::into(out.expStat),
-												soci::into(out.fameStat),
-												soci::into(out.jobStat),
-												soci::into(out.levelStat),
-												soci::into(out.worldId),
-												soci::into(out.levelTime),
-												soci::into(out.fame.newRank),
-												soci::into(out.world.newRank),
-												soci::into(out.job.newRank),
-												soci::into(out.overall.newRank));
+	soci::statement statement = (sql.prepare
+		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
+		<< "FROM characters c "
+		<< "INNER JOIN user_accounts u ON u.user_id = c.user_id "
+		<< "WHERE "
+		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
+		<< "	AND u.gm_level IS NULL "
+		<< "	AND u.admin IS NULL "
+		<< "	AND ("
+		<< "		("
+		<< "			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")"
+		<< "			AND c.level > 9"
+		<< "		)"
+		<< "		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")"
+		<< "	) "
+		<< "ORDER BY c.overall_cpos DESC",
+		soci::into(out.charId),
+		soci::into(out.expStat),
+		soci::into(out.fameStat),
+		soci::into(out.jobStat),
+		soci::into(out.levelStat),
+		soci::into(out.worldId),
+		soci::into(out.levelTime),
+		soci::into(out.fame.newRank),
+		soci::into(out.world.newRank),
+		soci::into(out.job.newRank),
+		soci::into(out.overall.newRank));
 
 	vector<RankPlayer> v;
 	statement.execute();
@@ -105,46 +106,48 @@ void RankingCalculator::all() {
 		fame(v);
 
 		int32_t charId = 0;
-		int32_t oFame = 0;
+		opt_int32_t oFame = 0;
 		int32_t cFame = 0;
-		int32_t oWorld = 0;
+		opt_int32_t oWorld = 0;
 		int32_t cWorld = 0;
-		int32_t oJob = 0;
+		opt_int32_t oJob = 0;
 		int32_t cJob = 0;
-		int32_t oOverall = 0;
+		opt_int32_t oOverall = 0;
 		int32_t cOverall = 0;
 
-		soci::statement st = (sql.prepare << "UPDATE characters SET " <<
-												"fame_opos = :ofame," <<
-												"fame_cpos = :cfame," <<
-												"world_opos = :oworld," <<
-												"world_cpos = :cworld," <<
-												"job_opos = :ojob," <<
-												"job_cpos = :cjob," <<
-												"overall_opos = :ooverall," <<
-												"overall_cpos = :coverall " <<
-												"WHERE character_id = :char",
-												soci::use(charId, "char"),
-												soci::use(oFame, "ofame"),
-												soci::use(cFame, "cfame"),
-												soci::use(oWorld, "oworld"),
-												soci::use(cWorld, "cworld"),
-												soci::use(oJob, "ojob"),
-												soci::use(cJob, "cjob"),
-												soci::use(oOverall, "ooverall"),
-												soci::use(cOverall, "coverall"));
+		soci::statement st = (sql.prepare
+			<< "UPDATE characters "
+			<< "SET "
+			<< "	fame_opos = :ofame,"
+			<< "	fame_cpos = :cfame,"
+			<< "	world_opos = :oworld,"
+			<< "	world_cpos = :cworld,"
+			<< "	job_opos = :ojob,"
+			<< "	job_cpos = :cjob,"
+			<< "	overall_opos = :ooverall,"
+			<< "	overall_cpos = :coverall "
+			<< "	WHERE character_id = :char",
+			soci::use(charId, "char"),
+			soci::use(oFame, "ofame"),
+			soci::use(cFame, "cfame"),
+			soci::use(oWorld, "oworld"),
+			soci::use(cWorld, "cworld"),
+			soci::use(oJob, "ojob"),
+			soci::use(cJob, "cjob"),
+			soci::use(oOverall, "ooverall"),
+			soci::use(cOverall, "coverall"));
 
 		for (vector<RankPlayer>::const_iterator iter = v.begin(); iter != v.end(); ++iter) {
 			const RankPlayer &p = *iter;
 			charId = p.charId;
 			oFame = p.fame.oldRank;
-			cFame = p.fame.newRank;
+			cFame = p.fame.newRank.get();
 			oWorld = p.world.oldRank;
-			cWorld = p.world.newRank;
+			cWorld = p.world.newRank.get();
 			oJob = p.job.oldRank;
-			cJob = p.job.newRank;
+			cJob = p.job.newRank.get();
 			oOverall = p.overall.oldRank;
-			cOverall = p.overall.newRank;
+			cOverall = p.overall.newRank.get();
 			st.execute(true);
 		}
 	}
@@ -217,7 +220,7 @@ void RankingCalculator::world(vector<RankPlayer> &v) {
 		return t1.worldId > t2.worldId;
 	});
 
- 	Worlds::Instance()->runFunction([&v](World *world) -> bool {
+	Worlds::Instance()->runFunction([&v](World *world) -> bool {
 		uint8_t worldId = world->getId();
 		uint8_t lastLevel = 0;
 		time_t lastTime = 0;

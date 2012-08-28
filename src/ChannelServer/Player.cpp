@@ -243,11 +243,13 @@ void Player::playerConnect(PacketReader &packet) {
 	m_id = id;
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
-	sql.once << "SELECT c.*, u.gm_level, u.admin FROM characters c " <<
-				"INNER JOIN user_accounts u ON c.user_id = u.user_id " <<
-				"WHERE c.character_id = :char",
-				soci::use(id, "char"),
-				soci::into(row);
+	sql.once
+		<< "SELECT c.*, u.gm_level, u.admin "
+		<< "FROM characters c "
+		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "WHERE c.character_id = :char",
+		soci::use(id, "char"),
+		soci::into(row);
 
 	if (!sql.got_data()) {
 		// Hacking
@@ -578,67 +580,69 @@ void Player::saveStats() {
 	// Other
 	int32_t cover = getMonsterBook()->getCover();
 
-	Database::getCharDb().once << "UPDATE characters SET " <<
-									"level = :level, " <<
-									"job = :job, " <<
-									"str = :str, " <<
-									"dex = :dex, " <<
-									"`int` = :int, " <<
-									"luk = :luk, " <<
-									"chp = :hp, " <<
-									"mhp = :maxhp, " <<
-									"cmp = :mp, " <<
-									"mmp = :maxmp, " <<
-									"hpmp_ap = :hpmpap, " <<
-									"ap = :ap, " <<
-									"sp = :sp, " <<
-									"exp = :exp, " <<
-									"fame = :fame, " <<
-									"map = :map, " <<
-									"pos = :pos, " <<
-									"gender = :gender, " <<
-									"skin = :skin, " <<
-									"eyes = :eyes, " <<
-									"hair = :hair, " <<
-									"mesos = :money, " <<
-									"equip_slots = :equip, " <<
-									"use_slots = :use, " <<
-									"setup_slots = :setup, " <<
-									"etc_slots = :etc, " <<
-									"cash_slots = :cash, " <<
-									"buddylist_size = :buddylist, " <<
-									"book_cover = :cover " <<
-									"WHERE character_id = :char",
-									soci::use(m_id, "char"),
-									soci::use(level, "level"),
-									soci::use(job, "job"),
-									soci::use(str, "str"),
-									soci::use(dex, "dex"),
-									soci::use(intt, "int"),
-									soci::use(luk, "luk"),
-									soci::use(hp, "hp"),
-									soci::use(maxHp, "maxhp"),
-									soci::use(mp, "mp"),
-									soci::use(maxMp, "maxmp"),
-									soci::use(hpMpAp, "hpmpap"),
-									soci::use(ap, "ap"),
-									soci::use(sp, "sp"),
-									soci::use(exp, "exp"),
-									soci::use(fame, "fame"),
-									soci::use(m_map, "map"),
-									soci::use(m_mapPos, "pos"),
-									soci::use(m_gender, "gender"),
-									soci::use(m_skin, "skin"),
-									soci::use(m_eyes, "eyes"),
-									soci::use(m_hair, "hair"),
-									soci::use(money, "money"),
-									soci::use(equip, "equip"),
-									soci::use(use, "use"),
-									soci::use(setup, "setup"),
-									soci::use(etc, "etc"),
-									soci::use(cash, "cash"),
-									soci::use(m_buddylistSize, "buddylist"),
-									soci::use(cover, "cover");
+	Database::getCharDb().once
+		<< "UPDATE characters "
+		<< "SET "
+		<< "	level = :level, "
+		<< "	job = :job, "
+		<< "	str = :str, "
+		<< "	dex = :dex, "
+		<< "	`int` = :int, "
+		<< "	luk = :luk, "
+		<< "	chp = :hp, "
+		<< "	mhp = :maxhp, "
+		<< "	cmp = :mp, "
+		<< "	mmp = :maxmp, "
+		<< "	hpmp_ap = :hpmpap, "
+		<< "	ap = :ap, "
+		<< "	sp = :sp, "
+		<< "	exp = :exp, "
+		<< "	fame = :fame, "
+		<< "	map = :map, "
+		<< "	pos = :pos, "
+		<< "	gender = :gender, "
+		<< "	skin = :skin, "
+		<< "	eyes = :eyes, "
+		<< "	hair = :hair, "
+		<< "	mesos = :money, "
+		<< "	equip_slots = :equip, "
+		<< "	use_slots = :use, "
+		<< "	setup_slots = :setup, "
+		<< "	etc_slots = :etc, "
+		<< "	cash_slots = :cash, "
+		<< "	buddylist_size = :buddylist, "
+		<< "	book_cover = :cover "
+		<< "WHERE character_id = :char",
+		soci::use(m_id, "char"),
+		soci::use(level, "level"),
+		soci::use(job, "job"),
+		soci::use(str, "str"),
+		soci::use(dex, "dex"),
+		soci::use(intt, "int"),
+		soci::use(luk, "luk"),
+		soci::use(hp, "hp"),
+		soci::use(maxHp, "maxhp"),
+		soci::use(mp, "mp"),
+		soci::use(maxMp, "maxmp"),
+		soci::use(hpMpAp, "hpmpap"),
+		soci::use(ap, "ap"),
+		soci::use(sp, "sp"),
+		soci::use(exp, "exp"),
+		soci::use(fame, "fame"),
+		soci::use(m_map, "map"),
+		soci::use(m_mapPos, "pos"),
+		soci::use(m_gender, "gender"),
+		soci::use(m_skin, "skin"),
+		soci::use(m_eyes, "eyes"),
+		soci::use(m_hair, "hair"),
+		soci::use(money, "money"),
+		soci::use(equip, "equip"),
+		soci::use(use, "use"),
+		soci::use(setup, "setup"),
+		soci::use(etc, "etc"),
+		soci::use(cash, "cash"),
+		soci::use(m_buddylistSize, "buddylist"),
+		soci::use(cover, "cover");
 }
 
 void Player::saveAll(bool saveCooldowns) {
@@ -655,15 +659,16 @@ void Player::saveAll(bool saveCooldowns) {
 
 void Player::setOnline(bool online) {
 	int32_t onlineId = online ? ChannelServer::Instance()->getOnlineId() : 0;
-	Database::getCharDb().once << "UPDATE user_accounts u " <<
-									"INNER JOIN characters c ON u.user_id = c.user_id " <<
-									"SET " <<
-									"	u.online = :onlineId, " <<
-									"	c.online = :online " <<
-									"WHERE c.character_id = :char",
-									soci::use(m_id, "char"),
-									soci::use(online, "online"),
-									soci::use(onlineId, "onlineId");
+	Database::getCharDb().once
+		<< "UPDATE user_accounts u "
+		<< "INNER JOIN characters c ON u.user_id = c.user_id "
+		<< "SET "
+		<< "	u.online = :onlineId, "
+		<< "	c.online = :online "
+		<< "WHERE c.character_id = :char",
+		soci::use(m_id, "char"),
+		soci::use(online, "online"),
+		soci::use(onlineId, "onlineId");
 }
 
 void Player::setLevelDate() {

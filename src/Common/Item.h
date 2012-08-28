@@ -18,14 +18,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <soci.h>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
+
+class Item;
+
+struct ItemDbInformation {
+	ItemDbInformation(int16_t slot, int32_t charId, int32_t userId, int32_t worldId, const string &location) :
+		slot(slot),
+		charId(charId),
+		userId(userId),
+		worldId(worldId),
+		location(location)
+	{
+	}
+
+	int16_t slot;
+	int32_t charId;
+	int32_t userId;
+	int32_t worldId;
+	string location;
+};
+
+struct ItemDbRecord : ItemDbInformation {
+	ItemDbRecord(int16_t slot, int32_t charId, int32_t userId, int32_t worldId, const string &location, Item *item) :
+		ItemDbInformation(slot, charId, userId, worldId, location),
+		item(item)
+	{
+	}
+	ItemDbRecord(const ItemDbInformation &info, Item *item) :
+		ItemDbInformation(info.slot, info.charId, info.userId, info.worldId, info.location),
+		item(item)
+	{
+	}
+
+	Item *item;
+};
 
 class Item {
 public:
 	Item();
-	Item(int32_t itemId);
+	Item(const soci::row &row);
 	Item(int32_t itemId, int16_t amount);
 	Item(int32_t equipid, bool random);
 	Item(Item *item);
@@ -35,6 +72,7 @@ public:
 	bool hasLock() const;
 	bool hasKarma() const;
 	bool hasTradeBlock() const;
+
 	int8_t getSlots() const { return m_slots; }
 	int8_t getScrolls() const { return m_scrolls; }
 	int16_t getStr() const { return m_str; }
@@ -47,8 +85,8 @@ public:
 	int16_t getMatk() const { return m_matk; }
 	int16_t getWdef() const { return m_wdef; }
 	int16_t getMdef() const { return m_mdef; }
-	int16_t getAccuracy() const { return m_acc; }
-	int16_t getAvoid() const { return m_avo; }
+	int16_t getAccuracy() const { return m_accuracy; }
+	int16_t getAvoid() const { return m_avoid; }
 	int16_t getHands() const { return m_hands; }
 	int16_t getSpeed() const { return m_speed; }
 	int16_t getJump() const { return m_jump; }
@@ -65,8 +103,10 @@ public:
 	void setLock(bool lock);
 	void setKarma(bool karma);
 	void setTradeBlock(bool block);
-	void setSlots(int8_t slots) { m_slots = slots; }
-	void setScrolls(int8_t scrolls) { m_scrolls = scrolls; }
+
+	void databaseInsert(soci::session &sql, const ItemDbInformation &info);
+	void setSlots(int8_t slots);
+	void setScrolls(int8_t scrolls);
 	void setStr(int16_t strength);
 	void setDex(int16_t dexterity);
 	void setInt(int16_t intelligence);
@@ -82,12 +122,12 @@ public:
 	void setHands(int16_t hands);
 	void setJump(int16_t jump);
 	void setSpeed(int16_t speed);
-	void setAmount(int16_t amount) { m_amount = amount; }
-	void setName(const string &name) { m_name = name; }
-	void setFlags(int16_t flags) { m_flags = flags; }
-	void setHammers(int32_t hammers) { m_hammers = hammers; }
-	void setPetId(int64_t petId) { m_petId = petId; }
-	void setExpirationTime(int64_t exp) { m_expiration = exp; }
+	void setAmount(int16_t amount);
+	void setName(const string &name);
+	void setFlags(int16_t flags);
+	void setHammers(int32_t hammers);
+	void setPetId(int64_t petId);
+	void setExpirationTime(int64_t exp);
 	void addStr(int16_t strength, bool onlyIfExists = false);
 	void addDex(int16_t dexterity, bool onlyIfExists = false);
 	void addInt(int16_t intelligence, bool onlyIfExists = false);
@@ -109,11 +149,17 @@ public:
 	void incSlots(int8_t inc = 1) { m_slots += inc; }
 	void decSlots(int8_t dec = 1) { m_slots -= dec; }
 	void incScrolls() { m_scrolls++; }
+
+	static void databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items);
+
+	const static string Inventory;
+	const static string Storage;
 private:
 	bool testPerform(int16_t stat, bool onlyIfExists);
 	int16_t testStat(int16_t stat, int16_t max);
 	void modifyFlags(bool add, int16_t flags);
 	bool testFlags(int16_t flags) const;
+	void initializeItem(const soci::row &row);
 
 	int8_t m_slots;
 	int8_t m_scrolls;
@@ -127,8 +173,8 @@ private:
 	int16_t m_matk;
 	int16_t m_wdef;
 	int16_t m_mdef;
-	int16_t m_acc;
-	int16_t m_avo;
+	int16_t m_accuracy;
+	int16_t m_avoid;
 	int16_t m_hands;
 	int16_t m_jump;
 	int16_t m_speed;

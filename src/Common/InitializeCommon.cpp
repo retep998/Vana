@@ -95,13 +95,14 @@ void Initializing::setUsersOffline(int32_t onlineId) {
 	std::cout << "Resetting online status of players..." << std::endl;
 	clock_t startTime = TimeUtilities::getTickCount();
 
-	Database::getCharDb().once << "UPDATE user_accounts u "
-								<< "INNER JOIN characters c ON u.user_id = c.user_id "
-								<< "SET "
-								<< "	u.online = 0,"
-								<< "	c.online = 0 "
-								<< "WHERE u.online = :online",
-								soci::use(onlineId, "online");
+	Database::getCharDb().once
+		<< "UPDATE user_accounts u "
+		<< "INNER JOIN characters c ON u.user_id = c.user_id "
+		<< "SET "
+		<< "	u.online = 0,"
+		<< "	c.online = 0 "
+		<< "WHERE u.online = :online",
+		soci::use(onlineId, "online");
 
 	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
 	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;

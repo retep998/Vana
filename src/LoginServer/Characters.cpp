@@ -37,14 +37,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::unordered_map;
 
 void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT i.item_id, i.slot " <<
-															"FROM items i " <<
-															"WHERE i.character_id = :id " <<
-																"AND i.inv = :inv " <<
-																"AND i.slot < 0 " <<
-															"ORDER BY slot ASC",
-																soci::use(id, "id"),
-																soci::use(Inventories::EquipInventory, "inv"));
+	soci::rowset<> rs = (Database::getCharDb().prepare
+		<< "SELECT i.item_id, i.slot "
+		<< "FROM items i "
+		<< "WHERE "
+		<< "	i.character_id = :id "
+		<< "	AND i.inv = :inv "
+		<< "	AND i.slot < 0 "
+		<< "ORDER BY slot ASC",
+		soci::use(id, "id"),
+		soci::use(Inventories::EquipInventory, "inv"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		soci::row const &row = *i;
@@ -97,8 +99,11 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 }
 
 void Characters::showAllCharacters(Player *player) {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM characters c WHERE c.user_id = :user ",
-															soci::use(player->getUserId(), "user"));
+	soci::rowset<> rs = (Database::getCharDb().prepare
+		<< "SELECT * "
+		<< "FROM characters c "
+		<< "WHERE c.user_id = :user ",
+		soci::use(player->getUserId(), "user"));
 
 	typedef unordered_map<uint8_t, vector<Character>> CharsMap;
 
@@ -131,12 +136,15 @@ void Characters::showAllCharacters(Player *player) {
 
 void Characters::showCharacters(Player *player) {
 	soci::session &sql = Database::getCharDb();
-	int8_t worldId = player->getWorld();
+	int8_t worldId = player->getWorldId();
 	int32_t userId = player->getUserId();
 
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM characters c WHERE c.user_id = :user AND c.world_id = :world ",
-										soci::use(userId, "user"),
-										soci::use(worldId, "world"));
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT * "
+		<< "FROM characters c "
+		<< "WHERE c.user_id = :user AND c.world_id = :world ",
+		soci::use(userId, "user"),
+		soci::use(worldId, "world"));
 
 	vector<Character> chars;
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
@@ -148,10 +156,13 @@ void Characters::showCharacters(Player *player) {
 	}
 
 	opt_int32_t max;
-	sql.once << "SELECT s.char_slots FROM storage s WHERE s.user_id = :user AND s.world_id = :world ",
-				soci::use(userId, "user"),
-				soci::use(worldId, "world"),
-				soci::into(max);
+	sql.once
+		<< "SELECT s.char_slots "
+		<< "FROM storage s "
+		<< "WHERE s.user_id = :user AND s.world_id = :world ",
+		soci::use(userId, "user"),
+		soci::use(worldId, "world"),
+		soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
 		WorldConfig &world = Worlds::Instance()->getWorld(worldId)->getConfig();
@@ -179,52 +190,17 @@ void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 }
 
 void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) {
-	using namespace soci;
-
-	session &sql = Database::getCharDb();
-	int16_t inventory = GameLogicUtilities::getInventory(itemId);
+	soci::session &sql = Database::getCharDb();
+	uint8_t inventory = GameLogicUtilities::getInventory(itemId);
+	ItemDbInformation info(slot, charId, player->getUserId(), player->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
 		Item equip(itemId, false);
-		sql.once << "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, name) " <<
-					"VALUES (:char, :inv, :slot, :loc, :user, :world, :itemid, :slots, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hand, :speed, :jump, :name)",
-					use(charId, "char"),
-					use(inventory, "inv"),
-					use(slot, "slot"),
-					use(string("inventory"), "loc"),
-					use(player->getUserId(), "user"),
-					use(player->getWorld(), "world"),
-					use(itemId, "itemid"),
-					use(equip.getSlots(), "slots"),
-					use(equip.getStr(), "str"),
-					use(equip.getDex(), "dex"),
-					use(equip.getInt(), "int"),
-					use(equip.getLuk(), "luk"),
-					use(equip.getHp(), "hp"),
-					use(equip.getMp(), "mp"),
-					use(equip.getWatk(), "watk"),
-					use(equip.getMatk(), "matk"),
-					use(equip.getWdef(), "wdef"),
-					use(equip.getMdef(), "mdef"),
-					use(equip.getAccuracy(), "acc"),
-					use(equip.getAvoid(), "avo"),
-					use(equip.getHands(), "hand"),
-					use(equip.getSpeed(), "speed"),
-					use(equip.getJump(), "jump"),
-					use(string(""), "name");
+		equip.databaseInsert(sql, info);
 	}
 	else {
-		sql.once << "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, amount, name) " <<
-					"VALUES (:char, :inv, :slot, :loc, :user, :world, :itemid, :amount, :name)",
-					use(charId, "char"),
-					use(inventory, "inv"),
-					use(slot, "slot"),
-					use(string("inventory"), "loc"),
-					use(player->getUserId(), "user"),
-					use(player->getWorld(), "world"),
-					use(itemId, "itemid"),
-					use(amount, "amount"),
-					use(string(""), "name");
+		Item item(itemId, amount);
+		item.databaseInsert(sql, info);
 	}
 }
 
@@ -272,22 +248,22 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 
 	soci::session &sql = Database::getCharDb();
 
-	sql.once << "INSERT INTO characters (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) " <<
-				"VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
-				soci::use(name, "name"),
-				soci::use(player->getUserId(), "user"),
-				soci::use(player->getWorld(), "world"),
-				soci::use(eyes, "eyes"),
-				soci::use(hair + hairColor, "hair"),
-				soci::use(skin, "skin"),
-				soci::use(gender, "gender"),
-				soci::use(str, "str"),
-				soci::use(dex, "dex"),
-				soci::use(intt, "int"),
-				soci::use(luk, "luk");
+	sql.once
+		<< "INSERT INTO characters (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) "
+		<< "VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
+		soci::use(name, "name"),
+		soci::use(player->getUserId(), "user"),
+		soci::use(player->getWorldId(), "world"),
+		soci::use(eyes, "eyes"),
+		soci::use(hair + hairColor, "hair"),
+		soci::use(skin, "skin"),
+		soci::use(gender, "gender"),
+		soci::use(str, "str"),
+		soci::use(dex, "dex"),
+		soci::use(intt, "int"),
+		soci::use(luk, "luk");
 
-	int32_t id = 0;
-	sql.once << "SELECT LAST_INSERT_ID()", soci::into(id);
+	int32_t id = Database::getLastId<int32_t>(sql);
 
 	createItem(top, player, id, -EquipSlots::Top);
 	createItem(bottom, player, id, -EquipSlots::Bottom);
@@ -296,9 +272,12 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	createItem(Items::BeginnersGuidebook, player, id, 1);
 
 	soci::row row;
-	sql.once << "SELECT * FROM characters c WHERE c.character_id = :id",
-				soci::use(id, "id"),
-				soci::into(row);
+	sql.once
+		<< "SELECT * "
+		<< "FROM characters c "
+		<< "WHERE c.character_id = :id",
+		soci::use(id, "id"),
+		soci::into(row);
 
 	Character charc;
 	loadCharacter(charc, row);
@@ -329,9 +308,12 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	soci::session &sql = Database::getCharDb();
 	opt_int8_t worldId;
 
-	sql.once << "SELECT world_id FROM characters c WHERE c.character_id = :char ",
-					soci::use(id, "char"),
-					soci::into(worldId);
+	sql.once
+		<< "SELECT world_id "
+		<< "FROM characters c "
+		<< "WHERE c.character_id = :char ",
+		soci::use(id, "char"),
+		soci::into(worldId);
 
 	if (!sql.got_data() || !worldId.is_initialized()) {
 		// ???
@@ -339,7 +321,8 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	}
 
 	bool success = false;
-	if (data == player->getCharDeletePassword()) {
+	opt_int32_t &delPassword = player->getCharDeletePassword();
+	if (!delPassword.is_initialized() || delPassword.get() == data) {
 		Worlds::Instance()->runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
 				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
@@ -349,20 +332,8 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 			return false;
 		});
 
-		sql.once << "DELETE FROM characters WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM active_quests WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM completed_quests WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM cooldowns WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM teleport_rock_locations WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM buddylist WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM keymap WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM skills WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM skill_macros WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM character_variables WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM monster_book WHERE character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM mounts WHERE character_id = :char ", soci::use(id, "char");
 		sql.once << "DELETE p FROM pets p INNER JOIN items i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM items WHERE character_id = :char ", soci::use(id, "char");
+		sql.once << "DELETE FROM characters WHERE character_id = :char ", soci::use(id, "char");
 	}
 	else {
 		result = IncorrectBirthday;
@@ -380,7 +351,7 @@ void Characters::connectGame(Player *player, int32_t charId) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorld())->getConnection(), player->getChannel(), charId, player->getIp());
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorldId())->getConnection(), player->getChannel(), charId, player->getIp());
 	LoginPacket::connectIp(player, charId);
 }
 
@@ -397,7 +368,7 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 	}
 	int32_t id = packet.get<int32_t>();
 	int8_t worldId = (int8_t) packet.get<int32_t>();
-	player->setWorld(worldId);
+	player->setWorldId(worldId);
 
 	// Take the player to a random channel
 	uint16_t channel = Worlds::Instance()->getWorld(worldId)->getRandomChannel();
@@ -409,19 +380,30 @@ void Characters::connectGameWorld(Player *player, PacketReader &packet) {
 bool Characters::ownerCheck(Player *player, int32_t id) {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
-	sql.once << "SELECT 1 FROM characters c WHERE c.character_id = :char AND c.user_id = :user ",
-									soci::use(id, "char"),
-									soci::use(player->getUserId(), "user"),
-									soci::into(exists);
+
+	sql.once
+		<< "SELECT 1 "
+		<< "FROM characters c "
+		<< "WHERE c.character_id = :char AND c.user_id = :user "
+		<< "LIMIT 1 ",
+		soci::use(id, "char"),
+		soci::use(player->getUserId(), "user"),
+		soci::into(exists);
+
 	return sql.got_data() && exists.is_initialized();
 }
 
 bool Characters::nameTaken(const string &name) {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
-	sql.once << "SELECT 1 FROM characters c WHERE c.name = :name ",
-									soci::use(name, "name"),
-									soci::into(exists);
+
+	sql.once
+		<< "SELECT 1 "
+		<< "FROM characters c "
+		<< "WHERE c.name = :name "
+		<< "LIMIT 1",
+		soci::use(name, "name"),
+		soci::into(exists);
 
 	return sql.got_data() && exists.is_initialized();
 }

@@ -67,7 +67,7 @@ void WorldServer::loadLogConfig() {
 	}
 }
 
-string WorldServer::makeLogIdentifier() {
+opt_string WorldServer::makeLogIdentifier() {
 	return "World " + StringUtilities::lexical_cast<string>(getWorldId());
 }
 

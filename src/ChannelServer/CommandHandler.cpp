@@ -194,17 +194,18 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			int32_t length = packet.get<int32_t>();
 			const string &reasonMessage = packet.getString();
 			if (Player *receiver = PlayerDataProvider::Instance()->getPlayer(victim)) {
-				Database::getCharDb().once << "UPDATE user_accounts u "
-											<< "INNER JOIN characters c ON u.user_id = c.user_id "
-											<< "SET "
-											<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
-											<< "	u.ban_reason = :reason,"
-											<< "	u.ban_reasonMessage = :reasonMessage "
-											<< "WHERE c.name = :name ",
-											soci::use(victim, "name"),
-											soci::use(length, "expire"),
-											soci::use(reason, "reason"),
-											soci::use(reasonMessage, "reasonMessage");
+				Database::getCharDb().once
+					<< "UPDATE user_accounts u "
+					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "SET "
+					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
+					<< "	u.ban_reason = :reason,"
+					<< "	u.ban_reasonMessage = :reasonMessage "
+					<< "WHERE c.name = :name ",
+					soci::use(victim, "name"),
+					soci::use(length, "expire"),
+					soci::use(reason, "reason"),
+					soci::use(reasonMessage, "reasonMessage");
 
 				GmPacket::block(player);
 				const string &banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);

@@ -63,10 +63,11 @@ int32_t Fame::canFame(Player *player, int32_t to) {
 }
 
 void Fame::addFameLog(int32_t from, int32_t to) {
-	Database::getCharDb().once << "INSERT INTO fame_log (from_character_id, to_character_id, fame_time) " <<
-									"VALUES (:from, :to, NOW())",
-									soci::use(from, "from"),
-									soci::use(to, "to");
+	Database::getCharDb().once
+		<< "INSERT INTO fame_log (from_character_id, to_character_id, fame_time) "
+		<< "VALUES (:from, :to, NOW())",
+		soci::use(from, "from"),
+		soci::use(to, "to");
 }
 
 bool Fame::getLastFameLog(int32_t from) {
@@ -81,12 +82,15 @@ bool Fame::getLastFameLog(int32_t from) {
 	soci::session &sql = Database::getCharDb();
 	std::tm time;
 	soci::indicator ind;
-	sql.once << "SELECT fame_time FROM fame_log " <<
-				"WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime " <<
-				"ORDER BY fame_time DESC",
-				soci::use(from, "from"),
-				soci::use(fameTime, "fameTime"),
-				soci::into(time, ind);
+
+	sql.once
+		<< "SELECT fame_time "
+		<< "FROM fame_log "
+		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime "
+		<< "ORDER BY fame_time DESC",
+		soci::use(from, "from"),
+		soci::use(fameTime, "fameTime"),
+		soci::into(time, ind);
 
 	return !(sql.got_data() && ind != soci::i_null);
 }
@@ -103,13 +107,16 @@ bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
 	soci::session &sql = Database::getCharDb();
 	std::tm time;
 	soci::indicator ind;
-	sql.once << "SELECT fame_time FROM fame_log " <<
-				"WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime " <<
-				"ORDER BY fame_time DESC",
-				soci::use(from, "from"),
-				soci::use(to, "to"),
-				soci::use(fameResetTime, "fameResetTime"),
-				soci::into(time, ind);
+
+	sql.once
+		<< "SELECT fame_time "
+		<< "FROM fame_log "
+		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime "
+		<< "ORDER BY fame_time DESC",
+		soci::use(from, "from"),
+		soci::use(to, "to"),
+		soci::use(fameResetTime, "fameResetTime"),
+		soci::into(time, ind);
 
 	return !(sql.got_data() && ind != soci::i_null);
 }

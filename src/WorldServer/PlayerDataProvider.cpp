@@ -49,8 +49,11 @@ void PlayerDataProvider::loadData() {
 void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Players... ";
 
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT c.character_id, c.name FROM characters c WHERE c.world_id = :world",
-															soci::use(worldId, "world"));
+	soci::rowset<> rs = (Database::getCharDb().prepare
+		<< "SELECT c.character_id, c.name "
+		<< "FROM characters c "
+		<< "WHERE c.world_id = :world",
+		soci::use(worldId, "world"));
 
 	Player *p;
 

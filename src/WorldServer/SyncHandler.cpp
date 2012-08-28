@@ -155,11 +155,12 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 	}
 	else {
 		// Make new pending buddy in the database
-		Database::getCharDb().once << "INSERT INTO buddylist_pending " <<
-										"VALUES (:invitee, :name, :player)",
-										soci::use(inviteeId, "invitee"),
-										soci::use(inviter->getName(), "inviter"),
-										soci::use(playerId, "player");
+		Database::getCharDb().once
+			<< "INSERT INTO buddylist_pending "
+			<< "VALUES (:invitee, :name, :player)",
+			soci::use(inviteeId, "invitee"),
+			soci::use(inviter->getName(), "inviter"),
+			soci::use(playerId, "player");
 	}
 }
 

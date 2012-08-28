@@ -102,15 +102,18 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				};
 
 				if (type == 100) {
-					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE objectid = :q",
-														soci::use(q, "q"));
+					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 				else {
 					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE object_type = :type AND label LIKE :q",
-														soci::use(q, "q"),
-														soci::use(type, "type"));
+					soci::rowset<> rs = (sql.prepare
+						<< "SELECT objectid, `label` "
+						<< "FROM strings "
+						<< "WHERE object_type = :type AND label LIKE :q",
+						soci::use(q, "q"),
+						soci::use(type, "type"));
+
 					displayFunc(rs, format);
 				}
 			}
@@ -132,14 +135,11 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 
 				if (type == 300) {
 					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE :q",
-														soci::use(q, "q"));
-
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 				else if (type == 400) {
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE objectid = :q",
-														soci::use(q, "q"));
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 			}

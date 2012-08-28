@@ -64,7 +64,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
 			pet->setInventorySlot((int8_t) freeSlot);
-			PetsPacket::updatePet(player, pet);
+			PetsPacket::updatePet(player, pet, item);
 		}
 		return 0;
 	}

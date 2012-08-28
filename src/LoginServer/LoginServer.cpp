@@ -74,9 +74,9 @@ void LoginServer::loadLogConfig() {
 	}
 }
 
-string LoginServer::makeLogIdentifier() {
+opt_string LoginServer::makeLogIdentifier() {
 	// Login needs no special identifier; there's only one
-	return "";
+	return opt_string();
 }
 
 void LoginServer::loadWorlds() {

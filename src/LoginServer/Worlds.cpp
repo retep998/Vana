@@ -60,7 +60,7 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 
 	int8_t worldId = packet.get<int8_t>();
 	if (World *world = getWorld(worldId)) {
-		player->setWorld(worldId);
+		player->setWorldId(worldId);
 		int32_t load = world->getPlayerLoad();
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90;
@@ -89,9 +89,14 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	int8_t channel = packet.get<int8_t>();
 
 	LoginPacket::channelSelect(player);
-	World *world = m_worlds[player->getWorld()];
+	World *world = m_worlds[player->getWorldId()];
 
-	if (Channel *chan = m_worlds[player->getWorld()]->getChannel(channel)) {
+	if (world == nullptr) {
+		// Hacking, lag, or client that hasn't been updated (e.g. in the middle of logging in)
+		return;
+	}
+
+	if (Channel *chan = world->getChannel(channel)) {
 		player->setChannel(channel);
 		Characters::showCharacters(player);
 	}

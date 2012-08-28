@@ -40,7 +40,7 @@ public:
 	virtual void loadConfig() = 0;
 	virtual void loadLogConfig() = 0;
 	virtual void loadData() = 0;
-	virtual string makeLogIdentifier() = 0;
+	virtual opt_string makeLogIdentifier() = 0;
 	virtual void shutdown();
 
 	void displayLaunchTime() const;

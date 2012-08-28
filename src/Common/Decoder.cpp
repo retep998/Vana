@@ -123,7 +123,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 
 		pos += tPos;
 		if (first) {
-			first = 0; 
+			first = 0;
 		}
 	}
 

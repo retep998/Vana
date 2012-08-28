@@ -31,25 +31,25 @@ public:
 	void handleRequest(PacketReader &packet);
 
 	void setGender(int8_t gender) { m_gender = gender; }
-	void setWorld(int8_t world) { m_world = world; }
+	void setWorldId(int8_t worldId) { m_worldId = worldId; }
 	void setAdmin(bool value) { m_admin = value; }
 	void setChannel(uint16_t channel) {	m_channel = channel; }
 	void setUserId(int32_t id) { m_userId = id; }
 	void setStatus(PlayerStatus::PlayerStatus status) { m_status = status; }
 	void setPin(int32_t pin) { m_pin = pin; }
-	void setCharDeletePassword(int32_t charDeletePassword) { m_charDeletePassword = charDeletePassword; }
+	void setCharDeletePassword(opt_int32_t charDeletePassword) { m_charDeletePassword = charDeletePassword; }
 	void setQuietBanReason(int8_t reason) { m_quietBanReason = reason; }
 	void setQuietBanTime(int64_t t) { m_quietBanTime = t; }
 	void setCreationTime(int64_t t) { m_userCreation = t; }
 
 	int8_t getGender() const { return m_gender; }
-	int8_t getWorld() const { return m_world; }
+	int8_t getWorldId() const { return m_worldId; }
 	bool isAdmin() const { return m_admin; }
 	uint16_t getChannel() const { return m_channel; }
 	int32_t getUserId() const { return m_userId; }
 	PlayerStatus::PlayerStatus getStatus() const { return m_status; }
 	int32_t getPin() const { return m_pin; }
-	int32_t getCharDeletePassword() const { return m_charDeletePassword; }
+	opt_int32_t getCharDeletePassword() const { return m_charDeletePassword; }
 	int8_t getQuietBanReason() const { return m_quietBanReason; }
 	int64_t getQuietBanTime() const { return m_quietBanTime; }
 	int64_t getCreationTime() const { return m_userCreation; }
@@ -58,13 +58,13 @@ public:
 	void setOnline(bool online);
 private:
 	int8_t m_gender;
-	int8_t m_world;
+	int8_t m_worldId;
 	int8_t m_quietBanReason;
 	uint16_t m_channel;
 	int32_t m_userId;
 	int32_t m_pin;
 	int32_t m_invalidLogins;
-	int32_t m_charDeletePassword;
+	opt_int32_t m_charDeletePassword;
 	int64_t m_quietBanTime;
 	int64_t m_userCreation;
 	bool m_admin;

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace fs = boost::filesystem;
 
-string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const string &id, const string &message) {
+string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const opt_string &id, const string &message) {
 	// This function is gloriously unelegant
 	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
 	string ret = logger->getFilenameFormat();
@@ -46,7 +46,6 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 				case Replacements::Time: strm << getTimeFormatted(logger->getTimeFormat()); break;
 				case Replacements::Event: strm << getLevelString(type); break;
 				case Replacements::Origin: strm << getServerTypeString(logger->getServerType()); break;
-				case Replacements::Id: strm << id; break;
 				case Replacements::Message: strm << message; break;
 				case Replacements::IntegerDate: strm << TimeUtilities::getDate(start); break;
 				case Replacements::StringDate: strm << TimeUtilities::getDayString(!(flags & Replacements::Long), start); break;
@@ -58,6 +57,11 @@ string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, 
 				case Replacements::Second: strm << TimeUtilities::getSecond(start); break;
 				case Replacements::TimeZone: strm << TimeUtilities::getTimeZone(); break;
 				case Replacements::Year: strm << TimeUtilities::getYear(!(flags & Replacements::Long), start); break;
+				case Replacements::Id:
+					if (id.is_initialized()) {
+						strm << id.get();
+					}
+					break;
 				case Replacements::AmPm: {
 					bool pm = !(TimeUtilities::getHour(false, start) < 12);
 					if (flags & Replacements::Uppercase) {
@@ -94,7 +98,7 @@ FileLogger::~FileLogger() {
 	flush();
 }
 
-void FileLogger::log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+void FileLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 	FileLog file;
 	file.message = Logger::getLogFormatted(type, this, identifier, message);
 	file.file = FileLogger::prepareFileName(type, this, time(nullptr), identifier, message);

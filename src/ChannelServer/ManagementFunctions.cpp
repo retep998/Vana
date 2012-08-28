@@ -273,15 +273,16 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 		string expire("9000-00-00 00:00:00");
 
 		soci::session &sql = Database::getCharDb();
-		soci::statement st = (sql.prepare << "UPDATE user_accounts u "
-											<< "INNER JOIN characters c ON u.user_id = c.user_id "
-											<< "SET "
-											<< "	u.ban_expire = :expire,"
-											<< "	u.ban_reason = :reason "
-											<< "WHERE c.name = :name ",
-											soci::use(targetName, "name"),
-											soci::use(expire, "expire"),
-											soci::use(reason, "reason"));
+		soci::statement st = (sql.prepare
+			<< "UPDATE user_accounts u "
+			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "SET "
+			<< "	u.ban_expire = :expire,"
+			<< "	u.ban_reason = :reason "
+			<< "WHERE c.name = :name ",
+			soci::use(targetName, "name"),
+			soci::use(expire, "expire"),
+			soci::use(reason, "reason"));
 
 		if (st.get_affected_rows() > 0) {
 			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
@@ -310,15 +311,16 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 
 		// Ban account
 		soci::session &sql = Database::getCharDb();
-		soci::statement st = (sql.prepare << "UPDATE user_accounts u "
-											<< "INNER JOIN characters c ON u.user_id = c.user_id "
-											<< "SET "
-											<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
-											<< "	u.ban_reason = :reason "
-											<< "WHERE c.name = :name ",
-											soci::use(targetName, "name"),
-											soci::use(length, "expire"),
-											soci::use(reason, "reason"));
+		soci::statement st = (sql.prepare
+			<< "UPDATE user_accounts u "
+			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "SET "
+			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
+			<< "	u.ban_reason = :reason "
+			<< "WHERE c.name = :name ",
+			soci::use(targetName, "name"),
+			soci::use(length, "expire"),
+			soci::use(reason, "reason"));
 
 		if (st.get_affected_rows() > 0) {
 			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
@@ -347,9 +349,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 
 			// IP ban
 			soci::session &sql = Database::getCharDb();
-			soci::statement st = (sql.prepare << "INSERT INTO ip_bans (ip) "
-												<< "VALUES (:ip)",
-												soci::use(targetIp, "ip"));
+			soci::statement st = (sql.prepare << "INSERT INTO ip_bans (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
 
 			if (st.get_affected_rows() > 0) {
 				const string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
@@ -371,12 +371,13 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 		string expire("0000-00-00 00:00:00");
 
 		soci::session &sql = Database::getCharDb();
-		soci::statement st = (sql.prepare << "UPDATE user_accounts u "
-											<< "INNER JOIN characters c ON u.user_id = c.user_id "
-											<< "SET u.ban_expire = :expire "
-											<< "WHERE c.name = :name ",
-											soci::use(args, "name"),
-											soci::use(expire, "expire"));
+		soci::statement st = (sql.prepare
+			<< "UPDATE user_accounts u "
+			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "SET u.ban_expire = :expire "
+			<< "WHERE c.name = :name ",
+			soci::use(args, "name"),
+			soci::use(expire, "expire"));
 
 		if (st.get_affected_rows() > 0) {
 			const string &banMessage = args + " has been unbanned.";

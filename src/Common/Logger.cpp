@@ -67,12 +67,12 @@ string Logger::getServerTypeString(int16_t serverType) {
 	return ret;
 }
 
-string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const string &id, const string &message) {
+string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message) {
 	// This function is gloriously unelegant
-	const LogReplacements::map_t &butts = LogReplacements::Instance()->getMap();
+	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
 	string ret = logger->getFormat();
 	time_t start = time(nullptr);
-	for (LogReplacements::map_t::const_iterator iter = butts.begin(); iter != butts.end(); ++iter) {
+	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {
 			std::ostringstream strm;
@@ -81,8 +81,12 @@ string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const st
 				case Replacements::Time: strm << getTimeFormatted(logger->getTimeFormat()); break;
 				case Replacements::Event: strm << getLevelString(type); break;
 				case Replacements::Origin: strm << getServerTypeString(logger->getServerType()); break;
-				case Replacements::Id: strm << id; break;
 				case Replacements::Message: strm << message; break;
+				case Replacements::Id:
+					if (id.is_initialized()) {
+						strm << id.get();
+					}
+					break;
 			}
 			const string &y = strm.str();
 			ret.replace(x, iter->first.size(), y.c_str(), y.size());
@@ -154,6 +158,6 @@ Logger::~Logger() {
 
 }
 
-void Logger::log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+void Logger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 
 }
