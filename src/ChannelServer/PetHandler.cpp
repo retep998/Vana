@@ -55,7 +55,7 @@ void PetHandler::handleChat(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleSummon(Player *player, PacketReader &packet) {
-	packet.skipBytes(4); // Ticks
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1; // Might possibly fit under getBool criteria
 	bool multipet = player->getSkills()->getSkillLevel(Skills::Beginner::FollowTheLead) > 0;
@@ -136,8 +136,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 }
 
 void PetHandler::handleFeed(Player *player, PacketReader &packet) {
-	packet.skipBytes(4); // Ticks
-
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
@@ -189,7 +188,7 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 		return;
 	}
 	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
-	packet.skipBytes(4); // Ticks
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);

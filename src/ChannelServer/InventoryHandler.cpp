@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.h"
 
 void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int8_t inv = packet.get<int8_t>();
 	int16_t slot1 = packet.get<int16_t>();
 	int16_t slot2 = packet.get<int16_t>();
@@ -229,7 +229,7 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useItem(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 	if (player->getStats()->isDead() || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) == 0) {
@@ -253,7 +253,7 @@ void InventoryHandler::cancelItem(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 
@@ -334,7 +334,7 @@ void InventoryHandler::handleChair(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 
@@ -363,7 +363,7 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 
@@ -383,7 +383,7 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 }
 
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int16_t equipSlot = packet.get<int16_t>();
 	bool whiteScroll = (packet.get<int16_t>() == 2);
@@ -438,7 +438,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
 		string message = packet.getString();
-		packet.skipBytes(4); // Ticks
+		uint32_t ticks = packet.get<uint32_t>();
 		if (message.length() <= 35) {
 			Map *map = Maps::getMap(player->getMap());
 			message = player->getName() + " 's message : " + message;
@@ -620,7 +620,8 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					const string &msg3 = packet.getString();
 					const string &msg4 = packet.getString();
 					const string &msg5 = packet.getString();
-					packet.skipBytes(4); // Ticks
+					uint32_t ticks = packet.get<uint32_t>();
+
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
 					if (itemId == Items::Megassenger) {
@@ -639,7 +640,8 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				const string &msg3 = packet.getString();
 				const string &msg4 = packet.getString();
 				const string &msg5 = packet.getString();
-				packet.skipBytes(4); // Ticks
+				uint32_t ticks = packet.get<uint32_t>();
+
 				MapleTvs::Instance()->addMessage(player, nullptr, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
 				if (itemId == Items::StarMegassenger) {
@@ -661,8 +663,10 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 					const string &msg3 = packet.getString();
 					const string &msg4 = packet.getString();
 					const string &msg5 = packet.getString();
-					packet.skipBytes(4); // Ticks
+					uint32_t ticks = packet.get<uint32_t>();
+
 					MapleTvs::Instance()->addMessage(player, receiver, msg, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
+
 					if (itemId == Items::HeartMegassenger) {
 						InventoryPacket::showSuperMegaphone(player, player->getMedalName() + " : " + msg + msg2 + msg3 + msg4 + msg5, showWhisper);
 					}
@@ -875,7 +879,7 @@ void InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	packet.skipBytes(4); // Ticks
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 

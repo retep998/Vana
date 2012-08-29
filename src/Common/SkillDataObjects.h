@@ -174,8 +174,8 @@ struct Attack {
 	int32_t skillId;
 	int32_t summonId;
 	int32_t charge;
-	int32_t ticks;
 	int32_t starId;
+	uint32_t ticks;
 	int64_t totalDamage;
 	Pos projectilePos;
 	Pos playerPos;
