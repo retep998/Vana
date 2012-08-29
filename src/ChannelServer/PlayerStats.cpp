@@ -508,7 +508,7 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 }
 
 void PlayerStats::addStat(PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int32_t type = packet.get<int32_t>();
 	if (getAp() == 0) {
 		// Hacking
@@ -519,7 +519,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 }
 
 void PlayerStats::addStatMulti(PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	uint32_t amount = packet.get<uint32_t>();
 
 	LevelsPacket::statOk(m_player);

@@ -60,7 +60,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
-	packet.skipBytes(4); // Ticks
+	uint32_t ticks = packet.get<uint32_t>();
 	int8_t type = packet.get<int8_t>();
 	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
 	int32_t damage = packet.get<int32_t>();
@@ -260,15 +260,14 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 }
 
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	if (Player *info = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
 		PlayersPacket::showInfo(player, info, packet.getBool());
 	}
 }
 
 void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
-
+	uint32_t ticks = packet.get<uint32_t>();
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
 	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
@@ -879,11 +878,11 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 		attack.animation = packet.get<uint8_t>();
 		attack.weaponClass = packet.get<uint8_t>();
 		attack.weaponSpeed = packet.get<uint8_t>();
-		attack.ticks = packet.get<int32_t>();
+		attack.ticks = packet.get<uint32_t>();
 	}
 	else {
 		attack.summonId = packet.get<int32_t>(); // Summon ID, not to be confused with summon skill ID
-		attack.ticks = packet.get<int32_t>();
+		attack.ticks = packet.get<uint32_t>();
 		attack.animation = packet.get<uint8_t>();
 		targets = packet.get<int8_t>();
 		hits = 1;

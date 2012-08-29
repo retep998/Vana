@@ -155,7 +155,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 }
 
 void DropHandler::dropMesos(Player *player, PacketReader &packet) {
-	packet.skipBytes(4);
+	uint32_t ticks = packet.get<uint32_t>();
 	int32_t amount = packet.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
 		// Hacking
