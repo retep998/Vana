@@ -598,6 +598,12 @@ void PlayerActiveBuffs::endMorph() {
 	}
 }
 
+void PlayerActiveBuffs::swapWeapon() {
+	stopBooster();
+	stopCharge();
+	stopBulletSkills();
+}
+
 void PlayerActiveBuffs::write(PacketCreator &packet) {
 	// Map entry buff info
 	packet.add<int8_t>(getCombo());
