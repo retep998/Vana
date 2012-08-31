@@ -114,7 +114,7 @@ void PlayerQuests::load() {
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT a.quest_id, ma.mob_id, am.quantity_killed, a.data "
 		<< "FROM active_quests a "
-		<< "LEFT OUTER JOIN active_quest_mobs am ON am.active_quest_id = a.id "
+		<< "LEFT OUTER JOIN active_quests_mobs am ON am.active_quest_id = a.id "
 		<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
 		soci::use(charId, "char"));
 
