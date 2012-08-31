@@ -24,10 +24,10 @@ namespace Parties {
 }
 
 namespace Characters {
-	const uint8_t MaxNameSize = 12;
 	const uint8_t MinNameSize = 4;
-	const uint8_t MaxPasswordSize = 15;
+	const uint8_t MaxNameSize = 12;
 	const uint8_t MinPasswordSize = 5;
+	const uint8_t MaxPasswordSize = 15;
 	const int32_t DefaultCharacterSlots = 3;
 }
 
@@ -44,7 +44,12 @@ namespace Buddies {
 }
 
 namespace GuildsAndAlliances {
+	const int8_t MinNameSize = 4;
+	const int8_t MaxNameSize = 12;
 	const int32_t RankQuantity = 5;
+	const int32_t MaxGuildCapacity = 100;
+	const int32_t MaxAllianceCapacity = 3;
+	const int32_t ThreadsPerPage = 10;
 }
 
 namespace Stats {
