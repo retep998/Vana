@@ -176,6 +176,7 @@ public:
 	int32_t getHomingBeacon();
 
 	void endMorph();
+	void swapWeapon();
 
 	void write(PacketCreator &packet);
 	void read(PacketReader &packet);

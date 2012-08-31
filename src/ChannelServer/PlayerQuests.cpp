@@ -173,11 +173,11 @@ void PlayerQuests::addQuest(int16_t questId) {
 void PlayerQuests::addQuestMobs(int16_t questId) {
 	Quest *questInfo = QuestDataProvider::Instance()->getInfo(questId);
 	if (questInfo->hasMobRequests()) {
-		auto quest = m_quests;
-		auto toQuest = m_mobToQuestMapping;
-		questInfo->mobRequestFunc([&questId, &quest, &toQuest](int32_t mobId, int16_t count) -> bool {
-			quest[questId].kills[mobId] = 0;
-			toQuest[mobId].push_back(questId);
+		auto &questMapping = m_quests;
+		auto &mapping = m_mobToQuestMapping;
+		questInfo->mobRequestFunc([&questId, &questMapping, &mapping](int32_t mobId, int16_t count) -> bool {
+			questMapping[questId].kills[mobId] = 0;
+			mapping[mobId].push_back(questId);
 			return false;
 		});
 	}
@@ -185,21 +185,20 @@ void PlayerQuests::addQuestMobs(int16_t questId) {
 
 void PlayerQuests::updateQuestMob(int32_t mobId) {
 	if (m_mobToQuestMapping.find(mobId) != m_mobToQuestMapping.end()) {
-		int16_t qid = 0;
-		ActiveQuest q;
-		Quest *realquest;
+		int16_t questId = 0;
+		Quest *realQuest;
 		for (size_t i = 0; i < m_mobToQuestMapping[mobId].size(); i++) {
-			qid = m_mobToQuestMapping[mobId][i];
-			q = m_quests[qid];
-			realquest = QuestDataProvider::Instance()->getInfo(qid);
-			int16_t maxcount = realquest->getMobRequestQuantity(mobId);
-			if (!q.done && q.kills[mobId] < maxcount) {
+			questId = m_mobToQuestMapping[mobId][i];
+			ActiveQuest &q = m_quests[questId];
+			realQuest = QuestDataProvider::Instance()->getInfo(questId);
+			int16_t maxCount = realQuest->getMobRequestQuantity(mobId);
+			if (!q.done && q.kills[mobId] < maxCount) {
 				q.kills[mobId] += 1;
 				QuestsPacket::updateQuest(m_player, q);
-				if (q.kills[mobId] == maxcount) {
+				if (q.kills[mobId] == maxCount) {
 					checkDone(q);
 				}
-				m_quests[qid] = q;
+				m_quests[questId] = q;
 			}
 		}
 	}
@@ -221,7 +220,7 @@ void PlayerQuests::checkDone(ActiveQuest &quest) {
 			return false;
 		});
 	}
-	else if (questInfo->hasMobRequests()) {
+	if (quest.done && questInfo->hasMobRequests()) {
 		questInfo->mobRequestFunc([&quest](int32_t mobId, int16_t count) -> bool {
 			if (quest.kills[mobId] < count) {
 				quest.done = false;
