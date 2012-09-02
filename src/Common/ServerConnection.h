@@ -32,7 +32,7 @@ class PacketReader;
 class AbstractServerConnection : public AbstractConnection {
 public:
 	AbstractServerConnection() { m_isServer = true; }
-	void sendAuth(const string &pass, const IpMatrix &extIp);
+	void sendAuth(const string &pass, const string &salt, const IpMatrix &extIp);
 	int8_t getType() const { return m_type; }
 protected:
 	void setType(int8_t type) { m_type = type; }
@@ -43,7 +43,7 @@ private:
 class AbstractServerAcceptConnection : public AbstractConnection {
 public:
 	AbstractServerAcceptConnection() : m_isAuthenticated(false) { m_isServer = true; }
-	bool processAuth(AbstractServer *server, PacketReader &packet, const string &pass);
+	bool processAuth(AbstractServer *server, PacketReader &packet);
 	virtual void authenticated(int8_t type) = 0;
 
 	bool isAuthenticated() const { return m_isAuthenticated; }

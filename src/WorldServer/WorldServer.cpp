@@ -43,8 +43,9 @@ void WorldServer::loadData() {
 	m_loginConnection = new LoginServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
 	const string &interPassword = getInterPassword();
+	const string &salt = getSalt();
 	const IpMatrix &externalIp = getExternalIp();
-	getLoginConnection()->sendAuth(interPassword, externalIp);
+	getLoginConnection()->sendAuth(interPassword, salt, externalIp);
 }
 
 void WorldServer::loadConfig() {
