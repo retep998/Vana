@@ -43,6 +43,8 @@ bool PlayerModFunctions::modMesos(Player *player, const string &args) {
 bool PlayerModFunctions::heal(Player *player, const string &args) {
 	player->getStats()->setHp(player->getStats()->getMaxHp());
 	player->getStats()->setMp(player->getStats()->getMaxMp());
+	player->getActiveBuffs()->useDispel();
+	player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 	return true;
 }
 
