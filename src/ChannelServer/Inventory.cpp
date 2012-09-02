@@ -52,7 +52,7 @@ int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 		}
 		else if (!freeSlot) {
 			freeSlot = s;
-			if (GameLogicUtilities::isStackable(item->getId())) {
+			if (!GameLogicUtilities::isStackable(item->getId())) {
 				break;
 			}
 		}
