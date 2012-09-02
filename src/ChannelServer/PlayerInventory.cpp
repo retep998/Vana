@@ -398,6 +398,150 @@ void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 	}
 }
 
+void PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) {
+	bool equippedSlot1 = (slot1 < 0);
+	bool equippedSlot2 = (slot2 < 0);
+	if (inventory == Inventories::EquipInventory && (equippedSlot1 || equippedSlot2)) {
+		// Handle these specially
+		Item *item1 = getItem(inventory, slot1);
+		if (item1 == nullptr) {
+			// Hacking
+			return;
+		}
+
+		int32_t itemId1 = item1->getId();
+		int16_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
+		int16_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
+		if (!EquipDataProvider::Instance()->validSlot(itemId1, strippedSlot2)) {
+			// Hacking
+			return;
+		}
+
+		Item *remove = nullptr;
+		int16_t oldSlot = 0;
+		bool weapon = (strippedSlot2 == EquipSlots::Weapon);
+		bool shield = (strippedSlot2 == EquipSlots::Shield);
+		bool top = (strippedSlot2 == EquipSlots::Top);
+		bool bottom = (strippedSlot2 == EquipSlots::Bottom);
+
+		if (weapon && GameLogicUtilities::is2hWeapon(itemId1) && getEquippedId(EquipSlots::Shield) != 0) {
+			oldSlot = -EquipSlots::Shield;
+		}
+		else if (shield && GameLogicUtilities::is2hWeapon(getEquippedId(EquipSlots::Weapon))) {
+			oldSlot = -EquipSlots::Weapon;
+		}
+		else if (top && GameLogicUtilities::isOverall(itemId1) && getEquippedId(EquipSlots::Bottom) != 0) {
+			oldSlot = -EquipSlots::Bottom;
+		}
+		else if (bottom && GameLogicUtilities::isOverall(getEquippedId(EquipSlots::Top))) {
+			oldSlot = -EquipSlots::Top;
+		}
+		if (oldSlot != 0) {
+			remove = getItem(inventory, oldSlot);
+			bool onlySwap = true;
+			if ((getEquippedId(EquipSlots::Shield) != 0) && (getEquippedId(EquipSlots::Weapon) != 0)) {
+				onlySwap = false;
+			}
+			else if ((getEquippedId(EquipSlots::Top) != 0) && (getEquippedId(EquipSlots::Bottom) != 0)) {
+				onlySwap = false;
+			}
+			if (onlySwap) {
+				int16_t swapSlot = 0;
+				if (weapon) {
+					swapSlot = -EquipSlots::Shield;
+					m_player->getActiveBuffs()->swapWeapon();
+				}
+				else if (shield) {
+					swapSlot = -EquipSlots::Weapon;
+					m_player->getActiveBuffs()->swapWeapon();
+				}
+				else if (top) {
+					swapSlot = -EquipSlots::Bottom;
+				}
+				else if (bottom) {
+					swapSlot = -EquipSlots::Top;
+				}
+				setItem(inventory, swapSlot, nullptr);
+				setItem(inventory, slot1, remove);
+				setItem(inventory, slot2, item1);
+				InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
+				InventoryPacket::moveItem(m_player, inventory, swapSlot, slot1);
+				InventoryPacket::updatePlayer(m_player);
+				return;
+			}
+			else {
+				if (getOpenSlotsNum(inventory) == 0) {
+					InventoryPacket::blankUpdate(m_player);
+					return;
+				}
+				int16_t freeSlot = 0;
+				for (int16_t s = 1; s <= getMaxSlots(inventory); s++) {
+					Item *oldItem = getItem(inventory, s);
+					if (oldItem == nullptr) {
+						freeSlot = s;
+						break;
+					}
+				}
+				setItem(inventory, freeSlot, remove);
+				setItem(inventory, oldSlot, nullptr);
+				InventoryPacket::moveItem(m_player, inventory, oldSlot, freeSlot);
+			}
+		}
+		else {
+			// Nothing special happening, just a simple equip swap
+			Item *item2 = getItem(inventory, slot2);
+			if (item2 == nullptr) {
+				setItem(inventory, slot2, item1);
+				InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
+			}
+			else {
+				setItem(inventory, slot1, item2);
+				setItem(inventory, slot2, item1);
+				InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
+			}
+		}
+	}
+	else {
+		// The only interesting things that can happen here are stack modifications and slot swapping
+		Item *item1 = getItem(inventory, slot1);
+		Item *item2 = getItem(inventory, slot2);
+		
+		if (item1 == nullptr || item2 == nullptr) {
+			// Hacking
+			return;
+		}
+
+		int32_t itemId1 = item1->getId();
+		int32_t itemId2 = item2->getId();
+		if (itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
+			int32_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId1);
+			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
+				item2->incAmount(item1->getAmount());
+				deleteItem(inventory, slot1, false);
+				InventoryPacket::updateItemAmounts(m_player, inventory, slot2, item2->getAmount(), 0, 0);
+				InventoryPacket::moveItem(m_player, inventory, slot1, 0);
+			}
+			else {
+				item1->decAmount(maxSlot - item2->getAmount());
+				item2->setAmount(maxSlot);
+				InventoryPacket::updateItemAmounts(m_player, inventory, slot1, item1->getAmount(), slot2, item2->getAmount());
+			}
+		}
+		else {
+			// The item is either not stackable or not the same item, either way it's a plain swap
+			setItem(inventory, slot1, item2);
+			setItem(inventory, slot2, item1);
+			if (item1->getPetId() > 0) {
+				m_player->getPets()->getPet(item1->getPetId())->setInventorySlot((int8_t) slot2);
+			}
+			if (item2->getPetId() > 0) {
+				m_player->getPets()->getPet(item2->getPetId())->setInventorySlot((int8_t) slot1);
+			}
+			InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
+		}
+	}
+}
+
 bool PlayerInventory::ensureRockDestination(int32_t mapId) {
 	for (size_t k = 0; k < m_rockLocations.size(); ++k) {
 		if (m_rockLocations[k] == mapId) {

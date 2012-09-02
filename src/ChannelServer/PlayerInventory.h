@@ -55,6 +55,7 @@ public:
 	void changeItemAmount(int32_t itemId, int16_t amount) { m_itemAmounts[itemId] += amount; }
 	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
 	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
+	void swapItems(int8_t inventory, int16_t slot1, int16_t slot2);
 
 	uint8_t getMaxSlots(int8_t inv) const { return m_maxSlots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }
@@ -69,7 +70,6 @@ public:
 
 	bool hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack = false);
 	int16_t getOpenSlotsNum(int8_t inv);
-
 	int32_t doShadowStars();
 
 	bool isHammering() const { return m_hammer != -1; }
