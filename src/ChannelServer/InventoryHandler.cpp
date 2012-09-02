@@ -54,161 +54,21 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 	auto testSlot = [&slot1, &slot2, &strippedSlot1, &strippedSlot2](int16_t testSlot) -> bool {
 		return (slot1 < 0 && strippedSlot1 == testSlot) || (slot2 < 0 && strippedSlot2 == testSlot);
 	};
-	Item *item1 = player->getInventory()->getItem(inv, slot1);
-	if (item1 == nullptr) {
-		return;
-	}
 
 	if (dropped) {
-		int16_t amount = packet.get<int16_t>();
-		if (!GameLogicUtilities::isStackable(item1->getId())) {
-			amount = item1->getAmount();
-		}
-		else if (amount <= 0 || amount > item1->getAmount()) {
-			// Hacking
+		Item *item1 = player->getInventory()->getItem(inv, slot1);
+		if (item1 == nullptr) {
 			return;
 		}
-		Item droppedItem(item1);
-		droppedItem.setAmount(amount);
-		if (item1->getAmount() == amount) {
-			InventoryPacket::moveItem(player, inv, slot1, slot2);
-			player->getInventory()->deleteItem(inv, slot1);
-		}
-		else {
-			item1->decAmount(amount);
-			player->getInventory()->changeItemAmount(item1->getId(), -amount);
-			InventoryPacket::updateItemAmounts(player, inv, slot1, item1->getAmount(), 0, 0);
-		}
-		Drop *drop = new Drop(player->getMap(), droppedItem, player->getPos(), player->getId(), true);
-		drop->setTime(0);
-
-		bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppedItem.getId());
-		drop->setTradeable(isTradeable);
-
-		drop->doDrop(player->getPos());
-		if (isTradeable) {
-			// Drop is deleted otherwise, avoid like plague
-			ReactorHandler::checkDrop(player, drop);
-		}
+		InventoryHandler::dropItem(player, packet, item1, slot1, inv);
 	}
 	else {
-		// Change item slot (swapping)
-		Item *item2 = player->getInventory()->getItem(inv, slot2);
-
-		if (item2 == nullptr) {
-			// Hacking
-			return;
-		}
-
-		if (item1->getId() == item2->getId() && !GameLogicUtilities::isStackable(item1->getId())) {
-			if (item1->getAmount() + item2->getAmount() <= ItemDataProvider::Instance()->getMaxSlot(item1->getId())) {
-				item2->incAmount(item1->getAmount());
-				player->getInventory()->deleteItem(inv, slot1, false);
-				InventoryPacket::updateItemAmounts(player, inv, slot2, item2->getAmount(), 0, 0);
-				InventoryPacket::moveItem(player, inv, slot1, 0);
-			}
-			else {
-				item1->decAmount(ItemDataProvider::Instance()->getMaxSlot(item1->getId()) - item2->getAmount());
-				item2->setAmount(ItemDataProvider::Instance()->getMaxSlot(item2->getId()));
-				InventoryPacket::updateItemAmounts(player, inv, slot1, item1->getAmount(), slot2, item2->getAmount());
-			}
-		}
-		else {
-			if (equippedSlot2) {
-				if (!EquipDataProvider::Instance()->validSlot(item1->getId(), strippedSlot2)) {
-					// Hacking
-					return;
-				}
-				Item *remove = nullptr;
-				int16_t oldSlot = 0;
-				bool weapon = -slot2 == EquipSlots::Weapon;
-				bool shield = -slot2 == EquipSlots::Shield;
-				bool top = -slot2 == EquipSlots::Top;
-				bool bottom = -slot2 == EquipSlots::Bottom;
-
-				if (weapon && GameLogicUtilities::is2hWeapon(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) {
-					oldSlot = -EquipSlots::Shield;
-				}
-				else if (shield && GameLogicUtilities::is2hWeapon(player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
-					oldSlot = -EquipSlots::Weapon;
-				}
-				else if (top && GameLogicUtilities::isOverall(item1->getId()) && player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0) {
-					oldSlot = -EquipSlots::Bottom;
-				}
-				else if (bottom && GameLogicUtilities::isOverall(player->getInventory()->getEquippedId(EquipSlots::Top))) {
-					oldSlot = -EquipSlots::Top;
-				}
-				if (oldSlot != 0) {
-					remove = player->getInventory()->getItem(inv, oldSlot);
-					bool onlySwap = true;
-					if ((player->getInventory()->getEquippedId(EquipSlots::Shield) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Weapon) != 0)) {
-						onlySwap = false;
-					}
-					else if ((player->getInventory()->getEquippedId(EquipSlots::Top) != 0) && (player->getInventory()->getEquippedId(EquipSlots::Bottom) != 0)) {
-						onlySwap = false;
-					}
-					if (onlySwap) {
-						int16_t swapSlot = 0;
-						if (weapon) {
-							swapSlot = -EquipSlots::Shield;
-							player->getActiveBuffs()->swapWeapon();
-						}
-						else if (shield) {
-							swapSlot = -EquipSlots::Weapon;
-							player->getActiveBuffs()->swapWeapon();
-						}
-						else if (top) {
-							swapSlot = -EquipSlots::Bottom;
-						}
-						else if (bottom) {
-							swapSlot = -EquipSlots::Top;
-						}
-						player->getInventory()->setItem(inv, swapSlot, nullptr);
-						player->getInventory()->setItem(inv, slot1, remove);
-						player->getInventory()->setItem(inv, slot2, item1);
-						InventoryPacket::moveItem(player, inv, slot1, slot2);
-						InventoryPacket::moveItem(player, inv, swapSlot, slot1);
-						InventoryPacket::updatePlayer(player);
-						return;
-					}
-					else {
-						if (player->getInventory()->getOpenSlotsNum(inv) == 0) {
-							InventoryPacket::blankUpdate(player);
-							return;
-						}
-						int16_t freeSlot = 0;
-						for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
-							Item *oldItem = player->getInventory()->getItem(inv, s);
-							if (oldItem == nullptr) {
-								freeSlot = s;
-								break;
-							}
-						}
-						player->getInventory()->setItem(inv, freeSlot, remove);
-						player->getInventory()->setItem(inv, oldSlot, nullptr);
-						InventoryPacket::moveItem(player, inv, oldSlot, freeSlot);
-					}
-				}
-			}
-			else if (slot1 < 0 && !ItemDataProvider::Instance()->isCash(item2->getId())) {
-				// Client tries to switch a cash item with a regular item
-				return;
-			}
-			player->getInventory()->setItem(inv, slot1, item2);
-			player->getInventory()->setItem(inv, slot2, item1);
-			if (item1->getPetId() > 0) {
-				player->getPets()->getPet(item1->getPetId())->setInventorySlot((int8_t) slot2);
-			}
-			if (item2->getPetId() > 0) {
-				player->getPets()->getPet(item2->getPetId())->setInventorySlot((int8_t) slot1);
-			}
-			InventoryPacket::moveItem(player, inv, slot1, slot2);
-		}
+		player->getInventory()->swapItems(inv, slot1, slot2);
 	}
 	if (testSlot(EquipSlots::Weapon) || testSlot(EquipSlots::Shield)) {
 		player->getActiveBuffs()->swapWeapon();
 	}
-	if (slot1 < 0 || slot2 < 0) {
+	if (equippedSlot1 || equippedSlot2) {
 		auto test = [&player, &testSlot](int16_t equipSlot, int32_t petIndex) {
 			if (testSlot(equipSlot)) {
 				if (Pet *pet = player->getPets()->getSummoned(petIndex)) {
@@ -222,6 +82,38 @@ void InventoryHandler::itemMove(Player *player, PacketReader &packet) {
 		test(EquipSlots::PetLabelRing3, 2);
 
 		InventoryPacket::updatePlayer(player);
+	}
+}
+
+void InventoryHandler::dropItem(Player *player, PacketReader &packet, Item *item, int16_t slot, int8_t inv) {
+	int16_t amount = packet.get<int16_t>();
+	if (!GameLogicUtilities::isStackable(item->getId())) {
+		amount = item->getAmount();
+	}
+	else if (amount <= 0 || amount > item->getAmount()) {
+		// Hacking
+		return;
+	}
+	Item droppedItem(item);
+	droppedItem.setAmount(amount);
+	if (item->getAmount() == amount) {
+		InventoryPacket::moveItem(player, inv, slot, 0);
+		player->getInventory()->deleteItem(inv, slot);
+	}
+	else {
+		item->decAmount(amount);
+		player->getInventory()->changeItemAmount(item->getId(), -amount);
+		InventoryPacket::updateItemAmounts(player, inv, slot, item->getAmount(), 0, 0);
+	}
+	bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppedItem.getId());
+	Drop *drop = new Drop(player->getMap(), droppedItem, player->getPos(), player->getId(), true);
+	drop->setTime(0);
+	drop->setTradeable(isTradeable);
+	drop->doDrop(player->getPos());
+
+	if (isTradeable) {
+		// Drop is deleted otherwise, avoid like plague
+		ReactorHandler::checkDrop(player, drop);
 	}
 }
 

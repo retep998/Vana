@@ -19,11 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 
+class Item;
 class Player;
 class PacketReader;
 
 namespace InventoryHandler {
 	void itemMove(Player *player, PacketReader &packet);
+	void dropItem(Player *player, PacketReader &packet, Item *item, int16_t slot, int8_t inv);
+	void moveItem(Player *player, PacketReader &packet);
 	void useItem(Player *player, PacketReader &packet);
 	void cancelItem(Player *player, PacketReader &packet);
 	void useSkillbook(Player *player, PacketReader &packet);
