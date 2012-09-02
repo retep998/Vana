@@ -1042,8 +1042,8 @@ int LuaExports::giveAp(lua_State *luaVm) {
 }
 
 int LuaExports::giveExp(lua_State *luaVm) {
-	int32_t exp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getStats()->giveExp(exp, true);
+	uint32_t exp = lua_tointeger(luaVm, -1);
+	getPlayer(luaVm)->getStats()->giveExp(exp * ChannelServer::Instance()->getQuestExpRate(), true);
 	return 0;
 }
 
