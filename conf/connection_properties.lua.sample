@@ -1,6 +1,9 @@
 -- Inter-server password, change this or others will be able to hack your server
 inter_password = "changeme";
 
+-- Inter-server salt, an arbitrary string used to hash the password more securely
+inter_salt = "changeme";
+
 -- Use encryption to communicate with clients?
 use_client_encryption = true;
 
