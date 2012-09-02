@@ -615,8 +615,13 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 	packet.add<int32_t>(m_mapBuffs.mountId);
 	packet.add<int32_t>(m_mapBuffs.mountSkill);
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		auto &values = m_mapBuffs.values.find(i)->second;
 		packet.add<uint8_t>(m_mapBuffs.types[i]);
+		auto foundValue = m_mapBuffs.values.find(i);
+		if (foundValue == m_mapBuffs.values.end()) {
+			packet.add<uint8_t>(0);
+			continue;
+		}
+		auto &values = foundValue->second;
 		packet.add<uint8_t>(values.size());
 		for (unordered_map<uint8_t, MapEntryVals>::const_iterator iter = values.begin(); iter != values.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
@@ -641,7 +646,12 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 	}
 	// Current buffs by type info
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		auto &currentByte = m_activeBuffsByType.find(i)->second;
+		auto foundByte = m_activeBuffsByType.find(i);
+		if (foundByte == m_activeBuffsByType.end()) {
+			packet.add<uint8_t>(0);
+			continue;
+		}
+		auto &currentByte = foundByte->second;
 		packet.add<uint8_t>(currentByte.size());
 		for (unordered_map<uint8_t, int32_t>::const_iterator iter = currentByte.begin(); iter != currentByte.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
