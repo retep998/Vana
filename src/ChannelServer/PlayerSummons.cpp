@@ -72,12 +72,12 @@ Summon * PlayerSummons::getSummon(int32_t summonId) {
 	return nullptr;
 }
 
-int32_t PlayerSummons::getSummonTimeRemaining() {
+int32_t PlayerSummons::getSummonTimeRemaining() const {
 	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
 	return m_player->getTimers()->checkTimer(id);
 }
 
-void PlayerSummons::write(PacketCreator &packet) {
+void PlayerSummons::write(PacketCreator &packet) const {
 	int32_t summonId = 0;
 	int32_t timeLeft = 0;
 	uint8_t level = 0;

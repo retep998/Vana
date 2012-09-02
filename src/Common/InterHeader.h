@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Inter-server communication does not separate send and recv because the server does both
 enum AnyConnection : header_t {
-	IMSG_PASSWORD = 0xff
+	IMSG_PASSWORD = 0xff,
+	IMSG_REHASH_CONFIG = 0x100
 };
 
 enum LoginWorld : header_t {

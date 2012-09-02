@@ -33,7 +33,7 @@ struct MajorBoss : public IPacketSerializable<MajorBoss> {
 	int16_t attempts;
 	vector<int8_t> channels;
 
-	void write(PacketCreator &packet) {
+	void write(PacketCreator &packet) const {
 		packet.add<int16_t>(attempts);
 		packet.addVector(channels);
 	}
@@ -73,7 +73,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 	MajorBoss horntail;
 	MajorBoss pinkbean;
 
-	void write(PacketCreator &packet) {
+	void write(PacketCreator &packet) const {
 		packet.add<int8_t>(ribbon);
 		packet.add<uint8_t>(maxMultiLevel);
 		packet.add<uint8_t>(defaultStorageSlots);

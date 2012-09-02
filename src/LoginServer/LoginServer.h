@@ -42,6 +42,7 @@ public:
 
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }
+	void rehashConfig();
 	int32_t getInvalidLoginThreshold() const { return m_maxInvalidLogins; }
 private:
 	LoginServer();

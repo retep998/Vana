@@ -62,3 +62,8 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 		}
 	}
 }
+
+void LoginServerConnectHandler::rehashConfig(PacketReader &packet) {
+	const WorldConfig &config = packet.getClass<WorldConfig>();
+	WorldServer::Instance()->rehashConfig(config);
+}

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SyncPacket::PlayerPacket::updateLevel(int32_t playerId, int32_t level) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
 	packet.add<int8_t>(Sync::Player::UpdateBits::Level);
@@ -37,7 +37,7 @@ void SyncPacket::PlayerPacket::updateLevel(int32_t playerId, int32_t level) {
 
 void SyncPacket::PlayerPacket::updateJob(int32_t playerId, int32_t job) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
 	packet.add<int8_t>(Sync::Player::UpdateBits::Job);
@@ -48,7 +48,7 @@ void SyncPacket::PlayerPacket::updateJob(int32_t playerId, int32_t job) {
 
 void SyncPacket::PlayerPacket::updateMap(int32_t playerId, int32_t map) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
 	packet.add<int8_t>(Sync::Player::UpdateBits::Map);
@@ -59,7 +59,7 @@ void SyncPacket::PlayerPacket::updateMap(int32_t playerId, int32_t map) {
 
 void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
@@ -75,7 +75,7 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 
 void SyncPacket::PlayerPacket::connect(Player *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::Connect);
 	packet.add<int32_t>(player->getId());
@@ -85,7 +85,7 @@ void SyncPacket::PlayerPacket::connect(Player *player) {
 
 void SyncPacket::PlayerPacket::disconnect(int32_t playerId) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::Disconnect);
 	packet.add<int32_t>(playerId);
@@ -94,7 +94,7 @@ void SyncPacket::PlayerPacket::disconnect(int32_t playerId) {
 
 void SyncPacket::PlayerPacket::connectableEstablished(int32_t playerId) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerId);
@@ -103,7 +103,7 @@ void SyncPacket::PlayerPacket::connectableEstablished(int32_t playerId) {
 
 void SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(playerId);
@@ -115,7 +115,7 @@ void SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target
 
 void SyncPacket::BuddyPacket::buddyInvite(int32_t playerId, int32_t inviteeId) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::Invite);
 	packet.add<int32_t>(inviteeId);
@@ -125,7 +125,7 @@ void SyncPacket::BuddyPacket::buddyInvite(int32_t playerId, int32_t inviteeId) {
 
 void SyncPacket::BuddyPacket::buddyOnline(int32_t playerId, const vector<int32_t> &players, bool online) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SYNC);
+	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::OnlineOffline);
 	packet.add<int32_t>(playerId);

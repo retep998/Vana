@@ -387,6 +387,10 @@ void ChatHandlerFunctions::initialize() {
 	command.syntax = "<$player>";
 	command.notes.push_back("Allows you to view the lag of any player.");
 	CommandList["lag"] = command.addToMap();
+
+	command.command = &ManagementFunctions::rehash;
+	command.notes.push_back("Rehashes world configurations after modification.");
+	CommandList["rehash"] = command.addToMap();
 	#pragma endregion
 
 	#pragma region GM Level 0

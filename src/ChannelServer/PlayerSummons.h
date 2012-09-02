@@ -37,12 +37,12 @@ public:
 	void addSummon(Summon *summon, int32_t time);
 	void removeSummon(bool puppet, bool fromTimer);
 
-	void write(PacketCreator &packet);
+	void write(PacketCreator &packet) const;
 	void read(PacketReader &packet);
 private:
 	Player *m_player;
 	Summon *m_summon;
 	Summon *m_puppet;
 
-	int32_t getSummonTimeRemaining();
+	int32_t getSummonTimeRemaining() const;
 };

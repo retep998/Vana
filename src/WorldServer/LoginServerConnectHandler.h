@@ -23,4 +23,5 @@ class PacketReader;
 namespace LoginServerConnectHandler {
 	void connect(LoginServerConnection *connection, PacketReader &packet);
 	void newPlayer(PacketReader &packet);
+	void rehashConfig(PacketReader &packet);
 }

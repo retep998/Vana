@@ -48,7 +48,8 @@ void WorldServerConnection::handleRequest(PacketReader &packet) {
 		case IMSG_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
 		case IMSG_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
 		case IMSG_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
-		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet);
+		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
+		case IMSG_REHASH_CONFIG: WorldServerConnectHandler::rehashConfig(packet); break;
 
 		case IMSG_SYNC: SyncHandler::handle(packet); break;
 	}

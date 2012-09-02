@@ -69,7 +69,7 @@ void PlayerActiveBuffs::removeBuff() {
 	}
 }
 
-int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) {
+int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) const {
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	return m_player->getTimers()->checkTimer(id);
 }
@@ -219,8 +219,8 @@ void PlayerActiveBuffs::setMountInfo(int32_t skillId, int32_t mountId) {
 }
 
 // Active skill levels
-uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillId) {
-	return m_activeLevels.find(skillId) != m_activeLevels.end() ? m_activeLevels[skillId] : 0;
+uint8_t PlayerActiveBuffs::getActiveSkillLevel(int32_t skillId) const {
+	return m_activeLevels.find(skillId) != m_activeLevels.end() ? m_activeLevels.find(skillId)->second : 0;
 }
 
 void PlayerActiveBuffs::setActiveSkillLevel(int32_t skillId, uint8_t level) {
@@ -604,7 +604,7 @@ void PlayerActiveBuffs::swapWeapon() {
 	stopBulletSkills();
 }
 
-void PlayerActiveBuffs::write(PacketCreator &packet) {
+void PlayerActiveBuffs::write(PacketCreator &packet) const {
 	// Map entry buff info
 	packet.add<int8_t>(getCombo());
 	packet.add<int16_t>(getEnergyChargeLevel());
@@ -615,9 +615,10 @@ void PlayerActiveBuffs::write(PacketCreator &packet) {
 	packet.add<int32_t>(m_mapBuffs.mountId);
 	packet.add<int32_t>(m_mapBuffs.mountSkill);
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
+		auto &values = m_mapBuffs.values.find(i)->second;
 		packet.add<uint8_t>(m_mapBuffs.types[i]);
-		packet.add<uint8_t>(m_mapBuffs.values[i].size());
-		for (unordered_map<uint8_t, MapEntryVals>::iterator iter = m_mapBuffs.values[i].begin(); iter != m_mapBuffs.values[i].end(); ++iter) {
+		packet.add<uint8_t>(values.size());
+		for (unordered_map<uint8_t, MapEntryVals>::const_iterator iter = values.begin(); iter != values.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
 			packet.addBool(iter->second.debuff);
 			if (iter->second.debuff) {
@@ -632,18 +633,17 @@ void PlayerActiveBuffs::write(PacketCreator &packet) {
 	}
 	// Current buff info (IDs, times, levels)
 	packet.add<uint8_t>(m_buffs.size());
-	for (list<int32_t>::iterator iter = m_buffs.begin(); iter != m_buffs.end(); ++iter) {
+	for (list<int32_t>::const_iterator iter = m_buffs.begin(); iter != m_buffs.end(); ++iter) {
 		int32_t buffId = *iter;
 		packet.add<int32_t>(buffId);
 		packet.add<int32_t>(buffTimeLeft(buffId));
 		packet.add<uint8_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
-	unordered_map<uint8_t, int32_t> currentByte;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		currentByte = m_activeBuffsByType[i];
+		auto &currentByte = m_activeBuffsByType.find(i)->second;
 		packet.add<uint8_t>(currentByte.size());
-		for (unordered_map<uint8_t, int32_t>::iterator iter = currentByte.begin(); iter != currentByte.end(); ++iter) {
+		for (unordered_map<uint8_t, int32_t>::const_iterator iter = currentByte.begin(); iter != currentByte.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
 			packet.add<int32_t>(iter->second);
 		}

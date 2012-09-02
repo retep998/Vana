@@ -55,6 +55,11 @@ void WorldServer::loadConfig() {
 	m_port = -1; // Will get from login server later
 }
 
+void WorldServer::rehashConfig(const WorldConfig &config) {
+	setConfig(config);
+	WorldServerAcceptPacket::rehashConfig(config);
+}
+
 void WorldServer::loadLogConfig() {
 	ConfigFile conf("conf/logger.lua", false);
 	initializeLoggingConstants(conf);

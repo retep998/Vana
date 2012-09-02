@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeCommon.h"
 #include "InitializeLogin.h"
+#include "LoginServerAcceptPacket.h"
 #include "MapleVersion.h"
 #include "RankingCalculator.h"
 #include "VanaConstants.h"
@@ -77,6 +78,18 @@ void LoginServer::loadLogConfig() {
 opt_string LoginServer::makeLogIdentifier() {
 	// Login needs no special identifier; there's only one
 	return opt_string();
+}
+
+void LoginServer::rehashConfig() {
+	loadWorlds();
+	Worlds::Instance()->runFunction([](World *world) -> bool {
+		if (world != nullptr && world->getConnection() != nullptr) {
+			// We only need to inform worlds that are actually connected
+			// Otherwise they'll get the modified config when they connect
+			LoginServerAcceptPacket::rehashConfig(world);
+		}
+		return false;
+	});
 }
 
 void LoginServer::loadWorlds() {

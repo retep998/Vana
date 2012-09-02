@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_GROUP_CHAT);
+	packet.add<header_t>(IMSG_GROUP_CHAT);
 	packet.add<int32_t>(playerId);
 	packet.add<int8_t>(type);
 	packet.addString(chat);
@@ -36,7 +36,7 @@ void WorldServerConnectPacket::groupChat(WorldServerConnection *player, int8_t t
 
 void WorldServerConnectPacket::findPlayer(WorldServerConnection *player, int32_t playerId, const string &findeeName) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_FIND);
+	packet.add<header_t>(IMSG_FIND);
 	packet.add<int32_t>(playerId);
 	packet.addString(findeeName);
 	player->getSession()->send(packet);
@@ -44,7 +44,7 @@ void WorldServerConnectPacket::findPlayer(WorldServerConnection *player, int32_t
 
 void WorldServerConnectPacket::whisperPlayer(WorldServerConnection *player, int32_t playerId, const string &whisperee, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_WHISPER);
+	packet.add<header_t>(IMSG_WHISPER);
 	packet.add<int32_t>(playerId);
 	packet.addString(whisperee);
 	packet.addString(message);
@@ -53,15 +53,15 @@ void WorldServerConnectPacket::whisperPlayer(WorldServerConnection *player, int3
 
 void WorldServerConnectPacket::scrollingHeader(WorldServerConnection *player, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SCROLLING_HEADER);
+	packet.add<header_t>(IMSG_SCROLLING_HEADER);
 	packet.addString(message);
 	player->getSession()->send(packet);
 }
 
 void WorldServerConnectPacket::rankingCalculation(WorldServerConnection *player) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_TO_LOGIN);
-	packet.add<int16_t>(IMSG_CALCULATE_RANKING);
+	packet.add<header_t>(IMSG_TO_LOGIN);
+	packet.add<header_t>(IMSG_CALCULATE_RANKING);
 	player->getSession()->send(packet);
 }
 
@@ -81,7 +81,14 @@ void WorldServerConnectPacket::toWorlds(WorldServerConnection *player, PacketCre
 
 void WorldServerConnectPacket::reloadMcdb(WorldServerConnection *player, const string &type) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_REFRESH_DATA);
+	packet.add<header_t>(IMSG_REFRESH_DATA);
 	packet.addString(type);
 	toChannels(player, packet);
+}
+
+void WorldServerConnectPacket::rehashConfig(WorldServerConnection *player) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_TO_LOGIN);
+	packet.add<header_t>(IMSG_REHASH_CONFIG);
+	player->getSession()->send(packet);
 }

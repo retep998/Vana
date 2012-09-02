@@ -30,4 +30,5 @@ namespace WorldServerConnectHandler {
 	void setRates(PacketReader &packet);
 	void sendToPlayers(PacketReader &packet);
 	void reloadMcdb(PacketReader &packet);
+	void rehashConfig(PacketReader &packet);
 }

@@ -160,3 +160,8 @@ void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
 	else if (args == "reactors") ReactorDataProvider::Instance()->loadData();
 	else if (args == "quest") QuestDataProvider::Instance()->loadData();
 }
+
+void WorldServerConnectHandler::rehashConfig(PacketReader &packet) {
+	const WorldConfig &config = packet.getClass<WorldConfig>();
+	ChannelServer::Instance()->setConfig(config);
+}

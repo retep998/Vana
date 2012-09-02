@@ -38,7 +38,7 @@ using std::unordered_map;
 
 void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_FORWARD_TO);
+	packet.add<header_t>(IMSG_FORWARD_TO);
 	packet.add<int32_t>(playerId);
 	packet.add<header_t>(SMSG_MESSAGE_GROUP);
 	packet.add<int8_t>(type);
@@ -50,7 +50,7 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8
 
 void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_CHANNEL_CONNECT);
+	packet.add<header_t>(IMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
 	packet.add<port_t>(port);
 
@@ -61,7 +61,7 @@ void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, u
 
 void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_FIND);
+	packet.add<header_t>(IMSG_FIND);
 	packet.add<int32_t>(finder);
 	packet.add<int16_t>(channel);
 	packet.addString(findee);
@@ -72,7 +72,7 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection
 
 void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_WHISPER);
+	packet.add<header_t>(IMSG_WHISPER);
 	packet.add<int32_t>(whisperee);
 	packet.addString(whisperer);
 	packet.add<int16_t>(whispererChannel);
@@ -83,15 +83,23 @@ void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, 
 
 void WorldServerAcceptPacket::scrollingHeader(const string &message) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SCROLLING_HEADER);
+	packet.add<header_t>(IMSG_SCROLLING_HEADER);
 	packet.addString(message);
+
+	Channels::Instance()->sendToAll(packet);
+}
+
+void WorldServerAcceptPacket::rehashConfig(const WorldConfig &config) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_REHASH_CONFIG);
+	packet.addClass<WorldConfig>(config);
 
 	Channels::Instance()->sendToAll(packet);
 }
 
 void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *connection, int32_t setBit) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_SET_RATES);
+	packet.add<header_t>(IMSG_SET_RATES);
 	packet.add<int32_t>(setBit);
 
 	WorldConfig &conf = WorldServer::Instance()->getConfig();

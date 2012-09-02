@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, World *world) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_WORLD_CONNECT);
+	packet.add<header_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(world->getId());
 	packet.add<port_t>(world->getPort());
 
@@ -38,14 +38,14 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, W
 
 void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_WORLD_CONNECT);
+	packet.add<header_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(-1);
 	connection->getSession()->send(packet);
 }
 
 void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, ip_t ip, port_t port) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_LOGIN_CHANNEL_CONNECT);
+	packet.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldId);
 	packet.add<ip_t>(ip);
 	packet.add<port_t>(port);
@@ -54,9 +54,16 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connec
 
 void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip) {
 	PacketCreator packet;
-	packet.add<int16_t>(IMSG_NEW_PLAYER);
+	packet.add<header_t>(IMSG_NEW_PLAYER);
 	packet.add<uint16_t>(channel);
 	packet.add<int32_t>(charId);
 	packet.add<ip_t>(ip);
 	connection->getSession()->send(packet);
+}
+
+void LoginServerAcceptPacket::rehashConfig(World *world) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_REHASH_CONFIG);
+	packet.addClass<WorldConfig>(world->getConfig());
+	world->getConnection()->getSession()->send(packet);
 }

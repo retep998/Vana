@@ -113,3 +113,8 @@ void ChannelServer::setScrollingHeader(const string &message) {
 		}
 	}
 }
+
+void ChannelServer::setConfig(const WorldConfig &config) {
+	setScrollingHeader(config.scrollingHeader);
+	m_config = config;
+}
