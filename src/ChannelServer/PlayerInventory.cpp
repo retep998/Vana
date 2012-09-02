@@ -399,9 +399,8 @@ void PlayerInventory::delRockMap(int32_t mapId, int8_t type) {
 }
 
 void PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) {
-	bool equippedSlot1 = (slot1 < 0);
 	bool equippedSlot2 = (slot2 < 0);
-	if (inventory == Inventories::EquipInventory && (equippedSlot1 || equippedSlot2)) {
+	if (inventory == Inventories::EquipInventory && equippedSlot2) {
 		// Handle these specially
 		Item *item1 = getItem(inventory, slot1);
 		if (item1 == nullptr) {
@@ -487,33 +486,26 @@ void PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 				InventoryPacket::moveItem(m_player, inventory, oldSlot, freeSlot);
 			}
 		}
-		else {
-			// Nothing special happening, just a simple equip swap
-			Item *item2 = getItem(inventory, slot2);
-			if (item2 == nullptr) {
-				setItem(inventory, slot2, item1);
-				InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
-			}
-			else {
-				setItem(inventory, slot1, item2);
-				setItem(inventory, slot2, item1);
-				InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
-			}
-		}
+		// Nothing special happening, just a simple equip swap
+		Item *item2 = getItem(inventory, slot2);
+		setItem(inventory, slot1, item2);
+		setItem(inventory, slot2, item1);
+		InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
 	}
 	else {
 		// The only interesting things that can happen here are stack modifications and slot swapping
 		Item *item1 = getItem(inventory, slot1);
 		Item *item2 = getItem(inventory, slot2);
 		
-		if (item1 == nullptr || item2 == nullptr) {
+		if (item1 == nullptr) {
+			// If item2 is nullptr, it's moving item1 into slot2
 			// Hacking
 			return;
 		}
 
 		int32_t itemId1 = item1->getId();
-		int32_t itemId2 = item2->getId();
-		if (itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
+		int32_t itemId2 = (item2 == nullptr ? 0 : item2->getId());
+		if (item2 != nullptr && itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
 			int32_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId1);
 			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
 				item2->incAmount(item1->getAmount());
@@ -528,13 +520,13 @@ void PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 			}
 		}
 		else {
-			// The item is either not stackable or not the same item, either way it's a plain swap
+			// The item is not stackable, not the same item, or a blank slot swap is occurring, either way it's a plain swap
 			setItem(inventory, slot1, item2);
 			setItem(inventory, slot2, item1);
 			if (item1->getPetId() > 0) {
 				m_player->getPets()->getPet(item1->getPetId())->setInventorySlot((int8_t) slot2);
 			}
-			if (item2->getPetId() > 0) {
+			if (item2 != nullptr && item2->getPetId() > 0) {
 				m_player->getPets()->getPet(item2->getPetId())->setInventorySlot((int8_t) slot1);
 			}
 			InventoryPacket::moveItem(m_player, inventory, slot1, slot2);
