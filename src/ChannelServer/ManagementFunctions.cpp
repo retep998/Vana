@@ -394,5 +394,6 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 
 bool ManagementFunctions::rehash(Player *player, const string &args) {
 	WorldServerConnectPacket::rehashConfig(ChannelServer::Instance()->getWorldConnection());
+	PlayerPacket::showMessage(player, "Sent a signal to force rehashing world configurations.", PlayerPacket::NoticeTypes::Blue);
 	return true;
 }
