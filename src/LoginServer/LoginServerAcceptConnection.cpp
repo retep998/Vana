@@ -50,6 +50,7 @@ void LoginServerAcceptConnection::handleRequest(PacketReader &packet) {
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLDS: LoginServerAcceptHandler::toWorlds(this, packet); break;
+		case IMSG_REHASH_CONFIG: LoginServer::Instance()->rehashConfig(); break;
 	}
 }
 

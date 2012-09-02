@@ -42,7 +42,7 @@ public:
 	template <typename T>
 	void addVector(const vector<T> &vec);
 	template <typename T>
-	void addClass(IPacketWritable &obj);
+	void addClass(const IPacketWritable &obj);
 
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
@@ -89,7 +89,7 @@ void PacketCreator::addVector(const vector<T> &vec) {
 }
 
 template <typename T>
-void PacketCreator::addClass(IPacketWritable &obj) {
+void PacketCreator::addClass(const IPacketWritable &obj) {
 	obj.write(*this);
 }
 

@@ -59,7 +59,7 @@ public:
 	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }
 	void setDropRate(int32_t rate) { m_config.dropRate = rate; }
 	void setMesoRate(int32_t rate) { m_config.mesoRate = rate; }
-	void setConfig(const WorldConfig &config) { m_config = config; }
+	void setConfig(const WorldConfig &config);
 
 	bool isConnected() const { return m_channel != -1; }
 	int8_t getWorld() const { return m_world; }

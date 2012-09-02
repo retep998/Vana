@@ -30,4 +30,5 @@ namespace LoginServerAcceptPacket {
 	void noMoreWorld(LoginServerAcceptConnection *connection);
 	void connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, ip_t ip, port_t port);
 	void newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip);
+	void rehashConfig(World *world);
 }

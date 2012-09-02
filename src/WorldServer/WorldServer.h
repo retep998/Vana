@@ -39,6 +39,7 @@ public:
 	void loadData();
 	void loadConfig();
 	void loadLogConfig();
+	void rehashConfig(const WorldConfig &config);
 	void listen();
 	opt_string makeLogIdentifier();
 

@@ -74,14 +74,14 @@ public:
 	void addBuff(int32_t skill, int32_t time);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
-	int32_t buffTimeLeft(int32_t skill);
+	int32_t buffTimeLeft(int32_t skill) const;
 	list<int32_t> getBuffs() const { return m_buffs; }
 	void dispelBuffs();
 
 	// Buff info
 	void addBuffInfo(int32_t skillId, const vector<Buff> &buffs);
 	void setActiveSkillLevel(int32_t skillId, uint8_t level);
-	uint8_t getActiveSkillLevel(int32_t skillId);
+	uint8_t getActiveSkillLevel(int32_t skillId) const;
 	ActiveBuff removeBuffInfo(int32_t skillId, const vector<Buff> &buffs);
 	ActiveBuffsByType getBuffTypes() const { return m_activeBuffsByType; }
 	SkillLevelInfo * getActiveSkillInfo(int32_t skillId);
@@ -178,7 +178,7 @@ public:
 	void endMorph();
 	void swapWeapon();
 
-	void write(PacketCreator &packet);
+	void write(PacketCreator &packet) const;
 	void read(PacketReader &packet);
 private:
 	bool hasBuff(int32_t skillId);

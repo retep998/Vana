@@ -391,3 +391,8 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 	}
 	return false;
 }
+
+bool ManagementFunctions::rehash(Player *player, const string &args) {
+	WorldServerConnectPacket::rehashConfig(ChannelServer::Instance()->getWorldConnection());
+	return true;
+}

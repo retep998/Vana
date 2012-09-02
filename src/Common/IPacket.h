@@ -24,7 +24,7 @@ class PacketReader;
 
 class IPacketWritable {
 public:
-	virtual void write(PacketCreator &packet) = 0;
+	virtual void write(PacketCreator &packet) const = 0;
 };
 
 template <typename T>

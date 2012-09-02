@@ -24,6 +24,7 @@ using std::string;
 
 class PacketReader;
 class WorldServerAcceptConnection;
+struct WorldConfig;
 
 namespace WorldServerAcceptPacket {
 	void connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port);
@@ -31,6 +32,7 @@ namespace WorldServerAcceptPacket {
 	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
 	void scrollingHeader(const string &message);
 	void groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender);
+	void rehashConfig(const WorldConfig &config);
 
 	// I have my eye on you...
 	void sendRates(WorldServerAcceptConnection *connection, int32_t setBit);
