@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
+#include "SkillConstants.h"
 
 bool PlayerModFunctions::disconnect(Player *player, const string &args) {
 	player->getSession()->disconnect();
@@ -41,10 +42,11 @@ bool PlayerModFunctions::modMesos(Player *player, const string &args) {
 }
 
 bool PlayerModFunctions::heal(Player *player, const string &args) {
-	player->getStats()->setHp(player->getStats()->getMaxHp());
-	player->getStats()->setMp(player->getStats()->getMaxMp());
 	player->getActiveBuffs()->useDispel();
 	player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
+	player->getActiveBuffs()->removeDebuff(MobSkills::CrazySkull);
+	player->getStats()->setHp(player->getStats()->getMaxHp());
+	player->getStats()->setMp(player->getStats()->getMaxMp());
 	return true;
 }
 
