@@ -53,8 +53,9 @@ void ChannelServer::loadData() {
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
 	const string &interPassword = getInterPassword();
+	const string &salt = getSalt();
 	const IpMatrix &externalIp = getExternalIp();
-	loginPlayer->sendAuth(interPassword, externalIp);
+	loginPlayer->sendAuth(interPassword, salt, externalIp);
 }
 
 void ChannelServer::loadLogConfig() {
@@ -79,8 +80,9 @@ void ChannelServer::connectWorld() {
 	m_worldConnection = new WorldServerConnection;
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
 	const string &interPassword = getInterPassword();
+	const string &salt = getSalt();
 	const IpMatrix &externalIp = getExternalIp();
-	getWorldConnection()->sendAuth(interPassword, externalIp);
+	getWorldConnection()->sendAuth(interPassword, salt, externalIp);
 }
 
 void ChannelServer::loadConfig() {

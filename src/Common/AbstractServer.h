@@ -54,6 +54,7 @@ public:
 	clock_t getStartTime() const { return m_startTime; }
 	IpMatrix getExternalIp() const { return m_externalIp; }
 	string getInterPassword() const { return m_interPassword; }
+	string getSalt() const { return m_salt; }
 	Logger * getLogger() const { return m_logger.get(); }
 protected:
 	AbstractServer();
@@ -63,6 +64,7 @@ protected:
 	bool m_toListen;
 	LoginConfig m_loginConfig;
 	string m_interPassword;
+	string m_salt;
 	IpMatrix m_externalIp;
 	std::unique_ptr<Logger> m_logger;
 private:

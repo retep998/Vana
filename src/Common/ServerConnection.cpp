@@ -20,17 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
 #include "IpUtilities.h"
+#include "MiscUtilities.h"
 #include "PacketReader.h"
 #include "Session.h"
 #include <boost/asio.hpp>
 #include <iostream>
 
-void AbstractServerConnection::sendAuth(const string &pass, const IpMatrix &extIp) {
-	AuthenticationPacket::sendPassword(this, pass, extIp);
+void AbstractServerConnection::sendAuth(const string &pass, const string &salt, const IpMatrix &extIp) {
+	AuthenticationPacket::sendPassword(this, MiscUtilities::hashPassword(pass, salt), extIp);
 }
 
-bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet, const string &pass) {
+bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet) {
 	if (packet.getHeader() == IMSG_PASSWORD) {
+		string pass = MiscUtilities::hashPassword(server->getInterPassword(), server->getSalt());
 		if (packet.getString() == pass) {
 			m_isAuthenticated = true;
 
