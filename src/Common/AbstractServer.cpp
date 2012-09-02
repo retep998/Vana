@@ -40,12 +40,20 @@ void AbstractServer::initialize() {
 	m_startTime = TimeUtilities::getTickCount();
 
 	ConfigFile config("conf/connection_properties.lua");
+
 	m_interPassword = config.getString("inter_password");
+	string salt = config.getString("inter_salt");
 
 	if (m_interPassword == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
 		ExitCodes::exit(ExitCodes::ConfigError);
 	}
+	if (salt == "changeme") {
+		std::cerr << "ERROR: inter_salt is not changed." << std::endl;
+		ExitCodes::exit(ExitCodes::ConfigError);
+	}
+
+	m_interPassword = MiscUtilities::hashPassword(m_interPassword, salt);
 
 	m_externalIp = config.getIpMatrix("external_ip");
 	m_loginConfig.clientEncryption = config.getBool("use_client_encryption");
