@@ -67,10 +67,12 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 		else if (test == "quest") type = 6;
 		// The rest of the constants don't, they're merely there for later processing
 		else if (test == "id") type = 100;
-
 		else if (test == "continent") type = 200;
 		else if (test == "scriptbyname") type = 300;
 		else if (test == "scriptbyid") type = 400;
+		else if (test == "whatdrops") type = 500;
+		else if (test == "whatmaps") type = 600;
+		else if (test == "music") type = 700;
 
 		if (type != 0) {
 			soci::session &sql = Database::getDataDb();
@@ -128,7 +130,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 					PlayerPacket::showMessage(player, "Invalid map.", PlayerPacket::NoticeTypes::Red);
 				}
 			}
-			else if (type > 200) {
+			else if (type == 300 || type == 400) {
 				auto format = [](const soci::row &row, std::ostringstream &str) {
 					str << row.get<int32_t>(1) << " (" << row.get<string>(0) << "): " << row.get<string>(2);
 				};
@@ -142,6 +144,53 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
+			}
+			else if (type == 500) {
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				};
+
+				soci::rowset<> rs = (sql.prepare
+					<< "SELECT d.dropperid, s.label "
+					<< "FROM drop_data d "
+					<< "INNER JOIN strings s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM user_drop_data) AND d.itemid = :q "
+					<< "UNION ALL "
+					<< "SELECT d.dropperid, s.label "
+					<< "FROM user_drop_data d "
+					<< "INNER JOIN strings s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+					<< "WHERE d.itemid = :q ",
+					soci::use(q, "q"));
+
+				displayFunc(rs, format);
+			}
+			else if (type == 600) {
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				};
+
+				soci::rowset<> rs = (sql.prepare
+					<< "SELECT m.mapid, s.label "
+					<< "FROM map_data m "
+					<< "INNER JOIN strings s ON s.objectid = m.mapid AND s.object_type = 'map' "
+					<< "WHERE m.mapid IN (SELECT ml.mapid FROM map_life ml WHERE ml.lifeid = :q AND ml.life_type = 'mob') ",
+					soci::use(q, "q"));
+
+				displayFunc(rs, format);
+			}
+			else if (type == 700) {
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<string>(0);
+				};
+
+				q = "%" + q + "%";
+				soci::rowset<> rs = (sql.prepare
+					<< "SELECT DISTINCT m.default_bgm "
+					<< "FROM map_data m "
+					<< "WHERE m.default_bgm LIKE :q",
+					soci::use(q, "q"));
+
+				displayFunc(rs, format);
 			}
 		}
 		else {

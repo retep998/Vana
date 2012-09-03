@@ -589,7 +589,14 @@ int16_t ChatHandlerFunctions::getJob(const string &query) {
 	else if (query == "thunder2") job = Jobs::JobIds::ThunderBreaker2;
 	else if (query == "thunder3") job = Jobs::JobIds::ThunderBreaker3;
 	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
-	else job = atoi(query.c_str());
+	else if (query == "0") job = Jobs::JobIds::Beginner;
+	else {
+		job = atoi(query.c_str());
+		if (job == 0) {
+			// Invalid conversion
+			job = -1;
+		}
+	}
 	return job;
 }
 
