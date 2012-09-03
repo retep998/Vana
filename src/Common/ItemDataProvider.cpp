@@ -535,7 +535,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 			if (itemInfo->cursed > 0 && Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
 				cursed = true;
 			}
-			else if (!whiteScroll) {
+			else if (!whiteScroll && itemInfo->recover == 0) {
 				equip->decSlots();
 			}
 		}
