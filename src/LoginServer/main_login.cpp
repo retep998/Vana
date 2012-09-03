@@ -40,7 +40,7 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 #endif
 
 int main() {
-	Botan::LibraryInitializer init;
+	Botan::LibraryInitializer init("thread_safe=true");
 	try {
 		LoginServer *server = LoginServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();
