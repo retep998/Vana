@@ -80,7 +80,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		mobId = packet.get<int32_t>();
 		mapMobId = packet.get<int32_t>();
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
-		if (mob != nullptr && mob->getId() != mobId) {
+		if (mob != nullptr && mob->getMobId() != mobId) {
 			// Hacking
 			return;
 		}
