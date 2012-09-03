@@ -166,6 +166,7 @@ public:
 	void checkMists();
 	void clearDrops(clock_t time);
 	void runTimer();
+	void mapTick();
 	void timeMob(bool firstLoad = true);
 	void setMapTimer(int32_t t);
 	Timer::Container * getTimers() const { return m_timers.get(); }
