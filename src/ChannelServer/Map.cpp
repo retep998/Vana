@@ -65,6 +65,10 @@ Map::Map(MapInfoPtr info, int32_t id) :
 	new Timer::Timer(bind(&Map::runTimer, this),
 		Timer::Id(Timer::Types::MapTimer, id, 0),
 		getTimers(), 0, 10 * 1000);
+
+	new Timer::Timer(bind(&Map::mapTick, this),
+		Timer::Id(Timer::Types::MapTimer, id, 10),
+		getTimers(), 0, 1000);
 }
 
 // Map info
@@ -760,6 +764,9 @@ void Map::runTimer() {
 	checkSpawn(time);
 	clearDrops(time);
 	checkMists();
+}
+
+void Map::mapTick() {
 	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
 	}
