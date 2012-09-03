@@ -430,8 +430,8 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 	opt_string name;
 
 	statement st = (sql.prepare
-		<< "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
-		<< "VALUES (:char, :inv, :slot, :location, :user, :world, :itemid, :amount, :slots, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
+		<< "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
+		<< "VALUES (:char, :inv, :slot, :location, :user, :world, :itemid, :amount, :slots, :scrolls, :str, :dex, :int, :luk, :hp, :mp, :watk, :matk, :wdef, :mdef, :acc, :avo, :hands, :speed, :jump, :flags, :hammers, :pet, :name, :expiration)",
 		use(playerId, "char"),
 		use(inventory, "inv"),
 		use(slot, "slot"),
