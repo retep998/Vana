@@ -174,7 +174,7 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("-------------");
 	command.notes.push_back("Valid maps");
 	command.notes.push_back("-------------");
-	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
+	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | stone | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
 	command.notes.push_back("Maple Island: southperry | amherst");
 	command.notes.push_back("Victoria: henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
 	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
@@ -182,13 +182,14 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("Masteria: nlc | amoria | crimsonwood");
 	command.notes.push_back("Landmasses: temple | ereve | rien");
 	command.notes.push_back("World Tour: showa | shrine | singapore | quay | malaysia | kampung");
-	command.notes.push_back("Dungeons: subway | anttunnel | dungeon | mine | armory | mansion");
+	command.notes.push_back("Dungeons: subway | anttunnel | dungeon | sharpcliff | mine | caveoftrial | armory | mansion | leafrecanyon | clocktower");
 	command.notes.push_back("-------------");
 	command.notes.push_back("Boss maps");
 	command.notes.push_back("-------------");
 	command.notes.push_back("PQ Bosses: ergoth | lordpirate | alishar | papapixie | kingslime");
 	command.notes.push_back("Area Bosses: mushmom | bluemushmom | zombiemushmom | manon | griffey | jrbalrog | anego | tengu | lilynouch | dodo | lyka");
 	command.notes.push_back("Bosses: pap | zakum | horntail | pianus | grandpa | bean");
+	command.notes.push_back("Boss-Related: zakumdoor | zakumsignup | caveoflifeentrance | caveoflife | horntailsignup");
 	CommandList["map"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::job;
@@ -421,6 +422,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "fm") mapId = 910000000;
 	else if (query == "4th") mapId = 240010501;
 	else if (query == "3rd") mapId = 211000001;
+	else if (query == "stone") mapId = 211040401;
 	else if (query == "grendel") mapId = 101000003;
 	else if (query == "athena") mapId = 100000201;
 	else if (query == "darklord") mapId = 103000003;
@@ -468,7 +470,11 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "subway") mapId = 103000100;
 	else if (query == "anttunnel") mapId = 105070001;
 	else if (query == "dungeon") mapId = 105090200;
+	else if (query == "sharpcliff") mapId = 211040300;
 	else if (query == "mine") mapId = 211041400;
+	else if (query == "caveoftrial") mapId = 211042000;
+	else if (query == "leafrecanyon") mapId = 240040000;
+	else if (query == "clocktower") mapId = 220050300;
 	// World Tour
 	else if (query == "singapore") mapId = 540000000;
 	else if (query == "quay") mapId = 541000000;
@@ -502,6 +508,12 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "pianus") mapId = 230040420;
 	else if (query == "grandpa") mapId = 801040100;
 	else if (query == "bean") mapId = 270050100;
+	// Boss-related maps
+	else if (query == "papdoor") mapId = 211042300;
+	else if (query == "zakumdoor") mapId = 211042300;
+	else if (query == "caveoflifeentrance") mapId = 240040700;
+	else if (query == "caveoflife") mapId = 240050000;
+	else if (query == "horntailsignup") mapId = 240050400;
 	else {
 		char *endptr;
 		mapId = strtol(query.c_str(), &endptr, 0);

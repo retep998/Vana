@@ -38,7 +38,7 @@ bool ManagementFunctions::map(Player *player, const string &args) {
 			player->setMap(mapId);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Map not found.", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, "Map not found: " + args, PlayerPacket::NoticeTypes::Red);
 		}
 	}
 	else {
