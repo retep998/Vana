@@ -152,7 +152,11 @@ if getLevel() >= 50 then
 					end
 				end
 			else
-				addText("You don't have #b#t4031058##k with you. Please find the dark, snow-covered area called the Holy Ground at the snowfield in Ossyria, offer the special item as a sacrifice, and answer each and every question asked with honesty and conviction to receive #b#t4031058##k. Bring that back to me to complete the 3rd job advancement test. Best of luck to you.");
+				addText("You don't have #b#t4031058##k with you. ");
+				addText("Please find the dark, snow-covered area called the Holy Ground at the snowfield in Ossyria, offer the special item as a sacrifice, and answer each and every question asked with honesty and conviction to receive #b#t4031058##k. ");
+				addText("Bring that back to me to complete the 3rd job advancement test. ");
+				addText("Best of luck to you.");
+				sendOk();
 			end
 		end
 	elseif choice == 1 then

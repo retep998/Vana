@@ -51,7 +51,8 @@ end
 function question(id)
 	local questionId = 0;
 	repeat
-		questionId = getRandomNumber(#questions + 1);
+		questionId = getRandomNumber(#questions);
+		consoleOutput(questionId);
 	until questionRecord[questionId] == nil
 
 	local q = questions[questionId];
