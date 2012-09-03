@@ -41,7 +41,7 @@ BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
 #endif
 
 int main() {
-	Botan::LibraryInitializer init;
+	Botan::LibraryInitializer init("thread_safe=true");
 	try {
 		ChannelServer *server = ChannelServer::Instance();
 		ConnectionManager *connMan = ConnectionManager::Instance();
