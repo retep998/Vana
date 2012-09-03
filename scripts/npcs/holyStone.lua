@@ -40,6 +40,26 @@ if questions == nil then
 		[5] = {
 			["question"] = "Which of these quests can be repeated...?#b\r\n#L0# Maya and the Weird Medicine#l\r\n#L1# Alex the Runaway Kid#l\r\n#L2# Pia and the Blue Mushroom#l\r\n#L3# Arwen and the Glass Shoes#l\r\n#L4# Alpha Platoon's Network of Communication#l\r\n",
 			["answer"] = 3
+		},
+		[6] = {
+			["question"] = "Which of these pairings of sickness/results resulted from a monster's attack does NOT match...?#b\r\n#L0# State of darkness - decrease in accuracy#l\r\n#L1 State of being cursed - decrease in EXP earned#l\r\n#L2 State of weakness - decrease in speed#l\r\n#L3 State of being sealed up - unable to use skills#l\r\n#L4 State of being poisoned - slow decrease in HP#l",
+			["answer"] = 2
+		},
+		[7] = {
+			["question"] = "Which of these NPC's will you NOT see at Orbis of Ossyria...?#b\r\n#L0# Staff Sergeant Charlie#l\r\n#L1 Sophia#l\r\n#L2 Neve#l\r\n#L3 Nuri the Fairy#l\r\n#L4 Edel the Fairy#l",
+			["answer"] = 1
+		},
+		[8] = {
+			["question"] = "Which of these quests has the highest required level to start...?#b\r\n#L0# Manji's Old Gladius#l\r\n#L1 Luke the Security Man's Wish to Travel#l\r\n#L2 Looking for the Book of Ancient#l\r\n#L3 Alcaster and the Black Crystal#l\r\n#L4 Alpha Platoon's Network of Communication#l",
+			["answer"] = 3
+		},
+		[9] = {
+			["question"] = "Which of these NPC's have NOTHING to do with refining, upgrading, and making items...?#b\r\n#L0# Neve#l\r\n#L1 Mr. Thunder#l\r\n#L2 Shane#l\r\n#L3 Francois#l\r\n#L4 Vogen#l",
+			["answer"] = 2
+		},
+		[10] = {
+			["question"] = "In MapleStory, which of these pairings of potion/results matches?#b\r\n#L0# Orange Potion - Recover HP 200#l\r\n#L1 Ice Cream Pop - Recover MP 2000#l\r\n#L2 Lemon - Recover MP 100#l\r\n#L3 Fried Chicken - Recover HP 300#l\r\n#L4 Pizza - Recover HP 400#l",
+			["answer"] = 4
 		}
 	};
 end
