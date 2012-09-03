@@ -350,7 +350,7 @@ void PlayerStats::modifyMaxMp(int16_t mod) {
 
 void PlayerStats::setExp(int32_t exp) {
 	m_exp = std::max(exp, 0);
-	PlayerPacket::updateStat(m_player, Stats::Exp, exp);
+	PlayerPacket::updateStat(m_player, Stats::Exp, m_exp);
 }
 
 void PlayerStats::setFame(int16_t fame) {
