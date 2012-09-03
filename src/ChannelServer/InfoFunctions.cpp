@@ -73,6 +73,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 		else if (test == "whatdrops") type = 500;
 		else if (test == "whatmaps") type = 600;
 		else if (test == "music") type = 700;
+		else if (test == "drops") type = 800;
 
 		if (type != 0) {
 			soci::session &sql = Database::getDataDb();
@@ -188,6 +189,26 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 					<< "SELECT DISTINCT m.default_bgm "
 					<< "FROM map_data m "
 					<< "WHERE m.default_bgm LIKE :q",
+					soci::use(q, "q"));
+
+				displayFunc(rs, format);
+			}
+			else if (type == 800) {
+				auto format = [](const soci::row &row, std::ostringstream &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				};
+
+				soci::rowset<> rs = (sql.prepare
+					<< "SELECT d.itemid, s.label "
+					<< "FROM drop_data d "
+					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
+					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM user_drop_data) AND d.dropperid = :q "
+					<< "UNION ALL "
+					<< "SELECT d.itemid, s.label "
+					<< "FROM user_drop_data d "
+					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
+					<< "WHERE d.dropperid = :q "
+					<< "ORDER BY itemid",
 					soci::use(q, "q"));
 
 				displayFunc(rs, format);
