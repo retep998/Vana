@@ -117,7 +117,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				LoginPacket::loginError(player, LoginPacket::Errors::AlreadyLoggedIn);
 				valid = false;
 			}
-			else if (row.get<bool>("banned")) {
+			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
 				int32_t time = timeToTick32(row.get<unix_time_t>("ban_expire"));
 				LoginPacket::loginBan(player, row.get<int8_t>("ban_reason"), time);
 				valid = false;
