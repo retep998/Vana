@@ -174,7 +174,7 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("-------------");
 	command.notes.push_back("Valid maps");
 	command.notes.push_back("-------------");
-	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | 4th | grendel | athena | darklord | danceswb | kyrin");
+	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
 	command.notes.push_back("Maple Island: southperry | amherst");
 	command.notes.push_back("Victoria: henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
 	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
@@ -182,12 +182,12 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("Masteria: nlc | amoria | crimsonwood");
 	command.notes.push_back("Landmasses: temple | ereve | rien");
 	command.notes.push_back("World Tour: showa | shrine | singapore | quay | malaysia | kampung");
-	command.notes.push_back("Dungeons: dungeon | mine | armory | mansion");
+	command.notes.push_back("Dungeons: subway | anttunnel | dungeon | mine | armory | mansion");
 	command.notes.push_back("-------------");
 	command.notes.push_back("Boss maps");
 	command.notes.push_back("-------------");
 	command.notes.push_back("PQ Bosses: ergoth | lordpirate | alishar | papapixie | kingslime");
-	command.notes.push_back("Area Bosses: manon | griffey | jrbalrog | anego | tengu | lilynouch | dodo | lyka");
+	command.notes.push_back("Area Bosses: mushmom | bluemushmom | zombiemushmom | manon | griffey | jrbalrog | anego | tengu | lilynouch | dodo | lyka");
 	command.notes.push_back("Bosses: pap | zakum | horntail | pianus | grandpa | bean");
 	CommandList["map"] = command.addToMap();
 
@@ -424,7 +424,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "grendel") mapId = 101000003;
 	else if (query == "athena") mapId = 100000201;
 	else if (query == "darklord") mapId = 103000003;
-	else if (query == "danceswb") mapId = 102000003;
+	else if (query == "danceswithbalrog") mapId = 102000003;
 	else if (query == "kyrin") mapId = 120000101;
 	else if (query == "happyville") mapId = 209000000;
 	// Maple Island
@@ -465,6 +465,8 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	// Dungeon areas
 	else if (query == "armory") mapId = 801040004;
 	else if (query == "mansion") mapId = 682000000;
+	else if (query == "subway") mapId = 103000100;
+	else if (query == "anttunnel") mapId = 105070001;
 	else if (query == "dungeon") mapId = 105090200;
 	else if (query == "mine") mapId = 211041400;
 	// World Tour
@@ -475,6 +477,9 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "shrine") mapId = 800000000;
 	else if (query == "showa") mapId = 801000000;
 	// Area boss maps
+	else if (query == "mushmom") mapId = 100000005;
+	else if (query == "bluemushmom") mapId = 800010100;
+	else if (query == "zombiemushmom") mapId = 105070002;
 	else if (query == "manon") mapId = 240020401;
 	else if (query == "griffey") mapId = 240020101;
 	else if (query == "jrbalrog") mapId = 105090900;
