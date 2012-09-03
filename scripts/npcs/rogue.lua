@@ -19,7 +19,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/jobFunctions.lua");
 
-if isQuestActive(6141) then
+questState = getPlayerVariable("third_job_advancement", true);
+if questState == 1 then
+	addText("Ah, I was waiting for you. ");
+	addText("I heard about you from #bArec#k in Ossyria, and I'd actually like to test your strength. ");
+	addText("There is an opening in the middle of a deep swamp in Victoria Island, which will lead you to a secret passage.  ");
+	addText("Once inside, you'll face my clone. ");
+	addText("Your task is to defeat him and bring the #b#t4031059##k back with you.");
+	sendNext();
+
+	addText("My the other self is quite strong. ");
+	addText("He uses many special skills and you should fight with him 1 on 1. ");
+	addText("However, people cannot stay long in the secret passage, so it is important to beat him ASAP. ");
+	addText("Well... Good luck! I will look forward to you bringing #b#t4031059##k to me.");
+	sendBackNext();
+
+	setPlayerVariable("third_job_advancement", 2);
+elseif questState == 2 then
+	if getItemAmount(4031059) > 0 then
+		addText("Wow! You beat my other self and brought the #b#t4031059##k to me. ");
+		addText("This surely proves your strength and that you are ready to advance to the 3rd job. ");
+		addText("As I promised, I will give #b#t4031057##k to you. ");
+		sendNext();
+
+		giveItem(4031059, -1);
+		giveItem(4031057, 1);
+
+		addText("Give this necklace to #bArec#k in Ossyria and you will be able to take second test of the 3rd job advancement. Good luck!");
+		sendNext();
+	else
+		addText("Hmmm...weird. ");
+		addText("Are you sure that you have the #b#t4031059##k? ");
+		addText("If you do have it, make sure you have an empty slot in your Item Inventory.");
+		sendNext();
+	end
+elseif isQuestActive(6141) then
 	addText("Would you like to go to the training ground?");
 	yes = askYesNo();
 	if yes == 0 then
