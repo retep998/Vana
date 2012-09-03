@@ -155,14 +155,14 @@ string StringUtilities::rightTrim(string &s) {
 inline
 string StringUtilities::toUpper(const string &s) {
 	string ret = s;
-	std::for_each(ret.begin(), ret.end(), [](char x) -> char { return std::toupper(x); });
+	std::transform(ret.begin(), ret.end(), ret.begin(), [](char x) -> char { return std::toupper(x); });
 	return ret;
 }
 
 inline
 string StringUtilities::toLower(const string &s) {
 	string ret = s;
-	std::for_each(ret.begin(), ret.end(), [](char x) -> char { return std::tolower(x); });
+	std::transform(ret.begin(), ret.end(), ret.begin(), [](char x) -> char { return std::tolower(x); });
 	return ret;
 }
 
