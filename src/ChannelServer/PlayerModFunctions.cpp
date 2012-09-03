@@ -156,7 +156,7 @@ bool PlayerModFunctions::job(Player *player, const string &args) {
 			player->getStats()->setJob(job);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid job.", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, "Invalid job: " + args, PlayerPacket::NoticeTypes::Red);
 		}
 	}
 	else {

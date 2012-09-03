@@ -153,8 +153,24 @@ bool MapFunctions::horntail(Player *player, const string &args) {
 }
 
 bool MapFunctions::music(Player *player, const string &args) {
-	Maps::getMap(player->getMap())->setMusic(args);
-	PlayerPacket::showMessage(player, "Set music on the map to: " + args, PlayerPacket::NoticeTypes::Blue);
+	soci::session &sql = Database::getDataDb();
+	string music;
+
+	sql
+		<< "SELECT m.default_bgm "
+		<< "FROM map_data m "
+		<< "WHERE m.default_bgm = :q "
+		<< "LIMIT 1",
+		soci::use(args, "q"),
+		soci::into(music);
+
+	if (music.empty()) {
+		PlayerPacket::showMessage(player, "Invalid music: " + args, PlayerPacket::NoticeTypes::Red);
+	}
+	else {
+		Maps::getMap(player->getMap())->setMusic(music);
+		PlayerPacket::showMessage(player, "Set music on the map to: " + music, PlayerPacket::NoticeTypes::Blue);
+	}
 	return true;
 }
 
