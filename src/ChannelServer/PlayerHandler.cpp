@@ -74,21 +74,19 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	int32_t mapMobId = 0; // Map Mob ID
 	int32_t mobId = 0; // Actual Mob ID - i.e. 8800000 for Zakum
 	int32_t noDamageId = 0;
-	Mob *mob = nullptr;
 	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
 		mobId = packet.get<int32_t>();
-
 		mapMobId = packet.get<int32_t>();
-		mob = Maps::getMap(player->getMap())->getMob(mapMobId);
-		if (mob == nullptr || mob->getMobId() != mobId) {
+		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		if (mob != nullptr && mob->getId() != mobId) {
 			// Hacking
 			return;
 		}
-
+		MobInfo mobInfo = (mob != nullptr ? mob->getInfo() : MobDataProvider::Instance()->getMobInfo(mobId));
 		if (type != BumpDamage) {
-			int32_t attackerId = (mob->hasLink() ? mob->getLink() : mobId);
+			int32_t attackerId = (mobInfo->link != 0 ? mobInfo->link : mobId);
 			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerId, type);
 			if (attack == nullptr) {
 				// Hacking, I think
@@ -99,12 +97,17 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			mpBurn = attack->mpBurn;
 			deadlyAttack = attack->deadlyAttack;
 		}
+
 		hit = packet.get<uint8_t>(); // Knock direction
 		pgmr.reduction = packet.get<uint8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
 			pgmr.isPhysical = packet.getBool();
 			pgmr.mapMobId = packet.get<int32_t>();
+			if (pgmr.mapMobId != mapMobId) {
+				// Hacking
+				return;
+			}
 			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			packet.skipBytes(4); // Mob position garbage
 			pgmr.pos = packet.getPos();
