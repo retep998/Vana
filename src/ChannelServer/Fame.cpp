@@ -80,8 +80,7 @@ bool Fame::getLastFameLog(int32_t from) {
 	}
 
 	soci::session &sql = Database::getCharDb();
-	std::tm time;
-	soci::indicator ind;
+	opt_unix_time_t time;
 
 	sql.once
 		<< "SELECT fame_time "
@@ -90,9 +89,9 @@ bool Fame::getLastFameLog(int32_t from) {
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
 		soci::use(fameTime, "fameTime"),
-		soci::into(time, ind);
+		soci::into(time);
 
-	return !(sql.got_data() && ind != soci::i_null);
+	return time.is_initialized();
 }
 
 bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
@@ -105,8 +104,7 @@ bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
 	}
 
 	soci::session &sql = Database::getCharDb();
-	std::tm time;
-	soci::indicator ind;
+	opt_unix_time_t time;
 
 	sql.once
 		<< "SELECT fame_time "
@@ -116,7 +114,7 @@ bool Fame::getLastFameSpLog(int32_t from, int32_t to) {
 		soci::use(from, "from"),
 		soci::use(to, "to"),
 		soci::use(fameResetTime, "fameResetTime"),
-		soci::into(time, ind);
+		soci::into(time);
 
-	return !(sql.got_data() && ind != soci::i_null);
+	return time.is_initialized();
 }
