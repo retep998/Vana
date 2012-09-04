@@ -87,8 +87,13 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
 		case CommandOpcodes::FindPlayer:
-			if (receiver) {
-				PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+			if (receiver != nullptr) {
+				if (receiver->getActiveBuffs()->isUsingHide()) {
+					PlayersPacket::findPlayer(player, receiver->getName(), -1, 0);
+				}
+				else {
+					PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+				}
 			}
 			else {
 				WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
