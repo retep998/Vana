@@ -87,9 +87,10 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 	soci::row row;
 
 	sql.once
-		<< "SELECT c.character_id, c.name, u.gm, c.buddylist_size AS buddylist_limit, ("
+		<< "SELECT c.character_id, c.name, u.gm_level, c.buddylist_size AS buddylist_limit, ("
 		<< "	SELECT COUNT(b.id) "
-		<< "	FROM buddylist b WHERE b.character_id = c.character_id"
+		<< "	FROM buddylist b "
+		<< "	WHERE b.character_id = c.character_id"
 		<< ") AS buddylist_size "
 		<< "FROM characters c "
 		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
@@ -103,12 +104,12 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		return BuddyListPacket::Errors::UserDoesNotExist;
 	}
 
-	if (row.get<int32_t>("gm") > 0 && !m_player->isGm()) {
+	if (row.get<int32_t>("gm_level") > 0 && !m_player->isGm()) {
 		// GM cannot be in buddy list unless the player is a GM
 		return BuddyListPacket::Errors::NoGms;
 	}
 
-	if (row.get<int32_t>("buddylist_size") >= row.get<int32_t>("buddylist_limit")) {
+	if (row.get<int64_t>("buddylist_size") >= row.get<int32_t>("buddylist_limit")) {
 		// Opposite-end buddy list full
 		return BuddyListPacket::Errors::TargetListFull;
 	}
