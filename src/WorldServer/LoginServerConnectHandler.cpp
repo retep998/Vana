@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeWorld.h"
 #include "LoginServerConnection.h"
 #include "PacketReader.h"
+#include "Player.h"
 #include "PlayerDataProvider.h"
 #include "Rates.h"
 #include "SyncPacket.h"
@@ -55,9 +56,11 @@ void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	ip_t ip = packet.get<ip_t>();
 
 	if (Channels::Instance()->getChannel(channel)) {
-		if (PlayerDataProvider::Instance()->getPlayer(playerId) == nullptr) {
+		Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+		if (player == nullptr || !player->isOnline()) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
+			PlayerDataProvider::Instance()->initialPlayerConnect(playerId, channel, ip);
 			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip, packet);
 		}
 	}

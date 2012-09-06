@@ -55,7 +55,7 @@ void Player::handleRequest(PacketReader &packet) {
 			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
 			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
 			case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
-			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this);
+			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this); break;
 		}
 	}
 	catch (std::range_error) {

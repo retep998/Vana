@@ -37,9 +37,9 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	// Players
 	int32_t quantity = packet.get<int32_t>();
 	int32_t i;
-	PlayerData *player;
+	std::shared_ptr<PlayerData> player;
 	for (i = 0; i < quantity; i++) {
-		player = new PlayerData;
+		player.reset(new PlayerData);
 		player->gmLevel = packet.get<int32_t>();
 		player->admin = packet.getBool();
 		player->level = packet.get<uint8_t>();
@@ -47,21 +47,24 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 		player->channel = packet.get<int16_t>();
 		player->map = packet.get<int32_t>();
 		player->party = packet.get<int32_t>();
+
+		m_playerData[packet.get<int32_t>()] = player;
 	}
 
 	// Parties
 	quantity = packet.get<int32_t>();
 	int8_t members, j;
-	Party *party;
+	std::shared_ptr<Party> party;
 	for (i = 0; i < quantity; i++) {
-		party = new Party(packet.get<int32_t>());
+		party.reset(new Party(packet.get<int32_t>()));
 		party->setLeader(packet.get<int32_t>());
 		members = packet.get<int8_t>();
 
 		for (j = 0; j < members; j++) {
 			party->addMember(packet.get<int32_t>());
 		}
-		m_parties[party->getId()].reset(party);
+
+		m_parties[party->getId()] = party;
 	}
 }
 
@@ -171,16 +174,15 @@ Party * PlayerDataProvider::getParty(int32_t id) {
 }
 
 void PlayerDataProvider::newParty(int32_t id, int32_t leaderId) {
-	Party *party = new Party(id);
+	std::shared_ptr<Party> p(new Party(id));
 	Player *leader = getPlayer(leaderId);
 	if (leader == 0) {
-		party->addMember(leaderId);
+		p->addMember(leaderId);
 	}
 	else {
-		party->addMember(leader);
+		p->addMember(leader);
 	}
-	party->setLeader(leaderId);
-	std::shared_ptr<Party> p(party);
+	p->setLeader(leaderId);
 	m_parties[id] = p;
 }
 
