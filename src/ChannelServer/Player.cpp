@@ -341,7 +341,9 @@ void Player::playerConnect(PacketReader &packet) {
 	m_quests.reset(new PlayerQuests(this));
 	m_monsterBook.reset(new PlayerMonsterBook(this));
 
-	getMonsterBook()->setCover(row.get<int32_t>("book_cover"));
+	opt_int32_t bookCover = row.get<opt_int32_t>("book_cover");
+	int32_t cover = bookCover.is_initialized() ? bookCover.get() : 0;
+	getMonsterBook()->setCover(cover);
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -578,7 +580,11 @@ void Player::saveStats() {
 	uint8_t cash = i->getMaxSlots(Inventories::CashInventory);
 	int32_t money = i->getMesos();
 	// Other
-	int32_t cover = getMonsterBook()->getCover();
+	int32_t rawCover = getMonsterBook()->getCover();
+	opt_int32_t cover;
+	if (rawCover != 0) {
+		cover = rawCover;
+	}
 
 	Database::getCharDb().once
 		<< "UPDATE characters "
