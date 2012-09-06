@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
 using Initializing::OutputWidth;
 
@@ -82,13 +83,14 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 	Player *player;
 	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		player = iter->second.get();
+		packet.add<int32_t>(0);
 		packet.addBool(false);
-		packet.addBool(false);
-		packet.add<int16_t>(player->getLevel());
+		packet.add<uint8_t>(player->getLevel());
+		packet.add<int16_t>(player->getJob());
 		packet.add<int16_t>(player->getChannel());
 		packet.add<int32_t>(player->getMap());
 		packet.add<int32_t>(player->getParty() != nullptr ? player->getParty()->getId() : 0);
-		packet.add<int32_t>(0);
+		packet.add<int32_t>(player->getId());
 	}
 
 	packet.add<uint32_t>(m_parties.size());
@@ -106,11 +108,17 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 }
 
 // Players
+void PlayerDataProvider::initialPlayerConnect(int32_t id, uint16_t channel, ip_t ip) {
+	std::shared_ptr<Player> player = m_players[id];
+	player->setIp(ip);
+}
+
 void PlayerDataProvider::playerConnect(Player *player, bool online) {
 	if (m_players.find(player->getId()) == m_players.end()) {
 		m_players[player->getId()].reset(player);
 	}
 	if (online) {
+		player->setOnline(true);
 		if (player->getParty() != nullptr) {
 			//SyncHandler::logInLogOut(player->getId());
 		}

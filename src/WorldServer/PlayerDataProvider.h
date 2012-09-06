@@ -44,6 +44,7 @@ public:
 	void getChannelConnectPacket(PacketCreator &packet);
 
 	// Player info
+	void initialPlayerConnect(int32_t id, uint16_t channel, ip_t ip);
 	void playerConnect(Player *player, bool online = true);
 	void playerDisconnect(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
