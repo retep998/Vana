@@ -37,6 +37,7 @@ namespace Sync {
 	namespace SyncTypes {
 		enum SyncTypes : int8_t {
 			ChannelStart,
+			Config,
 			Update,
 			Player,
 			Party,
@@ -44,6 +45,13 @@ namespace Sync {
 			Guild,
 			GuildBbs,
 			Alliance
+		};
+	}
+	namespace Config {
+		enum SyncModes : int8_t {
+			RateSet,
+			RateReset,
+			ScrollingHeader
 		};
 	}
 	namespace Player {

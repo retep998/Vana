@@ -29,6 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+struct LoginConfig {
+	bool clientEncryption;
+	bool clientPing;
+	bool serverPing;
+};
+
 struct MajorBoss : public IPacketSerializable<MajorBoss> {
 	int16_t attempts;
 	vector<int8_t> channels;
@@ -43,10 +49,31 @@ struct MajorBoss : public IPacketSerializable<MajorBoss> {
 	}
 };
 
-struct LoginConfig {
-	bool clientEncryption;
-	bool clientPing;
-	bool serverPing;
+struct Rates : public IPacketSerializable<Rates> {
+	int32_t mobExpRate;
+	int32_t questExpRate;
+	int32_t mobMesoRate;
+	int32_t dropRate;
+
+	struct Types {
+		static const int32_t MobExpRate = 0x01;
+		static const int32_t QuestExpRate = 0x02;
+		static const int32_t MobMesoRate = 0x04;
+		static const int32_t DropRate = 0x08;
+	};
+
+	void write(PacketCreator &packet) const {
+		packet.add<int32_t>(mobExpRate);
+		packet.add<int32_t>(questExpRate);
+		packet.add<int32_t>(mobMesoRate);
+		packet.add<int32_t>(dropRate);
+	}
+	void read(PacketReader &packet) {
+		mobExpRate = packet.get<int32_t>();
+		questExpRate = packet.get<int32_t>();
+		mobMesoRate = packet.get<int32_t>();
+		dropRate = packet.get<int32_t>();
+	}
 };
 
 struct WorldConfig : public IPacketSerializable<WorldConfig> {
@@ -54,10 +81,6 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 	uint8_t maxMultiLevel;
 	uint8_t defaultStorageSlots;
 	int16_t maxStats;
-	int32_t expRate;
-	int32_t questExpRate;
-	int32_t mesoRate;
-	int32_t dropRate;
 	int32_t defaultChars;
 	int32_t maxChars;
 	int32_t maxPlayerLoad;
@@ -67,6 +90,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 	string eventMsg;
 	string scrollingHeader;
 	string name;
+	Rates rates;
 	MajorBoss pianus;
 	MajorBoss pap;
 	MajorBoss zakum;
@@ -78,10 +102,6 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		packet.add<uint8_t>(maxMultiLevel);
 		packet.add<uint8_t>(defaultStorageSlots);
 		packet.add<int16_t>(maxStats);
-		packet.add<int32_t>(expRate);
-		packet.add<int32_t>(questExpRate);
-		packet.add<int32_t>(mesoRate);
-		packet.add<int32_t>(dropRate);
 		packet.add<int32_t>(defaultChars);
 		packet.add<int32_t>(maxChars);
 		packet.add<int32_t>(maxPlayerLoad);
@@ -91,6 +111,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		packet.addString(eventMsg);
 		packet.addString(scrollingHeader);
 		packet.addString(name);
+		packet.addClass<Rates>(rates);
 		packet.addClass<MajorBoss>(pianus);
 		packet.addClass<MajorBoss>(pap);
 		packet.addClass<MajorBoss>(zakum);
@@ -102,10 +123,6 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		maxMultiLevel = packet.get<uint8_t>();
 		defaultStorageSlots = packet.get<uint8_t>();
 		maxStats = packet.get<int16_t>();
-		expRate = packet.get<int32_t>();
-		questExpRate = packet.get<int32_t>();
-		mesoRate = packet.get<int32_t>();
-		dropRate = packet.get<int32_t>();
 		defaultChars = packet.get<int32_t>();
 		maxChars = packet.get<int32_t>();
 		maxPlayerLoad = packet.get<int32_t>();
@@ -115,6 +132,7 @@ struct WorldConfig : public IPacketSerializable<WorldConfig> {
 		eventMsg = packet.getString();
 		scrollingHeader = packet.getString();
 		name = packet.getString();
+		rates = packet.getClass<Rates>();
 		pianus = packet.getClass<MajorBoss>();
 		pap = packet.getClass<MajorBoss>();
 		zakum = packet.getClass<MajorBoss>();

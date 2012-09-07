@@ -87,7 +87,7 @@ public:
 	int8_t getWorldId() const { return m_worldId; }
 	int8_t getGender() const { return m_gender; }
 	int8_t getSkin() const { return m_skin; }
-	int8_t getMappos() const { return m_mapPos; }
+	int8_t getMapPos() const { return m_mapPos; }
 	int8_t getFallCounter() const { return m_fallCounter; }
 	uint8_t getBuddyListSize() const { return m_buddylistSize; }
 	uint8_t getPortalCount(bool add = false);

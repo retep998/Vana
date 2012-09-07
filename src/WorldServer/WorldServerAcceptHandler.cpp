@@ -67,11 +67,6 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connec
 	}
 }
 
-void WorldServerAcceptHandler::scrollingHeader(WorldServerAcceptConnection *connection, PacketReader &packet) {
-	const string &message = packet.getString();
-	WorldServer::Instance()->setScrollingHeader(message);
-}
-
 void WorldServerAcceptHandler::sendToChannels(PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);

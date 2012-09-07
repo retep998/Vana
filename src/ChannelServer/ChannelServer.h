@@ -44,34 +44,27 @@ public:
 	void connectWorld();
 	opt_string makeLogIdentifier();
 
-	void setPianusChannel(bool isChannel) { m_pianusChannel = isChannel; }
-	void setPapChannel(bool isChannel) { m_papChannel = isChannel; }
-	void setZakumChannel(bool isChannel) { m_zakumChannel = isChannel; }
-	void setHorntailChannel(bool isChannel) {m_horntailChannel = isChannel; }
-	void setPinkBeanChannel(bool isChannel) { m_pinkbeanChannel = isChannel; }
-	void setChannel(int16_t channel) { m_channel = channel; }
-	void setWorld(int8_t id) { m_world = id; }
+	void setChannelId(int16_t channel) { m_channelId = channel; }
+	void setWorldId(int8_t id) { m_world = id; }
 	void setWorldPort(port_t port) { m_worldPort = port; }
 	void setPort(port_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
 	void setWorldIp(ip_t ip) { m_worldIp = ip; }
-	void setExpRate(int32_t rate) { m_config.expRate = rate; }
-	void setQuestExpRate(int32_t rate) { m_config.questExpRate = rate; }
-	void setDropRate(int32_t rate) { m_config.dropRate = rate; }
-	void setMesoRate(int32_t rate) { m_config.mesoRate = rate; }
+	void modifyRate(int32_t rateType, int32_t newValue);
+	void setRates(const Rates &rates);
 	void setConfig(const WorldConfig &config);
 
-	bool isConnected() const { return m_channel != -1; }
-	int8_t getWorld() const { return m_world; }
+	bool isConnected() const { return m_channelId != -1; }
+	int8_t getWorldId() const { return m_world; }
 	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
 	uint8_t getDefaultStorageSlots() const { return m_config.defaultStorageSlots; }
 	int16_t getMaxStats() const { return m_config.maxStats; }
-	int16_t getChannel() const { return m_channel; }
-	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + m_channel; }
-	int32_t getExpRate() const { return m_config.expRate; }
-	int32_t getQuestExpRate() const { return m_config.questExpRate; }
-	int32_t getMesoRate() const { return m_config.mesoRate; }
-	int32_t getDropRate() const { return m_config.dropRate; }
+	int16_t getChannelId() const { return m_channelId; }
+	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + m_channelId; }
+	int32_t getMobExpRate() const { return m_config.rates.mobExpRate; }
+	int32_t getQuestExpRate() const { return m_config.rates.questExpRate; }
+	int32_t getMobMesoRate() const { return m_config.rates.mobMesoRate; }
+	int32_t getDropRate() const { return m_config.rates.dropRate; }
 	int32_t getDefaultChars() const { return m_config.defaultChars; }
 	int32_t getMaxChars() const { return m_config.maxChars; }
 	int32_t getFameTime() const { return m_config.fameTime; }
@@ -82,8 +75,7 @@ public:
 	int16_t getHorntailAttempts() const { return m_config.horntail.attempts; }
 	int16_t getPinkBeanAttempts() const { return m_config.pinkbean.attempts; }
 	string getScrollingHeader() const { return m_config.scrollingHeader; }
-	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
-	void sendToWorld(PacketCreator &packet);
+	void sendPacketToWorld(PacketCreator &packet);
 
 	// Specific bosses that can be battled on this channel
 	bool isPianusChannel() const { return m_pianusChannel; }
@@ -101,7 +93,7 @@ private:
 	ChannelServer();
 	static ChannelServer *singleton;
 
-	WorldServerConnection *m_worldConnection;
+	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
 
 	bool m_pianusChannel;
 	bool m_papChannel;
@@ -109,11 +101,12 @@ private:
 	bool m_horntailChannel;
 	bool m_pinkbeanChannel;
 	int8_t m_world;
-	int16_t m_channel;
+	int16_t m_channelId;
 	port_t m_worldPort;
 	port_t m_loginPort;
 	port_t m_port;
 	ip_t m_worldIp;
 	ip_t m_loginIp;
 	WorldConfig m_config;
+	WorldServerConnection *m_worldConnection;
 };

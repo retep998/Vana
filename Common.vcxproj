@@ -225,7 +225,6 @@
     <ClInclude Include="src\Common\Decoder.h" />
     <ClInclude Include="src\Common\AbstractConnection.h" />
     <ClInclude Include="src\Common\AbstractServer.h" />
-    <ClInclude Include="src\Common\Rates.h" />
     <ClInclude Include="src\Common\ServerConnection.h" />
     <ClInclude Include="src\Common\GameObjects.h" />
     <ClInclude Include="src\Common\Pos.h" />

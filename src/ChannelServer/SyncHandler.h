@@ -23,10 +23,12 @@ class PacketReader;
 
 namespace SyncHandler {
 	void handle(PacketReader &packet);
+	void handleConfigSync(PacketReader &packet);
 	void handleChannelSync(PacketReader &packet);
 	void handlePlayerSync(PacketReader &packet);
 	void handlePartySync(PacketReader &packet);
 	void handleBuddySync(PacketReader &packet);
 	void buddyInvite(PacketReader &packet);
 	void buddyOnlineOffline(PacketReader &packet);
+	void setRates(PacketReader &packet);
 }

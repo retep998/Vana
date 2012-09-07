@@ -104,6 +104,12 @@ void LoginServer::loadWorlds() {
 		stream << "world" << i << "_" << key;
 		return stream.str();
 	};
+	auto getRatesConfig = [&getKey, &config](Rates &dest) {
+		dest.mobExpRate = config.get<int32_t>(getKey("mob_exp_rate"));
+		dest.questExpRate = config.get<int32_t>(getKey("quest_exp_rate"));
+		dest.mobMesoRate = config.get<int32_t>(getKey("mob_meso_rate"));
+		dest.dropRate = config.get<int32_t>(getKey("drop_rate"));
+	};
 	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string &src, size_t maxChannels) {
 		dest.attempts = config.get<int16_t>(getKey(src + "_attempts"));
 		dest.channels = config.getBossChannels(getKey(src + "_channels"), maxChannels);
@@ -127,10 +133,6 @@ void LoginServer::loadWorlds() {
 
 		conf.maxChannels = config.get<int32_t>(getKey("channels"));
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
-		conf.expRate = config.get<int32_t>(getKey("exp_rate"));
-		conf.questExpRate = config.get<int32_t>(getKey("quest_exp_rate"));
-		conf.mesoRate = config.get<int32_t>(getKey("meso_rate"));
-		conf.dropRate = config.get<int32_t>(getKey("drop_rate"));
 		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
 		conf.maxMultiLevel = config.get<uint8_t>(getKey("max_multi_level"));
 		conf.eventMsg = config.getString(getKey("event_message"));
@@ -142,6 +144,7 @@ void LoginServer::loadWorlds() {
 		conf.fameTime = config.get<int32_t>(getKey("fame_time"));
 		conf.fameResetTime = config.get<int32_t>(getKey("fame_reset_time"));
 
+		getRatesConfig(conf.rates);
 		getBossConfig(conf.pianus, "pianus", conf.maxChannels);
 		getBossConfig(conf.pap, "pap", conf.maxChannels);
 		getBossConfig(conf.zakum, "zakum", conf.maxChannels);

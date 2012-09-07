@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.h"
 #include "BuddyListPacket.h"
+#include "ChannelServer.h"
+#include "Configuration.h"
 #include "Connectable.h"
 #include "GameObjects.h"
 #include "InterHeader.h"
@@ -25,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "Player.h"
+#include "PlayerBuddyList.h"
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
 #include "SmsgHeader.h"
@@ -32,10 +35,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SyncHandler::handle(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
+		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
 		case Sync::SyncTypes::ChannelStart: handleChannelSync(packet); break;
 		case Sync::SyncTypes::Player: handlePlayerSync(packet); break;
 		case Sync::SyncTypes::Party: handlePartySync(packet); break;
 		case Sync::SyncTypes::Buddy: handleBuddySync(packet); break;
+	}
+}
+
+void SyncHandler::handleConfigSync(PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Config::RateSet: setRates(packet); break;
+		case Sync::Config::ScrollingHeader: ChannelServer::Instance()->setScrollingHeader(packet.getString()); break;
 	}
 }
 
@@ -76,13 +87,14 @@ void SyncHandler::handleBuddySync(PacketReader &packet) {
 }
 
 void SyncHandler::buddyInvite(PacketReader &packet) {
-	int32_t playerId = packet.get<int32_t>();
-	if (Player *player = PlayerDataProvider::Instance()->getPlayer(playerId)) {
+	int32_t inviterId = packet.get<int32_t>();
+	int32_t inviteeId = packet.get<int32_t>();
+	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
 		BuddyInvite invite;
-		invite.id = packet.get<int32_t>();
+		invite.id = inviterId;
 		invite.name = packet.getString();
-		player->getBuddyList()->addBuddyInvite(invite);
-		player->getBuddyList()->checkForPendingBuddy();
+		invitee->getBuddyList()->addBuddyInvite(invite);
+		invitee->getBuddyList()->checkForPendingBuddy();
 	}
 }
 
@@ -99,4 +111,9 @@ void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
 			}
 		}
 	}
+}
+
+void SyncHandler::setRates(PacketReader &packet) {
+	Rates rates = packet.getClass<Rates>();
+	ChannelServer::Instance()->setRates(rates);
 }

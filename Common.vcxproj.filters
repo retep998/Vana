@@ -300,9 +300,6 @@
     <ClInclude Include="src\Common\LogReplacements.h">
       <Filter>Source\Loggers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\Rates.h">
-      <Filter>Source\Inter-Server</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\ServerConnection.h">
       <Filter>Source\Inter-Server</Filter>
     </ClInclude>

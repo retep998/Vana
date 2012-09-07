@@ -36,7 +36,7 @@ using std::unordered_map;
 void PlayerPacket::connectData(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
 	packet.addBool(true); // Is a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
@@ -64,7 +64,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<int32_t>(0); // Gachapon EXP
 
 	packet.add<int32_t>(player->getMap());
-	packet.add<int8_t>(player->getMappos());
+	packet.add<int8_t>(player->getMapPos());
 
 	packet.add<int32_t>(0); // Unknown int32 added in .62
 
@@ -196,7 +196,7 @@ void PlayerPacket::showMessageWorld(const string &msg, int8_t type) {
 	packet.add<header_t>(IMSG_TO_CHANNELS);
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	showMessagePacket(packet, msg, type);
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
@@ -206,7 +206,7 @@ void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
 	packet.add<header_t>(IMSG_TO_CHANNELS);
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	showMessagePacket(packet, msg, type);
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, int8_t type) {

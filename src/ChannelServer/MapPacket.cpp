@@ -186,7 +186,7 @@ void MapPacket::removePlayer(Player *player) {
 void MapPacket::changeMap(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
 	packet.addBool(false); // Not a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
@@ -198,7 +198,7 @@ void MapPacket::changeMap(Player *player) {
 		}
 	}
 	packet.add<int32_t>(player->getMap());
-	packet.add<int8_t>(player->getMappos());
+	packet.add<int8_t>(player->getMapPos());
 	packet.add<int16_t>(player->getStats()->getHp());
 	packet.add<int8_t>(0x00);
 	packet.add<int64_t>(TimeUtilities::getServerTime());

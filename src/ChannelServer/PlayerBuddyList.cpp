@@ -40,7 +40,7 @@ void PlayerBuddyList::load() {
 	soci::session &sql = Database::getCharDb();
 
 	soci::rowset<> rs = (sql.prepare
-		<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
+		<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
 		<< "FROM buddylist bl "
 		<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
 		<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
@@ -59,7 +59,7 @@ void PlayerBuddyList::load() {
 		<< "LEFT JOIN characters c ON c.character_id = p.inviter_character_id "
 		<< "WHERE c.world_id = :world AND p.character_id = :char ",
 		soci::use(m_player->getId(), "char"),
-		soci::use(ChannelServer::Instance()->getWorld(), "world"));
+		soci::use(ChannelServer::Instance()->getWorldId(), "world"));
 
 	BuddyInvite invite;
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
@@ -96,7 +96,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
 		<< "WHERE c.name = :name AND c.world_id = :world ",
 		soci::use(name, "name"),
-		soci::use(ChannelServer::Instance()->getWorld(), "world"),
+		soci::use(ChannelServer::Instance()->getWorldId(), "world"),
 		soci::into(row);
 
 	if (!sql.got_data()) {
@@ -145,7 +145,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		int32_t rowId = Database::getLastId<int32_t>(sql);
 
 		sql.once
-			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, u.online "
+			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
 			<< "FROM buddylist bl "
 			<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
 			<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
@@ -165,7 +165,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 
 		if (!sql.got_data()) {
 			if (invite) {
-				SyncPacket::BuddyPacket::buddyInvite(charId, m_player->getId());
+				SyncPacket::BuddyPacket::buddyInvite(m_player->getId(), charId);
 			}
 		}
 		else {
@@ -239,7 +239,7 @@ void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
 	}
 
 	int32_t channelId = -1;
-	int32_t online = row.get<int32_t>("online");
+	int64_t online = row.get<int64_t>("online");
 	if (online >= 20000) {
 		online -= 20000;
 		channelId = online % 100;

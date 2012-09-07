@@ -46,7 +46,9 @@ public:
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(port_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
-	void setConfig(const WorldConfig &config) { m_config = config; }
+	void setConfig(const WorldConfig &config);
+	void setRates(const Rates &rates);
+	void resetRates();
 
 	bool isConnected() const { return (m_worldId != -1); }
 	int8_t getWorldId() const { return m_worldId; }
@@ -64,5 +66,6 @@ private:
 	port_t m_port;
 	ip_t m_loginIp;
 	WorldConfig m_config;
+	Rates m_defaultRates;
 	LoginServerConnection *m_loginConnection;
 };

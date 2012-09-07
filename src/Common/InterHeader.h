@@ -22,7 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Inter-server communication does not separate send and recv because the server does both
 enum AnyConnection : header_t {
 	IMSG_PASSWORD = 0xff,
-	IMSG_REHASH_CONFIG = 0x100
+	IMSG_REHASH_CONFIG,
+	IMSG_TO_LOGIN,
+	IMSG_TO_WORLD,
+	IMSG_TO_CHANNELS,
+	IMSG_TO_WORLDS,
+	IMSG_REFRESH_DATA, // For reloading MCDB
 };
 
 enum LoginWorld : header_t {
@@ -40,16 +45,10 @@ enum LoginChannel : header_t {
 
 enum WorldChannel : header_t {
 	IMSG_CHANNEL_CONNECT = 0x3000,
+	IMSG_TO_PLAYER,
 	IMSG_TO_PLAYERS, // Pass the content of the packet to player of all channel servers
+	IMSG_GROUP_CHAT,
 	IMSG_FIND, // "/find" command
 	IMSG_WHISPER,
-	IMSG_SCROLLING_HEADER,
-	IMSG_FORWARD_TO,
-	IMSG_GROUP_CHAT,
-	IMSG_SET_RATES,
-	IMSG_TO_LOGIN, // Channel servers send this to ask the world server to send something to login server
-	IMSG_TO_WORLDS, // For sending a packet to all worlds via the loginserver
-	IMSG_TO_CHANNELS, // For sending a packet from a channel to all channels via the WorldServer
-	IMSG_REFRESH_DATA, // For reloading MCDB
-	IMSG_SYNC
+	IMSG_SYNC,
 };

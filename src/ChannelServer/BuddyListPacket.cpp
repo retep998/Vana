@@ -54,7 +54,7 @@ void BuddyListPacket::showSize(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void BuddyListPacket::invitation(Player *player, const BuddyInvite &invite) {
+void BuddyListPacket::invitation(Player *invitee, const BuddyInvite &invite) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x09);
@@ -72,7 +72,7 @@ void BuddyListPacket::invitation(Player *player, const BuddyInvite &invite) {
 	packet.add<uint8_t>(0xBA);
 
 	packet.add<int8_t>(0); // Unknown
-	player->getSession()->send(packet);
+	invitee->getSession()->send(packet);
 }
 
 void BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) {

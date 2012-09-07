@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeWorld.h"
 #include "IpUtilities.h"
 #include "StringUtilities.h"
+#include "SyncPacket.h"
 #include "VanaConstants.h"
 #include "WorldServerAcceptPacket.h"
 
@@ -61,6 +62,20 @@ void WorldServer::rehashConfig(const WorldConfig &config) {
 	WorldServerAcceptPacket::rehashConfig(config);
 }
 
+void WorldServer::setConfig(const WorldConfig &config) {
+	m_config = config;
+	m_defaultRates = config.rates;
+}
+
+void WorldServer::setRates(const Rates &rates) {
+	m_config.rates = rates;
+	SyncPacket::ConfigPacket::setRates(rates);
+}
+
+void WorldServer::resetRates() {
+	setRates(m_defaultRates);
+}
+
 void WorldServer::loadLogConfig() {
 	ConfigFile conf("conf/logger.lua", false);
 	initializeLoggingConstants(conf);
@@ -79,5 +94,5 @@ opt_string WorldServer::makeLogIdentifier() {
 
 void WorldServer::setScrollingHeader(const string &message) {
 	m_config.scrollingHeader = message;
-	WorldServerAcceptPacket::scrollingHeader(message);
+	SyncPacket::ConfigPacket::scrollingHeader(message);
 }

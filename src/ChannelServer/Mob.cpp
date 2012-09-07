@@ -551,7 +551,7 @@ int32_t Mob::giveExp(Player *killer) {
 				// Account for EXP increasing junk
 				int16_t hsRate = damager->getActiveBuffs()->getHolySymbolRate();
 				exp = exp * getTauntEffect() / 100;
-				exp *= ChannelServer::Instance()->getExpRate();
+				exp *= ChannelServer::Instance()->getMobExpRate();
 				exp += ((exp * hsRate) / 100);
 				damager->getStats()->giveExp(exp, false, (damager == killer));
 			}
@@ -579,7 +579,7 @@ int32_t Mob::giveExp(Player *killer) {
 					uint32_t exp = static_cast<uint32_t>(m_info->exp * ((8 * damagerLevel / totalLevel) + (damager == partyIter->second.highestDamager ? 2 : 0)) / 10);
 					int16_t hsRate = damager->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
-					exp *= ChannelServer::Instance()->getExpRate();
+					exp *= ChannelServer::Instance()->getMobExpRate();
 					exp += ((exp * hsRate) / 100);
 					damager->getStats()->giveExp(exp, false, (damager == killer));
 				}

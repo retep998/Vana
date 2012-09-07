@@ -22,16 +22,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
 #include "IpUtilities.h"
+#include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "ServerPacket.h"
+#include "SyncPacket.h"
 #include "WorldServerConnection.h"
+#include "WorldServerConnectPacket.h"
 
 ChannelServer * ChannelServer::singleton = nullptr;
 
 ChannelServer::ChannelServer() :
-	m_channel(-1)
+	m_channelId(-1)
 {
 }
 
@@ -41,7 +44,7 @@ void ChannelServer::listen() {
 }
 
 void ChannelServer::shutdown() {
-	m_channel = -1; // Else when WorldServerConnection disconnects, it will try to call shutdown() again
+	m_channelId = -1; // Otherwise when WorldServerConnection disconnects, it will try to call shutdown() again
 	AbstractServer::shutdown();
 }
 
@@ -72,7 +75,7 @@ void ChannelServer::loadLogConfig() {
 
 opt_string ChannelServer::makeLogIdentifier() {
 	std::ostringstream identifier;
-	identifier << "World: " << static_cast<int16_t>(getWorld()) << "; ID: " << getChannel();
+	identifier << "World: " << static_cast<int16_t>(getWorldId()) << "; ID: " << getChannelId();
 	return identifier.str();
 }
 
@@ -100,7 +103,7 @@ void ChannelServer::loadConfig() {
 	m_pinkbeanChannel = false;
 }
 
-void ChannelServer::sendToWorld(PacketCreator &packet) {
+void ChannelServer::sendPacketToWorld(PacketCreator &packet) {
 	getWorldConnection()->getSession()->send(packet);
 }
 
@@ -116,7 +119,26 @@ void ChannelServer::setScrollingHeader(const string &message) {
 	}
 }
 
+void ChannelServer::modifyRate(int32_t rateType, int32_t newValue) {
+	Rates currentRates = m_config.rates;
+	if (rateType & Rates::Types::MobExpRate) currentRates.mobExpRate = newValue;
+	if (rateType & Rates::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
+	if (rateType & Rates::Types::QuestExpRate) currentRates.questExpRate = newValue;
+	if (rateType & Rates::Types::DropRate) currentRates.dropRate = newValue;
+	SyncPacket::ConfigPacket::modifyRates(currentRates);
+}
+
+void ChannelServer::setRates(const Rates &rates) {
+	m_config.rates = rates;
+}
+
 void ChannelServer::setConfig(const WorldConfig &config) {
 	setScrollingHeader(config.scrollingHeader);
 	m_config = config;
+	int8_t channelId = static_cast<int8_t>(m_channelId + 1);
+	m_pianusChannel = MiscUtilities::isBossChannel(config.pianus.channels, channelId);
+	m_papChannel = MiscUtilities::isBossChannel(config.pap.channels, channelId);
+	m_zakumChannel = MiscUtilities::isBossChannel(config.zakum.channels, channelId);
+	m_horntailChannel = MiscUtilities::isBossChannel(config.horntail.channels, channelId);
+	m_pinkbeanChannel = MiscUtilities::isBossChannel(config.pinkbean.channels, channelId);
 }

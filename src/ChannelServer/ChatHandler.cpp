@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.h"
-#include "ChannelServer.h"
 #include "ChatHandlerFunctions.h"
 #include "PacketReader.h"
 #include "Player.h"
@@ -79,6 +78,6 @@ void ChatHandler::handleGroupChat(Player *player, PacketReader &packet) {
 	const string &chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
-		WorldServerConnectPacket::groupChat(ChannelServer::Instance()->getWorldConnection(), type, player->getId(), receivers, chat);
+		WorldServerConnectPacket::groupChat(type, player->getId(), receivers, chat);
 	}
 }

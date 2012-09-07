@@ -25,8 +25,14 @@ using std::string;
 using std::vector;
 
 class Player;
+struct Rates;
 
 namespace SyncPacket {
+	namespace ConfigPacket {
+		void scrollingHeader(const string &message);
+		void resetRates();
+		void modifyRates(const Rates &rates);
+	}
 	namespace PlayerPacket {
 		void changeChannel(Player *info, uint16_t channel);
 		void connectableEstablished(int32_t playerId);
@@ -40,7 +46,7 @@ namespace SyncPacket {
 		void sync(int8_t type, int32_t playerId, int32_t target = 0);
 	}
 	namespace BuddyPacket {
-		void buddyInvite(int32_t playerId, int32_t inviteeId);
+		void buddyInvite(int32_t inviterId, int32_t inviteeId);
 		void buddyOnline(int32_t playerId, const vector<int32_t> &players, bool online);
 	}
 }
