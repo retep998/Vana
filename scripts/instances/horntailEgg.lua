@@ -28,7 +28,7 @@ function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
 		moveAllPlayers(240040610);
 		removeAllInstancePlayers();
-		removeTheNPC();
+		despawnNpc();
 	end
 end
 
@@ -40,11 +40,11 @@ end
 
 function finish(playerId)
 	removeInstancePlayer(playerId);
-	removeTheNPC();
+	despawnNpc();
 	markForDelete();
 end
 
-function removeTheNPC()
+function despawnNpc()
 	g = getInstanceVariable("npc", true);
 	if g then
 		removeNpc(240040611, g);
