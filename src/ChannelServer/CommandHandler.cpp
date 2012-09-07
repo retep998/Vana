@@ -96,17 +96,17 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 				}
 			}
 			else {
-				WorldServerConnectPacket::findPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name);
+				WorldServerConnectPacket::findPlayer(player->getId(), name);
 			}
 			break;
 		case CommandOpcodes::Whisper: {
 			const string &chat = packet.getString();
 			if (receiver) {
-				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannel(), chat);
+				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::Instance()->getChannelId(), chat);
 				PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
 			}
 			else {
-				WorldServerConnectPacket::whisperPlayer(ChannelServer::Instance()->getWorldConnection(), player->getId(), name, chat);
+				WorldServerConnectPacket::whisperPlayer(player->getId(), name, chat);
 			}
 			break;
 		}

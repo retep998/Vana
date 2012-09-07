@@ -29,10 +29,15 @@ class PacketReader;
 class Party;
 class Player;
 class WorldServerAcceptConnection;
+struct Rates;
 
 namespace SyncPacket {
 	void sendSyncData(WorldServerAcceptConnection *player);
 
+	namespace ConfigPacket {
+		void setRates(const Rates &rates);
+		void scrollingHeader(const string &message);
+	}
 	namespace PartyPacket {
 		void removePartyMember(int32_t partyId, int32_t playerId, bool kicked);
 		void addPartyMember(int32_t partyId, int32_t playerId);
@@ -49,7 +54,7 @@ namespace SyncPacket {
 		void updatePlayerLevel(int32_t playerId, int16_t level);
 	}
 	namespace BuddyPacket {
-		void sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterid, const string &name);
+		void sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterId, const string &name);
 		void sendBuddyOnlineOffline(WorldServerAcceptConnection *connection, const vector<int32_t> &players, int32_t playerId, int32_t channelId);
 	}
 }

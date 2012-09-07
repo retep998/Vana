@@ -15,9 +15,9 @@ world0_id = 0;
 world0_ribbon = 0;
 
 -- Server rates
-world0_exp_rate = 1;
+world0_mob_exp_rate = 1;
 world0_quest_exp_rate = 1;
-world0_meso_rate = 1;
+world0_mob_meso_rate = 1;
 world0_drop_rate = 1;
 
 -- Max allowed character slots (between 1 and 6)
@@ -80,9 +80,9 @@ world0_pinkbean_attempts = 1;
 -- world1_channels = 1;
 -- world1_id = 1;
 -- world1_ribbon = 2;
--- world1_exp_rate = 1;
+-- world1_mob_exp_rate = 1;
 -- world1_quest_exp_rate = 1;
--- world1_meso_rate = 1;
+-- world1_mob_meso_rate = 1;
 -- world1_drop_rate = 1;
 -- world1_max_characters = 6;
 -- world1_default_characters = 3;

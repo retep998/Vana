@@ -37,13 +37,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void SyncHandler::handle(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
-		case Sync::SyncTypes::Player: handlePlayerPacket(connection, packet); break;
+		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
+		case Sync::SyncTypes::Player: handlePlayerSync(connection, packet); break;
 		case Sync::SyncTypes::Party: handlePartySync(packet); break;
-		case Sync::SyncTypes::Buddy: handleBuddyPacket(packet); break;
+		case Sync::SyncTypes::Buddy: handleBuddySync(packet); break;
 	}
 }
 
-void SyncHandler::handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet) {
+void SyncHandler::handleConfigSync(PacketReader &packet) {
+	switch (packet.get<int8_t>()) {
+		case Sync::Config::RateSet: handleSetRates(packet); break;
+		case Sync::Config::RateReset: WorldServer::Instance()->resetRates(); break;
+		case Sync::Config::ScrollingHeader: handleScrollingHeader(packet); break;
+	}
+}
+
+void SyncHandler::handleSetRates(PacketReader &packet) {
+	Rates rates = packet.getClass<Rates>();
+	WorldServer::Instance()->setRates(rates);
+}
+
+void SyncHandler::handleScrollingHeader(PacketReader &packet) {
+	const string &message = packet.getString();
+	WorldServer::Instance()->setScrollingHeader(message);
+}
+
+void SyncHandler::handlePlayerSync(WorldServerAcceptConnection *connection, PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::Player::ChangeChannelRequest: playerChangeChannel(connection, packet); break;
 		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, packet); break;
@@ -134,7 +153,7 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, P
 	}
 }
 
-void SyncHandler::handleBuddyPacket(PacketReader &packet) {
+void SyncHandler::handleBuddySync(PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::Buddy::Invite: buddyInvite(packet); break;
 		case Sync::Buddy::OnlineOffline: buddyOnline(packet); break;
@@ -142,8 +161,8 @@ void SyncHandler::handleBuddyPacket(PacketReader &packet) {
 }
 
 void SyncHandler::buddyInvite(PacketReader &packet) {
-	int32_t playerId = packet.get<int32_t>();
-	Player *inviter = PlayerDataProvider::Instance()->getPlayer(playerId);
+	int32_t inviterId = packet.get<int32_t>();
+	Player *inviter = PlayerDataProvider::Instance()->getPlayer(inviterId);
 	if (inviter == nullptr) {
 		// No idea how this would happen... take no risk and just return
 		return;
@@ -151,16 +170,16 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 
 	int32_t inviteeId = packet.get<int32_t>();
 	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
-		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, playerId, inviter->getName());
+		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, inviterId, inviter->getName());
 	}
 	else {
 		// Make new pending buddy in the database
 		Database::getCharDb().once
 			<< "INSERT INTO buddylist_pending "
-			<< "VALUES (:invitee, :name, :player)",
+			<< "VALUES (:invitee, :name, :inviter)",
 			soci::use(inviteeId, "invitee"),
-			soci::use(inviter->getName(), "inviter"),
-			soci::use(playerId, "player");
+			soci::use(inviter->getName(), "name"),
+			soci::use(inviterId, "inviter");
 	}
 }
 

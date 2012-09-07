@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "PlayerPacket.h"
 #include "StringUtilities.h"
+#include "SyncPacket.h"
 #include "WorldServerConnectPacket.h"
 
 using StringUtilities::lexical_cast;
@@ -74,7 +75,7 @@ bool ManagementFunctions::lag(Player *player, const string &args) {
 }
 
 bool ManagementFunctions::header(Player *player, const string &args) {
-	WorldServerConnectPacket::scrollingHeader(ChannelServer::Instance()->getWorldConnection(), args);
+	SyncPacket::ConfigPacket::scrollingHeader(args);
 	return true;
 }
 
@@ -105,12 +106,12 @@ bool ManagementFunctions::kick(Player *player, const string &args) {
 }
 
 bool ManagementFunctions::relog(Player *player, const string &args) {
-	player->changeChannel((int8_t)ChannelServer::Instance()->getChannel());
+	player->changeChannel((int8_t)ChannelServer::Instance()->getChannelId());
 	return true;
 }
 
 bool ManagementFunctions::calculateRanks(Player *player, const string &args) {
-	WorldServerConnectPacket::rankingCalculation(ChannelServer::Instance()->getWorldConnection());
+	WorldServerConnectPacket::rankingCalculation();
 	PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", PlayerPacket::NoticeTypes::Blue);
 	return true;
 }
@@ -163,7 +164,7 @@ bool ManagementFunctions::reload(Player *player, const string &args) {
 			args == "mobs" || args == "beauty" || args == "scripts" ||
 			args == "skills" || args == "reactors" || args == "pets" ||
 			args == "quests" || args == "all") {
-			WorldServerConnectPacket::reloadMcdb(ChannelServer::Instance()->getWorldConnection(), args);
+			WorldServerConnectPacket::reloadMcdb(args);
 			PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
@@ -403,7 +404,47 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 }
 
 bool ManagementFunctions::rehash(Player *player, const string &args) {
-	WorldServerConnectPacket::rehashConfig(ChannelServer::Instance()->getWorldConnection());
+	WorldServerConnectPacket::rehashConfig();
 	PlayerPacket::showMessage(player, "Sent a signal to force rehashing world configurations.", PlayerPacket::NoticeTypes::Blue);
+	return true;
+}
+
+bool ManagementFunctions::rates(Player *player, const string &args) {
+	cmatch matches;
+	if (args.length() > 0) {
+		if (!ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
+			return false;
+		}
+		string type = matches[1];
+		if (type == "view") {
+			auto display = [=](const string &type, int32_t rate) {
+				PlayerPacket::showMessage(player, type + " Rate: " + StringUtilities::lexical_cast<string>(rate) + "x", PlayerPacket::NoticeTypes::Blue);
+			};
+			PlayerPacket::showMessage(player, "Current Rates", PlayerPacket::NoticeTypes::Blue);
+			display("Mob EXP", ChannelServer::Instance()->getMobExpRate());
+			display("Mob Meso", ChannelServer::Instance()->getMobMesoRate());
+			display("Quest EXP", ChannelServer::Instance()->getQuestExpRate());
+			display("Drop", ChannelServer::Instance()->getDropRate());
+		}
+		else if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (\\d+)", matches)) {
+			string value = matches[2];
+			int32_t rateType = 0;
+			int32_t newAmount = value.length() > 0 ? atoi(value.c_str()) : 1;
+
+			if (type == "mobexp") rateType = Rates::Types::MobExpRate;
+			if (type == "mobmeso") rateType = Rates::Types::MobMesoRate;
+			if (type == "questexp") rateType = Rates::Types::QuestExpRate;
+			if (type == "drop") rateType = Rates::Types::DropRate;
+			ChannelServer::Instance()->modifyRate(rateType, newAmount);
+			PlayerPacket::showMessage(player, "Sent request to modify rate", PlayerPacket::NoticeTypes::Blue);
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		PlayerPacket::showMessage(player, "Sent request to reset rates", PlayerPacket::NoticeTypes::Blue);
+		SyncPacket::ConfigPacket::resetRates();
+	}
 	return true;
 }

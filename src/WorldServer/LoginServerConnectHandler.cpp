@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
-#include "Rates.h"
 #include "SyncPacket.h"
 #include "WorldServer.h"
 #include <iostream>

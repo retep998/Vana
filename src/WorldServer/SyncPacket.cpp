@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.h"
 #include "Channel.h"
 #include "Channels.h"
+#include "Configuration.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
 #include "MapConstants.h"
@@ -30,6 +31,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
+
+
+void SyncPacket::ConfigPacket::scrollingHeader(const string &message) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Config);
+	packet.add<int8_t>(Sync::Config::ScrollingHeader);
+	packet.addString(message);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::ConfigPacket::setRates(const Rates &rates) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Config);
+	packet.add<int8_t>(Sync::Config::RateSet);
+	packet.addClass<Rates>(rates);
+	Channels::Instance()->sendToAll(packet);
+}
 
 void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer) {
 	PacketCreator packet;
@@ -143,13 +163,13 @@ void SyncPacket::PartyPacket::disbandParty(int32_t partyId) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterid, const string &name) {
+void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterId, const string &name) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::Invite);
+	packet.add<int32_t>(inviterId);
 	packet.add<int32_t>(inviteeId);
-	packet.add<int32_t>(inviterid);
 	packet.addString(name);
 	connection->getSession()->send(packet);
 }

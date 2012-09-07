@@ -438,7 +438,7 @@ int LuaExports::deleteChannelVariable(lua_State *luaVm) {
 }
 
 int LuaExports::getChannel(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannel() + 1);
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getChannelId() + 1);
 	return 1;
 }
 
@@ -1596,7 +1596,7 @@ int LuaExports::getDropRate(lua_State *luaVm) {
 }
 
 int LuaExports::getExpRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getExpRate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getMobExpRate());
 	return 1;
 }
 
@@ -1606,7 +1606,7 @@ int LuaExports::getQuestExpRate(lua_State *luaVm) {
 }
 
 int LuaExports::getMesoRate(lua_State *luaVm) {
-	lua_pushnumber(luaVm, ChannelServer::Instance()->getMesoRate());
+	lua_pushnumber(luaVm, ChannelServer::Instance()->getMobMesoRate());
 	return 1;
 }
 

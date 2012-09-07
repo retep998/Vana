@@ -26,16 +26,15 @@ using std::vector;
 
 class PacketCreator;
 class Player;
-class WorldServerConnection;
+struct Rates;
 
 namespace WorldServerConnectPacket {
-	void findPlayer(WorldServerConnection *player, int32_t playerId, const string &findeeName);
-	void whisperPlayer(WorldServerConnection *player, int32_t playerId, const string &whisperee, const string &message);
-	void scrollingHeader(WorldServerConnection *player, const string &message);
-	void groupChat(WorldServerConnection *player, int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat);
-	void rankingCalculation(WorldServerConnection *player);
-	void toChannels(WorldServerConnection *player, PacketCreator &packet);
-	void toWorlds(WorldServerConnection *player, PacketCreator &packet);
-	void reloadMcdb(WorldServerConnection *player, const string &type);
-	void rehashConfig(WorldServerConnection *player);
+	void findPlayer(int32_t playerId, const string &findeeName);
+	void whisperPlayer(int32_t playerId, const string &whisperee, const string &message);
+	void groupChat(int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat);
+	void rankingCalculation();
+	void sendToChannels(PacketCreator &packet);
+	void sendToWorlds(PacketCreator &packet);
+	void reloadMcdb(const string &type);
+	void rehashConfig();
 }

@@ -125,7 +125,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			else {
 				int32_t mesos = amount;
 				if (!isSteal) {
-					mesos *= ChannelServer::Instance()->getMesoRate();
+					mesos *= ChannelServer::Instance()->getMobMesoRate();
 					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
 						// Account for Meso Up
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Skills::Hermit::MesoUp)->x) / 100;

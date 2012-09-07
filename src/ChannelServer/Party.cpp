@@ -314,7 +314,7 @@ void Party::updatePacket(PacketCreator &packet) {
 	size_t i = 0;
 	PlayerMap::iterator iter;
 	PlayerData *player;
-	int16_t channelId = ChannelServer::Instance()->getChannel();
+	int16_t channelId = ChannelServer::Instance()->getChannelId();
 
 	// Add party member IDs to packet
 	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {

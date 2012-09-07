@@ -165,9 +165,9 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
 	packet.addBool(whisper);
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) {
@@ -180,9 +180,9 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	packet.addString(msg2);
 	packet.addString(msg3);
 	packet.addString(msg4);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannel());
+	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
 	packet.addBuffer(displayInfo, displayInfoSize);
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool whisper, Item *item) {
@@ -191,7 +191,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
 	packet.addBool(whisper);
 	if (item == nullptr) {
 		packet.add<int8_t>(0);
@@ -199,7 +199,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	else {
 		PlayerPacketHelper::addItemInfo(packet, 1, item);
 	}
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper) {
@@ -215,9 +215,9 @@ void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const st
 	if (lines > 2) {
 		packet.addString(line3);
 	}
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannel());
+	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
 	packet.addBool(whisper);
-	ChannelServer::Instance()->sendToWorld(packet);
+	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
 void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {

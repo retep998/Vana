@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "PacketReader.h"
 #include "PlayerDataProvider.h"
-#include "Rates.h"
 #include "Session.h"
 #include "StringUtilities.h"
 #include "SyncHandler.h"
@@ -53,7 +52,6 @@ void WorldServerAcceptConnection::handleRequest(PacketReader &packet) {
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
 		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
-		case IMSG_SCROLLING_HEADER: WorldServerAcceptHandler::scrollingHeader(this, packet); break;
 		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
 		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
@@ -67,13 +65,9 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 		if (m_channel != -1) {
 			port_t port = WorldServer::Instance()->getInterPort() + m_channel + 1;
 			Channels::Instance()->registerChannel(this, m_channel, getIp(), getExternalIp(), port);
+
 			WorldServerAcceptPacket::connect(this, m_channel, port);
-
-			WorldServerAcceptPacket::sendRates(this, Rates::SetBits::All);
-			WorldServerAcceptPacket::scrollingHeader(WorldServer::Instance()->getScrollingHeader());
-
 			SyncPacket::sendSyncData(this);
-
 			LoginServerConnectPacket::registerChannel(m_channel, getIp(), getExternalIp(), port);
 
 			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + StringUtilities::lexical_cast<string>(m_channel));

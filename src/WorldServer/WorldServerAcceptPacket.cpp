@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Party.h"
 #include "PlayerDataProvider.h"
-#include "Rates.h"
 #include "Session.h"
 #include "SmsgHeader.h"
 #include "TimeUtilities.h"
@@ -38,7 +37,7 @@ using std::unordered_map;
 
 void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender) {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_FORWARD_TO);
+	packet.add<header_t>(IMSG_TO_PLAYER);
 	packet.add<int32_t>(playerId);
 	packet.add<header_t>(SMSG_MESSAGE_GROUP);
 	packet.add<int8_t>(type);
@@ -81,41 +80,10 @@ void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, 
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void WorldServerAcceptPacket::scrollingHeader(const string &message) {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SCROLLING_HEADER);
-	packet.addString(message);
-
-	Channels::Instance()->sendToAll(packet);
-}
-
 void WorldServerAcceptPacket::rehashConfig(const WorldConfig &config) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REHASH_CONFIG);
 	packet.addClass<WorldConfig>(config);
 
 	Channels::Instance()->sendToAll(packet);
-}
-
-void WorldServerAcceptPacket::sendRates(WorldServerAcceptConnection *connection, int32_t setBit) {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SET_RATES);
-	packet.add<int32_t>(setBit);
-
-	WorldConfig &conf = WorldServer::Instance()->getConfig();
-
-	if (setBit & Rates::SetBits::Exp) {
-		packet.add<int32_t>(conf.expRate);
-	}
-	if (setBit & Rates::SetBits::QuestExp) {
-		packet.add<int32_t>(conf.questExpRate);
-	}
-	if (setBit & Rates::SetBits::Meso) {
-		packet.add<int32_t>(conf.mesoRate);
-	}
-	if (setBit & Rates::SetBits::Drop) {
-		packet.add<int32_t>(conf.dropRate);
-	}
-
-	connection->getSession()->send(packet);
 }

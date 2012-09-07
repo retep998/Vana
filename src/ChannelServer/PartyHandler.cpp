@@ -50,6 +50,10 @@ void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 		}
 		case PartyActions::Invite: {
 			const string &invName = packet.getString();
+			if (player->getParty() == nullptr) {
+				// ??
+				return;
+			}
 			if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
 					PartyPacket::error(player, PartyPacket::Errors::PlayerHasParty);

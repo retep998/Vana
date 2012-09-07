@@ -45,9 +45,9 @@ void WorldServerConnection::handleRequest(PacketReader &packet) {
 		case IMSG_TO_PLAYERS: WorldServerConnectHandler::sendToPlayers(packet); break;
 		case IMSG_FIND: WorldServerConnectHandler::findPlayer(packet); break;
 		case IMSG_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
-		case IMSG_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
-		case IMSG_FORWARD_TO: WorldServerConnectHandler::forwardPacket(packet); break;
-		case IMSG_SET_RATES: WorldServerConnectHandler::setRates(packet); break;
+		// TODO FIXME
+		//case IMSG_SCROLLING_HEADER: WorldServerConnectHandler::scrollingHeader(packet); break;
+		case IMSG_TO_PLAYER: WorldServerConnectHandler::forwardPacket(packet); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
 		case IMSG_REHASH_CONFIG: WorldServerConnectHandler::rehashConfig(packet); break;
 

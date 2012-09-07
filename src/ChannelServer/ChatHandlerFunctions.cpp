@@ -394,6 +394,11 @@ void ChatHandlerFunctions::initialize() {
 	command.command = &ManagementFunctions::rehash;
 	command.notes.push_back("Rehashes world configurations after modification.");
 	CommandList["rehash"] = command.addToMap();
+
+	command.command = &ManagementFunctions::rates;
+	command.syntax = "[${view | mobexp | mobmeso | questexp | drop}] [#new rate]";
+	command.notes.push_back("Sets or resets the rates on the current world.");
+	CommandList["rates"] = command.addToMap();
 	#pragma endregion
 
 	#pragma region GM Level 0

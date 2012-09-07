@@ -30,17 +30,21 @@ class WorldServerAcceptConnection;
 namespace SyncHandler {
 	// Dispatch
 	void handle(WorldServerAcceptConnection *connection, PacketReader &packet);
+	// Config
+	void handleConfigSync(PacketReader &packet);
+	void handleSetRates(PacketReader &packet);
+	void handleScrollingHeader(PacketReader &packet);
 	// Party
 	void handlePartySync(PacketReader &packet);
 	// Player
-	void handlePlayerPacket(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void handlePlayerSync(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void playerConnect(int16_t channel, PacketReader &packet);
 	void playerDisconnect(int16_t channel, PacketReader &packet);
 	void playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void handlePlayerUpdate(PacketReader &packet);
 	// Buddy
-	void handleBuddyPacket(PacketReader &packet);
+	void handleBuddySync(PacketReader &packet);
 	void buddyInvite(PacketReader &packet);
 	void buddyOnline(PacketReader &packet);
 }

@@ -25,9 +25,7 @@ namespace WorldServerConnectHandler {
 	void connect(WorldServerConnection *player, PacketReader &packet);
 	void findPlayer(PacketReader &packet);
 	void whisperPlayer(PacketReader &packet);
-	void scrollingHeader(PacketReader &packet);
 	void forwardPacket(PacketReader &packet);
-	void setRates(PacketReader &packet);
 	void sendToPlayers(PacketReader &packet);
 	void reloadMcdb(PacketReader &packet);
 	void rehashConfig(PacketReader &packet);

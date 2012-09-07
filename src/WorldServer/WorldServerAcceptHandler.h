@@ -23,7 +23,6 @@ class WorldServerAcceptConnection;
 namespace WorldServerAcceptHandler {
 	void findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void scrollingHeader(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void groupChat(WorldServerAcceptConnection *connection, PacketReader &packet);
 	void sendToChannels(PacketReader &packet);
 	void sendToLogin(PacketReader &packet);
