@@ -110,3 +110,35 @@ function moveAllMapMembers(mapId, portalString)
 		end
 	end
 end
+
+function addPartyMembersToInstance()
+	players = getAllPartyPlayerIds();
+	mapId = getMap();
+	for i = 1, #players do
+		player = players[i];
+		if setPlayer(player) then
+			if getMap() == mapId then
+				addInstancePlayer(getId());
+			end
+			revertPlayer();
+		end
+	end
+end
+
+function moveLocalPartyMembersToMap(destinationMapId, portalString)
+	players = getAllPartyPlayerIds();
+	currentMapId = getMap();
+	for i = 1, #players do
+		player = players[i];
+		if setPlayer(player) then
+			if getMap() == currentMapId then
+				if portalString == nil then
+					setMap(destinationMapId);
+				else
+					setMap(destinationMapId, portalString);
+				end
+			end
+			revertPlayer();
+		end
+	end
+end
