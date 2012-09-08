@@ -46,12 +46,12 @@ if isQuestCompleted(3035) then
 	addText("It'll cost you #b" .. itemPrice .. " mesos#k per item. ");
 	addText("How many would you like to purchase?");
 	quantity = askNumber(1, 100);
-	
+
 	local totalCost = itemPrice * quantity;
 	addText("Are you sure you want to buy #r" .. quantity .. " #t" .. itemId .. "##k? ");
 	addText("It'll cost you " .. itemPrice .. " mesos per #t" .. itemId .. "#, which will cost you #r" .. totalCost .. "#k mesos total.");
 	choice = askYesNo();
-	
+
 	if choice == 1 then
 		if not hasOpenSlotsFor(itemId, quantity) or getMesos() < totalCost then
 			addText("Are you sure you have enough mesos? ");
