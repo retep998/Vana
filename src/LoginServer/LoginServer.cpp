@@ -83,7 +83,7 @@ opt_string LoginServer::makeLogIdentifier() {
 void LoginServer::rehashConfig() {
 	loadWorlds();
 	Worlds::Instance()->runFunction([](World *world) -> bool {
-		if (world != nullptr && world->getConnection() != nullptr) {
+		if (world != nullptr && world->isConnected()) {
 			// We only need to inform worlds that are actually connected
 			// Otherwise they'll get the modified config when they connect
 			LoginServerAcceptPacket::rehashConfig(world);

@@ -32,6 +32,7 @@ using std::vector;
 
 class Channel;
 class LoginServerAcceptConnection;
+class PacketCreator;
 
 class World {
 public:
@@ -48,6 +49,7 @@ public:
 	void clearChannels() { m_channels.clear(); }
 	void removeChannel(int32_t id) { m_channels.erase(id); }
 	void addChannel(int32_t id, Channel *channel) { m_channels[id].reset(channel); }
+	void send(const PacketCreator &packet);
 
 	bool isConnected() const { return m_connected; }
 	int8_t getId() const { return m_id; }
@@ -57,12 +59,13 @@ public:
 	size_t getMaxChannels() const { return m_config.maxChannels; }
 	int32_t getPlayerLoad() const { return m_playerLoad; }
 	int32_t getMaxPlayerLoad() const { return m_config.maxPlayerLoad; }
+	ip_t getIp() const;
+	const IpMatrix & getExternalIp() const;
 	size_t getChannelCount() const { return m_channels.size(); }
 	string getName() const { return m_config.name; }
 	string getEventMessage() const { return m_config.eventMsg; }
 	Channel * getChannel(int32_t id) { return (m_channels.find(id) != m_channels.end() ? m_channels[id].get() : nullptr); }
-	WorldConfig & getConfig() { return m_config; }
-	LoginServerAcceptConnection * getConnection() const { return m_connection; }
+	const WorldConfig & getConfig() const { return m_config; }
 private:
 	typedef std::unordered_map<int32_t, std::shared_ptr<Channel>> ChannelMap;
 

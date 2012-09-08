@@ -26,9 +26,9 @@ class LoginServerAcceptConnection;
 class World;
 
 namespace LoginServerAcceptPacket {
-	void connect(LoginServerAcceptConnection *connection, World *world);
+	void connect(World *world);
 	void noMoreWorld(LoginServerAcceptConnection *connection);
 	void connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, ip_t ip, port_t port);
-	void newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip);
+	void newPlayer(World *world, uint16_t channel, int32_t charId, ip_t ip);
 	void rehashConfig(World *world);
 }

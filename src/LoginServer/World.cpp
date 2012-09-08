@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "World.h"
+#include "LoginServerAcceptConnection.h"
+#include "PacketCreator.h"
 #include "Randomizer.h"
 
 void World::runChannelFunction(function<void (Channel *)> func) {
@@ -26,4 +28,16 @@ void World::runChannelFunction(function<void (Channel *)> func) {
 
 uint16_t World::getRandomChannel() const {
 	return Randomizer::Instance()->randShort(getMaxChannels() - 1);
+}
+
+void World::send(const PacketCreator &packet) {
+	m_connection->getSession()->send(packet);
+}
+
+ip_t World::getIp() const {
+	return m_connection->getIp();
+}
+
+const IpMatrix & World::getExternalIp() const {
+	return m_connection->getExternalIp();
 }
