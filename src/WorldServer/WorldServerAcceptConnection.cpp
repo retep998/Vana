@@ -53,9 +53,9 @@ void WorldServerAcceptConnection::handleRequest(PacketReader &packet) {
 		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
 		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
 		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
-		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendToLogin(packet); break;
-		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
-		case IMSG_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendPacketToLogin(packet); break;
+		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
+		case IMSG_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendPacketToChannels(packet); break;
 	}
 }
 

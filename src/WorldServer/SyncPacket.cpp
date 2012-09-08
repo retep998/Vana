@@ -32,6 +32,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include "WorldServerAcceptConnection.h"
 
+void SyncPacket::sendSyncData(WorldServerAcceptConnection *connection) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::ChannelStart);
+
+	PlayerDataProvider::Instance()->getChannelConnectPacket(packet);
+
+	connection->getSession()->send(packet);
+}
 
 void SyncPacket::ConfigPacket::scrollingHeader(const string &message) {
 	PacketCreator packet;
@@ -163,7 +172,7 @@ void SyncPacket::PartyPacket::disbandParty(int32_t partyId) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterId, const string &name) {
+void SyncPacket::BuddyPacket::sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string &name) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
@@ -171,20 +180,10 @@ void SyncPacket::BuddyPacket::sendBuddyInvite(WorldServerAcceptConnection *conne
 	packet.add<int32_t>(inviterId);
 	packet.add<int32_t>(inviteeId);
 	packet.addString(name);
-	connection->getSession()->send(packet);
+	channel->send(packet);
 }
 
-void SyncPacket::sendSyncData(WorldServerAcceptConnection *player) {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::ChannelStart);
-
-	PlayerDataProvider::Instance()->getChannelConnectPacket(packet);
-
-	player->getSession()->send(packet);
-}
-
-void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection *connection, const vector<int32_t> &players, int32_t playerId, int32_t channelId) {
+void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(Channel *channel, const vector<int32_t> &players, int32_t playerId, int32_t channelId) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
@@ -192,5 +191,5 @@ void SyncPacket::BuddyPacket::sendBuddyOnlineOffline(WorldServerAcceptConnection
 	packet.add<int32_t>(playerId);
 	packet.add<int32_t>(channelId); // I need to get FF FF FF FF, not FF FF 00 00
 	packet.addVector(players);
-	connection->getSession()->send(packet);
+	channel->send(packet);
 }

@@ -67,14 +67,14 @@ void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connec
 	}
 }
 
-void WorldServerAcceptHandler::sendToChannels(PacketReader &packet) {
+void WorldServerAcceptHandler::sendPacketToChannels(PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	Channels::Instance()->sendToAll(pack);
 }
 
-void WorldServerAcceptHandler::sendToLogin(PacketReader &packet) {
+void WorldServerAcceptHandler::sendPacketToLogin(PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
-	WorldServer::Instance()->getLoginConnection()->getSession()->send(pack);
+	WorldServer::Instance()->sendPacketToLogin(pack);
 }

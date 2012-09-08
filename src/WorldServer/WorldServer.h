@@ -28,7 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
-// WorldServer main application class, implemented as singleton
+class PacketCreator;
+
 class WorldServer : public AbstractServer, boost::noncopyable {
 public:
 	static WorldServer * Instance() {
@@ -49,6 +50,7 @@ public:
 	void setConfig(const WorldConfig &config);
 	void setRates(const Rates &rates);
 	void resetRates();
+	void sendPacketToLogin(const PacketCreator &packet);
 
 	bool isConnected() const { return (m_worldId != -1); }
 	int8_t getWorldId() const { return m_worldId; }
@@ -56,7 +58,6 @@ public:
 	int32_t getMaxChannels() const { return m_config.maxChannels; }
 	string getScrollingHeader() { return m_config.scrollingHeader.c_str(); }
 	WorldConfig & getConfig() { return m_config; }
-	LoginServerConnection * getLoginConnection() const { return m_loginConnection; }
 private:
 	WorldServer();
 	static WorldServer *singleton;

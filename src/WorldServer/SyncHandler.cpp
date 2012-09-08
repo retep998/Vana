@@ -136,18 +136,20 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, P
 }
 
 void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
+	// TODO FIXME
+	// This request comes from the destination channel so I can't remove the ->getConnection() calls
 	int32_t playerId = packet.get<int32_t>();
 	Player *gamePlayer = PlayerDataProvider::Instance()->getPlayer(playerId);
 	if (gamePlayer) {
 		uint16_t chanId = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerId);
-		Channel *chan = Channels::Instance()->getChannel(chanId);
-		Channel *curchan = Channels::Instance()->getChannel(gamePlayer->getChannel());
-		if (chan) {
-			ip_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), chan->getExternalIps(), chan->getIp());
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerId, chanIp, chan->getPort());
+		Channel *destinationChannel = Channels::Instance()->getChannel(chanId);
+		Channel *currentChannel = Channels::Instance()->getChannel(gamePlayer->getChannel());
+		if (destinationChannel) {
+			ip_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), destinationChannel->getExternalIps(), destinationChannel->getIp());
+			SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, chanIp, destinationChannel->getPort());
 		}
 		else {
-			SyncPacket::PlayerPacket::playerChangeChannel(curchan->getConnection(), playerId, 0, -1);
+			SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, 0, -1);
 		}
 		PlayerDataProvider::Instance()->removePendingPlayer(playerId);
 	}
@@ -170,7 +172,7 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 
 	int32_t inviteeId = packet.get<int32_t>();
 	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
-		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel())->getConnection(), inviteeId, inviterId, inviter->getName());
+		SyncPacket::BuddyPacket::sendBuddyInvite(Channels::Instance()->getChannel(invitee->getChannel()), inviteeId, inviterId, inviter->getName());
 	}
 	else {
 		// Make new pending buddy in the database
@@ -208,7 +210,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 
 	for (unordered_map<int16_t, vector<int32_t>>::iterator iter = ids.begin(); iter != ids.end(); ++iter) {
 		if (Channel *channel = Channels::Instance()->getChannel(iter->first)) {
-			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel->getConnection(), iter->second, playerId, (online ? player->getChannel() : -1));
+			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel, iter->second, playerId, (online ? player->getChannel() : -1));
 		}
 	}
 }

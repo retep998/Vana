@@ -33,7 +33,7 @@ void LoginServerConnectPacket::registerChannel(int32_t channel, ip_t ip, const I
 	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
 
 	packet.add<port_t>(port);
-	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+	WorldServer::Instance()->sendPacketToLogin(packet);
 }
 
 void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t population) {
@@ -42,7 +42,7 @@ void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t populat
 	packet.add<int32_t>(channel);
 	packet.add<int32_t>(population);
 
-	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+	WorldServer::Instance()->sendPacketToLogin(packet);
 }
 
 void LoginServerConnectPacket::removeChannel(int32_t channel) {
@@ -50,5 +50,5 @@ void LoginServerConnectPacket::removeChannel(int32_t channel) {
 	packet.add<header_t>(IMSG_REMOVE_CHANNEL);
 	packet.add<int32_t>(channel);
 
-	WorldServer::Instance()->getLoginConnection()->getSession()->send(packet);
+	WorldServer::Instance()->sendPacketToLogin(packet);
 }

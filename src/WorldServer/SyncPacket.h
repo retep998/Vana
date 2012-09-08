@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+class Channel;
 class PacketCreator;
 class PacketReader;
 class Party;
@@ -32,7 +33,7 @@ class WorldServerAcceptConnection;
 struct Rates;
 
 namespace SyncPacket {
-	void sendSyncData(WorldServerAcceptConnection *player);
+	void sendSyncData(WorldServerAcceptConnection *connection);
 
 	namespace ConfigPacket {
 		void setRates(const Rates &rates);
@@ -54,7 +55,7 @@ namespace SyncPacket {
 		void updatePlayerLevel(int32_t playerId, int16_t level);
 	}
 	namespace BuddyPacket {
-		void sendBuddyInvite(WorldServerAcceptConnection *connection, int32_t inviteeId, int32_t inviterId, const string &name);
-		void sendBuddyOnlineOffline(WorldServerAcceptConnection *connection, const vector<int32_t> &players, int32_t playerId, int32_t channelId);
+		void sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string &name);
+		void sendBuddyOnlineOffline(Channel *channel, const vector<int32_t> &players, int32_t playerId, int32_t channelId);
 	}
 }

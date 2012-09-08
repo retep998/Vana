@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::vector;
 
+class PacketCreator;
 class WorldServerAcceptConnection;
 
 class Channel : boost::noncopyable {
@@ -43,6 +44,7 @@ public:
 	ip_t getIp() const { return m_ip; }
 	const IpMatrix & getExternalIps() { return m_externalIps; }
 	WorldServerAcceptConnection * getConnection() const { return m_connection; }
+	void send(const PacketCreator &packet);
 private:
 	uint16_t m_id;
 	port_t m_port;
