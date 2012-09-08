@@ -520,6 +520,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "zakumdoor") mapId = 211042300;
 	else if (query == "caveoflifeentrance") mapId = 240040700;
 	else if (query == "caveoflife") mapId = 240050000;
+	else if (query == "zakumsignup") mapId = 211042400;
 	else if (query == "horntailsignup") mapId = 240050400;
 	else {
 		char *endptr;

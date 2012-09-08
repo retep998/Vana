@@ -36,7 +36,9 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 		startInstanceTimer("clean", 1, false);
 	elseif b then
 		if setPlayer(playerId) then
-			if not isGM() then
+			gm = isGm();
+			gmInstance = getInstanceVariable("gm", true);
+			if (gm and gmInstance) or (not gm and not gmInstance) then
 				addInstancePlayer(playerId);
 			end
 			revertPlayer();

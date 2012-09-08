@@ -43,6 +43,14 @@ function verifyInstance()
 	return isInstance("zakumSignup");
 end
 
+function compatibilityCheck()
+	if setInstance("zakumSignup") then
+		gm = isGm();
+		gmInstance = getInstanceVariable("gm", true);
+		return (not gm and gmInstance ~= 1) or (gm and gmInstance == 1);
+	end
+end
+
 if getLevel() < 50 then
 	-- Should never get this far, but whatever, double checking
 	addText("Only players with level 50 or above are qualified to join the Zakum Squad.");
@@ -50,16 +58,18 @@ if getLevel() < 50 then
 	return;
 end
 
-if verifyInstance() and isBannedInstancePlayer(getName()) then
-	addText("Your participation is formally rejected from the squad. ");
-	addText("You may only participate with an approval from the leader of the squad.");
-	sendOk();
-	return;
+if verifyInstance() then
+	if isBannedInstancePlayer(getName()) or not compatibilityCheck() then
+		addText("Your participation is formally rejected from the squad. ");
+		addText("You may only participate with an approval from the leader of the squad.");
+		sendOk();
+		return;
+	end
 end
 
 if not verifyInstance() then
 	if not isInstance("zakum") then
-		if isPartyLeader() then
+		if isGm() or isPartyLeader() then
 			addText("Would you like to become the leader of the Zakum Expedition Squad?");
 			ans = askYesNo();
 
@@ -68,15 +78,17 @@ if not verifyInstance() then
 				addText("The expedition squad is already active.");
 			else
 				if ans == 1 then
-					if not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3 then
+					if not isGm() and (not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Zakum Expedition Squad.");
 					else
 						createInstance("zakumSignup", 5 * 60, true);
 						addPlayerSignUp(getName());
 						setInstanceVariable("master", getName());
+						setInstanceVariable("gm", isGm());
 						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", env_blueMessage);
 
-						addText("You have been appointed the leader of the Zakum Expedition Squad. You'll now have 5 minutes to form the squad and have every member enter the mission.");
+						addText("You have been appointed the leader of the Zakum Expedition Squad. ");
+						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
 					end
 				else
 					addText("Talk to me if you want to become the leader of the squad.");
@@ -155,10 +167,14 @@ else
 					sendOk();
 				end
 			elseif choice == 3 then
-				if getInstanceSignupCount() >= 6 then
+				if isGm() or getInstanceSignupCount() >= 6 then
 					setInstanceVariable("enter", "1");
 					messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
 					createInstance("zakum", 0, false);
+
+					if isGm() and setInstance("zakum") then
+						setInstanceVariable("gm", 1);
+					end
 
 					enterBossMap();
 				else
