@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Griffey portal
 
-if getNumPlayers(240020102) < 6 then
+if getNumPlayers(240020101) < 6 then
 	playPortalSe();
-	setMap(240020102, "out00");
+	setMap(240020101, "out00");
 else
 	showMessage("You may not enter the Griffey Forest.", env_redMessage);
 end
