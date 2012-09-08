@@ -26,4 +26,5 @@ namespace InfoFunctions {
 	bool lookup(Player *player, const string &args);
 	bool pos(Player *player, const string &args);
 	bool online(Player *player, const string &args);
+	bool variable(Player *player, const string &args);
 }

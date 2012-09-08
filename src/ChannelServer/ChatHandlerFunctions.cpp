@@ -170,6 +170,11 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("Searches that are based on search string: item, skill, map, mob, npc, quest, scriptbyname, music");
 	CommandList["lookup"] = command.addToMap();
 
+	command.command = &InfoFunctions::variable;
+	command.syntax = "<$variable name>";
+	command.notes.push_back("Displays the value for a given player variable (or an error if the value is blank/doesn't exist).");
+	CommandList["variable"] = command.addToMap();
+
 	command.command = &ManagementFunctions::map;
 	command.syntax = "<${town | map string | boss map string} | #map ID>";
 	command.notes.push_back("Warps you to a desired map.");
