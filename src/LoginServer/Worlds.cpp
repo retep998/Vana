@@ -121,7 +121,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 		world->setConnected(true);
 		world->setConnection(connection);
 
-		LoginServerAcceptPacket::connect(connection, world);
+		LoginServerAcceptPacket::connect(world);
 
 		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string>(worldId));
 	}
@@ -146,9 +146,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	int8_t worldId = -1;
 	if (validWorld != nullptr) {
 		worldId = validWorld->getId();
-		LoginServerAcceptConnection *wConnection = validWorld->getConnection();
-
-		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), wConnection->getExternalIp(), wConnection->getIp());
+		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), validWorld->getExternalIp(), validWorld->getIp());
 		LoginServerAcceptPacket::connectChannel(connection, worldId, worldIp, validWorld->getPort());
 	}
 	else {
@@ -162,7 +160,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 void Worlds::toWorlds(PacketCreator &packet) {
 	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
 		if (iter->second->isConnected()) {
-			iter->second->getConnection()->getSession()->send(packet);
+			iter->second->send(packet);
 		}
 	}
 }

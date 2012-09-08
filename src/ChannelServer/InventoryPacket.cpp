@@ -108,6 +108,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairId) {
 	packet.add<int16_t>(1);
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
+
 	packet = PacketCreator();
 	packet.add<header_t>(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());

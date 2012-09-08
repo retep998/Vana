@@ -165,7 +165,7 @@ void Characters::showCharacters(Player *player) {
 		soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
-		WorldConfig &world = Worlds::Instance()->getWorld(worldId)->getConfig();
+		const WorldConfig &world = Worlds::Instance()->getWorld(worldId)->getConfig();
 		max = world.defaultChars;
 	}
 
@@ -351,7 +351,7 @@ void Characters::connectGame(Player *player, int32_t charId) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorldId())->getConnection(), player->getChannel(), charId, player->getIp());
+	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
 	LoginPacket::connectIp(player, charId);
 }
 

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, World *world) {
+void LoginServerAcceptPacket::connect(World *world) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(world->getId());
@@ -32,7 +32,7 @@ void LoginServerAcceptPacket::connect(LoginServerAcceptConnection *connection, W
 
 	packet.addClass<WorldConfig>(world->getConfig());
 
-	connection->getSession()->send(packet);
+	world->send(packet);
 }
 
 void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) {
@@ -51,18 +51,18 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connec
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(LoginServerAcceptConnection *connection, uint16_t channel, int32_t charId, ip_t ip) {
+void LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, ip_t ip) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_NEW_PLAYER);
 	packet.add<uint16_t>(channel);
 	packet.add<int32_t>(charId);
 	packet.add<ip_t>(ip);
-	connection->getSession()->send(packet);
+	world->send(packet);
 }
 
 void LoginServerAcceptPacket::rehashConfig(World *world) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REHASH_CONFIG);
 	packet.addClass<WorldConfig>(world->getConfig());
-	world->getConnection()->getSession()->send(packet);
+	world->send(packet);
 }
