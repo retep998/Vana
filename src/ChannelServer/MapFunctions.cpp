@@ -85,7 +85,7 @@ bool MapFunctions::killMob(Player *player, const string &args) {
 		int32_t mobId = atoi(args.c_str());
 		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
 		if (mob != nullptr) {
-			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". HP left: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
+			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". Damage applied: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
 			mob->applyDamage(player->getId(), mob->getHp());
 		}
 		else {
@@ -129,7 +129,8 @@ bool MapFunctions::listMobs(Player *player, const string &args) {
 					<< " (ID: " << iter->second->getMobId()
 					<< ", HP: " << iter->second->getHp()
 					<< "/" << iter->second->getMaxHp()
-					<< ")";
+					<< " [" << static_cast<int64_t>(iter->second->getHp()) * 100 / iter->second->getMaxHp()
+					<< "%])";
 
 			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
 		}

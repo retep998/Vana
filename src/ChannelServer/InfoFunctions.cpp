@@ -247,3 +247,20 @@ bool InfoFunctions::online(Player *player, const string &args) {
 	PlayerPacket::showMessage(player, igns.str(), PlayerPacket::NoticeTypes::Blue);
 	return true;
 }
+
+bool InfoFunctions::variable(Player *player, const string &args) {
+	cmatch matches;
+	if (!ChatHandlerFunctions::runRegexPattern(args, "(\\w+)", matches)) {
+		return false;
+	}
+
+	string test = matches[1];
+	string val = player->getVariables()->getVariable(test);
+	if (!val.empty()) {
+		PlayerPacket::showMessage(player, test + ": " + val, PlayerPacket::NoticeTypes::Blue);
+	}
+	else {
+		PlayerPacket::showMessage(player, "Variable '" + test + "' did not exist or has a blank value", PlayerPacket::NoticeTypes::Red);
+	}
+	return true;
+}
