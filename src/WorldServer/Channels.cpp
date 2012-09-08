@@ -54,7 +54,7 @@ void Channels::sendToAll(const PacketCreator &packet) {
 }
 
 void Channels::sendToChannel(uint16_t channel, const PacketCreator &packet) {
-	getChannel(channel)->getConnection()->getSession()->send(packet);
+	getChannel(channel)->send(packet);
 }
 
 void Channels::increasePopulation(uint16_t channel) {

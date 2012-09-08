@@ -55,7 +55,7 @@ void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connec
 	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));
 }
 
-void LoginServerAcceptHandler::toWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) {
+void LoginServerAcceptHandler::sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	PacketCreator pack;
 	pack.addBuffer(packet);
 	Worlds::Instance()->toWorlds(pack);

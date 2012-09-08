@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channel.h"
+#include "PacketCreator.h"
+#include "WorldServerAcceptConnection.h"
 
 Channel::Channel() :
 	m_players(0),
@@ -24,4 +26,8 @@ Channel::Channel() :
 	m_ip(0),
 	m_port(0)
 {
+}
+
+void Channel::send(const PacketCreator &packet) {
+	m_connection->getSession()->send(packet);
 }

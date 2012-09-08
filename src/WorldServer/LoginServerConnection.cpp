@@ -32,7 +32,7 @@ LoginServerConnection::LoginServerConnection()
 LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::Instance()->isConnected()) {
 		WorldServer::Instance()->setWorldId(-1);
-		std::cout << "Disconnected from loginserver. Shutting down..." << std::endl;
+		std::cout << "Disconnected from the LoginServer. Shutting down..." << std::endl;
 		WorldServer::Instance()->shutdown();
 	}
 }
@@ -42,6 +42,6 @@ void LoginServerConnection::handleRequest(PacketReader &packet) {
 		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case IMSG_REHASH_CONFIG: LoginServerConnectHandler::rehashConfig(packet); break;
-		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendToChannels(packet); break;
+		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
 	}
 }

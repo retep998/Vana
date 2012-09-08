@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "InitializeWorld.h"
 #include "IpUtilities.h"
+#include "PacketCreator.h"
 #include "StringUtilities.h"
 #include "SyncPacket.h"
 #include "VanaConstants.h"
@@ -46,7 +47,7 @@ void WorldServer::loadData() {
 	const string &interPassword = getInterPassword();
 	const string &salt = getSalt();
 	const IpMatrix &externalIp = getExternalIp();
-	getLoginConnection()->sendAuth(interPassword, salt, externalIp);
+	m_loginConnection->sendAuth(interPassword, salt, externalIp);
 }
 
 void WorldServer::loadConfig() {
@@ -95,4 +96,8 @@ opt_string WorldServer::makeLogIdentifier() {
 void WorldServer::setScrollingHeader(const string &message) {
 	m_config.scrollingHeader = message;
 	SyncPacket::ConfigPacket::scrollingHeader(message);
+}
+
+void WorldServer::sendPacketToLogin(const PacketCreator &packet) {
+	m_loginConnection->getSession()->send(packet);
 }
