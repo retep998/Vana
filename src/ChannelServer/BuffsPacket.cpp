@@ -67,7 +67,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, int32_t time, const 
 		}
 		packet.add<int16_t>(0);
 		packet.add<int16_t>(addedInfo);
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
+		player->getMap()->sendPacket(packet, player);
 	}
 }
 
@@ -106,7 +106,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, int
 	}
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(delay);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
@@ -126,7 +126,7 @@ void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
 
 	BuffsPacketHelper::addBytes(packet, playerSkill.types);
 
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
@@ -146,7 +146,7 @@ void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
 
 	BuffsPacketHelper::addBytes(packet, playerSkill.types);
 
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
@@ -187,7 +187,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, int32_t time, c
 		packet.add<int16_t>(castedtime);
 	}
 	packet.add<int16_t>(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
@@ -224,7 +224,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, int32_t time
 	packet.add<int16_t>(0);
 	packet.add<int16_t>(castedtime);
 	packet.add<int16_t>(addedInfo);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId) {
@@ -258,7 +258,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, int32_t time, const 
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId) {

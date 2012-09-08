@@ -51,12 +51,12 @@ void NpcHandler::handleNpc(Player *player, PacketReader &packet) {
 	}
 	uint32_t npcId = Map::makeNpcId(packet.get<uint32_t>());
 
-	if (!Maps::getMap(player->getMap())->isValidNpcIndex(npcId)) {
+	if (!player->getMap()->isValidNpcIndex(npcId)) {
 		// Shouldn't ever happen except in edited packets
 		return;
 	}
 
-	NpcSpawnInfo npcs = Maps::getMap(player->getMap())->getNpc(npcId);
+	NpcSpawnInfo npcs = player->getMap()->getNpc(npcId);
 	if (player->getNpc() == nullptr && Npc::hasScript(npcs.id, 0, false)) {
 		Npc *npc = new Npc(npcs.id, player, npcs.pos);
 		npc->run();

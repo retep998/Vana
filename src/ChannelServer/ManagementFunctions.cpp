@@ -193,7 +193,7 @@ bool ManagementFunctions::addNpc(Player *player, const string &args) {
 		npc.pos = player->getPos();
 		npc.rx0 = npc.pos.x - 50;
 		npc.rx1 = npc.pos.x + 50;
-		int32_t id = Maps::getMap(player->getMap())->addNpc(npc);
+		int32_t id = player->getMap()->addNpc(npc);
 		PlayerPacket::showMessage(player, "Spawned NPC with object ID " + lexical_cast<string>(id) , PlayerPacket::NoticeTypes::Blue);
 		return true;
 	}
@@ -213,9 +213,9 @@ bool ManagementFunctions::kill(Player *player, const string &args) {
 		bool proceed = true;
 		auto iterate = [&player](function<bool(Player *p)> func) -> int {
 			int32_t kills = 0;
-			int32_t map = player->getMap();
-			for (size_t i = 0; i < Maps::getMap(map)->getNumPlayers(); ++i) {
-				Player *t = Maps::getMap(map)->getPlayer(i);
+			Map *map = player->getMap();
+			for (size_t i = 0; i < map->getNumPlayers(); ++i) {
+				Player *t = map->getPlayer(i);
 				if (t != player) {
 					if (func(t)) kills++;
 				}

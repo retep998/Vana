@@ -140,7 +140,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			int16_t x = packet.get<int16_t>();
 			int16_t y = packet.get<int16_t>();
 			const Pos &origin = Pos(x, y);
-			Mist *m = new Mist(player->getMap(), player, origin, skill, skillId, level);
+			Mist *m = new Mist(player->getMapId(), player, origin, skill, skillId, level);
 			break;
 		}
 		case Skills::Corsair::Battleship:
@@ -155,7 +155,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			uint8_t mobs = packet.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
-				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId)) {
+				if (Mob *mob = player->getMap()->getMob(mapMobId)) {
 					if (Randomizer::Instance()->randShort(99) < skill->prop) {
 						mob->doCrashSkill(skillId);
 					}
@@ -190,7 +190,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 		case Skills::NightLord::NinjaAmbush: {
 			uint8_t mobs = packet.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
-				if (Mob *mob = Maps::getMap(player->getMap())->getMob(packet.get<int32_t>())) {
+				if (Mob *mob = player->getMap()->getMob(packet.get<int32_t>())) {
 					MobHandler::handleMobStatus(player->getId(), mob, skillId, level, 0, 0);
 				}
 			}
@@ -231,7 +231,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			affected = packet.get<int8_t>();
 			for (int8_t k = 0; k < affected; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
-				if (Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId)) {
+				if (Mob *mob = player->getMap()->getMob(mapMobId)) {
 					if (Randomizer::Instance()->randShort(99) < skill->prop) {
 						mob->dispelBuffs();
 					}
@@ -251,7 +251,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			int16_t heal = (healRate * player->getStats()->getMaxHp() / 100) / partyPlayers;
 
 			if (party != nullptr) {
-				vector<Player *> members = party->getPartyMembers(player->getMap());
+				vector<Player *> members = party->getPartyMembers(player->getMapId());
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
 					int16_t chp = cmem->getStats()->getHp();

@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "KeyMaps.h"
 #include "LevelsPacket.h"
+#include "Map.h"
 #include "MapPacket.h"
 #include "Maps.h"
 #include "MobHandler.h"
@@ -405,6 +406,10 @@ void Player::playerConnect(PacketReader &packet) {
 	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
 
+Map * Player::getMap() const {
+	return Maps::getMap(getMapId());
+}
+
 void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 	if (!Maps::getMap(mapId)) {
 		MapPacket::portalBlocked(this);
@@ -684,7 +689,7 @@ void Player::setLevelDate() {
 void Player::acceptDeath(bool wheel) {
 	int32_t toMap = (Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map);
 	if (wheel) {
-		toMap = getMap();
+		toMap = getMapId();
 	}
 	getStats()->setHp(50, false);
 	getActiveBuffs()->removeBuff();

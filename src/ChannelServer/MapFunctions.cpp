@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapFunctions.h"
 #include "ChannelServer.h"
+#include "Map.h"
 #include "MapPacket.h"
-#include "Maps.h"
 #include "MobConstants.h"
 #include "Player.h"
 #include "PlayerPacket.h"
@@ -28,14 +28,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using StringUtilities::lexical_cast;
 
 bool MapFunctions::eventInstruction(Player *player, const string &args) {
-	MapPacket::showEventInstructions(player->getMap());
+	MapPacket::showEventInstructions(player->getMapId());
 	return true;
 }
 
 bool MapFunctions::instruction(Player *player, const string &args) {
 	if (args.length() != 0) {
-		for (size_t i = 0; i < Maps::getMap(player->getMap())->getNumPlayers(); i++) {
-			PlayerPacket::instructionBubble(Maps::getMap(player->getMap())->getPlayer(i), args);
+		Map *map = player->getMap();
+		for (size_t i = 0; i < map->getNumPlayers(); i++) {
+			PlayerPacket::instructionBubble(map->getPlayer(i), args);
 		}
 		PlayerPacket::showMessage(player, "Showing instruction bubble to everyone on the map.", PlayerPacket::NoticeTypes::Blue);
 		return true;
@@ -74,7 +75,7 @@ bool MapFunctions::timer(Player *player, const string &args) {
 			msg << "!";
 		}
 		PlayerPacket::showMessage(player, msg.str(), PlayerPacket::NoticeTypes::Blue);
-		Maps::getMap(player->getMap())->setMapTimer(time);
+		player->getMap()->setMapTimer(time);
 		return true;
 	}
 	return false;
@@ -83,7 +84,7 @@ bool MapFunctions::timer(Player *player, const string &args) {
 bool MapFunctions::killMob(Player *player, const string &args) {
 	if (args.length() != 0) {
 		int32_t mobId = atoi(args.c_str());
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
+		Mob *mob = player->getMap()->getMob(mobId);
 		if (mob != nullptr) {
 			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". Damage applied: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
 			mob->applyDamage(player->getId(), mob->getHp());
@@ -99,7 +100,7 @@ bool MapFunctions::killMob(Player *player, const string &args) {
 bool MapFunctions::getMobHp(Player *player, const string &args) {
 	if (args.length() != 0) {
 		int32_t mobId = atoi(args.c_str());
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
+		Mob *mob = player->getMap()->getMob(mobId);
 		if (mob != nullptr) {
 			std::ostringstream message;
 			message << "Mob " << mobId
@@ -117,9 +118,9 @@ bool MapFunctions::getMobHp(Player *player, const string &args) {
 }
 
 bool MapFunctions::listMobs(Player *player, const string &args) {
-	if (Maps::getMap(player->getMap())->countMobs(0) > 0) {
+	if (player->getMap()->countMobs(0) > 0) {
 		typedef unordered_map<int32_t, Mob *> MobMap;
-		MobMap mobs = Maps::getMap(player->getMap())->getMobs();
+		MobMap mobs = player->getMap()->getMobs();
 		std::ostringstream message;
 		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); ++iter) {
 			message.str("");
@@ -142,13 +143,13 @@ bool MapFunctions::listMobs(Player *player, const string &args) {
 }
 
 bool MapFunctions::zakum(Player *player, const string &args) {
-	Maps::getMap(player->getMap())->spawnZakum(player->getPos());
+	player->getMap()->spawnZakum(player->getPos());
 	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Zakum on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
 	return true;
 }
 
 bool MapFunctions::horntail(Player *player, const string &args) {
-	Maps::getMap(player->getMap())->spawnMob(Mobs::SummonHorntail, player->getPos());
+	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
 	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Horntail on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
 	return true;
 }
@@ -169,7 +170,7 @@ bool MapFunctions::music(Player *player, const string &args) {
 		PlayerPacket::showMessage(player, "Invalid music: " + args, PlayerPacket::NoticeTypes::Red);
 	}
 	else {
-		Maps::getMap(player->getMap())->setMusic(music);
+		player->getMap()->setMusic(music);
 		PlayerPacket::showMessage(player, "Set music on the map to: " + music, PlayerPacket::NoticeTypes::Blue);
 	}
 	return true;
@@ -184,7 +185,7 @@ bool MapFunctions::summon(Player *player, const string &args) {
 			int32_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 			if (count > 100) count = 100;
 			for (int32_t i = 0; i < count; i++) {
-				Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos());
+				player->getMap()->spawnMob(mobId, player->getPos());
 			}
 			if (count > 0) {
 				PlayerPacket::showMessage(player, "Spawned " + lexical_cast<string>(count) + " mobs with ID " + lexical_cast<string>(mobId) + ".", PlayerPacket::NoticeTypes::Blue);
@@ -202,12 +203,12 @@ bool MapFunctions::summon(Player *player, const string &args) {
 }
 
 bool MapFunctions::clearDrops(Player *player, const string &args) {
-	Maps::getMap(player->getMap())->clearDrops();
+	player->getMap()->clearDrops();
 	return true;
 }
 
 bool MapFunctions::killAllMobs(Player *player, const string &args) {
-	int32_t killed = Maps::getMap(player->getMap())->killMobs(player);
+	int32_t killed = player->getMap()->killMobs(player);
 	PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(killed) + " mobs!", PlayerPacket::NoticeTypes::Blue);
 	return true;
 }

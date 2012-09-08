@@ -40,7 +40,7 @@ using std::bind;
 
 void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	int32_t mobId = packet.get<int32_t>();
-	Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
+	Mob *mob = player->getMap()->getMob(mobId);
 	if (player->getStats()->isDead() || mob == nullptr) {
 		return;
 	}
@@ -56,7 +56,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	int32_t mobTo = packet.get<int32_t>();
 
-	Map *map = Maps::getMap(player->getMap());
+	Map *map = player->getMap();
 	Mob *dealer = map->getMob(mobFrom);
 	Mob *taker = map->getMob(mobTo);
 	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
@@ -84,7 +84,7 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	packet.skipBytes(1); // Facing direction
 	packet.skipBytes(4); // Some type of pos, damage display, I think
 
-	Map *map = Maps::getMap(player->getMap());
+	Map *map = player->getMap();
 	Mob *damager = map->getMob(mobFrom);
 	Mob *taker = map->getMob(mobTo);
 	if (damager != nullptr && taker != nullptr) {
@@ -95,7 +95,7 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int32_t mobId = packet.get<int32_t>();
 
-	Mob *mob = Maps::getMap(player->getMap())->getMob(mobId);
+	Mob *mob = player->getMap()->getMob(mobId);
 
 	if (mob == nullptr || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
 		return;

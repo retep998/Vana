@@ -79,7 +79,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	if (type != MapDamage) {
 		mobId = packet.get<int32_t>();
 		mapMobId = packet.get<int32_t>();
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob != nullptr && mob->getMobId() != mobId) {
 			// Hacking
 			return;
@@ -293,7 +293,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 
 	if (player->getFh() == 0) {
 		// Player is floating in the air
-		int32_t mapId = player->getMap();
+		int32_t mapId = player->getMapId();
 		const Pos &playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
@@ -416,7 +416,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		Skills::useAttackSkill(player, skillId);
 	}
 
-	int32_t map = player->getMap();
+	int32_t map = player->getMapId();
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
 	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
@@ -478,7 +478,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 
 			clock_t ppTime = 175 * pickpocket;
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
-			Drop *ppDrop = new Drop(player->getMap(), ppMesos, ppPos, player->getId(), true);
+			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, ppDrop, origin),
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
@@ -494,17 +494,17 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	switch (skillId) {
 		case Skills::ChiefBandit::MesoExplosion: {
 			uint8_t items = packet.get<int8_t>();
-			int32_t map = player->getMap();
+			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
 				int32_t objId = packet.get<int32_t>();
 				packet.skipBytes(1); // Some value
-				if (Drop *drop = Maps::getMap(map)->getDrop(objId)) {
+				if (Drop *drop = map->getDrop(objId)) {
 					if (!drop->isMesos()) {
 						// Hacking
 						return;
 					}
 					DropsPacket::explodeDrop(drop);
-					Maps::getMap(map)->removeDrop(drop->getId());
+					map->removeDrop(drop->getId());
 					delete drop;
 				}
 			}
@@ -603,7 +603,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t mapMobId = i->first;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -703,7 +703,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -741,7 +741,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	switch (skillId) {
 		case Skills::FpMage::PoisonMist:
 		case Skills::BlazeWizard::FlameGear: {
-			Mist *mist = new Mist(player->getMap(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillId, level), skillId, level, true);
+			Mist *mist = new Mist(player->getMapId(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillId, level), skillId, level, true);
 			break;
 		}
 	}
@@ -758,7 +758,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -799,7 +799,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
-		Mob *mob = Maps::getMap(player->getMap())->getMob(mapMobId);
+		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}

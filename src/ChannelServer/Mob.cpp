@@ -437,7 +437,7 @@ void Mob::setControl(Player *control, bool spawn, Player *display) {
 }
 
 void Mob::endControl() {
-	if (m_controller != nullptr && m_controller->getMap() == getMapId()) {
+	if (m_controller != nullptr && m_controller->getMapId() == getMapId()) {
 		MobsPacket::endControlMob(m_controller, this);
 	}
 }
@@ -522,7 +522,7 @@ int32_t Mob::giveExp(Player *killer) {
 				highestDamage = iter->second;
 			}
 			damager = PlayerDataProvider::Instance()->getPlayer(iter->first);
-			if (damager == nullptr || damager->getMap() != m_mapId || damager->getStats()->isDead()) {
+			if (damager == nullptr || damager->getMapId() != m_mapId || damager->getStats()->isDead()) {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 			}

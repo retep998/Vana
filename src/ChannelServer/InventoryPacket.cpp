@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryPacketHelper.h"
 #include "ItemConstants.h"
+#include "Map.h"
 #include "Maps.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -55,7 +56,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 	PlayerPacketHelper::addPlayerDisplay(packet, player);
 	packet.add<int8_t>(0);
 	packet.add<int16_t>(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
@@ -113,7 +114,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairId) {
 	packet.add<header_t>(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(chairId);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void InventoryPacket::sitMapChair(Player *player, int16_t chairId) {
@@ -136,7 +137,7 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	packet.add<header_t>(SMSG_CHAIR_SIT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) {
@@ -149,7 +150,7 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	packet.add<int8_t>(succeed);
 	packet.addBool(destroy);
 	packet.add<int16_t>(legendarySpirit);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	player->getMap()->sendPacket(packet);
 }
 
 void InventoryPacket::showMegaphone(Player *player, const string &msg) {
@@ -230,7 +231,7 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 	packet.add<int32_t>(newMaxLevel);
 	packet.addBool(use);
 	packet.addBool(succeed);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	player->getMap()->sendPacket(packet);
 }
 
 void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
@@ -238,7 +239,7 @@ void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
 	packet.add<header_t>(SMSG_ITEM_EFFECT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(itemId);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {
@@ -339,7 +340,7 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	packet.add<int32_t>(player->getId());
 	packet.addBool(!msg.empty());
 	packet.addString(msg);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	player->getMap()->sendPacket(packet);
 }
 
 void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playerName) {
@@ -366,7 +367,7 @@ void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, co
 	packet.add<int32_t>(itemId);
 	packet.add<int8_t>(1); // Unk...?
 	packet.addString(effect);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void InventoryPacket::sendItemExpired(Player *player, const vector<int32_t> &items) {

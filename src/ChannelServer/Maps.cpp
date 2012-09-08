@@ -53,10 +53,10 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 		const string &filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
-			int32_t map = player->getMap();
+			int32_t map = player->getMapId();
 			LuaPortal(filename, player->getId(), portal);
 
-			if (map == player->getMap()) {
+			if (map == player->getMapId()) {
 				// The portal didn't change the map
 				MapPacket::portalBlocked(player);
 			}
@@ -107,7 +107,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 		case -1: {
 			const string &portalName = packet.getString();
 
-			Map *toMap = getMap(player->getMap());
+			Map *toMap = player->getMap();
 			if (toMap == nullptr) {
 				return;
 			}
@@ -131,7 +131,7 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	packet.skipBytes(1);
 	const string &portalName = packet.getString();
 
-	PortalInfo *portal = getMap(player->getMap())->getPortal(portalName);
+	PortalInfo *portal = player->getMap()->getPortal(portalName);
 	if (portal == nullptr) {
 		return;
 	}

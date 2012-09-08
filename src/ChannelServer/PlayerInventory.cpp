@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacketHelper.h"
 #include "ItemConstants.h"
 #include "ItemDataProvider.h"
+#include "Map.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Pet.h"
@@ -232,6 +233,7 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 		if (slot < 0) {
 			addEquipped(slot, 0);
 			m_player->getStats()->setEquip(slot, nullptr);
+			m_player->getMap()->checkPlayerEquip(m_player);
 		}
 	}
 	else {
@@ -239,6 +241,7 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 		if (slot < 0) {
 			addEquipped(slot, item->getId());
 			m_player->getStats()->setEquip(slot, item);
+			m_player->getMap()->checkPlayerEquip(m_player);
 		}
 	}
 }
@@ -292,10 +295,10 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
 }
 
 bool PlayerInventory::isEquippedItem(int32_t itemId) {
-	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
+	const ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
 	bool has = false;
-	for (ItemInventory::iterator iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first == itemId) {
+	for (auto iter = equips.begin(); iter != equips.end(); ++iter) {
+		if (iter->first < 0 && iter->second->getId() == itemId) {
 			has = true;
 			break;
 		}

@@ -40,7 +40,7 @@ using std::string;
 void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 
-	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
+	Reactor *reactor = player->getMap()->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
 		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
@@ -82,7 +82,7 @@ void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 	bool isTouching = packet.getBool();
 
-	Reactor *reactor = Maps::getMap(player->getMap())->getReactor(id);
+	Reactor *reactor = player->getMap()->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
 		int8_t newState = reactor->getState() + (isTouching ? 1 : -1);

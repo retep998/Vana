@@ -106,5 +106,5 @@ void EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemId) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(0x0B);
 	packet.add<int32_t>(itemId);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }

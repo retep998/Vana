@@ -47,10 +47,10 @@ int LuaExports::getPortalName(lua_State *luaVm) {
 }
 
 int LuaExports::instantWarp(lua_State *luaVm) {
-	Player *p = getPlayer(luaVm);
+	Player *player = getPlayer(luaVm);
 	string portal = lua_tostring(luaVm, 1);
-	int8_t pid = Maps::getMap(p->getMap())->getPortal(portal)->id;
-	MapPacket::instantWarp(p, pid);
+	int8_t portalId = player->getMap()->getPortal(portal)->id;
+	MapPacket::instantWarp(player, portalId);
 	return 0;
 }
 

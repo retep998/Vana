@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.h"
 #include "ChannelServer.h"
 #include "Inventory.h"
+#include "Map.h"
 #include "Maps.h"
 #include "Mist.h"
 #include "PacketCreator.h"
@@ -173,14 +174,14 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 
 void MapPacket::showPlayer(Player *player) {
 	PacketCreator packet = playerPacket(player);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void MapPacket::removePlayer(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_PLAYER_DESPAWN);
 	packet.add<int32_t>(player->getId());
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void MapPacket::changeMap(Player *player) {
@@ -197,7 +198,7 @@ void MapPacket::changeMap(Player *player) {
 			packet.addString("Line");
 		}
 	}
-	packet.add<int32_t>(player->getMap());
+	packet.add<int32_t>(player->getMapId());
 	packet.add<int8_t>(player->getMapPos());
 	packet.add<int16_t>(player->getStats()->getHp());
 	packet.add<int8_t>(0x00);

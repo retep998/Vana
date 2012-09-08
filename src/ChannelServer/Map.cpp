@@ -177,6 +177,29 @@ void Map::addPlayer(Player *player) {
 	if (m_ship) {
 		// Boat packet, need to change this section slightly...
 	}
+
+	checkPlayerEquip(player);
+}
+
+void Map::checkPlayerEquip(Player *player) {
+	if (!player->isGm()) {
+		int32_t dps = getInfo()->damagePerSecond;
+		if (dps > 0) {
+			int32_t protectItem = getInfo()->protectItem;
+			int32_t playerId = player->getId();
+			if (protectItem > 0) {
+				if (!player->getInventory()->isEquippedItem(protectItem)) {
+					m_playersWithoutProtectItem[playerId] = player;
+				}
+				else if (m_playersWithoutProtectItem.find(playerId) != m_playersWithoutProtectItem.end()) {
+					m_playersWithoutProtectItem.erase(playerId);
+				}
+			}
+			else {
+				m_playersWithoutProtectItem[playerId] = player;
+			}
+		}
+	}
 }
 
 void Map::boatDock(bool isDocked) {
@@ -205,6 +228,7 @@ string Map::getPlayerNames() {
 }
 
 void Map::removePlayer(Player *player) {
+	int32_t playerId = player->getId();
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (m_players[i] == player) {
 			m_players.erase(m_players.begin() + i);
@@ -215,6 +239,9 @@ void Map::removePlayer(Player *player) {
 	SummonHandler::removeSummon(player, false, true, SummonMessages::None);
 	MapPacket::removePlayer(player);
 	updateMobControl(player);
+	if (m_playersWithoutProtectItem.find(playerId) != m_playersWithoutProtectItem.end()) {
+		m_playersWithoutProtectItem.erase(playerId);
+	}
 }
 
 void Map::runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, function<void (Player *)> successFunc) {
@@ -770,6 +797,16 @@ void Map::mapTick() {
 	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
 	}
+	int32_t dps = getInfo()->damagePerSecond;
+	if (dps > 0 && m_playersWithoutProtectItem.size() > 0) {
+		Player *player = nullptr;
+		for (auto iter = m_playersWithoutProtectItem.begin(); iter != m_playersWithoutProtectItem.end(); ++iter) {
+			player = iter->second;
+			if (!player->getStats()->isDead()) {
+				player->getStats()->damageHp(dps);
+			}
+		}
+	}
 }
 
 void Map::timeMob(bool firstLoad) {
@@ -811,8 +848,9 @@ void Map::setMapTimer(int32_t t) {
 
 void Map::showObjects(Player *player) {
 	// Music
-	if (getMusic() != getDefaultMusic())
+	if (getMusic() != getDefaultMusic()) {
 		EffectPacket::playMusic(player, getMusic());
+	}
 
 	// MapleTV messengers
 	if (MapleTvs::Instance()->isMapleTvMap(getId()) && MapleTvs::Instance()->hasMessage()) {
