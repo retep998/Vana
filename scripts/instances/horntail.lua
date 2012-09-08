@@ -40,7 +40,7 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 			gm = isGm();
 			gmInstance = getInstanceVariable("gm", true);
 			if (gm and gmInstance) or (not gm and not gmInstance) then
-				addInstancePlayer(playerId);			
+				addInstancePlayer(playerId);
 			end
 			revertPlayer();
 		end

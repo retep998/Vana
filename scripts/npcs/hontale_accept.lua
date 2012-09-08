@@ -213,7 +213,7 @@ else
 			end
 		elseif isAtHead() then
 			addText("The battle has already begun.");
-			sendOk();				
+			sendOk();
 		else
 			addText("What would you like to do?\r\n#b");
 			addText("#L0# Enter the Zakum Expedition Squad#l\r\n");

@@ -88,7 +88,7 @@ if choice == 0 then
 			addText("Buying #b" .. result .. " Magic Seed(s)#k will cost you #b" .. totalPrice .. " mesos#k.");
 			addText("Are you sure you want to make the purchase?");
 			verify = askYesNo();
-			
+
 			if verify == 0 then
 				addText("Please think carefully. ");
 				addText("Once you have made your decision, let me know.");
@@ -102,7 +102,7 @@ if choice == 0 then
 				else
 					giveMesos(-totalPrice);
 					giveItem(item, result);
-					
+
 					addText(partingText);
 					sendNext();
 				end
@@ -165,7 +165,7 @@ elseif choice == 1 then
 		addText("How many #b#t" .. item .. "##k's would you like to donate?\r\n");
 		addText("#b< Owned : " .. amount .. " >#k");
 		donation = askNumber(0, 0, amount);
-		
+
 		addText("Are you sure you want to donate #b" .. donation .. " #t" .. item .. "##k?");
 		verify = askYesNo();
 
