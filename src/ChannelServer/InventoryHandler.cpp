@@ -106,7 +106,7 @@ void InventoryHandler::dropItem(Player *player, PacketReader &packet, Item *item
 		InventoryPacket::updateItemAmounts(player, inv, slot, item->getAmount(), 0, 0);
 	}
 	bool isTradeable = ItemDataProvider::Instance()->isTradeable(droppedItem.getId());
-	Drop *drop = new Drop(player->getMap(), droppedItem, player->getPos(), player->getId(), true);
+	Drop *drop = new Drop(player->getMapId(), droppedItem, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->setTradeable(isTradeable);
 	drop->doDrop(player->getPos());
@@ -198,7 +198,7 @@ void InventoryHandler::useChair(Player *player, PacketReader &packet) {
 
 void InventoryHandler::handleChair(Player *player, PacketReader &packet) {
 	int16_t chair = packet.get<int16_t>();
-	Map *map = Maps::getMap(player->getMap());
+	Map *map = player->getMap();
 	if (chair == -1) {
 		if (player->getChair() != 0) {
 			player->setChair(0);
@@ -245,7 +245,7 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 		const SummonBag &s = (*item)[i];
 		if (Randomizer::Instance()->randInt(99) < s.chance) {
 			if (MobDataProvider::Instance()->mobExists(s.mobId)) {
-				Maps::getMap(player->getMap())->spawnMob(s.mobId, player->getPos());
+				player->getMap()->spawnMob(s.mobId, player->getPos());
 			}
 		}
 	}
@@ -268,7 +268,7 @@ void InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) {
 	}
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 	int32_t map = info->moveTo;
-	player->setMap(map == Maps::NoMap ? Maps::getMap(player->getMap())->getReturnMap() : map);
+	player->setMap(map == Maps::NoMap ? player->getMap()->getReturnMap() : map);
 }
 
 void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
@@ -329,7 +329,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 		string message = packet.getString();
 		uint32_t ticks = packet.get<uint32_t>();
 		if (message.length() <= 35) {
-			Map *map = Maps::getMap(player->getMap());
+			Map *map = player->getMap();
 			message = player->getName() + " 's message : " + message;
 			used = map->createWeather(player, false, Items::WeatherTime, itemId, message);
 		}
@@ -605,7 +605,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				break;
 			}
 			case Items::CongratulatorySong:
-				InventoryPacket::playCashSong(player->getMap(), itemId, player->getName());
+				InventoryPacket::playCashSong(player->getMapId(), itemId, player->getName());
 				used = true;
 				break;
 		}
@@ -642,7 +642,7 @@ void InventoryHandler::handleRockFunctions(Player *player, PacketReader &packet)
 		player->getInventory()->delRockMap(map, type);
 	}
 	else if (mode == Add) {
-		int32_t map = player->getMap();
+		int32_t map = player->getMapId();
 		Map *m = Maps::getMap(map);
 		if (m->canVip() && m->getContinent() != 0) {
 			player->getInventory()->addRockMap(map, type);
@@ -682,7 +682,7 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 		const string &targetName = packet.getString();
 		Player *target = PlayerDataProvider::Instance()->getPlayer(targetName);
 		if (target != nullptr && target != player) {
-			targetMapId = target->getMap();
+			targetMapId = target->getMapId();
 		}
 		else if (target == nullptr) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::DifficultToLocate, type);
@@ -694,14 +694,14 @@ bool InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 	}
 	if (targetMapId != -1) {
 		Map *destination = Maps::getMap(targetMapId);
-		Map *origin = Maps::getMap(player->getMap());
+		Map *origin = player->getMap();
 		if (!destination->canVip()) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
 		}
 		else if (!origin->canVip()) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::CannotGo, type);
 		}
-		else if (player->getMap() == targetMapId) {
+		else if (player->getMapId() == targetMapId) {
 			InventoryPacket::sendRockError(player, InventoryPacket::RockErrors::AlreadyThere, type);
 		}
 		else if (type == 0 && destination->getContinent()!= origin->getContinent()) {

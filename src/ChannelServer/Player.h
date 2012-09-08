@@ -47,6 +47,7 @@ using std::unordered_set;
 using std::vector;
 
 class Instance;
+class Map;
 class PacketReader;
 class Party;
 struct PortalInfo;
@@ -96,8 +97,8 @@ public:
 	int32_t getUserId() const { return m_userId; }
 	int32_t getEyes() const { return m_eyes; }
 	int32_t getHair() const { return m_hair; }
-	int32_t getMap() const { return m_map; }
-	int32_t getLastMap() const { return m_lastMap; }
+	int32_t getMapId() const { return m_map; }
+	int32_t getLastMapId() const { return m_lastMap; }
 	int32_t getShop() const { return m_shop; }
 	int32_t getChair() const { return m_chair; }
 	int32_t getItemEffect() const { return m_itemEffect; }
@@ -111,6 +112,7 @@ public:
 	string getName() const { return m_name; }
 	SpecialSkillInfo getSpecialSkillInfo() const { return m_info; }
 
+	Map * getMap() const;
 	Npc * getNpc() const { return m_npc.get(); }
 	Party * getParty() const { return m_party; }
 	Instance * getInstance() const { return m_instance; }

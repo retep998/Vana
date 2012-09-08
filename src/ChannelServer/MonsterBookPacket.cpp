@@ -43,7 +43,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, b
 		packet.add<header_t>(SMSG_SKILL_SHOW);
 		packet.add<int32_t>(player->getId());
 		packet.add<int8_t>(0x0D);
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
+		player->getMap()->sendPacket(packet, player);
 		*/
 	}
 }

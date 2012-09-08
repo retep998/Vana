@@ -106,7 +106,7 @@ void SyncPacket::PlayerPacket::connect(Player *player) {
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::Connect);
 	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getMap());
+	packet.add<int32_t>(player->getMapId());
 	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 

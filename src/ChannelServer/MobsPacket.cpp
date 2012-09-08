@@ -128,7 +128,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 	packet.add<int8_t>(skill);
 	packet.addPos(projectileTarget);
 	packet.addBuffer(buf, len);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void MobsPacket::healMob(Mob *mob, int32_t amount) {

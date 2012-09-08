@@ -427,9 +427,9 @@ void ChatHandlerFunctions::initialize() {
 int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	int32_t mapId = -1;
 	// Special
-	if (query == "here") mapId = player->getMap();
-	else if (query == "back") mapId = player->getLastMap();
-	else if (query == "town") mapId = Maps::getMap(player->getMap())->getReturnMap();
+	if (query == "here") mapId = player->getMapId();
+	else if (query == "back") mapId = player->getLastMapId();
+	else if (query == "town") mapId = player->getMap()->getReturnMap();
 	else if (query == "gm") mapId = Maps::GmMap;
 	else if (query == "fm") mapId = 910000000;
 	else if (query == "4th") mapId = 240010501;

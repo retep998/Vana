@@ -149,6 +149,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 		mapInfo->minLevel = row.get<uint8_t>("min_level_limit");
 		mapInfo->timeLimit = row.get<int32_t>("time_limit");
 		mapInfo->protectItem = row.get<int32_t>("protect_item");
+		mapInfo->damagePerSecond = row.get<int32_t>("damage_per_second");
 		mapInfo->shipKind = row.get<int8_t>("ship_kind");
 
 		map = new Map(mapInfo, mapId);

@@ -359,7 +359,7 @@ void PlayerStats::setFame(int16_t fame) {
 }
 
 void PlayerStats::loseExp() {
-	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMap() != Maps::SorcerersRoom) {
+	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Maps::SorcerersRoom) {
 		uint16_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
 			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
@@ -367,7 +367,7 @@ void PlayerStats::loseExp() {
 			InventoryPacket::useCharm(m_player, static_cast<uint8_t>(charms));
 			return;
 		}
-		Map *loc = Maps::getMap(m_player->getMap());
+		Map *loc = m_player->getMap();
 		int8_t expLoss = 10;
 		if (loc->loseOnePercent()) {
 			expLoss = 1;

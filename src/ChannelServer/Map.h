@@ -114,6 +114,7 @@ public:
 	Player * getPlayer(uint32_t i) const;
 	string getPlayerNames();
 	void removePlayer(Player *player);
+	void checkPlayerEquip(Player *player);
 	void buffPlayers(int32_t buffId);
 	void runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, function<void (Player *)> successFunc);
 	void runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count, function<void (Player *)> successFunc);
@@ -225,6 +226,7 @@ private:
 	vector<Respawnable> m_reactorRespawns;
 	unordered_map<int32_t, Mob *> m_webbed;
 	unordered_map<int32_t, Mob *> m_mobs;
+	unordered_map<int32_t, Player *> m_playersWithoutProtectItem;
 	unordered_map<int32_t, Drop *> m_drops;
 	unordered_map<int32_t, Mist *> m_poisonMists;
 	unordered_map<int32_t, Mist *> m_mists;

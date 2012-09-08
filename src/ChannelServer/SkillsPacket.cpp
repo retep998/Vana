@@ -63,7 +63,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 		player->getSession()->send(packet);
 	}
 	else {
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
+		player->getMap()->sendPacket(packet, player);
 	}
 }
 
@@ -121,7 +121,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 			break;
 	}
 	if (send) {
-		Maps::getMap(player->getMap())->sendPacket(packet, player);
+		player->getMap()->sendPacket(packet, player);
 	}
 }
 
@@ -136,7 +136,7 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 	packet.add<int8_t>(info.level);
 	packet.add<int8_t>(info.direction);
 	packet.add<int8_t>(info.weaponSpeed);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info) {
@@ -147,7 +147,7 @@ void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info)
 	packet.add<header_t>(SMSG_SPECIAL_SKILL_END);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(info.skillId);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) {
@@ -155,7 +155,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t s
 	packet.add<header_t>(SMSG_MOB_DRAGGED);
 	packet.add<int32_t>(mapMobId);
 	packet.add<uint8_t>(success);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
@@ -184,5 +184,5 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int32_t>(Skills::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
 	packet.addBool(on);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }

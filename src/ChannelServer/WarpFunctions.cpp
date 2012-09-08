@@ -27,7 +27,7 @@ using StringUtilities::lexical_cast;
 namespace Functors {
 	struct WarpFunctor {
 		void operator() (Player *warpee) {
-			if (warpee->getMap() != mapId) {
+			if (warpee->getMapId() != mapId) {
 				warpee->setMap(mapId);
 			}
 		}
@@ -37,7 +37,7 @@ namespace Functors {
 }
 
 bool WarpFunctions::warpAll(Player *player, const string &args) {
-	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
+	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMapId();
 
 	if (Maps::getMap(mapId)) {
 		Functors::WarpFunctor func = {mapId, player};
@@ -61,7 +61,7 @@ bool WarpFunctions::warp(Player *player, const string &args) {
 		string targetName = matches[1];
 		if (Player *warpee = PlayerDataProvider::Instance()->getPlayer(targetName)) {
 			string mapString = matches[2];
-			int32_t mapId = mapString.length() > 0 ? ChatHandlerFunctions::getMap(mapString, player) : player->getMap();
+			int32_t mapId = mapString.length() > 0 ? ChatHandlerFunctions::getMap(mapString, player) : player->getMapId();
 
 			if (Maps::getMap(mapId)) {
 				warpee->setMap(mapId);
@@ -80,11 +80,11 @@ bool WarpFunctions::warp(Player *player, const string &args) {
 }
 
 bool WarpFunctions::warpMap(Player *player, const string &args) {
-	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMap();
+	int32_t mapId = args.length() != 0 ? ChatHandlerFunctions::getMap(args, player) : player->getMapId();
 
 	if (Map *map = Maps::getMap(mapId)) {
 		Functors::WarpFunctor func = {mapId, player};
-		Maps::getMap(player->getMap())->runFunctionPlayers(func);
+		player->getMap()->runFunctionPlayers(func);
 		if (args.length() > 0) {
 			PlayerPacket::showMessage(player, "Warped everyone in the map to map ID " + lexical_cast<string>(mapId) + ".", PlayerPacket::NoticeTypes::Blue);
 		}
@@ -101,7 +101,7 @@ bool WarpFunctions::warpMap(Player *player, const string &args) {
 bool WarpFunctions::warpTo(Player *player, const string &args) {
 	if (args.length() > 0) {
 		if (Player *warpTo = PlayerDataProvider::Instance()->getPlayer(args)) {
-			player->setMap(warpTo->getMap());
+			player->setMap(warpTo->getMapId());
 		}
 		else {
 			PlayerPacket::showMessage(player, "Player not found: " + args, PlayerPacket::NoticeTypes::Red);

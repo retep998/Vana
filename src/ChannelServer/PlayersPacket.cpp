@@ -36,7 +36,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(0);
 	packet.addBuffer(buf, size);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::faceExpression(Player *player, int32_t face) {
@@ -46,7 +46,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	packet.add<header_t>(SMSG_EMOTE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(face);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly) {
@@ -56,7 +56,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 	packet.addBool(player->isGm());
 	packet.addString(msg);
 	packet.addBool(bubbleOnly);
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	player->getMap()->sendPacket(packet);
 }
 
 void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
@@ -93,7 +93,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			}
 			break;
 	}
-	Maps::getMap(player->getMap())->sendPacket(packet);
+	player->getMap()->sendPacket(packet);
 }
 
 void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
@@ -187,7 +187,7 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 			packet.add<int32_t>(*j);
 		}
 	}
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
@@ -230,7 +230,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	}
 	packet.addPos(attack.projectilePos);
 
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
@@ -262,7 +262,7 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	if (attack.charge > 0) {
 		packet.add<int32_t>(attack.charge);
 	}
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
@@ -279,7 +279,7 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 			packet.add<int32_t>(*j);
 		}
 	}
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) {
@@ -310,5 +310,5 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 		}
 	}
 
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }

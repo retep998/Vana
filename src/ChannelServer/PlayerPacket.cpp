@@ -63,7 +63,7 @@ void PlayerPacket::connectData(Player *player) {
 
 	packet.add<int32_t>(0); // Gachapon EXP
 
-	packet.add<int32_t>(player->getMap());
+	packet.add<int32_t>(player->getMapId());
 	packet.add<int8_t>(player->getMapPos());
 
 	packet.add<int32_t>(0); // Unknown int32 added in .62

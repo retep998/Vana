@@ -107,7 +107,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, i
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(9);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void QuestsPacket::forfeitQuest(Player *player, int16_t questId) {

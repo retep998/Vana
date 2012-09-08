@@ -72,7 +72,8 @@ struct MapInfo {
 		shop(false),
 		scrollDisable(false),
 		shuffleReactors(false),
-		forceMapEquip(false)
+		forceMapEquip(false),
+		damagePerSecond(0)
 		{ }
 	bool clock;
 	bool town;
@@ -95,6 +96,7 @@ struct MapInfo {
 	int32_t link;
 	int32_t timeLimit;
 	int32_t protectItem;
+	int32_t damagePerSecond;
 	double spawnRate;
 	double traction;
 	string defaultMusic;

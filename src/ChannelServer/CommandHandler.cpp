@@ -92,7 +92,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 					PlayersPacket::findPlayer(player, receiver->getName(), -1, 0);
 				}
 				else {
-					PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMap());
+					PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMapId());
 				}
 			}
 			else {
@@ -151,7 +151,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			int32_t count = packet.get<int32_t>();
 			if (MobDataProvider::Instance()->mobExists(mobId)) {
 				for (int32_t i = 0; i < count && i < 100; i++) {
-					Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos());
+					player->getMap()->spawnMob(mobId, player->getPos());
 				}
 			}
 			else {
@@ -222,10 +222,10 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 			break;
 		}
 		case AdminOpcodes::ShowMessageMap:
-			PlayerPacket::showMessage(player, Maps::getMap(player->getMap())->getPlayerNames(), PlayerPacket::NoticeTypes::Notice);
+			PlayerPacket::showMessage(player, player->getMap()->getPlayerNames(), PlayerPacket::NoticeTypes::Notice);
 			break;
 		case AdminOpcodes::Snow:
-			Maps::getMap(player->getMap())->createWeather(player, true, packet.get<int32_t>(), Items::SnowySnow, "");
+			player->getMap()->createWeather(player, true, packet.get<int32_t>(), Items::SnowySnow, "");
 			break;
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = packet.get<int8_t>();

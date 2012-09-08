@@ -165,7 +165,7 @@ vector<int32_t> Party::getAllPlayerIds() {
 vector<Player *> Party::getPartyMembers(int32_t mapId) {
 	vector<Player *> players;
 	runFunction([&players, &mapId](Player *player) {
-		if (mapId == -1 || player->getMap() == mapId) {
+		if (mapId == -1 || player->getMapId() == mapId) {
 			players.push_back(player);
 		}
 	});
@@ -174,7 +174,7 @@ vector<Player *> Party::getPartyMembers(int32_t mapId) {
 
 void Party::showHpBar(Player *player) {
 	runFunction([&player](Player *testPlayer) {
-		if (testPlayer != player && testPlayer->getMap() == player->getMap()) {
+		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			PlayerPacket::showHpBar(player, testPlayer);
 		}
 	});
@@ -182,7 +182,7 @@ void Party::showHpBar(Player *player) {
 
 void Party::receiveHpBar(Player *player) {
 	runFunction([&player](Player *testPlayer) {
-		if (testPlayer != player && testPlayer->getMap() == player->getMap()) {
+		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			PlayerPacket::showHpBar(testPlayer, player);
 		}
 	});
@@ -193,7 +193,7 @@ int8_t Party::getMemberCountOnMap(int32_t mapId) {
 	Player *test = nullptr;
 	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
 		test = iter->second;
-		if (test != nullptr && test->getMap() == mapId) {
+		if (test != nullptr && test->getMapId() == mapId) {
 			count++;
 		}
 	}

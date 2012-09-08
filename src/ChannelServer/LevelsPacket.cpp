@@ -47,7 +47,7 @@ void LevelsPacket::levelUp(Player *player) {
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(0);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }
 
 void LevelsPacket::statOk(Player *player) {
@@ -63,5 +63,5 @@ void LevelsPacket::jobChange(Player *player) {
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(8);
-	Maps::getMap(player->getMap())->sendPacket(packet, player);
+	player->getMap()->sendPacket(packet, player);
 }

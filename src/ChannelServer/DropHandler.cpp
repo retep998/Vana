@@ -162,7 +162,7 @@ void DropHandler::dropMesos(Player *player, PacketReader &packet) {
 		return;
 	}
 	player->getInventory()->modifyMesos(-amount, true);
-	Drop *drop = new Drop(player->getMap(), amount, player->getPos(), player->getId(), true);
+	Drop *drop = new Drop(player->getMapId(), amount, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->doDrop(player->getPos());
 }
@@ -176,7 +176,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 	packet.skipBytes(5);
 	const Pos &playerPos = packet.getPos();
 	int32_t dropId = packet.get<int32_t>();
-	Drop *drop = Maps::getMap(player->getMap())->getDrop(dropId);
+	Drop *drop = player->getMap()->getDrop(dropId);
 
 	if (drop == nullptr) {
 		DropsPacket::dontTake(player);
@@ -217,7 +217,7 @@ void DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 
 		if (player->getParty() != nullptr && !drop->isplayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
-			vector<Player *> members = player->getParty()->getPartyMembers(player->getMap());
+			vector<Player *> members = player->getParty()->getPartyMembers(player->getMapId());
 			if (members.size() != 1) {
 				playerRate = 60;
 				int32_t mesos = rawMesos * playerRate / 100;

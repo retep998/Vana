@@ -42,7 +42,7 @@ void SummonHandler::useSummon(Player *player, int32_t skillId, uint8_t level) {
 	Pos sumpos;
 	if (puppet) {
 		int16_t x = ppos.x + 200 * (player->isFacingRight() ? 1 : -1);
-		sumpos = Maps::getMap(player->getMap())->findFloor(Pos(x, ppos.y));
+		sumpos = player->getMap()->findFloor(Pos(x, ppos.y));
 	}
 	else {
 		sumpos = ppos;

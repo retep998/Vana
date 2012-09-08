@@ -77,7 +77,7 @@ void Drop::doDrop(const Pos &origin) {
 		}
 	}
 	else if (Player *player = PlayerDataProvider::Instance()->getPlayer(m_playerId)) {
-		if (player->getMap() == m_mapId) {
+		if (player->getMapId() == m_mapId) {
 			DropsPacket::showDrop(player, this, DropsPacket::DropTypes::DropAnimation, true, origin);
 		}
 	}

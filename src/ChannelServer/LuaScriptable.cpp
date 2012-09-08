@@ -956,7 +956,7 @@ int LuaExports::getLuk(lua_State *luaVm) {
 }
 
 int LuaExports::getMap(lua_State *luaVm) {
-	lua_pushnumber(luaVm, getPlayer(luaVm)->getMap());
+	lua_pushnumber(luaVm, getPlayer(luaVm)->getMapId());
 	return 1;
 }
 
@@ -1270,7 +1270,7 @@ int LuaExports::setMusic(lua_State *luaVm) {
 		mapId = lua_tointeger(luaVm, 2);
 	}
 	else if (Player *player = getPlayer(luaVm)) {
-		mapId = player->getMap();
+		mapId = player->getMapId();
 	}
 
 	if (mapId != -1) {
@@ -1281,13 +1281,13 @@ int LuaExports::setMusic(lua_State *luaVm) {
 
 int LuaExports::showMapEffect(lua_State *luaVm) {
 	const string &val = lua_tostring(luaVm, -1);
-	EffectPacket::sendEffect(getPlayer(luaVm)->getMap(), val);
+	EffectPacket::sendEffect(getPlayer(luaVm)->getMapId(), val);
 	return 0;
 }
 
 int LuaExports::showMapEvent(lua_State *luaVm) {
 	const string &val = lua_tostring(luaVm, -1);
-	EffectPacket::sendEvent(getPlayer(luaVm)->getMap(), val);
+	EffectPacket::sendEvent(getPlayer(luaVm)->getMapId(), val);
 	return 0;
 }
 
@@ -1298,7 +1298,7 @@ int LuaExports::clearDrops(lua_State *luaVm) {
 		mapId = lua_tointeger(luaVm, 1);
 	}
 	else if (Player *player = getPlayer(luaVm)) {
-		mapId = getPlayer(luaVm)->getMap();
+		mapId = getPlayer(luaVm)->getMapId();
 	}
 	if (mapId != -1) {
 		Maps::getMap(mapId)->clearDrops(false);
@@ -1312,7 +1312,7 @@ int LuaExports::clearMobs(lua_State *luaVm) {
 		mapId = lua_tointeger(luaVm, 1);
 	}
 	else {
-		mapId = getPlayer(luaVm)->getMap();
+		mapId = getPlayer(luaVm)->getMapId();
 	}
 	Maps::getMap(mapId)->killMobs(nullptr, 0, false, false);
 	return 0;
@@ -1353,9 +1353,10 @@ int LuaExports::getNumPlayers(lua_State *luaVm) {
 int LuaExports::getReactorState(lua_State *luaVm) {
 	int32_t mapId = lua_tointeger(luaVm, -2);
 	int32_t reactorId = lua_tointeger(luaVm, -1);
-	for (uint32_t i = 0; i < Maps::getMap(mapId)->getNumReactors(); i++) {
-		if (Maps::getMap(mapId)->getReactor(i)->getReactorId() == reactorId) {
-			lua_pushinteger(luaVm, Maps::getMap(mapId)->getReactor(i)->getState());
+	Map *map = Maps::getMap(mapId);
+	for (uint32_t i = 0; i < map->getNumReactors(); i++) {
+		if (map->getReactor(i)->getReactorId() == reactorId) {
+			lua_pushinteger(luaVm, map->getReactor(i)->getState());
 			return 1;
 		}
 	}
@@ -1365,12 +1366,11 @@ int LuaExports::getReactorState(lua_State *luaVm) {
 
 int LuaExports::killMobs(lua_State *luaVm) {
 	int32_t mobId = lua_tointeger(luaVm, 1);
-	int32_t mapId = getPlayer(luaVm)->getMap();
 	bool playerkill = true;
 	if (lua_isboolean(luaVm, 2)) {
 		playerkill = lua_toboolean(luaVm, 2) == 1;
 	}
-	int32_t killed = Maps::getMap(mapId)->killMobs(getPlayer(luaVm), mobId, playerkill, true);
+	int32_t killed = getPlayer(luaVm)->getMap()->killMobs(getPlayer(luaVm), mobId, playerkill, true);
 	lua_pushinteger(luaVm, killed);
 	return 1;
 }
@@ -1399,8 +1399,7 @@ int LuaExports::setReactorState(lua_State *luaVm) {
 int LuaExports::showMapMessage(lua_State *luaVm) {
 	const string &msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
-	int32_t map = getPlayer(luaVm)->getMap();
-	Maps::getMap(map)->showMessage(msg, type);
+	getPlayer(luaVm)->getMap()->showMessage(msg, type);
 	return 0;
 }
 
@@ -1414,7 +1413,7 @@ int LuaExports::showMapTimer(lua_State *luaVm) {
 int LuaExports::spawnMob(lua_State *luaVm) {
 	int32_t mobId = lua_tointeger(luaVm, -1);
 	Player *player = getPlayer(luaVm);
-	lua_pushinteger(luaVm, Maps::getMap(player->getMap())->spawnMob(mobId, player->getPos()));
+	lua_pushinteger(luaVm, player->getMap()->spawnMob(mobId, player->getPos()));
 	return 1;
 }
 
@@ -1426,7 +1425,7 @@ int LuaExports::spawnMobPos(lua_State *luaVm) {
 	if (lua_isnumber(luaVm, 4)) {
 		fh = lua_tointeger(luaVm, 4);
 	}
-	lua_pushinteger(luaVm, Maps::getMap(getPlayer(luaVm)->getMap())->spawnMob(mobId, Pos(x, y), fh));
+	lua_pushinteger(luaVm, getPlayer(luaVm)->getMap()->spawnMob(mobId, Pos(x, y), fh));
 	return 1;
 }
 
@@ -1798,7 +1797,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 		persistent = lua_tointeger(luaVm, 4);
 	}
 	if (player != nullptr) {
-		map = player->getMap();
+		map = player->getMapId();
 		id = player->getId();
 	}
 	Instance *instance = new Instance(name, map, id, time, persistent, showTimer);
