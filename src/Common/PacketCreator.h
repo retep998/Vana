@@ -51,8 +51,8 @@ public:
 	void addBool(bool value);
 	void addBytes(const char *hex);
 	void addBuffer(const unsigned char *bytes, size_t len);
-	void addBuffer(PacketCreator &packet);
-	void addBuffer(PacketReader &packet);
+	void addBuffer(const PacketCreator &packet);
+	void addBuffer(const PacketReader &packet);
 
 	const unsigned char * getBuffer() const;
 	size_t getSize() const;
