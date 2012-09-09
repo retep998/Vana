@@ -42,24 +42,44 @@ if questions == nil then
 			["answer"] = 3
 		},
 		[6] = {
-			["question"] = "Which of these pairings of sickness/results resulted from a monster's attack does NOT match...?#b\r\n#L0# State of darkness - decrease in accuracy#l\r\n#L1 State of being cursed - decrease in EXP earned#l\r\n#L2 State of weakness - decrease in speed#l\r\n#L3 State of being sealed up - unable to use skills#l\r\n#L4 State of being poisoned - slow decrease in HP#l",
+			["question"] = "Which of these pairings of sickness/results resulted from a monster's attack does NOT match...?#b\r\n#L0# State of darkness - decrease in accuracy#l\r\n#L1# State of being cursed - decrease in EXP earned#l\r\n#L2# State of weakness - decrease in speed#l\r\n#L3# State of being sealed up - unable to use skills#l\r\n#L4# State of being poisoned - slow decrease in HP#l",
 			["answer"] = 2
 		},
 		[7] = {
-			["question"] = "Which of these NPC's will you NOT see at Orbis of Ossyria...?#b\r\n#L0# Staff Sergeant Charlie#l\r\n#L1 Sophia#l\r\n#L2 Neve#l\r\n#L3 Nuri the Fairy#l\r\n#L4 Edel the Fairy#l",
+			["question"] = "Which of these NPC's will you NOT see at Orbis of Ossyria...?#b\r\n#L0# Staff Sergeant Charlie#l\r\n#L1# Sophia#l\r\n#L2# Neve#l\r\n#L3# Nuri the Fairy#l\r\n#L4# Edel the Fairy#l",
 			["answer"] = 1
 		},
 		[8] = {
-			["question"] = "Which of these quests has the highest required level to start...?#b\r\n#L0# Manji's Old Gladius#l\r\n#L1 Luke the Security Man's Wish to Travel#l\r\n#L2 Looking for the Book of Ancient#l\r\n#L3 Alcaster and the Black Crystal#l\r\n#L4 Alpha Platoon's Network of Communication#l",
+			["question"] = "Which of these quests has the highest required level to start...?#b\r\n#L0# Manji's Old Gladius#l\r\n#L1# Luke the Security Man's Wish to Travel#l\r\n#L2# Looking for the Book of Ancient#l\r\n#L3# Alcaster and the Black Crystal#l\r\n#L4# Alpha Platoon's Network of Communication#l",
 			["answer"] = 3
 		},
 		[9] = {
-			["question"] = "Which of these NPC's have NOTHING to do with refining, upgrading, and making items...?#b\r\n#L0# Neve#l\r\n#L1 Mr. Thunder#l\r\n#L2 Shane#l\r\n#L3 Francois#l\r\n#L4 Vogen#l",
+			["question"] = "Which of these NPC's have NOTHING to do with refining, upgrading, and making items...?#b\r\n#L0# Neve#l\r\n#L1# Mr. Thunder#l\r\n#L2# Shane#l\r\n#L3# Francois#l\r\n#L4# Vogen#l",
 			["answer"] = 2
 		},
 		[10] = {
-			["question"] = "In MapleStory, which of these pairings of potion/results matches?#b\r\n#L0# Orange Potion - Recover HP 200#l\r\n#L1 Ice Cream Pop - Recover MP 2000#l\r\n#L2 Lemon - Recover MP 100#l\r\n#L3 Fried Chicken - Recover HP 300#l\r\n#L4 Pizza - Recover HP 400#l",
+			["question"] = "In MapleStory, which of these pairings of potion/results matches?#b\r\n#L0# Orange Potion - Recover HP 200#l\r\n#L1# Ice Cream Pop - Recover MP 2000#l\r\n#L2# Lemon - Recover MP 100#l\r\n#L3# Fried Chicken - Recover HP 300#l\r\n#L4# Pizza - Recover HP 400#l",
 			["answer"] = 4
+		},
+		[11] = {
+			["question"] = "Which of the pairings of the monster/leftover is correctly matched?#b\r\n#L0# Fire Boar - Fire Boar's Nose#l\r\n#L1# Cold Eye - Cold Eye's Eye#l\r\n#L2# Pig - Pig's Ear#l\r\n#L3# Stirge - Stirge Wing#l\r\n#L4# Zombie Mushroom - Zombie Mushroom's Top#l",
+			["answer"] = 3
+		},
+		[12] = {
+			["question"] = "Which of these NPC's will you NOT see at Perion of Victoria Island?#b\r\n#L0# Arturo#l\r\n#L1# Francois#l\r\n#L2# Manji#l\r\n#L3# Mr. Thunder#l\r\n#L4# Sophia#l",
+			["answer"] = 1
+		},
+		[13] = {
+			["question"] = "Which of these NPC's is the father of Alex the Runaway Kid, whom you'll see at Kerning City?#b\r\n#L0# Cloy#l\r\n#L1# Vicious#l\r\n#L2# Lucas#l\r\n#L3# John#l\r\n#L4# Chief Stan#l",
+			["answer"] = 4
+		},
+		[14] = {
+			["question"] = "Which of these items will you receive from the NPC after collecting 30 Dark Marbles during the test for the 2nd job advancement?#b\r\n#L0# The Proof of a Hero#l\r\n#L1# Hero's Necklace#l\r\n#L2# Hero's Pendant#l\r\n#L3# Hero's Medal#l\r\n#L4# Hero's Sign#l",
+			["answer"] = 0
+		},
+		[15] = {
+			["question"] = "Which of these pairings of job/required stat matches for the 1st job advancement?#b\r\n#L0# Warrior - STR 30+ #l\r\n#L1# Magician - INT 25+ #l\r\n#L2# Bowman - DEX 25+ #l\r\n#L3# Thief - DEX 20+ #l\r\n#L4# Thief - LUK 20+ #l",
+			["answer"] = 2
 		}
 	};
 end

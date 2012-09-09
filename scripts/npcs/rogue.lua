@@ -23,7 +23,7 @@ questState = getPlayerVariable("third_job_advancement", true);
 if questState == 1 then
 	addText("Ah, I was waiting for you. ");
 	addText("I heard about you from #bArec#k in Ossyria, and I'd actually like to test your strength. ");
-	addText("There is an opening in the middle of a deep swamp in Victoria Island, which will lead you to a secret passage.  ");
+	addText("There is an opening in the middle of a deep swamp in Victoria Island, which will lead you to a secret passage. ");
 	addText("Once inside, you'll face my clone. ");
 	addText("Your task is to defeat him and bring the #b#t4031059##k back with you.");
 	sendNext();

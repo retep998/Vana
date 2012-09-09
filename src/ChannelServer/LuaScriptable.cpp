@@ -141,6 +141,7 @@ void LuaScriptable::initialize() {
 	// Inventory
 	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
 	lua_register(luaVm, "addStorageSlots", &LuaExports::addStorageSlots);
+	lua_register(luaVm, "destroyEquippedItem", &LuaExports::destroyEquippedItem);
 	lua_register(luaVm, "getEquippedItemInSlot", &LuaExports::getEquippedItemInSlot);
 	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
 	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
@@ -798,6 +799,17 @@ int LuaExports::addStorageSlots(lua_State *luaVm) {
 	int8_t slots = lua_tointeger(luaVm, 1);
 	getPlayer(luaVm)->getStorage()->setSlots(getPlayer(luaVm)->getStorage()->getSlots() + slots);
 	return 0;
+}
+
+int LuaExports::destroyEquippedItem(lua_State *luaVm) {
+	int32_t itemId = lua_tointeger(luaVm, 1);
+	Player *player = getPlayer(luaVm);
+	bool destroyed = player->getInventory()->isEquippedItem(itemId);
+	if (destroyed) {
+		player->getInventory()->destroyEquippedItem(itemId);
+	}
+	lua_pushboolean(luaVm, destroyed);
+	return 1;
 }
 
 int LuaExports::getEquippedItemInSlot(lua_State *luaVm) {
