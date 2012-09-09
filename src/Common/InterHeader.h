@@ -28,6 +28,7 @@ enum AnyConnection : header_t {
 	IMSG_TO_CHANNELS,
 	IMSG_TO_WORLDS,
 	IMSG_REFRESH_DATA, // For reloading MCDB
+	IMSG_SYNC,
 };
 
 enum LoginWorld : header_t {
@@ -35,12 +36,12 @@ enum LoginWorld : header_t {
 	IMSG_REGISTER_CHANNEL,
 	IMSG_UPDATE_CHANNEL_POP,
 	IMSG_REMOVE_CHANNEL,
-	IMSG_NEW_PLAYER
+	IMSG_NEW_PLAYER,
 };
 
 enum LoginChannel : header_t {
 	IMSG_LOGIN_CHANNEL_CONNECT = 0x2000, // Get world server info
-	IMSG_CALCULATE_RANKING
+	IMSG_CALCULATE_RANKING,
 };
 
 enum WorldChannel : header_t {
@@ -50,5 +51,4 @@ enum WorldChannel : header_t {
 	IMSG_GROUP_CHAT,
 	IMSG_FIND, // "/find" command
 	IMSG_WHISPER,
-	IMSG_SYNC,
 };

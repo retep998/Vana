@@ -32,6 +32,9 @@ using std::unordered_map;
 class PacketCreator;
 class Party;
 class Player;
+namespace soci {
+	class row;
+}
 
 class PlayerDataProvider : boost::noncopyable {
 public:
@@ -42,12 +45,14 @@ public:
 	}
 	void loadData();
 	void getChannelConnectPacket(PacketCreator &packet);
+	void getPlayerDataPacket(PacketCreator &packet, int32_t playerId);
 
 	// Player info
 	void initialPlayerConnect(int32_t id, uint16_t channel, ip_t ip);
 	void playerConnect(Player *player, bool online = true);
 	void playerDisconnect(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);
+	void loadPlayer(int32_t playerId);
 	Player * getPlayer(const string &name, bool includeOffline = false);
 	Player * getPlayer(int32_t id, bool includeOffline = false);
 	int32_t getPlayerQuantity();
@@ -76,6 +81,8 @@ private:
 	void loadGuilds(int16_t worldId);
 	void loadAlliances(int16_t worldId);
 	void loadPlayers(int16_t worldId);
+	void loadPlayer(const soci::row &row);
+	void generatePlayerDataPacket(PacketCreator &packet, Player *player);
 
 	unordered_map<int32_t, uint16_t> m_channelSwitches; // Channel changes
 	LoopingId<int32_t> m_partyIds;

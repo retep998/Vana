@@ -56,26 +56,45 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 		<< "WHERE c.world_id = :world",
 		soci::use(worldId, "world"));
 
-	Player *p;
-
-	enum TableColumns : int32_t {
-		CharacterId = 0,
-		Name
-	};
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
-
-		p = new Player(row.get<int32_t>(CharacterId));
-		p->setName(row.get<string>(Name));
-		p->setJob(-1);
-		p->setLevel(-1);
-		p->setMap(-1);
-		p->setChannel(0);
-
-		playerConnect(p, false);
+		const soci::row &row = *i;
+		loadPlayer(row);
 	}
 
 	std::cout << "DONE" << std::endl;
+}
+
+void PlayerDataProvider::loadPlayer(int32_t playerId) {
+	if (m_players.find(playerId) != m_players.end()) {
+		return;
+	}
+
+	soci::rowset<> rs = (Database::getCharDb().prepare
+		<< "SELECT c.character_id, c.name "
+		<< "FROM characters c "
+		<< "WHERE c.character_id = :char",
+		soci::use(playerId, "char"));
+
+	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
+		const soci::row &row = *i;
+		loadPlayer(row);
+	}
+
+	SyncPacket::PlayerPacket::characterCreated(playerId);
+}
+
+void PlayerDataProvider::loadPlayer(const soci::row &row) {
+	Player *p = new Player(row.get<int32_t>("character_id"));
+	p->setName(row.get<string>("name"));
+	p->setJob(-1);
+	p->setLevel(-1);
+	p->setMap(-1);
+	p->setChannel(0);
+	playerConnect(p, false);
+}
+
+void PlayerDataProvider::getPlayerDataPacket(PacketCreator &packet, int32_t playerId) {
+	generatePlayerDataPacket(packet, m_players[playerId].get());
 }
 
 void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
@@ -83,14 +102,7 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 	Player *player;
 	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
 		player = iter->second.get();
-		packet.add<int32_t>(0);
-		packet.addBool(false);
-		packet.add<uint8_t>(player->getLevel());
-		packet.add<int16_t>(player->getJob());
-		packet.add<int16_t>(player->getChannel());
-		packet.add<int32_t>(player->getMap());
-		packet.add<int32_t>(player->getParty() != nullptr ? player->getParty()->getId() : 0);
-		packet.add<int32_t>(player->getId());
+		generatePlayerDataPacket(packet, player);
 	}
 
 	packet.add<uint32_t>(m_parties.size());
@@ -105,6 +117,17 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 			packet.add<int32_t>(player->getId());
 		});
 	}
+}
+
+void PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player *player) {
+	packet.add<int32_t>(0);
+	packet.addBool(false);
+	packet.add<uint8_t>(player->getLevel());
+	packet.add<int16_t>(player->getJob());
+	packet.add<int16_t>(player->getChannel());
+	packet.add<int32_t>(player->getMap());
+	packet.add<int32_t>(player->getParty() != nullptr ? player->getParty()->getId() : 0);
+	packet.add<int32_t>(player->getId());
 }
 
 // Players

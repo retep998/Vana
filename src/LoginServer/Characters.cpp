@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Player.h"
 #include "Session.h"
+#include "SyncPacket.h"
 #include "World.h"
 #include "Worlds.h"
 #include "ValidCharDataProvider.h"
@@ -282,6 +283,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	Character charc;
 	loadCharacter(charc, row);
 	LoginPacket::showCharacter(player, charc);
+	SyncPacket::PlayerPacket::characterCreated(Worlds::Instance()->getWorld(player->getWorldId()), id);
 }
 
 void Characters::deleteCharacter(Player *player, PacketReader &packet) {

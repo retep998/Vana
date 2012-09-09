@@ -62,7 +62,9 @@ namespace Sync {
 			ChangeChannelGo,
 			NewConnectable,
 			DeleteConnectable,
-			UpdatePlayer
+			UpdatePlayer,
+			CharacterCreated,
+			CharacterDeleted
 		};
 		namespace UpdateBits {
 			enum : int8_t {

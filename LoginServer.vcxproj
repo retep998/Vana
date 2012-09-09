@@ -114,6 +114,7 @@
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
     <ClCompile Include="src\LoginServer\Player.cpp" />
     <ClCompile Include="src\LoginServer\RankingCalculator.cpp" />
+    <ClCompile Include="src\LoginServer\SyncPacket.cpp" />
     <ClCompile Include="src\LoginServer\World.cpp" />
     <ClCompile Include="src\LoginServer\Worlds.cpp" />
     <ClCompile Include="src\LoginServer\LoginPacket.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="src\LoginServer\Player.h" />
     <ClInclude Include="src\LoginServer\PlayerStatus.h" />
     <ClInclude Include="src\LoginServer\RankingCalculator.h" />
+    <ClInclude Include="src\LoginServer\SyncPacket.h" />
     <ClInclude Include="src\LoginServer\World.h" />
     <ClInclude Include="src\LoginServer\Worlds.h" />
     <ClInclude Include="src\LoginServer\InitializeLogin.h" />

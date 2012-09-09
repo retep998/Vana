@@ -47,6 +47,7 @@ public:
 
 	// Online players
 	void addPlayer(Player *player);
+	void newPlayer(PacketReader &packet);
 	void changeChannel(PacketReader &packet);
 	void newConnectable(PacketReader &packet);
 	void deleteConnectable(int32_t id);
@@ -70,6 +71,8 @@ public:
 private:
 	PlayerDataProvider() {}
 	static PlayerDataProvider *singleton;
+
+	void parsePlayer(PacketReader &packet);
 
 	unordered_map<int32_t, std::shared_ptr<PlayerData>> m_playerData;
 	unordered_map<int32_t, std::shared_ptr<Party>> m_parties;
