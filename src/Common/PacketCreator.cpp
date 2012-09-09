@@ -45,11 +45,11 @@ void PacketCreator::addBool(bool value) {
 	add<int8_t>(value ? 1 : 0);
 }
 
-void PacketCreator::addBuffer(PacketCreator &packet) {
+void PacketCreator::addBuffer(const PacketCreator &packet) {
 	addBuffer(packet.getBuffer(), packet.getSize());
 }
 
-void PacketCreator::addBuffer(PacketReader &packet) {
+void PacketCreator::addBuffer(const PacketReader &packet) {
 	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 
