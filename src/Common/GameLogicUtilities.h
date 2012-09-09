@@ -86,7 +86,7 @@ namespace GameLogicUtilities {
 		}
 		return false;
 	}
-	inline int16_t getJobTrack(int16_t jobId) { return (isAdventurer(jobId) ? (jobId / 10) : (jobId / 100)); }
+	inline int16_t getJobTrack(int16_t jobId) { return (jobId / 100); }
 	inline int16_t getJobLine(int16_t jobId) { return (isAdventurer(jobId) ? (jobId / 100) : ((jobId / 100) % 10)); }
 	inline int16_t getJobProgression(int16_t jobId) {
 		if (isBeginnerJob(jobId)) {
