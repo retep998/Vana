@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncHandler.h"
+#include "AbstractConnection.h"
 #include "Channel.h"
 #include "Channels.h"
 #include "Database.h"
@@ -35,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.h"
 #include "WorldServerAcceptPacket.h"
 
-void SyncHandler::handle(WorldServerAcceptConnection *connection, PacketReader &packet) {
+void SyncHandler::handle(AbstractConnection *connection, PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
 		case Sync::SyncTypes::Player: handlePlayerSync(connection, packet); break;
@@ -62,13 +63,14 @@ void SyncHandler::handleScrollingHeader(PacketReader &packet) {
 	WorldServer::Instance()->setScrollingHeader(message);
 }
 
-void SyncHandler::handlePlayerSync(WorldServerAcceptConnection *connection, PacketReader &packet) {
+void SyncHandler::handlePlayerSync(AbstractConnection *connection, PacketReader &packet) {
 	switch (packet.get<int8_t>()) {
 		case Sync::Player::ChangeChannelRequest: playerChangeChannel(connection, packet); break;
 		case Sync::Player::ChangeChannelGo: handleChangeChannel(connection, packet); break;
-		case Sync::Player::Connect: playerConnect(connection->getChannel(), packet); break;
-		case Sync::Player::Disconnect: playerDisconnect(connection->getChannel(), packet); break;
+		case Sync::Player::Connect: playerConnect(static_cast<WorldServerAcceptConnection *>(connection)->getChannel(), packet); break;
+		case Sync::Player::Disconnect: playerDisconnect(static_cast<WorldServerAcceptConnection *>(connection)->getChannel(), packet); break;
 		case Sync::Player::UpdatePlayer: handlePlayerUpdate(packet); break;
+		case Sync::Player::CharacterCreated: handleCharacterCreated(packet); break;
 	}
 }
 
@@ -110,19 +112,13 @@ void SyncHandler::playerDisconnect(int16_t channel, PacketReader &packet) {
 		SyncPacket::PlayerPacket::deleteConnectable(chan, id);
 	}
 }
-void SyncHandler::handlePartySync(PacketReader &packet) {
-	int8_t type = packet.get<int8_t>();
-	int32_t playerId = packet.get<int32_t>();
-	switch (type) {
-		case PartyActions::Create: PlayerDataProvider::Instance()->createParty(playerId); break;
-		case PartyActions::Leave: PlayerDataProvider::Instance()->removePartyMember(playerId); break;
-		case PartyActions::Expel: PlayerDataProvider::Instance()->removePartyMember(playerId, packet.get<int32_t>()); break;
-		case PartyActions::Join: PlayerDataProvider::Instance()->addPartyMember(playerId); break;
-		case PartyActions::SetLeader: PlayerDataProvider::Instance()->setPartyLeader(playerId, packet.get<int32_t>()); break;
-	}
+
+void SyncHandler::handleCharacterCreated(PacketReader &packet) {
+	int32_t id = packet.get<int32_t>();
+	PlayerDataProvider::Instance()->loadPlayer(id);
 }
 
-void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
+void SyncHandler::playerChangeChannel(AbstractConnection *connection, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<uint16_t>());
 	if (chan) {
@@ -135,7 +131,7 @@ void SyncHandler::playerChangeChannel(WorldServerAcceptConnection *connection, P
 	}
 }
 
-void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet) {
+void SyncHandler::handleChangeChannel(AbstractConnection *connection, PacketReader &packet) {
 	// TODO FIXME
 	// This request comes from the destination channel so I can't remove the ->getConnection() calls
 	int32_t playerId = packet.get<int32_t>();
@@ -152,6 +148,18 @@ void SyncHandler::handleChangeChannel(WorldServerAcceptConnection *connection, P
 			SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, 0, -1);
 		}
 		PlayerDataProvider::Instance()->removePendingPlayer(playerId);
+	}
+}
+
+void SyncHandler::handlePartySync(PacketReader &packet) {
+	int8_t type = packet.get<int8_t>();
+	int32_t playerId = packet.get<int32_t>();
+	switch (type) {
+		case PartyActions::Create: PlayerDataProvider::Instance()->createParty(playerId); break;
+		case PartyActions::Leave: PlayerDataProvider::Instance()->removePartyMember(playerId); break;
+		case PartyActions::Expel: PlayerDataProvider::Instance()->removePartyMember(playerId, packet.get<int32_t>()); break;
+		case PartyActions::Join: PlayerDataProvider::Instance()->addPartyMember(playerId); break;
+		case PartyActions::SetLeader: PlayerDataProvider::Instance()->setPartyLeader(playerId, packet.get<int32_t>()); break;
 	}
 }
 

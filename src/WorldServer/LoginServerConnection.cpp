@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.h"
 #include "InterHeader.h"
 #include "PacketReader.h"
+#include "SyncHandler.h"
 #include "VanaConstants.h"
 #include "WorldServer.h"
 #include "WorldServerAcceptHandler.h"
@@ -43,5 +44,6 @@ void LoginServerConnection::handleRequest(PacketReader &packet) {
 		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case IMSG_REHASH_CONFIG: LoginServerConnectHandler::rehashConfig(packet); break;
 		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
+		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 	}
 }

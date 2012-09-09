@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::string;
 
+class AbstractConnection;
 class PacketCreator;
 class PacketReader;
 class Player;
-class WorldServerAcceptConnection;
 
 namespace SyncHandler {
 	// Dispatch
-	void handle(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void handle(AbstractConnection *connection, PacketReader &packet);
 	// Config
 	void handleConfigSync(PacketReader &packet);
 	void handleSetRates(PacketReader &packet);
@@ -37,12 +37,13 @@ namespace SyncHandler {
 	// Party
 	void handlePartySync(PacketReader &packet);
 	// Player
-	void handlePlayerSync(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void handlePlayerSync(AbstractConnection *connection, PacketReader &packet);
 	void playerConnect(int16_t channel, PacketReader &packet);
 	void playerDisconnect(int16_t channel, PacketReader &packet);
-	void playerChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void handleChangeChannel(WorldServerAcceptConnection *connection, PacketReader &packet);
+	void playerChangeChannel(AbstractConnection *connection, PacketReader &packet);
+	void handleChangeChannel(AbstractConnection *connection, PacketReader &packet);
 	void handlePlayerUpdate(PacketReader &packet);
+	void handleCharacterCreated(PacketReader &packet);
 	// Buddy
 	void handleBuddySync(PacketReader &packet);
 	void buddyInvite(PacketReader &packet);

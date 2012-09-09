@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SyncPacket.h"
+#include "AbstractConnection.h"
 #include "Channel.h"
 #include "Channels.h"
 #include "Configuration.h"
@@ -81,7 +82,7 @@ void SyncPacket::PlayerPacket::deleteConnectable(uint16_t channel, int32_t playe
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerId, ip_t ip, port_t port) {
+void SyncPacket::PlayerPacket::playerChangeChannel(AbstractConnection *connection, int32_t playerId, ip_t ip, port_t port) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
@@ -119,6 +120,15 @@ void SyncPacket::PlayerPacket::updatePlayerMap(int32_t playerId, int32_t map) {
 	packet.add<int8_t>(Sync::Player::UpdatePlayer);
 	packet.add<int8_t>(Sync::Player::UpdateBits::Map);
 	packet.add<int32_t>(map);
+	Channels::Instance()->sendToAll(packet);
+}
+
+void SyncPacket::PlayerPacket::characterCreated(int32_t playerId) {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<int8_t>(Sync::SyncTypes::Player);
+	packet.add<int8_t>(Sync::Player::CharacterCreated);
+	PlayerDataProvider::Instance()->getPlayerDataPacket(packet, playerId);
 	Channels::Instance()->sendToAll(packet);
 }
 

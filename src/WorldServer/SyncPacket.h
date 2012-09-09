@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::string;
 using std::vector;
 
+class AbstractConnection;
 class Channel;
 class PacketCreator;
 class PacketReader;
@@ -47,12 +48,13 @@ namespace SyncPacket {
 		void disbandParty(int32_t partyId);
 	}
 	namespace PlayerPacket {
-		void playerChangeChannel(WorldServerAcceptConnection *connection, int32_t playerId, ip_t ip, port_t port);
+		void playerChangeChannel(AbstractConnection *connection, int32_t playerId, ip_t ip, port_t port);
 		void newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer);
 		void deleteConnectable(uint16_t channel, int32_t playerId);
 		void updatePlayerJob(int32_t playerId, int16_t job);
 		void updatePlayerMap(int32_t playerId, int32_t map);
 		void updatePlayerLevel(int32_t playerId, int16_t level);
+		void characterCreated(int32_t playerId);
 	}
 	namespace BuddyPacket {
 		void sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string &name);

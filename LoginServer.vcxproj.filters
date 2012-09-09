@@ -20,6 +20,12 @@
     <Filter Include="Source\LoginServer">
       <UniqueIdentifier>{715533c6-c5a1-4b19-8e5c-d607947f8451}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Inter-Server\Channel/World">
+      <UniqueIdentifier>{4063f10a-76f5-4532-af40-7c5083d14053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Inter-Server\Sync">
+      <UniqueIdentifier>{365d5af5-00ec-4c07-a7d8-61216e2d91d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp">
@@ -46,12 +52,6 @@
     <ClCompile Include="src\LoginServer\LoginPacketHelper.cpp">
       <Filter>Source\Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoginServer\LoginServerAcceptConnection.cpp">
-      <Filter>Source\Inter-Server</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp">
-      <Filter>Source\Inter-Server</Filter>
-    </ClCompile>
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp">
       <Filter>Source\Database Loading</Filter>
     </ClCompile>
@@ -61,23 +61,23 @@
     <ClCompile Include="src\LoginServer\World.cpp">
       <Filter>Source\LoginServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp">
-      <Filter>Source\Inter-Server</Filter>
-    </ClCompile>
     <ClCompile Include="src\LoginServer\main_login.cpp" />
+    <ClCompile Include="src\LoginServer\LoginServerAcceptConnection.cpp">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoginServer\SyncPacket.cpp">
+      <Filter>Source\Inter-Server\Sync</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LoginServer\InitializeLogin.h">
       <Filter>Source\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h">
-      <Filter>Source\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
-      <Filter>Source\Inter-Server</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h">
-      <Filter>Source\Inter-Server</Filter>
     </ClInclude>
     <ClInclude Include="src\LoginServer\Channel.h">
       <Filter>Source\LoginServer</Filter>
@@ -114,6 +114,18 @@
     </ClInclude>
     <ClInclude Include="src\LoginServer\PrecompiledHeader.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
+      <Filter>Source\Inter-Server\Channel/World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoginServer\SyncPacket.h">
+      <Filter>Source\Inter-Server\Sync</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

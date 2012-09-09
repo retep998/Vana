@@ -60,6 +60,7 @@ void SyncHandler::handlePlayerSync(PacketReader &packet) {
 		case Sync::Player::DeleteConnectable: PlayerDataProvider::Instance()->deleteConnectable(packet.get<int32_t>()); break;
 		case Sync::Player::ChangeChannelGo: PlayerDataProvider::Instance()->changeChannel(packet); break;
 		case Sync::Player::UpdatePlayer: PlayerDataProvider::Instance()->updatePlayer(packet); break;
+		case Sync::Player::CharacterCreated: PlayerDataProvider::Instance()->newPlayer(packet); break;
 	}
 }
 

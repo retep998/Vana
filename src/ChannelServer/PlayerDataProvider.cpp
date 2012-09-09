@@ -37,18 +37,8 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	// Players
 	int32_t quantity = packet.get<int32_t>();
 	int32_t i;
-	std::shared_ptr<PlayerData> player;
 	for (i = 0; i < quantity; i++) {
-		player.reset(new PlayerData);
-		player->gmLevel = packet.get<int32_t>();
-		player->admin = packet.getBool();
-		player->level = packet.get<uint8_t>();
-		player->job = packet.get<int16_t>();
-		player->channel = packet.get<int16_t>();
-		player->map = packet.get<int32_t>();
-		player->party = packet.get<int32_t>();
-
-		m_playerData[packet.get<int32_t>()] = player;
+		parsePlayer(packet);
 	}
 
 	// Parties
@@ -68,11 +58,28 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	}
 }
 
+void PlayerDataProvider::parsePlayer(PacketReader &packet) {
+	std::shared_ptr<PlayerData> player(new PlayerData);
+	player->gmLevel = packet.get<int32_t>();
+	player->admin = packet.getBool();
+	player->level = packet.get<uint8_t>();
+	player->job = packet.get<int16_t>();
+	player->channel = packet.get<int16_t>();
+	player->map = packet.get<int32_t>();
+	player->party = packet.get<int32_t>();
+
+	m_playerData[packet.get<int32_t>()] = player;
+}
+
 // Players
 void PlayerDataProvider::addPlayer(Player *player) {
 	m_players[player->getId()] = player;
 	string upper = StringUtilities::toUpper(player->getName());
 	m_playersByName[upper] = player; // Store in upper case for easy non-case-sensitive search
+}
+
+void PlayerDataProvider::newPlayer(PacketReader &packet) {
+	parsePlayer(packet);
 }
 
 void PlayerDataProvider::removePlayer(Player *player) {
