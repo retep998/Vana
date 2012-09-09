@@ -58,7 +58,7 @@ if jl == 1 and jp == 1 then
 
 					if jt == 1 then
 						setMaxSkillLevel(1120004, 10);
-						setMaxSkillLevel(1120001, 10);
+						setMaxSkillLevel(1121001, 10);
 						setMaxSkillLevel(1121008, 10);
 					elseif jt == 2 then
 						setMaxSkillLevel(1220005, 10);

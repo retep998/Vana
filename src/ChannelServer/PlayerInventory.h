@@ -56,6 +56,7 @@ public:
 	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
 	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
 	void swapItems(int8_t inventory, int16_t slot1, int16_t slot2);
+	void destroyEquippedItem(int32_t itemId);
 
 	uint8_t getMaxSlots(int8_t inv) const { return m_maxSlots[inv - 1]; }
 	int32_t getMesos() const { return m_mesos; }

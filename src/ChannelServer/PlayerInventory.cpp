@@ -246,6 +246,18 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 	}
 }
 
+void PlayerInventory::destroyEquippedItem(int32_t itemId) {
+	int8_t inv = Inventories::EquipInventory;
+	const ItemInventory &equips = m_items[inv - 1];
+	for (auto iter = equips.begin(); iter != equips.end(); ++iter) {
+		if (iter->first < 0 && iter->second->getId() == itemId) {
+			InventoryPacket::moveItem(m_player, inv, iter->first, 0);
+			deleteItem(inv, iter->first, false);
+			break;
+		}
+	}
+}
+
 int16_t PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) {
 	inv -= 1;
 	return (m_items[inv].find(slot) != m_items[inv].end() ? m_items[inv][slot]->getAmount() : 0);
