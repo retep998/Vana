@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include "TimerContainer.h"
 #include "TimeUtilities.h"
+#include <chrono>
 #include <functional>
 
 namespace Timer {
@@ -32,7 +33,7 @@ Thread::Thread() :
 	m_terminate(false),
 	m_container(new Container)
 {
-	m_thread.reset(new boost::thread(bind(&Thread::runThread, this)));
+	m_thread.reset(new std::thread(bind(&Thread::runThread, this)));
 }
 
 Thread::~Thread() {
@@ -40,14 +41,14 @@ Thread::~Thread() {
 }
 
 void Thread::registerTimer(Timer *timer) {
-	boost::recursive_mutex::scoped_lock l(m_timersMutex);
+	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
 	m_resortTimer = true;
 	m_timers.push_back(timer);
 	m_mainLoopCondition.notify_one();
 }
 
 void Thread::removeTimer(Timer *timer) {
-	boost::recursive_mutex::scoped_lock l(m_timersMutex);
+	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
 	m_timers.remove(timer);
 	m_mainLoopCondition.notify_one();
 }
@@ -71,13 +72,13 @@ Timer * Thread::findMin() {
 }
 
 void Thread::forceReSort() {
-	boost::recursive_mutex::scoped_lock l(m_timersMutex);
+	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
 	m_resortTimer = true;
 	m_mainLoopCondition.notify_one();
 }
 
 void Thread::runThread() {
-	boost::unique_lock<boost::recursive_mutex> l(m_timersMutex);
+	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
 	while (!m_terminate) {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
@@ -88,7 +89,7 @@ void Thread::runThread() {
 			continue;
 		}
 
-		if (m_mainLoopCondition.timed_wait(l, boost::get_system_time() + boost::posix_time::milliseconds(msec))) {
+		if (m_mainLoopCondition.wait_for(l, std::chrono::milliseconds(msec))) {
 			continue;
 		}
 

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -56,5 +56,5 @@ namespace RankingCalculator {
 	bool baseCompare(const RankPlayer &t1, const RankPlayer &t2);
 	void updateRank(Rank &r, int32_t newRank);
 
-	extern boost::mutex RankingsMutex;
+	extern std::mutex RankingsMutex;
 }

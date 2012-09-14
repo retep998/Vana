@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/thread/recursive_mutex.hpp>
 #include <ctime>
 #include <functional>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -208,7 +208,7 @@ private:
 	LoopingId<int32_t> m_mistIds;
 	MapInfoPtr m_info;
 	TimeMobPtr m_timeMobInfo;
-	boost::recursive_mutex m_dropsMutex;
+	std::recursive_mutex m_dropsMutex;
 	std::shared_ptr<Timer::Container> m_timers;
 	vector<FootholdInfo> m_footholds;
 	vector<ReactorSpawnInfo> m_reactorSpawns;

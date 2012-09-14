@@ -18,13 +18,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileLogger.h"
 #include "LogReplacements.h"
 #include "TimeUtilities.h"
+#ifdef WIN32
+#include <filesystem>
+#else
 #include <boost/filesystem.hpp>
+#endif
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
+#ifdef WIN32
+namespace fs = std::tr2::sys;
+#else
 namespace fs = boost::filesystem;
+#endif
 
 string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const opt_string &id, const string &message) {
 	// This function is gloriously unelegant

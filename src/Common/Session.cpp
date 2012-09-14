@@ -76,7 +76,7 @@ void Session::send(const PacketCreator &packet, bool encrypt) {
 }
 
 void Session::send(const unsigned char *buf, int32_t len, bool encrypt) {
-	boost::mutex::scoped_lock l(m_sendMutex);
+	std::unique_lock<std::mutex> l(m_sendMutex);
 
 	unsigned char *sendBuffer;
 	size_t realLength = len;
@@ -114,7 +114,7 @@ void Session::startReadHeader() {
 }
 
 void Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) {
-	boost::mutex::scoped_lock l(m_sendMutex);
+	std::unique_lock<std::mutex> l(m_sendMutex);
 	if (error) {
 		disconnect();
 	}

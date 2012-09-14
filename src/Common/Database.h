@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <soci.h>
 #include "SociExtensions.h"
 #include "Types.h"
-#include <boost/thread/tss.hpp>
+#include <memory>
 #include <string>
 
 struct DbConfig;
 
 class Database {
 public:
-	typedef boost::thread_specific_ptr<soci::session> tsConn;
+	typedef soci::session * tsConn;
 
 	static void connectCharDb();
 	static void connectDataDb();
@@ -40,8 +40,8 @@ public:
 	template <typename T> static T getLastId(soci::session &sql);
 private:
 	static soci::session & getConnection(tsConn &conn, std::function<void()> func);
-	static tsConn m_chardb;
-	static tsConn m_datadb;
+	thread_local static tsConn m_chardb;
+	thread_local static tsConn m_datadb;
 	static std::string buildConnectionString(const DbConfig &conf);
 };
 
@@ -57,7 +57,7 @@ soci::session & Database::getDataDb() {
 
 inline
 soci::session & Database::getConnection(tsConn &conn, std::function<void()> func) {
-	if (conn.get() == nullptr) {
+	if (conn == nullptr) {
 		func();
 	}
 	/* SOCI
@@ -73,7 +73,7 @@ soci::session & Database::getConnection(tsConn &conn, std::function<void()> func
 		}
 	}
 	*/
-	return *conn.get();
+	return *conn;
 }
 
 template<typename T>

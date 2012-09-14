@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "shared_array.hpp"
 #include "Types.h"
 #include <boost/asio.hpp>
-#include <boost/thread/mutex.hpp>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
 
@@ -68,7 +68,7 @@ protected:
 
 	// Packet sending
 	std::shared_array<unsigned char> m_sendPacket;
-	boost::mutex m_sendMutex;
+	std::mutex m_sendMutex;
 };
 
 typedef std::shared_ptr<Session> SessionPtr;
