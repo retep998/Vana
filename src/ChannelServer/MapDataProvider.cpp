@@ -78,7 +78,7 @@ void MapDataProvider::loadData() {
 }
 
 void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
-	boost::mutex::scoped_lock l(m_loadMutex);
+	std::unique_lock<std::mutex> l(m_loadMutex);
 
 	int32_t checkMap = loadMapData(mapId, map);
 	if (checkMap != -1) {

@@ -62,3 +62,8 @@ typedef std::optional<std::string> opt_string;
 typedef uint16_t header_t;
 typedef uint16_t port_t;
 typedef uint32_t ip_t;
+
+// Remove when VS2012 supports thread_local
+#ifdef WIN32
+#define thread_local __declspec(thread)
+#endif

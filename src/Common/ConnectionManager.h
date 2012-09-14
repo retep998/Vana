@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "noncopyable.hpp"
 #include "SessionManager.h"
 #include "Types.h"
-#include <boost/thread.hpp>
 #include <list>
 #include <memory>
 #include <string>
+#include <thread>
 
 using std::string;
 
@@ -52,7 +52,7 @@ private:
 	ConnectionManager();
 	static ConnectionManager *singleton;
 
-	std::unique_ptr<boost::thread> m_thread;
+	std::unique_ptr<std::thread> m_thread;
 	boost::asio::io_service m_ioService;
 	SessionManagerPtr m_clients;
 	std::list<ConnectionAcceptorPtr> m_servers;

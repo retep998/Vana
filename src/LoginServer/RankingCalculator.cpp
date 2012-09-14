@@ -32,12 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 using std::unique_ptr;
 using std::bind;
 using Initializing::OutputWidth;
 
-boost::mutex RankingCalculator::RankingsMutex;
+std::mutex RankingCalculator::RankingsMutex;
 
 void RankingCalculator::setTimer() {
 	/*
@@ -49,13 +50,13 @@ void RankingCalculator::setTimer() {
 
 void RankingCalculator::runThread() {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
-	// The boost::thread object will be deleted immediately, but the thread will continue to run
-	unique_ptr<boost::thread>(new boost::thread(bind(&RankingCalculator::all)));
+	// The std::thread object will be deleted immediately, but the thread will continue to run
+	unique_ptr<std::thread>(new std::thread(bind(&RankingCalculator::all)));
 }
 
 void RankingCalculator::all() {
 	// There's no guarantee what effect running two at once will have, but it's likely to be bad
-	boost::unique_lock<boost::mutex> l(RankingsMutex, boost::try_to_lock);
+	std::unique_lock<std::mutex> l(RankingsMutex, std::try_to_lock);
 	if (!l) return;
 
 	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... " << std::endl;

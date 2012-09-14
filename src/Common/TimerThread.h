@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "noncopyable.hpp"
-#include <boost/thread.hpp>
+#include <condition_variable>
 #include <list>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 namespace Timer {
 
@@ -54,10 +56,10 @@ private:
 	bool m_resortTimer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
 	volatile bool m_terminate;
 	list<Timer *> m_timers;
-	boost::recursive_mutex m_timersMutex;
+	std::recursive_mutex m_timersMutex;
 
-	std::unique_ptr<boost::thread> m_thread;
-	boost::condition_variable_any m_mainLoopCondition;
+	std::unique_ptr<std::thread> m_thread;
+	std::condition_variable_any m_mainLoopCondition;
 
 	std::unique_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
 };

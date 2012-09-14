@@ -46,7 +46,7 @@ void ConnectionManager::stop() {
 }
 
 void ConnectionManager::run() {
-	m_thread.reset(new boost::thread(std::bind(&ConnectionManager::handleRun, this)));
+	m_thread.reset(new std::thread(std::bind(&ConnectionManager::handleRun, this)));
 }
 
 void ConnectionManager::join() {

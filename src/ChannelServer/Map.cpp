@@ -594,7 +594,7 @@ unordered_map<int32_t, Mob *> Map::getMobs() const {
 
 // Drops
 void Map::addDrop(Drop *drop) {
-	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 	int32_t id = getObjectId();
 	drop->setId(id);
 	drop->setPos(findFloor(drop->getPos()));
@@ -602,19 +602,19 @@ void Map::addDrop(Drop *drop) {
 }
 
 void Map::removeDrop(int32_t id) {
-	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 	if (m_drops.find(id) != m_drops.end()) {
 		m_drops.erase(id);
 	}
 }
 
 Drop * Map::getDrop(int32_t id) {
-	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 	return (m_drops.find(id) != m_drops.end() ? m_drops[id] : nullptr);
 }
 
 void Map::clearDrops(bool showPacket) {
-	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); ++iter) {
 		iter->second->removeDrop(showPacket);
@@ -774,7 +774,7 @@ void Map::checkMists() {
 
 void Map::clearDrops(clock_t time) {
 	// Clear drops based on how long they have been in the map
-	boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 	time -= 180000; // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); ++iter) {
@@ -898,7 +898,7 @@ void Map::showObjects(Player *player) {
 
 	// Drops
 	{
-		boost::recursive_mutex::scoped_lock l(m_dropsMutex);
+		std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
 		for (unordered_map<int32_t, Drop *>::iterator iter = m_drops.begin(); iter != m_drops.end(); ++iter) {
 			if (iter->second != nullptr) {
 				iter->second->showDrop(player);

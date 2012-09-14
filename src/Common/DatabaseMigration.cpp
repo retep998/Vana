@@ -20,10 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigrationRunner.h"
 #include "ExitCodes.h"
 #include "StringUtilities.h"
+#ifdef WIN32
+#include <filesystem>
+#else
+// Until GCC supports the TR2 filesystem header
 #include <boost/filesystem.hpp>
+#endif
 #include <iostream>
 
+#ifdef WIN32
+namespace fs = std::tr2::sys;
+#else
 namespace fs = boost::filesystem;
+#endif
 
 DatabaseMigration::DatabaseMigration(bool update) :
 	m_sqlVersion(0),
@@ -84,14 +93,23 @@ void DatabaseMigration::loadDatabaseInfo() {
 void DatabaseMigration::loadSqlFiles() {
 	fs::path fullPath = fs::system_complete(fs::path("sql"));
 	if (!fs::exists(fullPath)) {
+#ifdef WIN32
+		std::cerr << "SQL files not found: " << fullPath.file_string() << std::endl;
+#else
 		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
+#endif
 		ExitCodes::exit(ExitCodes::SqlDirectoryNotFound);
 	}
 
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
+#ifdef WIN32
+		const string &filename = dir->path().filename();
+		const string &fileString = dir->path().file_string();
+#else
 		const string &filename = dir->path().filename().generic_string();
 		const string &fileString = dir->path().generic_string();
+#endif
 		if (filename.find(".sql") == string::npos) {
 			// Not an SQL file
 			continue;

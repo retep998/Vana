@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "noncopyable.hpp"
 #include "Pos.h"
 #include "Types.h"
-#include <boost/thread/mutex.hpp>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -132,7 +132,7 @@ private:
 
 	unordered_map<int32_t, Map *> m_maps;
 	unordered_map<int8_t, int8_t> m_continents;
-	boost::mutex m_loadMutex;
+	std::mutex m_loadMutex;
 
 	void loadMap(int32_t mapId, Map *&map);
 };
