@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "soci-mysql.h"
 
-Database::tsConn Database::m_chardb;
-Database::tsConn Database::m_datadb;
+thread_local soci::session * Database::m_chardb = nullptr;
+thread_local soci::session * Database::m_datadb = nullptr;
 
 void Database::connectCharDb() {
 	ConfigFile config("conf/database.lua");

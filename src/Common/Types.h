@@ -66,4 +66,6 @@ typedef uint32_t ip_t;
 // Remove when VS2012 supports thread_local
 #ifdef WIN32
 #define thread_local __declspec(thread)
+#else
+#define thread_local __thread
 #endif

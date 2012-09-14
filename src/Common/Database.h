@@ -31,17 +31,15 @@ struct DbConfig;
 
 class Database {
 public:
-	typedef soci::session * tsConn;
-
 	static void connectCharDb();
 	static void connectDataDb();
 	static soci::session & getCharDb();
 	static soci::session & getDataDb();
 	template <typename T> static T getLastId(soci::session &sql);
 private:
-	static soci::session & getConnection(tsConn &conn, std::function<void()> func);
-	thread_local static tsConn m_chardb;
-	thread_local static tsConn m_datadb;
+	static soci::session & getConnection(soci::session *conn, std::function<void()> func);
+	static thread_local soci::session *m_chardb;
+	static thread_local soci::session *m_datadb;
 	static std::string buildConnectionString(const DbConfig &conf);
 };
 
@@ -56,7 +54,7 @@ soci::session & Database::getDataDb() {
 }
 
 inline
-soci::session & Database::getConnection(tsConn &conn, std::function<void()> func) {
+soci::session & Database::getConnection(soci::session *conn, std::function<void()> func) {
 	if (conn == nullptr) {
 		func();
 	}
