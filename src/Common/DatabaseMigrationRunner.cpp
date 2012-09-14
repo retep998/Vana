@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DatabaseMigrationRunner.h"
 #include "StringUtilities.h"
 #include "tokenizer.hpp"
+#include <iostream>
 #include <sstream>
 
 DatabaseMigration::Runner::Runner(const string &filename) :

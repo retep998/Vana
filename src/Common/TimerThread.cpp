@@ -89,7 +89,11 @@ void Thread::runThread() {
 			continue;
 		}
 
+#ifdef WIN32
 		if (m_mainLoopCondition.wait_for(l, std::chrono::milliseconds(msec))) {
+#else
+		if (m_mainLoopCondition.wait_for(l, std::chrono::milliseconds(msec)) == std::cv_status::no_timeout) {
+#endif
 			continue;
 		}
 
