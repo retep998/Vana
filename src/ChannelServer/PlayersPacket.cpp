@@ -153,17 +153,17 @@ void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
 }
 
 void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
+	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
-	bool mesoexplosion = attack.isMesoExplosion;
-	if (mesoexplosion) {
-		tbyte = (attack.targets * 0x10) + 0x0A;
+	bool isMesoExplosion = attack.isMesoExplosion;
+	if (isMesoExplosion) {
+		hitByte = (attack.targets * 0x10) + 0x0A;
 	}
 
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ATTACK_MELEE);
 	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
+	packet.add<int8_t>(hitByte);
 	packet.add<uint8_t>(attack.skillLevel);
 	if (skillId != Skills::All::RegularAttack) {
 		packet.add<int32_t>(skillId);
@@ -177,13 +177,13 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 	packet.add<int32_t>(0);
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
 		packet.add<int8_t>(0x06);
-		if (mesoexplosion) {
+		if (isMesoExplosion) {
 			packet.add<uint8_t>(i->second.size());
 		}
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+		for (Attack::damage_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			packet.add<int32_t>(*j);
 		}
 	}
@@ -213,10 +213,10 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 
 	packet.add<int32_t>(attack.starId);
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
 		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+		for (Attack::damage_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			int32_t damage = *j;
 			switch (skillId) {
 				case Skills::Marksman::Snipe: // Snipe is always crit
@@ -251,10 +251,10 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 
 	packet.add<int32_t>(0); // No clue
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
 		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+		for (Attack::damage_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			packet.add<int32_t>(*j);
 		}
 	}
@@ -272,10 +272,10 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(attack.summonId);
 	packet.add<int8_t>(attack.animation);
 	packet.add<int8_t>(attack.targets);
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
 		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+		for (Attack::damage_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			packet.add<int32_t>(*j);
 		}
 	}
@@ -302,10 +302,10 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 
 	packet.add<int32_t>(0);
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		packet.add<int32_t>(i->first);
 		packet.add<int8_t>(0x06);
-		for (Attack::diterator j = i->second.begin(); j != i->second.end(); ++j) {
+		for (Attack::damage_iterator j = i->second.begin(); j != i->second.end(); ++j) {
 			packet.add<int32_t>(*j);
 		}
 	}

@@ -423,7 +423,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	Pos origin;
 	vector<int32_t> ppDamages;
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targetTotal = 0;
 		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(i->first);
@@ -431,7 +431,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			continue;
 		}
 		origin = mob->getPos(); // Info for pickpocket before mob is set to 0 (in the case that mob dies)
-		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
 				connectedHits++;
@@ -601,7 +601,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int32_t maxHp = 0;
 	int32_t firstHit = 0;
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t mapMobId = i->first;
 		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
@@ -610,7 +610,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int8_t connectedHits = 0;
 
-		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
 				connectedHits++;
@@ -699,7 +699,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		Skills::useAttackSkill(player, skillId);
 	}
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
@@ -712,7 +712,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
 				connectedHits++;
@@ -754,7 +754,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	int32_t skillId = attack.skillId;
 	int8_t level = attack.skillLevel;
 
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
@@ -763,7 +763,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 			continue;
 		}
 
-		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
 				connectedHits++;
@@ -795,7 +795,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	}
 	PlayersPacket::useSummonAttack(player, attack);
 	int32_t skillId = summon->getSummonId();
-	for (Attack::iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
+	for (Attack::hit_iterator i = attack.damages.begin(); i != attack.damages.end(); ++i) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = i->first;
 		int8_t connectedHits = 0;
@@ -803,7 +803,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		if (mob == nullptr) {
 			continue;
 		}
-		for (Attack::diterator k = i->second.begin(); k != i->second.end(); ++k) {
+		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
 				connectedHits++;
