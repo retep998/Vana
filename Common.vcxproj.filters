@@ -5,15 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source\Database Loading">
-      <UniqueIdentifier>{83919201-7757-496d-93bd-b76823bcb5ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Database Loading\MCDB">
-      <UniqueIdentifier>{5612baa9-cd7e-42ec-8dfd-b614c568bf29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Database Manager">
-      <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Packets">
       <UniqueIdentifier>{1a4cf086-e5e2-4c4c-9f20-97d3a449c143}</UniqueIdentifier>
     </Filter>
@@ -25,12 +16,6 @@
     </Filter>
     <Filter Include="Source\Timer">
       <UniqueIdentifier>{ba915691-350f-47c6-9ed5-324e433bbc1e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Abstracts">
-      <UniqueIdentifier>{c948e922-0065-4758-aa3c-0dc0af7d52a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Database Migration">
-      <UniqueIdentifier>{80897322-dbfb-4ad3-be18-fd646a1ebfcf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Inter-Server">
       <UniqueIdentifier>{ee05f7d7-a4e3-43c8-a447-243f43321d17}</UniqueIdentifier>
@@ -53,22 +38,31 @@
     <Filter Include="Source\Lib">
       <UniqueIdentifier>{535f2c2a-4a21-4fd2-93c0-ca6d3e13da45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Configuration">
+      <UniqueIdentifier>{3ceab430-1c37-4086-9019-31cc885dd1b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Database">
+      <UniqueIdentifier>{7f88f4c5-3611-4887-871c-3defe2bced64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Data Loading">
+      <UniqueIdentifier>{83919201-7757-496d-93bd-b76823bcb5ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Data Loading\MCDB">
+      <UniqueIdentifier>{5612baa9-cd7e-42ec-8dfd-b614c568bf29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
-      <Filter>Source\Database Loading</Filter>
+      <Filter>Source\Data Loading</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\InitializeCommon.cpp">
-      <Filter>Source\Database Loading</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\ConfigFile.cpp">
-      <Filter>Source\Database Manager</Filter>
+      <Filter>Source\Data Loading</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Database.cpp">
-      <Filter>Source\Database Manager</Filter>
+      <Filter>Source\Database</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\PacketCreator.cpp">
       <Filter>Source\Packets</Filter>
@@ -103,18 +97,6 @@
     <ClCompile Include="src\Common\SessionManager.cpp">
       <Filter>Source\Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\AbstractConnection.cpp">
-      <Filter>Source\Abstracts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\AbstractServer.cpp">
-      <Filter>Source\Abstracts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\DatabaseMigration.cpp">
-      <Filter>Source\Database Migration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\DatabaseMigrationRunner.cpp">
-      <Filter>Source\Database Migration</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\ServerConnection.cpp">
       <Filter>Source\Inter-Server</Filter>
     </ClCompile>
@@ -122,40 +104,40 @@
       <Filter>Source\Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\BeautyDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\DropDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\EquipDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ItemDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\MobDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\NpcDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\QuestDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ReactorDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ScriptDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ShopDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\SkillDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\Item.cpp">
       <Filter>Source\Data Structures</Filter>
@@ -212,7 +194,22 @@
       <Filter>Source\Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\CurseDataProvider.cpp">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\ConfigFile.cpp">
+      <Filter>Source\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\MySqlQueryParser.cpp">
+      <Filter>Source\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\DatabaseUpdater.cpp">
+      <Filter>Source\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractServer.cpp">
+      <Filter>Source\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractConnection.cpp">
+      <Filter>Source\Connection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,12 +227,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\SkillConstants.h">
       <Filter>Source\Game Constants</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractConnection.h">
-      <Filter>Source\Abstracts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\AbstractServer.h">
-      <Filter>Source\Abstracts</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ExitCodes.h">
       <Filter>Source</Filter>
@@ -303,62 +294,50 @@
     <ClInclude Include="src\Common\ServerConnection.h">
       <Filter>Source\Inter-Server</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\DatabaseMigration.h">
-      <Filter>Source\Database Migration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\DatabaseMigrationRunner.h">
-      <Filter>Source\Database Migration</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ConfigFile.h">
-      <Filter>Source\Database Manager</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Database.h">
-      <Filter>Source\Database Manager</Filter>
+      <Filter>Source\Database</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\BeautyDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ValidCharDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\DropDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\EquipDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ItemDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\MobDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\NpcDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\QuestDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ReactorDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ScriptDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ShopDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\SkillDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\BuffDataProvider.h">
-      <Filter>Source\Database Loading</Filter>
+      <Filter>Source\Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\InitializeCommon.h">
-      <Filter>Source\Database Loading</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\Configuration.h">
-      <Filter>Source\Data Structures</Filter>
+      <Filter>Source\Data Loading</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Variables.h">
       <Filter>Source\Data Structures</Filter>
@@ -438,9 +417,6 @@
     <ClInclude Include="src\Common\ConnectionAcceptor.h">
       <Filter>Source\Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\AbstractSession.h">
-      <Filter>Source\Abstracts</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Quest.h">
       <Filter>Source\Data Structures</Filter>
     </ClInclude>
@@ -455,12 +431,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\SkillDataObjects.h">
       <Filter>Source\Data Structures\Data Provider</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\IConfig.h">
-      <Filter>Source\Abstracts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\IPacket.h">
-      <Filter>Source\Abstracts</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\noncopyable.hpp">
       <Filter>Source\Lib</Filter>
@@ -487,7 +457,34 @@
       <Filter>Source\Game Constants</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\CurseDataProvider.h">
-      <Filter>Source\Database Loading\MCDB</Filter>
+      <Filter>Source\Data Loading\MCDB</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\ConfigFile.h">
+      <Filter>Source\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Configuration.h">
+      <Filter>Source\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\MySqlQueryParser.h">
+      <Filter>Source\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\DatabaseUpdater.h">
+      <Filter>Source\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IConfig.h">
+      <Filter>Source\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractSession.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractServer.h">
+      <Filter>Source\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\IPacket.h">
+      <Filter>Source\Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractConnection.h">
+      <Filter>Source\Connection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

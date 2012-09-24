@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InitializeCommon.h"
 #include "Database.h"
-#include "DatabaseMigration.h"
+#include "DatabaseUpdater.h"
 #include "ExitCodes.h"
 #include "MapleVersion.h"
 #include "TimeUtilities.h"
@@ -72,9 +72,9 @@ string Initializing::makeLocale(const string &locale, bool testServer) {
 }
 
 void Initializing::checkSchemaVersion(bool update) {
-	DatabaseMigration dbMigration(update);
+	DatabaseUpdater db(update);
 
-	bool succeed = dbMigration.checkVersion();
+	bool succeed = db.checkVersion();
 
 	if (!succeed && !update) {
 		// Wrong version and we're not allowed to update, so let's quit
@@ -85,7 +85,7 @@ void Initializing::checkSchemaVersion(bool update) {
 		// Failed, but we can update it
 		std::cout << std::setw(OutputWidth) << "Updating database...";
 
-		dbMigration.update();
+		db.update();
 
 		std::cout << "DONE" << endl;
 	}
