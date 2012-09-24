@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MySqlQueryParser.h"
 #include "StringUtilities.h"
 #include "tokenizer.hpp"
+#include <fstream>
 
 vector<string> MySqlQueryParser::parseQueries(const string &filename) {
 	std::vector<string> queries;
