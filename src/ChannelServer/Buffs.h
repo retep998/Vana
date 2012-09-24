@@ -66,6 +66,7 @@ namespace Buffs {
 	void doAct(Player *player, int32_t skillId, uint8_t level);
 	void addDebuff(Player *player, uint8_t skillId, uint8_t level);
 	void endDebuff(Player *player, uint8_t skillId);
+	bool buffMayApply(int32_t skillId, uint8_t level, int8_t buffValue);
 
 	ActiveBuff parseBuffInfo(Player *player, int32_t skillId, uint8_t level);
 	ActiveMapBuff parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level);

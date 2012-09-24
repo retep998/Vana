@@ -138,8 +138,8 @@ namespace SkillTypes {
 }
 
 struct Attack {
-	typedef unordered_map<int32_t, vector<int32_t>>::const_iterator iterator;
-	typedef vector<int32_t>::const_iterator diterator;
+	typedef unordered_map<int32_t, vector<int32_t>>::const_iterator hit_iterator;
+	typedef vector<int32_t>::const_iterator damage_iterator;
 
 	Attack() :
 		isMesoExplosion(false),

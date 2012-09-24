@@ -79,8 +79,7 @@ ActiveBuff Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) 
 	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
 		cur = skillsInfo->player[i];
 		int8_t val = cur.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) {
-			// Cancel speed change for maxed dark sight
+		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
 		playerSkill.types[cur.buff.byte] += cur.buff.type;
@@ -143,8 +142,7 @@ ActiveMapBuff Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t l
 		}
 		map = skillsInfo->map[maps++];
 		int8_t val = map.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) {
-			// Cancel speed update for maxed dark sight
+		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
 		mapSkill.bytes.push_back(map.buff.byte);
@@ -187,8 +185,7 @@ ActiveMapBuff Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint
 		}
 		map = skillsInfo->map[mapCounter++];
 		int8_t val = map.buff.value;
-		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && val == SkillSpeed) {
-			// Cancel speed update for maxed dark sight
+		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
 		mapSkill.bytes.push_back(map.buff.byte);
@@ -223,7 +220,7 @@ vector<Buff> Buffs::parseBuffs(int32_t skillId, uint8_t level) {
 
 	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
 		BuffInfo cur = skillsInfo->player[i];
-		if (GameLogicUtilities::isMaxDarkSight(skillId, level) && cur.buff.value == SkillSpeed) { // Cancel speed update for maxed dark sight
+		if (!Buffs::buffMayApply(skillId, level, cur.buff.value)) {
 			continue;
 		}
 		ret.push_back(cur.buff);
@@ -572,4 +569,11 @@ void Buffs::endDebuff(Player *player, uint8_t skill) {
 
 	playerBuffs->deleteMapEntryBuffInfo(enterSkill);
 	playerBuffs->setActiveSkillLevel(skill, 0);
+}
+
+bool Buffs::buffMayApply(int32_t skillId, uint8_t level, int8_t buffValue) {
+	if (GameLogicUtilities::isDarkSight(skillId)) {
+		return buffValue != SkillSpeed || level != SkillDataProvider::Instance()->getMaxLevel(skillId);
+	}
+	return true;
 }
