@@ -50,7 +50,7 @@ void SkillDataProvider::loadPlayerSkills() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_player_level_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		skillId = row.get<int32_t>("skillid");
 		skillLevel = row.get<uint8_t>("skill_level");
@@ -105,7 +105,7 @@ void SkillDataProvider::loadMobSkills() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		skillId = row.get<int32_t>("skillid");
 		level = row.get<uint8_t>("skill_level");
@@ -135,7 +135,7 @@ void SkillDataProvider::loadMobSummons() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_summons");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		level = row.get<uint8_t>("level");
 		mobId = row.get<int32_t>("mobid");
@@ -152,7 +152,7 @@ void SkillDataProvider::loadBanishData() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_banish_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mobId = row.get<int32_t>("mobid");
 
@@ -172,7 +172,7 @@ void SkillDataProvider::loadMorphs() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM morph_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		morph = MorphData();
 		morphId = row.get<int32_t>("morphid");

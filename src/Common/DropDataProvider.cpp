@@ -55,7 +55,7 @@ void DropDataProvider::loadDrops() {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM drop_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		drop = DropInfo();
 		dropFlags(row.get<opt_string>("flags"));
@@ -74,7 +74,7 @@ void DropDataProvider::loadDrops() {
 	bool dropped = false;
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		drop = DropInfo();
 		dropFlags(row.get<opt_string>("flags"));
@@ -104,7 +104,7 @@ void DropDataProvider::loadGlobalDrops() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM drop_global_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		drop = GlobalDrop();
 		runFlags(row.get<opt_string>("flags"), [&drop](const string &cmp) {

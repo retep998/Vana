@@ -46,7 +46,7 @@ void ScriptDataProvider::loadData() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM scripts");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		objectId = row.get<int32_t>("objectid");
 		script = row.get<string>("script");

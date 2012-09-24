@@ -68,7 +68,7 @@ void MapDataProvider::loadData() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_continent_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mapCluster = row.get<int8_t>("map_cluster");
 		continent = row.get<int8_t>("continent");
@@ -96,7 +96,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		MapInfoPtr mapInfo(new MapInfo);
 		link = row.get<int32_t>("link");
@@ -169,7 +169,7 @@ void MapDataProvider::loadSeats(Map *map, int32_t link) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_seats WHERE mapid = :map", soci::use(link, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		id = row.get<int16_t>("seatid");
 		chair = SeatInfo();
@@ -185,7 +185,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_portals WHERE mapid = :map", soci::use(link, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		portal = PortalInfo();
 		runFlags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
@@ -213,7 +213,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_life WHERE mapid = :map", soci::use(link, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		life = SpawnInfo();
 		runFlags(row.get<opt_string>("flags"), [&life](const string &cmp) {
@@ -253,7 +253,7 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_footholds WHERE mapid = :map", soci::use(link, "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		foot = FootholdInfo();
 		runFlags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
@@ -274,7 +274,7 @@ void MapDataProvider::loadMapTimeMob(Map *map) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_time_mob WHERE mapid = :map", soci::use(map->getId(), "map"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		TimeMobPtr info(new TimeMob);
 

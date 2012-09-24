@@ -53,7 +53,7 @@ void EquipDataProvider::loadEquips() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM item_equip_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 		equip = EquipInfo();
 
 		runFlags(row.get<opt_string>("flags"), [&equip](const string &cmp) {

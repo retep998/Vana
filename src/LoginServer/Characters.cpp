@@ -50,7 +50,7 @@ void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 		soci::use(Inventories::EquipInventory, "inv"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		CharEquip equip;
 		equip.id = row.get<int32_t>("item_id");
@@ -113,7 +113,7 @@ void Characters::showAllCharacters(Player *player) {
 	World *world;
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		uint8_t worldId = row.get<uint8_t>("world_id");
 		world = Worlds::Instance()->getWorld(worldId);
@@ -149,7 +149,7 @@ void Characters::showCharacters(Player *player) {
 
 	vector<Character> chars;
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		Character charc;
 		loadCharacter(charc, row);

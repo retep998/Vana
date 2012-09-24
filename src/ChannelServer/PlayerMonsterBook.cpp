@@ -39,7 +39,7 @@ void PlayerMonsterBook::load() {
 		soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		addCard(row.get<int32_t>("card_id"), row.get<uint8_t>("level"), true);
 	}

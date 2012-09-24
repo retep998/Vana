@@ -84,7 +84,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				std::ostringstream str("");
 				bool found = false;
 				for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-					soci::row const &row = *i;
+					const soci::row &row = *i;
 					found = true;
 
 					str.str("");

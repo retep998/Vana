@@ -49,7 +49,7 @@ void ShopDataProvider::loadShops() {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM shop_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		shop = ShopInfo();
 		shopId = row.get<int32_t>("shopid");
@@ -62,7 +62,7 @@ void ShopDataProvider::loadShops() {
 	ShopItemInfo item;
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		item = ShopItemInfo();
 		shopId = row.get<int32_t>("shopid");
@@ -82,7 +82,7 @@ void ShopDataProvider::loadUserShops() {
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM user_shop_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		shop = ShopInfo();
 		shopId = row.get<int32_t>("shopid");
@@ -99,7 +99,7 @@ void ShopDataProvider::loadUserShops() {
 	ShopItemInfo item;
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		item = ShopItemInfo();
 		shopId = row.get<int32_t>("shopid");
@@ -120,7 +120,7 @@ void ShopDataProvider::loadRechargeTiers() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM shop_recharge_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		rechargeTier = row.get<int8_t>("tierid");
 		itemId = row.get<int32_t>("itemid");

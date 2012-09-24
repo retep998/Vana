@@ -48,7 +48,7 @@ void QuestDataProvider::loadQuestData() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		questId = row.get<int16_t>("questid");
 		curQuest.setNextQuest(row.get<int16_t>("next_quest"));
@@ -69,7 +69,7 @@ void QuestDataProvider::loadRequests() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_requests");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		questId = row.get<int16_t>("questid");
 		cur = &m_quests[questId];
@@ -92,7 +92,7 @@ void QuestDataProvider::loadRequiredJobs() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_required_jobs");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		questId = row.get<int16_t>("questid");
 		cur = &m_quests[questId];
@@ -112,7 +112,7 @@ void QuestDataProvider::loadRewards() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_rewards");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		questId = row.get<int16_t>("questid");
 		cur = &m_quests[questId];
