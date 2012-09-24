@@ -35,7 +35,7 @@ void CurseDataProvider::loadData() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM curse_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		m_curseWords.push_back(row.get<string>("word"));
 	}

@@ -64,7 +64,7 @@ void KeyMaps::load(int32_t charId) {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT k.* FROM keymap k WHERE k.character_id = :char", soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		add(row.get<int32_t>("pos"), new KeyMap(row.get<int8_t>("type"), row.get<int32_t>("action")));
 	}

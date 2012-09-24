@@ -54,7 +54,7 @@ void PlayerVariables::load() {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM character_variables WHERE character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		m_variables[row.get<string>("key")] = row.get<string>("value");
 	}

@@ -39,7 +39,7 @@ void PlayerSkills::load() {
 		soci::use(playerId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		skill = PlayerSkillInfo();
 		skillId = row.get<int32_t>("skill_id");
@@ -56,7 +56,7 @@ void PlayerSkills::load() {
 		soci::use(playerId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		int32_t skillId = row.get<int32_t>("skill_id");
 		int16_t timeLeft = row.get<int16_t>("remaining_time");

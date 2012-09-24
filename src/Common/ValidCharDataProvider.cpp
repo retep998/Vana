@@ -44,7 +44,7 @@ void ValidCharDataProvider::loadForbiddenNames() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_forbidden_names");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		m_forbiddenNames.push_back(row.get<string>("forbidden_name"));
 	}
@@ -63,7 +63,7 @@ void ValidCharDataProvider::loadCreationItems() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_creation_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
 		runFlags(row.get<opt_string>("character_type"), [&classId](const string &cmp) {

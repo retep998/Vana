@@ -64,7 +64,7 @@ void PlayerMounts::load() {
 	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM mounts m WHERE m.character_id = :char ", soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		c = MountData();
 		c.exp = row.get<int16_t>("exp");

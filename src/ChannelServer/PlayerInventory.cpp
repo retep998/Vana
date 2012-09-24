@@ -71,7 +71,7 @@ void PlayerInventory::load() {
 		soci::use(location, "location"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		Item *item = new Item(row);
 		addItem(row.get<int8_t>("inv"), row.get<int16_t>("slot"), item, true);
@@ -85,7 +85,7 @@ void PlayerInventory::load() {
 	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		int8_t index = row.get<int8_t>("map_index");
 		int32_t mapId = row.get<int32_t>("map_id");

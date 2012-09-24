@@ -49,7 +49,7 @@ void MobDataProvider::loadAttacks() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_attacks");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mobAttack = MobAttackInfo();
 		runFlags(row.get<opt_string>("flags"), [&mobAttack](const string &cmp) {
@@ -75,7 +75,7 @@ void MobDataProvider::loadSkills() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_skills");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mobId = row.get<int32_t>("mobid");
 		mobSkill.skillId = row.get<uint8_t>("skillid");
@@ -94,7 +94,7 @@ void MobDataProvider::loadMobs() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mob.reset(new MobInfoRaw());
 		runFlags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
@@ -163,7 +163,7 @@ void MobDataProvider::loadSummons() {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_summons");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		mobId = row.get<int32_t>("mobid");
 		summonId = row.get<int32_t>("summonid");

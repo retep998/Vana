@@ -119,7 +119,7 @@ void PlayerQuests::load() {
 		soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		current = row.get<int16_t>("quest_id");
 		int32_t mob = row.get<int32_t>("mob_id");
@@ -149,7 +149,7 @@ void PlayerQuests::load() {
 	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM completed_quests c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		soci::row const &row = *i;
+		const soci::row &row = *i;
 
 		m_completed[row.get<int16_t>("quest_id")] = row.get<int64_t>("end_time");
 	}

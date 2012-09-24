@@ -31,7 +31,7 @@ struct Id {
 	uint32_t id;
 	uint32_t id2;
 
-	bool operator==(Id const &other) const;
+	bool operator==(const Id &other) const;
 };
 
 inline
@@ -43,7 +43,7 @@ Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
 }
 
 inline
-bool Id::operator==(Id const &other) const {
+bool Id::operator==(const Id &other) const {
 	return type == other.type && id == other.id && id2 == other.id2;
 }
 
