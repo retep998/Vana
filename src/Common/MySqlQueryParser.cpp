@@ -15,44 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Database.h"
-#include "DatabaseMigrationRunner.h"
+#include "MySqlQueryParser.h"
 #include "StringUtilities.h"
 #include "tokenizer.hpp"
-#include <iostream>
-#include <sstream>
 
-DatabaseMigration::Runner::Runner(const string &filename) :
-	m_filename(filename)
-{
-	loadFile();
-}
+vector<string> MySqlQueryParser::parseQueries(const string &filename) {
+	std::vector<string> queries;
+	std::ifstream filestream;
 
-void DatabaseMigration::Runner::run() {
-	soci::session &sql = Database::getCharDb();
-
-	for (size_t i = 0; i < m_queries.size(); i++) {
-		try {
-			sql.once << m_queries[i];
-		}
-		catch (soci::soci_error &e) {
-			std::cerr << "\nERROR: " << e.what() << std::endl;
-			std::cerr << "File: " << m_filename << std::endl;
-			// TODO: Handle the error
-		}
-	}
-}
-
-void DatabaseMigration::Runner::loadFile() {
-	m_filestream.open(m_filename.c_str());
+	filestream.open(filename.c_str());
 
 	string content;
 	// Read whole file
 	{
 		std::ostringstream contentStream;
-		while (!m_filestream.eof()) {
+		while (!filestream.eof()) {
 			string line;
-			std::getline(m_filestream, line);
+			std::getline(filestream, line);
 			contentStream << line << std::endl;
 		}
 
@@ -67,8 +46,10 @@ void DatabaseMigration::Runner::loadFile() {
 			string q = *iter;
 			q = StringUtilities::trim(q);
 			if (q.size() > 0) {
-				m_queries.push_back(q);
+				queries.push_back(q);
 			}
 		}
 	}
+
+	return queries;
 }

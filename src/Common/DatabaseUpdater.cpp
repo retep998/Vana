@@ -15,11 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "DatabaseMigration.h"
+#include "DatabaseUpdater.h"
 #include "Database.h"
-#include "DatabaseMigrationRunner.h"
 #include "ExitCodes.h"
+#include "MySqlQueryParser.h"
 #include "StringUtilities.h"
+#include "tokenizer.hpp"
 #ifdef WIN32
 #include <filesystem>
 #else
@@ -34,7 +35,7 @@ namespace fs = std::tr2::sys;
 namespace fs = boost::filesystem;
 #endif
 
-DatabaseMigration::DatabaseMigration(bool update) :
+DatabaseUpdater::DatabaseUpdater(bool update) :
 	m_sqlVersion(0),
 	m_update(update)
 {
@@ -43,31 +44,30 @@ DatabaseMigration::DatabaseMigration(bool update) :
 }
 
 // Returns true if the database is up-to-date.
-bool DatabaseMigration::checkVersion() {
+bool DatabaseUpdater::checkVersion() {
 	return m_sqlVersion <= m_version;
 }
 
 // Updates the database to the latest version
-void DatabaseMigration::update() {
+void DatabaseUpdater::update() {
 	update(m_sqlVersion);
 }
 
 // Updates the database to the specified version
-void DatabaseMigration::update(size_t version) {
+void DatabaseUpdater::update(size_t version) {
 	if (version <= m_version) {
 		// TODO: Throw exception
 		return;
 	}
 
 	for (SqlFiles::iterator iter = m_sqlFiles.find(m_version + 1); iter != m_sqlFiles.end(); ++iter) {
-		Runner runner(iter->second);
-		runner.run();
+		runQueries(iter->second);
 	}
 
 	updateInfoTable(version);
 }
 
-void DatabaseMigration::loadDatabaseInfo() {
+void DatabaseUpdater::loadDatabaseInfo() {
 	// vana_info table for checking database version
 	opt_int32_t version;
 	bool retrievedData = false;
@@ -90,7 +90,7 @@ void DatabaseMigration::loadDatabaseInfo() {
 	}
 }
 
-void DatabaseMigration::loadSqlFiles() {
+void DatabaseUpdater::loadSqlFiles() {
 	fs::path fullPath = fs::system_complete(fs::path("sql"));
 	if (!fs::exists(fullPath)) {
 #ifdef WIN32
@@ -131,13 +131,30 @@ void DatabaseMigration::loadSqlFiles() {
 }
 
 // Create the info table
-void DatabaseMigration::createInfoTable() {
+void DatabaseUpdater::createInfoTable() {
 	soci::session &sql = Database::getCharDb();
 	sql.once << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
 	sql.once << "INSERT INTO vana_info VALUES (NULL)";
 }
 
 // Set version number in the info table
-void DatabaseMigration::updateInfoTable(size_t version) {
+void DatabaseUpdater::updateInfoTable(size_t version) {
 	Database::getCharDb().once << "UPDATE vana_info SET version = :version", soci::use(version, "version");
+}
+
+void DatabaseUpdater::runQueries(const string &filename) {
+	soci::session &sql = Database::getCharDb();
+	const std::vector<string> &queries = MySqlQueryParser::parseQueries(filename);
+
+	// Run them
+	for (auto i = queries.begin(); i != queries.end(); ++i) {
+		try {
+			sql.once << *i;
+		}
+		catch (soci::soci_error &e) {
+			std::cerr << "\nERROR: " << e.what() << std::endl;
+			std::cerr << "File: " << filename << std::endl;
+			// TODO: Handle the error
+		}
+	}
 }

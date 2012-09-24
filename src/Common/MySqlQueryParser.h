@@ -17,24 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "DatabaseMigration.h"
-#include <fstream>
+#include "Types.h"
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
 
-class DatabaseMigration::Runner {
+class MySqlQueryParser {
 public:
-	Runner(const string &filename);
-	void run();
-private:
-	void loadFile();
-
-	typedef vector<string> Queries;
-
-	string m_filename;
-	std::ifstream m_filestream;
-	Queries m_queries;
+	static vector<string> parseQueries(const string &filename);
 };

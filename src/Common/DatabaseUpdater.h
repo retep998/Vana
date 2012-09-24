@@ -24,17 +24,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::map;
 using std::string;
 
-class DatabaseMigration {
+class DatabaseUpdater {
 public:
-	DatabaseMigration(bool update);
+	DatabaseUpdater(bool update);
 	bool checkVersion();
 	void update();
 	void update(size_t version);
-
-	class Runner;
 private:
 	void loadDatabaseInfo();
 	void loadSqlFiles();
+	void runQueries(const string &filename);
 	static void createInfoTable();
 	static void updateInfoTable(size_t version);
 
