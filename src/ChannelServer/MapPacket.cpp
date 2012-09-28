@@ -137,7 +137,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(player->getItemEffect());
 	packet.add<int32_t>(player->getChair());
-	packet.addPos(player->getPos());
+	packet.addClass<Pos>(player->getPos());
 	packet.add<int8_t>(player->getStance());
 	packet.add<int16_t>(player->getFh());
 	packet.add<int8_t>(0);
@@ -147,7 +147,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int32_t>(pet->getItemId());
 			packet.addString(pet->getName());
 			packet.add<int64_t>(pet->getId());
-			packet.addPos(pet->getPos());
+			packet.addClass<Pos>(pet->getPos());
 			packet.add<int8_t>(pet->getStance());
 			packet.add<int16_t>(pet->getFh());
 			packet.addBool(pet->hasNameTag());
@@ -272,8 +272,8 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(0);
-	packet.addPos(mist->getLt(), true);
-	packet.addPos(mist->getRb(), true);
+	packet.addClass<WidePos>(WidePos(mist->getLt()));
+	packet.addClass<WidePos>(WidePos(mist->getRb()));
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
@@ -287,8 +287,8 @@ void MapPacket::spawnMist(int32_t mapId, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(mist->getDelay());
-	packet.addPos(mist->getLt(), true);
-	packet.addPos(mist->getRb(), true);
+	packet.addClass<WidePos>(WidePos(mist->getLt()));
+	packet.addClass<WidePos>(WidePos(mist->getRb()));
 	packet.add<int32_t>(0);
 	Maps::getMap(mapId)->sendPacket(packet);
 }

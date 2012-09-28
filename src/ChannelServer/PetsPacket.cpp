@@ -38,7 +38,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.add<int32_t>(pet->getItemId());
 		packet.addString(pet->getName());
 		packet.add<int64_t>(pet->getId());
-		packet.addPos(pet->getPos());
+		packet.addClass<Pos>(pet->getPos());
 		packet.add<int8_t>(pet->getStance());
 		packet.add<int16_t>(pet->getFh());
 		packet.addBool(pet->hasNameTag());

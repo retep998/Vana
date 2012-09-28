@@ -17,15 +17,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "IPacket.h"
+#include "PacketCreator.h"
+#include "PacketReader.h"
 #include "Types.h"
 #include <cmath>
 
-struct Pos {
+struct Pos : public IPacketSerializable<Pos> {
 	Pos(int16_t x, int16_t y) : x(x), y(y) { }
 	Pos() : x(0), y(0) { }
 	int16_t x;
 	int16_t y;
 	int32_t operator-(const Pos &p) {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
+	}
+
+	void write(PacketCreator &packet) const {
+		packet.add<int16_t>(x);
+		packet.add<int16_t>(y);
+	}
+	void read(PacketReader &packet) {
+		x = packet.get<int16_t>();
+		y = packet.get<int16_t>();
+	}
+};
+
+struct WidePos : public IPacketSerializable<WidePos> {
+	WidePos(const Pos &pos) : x(pos.x), y(pos.y) { }
+	WidePos(int32_t x, int32_t y) : x(x), y(y) { }
+	WidePos() : x(0), y(0) { }
+	int32_t x;
+	int32_t y;
+	int32_t operator-(const WidePos &p) {
+		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
+	}
+
+	void write(PacketCreator &packet) const {
+		packet.add<int32_t>(x);
+		packet.add<int32_t>(y);
+	}
+	void read(PacketReader &packet) {
+		x = packet.get<int32_t>();
+		y = packet.get<int32_t>();
 	}
 };

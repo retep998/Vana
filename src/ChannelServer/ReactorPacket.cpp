@@ -29,7 +29,7 @@ void ReactorPacket::spawnReactor(Reactor *reactor) {
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
-	packet.addPos(reactor->getPos());
+	packet.addClass<Pos>(reactor->getPos());
 	packet.add<int8_t>(0);
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
@@ -40,7 +40,7 @@ void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
-	packet.addPos(reactor->getPos());
+	packet.addClass<Pos>(reactor->getPos());
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
@@ -50,7 +50,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 	packet.add<header_t>(SMSG_REACTOR_TRIGGER);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
-	packet.addPos(reactor->getPos());
+	packet.addClass<Pos>(reactor->getPos());
 	packet.add<int32_t>(0);
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
@@ -60,6 +60,6 @@ void ReactorPacket::destroyReactor(Reactor *reactor) {
 	packet.add<header_t>(SMSG_REACTOR_DESPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int8_t>(reactor->getState());
-	packet.addPos(reactor->getPos());
+	packet.addClass<Pos>(reactor->getPos());
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }

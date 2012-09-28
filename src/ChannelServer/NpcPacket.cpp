@@ -47,7 +47,7 @@ void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t 
 	packet.add<header_t>(SMSG_NPC_SHOW);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
-	packet.addPos(npc.pos);
+	packet.addClass<Pos>(npc.pos);
 	packet.addBool(npc.facesRight);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
@@ -60,7 +60,7 @@ void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
-	packet.addPos(npc.pos);
+	packet.addClass<Pos>(npc.pos);
 	packet.addBool(npc.facesRight);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);

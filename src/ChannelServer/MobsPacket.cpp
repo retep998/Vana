@@ -31,7 +31,7 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
-	packet.addPos(mob->getPos());
+	packet.addClass<Pos>(mob->getPos());
 
 	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | mob->getFacingDirection();
 	if (mob->canFly()) {
@@ -70,7 +70,7 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
-	packet.addPos(mob->getPos());
+	packet.addClass<Pos>(mob->getPos());
 
 	int8_t bitfield = 0x02 | mob->getFacingDirection();
 	if (mob->canFly()) {
@@ -126,7 +126,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 	packet.add<int32_t>(mobId);
 	packet.addBool(useSkill);
 	packet.add<int8_t>(skill);
-	packet.addPos(projectileTarget);
+	packet.addClass<Pos>(projectileTarget);
 	packet.addBuffer(buf, len);
 	player->getMap()->sendPacket(packet, player);
 }
@@ -249,6 +249,6 @@ void MobsPacket::showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);
 	packet.add<int8_t>(summonEffect);
-	packet.addPos(pos, true);
+	packet.addClass<WidePos>(WidePos(pos));
 	Maps::getMap(mapId)->sendPacket(packet);
 }

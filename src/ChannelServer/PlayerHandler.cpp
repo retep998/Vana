@@ -110,7 +110,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 			}
 			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			packet.skipBytes(4); // Mob position garbage
-			pgmr.pos = packet.getPos();
+			pgmr.pos = packet.getClass<Pos>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
 				// Only Power Guard decreases damage
@@ -939,9 +939,9 @@ Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t
 	}
 
 	if (skillType == SkillTypes::Ranged) {
-		attack.projectilePos = packet.getPos();
+		attack.projectilePos = packet.getClass<Pos>();
 	}
-	attack.playerPos = packet.getPos();
+	attack.playerPos = packet.getClass<Pos>();
 
 	return attack;
 }

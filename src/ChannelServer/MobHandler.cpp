@@ -106,9 +106,9 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realSkill = 0;
 	uint8_t level = 0;
-	const Pos &projectileTarget = packet.getPos();
+	const Pos &projectileTarget = packet.getClass<Pos>();
 	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
-	const Pos &spot = packet.getPos();
+	const Pos &spot = packet.getClass<Pos>();
 
 	MovementHandler::parseMovement(mob, packet);
 
