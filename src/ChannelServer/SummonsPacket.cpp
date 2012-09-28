@@ -31,7 +31,7 @@ void SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Pl
 	packet.add<int32_t>(summon->getId());
 	packet.add<int32_t>(summon->getSummonId());
 	packet.add<int8_t>(summon->getLevel());
-	packet.addPos(summon->getPos());
+	packet.addClass<Pos>(summon->getPos());
 	packet.add<int8_t>(4); // ?
 	packet.add<int8_t>(0x53); // ?
 	packet.add<int8_t>(1); // ?
@@ -51,7 +51,7 @@ void SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startP
 	packet.add<header_t>(SMSG_SUMMON_MOVEMENT);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(summon->getId());
-	packet.addPos(startPos);
+	packet.addClass<Pos>(startPos);
 	packet.addBuffer(buf, bufLen);
 	player->getMap()->sendPacket(packet, player);
 }

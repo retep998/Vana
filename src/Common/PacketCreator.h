@@ -29,7 +29,6 @@ using std::string;
 using std::vector;
 
 class PacketReader;
-struct Pos;
 
 class PacketCreator {
 public:
@@ -46,8 +45,6 @@ public:
 
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
-	void addPos(const Pos &pos); // Positions
-	void addPos(const Pos &pos, bool fullInts); // Positions
 	void addBool(bool value);
 	void addBytes(const char *hex);
 	void addBuffer(const unsigned char *bytes, size_t len);

@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include "Pos.h"
 #include "StringUtilities.h"
 #include <cctype>
 #include <iomanip>
@@ -29,16 +28,6 @@ PacketCreator::PacketCreator() :
 	m_packet(new unsigned char[bufferLen]),
 	m_packetCapacity(bufferLen)
 {
-}
-
-void PacketCreator::addPos(const Pos &pos) {
-	add<int16_t>(pos.x);
-	add<int16_t>(pos.y);
-}
-
-void PacketCreator::addPos(const Pos &pos, bool fullInts) {
-	add<int32_t>(pos.x);
-	add<int32_t>(pos.y);
 }
 
 void PacketCreator::addBool(bool value) {

@@ -84,7 +84,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 				packet.addBool(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
 				packet.add<int32_t>(pgmr.mapMobId);
 				packet.add<int8_t>(6);
-				packet.addPos(pgmr.pos);
+				packet.addClass<Pos>(pgmr.pos);
 			}
 			packet.add<int8_t>(stance);
 			packet.add<int32_t>(dmg);
@@ -228,7 +228,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 			packet.add<int32_t>(damage);
 		}
 	}
-	packet.addPos(attack.projectilePos);
+	packet.addClass<Pos>(attack.projectilePos);
 
 	player->getMap()->sendPacket(packet, player);
 }

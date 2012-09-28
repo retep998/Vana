@@ -174,7 +174,7 @@ void DropHandler::petLoot(Player *player, PacketReader &packet) {
 
 void DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) {
 	packet.skipBytes(5);
-	const Pos &playerPos = packet.getPos();
+	const Pos &playerPos = packet.getClass<Pos>();
 	int32_t dropId = packet.get<int32_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);
 
