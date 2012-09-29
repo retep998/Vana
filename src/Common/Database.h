@@ -37,7 +37,6 @@ public:
 	static soci::session & getDataDb();
 	template <typename T> static T getLastId(soci::session &sql);
 private:
-	static soci::session & getConnection(soci::session *conn, std::function<void()> func);
 	static thread_local soci::session *m_chardb;
 	static thread_local soci::session *m_datadb;
 	static std::string buildConnectionString(const DbConfig &conf);
@@ -45,33 +44,18 @@ private:
 
 inline
 soci::session & Database::getCharDb() {
-	return getConnection(m_chardb, &connectCharDb);
+	if (m_chardb == nullptr) {
+		connectCharDb();
+	}
+	return *m_chardb;
 }
 
 inline
 soci::session & Database::getDataDb() {
-	return getConnection(m_datadb, &connectDataDb);
-}
-
-inline
-soci::session & Database::getConnection(soci::session *conn, std::function<void()> func) {
-	if (conn == nullptr) {
-		func();
+	if (m_datadb == nullptr) {
+		connectDataDb();
 	}
-	/* SOCI
-	// This will attempt to re-establish a connection if it's lost, but it costs a query every single time
-	// Consider re-architecting the system for better SQL failsafes
-	else {
-		try {
-			int32_t i = 0;
-			*conn.get() << "SELECT 1", soci::into(i);
-		}
-		catch (soci::soci_error) {
-			conn->reconnect();
-		}
-	}
-	*/
-	return *conn;
+	return *m_datadb;
 }
 
 template<typename T>
