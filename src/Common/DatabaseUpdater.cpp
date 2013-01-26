@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -105,7 +105,7 @@ void DatabaseUpdater::loadSqlFiles() {
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
 #ifdef WIN32
 		const string &filename = dir->path().filename();
-		const string &fileString = dir->path().file_string();
+		const string &fileString = (fullPath / dir->path()).file_string();
 #else
 		const string &filename = dir->path().filename().generic_string();
 		const string &fileString = dir->path().generic_string();
