@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ void ChatHandler::initializeCommands() {
 
 void ChatHandler::handleChat(Player *player, PacketReader &packet) {
 	const string &message = packet.getString();
-	bool bubbleOnly = packet.getBool(); // Skill macros only display chat bubbles
+	bool bubbleOnly = packet.get<bool>(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
 		PlayersPacket::showChat(player, message, bubbleOnly);

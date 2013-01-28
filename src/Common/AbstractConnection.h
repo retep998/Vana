@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,8 +38,8 @@ public:
 
 	Session * getSession() const { return m_session; }
 	void setSession(Session *val);
-	ip_t getIp() const { return m_ip; }
-	void setIp(ip_t ip) { m_ip = ip; }
+	const Ip & getIp() const { return m_ip; }
+	void setIp(const Ip &ip) { m_ip = ip; }
 	void setPinging(bool ping) { m_doesPing = ping; }
 	Timer::Container * getTimers() const { return m_timers.get(); }
 	uint32_t getLatency() const { return static_cast<uint32_t>(m_latency); }
@@ -49,7 +49,7 @@ public:
 	const static uint32_t PingTime = 15000; // Lower values (~15000) give better latency approximation but will disconnect quicker during lag
 protected:
 	Session *m_session;
-	ip_t m_ip;
+	Ip m_ip;
 	bool m_isServer;
 	bool m_doesPing;
 private:

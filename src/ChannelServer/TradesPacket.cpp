@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,7 +76,7 @@ void TradesPacket::sendTradeChat(Player *player, bool blue, const string &chat) 
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x06);
 	packet.add<int8_t>(0x08);
-	packet.addBool(blue);
+	packet.add<bool>(blue);
 	packet.addString(chat);
 	player->getSession()->send(packet);
 }

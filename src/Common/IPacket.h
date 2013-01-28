@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,11 +27,9 @@ public:
 	virtual void write(PacketCreator &packet) const = 0;
 };
 
-template <typename T>
 class IPacketReadable {
 public:
 	virtual void read(PacketReader &packet) = 0;
 };
 
-template <typename T>
-class IPacketSerializable : public IPacketWritable, public IPacketReadable<T> { };
+class IPacketSerializable : public IPacketWritable, public IPacketReadable { };

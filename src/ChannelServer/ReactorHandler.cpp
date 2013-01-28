@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 
 void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
-	bool isTouching = packet.getBool();
+	bool isTouching = packet.get<bool>();
 
 	Reactor *reactor = player->getMap()->getReactor(id);
 

@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.3/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -64,8 +64,8 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;libmysql.lib;libsoci_core_3_1.lib;libsoci_mysql_3_1.lib;lua.lib;botan.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC$(PlatformToolsetVersion)/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;libsoci_core.lib;libsoci_mysql.lib;lua.lib;botan.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(MySqlDirectory32)\lib;$(Configuration)_VC$(PlatformToolsetVersion)\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <SubSystem>Console</SubSystem>
@@ -76,7 +76,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.3/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server $(MySqlVersion)/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-$(BotanVersion)/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_$(BoostVersion)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -89,8 +89,8 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;libmysql.lib;libsoci_core_3_1.lib;libsoci_mysql_3_1.lib;lua.lib;botan.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/lib/opt;$(Configuration)_VC$(PlatformToolsetVersion)/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;libmysql.lib;libsoci_core.lib;libsoci_mysql.lib;lua.lib;botan.lib;common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(MySqlDirectory32)\lib;$(Configuration)_VC$(PlatformToolsetVersion)\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -192,7 +192,6 @@
     <ClCompile Include="src\ChannelServer\EventDataProvider.cpp" />
     <ClCompile Include="src\ChannelServer\Instance.cpp" />
     <ClCompile Include="src\ChannelServer\Instances.cpp" />
-    <ClCompile Include="src\ChannelServer\VersionConstants.cpp" />
     <ClCompile Include="src\ChannelServer\BuddyListHandler.cpp" />
     <ClCompile Include="src\ChannelServer\ChatHandler.cpp" />
     <ClCompile Include="src\ChannelServer\CommandHandler.cpp" />
@@ -297,7 +296,6 @@
     <ClInclude Include="src\ChannelServer\Instances.h" />
     <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.h" />
     <ClInclude Include="src\ChannelServer\InstanceMessageConstants.h" />
-    <ClInclude Include="src\ChannelServer\VersionConstants.h" />
     <ClInclude Include="src\ChannelServer\BuddyListHandler.h" />
     <ClInclude Include="src\ChannelServer\ChatHandler.h" />
     <ClInclude Include="src\ChannelServer\CommandHandler.h" />

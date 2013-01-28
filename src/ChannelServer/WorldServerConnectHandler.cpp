@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,13 +43,13 @@ void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 	int8_t worldId = packet.get<int8_t>();
 	if (worldId != -1) {
 		ChannelServer::Instance()->setWorldId(worldId);
-		ChannelServer::Instance()->setWorldIp(packet.get<ip_t>());
+		ChannelServer::Instance()->setWorldIp(packet.getClass<Ip>());
 		ChannelServer::Instance()->setWorldPort(packet.get<port_t>());
 		std::cout << "Connecting to world " << (int16_t) worldId << std::endl;
 		ChannelServer::Instance()->connectWorld();
 	}
 	else {
-		std::cerr << "Error: No world server to connect" << std::endl;
+		std::cerr << "ERROR: No world server to connect" << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
 }
@@ -70,7 +70,7 @@ void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 		ChannelServer::Instance()->displayLaunchTime();
 	}
 	else {
-		std::cerr << "Error: No channel to handle" << std::endl;
+		std::cerr << "ERROR: No channel to handle" << std::endl;
 		ChannelServer::Instance()->shutdown();
 	}
 }

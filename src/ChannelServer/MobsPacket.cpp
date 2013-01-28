@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -113,7 +113,7 @@ void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, 
 	packet.add<header_t>(SMSG_MOB_MOVEMENT);
 	packet.add<int32_t>(mobId);
 	packet.add<int16_t>(moveId);
-	packet.addBool(useSkill);
+	packet.add<bool>(useSkill);
 	packet.add<int16_t>(static_cast<int16_t>(mp));
 	packet.add<uint8_t>(skill);
 	packet.add<uint8_t>(level);
@@ -124,7 +124,7 @@ void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t sk
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT);
 	packet.add<int32_t>(mobId);
-	packet.addBool(useSkill);
+	packet.add<bool>(useSkill);
 	packet.add<int8_t>(skill);
 	packet.addClass<Pos>(projectileTarget);
 	packet.addBuffer(buf, len);

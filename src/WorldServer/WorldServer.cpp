@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeCommon.h"
 #include "InitializeWorld.h"
-#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "StringUtilities.h"
 #include "SyncPacket.h"
@@ -29,13 +28,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 WorldServer * WorldServer::singleton = nullptr;
 
 WorldServer::WorldServer() :
-	m_worldId(-1)
+	m_worldId(-1),
+	m_loginIp(0)
 {
 	setServerType(ServerTypes::World);
 }
 
 void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
+	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
 void WorldServer::loadData() {
@@ -46,13 +46,13 @@ void WorldServer::loadData() {
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
 	const string &interPassword = getInterPassword();
 	const string &salt = getSalt();
-	const IpMatrix &externalIp = getExternalIp();
-	m_loginConnection->sendAuth(interPassword, salt, externalIp);
+	const IpMatrix &externalIps = getExternalIps();
+	m_loginConnection->sendAuth(interPassword, salt, externalIps);
 }
 
 void WorldServer::loadConfig() {
 	ConfigFile config("conf/worldserver.lua");
-	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
+	m_loginIp = Ip(Ip::stringToIpv4(config.getString("login_ip")));
 	m_loginPort = config.get<port_t>("login_inter_port");
 
 	m_port = -1; // Will get from login server later
@@ -82,7 +82,7 @@ void WorldServer::loadLogConfig() {
 	initializeLoggingConstants(conf);
 	conf.execute();
 
-	bool enabled = conf.getBool("log_worlds");
+	bool enabled = conf.get<bool>("log_worlds");
 	if (enabled) {
 		LogConfig log = conf.getClass<LogConfig>("world");
 		createLogger(log);

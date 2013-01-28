@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ using TimeUtilities::getTickCount;
 
 Connectable * Connectable::singleton = nullptr;
 
-void Connectable::newPlayer(int32_t id, ip_t ip, PacketReader &packet) {
+void Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) {
 	ConnectingPlayer player;
 	player.connectIp = ip;
 	player.connectTime = getTickCount();
@@ -44,7 +44,7 @@ void Connectable::newPlayer(int32_t id, ip_t ip, PacketReader &packet) {
 	m_map[id] = player;
 }
 
-bool Connectable::checkPlayer(int32_t id, ip_t ip) {
+bool Connectable::checkPlayer(int32_t id, const Ip &ip) {
 	bool correct = false;
 	if (m_map.find(id) != m_map.end()) {
 		ConnectingPlayer &t = m_map[id];

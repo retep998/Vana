@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Session.h"
 #include "SessionManager.h"
 #include "Types.h"
@@ -31,12 +32,12 @@ class AbstractConnection;
 class ServerClient : public Session {
 public:
 	friend class ConnectionManager;
-	ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping);
+	ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping);
 private:
 	void startConnect();
 	void readConnectPacket();
 
-	ip_t m_server;
+	Ip m_server;
 	port_t m_port;
 	tcp::resolver m_resolver;
 };

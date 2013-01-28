@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -74,7 +74,7 @@ void SyncHandler::handlePartySync(PacketReader &packet) {
 		case Sync::Party::AddMember: PlayerDataProvider::Instance()->addPartyMember(partyId, packet.get<int32_t>()); break;
 		case Sync::Party::RemoveMember: {
 			int32_t playerId = packet.get<int32_t>();
-			PlayerDataProvider::Instance()->removePartyMember(partyId, playerId, packet.getBool());
+			PlayerDataProvider::Instance()->removePartyMember(partyId, playerId, packet.get<bool>());
 			break;
 		}
 	}

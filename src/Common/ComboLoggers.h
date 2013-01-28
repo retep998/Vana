@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Logger.h"
+#include "Types.h"
 #include <memory>
 #include <string>
 
@@ -25,14 +26,14 @@ using std::string;
 using std::unique_ptr;
 
 template<typename Logger1, typename Logger2>
-class DualLogger : public Logger {
+class DuoLogger : public Logger {
 public:
-	DualLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+	DuoLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
 		m_logger1.reset(new Logger1(filename, format, timeFormat, serverType, bufferSize));
 		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
 	}
 
-	void log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 	}
@@ -52,7 +53,7 @@ public:
 		m_logger3.reset(new Logger3(filename, format, timeFormat, serverType, bufferSize));
 	}
 
-	void log(LogTypes::LogTypes type, const string &identifier, const string &message) {
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 		getLogger3()->log(type, identifier, message);

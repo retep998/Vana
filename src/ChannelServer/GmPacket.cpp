@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ void GmPacket::beginHide(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
-	packet.addBool(true);
+	packet.add<bool>(true);
 
 	player->getSession()->send(packet);
 }
@@ -34,7 +34,7 @@ void GmPacket::endHide(Player *player) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
-	packet.addBool(false);
+	packet.add<bool>(false);
 
 	player->getSession()->send(packet);
 }
@@ -43,7 +43,7 @@ void GmPacket::warning(Player *player, bool succeed) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x1d);
-	packet.addBool(succeed);
+	packet.add<bool>(succeed);
 
 	player->getSession()->send(packet);
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -625,13 +625,13 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 		packet.add<uint8_t>(values.size());
 		for (unordered_map<uint8_t, MapEntryVals>::const_iterator iter = values.begin(); iter != values.end(); ++iter) {
 			packet.add<uint8_t>(iter->first);
-			packet.addBool(iter->second.debuff);
+			packet.add<bool>(iter->second.debuff);
 			if (iter->second.debuff) {
 				packet.add<int16_t>(iter->second.skill);
 				packet.add<int16_t>(iter->second.val);
 			}
 			else {
-				packet.addBool(iter->second.use);
+				packet.add<bool>(iter->second.use);
 				packet.add<int16_t>(iter->second.val);
 			}
 		}
@@ -676,13 +676,13 @@ void PlayerActiveBuffs::read(PacketReader &packet) {
 		uint8_t size = packet.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t type = packet.get<uint8_t>();
-			values.debuff = packet.getBool();
+			values.debuff = packet.get<bool>();
 			if (values.debuff) {
 				values.skill = packet.get<int16_t>();
 				values.val = packet.get<int16_t>();
 			}
 			else {
-				values.use = packet.getBool();
+				values.use = packet.get<bool>();
 				values.val = packet.get<int16_t>();
 			}
 			m_mapBuffs.values[i][type] = values;

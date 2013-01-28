@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			if (player->getStats()->isDead()) {
 				const string &unk = packet.getString(); // Useless
 				packet.skipBytes(1); // Useless
-				bool wheel = packet.getBool();
+				bool wheel = packet.get<bool>();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
 					player->acceptDeath(false);
 					return;

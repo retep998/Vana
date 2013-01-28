@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,10 +53,10 @@ void AbstractServer::initialize() {
 		ExitCodes::exit(ExitCodes::ConfigError);
 	}
 
-	m_externalIp = config.getIpMatrix("external_ip");
-	m_loginConfig.clientEncryption = config.getBool("use_client_encryption");
-	m_loginConfig.clientPing = config.getBool("use_client_ping");
-	m_loginConfig.serverPing = config.getBool("use_inter_ping");
+	m_externalIps = config.getIpMatrix("external_ip");
+	m_loginConfig.clientEncryption = config.get<bool>("use_client_encryption");
+	m_loginConfig.clientPing = config.get<bool>("use_client_ping");
+	m_loginConfig.serverPing = config.get<bool>("use_inter_ping");
 
 	loadConfig();
 	loadLogConfig();
@@ -82,9 +82,9 @@ void AbstractServer::createLogger(const LogConfig &conf) {
 		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(file, form, tForm, sType, bSize)); break;
 		case LogDestinations::File: m_logger.reset(new FileLogger(file, form, tForm, sType, bSize)); break;
 		case LogDestinations::Sql: m_logger.reset(new SqlLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileSql: m_logger.reset(new DualLogger<FileLogger, SqlLogger>(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileConsole: m_logger.reset(new DualLogger<FileLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::SqlConsole: m_logger.reset(new DualLogger<SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileSql: m_logger.reset(new DuoLogger<FileLogger, SqlLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::FileConsole: m_logger.reset(new DuoLogger<FileLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::SqlConsole: m_logger.reset(new DuoLogger<SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
 		case LogDestinations::FileSqlConsole: m_logger.reset(new TriLogger<FileLogger, SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
 	}
 }

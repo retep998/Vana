@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,9 +26,9 @@ void LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat)
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(3);
-	packet.addBool(white);
+	packet.add<bool>(white);
 	packet.add<int32_t>(exp);
-	packet.addBool(inChat);
+	packet.add<bool>(inChat);
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);

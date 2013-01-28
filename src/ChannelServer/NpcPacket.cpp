@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -48,11 +48,11 @@ void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t 
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addClass<Pos>(npc.pos);
-	packet.addBool(npc.facesRight);
+	packet.add<bool>(npc.facesRight);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
-	packet.addBool(show);
+	packet.add<bool>(show);
 }
 
 void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
@@ -61,11 +61,11 @@ void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addClass<Pos>(npc.pos);
-	packet.addBool(npc.facesRight);
+	packet.add<bool>(npc.facesRight);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
-	packet.addBool(show);
+	packet.add<bool>(show);
 }
 
 void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
@@ -90,7 +90,7 @@ void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
-	packet.addBool(show);
+	packet.add<bool>(show);
 	player->getSession()->send(packet);
 }
 
@@ -98,7 +98,7 @@ void NpcPacket::showNpcEffect(int32_t mapId, int32_t index, bool show) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
-	packet.addBool(show);
+	packet.add<bool>(show);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 

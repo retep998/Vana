@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,21 +33,19 @@ public:
 	PacketReader();
 	PacketReader(unsigned char *buffer, size_t length);
 
-	template <typename T>
-	T get();
-	template <typename T>
-	vector<T> getVector();
-	template <typename T>
-	vector<T> getVector(size_t size);
-	template <typename T>
-	T getClass();
+	template <typename T> T get();
+	template <> bool get<bool>();
+	template <typename T> vector<T> getVector();
+	template <typename T> vector<T> getVector(size_t size);
+	template <typename T> T getClass();
+	template <typename T> vector<T> getClassVector();
+	template <typename T> vector<T> getClassVector(size_t size);
 
 	void skipBytes(int32_t len);
 	header_t getHeader(bool advanceBuffer = true);
 	string getString();
 	string getString(size_t len);
 	unsigned char * getBuffer() const;
-	bool getBool();
 	size_t getBufferLength() const;
 	PacketReader & reset(int32_t len = 0);
 	string toString() const;
@@ -70,14 +68,15 @@ T PacketReader::get() {
 	return val;
 }
 
+template <>
+bool PacketReader::get<bool>() {
+	return (get<int8_t>() != 0);
+}
+
 template <typename T>
 vector<T> PacketReader::getVector() {
-	vector<T> vec;
 	size_t size = get<uint32_t>();
-	for (size_t i = 0; i < size; i++) {
-		vec.push_back(get<T>());
-	}
-	return vec;
+	return getVector<T>(size);
 }
 
 template <typename T>
@@ -94,6 +93,21 @@ T PacketReader::getClass() {
 	T obj;
 	obj.read(*this);
 	return obj;
+}
+
+template <typename T>
+vector<T> PacketReader::getClassVector() {
+	size_t size = get<uint32_t>();
+	return getClassVector<T>(size);
+}
+
+template <typename T>
+vector<T> PacketReader::getClassVector(size_t size) {
+	vector<T> vec;
+	for (size_t i = 0; i < size; i++) {
+		vec.push_back(getClass<T>());
+	}
+	return vec;
 }
 
 inline

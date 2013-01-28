@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,9 +53,9 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_CHAT);
 	packet.add<int32_t>(player->getId());
-	packet.addBool(player->isGm());
+	packet.add<bool>(player->isGm());
 	packet.addString(msg);
-	packet.addBool(bubbleOnly);
+	packet.add<bool>(bubbleOnly);
 	player->getMap()->sendPacket(packet);
 }
 
@@ -81,7 +81,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 			packet.add<int8_t>(hit);
 			packet.add<int8_t>(pgmr.reduction);
 			if (pgmr.reduction > 0) {
-				packet.addBool(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
+				packet.add<bool>(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
 				packet.add<int32_t>(pgmr.mapMobId);
 				packet.add<int8_t>(6);
 				packet.addClass<Pos>(pgmr.pos);
@@ -103,10 +103,10 @@ void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
 	packet.add<int8_t>(getInfo->getStats()->getLevel());
 	packet.add<int16_t>(getInfo->getStats()->getJob());
 	packet.add<int16_t>(getInfo->getStats()->getFame());
-	packet.addBool(false); // Married
+	packet.add<bool>(false); // Married
 	packet.addString("-"); // Guild
 	packet.addString(""); // Guild Alliance
-	packet.addBool(isSelf); // Is 1 when the character is clicking themselves
+	packet.add<bool>(isSelf); // Is 1 when the character is clicking themselves
 
 	getInfo->getPets()->petInfoPacket(packet);
 	getInfo->getMounts()->mountInfoPacket(packet);

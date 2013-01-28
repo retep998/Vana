@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop
 	packet.add<header_t>(SMSG_DROP_ITEM);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(drop->getId());
-	packet.addBool(drop->isMesos());
+	packet.add<bool>(drop->isMesos());
 	packet.add<int32_t>(drop->getObjectId());
 	packet.add<int32_t>(drop->getOwner()); // Owner of drop
 	packet.add<int8_t>(drop->getType());
@@ -44,7 +44,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop
 	if (!drop->isMesos()) {
 		packet.add<int64_t>(Items::NoExpiration);
 	}
-	packet.addBool(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
+	packet.add<bool>(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
 
 	if (player != nullptr) {
 		player->getSession()->send(packet);
@@ -118,7 +118,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(0);
-	packet.addBool(isMesos);
+	packet.add<bool>(isMesos);
 	packet.add<int32_t>(id);
 
 	if (isMesos) {

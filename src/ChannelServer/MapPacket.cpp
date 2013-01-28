@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -150,8 +150,8 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.addClass<Pos>(pet->getPos());
 			packet.add<int8_t>(pet->getStance());
 			packet.add<int16_t>(pet->getFh());
-			packet.addBool(pet->hasNameTag());
-			packet.addBool(pet->hasQuoteItem());
+			packet.add<bool>(pet->hasNameTag());
+			packet.add<bool>(pet->hasQuoteItem());
 		}
 	}
 	packet.add<int32_t>(0);
@@ -159,7 +159,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
-	packet.addBool(!player->getChalkboard().empty());
+	packet.add<bool>(!player->getChalkboard().empty());
 	packet.addString(player->getChalkboard());
 	packet.add<int32_t>(0);
 	packet.add<int32_t>(0);
@@ -189,7 +189,7 @@ void MapPacket::changeMap(Player *player) {
 	packet.add<header_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
-	packet.addBool(false); // Not a connect packet
+	packet.add<bool>(false); // Not a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
 	if (false) {
 		size_t lineAmount = 0;
@@ -311,7 +311,7 @@ void MapPacket::instantWarp(Player *player, int8_t portalId) {
 void MapPacket::changeWeather(int32_t mapId, bool adminWeather, int32_t itemId, const string &message) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_WEATHER_EFFECT);
-	packet.addBool(adminWeather);
+	packet.add<bool>(adminWeather);
 	packet.add<int32_t>(itemId);
 	if (itemId != 0 && !adminWeather) {
 		// Admin weathers doesn't have a message

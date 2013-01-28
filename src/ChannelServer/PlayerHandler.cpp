@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ using std::bind;
 
 void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
 	int32_t doorId = packet.get<int32_t>();
-	bool toTown = !packet.getBool();
+	bool toTown = !packet.get<bool>();
 	//Player *doorHolder = PlayerDataProvider::Instance()->getPlayer(doorId);
 	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
 	//	// Hacking or lag
@@ -102,7 +102,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		pgmr.reduction = packet.get<uint8_t>();
 		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
-			pgmr.isPhysical = packet.getBool();
+			pgmr.isPhysical = packet.get<bool>();
 			pgmr.mapMobId = packet.get<int32_t>();
 			if (pgmr.mapMobId != mapMobId) {
 				// Hacking
@@ -265,7 +265,7 @@ void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet)
 void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
 	uint32_t ticks = packet.get<uint32_t>();
 	if (Player *info = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
-		PlayersPacket::showInfo(player, info, packet.getBool());
+		PlayersPacket::showInfo(player, info, packet.get<bool>());
 	}
 }
 
@@ -370,7 +370,7 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 	Player *receiver = nullptr;
 	bool hasTarget = packet.get<int8_t>() == 2;
 	int8_t sort = packet.get<int8_t>();
-	bool useWhisper = packet.getBool();
+	bool useWhisper = packet.get<bool>();
 	int8_t type = packet.get<int8_t>();
 	int32_t characterId = packet.get<int32_t>();
 

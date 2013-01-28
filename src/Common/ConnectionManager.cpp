@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,12 +30,12 @@ ConnectionManager::ConnectionManager() :
 {
 }
 
-void ConnectionManager::accept(port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) {
-	tcp::endpoint endpoint(tcp::v4(), port);
+void ConnectionManager::accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) {
+	tcp::endpoint endpoint(ipType == Ip::Type::Ipv4 ? tcp::v4() : tcp::v6(), port);
 	m_servers.push_back(ConnectionAcceptorPtr(new ConnectionAcceptor(m_ioService, endpoint, acf, loginConfig, isServer, patchLocation)));
 }
 
-void ConnectionManager::connect(ip_t serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) {
+void ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) {
 	ServerClientPtr c = ServerClientPtr(new ServerClient(m_ioService, serverIp, serverPort, m_clients, connection, loginConfig.serverPing));
 	c->startConnect();
 }

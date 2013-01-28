@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		WorldServer::Instance()->displayLaunchTime();
 	}
 	else {
-		std::cerr << "Error: No world to handle" << std::endl;
+		std::cerr << "ERROR: No world to handle" << std::endl;
 		WorldServer::Instance()->shutdown();
 	}
 }
@@ -52,7 +52,7 @@ void LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
 	uint16_t channel = packet.get<int16_t>();
 	int32_t playerId = packet.get<int32_t>();
-	ip_t ip = packet.get<ip_t>();
+	const Ip &ip = packet.getClass<Ip>();
 
 	if (Channels::Instance()->getChannel(channel)) {
 		Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);

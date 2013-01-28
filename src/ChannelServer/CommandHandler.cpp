@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -122,7 +122,7 @@ void CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) {
 
 	switch (type) {
 		case AdminOpcodes::Hide: {
-			bool hide = packet.getBool();
+			bool hide = packet.get<bool>();
 			if (hide) {
 				MapPacket::removePlayer(player);
 				GmPacket::beginHide(player);

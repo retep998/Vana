@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
-#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "ServerConnection.h"
 #include "Session.h"
@@ -27,10 +26,7 @@ void AuthenticationPacket::sendPassword(AbstractServerConnection *connection, co
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_PASSWORD);
 	packet.addString(pass);
-
-	packet.add<uint32_t>(extIp.size());
-	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
-
+	packet.addClassVector<ExternalIp>(extIp);
 	packet.add<int8_t>(connection->getType());
 	connection->getSession()->send(packet);
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacket.h"
 #include "Channel.h"
 #include "Characters.h"
-#include "IpUtilities.h"
+#include "ClientIp.h"
 #include "LoginPacketHelper.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -58,7 +58,7 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 		case PlayerStatus::SetPin: packet.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
 		default: packet.add<int8_t>(player->getGender()); break;
 	}
-	packet.addBool(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
+	packet.add<bool>(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.addString(username);
@@ -219,16 +219,16 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(0);
 
+	Ip chanIp(0);
+	port_t port = -1;
+
 	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorldId())->getChannel(player->getChannel())) {
-		ip_t chanIp = IpUtilities::matchIpSubnet(player->getIp(), channel->getExternalIps(), channel->getIp());
-		packet.add<ip_t>(htonl(chanIp)); // MapleStory accepts IP addresses in big-endian
-		packet.add<port_t>(channel->getPort());
+		chanIp = channel->matchIpToSubnet(player->getIp());
+		port = channel->getPort();
 	}
-	else {
-		// Channel does not exist, let's be mean and send something non-existent
-		packet.add<ip_t>(0); // ip
-		packet.add<port_t>(-1); // port
-	}
+
+	packet.addClass<ClientIp>(ClientIp(chanIp));
+	packet.add<port_t>(port);
 	packet.add<int32_t>(charId);
 	packet.add<int32_t>(0);
 	packet.add<int8_t>(0);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,13 +61,13 @@ void SyncPacket::ConfigPacket::setRates(const Rates &rates) {
 	Channels::Instance()->sendToAll(packet);
 }
 
-void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer) {
+void SyncPacket::PlayerPacket::newConnectable(uint16_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::NewConnectable);
 	packet.add<int32_t>(playerId);
-	packet.add<ip_t>(ip);
+	packet.addClass<Ip>(ip);
 	packet.add<uint16_t>(buffer.getBufferLength());
 	packet.addBuffer(buffer);
 	Channels::Instance()->sendToChannel(channel, packet);
@@ -82,13 +82,13 @@ void SyncPacket::PlayerPacket::deleteConnectable(uint16_t channel, int32_t playe
 	Channels::Instance()->sendToChannel(channel, packet);
 }
 
-void SyncPacket::PlayerPacket::playerChangeChannel(AbstractConnection *connection, int32_t playerId, ip_t ip, port_t port) {
+void SyncPacket::PlayerPacket::playerChangeChannel(AbstractConnection *connection, int32_t playerId, const Ip &ip, port_t port) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);
 	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerId);
-	packet.add<ip_t>(ip);
+	packet.addClass<Ip>(ip);
 	packet.add<port_t>(port);
 	connection->getSession()->send(packet);
 }
@@ -139,7 +139,7 @@ void SyncPacket::PartyPacket::removePartyMember(int32_t partyId, int32_t playerI
 	packet.add<int8_t>(Sync::Party::RemoveMember);
 	packet.add<int32_t>(partyId);
 	packet.add<int32_t>(playerId);
-	packet.addBool(kicked);
+	packet.add<bool>(kicked);
 	Channels::Instance()->sendToAll(packet);
 }
 

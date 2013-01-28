@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ struct LoginConfig {
 	bool serverPing;
 };
 
-struct MajorBoss : public IPacketSerializable<MajorBoss> {
+struct MajorBoss : public IPacketSerializable {
 	int16_t attempts;
 	vector<int8_t> channels;
 
@@ -49,7 +49,7 @@ struct MajorBoss : public IPacketSerializable<MajorBoss> {
 	}
 };
 
-struct Rates : public IPacketSerializable<Rates> {
+struct Rates : public IPacketSerializable {
 	int32_t mobExpRate;
 	int32_t questExpRate;
 	int32_t mobMesoRate;
@@ -76,7 +76,7 @@ struct Rates : public IPacketSerializable<Rates> {
 	}
 };
 
-struct WorldConfig : public IPacketSerializable<WorldConfig> {
+struct WorldConfig : public IPacketSerializable {
 	int8_t ribbon;
 	uint8_t maxMultiLevel;
 	uint8_t defaultStorageSlots;

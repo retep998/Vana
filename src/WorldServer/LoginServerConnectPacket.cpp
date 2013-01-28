@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,21 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnectPacket.h"
 #include "InterHeader.h"
-#include "IpUtilities.h"
 #include "LoginServerConnection.h"
 #include "PacketCreator.h"
 #include "Session.h"
 #include "WorldServer.h"
 
-void LoginServerConnectPacket::registerChannel(int32_t channel, ip_t ip, const IpMatrix &extIp, port_t port) {
+void LoginServerConnectPacket::registerChannel(int32_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
-	packet.add<ip_t>(ip);
-
-	packet.add<uint32_t>(extIp.size());
-	std::for_each(extIp.begin(), extIp.end(), IpUtilities::SendIpArray(packet));
-
+	packet.addClass<Ip>(channelIp);
+	packet.addClassVector<ExternalIp>(extIp);
 	packet.add<port_t>(port);
 	WorldServer::Instance()->sendPacketToLogin(packet);
 }

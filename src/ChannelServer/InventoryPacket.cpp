@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ void InventoryPacket::updatePlayer(Player *player) {
 void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.addBool(fromDrop);
+	packet.add<bool>(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(inv);
@@ -73,7 +73,7 @@ void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item 
 void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.addBool(fromDrop);
+	packet.add<bool>(fromDrop);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(1);
 	packet.add<int8_t>(inv);
@@ -148,7 +148,7 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	packet.add<header_t>(SMSG_SCROLL_USE);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(succeed);
-	packet.addBool(destroy);
+	packet.add<bool>(destroy);
 	packet.add<int16_t>(legendarySpirit);
 	player->getMap()->sendPacket(packet);
 }
@@ -168,7 +168,7 @@ void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool
 	packet.add<int8_t>(3);
 	packet.addString(msg);
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
-	packet.addBool(whisper);
+	packet.add<bool>(whisper);
 	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
@@ -194,7 +194,7 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	packet.add<int8_t>(8);
 	packet.addString(msg);
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
-	packet.addBool(whisper);
+	packet.add<bool>(whisper);
 	if (item == nullptr) {
 		packet.add<int8_t>(0);
 	}
@@ -218,7 +218,7 @@ void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const st
 		packet.addString(line3);
 	}
 	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
-	packet.addBool(whisper);
+	packet.add<bool>(whisper);
 	ChannelServer::Instance()->sendPacketToWorld(packet);
 }
 
@@ -229,8 +229,8 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
 	packet.add<int32_t>(skillId);
 	packet.add<int32_t>(newMaxLevel);
-	packet.addBool(use);
-	packet.addBool(succeed);
+	packet.add<bool>(use);
+	packet.add<bool>(succeed);
 	player->getMap()->sendPacket(packet);
 }
 
@@ -338,7 +338,7 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHALKBOARD);
 	packet.add<int32_t>(player->getId());
-	packet.addBool(!msg.empty());
+	packet.add<bool>(!msg.empty());
 	packet.addString(msg);
 	player->getMap()->sendPacket(packet);
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -132,12 +132,12 @@ void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
 
 void PlayerMounts::mountInfoPacket(PacketCreator &packet) {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
-		packet.addBool(true);
+		packet.add<bool>(true);
 		packet.add<int32_t>(getCurrentLevel());
 		packet.add<int32_t>(getCurrentExp());
 		packet.add<int32_t>(getCurrentTiredness());
 	}
 	else {
-		packet.addBool(false);
+		packet.add<bool>(false);
 	}
 }

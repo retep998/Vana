@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,25 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "ExternalIp.h"
+#include "ExternalIpResolver.h"
 #include "Ip.h"
 #include "Types.h"
 
-class Channel {
+class Channel : public ExternalIpResolver {
 public:
 	Channel() : m_population(0) { }
 
 	void setPort(port_t port) { m_port = port; }
 	void setPopulation(int32_t population) { m_population = population; }
-	void setIp(ip_t ip) { m_ip = ip; }
-	void setExternalIps(const IpMatrix &matrix) { m_externalIps = matrix; }
-
 	port_t getPort() const { return m_port; }
 	int32_t getPopulation() const { return m_population; }
-	ip_t getIp() const { return m_ip; }
-	IpMatrix & getExternalIps() { return m_externalIps; }
 private:
 	port_t m_port;
 	int32_t m_population;
-	ip_t m_ip;
-	IpMatrix m_externalIps;
 };

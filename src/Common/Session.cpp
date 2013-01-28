@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "AbstractConnection.h"
 #include "Decoder.h"
-#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "SessionManager.h"
@@ -45,10 +44,14 @@ void Session::start() {
 void Session::handleStart() {
 	m_connection->setSession(this);
 	m_connection->setPinging(m_usePing);
-	m_connection->setIp(m_socket.remote_endpoint().address().to_v4().to_ulong());
+	// TODO FIXME
+	m_connection->setIp(Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
 
 	if (m_isForClient) {
-		const PacketCreator &connectPacket = m_decoder.getConnectPacket(m_patchLocation);
+		m_decoder.setRecvIv(Randomizer::Instance()->randInt());
+		m_decoder.setSendIv(Randomizer::Instance()->randInt());
+
+		const PacketCreator &connectPacket = getConnectPacket(m_patchLocation);
 		send(connectPacket, false);
 	}
 
@@ -163,6 +166,20 @@ void Session::handleReadBody(const boost::system::error_code &error, size_t byte
 	}
 }
 
-ip_t Session::getIp() const {
+const Ip & Session::getIp() const {
 	return m_connection->getIp();
+}
+
+PacketCreator Session::getConnectPacket(const string &patchLocation) {
+	PacketCreator packet;
+	// IV_PATCH_LOCATION
+	packet.add<header_t>(0);
+	packet.add<uint16_t>(MapleVersion::Version);
+	packet.addString(patchLocation);
+	packet.add<uint32_t>(m_decoder.getRecvIv());
+	packet.add<uint32_t>(m_decoder.getSendIv());
+	packet.add<int8_t>(MapleVersion::Locale);
+
+	packet.set<header_t>(packet.getSize() - sizeof(header_t), 0);
+	return packet;
 }

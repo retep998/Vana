@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,18 +34,15 @@ class PacketCreator {
 public:
 	PacketCreator();
 
-	template <typename T>
-	void add(T value);
-	template <typename T>
-	void set(T value, size_t pos);
-	template <typename T>
-	void addVector(const vector<T> &vec);
-	template <typename T>
-	void addClass(const IPacketWritable &obj);
+	template <typename T> void add(T value);
+	template <> void add<bool>(bool value);
+	template <typename T> void addVector(const vector<T> &vec);
+	template <typename T> void addClass(const IPacketWritable &obj);
+	template <typename T> void addClassVector(const vector<T> &vec);
+	template <typename T> void set(T value, size_t pos);
 
 	void addString(const string &str); // Dynamically-lengthed strings
 	void addString(const string &str, size_t len); // Static-lengthed strings
-	void addBool(bool value);
 	void addBytes(const char *hex);
 	void addBuffer(const unsigned char *bytes, size_t len);
 	void addBuffer(const PacketCreator &packet);
@@ -62,7 +59,7 @@ private:
 	unsigned char getHexByte(unsigned char input);
 
 	size_t m_pos;
-	std::shared_array<unsigned char> m_packet;
+	MiscUtilities::shared_array<unsigned char> m_packet;
 	size_t m_packetCapacity;
 };
 
@@ -70,6 +67,11 @@ template <typename T>
 void PacketCreator::add(T value) {
 	(*(T *) getBuffer(m_pos, sizeof(T))) = value;
 	m_pos += sizeof(T);
+}
+
+template <>
+void PacketCreator::add<bool>(bool value) {
+	add<int8_t>(value ? 1 : 0);
 }
 
 template <typename T>
@@ -88,6 +90,14 @@ void PacketCreator::addVector(const vector<T> &vec) {
 template <typename T>
 void PacketCreator::addClass(const IPacketWritable &obj) {
 	obj.write(*this);
+}
+
+template <typename T>
+void PacketCreator::addClassVector(const vector<T> &vec) {
+	add<uint32_t>(vec.size());
+	for (typename vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
+		addClass<T>(*iter);
+	}
 }
 
 inline

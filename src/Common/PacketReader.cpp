@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -68,10 +68,6 @@ PacketReader & PacketReader::reset(int32_t len) {
 	}
 
 	return *this;
-}
-
-bool PacketReader::getBool() {
-	return (get<int8_t>() != 0);
 }
 
 string PacketReader::toString() const {

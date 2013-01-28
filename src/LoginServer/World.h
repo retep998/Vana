@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -59,8 +59,7 @@ public:
 	size_t getMaxChannels() const { return m_config.maxChannels; }
 	int32_t getPlayerLoad() const { return m_playerLoad; }
 	int32_t getMaxPlayerLoad() const { return m_config.maxPlayerLoad; }
-	ip_t getIp() const;
-	const IpMatrix & getExternalIp() const;
+	Ip matchSubnet(const Ip &test);
 	size_t getChannelCount() const { return m_channels.size(); }
 	string getName() const { return m_config.name; }
 	string getEventMessage() const { return m_config.eventMsg; }

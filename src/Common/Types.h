@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,23 +45,22 @@ private:
 };
 
 // Useful DB-related aliases
-typedef std::optional<bool> opt_bool;
-typedef std::optional<int8_t> opt_int8_t;
-typedef std::optional<uint8_t> opt_uint8_t;
-typedef std::optional<int16_t> opt_int16_t;
-typedef std::optional<uint16_t> opt_uint16_t;
-typedef std::optional<int32_t> opt_int32_t;
-typedef std::optional<uint32_t> opt_uint32_t;
-typedef std::optional<int64_t> opt_int64_t;
-typedef std::optional<uint64_t> opt_uint64_t;
-typedef std::optional<double> opt_double;
-typedef std::optional<unix_time_t> opt_unix_time_t;
-typedef std::optional<std::string> opt_string;
+typedef MiscUtilities::optional<bool> opt_bool;
+typedef MiscUtilities::optional<int8_t> opt_int8_t;
+typedef MiscUtilities::optional<uint8_t> opt_uint8_t;
+typedef MiscUtilities::optional<int16_t> opt_int16_t;
+typedef MiscUtilities::optional<uint16_t> opt_uint16_t;
+typedef MiscUtilities::optional<int32_t> opt_int32_t;
+typedef MiscUtilities::optional<uint32_t> opt_uint32_t;
+typedef MiscUtilities::optional<int64_t> opt_int64_t;
+typedef MiscUtilities::optional<uint64_t> opt_uint64_t;
+typedef MiscUtilities::optional<double> opt_double;
+typedef MiscUtilities::optional<unix_time_t> opt_unix_time_t;
+typedef MiscUtilities::optional<std::string> opt_string;
 
 // Miscellaneous utility types
 typedef uint16_t header_t;
 typedef uint16_t port_t;
-typedef uint32_t ip_t;
 
 // Remove when VS2012 supports thread_local
 #ifdef WIN32

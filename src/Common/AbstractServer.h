@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Configuration.h"
+#include "ExternalIp.h"
 #include "Ip.h"
 #include "Logger.h"
 #include "Types.h"
@@ -52,7 +53,7 @@ public:
 	bool isListening() const { return m_toListen; }
 	int16_t getServerType() const { return m_serverType; }
 	clock_t getStartTime() const { return m_startTime; }
-	IpMatrix getExternalIp() const { return m_externalIp; }
+	IpMatrix getExternalIps() const { return m_externalIps; }
 	string getInterPassword() const { return m_interPassword; }
 	string getSalt() const { return m_salt; }
 	Logger * getLogger() const { return m_logger.get(); }
@@ -65,7 +66,7 @@ protected:
 	LoginConfig m_loginConfig;
 	string m_interPassword;
 	string m_salt;
-	IpMatrix m_externalIp;
+	IpMatrix m_externalIps;
 	std::unique_ptr<Logger> m_logger;
 private:
 	typedef std::unordered_map<string, int32_t> ConstantMap;

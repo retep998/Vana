@@ -47,7 +47,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.3/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -68,7 +68,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server 5.1/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-3.1.0/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-1.10.3/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_1_51_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server $(MySqlVersion)/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-$(BotanVersion)/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_$(BoostVersion)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -85,9 +85,13 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Common\ClientIp.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\CurseDataProvider.cpp" />
+    <ClCompile Include="src\Common\ExternalIp.cpp" />
+    <ClCompile Include="src\Common\ExternalIpResolver.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
+    <ClCompile Include="src\Common\Ip.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
     <ClCompile Include="src\Common\BlockCipherIv.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
@@ -125,7 +129,6 @@
     <ClCompile Include="src\Common\PingPacket.cpp" />
     <ClCompile Include="src\Common\AuthenticationPacket.cpp" />
     <ClCompile Include="src\Common\FileUtilities.cpp" />
-    <ClCompile Include="src\Common\IpUtilities.cpp" />
     <ClCompile Include="src\Common\MiscUtilities.cpp" />
     <ClCompile Include="src\Common\Randomizer.cpp" />
     <ClCompile Include="src\Common\StringUtilities.cpp" />
@@ -144,11 +147,14 @@
   <ItemGroup>
     <ClInclude Include="src\Common\AbstractSession.h" />
     <ClInclude Include="src\Common\BitUtilities.h" />
+    <ClInclude Include="src\Common\ClientIp.h" />
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
     <ClInclude Include="src\Common\ConsoleLogger.h" />
     <ClInclude Include="src\Common\CurseDataProvider.h" />
     <ClInclude Include="src\Common\ExitCodes.h" />
+    <ClInclude Include="src\Common\ExternalIp.h" />
+    <ClInclude Include="src\Common\ExternalIpResolver.h" />
     <ClInclude Include="src\Common\FileLogger.h" />
     <ClInclude Include="src\Common\GameConstants.h" />
     <ClInclude Include="src\Common\hash_combine.hpp" />
@@ -212,7 +218,6 @@
     <ClInclude Include="src\Common\AuthenticationPacket.h" />
     <ClInclude Include="src\Common\FileUtilities.h" />
     <ClInclude Include="src\Common\GameLogicUtilities.h" />
-    <ClInclude Include="src\Common\IpUtilities.h" />
     <ClInclude Include="src\Common\LoopingId.h" />
     <ClInclude Include="src\Common\MiscUtilities.h" />
     <ClInclude Include="src\Common\Randomizer.h" />

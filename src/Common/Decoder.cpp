@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -178,19 +178,4 @@ void Decoder::createHeader(unsigned char *header, uint16_t size) {
 	}
 	(*(uint16_t *)(header)) = version;
 	(*(uint16_t *)(header + 2)) = pSize;
-}
-
-PacketCreator Decoder::getConnectPacket(const string &patchLocation) {
-	m_recv.updateIv(Randomizer::Instance()->randInt());
-	m_send.updateIv(Randomizer::Instance()->randInt());
-
-	PacketCreator packet;
-	packet.add<header_t>(patchLocation != "" ? IV_PATCH_LOCATION : IV_NO_PATCH_LOCATION);
-	packet.add<uint16_t>(MapleVersion::Version);
-	packet.addString(patchLocation);
-	packet.add<uint32_t>(m_recv.getIv());
-	packet.add<uint32_t>(m_send.getIv());
-	packet.add<int8_t>(MapleVersion::Locale);
-
-	return packet;
 }

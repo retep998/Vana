@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "ConnectionAcceptor.h"
+#include "Ip.h"
 #include "noncopyable.hpp"
 #include "SessionManager.h"
 #include "Types.h"
@@ -39,8 +40,8 @@ public:
 		return singleton;
 	}
 
-	void accept(port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation = "");
-	void connect(ip_t serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection);
+	void accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation = "");
+	void connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection);
 	void stop();
 
 	void run();

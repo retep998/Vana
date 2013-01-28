@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractServer.h"
 #include "Configuration.h"
+#include "Ip.h"
 #include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
@@ -49,7 +50,7 @@ public:
 	void setWorldPort(port_t port) { m_worldPort = port; }
 	void setPort(port_t port) { m_port = port; }
 	void setScrollingHeader(const string &message);
-	void setWorldIp(ip_t ip) { m_worldIp = ip; }
+	void setWorldIp(const Ip &ip) { m_worldIp = ip; }
 	void modifyRate(int32_t rateType, int32_t newValue);
 	void setRates(const Rates &rates);
 	void setConfig(const WorldConfig &config);
@@ -105,8 +106,8 @@ private:
 	port_t m_worldPort;
 	port_t m_loginPort;
 	port_t m_port;
-	ip_t m_worldIp;
-	ip_t m_loginIp;
+	Ip m_worldIp;
+	Ip m_loginIp;
 	WorldConfig m_config;
 	WorldServerConnection *m_worldConnection;
 };

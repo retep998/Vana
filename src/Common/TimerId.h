@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,9 +55,9 @@ namespace std {
 		size_t operator()(const Timer::Id &v) const {
 			size_t seed = 0;
 
-			hash_combine(seed, v.type);
-			hash_combine(seed, v.id);
-			hash_combine(seed, v.id2);
+			MiscUtilities::hash_combine(seed, v.type);
+			MiscUtilities::hash_combine(seed, v.id);
+			MiscUtilities::hash_combine(seed, v.id2);
 
 			return seed;
 		}

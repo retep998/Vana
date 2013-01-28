@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -276,7 +276,7 @@ void InventoryHandler::useScroll(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int16_t equipSlot = packet.get<int16_t>();
 	bool whiteScroll = (packet.get<int16_t>() == 2);
-	bool legendarySpirit = packet.getBool();
+	bool legendarySpirit = packet.get<bool>();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Item *equip = player->getInventory()->getItem(Inventories::EquipInventory, equipSlot);
@@ -385,7 +385,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::SuperMegaphone: {
 				const string &msg = player->getMedalName() + " : " + packet.getString();
-				bool whisper = packet.getBool();
+				bool whisper = packet.get<bool>();
 				InventoryPacket::showSuperMegaphone(player, msg, whisper);
 				used = true;
 				break;
@@ -404,9 +404,9 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::ItemMegaphone: {
 				const string &msg = player->getMedalName() + " : " + packet.getString();
-				bool whisper = packet.getBool();
+				bool whisper = packet.get<bool>();
 				Item *item = nullptr;
-				if (packet.getBool()) {
+				if (packet.get<bool>()) {
 					int8_t inv = static_cast<int8_t>(packet.get<int32_t>());
 					int16_t slot = static_cast<int16_t>(packet.get<int32_t>());
 					item = player->getInventory()->getItem(inv, slot);
@@ -429,7 +429,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 				for (int8_t i = 0; i < lines; i++) {
 					text[i] = player->getMedalName() + " : " + packet.getString();
 				}
-				bool whisper = packet.getBool();
+				bool whisper = packet.get<bool>();
 				InventoryPacket::showTripleMegaphone(player, lines, text[0], text[1], text[2], whisper);
 				used = true;
 				break;
@@ -499,7 +499,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::MapleTvMessenger:
 			case Items::Megassenger: {
 				bool hasReceiver = (packet.get<int8_t>() == 3);
-				bool showWhisper = (itemId == Items::Megassenger ? packet.getBool() : false);
+				bool showWhisper = (itemId == Items::Megassenger ? packet.get<bool>() : false);
 				Player *receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
 				int32_t time = 15;
 
@@ -523,7 +523,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			case Items::MapleTvStarMessenger:
 			case Items::StarMegassenger: {
 				int32_t time = 30;
-				bool showWhisper = (itemId == Items::StarMegassenger ? packet.getBool() : false);
+				bool showWhisper = (itemId == Items::StarMegassenger ? packet.get<bool>() : false);
 				const string &msg = packet.getString();
 				const string &msg2 = packet.getString();
 				const string &msg3 = packet.getString();
@@ -541,7 +541,7 @@ void InventoryHandler::useCashItem(Player *player, PacketReader &packet) {
 			}
 			case Items::MapleTvHeartMessenger:
 			case Items::HeartMegassenger: {
-				bool showWhisper = (itemId == Items::HeartMegassenger ? packet.getBool() : false);
+				bool showWhisper = (itemId == Items::HeartMegassenger ? packet.get<bool>() : false);
 				const string &name = packet.getString();
 				Player *receiver = PlayerDataProvider::Instance()->getPlayer(name);
 				int32_t time = 60;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -48,8 +49,8 @@ namespace SyncPacket {
 		void disbandParty(int32_t partyId);
 	}
 	namespace PlayerPacket {
-		void playerChangeChannel(AbstractConnection *connection, int32_t playerId, ip_t ip, port_t port);
-		void newConnectable(uint16_t channel, int32_t playerId, ip_t ip, PacketReader &buffer);
+		void playerChangeChannel(AbstractConnection *connection, int32_t playerId, const Ip &ip, port_t port);
+		void newConnectable(uint16_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer);
 		void deleteConnectable(uint16_t channel, int32_t playerId);
 		void updatePlayerJob(int32_t playerId, int16_t job);
 		void updatePlayerMap(int32_t playerId, int32_t map);

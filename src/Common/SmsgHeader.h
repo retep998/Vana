@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#define IV_NO_PATCH_LOCATION 0x0d
+// Technically the packet for global sets the length, but your Maple locale may not be the same
+// Search for IV_PATCH_LOCATION in order to find the spot where the connect packet is created if this is the case for your locale
 #define IV_PATCH_LOCATION 0x0e
 
 #define SMSG_AUTHENTICATION 0x00

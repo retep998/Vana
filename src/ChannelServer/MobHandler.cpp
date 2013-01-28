@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -102,7 +102,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 	}
 
 	int16_t moveId = packet.get<int16_t>();
-	bool useSkill = packet.getBool();
+	bool useSkill = packet.get<bool>();
 	int8_t skill = packet.get<int8_t>();
 	uint8_t realSkill = 0;
 	uint8_t level = 0;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.h"
 #include "Database.h"
 #include "GameConstants.h"
-#include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "MiscUtilities.h"
@@ -38,7 +37,7 @@ using TimeUtilities::timeToTick32;
 void Login::loginUser(Player *player, PacketReader &packet) {
 	const string &username = packet.getString();
 	const string &password = packet.getString();
-	const string &ip = IpUtilities::ipToString(player->getIp());
+	const string &ip = player->getIp().toString();
 
 	if (!MiscUtilities::inRangeInclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking
@@ -132,7 +131,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 		}
 	}
 	else {
-		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + IpUtilities::ipToString(player->getIp()));
+		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + player->getIp().toString());
 
 		player->setUserId(userId);
 
@@ -189,7 +188,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 		return;
 	}
 	if (packet.get<int8_t>() == 1) {
-		// getBool candidate?
+		// get<bool> candidate?
 		int8_t gender = packet.get<int8_t>();
 		if (gender != Gender::Male && gender != Gender::Female) {
 			// Hacking
@@ -285,7 +284,7 @@ void Login::registerPin(Player *player, PacketReader &packet) {
 	player->setStatus(PlayerStatus::NotLoggedIn);
 	Database::getCharDb().once
 		<< "UPDATE user_accounts u "
-		<< "SET u.pin = :pin"
+		<< "SET u.pin = :pin "
 		<< "WHERE u.user_id = :user",
 		soci::use(pin, "pin"),
 		soci::use(player->getUserId(), "user");

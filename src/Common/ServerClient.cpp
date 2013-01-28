@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::endl;
 
-ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping) :
+ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping) :
 	Session(ioService, sessionManager, connection, false, true, ping),
 	m_server(serverIp),
 	m_port(serverPort),
@@ -37,7 +37,15 @@ ServerClient::ServerClient(boost::asio::io_service &ioService, ip_t serverIp, po
 void ServerClient::startConnect() {
 	// Synchronously connect and process the connect packet
 
-	tcp::endpoint endpoint(boost::asio::ip::address_v4(m_server), m_port);
+	boost::asio::ip::address endAddress;
+	if (m_server.getType() == Ip::Type::Ipv4) {
+		endAddress = boost::asio::ip::address_v4(m_server.asIpv4());
+	}
+	else {
+		throw std::invalid_argument("IPv6 unsupported");
+	}
+	tcp::endpoint endpoint(endAddress, m_port);
+
 	boost::system::error_code error;
 	m_socket.connect(endpoint, error);
 
@@ -49,13 +57,13 @@ void ServerClient::startConnect() {
 			start();
 		}
 		catch (std::range_error) {
-			std::cerr << "Error: Malformed IV packet" << endl;
+			std::cerr << "ERROR: Malformed IV packet" << endl;
 			disconnect();
 			ExitCodes::exit(ExitCodes::ServerMalformedIvPacket);
 		}
 	}
 	else {
-		std::cerr << "Error: " << error.message() << endl;
+		std::cerr << "ERROR: " << error.message() << endl;
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }

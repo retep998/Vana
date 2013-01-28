@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,4 +27,6 @@ namespace TradeHandler {
 	void tradeHandler(Player *player, PacketReader &packet);
 	void removeTrade(int32_t id);
 	void cancelTrade(Player *player);
+
+	int32_t getTaxLevel(int32_t mesos);
 }

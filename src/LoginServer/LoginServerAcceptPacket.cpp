@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,21 +42,21 @@ void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connectio
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, ip_t ip, port_t port) {
+void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldId);
-	packet.add<ip_t>(ip);
+	packet.addClass<Ip>(ip);
 	packet.add<port_t>(port);
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, ip_t ip) {
+void LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip) {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_NEW_PLAYER);
 	packet.add<uint16_t>(channel);
 	packet.add<int32_t>(charId);
-	packet.add<ip_t>(ip);
+	packet.addClass<Ip>(ip);
 	world->send(packet);
 }
 

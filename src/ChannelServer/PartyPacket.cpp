@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -58,7 +58,7 @@ void PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerI
 	packet.add<int8_t>(0x0C);
 	packet.add<int32_t>(party->getId());
 	packet.add<int32_t>(playerId);
-	packet.addBool(kicked);
+	packet.add<bool>(kicked);
 	packet.addString(name);
 	party->updatePacket(packet);
 	packetTarget->getSession()->send(packet);
@@ -90,7 +90,7 @@ void PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeade
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x1A);
 	packet.add<int32_t>(newLeader);
-	packet.addBool(false);
+	packet.add<bool>(false);
 	packetTarget->getSession()->send(packet);
 }
 

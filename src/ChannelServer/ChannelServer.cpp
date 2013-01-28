@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.h"
 #include "InitializeChannel.h"
 #include "InitializeCommon.h"
-#include "IpUtilities.h"
 #include "MiscUtilities.h"
 #include "PacketCreator.h"
 #include "Player.h"
@@ -34,12 +33,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ChannelServer * ChannelServer::singleton = nullptr;
 
 ChannelServer::ChannelServer() :
-	m_channelId(-1)
+	m_channelId(-1),
+	m_worldIp(0),
+	m_loginIp(0)
 {
 }
 
 void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false);
+	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false);
 	Initializing::setUsersOffline(getOnlineId());
 }
 
@@ -57,8 +58,8 @@ void ChannelServer::loadData() {
 	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
 	const string &interPassword = getInterPassword();
 	const string &salt = getSalt();
-	const IpMatrix &externalIp = getExternalIp();
-	loginPlayer->sendAuth(interPassword, salt, externalIp);
+	const IpMatrix &externalIps = getExternalIps();
+	loginPlayer->sendAuth(interPassword, salt, externalIps);
 }
 
 void ChannelServer::loadLogConfig() {
@@ -66,7 +67,7 @@ void ChannelServer::loadLogConfig() {
 	initializeLoggingConstants(conf);
 	conf.execute();
 
-	bool enabled = conf.getBool("log_channels");
+	bool enabled = conf.get<bool>("log_channels");
 	if (enabled) {
 		LogConfig log = conf.getClass<LogConfig>("channel");
 		createLogger(log);
@@ -84,13 +85,13 @@ void ChannelServer::connectWorld() {
 	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
 	const string &interPassword = getInterPassword();
 	const string &salt = getSalt();
-	const IpMatrix &externalIp = getExternalIp();
-	getWorldConnection()->sendAuth(interPassword, salt, externalIp);
+	const IpMatrix &externalIps = getExternalIps();
+	getWorldConnection()->sendAuth(interPassword, salt, externalIps);
 }
 
 void ChannelServer::loadConfig() {
 	ConfigFile config("conf/channelserver.lua");
-	m_loginIp = IpUtilities::stringToIp(config.getString("login_ip"));
+	m_loginIp = Ip(Ip::stringToIpv4(config.getString("login_ip")));
 	m_loginPort = config.get<port_t>("login_inter_port");
 
 	 // Will get from world server

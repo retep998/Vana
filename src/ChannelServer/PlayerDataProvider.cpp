@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 void PlayerDataProvider::parsePlayer(PacketReader &packet) {
 	std::shared_ptr<PlayerData> player(new PlayerData);
 	player->gmLevel = packet.get<int32_t>();
-	player->admin = packet.getBool();
+	player->admin = packet.get<bool>();
 	player->level = packet.get<uint8_t>();
 	player->job = packet.get<int16_t>();
 	player->channel = packet.get<int16_t>();
@@ -90,11 +90,11 @@ void PlayerDataProvider::removePlayer(Player *player) {
 
 void PlayerDataProvider::changeChannel(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
-	ip_t ip = packet.get<ip_t>();
+	const Ip &ip = packet.getClass<Ip>();
 	port_t port = packet.get<port_t>();
 
 	if (Player *player = getPlayer(playerId)) {
-		if (ip == 0) {
+		if (!ip.isInitialized()) {
 			PlayerPacket::sendBlockedMessage(player, PlayerPacket::BlockMessages::CannotGo);
 		}
 		else {
@@ -108,7 +108,7 @@ void PlayerDataProvider::changeChannel(PacketReader &packet) {
 
 void PlayerDataProvider::newConnectable(PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
-	ip_t ip = packet.get<ip_t>();
+	const Ip &ip = packet.getClass<Ip>();
 	Connectable::Instance()->newPlayer(playerId, ip, packet);
 	SyncPacket::PlayerPacket::connectableEstablished(playerId);
 }
