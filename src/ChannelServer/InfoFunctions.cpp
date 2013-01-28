@@ -57,9 +57,15 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 	cmatch matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (.+)", matches)) {
 		uint16_t type = 0;
+		uint16_t subType = 0;
+
 		string test = matches[1];
 		// These constants correspond to MCDB enum types
 		if (test == "item") type = 1;
+		else if (test == "equip") { type = 1; subType = 1; }
+		else if (test == "use") { type = 1; subType = 2; }
+		else if (test == "etc") { type = 1; subType = 4; }
+		else if (test == "cash") { type = 1; subType = 5; }
 		else if (test == "skill") type = 2;
 		else if (test == "map") type = 3;
 		else if (test == "mob") type = 4;
@@ -106,6 +112,19 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 
 				if (type == 100) {
 					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE objectid = :q", soci::use(q, "q"));
+					displayFunc(rs, format);
+				}
+				else if (type == 1 && subType != 0) {
+					q = "%" + q + "%";
+					soci::rowset<> rs = (sql.prepare
+						<< "SELECT s.objectid, s.`label` "
+						<< "FROM strings s "
+						<< "INNER JOIN item_data i ON s.objectid = i.itemid "
+						<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
+						soci::use(q, "q"),
+						soci::use(type, "type"),
+						soci::use(subType, "subtype"));
+
 					displayFunc(rs, format);
 				}
 				else {
@@ -215,7 +234,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 			}
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Red);
+			PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, equip, use, etc, cash, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Red);
 		}
 		return true;
 	}

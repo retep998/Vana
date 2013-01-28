@@ -20,14 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/jobFunctions.lua");
 
 if isQuestActive(6110) then
-	if getPartyId() == 0 then
+	gm = isGm()
+	if not (gm or getPartyId() ~= 0) then
 		showMessage("You don't have a  party. You can challenge with party.", env_redMessage);
-	elseif isPartyLeader() then
+	elseif gm or isPartyLeader() then
 		members = getAllPartyPlayerIds();
-		if #members ~= 2 then
+		if not (gm or #members == 2) then
 			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", env_redMessage);
 		else
-			if not isPartyInLevelRange(120, 200) then
+			if not (gm or isPartyInLevelRange(120, 200)) then
 				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", env_redMessage);
 			else
 				memberCount = 0
@@ -42,7 +43,7 @@ if isQuestActive(6110) then
 						revertPlayer();
 					end
 				end
-				if memberCount ~= 2 then
+				if not (gm or memberCount == 2) then
 					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", env_redMessage);
 				else
 					if not isInstance("rush4th") then
