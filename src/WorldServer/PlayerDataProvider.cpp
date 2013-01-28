@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -121,7 +121,7 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 
 void PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player *player) {
 	packet.add<int32_t>(0);
-	packet.addBool(false);
+	packet.add<bool>(false);
 	packet.add<uint8_t>(player->getLevel());
 	packet.add<int16_t>(player->getJob());
 	packet.add<int16_t>(player->getChannel());
@@ -131,7 +131,7 @@ void PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player 
 }
 
 // Players
-void PlayerDataProvider::initialPlayerConnect(int32_t id, uint16_t channel, ip_t ip) {
+void PlayerDataProvider::initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip) {
 	std::shared_ptr<Player> player = m_players[id];
 	player->setIp(ip);
 }

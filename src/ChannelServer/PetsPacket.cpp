@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,8 +32,8 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	packet.add<header_t>(SMSG_PET_SUMMON);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(index != -1 ? index : (pet->isSummoned() ? pet->getIndex().get() : -1));
-	packet.addBool(pet->isSummoned());
-	packet.addBool(kick); // Kick existing pet (only when player doesn't have follow the lead)
+	packet.add<bool>(pet->isSummoned());
+	packet.add<bool>(kick); // Kick existing pet (only when player doesn't have follow the lead)
 	if (pet->isSummoned()) {
 		packet.add<int32_t>(pet->getItemId());
 		packet.addString(pet->getName());
@@ -41,8 +41,8 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.addClass<Pos>(pet->getPos());
 		packet.add<int8_t>(pet->getStance());
 		packet.add<int16_t>(pet->getFh());
-		packet.addBool(pet->hasNameTag());
-		packet.addBool(pet->hasQuoteItem());
+		packet.add<bool>(pet->hasNameTag());
+		packet.add<bool>(pet->hasQuoteItem());
 	}
 	if (onlyPlayer) {
 		player->getSession()->send(packet);
@@ -60,7 +60,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(act);
 	packet.addString(message);
-	packet.addBool(pet->hasQuoteItem());
+	packet.add<bool>(pet->hasQuoteItem());
 	player->getMap()->sendPacket(packet, player);
 }
 
@@ -78,10 +78,10 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
 	packet.add<header_t>(SMSG_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
-	packet.addBool(animation == 1);
+	packet.add<bool>(animation == 1);
 	packet.add<int8_t>(animation);
 	packet.add<int8_t>(0);
-	packet.addBool(pet->hasQuoteItem());
+	packet.add<bool>(pet->hasQuoteItem());
 	player->getSession()->send(packet);
 }
 
@@ -123,7 +123,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.addString(pet->getName());
-	packet.addBool(pet->hasNameTag());
+	packet.add<bool>(pet->hasNameTag());
 	player->getMap()->sendPacket(packet);
 }
 
@@ -133,7 +133,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	packet.add<int32_t>(player->getId());
 	packet.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1);
 	packet.add<int64_t>(pet->getId());
-	packet.addBool(pet->hasNameTag());
+	packet.add<bool>(pet->hasNameTag());
 	player->getSession()->send(packet);
 }
 

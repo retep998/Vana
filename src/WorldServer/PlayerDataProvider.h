@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.h"
+#include "Ip.h"
 #include "LoopingId.h"
 #include "Types.h"
 #include <functional>
@@ -48,7 +49,7 @@ public:
 	void getPlayerDataPacket(PacketCreator &packet, int32_t playerId);
 
 	// Player info
-	void initialPlayerConnect(int32_t id, uint16_t channel, ip_t ip);
+	void initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip);
 	void playerConnect(Player *player, bool online = true);
 	void playerDisconnect(int32_t id, int16_t channel = -1);
 	void removeChannelPlayers(uint16_t channel);

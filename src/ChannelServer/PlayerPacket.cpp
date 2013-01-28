@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerPacket.h"
 #include "ChannelServer.h"
+#include "ClientIp.h"
 #include "InterHeader.h"
 #include "KeyMaps.h"
 #include "PacketCreator.h"
@@ -38,7 +39,7 @@ void PlayerPacket::connectData(Player *player) {
 	packet.add<header_t>(SMSG_CHANGE_MAP);
 	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
-	packet.addBool(true); // Is a connect packet
+	packet.add<bool>(true); // Is a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
 	if (false) {
 		size_t lineAmount = 0;
@@ -118,14 +119,14 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != nullptr) {
 			packet.addString(macro->name);
-			packet.addBool(macro->shout);
+			packet.add<bool>(macro->shout);
 			packet.add<int32_t>(macro->skill1);
 			packet.add<int32_t>(macro->skill2);
 			packet.add<int32_t>(macro->skill3);
 		}
 		else {
 			packet.addString("");
-			packet.addBool(false);
+			packet.add<bool>(false);
 			packet.add<int32_t>(0);
 			packet.add<int32_t>(0);
 			packet.add<int32_t>(0);
@@ -138,7 +139,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.addBool(itemResponse);
+	packet.add<bool>(itemResponse);
 	packet.add<int32_t>(updateBits);
 	switch (updateBits) {
 		// For now it only accepts updateBits as a single unit, might be a collection later
@@ -170,11 +171,11 @@ void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value,
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::changeChannel(Player *player, ip_t ip, port_t port) {
+void PlayerPacket::changeChannel(Player *player, const Ip &ip, port_t port) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_CHANGE);
-	packet.addBool(true);
-	packet.add<ip_t>(htonl(ip)); // MapleStory accepts IP addresses in big-endian
+	packet.add<bool>(true);
+	packet.addClass<ClientIp>(ClientIp(ip)); // MapleStory accepts IP addresses in big-endian
 	packet.add<port_t>(port);
 	player->getSession()->send(packet);
 }
@@ -231,7 +232,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	packet.addString(msg);
 	packet.add<int16_t>(width);
 	packet.add<int16_t>(time);
-	packet.addBool(!isStatic);
+	packet.add<bool>(!isStatic);
 
 	if (isStatic) {
 		packet.add<int32_t>(x);
@@ -260,7 +261,7 @@ void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
 void PlayerPacket::sendYellowMessage(Player *player, const string &msg) {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_YELLOW_MESSAGE);
-	packet.addBool(true);
+	packet.add<bool>(true);
 	packet.addString(msg);
 	player->getSession()->send(packet);
 }

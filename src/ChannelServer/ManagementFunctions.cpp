@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.h"
 #include "Database.h"
 #include "Inventory.h"
-#include "IpUtilities.h"
 #include "ItemDataProvider.h"
 #include "Maps.h"
 #include "NpcHandler.h"
@@ -348,7 +347,7 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
 		string targetName = matches[1];
 		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
-			const string &targetIp = IpUtilities::ipToString(target->getIp());
+			const string &targetIp = target->getIp().toString();
 			target->getSession()->disconnect();
 
 			string reasonString = matches[2];

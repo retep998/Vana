@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,9 +41,9 @@ vector<string> MySqlQueryParser::parseQueries(const string &filename) {
 
 	// Parse each SQL statement
 	{
-		std::tokenizer tokens(content, ";");
+		MiscUtilities::tokenizer tokens(content, ";");
 
-		for (std::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
+		for (MiscUtilities::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
 			string q = *iter;
 			q = StringUtilities::trim(q);
 			if (q.size() > 0) {

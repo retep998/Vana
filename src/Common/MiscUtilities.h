@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,8 +46,8 @@ namespace MiscUtilities {
 	}
 
 	template<class T>
-	std::optional<T> getOptional(const T &testVal, NullableMode mode, const T nullableVals[], const size_t nullableValCount = 1) {
-		std::optional<T> ret;
+	MiscUtilities::optional<T> getOptional(const T &testVal, NullableMode mode, const T nullableVals[], const size_t nullableValCount = 1) {
+		MiscUtilities::optional<T> ret;
 		if (mode == NullIfFound) {
 			bool found = false;
 			for (size_t i = 0; i < nullableValCount; ++i) {

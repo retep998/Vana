@@ -9,7 +9,7 @@
 
 #include <functional>
 
-namespace std {
+namespace MiscUtilities {
 	// This function is based on boost::hash_combine
 	template <typename T>
 	inline void hash_combine(std::size_t &seed, const T &v) {

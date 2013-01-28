@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,12 +38,12 @@ public:
 
 	void createHeader(unsigned char *header, uint16_t size);
 
-	PacketCreator getConnectPacket(const string &patchLocation = "");
-
 	void encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
 	void decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
 	void setRecvIv(uint32_t iv) { m_recv.updateIv(iv); }
 	void setSendIv(uint32_t iv) { m_send.updateIv(iv); }
+	uint32_t getRecvIv() const { return m_recv.getIv(); }
+	uint32_t getSendIv() const { return m_send.getIv(); }
 private:
 	bool isEncrypted() const { return m_encrypted; }
 	void getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size);

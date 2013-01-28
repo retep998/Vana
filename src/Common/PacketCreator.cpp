@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,10 +28,6 @@ PacketCreator::PacketCreator() :
 	m_packet(new unsigned char[bufferLen]),
 	m_packetCapacity(bufferLen)
 {
-}
-
-void PacketCreator::addBool(bool value) {
-	add<int8_t>(value ? 1 : 0);
 }
 
 void PacketCreator::addBuffer(const PacketCreator &packet) {

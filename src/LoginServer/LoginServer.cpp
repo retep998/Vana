@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,8 +37,8 @@ LoginServer::LoginServer()
 }
 
 void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
-	ConnectionManager::Instance()->accept(m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
+	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
+	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
 void LoginServer::loadData() {
@@ -53,7 +53,7 @@ void LoginServer::loadData() {
 
 void LoginServer::loadConfig() {
 	ConfigFile config("conf/loginserver.lua");
-	m_pinEnabled = config.getBool("pin");
+	m_pinEnabled = config.get<bool>("pin");
 	m_port = config.get<port_t>("port");
 	m_interPort = config.get<port_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
@@ -67,7 +67,7 @@ void LoginServer::loadLogConfig() {
 	initializeLoggingConstants(conf);
 	conf.execute();
 
-	bool enabled = conf.getBool("log_login");
+	bool enabled = conf.get<bool>("log_login");
 	if (enabled) {
 		LogConfig log;
 		log = conf.getClass<LogConfig>("login");

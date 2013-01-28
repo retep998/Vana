@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractConnection.h"
-#include "Ip.h"
+#include "ExternalIp.h"
+#include "ExternalIpResolver.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -47,12 +48,15 @@ public:
 	virtual void authenticated(int8_t type) = 0;
 
 	bool isAuthenticated() const { return m_isAuthenticated; }
-	const IpMatrix & getExternalIp() const { return m_externalIp; }
 	int8_t getType() const { return m_type; }
+
+	Ip matchSubnet(const Ip &test) const { return m_resolver.matchIpToSubnet(test); }
+	void setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) { m_resolver.setExternalIpInformation(defaultIp, matrix); }
+	const IpMatrix & getExternalIps() const { return m_resolver.getExternalIps(); }
 protected:
 	void setType(int8_t type) { m_type = type; }
 private:
 	int8_t m_type;
 	bool m_isAuthenticated;
-	IpMatrix m_externalIp;
+	ExternalIpResolver m_resolver;
 };

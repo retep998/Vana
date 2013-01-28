@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 
@@ -29,7 +30,7 @@ public:
 	Player();
 	Player(int32_t id);
 	void setOnline(bool isOnline) { m_online = isOnline; }
-	void setIp(ip_t newIp) { m_ip = newIp; }
+	void setIp(const Ip &newIp) { m_ip = newIp; }
 	void setChannel(int16_t newChannel) { m_channel = newChannel; }
 	void setOnlineTime(int64_t newTime) { m_onlineTime = newTime; }
 	void setMap(int32_t mapId) { m_map = mapId; }
@@ -42,9 +43,9 @@ public:
 	int16_t getJob() const { return m_job; }
 	int32_t getMap() const { return m_map; }
 	int32_t getId() const { return m_id; }
-	ip_t getIp() const { return m_ip; }
 	int64_t getOnlineTime() const { return m_onlineTime; }
 	string getName() const { return m_name; }
+	const Ip & getIp() const { return m_ip; }
 
 	// Party
 	void setParty(Party *party) { m_party = party; }
@@ -59,9 +60,9 @@ private:
 	int16_t m_job;
 	int32_t m_id;
 	int32_t m_map;
-	ip_t m_ip;
 	int64_t m_onlineTime;
 	int64_t m_inviteTime;
 	string m_name;
+	Ip m_ip;
 	Party *m_party;
 };

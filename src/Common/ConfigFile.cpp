@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "ExitCodes.h"
 #include "FileUtilities.h"
-#include "IpUtilities.h"
 #include <iostream>
 
 using std::cerr;
@@ -110,12 +109,12 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 	lua_getglobal(getLuaState(), value.c_str());
 	lua_pushnil(getLuaState());
 	while (lua_next(getLuaState(), -2)) {
-		IpArray arr;
+		vector<uint32_t> arr;
 		arr.reserve(2);
 
 		lua_pushnil(getLuaState());
 		while (lua_next(getLuaState(), -2)) {
-			arr.push_back(IpUtilities::stringToIp(lua_tostring(getLuaState(), -1)));
+			arr.push_back(Ip::stringToIpv4(lua_tostring(getLuaState(), -1)));
 			lua_pop(getLuaState(), 1);
 		}
 
@@ -124,7 +123,7 @@ IpMatrix ConfigFile::getIpMatrix(const string &value) {
 			ExitCodes::exit(ExitCodes::ConfigError);
 		}
 
-		matrix.push_back(arr);
+		matrix.push_back(ExternalIp(arr[0], arr[1]));
 
 		lua_pop(getLuaState(), 1);
 	}
@@ -152,12 +151,4 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 		}
 	}
 	return channels;
-}
-
-bool ConfigFile::getBool(const string &value) {
-	keyMustExist(value);
-	lua_getglobal(getLuaState(), value.c_str());
-	bool ret = (lua_toboolean(getLuaState(), -1) != 0);
-	lua_pop(getLuaState(), 1);
-	return ret;
 }

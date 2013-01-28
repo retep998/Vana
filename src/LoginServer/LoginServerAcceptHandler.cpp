@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerAcceptHandler.h"
 #include "Channel.h"
-#include "IpUtilities.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptConnection.h"
 #include "PacketCreator.h"
@@ -32,8 +31,8 @@ using StringUtilities::lexical_cast;
 void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
-	chan->setIp(packet.get<ip_t>());
-	IpUtilities::extractExternalIp(packet, chan->getExternalIps());
+	const Ip &ip = packet.getClass<Ip>();
+	chan->setExternalIpInformation(ip, packet.getClassVector<ExternalIp>());
 	chan->setPort(packet.get<port_t>());
 	Worlds::Instance()->getWorld(connection->getWorldId())->addChannel(channel, chan);
 	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));

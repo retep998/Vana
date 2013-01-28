@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "Ip.h"
 #include "Types.h"
 #include <string>
 
@@ -49,7 +50,7 @@ namespace PlayerPacket {
 	void showKeys(Player *player, KeyMaps *keymaps);
 	void showSkillMacros(Player *player, SkillMacros *macros);
 	void updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false);
-	void changeChannel(Player *player, ip_t ip, port_t port);
+	void changeChannel(Player *player, const Ip &ip, port_t port);
 	void showMessage(Player *player, const string &msg, int8_t type);
 	void showMessageChannel(const string &msg, int8_t type);
 	void showMessageWorld(const string &msg, int8_t type);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.h"
 #include "CmsgHeader.h"
 #include "Database.h"
-#include "IpUtilities.h"
 #include "Login.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
@@ -47,7 +46,7 @@ void Player::handleRequest(PacketReader &packet) {
 			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
 			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
-			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + IpUtilities::ipToString(this->getIp())); break;
+			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + this->getIp().toString()); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
@@ -76,11 +75,12 @@ Player::~Player() {
 }
 
 void Player::setOnline(bool online) {
-	Database::getCharDb() << "UPDATE user_accounts u " <<
-								"SET " <<
-								"	u.online = :online," <<
-								"	u.last_login = NOW() " <<
-								"WHERE u.user_id = :id",
-								soci::use((online ? 1 : 0), "online"),
-								soci::use(getUserId(), "id");
+	Database::getCharDb()
+		<< "UPDATE user_accounts u "
+		<< "SET "
+		<< "	u.online = :online,"
+		<< "	u.last_login = NOW() "
+		<< "WHERE u.user_id = :id",
+		soci::use((online ? 1 : 0), "online"),
+		soci::use(getUserId(), "id");
 }

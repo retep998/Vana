@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,7 +55,6 @@ void WorldServerAcceptConnection::handleRequest(PacketReader &packet) {
 		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendPacketToLogin(packet); break;
 		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
-		case IMSG_TO_PLAYERS: packet.reset(); WorldServerAcceptHandler::sendPacketToChannels(packet); break;
 	}
 }
 
@@ -64,17 +63,18 @@ void WorldServerAcceptConnection::authenticated(int8_t type) {
 		m_channel = Channels::Instance()->getAvailableChannel();
 		if (m_channel != -1) {
 			port_t port = WorldServer::Instance()->getInterPort() + m_channel + 1;
-			Channels::Instance()->registerChannel(this, m_channel, getIp(), getExternalIp(), port);
+			const IpMatrix &ips = getExternalIps();
+			Channels::Instance()->registerChannel(this, m_channel, getIp(), ips, port);
 
 			WorldServerAcceptPacket::connect(this, m_channel, port);
 			SyncPacket::sendSyncData(this);
-			LoginServerConnectPacket::registerChannel(m_channel, getIp(), getExternalIp(), port);
+			LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port);
 
 			WorldServer::Instance()->log(LogTypes::ServerConnect, "Channel " + StringUtilities::lexical_cast<string>(m_channel));
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);
-			std::cerr << "Error: No more channels to assign." << std::endl;
+			std::cerr << "ERROR: No more channels to assign." << std::endl;
 			getSession()->disconnect();
 		}
 	}

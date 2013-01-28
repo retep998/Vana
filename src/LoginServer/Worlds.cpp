@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include "Channel.h"
 #include "Characters.h"
-#include "IpUtilities.h"
 #include "LoginPacket.h"
 #include "LoginServer.h"
 #include "LoginServerAcceptConnection.h"
@@ -127,7 +126,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);
-		std::cerr << "Error: No more worlds to assign." << std::endl;
+		std::cerr << "ERROR: No more worlds to assign." << std::endl;
 		connection->getSession()->disconnect();
 	}
 	return worldId;
@@ -146,12 +145,12 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	int8_t worldId = -1;
 	if (validWorld != nullptr) {
 		worldId = validWorld->getId();
-		ip_t worldIp = IpUtilities::matchIpSubnet(connection->getIp(), validWorld->getExternalIp(), validWorld->getIp());
+		Ip worldIp = validWorld->matchSubnet(connection->getIp());
 		LoginServerAcceptPacket::connectChannel(connection, worldId, worldIp, validWorld->getPort());
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(connection, worldId, 0, 0);
-		std::cerr << "Error: No more channels to assign." << std::endl;
+		LoginServerAcceptPacket::connectChannel(connection, worldId, Ip(0), 0);
+		std::cerr << "ERROR: No more channels to assign." << std::endl;
 	}
 	connection->getSession()->disconnect();
 	return worldId;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -91,7 +91,7 @@ void SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) {
 	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
 	packet.add<uint16_t>(channel);
-	packet.add<ip_t>(info->getIp());
+	packet.addClass<Ip>(info->getIp());
 	packet.add<int64_t>(info->getConnectionTime());
 
 	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());
@@ -156,7 +156,7 @@ void SyncPacket::BuddyPacket::buddyOnline(int32_t playerId, const vector<int32_t
 	packet.add<int8_t>(Sync::SyncTypes::Buddy);
 	packet.add<int8_t>(Sync::Buddy::OnlineOffline);
 	packet.add<int32_t>(playerId);
-	packet.addBool(online);
+	packet.add<bool>(online);
 	packet.addVector(players);
 	ChannelServer::Instance()->sendPacketToWorld(packet);
 }

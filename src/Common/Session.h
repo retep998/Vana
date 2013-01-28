@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AbstractSession.h"
 #include "Decoder.h"
+#include "Ip.h"
 #include "shared_array.hpp"
 #include "Types.h"
 #include <boost/asio.hpp>
@@ -41,7 +42,7 @@ public:
 
 	void disconnect();
 	void send(const PacketCreator &packet, bool encrypt = true);
-	ip_t getIp() const;
+	const Ip & getIp() const;
 protected:
 	tcp::socket & getSocket() { return m_socket; }
 	void start();
@@ -54,6 +55,7 @@ protected:
 	void handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred);
 	void handleReadBody(const boost::system::error_code &error, size_t bytesTransferred);
 	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
+	PacketCreator getConnectPacket(const string &patchLocation);
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
@@ -61,13 +63,13 @@ protected:
 	tcp::socket m_socket;
 	Decoder m_decoder;
 	std::shared_ptr<AbstractConnection> m_connection;
-	std::shared_array<unsigned char> m_buffer;
+	MiscUtilities::shared_array<unsigned char> m_buffer;
 	bool m_isForClient;
 	bool m_usePing;
 	string m_patchLocation;
 
 	// Packet sending
-	std::shared_array<unsigned char> m_sendPacket;
+	MiscUtilities::shared_array<unsigned char> m_sendPacket;
 	std::mutex m_sendMutex;
 };
 

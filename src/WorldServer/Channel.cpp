@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,6 @@ Channel::Channel() :
 	m_players(0),
 	m_connection(nullptr),
 	m_id(0),
-	m_ip(0),
 	m_port(0)
 {
 }

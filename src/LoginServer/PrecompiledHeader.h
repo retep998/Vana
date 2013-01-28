@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,4 +19,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // No need for header guard, this precompiled header file will never
 // be included twice.
 
-#include "../Common/PrecompiledHeader.h" // Common project precompiled header
+// Common project precompiled header
+#include "../Common/PrecompiledHeader.h"

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -148,8 +148,8 @@ void Npc::sendDialog(bool back, bool next, bool save) {
 	}
 
 	PacketCreator packet = npcPacket(NpcDialogs::Normal);
-	packet.addBool(back);
-	packet.addBool(next);
+	packet.add<bool>(back);
+	packet.add<bool>(next);
 	m_player->getSession()->send(packet);
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,8 +23,8 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
+#include "ExternalIp.h"
 #include "IConfig.h"
-#include "Ip.h"
 #include "Types.h"
 #include <string>
 #include <vector>
@@ -48,12 +48,12 @@ public:
 	void setVariable(const string &name, const string &value);
 	void setVariable(const string &name, int32_t value);
 	template <typename T> T get(const string &value);
+	template <> bool get<bool>(const string &value);
 	template <typename T> T getClass(const string &prefix = "");
 
 	string getString(const string &value);
 	IpMatrix getIpMatrix(const string &value);
 	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
-	bool getBool(const string &value);
 private:
 	void keyMustExist(const string &value);
 
@@ -67,6 +67,15 @@ T ConfigFile::get(const string &value) {
 	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
 	T val = lua_tointeger(getLuaState(), -1);
+	lua_pop(getLuaState(), 1);
+	return val;
+}
+
+template <>
+bool ConfigFile::get<bool>(const string &value) {
+	keyMustExist(value);
+	lua_getglobal(getLuaState(), value.c_str());
+	bool val = lua_toboolean(getLuaState(), -1) != 0;
 	lua_pop(getLuaState(), 1);
 	return val;
 }

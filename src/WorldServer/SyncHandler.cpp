@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameObjects.h"
 #include "InterHeader.h"
 #include "InterHelper.h"
-#include "IpUtilities.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
 #include "Party.h"
@@ -121,13 +120,15 @@ void SyncHandler::handleCharacterCreated(PacketReader &packet) {
 void SyncHandler::playerChangeChannel(AbstractConnection *connection, PacketReader &packet) {
 	int32_t playerId = packet.get<int32_t>();
 	Channel *chan = Channels::Instance()->getChannel(packet.get<uint16_t>());
+	Ip ip(0);
+	port_t port = -1;
 	if (chan) {
 		PlayerDataProvider::Instance()->addPendingPlayer(playerId, chan->getId());
-		SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, packet.get<ip_t>(), packet);
+		ip = packet.getClass<Ip>();
+		SyncPacket::PlayerPacket::newConnectable(chan->getId(), playerId, ip, packet);
 	}
 	else {
-		// Channel doesn't exist (offline)
-		SyncPacket::PlayerPacket::playerChangeChannel(connection, playerId, 0, -1);
+		SyncPacket::PlayerPacket::playerChangeChannel(connection, playerId, ip, port);
 	}
 }
 
@@ -140,13 +141,14 @@ void SyncHandler::handleChangeChannel(AbstractConnection *connection, PacketRead
 		uint16_t chanId = PlayerDataProvider::Instance()->getPendingPlayerChannel(playerId);
 		Channel *destinationChannel = Channels::Instance()->getChannel(chanId);
 		Channel *currentChannel = Channels::Instance()->getChannel(gamePlayer->getChannel());
+		Ip ip(0);
+		port_t port = -1;
 		if (destinationChannel) {
-			ip_t chanIp = IpUtilities::matchIpSubnet(gamePlayer->getIp(), destinationChannel->getExternalIps(), destinationChannel->getIp());
-			SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, chanIp, destinationChannel->getPort());
+			ip = destinationChannel->matchIpToSubnet(gamePlayer->getIp());
+			port = destinationChannel->getPort();
 		}
-		else {
-			SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, 0, -1);
-		}
+
+		SyncPacket::PlayerPacket::playerChangeChannel(currentChannel->getConnection(), playerId, ip, port);
 		PlayerDataProvider::Instance()->removePendingPlayer(playerId);
 	}
 }
@@ -201,7 +203,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 		return;
 	}
 
-	bool online = packet.getBool();
+	bool online = packet.get<bool>();
 
 	const vector<int32_t> &tempIds = packet.getVector<int32_t>();
 	unordered_map<int16_t, vector<int32_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people

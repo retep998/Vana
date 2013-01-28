@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,12 +29,11 @@ Channels::Channels()
 {
 }
 
-void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, ip_t ip, const IpMatrix &extIp, port_t port) {
+void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
 	shared_ptr<Channel> chan(new Channel());
 	chan->setConnection(connection);
 	chan->setId(channel);
-	chan->setIp(ip);
-	chan->setExternalIps(extIp);
+	chan->setExternalIpInformation(channelIp, extIp);
 	chan->setPort(port);
 	m_channels[channel] = chan;
 }

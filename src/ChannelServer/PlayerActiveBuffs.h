@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,7 +55,7 @@ struct MapEntryBuffs {
 
 typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t>> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
 
-class PlayerActiveBuffs : public IPacketSerializable<PlayerActiveBuffs>, boost::noncopyable {
+class PlayerActiveBuffs : public IPacketSerializable, boost::noncopyable {
 public:
 	PlayerActiveBuffs(Player *player) :
 		m_player(player),

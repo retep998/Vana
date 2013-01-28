@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "ConfigFile.h"
 #include "Configuration.h"
+#include "Ip.h"
 #include "LoginServerConnection.h"
 #include "noncopyable.hpp"
 #include "Types.h"
@@ -65,7 +66,7 @@ private:
 	int8_t m_worldId;
 	port_t m_loginPort;
 	port_t m_port;
-	ip_t m_loginIp;
+	Ip m_loginIp;
 	WorldConfig m_config;
 	Rates m_defaultRates;
 	LoginServerConnection *m_loginConnection;

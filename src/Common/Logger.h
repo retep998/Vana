@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -81,8 +81,8 @@ struct LogMessage {
 class Logger {
 public:
 	Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
-	virtual ~Logger();
-	virtual void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message);
+	virtual ~Logger() { }
+	virtual void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) { }
 
 	int16_t getServerType() const { return m_serverType; }
 	const string & getFormat() const { return m_format; }

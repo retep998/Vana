@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "AuthenticationPacket.h"
 #include "InterHeader.h"
-#include "IpUtilities.h"
 #include "MiscUtilities.h"
 #include "PacketReader.h"
 #include "Session.h"
@@ -36,21 +35,20 @@ bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketR
 		if (packet.getString() == pass) {
 			m_isAuthenticated = true;
 
-			IpUtilities::extractExternalIp(packet, m_externalIp);
+			setExternalIpInformation(getIp(), packet.getClassVector<ExternalIp>());
 
 			int8_t type = packet.get<int8_t>();
 			setType(type);
 			authenticated(type);
 		}
 		else {
-			server->log(LogTypes::ServerAuthFailure, "IP: " + IpUtilities::ipToString(getSession()->getIp()));
+			server->log(LogTypes::ServerAuthFailure, "IP: " + getSession()->getIp().toString());
 
 			getSession()->disconnect();
 			return false;
 		}
 	}
 	else if (!m_isAuthenticated) {
-		// Trying to do something while unauthenticated? DC!
 		getSession()->disconnect();
 		return false;
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,16 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Ip.h"
+#include "ExternalIp.h"
 #include "Types.h"
 #include <string>
-#include <vector>
-
-using std::string;
-using std::vector;
 
 class AbstractServerConnection;
 
 namespace AuthenticationPacket {
-	void sendPassword(AbstractServerConnection *connection, const string &pass, const IpMatrix &extIp);
+	void sendPassword(AbstractServerConnection *connection, const std::string &pass, const IpMatrix &extIp);
 }

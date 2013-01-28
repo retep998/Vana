@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.h"
 #include "InventoryHandler.h"
 #include "InventoryPacket.h"
-#include "IpUtilities.h"
 #include "ItemDataProvider.h"
 #include "KeyMaps.h"
 #include "LevelsPacket.h"
@@ -397,7 +396,7 @@ void Player::playerConnect(PacketReader &packet) {
 	Maps::addPlayer(this, m_map);
 
 	std::ostringstream x;
-	x << getName() << " (" << getId() << ") connected from " << IpUtilities::ipToString(getIp());
+	x << getName() << " (" << getId() << ") connected from " << getIp().toString();
 	ChannelServer::Instance()->log(LogTypes::Info, x.str());
 
 	setOnline(true);
@@ -532,7 +531,7 @@ void Player::changeSkillMacros(PacketReader &packet) {
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
 		const string &name = packet.getString();
-		bool shout = packet.getBool();
+		bool shout = packet.get<bool>();
 		int32_t skill1 = packet.get<int32_t>();
 		int32_t skill2 = packet.get<int32_t>();
 		int32_t skill3 = packet.get<int32_t>();

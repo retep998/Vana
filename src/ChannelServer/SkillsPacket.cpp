@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -172,7 +172,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Skills::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
-	packet.addBool(on);
+	packet.add<bool>(on);
 	player->getSession()->send(packet);
 	if (player->getActiveBuffs()->isUsingHide()) {
 		return;
@@ -183,6 +183,6 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(Skills::DarkKnight::Berserk);
 	packet.add<int8_t>(level);
-	packet.addBool(on);
+	packet.add<bool>(on);
 	player->getMap()->sendPacket(packet, player);
 }

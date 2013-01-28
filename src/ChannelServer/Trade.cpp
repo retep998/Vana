@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.h"
 #include "Player.h"
 #include "PlayerDataProvider.h"
+#include "TradeHandler.h"
 #include "Trades.h"
-#include "VersionConstants.h"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
 	m_sender(new TradeInfo()),

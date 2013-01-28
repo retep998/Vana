@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,8 +49,8 @@ void StringUtilities::runFlags(const opt_string &flags, function<void (const str
 
 void StringUtilities::runFlags(const string &flags, function<void (const string &)> func) {
 	if (flags.length() > 0) {
-		std::tokenizer tokens(flags, ",");
-		for (std::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
+		MiscUtilities::tokenizer tokens(flags, ",");
+		for (MiscUtilities::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
 			func(*iter);
 		}
 	}

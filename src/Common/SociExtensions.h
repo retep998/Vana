@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -105,7 +105,7 @@ namespace soci {
 		}
 	};
 
-#ifdef _WIN32
+#ifdef WIN32
 	// These conflict with the default SOCI lib, which we took care of for Windows
 	// The defaults were also fixed in the SOCI code repo, but it's unclear when there will be a real release
 	// Ergo, Linux may not run at all, but at least it compiles..?
@@ -290,10 +290,10 @@ namespace soci {
 	};
 
 	template <typename T>
-	struct type_conversion<std::optional<T>> {
+	struct type_conversion<MiscUtilities::optional<T>> {
 		typedef typename type_conversion<T>::base_type base_type;
 
-		static void from_base(const base_type &in, indicator ind, std::optional<T> &out) {
+		static void from_base(const base_type &in, indicator ind, MiscUtilities::optional<T> &out) {
 			if (ind == i_null) {
 				out.reset();
 			}
@@ -304,7 +304,7 @@ namespace soci {
 			}
 		}
 
-		static void to_base(const std::optional<T> &in, base_type &out, indicator &ind) {
+		static void to_base(const MiscUtilities::optional<T> &in, base_type &out, indicator &ind) {
 			if (in.is_initialized()) {
 				type_conversion<T>::to_base(in.get(), out, ind);
 			}

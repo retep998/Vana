@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2012 Vana Development Team
+Copyright (C) 2008-2013 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ class PacketReader;
 class Player;
 class Summon;
 
-class PlayerSummons : public IPacketSerializable<PlayerSummons>, boost::noncopyable {
+class PlayerSummons : public IPacketSerializable, boost::noncopyable {
 public:
 	PlayerSummons(Player *player) : m_player(player), m_summon(nullptr), m_puppet(nullptr) { }
 
