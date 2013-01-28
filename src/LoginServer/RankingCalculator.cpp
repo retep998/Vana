@@ -51,7 +51,8 @@ void RankingCalculator::setTimer() {
 void RankingCalculator::runThread() {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
 	// The std::thread object will be deleted immediately, but the thread will continue to run
-	unique_ptr<std::thread>(new std::thread(bind(&RankingCalculator::all)));
+	unique_ptr<std::thread> p(new std::thread(bind(&RankingCalculator::all)));
+	p->detach();
 }
 
 void RankingCalculator::all() {
