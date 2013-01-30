@@ -29,7 +29,7 @@ ExternalIp::ExternalIp(const std::string &addr, uint32_t ipv4SubnetMask) :
 
 ExternalIp::ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask) :
 	Ip(ipv4),
-	m_ipv4SubnetMask()
+	m_ipv4SubnetMask(ipv4SubnetMask)
 {
 }
 
