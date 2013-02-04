@@ -42,7 +42,7 @@ bool ManagementFunctions::map(Player *player, const string &args) {
 		}
 	}
 	else {
-		PlayerPacket::showMessage(player, "Current Map: " + lexical_cast<string>(player->getMap()), PlayerPacket::NoticeTypes::Blue);
+		PlayerPacket::showMessage(player, "Current Map: " + lexical_cast<string>(player->getMap()->getId()), PlayerPacket::NoticeTypes::Blue);
 	}
 	return true;
 }
