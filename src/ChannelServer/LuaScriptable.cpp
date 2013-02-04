@@ -1566,7 +1566,7 @@ int LuaExports::getMonth(lua_State *luaVm) {
 }
 
 int LuaExports::getNearestMinute(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getDistanceToNextMinuteMark(lua_tointeger(luaVm, 1)).count());
+	lua_pushinteger(luaVm, static_cast<int32_t>(TimeUtilities::getDistanceToNextMinuteMark(lua_tointeger(luaVm, 1)).count()));
 	return 1;
 }
 

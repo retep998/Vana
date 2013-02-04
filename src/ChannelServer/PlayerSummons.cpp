@@ -83,7 +83,7 @@ void PlayerSummons::write(PacketCreator &packet) const {
 	uint8_t level = 0;
 	if (m_summon != nullptr) {
 		summonId = m_summon->getSummonId();
-		timeLeft = getSummonTimeRemaining().count();
+		timeLeft = static_cast<int32_t>(getSummonTimeRemaining().count());
 		level = m_summon->getLevel();
 	}
 	packet.add<int32_t>(summonId);

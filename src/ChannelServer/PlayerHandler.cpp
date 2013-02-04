@@ -546,9 +546,16 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			break;
 		}
 		case Skills::DragonKnight::Sacrifice: {
-			int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
-			uint16_t hpDamage = static_cast<uint16_t>(attack.totalDamage * xProperty / 100);
-			player->getStats()->setHp(hpDamage > player->getStats()->getHp() ? 1 : hpDamage);
+			if (attack.totalDamage > 0) {
+				int16_t xProperty = player->getSkills()->getSkillInfo(skillId)->x;
+				int32_t hpDamage = static_cast<int32_t>(attack.totalDamage * xProperty / 100);
+				if (hpDamage > player->getStats()->getHp()) {
+					hpDamage = player->getStats()->getHp() - 1;
+				}
+				if (hpDamage > 0) {
+					player->getStats()->damageHp(hpDamage);
+				}
+			}
 			break;
 		}
 		case Skills::WhiteKnight::ChargeBlow: {

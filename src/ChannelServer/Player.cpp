@@ -690,8 +690,9 @@ void Player::acceptDeath(bool wheel) {
 	if (wheel) {
 		toMap = getMapId();
 	}
+	getActiveBuffs()->removeBuffs();
+	getStats()->checkHpMp();
 	getStats()->setHp(50, false);
-	getActiveBuffs()->removeBuff();
 	setMap(toMap);
 }
 
