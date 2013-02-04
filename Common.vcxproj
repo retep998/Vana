@@ -68,7 +68,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProgramFiles)/MySQL/MySQL Server $(MySqlVersion)/include;src/Common;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/core;$(LazurBeemz)/$(PlatformToolsetVersion)/soci-$(SociVersion)/backends/mysql;$(LazurBeemz)/$(PlatformToolsetVersion)/lua/include;$(LazurBeemz)/$(PlatformToolsetVersion)/Botan-$(BotanVersion)/build/include/;$(LazurBeemz)/$(PlatformToolsetVersion)/boost_$(BoostVersion)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
