@@ -48,13 +48,13 @@ private:
 	static Trades *singleton;
 	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
 
+	Timer::Container * getTimers() const { return m_container.get(); }
+	int32_t getNewId() { return m_tradeIds.next(); }
+	seconds_t getTimerSecondsRemaining(int32_t m_id);
+	void timeout(Player *sender);
+	void startTimeout(int32_t id, Player *sender);
+
 	std::unique_ptr<Timer::Container> m_container;
 	unordered_map<int32_t, std::shared_ptr<ActiveTrade>> m_trades;
 	LoopingId<int32_t> m_tradeIds;
-
-	Timer::Container * getTimers() const { return m_container.get(); }
-	int32_t getNewId() { return m_tradeIds.next(); }
-	int32_t checkTimer(int32_t m_id);
-	void timeout(Player *sender);
-	void startTimeout(int32_t id, Player *sender);
 };

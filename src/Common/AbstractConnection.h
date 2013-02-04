@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Session.h"
 #include "TimerContainer.h"
+#include "Types.h"
 #include <memory>
 #include <string>
 
@@ -42,11 +43,7 @@ public:
 	void setIp(const Ip &ip) { m_ip = ip; }
 	void setPinging(bool ping) { m_doesPing = ping; }
 	Timer::Container * getTimers() const { return m_timers.get(); }
-	uint32_t getLatency() const { return static_cast<uint32_t>(m_latency); }
-
-	// Times in milliseconds
-	const static uint32_t InitialPing = 60000; // Shouldn't be modified much; client launching may be slow
-	const static uint32_t PingTime = 15000; // Lower values (~15000) give better latency approximation but will disconnect quicker during lag
+	milliseconds_t getLatency() const { return m_latency; }
 protected:
 	Session *m_session;
 	Ip m_ip;
@@ -54,8 +51,8 @@ protected:
 	bool m_doesPing;
 private:
 	bool m_isPinged;
-	clock_t m_latency;
-	clock_t m_lastPing;
+	milliseconds_t m_latency;
+	time_point_t m_lastPing;
 	std::unique_ptr<Timer::Container> m_timers;
 };
 

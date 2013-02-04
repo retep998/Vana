@@ -24,14 +24,14 @@ struct ActiveBuff;
 struct ActiveMapBuff;
 
 namespace BuffsPacket {
-	void useSkill(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
+	void useSkill(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
 	void endSkill(Player *player, const ActiveBuff &playerSkill);
-	void giveDebuff(Player *player, uint8_t skillId, uint8_t level, int16_t time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
+	void giveDebuff(Player *player, uint8_t skillId, uint8_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
 	void endDebuff(Player *player, const ActiveBuff &playerSkill);
 
 	// Specific skills
-	void usePirateBuff(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
-	void useSpeedInfusion(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
-	void useMount(Player *player, int32_t skillId, int32_t time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId);
+	void usePirateBuff(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
+	void useSpeedInfusion(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
+	void useMount(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId);
 	void useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId);
 }

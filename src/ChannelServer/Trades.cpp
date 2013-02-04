@@ -42,7 +42,7 @@ int32_t Trades::newTrade(Player *start, Player *recv) {
 }
 
 void Trades::removeTrade(int32_t id) {
-	if (checkTimer(id) != 0) {
+	if (getTimerSecondsRemaining(id).count() > 0) {
 		stopTimeout(id);
 	}
 	Player *p = m_trades[id]->getSender();
@@ -62,9 +62,9 @@ ActiveTrade * Trades::getTrade(int32_t id) {
 	return (m_trades.find(id) != m_trades.end() ? m_trades[id].get() : nullptr);
 }
 
-int32_t Trades::checkTimer(int32_t id) {
+seconds_t Trades::getTimerSecondsRemaining(int32_t id) {
 	Timer::Id check(Timer::Types::TradeTimer, id, 0);
-	return getTimers()->checkTimer(check);
+	return getTimers()->getSecondsRemaining(check);
 }
 
 void Trades::timeout(Player *sender) {
@@ -79,5 +79,5 @@ void Trades::stopTimeout(int32_t id) {
 void Trades::startTimeout(int32_t id, Player *sender) {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
 	new Timer::Timer(bind(&Trades::timeout, this, sender),
-		tid, nullptr, TimeUtilities::fromNow(TradeTimeout * 1000));
+		tid, nullptr, seconds_t(TradeTimeout));
 }

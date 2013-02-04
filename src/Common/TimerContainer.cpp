@@ -17,21 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimerContainer.h"
 #include "Timer.h"
+#include <chrono>
 
 namespace Timer {
 
-int32_t Container::checkTimer(const Id &id) {
-	if (m_timers.find(id) != m_timers.end()) {
-		return (int32_t)(m_timers[id]->getTimeLeft() / 1000);
+seconds_t Container::getSecondsRemaining(const Id &id) {
+	auto iter = m_timers.find(id);
+	if (iter != m_timers.end()) {
+		return std::chrono::duration_cast<seconds_t>(iter->second->getTimeLeft());
 	}
-	return 0;
+	return seconds_t(0);
 }
 
-int64_t Container::checkTimer(const Id &id, bool msec) {
-	if (m_timers.find(id) != m_timers.end()) {
-		return m_timers[id]->getTimeLeft();
+milliseconds_t Container::getMillisecondsRemaining(const Id &id) {
+	auto iter = m_timers.find(id);
+	if (iter != m_timers.end()) {
+		return std::chrono::duration_cast<milliseconds_t>(iter->second->getTimeLeft());
 	}
-	return 0;
+	return milliseconds_t(0);
+}
+
+bool Container::isTimerRunning(const Id &id) {
+	return m_timers.find(id) != m_timers.end();
 }
 
 void Container::registerTimer(Timer *timer) {

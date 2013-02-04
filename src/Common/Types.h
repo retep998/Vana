@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "optional.hpp"
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <string>
 
@@ -61,6 +62,15 @@ typedef MiscUtilities::optional<std::string> opt_string;
 // Miscellaneous utility types
 typedef uint16_t header_t;
 typedef uint16_t port_t;
+typedef std::chrono::system_clock effective_clock_t;
+typedef effective_clock_t::duration duration_t;
+typedef effective_clock_t::time_point time_point_t;
+typedef std::chrono::nanoseconds nanoseconds_t;
+typedef std::chrono::microseconds microseconds_t;
+typedef std::chrono::milliseconds milliseconds_t;
+typedef std::chrono::seconds seconds_t;
+typedef std::chrono::minutes minutes_t;
+typedef std::chrono::hours hours_t;
 
 // Remove when VS2012 supports thread_local
 #ifdef WIN32

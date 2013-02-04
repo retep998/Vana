@@ -52,7 +52,7 @@ public:
 	void log(LogTypes::LogTypes type, const string &message);
 	bool isListening() const { return m_toListen; }
 	int16_t getServerType() const { return m_serverType; }
-	clock_t getStartTime() const { return m_startTime; }
+	const time_point_t & getStartTime() const { return m_startTime; }
 	IpMatrix getExternalIps() const { return m_externalIps; }
 	string getInterPassword() const { return m_interPassword; }
 	string getSalt() const { return m_salt; }
@@ -61,12 +61,12 @@ protected:
 	AbstractServer();
 
 	int16_t m_serverType;
-	clock_t m_startTime;
 	bool m_toListen;
 	LoginConfig m_loginConfig;
 	string m_interPassword;
 	string m_salt;
 	IpMatrix m_externalIps;
+	time_point_t m_startTime;
 	std::unique_ptr<Logger> m_logger;
 private:
 	typedef std::unordered_map<string, int32_t> ConstantMap;

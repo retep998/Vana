@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerPacket.h"
 #include "StringUtilities.h"
+#include <chrono>
 #include <iostream>
 
 using StringUtilities::lexical_cast;
@@ -46,31 +47,32 @@ bool MapFunctions::instruction(Player *player, const string &args) {
 
 bool MapFunctions::timer(Player *player, const string &args) {
 	if (args.length() != 0) {
-		int32_t time = atoi(args.c_str());
+		seconds_t time(atoi(args.c_str()));
 		std::ostringstream msg;
 		msg << "Stopped map timer.";
-		if (time > 0) {
-			int32_t seconds = time /= 60;
-			int32_t minutes = time /= 60;
-			int32_t hours = time /= 60;
+		if (time.count() > 0) {
 			msg.str("");
 			msg.clear();
 			msg << "Started map timer. Counting down from ";
 
-			if (hours > 0) {
-				msg << hours << " hours";
+			hours_t hours = std::chrono::duration_cast<hours_t>(time);
+			minutes_t minutes = std::chrono::duration_cast<minutes_t>(time - hours);
+			seconds_t seconds = std::chrono::duration_cast<seconds_t>(time - hours - minutes);
+
+			if (hours.count() > 0) {
+				msg << hours.count() << " hours";
 			}
-			if (minutes > 0) {
-				if (hours > 0) {
+			if (minutes.count() > 0) {
+				if (hours.count() > 0) {
 					msg << ", ";
 				}
-				msg << minutes << " minutes";
+				msg << minutes.count() << " minutes";
 			}
-			if (seconds > 0) {
-				if (hours > 0 || minutes > 0) {
+			if (seconds.count() > 0) {
+				if (hours.count() > 0 || minutes.count() > 0) {
 					msg << " and ";
 				}
-				msg << seconds << " seconds";
+				msg << seconds.count() << " seconds";
 			}
 			msg << "!";
 		}

@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
 #include "Pos.h"
+#include "Types.h"
 #include <string>
 
 using std::string;
@@ -88,11 +88,12 @@ struct ReactorSpawnInfo : public SpawnInfo {
 };
 
 struct Respawnable {
-	Respawnable() : spawnAt(-1), spawnId(0) { }
-	Respawnable(size_t spawnId, clock_t spawnAt) : spawnAt(spawnAt), spawnId(spawnId) { }
+	Respawnable() : spawnAt(seconds_t(0)), spawnId(0), spawn(false) { }
+	Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt(spawnAt), spawnId(spawnId), spawn(true) { }
 
 	size_t spawnId;
-	clock_t spawnAt;
+	time_point_t spawnAt;
+	bool spawn;
 };
 
 struct SeatInfo {

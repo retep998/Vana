@@ -175,7 +175,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 							else {
 								new Timer::Timer(bind(&MobHandler::handleMobSkill, mob, realSkill, level, mobSkill),
 									Timer::Id(Timer::Types::MobSkillTimer, mob->getMobId(), mob->getCounter()),
-									mob->getTimers(), TimeUtilities::fromNow(info->effectAfter));
+									mob->getTimers(), seconds_t(info->effectAfter));
 							}
 							used = true;
 						}

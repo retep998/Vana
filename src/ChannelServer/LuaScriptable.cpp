@@ -1418,7 +1418,7 @@ int LuaExports::showMapMessage(lua_State *luaVm) {
 int LuaExports::showMapTimer(lua_State *luaVm) {
 	int32_t mapId = lua_tointeger(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
-	Maps::getMap(mapId)->setMapTimer(time);
+	Maps::getMap(mapId)->setMapTimer(seconds_t(time));
 	return 0;
 }
 
@@ -1566,7 +1566,7 @@ int LuaExports::getMonth(lua_State *luaVm) {
 }
 
 int LuaExports::getNearestMinute(lua_State *luaVm) {
-	lua_pushinteger(luaVm, TimeUtilities::getNearestMinuteMark(lua_tointeger(luaVm, 1)));
+	lua_pushinteger(luaVm, TimeUtilities::getDistanceToNextMinuteMark(lua_tointeger(luaVm, 1)).count());
 	return 1;
 }
 
@@ -1793,7 +1793,7 @@ int LuaExports::banInstancePlayer(lua_State *luaVm) {
 
 int LuaExports::checkInstanceTimer(lua_State *luaVm) {
 	const string &name = lua_tostring(luaVm, 1);
-	lua_pushinteger(luaVm, getInstance(luaVm)->checkTimer(name));
+	lua_pushinteger(luaVm, static_cast<int32_t>(getInstance(luaVm)->getTimerSecondsRemaining(name).count()));
 	return 1;
 }
 
@@ -1812,7 +1812,7 @@ int LuaExports::createInstance(lua_State *luaVm) {
 		map = player->getMapId();
 		id = player->getId();
 	}
-	Instance *instance = new Instance(name, map, id, time, persistent, showTimer);
+	Instance *instance = new Instance(name, map, id, seconds_t(time), seconds_t(persistent), showTimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 
@@ -1878,7 +1878,7 @@ int LuaExports::getInstanceSignupCount(lua_State *luaVm) {
 }
 
 int LuaExports::getInstanceTime(lua_State *luaVm) {
-	lua_pushinteger(luaVm, getInstance(luaVm)->checkInstanceTimer());
+	lua_pushinteger(luaVm, static_cast<int32_t>(getInstance(luaVm)->checkInstanceTimer().count()));
 	return 1;
 }
 
@@ -1919,7 +1919,7 @@ int LuaExports::isInstanceMap(lua_State *luaVm) {
 }
 
 int LuaExports::isInstancePersistent(lua_State *luaVm) {
-	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence() != 0);
+	lua_pushboolean(luaVm, getInstance(luaVm)->getPersistence().count() != 0);
 	return 1;
 }
 
@@ -2022,7 +2022,7 @@ int LuaExports::setInstanceMax(lua_State *luaVm) {
 }
 
 int LuaExports::setInstancePersistence(lua_State *luaVm) {
-	getInstance(luaVm)->setPersistence(lua_tointeger(luaVm, 1));
+	getInstance(luaVm)->setPersistence(seconds_t(lua_tointeger(luaVm, 1)));
 	return 0;
 }
 
@@ -2032,7 +2032,7 @@ int LuaExports::setInstanceReset(lua_State *luaVm) {
 }
 
 int LuaExports::setInstanceTime(lua_State *luaVm) {
-	getInstance(luaVm)->setInstanceTimer(lua_tointeger(luaVm, 1));
+	getInstance(luaVm)->setInstanceTimer(seconds_t(lua_tointeger(luaVm, 1)));
 	return 0;
 }
 

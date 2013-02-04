@@ -300,10 +300,11 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 
 	int32_t mountId = parseMountInfo(player, skillId, level);
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
-	int32_t time = skill->time;
+	seconds_t time(skill->time);
+
 	switch (skillId) {
 		case Skills::DragonKnight::DragonRoar:
-			time = skill->y;
+			time = seconds_t(skill->y);
 			break;
 		case Skills::Beginner::MonsterRider:
 		case Skills::Noblesse::MonsterRider:
@@ -315,7 +316,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 			player->getActiveBuffs()->setMountInfo(skillId, mountId);
 			break;
 		case Skills::SuperGm::Hide:
-			time = 2100000; // Make sure that it doesn't end any time soon
+			time = seconds_t(2100000); // Make sure that it doesn't end any time soon
 			break;
 		case Skills::Spearman::HyperBody:
 		case Skills::SuperGm::HyperBody:
@@ -395,7 +396,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 				break;
 			case Skills::Marauder::EnergyCharge:
 			case Skills::ThunderBreaker::EnergyCharge:
-				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : 0), playerSkill, mapSkill);
+				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t(0)), playerSkill, mapSkill);
 				break;
 			case Skills::Buccaneer::SpeedInfusion:
 			case Skills::ThunderBreaker::SpeedInfusion:
@@ -426,7 +427,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	return true;
 }
 
-void Buffs::addBuff(Player *player, int32_t itemId, int32_t time) {
+void Buffs::addBuff(Player *player, int32_t itemId, const seconds_t &time) {
 	itemId *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
 	const vector<Buff> &buffs = parseBuffs(itemId, 0);
 	const ActiveBuff &playerSkill = parseBuffInfo(player, itemId, 0);
@@ -542,7 +543,7 @@ void Buffs::addDebuff(Player *player, uint8_t skillId, uint8_t level) {
 		return;
 	}
 
-	int16_t time = SkillDataProvider::Instance()->getMobSkill(skillId, level)->time;
+	seconds_t time(SkillDataProvider::Instance()->getMobSkill(skillId, level)->time);
 	MobAilmentInfo *mobSkillsInfo = BuffDataProvider::Instance()->getMobSkillInfo(skillId);
 
 	const vector<Buff> &buffs = parseMobBuffs(skillId);

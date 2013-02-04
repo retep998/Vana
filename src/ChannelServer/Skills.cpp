@@ -504,7 +504,7 @@ void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 	}
 	new Timer::Timer(bind(&Skills::stopCooldown, player, skillId),
 		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
-		player->getTimers(), TimeUtilities::fromNow(coolTime * 1000));
+		player->getTimers(), seconds_t(coolTime));
 }
 
 void Skills::stopCooldown(Player *player, int32_t skillId) {
@@ -515,21 +515,21 @@ void Skills::stopCooldown(Player *player, int32_t skillId) {
 	}
 
 	Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
-	if (player->getTimers()->checkTimer(id) > 0) {
+	if (player->getTimers()->isTimerRunning(id)) {
 		player->getTimers()->removeTimer(id);
 	}
 }
 
 bool Skills::isCooling(Player *player, int32_t skillId) {
 	Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
-	return player->getTimers()->checkTimer(id) > 0;
+	return player->getTimers()->isTimerRunning(id);
 }
 
 int16_t Skills::getCooldownTimeLeft(Player *player, int32_t skillId) {
 	int16_t coolTime = 0;
 	if (isCooling(player, skillId)) {
 		Timer::Id id(Timer::Types::CoolTimer, skillId, 0);
-		coolTime = static_cast<int16_t>(player->getTimers()->checkTimer(id));
+		coolTime = static_cast<int16_t>(player->getTimers()->getSecondsRemaining(id).count());
 	}
 	return coolTime;
 }

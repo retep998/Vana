@@ -83,16 +83,16 @@ void Thread::runThread() {
 		// Find minimum wakeup time
 		Timer *minTimer = findMin();
 		// Be certain the time stays in milliseconds
-		int64_t msec = (minTimer == nullptr) ? 1000000000 : minTimer->getRunAt() - TimeUtilities::getTickCount();
-		if (msec <= 0) {
+		milliseconds_t msec = (minTimer == nullptr) ? milliseconds_t(1000000000) : std::chrono::duration_cast<milliseconds_t>(minTimer->getRunAt() - TimeUtilities::getNow());
+		if (msec.count() <= 0) {
 			minTimer->run();
 			continue;
 		}
 
 #ifdef WIN32
-		if (m_mainLoopCondition.wait_for(l, std::chrono::milliseconds(msec))) {
+		if (m_mainLoopCondition.wait_for(l, msec)) {
 #else
-		if (m_mainLoopCondition.wait_for(l, std::chrono::milliseconds(msec)) == std::cv_status::no_timeout) {
+		if (m_mainLoopCondition.wait_for(l, msec) == std::cv_status::no_timeout) {
 #endif
 			continue;
 		}

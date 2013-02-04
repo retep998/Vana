@@ -80,7 +80,7 @@ void MapleTvs::parseBuffer() {
 
 		Timer::Id id(Timer::Types::MapleTvTimer, message.senderId, message.counter);
 		new Timer::Timer(bind(&MapleTvs::parseBuffer, this),
-			id, getTimers(), TimeUtilities::fromNow(message.time * 1000));
+			id, getTimers(), seconds_t(message.time));
 	}
 	else {
 		m_hasMessage = false;
@@ -95,16 +95,16 @@ void MapleTvs::sendPacket(PacketCreator &packet) {
 	}
 }
 
-int32_t MapleTvs::checkMessageTimer() const {
+seconds_t MapleTvs::checkMessageTimer() const {
 	Timer::Id id(Timer::Types::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter);
-	return getTimers()->checkTimer(id);
+	return getTimers()->getSecondsRemaining(id);
 }
 
 void MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) {
 	 getMapleTvPacket(m_currentMessage, packet, checkMessageTimer());
 }
 
-void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, int32_t timeLeft) {
+void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft) {
 	packet.add<header_t>(SMSG_MAPLETV_ON);
 	packet.add<int8_t>(message.hasReceiver ? 3 : 1);
 	packet.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000)); // Positively will be within -128 to 127
@@ -116,7 +116,7 @@ void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, 
 	packet.addString(message.msg3);
 	packet.addString(message.msg4);
 	packet.addString(message.msg5);
-	packet.add<int32_t>(timeLeft == 0 ? message.time : timeLeft);
+	packet.add<int32_t>(timeLeft.count() == 0 ? message.time : static_cast<int32_t>(timeLeft.count()));
 	if (message.hasReceiver) {
 		packet.addBuffer(message.recvDisplay);
 	}

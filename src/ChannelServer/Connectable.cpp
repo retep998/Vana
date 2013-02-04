@@ -21,14 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 #include <ctime>
 
-using TimeUtilities::getTickCount;
-
 Connectable * Connectable::singleton = nullptr;
 
 void Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) {
 	ConnectingPlayer player;
 	player.connectIp = ip;
-	player.connectTime = getTickCount();
+	player.connectTime = TimeUtilities::getNow();
 
 	uint16_t pSize = packet.get<uint16_t>();
 	if (pSize > 0) {
@@ -48,7 +46,7 @@ bool Connectable::checkPlayer(int32_t id, const Ip &ip) {
 	bool correct = false;
 	if (m_map.find(id) != m_map.end()) {
 		ConnectingPlayer &t = m_map[id];
-		if (t.connectIp == ip && (getTickCount() - t.connectTime) < MaxMilliseconds) {
+		if (t.connectIp == ip && std::chrono::duration_cast<milliseconds_t>(TimeUtilities::getNow() - t.connectTime).count() < MaxMilliseconds) {
 			correct = true;
 		}
 	}

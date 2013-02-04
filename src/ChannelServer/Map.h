@@ -162,14 +162,14 @@ public:
 
 	// Timer stuff
 	void respawn(int8_t types = SpawnTypes::All);
-	void checkSpawn(clock_t time);
+	void checkSpawn(time_point_t time);
 	void checkShadowWeb();
 	void checkMists();
-	void clearDrops(clock_t time);
+	void clearDrops(time_point_t time);
 	void runTimer();
 	void mapTick();
 	void timeMob(bool firstLoad = true);
-	void setMapTimer(int32_t t);
+	void setMapTimer(const seconds_t &timer);
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	// Show all map objects
@@ -198,10 +198,8 @@ private:
 	// Data
 	bool m_ship;
 	int32_t m_id;
-	int32_t m_timer;
 	int32_t m_timeMob;
 	int32_t m_spawnMobs;
-	time_t m_timerStart;
 	string m_music;
 	Instance *m_instance;
 	LoopingId<int32_t> m_objectIds;
@@ -218,6 +216,8 @@ private:
 	unordered_map<string, PortalInfo> m_portals;
 	unordered_map<int8_t, PortalInfo> m_spawnPoints;
 	unordered_map<string, Pos> m_reactorPositions;
+	seconds_t m_timer;
+	time_point_t m_timerStart;
 
 	// Shorter-lived objects
 	vector<Player *> m_players;

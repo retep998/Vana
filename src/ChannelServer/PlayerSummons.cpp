@@ -40,7 +40,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
 	new Timer::Timer(bind(&SummonHandler::removeSummon, m_player, puppet, false, SummonMessages::OutOfTime, true),
-		id, m_player->getTimers(), TimeUtilities::fromNow(time * 1000));
+		id, m_player->getTimers(), seconds_t(time));
 }
 
 void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
@@ -72,9 +72,9 @@ Summon * PlayerSummons::getSummon(int32_t summonId) {
 	return nullptr;
 }
 
-int32_t PlayerSummons::getSummonTimeRemaining() const {
+seconds_t PlayerSummons::getSummonTimeRemaining() const {
 	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
-	return m_player->getTimers()->checkTimer(id);
+	return m_player->getTimers()->getSecondsRemaining(id);
 }
 
 void PlayerSummons::write(PacketCreator &packet) const {
@@ -83,7 +83,7 @@ void PlayerSummons::write(PacketCreator &packet) const {
 	uint8_t level = 0;
 	if (m_summon != nullptr) {
 		summonId = m_summon->getSummonId();
-		timeLeft = getSummonTimeRemaining();
+		timeLeft = getSummonTimeRemaining().count();
 		level = m_summon->getLevel();
 	}
 	packet.add<int32_t>(summonId);

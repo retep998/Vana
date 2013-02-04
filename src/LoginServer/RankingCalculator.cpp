@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.h"
 #include "InitializeCommon.h"
 #include "JobConstants.h"
+#include "StopWatch.h"
 #include "StringUtilities.h"
 #include "Timer.h"
 #include "TimerThread.h"
@@ -43,7 +44,7 @@ std::mutex RankingCalculator::RankingsMutex;
 void RankingCalculator::setTimer() {
 	/*
 	new Timer::Timer(&RankingCalculator::runThread,
-		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::fromNow(TimeUtilities::getNearestMinuteMark(5)), 5 * 60 * 1000);
+		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::getNowWithTimeAdded(TimeUtilities::getNearestMinuteMark(5)), 5 * 60 * 1000);
 	*/
 	// Calculate ranking every 1 hour, starting on the hour
 }
@@ -61,7 +62,7 @@ void RankingCalculator::all() {
 	if (!l) return;
 
 	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... " << std::endl;
-	clock_t startTime = TimeUtilities::getTickCount();
+	StopWatch sw;
 
 	soci::session &sql = Database::getCharDb();
 	RankPlayer out;
@@ -154,8 +155,7 @@ void RankingCalculator::all() {
 		}
 	}
 
-	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
-	std::cout << "Calculating rankings completed in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl;
+	std::cout << "Calculating rankings completed in " << std::setprecision(3) << sw.elapsed<milliseconds_t>() / 1000.f << " seconds!" << std::endl;
 
 	l.unlock();
 }

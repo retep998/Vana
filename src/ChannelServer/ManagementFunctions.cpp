@@ -63,7 +63,7 @@ bool ManagementFunctions::lag(Player *player, const string &args) {
 	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+)", matches)) {
 		string target = matches[1];
 		if (Player *p = PlayerDataProvider::Instance()->getPlayer(target)) {
-			PlayerPacket::showMessage(player, p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency()) + "ms", PlayerPacket::NoticeTypes::Blue);
+			PlayerPacket::showMessage(player, p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency().count()) + "ms", PlayerPacket::NoticeTypes::Blue);
 		}
 		else {
 			PlayerPacket::showMessage(player, "Player not found.", PlayerPacket::NoticeTypes::Red);

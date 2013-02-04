@@ -23,17 +23,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "Timer.h"
 #include "TimeUtilities.h"
+#include <chrono>
 #include <functional>
 #include <iostream>
 
 using std::bind;
+
+const milliseconds_t InitialPing = milliseconds_t(60000);
+const milliseconds_t PingTime = milliseconds_t(15000);
 
 AbstractConnection::AbstractConnection() :
 	m_isServer(false),
 	m_isPinged(false),
 	m_doesPing(true),
 	m_latency(InitialPing),
-	m_lastPing(InitialPing),
+	m_lastPing(),
 	m_timers(new Timer::Container),
 	m_ip(0)
 {
@@ -54,7 +58,8 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 					return;
 				}
 				m_isPinged = false;
-				m_latency = (clock() - m_lastPing) / 2; // This is for the trip to and from, so latency is averaged between them
+				// This is for the trip to and from, so latency is averaged between them
+				m_latency = std::chrono::duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
 				break;
 		}
 		handleRequest(packet);
@@ -67,7 +72,7 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 void AbstractConnection::setTimer() {
 	new Timer::Timer(bind(&AbstractConnection::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), TimeUtilities::fromNow(InitialPing), PingTime);
+		getTimers(), InitialPing, PingTime);
 }
 
 void AbstractConnection::ping() {
@@ -79,7 +84,7 @@ void AbstractConnection::ping() {
 		}
 
 		m_isPinged = true;
-		m_lastPing = clock();
+		m_lastPing = TimeUtilities::getNow();
 		PingPacket::ping(this);
 	}
 }

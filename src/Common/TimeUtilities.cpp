@@ -46,7 +46,7 @@ int64_t TimeUtilities::timeToTick(time_t time) {
 	ticks += (timeInfo->tm_min * 60);
 	ticks += (timeInfo->tm_hour * 3600);
 	ticks += (((int64_t) timeInfo->tm_yday + leapDays) * 86400);
-	ticks += (int64_t) years * 86400 * 365; // Exluding leap years
+	ticks += (int64_t) years * 86400 * 365; // Excluding leap years
 
 	ticks *= 10000000; // Convert to 100-nanoseconds
 	return ticks;
@@ -154,13 +154,6 @@ int32_t TimeUtilities::getWeek(time_t ctime) {
 	return result;
 }
 
-int32_t TimeUtilities::getNearestMinuteMark(int32_t interval, time_t ctime) {
-	// Returns the closest interval minute mark in seconds
-	std::tm *timeInfo = localtime(&ctime);
-	int32_t result = (((timeInfo->tm_min / interval) + 1) * interval * 60);
-	return result;
-}
-
 bool TimeUtilities::isDst(time_t ctime) {
 	std::tm *timeInfo = localtime(&ctime);
 	return (timeInfo->tm_isdst > 0);
@@ -208,27 +201,3 @@ int64_t TimeUtilities::addDaysToTicks(int64_t ticks, int16_t days) {
 	// For expiration time increases
 	return ticks + (days * 24 * 60 * 60);
 }
-
-#ifdef WIN32
-# include <windows.h>
-uint32_t TimeUtilities::getTickCount() {
-	return GetTickCount();
-}
-#else
-# include <sys/times.h>
-# include <unistd.h>
-uint32_t TimeUtilities::getTickCount() {
-	tms tm;
-
-	// Note:
-	// CLOCKS_PER_SEC is always 1,000,000
-	// CLK_TCK is the real vlaue (deprecated)
-	// sysconf(_SC_CLK_TCK) is the current way of getting CLK_TCK
-	uint32_t clkTck = sysconf(_SC_CLK_TCK);
-
-	if (clkTck < 1000) {
-		return times(&tm) * (1000 / clkTck);
-	}
-	return times(&tm) * (clkTck / 1000);
-}
-#endif

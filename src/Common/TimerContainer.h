@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TimerId.h"
 #include "TimerTypes.h"
+#include "Types.h"
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -32,8 +33,9 @@ using std::unordered_map;
 
 class Container {
 public:
-	int32_t checkTimer(const Id &id);
-	int64_t checkTimer(const Id &id, bool msec);
+	seconds_t getSecondsRemaining(const Id &id);
+	milliseconds_t getMillisecondsRemaining(const Id &id);
+	bool isTimerRunning(const Id &id);
 	void registerTimer(Timer *timer);
 	void removeTimer(const Id &id);
 private:
