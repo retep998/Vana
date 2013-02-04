@@ -62,9 +62,15 @@ void PlayerActiveBuffs::removeBuff(int32_t skill, bool fromTimer) {
 	m_buffs.remove(skill);
 }
 
-void PlayerActiveBuffs::removeBuff() {
+void PlayerActiveBuffs::removeBuffs() {
 	while (m_buffs.size() > 0) {
-		removeBuff(*m_buffs.begin());
+		int32_t skillId = *m_buffs.begin();
+		removeBuff(skillId);
+		if (skillId == Skills::Spearman::HyperBody) {
+			m_player->getStats()->setHyperBody(0, 0);
+			m_player->getStats()->setHp(m_player->getStats()->getHp());
+			m_player->getStats()->setMp(m_player->getStats()->getMp());
+		}
 	}
 }
 
