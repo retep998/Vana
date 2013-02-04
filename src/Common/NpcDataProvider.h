@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::unordered_map;
 
 struct NpcData {
-	NpcData() : isMapleTv(false), isGuildRank(false) { }
+	NpcData() : isMapleTv(false), isGuildRank(false), storageCost(0) { }
 	int32_t storageCost;
 	bool isMapleTv;
 	bool isGuildRank;
