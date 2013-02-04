@@ -142,17 +142,17 @@ void Mob::initMob() {
 	if (m_info->hpRecovery > 0) {
 		new Timer::Timer(std::bind(&Mob::naturalHealHp, this, m_info->hpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
-			getTimers(), 0, 10 * 1000);
+			getTimers(), seconds_t(0), seconds_t(10));
 	}
 	if (m_info->mpRecovery > 0) {
 		new Timer::Timer(std::bind(&Mob::naturalHealMp, this, m_info->mpRecovery),
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
-			getTimers(), 0, 10 * 1000);
+			getTimers(), seconds_t(0), seconds_t(10));
 	}
 	if (m_info->removeAfter > 0) {
 		new Timer::Timer(std::bind(&Mob::applyDamage, this, 0, m_info->hp, false),
 			Timer::Id(Timer::Types::MobRemoveTimer, m_mobId, m_id),
-			map->getTimers(), TimeUtilities::fromNow(m_info->removeAfter * 1000));
+			map->getTimers(), seconds_t(m_info->removeAfter));
 	}
 }
 
@@ -224,7 +224,7 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 				for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
 					new Timer::Timer(std::bind(properOverload, spawnIter->second, true),
 						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
-						nullptr, TimeUtilities::fromNow(400));
+						nullptr, milliseconds_t(400));
 				}
 			}
 			else {
@@ -321,13 +321,13 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				// Damage timer for poison(s)
 				new Timer::Timer(std::bind(&Mob::applyDamage, this, playerId, statusInfo[i].val, true),
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
-					getTimers(), 0, 1000);
+					getTimers(), seconds_t(0), seconds_t(1000));
 				break;
 		}
 
 		new Timer::Timer(std::bind(&Mob::removeStatus, this, cStatus, true),
 			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
-			getTimers(), TimeUtilities::fromNow(statusInfo[i].time * 1000));
+			getTimers(), seconds_t(statusInfo[i].time));
 	}
 	// Calculate new status mask
 	m_status = 0;
@@ -447,9 +447,9 @@ void Mob::die(Player *player, bool fromExplosion) {
 
 	endControl();
 
-	Timer::Id tid(Timer::Types::MobRemoveTimer, m_mobId, m_id);
-	if (map->getTimers()->checkTimer(tid) > 0) {
-		map->getTimers()->removeTimer(tid);
+	Timer::Id timerId(Timer::Types::MobRemoveTimer, m_mobId, m_id);
+	if (map->getTimers()->isTimerRunning(timerId)) {
+		map->getTimers()->removeTimer(timerId);
 	}
 
 	int32_t highestDamager = giveExp(player);

@@ -93,7 +93,7 @@ void Initializing::checkSchemaVersion(bool update) {
 
 void Initializing::setUsersOffline(int32_t onlineId) {
 	std::cout << "Resetting online status of players..." << std::endl;
-	clock_t startTime = TimeUtilities::getTickCount();
+	time_point_t startTime = TimeUtilities::getNow();
 
 	Database::getCharDb().once
 		<< "UPDATE user_accounts u "
@@ -104,6 +104,6 @@ void Initializing::setUsersOffline(int32_t onlineId) {
 		<< "WHERE u.online = :online",
 		soci::use(onlineId, "online");
 
-	float loadingTime = (TimeUtilities::getTickCount() - startTime) / 1000.0f;
-	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
+	milliseconds_t::rep loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), startTime);
+	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
 }

@@ -40,9 +40,9 @@ public:
 	void write(PacketCreator &packet) const;
 	void read(PacketReader &packet);
 private:
+	seconds_t getSummonTimeRemaining() const;
+
 	Player *m_player;
 	Summon *m_summon;
 	Summon *m_puppet;
-
-	int32_t getSummonTimeRemaining() const;
 };

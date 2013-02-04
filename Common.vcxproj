@@ -186,6 +186,7 @@
     <ClInclude Include="src\Common\SkillDataObjects.h" />
     <ClInclude Include="src\Common\SociExtensions.h" />
     <ClInclude Include="src\Common\SqlLogger.h" />
+    <ClInclude Include="src\Common\StopWatch.h" />
     <ClInclude Include="src\Common\TauswortheGenerator.h" />
     <ClInclude Include="src\Common\Timer.h" />
     <ClInclude Include="src\Common\TimerContainer.h" />

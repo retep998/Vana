@@ -46,6 +46,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctime>
 #include <functional>
 #include <iostream>
+#include <stdexcept>
 
 using std::bind;
 
@@ -55,7 +56,6 @@ Map::Map(MapInfoPtr info, int32_t id) :
 	m_objectIds(1000),
 	m_instance(nullptr),
 	m_timer(0),
-	m_timerStart(0),
 	m_timeMob(0),
 	m_spawnMobs(-1),
 	m_music(info->defaultMusic),
@@ -64,11 +64,11 @@ Map::Map(MapInfoPtr info, int32_t id) :
 	// Dynamic loading, start the map timer once the object is created
 	new Timer::Timer(bind(&Map::runTimer, this),
 		Timer::Id(Timer::Types::MapTimer, id, 0),
-		getTimers(), 0, 10 * 1000);
+		getTimers(), seconds_t(0), seconds_t(10));
 
 	new Timer::Timer(bind(&Map::mapTick, this),
 		Timer::Id(Timer::Types::MapTimer, id, 10),
-		getTimers(), 0, 1000);
+		getTimers(), seconds_t(0), seconds_t(1));
 }
 
 // Map info
@@ -145,11 +145,11 @@ void Map::addPortal(const PortalInfo &portal) {
 void Map::addTimeMob(TimeMobPtr info) {
 	new Timer::Timer(bind(&Map::timeMob, this, false),
 		Timer::Id(Timer::Types::MapTimer, getId(), 1),
-		getTimers(), TimeUtilities::nthSecondOfHour(0), 60 * 60 * 1000); // Check once per hour
+		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 
 	new Timer::Timer(bind(&Map::timeMob, this, true),
 		Timer::Id(Timer::Types::MapTimer, getId(), 2),
-		getTimers(), TimeUtilities::fromNow(3 * 1000), 0); // First check
+		getTimers(), seconds_t(3)); // First check
 
 	m_timeMobInfo = info;
 }
@@ -166,11 +166,11 @@ void Map::addPlayer(Player *player) {
 	else {
 		GmPacket::beginHide(player);
 	}
-	if (m_timer > 0) {
-		MapPacket::showTimer(player, m_timer - static_cast<int32_t>(time(nullptr) - m_timerStart));
+	if (m_timer.count() > 0) {
+		MapPacket::showTimer(player, m_timer - std::chrono::duration_cast<seconds_t>(TimeUtilities::getNow() - m_timerStart));
 	}
 	else if (Instance *i = getInstance()) {
-		if (i->showTimer() && i->checkInstanceTimer() > 0) {
+		if (i->showTimer() && i->checkInstanceTimer().count() > 0) {
 			MapPacket::showTimer(player, i->checkInstanceTimer());
 		}
 	}
@@ -300,7 +300,7 @@ void Map::removeReactor(uint32_t id) {
 	ReactorSpawnInfo *info = &m_reactorSpawns[id];
 	if (info->time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
-		clock_t reactorRespawn = info->time * 1000 + TimeUtilities::getTickCount();
+		time_point_t reactorRespawn = TimeUtilities::getNowWithTimeAdded(seconds_t(info->time));
 		m_reactorRespawns.push_back(Respawnable(id, reactorRespawn));
 	}
 }
@@ -496,10 +496,10 @@ void Map::updateMobControl(Mob *mob, bool spawn, Player *display) {
 void Map::removeMob(int32_t id, int32_t spawnId) {
 	if (m_mobs.find(id) != m_mobs.end()) {
 		if (spawnId >= 0 && m_mobSpawns[spawnId].time != -1) {
-			// Add spawn point to respawns if mob was spawned by a spawn point.
-			clock_t spawnTime = m_mobSpawns[spawnId].time * 1000 * (Randomizer::Instance()->randInt(200, 100)) / 100;
+			// Add spawn point to respawns if mob was spawned by a spawn point
 			// Randomly spawn between 1x and 2x the spawn time
-			spawnTime += TimeUtilities::getTickCount();
+			seconds_t timeModifier = seconds_t(m_mobSpawns[spawnId].time * (Randomizer::Instance()->randInt(200, 100)) / 100);
+			time_point_t spawnTime = TimeUtilities::getNowWithTimeAdded<seconds_t>(timeModifier);
 			m_mobRespawns.push_back(Respawnable(spawnId, spawnTime));
 			m_mobSpawns[spawnId].spawned = false;
 		}
@@ -649,7 +649,7 @@ void Map::addMist(Mist *mist) {
 
 	new Timer::Timer(bind(&Map::removeMist, this, mist),
 		Timer::Id(Timer::Types::MistTimer, mist->getId(), 0),
-		getTimers(), TimeUtilities::fromNow(mist->getTime() * 1000));
+		getTimers(), seconds_t(mist->getTime()));
 
 	MapPacket::spawnMist(getId(), mist);
 }
@@ -711,7 +711,7 @@ void Map::respawn(int8_t types) {
 	}
 }
 
-void Map::checkSpawn(clock_t time) {
+void Map::checkSpawn(time_point_t time) {
 	Respawnable *respawn;
 
 	for (size_t i = 0; i < m_mobRespawns.size(); ++i) {
@@ -772,14 +772,14 @@ void Map::checkMists() {
 	}
 }
 
-void Map::clearDrops(clock_t time) {
+void Map::clearDrops(time_point_t time) {
 	// Clear drops based on how long they have been in the map
 	std::unique_lock<std::recursive_mutex> l(m_dropsMutex);
-	time -= 180000; // Drops disappear after 3 minutes
+	time -= minutes_t(3); // Drops disappear after 3 minutes
 	unordered_map<int32_t, Drop *> drops = m_drops;
 	for (unordered_map<int32_t, Drop *>::iterator iter = drops.begin(); iter != drops.end(); ++iter) {
 		if (iter->second != nullptr) {
-			if (iter->second->getDropped() < time) {
+			if (iter->second->getDroppedAtTime() < time) {
 				iter->second->removeDrop();
 			}
 		}
@@ -787,7 +787,7 @@ void Map::clearDrops(clock_t time) {
 }
 
 void Map::runTimer() {
-	clock_t time = TimeUtilities::getTickCount();
+	time_point_t time = TimeUtilities::getNow();
 	checkSpawn(time);
 	clearDrops(time);
 	checkMists();
@@ -832,17 +832,19 @@ void Map::timeMob(bool firstLoad) {
 	}
 }
 
-void Map::setMapTimer(int32_t t) {
-	if (t > 0 && m_timer != 0) {
-		return;
+void Map::setMapTimer(const seconds_t &timer) {
+	if (timer.count() > 0 && m_timer.count() != 0) {
+		throw std::runtime_error("Timer already executing on map " + StringUtilities::lexical_cast<string>(getId()));
 	}
-	m_timer = t;
-	m_timerStart = time(nullptr);
-	MapPacket::showTimer(getId(), t);
-	if (t > 0) {
-		new Timer::Timer(bind(&Map::setMapTimer, this, 0),
+
+	m_timer = timer;
+	m_timerStart = TimeUtilities::getNow();
+
+	MapPacket::showTimer(getId(), timer);
+	if (timer.count() > 0) {
+		new Timer::Timer(bind(&Map::setMapTimer, this, seconds_t(0)),
 			Timer::Id(Timer::Types::MapTimer, getId(), 25),
-			getTimers(), TimeUtilities::fromNow(t * 1000));
+			getTimers(), timer);
 	}
 }
 
@@ -942,13 +944,13 @@ void Map::showMessage(const string &message, int8_t type) {
 
 bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string &message) {
 	Timer::Id timerId(Timer::Types::WeatherTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
-	if (getTimers()->checkTimer(timerId) != 0) {
+	if (getTimers()->isTimerRunning(timerId)) {
 		// Hacking
 		return false;
 	}
 
 	MapPacket::changeWeather(getId(), adminWeather, itemId, message);
 	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
-		timerId, getTimers(), TimeUtilities::fromNow(time * 1000));
+		timerId, getTimers(), seconds_t(time));
 	return true;
 }

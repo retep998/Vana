@@ -224,12 +224,12 @@ void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showTimer(int32_t mapId, int32_t sec) {
+void MapPacket::showTimer(int32_t mapId, const seconds_t &sec) {
 	PacketCreator packet;
-	if (sec > 0) {
+	if (sec.count() > 0) {
 		packet.add<header_t>(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
-		packet.add<int32_t>(sec);
+		packet.add<int32_t>(static_cast<int32_t>(sec.count()));
 	}
 	else {
 		packet.add<header_t>(SMSG_TIMER_OFF);
@@ -237,12 +237,12 @@ void MapPacket::showTimer(int32_t mapId, int32_t sec) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MapPacket::showTimer(Player *player, int32_t sec) {
+void MapPacket::showTimer(Player *player, const seconds_t &sec) {
 	PacketCreator packet;
-	if (sec > 0) {
+	if (sec.count() > 0) {
 		packet.add<header_t>(SMSG_TIMER);
 		packet.add<int8_t>(0x02);
-		packet.add<int32_t>(sec);
+		packet.add<int32_t>(static_cast<int32_t>(sec.count()));
 	}
 	else {
 		packet.add<header_t>(SMSG_TIMER_OFF);

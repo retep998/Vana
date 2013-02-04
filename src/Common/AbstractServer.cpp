@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.h"
 #include "SqlLogger.h"
 #include "TimeUtilities.h"
+#include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -37,7 +38,7 @@ AbstractServer::AbstractServer()
 }
 
 void AbstractServer::initialize() {
-	m_startTime = TimeUtilities::getTickCount();
+	m_startTime = TimeUtilities::getNow();
 
 	ConfigFile config("conf/connection_properties.lua");
 
@@ -125,6 +126,6 @@ void AbstractServer::log(LogTypes::LogTypes type, const string &message) {
 }
 
 void AbstractServer::displayLaunchTime() const {
-	float loadingTime = (TimeUtilities::getTickCount() - getStartTime()) / 1000.0f;
-	std::cout << "Started in " << std::setprecision(3) << loadingTime << " seconds!" << std::endl << std::endl;
+	milliseconds_t::rep loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), getStartTime());
+	std::cout << "Started in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
 }

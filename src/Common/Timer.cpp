@@ -22,18 +22,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-Timer::Timer(function<void ()> func, const Id &id, Container *container, int64_t runAt, clock_t repeat) :
+Timer::Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow) :
 	m_id(id),
 	m_container(container),
-	m_runAt(runAt),
-	m_repeat(repeat),
+	m_repeat(false),
 	m_function(func)
 {
+	init(differenceFromNow);
+}
+
+Timer::Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat) :
+	m_id(id),
+	m_container(container),
+	m_repeat(true),
+	m_repeatTime(repeat),
+	m_function(func)
+{
+	init(differenceFromNow);
+}
+
+void Timer::init(const duration_t &differenceFromNow) {
+	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);
+
 	if (!m_container) {
 		// No container specified, use the central container
 		m_container = Thread::Instance()->getContainer();
 	}
-	if (!m_runAt) {
+	if (m_runAt <= TimeUtilities::getNow()) {
 		reset();
 	}
 	else {
@@ -60,12 +75,12 @@ void Timer::run() {
 }
 
 void Timer::reset() {
-	m_runAt = m_repeat + TimeUtilities::getTickCount();
+	m_runAt = TimeUtilities::getNowWithTimeAdded(m_repeatTime);
 	Thread::Instance()->forceReSort();
 }
 
-int64_t Timer::getTimeLeft() const {
-	return m_runAt - TimeUtilities::getTickCount();
+duration_t Timer::getTimeLeft() const {
+	return m_runAt - TimeUtilities::getNow();
 }
 
 }

@@ -18,31 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <chrono>
+#include <ctime>
 
-namespace Timer {
-
-struct Types {
-	enum : uint32_t {
-		BuffTimer,
-		CoolTimer,
-		InstanceTimer,
-		MapleTvTimer,
-		MapTimer,
-		MistTimer,
-		MobHealTimer,
-		MobRemoveTimer,
-		MobStatusTimer,
-		MobSkillTimer,
-		PetTimer,
-		PickpocketTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		SpongeCleanupTimer,
-		TradeTimer,
-		WeatherTimer
-	};
+class StopWatch {
+public:
+	StopWatch() : m_start(effective_clock_t::now()) { }
+	void restart() { m_start = effective_clock_t::now(); }
+	template <typename T>
+	typename T::rep elapsed() const { return std::chrono::duration_cast<T>(effective_clock_t::now() - m_start).count(); }
+private:
+	time_point_t m_start;
 };
-
-}

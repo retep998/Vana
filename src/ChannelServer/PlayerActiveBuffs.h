@@ -71,10 +71,10 @@ public:
 		{ }
 
 	// Buff handling
-	void addBuff(int32_t skill, int32_t time);
+	void addBuff(int32_t skill, const seconds_t &time);
 	void removeBuff(int32_t skill, bool fromTimer = false);
 	void removeBuff();
-	int32_t buffTimeLeft(int32_t skill) const;
+	seconds_t getBuffSecondsRemaining(int32_t skill) const;
 	list<int32_t> getBuffs() const { return m_buffs; }
 	void dispelBuffs();
 

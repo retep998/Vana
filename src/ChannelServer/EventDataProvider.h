@@ -48,7 +48,7 @@ private:
 
 	void loadEvents();
 	void loadInstances();
-	void startInstance(const string &name, int32_t time, int32_t repeat = 0);
+	void startInstance(const string &name, const seconds_t &time, const seconds_t &repeat = seconds_t(0));
 
 	std::unique_ptr<Timer::Container> m_timers;
 	std::unique_ptr<Variables> m_variables;

@@ -39,6 +39,7 @@ struct PortalInfo;
 
 namespace Timer {
 	class Container;
+	struct Id;
 }
 
 struct TimerAction {
@@ -50,11 +51,11 @@ struct TimerAction {
 
 class Instance {
 public:
-	Instance(const string &name, int32_t map, int32_t playerId, int32_t time, int32_t persistent, bool showTimer, bool appLaunch = false);
+	Instance(const string &name, int32_t map, int32_t playerId, const seconds_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
 	~Instance();
 
 	string getName() const { return m_name; }
-	uint32_t getStart() const { return m_start; }
+	const time_point_t & getStart() const { return m_start; }
 	int32_t getCounterId();
 	bool getMarkedForDelete() const { return m_markedForDeletion; }
 	void markForDelete();
@@ -95,11 +96,11 @@ public:
 	void addParty(Party *party);
 
 	// Instance time
-	bool hasInstanceTimer() const { return m_time > 0; }
-	void setInstanceTimer(int32_t time, bool firstRun = false);
-	void setPersistence(int32_t p) { m_persistent = p; }
-	int32_t getPersistence() const { return m_persistent; }
-	int32_t checkInstanceTimer();
+	bool hasInstanceTimer() const { return m_time.count() > 0; }
+	void setInstanceTimer(const seconds_t &time, bool firstRun = false);
+	void setPersistence(const duration_t &persistence) { m_persistent = persistence; }
+	duration_t getPersistence() const { return m_persistent; }
+	seconds_t checkInstanceTimer();
 	bool showTimer() const { return m_showTimer; }
 	void showTimer(bool show, bool doIt = false);
 
@@ -109,7 +110,7 @@ public:
 	void timerEnd(const string &name, bool fromTimer = false);
 	bool addTimer(const string &name, const TimerAction &timer);
 	bool isTimerPersistent(const string &name);
-	int32_t checkTimer(const string &name);
+	seconds_t getTimerSecondsRemaining(const string &name);
 	Timer::Container * getTimers() const { return m_timers.get(); }
 
 	// Lua interaction
@@ -121,6 +122,9 @@ public:
 	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
 	void sendMessage(InstanceMessages message, const string &, int32_t);
 private:
+	LuaInstance * getLuaInstance() { return m_luaInstance.get(); }
+	Timer::Id getTimerId() const;
+
 	unique_ptr<Timer::Container> m_timers; // Timer container for the instance
 	unique_ptr<Variables> m_variables;
 	unique_ptr<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
@@ -133,15 +137,13 @@ private:
 	vector<Map *> m_maps;
 	vector<Party *> m_parties;
 
-	uint32_t m_start; // Tick count when instance started
+	time_point_t m_start;
 	string m_name; // Identification for the instance
 	int32_t m_maxPlayers; // Maximum players allowed for instance
-	int32_t m_time; // Instance time
 	int32_t m_timerCounter; // Used for uniqueness of timer IDs
-	int32_t m_persistent; // How often does instance repeat?
+	seconds_t m_time; // Instance time
+	duration_t m_persistent; // How often does instance repeat?
 	bool m_showTimer; // Show timer
 	bool m_resetOnDestroy; // Reset reactors when done
 	bool m_markedForDeletion; // End of instance time
-
-	LuaInstance * getLuaInstance() { return m_luaInstance.get(); }
 };

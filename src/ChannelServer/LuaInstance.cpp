@@ -166,7 +166,7 @@ int LuaExports::createInstanceInstance(lua_State *luaVm) {
 		persistent = lua_tointeger(luaVm, 4);
 	}
 
-	Instance *instance = new Instance(name, 0, 0, time, persistent, showTimer);
+	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);
 

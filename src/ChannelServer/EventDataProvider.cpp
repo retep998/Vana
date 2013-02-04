@@ -50,12 +50,12 @@ void EventDataProvider::loadEvents() {
 	// Starts a new timer that runs every hour
 	// new Timer::Timer(bind(&namespace::func, parameters),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
-	// getTimers(), Timer::Time::getNthSecondOfHour(0), 60 * 60 * 1000);
+	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
 
 	// Same, except runs a class function
 	// new Timer::Timer(bind(&class::func, class instance, parameters),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
-	// getTimers(), Timer::Time::getNthSecondOfHour(0), 60 * 60 * 1000);
+	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
 
 	std::cout << "DONE" << std::endl;
 }
@@ -63,16 +63,18 @@ void EventDataProvider::loadEvents() {
 void EventDataProvider::loadInstances() {
 	std::cout << std::setw(OutputWidth) << std::left << "Initializing Instances... ";
 
-	int32_t nearestTen = TimeUtilities::getNearestMinuteMark(10); // Most common intervals with boats
-	int32_t nearestFifteen = TimeUtilities::getNearestMinuteMark(15);
+	// Most common intervals with boats
+	const time_point_t &now = TimeUtilities::getNow();
+	const seconds_t &nearestTen = -TimeUtilities::getDistanceToNextMinuteMark(10,  now);
+	const seconds_t &nearestFifteen = -TimeUtilities::getDistanceToNextMinuteMark(15,  now);
 
-	//startInstance("kerningToNlcBoarding", -nearestTen, 10 * 60);
-	//startInstance("nlcToKerningBoarding", -nearestTen, 10 * 60);
+	//startInstance("kerningToNlcBoarding", nearestTen, minutes_t(10));
+	//startInstance("nlcToKerningBoarding", nearestTen, minutes_t(10));
 
 	std::cout << "DONE" << std::endl;
 }
 
-void EventDataProvider::startInstance(const string &name, int32_t time, int32_t repeat) {
+void EventDataProvider::startInstance(const string &name, const seconds_t &time, const seconds_t &repeat) {
 	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
 	Instances::InstancePtr()->addInstance(instance);
 	instance->sendMessage(BeginInstance);

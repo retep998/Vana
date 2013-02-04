@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::bind;
 
-Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t time, int32_t persistent, bool showTimer, bool appLaunch) :
+Instance::Instance(const string &name, int32_t map, int32_t playerId, const seconds_t &time, const duration_t &persistent, bool showTimer, bool appLaunch) :
 	m_name(name),
 	m_maxPlayers(0),
 	m_timerCounter(0),
@@ -43,7 +43,7 @@ Instance::Instance(const string &name, int32_t map, int32_t playerId, int32_t ti
 	m_timers(new Timer::Container),
 	m_variables(new Variables),
 	m_luaInstance(new LuaInstance(name, playerId)),
-	m_start(TimeUtilities::getTickCount()),
+	m_start(TimeUtilities::getNow()),
 	m_resetOnDestroy(true),
 	m_markedForDeletion(false)
 {
@@ -233,24 +233,25 @@ bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 		if (timer.time > 0) {
 			// Positive, occurs in the future
 			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
-				id, getTimers(), TimeUtilities::fromNow(timer.time * 1000), timer.persistent * 1000);
+				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
 		}
 		else {
 			// Negative, occurs nth second of hour
 			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
-				id, getTimers(), TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), timer.persistent * 1000);
+				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
 		}
 		return true;
 	}
 	return false;
 }
 
-int32_t Instance::checkTimer(const string &timerName) {
-	int32_t timeLeft = 0;
-	if (m_timerActions.find(timerName) != m_timerActions.end()) {
-		TimerAction timer = m_timerActions[timerName];
+seconds_t Instance::getTimerSecondsRemaining(const string &timerName) {
+	seconds_t timeLeft(0);
+	auto iter = m_timerActions.find(timerName);
+	if (iter != m_timerActions.end()) {
+		const TimerAction &timer = iter->second;
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
-		timeLeft = getTimers()->checkTimer(id);
+		timeLeft = getTimers()->getSecondsRemaining(id);
 	}
 	return timeLeft;
 }
@@ -258,7 +259,7 @@ int32_t Instance::checkTimer(const string &timerName) {
 void Instance::removeTimer(const string &timerName) {
 	if (m_timerActions.find(timerName) != m_timerActions.end()) {
 		TimerAction timer = m_timerActions[timerName];
-		if (checkTimer(timerName) > 0) {
+		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
 			sendMessage(TimerEnd, timerName, false);
@@ -271,37 +272,39 @@ void Instance::removeAllTimers() {
 	for (unordered_map<string, TimerAction>::iterator iter = m_timerActions.begin(); iter != m_timerActions.end(); ++iter) {
 		removeTimer(iter->first);
 	}
-	setInstanceTimer(0);
+	setInstanceTimer(seconds_t(0));
 }
 
-int32_t Instance::checkInstanceTimer() {
-	int32_t timeLeft = 0;
-	if (m_time > 0) {
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
-		timeLeft = getTimers()->checkTimer(id);
+seconds_t Instance::checkInstanceTimer() {
+	seconds_t timeLeft(0);
+	if (m_time.count() > 0) {
+		const Timer::Id id = getTimerId();
+		timeLeft = getTimers()->getSecondsRemaining(id);
 	}
 	return timeLeft;
 }
 
-void Instance::setInstanceTimer(int32_t time, bool firstRun) {
-	if (checkInstanceTimer() > 0) {
-		Timer::Id id(Timer::Types::InstanceTimer, m_time, -1);
+void Instance::setInstanceTimer(const seconds_t &time, bool firstRun) {
+	if (checkInstanceTimer().count() > 0) {
+		const Timer::Id id = getTimerId();
 		getTimers()->removeTimer(id);
 	}
-	if (time != 0) {
-		int64_t runat = 0;
-		if (time < 0) {
-			m_time = -(time + 1);
-			runat = TimeUtilities::nthSecondOfHour(static_cast<uint16_t>(m_time));
+	if (time.count() != 0) {
+		duration_t difference;
+		int32_t timeCount = static_cast<int32_t>(time.count());
+
+		if (timeCount < 0) {
+			m_time = seconds_t(-(timeCount + 1));
+			difference = TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(m_time.count()));
 		}
-		else if (time > 0) {
-			m_time = time * 1000;
-			runat = TimeUtilities::fromNow(m_time);
+		else if (timeCount > 0) {
+			m_time = seconds_t(timeCount);
+			difference = milliseconds_t(m_time);
 		}
 
 		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
-			Timer::Id(Timer::Types::InstanceTimer, m_time, -1),
-			getTimers(), runat, m_persistent * 1000);
+			getTimerId(),
+			getTimers(), difference, m_persistent);
 
 		if (!firstRun && showTimer()) {
 			showTimer(true, true);
@@ -347,7 +350,7 @@ void Instance::timerEnd(const string &name, bool fromTimer) {
 void Instance::instanceEnd(bool fromTimer) {
 	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
 	showTimer(false);
-	if (!getPersistence()) {
+	if (getPersistence().count() == 0) {
 		markForDelete();
 	}
 }
@@ -389,7 +392,7 @@ void Instance::respawnReactors(int32_t mapId) {
 void Instance::showTimer(bool show, bool doIt) {
 	if (!show && (doIt || m_showTimer)) {
 		for (size_t i = 0; i < getMapNum(); ++i) {
-			MapPacket::showTimer(m_maps[i]->getId(), 0);
+			MapPacket::showTimer(m_maps[i]->getId(), seconds_t(0));
 		}
 	}
 	else if (show && (doIt || !m_showTimer)) {
@@ -397,4 +400,8 @@ void Instance::showTimer(bool show, bool doIt) {
 			MapPacket::showTimer(m_maps[i]->getId(), checkInstanceTimer());
 		}
 	}
+}
+
+Timer::Id Instance::getTimerId() const {
+	return Timer::Id(Timer::Types::InstanceTimer, static_cast<int32_t>(m_time.count()), -1);
 }

@@ -22,23 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 #include "TimeUtilities.h"
-#include <limits>
 
 Drop::Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop) :
 	m_questId(0),
 	m_owner(owner),
 	m_mapId(mapId),
 	m_mesos(mesos),
-	// Initializing dropped time to max-value to prevent timers from
-	// deleting the drop in case doDrop did not get called right away
-	m_dropped(std::numeric_limits<int32_t>::max()),
 	m_playerId(0),
 	m_playerDrop(playerDrop),
 	m_type(Drop::Normal),
 	m_tradeable(true),
 	m_pos(pos)
 {
-	Maps::getMap(mapId)->addDrop(this);
 }
 
 Drop::Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop) :
@@ -46,7 +41,6 @@ Drop::Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool 
 	m_owner(owner),
 	m_mapId(mapId),
 	m_mesos(0),
-	m_dropped(std::numeric_limits<int32_t>::max()),
 	m_playerId(0),
 	m_playerDrop(playerDrop),
 	m_type(Drop::Normal),
@@ -54,7 +48,6 @@ Drop::Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool 
 	m_pos(pos),
 	m_item(item)
 {
-	Maps::getMap(mapId)->addDrop(this);
 }
 
 int32_t Drop::getObjectId() {
@@ -66,7 +59,9 @@ int16_t Drop::getAmount() {
 }
 
 void Drop::doDrop(const Pos &origin) {
-	setDropped(TimeUtilities::getTickCount());
+	setDroppedAtTime(TimeUtilities::getNow());
+	Maps::getMap(m_mapId)->addDrop(this);
+
 	if (!isQuest()) {
 		if (!isTradeable()) {
 			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DisappearDuringDrop, false, origin);

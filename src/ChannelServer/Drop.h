@@ -33,16 +33,15 @@ public:
 	void setItemAmount(int16_t amount) { m_item.setAmount(amount); }
 	void setId(int32_t id) { m_id = id; }
 	void setTime(int32_t time) { m_time = time; }
-	void setDropped(int32_t time) { m_dropped = time; }
 	void setPlayerId(int32_t playerId) { m_playerId = playerId; }
 	void setOwner(int32_t owner) { m_owner = owner; }
 	void setPos(Pos pos) { m_pos = pos; }
 	void setType(int8_t t) { m_type = t; }
+	void setDroppedAtTime(time_point_t time) { m_droppedAtTime = time; }
 
 	int8_t getType() const { return m_type; }
 	int16_t getQuest() const { return m_questId; }
 	int32_t getId() const { return m_id; }
-	int32_t getDropped() const { return m_dropped; }
 	int32_t getTime() const { return m_time; }
 	int32_t getOwner() const { return m_owner; }
 	int32_t getMap() const { return m_mapId; }
@@ -52,6 +51,7 @@ public:
 	bool isTradeable() const { return m_tradeable; }
 	Pos getPos() const { return m_pos; }
 	Item getItem() const { return m_item; }
+	time_point_t getDroppedAtTime() const { return m_droppedAtTime; }
 
 	int16_t getAmount();
 	int32_t getObjectId();
@@ -69,14 +69,14 @@ private:
 	int8_t m_type;
 	int16_t m_questId;
 	int32_t m_owner;
-	int32_t m_time;
 	int32_t m_mapId;
 	int32_t m_id;
 	int32_t m_mesos;
-	int32_t m_dropped;
+	int32_t m_time;
 	int32_t m_playerId;
 	bool m_playerDrop;
 	bool m_tradeable;
 	Pos m_pos;
 	Item m_item;
+	time_point_t m_droppedAtTime;
 };

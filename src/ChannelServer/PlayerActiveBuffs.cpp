@@ -35,20 +35,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using std::bind;
 
 // Buff skills
-void PlayerActiveBuffs::addBuff(int32_t skill, int32_t time) {
-	if (time > 0) {
+void PlayerActiveBuffs::addBuff(int32_t skill, const seconds_t &time) {
+	if (time.count() > 0) {
 		// Only bother with timers when there is a time
-		clock_t skillExpire = time * 1000;
 		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
 			uint8_t mobSkill = static_cast<uint8_t>(skill);
 			new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, mobSkill, true),
-				id, m_player->getTimers(), TimeUtilities::fromNow(skillExpire));
+				id, m_player->getTimers(), time);
 		}
 		else {
 			new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
-				id, m_player->getTimers(), TimeUtilities::fromNow(skillExpire));
+				id, m_player->getTimers(), time);
 		}
 	}
 	m_buffs.push_back(skill);
@@ -69,9 +68,9 @@ void PlayerActiveBuffs::removeBuff() {
 	}
 }
 
-int32_t PlayerActiveBuffs::buffTimeLeft(int32_t skill) const {
+seconds_t PlayerActiveBuffs::getBuffSecondsRemaining(int32_t skill) const {
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
-	return m_player->getTimers()->checkTimer(id);
+	return m_player->getTimers()->getSecondsRemaining(id);
 }
 
 // Skill "acts"
@@ -96,7 +95,7 @@ void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t ti
 	runAct.value = value;
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
-	new Timer::Timer(runAct, id, getActTimer(skill), 0, time);
+	new Timer::Timer(runAct, id, getActTimer(skill), seconds_t(0), milliseconds_t(time));
 }
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
@@ -288,7 +287,7 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 	m_combo = combo;
 	if (sendPacket) {
 		int32_t skillId = m_player->getSkills()->getComboAttack();
-		int32_t timeLeft = buffTimeLeft(skillId);
+		seconds_t timeLeft = getBuffSecondsRemaining(skillId);
 		uint8_t level = getActiveSkillLevel(skillId);
 		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
 		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
@@ -358,7 +357,7 @@ void PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) {
 	if (m_energyCharge != Stats::MaxEnergyChargeLevel && targets > 0) {
 		int32_t skillId = m_player->getSkills()->getEnergyCharge();
 		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
-		if (m_player->getTimers()->checkTimer(id) > 0) {
+		if (m_player->getTimers()->isTimerRunning(id)) {
 			stopEnergyChargeTimer();
 		}
 		startEnergyChargeTimer();
@@ -392,7 +391,7 @@ void PlayerActiveBuffs::startEnergyChargeTimer() {
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
 	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
-		id, m_player->getTimers(), TimeUtilities::fromNow(10 * 1000)); // 10 seconds
+		id, m_player->getTimers(), seconds_t(10));
 }
 
 void PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargeLevel, bool startTimer) {
@@ -641,7 +640,7 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 	for (list<int32_t>::const_iterator iter = m_buffs.begin(); iter != m_buffs.end(); ++iter) {
 		int32_t buffId = *iter;
 		packet.add<int32_t>(buffId);
-		packet.add<int32_t>(buffTimeLeft(buffId));
+		packet.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
 		packet.add<uint8_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
@@ -692,7 +691,7 @@ void PlayerActiveBuffs::read(PacketReader &packet) {
 	uint8_t nBuffs = packet.get<uint8_t>();
 	for (uint8_t i = 0; i < nBuffs; ++i) {
 		int32_t skillId = packet.get<int32_t>();
-		int32_t timeLeft = packet.get<int32_t>();
+		seconds_t timeLeft(packet.get<int32_t>());
 		uint8_t level = packet.get<uint8_t>();
 		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);

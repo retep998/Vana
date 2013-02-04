@@ -33,8 +33,8 @@ namespace MapPacket {
 	void changeMap(Player *player);
 	void portalBlocked(Player *player); // Blocked portals
 	void showClock(Player *player, int8_t hour, int8_t min, int8_t sec);
-	void showTimer(int32_t mapId, int32_t sec); // Show timer like in PQs
-	void showTimer(Player *player, int32_t sec); // Show timer like in PQs
+	void showTimer(int32_t mapId, const seconds_t &sec); // Show timer like in PQs
+	void showTimer(Player *player, const seconds_t &sec); // Show timer like in PQs
 	void forceMapEquip(Player *player);
 	void showEventInstructions(int32_t mapId);
 	void showMist(Player *player, Mist *mist);

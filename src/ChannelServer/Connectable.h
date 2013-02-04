@@ -29,7 +29,7 @@ using std::unordered_map;
 
 struct ConnectingPlayer {
 	Ip connectIp;
-	uint32_t connectTime;
+	time_point_t connectTime;
 	std::shared_ptr<PacketReader> heldPacket;
 
 	ConnectingPlayer() : connectIp(0) { }

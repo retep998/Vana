@@ -476,13 +476,12 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			Pos ppPos = origin;
 			ppPos.x += (ppSize % 2 == 0 ? 5 : 0) + (ppSize / 2) - 20 * ((ppSize / 2) - pickpocket);
 
-			clock_t ppTime = 175 * pickpocket;
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
 			new Timer::Timer(bind(&Drop::doDrop, ppDrop, origin),
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
-				nullptr, TimeUtilities::fromNow(ppTime));
+				nullptr, milliseconds_t(175 * pickpocket));
 		}
 		ppDamages.clear();
 	}
