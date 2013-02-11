@@ -148,7 +148,7 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 		if (success) {
 			PetsPacket::showAnimation(player, pet, 1);
 			pet->modifyFullness(Stats::PetFeedFullness, false);
-			if (Randomizer::Instance()->randInt(99) < 60) {
+			if (Randomizer::rand<int32_t>(99) < 60) {
 				// 60% chance for feed to add closeness
 				pet->addCloseness(1);
 			}
@@ -173,7 +173,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 		// Hacking or no action info available
 		return;
 	}
-	bool success = (Randomizer::Instance()->randInt(100) < action->prob);
+	bool success = (Randomizer::rand<uint32_t>(100) < action->prob);
 	if (success) {
 		pet->addCloseness(action->increase);
 	}

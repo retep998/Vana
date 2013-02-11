@@ -321,7 +321,7 @@ void PlayerActiveBuffs::addCombo() {
 		if (m_combo == maxCombo) {
 			return;
 		}
-		if (advCombo > 0 && Randomizer::Instance()->randShort(99) < prop) {
+		if (advCombo > 0 && Randomizer::rand<uint16_t>(99) < prop) {
 			// 4th job skill gives chance to add second orb
 			m_combo += 1;
 		}

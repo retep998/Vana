@@ -76,7 +76,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
 	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); ++i) {
-		int16_t amount = static_cast<int16_t>(Randomizer::Instance()->randInt(i->maxAmount, i->minAmount));
+		int16_t amount = static_cast<int16_t>(Randomizer::rand<int32_t>(i->maxAmount, i->minAmount));
 		Drop *drop = nullptr;
 		uint32_t chance = i->chance;
 
@@ -88,7 +88,7 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			chance *= ChannelServer::Instance()->getDropRate();
 		}
 
-		if (Randomizer::Instance()->randInt(999999) < chance) {
+		if (Randomizer::rand<uint32_t>(999999) < chance) {
 			if (explosive) {
 				mod = 35;
 			}

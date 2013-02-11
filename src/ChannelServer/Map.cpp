@@ -252,7 +252,7 @@ void Map::runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, in
 	int16_t done = 0;
 	for (size_t i = 0; i < m_players.size(); ++i) {
 		if (Player *toy = m_players[i]) {
-			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::Instance()->randShort(99) < prop) {
+			if (GameLogicUtilities::isInBox(origin, lt, rb, toy->getPos()) && Randomizer::rand<int16_t>(99) < prop) {
 				successFunc(toy);
 				done++;
 			}
@@ -355,8 +355,8 @@ Pos Map::findRandomPos() {
 	Pos pos(0, 0);
 	Pos tPos;
 	while (pos.x == 0 && pos.y == 0) {
-		xTemp = Randomizer::Instance()->randShort(xMax, xMin);
-		yTemp = Randomizer::Instance()->randShort(yMax, yMin);
+		xTemp = Randomizer::rand<int16_t>(xMax, xMin);
+		yTemp = Randomizer::rand<int16_t>(yMax, yMin);
 		tPos.x = xTemp;
 		tPos.y = yTemp;
 		tPos = findFloor(tPos);
@@ -386,7 +386,7 @@ PortalInfo * Map::getPortal(const string &name) {
 }
 
 PortalInfo * Map::getSpawnPoint(int8_t portalId) {
-	int8_t id = (portalId != -1 ? portalId : Randomizer::Instance()->randChar(m_spawnPoints.size() - 1));
+	int8_t id = (portalId != -1 ? portalId : Randomizer::rand<int8_t>(m_spawnPoints.size() - 1));
 	return &m_spawnPoints[id];
 }
 
@@ -498,7 +498,7 @@ void Map::removeMob(int32_t id, int32_t spawnId) {
 		if (spawnId >= 0 && m_mobSpawns[spawnId].time != -1) {
 			// Add spawn point to respawns if mob was spawned by a spawn point
 			// Randomly spawn between 1x and 2x the spawn time
-			seconds_t timeModifier = seconds_t(m_mobSpawns[spawnId].time * (Randomizer::Instance()->randInt(200, 100)) / 100);
+			seconds_t timeModifier = seconds_t(m_mobSpawns[spawnId].time * (Randomizer::rand<int32_t>(200, 100)) / 100);
 			time_point_t spawnTime = TimeUtilities::getNowWithTimeAdded<seconds_t>(timeModifier);
 			m_mobRespawns.push_back(Respawnable(spawnId, spawnTime));
 			m_mobSpawns[spawnId].spawned = false;

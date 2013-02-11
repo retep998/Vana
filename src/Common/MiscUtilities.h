@@ -33,6 +33,7 @@ namespace MiscUtilities {
 	};
 
 	string hashPassword(const string &password, const string &salt);
+	string generateSalt(size_t length);
 	bool isBossChannel(const vector<int8_t> &vec, int8_t channelId);
 
 	template<class T>

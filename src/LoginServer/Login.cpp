@@ -96,7 +96,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				}
 				else {
 					// We have a valid password, so let's hash the password
-					salt = Randomizer::Instance()->generateSalt(VanaConstants::SaltSize);
+					salt = MiscUtilities::generateSalt(VanaConstants::SaltSize);
 					const string &hashedPassword = MiscUtilities::hashPassword(password, salt.get());
 
 					sql.once

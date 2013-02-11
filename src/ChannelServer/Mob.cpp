@@ -49,7 +49,7 @@ StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t tim
 				break;
 			}
 		case StatusEffects::Mob::Stun:
-			this->time = time + 1 + Randomizer::Instance()->randInt(time * 2); // The 1 accounts for the skill cast time
+			this->time = time + 1 + Randomizer::rand<int32_t>(time * 2); // The 1 accounts for the skill cast time
 			if (skillId == Skills::IlArchMage::Blizzard) {
 				time += 2; // Account for skill cast time, ideally we'd like to remove both these additions with MCDB suport for cast times
 			}
@@ -644,7 +644,7 @@ void Mob::skillHeal(int32_t healHp, int32_t healRange) {
 	}
 	int32_t min = (healHp - (healRange / 2));
 	int32_t max = (healHp + (healRange / 2));
-	int32_t amount = Randomizer::Instance()->randInt(max, min);
+	int32_t amount = Randomizer::rand<int32_t>(max, min);
 	int32_t original = amount;
 
 	if (m_hp + amount > getMaxHp()) {
@@ -684,7 +684,7 @@ void Mob::doCrashSkill(int32_t skillId) {
 }
 
 void Mob::mpEat(Player *player, MpEaterInfo *mp) {
-	if ((m_mpEaterCount < 3) && (getMp() > 0) && (Randomizer::Instance()->randInt(99) < mp->prop)) {
+	if ((m_mpEaterCount < 3) && (getMp() > 0) && (Randomizer::rand<uint16_t>(99) < mp->prop)) {
 		mp->used = true;
 		int32_t eatenMp = getMaxMp() * mp->x / 100;
 

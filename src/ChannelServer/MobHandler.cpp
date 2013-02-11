@@ -60,7 +60,7 @@ void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
 	Mob *dealer = map->getMob(mobFrom);
 	Mob *taker = map->getMob(mobTo);
 	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
-		int32_t damage = dealer->getInfo()->level * Randomizer::Instance()->randInt(100) / 10;
+		int32_t damage = dealer->getInfo()->level * Randomizer::rand<int32_t>(100) / 10;
 		// Temp for now until I figure out something more effective
 		// TODO: Fix formula
 		int32_t mobId = taker->getMobId();
@@ -118,7 +118,7 @@ void MobHandler::monsterControl(Player *player, PacketReader &packet) {
 			bool used = false;
 			if (size > 0) {
 				bool stop = false;
-				uint8_t rand = Randomizer::Instance()->randChar(size - 1);
+				uint8_t rand = Randomizer::rand<uint8_t>(size - 1);
 				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
 				realSkill = info->skillId;
 				level = info->level;
@@ -305,8 +305,8 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 			}
 			for (size_t summonSize = 0; summonSize < skillInfo->summons.size(); ++summonSize) {
 				int32_t spawnId = skillInfo->summons[summonSize];
-				int16_t xPos = Randomizer::Instance()->randShort(xMax, xMin);
-				int16_t yPos = Randomizer::Instance()->randShort(yMax, yMin);
+				int16_t xPos = Randomizer::rand<int16_t>(xMax, xMin);
+				int16_t yPos = Randomizer::rand<int16_t>(yMax, yMin);
 				Pos floor;
 				if (mob->getMapId() == Maps::OriginOfClockTower) {
 					// Papulatus' map
@@ -314,7 +314,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 						// Keep High Darkstars high
 						while ((floor.y > -538 || floor.y == yPos) || !GameLogicUtilities::isInBox(mob->getPos(), skillInfo->lt, skillInfo->rb, floor)) {
 							// Mobs spawn on the ground, we need them up top
-							xPos = Randomizer::Instance()->randShort(xMax, xMin);
+							xPos = Randomizer::rand<int16_t>(xMax, xMin);
 							yPos = -590;
 							floor = map->findFloor(Pos(xPos, yPos));
 						}
@@ -352,7 +352,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 	vector<StatusInfo> statuses;
 	int16_t y = 0;
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
-	bool success = (skillId == 0 ? false : (Randomizer::Instance()->randInt(99) < skill->prop));
+	bool success = (skillId == 0 ? false : (Randomizer::rand<uint16_t>(99) < skill->prop));
 	if (mob->canFreeze()) {
 		// Freezing stuff
 		switch (skillId) {
@@ -405,10 +405,10 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 					int32_t minDamage = ((80 * part1 / 10 + part2) / 100) * vAtk;
 					int32_t maxDamage = ((185 * part1 / 10 + part2) / 100) * vAtk;
 
-					damage = Randomizer::Instance()->randInt(maxDamage, minDamage);
+					damage = Randomizer::rand<int32_t>(maxDamage, minDamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
-						success = (Randomizer::Instance()->randInt(99) < venom->prop);
+						success = (Randomizer::rand<uint16_t>(99) < venom->prop);
 						if (success) {
 							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->time));
 							mob->addStatus(player->getId(), statuses);

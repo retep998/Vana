@@ -342,7 +342,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 			// Maximum = (luk * 6.6 + dex) * 0.2 * (recovery% / 100 + 1)
 			// Minimum = (luk * 3.3 + dex) * 0.2 * (recovery% / 100 + 1)
 			// I used 66 / 10 and 2 / 10 respectively to get 6.6 and 0.2 without using floating points
-			player->getStats()->modifyHp(Randomizer::Instance()->randShort(maximum, minimum));
+			player->getStats()->modifyHp(Randomizer::rand<int16_t>(maximum, minimum));
 			break;
 		}
 	}
@@ -437,7 +437,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				connectedHits++;
 				targetTotal += damage;
 			}
-			if (ppok && Randomizer::Instance()->randInt(99) < picking->prop) {
+			if (ppok && Randomizer::rand<uint16_t>(99) < picking->prop) {
 				 // Make sure this is a melee attack and not meso explosion, plus pickpocket being active
 				ppDamages.push_back(damage);
 			}
@@ -564,7 +564,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			if (skillLevel > 0) {
 				xProperty = SkillDataProvider::Instance()->getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
-			if ((xProperty != 100) && (xProperty == 0 || Randomizer::Instance()->randShort(99) > (xProperty - 1))) {
+			if ((xProperty != 100) && (xProperty == 0 || Randomizer::rand<int16_t>(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
 			}
 			break;
@@ -632,7 +632,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 			if (skillId == Skills::Ranger::MortalBlow || skillId == Skills::Sniper::MortalBlow) {
 				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillId);
 				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if ((mob->getHp() < hpPercentage) && (Randomizer::Instance()->randShort(99) < sk->y)) {
+				if ((mob->getHp() < hpPercentage) && (Randomizer::rand<int16_t>(99) < sk->y)) {
 					damage = mob->getHp();
 				}
 			}
