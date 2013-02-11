@@ -17,36 +17,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <limits>
 #include <random>
-#include <string>
 
-using std::string;
 using std::mt19937;
 using std::uniform_int_distribution;
 
-class Randomizer : boost::noncopyable {
+class Randomizer {
 public:
-	static Randomizer * Instance() {
-		if (singleton == nullptr)
-			singleton = new Randomizer;
-		return singleton;
+	template <typename TInteger>
+	static TInteger rand() {
+		return rand(std::numeric_limits<TInteger>::max(), std::numeric_limits<TInteger>::min());
 	}
 
-	uint32_t randInt(uint32_t max, uint32_t min = 0);
-	uint32_t randInt();
-	uint16_t randShort(uint16_t max, uint16_t min = 0);
-	uint8_t randChar(uint8_t max, uint8_t min = 0);
-	string generateSalt(size_t length);
+	template <typename TInteger>
+	static TInteger rand(TInteger max, TInteger min = 0) {
+		return s_rand.rand<TInteger>(max, min);
+	}
+
 private:
-	Randomizer() {
-		m_engine.seed(std::rand());
-		m_distribution = uniform_int_distribution<uint32_t>(std::numeric_limits<uint32_t>::min(), std::numeric_limits<uint32_t>::max());
-	}
-	static Randomizer *singleton;
+	class _impl {
+	public:
+		_impl() {
+			m_engine.seed(std::rand());
+			m_distribution = uniform_int_distribution<uint64_t>(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
+		}
 
-	mt19937 m_engine;
-	uniform_int_distribution<uint32_t> m_distribution;
+		template <typename TInteger>
+		TInteger rand(TInteger max, TInteger min = 0) {
+			TInteger diff = (max - min) + 1;
+			uint64_t result = m_distribution(m_engine);
+			if (diff != 0) result = (result % diff) + min;
+			return static_cast<TInteger>(result);
+		}
+	private:
+		mt19937 m_engine;
+		uniform_int_distribution<uint64_t> m_distribution;
+	};
+
+	static _impl s_rand;
 };

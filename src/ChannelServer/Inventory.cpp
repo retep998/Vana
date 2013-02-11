@@ -198,7 +198,7 @@ void Inventory::useItem(Player *player, int32_t itemId) {
 	if (GameLogicUtilities::isMonsterCard(itemId)) {
 		bool isFull = player->getMonsterBook()->addCard(itemId); // Has a special buff for being full?
 		MonsterBookPacket::addCard(player, itemId, player->getMonsterBook()->getCardLevel(itemId), isFull);
-		if (item->mcProb != 0 && Randomizer::Instance()->randShort(99) < item->mcProb) {
+		if (item->mcProb != 0 && Randomizer::rand<uint16_t>(99) < item->mcProb) {
 			Buffs::addBuff(player, itemId, seconds_t(item->time));
 		}
 	}

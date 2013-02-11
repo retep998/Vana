@@ -357,7 +357,7 @@ bool PlayerQuests::giveRewards(int16_t questId, bool start) {
 	});
 
 	if (chance > 0) {
-		int32_t random = Randomizer::Instance()->randInt(chance - 1);
+		int32_t random = Randomizer::rand<int32_t>(chance - 1);
 		chance = 0;
 		for (size_t i = 0; i < items.size(); i++) {
 			QuestRewardInfo &info = items[i];

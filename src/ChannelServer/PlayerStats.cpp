@@ -647,11 +647,11 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
 }
 
 int16_t PlayerStats::randHp() {
-	return Randomizer::Instance()->randShort(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
+	return Randomizer::rand<int16_t>(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
 int16_t PlayerStats::randMp() {
-	return Randomizer::Instance()->randShort(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
+	return Randomizer::rand<int16_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
 int16_t PlayerStats::getX(int32_t skillId) {

@@ -174,7 +174,7 @@ void InventoryHandler::useSkillbook(Player *player, PacketReader &packet) {
 				// I know the multiple levels of if aren't necessary, but they're large/verbose comparisons
 				if (player->getSkills()->getMaxSkillLevel(skillId) < newMaxLevel) {
 					// Don't want to break up this vertical spacing
-					if (Randomizer::Instance()->randShort(99) < s.chance) {
+					if (Randomizer::rand<int8_t>(99) < s.chance) {
 						player->getSkills()->setMaxSkillLevel(skillId, newMaxLevel);
 						succeed = true;
 					}
@@ -243,7 +243,7 @@ void InventoryHandler::useSummonBag(Player *player, PacketReader &packet) {
 	vector<SummonBag> *item = ItemDataProvider::Instance()->getItemSummons(itemId);
 	for (size_t i = 0; i < item->size(); i++) {
 		const SummonBag &s = (*item)[i];
-		if (Randomizer::Instance()->randInt(99) < s.chance) {
+		if (Randomizer::rand<uint32_t>(99) < s.chance) {
 			if (MobDataProvider::Instance()->mobExists(s.mobId)) {
 				player->getMap()->spawnMob(s.mobId, player->getPos());
 			}

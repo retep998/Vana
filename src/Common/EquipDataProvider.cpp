@@ -150,7 +150,7 @@ int16_t EquipDataProvider::getRandomStat(int16_t equipAmount, uint16_t variance)
 }
 
 int16_t EquipDataProvider::getStatVariance(uint16_t amount) {
-	int16_t s = Randomizer::Instance()->randShort(amount);
+	int16_t s = Randomizer::rand<int16_t>(amount);
 	s -= (amount / 2);
 	return s;
 }

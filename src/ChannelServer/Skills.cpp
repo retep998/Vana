@@ -156,7 +156,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (uint8_t k = 0; k < mobs; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
 				if (Mob *mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::Instance()->randShort(99) < skill->prop) {
+					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 						mob->doCrashSkill(skillId);
 					}
 				}
@@ -219,7 +219,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 				for (size_t i = 0; i < members.size(); i++) {
 					Player *cmem = members[i];
 					if (cmem != nullptr && cmem != player && cmem->getMap() == player->getMap()) {
-						if (Randomizer::Instance()->randShort(99) < skill->prop) {
+						if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 							SkillsPacket::showSkill(cmem, skillId, level, direction, true, true);
 							SkillsPacket::showSkill(cmem, skillId, level, direction, true);
 							cmem->getActiveBuffs()->useDispel();
@@ -232,7 +232,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 			for (int8_t k = 0; k < affected; k++) {
 				int32_t mapMobId = packet.get<int32_t>();
 				if (Mob *mob = player->getMap()->getMob(mapMobId)) {
-					if (Randomizer::Instance()->randShort(99) < skill->prop) {
+					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 						mob->dispelBuffs();
 					}
 				}
@@ -429,7 +429,7 @@ void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 	if (moneyConsume > 0) {
 		int16_t minMesos = moneyConsume - (80 + level * 5);
 		int16_t maxMesos = moneyConsume + (80 + level * 5);
-		int16_t amount = Randomizer::Instance()->randShort(maxMesos, minMesos);
+		int16_t amount = Randomizer::rand<int16_t>(maxMesos, minMesos);
 		int32_t mesos = player->getInventory()->getMesos();
 		if (mesos - amount > -1) {
 			player->getInventory()->modifyMesos(-amount);

@@ -30,6 +30,14 @@ string MiscUtilities::hashPassword(const string &password, const string &salt) {
 	return pipe.read_all_as_string();
 }
 
+string MiscUtilities::generateSalt(size_t length) {
+	string salt(length, 0);
+	for (size_t i = 0; i < length; i++) {
+		salt[i] = Randomizer::rand<uint8_t>(126, 33);
+	}
+	return salt;
+}
+
 bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {
 	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
 		if (*iter == channelId) {

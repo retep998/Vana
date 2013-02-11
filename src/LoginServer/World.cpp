@@ -27,7 +27,7 @@ void World::runChannelFunction(function<void (Channel *)> func) {
 }
 
 uint16_t World::getRandomChannel() const {
-	return Randomizer::Instance()->randShort(getMaxChannels() - 1);
+	return Randomizer::rand<uint16_t>(getMaxChannels() - 1);
 }
 
 void World::send(const PacketCreator &packet) {

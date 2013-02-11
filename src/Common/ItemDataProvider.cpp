@@ -423,7 +423,7 @@ ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
 
 	for (size_t i = 0; i < rewards->size(); i++) {
 		info = &(*rewards)[i];
-		if (Randomizer::Instance()->randShort(99) < info->prob) {
+		if (Randomizer::rand<uint16_t>(99) < info->prob) {
 			return info;
 		}
 	}
@@ -440,7 +440,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 	// Special scrolls
 	if (itemInfo->preventSlip || itemInfo->warmSupport) {
 		succeed = 0;
-		if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+		if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
 			if (itemInfo->preventSlip) {
 				equip->setPreventSlip(true);
 			}
@@ -455,10 +455,10 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 		if (itemInfo->randStat) {
 			if (equip->getSlots() > 0) {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
 					int8_t n = -1;
 					uint16_t variance = Items::StatVariance::Chaos::Normal;
-					if (Randomizer::Instance()->randShort(99) < 50U) {
+					if (Randomizer::rand<uint16_t>(99) < 50U) {
 						// Increase stats
 						n = 1;
 					}
@@ -494,7 +494,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 			int8_t recoverSlots = std::min(itemInfo->recover, maxRecoverableSlots);
 			if (recoverSlots > 0) {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
 					// Give back slot(s)
 					equip->incSlots(recoverSlots);
 					succeed = 1;
@@ -508,7 +508,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 			}
 			if (equip->getSlots() > 0) {
 				succeed = 0;
-				if (Randomizer::Instance()->randShort(99) < itemInfo->success) {
+				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
 					succeed = 1;
 					equip->addStr(itemInfo->istr);
 					equip->addDex(itemInfo->idex);
@@ -532,7 +532,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 		}
 
 		if (succeed == 0) {
-			if (itemInfo->cursed > 0 && Randomizer::Instance()->randShort(99) < itemInfo->cursed) {
+			if (itemInfo->cursed > 0 && Randomizer::rand<uint16_t>(99) < itemInfo->cursed) {
 				cursed = true;
 			}
 			else if (!whiteScroll && itemInfo->recover == 0) {
@@ -543,7 +543,7 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 }
 
 int16_t ItemDataProvider::getStatVariance(int8_t mod, uint16_t variance) {
-	int16_t s = Randomizer::Instance()->randShort(variance);
+	int16_t s = Randomizer::rand<int16_t>(variance);
 	s *= mod;
 	return s;
 }

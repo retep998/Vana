@@ -48,8 +48,8 @@ void Session::handleStart() {
 	m_connection->setIp(Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
 
 	if (m_isForClient) {
-		m_decoder.setRecvIv(Randomizer::Instance()->randInt());
-		m_decoder.setSendIv(Randomizer::Instance()->randInt());
+		m_decoder.setRecvIv(Randomizer::rand<uint32_t>());
+		m_decoder.setSendIv(Randomizer::rand<uint32_t>());
 
 		const PacketCreator &connectPacket = getConnectPacket(m_patchLocation);
 		send(connectPacket, false);

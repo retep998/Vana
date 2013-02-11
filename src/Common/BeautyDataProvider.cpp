@@ -94,17 +94,17 @@ void BeautyDataProvider::loadFaces() {
 }
 
 int8_t BeautyDataProvider::getRandomSkin() {
-	return m_skins[Randomizer::Instance()->randInt(m_skins.size() - 1)];
+	return m_skins[Randomizer::rand<int32_t>(m_skins.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomHair(int8_t gender) {
 	ValidLook *look = getGender(gender);
-	return look->hair[Randomizer::Instance()->randInt(look->hair.size() - 1)];
+	return look->hair[Randomizer::rand<int32_t>(look->hair.size() - 1)];
 }
 
 int32_t BeautyDataProvider::getRandomFace(int8_t gender) {
 	ValidLook *look = getGender(gender);
-	return look->faces[Randomizer::Instance()->randInt(look->faces.size() - 1)];
+	return look->faces[Randomizer::rand<int32_t>(look->faces.size() - 1)];
 }
 
 vector<int8_t> BeautyDataProvider::getSkins() {

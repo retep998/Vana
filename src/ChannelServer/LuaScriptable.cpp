@@ -408,7 +408,7 @@ int LuaExports::consoleOutput(lua_State *luaVm) {
 
 int LuaExports::getRandomNumber(lua_State *luaVm) {
 	int32_t number = lua_tointeger(luaVm, -1);
-	lua_pushinteger(luaVm, Randomizer::Instance()->randInt(number, 1));
+	lua_pushinteger(luaVm, Randomizer::rand<int32_t>(number, 1));
 	return 1;
 }
 

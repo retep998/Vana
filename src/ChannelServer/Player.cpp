@@ -729,9 +729,9 @@ uint8_t Player::getPortalCount(bool add) {
 }
 
 void Player::initializeRng(PacketCreator &packet) {
-	uint32_t seed1 = Randomizer::Instance()->randInt();
-	uint32_t seed2 = Randomizer::Instance()->randInt();
-	uint32_t seed3 = Randomizer::Instance()->randInt();
+	uint32_t seed1 = Randomizer::rand<uint32_t>();
+	uint32_t seed2 = Randomizer::rand<uint32_t>();
+	uint32_t seed3 = Randomizer::rand<uint32_t>();
 
 	m_randStream.reset(new TauswortheGenerator(seed1, seed2, seed3));
 
