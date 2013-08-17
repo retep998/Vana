@@ -50,7 +50,7 @@ void PacketCreator::addBytes(const char *hex) {
 }
 
 unsigned char PacketCreator::getHexByte(unsigned char input) {
-	input = toupper(input);
+	input = static_cast<unsigned char>(toupper(input));
 	if (input >= 'A' && input <= 'F') {
 		input -= 'A' - 0xA;
 	}
@@ -76,9 +76,9 @@ void PacketCreator::addString(const string &str, size_t len) {
 }
 
 void PacketCreator::addString(const string &str) {
-	size_t len = str.size();
+	uint16_t len = static_cast<uint16_t>(str.size());
 	add<uint16_t>(len);
-	addString(str, str.size());
+	addString(str, len);
 }
 
 unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {

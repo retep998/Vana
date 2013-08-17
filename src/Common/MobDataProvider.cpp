@@ -193,7 +193,7 @@ MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) {
 }
 
 uint8_t MobDataProvider::getSkillCount(int32_t mobId) {
-	return (m_skills.find(mobId) != m_skills.end() ? m_skills[mobId].size() : 0);
+	return static_cast<uint8_t>(m_skills.find(mobId) != m_skills.end() ? m_skills[mobId].size() : 0);
 }
 
 int8_t MobDataProvider::getElemModifier(const string &elemAttr) {

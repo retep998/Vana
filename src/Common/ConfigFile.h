@@ -66,7 +66,7 @@ template <typename T>
 T ConfigFile::get(const string &value) {
 	keyMustExist(value);
 	lua_getglobal(getLuaState(), value.c_str());
-	T val = lua_tointeger(getLuaState(), -1);
+	T val = static_cast<T>(lua_tointeger(getLuaState(), -1));
 	lua_pop(getLuaState(), 1);
 	return val;
 }

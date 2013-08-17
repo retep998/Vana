@@ -470,7 +470,7 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 		location = rec.location;
 		userId = rec.userId;
 		playerId = rec.charId;
-		worldId = rec.worldId;
+		worldId = static_cast<int8_t>(rec.worldId);
 		slot = rec.slot;
 		amount = item->m_amount;
 		itemId = item->m_id;

@@ -180,6 +180,6 @@ PacketCreator Session::getConnectPacket(const string &patchLocation) {
 	packet.add<uint32_t>(m_decoder.getSendIv());
 	packet.add<int8_t>(MapleVersion::Locale);
 
-	packet.set<header_t>(packet.getSize() - sizeof(header_t), 0);
+	packet.set<header_t>(static_cast<header_t>(packet.getSize() - sizeof(header_t)), 0);
 	return packet;
 }

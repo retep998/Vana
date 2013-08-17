@@ -67,7 +67,7 @@ void SkillDataProvider::loadPlayerSkills() {
 		level.mastery = row.get<int8_t>("mastery");
 		level.optionalItem = row.get<int32_t>("optional_item_cost");
 		level.item = row.get<int32_t>("item_cost");
-		level.itemCount = row.get<int32_t>("item_count");
+		level.itemCount = row.get<int16_t>("item_count");
 		level.bulletConsume = row.get<int16_t>("bullet_cost");
 		level.moneyConsume = row.get<int16_t>("money_cost");
 		level.x = row.get<int16_t>("x_property");
@@ -87,7 +87,7 @@ void SkillDataProvider::loadPlayerSkills() {
 		level.morph = row.get<int16_t>("morph");
 		level.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
 		level.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
-		level.coolTime = row.get<int32_t>("cooldown_time");
+		level.coolTime = row.get<int16_t>("cooldown_time");
 
 		m_skills[skillId][skillLevel] = level;
 		if (m_skillMaxLevels.find(skillId) == m_skillMaxLevels.end() || m_skillMaxLevels[skillId] < skillLevel) {
@@ -107,7 +107,7 @@ void SkillDataProvider::loadMobSkills() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		const soci::row &row = *i;
 
-		skillId = row.get<int32_t>("skillid");
+		skillId = row.get<uint8_t>("skillid");
 		level = row.get<uint8_t>("skill_level");
 		mobLevel.time = row.get<int16_t>("buff_time");
 		mobLevel.mp = row.get<uint8_t>("mp_cost");
@@ -115,7 +115,7 @@ void SkillDataProvider::loadMobSkills() {
 		mobLevel.y = row.get<int32_t>("y_property");
 		mobLevel.prop = row.get<int16_t>("chance");
 		mobLevel.count = row.get<uint8_t>("target_count");
-		mobLevel.interval = row.get<int32_t>("cooldown");
+		mobLevel.interval = row.get<int16_t>("cooldown");
 		mobLevel.lt.x = row.get<int16_t>("ltx");
 		mobLevel.rb.x = row.get<int16_t>("rbx");
 		mobLevel.lt.y = row.get<int16_t>("lty");
@@ -175,7 +175,7 @@ void SkillDataProvider::loadMorphs() {
 		const soci::row &row = *i;
 
 		morph = MorphData();
-		morphId = row.get<int32_t>("morphid");
+		morphId = row.get<int16_t>("morphid");
 
 		runFlags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
 			if (cmp == "superman") morph.superman = true;
