@@ -71,7 +71,7 @@ string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const op
 	// This function is gloriously unelegant
 	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
 	string ret = logger->getFormat();
-	time_t start = time(nullptr);
+
 	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
 		size_t x = ret.find(iter->first);
 		if (x != string::npos) {

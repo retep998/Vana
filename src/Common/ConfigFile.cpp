@@ -139,7 +139,7 @@ vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChanne
 	lua_getglobal(getLuaState(), value.c_str());
 	lua_pushnil(getLuaState());
 	while (lua_next(getLuaState(), -2)) {
-		channels.push_back(lua_tointeger(getLuaState(), -1));
+		channels.push_back(static_cast<int8_t>(lua_tointeger(getLuaState(), -1)));
 		lua_pop(getLuaState(), 1);
 	}
 	lua_pop(getLuaState(), 1);

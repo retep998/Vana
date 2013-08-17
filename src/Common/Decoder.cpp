@@ -86,7 +86,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 		pipe.end_msg();
 
 		// Process the message and write it into the buffer
-		size_t bytesRead = pipe.read(buffer + pos, writeAmount);
+		pipe.read(buffer + pos, writeAmount);
 
 		pos += tPos;
 		if (first) {
@@ -119,7 +119,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 		pipe.end_msg();
 
 		// Process the message and write it into the buffer
-		size_t bytesRead = pipe.read(buffer + pos, readAmount);
+		pipe.read(buffer + pos, readAmount);
 
 		pos += tPos;
 		if (first) {
