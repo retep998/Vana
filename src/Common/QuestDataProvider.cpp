@@ -43,14 +43,14 @@ void QuestDataProvider::loadData() {
 void QuestDataProvider::loadQuestData() {
 	m_quests.clear();
 	Quest curQuest;
-	int16_t questId;
+	uint16_t questId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_data");
 
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		const soci::row &row = *i;
 
-		questId = row.get<int16_t>("questid");
+		questId = row.get<uint16_t>("questid");
 		curQuest.setNextQuest(row.get<int16_t>("next_quest"));
 		curQuest.setQuestId(questId);
 
@@ -59,7 +59,7 @@ void QuestDataProvider::loadQuestData() {
 }
 
 void QuestDataProvider::loadRequests() {
-	int16_t questId;
+	uint16_t questId;
 	int32_t reward;
 	int16_t count;
 	Quest *cur;
@@ -71,7 +71,7 @@ void QuestDataProvider::loadRequests() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		const soci::row &row = *i;
 
-		questId = row.get<int16_t>("questid");
+		questId = row.get<uint16_t>("questid");
 		cur = &m_quests[questId];
 
 		reward = row.get<int32_t>("objectid");
@@ -86,7 +86,7 @@ void QuestDataProvider::loadRequests() {
 }
 
 void QuestDataProvider::loadRequiredJobs() {
-	int16_t questId;
+	uint16_t questId;
 	Quest *cur;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_required_jobs");
@@ -94,7 +94,7 @@ void QuestDataProvider::loadRequiredJobs() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		const soci::row &row = *i;
 
-		questId = row.get<int16_t>("questid");
+		questId = row.get<uint16_t>("questid");
 		cur = &m_quests[questId];
 
 		cur->addValidJob(row.get<int16_t>("valid_jobid"));
@@ -103,7 +103,7 @@ void QuestDataProvider::loadRequiredJobs() {
 
 void QuestDataProvider::loadRewards() {
 	string jobTracks;
-	int16_t questId;
+	uint16_t questId;
 	int16_t job;
 	bool start;
 	Quest *cur;
@@ -114,7 +114,7 @@ void QuestDataProvider::loadRewards() {
 	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
 		const soci::row &row = *i;
 
-		questId = row.get<int16_t>("questid");
+		questId = row.get<uint16_t>("questid");
 		cur = &m_quests[questId];
 		reward = QuestRewardInfo();
 		job = row.get<int16_t>("job");
@@ -247,7 +247,7 @@ void QuestDataProvider::loadRewards() {
 	}
 }
 
-int16_t QuestDataProvider::getItemRequest(int16_t questId, int32_t itemId) {
+int16_t QuestDataProvider::getItemRequest(uint16_t questId, int32_t itemId) {
 	if (m_quests.find(questId) != m_quests.end()) {
 		return m_quests[questId].getItemRequestQuantity(itemId);
 	}
