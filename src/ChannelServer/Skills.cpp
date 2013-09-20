@@ -395,6 +395,13 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp) {
+	if (player->hasGmEquip()) {
+		// Ensure we don't lock, but don't actually use anything
+		player->getStats()->setHp(player->getStats()->getHp(), true);
+		player->getStats()->setMp(player->getStats()->getMp(), true);
+		return;
+	}
+
 	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
 	int16_t mpUse = skill->mp;
