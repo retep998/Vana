@@ -23,6 +23,7 @@ namespace Jobs {
 	namespace JobIds {
 		enum Jobs : int16_t {
 			Beginner = 0,
+			CannoneerBeginner = 1,
 
 			Swordsman = 100,
 			Fighter = 110,
@@ -113,6 +114,8 @@ namespace Jobs {
 			Legend = 2000,
 			Evan = 2001,
 			Mercedes = 2002,
+			Phantom = 2003,
+			Luminous = 2004,
 
 			Aran1 = 2100,
 			Aran2 = 2110,
@@ -135,6 +138,16 @@ namespace Jobs {
 			Mercedes3 = 2311,
 			Mercedes4 = 2312,
 
+			Phantom1 = 2400,
+			Phantom2 = 2410,
+			Phantom3 = 2411,
+			Phantom4 = 2412,
+
+			Luminous1 = 2700,
+			Luminous2 = 2710,
+			Luminous3 = 2711,
+			Luminous4 = 2712,
+
 			Citizen = 3000,
 			DemonSlayer = 3001,
 
@@ -156,7 +169,29 @@ namespace Jobs {
 			Mechanic1 = 3500,
 			Mechanic2 = 3510,
 			Mechanic3 = 3511,
-			Mechanic4 = 3512
+			Mechanic4 = 3512,
+
+			Xenon1 = 3600,
+			Xenon2 = 3610,
+			Xenon3 = 3611,
+			Xenon4 = 3612,
+
+			Mihile = 5000,
+			Mihile1 = 5100,
+			Mihile2 = 5110,
+			Mihile3 = 5111,
+			Mihile4 = 5112,
+
+			Kaiser = 6000,
+			AngelicBuster = 6001,
+			Kaiser1 = 6100,
+			Kaiser2 = 6110,
+			Kaiser3 = 6111,
+			Kaiser4 = 6112,
+			AngelicBuster1 = 6500,
+			AngelicBuster2 = 6510,
+			AngelicBuster3 = 6511,
+			AngelicBuster4 = 6512,
 		};
 	}
 	namespace JobTypes {
@@ -164,7 +199,8 @@ namespace Jobs {
 			Adventurer = 0,
 			Cygnus = 1,
 			Legend = 2,
-			Resistance = 3
+			Resistance = 3,
+			Nova = 6,
 		};
 	}
 	namespace JobLines {
@@ -200,20 +236,31 @@ namespace Jobs {
 			Aran = 21,
 			Evan = 22,
 			Mercedes = 23,
+			Phantom = 24,
+			Luminous = 27,
 
 			Citizen = 30,
 			DemonSlayer = 31,
 			BattleMage = 32,
 			WildHunter = 33,
-			Mechanic = 35
+			Mechanic = 35,
+			Xenon = 36,
+
+			Mihile = 51,
+
+			Nova = 60,
+			Kaiser = 61,
+			Angelic = 65,
 		};
 
-		const int32_t JobTrackCount = 21;
+		const int32_t JobTrackCount = 28;
 		const int8_t JobTracks[JobTrackCount] = {
 			Beginner, Warrior, Magician, Bowman, Thief, Pirate,
 			Noblesse, DawnWarrior, BlazeWizard, WindArcher, NightWalker, ThunderBreaker,
-			Legend, Aran, Evan, Mercedes,
-			Citizen, DemonSlayer, BattleMage, WildHunter, Mechanic
+			Legend, Aran, Evan, Mercedes, Phantom, Luminous,
+			Citizen, DemonSlayer, BattleMage, WildHunter, Mechanic, Xenon,
+			Mihile,
+			Nova, Kaiser, Angelic,
 		};
 	}
 	namespace JobProgressions {
@@ -233,12 +280,14 @@ namespace Jobs {
 		};
 	}
 	namespace Beginners {
-		const int32_t JobCount = 7;
+		const int32_t JobCount = 13;
 		const int16_t Jobs[JobCount] = {
-			Jobs::JobIds::Beginner,
+			Jobs::JobIds::Beginner, Jobs::JobIds::CannoneerBeginner,
 			Jobs::JobIds::Noblesse,
-			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes,
-			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer
+			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes, Jobs::JobIds::Phantom, Jobs::JobIds::Luminous,
+			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer,
+			Jobs::JobIds::Mihile,
+			Jobs::JobIds::Kaiser, Jobs::JobIds::AngelicBuster,
 		};
 	}
 }
