@@ -51,11 +51,13 @@ void WorldServer::loadData() {
 }
 
 void WorldServer::loadConfig() {
-	ConfigFile config("conf/worldserver.lua");
-	m_loginIp = Ip(Ip::stringToIpv4(config.getString("login_ip")));
-	m_loginPort = config.get<port_t>("login_inter_port");
+	ConfigFile config("conf/interserver.lua");
+	InterServerConfig conf = config.getClass<InterServerConfig>();
 
-	m_port = -1; // Will get from login server later
+	m_loginIp = conf.loginIp; //(Ip::stringToIpv4(config.getString("login_ip")));
+	m_loginPort = conf.port; //config.get<port_t>("login_inter_port");
+
+	m_port = -1; // Will get from LoginServer later
 }
 
 void WorldServer::rehashConfig(const WorldConfig &config) {

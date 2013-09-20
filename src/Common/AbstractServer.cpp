@@ -55,9 +55,7 @@ void AbstractServer::initialize() {
 	}
 
 	m_externalIps = config.getIpMatrix("external_ip");
-	m_loginConfig.clientEncryption = config.get<bool>("use_client_encryption");
-	m_loginConfig.clientPing = config.get<bool>("use_client_ping");
-	m_loginConfig.serverPing = config.get<bool>("use_inter_ping");
+	m_loginConfig = config.getClass<LoginConfig>();
 
 	loadConfig();
 	loadLogConfig();

@@ -33,12 +33,12 @@ public:
 			singleton = new LoginServer;
 		return singleton;
 	}
-	void loadData();
-	void loadConfig();
-	void loadLogConfig();
+	void loadData() override;
+	void loadConfig() override;
+	void loadLogConfig() override;
 	void loadWorlds();
-	void listen();
-	opt_string makeLogIdentifier();
+	void listen() override;
+	opt_string makeLogIdentifier() override;
 
 	bool getPinEnabled() const { return m_pinEnabled; }
 	void setPinEnabled(bool enabled) { m_pinEnabled = enabled; }

@@ -90,11 +90,13 @@ void ChannelServer::connectWorld() {
 }
 
 void ChannelServer::loadConfig() {
-	ConfigFile config("conf/channelserver.lua");
-	m_loginIp = Ip(Ip::stringToIpv4(config.getString("login_ip")));
-	m_loginPort = config.get<port_t>("login_inter_port");
+	ConfigFile config("conf/interserver.lua");
+	InterServerConfig conf = config.getClass<InterServerConfig>();
 
-	 // Will get from world server
+	m_loginIp = conf.loginIp;
+	m_loginPort = conf.port;
+
+	 // Will get from WorldServer later
 	m_world = -1;
 	m_port = -1;
 	m_pianusChannel = false;

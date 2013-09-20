@@ -26,8 +26,8 @@ class LoginServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
 	LoginServerAcceptConnection();
 	~LoginServerAcceptConnection();
-	void handleRequest(PacketReader &packet);
-	void authenticated(int8_t type);
+	void handleRequest(PacketReader &packet) override;
+	void authenticated(int8_t type) override;
 
 	void setWorldId(int8_t id) { m_worldId = id; }
 	int8_t getWorldId() const { return m_worldId; }
@@ -37,7 +37,7 @@ private:
 
 class LoginServerAcceptConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new LoginServerAcceptConnection();
 	}
 };

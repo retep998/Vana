@@ -57,8 +57,8 @@ public:
 	Ip(const string &addr, Ip::Type type);
 	explicit Ip(uint32_t ipv4);
 
-	virtual void write(PacketCreator &packet) const;
-	virtual void read(PacketReader &packet);
+	virtual void write(PacketCreator &packet) const override;
+	virtual void read(PacketReader &packet) override;
 
 	string toString() const;
 	uint32_t asIpv4() const { return m_ipv4; }

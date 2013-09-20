@@ -1,3 +1,0 @@
--- What IP and port should the WorldServer use to connect to the LoginServer?
-login_ip = "127.0.0.1";
-login_inter_port = 8485;

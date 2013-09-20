@@ -49,7 +49,7 @@ public:
 	int64_t getId() const { return m_id; }
 	bool isSummoned() const { return m_index.is_initialized(); }
 	string getName() { return m_name; }
-	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
+	Pos getPos() const override { return Pos(m_pos.x, m_pos.y - 1); }
 	bool hasNameTag() const;
 	bool hasQuoteItem() const;
 

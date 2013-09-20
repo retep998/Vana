@@ -28,7 +28,7 @@ public:
 	Player();
 	~Player();
 
-	void handleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet) override;
 
 	void setGender(int8_t gender) { m_gender = gender; }
 	void setWorldId(int8_t worldId) { m_worldId = worldId; }
@@ -74,7 +74,7 @@ private:
 
 class PlayerFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new Player();
 	}
 };

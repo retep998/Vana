@@ -25,12 +25,12 @@ class LoginServerConnection : public AbstractServerConnection {
 public:
 	LoginServerConnection();
 	~LoginServerConnection();
-	void handleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet) override;
 };
 
 class LoginServerConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new LoginServerConnection();
 	}
 };

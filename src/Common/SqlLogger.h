@@ -29,7 +29,7 @@ public:
 	SqlLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	~SqlLogger();
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message);
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override;
 	void flush();
 private:
 	size_t m_bufferSize;

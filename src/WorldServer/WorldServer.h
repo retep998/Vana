@@ -38,12 +38,12 @@ public:
 			singleton = new WorldServer;
 		return singleton;
 	}
-	void loadData();
-	void loadConfig();
-	void loadLogConfig();
+	void loadData() override;
+	void loadConfig() override;
+	void loadLogConfig() override;
 	void rehashConfig(const WorldConfig &config);
-	void listen();
-	opt_string makeLogIdentifier();
+	void listen() override;
+	opt_string makeLogIdentifier() override;
 
 	void setWorldId(int8_t id) { m_worldId = id; }
 	void setInterPort(port_t port) { m_port = port; }

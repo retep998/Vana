@@ -27,13 +27,13 @@ public:
 	virtual ~MovableLife() { }
 
 	bool isFacingRight() const { return m_stance % 2 == 0; }
-	virtual int8_t getStance() const { return m_stance; }
-	virtual int16_t getFh() const { return m_foothold; }
+	int8_t getStance() const { return m_stance; }
+	int16_t getFh() const { return m_foothold; }
 	virtual Pos getPos() const { return m_pos; }
 
-	virtual void setStance(int8_t val) { m_stance = val; }
-	virtual void setFh(int16_t val) { m_foothold = val; }
-	virtual void setPos(const Pos &val) { m_pos = val; }
+	void setStance(int8_t val) { m_stance = val; }
+	void setFh(int16_t val) { m_foothold = val; }
+	void setPos(const Pos &val) { m_pos = val; }
 protected:
 	int8_t m_stance;
 	int16_t m_foothold;

@@ -26,12 +26,12 @@ class WorldServerConnection : public AbstractServerConnection {
 public:
 	WorldServerConnection();
 	~WorldServerConnection();
-	void handleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet) override;
 };
 
 class WorldServerConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new WorldServerConnection();
 	}
 };

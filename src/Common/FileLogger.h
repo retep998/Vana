@@ -34,7 +34,7 @@ public:
 	FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	~FileLogger();
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message);
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override;
 	void flush();
 	const string & getFilenameFormat() const { return m_filenameFormat; }
 private:
