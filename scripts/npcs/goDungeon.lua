@@ -46,7 +46,7 @@ else
 		yes = askYesNo();
 
 		if yes == 1 then
-			setMap(211040300, "sp");
+			setMap(211040300, "under00");
 		else
 			addText("Even if your level's high it's hard to actually go in there, but if you ever change your mind please find me. After all, my job is to protect this place.");
 			sendNext();
