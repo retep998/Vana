@@ -28,14 +28,14 @@ class LuaNpc : public LuaScriptable {
 public:
 	LuaNpc(const string &filename, int32_t playerId);
 
-	bool run();
+	bool run() override;
 	bool proceedNext();
 	bool proceedSelection(uint8_t selected);
 	bool proceedNumber(int32_t number);
 	bool proceedText(const string &text);
 protected:
 	bool resume(int32_t nArgs);
-	void handleError();
+	void handleError() override;
 
 	lua_State *m_luaThread; // For executing scripts (pausable)
 };

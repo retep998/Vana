@@ -131,7 +131,7 @@ public:
 	bool hasStatus(int32_t status) const;
 	bool canCastSkills() const;
 	bool isSponge() const { return isSponge(getMobId()); }
-	Pos getPos() const { return Pos(m_pos.x, m_pos.y - 1); }
+	Pos getPos() const override { return Pos(m_pos.x, m_pos.y - 1); }
 	Mob * getOwner() const { return m_owner; }
 	Mob * getSponge() const { return m_sponge; }
 	const MobInfo getInfo() const { return m_info; }

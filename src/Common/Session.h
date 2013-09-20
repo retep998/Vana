@@ -40,15 +40,15 @@ public:
 	friend class ConnectionAcceptor;
 	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation = "");
 
-	void disconnect();
+	void disconnect() override;
 	void send(const PacketCreator &packet, bool encrypt = true);
 	const Ip & getIp() const;
 protected:
 	tcp::socket & getSocket() { return m_socket; }
-	void start();
-	void stop();
-	void handleStart();
-	void handleStop();
+	void start() override;
+	void stop() override;
+	void handleStart() override;
+	void handleStop() override;
 
 	void startReadHeader();
 	void handleWrite(const boost::system::error_code &error, size_t bytesTransferred);

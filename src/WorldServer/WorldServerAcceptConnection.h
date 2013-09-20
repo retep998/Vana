@@ -26,8 +26,8 @@ class WorldServerAcceptConnection : public AbstractServerAcceptConnection {
 public:
 	~WorldServerAcceptConnection();
 
-	void handleRequest(PacketReader &packet);
-	void authenticated(int8_t type);
+	void handleRequest(PacketReader &packet) override;
+	void authenticated(int8_t type) override;
 
 	uint16_t getChannel() const { return m_channel; }
 private:
@@ -36,7 +36,7 @@ private:
 
 class WorldServerAcceptConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new WorldServerAcceptConnection();
 	}
 };

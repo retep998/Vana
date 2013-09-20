@@ -33,7 +33,7 @@ public:
 		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
 	}
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 	}
@@ -53,7 +53,7 @@ public:
 		m_logger3.reset(new Logger3(filename, format, timeFormat, serverType, bufferSize));
 	}
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
+	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 		getLogger3()->log(type, identifier, message);

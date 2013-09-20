@@ -37,13 +37,13 @@ public:
 			singleton = new ChannelServer;
 		return singleton;
 	}
-	void loadData();
-	void loadConfig();
-	void loadLogConfig();
-	void listen();
-	void shutdown();
+	void loadData() override;
+	void loadConfig() override;
+	void loadLogConfig() override;
+	void listen() override;
+	void shutdown() override;
 	void connectWorld();
-	opt_string makeLogIdentifier();
+	opt_string makeLogIdentifier() override;
 
 	void setChannelId(int16_t channel) { m_channelId = channel; }
 	void setWorldId(int8_t id) { m_world = id; }

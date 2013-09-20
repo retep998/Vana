@@ -57,7 +57,7 @@ public:
 	Player();
 	~Player();
 
-	void handleRequest(PacketReader &packet);
+	void handleRequest(PacketReader &packet) override;
 
 	void setSaveOnDc(bool save) { m_saveOnDc = save; }
 	void setTrading(bool state) { m_tradeState = state; }
@@ -196,7 +196,7 @@ private:
 
 class PlayerFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() {
+	AbstractConnection * createConnection() override {
 		return new Player();
 	}
 };
