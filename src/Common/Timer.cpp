@@ -26,7 +26,8 @@ Timer::Timer(const function<void ()> func, const Id &id, Container *container, c
 	m_id(id),
 	m_container(container),
 	m_repeat(false),
-	m_function(func)
+	m_function(func),
+	m_repeatTime(0)
 {
 	init(differenceFromNow);
 }

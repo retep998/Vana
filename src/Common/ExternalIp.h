@@ -32,8 +32,8 @@ public:
 	ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask);
 
 	bool tryMatchIpToSubnet(const Ip &test, Ip &result) const;
-	void write(PacketCreator &packet) const;
-	void read(PacketReader &packet);
+	void write(PacketCreator &packet) const override;
+	void read(PacketReader &packet) override;
 private:
 	friend class PacketReader;
 	ExternalIp() : Ip() { }
