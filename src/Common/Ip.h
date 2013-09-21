@@ -37,8 +37,8 @@ public:
 				throw std::invalid_argument("Must pass Ip::Type::Ipv4 or Ip::Type::Ipv6 to the constructor");
 			}
 		}
-		void write(PacketCreator &packet) const;
-		void read(PacketReader &packet);
+		void write(PacketCreator &packet) const override;
+		void read(PacketReader &packet) override;
 
 		bool operator==(const Type &right) const { return right.m_type == this->m_type; }
 		bool operator==(const int8_t &right) const { return right == this->m_type; }
