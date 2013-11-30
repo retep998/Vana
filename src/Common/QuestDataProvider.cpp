@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeCommon.h"
 #include "Quest.h"
 #include "StringUtilities.h"
+#include <initializer_list>
 #include <iomanip>
 #include <iostream>
 
@@ -144,103 +145,82 @@ void QuestDataProvider::loadRewards() {
 		}
 		else {
 			runFlags(jobTracks, [&cur, &reward, &start](const string &cmp) {
-				// Workaround for VS2010 in two ways:
-				// - There's a bug in the compiler where it won't properly capture variables on inner lambdas
-				// - Secondly, it doesn't support std::initializer_list semantics so I have to do something ugly... very ugly
-				Quest *&q = cur;
-				QuestRewardInfo &r = reward;
-				bool s = start;
-				auto func = [&](int16_t jobArr[], size_t arrSize) {
-					for (size_t i = 0; i != arrSize; ++i) {
-						q->addReward(s, r, jobArr[i]);
+				auto addRewardForJobs = [&cur, &reward, &start](std::initializer_list<int16_t> jobs) {
+					for (auto job : jobs) {
+						cur->addReward(start, reward, job);
 					}
 				};
 				if (cmp == "beginner") {
-					int16_t arr[] = {Jobs::JobIds::Beginner};
-					func(arr, 1);
+					addRewardForJobs({Jobs::JobIds::Beginner});
 				}
 				else if (cmp == "warrior") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Swordsman,
 						Jobs::JobIds::Fighter, Jobs::JobIds::Crusader, Jobs::JobIds::Hero,
 						Jobs::JobIds::Page, Jobs::JobIds::WhiteKnight, Jobs::JobIds::Paladin,
 						Jobs::JobIds::Spearman, Jobs::JobIds::DragonKnight, Jobs::JobIds::DarkKnight
-					};
-					func(arr, 10);
+					});
 				}
 				else if (cmp == "magician") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Magician,
 						Jobs::JobIds::FpWizard, Jobs::JobIds::FpMage, Jobs::JobIds::FpArchMage,
 						Jobs::JobIds::IlWizard, Jobs::JobIds::IlMage, Jobs::JobIds::IlArchMage,
 						Jobs::JobIds::Cleric, Jobs::JobIds::Priest, Jobs::JobIds::Bishop
-					};
-					func(arr, 10);
+					});
 				}
 				else if (cmp == "bowman") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Archer,
 						Jobs::JobIds::Hunter, Jobs::JobIds::Ranger, Jobs::JobIds::Bowmaster,
 						Jobs::JobIds::Crossbowman, Jobs::JobIds::Sniper, Jobs::JobIds::Marksman
-					};
-					func(arr, 7);
+					});
 				}
 				else if (cmp == "thief") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Rogue,
 						Jobs::JobIds::Assassin, Jobs::JobIds::Hermit, Jobs::JobIds::NightLord,
 						Jobs::JobIds::Bandit, Jobs::JobIds::ChiefBandit, Jobs::JobIds::Shadower
-					};
-					func(arr, 7);
+					});
 				}
 				else if (cmp == "pirate") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Pirate,
 						Jobs::JobIds::Brawler, Jobs::JobIds::Marauder, Jobs::JobIds::Buccaneer,
 						Jobs::JobIds::Gunslinger, Jobs::JobIds::Outlaw, Jobs::JobIds::Corsair
-					};
-					func(arr, 7);
+					});
 				}
 				else if (cmp == "cygnus_beginner") {
-					int16_t arr[] = {Jobs::JobIds::Noblesse};
-					func(arr, 1);
+					addRewardForJobs({Jobs::JobIds::Noblesse});
 				}
 				else if (cmp == "cygnus_warrior") {
-					int16_t arr[] = {Jobs::JobIds::DawnWarrior1, Jobs::JobIds::DawnWarrior2, Jobs::JobIds::DawnWarrior3};
-					func(arr, 3);
+					addRewardForJobs({Jobs::JobIds::DawnWarrior1, Jobs::JobIds::DawnWarrior2, Jobs::JobIds::DawnWarrior3});
 				}
 				else if (cmp == "cygnus_magician") {
-					int16_t arr[] = {Jobs::JobIds::BlazeWizard1, Jobs::JobIds::BlazeWizard2, Jobs::JobIds::BlazeWizard3};
-					func(arr, 3);
+					addRewardForJobs({Jobs::JobIds::BlazeWizard1, Jobs::JobIds::BlazeWizard2, Jobs::JobIds::BlazeWizard3});
 				}
 				else if (cmp == "cygnus_bowman") {
-					int16_t arr[] = {Jobs::JobIds::WindArcher1, Jobs::JobIds::WindArcher2, Jobs::JobIds::WindArcher3};
-					func(arr, 3);
+					addRewardForJobs({Jobs::JobIds::WindArcher1, Jobs::JobIds::WindArcher2, Jobs::JobIds::WindArcher3});
 				}
 				else if (cmp == "cygnus_thief") {
-					int16_t arr[] = {Jobs::JobIds::NightWalker1, Jobs::JobIds::NightWalker2, Jobs::JobIds::NightWalker3};
-					func(arr, 3);
+					addRewardForJobs({Jobs::JobIds::NightWalker1, Jobs::JobIds::NightWalker2, Jobs::JobIds::NightWalker3});
 				}
 				else if (cmp == "cygnus_pirate") {
-					int16_t arr[] = {Jobs::JobIds::ThunderBreaker1, Jobs::JobIds::ThunderBreaker2, Jobs::JobIds::ThunderBreaker3};
-					func(arr, 3);
+					addRewardForJobs({Jobs::JobIds::ThunderBreaker1, Jobs::JobIds::ThunderBreaker2, Jobs::JobIds::ThunderBreaker3});
 				}
 				else if (cmp == "episode2_beginner") {
-					int16_t arr[] = {Jobs::JobIds::Legend};
-					func(arr, 1);
+					addRewardForJobs({Jobs::JobIds::Legend});
 				}
 				else if (cmp == "episode2_warrior") {
-					int16_t arr[] = {Jobs::JobIds::Aran1, Jobs::JobIds::Aran2, Jobs::JobIds::Aran3, Jobs::JobIds::Aran4};
-					func(arr, 4);
+					addRewardForJobs({Jobs::JobIds::Aran1, Jobs::JobIds::Aran2, Jobs::JobIds::Aran3, Jobs::JobIds::Aran4});
 				}
 				else if (cmp == "episode2_magician") {
-					int16_t arr[] = {
+					addRewardForJobs({
 						Jobs::JobIds::Evan1,
 						Jobs::JobIds::Evan2, Jobs::JobIds::Evan3, Jobs::JobIds::Evan4,
 						Jobs::JobIds::Evan5, Jobs::JobIds::Evan6, Jobs::JobIds::Evan7,
 						Jobs::JobIds::Evan8, Jobs::JobIds::Evan9, Jobs::JobIds::Evan10
-					};
-					func(arr, 10);
+					});
 				}
 			});
 		}
