@@ -44,10 +44,8 @@ void DropDataProvider::loadDrops() {
 	int32_t dropper;
 
 	auto dropFlags = [&drop](const opt_string &flags) {
-		// Inner lambda workaround for VS2010
-		auto &d = drop;
-		runFlags(flags, [&d](const string &cmp) {
-			if (cmp == "is_mesos") d.isMesos = true;
+		runFlags(flags, [&drop](const string &cmp) {
+			if (cmp == "is_mesos") drop.isMesos = true;
 		});
 	};
 
