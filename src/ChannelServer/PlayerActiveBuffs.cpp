@@ -58,7 +58,7 @@ void PlayerActiveBuffs::removeBuff(int32_t skill, bool fromTimer) {
 		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 		m_player->getTimers()->removeTimer(id);
 	}
-	removeAct(skill);
+	removeAction(skill);
 	m_buffs.remove(skill);
 }
 
@@ -79,8 +79,8 @@ seconds_t PlayerActiveBuffs::getBuffSecondsRemaining(int32_t skill) const {
 	return m_player->getTimers()->getSecondsRemaining(id);
 }
 
-// Skill "acts"
-struct RunAct {
+// Skill actions
+struct RunAction {
 	void operator()() {
 		switch (act) {
 			case ActHeal: Skills::heal(player, value, skill); break;
@@ -89,19 +89,19 @@ struct RunAct {
 	}
 	Player *player;
 	int32_t skill;
-	Act act;
+	Action act;
 	int16_t value;
 };
 
-void PlayerActiveBuffs::addAct(int32_t skill, Act act, int16_t value, int32_t time) {
-	RunAct runAct;
+void PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time) {
+	RunAction runAct;
 	runAct.player = m_player;
 	runAct.skill = skill;
 	runAct.act = act;
 	runAct.value = value;
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
-	new Timer::Timer(runAct, id, getActTimer(skill), seconds_t(0), milliseconds_t(time));
+	new Timer::Timer(runAct, id, getActTimer(skill), seconds_t(0), time);
 }
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
@@ -111,7 +111,7 @@ Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
 	return m_skillActs[skill].get();
 }
 
-void PlayerActiveBuffs::removeAct(int32_t skill) {
+void PlayerActiveBuffs::removeAction(int32_t skill) {
 	m_skillActs.erase(skill);
 }
 
@@ -262,12 +262,17 @@ void PlayerActiveBuffs::dispelBuffs() {
 	if (isUsingHide()) {
 		return;
 	}
-	unordered_map<int32_t, uint8_t> activeLevels = m_activeLevels;
-	for (unordered_map<int32_t, uint8_t>::iterator iter = activeLevels.begin(); iter != activeLevels.end(); ++iter) {
+	
+	vector<int32_t> stopSkills;
+	for (auto iter = m_activeLevels.cbegin(); iter != m_activeLevels.cend(); ++iter) {
 		if (iter->first > 0 && !GameLogicUtilities::isMobSkill(iter->first)) {
 			// Only want active skills and skill buffs - no item buffs or debuffs
-			Skills::stopSkill(m_player, iter->first);
+			stopSkills.push_back(iter->first);
 		}
+	}
+
+	for (auto skill : stopSkills) {
+		Skills::stopSkill(m_player, skill);
 	}
 }
 
@@ -302,7 +307,6 @@ void PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) {
 }
 
 void PlayerActiveBuffs::addCombo() {
-	// Add orbs
 	int32_t skillId = m_player->getSkills()->getComboAttack();
 	uint8_t cLevel = getActiveSkillLevel(skillId);
 	if (cLevel > 0) {
@@ -322,7 +326,6 @@ void PlayerActiveBuffs::addCombo() {
 			return;
 		}
 		if (advCombo > 0 && Randomizer::rand<uint16_t>(99) < prop) {
-			// 4th job skill gives chance to add second orb
 			m_combo += 1;
 		}
 		m_combo += 1;
@@ -343,12 +346,10 @@ void PlayerActiveBuffs::checkBerserk(bool display) {
 			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > hpPercentage) {
-				// If on and we're above Berserk HP, Berserk fails
 				m_berserk = false;
 				change = true;
 			}
 			else if (!m_berserk && hp <= hpPercentage) {
-				// If off and we're below Berserk HP, let's rock
 				m_berserk = true;
 				change = true;
 			}
@@ -701,7 +702,7 @@ void PlayerActiveBuffs::read(PacketReader &packet) {
 		uint8_t level = packet.get<uint8_t>();
 		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);
-		Buffs::doAct(m_player, skillId, level);
+		Buffs::doAction(m_player, skillId, level);
 	}
 	// Current buffs by type
 	unordered_map<uint8_t, int32_t> currentByte;

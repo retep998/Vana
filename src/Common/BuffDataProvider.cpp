@@ -698,9 +698,9 @@ void BuffDataProvider::loadData() {
 	act.time = 4900;
 	act.value = SkillX;
 	m_skillInfo[Skills::Beginner::Recovery].act = act;
-	m_skillInfo[Skills::Beginner::Recovery].bact = true;
+	m_skillInfo[Skills::Beginner::Recovery].hasAction = true;
 	m_skillInfo[Skills::Noblesse::Recovery].act = act;
-	m_skillInfo[Skills::Noblesse::Recovery].bact = true;
+	m_skillInfo[Skills::Noblesse::Recovery].hasAction = true;
 
 	// Dragon Blood
 	buff.type = 0x01;
@@ -717,7 +717,7 @@ void BuffDataProvider::loadData() {
 	act.time = 4000;
 	act.value = SkillX;
 	m_skillInfo[Skills::DragonKnight::DragonBlood].act = act;
-	m_skillInfo[Skills::DragonKnight::DragonBlood].bact = true;
+	m_skillInfo[Skills::DragonKnight::DragonBlood].hasAction = true;
 	// End act buffs
 
 	// Debuffs

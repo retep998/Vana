@@ -92,10 +92,10 @@ public:
 	void setMountInfo(int32_t skillId, int32_t mountId);
 	MapEntryBuffs getMapEntryBuffs();
 
-	// Skill "acts"
-	void addAct(int32_t skill, Act act, int16_t value, int32_t time);
+	// Skill actions
+	void addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time);
 	Timer::Container * getActTimer(int32_t skill);
-	void removeAct(int32_t skill);
+	void removeAction(int32_t skill);
 
 	// Debuffs
 	void addDebuff(uint8_t skill, uint8_t level);
