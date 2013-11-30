@@ -51,17 +51,17 @@ struct BuffMapInfo {
 };
 
 struct BuffAct {
-	Act type;
+	Action type;
 	int8_t value;
 	int32_t time;
 };
 
 struct SkillInfo {
-	SkillInfo() : bact(false) { }
+	SkillInfo() : hasAction(false) { }
 	vector<BuffInfo> player;
 	vector<BuffMapInfo> map;
 	BuffAct act;
-	bool bact;
+	bool hasAction;
 };
 
 struct MobAilmentInfo {

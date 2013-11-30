@@ -63,7 +63,7 @@ namespace Buffs {
 	void addBuff(Player *player, int32_t itemId, const seconds_t &time);
 	bool addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedInfo, int32_t mapMobId = 0);
 	void endBuff(Player *player, int32_t skill);
-	void doAct(Player *player, int32_t skillId, uint8_t level);
+	void doAction(Player *player, int32_t skillId, uint8_t level);
 	void addDebuff(Player *player, uint8_t skillId, uint8_t level);
 	void endDebuff(Player *player, uint8_t skillId);
 	bool buffMayApply(int32_t skillId, uint8_t level, int8_t buffValue);

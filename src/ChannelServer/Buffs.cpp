@@ -422,7 +422,7 @@ bool Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 		playerBuffs->setActiveSkillLevel(skillId, level);
 		playerBuffs->removeBuff(skillId);
 		playerBuffs->addBuff(skillId, time);
-		doAct(player, skillId, level);
+		doAction(player, skillId, level);
 	}
 	return true;
 }
@@ -529,12 +529,12 @@ void Buffs::endBuff(Player *player, int32_t skill) {
 	playerBuffs->setActiveSkillLevel(skill, 0);
 }
 
-void Buffs::doAct(Player *player, int32_t skillId, uint8_t level) {
+void Buffs::doAction(Player *player, int32_t skillId, uint8_t level) {
 	SkillInfo *skillsInfo = BuffDataProvider::Instance()->getSkillInfo(skillId);
 
-	if (skillsInfo->bact) {
+	if (skillsInfo->hasAction) {
 		int16_t value = getValue(skillsInfo->act.value, skillId, level);
-		player->getActiveBuffs()->addAct(skillId, skillsInfo->act.type, value, skillsInfo->act.time);
+		player->getActiveBuffs()->addAction(skillId, skillsInfo->act.type, value, milliseconds_t(skillsInfo->act.time));
 	}
 }
 
