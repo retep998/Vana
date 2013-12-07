@@ -105,7 +105,8 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 			return;
 		}
 	}
-	if (!NpcDataProvider::Instance()->isValidNpcId(npcId)) {
+	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
+	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::Instance()->isValidNpcId(npcId)) {
 		std::ostringstream x;
 		x << "Player (ID: " << player->getId()
 			<< ", Name: " << player->getName()
