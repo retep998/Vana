@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- NimaKIN, credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
 
 if isGm() == 1 then
-	addText("Hi #h #! What do you wish?\n");
-	addText("#bL1#I would like my inventory slots maxed#l\n");
-	addText("#L2#I would like my skills maxed#l");
+	addText("Hi #h #! What do you wish?\r\n");
+	addText("#b#L1#I would like my inventory slots maxed#l\r\n");
+	addText("#L2#I would like my skills maxed#l\r\n");
 	choice = askChoice();
 
 	if choice == 1 then
