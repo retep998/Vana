@@ -37,6 +37,10 @@ Map * Maps::getMap(int32_t mapId) {
 	return MapDataProvider::Instance()->getMap(mapId);
 }
 
+void Maps::unloadMap(int32_t mapId) {
+	MapDataProvider::Instance()->unloadMap(mapId);
+}
+
 void Maps::usePortal(Player *player, PortalInfo *portal) {
 	if (portal->script.size() != 0) { // Scripted portal
 		// Check for "onlyOnce" portal

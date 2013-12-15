@@ -200,6 +200,7 @@ private:
 	int32_t m_id;
 	int32_t m_timeMob;
 	int32_t m_spawnMobs;
+	int32_t m_emptyMapTicks;
 	string m_music;
 	Instance *m_instance;
 	LoopingId<int32_t> m_objectIds;

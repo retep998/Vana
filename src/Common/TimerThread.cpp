@@ -29,72 +29,58 @@ using std::bind;
 Thread * Thread::singleton = nullptr;
 
 Thread::Thread() :
-	m_resortTimer(false),
 	m_terminate(false),
 	m_container(new Container)
 {
-	m_thread.reset(new std::thread(bind(&Thread::runThread, this)));
+	m_thread.reset(new std::thread([this]() { this->runThread(); }));
 }
 
 Thread::~Thread() {
 	m_terminate = true;
 }
 
-void Thread::registerTimer(Timer *timer) {
+void Thread::registerTimer(shared_ptr<Timer> timer) {
 	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
-	m_resortTimer = true;
-	m_timers.push_back(timer);
+	m_timers.push(std::make_pair(timer->getRunAt(), timer));
 	m_mainLoopCondition.notify_one();
 }
 
-void Thread::removeTimer(Timer *timer) {
-	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
-	m_timers.remove(timer);
-	m_mainLoopCondition.notify_one();
-}
-
-bool less_than (const Timer *t1, const Timer *t2) {
-	return (t1->getRunAt() < t2->getRunAt());
-}
-
-Timer * Thread::findMin() {
-	// Unsynchronized
-	if (m_timers.size() == 0) {
-		return nullptr;
+time_point_t Thread::getWaitTime() const {
+	if (m_timers.size() > 0) {
+		return m_timers.top().first;
 	}
 
-	if (m_resortTimer) {
-		m_timers.sort(less_than);
-		m_resortTimer = false;
-	}
-
-	return *m_timers.begin();
-}
-
-void Thread::forceReSort() {
-	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
-	m_resortTimer = true;
-	m_mainLoopCondition.notify_one();
+	return TimeUtilities::getNowWithTimeAdded(milliseconds_t(1000000000));
 }
 
 void Thread::runThread() {
 	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
 	while (!m_terminate) {
-		// Find minimum wakeup time
-		Timer *minTimer = findMin();
-		// Be certain the time stays in milliseconds
-		milliseconds_t msec = (minTimer == nullptr) ? milliseconds_t(1000000000) : std::chrono::duration_cast<milliseconds_t>(minTimer->getRunAt() - TimeUtilities::getNow());
-		if (msec.count() <= 0) {
-			minTimer->run();
-			continue;
+		time_point_t waitTime = getWaitTime();
+		time_point_t now = TimeUtilities::getNow();
+
+		while (waitTime <= now) {
+			pair<time_point_t, weak_ptr<Timer>> top = m_timers.top();
+			if (top.second.expired()) {
+				m_timers.pop();
+				continue;
+			}
+
+			shared_ptr<Timer> timer = top.second.lock();
+			m_timers.pop();
+
+			if (timer->run() == TimerRunResult::Reset) {
+				m_timers.push(std::make_pair(timer->reset(now), timer));
+			}
+			else {
+				timer->getContainer()->removeTimer(timer->getId());
+			}
+
+			waitTime = getWaitTime();
 		}
 
-		if (m_mainLoopCondition.wait_for(l, msec) == std::cv_status::no_timeout) {
+		if (m_mainLoopCondition.wait_until(l, waitTime) == std::cv_status::no_timeout) {
 			continue;
-		}
-
-		if (minTimer != nullptr) {
-			minTimer->run();
 		}
 	}
 }

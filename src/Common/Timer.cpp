@@ -19,8 +19,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.h"
 #include "TimerThread.h"
 #include "TimeUtilities.h"
+#include <memory>
 
 namespace Timer {
+
+void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow) {
+	if (container == nullptr) {
+		container = Thread::Instance()->getContainer();
+	}
+
+	std::shared_ptr<Timer> timer = std::make_shared<Timer>(func, id, container, differenceFromNow);
+	container->registerTimer(timer);
+}
+
+void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat) {
+	if (container == nullptr) {
+		container = Thread::Instance()->getContainer();
+	}
+
+	std::shared_ptr<Timer> timer = std::make_shared<Timer>(func, id, container, differenceFromNow, repeat);
+	container->registerTimer(timer);
+}
 
 Timer::Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow) :
 	m_id(id),
@@ -29,7 +48,7 @@ Timer::Timer(const function<void ()> func, const Id &id, Container *container, c
 	m_function(func),
 	m_repeatTime(0)
 {
-	init(differenceFromNow);
+	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);
 }
 
 Timer::Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat) :
@@ -39,45 +58,17 @@ Timer::Timer(const function<void ()> func, const Id &id, Container *container, c
 	m_repeatTime(repeat),
 	m_function(func)
 {
-	init(differenceFromNow);
-}
-
-void Timer::init(const duration_t &differenceFromNow) {
 	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);
-
-	if (!m_container) {
-		// No container specified, use the central container
-		m_container = Thread::Instance()->getContainer();
-	}
-	if (m_runAt <= TimeUtilities::getNow()) {
-		reset();
-	}
-	else {
-		Thread::Instance()->forceReSort();
-	}
-
-	m_container->registerTimer(this);
-	Thread::Instance()->registerTimer(this);
 }
 
-Timer::~Timer() {
-	Thread::Instance()->removeTimer(this);
-}
-
-void Timer::run() {
+TimerRunResult::RunResult Timer::run() {
 	m_function();
-
-	if (m_repeat) {
-		reset();
-	}
-	else {
-		m_container->removeTimer(getId());
-	}
+	return m_repeat ? TimerRunResult::Reset : TimerRunResult::Complete;
 }
 
-void Timer::reset() {
-	m_runAt = TimeUtilities::getNowWithTimeAdded(m_repeatTime);
-	Thread::Instance()->forceReSort();
+time_point_t Timer::reset(const time_point_t &now) {
+	m_runAt = now + m_repeatTime;
+	return m_runAt;
 }
 
 duration_t Timer::getTimeLeft() const {

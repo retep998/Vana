@@ -50,7 +50,7 @@ int main() {
 
 #ifdef _WIN32
 		// Allow the server to stop on windows console events
-		console_ctrl_function = std::bind(&AbstractServer::shutdown, server);
+		console_ctrl_function = [server]() { server->shutdown(); };
 		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 		connMan->run();
 		connMan->join();

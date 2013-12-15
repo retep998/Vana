@@ -25,24 +25,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using std::function;
 
+namespace TimerRunResult {
+	enum RunResult {
+		Reset,
+		Complete
+	};
+}
+
 namespace Timer {
 
 class Container;
+class Thread;
+
+void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow);
+void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat);
 
 class Timer {
 public:
-	Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow);
-	Timer(const function<void ()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat);
-	~Timer();
+	Timer(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow);
+	Timer(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat);
 
 	Id getId() const { return m_id; }
 	const time_point_t & getRunAt() const { return m_runAt; }
 	duration_t getTimeLeft() const;
-
-	void run();
-	void reset();
+	TimerRunResult::RunResult run();
+	time_point_t reset(const time_point_t &now);
+	Container * getContainer() const { return m_container; }
 private:
-	void init(const duration_t &differenceFromNow);
+	Timer() = delete;
 
 	Id m_id;
 	Container *m_container;

@@ -140,17 +140,20 @@ void Mob::initMob() {
 	m_statuses[empty.status] = empty;
 
 	if (m_info->hpRecovery > 0) {
-		new Timer::Timer(std::bind(&Mob::naturalHealHp, this, m_info->hpRecovery),
+		int32_t recovery = m_info->hpRecovery;
+		Timer::create([this, recovery]() { this->naturalHealHp(recovery); },
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
-			getTimers(), seconds_t(0), seconds_t(10));
+			getTimers(), seconds_t(1), seconds_t(10));
 	}
 	if (m_info->mpRecovery > 0) {
-		new Timer::Timer(std::bind(&Mob::naturalHealMp, this, m_info->mpRecovery),
+		int32_t recovery = m_info->mpRecovery;
+		Timer::create([this, recovery]() { this->naturalHealMp(recovery); },
 			Timer::Id(Timer::Types::MobHealTimer, 1, 1),
-			getTimers(), seconds_t(0), seconds_t(10));
+			getTimers(), seconds_t(1), seconds_t(10));
 	}
 	if (m_info->removeAfter > 0) {
-		new Timer::Timer(std::bind(&Mob::applyDamage, this, 0, m_info->hp, false),
+		int32_t damage = m_info->hp;
+		Timer::create([this, damage]() { this->applyDamage(0, damage, false); },
 			Timer::Id(Timer::Types::MobRemoveTimer, m_mobId, m_id),
 			map->getTimers(), seconds_t(m_info->removeAfter));
 	}
@@ -214,15 +217,10 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (m_hp == Stats::MinHp) {
-			// Time to die
 			if (isSponge()) {
-				// Workaround for GCC
-				// In particular, it was not selecting overloads properly in the timer statement
-				// It had to choose between (Player *, Player * + bool, bool, or no args)
-				// It couldn't manage that simple task in a context where it's obvious which one
-				void (Mob::* properOverload)(bool) = &Mob::die;
 				for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
-					new Timer::Timer(std::bind(properOverload, spawnIter->second, true),
+					Mob *rawPointer = spawnIter->second;
+					Timer::create([rawPointer]() { rawPointer->die(true); },
 						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
 						nullptr, milliseconds_t(400));
 				}
@@ -252,10 +250,9 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 			// Apply damage after you can be sure that all the units are linked and ready
 		}
 	}
-	// TODO: Fix this, for some reason, it causes issues within the timer container
-//	else if (hp == 1) {
-//		removeStatus(StatusEffects::Mob::Poison);
-//	}
+	else if (m_hp == 1) {
+		removeStatus(StatusEffects::Mob::Poison);
+	}
 }
 
 void Mob::applyWebDamage() {
@@ -275,7 +272,8 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 	int32_t addedStatus = 0;
 	vector<int32_t> reflection;
 	for (size_t i = 0; i < statusInfo.size(); i++) {
-		int32_t cStatus = statusInfo[i].status;
+		StatusInfo &info = statusInfo[i];
+		int32_t cStatus = info.status;
 		bool alreadyHas = (m_statuses.find(cStatus) != m_statuses.end());
 		switch (cStatus) {
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
@@ -286,14 +284,14 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				break;
 			case StatusEffects::Mob::ShadowWeb:
 				m_webPlayerId = playerId;
-				m_webLevel = static_cast<uint8_t>(statusInfo[i].val);
+				m_webLevel = static_cast<uint8_t>(info.val);
 				Maps::getMap(m_mapId)->addWebbedMob(this);
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (statusInfo[i].skillId) {
 					case Skills::NightLord::Taunt:
 					case Skills::Shadower::Taunt: {
-						m_tauntEffect = (100 - statusInfo[i].val) + 100;
+						m_tauntEffect = (100 - info.val) + 100;
 						// Value passed as 100 - x, so 100 - value will = x
 						break;
 					}
@@ -302,32 +300,33 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 			case StatusEffects::Mob::VenomousWeapon:
 				setVenomCount(getVenomCount() + 1);
 				if (alreadyHas) {
-					statusInfo[i].val += m_statuses[cStatus].val; // Increase the damage
+					info.val += m_statuses[cStatus].val; // Increase the damage
 				}
 				break;
 			case StatusEffects::Mob::WeaponDamageReflect:
 			case StatusEffects::Mob::MagicDamageReflect:
-				reflection.push_back(statusInfo[i].reflection);
+				reflection.push_back(info.reflection);
 				break;
 		}
 
-		m_statuses[cStatus] = statusInfo[i];
+		m_statuses[cStatus] = info;
 		addedStatus += cStatus;
 
 		switch (cStatus) {
 			case StatusEffects::Mob::Poison:
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
-				// Damage timer for poison(s)
-				new Timer::Timer(std::bind(&Mob::applyDamage, this, playerId, statusInfo[i].val, true),
+				int32_t poisonDamage = info.val;
+				Timer::create([this, playerId, poisonDamage]() { this->applyDamage(playerId, poisonDamage, true); },
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
-					getTimers(), seconds_t(0), seconds_t(1000));
+					getTimers(), seconds_t(0), seconds_t(1));
 				break;
 		}
 
-		new Timer::Timer(std::bind(&Mob::removeStatus, this, cStatus, true),
+		// We add some milliseconds to our times in order to allow poisons to not end one hit early
+		Timer::create([this, cStatus]() { this->removeStatus(cStatus, true); },
 			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
-			getTimers(), seconds_t(statusInfo[i].time));
+			getTimers(), milliseconds_t(statusInfo[i].time * 1000 + 100));
 	}
 	// Calculate new status mask
 	m_status = 0;

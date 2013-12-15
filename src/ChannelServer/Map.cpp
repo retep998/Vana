@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.h"
+#include "ChannelServer.h"
 #include "Drop.h"
 #include "EffectPacket.h"
 #include "GameLogicUtilities.h"
@@ -57,16 +58,17 @@ Map::Map(MapInfoPtr info, int32_t id) :
 	m_instance(nullptr),
 	m_timer(0),
 	m_timeMob(0),
+	m_emptyMapTicks(0),
 	m_spawnMobs(-1),
 	m_music(info->defaultMusic),
 	m_timers(new Timer::Container)
 {
 	// Dynamic loading, start the map timer once the object is created
-	new Timer::Timer(bind(&Map::runTimer, this),
+	Timer::create([this]() { this->runTimer(); },
 		Timer::Id(Timer::Types::MapTimer, id, 0),
 		getTimers(), seconds_t(0), seconds_t(10));
 
-	new Timer::Timer(bind(&Map::mapTick, this),
+	Timer::create([this]() { this->mapTick(); },
 		Timer::Id(Timer::Types::MapTimer, id, 10),
 		getTimers(), seconds_t(0), seconds_t(1));
 }
@@ -143,11 +145,11 @@ void Map::addPortal(const PortalInfo &portal) {
 }
 
 void Map::addTimeMob(TimeMobPtr info) {
-	new Timer::Timer(bind(&Map::timeMob, this, false),
+	Timer::create([this]() { this->timeMob(false); },
 		Timer::Id(Timer::Types::MapTimer, getId(), 1),
 		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 
-	new Timer::Timer(bind(&Map::timeMob, this, true),
+	Timer::create([this]() { this->timeMob(true); },
 		Timer::Id(Timer::Types::MapTimer, getId(), 2),
 		getTimers(), seconds_t(3)); // First check
 
@@ -647,7 +649,7 @@ void Map::addMist(Mist *mist) {
 		m_mists[mist->getId()] = mist;
 	}
 
-	new Timer::Timer(bind(&Map::removeMist, this, mist),
+	Timer::create([this, mist]() { this->removeMist(mist); },
 		Timer::Id(Timer::Types::MistTimer, mist->getId(), 0),
 		getTimers(), seconds_t(mist->getTime()));
 
@@ -788,12 +790,27 @@ void Map::clearDrops(time_point_t time) {
 
 void Map::runTimer() {
 	time_point_t time = TimeUtilities::getNow();
+
 	checkSpawn(time);
 	clearDrops(time);
 	checkMists();
 }
 
 void Map::mapTick() {
+	int32_t mapUnloadTime = ChannelServer::Instance()->getMapUnloadTime();
+	if (mapUnloadTime > 0) {
+		if (m_players.size() > 0) {
+			m_emptyMapTicks = 0;
+		}
+		else {
+			m_emptyMapTicks++;
+			if (m_emptyMapTicks > mapUnloadTime) {
+				Maps::unloadMap(getId());
+				return;
+			}
+		}
+	}
+
 	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
 	}
@@ -802,7 +819,7 @@ void Map::mapTick() {
 		Player *player = nullptr;
 		for (auto iter = m_playersWithoutProtectItem.begin(); iter != m_playersWithoutProtectItem.end(); ++iter) {
 			player = iter->second;
-			if (!player->getStats()->isDead()) {
+			if (!player->getStats()->isDead() && !player->hasGmEquip() && !player->getActiveBuffs()->isUsingHide()) {
 				player->getStats()->damageHp(dps);
 			}
 		}
@@ -842,7 +859,7 @@ void Map::setMapTimer(const seconds_t &timer) {
 
 	MapPacket::showTimer(getId(), timer);
 	if (timer.count() > 0) {
-		new Timer::Timer(bind(&Map::setMapTimer, this, seconds_t(0)),
+		Timer::create([this]() { this->setMapTimer(seconds_t(0)); },
 			Timer::Id(Timer::Types::MapTimer, getId(), 25),
 			getTimers(), timer);
 	}
@@ -950,7 +967,7 @@ bool Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t
 	}
 
 	MapPacket::changeWeather(getId(), adminWeather, itemId, message);
-	new Timer::Timer(bind(&MapPacket::changeWeather, getId(), adminWeather, 0, ""),
+	Timer::create([this, adminWeather]() { MapPacket::changeWeather(this->getId(), adminWeather, 0, ""); },
 		timerId, getTimers(), seconds_t(time));
 	return true;
 }

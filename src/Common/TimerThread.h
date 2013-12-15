@@ -19,14 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "noncopyable.hpp"
 #include <condition_variable>
-#include <list>
+#include <map>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <thread>
+#include <utility>
+#include <vector>
 
 namespace Timer {
 
-using std::list;
+using std::pair;
+using std::shared_ptr;
+using std::weak_ptr;
 
 class Container;
 class Timer;
@@ -43,21 +48,23 @@ public:
 
 	Container * getContainer() const { return m_container.get(); }
 
-	void registerTimer(Timer *timer);
-	void removeTimer(Timer *timer);
-	void forceReSort();
+	void registerTimer(shared_ptr<Timer> timer);
 private:
 	Thread();
 	static Thread *singleton;
-
-	Timer * findMin();
 	void runThread();
+	time_point_t getWaitTime() const;
 
-	bool m_resortTimer; // True if a new timer gets inserted into m_timers or it gets modified so it's not arranged
+	struct FindClosestTimer {
+		bool operator()(const pair<time_point_t, weak_ptr<Timer>> &t1, const pair<time_point_t, weak_ptr<Timer>> &t2) const {
+			return t1.first > t2.first;
+		}
+	};
+
 	volatile bool m_terminate;
-	list<Timer *> m_timers;
-	std::recursive_mutex m_timersMutex;
 
+	std::priority_queue<pair<time_point_t, weak_ptr<Timer>>, std::vector<pair<time_point_t, weak_ptr<Timer>>>, FindClosestTimer> m_timers;
+	std::recursive_mutex m_timersMutex;
 	std::unique_ptr<std::thread> m_thread;
 	std::condition_variable_any m_mainLoopCondition;
 

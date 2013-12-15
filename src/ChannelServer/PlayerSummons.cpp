@@ -39,7 +39,7 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 		m_puppet = summon;
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	new Timer::Timer(bind(&SummonHandler::removeSummon, m_player, puppet, false, SummonMessages::OutOfTime, true),
+	Timer::create([this, puppet]() { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
 		id, m_player->getTimers(), seconds_t(time));
 }
 

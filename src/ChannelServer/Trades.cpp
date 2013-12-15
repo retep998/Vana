@@ -78,6 +78,6 @@ void Trades::stopTimeout(int32_t id) {
 
 void Trades::startTimeout(int32_t id, Player *sender) {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
-	new Timer::Timer(bind(&Trades::timeout, this, sender),
+	Timer::create([this, sender]() { this->timeout(sender); },
 		tid, nullptr, seconds_t(TradeTimeout));
 }

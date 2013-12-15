@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimerContainer.h"
+#include "TimerThread.h"
 #include "Timer.h"
 #include <chrono>
 
@@ -41,12 +42,16 @@ bool Container::isTimerRunning(const Id &id) {
 	return m_timers.find(id) != m_timers.end();
 }
 
-void Container::registerTimer(Timer *timer) {
-	m_timers[timer->getId()] = shared_ptr<Timer>(timer);
+void Container::registerTimer(shared_ptr<Timer> timer) {
+	m_timers[timer->getId()] = timer;
+	Thread::Instance()->registerTimer(timer);
 }
 
 void Container::removeTimer(const Id &id) {
-	m_timers.erase(id);
+	auto iter = m_timers.find(id);
+	if (iter != m_timers.end()) {
+		m_timers.erase(iter);
+	}
 }
 
 }

@@ -48,12 +48,12 @@ void EventDataProvider::loadEvents() {
 	// Declarations go here for regular server events or whatever you want to put on a timer
 
 	// Starts a new timer that runs every hour
-	// new Timer::Timer(bind(&namespace::func, parameters),
+	// Timer::create(bind(&namespace::func, parameters),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
 
 	// Same, except runs a class function
-	// new Timer::Timer(bind(&class::func, class instance, parameters),
+	// Timer::create(bind(&class::func, class instance, parameters),
 	// Timer::Id(Timer::Types::EventTimer, ??, ??),
 	// getTimers(), Timer::Time::getNthSecondOfHour(0), hours_t(1));
 

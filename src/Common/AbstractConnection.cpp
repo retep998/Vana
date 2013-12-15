@@ -70,7 +70,7 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 }
 
 void AbstractConnection::setTimer() {
-	new Timer::Timer(bind(&AbstractConnection::ping, this),
+	Timer::create(bind(&AbstractConnection::ping, this),
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
 		getTimers(), InitialPing, PingTime);
 }

@@ -430,7 +430,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		if (mob == nullptr) {
 			continue;
 		}
-		origin = mob->getPos(); // Info for pickpocket before mob is set to 0 (in the case that mob dies)
+		origin = mob->getPos(); // Info for pickpocket before mob is set to nullptr (in the case that mob dies)
 		for (Attack::damage_iterator k = i->second.begin(); k != i->second.end(); ++k) {
 			int32_t damage = *k;
 			if (damage != 0) {
@@ -479,7 +479,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
-			new Timer::Timer(bind(&Drop::doDrop, ppDrop, origin),
+			Timer::create([ppDrop, origin]() { ppDrop->doDrop(origin); },
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				nullptr, milliseconds_t(175 * pickpocket));
 		}

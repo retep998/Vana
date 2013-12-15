@@ -79,7 +79,7 @@ void MapleTvs::parseBuffer() {
 		m_currentMessage = message;
 
 		Timer::Id id(Timer::Types::MapleTvTimer, message.senderId, message.counter);
-		new Timer::Timer(bind(&MapleTvs::parseBuffer, this),
+		Timer::create([this]() { this->parseBuffer(); },
 			id, getTimers(), seconds_t(message.time));
 	}
 	else {

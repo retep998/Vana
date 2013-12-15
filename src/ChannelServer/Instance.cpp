@@ -232,12 +232,12 @@ bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
-			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
+			Timer::create([this, timerName]() { this->timerEnd(timerName, true); },
 				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
 		}
 		else {
 			// Negative, occurs nth second of hour
-			new Timer::Timer(bind(&Instance::timerEnd, this, timerName, true),
+			Timer::create([this, timerName]() { this->timerEnd(timerName, true); },
 				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
 		}
 		return true;
@@ -302,7 +302,7 @@ void Instance::setInstanceTimer(const seconds_t &time, bool firstRun) {
 			difference = milliseconds_t(m_time);
 		}
 
-		new Timer::Timer(bind(&Instance::instanceEnd, this, true),
+		Timer::create([this]() { this->instanceEnd(true); },
 			getTimerId(),
 			getTimers(), difference, m_persistent);
 
