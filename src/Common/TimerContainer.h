@@ -36,7 +36,7 @@ public:
 	seconds_t getSecondsRemaining(const Id &id);
 	milliseconds_t getMillisecondsRemaining(const Id &id);
 	bool isTimerRunning(const Id &id);
-	void registerTimer(Timer *timer);
+	void registerTimer(shared_ptr<Timer> timer);
 	void removeTimer(const Id &id);
 private:
 	unordered_map<Id, shared_ptr<Timer>, std::hash<Id>> m_timers;

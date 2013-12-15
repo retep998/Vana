@@ -118,6 +118,7 @@ public:
 
 	void loadData();
 	Map * getMap(int32_t mapId);
+	void unloadMap(int32_t mapId);
 	int8_t getContinent(int32_t mapId);
 private:
 	MapDataProvider();
@@ -129,10 +130,9 @@ private:
 	void loadMapLife(Map *map, int32_t link);
 	void loadPortals(Map *map, int32_t link);
 	void loadSeats(Map *map, int32_t link);
+	void loadMap(int32_t mapId, Map *&map);
 
 	unordered_map<int32_t, Map *> m_maps;
 	unordered_map<int8_t, int8_t> m_continents;
 	std::mutex m_loadMutex;
-
-	void loadMap(int32_t mapId, Map *&map);
 };

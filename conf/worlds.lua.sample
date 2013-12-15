@@ -57,6 +57,10 @@ world0_fame_time = 60 * 60 * 24;
 -- Time between a character faming a specific character and being able to do it again
 world0_fame_reset_time = 60 * 60 * 24 * 30;
 
+-- Map unload time (in seconds)
+-- 0 means map unloading is disabled
+world0_map_unload_time = 60 * 60;
+
 -- Valid boss channels
 -- An empty list means the boss is disabled, -1 means all channels
 -- e.g. world0_zakum_channels = {};
@@ -95,6 +99,7 @@ world0_pinkbean_attempts = 1;
 -- world1_max_player_load = 1000;
 -- world1_fame_time = 60 * 60 * 24;
 -- world1_fame_reset_time = 60 * 60 * 24 * 30;
+-- world1_map_unload_time = 60 * 60;
 -- world1_pianus_channels = {-1};
 -- world1_pap_channels = {-1};
 -- world1_zakum_channels = {4, 5, 6};

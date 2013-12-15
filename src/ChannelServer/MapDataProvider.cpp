@@ -60,6 +60,14 @@ Map * MapDataProvider::getMap(int32_t mapId) {
 	}
 }
 
+void MapDataProvider::unloadMap(int32_t mapId) {
+	auto iter = m_maps.find(mapId);
+	if (iter != m_maps.end()) {
+		delete iter->second;
+		m_maps.erase(iter);
+	}
+}
+
 void MapDataProvider::loadData() {
 	m_continents.clear();
 	int8_t mapCluster;

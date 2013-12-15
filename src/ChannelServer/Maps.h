@@ -25,6 +25,7 @@ class Player;
 
 namespace Maps {
 	Map * getMap(int32_t mapId);
+	void unloadMap(int32_t mapId);
 	void usePortal(Player *player, PortalInfo *portal);
 	void usePortal(Player *player, PacketReader &packet);
 	void useScriptedPortal(Player *player, PacketReader &packet);

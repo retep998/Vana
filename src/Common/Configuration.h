@@ -94,6 +94,7 @@ struct WorldConfig : public IPacketSerializable {
 	int32_t maxPlayerLoad;
 	int32_t fameTime;
 	int32_t fameResetTime;
+	int32_t mapUnloadTime;
 	size_t maxChannels;
 	string eventMsg;
 	string scrollingHeader;
@@ -115,6 +116,7 @@ struct WorldConfig : public IPacketSerializable {
 		maxPlayerLoad(100),
 		fameTime(30 * 60 * 60),
 		fameResetTime(30 * 60 * 60),
+		mapUnloadTime(30 * 60),
 		maxChannels(20)
 	{
 	}
@@ -130,6 +132,7 @@ struct WorldConfig : public IPacketSerializable {
 		packet.add<int32_t>(maxChannels);
 		packet.add<int32_t>(fameTime);
 		packet.add<int32_t>(fameResetTime);
+		packet.add<int32_t>(mapUnloadTime);
 		packet.addString(eventMsg);
 		packet.addString(scrollingHeader);
 		packet.addString(name);
@@ -151,6 +154,7 @@ struct WorldConfig : public IPacketSerializable {
 		maxChannels = packet.get<int32_t>();
 		fameTime = packet.get<int32_t>();
 		fameResetTime = packet.get<int32_t>();
+		mapUnloadTime = packet.get<int32_t>();
 		eventMsg = packet.getString();
 		scrollingHeader = packet.getString();
 		name = packet.getString();

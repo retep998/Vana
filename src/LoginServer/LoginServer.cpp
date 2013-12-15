@@ -143,6 +143,7 @@ void LoginServer::loadWorlds() {
 		conf.defaultStorageSlots = config.get<uint8_t>(getKey("default_storage"));
 		conf.fameTime = config.get<int32_t>(getKey("fame_time"));
 		conf.fameResetTime = config.get<int32_t>(getKey("fame_reset_time"));
+		conf.mapUnloadTime = config.get<int32_t>(getKey("map_unload_time"));
 
 		getRatesConfig(conf.rates);
 		getBossConfig(conf.pianus, "pianus", conf.maxChannels);

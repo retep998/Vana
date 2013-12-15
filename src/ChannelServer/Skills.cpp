@@ -509,7 +509,7 @@ void Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 		SkillsPacket::sendCooldown(player, skillId, coolTime);
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
-	new Timer::Timer(bind(&Skills::stopCooldown, player, skillId),
+	Timer::create([player, skillId]() { Skills::stopCooldown(player, skillId); },
 		Timer::Id(Timer::Types::CoolTimer, skillId, 0),
 		player->getTimers(), seconds_t(coolTime));
 }

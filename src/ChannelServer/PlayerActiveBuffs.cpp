@@ -42,11 +42,11 @@ void PlayerActiveBuffs::addBuff(int32_t skill, const seconds_t &time) {
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
 			uint8_t mobSkill = static_cast<uint8_t>(skill);
-			new Timer::Timer(bind(&PlayerActiveBuffs::removeDebuff, this, mobSkill, true),
+			Timer::create([this, mobSkill]() { this->removeDebuff(mobSkill, true); },
 				id, m_player->getTimers(), time);
 		}
 		else {
-			new Timer::Timer(bind(&Skills::stopSkill, m_player, skill, true),
+			Timer::create([this, skill]() { Skills::stopSkill(m_player, skill, true); },
 				id, m_player->getTimers(), time);
 		}
 	}
@@ -102,7 +102,7 @@ void PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, cons
 	runAct.value = value;
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
-	new Timer::Timer(runAct, id, getActTimer(skill), seconds_t(0), time);
+	Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
 }
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
@@ -398,7 +398,7 @@ void PlayerActiveBuffs::startEnergyChargeTimer() {
 	m_timeSeed = static_cast<uint32_t>(clock());
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
-	new Timer::Timer(bind(&PlayerActiveBuffs::decreaseEnergyChargeLevel, this),
+	Timer::create([this]() { this->decreaseEnergyChargeLevel(); },
 		id, m_player->getTimers(), seconds_t(10));
 }
 
