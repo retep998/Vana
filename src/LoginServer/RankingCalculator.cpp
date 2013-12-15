@@ -42,10 +42,9 @@ using Initializing::OutputWidth;
 std::mutex RankingCalculator::RankingsMutex;
 
 void RankingCalculator::setTimer() {
-	/*
-	new Timer::Timer(&RankingCalculator::runThread,
-		Timer::Id(Timer::Types::RankTimer, 0, 0), nullptr, TimeUtilities::getNowWithTimeAdded(TimeUtilities::getNearestMinuteMark(5)), 5 * 60 * 1000);
-	*/
+	//Timer::create([]() { RankingCalculator::runThread(); },
+	//	Timer::Id(Timer::Types::RankTimer, 0, 0),
+	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
