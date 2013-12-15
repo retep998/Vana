@@ -1,4 +1,4 @@
-PROJECT LEADER
+RETIRED PROJECT LEADER
 pawitp
 
 CORE DEVELOPERS
@@ -16,11 +16,13 @@ MooMoo
 
 MAJOR CONTRIBUTORS
 [Trent]
+Astaelan
 Bri
 doyos
 Jonathan
 jwshan
 koolk
+lordstyx
 MooMoo
 Snow
 synexic
@@ -30,6 +32,7 @@ zOmgnO1
 CONTRIBUTIONS
 [Trent] - Owner of the IRC server we use for #vana
 Angel-SL - Being the guy who does the stuff and discusses content with the developers every few weeks
+Astaelan - Helping people constantly with his many years of programming experience
 Biscuit/dbgtdbz - Boat scripts
 Bri - Lots of bug reports
 Bri - Being rage-inducingly terrible at math
@@ -50,7 +53,7 @@ Leena - Contributed a Lua script
 Leena - Bug reports, discussion with developers
 Leifde - Pointing out a bug regarding death and logging out
 Levi - Creating one of the first - if not the first - Vana setup guides
-lordstyx - Reporting lots of bugs
+lordstyx - Reporting lots of bugs, being the go-to guy for testing
 MooMoo - Provides website and SVN
 RedXIII - Macro guy
 robtbs - Creating a helpful guide for connection to Vana
