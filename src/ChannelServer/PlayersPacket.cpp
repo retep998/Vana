@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 
 void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -40,7 +40,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 }
 
 void PlayersPacket::faceExpression(Player *player, int32_t face) {
-	if (player->getActiveBuffs()->isUsingHide())
+	if (player->isUsingGmHide())
 		return;
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_EMOTE);
@@ -60,7 +60,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 }
 
 void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	const int8_t BumpDamage = -1;
@@ -177,13 +177,13 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
 	packet.add<int32_t>(0);
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		packet.add<int32_t>(target.first);
 		packet.add<int8_t>(0x06);
 		if (isMesoExplosion) {
 			packet.add<uint8_t>(target.second.size());
 		}
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			packet.add<int32_t>(hit);
 		}
 	}
@@ -213,10 +213,10 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 
 	packet.add<int32_t>(attack.starId);
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		packet.add<int32_t>(target.first);
 		packet.add<int8_t>(0x06);
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			switch (skillId) {
 				case Skills::Marksman::Snipe: // Snipe is always crit
@@ -251,10 +251,10 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 
 	packet.add<int32_t>(0); // No clue
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		packet.add<int32_t>(target.first);
 		packet.add<int8_t>(0x06);
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			packet.add<int32_t>(hit);
 		}
 	}
@@ -272,10 +272,10 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	packet.add<int32_t>(attack.summonId);
 	packet.add<int8_t>(attack.animation);
 	packet.add<int8_t>(attack.targets);
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		packet.add<int32_t>(target.first);
 		packet.add<int8_t>(0x06);
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			packet.add<int32_t>(hit);
 		}
 	}
@@ -302,10 +302,10 @@ void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) 
 
 	packet.add<int32_t>(0);
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		packet.add<int32_t>(target.first);
 		packet.add<int8_t>(0x06);
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			packet.add<int32_t>(hit);
 		}
 	}

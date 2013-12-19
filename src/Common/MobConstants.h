@@ -78,7 +78,9 @@ namespace Mobs {
 		InactiveSolomonTheWise2 = 8820024,
 		InactiveRexTheWise2 = 8820025,
 		InactiveHugin2 = 8820026,
-		InactiveMunin2 = 8820027
+		InactiveMunin2 = 8820027,
+
+		NoMob = 9999999,
 	};
 	namespace ControlStatus {
 		enum : int8_t {

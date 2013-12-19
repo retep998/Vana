@@ -75,9 +75,7 @@ void MapDataProvider::loadData() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_continent_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		mapCluster = row.get<int8_t>("map_cluster");
 		continent = row.get<int8_t>("continent");
 
@@ -103,10 +101,8 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
-		MapInfoPtr mapInfo(new MapInfo);
+	for (const auto &row : rs) {
+		MapInfoPtr mapInfo = std::make_shared<MapInfo>();
 		link = row.get<int32_t>("link");
 		mapInfo->link = link;
 
@@ -147,8 +143,8 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
 		mapInfo->defaultMusic = row.get<string>("default_bgm");
-		mapInfo->lt = Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty"));
-		mapInfo->rb = Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby"));
+		mapInfo->dimensions.leftTop = Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty"));
+		mapInfo->dimensions.rightBottom = Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby"));
 		mapInfo->shuffleName = row.get<string>("shuffle_name");
 		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
 		mapInfo->dps = row.get<uint16_t>("damage_per_second");
@@ -176,14 +172,13 @@ void MapDataProvider::loadSeats(Map *map, int32_t link) {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_seats WHERE mapid = :map", soci::use(link, "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		id = row.get<int16_t>("seatid");
 		chair = SeatInfo();
 		chair.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
+		chair.id = id;
 
-		map->addSeat(id, chair);
+		map->addSeat(chair);
 	}
 }
 
@@ -192,9 +187,7 @@ void MapDataProvider::loadPortals(Map *map, int32_t link) {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_portals WHERE mapid = :map", soci::use(link, "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		portal = PortalInfo();
 		runFlags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
 			if (cmp == "only_once") portal.onlyOnce = true;
@@ -220,9 +213,7 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_life WHERE mapid = :map", soci::use(link, "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		life = SpawnInfo();
 		runFlags(row.get<opt_string>("flags"), [&life](const string &cmp) {
 			if (cmp == "faces_left") life.facesRight = false;
@@ -260,9 +251,7 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_footholds WHERE mapid = :map", soci::use(link, "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		foot = FootholdInfo();
 		runFlags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
 			if (cmp == "forbid_downward_jump") foot.forbidJumpDown = true;
@@ -281,10 +270,8 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 void MapDataProvider::loadMapTimeMob(Map *map) {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_time_mob WHERE mapid = :map", soci::use(map->getId(), "map"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
-		TimeMobPtr info(new TimeMob);
+	for (const auto &row : rs) {
+		TimeMobPtr info = std::make_shared<TimeMob>();
 
 		info->id = row.get<int32_t>("mobid");
 		info->startHour = row.get<int8_t>("start_hour");

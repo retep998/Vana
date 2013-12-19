@@ -112,16 +112,16 @@ void Party::deleteMember(int32_t id, bool kicked) {
 }
 
 void Party::disband() {
-	if (Instance *i = getInstance()) {
-		i->sendMessage(PartyDisband, getId());
+	if (Instance *instance = getInstance()) {
+		instance->sendMessage(PartyDisband, getId());
 		setInstance(nullptr);
 	}
 	PlayerMap temp = m_members;
-	for (PlayerMap::iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-		if (iter->second != nullptr) {
-			iter->second->setParty(nullptr);
+	for (const auto &kvp : temp) {
+		if (Player *player = kvp.second) {
+			player->setParty(nullptr);
 		}
-		m_members.erase(iter->first);
+		m_members.erase(kvp.first);
 	}
 }
 
@@ -132,32 +132,32 @@ void Party::silentUpdate() {
 }
 
 Player * Party::getMemberByIndex(uint8_t index) {
-	Player *p = nullptr;
+	Player *member = nullptr;
 	if (index <= m_members.size()) {
 		int8_t f = 0;
-		for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
+		for (const auto &kvp : m_members) {
 			f++;
 			if (f == index) {
-				p = iter->second;
+				member = kvp.second;
 				break;
 			}
 		}
 	}
-	return p;
+	return member;
 }
 
 void Party::runFunction(function<void (Player *)> func) {
-	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		if (iter->second != nullptr) {
-			func(iter->second);
+	for (const auto &kvp : m_members) {
+		if (Player *player = kvp.second) {
+			func(player);
 		}
 	}
 }
 
 vector<int32_t> Party::getAllPlayerIds() {
 	vector<int32_t> playerIds;
-	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		playerIds.push_back(iter->first);
+	for (const auto &kvp : m_members) {
+		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
 }
@@ -190,11 +190,11 @@ void Party::receiveHpBar(Player *player) {
 
 int8_t Party::getMemberCountOnMap(int32_t mapId) {
 	int8_t count = 0;
-	Player *test = nullptr;
-	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		test = iter->second;
-		if (test != nullptr && test->getMapId() == mapId) {
-			count++;
+	for (const auto &kvp : m_members) {
+		if (Player *test = kvp.second) {
+			if (test->getMapId() == mapId) {
+				count++;
+			}
 		}
 	}
 	return count;
@@ -202,9 +202,8 @@ int8_t Party::getMemberCountOnMap(int32_t mapId) {
 
 bool Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) {
 	bool ret = true;
-	Player *test = nullptr;
-	for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		if (test = iter->second) {
+	for (const auto &kvp : m_members) {
+		if (Player *test = kvp.second) {
 			if (test->getStats()->getLevel() < lowBound || test->getStats()->getLevel() > highBound) {
 				ret = false;
 				break;
@@ -232,20 +231,20 @@ bool Party::checkFootholds(int8_t memberCount, const vector<vector<int16_t>> &fo
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
 	bool winner = true;
 	int8_t membersOnFootholds = 0;
-	Player *test;
 	TakenFootholds fhs; // foothold group ID = key
 
-	for (size_t m = 0; m < footholds.size(); m++) {
-		fhs[m] = false;
-		for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-			if (test = iter->second) {
-				for (size_t k = 0; k < footholds[m].size(); k++) {
-					if (test->getFh() == footholds[m][k]) {
-						if (fhs[m]) {
+	for (size_t group = 0; group < footholds.size(); group++) {
+		fhs[group] = false;
+		const vector<int16_t> &groupFootholds = footholds[group];
+		for (const auto &kvp : m_members) {
+			if (Player *test = kvp.second) {
+				for (const auto &fh : groupFootholds) {
+					if (test->getFh() == fh) {
+						if (fhs[group]) {
 							winner = false;
 						}
 						else {
-							fhs[m] = true;
+							fhs[group] = true;
 							membersOnFootholds++;
 						}
 						break;
@@ -260,7 +259,7 @@ bool Party::checkFootholds(int8_t memberCount, const vector<vector<int16_t>> &fo
 			break;
 		}
 	}
-	if (winner && (membersOnFootholds != memberCount)) {
+	if (winner && membersOnFootholds != memberCount) {
 		// Not all the foothold groups were indexed
 		winner = false;
 	}
@@ -270,21 +269,20 @@ bool Party::checkFootholds(int8_t memberCount, const vector<vector<int16_t>> &fo
 bool Party::verifyFootholds(const vector<vector<int16_t>> &footholds) {
 	// Determines if the players match your selected footholds
 	bool winner = true;
-	Player *test;
 	TakenFootholds fhs; // Foothold group ID = key
 
-	for (size_t m = 0; m < footholds.size(); m++) {
-		fhs[m] = false;
-		for (PlayerMap::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-			test = iter->second;
-			if (test = iter->second) {
-				for (size_t k = 0; k < footholds[m].size(); k++) {
-					if (test->getFh() == footholds[m][k]) {
-						if (fhs[m]) {
+	for (size_t group = 0; group < footholds.size(); group++) {
+		fhs[group] = false;
+		const vector<int16_t> &groupFootholds = footholds[group];
+		for (const auto &kvp : m_members) {
+			if (Player *test = kvp.second) {
+				for (const auto &fh : groupFootholds) {
+					if (test->getFh() == fh) {
+						if (fhs[group]) {
 							winner = false;
 						}
 						else {
-							fhs[m] = true;
+							fhs[group] = true;
 						}
 						break;
 					}
@@ -299,8 +297,8 @@ bool Party::verifyFootholds(const vector<vector<int16_t>> &footholds) {
 		}
 	}
 	if (winner) {
-		for (TakenFootholds::iterator iter = fhs.begin(); iter != fhs.end(); ++iter) {
-			if (!iter->second) {
+		for (const auto &kvp : fhs) {
+			if (!kvp.second) {
 				winner = false;
 				break;
 			}
@@ -317,16 +315,16 @@ void Party::updatePacket(PacketCreator &packet) {
 	int16_t channelId = ChannelServer::Instance()->getChannelId();
 
 	// Add party member IDs to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		packet.add<int32_t>(iter->first);
+	for (const auto &kvp : m_members) {
+		packet.add<int32_t>(kvp.first);
 	}
 	for (i = 0; i < offset; i++) {
 		packet.add<int32_t>(0);
 	}
 
 	// Add party member names to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
+	for (const auto &kvp : m_members) {
+		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
 		packet.addString(player->name, 13);
 	}
 	for (i = 0; i < offset; i++) {
@@ -334,8 +332,8 @@ void Party::updatePacket(PacketCreator &packet) {
 	}
 
 	// Add party member jobs to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
+	for (const auto &kvp : m_members) {
+		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
 		packet.add<int32_t>(player->job);
 	}
 	for (i = 0; i < offset; i++) {
@@ -343,8 +341,8 @@ void Party::updatePacket(PacketCreator &packet) {
 	}
 
 	// Add party member levels to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
+	for (const auto &kvp : m_members) {
+		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
 		packet.add<int32_t>(player->level);
 	}
 	for (i = 0; i < offset; i++) {
@@ -352,8 +350,8 @@ void Party::updatePacket(PacketCreator &packet) {
 	}
 
 	// Add party member channels to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
+	for (const auto &kvp : m_members) {
+		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
 		if (player->channel != -1) {
 			packet.add<int32_t>(player->channel);
 		}
@@ -368,8 +366,8 @@ void Party::updatePacket(PacketCreator &packet) {
 	packet.add<int32_t>(getLeaderId());
 
 	// Add party member maps to packet
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		player = PlayerDataProvider::Instance()->getPlayerData(iter->first);
+	for (const auto &kvp : m_members) {
+		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
 		if (player->channel == channelId) {
 			packet.add<int32_t>(player->map);
 		}
@@ -381,8 +379,8 @@ void Party::updatePacket(PacketCreator &packet) {
 		packet.add<int32_t>(-2);
 	}
 
-	// Add some portal shit
-	for (iter = m_members.begin(); iter != m_members.end(); ++iter) {
+	// Add some portal information (Door?)
+	for (const auto &kvp : m_members) {
 		packet.add<int32_t>(Maps::NoMap);
 		packet.add<int32_t>(Maps::NoMap);
 		packet.add<int32_t>(-1);

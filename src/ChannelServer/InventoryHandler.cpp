@@ -133,7 +133,7 @@ void InventoryHandler::useItem(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	if (!player->hasGmEquip()) {
+	if (!player->hasGmBenefits()) {
 		Inventory::takeItemSlot(player, Inventories::UseInventory, slot, amountUsed);
 	}
 

@@ -33,15 +33,17 @@ void Instances::removeInstance(Instance *instance) {
 
 Instance * Instances::getInstance(const string &name) {
 	string upper = StringUtilities::toUpper(name);
-	return (m_instances.find(upper) == m_instances.end()) ? nullptr : m_instances[upper];
+	auto kvp = m_instances.find(upper);
+	return kvp != m_instances.end() ? kvp->second : nullptr;
 }
 
 bool Instances::isInstance(const string &name) {
 	string upper = StringUtilities::toUpper(name);
-	bool exists = m_instances.find(upper) != m_instances.end();
-	if (exists && m_instances[upper]->getMarkedForDelete()) {
+	auto kvp = m_instances.find(upper);
+	bool exists = kvp != m_instances.end();
+	if (exists && kvp->second->getMarkedForDelete()) {
 		exists = false;
-		Instance *instance = m_instances[upper];
+		Instance *instance = kvp->second;
 		m_instances.erase(upper);
 		delete instance;
 	}

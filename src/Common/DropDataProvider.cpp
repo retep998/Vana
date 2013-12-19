@@ -52,9 +52,7 @@ void DropDataProvider::loadDrops() {
 	soci::session &sql = Database::getDataDb();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM drop_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		drop = DropInfo();
 		dropFlags(row.get<opt_string>("flags"));
 
@@ -71,9 +69,7 @@ void DropDataProvider::loadDrops() {
 	int32_t lastDropperId = -1;
 	bool dropped = false;
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		drop = DropInfo();
 		dropFlags(row.get<opt_string>("flags"));
 
@@ -101,9 +97,7 @@ void DropDataProvider::loadGlobalDrops() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM drop_global_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		drop = GlobalDrop();
 		runFlags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
 			if (cmp == "is_mesos") drop.isMesos = true;

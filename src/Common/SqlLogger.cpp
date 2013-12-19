@@ -61,11 +61,11 @@ void SqlLogger::flush() {
 			soci::use(identifier, "identifier"),
 			soci::use(message, "message"));
 
-		for (vector<LogMessage>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
-			logType = iter->type;
-			logTime = iter->time;
-			identifier = iter->identifier;
-			message = iter->message;
+		for (const auto &bufferedMessage : m_buffer) {
+			logType = bufferedMessage.type;
+			logTime = bufferedMessage.time;
+			identifier = bufferedMessage.identifier;
+			message = bufferedMessage.message;
 			st.execute(true);
 		}
 

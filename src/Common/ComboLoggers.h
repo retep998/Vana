@@ -29,8 +29,8 @@ template<typename Logger1, typename Logger2>
 class DuoLogger : public Logger {
 public:
 	DuoLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
-		m_logger1.reset(new Logger1(filename, format, timeFormat, serverType, bufferSize));
-		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
+		m_logger1 = std::make_unique<Logger1>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger2 = std::make_unique<Logger2>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
 	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {
@@ -48,9 +48,9 @@ template<typename Logger1, typename Logger2, typename Logger3>
 class TriLogger : public Logger {
 public:
 	TriLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
-		m_logger1.reset(new Logger1(filename, format, timeFormat, serverType, bufferSize));
-		m_logger2.reset(new Logger2(filename, format, timeFormat, serverType, bufferSize));
-		m_logger3.reset(new Logger3(filename, format, timeFormat, serverType, bufferSize));
+		m_logger1 = std::make_unique<Logger1>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger2 = std::make_unique<Logger2>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger3 = std::make_unique<Logger3>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
 	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {

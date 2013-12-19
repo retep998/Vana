@@ -38,9 +38,9 @@ AbstractConnection::AbstractConnection() :
 	m_doesPing(true),
 	m_latency(InitialPing),
 	m_lastPing(),
-	m_timers(new Timer::Container),
 	m_ip(0)
 {
+	m_timers = std::make_unique<Timer::Container>();
 }
 
 void AbstractConnection::baseHandleRequest(PacketReader &packet) {

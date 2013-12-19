@@ -67,84 +67,8 @@ string Logger::getServerTypeString(int16_t serverType) {
 	return ret;
 }
 
-string Logger::getLogFormatted(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message) {
-	// This function is gloriously unelegant
-	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
-	string ret = logger->getFormat();
-
-	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
-		size_t x = ret.find(iter->first);
-		if (x != string::npos) {
-			std::ostringstream strm;
-			int32_t mask = iter->second & Replacements::RemoveFlagMask;
-			switch (mask) {
-				case Replacements::Time: strm << getTimeFormatted(logger->getTimeFormat()); break;
-				case Replacements::Event: strm << getLevelString(type); break;
-				case Replacements::Origin: strm << getServerTypeString(logger->getServerType()); break;
-				case Replacements::Message: strm << message; break;
-				case Replacements::Id:
-					if (id.is_initialized()) {
-						strm << id.get();
-					}
-					break;
-			}
-			const string &y = strm.str();
-			ret.replace(x, iter->first.size(), y.c_str(), y.size());
-		}
-	}
-	return ret;
-}
-
-string Logger::getTimeFormatted(const string &fmt) {
-	// This function is gloriously unelegant
-	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
-	string ret = fmt;
-	time_t start = time(nullptr);
-	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
-		size_t x = ret.find(iter->first);
-		if (x != string::npos) {
-			std::ostringstream strm;
-			int32_t mask = iter->second & Replacements::RemoveFlagMask;
-			int32_t flags = iter->second & Replacements::GetFlagMask;
-			if (!(flags & Replacements::String)) {
-				// Integer
-				if (flags & Replacements::Long) {
-					strm << std::setw(2) << std::setfill('0');
-				}
-			}
-			switch (mask) {
-				case Replacements::IntegerDate: strm << TimeUtilities::getDate(start); break;
-				case Replacements::StringDate: strm << TimeUtilities::getDayString(!(flags & Replacements::Long), start); break;
-				case Replacements::IntegerMonth: strm << TimeUtilities::getMonth(start); break;
-				case Replacements::StringMonth: strm << TimeUtilities::getMonthString(!(flags & Replacements::Long), start); break;
-				case Replacements::Hour: strm << TimeUtilities::getHour(true, start); break;
-				case Replacements::MilitaryHour: strm << TimeUtilities::getHour(false, start); break;
-				case Replacements::Minute: strm << TimeUtilities::getMinute(start); break;
-				case Replacements::Second: strm << TimeUtilities::getSecond(start); break;
-				case Replacements::TimeZone: strm << TimeUtilities::getTimeZone(); break;
-				case Replacements::Year: strm << TimeUtilities::getYear(!(flags & Replacements::Long), start); break;
-				case Replacements::AmPm: {
-					bool pm = !(TimeUtilities::getHour(false, start) < 12);
-					if (flags & Replacements::Uppercase) {
-						strm << pm ? "P" : "A";
-						if (flags & Replacements::Long) {
-							strm << "M";
-						}
-					}
-					else {
-						strm << pm ? "p" : "a";
-						if (flags & Replacements::Long) {
-							strm << "m";
-						}
-					}
-					break;
-				}
-			}
-			const string &y = strm.str();
-			ret.replace(x, iter->first.size(), y.c_str(), y.size());
-		}
-	}
-	return ret;
+string Logger::formatLog(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message) {
+	return LogReplacements::format(logger->getFormat(), type, logger, time(nullptr), id, message);
 }
 
 Logger::Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :

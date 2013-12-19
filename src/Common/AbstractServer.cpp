@@ -78,13 +78,13 @@ void AbstractServer::createLogger(const LogConfig &conf) {
 	size_t bSize = conf.bufferSize;
 
 	switch (conf.destination) {
-		case LogDestinations::Console: m_logger.reset(new ConsoleLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::File: m_logger.reset(new FileLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::Sql: m_logger.reset(new SqlLogger(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileSql: m_logger.reset(new DuoLogger<FileLogger, SqlLogger>(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileConsole: m_logger.reset(new DuoLogger<FileLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::SqlConsole: m_logger.reset(new DuoLogger<SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
-		case LogDestinations::FileSqlConsole: m_logger.reset(new TriLogger<FileLogger, SqlLogger, ConsoleLogger>(file, form, tForm, sType, bSize)); break;
+		case LogDestinations::Console: m_logger = std::make_unique<ConsoleLogger>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::File: m_logger = std::make_unique<FileLogger>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::Sql: m_logger = std::make_unique<SqlLogger>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::FileSql: m_logger = std::make_unique<DuoLogger<FileLogger, SqlLogger>>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::FileConsole: m_logger = std::make_unique<DuoLogger<FileLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::SqlConsole: m_logger = std::make_unique<DuoLogger<SqlLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::FileSqlConsole: m_logger = std::make_unique<TriLogger<FileLogger, SqlLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
 	}
 }
 
@@ -103,11 +103,11 @@ void AbstractServer::initializeLoggingConstants(ConfigFile &conf) const {
 
 void AbstractServer::loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const {
 	int32_t oVal = val;
-	for (ConstantMap::const_iterator iter = constants.begin(); iter != constants.end(); ++iter) {
-		if (base.find(iter->first) != string::npos) continue;
+	for (const auto &kvp : constants) {
+		if (base.find(kvp.first) != string::npos) continue;
 
-		const string &newBase = base + "_" + iter->first;
-		val |= iter->second;
+		const string &newBase = base + "_" + kvp.first;
+		val |= kvp.second;
 		conf.setVariable(newBase, val);
 
 		if (depth < constants.size()) {
@@ -124,6 +124,6 @@ void AbstractServer::log(LogTypes::LogTypes type, const string &message) {
 }
 
 void AbstractServer::displayLaunchTime() const {
-	milliseconds_t::rep loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), getStartTime());
+	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), getStartTime());
 	std::cout << "Started in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
 }

@@ -33,7 +33,7 @@ void Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) {
 		unsigned char *buf = new unsigned char[pSize]; // Prevent the packet memory from being freed by external sources
 		memcpy(buf, packet.getBuffer(), pSize);
 
-		player.heldPacket.reset(new PacketReader(buf, pSize));
+		player.heldPacket = std::make_shared<PacketReader>(buf, pSize);
 	}
 	else {
 		player.heldPacket.reset<PacketReader>(nullptr);
@@ -44,9 +44,10 @@ void Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) {
 
 bool Connectable::checkPlayer(int32_t id, const Ip &ip) {
 	bool correct = false;
-	if (m_map.find(id) != m_map.end()) {
-		ConnectingPlayer &t = m_map[id];
-		if (t.connectIp == ip && std::chrono::duration_cast<milliseconds_t>(TimeUtilities::getNow() - t.connectTime).count() < MaxMilliseconds) {
+	auto kvp = m_map.find(id);
+	if (kvp != m_map.end()) {
+		const ConnectingPlayer &test = kvp->second;
+		if (test.connectIp == ip && std::chrono::duration_cast<milliseconds_t>(TimeUtilities::getNow() - test.connectTime).count() < MaxMilliseconds) {
 			correct = true;
 		}
 	}

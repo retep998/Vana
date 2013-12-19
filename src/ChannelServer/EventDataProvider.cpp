@@ -31,10 +31,10 @@ using Initializing::OutputWidth;
 
 EventDataProvider * EventDataProvider::singleton = nullptr;
 
-EventDataProvider::EventDataProvider() :
-	m_timers(new Timer::Container),
-	m_variables(new Variables)
+EventDataProvider::EventDataProvider()
 {
+	m_timers = std::make_unique<Timer::Container>();
+	m_variables = std::make_unique<Variables>();
 }
 
 void EventDataProvider::loadData() {

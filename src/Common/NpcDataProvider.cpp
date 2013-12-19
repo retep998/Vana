@@ -36,8 +36,7 @@ void NpcDataProvider::loadData() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM npc_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
+	for (const auto &row : rs) {
 		npc = NpcData();
 
 		id = row.get<int32_t>("npcid");

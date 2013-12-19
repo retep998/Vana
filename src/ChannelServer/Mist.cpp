@@ -27,21 +27,23 @@ Mist::Mist(int32_t mapId, Player *owner, const Pos &origin, SkillLevelInfo *skil
 	m_skill(skillId),
 	m_level(level),
 	m_origin(origin),
-	m_time((int16_t)(skill->time)),
+	m_time(static_cast<int16_t>(skill->time)),
 	m_delay(8),
 	m_isMobMist(false),
 	m_poison(isPoison)
 {
 	if (owner->isFacingRight()) {
-		m_rb = Pos(skill->lt.x * -1 + origin.x, skill->rb.y + origin.y);
-		m_lt = Pos(skill->rb.x * -1 + origin.x, skill->lt.y + origin.y);
+		m_area = Rect(
+			Pos(skill->dimensions.rightBottom.x * -1 + origin.x, skill->dimensions.leftTop.y + origin.y),
+			Pos(skill->dimensions.leftTop.x * -1 + origin.x, skill->dimensions.rightBottom.y + origin.y));
 	}
 	else {
-		m_lt = Pos(skill->lt.x + origin.x, skill->lt.y + origin.y);
-		m_rb = Pos(skill->rb.x + origin.x, skill->rb.y + origin.y);
+		m_area = Rect(
+			Pos(skill->dimensions.leftTop.x + origin.x, skill->dimensions.leftTop.y + origin.y),
+			Pos(skill->dimensions.rightBottom.x + origin.x, skill->dimensions.rightBottom.y + origin.y));
 	}
-	m_skillLt = skill->lt;
-	m_skillRb = skill->rb;
+
+	m_skillDimensions = skill->dimensions;
 
 	Maps::getMap(mapId)->addMist(this);
 }
@@ -58,15 +60,17 @@ Mist::Mist(int32_t mapId, Mob *owner, const Pos &origin, MobSkillLevelInfo *skil
 	m_poison(true)
 {
 	if (owner->isFacingRight()) {
-		m_rb = Pos(skill->lt.x * -1 + origin.x, skill->rb.y + origin.y);
-		m_lt = Pos(skill->rb.x * -1 + origin.x, skill->lt.y + origin.y);
+		m_area = Rect(
+			Pos(skill->dimensions.rightBottom.x * -1 + origin.x, skill->dimensions.leftTop.y + origin.y),
+			Pos(skill->dimensions.leftTop.x * -1 + origin.x, skill->dimensions.rightBottom.y + origin.y));
 	}
 	else {
-		m_lt = Pos(skill->lt.x + origin.x, skill->lt.y + origin.y);
-		m_rb = Pos(skill->rb.x + origin.x, skill->rb.y + origin.y);
+		m_area = Rect(
+			Pos(skill->dimensions.leftTop.x + origin.x, skill->dimensions.leftTop.y + origin.y),
+			Pos(skill->dimensions.rightBottom.x + origin.x, skill->dimensions.rightBottom.y + origin.y));
 	}
-	m_skillLt = skill->lt;
-	m_skillRb = skill->rb;
+
+	m_skillDimensions = skill->dimensions;
 
 	Maps::getMap(mapId)->addMist(this);
 }

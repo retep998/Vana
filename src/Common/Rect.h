@@ -16,26 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include "ExternalIpResolver.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include <stdexcept>
 
-ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :
-	m_defaultIp(defaultIp),
-	m_externalIps(externalIps)
-{
-}
+#include "Pos.h"
+#include "Types.h"
+#include <cmath>
 
-Ip ExternalIpResolver::matchIpToSubnet(const Ip &test) const {
-	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument("IP type must match the external IP type");
+struct Rect {
+	Rect(const Pos &lt, const Pos &rb) : leftTop(lt), rightBottom(rb) {}
+	Rect() : leftTop(), rightBottom() {}
 
-	Ip ret = m_defaultIp;
-	for (const auto &ipArray : m_externalIps) {
-		if (ipArray.tryMatchIpToSubnet(test, ret)) {
-			break;
-		}
-	}
-
-	return ret;
-}
+	Pos leftTop;
+	Pos rightBottom;
+};

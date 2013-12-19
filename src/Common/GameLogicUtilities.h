@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemConstants.h"
 #include "JobConstants.h"
 #include "Pos.h"
+#include "Rect.h"
 #include "SkillConstants.h"
 #include <string>
 
@@ -64,6 +65,7 @@ namespace GameLogicUtilities {
 	inline bool isPuppet(int32_t skillId) { return (skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet); }
 	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning); }
 	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
+	inline bool isInBox(const Pos &start, const Rect &dimensions, const Pos &test) { return isInBox(start, dimensions.leftTop, dimensions.rightBottom, test); }
 	inline bool isDarkSight(int32_t skillId) { return (skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight); }
 	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
 	inline bool itemSkillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 10000) == job); }

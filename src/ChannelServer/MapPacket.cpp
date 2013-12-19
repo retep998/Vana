@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 #include "TimeUtilities.h"
+#include "WidePos.h"
 #include <unordered_map>
 
 using std::unordered_map;
@@ -65,20 +66,21 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 		for (int8_t i = 0; i < EntryByteQuantity; i++) {
 			int8_t cbyte = byteorder[i]; // Values are sorted by lower bytes first
 			if (enter.types[cbyte] != 0) {
-				for (unordered_map<uint8_t, MapEntryVals>::iterator iter = enter.values[cbyte].begin(); iter != enter.values[cbyte].end(); ++iter) {
-					if (iter->second.debuff) {
-						if (!(iter->first == 0x01 && cbyte == Byte5)) { // Glitch in global, Slow doesn't display properly and if you try, it error 38s
-							packet.add<int16_t>(iter->second.skill);
-							packet.add<int16_t>(iter->second.val);
+				for (const auto &kvp : enter.values[cbyte]) {
+					const MapEntryVals &info = kvp.second;
+					if (info.debuff) {
+						if (!(kvp.first == 0x01 && cbyte == Byte5)) { // Glitch in global, Slow doesn't display properly and if you try, it error 38s
+							packet.add<int16_t>(info.skill);
+							packet.add<int16_t>(info.val);
 						}
 					}
-					else if (iter->second.use) {
-						int16_t value = iter->second.val;
+					else if (info.use) {
+						int16_t value = info.val;
 						if (cbyte == Byte3) {
-							if (iter->first == 0x20) {
+							if (kvp.first == 0x20) {
 								packet.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
 							}
-							if (iter->first == 0x40) {
+							if (kvp.first == 0x40) {
 								packet.add<int32_t>(player->getActiveBuffs()->getCharge());
 							}
 						}
@@ -272,8 +274,8 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(0);
-	packet.addClass<WidePos>(WidePos(mist->getLt()));
-	packet.addClass<WidePos>(WidePos(mist->getRb()));
+	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop));
+	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom));
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
@@ -287,8 +289,8 @@ void MapPacket::spawnMist(int32_t mapId, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(mist->getDelay());
-	packet.addClass<WidePos>(WidePos(mist->getLt()));
-	packet.addClass<WidePos>(WidePos(mist->getRb()));
+	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop));
+	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom));
 	packet.add<int32_t>(0);
 	Maps::getMap(mapId)->sendPacket(packet);
 }

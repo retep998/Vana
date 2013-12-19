@@ -96,7 +96,7 @@ public:
 	void setEquip(int16_t slot, Item *equip, bool isLoading = false);
 
 	// Level related functions
-	void giveExp(uint32_t exp, bool inChat = false, bool white = true);
+	void giveExp(uint64_t exp, bool inChat = false, bool white = true);
 	void addStat(PacketReader &packet);
 	void addStatMulti(PacketReader &packet);
 	void addStat(int32_t type, int16_t mod = 1, bool isReset = false);

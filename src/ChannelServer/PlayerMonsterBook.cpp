@@ -38,9 +38,7 @@ void PlayerMonsterBook::load() {
 		<< "ORDER BY b.card_id ASC",
 		soci::use(charId, "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		addCard(row.get<int32_t>("card_id"), row.get<uint8_t>("level"), true);
 	}
 
@@ -64,8 +62,8 @@ void PlayerMonsterBook::save() {
 			soci::use(cardId, "card"),
 			soci::use(level, "level"));
 
-		for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); ++iter) {
-			MonsterCard &c = iter->second;
+		for (const auto &kvp : m_cards) {
+			const MonsterCard &c = kvp.second;
 			cardId = c.id;
 			level = c.level;
 			st.execute(true);
@@ -92,7 +90,8 @@ bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 		m_cards[cardId] = card;
 	}
 	else {
-		MonsterCard card = (m_cards.find(cardId) != m_cards.end() ? m_cards[cardId] : MonsterCard(cardId, 0));
+		auto kvp = m_cards.find(cardId);
+		MonsterCard card = kvp != m_cards.end() ? kvp->second : MonsterCard(cardId, 0);
 		if (isFull(cardId)) {
 			return true;
 		}
@@ -111,9 +110,9 @@ void PlayerMonsterBook::connectData(PacketCreator &packet) {
 	packet.add<int8_t>(0);
 
 	packet.add<uint16_t>(m_cards.size());
-	for (unordered_map<int32_t, MonsterCard>::iterator iter = m_cards.begin(); iter != m_cards.end(); ++iter) {
-		packet.add<int16_t>(GameLogicUtilities::getCardShortId(iter->second.id));
-		packet.add<int8_t>(iter->second.level);
+	for (const auto &kvp : m_cards) {
+		packet.add<int16_t>(GameLogicUtilities::getCardShortId(kvp.second.id));
+		packet.add<int8_t>(kvp.second.level);
 	}
 }
 
@@ -138,9 +137,11 @@ void PlayerMonsterBook::infoData(PacketCreator &packet) {
 }
 
 MonsterCard * PlayerMonsterBook::getCard(int32_t cardId) {
-	return (m_cards.find(cardId) != m_cards.end() ? &m_cards[cardId] : nullptr);
+	auto kvp = m_cards.find(cardId);
+	return kvp != m_cards.end() ? &kvp->second : nullptr;
 }
 
 bool PlayerMonsterBook::isFull(int32_t cardId) {
-	return (m_cards.find(cardId) != m_cards.end() ? (m_cards[cardId].level == MonsterCards::MaxCardLevel) : false);
+	auto kvp = m_cards.find(cardId);
+	return kvp != m_cards.end() ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
 }

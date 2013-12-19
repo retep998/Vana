@@ -45,9 +45,9 @@ void PlayerMounts::save() {
 			soci::use(level, "level"),
 			soci::use(tiredness, "tiredness"));
 
-		for (unordered_map<int32_t, MountData>::iterator iter = m_mounts.begin(); iter != m_mounts.end(); ++iter) {
-			MountData &c = iter->second;
-			itemId = iter->first;
+		for (const auto &kvp : m_mounts) {
+			const MountData &c = kvp.second;
+			itemId = kvp.first;
 			exp = c.exp;
 			level = c.level;
 			tiredness = c.tiredness;
@@ -63,9 +63,7 @@ void PlayerMounts::load() {
 
 	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM mounts m WHERE m.character_id = :char ", soci::use(charId, "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		c = MountData();
 		c.exp = row.get<int16_t>("exp");
 		c.level = row.get<int8_t>("level");

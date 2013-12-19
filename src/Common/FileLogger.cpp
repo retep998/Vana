@@ -34,66 +34,6 @@ namespace fs = std::tr2::sys;
 namespace fs = boost::filesystem;
 #endif
 
-string FileLogger::prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const opt_string &id, const string &message) {
-	// This function is gloriously unelegant
-	const LogReplacements::map_t &repMap = LogReplacements::Instance()->getMap();
-	string ret = logger->getFilenameFormat();
-	for (LogReplacements::map_t::const_iterator iter = repMap.begin(); iter != repMap.end(); ++iter) {
-		size_t x = ret.find(iter->first);
-		if (x != string::npos) {
-			std::ostringstream strm;
-			int32_t mask = iter->second & Replacements::RemoveFlagMask;
-			int32_t flags = iter->second & Replacements::GetFlagMask;
-			if (!(flags & Replacements::String)) {
-				// Integer
-				if (flags & Replacements::Long) {
-					strm << std::setw(2) << std::setfill('0');
-				}
-			}
-			switch (mask) {
-				case Replacements::Time: strm << getTimeFormatted(logger->getTimeFormat()); break;
-				case Replacements::Event: strm << getLevelString(type); break;
-				case Replacements::Origin: strm << getServerTypeString(logger->getServerType()); break;
-				case Replacements::Message: strm << message; break;
-				case Replacements::IntegerDate: strm << TimeUtilities::getDate(start); break;
-				case Replacements::StringDate: strm << TimeUtilities::getDayString(!(flags & Replacements::Long), start); break;
-				case Replacements::IntegerMonth: strm << TimeUtilities::getMonth(start); break;
-				case Replacements::StringMonth: strm << TimeUtilities::getMonthString(!(flags & Replacements::Long), start); break;
-				case Replacements::Hour: strm << TimeUtilities::getHour(true, start); break;
-				case Replacements::MilitaryHour: strm << TimeUtilities::getHour(false, start); break;
-				case Replacements::Minute: strm << TimeUtilities::getMinute(start); break;
-				case Replacements::Second: strm << TimeUtilities::getSecond(start); break;
-				case Replacements::TimeZone: strm << TimeUtilities::getTimeZone(); break;
-				case Replacements::Year: strm << TimeUtilities::getYear(!(flags & Replacements::Long), start); break;
-				case Replacements::Id:
-					if (id.is_initialized()) {
-						strm << id.get();
-					}
-					break;
-				case Replacements::AmPm: {
-					bool pm = !(TimeUtilities::getHour(false, start) < 12);
-					if (flags & Replacements::Uppercase) {
-						strm << pm ? "P" : "A";
-						if (flags & Replacements::Long) {
-							strm << "M";
-						}
-					}
-					else {
-						strm << pm ? "p" : "a";
-						if (flags & Replacements::Long) {
-							strm << "m";
-						}
-					}
-					break;
-				}
-			}
-			const string &y = strm.str();
-			ret.replace(x, iter->first.size(), y.c_str(), y.size());
-		}
-	}
-	return ret;
-}
-
 FileLogger::FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),
 	m_bufferSize(bufferSize),
@@ -108,8 +48,8 @@ FileLogger::~FileLogger() {
 
 void FileLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
 	FileLog file;
-	file.message = Logger::getLogFormatted(type, this, identifier, message);
-	file.file = FileLogger::prepareFileName(type, this, time(nullptr), identifier, message);
+	file.message = Logger::formatLog(type, this, identifier, message);
+	file.file = LogReplacements::format(getFilenameFormat(), type, this, time(nullptr), identifier, message);
 	m_buffer.push_back(file);
 	if (m_buffer.size() >= m_bufferSize) {
 		flush();
@@ -117,14 +57,14 @@ void FileLogger::log(LogTypes::LogTypes type, const opt_string &identifier, cons
 }
 
 void FileLogger::flush() {
-	for (vector<FileLog>::const_iterator iter = m_buffer.begin(); iter != m_buffer.end(); ++iter) {
-		const string &file = iter->file;
+	for (const auto &bufferedMessage : m_buffer) {
+		const string &file = bufferedMessage.file;
 		fs::path fullPath = fs::system_complete(fs::path(file.substr(0, file.find_last_of("/"))));
 		if (!fs::exists(fullPath)) {
 			fs::create_directories(fullPath);
 		}
 		std::fstream f(file.c_str(), std::ios_base::out);
-		f << iter->message;
+		f << bufferedMessage.message;
 		f.close();
 	}
 	m_buffer.clear();

@@ -88,7 +88,7 @@ void CommandHandler::handleCommand(Player *player, PacketReader &packet) {
 	switch (type) {
 		case CommandOpcodes::FindPlayer:
 			if (receiver != nullptr) {
-				if (receiver->getActiveBuffs()->isUsingHide()) {
+				if (receiver->isUsingGmHide()) {
 					PlayersPacket::findPlayer(player, receiver->getName(), -1, 0);
 				}
 				else {

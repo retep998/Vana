@@ -17,57 +17,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
+#include "Logger.h"
 #include "Types.h"
+#include <functional>
 #include <string>
 #include <unordered_map>
 
 using std::string;
-using std::unordered_map;
-
-namespace Replacements {
-	enum Replacements : int32_t {
-		Long = 0x01, // Long versions of strings or padded digits
-		Uppercase = Long << 1, // Primarily for AM/PM
-		String = Long << 2, // End of flags
-
-		Start = Long << 8,
-		Id = Start << 1,
-		Message = Start << 2,
-		Time = Start << 3,
-		Event = Start << 4,
-		Origin = Start << 5,
-		Year = Start << 6,
-		StringMonth = Start << 7,
-		IntegerMonth = Start << 8,
-		StringDate = Start << 9,
-		IntegerDate = Start << 10,
-		Hour = Start << 11,
-		MilitaryHour = Start << 12,
-		Minute = Start << 13,
-		Second = Start << 14,
-		AmPm = Start << 15,
-		TimeZone = Start << 16
-	};
-	const uint32_t RemoveFlagMask = 0xFFFFFFF8; // Take off the flag bits
-	const uint32_t GetFlagMask = ~RemoveFlagMask; // Get only the flag bits
-}
 
 // Prevents them from being loaded a bunch of times, keeps them in memory for the life of the application
-class LogReplacements : public boost::noncopyable {
+class LogReplacements {
 public:
-	typedef unordered_map<string, int32_t> map_t;
-
-	static LogReplacements * Instance() {
-		if (singleton == nullptr)
-			singleton = new LogReplacements;
-		return singleton;
-	}
-	const map_t & getMap() const { return m_replacementMap; }
+	static string format(const string &format, LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string &id, const string &message);
 private:
 	LogReplacements();
+	LogReplacements(const LogReplacements &) = delete;
 	static LogReplacements *singleton;
 
-	void add(const string &key, int32_t val);
-	map_t m_replacementMap;
+	struct ReplacementArgs {
+		LogTypes::LogTypes logType;
+		Logger *logger;
+		time_t time;
+		const opt_string &id;
+		const string &msg;
+		ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string &id, const string &msg);
+	};
+
+	typedef std::function<void(std::ostringstream &, const ReplacementArgs &args)> func_t;
+	void add(const string &key, func_t func);
+	std::unordered_map<string, func_t> m_replacementMap;
 };

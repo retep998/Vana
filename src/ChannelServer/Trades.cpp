@@ -29,14 +29,14 @@ using std::bind;
 Trades * Trades::singleton = nullptr;
 
 Trades::Trades() :
-	m_tradeIds(1, 100000),
-	m_container(new Timer::Container)
+	m_tradeIds(1, 100000)
 {
+	m_container = std::make_unique<Timer::Container>();
 }
 
 int32_t Trades::newTrade(Player *start, Player *recv) {
 	int32_t id = getNewId();
-	m_trades[id].reset(new ActiveTrade(start, recv, id));
+	m_trades[id] = std::make_shared<ActiveTrade>(start, recv, id);
 	startTimeout(id, start);
 	return id;
 }

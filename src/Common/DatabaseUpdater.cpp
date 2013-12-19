@@ -147,9 +147,9 @@ void DatabaseUpdater::runQueries(const string &filename) {
 	const std::vector<string> &queries = MySqlQueryParser::parseQueries(filename);
 
 	// Run them
-	for (auto i = queries.begin(); i != queries.end(); ++i) {
+	for (const auto &query : queries) {
 		try {
-			sql.once << *i;
+			sql.once << query;
 		}
 		catch (soci::soci_error &e) {
 			std::cerr << "\nERROR: " << e.what() << std::endl;

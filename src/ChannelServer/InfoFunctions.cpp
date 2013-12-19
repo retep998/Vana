@@ -37,15 +37,15 @@ bool InfoFunctions::help(Player *player, const string &args) {
 		bool has = false;
 		std::ostringstream strm;
 		strm << "You may not use any commands.";
-		for (unordered_map<string, ChatCommand>::iterator iter = CommandList.begin(); iter != CommandList.end(); ++iter) {
-			if (player->getGmLevel() >= iter->second.level) {
+		for (const auto &kvp : CommandList) {
+			if (player->getGmLevel() >= kvp.second.level) {
 				if (!has) {
 					strm.str("");
 					strm.clear();
 					strm << "Available commands: ";
 					has = true;
 				}
-				strm << iter->first << " ";
+				strm << kvp.first << " ";
 			}
 		}
 		PlayerPacket::showMessage(player, strm.str(), PlayerPacket::NoticeTypes::Blue);
@@ -89,8 +89,7 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 
 				std::ostringstream str("");
 				bool found = false;
-				for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-					const soci::row &row = *i;
+				for (const auto &row : rs) {
 					found = true;
 
 					str.str("");

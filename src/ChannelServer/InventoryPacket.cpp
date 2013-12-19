@@ -46,9 +46,10 @@ void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_
 }
 
 void InventoryPacket::updatePlayer(Player *player) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
+
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_CHANGE_LOOK);
 	packet.add<int32_t>(player->getId());
@@ -101,7 +102,7 @@ void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot
 }
 
 void InventoryPacket::sitChair(Player *player, int32_t chairId) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -130,7 +131,7 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	packet.add<header_t>(SMSG_CHAIR);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide() || !showMap) {
+	if (player->isUsingGmHide() || !showMap) {
 		return;
 	}
 	packet = PacketCreator();
@@ -141,7 +142,7 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 }
 
 void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -332,7 +333,7 @@ void InventoryPacket::sendHammerUpdate(Player *player) {
 }
 
 void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;

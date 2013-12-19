@@ -38,3 +38,13 @@ uint32_t TauswortheGenerator::next() {
 	m_seed3 = ((m_seed3 & 0xFFFFFFF0) << 17) ^ (((m_seed3 <<  3) ^ m_seed3) >> 11);
 	return (m_seed1 ^ m_seed2 ^ m_seed3);
 }
+
+void TauswortheGenerator::skip() {
+	skip(7);
+}
+
+void TauswortheGenerator::skip(int32_t skipStateCount) {
+	do {
+		next();
+	} while (--skipStateCount > 0);
+}

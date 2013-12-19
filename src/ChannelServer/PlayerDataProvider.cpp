@@ -46,7 +46,7 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	int8_t members, j;
 	std::shared_ptr<Party> party;
 	for (i = 0; i < quantity; i++) {
-		party.reset(new Party(packet.get<int32_t>()));
+		party = std::make_shared<Party>(packet.get<int32_t>());
 		party->setLeader(packet.get<int32_t>());
 		members = packet.get<int8_t>();
 
@@ -59,7 +59,7 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 }
 
 void PlayerDataProvider::parsePlayer(PacketReader &packet) {
-	std::shared_ptr<PlayerData> player(new PlayerData);
+	std::shared_ptr<PlayerData> player = std::make_shared<PlayerData>();
 	player->gmLevel = packet.get<int32_t>();
 	player->admin = packet.get<bool>();
 	player->level = packet.get<uint8_t>();
@@ -75,7 +75,7 @@ void PlayerDataProvider::parsePlayer(PacketReader &packet) {
 void PlayerDataProvider::addPlayer(Player *player) {
 	m_players[player->getId()] = player;
 	string upper = StringUtilities::toUpper(player->getName());
-	m_playersByName[upper] = player; // Store in upper case for easy non-case-sensitive search
+	m_playersByName[upper] = player;
 }
 
 void PlayerDataProvider::newPlayer(PacketReader &packet) {
@@ -118,25 +118,27 @@ void PlayerDataProvider::deleteConnectable(int32_t id) {
 }
 
 Player * PlayerDataProvider::getPlayer(int32_t id) {
-	return (m_players.find(id) == m_players.end()) ? nullptr : m_players[id];
+	auto kvp = m_players.find(id);
+	return kvp != m_players.end() ? kvp->second : nullptr;
 }
 
 Player * PlayerDataProvider::getPlayer(const string &name) {
 	string upper = StringUtilities::toUpper(name);
-	return (m_playersByName.find(upper) == m_playersByName.end()) ? nullptr : m_playersByName[upper];
+	auto kvp = m_playersByName.find(upper);
+	return kvp != m_playersByName.end() ? kvp->second : nullptr;
 }
 
 void PlayerDataProvider::run(function<void (Player *)> func) {
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		func(iter->second);
+	for (const auto &kvp : m_players) {
+		func(kvp.second);
 	}
 }
 
 void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		Player *p = iter->second;
-		if (p->getGmLevel() >= minGmLevel) {
-			p->getSession()->send(packet);
+	for (const auto &kvp : m_players) {
+		Player *player = kvp.second;
+		if (player->getGmLevel() >= minGmLevel) {
+			player->getSession()->send(packet);
 		}
 	}
 }
@@ -172,7 +174,8 @@ void PlayerDataProvider::updatePlayer(PacketReader &packet) {
 }
 
 PlayerData * PlayerDataProvider::getPlayerData(int32_t id) {
-	return (m_playerData.find(id) != m_playerData.end() ? m_playerData[id].get() : nullptr);
+	auto kvp = m_playerData.find(id);
+	return kvp != m_playerData.end() ? kvp->second.get() : nullptr;
 }
 
 // Parties
@@ -181,7 +184,7 @@ Party * PlayerDataProvider::getParty(int32_t id) {
 }
 
 void PlayerDataProvider::newParty(int32_t id, int32_t leaderId) {
-	std::shared_ptr<Party> p(new Party(id));
+	std::shared_ptr<Party> p = std::make_shared<Party>(id);
 	Player *leader = getPlayer(leaderId);
 	if (leader == 0) {
 		p->addMember(leaderId);

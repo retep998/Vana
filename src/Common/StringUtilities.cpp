@@ -50,8 +50,8 @@ void StringUtilities::runFlags(const opt_string &flags, function<void (const str
 void StringUtilities::runFlags(const string &flags, function<void (const string &)> func) {
 	if (flags.length() > 0) {
 		MiscUtilities::tokenizer tokens(flags, ",");
-		for (MiscUtilities::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
-			func(*iter);
+		for (const auto &token : tokens) {
+			func(token);
 		}
 	}
 }

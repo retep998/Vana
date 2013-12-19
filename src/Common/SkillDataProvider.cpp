@@ -49,9 +49,7 @@ void SkillDataProvider::loadPlayerSkills() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_player_level_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		skillId = row.get<int32_t>("skillid");
 		skillLevel = row.get<uint8_t>("skill_level");
 
@@ -85,8 +83,8 @@ void SkillDataProvider::loadPlayerSkills() {
 		level.mpProp = row.get<uint16_t>("mp");
 		level.prop = row.get<uint16_t>("prop");
 		level.morph = row.get<int16_t>("morph");
-		level.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		level.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		level.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
+		level.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
 		level.coolTime = row.get<int16_t>("cooldown_time");
 
 		m_skills[skillId][skillLevel] = level;
@@ -104,9 +102,7 @@ void SkillDataProvider::loadMobSkills() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		skillId = row.get<uint8_t>("skillid");
 		level = row.get<uint8_t>("skill_level");
 		mobLevel.time = row.get<int16_t>("buff_time");
@@ -116,10 +112,8 @@ void SkillDataProvider::loadMobSkills() {
 		mobLevel.prop = row.get<int16_t>("chance");
 		mobLevel.count = row.get<uint8_t>("target_count");
 		mobLevel.interval = row.get<int16_t>("cooldown");
-		mobLevel.lt.x = row.get<int16_t>("ltx");
-		mobLevel.rb.x = row.get<int16_t>("rbx");
-		mobLevel.lt.y = row.get<int16_t>("lty");
-		mobLevel.rb.y = row.get<int16_t>("rby");
+		mobLevel.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
+		mobLevel.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
 		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
 		mobLevel.limit = row.get<int16_t>("summon_limit");
 		mobLevel.summonEffect = row.get<int8_t>("summon_effect");
@@ -134,9 +128,7 @@ void SkillDataProvider::loadMobSummons() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_summons");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		level = row.get<uint8_t>("level");
 		mobId = row.get<int32_t>("mobid");
 
@@ -151,9 +143,7 @@ void SkillDataProvider::loadBanishData() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_mob_banish_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		mobId = row.get<int32_t>("mobid");
 
 		banish.message = row.get<string>("message");
@@ -171,9 +161,7 @@ void SkillDataProvider::loadMorphs() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM morph_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		morph = MorphData();
 		morphId = row.get<int16_t>("morphid");
 

@@ -30,7 +30,7 @@ Channels::Channels()
 }
 
 void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
-	shared_ptr<Channel> chan(new Channel());
+	shared_ptr<Channel> chan = std::make_shared<Channel>();
 	chan->setConnection(connection);
 	chan->setId(channel);
 	chan->setExternalIpInformation(channelIp, extIp);
@@ -43,12 +43,13 @@ void Channels::removeChannel(uint16_t channel) {
 }
 
 Channel * Channels::getChannel(uint16_t num) {
-	return m_channels.find(num) != m_channels.end() ? m_channels[num].get() : nullptr;
+	auto kvp = m_channels.find(num);
+	return kvp != m_channels.end() ? kvp->second.get() : nullptr;
 }
 
 void Channels::sendToAll(const PacketCreator &packet) {
-	for (unordered_map<uint16_t, shared_ptr<Channel>>::iterator iter = m_channels.begin(); iter != m_channels.end(); ++iter) {
-		sendToChannel(iter->first, packet);
+	for (const auto &kvp : m_channels) {
+		sendToChannel(kvp.first, packet);
 	}
 }
 

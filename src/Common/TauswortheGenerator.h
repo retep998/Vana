@@ -26,6 +26,8 @@ public:
 	TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3);
 
 	void reset(uint32_t seed1, uint32_t seed2, uint32_t seed3);
+	void skip();
+	void skip(int32_t skipStateCount);
 	uint32_t next();
 private:
 	uint32_t m_seed1;

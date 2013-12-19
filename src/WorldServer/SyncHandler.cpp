@@ -205,7 +205,7 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 
 	bool online = packet.get<bool>();
 
-	const vector<int32_t> &tempIds = packet.getVector<int32_t>();
+	vector<int32_t> tempIds = packet.getVector<int32_t>();
 	unordered_map<int16_t, vector<int32_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people
 
 	int32_t id = 0;
@@ -218,9 +218,9 @@ void SyncHandler::buddyOnline(PacketReader &packet) {
 		}
 	}
 
-	for (unordered_map<int16_t, vector<int32_t>>::iterator iter = ids.begin(); iter != ids.end(); ++iter) {
-		if (Channel *channel = Channels::Instance()->getChannel(iter->first)) {
-			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel, iter->second, playerId, (online ? player->getChannel() : -1));
+	for (const auto &kvp : ids) {
+		if (Channel *channel = Channels::Instance()->getChannel(kvp.first)) {
+			SyncPacket::BuddyPacket::sendBuddyOnlineOffline(channel, kvp.second, playerId, (online ? player->getChannel() : -1));
 		}
 	}
 }

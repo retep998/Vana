@@ -26,10 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Trades.h"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
-	m_sender(new TradeInfo()),
-	m_receiver(new TradeInfo()),
 	m_id(id)
 {
+	m_sender = std::make_unique<TradeInfo>();
+	m_receiver = std::make_unique<TradeInfo>();
+
 	sender->setTrading(true);
 	receiver->setTrading(false);
 	sender->setTradeId(id);

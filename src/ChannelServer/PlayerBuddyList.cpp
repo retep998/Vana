@@ -47,9 +47,7 @@ void PlayerBuddyList::load() {
 		<< "WHERE bl.character_id = :char",
 		soci::use(m_player->getId(), "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		addBuddy(sql, row);
 	}
 
@@ -62,9 +60,7 @@ void PlayerBuddyList::load() {
 		soci::use(ChannelServer::Instance()->getWorldId(), "world"));
 
 	BuddyInvite invite;
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		invite = BuddyInvite();
 		invite.id = row.get<int32_t>("inviter_character_id");
 		invite.name = row.get<string>("inviter_name");
@@ -225,7 +221,7 @@ void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
 			soci::use(rowId, "id");
 	}
 
-	BuddyPtr buddy(new Buddy);
+	BuddyPtr buddy = std::make_shared<Buddy>();
 	buddy->charId = charId;
 
 	// Note that the cache is for displaying the character name when the
@@ -279,8 +275,8 @@ void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
 }
 
 void PlayerBuddyList::addBuddies(PacketCreator &packet) {
-	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); ++iter) {
-		BuddyPtr buddy = iter->second;
+	for (const auto &kvp : m_buddies) {
+		const BuddyPtr &buddy = kvp.second;
 		packet.add<int32_t>(buddy->charId);
 		packet.addString(buddy->name, 13);
 		packet.add<uint8_t>(buddy->oppositeStatus);
@@ -350,8 +346,8 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 
 vector<int32_t> PlayerBuddyList::getBuddyIds() {
 	vector<int32_t> ids;
-	for (unordered_map<int32_t, BuddyPtr>::iterator iter = m_buddies.begin(); iter != m_buddies.end(); ++iter) {
-		ids.push_back(iter->second->charId);
+	for (const auto &kvp : m_buddies) {
+		ids.push_back(kvp.second->charId);
 	}
 
 	return ids;

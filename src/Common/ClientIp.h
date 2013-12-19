@@ -31,7 +31,7 @@ class ClientIp : public IPacketWritable {
 public:
 	explicit ClientIp(const Ip &ip);
 
-	void write(PacketCreator &packet) const;
+	void write(PacketCreator &packet) const override;
 
 protected:
 	ClientIp() : m_ip(0) { }

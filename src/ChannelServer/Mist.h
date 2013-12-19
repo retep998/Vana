@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Pos.h"
+#include "Rect.h"
 #include "Types.h"
 
 class Map;
@@ -40,10 +41,8 @@ public:
 	int32_t getOwnerId() const { return m_ownerId; }
 	bool isMobMist() const { return m_isMobMist; }
 	bool isPoison() const { return m_poison; }
-	Pos getLt() const { return m_lt; }
-	Pos getRb() const { return m_rb; }
-	Pos getSkillLt() const { return m_skillLt; }
-	Pos getSkillRb() const { return m_skillRb; }
+	Rect getArea() const { return m_area; }
+	Rect getSkillDimensions() const { return m_skillDimensions; }
 	Pos getOrigin() const { return m_origin; }
 	Map * getMap() const;
 private:
@@ -56,9 +55,7 @@ private:
 	int32_t m_ownerId;
 	bool m_isMobMist;
 	bool m_poison;
-	Pos m_lt;
-	Pos m_rb;
-	Pos m_skillLt;
-	Pos m_skillRb;
+	Rect m_area;
+	Rect m_skillDimensions;
 	Pos m_origin;
 };

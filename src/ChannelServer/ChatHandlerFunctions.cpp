@@ -183,7 +183,7 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("-------------");
 	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | stone | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
 	command.notes.push_back("Maple Island: southperry | amherst");
-	command.notes.push_back("Victoria: henesys | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
+	command.notes.push_back("Victoria: henesys | hhg | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
 	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
 	command.notes.push_back("Ludus Lake: ludi |  kft | aqua | omega | altaire");
 	command.notes.push_back("Masteria: nlc | amoria | crimsonwood");
@@ -446,6 +446,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "amherst") mapId = 1010000;
 	// Victoria
 	else if (query == "henesys") mapId = 100000000;
+	else if (query == "hhg") mapId = 104040000;
 	else if (query == "perion") mapId = 102000000;
 	else if (query == "sharenian") mapId = 101030104;
 	else if (query == "ellinia") mapId = 101000000;

@@ -85,6 +85,8 @@ public:
 	bool isChangingChannel() const { return m_changingChannel; }
 	bool isTrading() const { return m_tradeState; }
 	bool hasGmEquip() const;
+	bool isUsingGmHide() const;
+	bool hasGmBenefits() const;
 	int8_t getWorldId() const { return m_worldId; }
 	int8_t getGender() const { return m_gender; }
 	int8_t getSkin() const { return m_skin; }
@@ -128,6 +130,7 @@ public:
 	PlayerStorage * getStorage() const { return m_storage.get(); }
 	PlayerSummons * getSummons() const { return m_summons.get(); }
 	PlayerVariables * getVariables() const { return m_variables.get(); }
+	TauswortheGenerator * getRandStream() const { return m_randStream.get(); }
 
 	// For "onlyOnce" portals
 	void addUsedPortal(int8_t portalId) { m_usedPortals.insert(portalId); }
@@ -144,7 +147,6 @@ private:
 	void changeKey(PacketReader &packet);
 	void changeSkillMacros(PacketReader &packet);
 	void saveStats();
-	bool equippedUtility(int16_t slot, int32_t itemId) const;
 
 	bool m_tradeState;
 	bool m_saveOnDc;

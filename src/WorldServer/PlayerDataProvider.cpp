@@ -56,8 +56,7 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 		<< "WHERE c.world_id = :world",
 		soci::use(worldId, "world"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
+	for (const auto &row : rs) {
 		loadPlayer(row);
 	}
 
@@ -75,8 +74,7 @@ void PlayerDataProvider::loadPlayer(int32_t playerId) {
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
+	for (const auto &row : rs) {
 		loadPlayer(row);
 	}
 
@@ -99,16 +97,15 @@ void PlayerDataProvider::getPlayerDataPacket(PacketCreator &packet, int32_t play
 
 void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 	packet.add<uint32_t>(m_players.size());
-	Player *player;
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		player = iter->second.get();
+	for (const auto &kvp : m_players) {
+		Player *player = kvp.second.get();
 		generatePlayerDataPacket(packet, player);
 	}
 
 	packet.add<uint32_t>(m_parties.size());
 	Party *party;
-	for (PartyMap::iterator iter = m_parties.begin(); iter != m_parties.end(); ++iter) {
-		party = iter->second.get();
+	for (const auto &kvp : m_parties) {
+		party = kvp.second.get();
 		packet.add<int32_t>(party->getId());
 		packet.add<int32_t>(party->getLeaderId());
 		packet.add<int8_t>(party->getMemberCount());
@@ -163,14 +160,16 @@ void PlayerDataProvider::playerDisconnect(int32_t id, int16_t channel) {
 Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) {
 	Player *player = nullptr;
 	bool found = false;
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		if ((iter->second->isOnline() || includeOffline) && StringUtilities::noCaseCompare(iter->second->getName(), name) == 0) {
-			player = iter->second.get();
+	for (const auto &kvp : m_players) {
+		player = kvp.second.get();
+		if ((player->isOnline() || includeOffline) && StringUtilities::noCaseCompare(player->getName(), name) == 0) {
 			found = true;
 			break;
 		}
+		player = nullptr;
 	}
 	if (!found) {
+		/* TODO FIXME: Resource issue? */
 		player = new Player;
 		player->setChannel(-1);
 	}
@@ -182,8 +181,9 @@ int32_t PlayerDataProvider::getPlayerQuantity() {
 }
 
 Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
-	if (m_players.find(id) != m_players.end()) {
-		Player *player = m_players[id].get();
+	auto kvp = m_players.find(id);
+	if (kvp != m_players.end()) {
+		Player *player = kvp->second.get();
 		if (player->isOnline() || includeOffline) {
 			return player;
 		}
@@ -192,10 +192,11 @@ Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 }
 
 void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
-	for (PlayerMap::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		if (iter->second->getChannel() == channel) {
-			iter->second->setOnline(false);
-			removePendingPlayerEarly(iter->second->getId());
+	for (const auto &kvp : m_players) {
+		Player *player = kvp.second.get();
+		if (player->getChannel() == channel) {
+			player->setOnline(false);
+			removePendingPlayerEarly(player->getId());
 		}
 	}
 }
@@ -206,22 +207,25 @@ void PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelId) {
 }
 
 void PlayerDataProvider::removePendingPlayer(int32_t id) {
-	if (m_channelSwitches.find(id) != m_channelSwitches.end()) {
-		m_channelSwitches.erase(id);
+	auto kvp = m_channelSwitches.find(id);
+	if (kvp != m_channelSwitches.end()) {
+		m_channelSwitches.erase(kvp);
 	}
 }
 
 int16_t PlayerDataProvider::removePendingPlayerEarly(int32_t id) {
 	int16_t channel = -1;
-	if (m_channelSwitches.find(id) != m_channelSwitches.end()) {
-		channel = m_channelSwitches[id];
-		m_channelSwitches.erase(id);
+	auto kvp = m_channelSwitches.find(id);
+	if (kvp != m_channelSwitches.end()) {
+		channel = kvp->second;
+		m_channelSwitches.erase(kvp);
 	}
 	return channel;
 }
 
 uint16_t PlayerDataProvider::getPendingPlayerChannel(int32_t id) {
-	return (m_channelSwitches.find(id) != m_channelSwitches.end() ? m_channelSwitches[id] : -1);
+	auto kvp = m_channelSwitches.find(id);
+	return (kvp != m_channelSwitches.end() ? kvp->second : -1);
 }
 
 // Parties
@@ -230,7 +234,8 @@ int32_t PlayerDataProvider::getPartyId() {
 }
 
 Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) != m_parties.end() ? m_parties[id].get() : nullptr);
+	auto kvp = m_parties.find(id);
+	return (kvp != m_parties.end() ? kvp->second.get() : nullptr);
 }
 
 void PlayerDataProvider::createParty(int32_t playerId) {

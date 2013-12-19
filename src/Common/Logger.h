@@ -87,12 +87,11 @@ public:
 	int16_t getServerType() const { return m_serverType; }
 	const string & getFormat() const { return m_format; }
 	const string & getTimeFormat() const { return m_timeFormat; }
+	static string getLevelString(LogTypes::LogTypes type);
+	static string getServerTypeString(int16_t serverType);
 protected:
 	Logger() { }
-	static string getLogFormatted(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message);
-	static string getLevelString(LogTypes::LogTypes type);
-	static string getTimeFormatted(const string &fmt);
-	static string getServerTypeString(int16_t serverType);
+	static string formatLog(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message);
 
 	string m_format;
 	string m_timeFormat;

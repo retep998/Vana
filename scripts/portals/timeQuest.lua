@@ -95,7 +95,7 @@ elseif map == 270040000 then
 	toMap = 270040000;
 end
 
-if isQuestCompleted(quest) then
+if isQuestCompleted(quest) or isGm() then
 	playPortalSe();
 	setMap(toMapIfDone, "out00");
 else

@@ -32,10 +32,10 @@ using std::map;
 using std::unordered_map;
 using std::vector;
 
-class Party;
-class Player;
 class Map;
 class PacketCreator;
+class Party;
+class Player;
 struct MpEaterInfo;
 
 struct StatusInfo {
@@ -55,7 +55,7 @@ struct StatusInfo {
 struct PartyExp {
 	PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) { }
 	uint8_t minHitLevel;
-	uint32_t totalExp;
+	uint64_t totalExp;
 	uint64_t highestDamage;
 	Player *highestDamager;
 	Party *party;
@@ -149,7 +149,7 @@ private:
 
 	void initMob();
 	void die(Player *player, bool fromExplosion = false);
-	int32_t giveExp(Player *killer);
+	int32_t getHighestDamager(Player *killer);
 	void spawnDeathMobs(Map *map);
 	void updateSpawnLinks();
 
