@@ -48,9 +48,7 @@ void MobDataProvider::loadAttacks() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_attacks");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		mobAttack = MobAttackInfo();
 		runFlags(row.get<opt_string>("flags"), [&mobAttack](const string &cmp) {
 			if (cmp == "deadly") mobAttack.deadlyAttack = true;
@@ -74,9 +72,7 @@ void MobDataProvider::loadSkills() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_skills");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		mobId = row.get<int32_t>("mobid");
 		mobSkill.skillId = row.get<uint8_t>("skillid");
 		mobSkill.level = row.get<uint8_t>("skill_level");
@@ -93,10 +89,9 @@ void MobDataProvider::loadMobs() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
+	for (const auto &row : rs) {
+		mob = std::make_shared<MobInfoRaw>();
 
-		mob.reset(new MobInfoRaw());
 		runFlags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
@@ -162,9 +157,7 @@ void MobDataProvider::loadSummons() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_summons");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		mobId = row.get<int32_t>("mobid");
 		summonId = row.get<int32_t>("summonid");
 

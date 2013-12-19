@@ -37,8 +37,8 @@ public:
 	void addSummon(Summon *summon, int32_t time);
 	void removeSummon(bool puppet, bool fromTimer);
 
-	void write(PacketCreator &packet) const;
-	void read(PacketReader &packet);
+	void write(PacketCreator &packet) const override;
+	void read(PacketReader &packet) override;
 private:
 	seconds_t getSummonTimeRemaining() const;
 

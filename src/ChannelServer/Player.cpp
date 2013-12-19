@@ -293,23 +293,23 @@ void Player::playerConnect(PacketReader &packet) {
 	);
 
 	// Inventory
-	m_mounts.reset(new PlayerMounts(this));
-	m_pets.reset(new PlayerPets(this));
+	m_mounts = std::make_unique<PlayerMounts>(this);
+	m_pets = std::make_unique<PlayerPets>(this);
 	std::array<uint8_t, Inventories::InventoryCount> maxSlots;
 	maxSlots[0] = row.get<uint8_t>("equip_slots");
 	maxSlots[1] = row.get<uint8_t>("use_slots");
 	maxSlots[2] = row.get<uint8_t>("setup_slots");
 	maxSlots[3] = row.get<uint8_t>("etc_slots");
 	maxSlots[4] = row.get<uint8_t>("cash_slots");
-	m_inventory.reset(new PlayerInventory(this, maxSlots, row.get<int32_t>("mesos")));
-	m_storage.reset(new PlayerStorage(this));
+	m_inventory = std::make_unique<PlayerInventory>(this, maxSlots, row.get<int32_t>("mesos"));
+	m_storage = std::make_unique<PlayerStorage>(this);
 
 	// Skills
-	m_skills.reset(new PlayerSkills(this));
+	m_skills = std::make_unique<PlayerSkills>(this);
 
 	// Buffs/summons
-	m_activeBuffs.reset(new PlayerActiveBuffs(this));
-	m_summons.reset(new PlayerSummons(this));
+	m_activeBuffs = std::make_unique<PlayerActiveBuffs>(this);
+	m_summons = std::make_unique<PlayerSummons>(this);
 
 	bool checked = false;
 	if (PacketReader *pack = Connectable::Instance()->getPacket(id)) {
@@ -336,10 +336,10 @@ void Player::playerConnect(PacketReader &packet) {
 	Connectable::Instance()->playerEstablished(id);
 
 	// The rest
-	m_variables.reset(new PlayerVariables(this));
-	m_buddyList.reset(new PlayerBuddyList(this));
-	m_quests.reset(new PlayerQuests(this));
-	m_monsterBook.reset(new PlayerMonsterBook(this));
+	m_variables = std::make_unique<PlayerVariables>(this);
+	m_buddyList = std::make_unique<PlayerBuddyList>(this);
+	m_quests = std::make_unique<PlayerQuests>(this);
+	m_monsterBook = std::make_unique<PlayerMonsterBook>(this);
 
 	opt_int32_t bookCover = row.get<opt_int32_t>("book_cover");
 	int32_t cover = bookCover.is_initialized() ? bookCover.get() : 0;
@@ -351,8 +351,9 @@ void Player::playerConnect(PacketReader &packet) {
 
 	SkillMacros skillMacros;
 	skillMacros.load(id);
-
-	getStats()->checkHpMp(); // Adjust down HP or MP if necessary
+	
+	// Adjust down HP or MP if necessary
+	getStats()->checkHpMp();
 
 	if (isGm() || isAdmin()) {
 		if (!checked) {
@@ -501,15 +502,16 @@ void Player::changeKey(PacketReader &packet) {
 	};
 
 	if (mode == ChangeKeys) {
-		if (howMany == 0)
+		if (howMany == 0) {
 			return;
+		}
 
 		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 		for (int32_t i = 0; i < howMany; i++) {
 			int32_t pos = packet.get<int32_t>();
 			int8_t type = packet.get<int8_t>();
 			int32_t action = packet.get<int32_t>();
-			keyMaps.add(pos, new KeyMaps::KeyMap(type, action));
+			keyMaps.add(pos, KeyMaps::KeyMap(type, action));
 		}
 
 		// Update to MySQL
@@ -686,7 +688,7 @@ void Player::setLevelDate() {
 }
 
 void Player::acceptDeath(bool wheel) {
-	int32_t toMap = (Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map);
+	int32_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
 	if (wheel) {
 		toMap = getMapId();
 	}
@@ -696,11 +698,11 @@ void Player::acceptDeath(bool wheel) {
 	setMap(toMap);
 }
 
-bool Player::equippedUtility(int16_t slot, int32_t itemId) const {
-	return getInventory()->getEquippedId(slot) == itemId;
-}
-
 bool Player::hasGmEquip() const {
+	auto equippedUtility = [this](int16_t slot, int32_t itemId) -> bool {
+		return this->getInventory()->getEquippedId(slot) == itemId;
+	};
+
 	if (equippedUtility(EquipSlots::Helm, Items::GmHat)) {
 		return true;
 	}
@@ -714,6 +716,14 @@ bool Player::hasGmEquip() const {
 		return true;
 	}
 	return false;
+}
+
+bool Player::isUsingGmHide() const {
+	return m_activeBuffs->isUsingGmHide();
+}
+
+bool Player::hasGmBenefits() const {
+	return isUsingGmHide() || hasGmEquip();
 }
 
 void Player::setBuddyListSize(uint8_t size) {
@@ -733,7 +743,7 @@ void Player::initializeRng(PacketCreator &packet) {
 	uint32_t seed2 = Randomizer::rand<uint32_t>();
 	uint32_t seed3 = Randomizer::rand<uint32_t>();
 
-	m_randStream.reset(new TauswortheGenerator(seed1, seed2, seed3));
+	m_randStream = std::make_unique<TauswortheGenerator>(seed1, seed2, seed3);
 
 	packet.add<uint32_t>(seed1);
 	packet.add<uint32_t>(seed2);

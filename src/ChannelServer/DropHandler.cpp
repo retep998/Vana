@@ -75,10 +75,10 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	}
 	std::random_shuffle(drops.begin(), drops.end());
 	int16_t mod = 25;
-	for (DropsInfo::iterator i = drops.begin(); i != drops.end(); ++i) {
-		int16_t amount = static_cast<int16_t>(Randomizer::rand<int32_t>(i->maxAmount, i->minAmount));
+	for (const auto &dropInfo : drops) {
+		int16_t amount = static_cast<int16_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
 		Drop *drop = nullptr;
-		uint32_t chance = i->chance;
+		uint32_t chance = dropInfo.chance;
 
 		if (isSteal) {
 			chance = chance * 3 / 10;
@@ -99,9 +99,9 @@ void DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 				// pos = Maps::getMap(mapId)->findFloor(pos); // getFhAtPosition doesn't work correctly!
 			}
 
-			if (!i->isMesos) {
-				int32_t itemId = i->itemId;
-				int16_t questId = i->questId;
+			if (!dropInfo.isMesos) {
+				int32_t itemId = dropInfo.itemId;
+				int16_t questId = dropInfo.questId;
 
 				if (questId > 0) {
 					if (player == nullptr || !player->getQuests()->isQuestActive(questId)) {

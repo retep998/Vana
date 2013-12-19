@@ -163,7 +163,7 @@ public:
 	bool hasShadowPartner();
 	bool hasShadowStars();
 	bool hasSoulArrow();
-	bool isUsingHide();
+	bool isUsingGmHide();
 	bool isCursed();
 	bool isZombified();
 	int16_t getHolySymbolRate();
@@ -178,8 +178,8 @@ public:
 	void endMorph();
 	void swapWeapon();
 
-	void write(PacketCreator &packet) const;
-	void read(PacketReader &packet);
+	void write(PacketCreator &packet) const override;
+	void read(PacketReader &packet) override;
 private:
 	bool hasBuff(int32_t skillId);
 

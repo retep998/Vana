@@ -39,9 +39,9 @@ void Worlds::showWorld(Player *player) {
 		return;
 	}
 
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		if (iter->second->isConnected()) {
-			LoginPacket::showWorld(player, iter->second);
+	for (const auto &kvp : m_worlds) {
+		if (kvp.second->isConnected()) {
+			LoginPacket::showWorld(player, kvp.second);
 		}
 	}
 	LoginPacket::worldEnd(player);
@@ -85,7 +85,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 		return;
 	}
 	packet.skipBytes(1);
-	int8_t channel = packet.get<int8_t>();
+	int8_t channelId = packet.get<int8_t>();
 
 	LoginPacket::channelSelect(player);
 	World *world = m_worlds[player->getWorldId()];
@@ -95,8 +95,8 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	if (Channel *chan = world->getChannel(channel)) {
-		player->setChannel(channel);
+	if (Channel *channel = world->getChannel(channelId)) {
+		player->setChannel(channelId);
 		Characters::showCharacters(player);
 	}
 	else {
@@ -106,9 +106,9 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 
 int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	World *world = nullptr;
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		if (!iter->second->isConnected()) {
-			world = iter->second;
+	for (const auto &kvp : m_worlds) {
+		if (!kvp.second->isConnected()) {
+			world = kvp.second;
 			break;
 		}
 	}
@@ -134,8 +134,8 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 
 int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	World *validWorld = nullptr;
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		World *world = iter->second;
+	for (const auto &kvp : m_worlds) {
+		World *world = kvp.second;
 		if (world->getChannelCount() < world->getMaxChannels() && world->isConnected()) {
 			validWorld = world;
 			break;
@@ -157,16 +157,16 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 }
 
 void Worlds::toWorlds(PacketCreator &packet) {
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		if (iter->second->isConnected()) {
-			iter->second->send(packet);
+	for (const auto &kvp : m_worlds) {
+		if (kvp.second->isConnected()) {
+			kvp.second->send(packet);
 		}
 	}
 }
 
 void Worlds::runFunction(function<bool (World *)> func) {
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		if (func(iter->second)) {
+	for (const auto &kvp : m_worlds) {
+		if (func(kvp.second)) {
 			break;
 		}
 	}
@@ -180,11 +180,12 @@ void Worlds::calculatePlayerLoad(World *world) {
 }
 
 World * Worlds::getWorld(int8_t id) {
-	return m_worlds.find(id) == m_worlds.end() ? nullptr : m_worlds[id];
+	auto kvp = m_worlds.find(id);
+	return kvp != m_worlds.end() ? kvp->second : nullptr;
 }
 
 void Worlds::setEventMessages(const string &message) {
-	for (map<int8_t, World *>::iterator iter = m_worlds.begin(); iter != m_worlds.end(); ++iter) {
-		iter->second->setEventMessage(message);
+	for (const auto &kvp : m_worlds) {
+		kvp.second->setEventMessage(message);
 	}
 }

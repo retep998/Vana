@@ -39,12 +39,13 @@ struct ActiveQuest {
 	ActiveQuest() : done(false) { }
 
 	string getQuestData() const {
-		if (kills.size() == 0)
+		if (kills.size() == 0) {
 			return data;
+		}
 
 		std::ostringstream info;
-		for (map<int32_t, int16_t, std::less<int32_t>>::const_iterator iter = kills.begin(); iter != kills.end(); ++iter) {
-			info << std::setw(3) << std::setfill('0') << iter->second;
+		for (const auto &kvp : kills) {
+			info << std::setw(3) << std::setfill('0') << kvp.second;
 		}
 		return info.str();
 	}

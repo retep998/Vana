@@ -42,9 +42,9 @@ void PlayerVariables::save() {
 			soci::use(key, "key"),
 			soci::use(value, "value"));
 
-		for (unordered_map<string, string>::iterator iter = m_variables.begin(); iter != m_variables.end(); ++iter) {
-			key = iter->first;
-			value = iter->second;
+		for (const auto &kvp : m_variables) {
+			key = kvp.first;
+			value = kvp.second;
 			st.execute(true);
 		}
 	}
@@ -53,9 +53,7 @@ void PlayerVariables::save() {
 void PlayerVariables::load() {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM character_variables WHERE character_id = :char", soci::use(m_player->getId(), "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		m_variables[row.get<string>("key")] = row.get<string>("value");
 	}
 }

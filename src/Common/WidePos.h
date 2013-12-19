@@ -16,26 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include "ExternalIpResolver.h"
+
+#include "IPacket.h"
 #include "PacketCreator.h"
 #include "PacketReader.h"
-#include <stdexcept>
+#include "Pos.h"
+#include "Types.h"
+#include <cmath>
 
-ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :
-	m_defaultIp(defaultIp),
-	m_externalIps(externalIps)
-{
-}
-
-Ip ExternalIpResolver::matchIpToSubnet(const Ip &test) const {
-	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument("IP type must match the external IP type");
-
-	Ip ret = m_defaultIp;
-	for (const auto &ipArray : m_externalIps) {
-		if (ipArray.tryMatchIpToSubnet(test, ret)) {
-			break;
-		}
+struct WidePos : public IPacketSerializable {
+	WidePos(const Pos &pos) : x(pos.x), y(pos.y) { }
+	WidePos(int32_t x, int32_t y) : x(x), y(y) { }
+	WidePos() : x(0), y(0) { }
+	int32_t x;
+	int32_t y;
+	int32_t operator-(const WidePos &p) const {
+		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	return ret;
-}
+	void write(PacketCreator &packet) const override {
+		packet.add<int32_t>(x);
+		packet.add<int32_t>(y);
+	}
+	void read(PacketReader &packet) override {
+		x = packet.get<int32_t>();
+		y = packet.get<int32_t>();
+	}
+};

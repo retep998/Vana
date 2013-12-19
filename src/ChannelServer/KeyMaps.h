@@ -30,7 +30,7 @@ public:
 
 	KeyMaps();
 
-	void add(int32_t pos, KeyMap *map);
+	void add(int32_t pos, const KeyMap &map);
 	void defaultMap();
 	KeyMap * getKeyMap(int32_t pos);
 	int32_t getMax();
@@ -40,28 +40,30 @@ public:
 
 	static const size_t size = 90;
 private:
-	unordered_map<int32_t, shared_ptr<KeyMap>> keyMaps;
+	unordered_map<int32_t, KeyMap> keyMaps;
 	int32_t maxValue; // Cache max value
 };
 
 struct KeyMaps::KeyMap {
 	KeyMap(int8_t type, int32_t action);
+	KeyMap() {}
 	int8_t type;
 	int32_t action;
 };
 
 inline KeyMaps::KeyMaps() : maxValue(-1) { }
 
-inline void KeyMaps::add(int32_t pos, KeyMap *map) {
-	keyMaps[pos].reset(map);
+inline void KeyMaps::add(int32_t pos, const KeyMap &map) {
+	keyMaps[pos] = map;
 	if (maxValue < pos) {
 		maxValue = pos;
 	}
 }
 
 inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int32_t pos) {
-	if (keyMaps.find(pos) != keyMaps.end()) {
-		return keyMaps[pos].get();
+	auto kvp = keyMaps.find(pos);
+	if (kvp != keyMaps.end()) {
+		return &kvp->second;
 	}
 	return nullptr;
 }

@@ -119,9 +119,7 @@ void PlayerStorage::load() {
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		Item *item = new Item(row);
 		addItem(item);
 	}

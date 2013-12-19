@@ -38,7 +38,6 @@ public:
 	void flush();
 	const string & getFilenameFormat() const { return m_filenameFormat; }
 private:
-	static string prepareFileName(LogTypes::LogTypes type, FileLogger *logger, time_t start, const opt_string &id, const string &message);
 	string m_filenameFormat;
 	size_t m_bufferSize;
 	vector<FileLog> m_buffer;

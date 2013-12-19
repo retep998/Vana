@@ -86,7 +86,6 @@ Mob::Mob(int32_t id, int32_t mapId, int32_t mobId, const Pos &pos, int16_t fh, i
 	m_mapId(mapId),
 	m_spawnId(-1),
 	m_mobId(mobId),
-	m_timers(new Timer::Container),
 	m_info(MobDataProvider::Instance()->getMobInfo(mobId)),
 	m_facingDirection(1),
 	m_controlStatus(controlStatus)
@@ -101,7 +100,6 @@ Mob::Mob(int32_t id, int32_t mapId, int32_t mobId, const Pos &pos, int32_t spawn
 	m_mapId(mapId),
 	m_spawnId(spawnId),
 	m_mobId(mobId),
-	m_timers(new Timer::Container),
 	m_info(MobDataProvider::Instance()->getMobInfo(mobId)),
 	m_facingDirection(direction),
 	m_controlStatus(Mobs::ControlStatus::ControlNormal)
@@ -110,6 +108,8 @@ Mob::Mob(int32_t id, int32_t mapId, int32_t mobId, const Pos &pos, int32_t spawn
 }
 
 void Mob::initMob() {
+	m_timers = std::make_unique<Timer::Container>();
+
 	m_hp = getMaxHp();
 	m_mp = getMaxMp();
 	if (canFly()) {
@@ -218,10 +218,10 @@ void Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) {
 		Mob *sponge = getSponge(); // Need to preserve the pointer through mob deletion in die()
 		if (m_hp == Stats::MinHp) {
 			if (isSponge()) {
-				for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
-					Mob *rawPointer = spawnIter->second;
+				for (const auto &kvp : m_spawns) {
+					Mob *rawPointer = kvp.second;
 					Timer::create([rawPointer]() { rawPointer->die(true); },
-						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, spawnIter->first),
+						Timer::Id(Timer::Types::SpongeCleanupTimer, m_id, kvp.first),
 						nullptr, milliseconds_t(400));
 				}
 			}
@@ -274,11 +274,11 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 	for (size_t i = 0; i < statusInfo.size(); i++) {
 		StatusInfo &info = statusInfo[i];
 		int32_t cStatus = info.status;
-		bool alreadyHas = (m_statuses.find(cStatus) != m_statuses.end());
+		bool alreadyHasStatus = m_statuses.find(cStatus) != m_statuses.end();
 		switch (cStatus) {
 			case StatusEffects::Mob::Poison: // Status effects that do not renew
 			case StatusEffects::Mob::Doom:
-				if (alreadyHas) {
+				if (alreadyHasStatus) {
 					continue;
 				}
 				break;
@@ -299,7 +299,7 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				break;
 			case StatusEffects::Mob::VenomousWeapon:
 				setVenomCount(getVenomCount() + 1);
-				if (alreadyHas) {
+				if (alreadyHasStatus) {
 					info.val += m_statuses[cStatus].val; // Increase the damage
 				}
 				break;
@@ -319,7 +319,7 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 				int32_t poisonDamage = info.val;
 				Timer::create([this, playerId, poisonDamage]() { this->applyDamage(playerId, poisonDamage, true); },
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
-					getTimers(), seconds_t(0), seconds_t(1));
+					getTimers(), seconds_t(1), seconds_t(1));
 				break;
 		}
 
@@ -330,24 +330,25 @@ void Mob::addStatus(int32_t playerId, vector<StatusInfo> &statusInfo) {
 	}
 	// Calculate new status mask
 	m_status = 0;
-	for (map<int32_t, StatusInfo>::iterator iter = m_statuses.begin(); iter != m_statuses.end(); ++iter) {
-		m_status |= iter->first;
+	for (const auto &kvp : m_statuses) {
+		m_status |= kvp.first;
 	}
 	MobsPacket::applyStatus(this, addedStatus, statusInfo, 300, reflection);
 }
 
 void Mob::statusPacket(PacketCreator &packet) {
 	packet.add<int32_t>(m_status);
-	for (map<int32_t, StatusInfo>::iterator iter = m_statuses.begin(); iter != m_statuses.end(); ++iter) {
+	for (const auto &kvp : m_statuses) {
 		// Val/skillId pairs must be ordered in the packet by status value ascending, this is done for us by std::map
-		if (iter->first != StatusEffects::Mob::Empty) {
-			packet.add<int16_t>(static_cast<int16_t>(iter->second.val));
-			if (iter->second.skillId >= 0) {
-				packet.add<int32_t>(iter->second.skillId);
+		if (kvp.first != StatusEffects::Mob::Empty) {
+			const StatusInfo &info = kvp.second;
+			packet.add<int16_t>(static_cast<int16_t>(info.val));
+			if (info.skillId >= 0) {
+				packet.add<int32_t>(info.skillId);
 			}
 			else {
-				packet.add<int16_t>(iter->second.mobSkill);
-				packet.add<int16_t>(iter->second.level);
+				packet.add<int16_t>(info.mobSkill);
+				packet.add<int16_t>(info.level);
 			}
 			packet.add<int16_t>(1);
 		}
@@ -451,7 +452,7 @@ void Mob::die(Player *player, bool fromExplosion) {
 		map->getTimers()->removeTimer(timerId);
 	}
 
-	int32_t highestDamager = giveExp(player);
+	int32_t highestDamager = getHighestDamager(player);
 	spawnDeathMobs(map);
 	updateSpawnLinks();
 
@@ -504,46 +505,50 @@ void Mob::die(bool showPacket) {
 	delete this;
 }
 
-int32_t Mob::giveExp(Player *killer) {
+int32_t Mob::getHighestDamager(Player *killer) {
 	int32_t highestDamager = 0;
 	uint64_t highestDamage = 0;
 
-	if (m_damages.size()) {
-		// Don't really want to bother with construction of the iterators and stuff if we won't use them
+	if (m_damages.size() > 0) {
 		unordered_map<int32_t, PartyExp> parties;
-		Player *damager = nullptr;
-		uint8_t damagerLevel = 0;
-		Party *damagerParty = nullptr;
-		for (unordered_map<int32_t, uint64_t>::iterator iter = m_damages.begin(); iter != m_damages.end(); ++iter) {
-			if (iter->second > highestDamage) {
+
+		for (const auto &kvp : m_damages) {
+			int32_t damagerId = kvp.first;
+			uint64_t damage = kvp.second;
+			if (damage > highestDamage) {
 				// Find the highest damager to give drop ownership
-				highestDamager = iter->first;
-				highestDamage = iter->second;
+				highestDamager = damagerId;
+				highestDamage = damage;
 			}
-			damager = PlayerDataProvider::Instance()->getPlayer(iter->first);
+
+			Player *damager = PlayerDataProvider::Instance()->getPlayer(damagerId);
 			if (damager == nullptr || damager->getMapId() != m_mapId || damager->getStats()->isDead()) {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 			}
-			damagerLevel = damager->getStats()->getLevel();
-			damagerParty = damager->getParty();
+			uint8_t damagerLevel = damager->getStats()->getLevel();
+			Party *damagerParty = damager->getParty();
 
-			uint32_t exp = static_cast<uint32_t>(getExp() * ((8 * iter->second / m_totalHealth) + (damager == killer ? 2 : 0)) / 10);
+			uint64_t exp = static_cast<uint64_t>(getExp()) * ((8 * damage / m_totalHealth) + (damager == killer ? 2 : 0)) / 10;
 			if (damagerParty != nullptr) {
-				int32_t pId = damagerParty->getId();
-				if (parties.find(pId) != parties.end()) {
-					parties[pId].totalExp += exp;
+				int32_t partyId = damagerParty->getId();
+				auto kvp = parties.find(partyId);
+				if (kvp == parties.end()) {
+					PartyExp newParty;
+					newParty.totalExp = 0;
+					newParty.party = damagerParty;
+					kvp = parties.insert(std::make_pair(partyId, newParty)).first;
 				}
-				else {
-					parties[pId].totalExp = exp;
-					parties[pId].party = damagerParty;
+
+				PartyExp &damagingParty = kvp->second;
+				damagingParty.totalExp += exp;
+
+				if (damagerLevel < damagingParty.minHitLevel) {
+					damagingParty.minHitLevel = damagerLevel;
 				}
-				if (damagerLevel < parties[pId].minHitLevel) {
-					parties[pId].minHitLevel = damagerLevel;
-				}
-				if (iter->second > parties[pId].highestDamage) {
-					parties[pId].highestDamager = damager;
-					parties[pId].highestDamage = iter->second;
+				if (damage > damagingParty.highestDamage) {
+					damagingParty.highestDamager = damager;
+					damagingParty.highestDamage = damage;
 				}
 			}
 			else {
@@ -555,32 +560,33 @@ int32_t Mob::giveExp(Player *killer) {
 				damager->getStats()->giveExp(exp, false, (damager == killer));
 			}
 		}
-		if (parties.size()) {
-			vector<Player *> partyMembers;
-			for (unordered_map<int32_t, PartyExp>::iterator partyIter = parties.begin(); partyIter != parties.end(); ++partyIter) {
-				damagerParty = partyIter->second.party;
-				partyMembers = damagerParty->getPartyMembers(getMapId());
+
+		if (parties.size() > 0) {
+			for (const auto &kvp : parties) {
+				const PartyExp &info = kvp.second;
+				Party *damagerParty = info.party;
+				vector<Player *> partyMembers = damagerParty->getPartyMembers(getMapId());
 				uint16_t totalLevel = 0;
 				uint16_t leechCount = 0;
-				for (size_t i = 0; i < partyMembers.size(); i++) {
-					damager = partyMembers[i];
-					if (damagerLevel < (partyIter->second.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
+				for (const auto &partyMember : partyMembers) {
+					uint8_t damagerLevel = partyMember->getStats()->getLevel();
+					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
 						continue;
 					}
 					totalLevel += damagerLevel;
 					leechCount++;
 				}
-				for (size_t i = 0; i < partyMembers.size(); i++) {
-					damager = partyMembers[i];
-					if (damagerLevel < (partyIter->second.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
+				for (const auto &partyMember : partyMembers) {
+					uint8_t damagerLevel = partyMember->getStats()->getLevel();
+					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
 						continue;
 					}
-					uint32_t exp = static_cast<uint32_t>(m_info->exp * ((8 * damagerLevel / totalLevel) + (damager == partyIter->second.highestDamager ? 2 : 0)) / 10);
-					int16_t hsRate = damager->getActiveBuffs()->getHolySymbolRate();
+					uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damagerLevel / totalLevel) + (partyMember == info.highestDamager ? 2 : 0)) / 10;
+					int16_t hsRate = partyMember->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
 					exp *= ChannelServer::Instance()->getMobExpRate();
 					exp += ((exp * hsRate) / 100);
-					damager->getStats()->giveExp(exp, false, (damager == killer));
+					partyMember->getStats()->giveExp(exp, false, (partyMember == killer));
 				}
 			}
 		}
@@ -613,23 +619,23 @@ void Mob::spawnDeathMobs(Map *map) {
 	else if (Mob *sponge = getSponge()) {
 		// More special logic to keep units linked
 		sponge->removeSpawn(getId());
-		for (size_t i = 0; i < m_info->summon.size(); i++) {
-			int32_t ident = map->spawnMob(m_info->summon[i], m_pos, getFh(), this);
+		for (const auto &summon : m_info->summon) {
+			int32_t ident = map->spawnMob(summon, m_pos, getFh(), this);
 			Mob *mob = map->getMob(ident);
 			sponge->addSpawn(ident, mob);
 		}
 	}
 	else {
-		for (size_t i = 0; i < m_info->summon.size(); i++) {
-			map->spawnMob(m_info->summon[i], m_pos, getFh(), this);
+		for (const auto &summon : m_info->summon) {
+			map->spawnMob(summon, m_pos, getFh(), this);
 		}
 	}
 }
 
 void Mob::updateSpawnLinks() {
 	if (m_spawns.size() > 0) {
-		for (unordered_map<int32_t, Mob *>::iterator spawnIter = m_spawns.begin(); spawnIter != m_spawns.end(); ++spawnIter) {
-			spawnIter->second->setOwner(nullptr);
+		for (const auto &kvp : m_spawns) {
+			kvp.second->setOwner(nullptr);
 		}
 	}
 	if (getOwner() != nullptr) {

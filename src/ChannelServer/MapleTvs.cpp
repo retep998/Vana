@@ -29,10 +29,10 @@ using std::bind;
 MapleTvs * MapleTvs::singleton = nullptr;
 
 MapleTvs::MapleTvs() :
-	m_timers(new Timer::Container),
 	m_counter(0),
 	m_hasMessage(false)
 {
+	m_timers = std::make_unique<Timer::Container>();
 }
 
 void MapleTvs::addMap(Map *map) {
@@ -90,8 +90,8 @@ void MapleTvs::parseBuffer() {
 }
 
 void MapleTvs::sendPacket(PacketCreator &packet) {
-	for (unordered_map<int32_t, Map *>::iterator iter = m_maps.begin(); iter != m_maps.end(); ++iter) {
-		iter->second->sendPacket(packet);
+	for (const auto &kvp : m_maps) {
+		kvp.second->sendPacket(packet);
 	}
 }
 

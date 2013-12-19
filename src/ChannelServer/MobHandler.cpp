@@ -220,7 +220,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillInfo->x, skillId, level, skillInfo->time));
 			break;
 		case MobSkills::HealAoe:
-			map->healMobs(skillInfo->x, skillInfo->y, mobPos, skillInfo->lt, skillInfo->rb);
+			map->healMobs(skillInfo->x, skillInfo->y, mobPos, skillInfo->dimensions);
 			break;
 		case MobSkills::Seal:
 		case MobSkills::Darkness:
@@ -235,11 +235,11 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 			auto func = [&skillId, &level](Player *player) {
 				player->getActiveBuffs()->addDebuff(skillId, level);
 			};
-			map->runFunctionPlayers(mobPos, skillInfo->lt, skillInfo->rb, skillInfo->prop, skillInfo->count, func);
+			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, skillInfo->count, func);
 			break;
 		}
 		case MobSkills::Dispel: {
-			map->runFunctionPlayers(mobPos, skillInfo->lt, skillInfo->rb, skillInfo->prop, [](Player *player) {
+			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, [](Player *player) {
 				player->getActiveBuffs()->dispelBuffs();
 			});
 			break;
@@ -261,7 +261,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 				}
 				player->setMap(field, portal);
 			};
-			map->runFunctionPlayers(mobPos, skillInfo->lt, skillInfo->rb, skillInfo->prop, skillInfo->count, func);
+			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, skillInfo->count, func);
 			break;
 		}
 		case MobSkills::PoisonMist:
@@ -292,16 +292,16 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 			break;
 		case MobSkills::Summon: {
 			int16_t xMin, xMax;
-			int16_t yMin = mobPos.y + skillInfo->lt.y;
-			int16_t yMax = mobPos.y + skillInfo->rb.y;
+			int16_t yMin = mobPos.y + skillInfo->dimensions.leftTop.y;
+			int16_t yMax = mobPos.y + skillInfo->dimensions.rightBottom.y;
 			int16_t d = 0;
 			if (mob->isFacingRight()) {
-				xMin = mobPos.x + skillInfo->rb.x * -1;
-				xMax = mobPos.x + skillInfo->lt.x * -1;
+				xMin = mobPos.x + skillInfo->dimensions.rightBottom.x * -1;
+				xMax = mobPos.x + skillInfo->dimensions.leftTop.x * -1;
 			}
 			else {
-				xMin = mobPos.x + skillInfo->lt.x;
-				xMax = mobPos.x + skillInfo->rb.x;
+				xMin = mobPos.x + skillInfo->dimensions.leftTop.x;
+				xMax = mobPos.x + skillInfo->dimensions.rightBottom.x;
 			}
 			for (size_t summonSize = 0; summonSize < skillInfo->summons.size(); ++summonSize) {
 				int32_t spawnId = skillInfo->summons[summonSize];
@@ -312,7 +312,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 					// Papulatus' map
 					if (spawnId == Mobs::HighDarkstar) {
 						// Keep High Darkstars high
-						while ((floor.y > -538 || floor.y == yPos) || !GameLogicUtilities::isInBox(mob->getPos(), skillInfo->lt, skillInfo->rb, floor)) {
+						while ((floor.y > -538 || floor.y == yPos) || !GameLogicUtilities::isInBox(mob->getPos(), skillInfo->dimensions, floor)) {
 							// Mobs spawn on the ground, we need them up top
 							xPos = Randomizer::rand<int16_t>(xMax, xMin);
 							yPos = -590;
@@ -339,7 +339,7 @@ void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSki
 	}
 	if (statuses.size() > 0) {
 		if (aoe) {
-			map->statusMobs(statuses, mob->getPos(), skillInfo->lt, skillInfo->rb);
+			map->statusMobs(statuses, mob->getPos(), skillInfo->dimensions);
 		}
 		else {
 			mob->addStatus(0, statuses);

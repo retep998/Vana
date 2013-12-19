@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "noncopyable.hpp"
 #include "Pos.h"
+#include "Rect.h"
 #include "Types.h"
 #include <memory>
 #include <mutex>
@@ -61,8 +62,6 @@ struct FieldLimit {
 
 struct MapInfo {
 	MapInfo() :
-		lt(Pos(0,0)),
-		rb(Pos(0,0)),
 		clock(false),
 		town(false),
 		swim(false),
@@ -102,8 +101,7 @@ struct MapInfo {
 	string defaultMusic;
 	string shuffleName;
 	string message;
-	Pos lt;
-	Pos rb;
+	Rect dimensions;
 	FieldLimit limitations;
 };
 typedef shared_ptr<MapInfo> MapInfoPtr;

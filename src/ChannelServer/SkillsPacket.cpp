@@ -38,7 +38,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 }
 
 void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -97,7 +97,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	if (send) {
 		player->getSession()->send(packet);
 	}
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -126,7 +126,7 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 }
 
 void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info) { // Hurricane, Pierce, Big Bang, Monster Magnet
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -140,7 +140,7 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 }
 
 void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info) {
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
@@ -166,7 +166,8 @@ void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Sends to map/user
+void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) {
+	// Sends to map/user
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(1);
@@ -174,7 +175,7 @@ void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) { // Send
 	packet.add<int8_t>(level);
 	packet.add<bool>(on);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();

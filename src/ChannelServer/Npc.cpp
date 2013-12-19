@@ -80,7 +80,7 @@ string Npc::getScript(int16_t questId, bool start) {
 
 void Npc::initScript(Player *player, int32_t npcId, const string &filename) {
 	if (FileUtilities::fileExists(filename)) {
-		m_luaNpc.reset(new LuaNpc(filename, player->getId()));
+		m_luaNpc = std::make_unique<LuaNpc>(filename, player->getId());
 		player->setNpc(this);
 	}
 	else {
@@ -144,7 +144,7 @@ void Npc::sendYesNo() {
 void Npc::sendDialog(bool back, bool next, bool save) {
 	if (save) {
 		// Store the current Npc state, for future "back" button use
-		m_previousStates.push_back(StatePtr(new State(m_text, back, next)));
+		m_previousStates.push_back(std::make_shared<State>(m_text, back, next));
 	}
 
 	PacketCreator packet = npcPacket(NpcDialogs::Normal);

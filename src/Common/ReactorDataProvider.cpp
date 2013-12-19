@@ -46,9 +46,7 @@ void ReactorDataProvider::loadReactors() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		id = row.get<int32_t>("reactorid");
 		reactor = ReactorData();
 		runFlags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
@@ -70,9 +68,7 @@ void ReactorDataProvider::loadStates() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		id = row.get<int32_t>("reactorid");
 		stateId = row.get<int8_t>("state");
 		state = ReactorStateInfo();
@@ -89,8 +85,8 @@ void ReactorDataProvider::loadStates() {
 
 		state.itemId = row.get<int32_t>("itemid");
 		state.itemQuantity = row.get<int16_t>("quantity");
-		state.lt = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		state.rb = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		state.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
+		state.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
 		state.nextState = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
@@ -106,9 +102,7 @@ void ReactorDataProvider::loadTriggerSkills() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_event_trigger_skills");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		id = row.get<int32_t>("reactorid");
 		state = row.get<int8_t>("state");
 		skillId = row.get<int32_t>("skillid");

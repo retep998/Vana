@@ -65,9 +65,7 @@ void ItemDataProvider::loadItems() {
 															"LEFT JOIN strings s ON id.itemId = s.objectid AND s.object_type = :item",
 															soci::use(string("item"), "item"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		item = ItemInfo();
 		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
 			if (cmp == "time_limited") item.timeLimited = true;
@@ -103,9 +101,7 @@ void ItemDataProvider::loadScrolls() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_scroll_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		item = ScrollInfo();
 		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
 			if (cmp == "rand_stat") item.randStat = true;
@@ -145,9 +141,7 @@ void ItemDataProvider::loadConsumes() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_consume_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		item = ConsumeInfo();
 
 		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
@@ -232,9 +226,7 @@ void ItemDataProvider::loadMapRanges() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_monster_card_map_ranges");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		range = CardMapRange();
 		itemId = row.get<int32_t>("itemid");
 		range.startMap = row.get<int32_t>("start_map");
@@ -250,9 +242,7 @@ void ItemDataProvider::loadMultiMorphs() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_random_morphs");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		morph = Morph();
 		itemId = row.get<int32_t>("itemid");
 		morph.morph = row.get<int16_t>("morphid");
@@ -270,9 +260,7 @@ void ItemDataProvider::loadMonsterCardData() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM monster_card_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		cardId = row.get<int32_t>("cardid");
 		mobId = row.get<int32_t>("mobid");
 
@@ -288,9 +276,7 @@ void ItemDataProvider::loadItemSkills() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_skills");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		skill = Skillbook();
 		itemId = row.get<int32_t>("itemid");
 		skill.skillId = row.get<int32_t>("skillid");
@@ -309,9 +295,7 @@ void ItemDataProvider::loadSummonBags() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_summons");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		itemId = row.get<int32_t>("itemid");
 		summon.mobId = row.get<int32_t>("mobid");
 		summon.chance = row.get<uint16_t>("chance");
@@ -327,9 +311,7 @@ void ItemDataProvider::loadItemRewards() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_reward_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		itemId = row.get<int32_t>("itemid");
 		reward.rewardId = row.get<int32_t>("rewardid");
 		reward.prob = row.get<uint16_t>("prob");
@@ -347,9 +329,7 @@ void ItemDataProvider::loadPets() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_data");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		pet = PetInfo();
 		runFlags(row.get<opt_string>("flags"), [&pet](const string &cmp) {
 			if (cmp == "no_revive") pet.noRevive = true;
@@ -377,9 +357,7 @@ void ItemDataProvider::loadPetInteractions() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_interactions");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		interact = PetInteractInfo();
 		itemId = row.get<int32_t>("itemid");
 		interact.increase = row.get<int16_t>("closeness");

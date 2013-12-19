@@ -43,8 +43,8 @@ vector<string> MySqlQueryParser::parseQueries(const string &filename) {
 	{
 		MiscUtilities::tokenizer tokens(content, ";");
 
-		for (MiscUtilities::tokenizer::iterator iter = tokens.begin(); iter != tokens.end(); ++iter) {
-			string q = *iter;
+		for (const auto &token : tokens) {
+			string q = token;
 			q = StringUtilities::trim(q);
 			if (q.size() > 0) {
 				queries.push_back(q);

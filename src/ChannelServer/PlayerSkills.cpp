@@ -38,9 +38,7 @@ void PlayerSkills::load() {
 		<< "WHERE s.character_id = :char",
 		soci::use(playerId, "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		skill = PlayerSkillInfo();
 		skillId = row.get<int32_t>("skill_id");
 		skill.level = row.get<uint8_t>("points");
@@ -55,9 +53,7 @@ void PlayerSkills::load() {
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		int32_t skillId = row.get<int32_t>("skill_id");
 		int16_t timeLeft = row.get<int16_t>("remaining_time");
 		Skills::startCooldown(m_player, skillId, timeLeft, true);
@@ -80,10 +76,10 @@ void PlayerSkills::save(bool saveCooldowns) {
 		use(level, "level"),
 		use(maxLevel, "maxLevel"));
 
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
-		skillId = iter->first;
-		level = iter->second.level;
-		maxLevel = iter->second.playerMaxSkillLevel;
+	for (const auto &kvp : m_skills) {
+		skillId = kvp.first;
+		level = kvp.second.level;
+		maxLevel = kvp.second.playerMaxSkillLevel;
 		st.execute(true);
 	}
 
@@ -99,9 +95,9 @@ void PlayerSkills::save(bool saveCooldowns) {
 				use(skillId, "skill"),
 				use(remainingTime, "time"));
 
-			for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); ++iter) {
-				skillId = iter->first;
-				remainingTime = Skills::getCooldownTimeLeft(m_player, iter->first);
+			for (const auto &kvp : m_cooldowns) {
+				skillId = kvp.first;
+				remainingTime = Skills::getCooldownTimeLeft(m_player, kvp.first);
 				st.execute(true);
 			}
 		}
@@ -112,11 +108,14 @@ bool PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacke
 	if (!SkillDataProvider::Instance()->isSkill(skillId)) {
 		return false;
 	}
+
 	// Keep people from adding too much SP and prevent it from going negative
-	uint8_t newLevel = ((m_skills.find(skillId) != m_skills.end()) ? m_skills[skillId].level : 0) + amount;
+
+	auto kvp = m_skills.find(skillId);
+	uint8_t newLevel = (kvp != m_skills.end() ? kvp->second.level : 0) + amount;
 	uint8_t maxSkillLevel = SkillDataProvider::Instance()->getMaxLevel(skillId);
 	if (newLevel > maxSkillLevel || (GameLogicUtilities::isFourthJobSkill(skillId) && newLevel > getMaxSkillLevel(skillId))) {
-		return false; // Let the caller handle this
+		return false;
 	}
 
 	m_skills[skillId].level = newLevel;
@@ -368,16 +367,17 @@ void PlayerSkills::addCooldown(int32_t skillId, int16_t time) {
 }
 
 void PlayerSkills::removeCooldown(int32_t skillId) {
-	if (m_cooldowns.find(skillId) != m_cooldowns.end()) {
-		m_cooldowns.erase(skillId);
+	auto kvp = m_cooldowns.find(skillId);
+	if (kvp != m_cooldowns.end()) {
+		m_cooldowns.erase(kvp);
 	}
 }
 
 void PlayerSkills::removeAllCooldowns() {
 	unordered_map<int32_t, int16_t> dupe = m_cooldowns;
-	for (unordered_map<int32_t, int16_t>::iterator iter = dupe.begin(); iter != dupe.end(); ++iter) {
-		if (iter->first != Skills::Buccaneer::TimeLeap) {
-			Skills::stopCooldown(m_player, iter->first);
+	for (const auto &kvp : dupe) {
+		if (kvp.first != Skills::Buccaneer::TimeLeap) {
+			Skills::stopCooldown(m_player, kvp.first);
 		}
 	}
 }
@@ -385,17 +385,17 @@ void PlayerSkills::removeAllCooldowns() {
 void PlayerSkills::connectData(PacketCreator &packet) {
 	// Skill levels
 	packet.add<uint16_t>(m_skills.size());
-	for (unordered_map<int32_t, PlayerSkillInfo>::iterator iter = m_skills.begin(); iter != m_skills.end(); ++iter) {
-		packet.add<int32_t>(iter->first);
-		packet.add<int32_t>(iter->second.level);
-		if (GameLogicUtilities::isFourthJobSkill(iter->first)) {
-			packet.add<int32_t>(iter->second.playerMaxSkillLevel); // Max Level for 4th job skills
+	for (const auto &kvp : m_skills) {
+		packet.add<int32_t>(kvp.first);
+		packet.add<int32_t>(kvp.second.level);
+		if (GameLogicUtilities::isFourthJobSkill(kvp.first)) {
+			packet.add<int32_t>(kvp.second.playerMaxSkillLevel);
 		}
 	}
 	// Cooldowns
 	packet.add<uint16_t>(m_cooldowns.size());
-	for (unordered_map<int32_t, int16_t>::iterator iter = m_cooldowns.begin(); iter != m_cooldowns.end(); ++iter) {
-		packet.add<int32_t>(iter->first);
-		packet.add<int16_t>(iter->second);
+	for (const auto &kvp : m_cooldowns) {
+		packet.add<int32_t>(kvp.first);
+		packet.add<int16_t>(kvp.second);
 	}
 }

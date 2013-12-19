@@ -40,7 +40,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, const seconds_t &tim
 	packet.add<int16_t>(addedInfo);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	if (playerSkill.hasMapBuff) {
@@ -86,7 +86,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, con
 	packet.add<int16_t>(delay);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -115,7 +115,7 @@ void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
 
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -135,7 +135,7 @@ void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
 
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -166,7 +166,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, const seconds_t
 	packet.add<int16_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total - only certain skills have this part
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -205,7 +205,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, const second
 	packet.add<int16_t>(castedTime);
 	packet.add<int16_t>(addedInfo);
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+	if (player->isUsingGmHide()) {
 		return;
 	}
 	packet = PacketCreator();
@@ -239,9 +239,11 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, const seconds_t &tim
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0); // Number of times you've been buffed total
 	player->getSession()->send(packet);
-	if (player->getActiveBuffs()->isUsingHide()) {
+
+	if (player->isUsingGmHide()) {
 		return;
 	}
+
 	packet = PacketCreator();
 	packet.add<header_t>(SMSG_3RD_PARTY_SKILL);
 	packet.add<int32_t>(player->getId());

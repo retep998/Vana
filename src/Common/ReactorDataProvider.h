@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "noncopyable.hpp"
-#include "Pos.h"
+#include "Rect.h"
 #include "Types.h"
 #include <unordered_map>
 #include <vector>
@@ -33,8 +33,7 @@ struct ReactorStateInfo {
 	int16_t itemQuantity;
 	int32_t itemId;
 	int32_t timeout;
-	Pos lt;
-	Pos rb;
+	Rect dimensions;
 	vector<int32_t> triggerSkills;
 };
 

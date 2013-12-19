@@ -49,9 +49,7 @@ void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 		soci::use(id, "id"),
 		soci::use(Inventories::EquipInventory, "inv"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		CharEquip equip;
 		equip.id = row.get<int32_t>("item_id");
 		equip.slot = row.get<int16_t>("slot");
@@ -112,9 +110,7 @@ void Characters::showAllCharacters(Player *player) {
 	uint32_t charsNum = 0;
 	World *world;
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		uint8_t worldId = row.get<uint8_t>("world_id");
 		world = Worlds::Instance()->getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
@@ -130,8 +126,8 @@ void Characters::showAllCharacters(Player *player) {
 
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
 	LoginPacket::showAllCharactersInfo(player, chars.size(), unk);
-	for (CharsMap::const_iterator iter = chars.begin(); iter != chars.end(); ++iter) {
-		LoginPacket::showCharactersWorld(player, iter->first, iter->second);
+	for (const auto &kvp : chars) {
+		LoginPacket::showCharactersWorld(player, kvp.first, kvp.second);
 	}
 }
 
@@ -148,9 +144,7 @@ void Characters::showCharacters(Player *player) {
 		soci::use(worldId, "world"));
 
 	vector<Character> chars;
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		Character charc;
 		loadCharacter(charc, row);
 		chars.push_back(charc);

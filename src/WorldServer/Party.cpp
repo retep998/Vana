@@ -48,14 +48,14 @@ void Party::setLeader(Player *newLeader) {
 }
 
 void Party::disband() {
-	for (map<int32_t, Player *, std::less<int32_t>>::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		iter->second->setParty(nullptr);
+	for (const auto &kvp : m_members) {
+		kvp.second->setParty(nullptr);
 	}
 	SyncPacket::PartyPacket::disbandParty(getId());
 }
 
 void Party::runFunction(function<void (Player *)> func) {
-	for (map<int32_t, Player *, std::less<int32_t>>::iterator iter = m_members.begin(); iter != m_members.end(); ++iter) {
-		func(iter->second);
+	for (const auto &kvp : m_members) {
+		func(kvp.second);
 	}
 }

@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <functional>
 #include <sstream>
+#include <utility>
 
 using std::bind;
 
@@ -40,13 +41,14 @@ Instance::Instance(const string &name, int32_t map, int32_t playerId, const seco
 	m_timerCounter(0),
 	m_persistent(persistent),
 	m_showTimer(showTimer),
-	m_timers(new Timer::Container),
-	m_variables(new Variables),
-	m_luaInstance(new LuaInstance(name, playerId)),
 	m_start(TimeUtilities::getNow()),
 	m_resetOnDestroy(true),
 	m_markedForDeletion(false)
 {
+	m_timers = std::make_unique<Timer::Container>();
+	m_variables = std::make_unique<Variables>();
+	m_luaInstance = std::make_unique<LuaInstance>(name, playerId);
+
 	if (!appLaunch) {
 		std::ostringstream x;
 		x << name << " started by player " << playerId;
@@ -62,7 +64,7 @@ Instance::~Instance() {
 		map->setInstance(nullptr);
 		map->setMusic("default");
 		map->clearDrops(false);
-		map->killMobs(0, 0, false, false);
+		map->killMobs(nullptr, 0, false, false);
 		map->killReactors(false);
 		if (m_resetOnDestroy) {
 			// Reset all mobs/reactors
@@ -72,16 +74,14 @@ Instance::~Instance() {
 	m_maps.clear();
 
 	// Parties
-	for (size_t k = 0; k < m_parties.size(); ++k) {
-		if (Party *p = m_parties[k]) {
-			p->setInstance(nullptr);
-		}
+	for (const auto &party : m_parties) {
+		party->setInstance(nullptr);
 	}
 	m_parties.clear();
 
 	// Players
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		iter->second->setInstance(nullptr);
+	for (const auto &kvp : m_players) {
+		kvp.second->setInstance(nullptr);
 	}
 	m_players.clear();
 	Instances::InstancePtr()->removeInstance(this);
@@ -129,15 +129,16 @@ void Instance::removePlayer(Player *player) {
 }
 
 void Instance::removePlayer(int32_t id) {
-	if (m_players.find(id) != m_players.end()) {
-		m_players.erase(id);
+	auto kvp = m_players.find(id);
+	if (kvp != m_players.end()) {
+		m_players.erase(kvp);
 	}
 }
 
 void Instance::removeAllPlayers() {
 	unordered_map<int32_t, Player *> temp = m_players;
-	for (unordered_map<int32_t, Player *>::iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-		removePlayer(iter->second);
+	for (const auto &kvp : temp) {
+		removePlayer(kvp.second);
 	}
 }
 
@@ -158,9 +159,8 @@ void Instance::moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *
 		return;
 	}
 	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
-	for (unordered_map<int32_t, Player *>::iterator iter = tmp.begin(); iter != tmp.end(); ++iter) {
-		iter->second->setMap(mapId, portal, respectInstances);
-
+	for (const auto &kvp : tmp) {
+		kvp.second->setMap(mapId, portal, respectInstances);
 	}
 }
 
@@ -175,8 +175,8 @@ bool Instance::isPlayerSignedUp(const string &name) {
 
 vector<int32_t> Instance::getAllPlayerIds() {
 	vector<int32_t> playerIds;
-	for (unordered_map<int32_t, Player *>::iterator iter = m_players.begin(); iter != m_players.end(); ++iter) {
-		playerIds.push_back(iter->first);
+	for (const auto &kvp : m_players) {
+		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
 }
@@ -228,7 +228,8 @@ void Instance::addParty(Party *party) {
 
 bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 	if (m_timerActions.find(timerName) == m_timerActions.end()) {
-		m_timerActions[timerName] = timer;
+		m_timerActions.insert(std::make_pair(timerName, timer));
+
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
@@ -247,9 +248,9 @@ bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 
 seconds_t Instance::getTimerSecondsRemaining(const string &timerName) {
 	seconds_t timeLeft(0);
-	auto iter = m_timerActions.find(timerName);
-	if (iter != m_timerActions.end()) {
-		const TimerAction &timer = iter->second;
+	auto kvp = m_timerActions.find(timerName);
+	if (kvp != m_timerActions.end()) {
+		const TimerAction &timer = kvp->second;
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		timeLeft = getTimers()->getSecondsRemaining(id);
 	}
@@ -257,20 +258,21 @@ seconds_t Instance::getTimerSecondsRemaining(const string &timerName) {
 }
 
 void Instance::removeTimer(const string &timerName) {
-	if (m_timerActions.find(timerName) != m_timerActions.end()) {
-		TimerAction timer = m_timerActions[timerName];
+	auto kvp = m_timerActions.find(timerName);
+	if (kvp != m_timerActions.end()) {
+		const TimerAction &timer = kvp->second;
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
 			sendMessage(TimerEnd, timerName, false);
 		}
-		m_timerActions.erase(timerName);
+		m_timerActions.erase(kvp);
 	}
 }
 
 void Instance::removeAllTimers() {
-	for (unordered_map<string, TimerAction>::iterator iter = m_timerActions.begin(); iter != m_timerActions.end(); ++iter) {
-		removeTimer(iter->first);
+	for (const auto &kvp : m_timerActions) {
+		removeTimer(kvp.first);
 	}
 	setInstanceTimer(seconds_t(0));
 }

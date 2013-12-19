@@ -29,10 +29,10 @@ using std::bind;
 Thread * Thread::singleton = nullptr;
 
 Thread::Thread() :
-	m_terminate(false),
-	m_container(new Container)
+	m_terminate(false)
 {
-	m_thread.reset(new std::thread([this]() { this->runThread(); }));
+	m_container = std::make_unique<Container>();
+	m_thread = std::make_unique<std::thread>([this]() { this->runThread(); });
 }
 
 Thread::~Thread() {
@@ -59,7 +59,7 @@ void Thread::runThread() {
 		time_point_t waitTime = getWaitTime();
 		time_point_t now = TimeUtilities::getNow();
 
-		while (waitTime <= now) {
+		while (waitTime <= now && m_timers.size() > 0) {
 			pair<time_point_t, weak_ptr<Timer>> top = m_timers.top();
 			if (top.second.expired()) {
 				m_timers.pop();

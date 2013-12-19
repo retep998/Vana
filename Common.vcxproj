@@ -173,6 +173,7 @@
     <ClInclude Include="src\Common\JobConstants.h" />
     <ClInclude Include="src\Common\Logger.h" />
     <ClInclude Include="src\Common\LogReplacements.h" />
+    <ClInclude Include="src\Common\make_unique.hpp" />
     <ClInclude Include="src\Common\MapConstants.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\MapObjects.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="src\Common\PrecompiledHeader.h" />
     <ClInclude Include="src\Common\MySqlQueryParser.h" />
     <ClInclude Include="src\Common\Quest.h" />
+    <ClInclude Include="src\Common\Rect.h" />
     <ClInclude Include="src\Common\shared_array.hpp" />
     <ClInclude Include="src\Common\SkillConstants.h" />
     <ClInclude Include="src\Common\SkillDataObjects.h" />
@@ -242,6 +244,7 @@
     <ClInclude Include="src\Common\VanaConstants.h" />
     <ClInclude Include="src\Common\Variables.h" />
     <ClInclude Include="src\Common\DatabaseUpdater.h" />
+    <ClInclude Include="src\Common\WidePos.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

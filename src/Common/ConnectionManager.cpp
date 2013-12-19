@@ -24,19 +24,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ConnectionManager * ConnectionManager::singleton = nullptr;
 
-ConnectionManager::ConnectionManager() :
-	m_clients(new SessionManager),
-	m_work(new boost::asio::io_service::work(m_ioService))
+ConnectionManager::ConnectionManager()
 {
+	m_clients = std::make_shared<SessionManager>();
+	m_work = std::make_unique<boost::asio::io_service::work>(m_ioService);
 }
 
 void ConnectionManager::accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) {
 	tcp::endpoint endpoint(ipType == Ip::Type::Ipv4 ? tcp::v4() : tcp::v6(), port);
-	m_servers.push_back(ConnectionAcceptorPtr(new ConnectionAcceptor(m_ioService, endpoint, acf, loginConfig, isServer, patchLocation)));
+	m_servers.push_back(std::make_shared<ConnectionAcceptor>(m_ioService, endpoint, acf, loginConfig, isServer, patchLocation));
 }
 
 void ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) {
-	ServerClientPtr c = ServerClientPtr(new ServerClient(m_ioService, serverIp, serverPort, m_clients, connection, loginConfig.serverPing));
+	ServerClientPtr c = std::make_shared<ServerClient>(m_ioService, serverIp, serverPort, m_clients, connection, loginConfig.serverPing);
 	c->startConnect();
 }
 
@@ -46,7 +46,7 @@ void ConnectionManager::stop() {
 }
 
 void ConnectionManager::run() {
-	m_thread.reset(new std::thread(std::bind(&ConnectionManager::handleRun, this)));
+	m_thread = std::make_unique<std::thread>(std::bind(&ConnectionManager::handleRun, this));
 }
 
 void ConnectionManager::join() {

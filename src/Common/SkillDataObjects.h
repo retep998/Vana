@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MapConstants.h"
 #include "Pos.h"
+#include "Rect.h"
 #include "Types.h"
 #include <string>
 #include <unordered_map>
@@ -60,8 +61,7 @@ struct SkillLevelInfo {
 	int32_t item;
 	int32_t time;
 	int32_t optionalItem;
-	Pos lt;
-	Pos rb;
+	Rect dimensions;
 };
 typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
@@ -76,7 +76,7 @@ struct SpecialSkillInfo {
 
 struct ReturnDamageInfo {
 	// Power Guard/Mana Reflection
-	ReturnDamageInfo() : reduction(0), damage(0), mapMobId(0), isPhysical(true), pos(0,0) { }
+	ReturnDamageInfo() : reduction(0), damage(0), mapMobId(0), isPhysical(true), pos(0, 0) { }
 	uint8_t reduction;
 	int32_t damage;
 	int32_t mapMobId;
@@ -104,8 +104,7 @@ struct MobSkillLevelInfo {
 	int16_t time;
 	int32_t x;
 	int32_t y;
-	Pos lt;
-	Pos rb;
+	Rect dimensions;
 	vector<int32_t> summons;
 };
 
@@ -138,9 +137,6 @@ namespace SkillTypes {
 }
 
 struct Attack {
-	typedef unordered_map<int32_t, vector<int32_t>>::const_iterator hit_iterator;
-	typedef vector<int32_t>::const_iterator damage_iterator;
-
 	Attack() :
 		isMesoExplosion(false),
 		isChargeSkill(false),

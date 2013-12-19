@@ -99,6 +99,7 @@ struct Respawnable {
 struct SeatInfo {
 	SeatInfo() : occupant(0) { }
 
+	int16_t id;
 	Pos pos;
 	Player *occupant;
 };

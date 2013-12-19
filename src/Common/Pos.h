@@ -28,36 +28,16 @@ struct Pos : public IPacketSerializable {
 	Pos() : x(0), y(0) { }
 	int16_t x;
 	int16_t y;
-	int32_t operator-(const Pos &p) {
+	int32_t operator-(const Pos &p) const {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	void write(PacketCreator &packet) const {
+	void write(PacketCreator &packet) const override {
 		packet.add<int16_t>(x);
 		packet.add<int16_t>(y);
 	}
-	void read(PacketReader &packet) {
+	void read(PacketReader &packet) override {
 		x = packet.get<int16_t>();
 		y = packet.get<int16_t>();
-	}
-};
-
-struct WidePos : public IPacketSerializable {
-	WidePos(const Pos &pos) : x(pos.x), y(pos.y) { }
-	WidePos(int32_t x, int32_t y) : x(x), y(y) { }
-	WidePos() : x(0), y(0) { }
-	int32_t x;
-	int32_t y;
-	int32_t operator-(const WidePos &p) {
-		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
-	}
-
-	void write(PacketCreator &packet) const {
-		packet.add<int32_t>(x);
-		packet.add<int32_t>(y);
-	}
-	void read(PacketReader &packet) {
-		x = packet.get<int32_t>();
-		y = packet.get<int32_t>();
 	}
 };

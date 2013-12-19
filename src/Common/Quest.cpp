@@ -55,24 +55,24 @@ void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
 }
 
 void Quest::mobRequestFunc(function<bool (int32_t, int16_t)> func) const {
-	for (MobRequests::const_iterator iter = m_mobRequests.begin(); iter != m_mobRequests.end(); ++iter) {
-		if (func(iter->first, iter->second)) {
+	for (const auto &kvp : m_mobRequests) {
+		if (func(kvp.first, kvp.second)) {
 			break;
 		}
 	}
 }
 
 void Quest::itemRequestFunc(function<bool (int32_t, int16_t)> func) const {
-	for (ItemRequests::const_iterator iter = m_itemRequests.begin(); iter != m_itemRequests.end(); ++iter) {
-		if (func(iter->first, iter->second)) {
+	for (const auto &kvp : m_itemRequests) {
+		if (func(kvp.first, kvp.second)) {
 			break;
 		}
 	}
 }
 
 void Quest::questRequestFunc(function<bool (int16_t, int8_t)> func) const {
-	for (QuestRequests::const_iterator iter = m_questRequests.begin(); iter != m_questRequests.end(); ++iter) {
-		if (func(iter->first, iter->second)) {
+	for (const auto &kvp : m_questRequests) {
+		if (func(kvp.first, kvp.second)) {
 			break;
 		}
 	}
@@ -91,17 +91,18 @@ bool Quest::rewardsFunc(bool start, int16_t job, function<bool (const QuestRewar
 	else {
 		rewMap = &m_endRewards;
 	}
-	for (Rewards::const_iterator iter = rewMap->rewards.begin(); iter != rewMap->rewards.end(); ++iter) {
-		if (func(*iter)) {
+	for (const auto &reward : rewMap->rewards) {
+		if (func(reward)) {
 			broken = true;
 			break;
 		}
 	}
 	if (!broken && job != -1) {
-		if (rewMap->jobRewards.find(job) != rewMap->jobRewards.end()) {
-			Rewards &rew = rewMap->jobRewards[job];
-			for (Rewards::const_iterator iter = rew.begin(); iter != rew.end(); ++iter) {
-				if (func(*iter)) {
+		auto kvp = rewMap->jobRewards.find(job);
+		if (kvp != rewMap->jobRewards.end()) {
+			const Rewards &rewards = kvp->second;
+			for (const auto &reward : rewards) {
+				if (func(reward)) {
 					broken = true;
 					break;
 				}

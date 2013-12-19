@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapObjects.h"
 #include "Mob.h"
 #include "Pos.h"
+#include "Rect.h"
 #include "Types.h"
 #include <ctime>
 #include <functional>
@@ -80,19 +81,8 @@ public:
 	int32_t getReturnMap() const { return getInfo()->rm; }
 	const string & getMusic() const { return m_music; }
 	const string & getDefaultMusic() const { return getInfo()->defaultMusic; }
-	const Pos & getMapLeftTop() const { return getInfo()->lt; }
-	const Pos & getMapRightBottom() const { return getInfo()->rb; }
 	int32_t getObjectId() { return m_objectIds.next(); }
 	int32_t getId() const { return m_id; }
-
-	// Data initialization
-	void addFoothold(const FootholdInfo &foothold);
-	void addSeat(int16_t id, const SeatInfo &seat);
-	void addPortal(const PortalInfo &portal);
-	int32_t addNpc(const NpcSpawnInfo &npc);
-	void addMobSpawn(const MobSpawnInfo &spawn);
-	void addReactorSpawn(const ReactorSpawnInfo &spawn);
-	void addTimeMob(TimeMobPtr info);
 
 	// Footholds
 	Pos findFloor(const Pos &pos);
@@ -116,11 +106,12 @@ public:
 	void removePlayer(Player *player);
 	void checkPlayerEquip(Player *player);
 	void buffPlayers(int32_t buffId);
-	void runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, function<void (Player *)> successFunc);
-	void runFunctionPlayers(const Pos &origin, const Pos &lt, const Pos &rb, int16_t prop, int16_t count, function<void (Player *)> successFunc);
+	void runFunctionPlayers(const Pos &origin, const Rect &dimensions, int16_t prop, function<void (Player *)> successFunc);
+	void runFunctionPlayers(const Pos &origin, const Rect &dimensions, int16_t prop, int16_t count, function<void(Player *)> successFunc);
 	void runFunctionPlayers(function<void (Player *)> successFunc);
 
 	// NPCs
+	int32_t addNpc(const NpcSpawnInfo &npc);
 	void removeNpc(uint32_t index);
 	bool isValidNpcIndex(uint32_t id) const;
 	NpcSpawnInfo getNpc(uint32_t id) const;
@@ -129,14 +120,14 @@ public:
 	void addWebbedMob(Mob *mob);
 	void removeWebbedMob(int32_t id);
 	void removeMob(int32_t id, int32_t spawnId);
-	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Pos &lt, const Pos &rb);
-	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Pos &lt, const Pos &rb);
+	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Rect &dimensions);
+	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Rect &dimensions);
 	void spawnZakum(const Pos &pos, int16_t fh = 0);
 	void updateMobControl(Mob *mob, bool spawn = false, Player *display = nullptr);
 	int32_t spawnShell(int32_t mobId, const Pos &pos, int16_t fh);
 	int32_t spawnMob(int32_t mobId, const Pos &pos, int16_t fh = 0, Mob *owner = nullptr, int8_t summonEffect = 0);
 	int32_t spawnMob(int32_t spawnId, const MobSpawnInfo &info);
-	int32_t killMobs(Player *player, int32_t mobId = 0, bool playerkill = true, bool showPacket = true);
+	int32_t killMobs(Player *player, int32_t mobId = 0, bool playerInitiated = true, bool showPacket = true);
 	int32_t countMobs(int32_t mobId = 0);
 	Mob * getMob(int32_t id, bool isMapId = true);
 	unordered_map<int32_t, Mob *> getMobs() const;
@@ -166,8 +157,6 @@ public:
 	void checkShadowWeb();
 	void checkMists();
 	void clearDrops(time_point_t time);
-	void runTimer();
-	void mapTick();
 	void timeMob(bool firstLoad = true);
 	void setMapTimer(const seconds_t &timer);
 	Timer::Container * getTimers() const { return m_timers.get(); }
@@ -190,7 +179,16 @@ private:
 	static const uint32_t NpcStart = 100;
 	static const uint32_t ReactorStart = 200;
 
+	friend class MapDataProvider;
+	void addFoothold(const FootholdInfo &foothold);
+	void addSeat(const SeatInfo &seat);
+	void addPortal(const PortalInfo &portal);
+	void addMobSpawn(const MobSpawnInfo &spawn);
+	void addReactorSpawn(const ReactorSpawnInfo &spawn);
+	void addTimeMob(TimeMobPtr info);
+
 	void updateMobControl(Player *player);
+	void mapTick();
 	int32_t getTimeMobId() const { return m_timeMob; }
 	MapInfo * getInfo() const { return m_info.get(); }
 	TimeMob * getTimeMob() const { return m_timeMobInfo.get(); }
@@ -201,6 +199,8 @@ private:
 	int32_t m_timeMob;
 	int32_t m_spawnMobs;
 	int32_t m_emptyMapTicks;
+	int32_t m_minSpawnCount;
+	int32_t m_maxSpawnCount;
 	string m_music;
 	Instance *m_instance;
 	LoopingId<int32_t> m_objectIds;
@@ -219,6 +219,7 @@ private:
 	unordered_map<string, Pos> m_reactorPositions;
 	seconds_t m_timer;
 	time_point_t m_timerStart;
+	time_point_t m_lastSpawn;
 
 	// Shorter-lived objects
 	vector<Player *> m_players;

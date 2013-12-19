@@ -79,14 +79,15 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 	}
 	if (updateEquips) {
 		m_equipBonuses = BonusSet();
-		for (EquipBonuses::iterator iter = m_equipStats.begin(); iter != m_equipStats.end(); ++iter) {
-			if (EquipDataProvider::Instance()->canEquip(iter->second.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
-				m_equipBonuses.hp += iter->second.hp;
-				m_equipBonuses.mp += iter->second.mp;
-				m_equipBonuses.str += iter->second.str;
-				m_equipBonuses.dex += iter->second.dex;
-				m_equipBonuses.intt += iter->second.intt;
-				m_equipBonuses.luk += iter->second.luk;
+		for (const auto &kvp : m_equipStats) {
+			const EquipBonus &info = kvp.second;
+			if (EquipDataProvider::Instance()->canEquip(info.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
+				m_equipBonuses.hp += info.hp;
+				m_equipBonuses.mp += info.mp;
+				m_equipBonuses.str += info.str;
+				m_equipBonuses.dex += info.dex;
+				m_equipBonuses.intt += info.intt;
+				m_equipBonuses.luk += info.luk;
 			}
 		}
 	}
@@ -389,7 +390,7 @@ void PlayerStats::loseExp() {
 }
 
 // Level related functions
-void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
+void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
 	int16_t fullJob = getJob();
 	uint8_t level = getLevel();
 	uint8_t jobMax = GameLogicUtilities::getMaxLevel(fullJob);
@@ -397,10 +398,19 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 		// Do not give EXP to characters of max level or over
 		return;
 	}
-	uint32_t curExp = getExp() + exp;
-	if (exp != 0) {
-		LevelsPacket::showExp(m_player, exp, white, inChat);
+
+	uint64_t curExp = getExp() + exp;
+	if (exp > 0) {
+		uint64_t expCounter = exp;
+		uint64_t batchSize = std::numeric_limits<int32_t>::max();
+		while (expCounter > 0) {
+
+			int32_t allocate = static_cast<int32_t>(std::min(expCounter, batchSize));
+			LevelsPacket::showExp(m_player, allocate, white, inChat);
+			expCounter -= allocate;
+		}
 	}
+
 	if (curExp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
 		uint8_t levelsGained = 0;
@@ -504,7 +514,9 @@ void PlayerStats::giveExp(uint32_t exp, bool inChat, bool white) {
 			}
 		}
 	}
-	setExp(curExp);
+
+	// By this point, the EXP should be a valid EXP in the range of 0 to int32_t max
+	setExp(static_cast<int32_t>(curExp));
 }
 
 void PlayerStats::addStat(PacketReader &packet) {

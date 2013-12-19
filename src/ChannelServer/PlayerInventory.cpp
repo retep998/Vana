@@ -51,8 +51,8 @@ PlayerInventory::PlayerInventory(Player *player, const std::array<uint8_t, Inven
 
 PlayerInventory::~PlayerInventory() {
 	typedef std::array<ItemInventory, Inventories::InventoryCount> ItemInvArr;
-	for (ItemInvArr::iterator iter = m_items.begin(); iter != m_items.end(); ++iter) {
-		std::for_each(iter->begin(), iter->end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
+	for (const auto &inv : m_items) {
+		std::for_each(inv.begin(), inv.end(), MiscUtilities::DeleterPairAssoc<ItemInventory::value_type>());
 	}
 }
 
@@ -70,9 +70,7 @@ void PlayerInventory::load() {
 		soci::use(m_player->getId(), "char"),
 		soci::use(location, "location"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		Item *item = new Item(row);
 		addItem(row.get<int8_t>("inv"), row.get<int16_t>("slot"), item, true);
 
@@ -84,9 +82,7 @@ void PlayerInventory::load() {
 
 	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		int8_t index = row.get<int8_t>("map_index");
 		int32_t mapId = row.get<int32_t>("map_id");
 
@@ -139,8 +135,8 @@ void PlayerInventory::save() {
 	vector<ItemDbRecord> v;
 	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		ItemInventory &itemsInv = m_items[i - 1];
-		for (ItemInventory::iterator iter = itemsInv.begin(); iter != itemsInv.end(); ++iter) {
-			ItemDbRecord rec(iter->first, charId, m_player->getUserId(), m_player->getWorldId(), Item::Inventory, iter->second);
+		for (const auto &kvp : itemsInv) {
+			ItemDbRecord rec(kvp.first, charId, m_player->getUserId(), m_player->getWorldId(), Item::Inventory, kvp.second);
 			v.push_back(rec);
 		}
 	}
@@ -249,10 +245,10 @@ void PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) {
 void PlayerInventory::destroyEquippedItem(int32_t itemId) {
 	int8_t inv = Inventories::EquipInventory;
 	const ItemInventory &equips = m_items[inv - 1];
-	for (auto iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first < 0 && iter->second->getId() == itemId) {
-			InventoryPacket::moveItem(m_player, inv, iter->first, 0);
-			deleteItem(inv, iter->first, false);
+	for (const auto &kvp : equips) {
+		if (kvp.first < 0 && kvp.second->getId() == itemId) {
+			InventoryPacket::moveItem(m_player, inv, kvp.first, 0);
+			deleteItem(inv, kvp.first, false);
 			break;
 		}
 	}
@@ -309,8 +305,8 @@ uint16_t PlayerInventory::getItemAmount(int32_t itemId) {
 bool PlayerInventory::isEquippedItem(int32_t itemId) {
 	const ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
 	bool has = false;
-	for (auto iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first < 0 && iter->second->getId() == itemId) {
+	for (const auto &kvp : equips) {
+		if (kvp.first < 0 && kvp.second->getId() == itemId) {
 			has = true;
 			break;
 		}
@@ -576,22 +572,21 @@ void PlayerInventory::connectData(PacketCreator &packet) {
 
 	// Go through equips
 	ItemInventory &equips = m_items[Inventories::EquipInventory - 1];
-	ItemInventory::iterator iter;
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first < 0 && iter->first > -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+	for (const auto &kvp : equips) {
+		if (kvp.first < 0 && kvp.first > -100) {
+			PlayerPacketHelper::addItemInfo(packet, kvp.first, kvp.second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first < -100) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+	for (const auto &kvp : equips) {
+		if (kvp.first < -100) {
+			PlayerPacketHelper::addItemInfo(packet, kvp.first, kvp.second);
 		}
 	}
 	packet.add<int8_t>(0);
-	for (iter = equips.begin(); iter != equips.end(); ++iter) {
-		if (iter->first > 0) {
-			PlayerPacketHelper::addItemInfo(packet, iter->first, iter->second);
+	for (const auto &kvp : equips) {
+		if (kvp.first > 0) {
+			PlayerPacketHelper::addItemInfo(packet, kvp.first, kvp.second);
 		}
 	}
 	packet.add<int8_t>(0);

@@ -51,7 +51,7 @@ void RankingCalculator::setTimer() {
 void RankingCalculator::runThread() {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
 	// The std::thread object will be deleted immediately, but the thread will continue to run
-	unique_ptr<std::thread> p(new std::thread(bind(&RankingCalculator::all)));
+	auto p = std::make_unique<std::thread>([] { RankingCalculator::all(); });
 	p->detach();
 }
 
@@ -139,8 +139,7 @@ void RankingCalculator::all() {
 			soci::use(oOverall, "ooverall"),
 			soci::use(cOverall, "coverall"));
 
-		for (vector<RankPlayer>::const_iterator iter = v.begin(); iter != v.end(); ++iter) {
-			const RankPlayer &p = *iter;
+		for (const auto &p : v) {
 			charId = p.charId;
 			oFame = p.fame.oldRank;
 			cFame = p.fame.newRank.get();

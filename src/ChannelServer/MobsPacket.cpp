@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Session.h"
 #include "SmsgHeader.h"
+#include "WidePos.h"
 
 void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner, bool spawn, bool show) {
 	PacketCreator packet;

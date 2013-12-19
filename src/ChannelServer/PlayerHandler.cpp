@@ -157,7 +157,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 		}
 	};
 
-	if (damage > 0 && !player->hasGmEquip()) {
+	if (damage > 0 && !player->hasGmBenefits()) {
 		if (player->getActiveBuffs()->hasMesoGuard() && player->getInventory()->getMesos() > 0) {
 			int32_t skillId = player->getActiveBuffs()->getMesoGuard();
 			int16_t mesoRate = player->getActiveBuffs()->getActiveSkillInfo(skillId)->x; // Meso Guard meso %
@@ -423,7 +423,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	Pos origin;
 	vector<int32_t> ppDamages;
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
 		int8_t connectedHits = 0;
 		Mob *mob = Maps::getMap(map)->getMob(target.first);
@@ -431,7 +431,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			continue;
 		}
 		origin = mob->getPos(); // Info for pickpocket before mob is set to nullptr (in the case that mob dies)
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			if (damage != 0) {
 				connectedHits++;
@@ -607,7 +607,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	int32_t maxHp = 0;
 	int32_t firstHit = 0;
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		int32_t mapMobId = target.first;
 		Mob *mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
@@ -616,8 +616,9 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int8_t connectedHits = 0;
 
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
+
 			if (damage != 0) {
 				connectedHits++;
 				targetTotal += damage;
@@ -705,7 +706,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		Skills::useAttackSkill(player, skillId);
 	}
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
@@ -718,7 +719,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 			return;
 		}
 
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			if (damage != 0) {
 				connectedHits++;
@@ -760,7 +761,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	int32_t skillId = attack.skillId;
 	int8_t level = attack.skillLevel;
 
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
@@ -769,7 +770,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 			continue;
 		}
 
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			if (damage != 0) {
 				connectedHits++;
@@ -801,7 +802,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	}
 	PlayersPacket::useSummonAttack(player, attack);
 	int32_t skillId = summon->getSummonId();
-	for (auto target : attack.damages) {
+	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
@@ -809,7 +810,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		if (mob == nullptr) {
 			continue;
 		}
-		for (auto hit : target.second) {
+		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			if (damage != 0) {
 				connectedHits++;

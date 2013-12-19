@@ -88,7 +88,7 @@ bool MapFunctions::killMob(Player *player, const string &args) {
 		int32_t mobId = atoi(args.c_str());
 		Mob *mob = player->getMap()->getMob(mobId);
 		if (mob != nullptr) {
-			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". Damage applied: " + lexical_cast<string>(mob->getMaxHp() - mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
+			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". Damage applied: " + lexical_cast<string>(mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
 			mob->applyDamage(player->getId(), mob->getHp());
 		}
 		else {
@@ -121,18 +121,17 @@ bool MapFunctions::getMobHp(Player *player, const string &args) {
 
 bool MapFunctions::listMobs(Player *player, const string &args) {
 	if (player->getMap()->countMobs(0) > 0) {
-		typedef unordered_map<int32_t, Mob *> MobMap;
-		MobMap mobs = player->getMap()->getMobs();
+		auto mobs = player->getMap()->getMobs();
 		std::ostringstream message;
-		for (MobMap::iterator iter = mobs.begin(); iter != mobs.end(); ++iter) {
+		for (const auto &kvp : mobs) {
 			message.str("");
 			message.clear();
 
-			message << "Mob " << iter->first
-					<< " (ID: " << iter->second->getMobId()
-					<< ", HP: " << iter->second->getHp()
-					<< "/" << iter->second->getMaxHp()
-					<< " [" << static_cast<int64_t>(iter->second->getHp()) * 100 / iter->second->getMaxHp()
+			message << "Mob " << kvp.first
+					<< " (ID: " << kvp.second->getMobId()
+					<< ", HP: " << kvp.second->getHp()
+					<< "/" << kvp.second->getMaxHp()
+					<< " [" << static_cast<int64_t>(kvp.second->getHp()) * 100 / kvp.second->getMaxHp()
 					<< "%])";
 
 			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
@@ -146,13 +145,13 @@ bool MapFunctions::listMobs(Player *player, const string &args) {
 
 bool MapFunctions::zakum(Player *player, const string &args) {
 	player->getMap()->spawnZakum(player->getPos());
-	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Zakum on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
+	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Zakum on map " + lexical_cast<string>(player->getMap()->getId()) + ". Name: " + player->getName());
 	return true;
 }
 
 bool MapFunctions::horntail(Player *player, const string &args) {
 	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
-	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Horntail on map " + lexical_cast<string>(player->getMap()) + ". Name: " + player->getName());
+	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Horntail on map " + lexical_cast<string>(player->getMap()->getId()) + ". Name: " + player->getName());
 	return true;
 }
 

@@ -44,9 +44,7 @@ void BeautyDataProvider::loadSkins() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_skin_data ORDER BY skinid ASC");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		m_skins.push_back(row.get<int8_t>("skinid"));
 	}
 
@@ -61,9 +59,7 @@ void BeautyDataProvider::loadHair() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_hair_data ORDER BY hairid ASC");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
 		hair = row.get<int32_t>("hairid");
 		look = getGender(gender);
@@ -81,9 +77,7 @@ void BeautyDataProvider::loadFaces() {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_face_data ORDER BY faceid ASC");
 
-	for (soci::rowset<>::const_iterator i = rs.begin(); i != rs.end(); ++i) {
-		const soci::row &row = *i;
-
+	for (const auto &row : rs) {
 		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
 		face = row.get<int32_t>("faceid");
 		look = getGender(gender);

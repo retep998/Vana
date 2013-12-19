@@ -395,7 +395,7 @@ void Skills::useSkill(Player *player, PacketReader &packet) {
 }
 
 void Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp) {
-	if (player->hasGmEquip()) {
+	if (player->hasGmBenefits()) {
 		// Ensure we don't lock, but don't actually use anything
 		player->getStats()->setHp(player->getStats()->getHp(), true);
 		player->getStats()->setMp(player->getStats()->getMp(), true);
@@ -477,7 +477,7 @@ void Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) 
 	if (player->getActiveBuffs()->hasShadowPartner()) {
 		hits *= 2;
 	}
-	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow())) {
+	if (pos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()) && !player->hasGmBenefits()) {
 		// If they don't have Shadow Stars or Soul Arrow, take the items
 		Inventory::takeItemSlot(player, Inventories::UseInventory, pos, hits);
 	}

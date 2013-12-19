@@ -82,8 +82,8 @@ void PacketCreator::set(T value, size_t pos) {
 template <typename T>
 void PacketCreator::addVector(const vector<T> &vec) {
 	add<uint32_t>(vec.size());
-	for (typename vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
-		add(*iter);
+	for (const auto &iter : vec) {
+		add(iter);
 	}
 }
 
@@ -95,8 +95,8 @@ void PacketCreator::addClass(const IPacketWritable &obj) {
 template <typename T>
 void PacketCreator::addClassVector(const vector<T> &vec) {
 	add<uint32_t>(vec.size());
-	for (typename vector<T>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
-		addClass<T>(*iter);
+	for (const auto &iter : vec) {
+		addClass<T>(iter);
 	}
 }
 

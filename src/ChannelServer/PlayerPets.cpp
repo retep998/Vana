@@ -67,8 +67,8 @@ void PlayerPets::save() {
 			soci::use(closeness, "closeness"),
 			soci::use(fullness, "fullness"));
 
-		for (unordered_map<int64_t, Pet *>::iterator iter = m_pets.begin(); iter != m_pets.end(); ++iter) {
-			Pet *p = iter->second;
+		for (const auto &kvp : m_pets) {
+			Pet *p = kvp.second;
 			index = p->getIndex();
 			name = p->getName();
 			level = p->getLevel();

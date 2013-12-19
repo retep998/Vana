@@ -39,8 +39,8 @@ string MiscUtilities::generateSalt(size_t length) {
 }
 
 bool MiscUtilities::isBossChannel(const vector<int8_t> &vec, int8_t channelId) {
-	for (vector<int8_t>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
-		if (*iter == channelId) {
+	for (const auto &channel : vec) {
+		if (channel == channelId) {
 			return true;
 		}
 	}

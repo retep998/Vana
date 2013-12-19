@@ -488,5 +488,14 @@
     <ClInclude Include="src\Common\StopWatch.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\WidePos.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Rect.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\make_unique.hpp">
+      <Filter>Lib</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

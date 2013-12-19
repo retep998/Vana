@@ -120,7 +120,7 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); ++j) {
 				reactorEvent = &(data->states[reactor->getState()][j]);
 				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
-					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->lt, reactorEvent->rb, drop->getPos())) {
+					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->dimensions, drop->getPos())) {
 						Reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;

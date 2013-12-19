@@ -463,8 +463,7 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 		use(name, "name"),
 		use(expiration, "expiration"));
 
-	for (auto iter = items.begin(); iter != items.end() ; ++iter) {
-		const ItemDbRecord &rec = *iter;
+	for (const auto &rec : items) {
 		Item *item = rec.item;
 
 		location = rec.location;

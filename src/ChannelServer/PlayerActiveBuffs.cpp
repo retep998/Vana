@@ -107,7 +107,7 @@ void PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, cons
 
 Timer::Container * PlayerActiveBuffs::getActTimer(int32_t skill) {
 	if (m_skillActs.find(skill) == m_skillActs.end()) {
-		m_skillActs[skill] = shared_ptr<Timer::Container>(new Timer::Container);
+		m_skillActs[skill] = std::make_shared<Timer::Container>();
 	}
 	return m_skillActs[skill].get();
 }
@@ -118,7 +118,7 @@ void PlayerActiveBuffs::removeAction(int32_t skill) {
 
 // Debuffs
 void PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) {
-	if (!m_player->getStats()->isDead() && !hasHolyShield() && !isUsingHide() && !m_player->hasGmEquip()) {
+	if (!m_player->getStats()->isDead() && !hasHolyShield() && !m_player->hasGmBenefits()) {
 		int32_t maskBit = calculateDebuffMaskBit(skill);
 		if (maskBit != 0 && (m_debuffMask & maskBit) == 0) {
 			// Don't have the debuff, continue processing
@@ -260,19 +260,19 @@ ActiveBuff PlayerActiveBuffs::removeBuffInfo(int32_t skillId, const vector<Buff>
 }
 
 void PlayerActiveBuffs::dispelBuffs() {
-	if (isUsingHide()) {
+	if (m_player->hasGmBenefits()) {
 		return;
 	}
 	
 	vector<int32_t> stopSkills;
-	for (auto iter = m_activeLevels.cbegin(); iter != m_activeLevels.cend(); ++iter) {
-		if (iter->first > 0 && !GameLogicUtilities::isMobSkill(iter->first)) {
+	for (const auto &kvp : m_activeLevels) {
+		if (kvp.first > 0 && !GameLogicUtilities::isMobSkill(kvp.first)) {
 			// Only want active skills and skill buffs - no item buffs or debuffs
-			stopSkills.push_back(iter->first);
+			stopSkills.push_back(kvp.first);
 		}
 	}
 
-	for (auto skill : stopSkills) {
+	for (const auto &skill : stopSkills) {
 		Skills::stopSkill(m_player, skill);
 	}
 }
@@ -478,7 +478,7 @@ bool PlayerActiveBuffs::hasHyperBody() {
 	return (getHyperBody() != 0);
 }
 
-bool PlayerActiveBuffs::isUsingHide() {
+bool PlayerActiveBuffs::isUsingGmHide() {
 	return (hasBuff(Skills::SuperGm::Hide));
 }
 
@@ -630,23 +630,23 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 		}
 		auto &values = foundValue->second;
 		packet.add<uint8_t>(values.size());
-		for (unordered_map<uint8_t, MapEntryVals>::const_iterator iter = values.begin(); iter != values.end(); ++iter) {
-			packet.add<uint8_t>(iter->first);
-			packet.add<bool>(iter->second.debuff);
-			if (iter->second.debuff) {
-				packet.add<int16_t>(iter->second.skill);
-				packet.add<int16_t>(iter->second.val);
+		for (const auto &kvp : values) {
+			const MapEntryVals &info = kvp.second;
+			packet.add<uint8_t>(kvp.first);
+			packet.add<bool>(info.debuff);
+			if (kvp.second.debuff) {
+				packet.add<int16_t>(info.skill);
+				packet.add<int16_t>(info.val);
 			}
 			else {
-				packet.add<bool>(iter->second.use);
-				packet.add<int16_t>(iter->second.val);
+				packet.add<bool>(info.use);
+				packet.add<int16_t>(info.val);
 			}
 		}
 	}
 	// Current buff info (IDs, times, levels)
 	packet.add<uint8_t>(m_buffs.size());
-	for (list<int32_t>::const_iterator iter = m_buffs.begin(); iter != m_buffs.end(); ++iter) {
-		int32_t buffId = *iter;
+	for (const auto &buffId : m_buffs) {
 		packet.add<int32_t>(buffId);
 		packet.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
 		packet.add<uint8_t>(getActiveSkillLevel(buffId));
@@ -660,9 +660,9 @@ void PlayerActiveBuffs::write(PacketCreator &packet) const {
 		}
 		auto &currentByte = foundByte->second;
 		packet.add<uint8_t>(currentByte.size());
-		for (unordered_map<uint8_t, int32_t>::const_iterator iter = currentByte.begin(); iter != currentByte.end(); ++iter) {
-			packet.add<uint8_t>(iter->first);
-			packet.add<int32_t>(iter->second);
+		for (const auto &kvp : currentByte) {
+			packet.add<uint8_t>(kvp.first);
+			packet.add<int32_t>(kvp.second);
 		}
 	}
 }

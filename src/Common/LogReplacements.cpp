@@ -16,42 +16,125 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LogReplacements.h"
+#include "TimeUtilities.h"
 #include <utility>
 
-LogReplacements * LogReplacements::singleton = nullptr;
+LogReplacements * LogReplacements::singleton = new LogReplacements();
 
-LogReplacements::LogReplacements()
+LogReplacements::ReplacementArgs::ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string &id, const string &msg) :
+	logType(logType),
+	logger(logger),
+	time(time),
+	id(id),
+	msg(msg)
 {
-	add("%yy", Replacements::Year);
-	add("%YY", Replacements::Year | Replacements::Long);
-	add("%mm", Replacements::IntegerMonth);
-	add("%MM", Replacements::IntegerMonth | Replacements::Long);
-	add("%oo", Replacements::StringMonth | Replacements::String);
-	add("%OO", Replacements::StringMonth | Replacements::String | Replacements::Long);
-	add("%dd", Replacements::IntegerDate);
-	add("%DD", Replacements::IntegerDate | Replacements::Long);
-	add("%aa", Replacements::StringDate | Replacements::String);
-	add("%AA", Replacements::StringDate | Replacements::String | Replacements::Long);
-	add("%hh", Replacements::Hour);
-	add("%HH", Replacements::Hour | Replacements::Long);
-	add("%mi", Replacements::MilitaryHour);
-	add("%MI", Replacements::MilitaryHour | Replacements::Long);
-	add("%ii", Replacements::Minute);
-	add("%II", Replacements::Minute | Replacements::Long);
-	add("%ss", Replacements::Second);
-	add("%SS", Replacements::Second | Replacements::Long);
-	add("%ww", Replacements::AmPm | Replacements::String | Replacements::Long);
-	add("%WW", Replacements::AmPm | Replacements::String | Replacements::Long | Replacements::Uppercase);
-	add("%qq", Replacements::AmPm | Replacements::String);
-	add("%QQ", Replacements::AmPm | Replacements::String | Replacements::Uppercase);
-	add("%zz", Replacements::TimeZone | Replacements::String);
-	add("%id", Replacements::Id | Replacements::String);
-	add("%t", Replacements::Time | Replacements::String);
-	add("%e", Replacements::Event | Replacements::String);
-	add("%orig", Replacements::Origin | Replacements::String);
-	add("%msg", Replacements::Message | Replacements::String);
 }
 
-void LogReplacements::add(const string &key, int32_t val) {
-	m_replacementMap.insert(std::make_pair(key, val));
+LogReplacements::LogReplacements() {
+	add("%yy", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getYear(true, args.time);
+	});
+	add("%YY", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getYear(false, args.time);
+	});
+	add("%mm", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonth(args.time);
+	});
+	add("%MM", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMonth(args.time);
+	});
+	add("%oo", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonthString(true, args.time);
+	});
+	add("%OO", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonthString(false, args.time);
+	});
+	add("%dd", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDate(args.time);
+	});
+	add("%DD", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getDate(args.time);
+	});
+	add("%aa", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDayString(true, args.time);
+	});
+	add("%AA", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDayString(false, args.time);
+	});
+	add("%hh", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getHour(true, args.time);
+	});
+	add("%HH", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(true, args.time);
+	});
+	add("%mi", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getHour(false, args.time);
+	});
+	add("%MI", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(false, args.time);
+	});
+	add("%ii", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMinute(args.time);
+	});
+	add("%II", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMinute(args.time);
+	});
+	add("%ss", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getSecond(args.time);
+	});
+	add("%SS", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getSecond(args.time);
+	});
+	add("%ww", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "pm" : "am";
+	});
+	add("%WW", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "PM" : "AM";
+	});
+	add("%qq", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "p" : "a";
+	});
+	add("%QQ", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "P" : "A";
+	});
+	add("%zz", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getTimeZone();
+	});
+	add("%id", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		if (args.id.is_initialized()) {
+			stream << args.id.get();
+		}
+	});
+	add("%t", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << format(args.logger->getTimeFormat(), args.logType, args.logger, args.time, args.id, args.msg);
+	});
+	add("%e", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << Logger::getLevelString(args.logType);
+	});
+	add("%orig", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << Logger::getServerTypeString(args.logger->getServerType());
+	});
+	add("%msg", [](std::ostringstream &stream, const ReplacementArgs &args) {
+		stream << args.msg;
+	});
+}
+
+void LogReplacements::add(const string &key, func_t func) {
+	m_replacementMap.insert(std::make_pair(key, func));
+}
+
+string LogReplacements::format(const string &format, LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string &id, const string &message) {
+	string ret = format;
+	ReplacementArgs args{logType, logger, time, id, message};
+
+	for (const auto &kvp : singleton->m_replacementMap) {
+		size_t x = ret.find(kvp.first);
+		if (x != string::npos) {
+			std::ostringstream strm;
+			kvp.second(strm, args);
+			const string &y = strm.str();
+			ret.replace(x, kvp.first.size(), y.c_str(), y.size());
+		}
+	}
+	return ret;
 }

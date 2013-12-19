@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 
 void World::runChannelFunction(function<void (Channel *)> func) {
-	for (ChannelMap::iterator iter = m_channels.begin(); iter != m_channels.end(); ++iter) {
-		func(iter->second.get());
+	for (const auto &kvp : m_channels) {
+		func(kvp.second.get());
 	}
 }
 
