@@ -5,7 +5,7 @@
 // http://isocpp.org/files/papers/N3656.txt
 #pragma once
 
-#ifndef _WIN32
+#ifndef WIN32
 #include <cstddef>
 #include <memory>
 #include <type_traits>

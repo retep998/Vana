@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,17 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "InstanceMessageConstants.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
 #include "Variables.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-using std::string;
-using std::unique_ptr;
-using std::unordered_map;
-using std::vector;
 
 class LuaInstance;
 class Map;
@@ -38,112 +34,106 @@ class Reactor;
 struct PortalInfo;
 
 namespace Timer {
-	class Container;
 	struct Id;
 }
 
 struct TimerAction {
-	TimerAction() : persistent(0) { }
-	int32_t counterId;
-	int32_t time; // How long the timer lasts, negative integers indicate second of hour (-1 to -3600)
-	int32_t persistent; // How often does it repeat?
+	int32_t counterId = 0;
+	int32_t time = 0; // How long the timer lasts, negative integers indicate second of hour (-1 to -3600)
+	int32_t persistent = 0; // How often does it repeat?
 };
 
-class Instance {
+class Instance : public TimerContainerHolder {
+	NONCOPYABLE(Instance);
+	NO_DEFAULT_CONSTRUCTOR(Instance);
 public:
-	Instance(const string &name, int32_t map, int32_t playerId, const seconds_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
+	Instance(const string_t &name, int32_t map, int32_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
 	~Instance();
 
-	string getName() const { return m_name; }
-	const time_point_t & getStart() const { return m_start; }
-	int32_t getCounterId();
-	bool getMarkedForDelete() const { return m_markedForDeletion; }
-	void markForDelete();
-	void instanceEnd(bool fromTimer = false);
-	Variables * getVariables() const { return m_variables.get(); }
+	auto getName() const -> string_t { return m_name; }
+	auto getStart() const -> const time_point_t & { return m_start; }
+	auto getCounterId() -> int32_t;
+	auto getMarkedForDelete() const -> bool { return m_markedForDeletion; }
+	auto markForDelete() -> void;
+	auto instanceEnd(bool fromTimer = false) -> void;
+	auto getVariables() const -> Variables * { return m_variables.get(); }
 
 	// Players
-	vector<int32_t> getAllPlayerIds();
-	const string getPlayerByIndex(uint32_t index) const;
-	const string getBannedPlayerByIndex(uint32_t index) const;
-	void setMaxPlayers(int32_t maxplayers) { m_maxPlayers = maxplayers; }
-	void addPlayer(Player *player);
-	void removePlayer(Player *player);
-	void removePlayer(int32_t id);
-	void removeAllPlayers();
-	void setBanned(const string &name, bool isbanned);
-	void addPlayerSignUp(Player *player);
-	void removePlayerSignUp(const string &name);
-	void moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal = nullptr);
-	bool isPlayerSignedUp(const string &name);
-	bool isBanned(const string &name);
-	bool instanceHasPlayers() const;
-	int32_t getMaxPlayers() const { return m_maxPlayers; }
-	size_t getPlayerNum() const { return m_players.size(); }
-	size_t getPlayerSignupNum() const { return m_playersOrder.size(); } // Number of players for the instance (squads, etc.)
-	size_t getBannedPlayerNum() const { return m_banned.size(); }
+	auto getAllPlayerIds() -> vector_t<int32_t>;
+	auto getPlayerByIndex(uint32_t index) const -> const string_t;
+	auto getBannedPlayerByIndex(uint32_t index) const -> const string_t;
+	auto setMaxPlayers(int32_t maxPlayers) -> void { m_maxPlayers = maxPlayers; }
+	auto addPlayer(Player *player) -> void;
+	auto removePlayer(Player *player) -> void;
+	auto removePlayer(int32_t id) -> void;
+	auto removeAllPlayers() -> void;
+	auto setBanned(const string_t &name, bool isBanned) -> void;
+	auto addPlayerSignUp(Player *player) -> void;
+	auto removePlayerSignUp(const string_t &name) -> void;
+	auto moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal = nullptr) -> void;
+	auto isPlayerSignedUp(const string_t &name) -> bool;
+	auto isBanned(const string_t &name) -> bool;
+	auto instanceHasPlayers() const -> bool;
+	auto getMaxPlayers() const -> int32_t { return m_maxPlayers; }
+	auto getPlayerNum() const -> size_t { return m_players.size(); }
+	auto getPlayerSignupNum() const -> size_t { return m_playersOrder.size(); } // Number of players for the instance (squads, etc.)
+	auto getBannedPlayerNum() const -> size_t { return m_banned.size(); }
 
 	// Maps
-	void addMap(Map *map);
-	void addMap(int32_t mapId);
-	Map * getMap(int32_t mapId);
-	size_t getMapNum();
-	void setResetAtEnd(bool reset) { m_resetOnDestroy = reset; }
-	void respawnMobs(int32_t mapId);
-	void respawnReactors(int32_t mapId);
+	auto addMap(Map *map) -> void;
+	auto addMap(int32_t mapId) -> void;
+	auto isInstanceMap(int32_t mapId) const -> bool;
+	auto setResetAtEnd(bool reset) -> void { m_resetOnDestroy = reset; }
+	auto respawnMobs(int32_t mapId) -> void;
+	auto respawnReactors(int32_t mapId) -> void;
 
 	// Parties
-	void addParty(Party *party);
+	auto addParty(Party *party) -> void;
 
 	// Instance time
-	bool hasInstanceTimer() const { return m_time.count() > 0; }
-	void setInstanceTimer(const seconds_t &time, bool firstRun = false);
-	void setPersistence(const duration_t &persistence) { m_persistent = persistence; }
-	duration_t getPersistence() const { return m_persistent; }
-	seconds_t checkInstanceTimer();
-	bool showTimer() const { return m_showTimer; }
-	void showTimer(bool show, bool doIt = false);
+	auto hasInstanceTimer() const -> bool { return m_time.count() > 0; }
+	auto setInstanceTimer(const duration_t &time, bool firstRun = false) -> void;
+	auto setPersistence(const duration_t &persistence) -> void { m_persistent = persistence; }
+	auto getPersistence() const -> duration_t { return m_persistent; }
+	auto checkInstanceTimer() -> seconds_t;
+	auto showTimer() const -> bool { return m_showTimer; }
+	auto showTimer(bool show, bool doIt = false) -> void;
 
 	// Timers
-	void removeAllTimers();
-	void removeTimer(const string &name);
-	void timerEnd(const string &name, bool fromTimer = false);
-	bool addTimer(const string &name, const TimerAction &timer);
-	bool isTimerPersistent(const string &name);
-	seconds_t getTimerSecondsRemaining(const string &name);
-	Timer::Container * getTimers() const { return m_timers.get(); }
+	auto removeAllTimers() -> void;
+	auto removeTimer(const string_t &name) -> void;
+	auto timerEnd(const string_t &name, bool fromTimer = false) -> void;
+	auto addTimer(const string_t &name, const TimerAction &timer) -> bool;
+	auto isTimerPersistent(const string_t &name) -> bool;
+	auto getTimerSecondsRemaining(const string_t &name) -> seconds_t;
 
 	// Lua interaction
-	void sendMessage(InstanceMessages message);
-	void sendMessage(InstanceMessages message, int32_t);
-	void sendMessage(InstanceMessages message, int32_t, int32_t);
-	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t);
-	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
-	void sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
-	void sendMessage(InstanceMessages message, const string &, int32_t);
+	auto sendMessage(InstanceMessages message) -> void;
+	auto sendMessage(InstanceMessages message, int32_t) -> void;
+	auto sendMessage(InstanceMessages message, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessages message, const string_t &, int32_t) -> void;
 private:
-	LuaInstance * getLuaInstance() { return m_luaInstance.get(); }
-	Timer::Id getTimerId() const;
+	auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
+	auto getTimerId() const -> Timer::Id;
 
-	unique_ptr<Timer::Container> m_timers; // Timer container for the instance
-	unique_ptr<Variables> m_variables;
-	unique_ptr<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
-
-	unordered_map<string, TimerAction> m_timerActions; // Timers indexed by name
-	unordered_map<int32_t, Player *> m_players;
-
-	vector<string> m_banned; // For squads
-	vector<string> m_playersOrder; // For squads
-	vector<Map *> m_maps;
-	vector<Party *> m_parties;
-
+	bool m_showTimer = false;
+	bool m_resetOnDestroy = true;
+	bool m_markedForDeletion = false;
+	int32_t m_maxPlayers = 0;
+	int32_t m_timerCounter = 0;
 	time_point_t m_start;
-	string m_name; // Identification for the instance
-	int32_t m_maxPlayers; // Maximum players allowed for instance
-	int32_t m_timerCounter; // Used for uniqueness of timer IDs
-	seconds_t m_time; // Instance time
-	duration_t m_persistent; // How often does instance repeat?
-	bool m_showTimer; // Show timer
-	bool m_resetOnDestroy; // Reset reactors when done
-	bool m_markedForDeletion; // End of instance time
+	seconds_t m_time;
+	duration_t m_persistent;
+	string_t m_name;
+	owned_ptr_t<Variables> m_variables;
+	owned_ptr_t<LuaInstance> m_luaInstance; // Lua instance for interacting with scripts
+	vector_t<string_t> m_banned; // For squads
+	vector_t<string_t> m_playersOrder; // For squads
+	vector_t<Map *> m_maps;
+	vector_t<Party *> m_parties;
+	hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name
+	hash_map_t<int32_t, Player *> m_players;
 };

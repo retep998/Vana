@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,13 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-NpcDataProvider * NpcDataProvider::singleton = nullptr;
-
-void NpcDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing NPCs... ";
+auto NpcDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing NPCs... ";
 	int32_t id;
 	NpcData npc;
 
@@ -40,7 +35,7 @@ void NpcDataProvider::loadData() {
 		npc = NpcData();
 
 		id = row.get<int32_t>("npcid");
-		runFlags(row.get<opt_string>("flags"), [&npc](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&npc](const string_t &cmp) {
 			if (cmp == "maple_tv") npc.isMapleTv = true;
 			else if (cmp == "is_guild_rank") npc.isGuildRank = true;
 		});

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,9 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WidePos.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-PacketCreator MapPacket::playerPacket(Player *player) {
+auto MapPacket::playerPacket(Player *player) -> PacketCreator {
 	PacketCreator packet;
 	MapEntryBuffs enter = player->getActiveBuffs()->getMapEntryBuffs();
 	packet.add<header_t>(SMSG_MAP_PLAYER_SPAWN);
@@ -141,7 +139,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	packet.add<int32_t>(player->getChair());
 	packet.addClass<Pos>(player->getPos());
 	packet.add<int8_t>(player->getStance());
-	packet.add<int16_t>(player->getFh());
+	packet.add<int16_t>(player->getFoothold());
 	packet.add<int8_t>(0);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
@@ -151,7 +149,7 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 			packet.add<int64_t>(pet->getId());
 			packet.addClass<Pos>(pet->getPos());
 			packet.add<int8_t>(pet->getStance());
-			packet.add<int16_t>(pet->getFh());
+			packet.add<int16_t>(pet->getFoothold());
 			packet.add<bool>(pet->hasNameTag());
 			packet.add<bool>(pet->hasQuoteItem());
 		}
@@ -174,22 +172,22 @@ PacketCreator MapPacket::playerPacket(Player *player) {
 	return packet;
 }
 
-void MapPacket::showPlayer(Player *player) {
+auto MapPacket::showPlayer(Player *player) -> void {
 	PacketCreator packet = playerPacket(player);
 	player->getMap()->sendPacket(packet, player);
 }
 
-void MapPacket::removePlayer(Player *player) {
+auto MapPacket::removePlayer(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_PLAYER_DESPAWN);
 	packet.add<int32_t>(player->getId());
 	player->getMap()->sendPacket(packet, player);
 }
 
-void MapPacket::changeMap(Player *player) {
+auto MapPacket::changeMap(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
+	packet.add<int32_t>(ChannelServer::getInstance().getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
 	packet.add<bool>(false); // Not a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
@@ -208,7 +206,7 @@ void MapPacket::changeMap(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::portalBlocked(Player *player) {
+auto MapPacket::portalBlocked(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(0x01);
@@ -216,7 +214,7 @@ void MapPacket::portalBlocked(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
+auto MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_TIMER);
 	packet.add<int8_t>(0x01);
@@ -226,7 +224,7 @@ void MapPacket::showClock(Player *player, int8_t hour, int8_t min, int8_t sec) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showTimer(int32_t mapId, const seconds_t &sec) {
+auto MapPacket::showTimer(int32_t mapId, const seconds_t &sec) -> void {
 	PacketCreator packet;
 	if (sec.count() > 0) {
 		packet.add<header_t>(SMSG_TIMER);
@@ -239,7 +237,7 @@ void MapPacket::showTimer(int32_t mapId, const seconds_t &sec) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MapPacket::showTimer(Player *player, const seconds_t &sec) {
+auto MapPacket::showTimer(Player *player, const seconds_t &sec) -> void {
 	PacketCreator packet;
 	if (sec.count() > 0) {
 		packet.add<header_t>(SMSG_TIMER);
@@ -252,20 +250,20 @@ void MapPacket::showTimer(Player *player, const seconds_t &sec) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::forceMapEquip(Player *player) {
+auto MapPacket::forceMapEquip(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_FORCE_EQUIPMENT);
 	player->getSession()->send(packet);
 }
 
-void MapPacket::showEventInstructions(int32_t mapId) {
+auto MapPacket::showEventInstructions(int32_t mapId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_EVENT_INSTRUCTION);
 	packet.add<int8_t>(0x00);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MapPacket::showMist(Player *player, Mist *mist) {
+auto MapPacket::showMist(Player *player, Mist *mist) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
@@ -274,13 +272,13 @@ void MapPacket::showMist(Player *player, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(0);
-	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop));
-	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom));
+	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop()));
+	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom()));
 	packet.add<int32_t>(0);
 	player->getSession()->send(packet);
 }
 
-void MapPacket::spawnMist(int32_t mapId, Mist *mist) {
+auto MapPacket::spawnMist(int32_t mapId, Mist *mist) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MIST_SPAWN);
 	packet.add<int32_t>(mist->getId());
@@ -289,20 +287,20 @@ void MapPacket::spawnMist(int32_t mapId, Mist *mist) {
 	packet.add<int32_t>(mist->getSkillId());
 	packet.add<uint8_t>(mist->getSkillLevel());
 	packet.add<int16_t>(mist->getDelay());
-	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop));
-	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom));
+	packet.addClass<WidePos>(WidePos(mist->getArea().leftTop()));
+	packet.addClass<WidePos>(WidePos(mist->getArea().rightBottom()));
 	packet.add<int32_t>(0);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MapPacket::removeMist(int32_t mapId, int32_t id) {
+auto MapPacket::removeMist(int32_t mapId, int32_t id) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MIST_DESPAWN);
 	packet.add<int32_t>(id);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MapPacket::instantWarp(Player *player, int8_t portalId) {
+auto MapPacket::instantWarp(Player *player, int8_t portalId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_TELEPORT);
 	packet.add<int8_t>(0x01);
@@ -310,7 +308,7 @@ void MapPacket::instantWarp(Player *player, int8_t portalId) {
 	player->getSession()->send(packet);
 }
 
-void MapPacket::changeWeather(int32_t mapId, bool adminWeather, int32_t itemId, const string &message) {
+auto MapPacket::changeWeather(int32_t mapId, bool adminWeather, int32_t itemId, const string_t &message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_WEATHER_EFFECT);
 	packet.add<bool>(adminWeather);

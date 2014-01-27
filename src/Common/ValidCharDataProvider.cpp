@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,13 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-ValidCharDataProvider * ValidCharDataProvider::singleton = nullptr;
-
-void ValidCharDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Char Info... ";
+auto ValidCharDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Char Info... ";
 
 	loadForbiddenNames();
 	loadCreationItems();
@@ -38,31 +33,31 @@ void ValidCharDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ValidCharDataProvider::loadForbiddenNames() {
+auto ValidCharDataProvider::loadForbiddenNames() -> void {
 	m_forbiddenNames.clear();
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_forbidden_names");
 
 	for (const auto &row : rs) {
-		m_forbiddenNames.push_back(row.get<string>("forbidden_name"));
+		m_forbiddenNames.push_back(row.get<string_t>("forbidden_name"));
 	}
 }
 
-void ValidCharDataProvider::loadCreationItems() {
+auto ValidCharDataProvider::loadCreationItems() -> void {
 	m_adventurer.clear();
 	m_cygnus.clear();
 
 	int8_t gender;
 	int8_t classId;
 	int32_t objectId;
-	string className;
+	string_t className;
 	ValidItems *items;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_creation_data");
 
 	for (const auto &row : rs) {
-		gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
-		runFlags(row.get<opt_string>("character_type"), [&classId](const string &cmp) {
+		gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		StringUtilities::runEnum(row.get<string_t>("character_type"), [&classId](const string_t &cmp) {
 			if (cmp == "regular") classId = Adventurer;
 			else if (cmp == "cygnus") classId = Cygnus;
 		});
@@ -70,7 +65,7 @@ void ValidCharDataProvider::loadCreationItems() {
 		objectId = row.get<int32_t>("objectid");
 		items = getItems(gender, classId);
 
-		runFlags(row.get<opt_string>("object_type"), [&items, &objectId](const string &cmp) {
+		StringUtilities::runEnum(row.get<string_t>("object_type"), [&items, &objectId](const string_t &cmp) {
 			if (cmp == "face") items->faces.push_back(objectId);
 			else if (cmp == "hair") items->hair.push_back(objectId);
 			else if (cmp == "haircolor") items->haircolor.push_back(objectId);
@@ -83,17 +78,17 @@ void ValidCharDataProvider::loadCreationItems() {
 	}
 }
 
-bool ValidCharDataProvider::isForbiddenName(const string &cmp) {
-	string c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
-	bool forbidden = (m_forbiddenNames.end() != std::find_if(m_forbiddenNames.begin(), m_forbiddenNames.end(),
-		[&c](const string &s) -> bool {
-			return c.find(s, 0) != string::npos;
+auto ValidCharDataProvider::isForbiddenName(const string_t &cmp) -> bool {
+	string_t c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
+	bool forbidden = (std::end(m_forbiddenNames) != std::find_if(std::begin(m_forbiddenNames), std::end(m_forbiddenNames),
+		[&c](const string_t &s) -> bool {
+			return c.find(s, 0) != string_t::npos;
 		})
 	);
 	return forbidden;
 }
 
-bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId) {
+auto ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId) -> bool {
 	if (gender != Gender::Male && gender != Gender::Female) {
 		return false;
 	}
@@ -108,7 +103,7 @@ bool ValidCharDataProvider::isValidCharacter(int8_t gender, int32_t hair, int32_
 	return valid;
 }
 
-bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) {
+auto ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) -> bool {
 	ValidItems *items = getItems(gender, classId);
 
 	if (items == nullptr) {
@@ -129,7 +124,7 @@ bool ValidCharDataProvider::isValidItem(int32_t id, int8_t gender, int8_t classI
 	return valid;
 }
 
-bool ValidCharDataProvider::iterateTest(int32_t id, vector<int32_t> *test) {
+auto ValidCharDataProvider::iterateTest(int32_t id, vector_t<int32_t> *test) -> bool {
 	for (size_t i = 0; i < test->size(); i++) {
 		if (id == (*test)[i]) {
 			return true;
@@ -138,7 +133,7 @@ bool ValidCharDataProvider::iterateTest(int32_t id, vector<int32_t> *test) {
 	return false;
 }
 
-ValidItems * ValidCharDataProvider::getItems(int8_t gender, int8_t classId) {
+auto ValidCharDataProvider::getItems(int8_t gender, int8_t classId) -> ValidItems * {
 	ValidItems *vec = nullptr;
 	if (gender == Gender::Male) {
 		switch (classId) {

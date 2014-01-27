@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void PartyPacket::error(Player *player, int8_t error) {
+auto PartyPacket::error(Player *player, int8_t error) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(error);
 	player->getSession()->send(packet);
 }
 
-void PartyPacket::createParty(Player *packetTarget, Party *party) {
+auto PartyPacket::createParty(Player *packetTarget, Party *party) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x08);
@@ -42,7 +42,7 @@ void PartyPacket::createParty(Player *packetTarget, Party *party) {
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::joinParty(Player *packetTarget, Party *party, const string &player) {
+auto PartyPacket::joinParty(Player *packetTarget, Party *party, const string_t &player) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x0F);
@@ -52,7 +52,7 @@ void PartyPacket::joinParty(Player *packetTarget, Party *party, const string &pl
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string &name, bool kicked) {
+auto PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string_t &name, bool kicked) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x0C);
@@ -64,7 +64,7 @@ void PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerI
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::invitePlayer(Player *packetTarget, Party *party, const string &inviter) {
+auto PartyPacket::invitePlayer(Player *packetTarget, Party *party, const string_t &inviter) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x04);
@@ -74,7 +74,7 @@ void PartyPacket::invitePlayer(Player *packetTarget, Party *party, const string 
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::disbandParty(Player *packetTarget, Party *party) {
+auto PartyPacket::disbandParty(Player *packetTarget, Party *party) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x0C);
@@ -85,7 +85,7 @@ void PartyPacket::disbandParty(Player *packetTarget, Party *party) {
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeader) {
+auto PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeader) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x1A);
@@ -94,7 +94,7 @@ void PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeade
 	packetTarget->getSession()->send(packet);
 }
 
-void PartyPacket::silentUpdate(Player *packetTarget, Party *party) {
+auto PartyPacket::silentUpdate(Player *packetTarget, Party *party) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x07);

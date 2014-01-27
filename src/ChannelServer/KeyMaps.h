@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,58 +18,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include <memory>
 #include <unordered_map>
 
-using std::shared_ptr;
-using std::unordered_map;
-
 class KeyMaps {
+	NONCOPYABLE(KeyMaps);
 public:
 	struct KeyMap;
 
-	KeyMaps();
+	KeyMaps() = default;
 
-	void add(int32_t pos, const KeyMap &map);
-	void defaultMap();
-	KeyMap * getKeyMap(int32_t pos);
-	int32_t getMax();
+	auto add(int32_t pos, const KeyMap &map) -> void;
+	auto defaultMap() -> void;
+	auto getKeyMap(int32_t pos) -> KeyMap *;
+	auto getMax() -> int32_t;
 
-	void load(int32_t charId);
-	void save(int32_t charId);
+	auto load(int32_t charId) -> void;
+	auto save(int32_t charId) -> void;
 
 	static const size_t size = 90;
 private:
-	unordered_map<int32_t, KeyMap> keyMaps;
-	int32_t maxValue; // Cache max value
+	hash_map_t<int32_t, KeyMap> keyMaps;
+	int32_t m_maxValue = -1; // Cache max value
 };
 
 struct KeyMaps::KeyMap {
 	KeyMap(int8_t type, int32_t action);
-	KeyMap() {}
-	int8_t type;
-	int32_t action;
+	KeyMap() = default;
+
+	int8_t type = 0;
+	int32_t action = 0;
 };
 
-inline KeyMaps::KeyMaps() : maxValue(-1) { }
-
-inline void KeyMaps::add(int32_t pos, const KeyMap &map) {
+inline
+auto KeyMaps::add(int32_t pos, const KeyMap &map) -> void {
 	keyMaps[pos] = map;
-	if (maxValue < pos) {
-		maxValue = pos;
+	if (m_maxValue < pos) {
+		m_maxValue = pos;
 	}
 }
 
-inline KeyMaps::KeyMap * KeyMaps::getKeyMap(int32_t pos) {
+inline
+auto KeyMaps::getKeyMap(int32_t pos) -> KeyMaps::KeyMap * {
 	auto kvp = keyMaps.find(pos);
-	if (kvp != keyMaps.end()) {
+	if (kvp != std::end(keyMaps)) {
 		return &kvp->second;
 	}
 	return nullptr;
 }
 
-inline int32_t KeyMaps::getMax() {
-	return maxValue;
+inline
+auto KeyMaps::getMax() -> int32_t {
+	return m_maxValue;
 }
 
-inline KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) : type(type), action(action) { }
+inline
+KeyMaps::KeyMap::KeyMap(int8_t type, int32_t action) : type(type), action(action) { }

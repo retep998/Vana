@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,52 +17,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Rect.h"
 #include "Types.h"
 #include <unordered_map>
 #include <vector>
 
-using std::unordered_map;
-using std::vector;
-
 struct ReactorStateInfo {
-	ReactorStateInfo() : type(0) { }
-	int8_t nextState;
-	int16_t type;
-	int16_t itemQuantity;
-	int32_t itemId;
-	int32_t timeout;
+	int8_t nextState = 0;
+	int16_t type = 0;
+	int16_t itemQuantity = 0;
+	int32_t itemId = 0;
+	int32_t timeout = 0;
 	Rect dimensions;
-	vector<int32_t> triggerSkills;
+	vector_t<int32_t> triggerSkills;
 };
 
 struct ReactorData {
-	ReactorData() : removeInFieldSet(false), activateByTouch(false) { }
-	bool removeInFieldSet;
-	bool activateByTouch;
-	int8_t maxStates;
-	int32_t link;
-	unordered_map<int8_t, vector<ReactorStateInfo>> states;
+	bool removeInFieldSet = false;
+	bool activateByTouch = false;
+	int8_t maxStates = 0;
+	int32_t link = 0;
+	hash_map_t<int8_t, vector_t<ReactorStateInfo>> states;
 };
 
-class ReactorDataProvider : boost::noncopyable {
+class ReactorDataProvider {
+	SINGLETON(ReactorDataProvider);
 public:
-	static ReactorDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new ReactorDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	ReactorData * getReactorData(int32_t reactorId, bool respectLink = false);
+	auto getReactorData(int32_t reactorId, bool respectLink = false) -> ReactorData *;
 private:
-	ReactorDataProvider() {}
-	static ReactorDataProvider *singleton;
+	auto loadReactors() -> void;
+	auto loadStates() -> void;
+	auto loadTriggerSkills() -> void;
 
-	void loadReactors();
-	void loadStates();
-	void loadTriggerSkills();
-
-	unordered_map<int32_t, ReactorData> m_reactorInfo;
+	hash_map_t<int32_t, ReactorData> m_reactorInfo;
 };

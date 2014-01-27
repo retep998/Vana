@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <cmath>
 
-void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) {
+auto PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) -> void {
 	if (slot != 0) {
 		if (shortSlot) {
 			packet.add<int16_t>(slot);
@@ -33,7 +33,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;
-			packet.add<int8_t>((int8_t) slot);
+			packet.add<int8_t>(static_cast<int8_t>(slot));
 		}
 	}
 	bool equip = GameLogicUtilities::isEquip(item->getId());
@@ -92,7 +92,7 @@ void PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *
 	}
 }
 
-void PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) {
+auto PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) -> void {
 	packet.add<int8_t>(player->getGender());
 	packet.add<int8_t>(player->getSkin());
 	packet.add<int32_t>(player->getEyes());

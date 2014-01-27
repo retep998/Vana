@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 
 class PacketCreator;
@@ -26,23 +25,25 @@ class PacketReader;
 class Player;
 class Summon;
 
-class PlayerSummons : public IPacketSerializable, boost::noncopyable {
+class PlayerSummons : public IPacketSerializable {
+	NONCOPYABLE(PlayerSummons);
+	NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
 public:
-	PlayerSummons(Player *player) : m_player(player), m_summon(nullptr), m_puppet(nullptr) { }
+	PlayerSummons(Player *player) : m_player(player) { }
 
-	Summon * getSummon() { return m_summon; }
-	Summon * getPuppet() { return m_puppet; }
-	Summon * getSummon(int32_t summonId);
+	auto getSummon() -> Summon * { return m_summon; }
+	auto getPuppet() -> Summon * { return m_puppet; }
+	auto getSummon(int32_t summonId) -> Summon *;
 
-	void addSummon(Summon *summon, int32_t time);
-	void removeSummon(bool puppet, bool fromTimer);
+	auto addSummon(Summon *summon, int32_t time) -> void;
+	auto removeSummon(bool puppet, bool fromTimer) -> void;
 
-	void write(PacketCreator &packet) const override;
-	void read(PacketReader &packet) override;
+	auto write(PacketCreator &packet) const -> void override;
+	auto read(PacketReader &packet) -> void override;
 private:
-	seconds_t getSummonTimeRemaining() const;
+	auto getSummonTimeRemaining() const -> seconds_t;
 
-	Player *m_player;
-	Summon *m_summon;
-	Summon *m_puppet;
+	Player *m_player = nullptr;
+	Summon *m_summon = nullptr;
+	Summon *m_puppet = nullptr;
 };

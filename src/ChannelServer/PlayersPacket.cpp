@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) {
+auto PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -39,7 +39,7 @@ void PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) 
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::faceExpression(Player *player, int32_t face) {
+auto PlayersPacket::faceExpression(Player *player, int32_t face) -> void {
 	if (player->isUsingGmHide())
 		return;
 	PacketCreator packet;
@@ -49,7 +49,7 @@ void PlayersPacket::faceExpression(Player *player, int32_t face) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly) {
+auto PlayersPacket::showChat(Player *player, const string_t &msg, bool bubbleOnly) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_CHAT);
 	packet.add<int32_t>(player->getId());
@@ -59,7 +59,7 @@ void PlayersPacket::showChat(Player *player, const string &msg, bool bubbleOnly)
 	player->getMap()->sendPacket(packet);
 }
 
-void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
+auto PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -96,7 +96,7 @@ void PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8
 	player->getMap()->sendPacket(packet);
 }
 
-void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
+auto PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_INFO);
 	packet.add<int32_t>(getInfo->getId());
@@ -116,7 +116,7 @@ void PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) {
 	player->getSession()->send(packet);
 }
 
-void PlayersPacket::whisperPlayer(Player *target, const string &whispererName, uint16_t channel, const string &message) {
+auto PlayersPacket::whisperPlayer(Player *target, const string_t &whispererName, uint16_t channel, const string_t &message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_COMMAND);
 	packet.add<int8_t>(0x12);
@@ -126,7 +126,7 @@ void PlayersPacket::whisperPlayer(Player *target, const string &whispererName, u
 	target->getSession()->send(packet);
 }
 
-void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, uint8_t is, bool isChannel) {
+auto PlayersPacket::findPlayer(Player *player, const string_t &name, int32_t map, uint8_t is, bool isChannel) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_COMMAND);
 	if (map != -1) {
@@ -146,13 +146,13 @@ void PlayersPacket::findPlayer(Player *player, const string &name, int32_t map, 
 	player->getSession()->send(packet);
 }
 
-void PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) {
+auto PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) -> void {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
-	PlayerDataProvider::Instance()->sendPacket(packet);
+	PlayerDataProvider::getInstance().sendPacket(packet);
 }
 
-void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
+auto PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) -> void {
 	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
 	bool isMesoExplosion = attack.isMesoExplosion;
@@ -190,7 +190,7 @@ void PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
+auto PlayersPacket::useRangedAttack(Player *player, const Attack &attack) -> void {
 	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
 
@@ -233,7 +233,7 @@ void PlayersPacket::useRangedAttack(Player *player, const Attack &attack) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
+auto PlayersPacket::useSpellAttack(Player *player, const Attack &attack) -> void {
 	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
 
@@ -265,7 +265,7 @@ void PlayersPacket::useSpellAttack(Player *player, const Attack &attack) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
+auto PlayersPacket::useSummonAttack(Player *player, const Attack &attack) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SUMMON_ATTACK);
 	packet.add<int32_t>(player->getId());
@@ -282,7 +282,7 @@ void PlayersPacket::useSummonAttack(Player *player, const Attack &attack) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) {
+auto PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) -> void {
 	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
 

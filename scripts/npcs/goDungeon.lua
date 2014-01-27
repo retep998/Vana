@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ else
 	sendNext();
 
 	addText("If you are thinking of going in, I suggest you change your mind. But if you really want to go in...I'm only letting in the ones that are strong enough to stay alive in there. I do not wish to see anyone else die. Let's see ... Hmmm ...");
-	if getLevel() < 50 then
+	if not isGm() and getLevel() < 50 then
 		addText(" you haven't reached Level 50 yet. I can't let you in, then, so forget it.");
 		sendBackOk();
 	else

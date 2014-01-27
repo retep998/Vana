@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ Party::Party(int32_t id, int32_t leaderId) :
 	SyncPacket::PartyPacket::createParty(id, leaderId);
 }
 
-void Party::addMember(Player *player, bool first) {
+auto Party::addMember(Player *player, bool first) -> void {
 	m_members[player->getId()] = player;
 	player->setParty(this);
 	if (!first) {
@@ -36,25 +36,25 @@ void Party::addMember(Player *player, bool first) {
 	}
 }
 
-void Party::deleteMember(Player *player, bool kicked) {
+auto Party::deleteMember(Player *player, bool kicked) -> void {
 	player->setParty(nullptr);
 	m_members.erase(player->getId());
 	SyncPacket::PartyPacket::removePartyMember(getId(), player->getId(), kicked);
 }
 
-void Party::setLeader(Player *newLeader) {
+auto Party::setLeader(Player *newLeader) -> void {
 	m_leaderId = newLeader->getId();
 	SyncPacket::PartyPacket::newPartyLeader(getId(), newLeader->getId());
 }
 
-void Party::disband() {
+auto Party::disband() -> void {
 	for (const auto &kvp : m_members) {
 		kvp.second->setParty(nullptr);
 	}
 	SyncPacket::PartyPacket::disbandParty(getId());
 }
 
-void Party::runFunction(function<void (Player *)> func) {
+auto Party::runFunction(function_t<void(Player *)> func) -> void {
 	for (const auto &kvp : m_members) {
 		func(kvp.second);
 	}

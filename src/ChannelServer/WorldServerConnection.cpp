@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@ WorldServerConnection::WorldServerConnection()
 }
 
 WorldServerConnection::~WorldServerConnection() {
-	if (ChannelServer::Instance()->isConnected()) {
+	if (ChannelServer::getInstance().isConnected()) {
 		std::cout << "Disconnected from the WorldServer. Shutting down..." << std::endl;
-		ChannelServer::Instance()->shutdown();
+		ChannelServer::getInstance().shutdown();
 	}
 }
 
-void WorldServerConnection::handleRequest(PacketReader &packet) {
+auto WorldServerConnection::handleRequest(PacketReader &packet) -> void {
 	switch (packet.getHeader()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;

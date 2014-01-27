@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,14 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-using FileUtilities::fileExists;
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-ScriptDataProvider * ScriptDataProvider::singleton = nullptr;
-
-void ScriptDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Scripts... ";
+auto ScriptDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Scripts... ";
 
 	m_npcScripts.clear();
 	m_reactorScripts.clear();
@@ -41,16 +35,16 @@ void ScriptDataProvider::loadData() {
 	m_itemScripts.clear();
 	int8_t modifier;
 	int32_t objectId;
-	string script;
+	string_t script;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM scripts");
 
 	for (const auto &row : rs) {
 		objectId = row.get<int32_t>("objectid");
-		script = row.get<string>("script");
+		script = row.get<string_t>("script");
 		modifier = row.get<int8_t>("helper");
 
-		runFlags(row.get<opt_string>("script_type"), [&](const string &cmp) {
+		StringUtilities::runEnum(row.get<string_t>("script_type"), [&](const string_t &cmp) {
 			if (cmp == "npc") m_npcScripts[objectId] = script;
 			else if (cmp == "reactor") m_reactorScripts[objectId] = script;
 			else if (cmp == "map_enter") m_mapEntryScripts[objectId] = script;
@@ -64,42 +58,42 @@ void ScriptDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-string ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
+auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> string_t {
 	if (hasScript(objectId, type)) {
-		const string &s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
-		if (fileExists(s)) {
+		string_t s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
+		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 	}
-	std::ostringstream filestream;
+	out_stream_t filestream;
 	filestream << "scripts/" << resolvePath(type) << "/" << objectId << ".lua";
-	string g(filestream.str());
+	string_t g(filestream.str());
 	return g;
 }
 
-string ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) {
+auto ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) -> string_t {
 	if (hasQuestScript(questId, state)) {
-		const string &s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
-		if (fileExists(s)) {
+		string_t s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
+		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 	}
-	std::ostringstream filestream;
+	out_stream_t filestream;
 	filestream << "scripts/quests/" << questId << (state == 0 ? "s" : "e") << ".lua";
-	string g(filestream.str());
+	string_t g(filestream.str());
 	return g;
 }
 
-bool ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) {
-	unordered_map<int32_t, string> &map = resolve(type);
-	return (map.find(objectId) != map.end());
+auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> bool {
+	hash_map_t<int32_t, string_t> &map = resolve(type);
+	return map.find(objectId) != std::end(map);
 }
 
-bool ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) {
-	return (m_questScripts.find(questId) != m_questScripts.end());
+auto ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) -> bool {
+	return m_questScripts.find(questId) != std::end(m_questScripts);
 }
 
-unordered_map<int32_t, string> & ScriptDataProvider::resolve(ScriptTypes::ScriptTypes type) {
+auto ScriptDataProvider::resolve(ScriptTypes::ScriptTypes type) -> hash_map_t<int32_t, string_t> & {
 	switch (type) {
 		case ScriptTypes::Item: return m_itemScripts; break;
 		case ScriptTypes::MapEntry: return m_mapEntryScripts; break;
@@ -111,7 +105,7 @@ unordered_map<int32_t, string> & ScriptDataProvider::resolve(ScriptTypes::Script
 	return m_itemScripts;
 }
 
-string ScriptDataProvider::resolvePath(ScriptTypes::ScriptTypes type) {
+auto ScriptDataProvider::resolvePath(ScriptTypes::ScriptTypes type) -> string_t {
 	switch (type) {
 		case ScriptTypes::Item: return "items"; break;
 		case ScriptTypes::MapEntry: return "map_entry"; break;

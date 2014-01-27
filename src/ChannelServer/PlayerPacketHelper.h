@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,6 +24,6 @@ class PacketCreator;
 class Player;
 
 namespace PlayerPacketHelper {
-	void addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot = false);
-	void addPlayerDisplay(PacketCreator &packet, Player *player);
+	auto addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot = false) -> void;
+	auto addPlayerDisplay(PacketCreator &packet, Player *player) -> void;
 }

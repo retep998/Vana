@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,61 +25,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VanaConstants.h"
 #include "WorldServerAcceptPacket.h"
 
-WorldServer * WorldServer::singleton = nullptr;
-
 WorldServer::WorldServer() :
-	m_worldId(-1),
 	m_loginIp(0)
 {
 	setServerType(ServerTypes::World);
 }
 
-void WorldServer::listen() {
-	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
+auto WorldServer::listen() -> void {
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
-void WorldServer::loadData() {
+auto WorldServer::loadData() -> void {
 	Initializing::checkSchemaVersion();
 	Initializing::loadData();
 
 	m_loginConnection = new LoginServerConnection;
-	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
-	const string &interPassword = getInterPassword();
-	const string &salt = getSalt();
+	ConnectionManager::getInstance().connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
+	const string_t &interPassword = getInterPassword();
+	const string_t &salt = getSalt();
 	const IpMatrix &externalIps = getExternalIps();
 	m_loginConnection->sendAuth(interPassword, salt, externalIps);
 }
 
-void WorldServer::loadConfig() {
+auto WorldServer::loadConfig() -> void {
 	ConfigFile config("conf/interserver.lua");
 	InterServerConfig conf = config.getClass<InterServerConfig>();
 
-	m_loginIp = conf.loginIp; //(Ip::stringToIpv4(config.getString("login_ip")));
-	m_loginPort = conf.port; //config.get<port_t>("login_inter_port");
+	m_loginIp = conf.loginIp;
+	m_loginPort = conf.port;
 
 	m_port = -1; // Will get from LoginServer later
 }
 
-void WorldServer::rehashConfig(const WorldConfig &config) {
+auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 	setConfig(config);
 	WorldServerAcceptPacket::rehashConfig(config);
 }
 
-void WorldServer::setConfig(const WorldConfig &config) {
+auto WorldServer::setConfig(const WorldConfig &config) -> void {
 	m_config = config;
 	m_defaultRates = config.rates;
 }
 
-void WorldServer::setRates(const Rates &rates) {
+auto WorldServer::setRates(const Rates &rates) -> void {
 	m_config.rates = rates;
 	SyncPacket::ConfigPacket::setRates(rates);
 }
 
-void WorldServer::resetRates() {
+auto WorldServer::resetRates() -> void {
 	setRates(m_defaultRates);
 }
 
-void WorldServer::loadLogConfig() {
+auto WorldServer::loadLogConfig() -> void {
 	ConfigFile conf("conf/logger.lua", false);
 	initializeLoggingConstants(conf);
 	conf.execute();
@@ -91,15 +88,15 @@ void WorldServer::loadLogConfig() {
 	}
 }
 
-opt_string WorldServer::makeLogIdentifier() {
-	return "World " + StringUtilities::lexical_cast<string>(getWorldId());
+auto WorldServer::makeLogIdentifier() -> opt_string_t {
+	return "World " + StringUtilities::lexical_cast<string_t>(getWorldId());
 }
 
-void WorldServer::setScrollingHeader(const string &message) {
+auto WorldServer::setScrollingHeader(const string_t &message) -> void {
 	m_config.scrollingHeader = message;
 	SyncPacket::ConfigPacket::scrollingHeader(message);
 }
 
-void WorldServer::sendPacketToLogin(const PacketCreator &packet) {
+auto WorldServer::sendPacketToLogin(const PacketCreator &packet) -> void {
 	m_loginConnection->getSession()->send(packet);
 }

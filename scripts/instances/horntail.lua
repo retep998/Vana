@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,24 +23,29 @@ function beginInstance()
 end
 
 function playerDisconnect(playerId, isPartyLeader)
-	startInstanceTimer("clean", 1, false);
+	cleanUpHorntail();
 end
 
 function timerEnd(name, fromTimer)
-	cleanUpHorntail();
+	if fromTimer then
+		if name == "delayedMarkForDelete" then
+			cleanUpZakum();
+		end
+	end
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	b = isInstanceMap(newMap);
-	if not b then -- Player probably died, want to make sure this doesn't keep the room full
+	if not b then
 		removeInstancePlayer(playerId);
-		startInstanceTimer("clean", 1, false);
+		cleanUpHorntail();
 	elseif b then
 		if setPlayer(playerId) then
 			gm = isGm();
-			gmInstance = getInstanceVariable("gm", true);
-			if (gm and gmInstance) or (not gm and not gmInstance) then
+			gmInstance = getInstanceVariable("gm");
+			if gm == gmInstance then
 				addInstancePlayer(playerId);
+				stopInstanceTimer("delayedMarkForDelete");
 			end
 			revertPlayer();
 		end
@@ -49,6 +54,16 @@ end
 
 function cleanUpHorntail()
 	if getInstancePlayerCount() == 0 then
+		instanceDelay = nil;
+		if setInstance("horntailSignup") then
+			instanceDelay = getInstanceTime();
+			revertInstance();
+		end
+		if instanceDelay then
+			startInstanceTimer("delayedMarkForDelete", instanceDelay + 5);
+			return;
+		end
+
 		markForDelete();
 	end
 end

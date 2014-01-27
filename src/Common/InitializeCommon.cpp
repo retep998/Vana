@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,15 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using std::endl;
-
-void Initializing::checkMcdbVersion() {
+auto Initializing::checkMcdbVersion() -> void {
 	soci::session &sql = Database::getDataDb();
 	soci::row row;
 	sql.once << "SELECT * FROM mcdb_info", soci::into(row);
 
 	if (!sql.got_data()) {
-		std::cerr << "ERROR: mcdb_info is empty." << endl;
+		std::cerr << "ERROR: mcdb_info is empty." << std::endl;
 		ExitCodes::exit(ExitCodes::McdbError);
 	}
 
@@ -41,44 +39,44 @@ void Initializing::checkMcdbVersion() {
 	int32_t subversion = row.get<int32_t>("subversion");
 	int16_t mapleVersion = row.get<int16_t>("maple_version");
 	bool testServer = row.get<bool>("test_server");
-	const string &mapleLocale = row.get<string>("maple_locale");
+	const string_t &mapleLocale = row.get<string_t>("maple_locale");
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
-		std::cerr << "ERROR: MCDB version incompatible." << endl;
-		std::cerr << "Vana: " << McdbVersion << "." << McdbSubVersion << endl;
-		std::cerr << "MCDB: " << version << "." << subversion << endl;
+		std::cerr << "ERROR: MCDB version incompatible." << std::endl;
+		std::cerr << "Vana: " << McdbVersion << "." << McdbSubVersion << std::endl;
+		std::cerr << "MCDB: " << version << "." << subversion << std::endl;
 		ExitCodes::exit(ExitCodes::McdbIncompatible);
 	}
 
 	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
-		std::cerr << "ERROR: Your MCDB is designed for different locale." << endl;
-		std::cerr << "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << endl;
-		std::cerr << "MCDB: " << makeLocale(mapleLocale, testServer) << endl;
+		std::cerr << "ERROR: Your MCDB is designed for different locale." << std::endl;
+		std::cerr << "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << std::endl;
+		std::cerr << "MCDB: " << makeLocale(mapleLocale, testServer) << std::endl;
 		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);
 	}
 	if (mapleVersion != MapleVersion::Version) {
-		std::cerr << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << endl;
-		std::cerr << "Vana: " << MapleVersion::Version << endl;
-		std::cerr << "MCDB: " << mapleVersion << endl;
+		std::cerr << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << std::endl;
+		std::cerr << "Vana: " << MapleVersion::Version << std::endl;
+		std::cerr << "MCDB: " << mapleVersion << std::endl;
 	}
 }
 
-string Initializing::makeLocale(const string &locale, bool testServer) {
-	string loc = locale;
+auto Initializing::makeLocale(const string_t &locale, bool testServer) -> string_t {
+	string_t loc = locale;
 	if (testServer) {
 		loc += " (test server)";
 	}
 	return loc;
 }
 
-void Initializing::checkSchemaVersion(bool update) {
+auto Initializing::checkSchemaVersion(bool update) -> void {
 	DatabaseUpdater db(update);
 
 	bool succeed = db.checkVersion();
 
 	if (!succeed && !update) {
 		// Wrong version and we're not allowed to update, so let's quit
-		std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << endl;
+		std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << std::endl;
 		ExitCodes::exit(ExitCodes::InfoDatabaseError);
 	}
 	else if (!succeed) {
@@ -87,11 +85,11 @@ void Initializing::checkSchemaVersion(bool update) {
 
 		db.update();
 
-		std::cout << "DONE" << endl;
+		std::cout << "DONE" << std::endl;
 	}
 }
 
-void Initializing::setUsersOffline(int32_t onlineId) {
+auto Initializing::setUsersOffline(int32_t onlineId) -> void {
 	std::cout << "Resetting online status of players..." << std::endl;
 	time_point_t startTime = TimeUtilities::getNow();
 
@@ -104,6 +102,6 @@ void Initializing::setUsersOffline(int32_t onlineId) {
 		<< "WHERE u.online = :online",
 		soci::use(onlineId, "online");
 
-	milliseconds_t::rep loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), startTime);
+	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), startTime);
 	std::cout << "Reset all accounts and players in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
 }

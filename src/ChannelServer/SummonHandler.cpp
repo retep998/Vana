@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,29 +30,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoopingId<int32_t> SummonHandler::summonIds;
 
-int32_t SummonHandler::loopId() {
+auto SummonHandler::loopId() -> int32_t {
 	return summonIds.next();
 }
 
-void SummonHandler::useSummon(Player *player, int32_t skillId, uint8_t level) {
+auto SummonHandler::useSummon(Player *player, int32_t skillId, uint8_t level) -> void {
 	Summon *summon = new Summon(loopId(), skillId, level);
 	bool puppet = GameLogicUtilities::isPuppet(skillId);
 	removeSummon(player, puppet, false, SummonMessages::None);
-	const Pos &ppos = player->getPos();
-	Pos sumpos;
+	Pos playerPosition = player->getPos();
+	Pos summonPosition;
 	if (puppet) {
-		int16_t x = ppos.x + 200 * (player->isFacingRight() ? 1 : -1);
-		sumpos = player->getMap()->findFloor(Pos(x, ppos.y));
+		playerPosition.x += 200 * (player->isFacingRight() ? 1 : -1);
+		player->getMap()->findFloor(playerPosition, summonPosition);
 	}
 	else {
-		sumpos = ppos;
+		summonPosition = playerPosition;
 	}
-	summon->setPos(sumpos);
-	player->getSummons()->addSummon(summon, SkillDataProvider::Instance()->getSkill(skillId, level)->time);
+	summon->setPos(summonPosition);
+	player->getSummons()->addSummon(summon, SkillDataProvider::getInstance().getSkill(skillId, level)->time);
 	SummonsPacket::showSummon(player, summon, true);
 }
 
-void SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer) {
+auto SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
 	// Maybe we don't need the packetOnly thing...? We don't use it anyway...
 
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
@@ -64,14 +64,14 @@ void SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, i
 	}
 }
 
-void SummonHandler::showSummon(Player *player) {
+auto SummonHandler::showSummon(Player *player) -> void {
 	if (Summon *summon = player->getSummons()->getSummon()) {
 		summon->setPos(player->getPos());
 		SummonsPacket::showSummon(player, summon, false);
 	}
 }
 
-void SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) {
+auto SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) -> void {
 	if (Summon *summon = fromPlayer->getSummons()->getSummon()) {
 		SummonsPacket::showSummon(fromPlayer, summon, false, toPlayer);
 	}
@@ -80,7 +80,7 @@ void SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) {
 	}
 }
 
-void SummonHandler::moveSummon(Player *player, PacketReader &packet) {
+auto SummonHandler::moveSummon(Player *player, PacketReader &packet) -> void {
 	int32_t summonId = packet.get<int32_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
@@ -98,7 +98,7 @@ void SummonHandler::moveSummon(Player *player, PacketReader &packet) {
 	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
 }
 
-void SummonHandler::damageSummon(Player *player, PacketReader &packet) {
+auto SummonHandler::damageSummon(Player *player, PacketReader &packet) -> void {
 	int32_t summonId = packet.get<int32_t>();
 	int8_t unk = packet.get<int8_t>();
 	int32_t damage = packet.get<int32_t>();

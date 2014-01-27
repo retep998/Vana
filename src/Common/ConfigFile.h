@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,60 +29,71 @@ extern "C" {
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 struct DbConfig;
 struct LogConfig;
 
 class ConfigFile {
+	NONCOPYABLE(ConfigFile);
+	NO_DEFAULT_CONSTRUCTOR(ConfigFile);
 public:
-	ConfigFile(const string &filename, bool executeFile = true);
-	ConfigFile();
+	ConfigFile(const string_t &filename, bool executeFile = true);
 	~ConfigFile();
-	void loadFile(const string &filename);
-	bool keyExists(const string &value);
-	bool execute();
-	void handleError();
-	void printError(const string &error);
-	void setVariable(const string &name, const string &value);
-	void setVariable(const string &name, int32_t value);
-	template <typename T> T get(const string &value);
-	template <> bool get<bool>(const string &value);
-	template <typename T> T getClass(const string &prefix = "");
 
-	string getString(const string &value);
-	IpMatrix getIpMatrix(const string &value);
-	vector<int8_t> getBossChannels(const string &value, size_t maxChannels);
+	auto keyExists(const string_t &value) -> bool;
+	auto execute() -> bool;
+	auto handleError() -> void;
+	auto printError(const string_t &error) -> void;
+	auto setVariable(const string_t &name, const string_t &value) -> void;
+	auto setVariable(const string_t &name, int32_t value) -> void;
+	template <typename TInteger>
+	auto get(const string_t &value) -> TInteger;
+	template <>
+	auto get<bool>(const string_t &value) -> bool;
+	template <>
+	auto get<string_t>(const string_t &value) -> string_t;
+
+	template <typename TClass>
+	auto getClass(const string_t &prefix = "") -> TClass;
+	auto getIpMatrix(const string_t &value) -> IpMatrix ;
+	auto getBossChannels(const string_t &value, size_t maxChannels) -> vector_t<int8_t>;
 private:
-	void keyMustExist(const string &value);
+	auto keyMustExist(const string_t &value) -> void;
+	auto loadFile(const string_t &filename) -> void;
 
-	lua_State * getLuaState() const { return m_luaVm; }
-	lua_State *m_luaVm;
-	string m_file;
+	lua_State *m_luaVm = nullptr;
+	string_t m_file;
 };
 
-template <typename T>
-T ConfigFile::get(const string &value) {
+template <typename TInteger>
+auto ConfigFile::get(const string_t &value) -> TInteger {
 	keyMustExist(value);
-	lua_getglobal(getLuaState(), value.c_str());
-	T val = static_cast<T>(lua_tointeger(getLuaState(), -1));
-	lua_pop(getLuaState(), 1);
+	lua_getglobal(m_luaVm, value.c_str());
+	TInteger val = static_cast<TInteger>(lua_tointeger(m_luaVm, -1));
+	lua_pop(m_luaVm, 1);
 	return val;
 }
 
 template <>
-bool ConfigFile::get<bool>(const string &value) {
+auto ConfigFile::get<bool>(const string_t &value) -> bool {
 	keyMustExist(value);
-	lua_getglobal(getLuaState(), value.c_str());
-	bool val = lua_toboolean(getLuaState(), -1) != 0;
-	lua_pop(getLuaState(), 1);
+	lua_getglobal(m_luaVm, value.c_str());
+	bool val = lua_toboolean(m_luaVm, -1) != 0;
+	lua_pop(m_luaVm, 1);
 	return val;
 }
 
-template <typename T>
-T ConfigFile::getClass(const string &prefix) {
-	T obj;
+template <>
+auto ConfigFile::get<string_t>(const string_t &value) -> string_t {
+	keyMustExist(value);
+	lua_getglobal(m_luaVm, value.c_str());
+	string_t x = lua_tostring(m_luaVm, -1);
+	lua_pop(m_luaVm, 1);
+	return x;
+}
+
+template <typename TClass>
+auto ConfigFile::getClass(const string_t &prefix) -> TClass {
+	TClass obj;
 	obj.read(*this, prefix);
 	return obj;
 }

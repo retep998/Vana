@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "optional.hpp"
-#include "soci.h"
 #include "Types.h"
+#include <soci.h>
 #include <string>
 
 namespace soci {
 	template <>
 	struct type_conversion<unix_time_t> {
-		typedef std::tm base_type;
-		typedef unix_time_t target_type;
+		using base_type = std::tm;
+		using target_type = unix_time_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -45,9 +45,9 @@ namespace soci {
 	};
 
 	template <>
-	struct type_conversion<std::string> {
-		typedef std::string base_type;
-		typedef std::string target_type;
+	struct type_conversion<string_t> {
+		using base_type = string_t;
+		using target_type = string_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -66,8 +66,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<bool> {
-		typedef int base_type;
-		typedef bool target_type;
+		using base_type = int;
+		using target_type = bool;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			out = (ind == i_ok && in == 1);
@@ -81,8 +81,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<int8_t> {
-		typedef int base_type;
-		typedef int8_t target_type;
+		using base_type = int;
+		using target_type = int8_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -112,8 +112,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<uint8_t> {
-		typedef int base_type;
-		typedef uint8_t target_type;
+		using base_type = int;
+		using target_type = uint8_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -138,8 +138,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<uint16_t> {
-		typedef int base_type;
-		typedef uint16_t target_type;
+		using base_type = int;
+		using target_type = uint16_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -164,8 +164,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<uint32_t> {
-		typedef int base_type;
-		typedef uint32_t target_type;
+		using base_type = int;
+		using target_type = uint32_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -185,8 +185,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<int16_t> {
-		typedef int base_type;
-		typedef int16_t target_type;
+		using base_type = int;
+		using target_type = int16_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -211,8 +211,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<int32_t> {
-		typedef int base_type;
-		typedef int32_t target_type;
+		using base_type = int;
+		using target_type = int32_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -231,8 +231,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<int64_t> {
-		typedef long long base_type;
-		typedef int64_t target_type;
+		using base_type = long long;
+		using target_type = int64_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -251,8 +251,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<uint64_t> {
-		typedef long long base_type;
-		typedef uint64_t target_type;
+		using base_type = long long;
+		using target_type = uint64_t;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -271,8 +271,8 @@ namespace soci {
 
 	template <>
 	struct type_conversion<double> {
-		typedef double base_type;
-		typedef double target_type;
+		using base_type = double;
+		using target_type = double;
 
 		static void from_base(const base_type &in, indicator &ind, target_type &out) {
 			if (ind == i_null) {
@@ -291,7 +291,7 @@ namespace soci {
 
 	template <typename T>
 	struct type_conversion<MiscUtilities::optional<T>> {
-		typedef typename type_conversion<T>::base_type base_type;
+		using base_type = typename type_conversion<T>::base_type;
 
 		static void from_base(const base_type &in, indicator ind, MiscUtilities::optional<T> &out) {
 			if (ind == i_null) {

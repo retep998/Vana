@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SqlLogger.h"
 #include "Database.h"
 
-SqlLogger::SqlLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
+SqlLogger::SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),
 	m_bufferSize(bufferSize)
 {
@@ -29,7 +29,7 @@ SqlLogger::~SqlLogger() {
 	flush();
 }
 
-void SqlLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
+auto SqlLogger::log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void {
 	LogMessage m;
 	m.type = type;
 	m.message = message;
@@ -41,15 +41,15 @@ void SqlLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const
 	}
 }
 
-void SqlLogger::flush() {
+auto SqlLogger::flush() -> void {
 	if (m_buffer.size() > 0) {
 		soci::session &sql = Database::getCharDb();
 		int16_t serverType = getServerType();
 		int32_t logType = 0;
-		opt_string identifier;
+		opt_string_t identifier;
 		// For GCC, GCC doesn't interpret operators very well
 		identifier = "";
-		string message = "";
+		string_t message = "";
 		unix_time_t logTime;
 
 		soci::statement st = (sql.prepare

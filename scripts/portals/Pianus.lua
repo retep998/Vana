@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/bossHelper.lua");
 
-if not isPianusChannel() then
+if not isGm() and not isPianusChannel() then
 	channels = getPianusChannels();
 	if #channels == 0 then
 		showMessage("You may not battle Pianus at this time.", env_redMessage);
@@ -30,11 +30,11 @@ if not isPianusChannel() then
 end
 
 x = getMaxPianusBattles();
-if x == 0 then
+if not isGm() and x == 0 then
 	showMessage("You may not battle Pianus at this time.", env_redMessage);
 else
-	if getNumPlayers(230040420) < 10 then
-		if enterBoss("Pianus", x) then
+	if isGm() or getNumPlayers(230040420) < 10 then
+		if isGm() or enterBoss("Pianus", x) then
 			playPortalSe();
 			setMap(230040420, "out00");
 		else

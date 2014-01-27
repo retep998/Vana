@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,45 +17,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
-
-using std::unordered_map;
 
 class PacketCreator;
 class Player;
 
 struct MountData {
-	int16_t exp;
-	int8_t tiredness;
-	int8_t level;
+	int16_t exp = 0;
+	int8_t tiredness = 0;
+	int8_t level = 0;
 };
 
-class PlayerMounts : boost::noncopyable {
+class PlayerMounts {
+	NONCOPYABLE(PlayerMounts);
+	NO_DEFAULT_CONSTRUCTOR(PlayerMounts);
 public:
 	PlayerMounts(Player *p);
 
-	void save();
-	void load();
+	auto save() -> void;
+	auto load() -> void;
 
-	void mountInfoPacket(PacketCreator &packet);
-	int32_t getCurrentMount() const { return m_currentMount; }
-	int16_t getCurrentExp();
-	int8_t getCurrentLevel();
-	int8_t getCurrentTiredness();
-	void setCurrentMount(int32_t id) { m_currentMount = id; }
-	void setCurrentExp(int16_t exp);
-	void setCurrentLevel(int8_t level);
-	void setCurrentTiredness(int8_t tiredness);
+	auto mountInfoPacket(PacketCreator &packet) -> void;
+	auto getCurrentMount() const -> int32_t { return m_currentMount; }
+	auto getCurrentExp() -> int16_t;
+	auto getCurrentLevel() -> int8_t;
+	auto getCurrentTiredness() -> int8_t;
+	auto setCurrentMount(int32_t id) -> void { m_currentMount = id; }
+	auto setCurrentExp(int16_t exp) -> void;
+	auto setCurrentLevel(int8_t level) -> void;
+	auto setCurrentTiredness(int8_t tiredness) -> void;
 
-	void addMount(int32_t id);
+	auto addMount(int32_t id) -> void;
 
-	int16_t getMountExp(int32_t id);
-	int8_t getMountLevel(int32_t id);
-	int8_t getMountTiredness(int32_t id);
+	auto getMountExp(int32_t id) -> int16_t;
+	auto getMountLevel(int32_t id) -> int8_t;
+	auto getMountTiredness(int32_t id) -> int8_t;
 private:
-	Player *m_player;
-	unordered_map<int32_t, MountData> m_mounts;
-	int32_t m_currentMount;
+	int32_t m_currentMount = 0;
+	Player *m_player = nullptr;
+	hash_map_t<int32_t, MountData> m_mounts;
 };

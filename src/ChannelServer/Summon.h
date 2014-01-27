@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Summon : public MovableLife {
+	NONCOPYABLE(Summon);
+	NO_DEFAULT_CONSTRUCTOR(Summon);
 public:
 	enum MovementPatterns : int8_t {
 		Static = 0,
@@ -28,19 +30,18 @@ public:
 		Flying = 3
 	};
 
-	Summon() { }
 	Summon(int32_t id, int32_t summonId, uint8_t level);
 
-	int32_t getId() { return m_id; }
-	int32_t getSummonId() { return m_summonId; }
-	uint8_t getLevel() { return m_level; }
-	uint8_t getType() { return m_type; }
-	int32_t getHP() { return m_hp; }
-	void doDamage(int32_t damage) { m_hp -= damage; }
+	auto getId() -> int32_t { return m_id; }
+	auto getSummonId() -> int32_t { return m_summonId; }
+	auto getLevel() -> uint8_t { return m_level; }
+	auto getType() -> uint8_t { return m_type; }
+	auto getHP() -> int32_t { return m_hp; }
+	auto doDamage(int32_t damage) -> void { m_hp -= damage; }
 private:
-	int32_t m_id;
-	int32_t m_summonId;
-	uint8_t m_level;
-	uint8_t m_type;
-	int32_t m_hp; // For puppet
+	uint8_t m_level = 0;
+	uint8_t m_type = 0;
+	int32_t m_id = 0;
+	int32_t m_summonId = 0;
+	int32_t m_hp = 0;
 };

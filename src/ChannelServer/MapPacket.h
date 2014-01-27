@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,26 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class Mist;
 class PacketCreator;
 class Player;
 
 namespace MapPacket {
-	PacketCreator playerPacket(Player *player);
-	void showPlayer(Player *player);
-	void removePlayer(Player *player);
-	void changeMap(Player *player);
-	void portalBlocked(Player *player); // Blocked portals
-	void showClock(Player *player, int8_t hour, int8_t min, int8_t sec);
-	void showTimer(int32_t mapId, const seconds_t &sec); // Show timer like in PQs
-	void showTimer(Player *player, const seconds_t &sec); // Show timer like in PQs
-	void forceMapEquip(Player *player);
-	void showEventInstructions(int32_t mapId);
-	void showMist(Player *player, Mist *mist);
-	void spawnMist(int32_t mapId, Mist *mist);
-	void removeMist(int32_t mapId, int32_t id);
-	void instantWarp(Player *player, int8_t portalId);
-	void changeWeather(int32_t mapId, bool adminWeather, int32_t itemId = 0, const string &message = "");
+	auto playerPacket(Player *player) -> PacketCreator;
+	auto showPlayer(Player *player) -> void;
+	auto removePlayer(Player *player) -> void;
+	auto changeMap(Player *player) -> void;
+	auto portalBlocked(Player *player) -> void; // Blocked portals
+	auto showClock(Player *player, int8_t hour, int8_t min, int8_t sec) -> void;
+	auto showTimer(int32_t mapId, const seconds_t &sec) -> void; // Show timer like in PQs
+	auto showTimer(Player *player, const seconds_t &sec) -> void; // Show timer like in PQs
+	auto forceMapEquip(Player *player) -> void;
+	auto showEventInstructions(int32_t mapId) -> void;
+	auto showMist(Player *player, Mist *mist) -> void;
+	auto spawnMist(int32_t mapId, Mist *mist) -> void;
+	auto removeMist(int32_t mapId, int32_t id) -> void;
+	auto instantWarp(Player *player, int8_t portalId) -> void;
+	auto changeWeather(int32_t mapId, bool adminWeather, int32_t itemId = 0, const string_t &message = "") -> void;
 }

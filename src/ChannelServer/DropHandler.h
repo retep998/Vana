@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,8 +24,8 @@ class Player;
 struct Pos;
 
 namespace DropHandler {
-	void doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false);
-	void dropMesos(Player *player, PacketReader &packet);
-	void petLoot(Player *player, PacketReader &packet);
-	void lootItem(Player *player, PacketReader &packet, int64_t petId = 0);
+	auto doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false) -> void;
+	auto dropMesos(Player *player, PacketReader &packet) -> void;
+	auto petLoot(Player *player, PacketReader &packet) -> void;
+	auto lootItem(Player *player, PacketReader &packet, int64_t petId = 0) -> void;
 }

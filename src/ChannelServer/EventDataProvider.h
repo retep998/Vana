@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,39 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
-#include "TimerContainer.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
 #include "Variables.h"
 #include <memory>
 #include <string>
 
-using std::string;
-
-namespace Timer {
-	struct Id;
-	class Container;
-}
-
-class EventDataProvider : boost::noncopyable {
+class EventDataProvider : public TimerContainerHolder {
+	SINGLETON_CUSTOM_CONSTRUCTOR(EventDataProvider);
 public:
-	static EventDataProvider * InstancePtr() {
-		if (singleton == nullptr)
-			singleton = new EventDataProvider;
-		return singleton;
-	}
-
-	void loadData();
-	Timer::Container * getTimers() const { return m_timers.get(); }
-	Variables * getVariables() const { return m_variables.get(); }
+	auto loadData() -> void;
+	auto getVariables() const -> Variables * { return m_variables.get(); }
 private:
-	EventDataProvider();
-	static EventDataProvider *singleton;
+	auto loadEvents() -> void;
+	auto loadInstances() -> void;
+	auto startInstance(const string_t &name, const duration_t &time, const duration_t &repeat = seconds_t(0)) -> void;
 
-	void loadEvents();
-	void loadInstances();
-	void startInstance(const string &name, const seconds_t &time, const seconds_t &repeat = seconds_t(0));
-
-	std::unique_ptr<Timer::Container> m_timers;
-	std::unique_ptr<Variables> m_variables;
+	owned_ptr_t<Variables> m_variables;
 };

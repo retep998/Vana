@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,8 +23,8 @@ class PacketReader;
 class Player;
 
 namespace Quests {
-	void getQuest(Player *player, PacketReader &packet);
-	void giveFame(Player *player, int32_t amount);
-	bool giveItem(Player *player, int32_t itemId, int16_t amount);
-	bool giveMesos(Player *player, int32_t amount);
+	auto getQuest(Player *player, PacketReader &packet) -> void;
+	auto giveFame(Player *player, int32_t amount) -> void;
+	auto giveItem(Player *player, int32_t itemId, int16_t amount) -> bool;
+	auto giveMesos(Player *player, int32_t amount) -> bool;
 }

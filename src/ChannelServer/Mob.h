@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,166 +17,127 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "GameConstants.h"
+#include "MobConstants.h"
 #include "MobDataProvider.h"
 #include "MovableLife.h"
 #include "Pos.h"
-#include "TimerContainer.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
 #include <map>
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
-using std::map;
-using std::unordered_map;
-using std::vector;
-
 class Map;
 class PacketCreator;
 class Party;
 class Player;
+struct MobSkillInfo;
+struct MobSkillLevelInfo;
 struct MpEaterInfo;
+struct StatusInfo;
 
-struct StatusInfo {
-	StatusInfo() : status(0), val(0), skillId(0), mobSkill(0), level(0), time(0), reflection(-1) { }
-	StatusInfo(int32_t status, int32_t val, int32_t skillId, clock_t time);
-	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, clock_t time);
-	StatusInfo(int32_t status, int32_t val, int16_t mobSkill, int16_t level, int32_t reflect, clock_t time);
-	int32_t status;
-	int32_t skillId;
-	int32_t reflection;
-	int32_t val;
-	int16_t mobSkill;
-	int16_t level;
-	clock_t time;
-};
-
-struct PartyExp {
-	PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) { }
-	uint8_t minHitLevel;
-	uint64_t totalExp;
-	uint64_t highestDamage;
-	Player *highestDamager;
-	Party *party;
-};
-
-class Mob : public MovableLife {
+class Mob : public MovableLife, public enable_shared<Mob>, public TimerContainerHolder {
+	NONCOPYABLE(Mob);
+	NO_DEFAULT_CONSTRUCTOR(Mob);
 public:
-	Mob(int32_t id, int32_t mapId, int32_t mobId, const Pos &pos, int16_t fh = 0, int8_t controlStatus = 1);
-	Mob(int32_t id, int32_t mapId, int32_t mobId, const Pos &pos, int32_t spawnId, int8_t direction, int16_t fh);
+	Mob(int32_t mapMobId, int32_t mapId, int32_t mobId, view_ptr_t<Mob> owner, const Pos &pos, int32_t spawnId, bool facesLeft, int16_t foothold, MobControlStatus controlStatus);
 
-	void applyDamage(int32_t playerId, int32_t damage, bool poison = false);
-	void applyWebDamage();
-	void setHp(int32_t hp) { m_hp = hp; }
-	void setMp(int32_t mp) { m_mp = mp; }
-	void addStatus(int32_t playerId, vector<StatusInfo> &statusInfo);
-	void removeStatus(int32_t status, bool fromTimer = false);
-	void setControl(Player *control, bool spawn = false, Player *display = nullptr);
-	void endControl();
-	void setOwner(Mob *owner) { m_owner = owner; }
-	void setSponge(Mob *sponge) { m_sponge = sponge; }
-	void setLastSkillUse(uint8_t skill, time_t useTime) { m_skillUse[skill] = useTime; }
-	void statusPacket(PacketCreator &packet);
-	void addSpawn(int32_t mapMobId, Mob *mob) { m_spawns[mapMobId] = mob; }
-	void removeSpawn(int32_t mapMobId) { m_spawns.erase(mapMobId); }
-	void skillHeal(int32_t healHp, int32_t healRange);
-	void dispelBuffs();
-	void doCrashSkill(int32_t skillId);
-	void explode();
-	void setVenomCount(int8_t count) { m_venomCount = count; }
-	void mpEat(Player *player, MpEaterInfo *mp);
-	void naturalHealHp(int32_t amount);
-	void naturalHealMp(int32_t amount);
-	void setControlStatus(int8_t newStat);
+	auto applyDamage(int32_t playerId, int32_t damage, bool poison = false) -> void;
+	auto applyWebDamage() -> void;
+	auto addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void;
+	auto statusPacket(PacketCreator &packet) -> void;
+	auto skillHeal(int32_t healHp, int32_t healRange) -> void;
+	auto dispelBuffs() -> void;
+	auto doCrashSkill(int32_t skillId) -> void;
+	auto explode() -> void;
+	auto kill() -> void;
+	auto consumeMp(int32_t mp) -> void;
+	auto mpEat(Player *player, MpEaterInfo *mp) -> void;
+	auto setSkillFeasibility(bool skillFeasible) -> void { m_skillFeasible = skillFeasible; }
+	auto useAnticipatedSkill() -> bool;
+	auto resetAnticipatedSkill() -> void;
 
-	int8_t getControlStatus() const { return m_controlStatus; }
-	int8_t getVenomCount() const { return m_venomCount; }
-	int8_t getFacingDirection() const { return m_facingDirection; }
-	int8_t getHpBarColor() const { return m_info->hpColor; }
-	int8_t getHpBarBgColor() const { return m_info->hpBackgroundColor; }
-	int16_t getOriginFh() const { return m_originFh; }
-	uint16_t getLevel() const { return m_info->level; }
-	int32_t getWeaponReflection();
-	int32_t getMagicReflection();
-	int32_t getStatusValue(int32_t status);
-	int32_t getId() const { return m_id; }
-	int32_t getMapId() const { return m_mapId; }
-	int32_t getMobId() const { return m_mobId; }
-	int32_t getSpawnId() const { return m_spawnId; }
-	int32_t getHp() const { return m_hp; }
-	int32_t getMp() const { return m_mp; }
-	int32_t getMaxHp() const { return m_info->hp; }
-	int32_t getMaxMp() const { return m_info->mp; }
-	int32_t getLink() const { return m_info->link; }
-	int32_t getDeathBuff() const { return m_info->buff; }
-	int32_t getExp() const { return m_info->exp; }
-	int32_t getCounter() { return ++m_counter; }
-	int32_t getSelfDestructHp() const { return m_info->selfDestruction; }
-	int32_t getTauntEffect() const { return m_tauntEffect; }
-	time_t getLastSkillUse(uint8_t skill) { return (m_skillUse.find(skill) != m_skillUse.end() ? m_skillUse[skill] : 0); }
-	bool isBoss() const { return m_info->boss; }
-	bool canFreeze() const { return m_info->canFreeze; }
-	bool canPoison() const { return m_info->canPoison; }
-	bool canFly() const { return m_info->flying; }
-	bool isFriendly() const { return m_info->friendly; }
-	bool isUndead() const { return m_info->undead; }
-	bool hasLink() const { return m_info->link != 0; }
-	bool hasExplosiveDrop() const { return m_info->explosiveReward; }
-	bool hasFfaDrop() const { return m_info->publicReward; }
-	bool hasImmunity() const;
-	bool hasReflect() const;
-	bool hasWeaponReflect() const;
-	bool hasMagicReflect() const;
-	bool hasStatus(int32_t status) const;
-	bool canCastSkills() const;
-	bool isSponge() const { return isSponge(getMobId()); }
-	Pos getPos() const override { return Pos(m_pos.x, m_pos.y - 1); }
-	Mob * getOwner() const { return m_owner; }
-	Mob * getSponge() const { return m_sponge; }
-	const MobInfo getInfo() const { return m_info; }
-	uint8_t getSkillCount() const { return m_info->skillCount; }
-	int16_t getSpawnCount() const { return static_cast<int16_t>(m_spawns.size()); }
-	unordered_map<int32_t, Mob *> getSpawns() const { return m_spawns; }
+	auto chooseRandomSkill(uint8_t &skillId, uint8_t &skillLevel) -> void;
+	auto getSkillFeasibility() const -> bool { return m_skillFeasible; }
+	auto getAnticipatedSkill() const -> uint8_t { return m_anticipatedSkill; }
+	auto getAnticipatedSkillLevel() const -> uint8_t { return m_anticipatedSkillLevel; }
+	auto getHpBarColor() const -> int8_t { return m_info->hpColor; }
+	auto getHpBarBgColor() const -> int8_t { return m_info->hpBackgroundColor; }
+	auto getVenomCount() const -> int8_t { return m_venomCount; }
+	auto getOriginFoothold() const -> int16_t { return m_originFoothold; }
+	auto getLevel() const -> uint16_t { return m_info->level; }
+	auto getMapMobId() const -> int32_t { return m_mapMobId; }
+	auto getMapId() const -> int32_t { return m_mapId; }
+	auto getMobId() const -> int32_t { return m_mobId; }
+	auto getHp() const -> int32_t { return m_hp; }
+	auto getMp() const -> int32_t { return m_mp; }
+	auto getMaxHp() const -> int32_t { return m_info->hp; }
+	auto getMaxMp() const -> int32_t { return m_info->mp; }
+	auto getMobIdOrLink() const -> int32_t { return m_info->link != 0 ? m_info->link : m_mobId; }
+	auto getSelfDestructHp() const -> int32_t { return m_info->selfDestruction; }
+	auto getTauntEffect() const -> int32_t { return m_tauntEffect; }
+	auto isBoss() const -> bool { return m_info->boss; }
+	auto canFreeze() const -> bool { return m_info->canFreeze; }
+	auto canPoison() const -> bool { return m_info->canPoison; }
+	auto canFly() const -> bool { return m_info->flying; }
+	auto isFriendly() const -> bool { return m_info->friendly; }
+	auto isUndead() const -> bool { return m_info->undead; }
+	auto hasExplosiveDrop() const -> bool { return m_info->explosiveReward; }
+	auto hasFfaDrop() const -> bool { return m_info->publicReward; }
+	auto isSponge() const -> bool { return isSponge(getMobId()); }
+	auto getPos() const -> Pos override { return Pos(m_pos.x, m_pos.y - 1); }
+	auto getControlStatus() const -> MobControlStatus { return m_controlStatus; }
 
-	Timer::Container * getTimers() const { return m_timers.get(); }
-	Player * getControl() const { return m_controller; }
-
-	void die(bool showPacket = false); // Removes mob, no EXP, no summoning
+	auto getController() const -> Player * { return m_controller; }
 private:
-	static bool isSponge(int32_t mobId);
-	static bool spawnsSponge(int32_t mobId);
+	static auto isSponge(int32_t mobId) -> bool;
+	static auto spawnsSponge(int32_t mobId) -> bool;
 
-	void initMob();
-	void die(Player *player, bool fromExplosion = false);
-	int32_t getHighestDamager(Player *killer);
-	void spawnDeathMobs(Map *map);
-	void updateSpawnLinks();
+	friend class Map;
 
-	int8_t m_venomCount;
-	int8_t m_mpEaterCount;
-	int8_t m_facingDirection;
-	int8_t m_controlStatus;
-	uint8_t m_webLevel;
-	int16_t m_originFh;
-	int32_t m_tauntEffect;
-	int32_t m_id;
-	int32_t m_mapId;
-	int32_t m_spawnId;
-	int32_t m_mobId;
-	int32_t m_hp;
-	int32_t m_mp;
-	int32_t m_status;
-	int32_t m_counter;
-	int32_t m_webPlayerId;
-	uint64_t m_totalHealth;
-	Mob *m_owner;
-	Mob *m_sponge;
-	const MobInfo m_info;
-	map<int32_t, StatusInfo> m_statuses;
-	unordered_map<int32_t, uint64_t> m_damages;
-	unordered_map<uint8_t, time_t> m_skillUse;
-	unordered_map<int32_t, Mob *> m_spawns;
-	Player *m_controller;
-	std::unique_ptr<Timer::Container> m_timers;
+	auto setController(Player *control, bool spawn = false, Player *display = nullptr) -> void;
+	auto die(Player *player, bool fromExplosion = false) -> void;
+	auto distributeExpAndGetDropRecipient(Player *killer) -> int32_t;
+	auto naturalHeal(int32_t hpHeal, int32_t mpHeal) -> void;
+	auto removeStatus(int32_t status, bool fromTimer = false) -> void;
+	auto endControl() -> void;
+	auto addSpawn(int32_t mapMobId, view_ptr_t<Mob> mob) -> void { m_spawns[mapMobId] = mob; }
+	auto setOwner(view_ptr_t<Mob> owner) -> void { m_owner = owner; }
+	auto getStatusValue(int32_t status) -> int32_t;
+	auto getWeaponReflection() -> int32_t;
+	auto getMagicReflection() -> int32_t;
+	auto hasImmunity() const -> bool;
+	auto hasStatus(int32_t status) const -> bool;
+	auto canCastSkills() const -> bool;
+	auto getSpawnId() const -> int32_t { return m_spawnId; }
+	auto getSponge() const -> view_ptr_t<Mob> { return m_sponge; }
+
+	bool m_skillFeasible = false;
+	int8_t m_venomCount = 0;
+	int8_t m_mpEaterCount = 0;
+	uint8_t m_webLevel = 0;
+	uint8_t m_anticipatedSkill = 0;
+	uint8_t m_anticipatedSkillLevel = 0;
+	int16_t m_originFoothold = 0;
+	int32_t m_tauntEffect = 100;
+	int32_t m_mapMobId = 0;
+	int32_t m_mapId = 0;
+	int32_t m_spawnId = 0;
+	int32_t m_mobId = 0;
+	int32_t m_hp = 0;
+	int32_t m_mp = 0;
+	int32_t m_status = 0;
+	int32_t m_webPlayerId = 0;
+	uint64_t m_totalHealth = 0;
+	Player *m_controller = nullptr;
+	MobControlStatus m_controlStatus = MobControlStatus::Normal;
+	time_point_t m_lastSkillUse;
+	view_ptr_t<Mob> m_owner;
+	view_ptr_t<Mob> m_sponge;
+	const ref_ptr_t<MobInfo> m_info;
+	ord_map_t<int32_t, StatusInfo> m_statuses;
+	hash_map_t<int32_t, uint64_t> m_damages;
+	hash_map_t<uint8_t, time_point_t> m_skillUse;
+	hash_map_t<int32_t, view_ptr_t<Mob>> m_spawns;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,28 +29,253 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.h"
 #include "WorldServerConnectPacket.h"
 
-using StringUtilities::lexical_cast;
+auto ManagementFunctions::map(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)? ?(\w+)?)", matches)) {
+		string_t rawMap = matches[1];
+		string_t rawPortal = matches[2];
+		if (rawMap.empty()) {
+			ChatHandlerFunctions::showInfo(player, "Current map: " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
+			return true;
+		}
 
-bool ManagementFunctions::map(Player *player, const string &args) {
-	if (args.length() != 0) {
-		int32_t mapId = ChatHandlerFunctions::getMap(args, player);
-		if (Maps::getMap(mapId)) {
-			player->setMap(mapId);
+		int32_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
+		if (mapId != -1 && Maps::getMap(mapId) != nullptr) {
+			PortalInfo *portal = nullptr;
+			if (!rawPortal.empty()) {
+				Map *map = Maps::getMap(mapId);
+				if (rawPortal == "sp") {
+					portal = map->getSpawnPoint();
+				}
+				else if (rawPortal == "tp") {
+
+				}
+				else {
+					portal = map->getPortal(rawPortal);
+				}
+
+				if (portal == nullptr) {
+					ChatHandlerFunctions::showError(player, "Invalid portal: " + rawPortal);
+					return true;
+				}
+			}
+			player->setMap(mapId, portal);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Map not found: " + args, PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
 		}
+
+		return true;
 	}
-	else {
-		PlayerPacket::showMessage(player, "Current Map: " + lexical_cast<string>(player->getMap()->getId()), PlayerPacket::NoticeTypes::Blue);
-	}
-	return true;
+
+	return false;
 }
 
-bool ManagementFunctions::changeChannel(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+)", matches)) {
-		string targetChannel = matches[1];
+auto ManagementFunctions::warp(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\w+) (\w+) ?(\w+)? ?(\w+)?)", matches)) {
+		string_t sourceType = matches[1];
+		string_t destinationType = matches[2];
+		string_t rawMap = matches[3];
+		string_t optional = matches[4];
+		string_t moreOptional = matches[5];
+		int32_t sourceMapId = -1;
+		int32_t destinationMapId = -1;
+		string_t portal;
+		Player *sourcePlayer = nullptr;
+		bool validCombo = true;
+		bool onlySource = true;
+		bool singleArgumentDestination = false;
+		bool portalSpecified = false;
+
+		auto resolvePlayer = [](const string_t &playerArg) { return PlayerDataProvider::getInstance().getPlayer(playerArg); };
+		auto resolveMapArg = [player](const string_t &mapArg) { return ChatHandlerFunctions::getMap(mapArg, player); };
+		auto resolveMapPortal = [&portal, player](const string_t &portalArg) {
+			if (!portalArg.empty()) {
+				portal = portalArg;
+				return true;
+			}
+			return false;
+		};
+		auto resolveMapCurrent = [player]() { return player->getMapId(); };
+		auto resolveMapPlayer = [player](const string_t &playerArg) {
+			if (Player *target = PlayerDataProvider::getInstance().getPlayer(playerArg)) {
+				return target->getMapId();
+			}
+			return -2;
+		};
+
+		if (sourceType == "map") {
+			onlySource = false;
+
+			sourceMapId = resolveMapArg(rawMap);
+			if (sourceMapId == -1 || Maps::getMap(sourceMapId) == nullptr) {
+				ChatHandlerFunctions::showError(player, "Invalid source map: " + rawMap);
+				return true;
+			}
+
+			if (destinationType == "map") {
+				destinationMapId = resolveMapArg(optional);
+				portalSpecified = resolveMapPortal(moreOptional);
+			}
+			else if (destinationType == "current" || destinationType == "self") {
+				destinationMapId = resolveMapCurrent();
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else if (destinationType == "player") {
+				destinationMapId = resolveMapPlayer(optional);
+				portalSpecified = resolveMapPortal(moreOptional);
+			}
+			else {
+				validCombo = false;
+			}
+		}
+		else if (sourceType == "player") {
+			onlySource = false;
+
+			sourcePlayer = PlayerDataProvider::getInstance().getPlayer(rawMap);
+			if (sourcePlayer == nullptr) {
+				ChatHandlerFunctions::showError(player, "Invalid source player: " + rawMap);
+				return true;
+			}
+
+			if (destinationType == "map") {
+				destinationMapId = resolveMapArg(optional);
+				portalSpecified = resolveMapPortal(moreOptional);
+			}
+			else if (destinationType == "current" || destinationType == "self") {
+				destinationMapId = resolveMapCurrent();
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else if (destinationType == "player") {
+				destinationMapId = resolveMapPlayer(optional);
+				portalSpecified = resolveMapPortal(moreOptional);
+			}
+			else {
+				validCombo = false;
+			}
+		}
+		else if (sourceType == "current" || sourceType == "self") {
+			sourceMapId = resolveMapCurrent();
+			if (destinationType == "map") {
+				destinationMapId = resolveMapArg(rawMap);
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else if (destinationType == "player") {
+				destinationMapId = resolveMapPlayer(rawMap);
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else {
+				validCombo = false;
+			}
+		}
+		else if (sourceType == "channel") {
+			if (destinationType == "map") {
+				destinationMapId = resolveMapArg(rawMap);
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else if (destinationType == "current" || destinationType == "self") {
+				destinationMapId = resolveMapCurrent();
+				portalSpecified = resolveMapPortal(rawMap);
+				singleArgumentDestination = true;
+			}
+			else if (destinationType == "player") {
+				destinationMapId = resolveMapPlayer(rawMap);
+				portalSpecified = resolveMapPortal(optional);
+			}
+			else {
+				validCombo = false;
+			}
+		}
+		else {
+			ChatHandlerFunctions::showError(player, "Invalid source type: " + sourceType);
+			return true;
+		}
+
+		if (!validCombo) {
+			ChatHandlerFunctions::showError(player, "Invalid destination type for source type \"" + sourceType + "\": " + destinationType);
+			return true;
+		}
+
+		if (destinationMapId == -2) {
+			ChatHandlerFunctions::showError(player, "Invalid destination player: " + (onlySource ? rawMap : optional));
+			return true;
+		}
+
+		if (destinationMapId == -1 || Maps::getMap(destinationMapId) == nullptr) {
+			ChatHandlerFunctions::showError(player, "Invalid destination map: " + (onlySource ? rawMap : optional));
+			return true;
+		}
+
+		PortalInfo *destinationPortal = nullptr;
+		Map *destination = Maps::getMap(destinationMapId);
+
+		if (portalSpecified) {
+			if (portal == "sp") {
+				destinationPortal = destination->getSpawnPoint();
+			}
+			else if (portal == "tp") {
+
+			}
+			else {
+				destinationPortal = destination->getPortal(portal);
+			}
+
+			if (destinationPortal == nullptr) {
+				ChatHandlerFunctions::showError(player, "Invalid destination portal: " + (singleArgumentDestination ? rawMap : (onlySource ? optional : moreOptional)));
+				return true;
+			}
+		}
+
+		auto warpToMap = [destinationMapId, destinationPortal](Player *target) {
+			if (target->getMapId() != destinationMapId) {
+				target->setMap(destinationMapId, destinationPortal);
+			}
+		};
+
+		if (sourceType == "map" || sourceType == "current") {
+			out_stream_t message;
+			message << "Warped all players on map ID " << sourceMapId << " to map ID " << destinationMapId;
+			if (portal.length() != 0) {
+				message << " (portal " << portal << ")";
+			}
+
+			Maps::getMap(sourceMapId)->runFunctionPlayers(warpToMap);
+			ChatHandlerFunctions::showInfo(player, message.str());
+		}
+		else if (sourceType == "player") {
+			out_stream_t message;
+			message << "Warped player " << rawMap << " to map ID " << destinationMapId;
+			if (portal.length() != 0) {
+				message << " (portal " << portal << ")";
+			}
+
+			warpToMap(sourcePlayer);
+			ChatHandlerFunctions::showInfo(player, message.str());
+		}
+		else if (sourceType == "self") {
+			warpToMap(player);
+		}
+		else if (sourceType == "channel") {
+			out_stream_t message;
+			message << "Warped everyone in the channel to map ID " << destinationMapId;
+			if (portal.length() != 0) {
+				message << " (portal " << portal << ")";
+			}
+
+			PlayerDataProvider::getInstance().run(warpToMap);
+			ChatHandlerFunctions::showInfo(player, message.str());
+		}
+
+		return true;
+	}
+	return false;
+}
+
+auto ManagementFunctions::changeChannel(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches)) {
+		string_t targetChannel = matches[1];
 		int8_t channel = atoi(targetChannel.c_str()) - 1;
 		player->changeChannel(channel);
 		return true;
@@ -58,86 +283,87 @@ bool ManagementFunctions::changeChannel(Player *player, const string &args) {
 	return false;
 }
 
-bool ManagementFunctions::lag(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+)", matches)) {
-		string target = matches[1];
-		if (Player *p = PlayerDataProvider::Instance()->getPlayer(target)) {
-			PlayerPacket::showMessage(player, p->getName() + "'s lag: " + lexical_cast<string>(p->getLatency().count()) + "ms", PlayerPacket::NoticeTypes::Blue);
+auto ManagementFunctions::lag(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches)) {
+		string_t target = matches[1];
+		if (Player *p = PlayerDataProvider::getInstance().getPlayer(target)) {
+			ChatHandlerFunctions::showInfo(player, p->getName() + "'s lag: " + StringUtilities::lexical_cast<string_t>(p->getLatency().count()) + "ms");
 		}
 		else {
-			PlayerPacket::showMessage(player, "Player not found.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid player: " + target);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::header(Player *player, const string &args) {
+auto ManagementFunctions::header(Player *player, const string_t &args) -> bool {
 	SyncPacket::ConfigPacket::scrollingHeader(args);
 	return true;
 }
 
-bool ManagementFunctions::shutdown(Player *player, const string &args) {
-	PlayerPacket::showMessage(player, "Shutting down the server.", PlayerPacket::NoticeTypes::Blue);
-	ChannelServer::Instance()->log(LogTypes::GmCommand, "GM shutdown the server. GM: " + player->getName());
-	ChannelServer::Instance()->shutdown();
+auto ManagementFunctions::shutdown(Player *player, const string_t &args) -> bool {
+	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
+	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM shutdown the server. GM: " + player->getName());
+	ChannelServer::getInstance().shutdown();
 	return true;
 }
 
-bool ManagementFunctions::kick(Player *player, const string &args) {
+auto ManagementFunctions::kick(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(args)) {
+		if (Player *target = PlayerDataProvider::getInstance().getPlayer(args)) {
 			if (player->getGmLevel() > target->getGmLevel()) {
 				target->getSession()->disconnect();
-				PlayerPacket::showMessage(player, "Kicked " + args + " from the server.", PlayerPacket::NoticeTypes::Blue);
+				ChatHandlerFunctions::showInfo(player, "Kicked " + args + " from the server");
 			}
 			else {
-				PlayerPacket::showMessage(player, "Player outranks you.", PlayerPacket::NoticeTypes::Red);
+				ChatHandlerFunctions::showError(player, "Player " + args + " is your peer or outranks you");
 			}
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid player or player is offline.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid player: " + args);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::relog(Player *player, const string &args) {
-	player->changeChannel((int8_t)ChannelServer::Instance()->getChannelId());
+auto ManagementFunctions::relog(Player *player, const string_t &args) -> bool {
+	player->changeChannel(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
 	return true;
 }
 
-bool ManagementFunctions::calculateRanks(Player *player, const string &args) {
+auto ManagementFunctions::calculateRanks(Player *player, const string_t &args) -> bool {
 	WorldServerConnectPacket::rankingCalculation();
-	PlayerPacket::showMessage(player, "Sent a signal to force the calculation of rankings.", PlayerPacket::NoticeTypes::Blue);
+	ChatHandlerFunctions::showInfo(player, "Sent a signal to force the calculation of rankings");
 	return true;
 }
 
-bool ManagementFunctions::item(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d*)?", matches)) {
-		int32_t itemId = atoi(string(matches[1]).c_str());
-		if (ItemDataProvider::Instance()->itemExists(itemId)) {
-			string countString = matches[2];
+auto ManagementFunctions::item(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches)) {
+		string_t rawItem = matches[1];
+		int32_t itemId = atoi(rawItem.c_str());
+		if (ItemDataProvider::getInstance().itemExists(itemId)) {
+			string_t countString = matches[2];
 			uint16_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
-			Inventory::addNewItem(player, itemId, count);
+			Inventory::addNewItem(player, itemId, count, true);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid Item ID.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid item: " + rawItem);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::storage(Player *player, const string &args) {
+auto ManagementFunctions::storage(Player *player, const string_t &args) -> bool {
 	NpcHandler::showStorage(player, 1012009);
 	return true;
 }
 
-bool ManagementFunctions::shop(Player *player, const string &args) {
+auto ManagementFunctions::shop(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		int32_t shopId = -1;
 		if (args == "gear") shopId = 9999999;
@@ -157,24 +383,24 @@ bool ManagementFunctions::shop(Player *player, const string &args) {
 	return false;
 }
 
-bool ManagementFunctions::reload(Player *player, const string &args) {
+auto ManagementFunctions::reload(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		if (args == "items" || args == "drops" || args == "shops" ||
 			args == "mobs" || args == "beauty" || args == "scripts" ||
 			args == "skills" || args == "reactors" || args == "pets" ||
 			args == "quests" || args == "all") {
 			WorldServerConnectPacket::reloadMcdb(args);
-			PlayerPacket::showMessage(player, "Reloading message for " + args + " sent to all channels.", PlayerPacket::NoticeTypes::Blue);
+			ChatHandlerFunctions::showInfo(player, "Reloading message for " + args + " sent to all channels");
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid reload type.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid reload type: " + args);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::npc(Player *player, const string &args) {
+auto ManagementFunctions::npc(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		int32_t npcId = atoi(args.c_str());
 		Npc *npc = new Npc(npcId, player);
@@ -184,7 +410,7 @@ bool ManagementFunctions::npc(Player *player, const string &args) {
 	return false;
 }
 
-bool ManagementFunctions::addNpc(Player *player, const string &args) {
+auto ManagementFunctions::addNpc(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		NpcSpawnInfo npc;
 		npc.id = atoi(args.c_str());
@@ -193,24 +419,24 @@ bool ManagementFunctions::addNpc(Player *player, const string &args) {
 		npc.rx0 = npc.pos.x - 50;
 		npc.rx1 = npc.pos.x + 50;
 		int32_t id = player->getMap()->addNpc(npc);
-		PlayerPacket::showMessage(player, "Spawned NPC with object ID " + lexical_cast<string>(id) , PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, "Spawned NPC with object ID " + StringUtilities::lexical_cast<string_t>(id));
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::killNpc(Player *player, const string &args) {
+auto ManagementFunctions::killNpc(Player *player, const string_t &args) -> bool {
 	player->setNpc(nullptr);
 	return true;
 }
 
-bool ManagementFunctions::kill(Player *player, const string &args) {
+auto ManagementFunctions::kill(Player *player, const string_t &args) -> bool {
 	if (player->getGmLevel() == 1) {
 		player->getStats()->setHp(0);
 	}
 	else {
 		bool proceed = true;
-		auto iterate = [&player](function<bool(Player *p)> func) -> int {
+		auto iterate = [&player](function_t<bool(Player *p)> func) -> int {
 			int32_t kills = 0;
 			Map *map = player->getMap();
 			for (size_t i = 0; i < map->getNumPlayers(); ++i) {
@@ -227,7 +453,7 @@ bool ManagementFunctions::kill(Player *player, const string &args) {
 				p->getStats()->setHp(0);
 				return true;
 			});
-			PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(kills) + "  players in the current map!", PlayerPacket::NoticeTypes::Blue);
+			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills) + " players in the current map");
 		}
 		else if (args == "gm" || args == "players") {
 			proceed = false;
@@ -238,17 +464,17 @@ bool ManagementFunctions::kill(Player *player, const string &args) {
 				}
 				return false;
 			});
-			PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(kills) + "  " + (args == "gm" ? "GMs" : "players") + " in the current map!", PlayerPacket::NoticeTypes::Blue);
+			ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(kills)+" " + (args == "gm" ? "GMs" : "players") + " in the current map");
 		}
 		if (proceed) {
 			if (args == "me") {
 				player->getStats()->setHp(0);
-				PlayerPacket::showMessage(player, "Killed yourself.", PlayerPacket::NoticeTypes::Blue);
+				ChatHandlerFunctions::showInfo(player, "Killed yourself");
 			}
-			else if (Player *kill = PlayerDataProvider::Instance()->getPlayer(args)) {
+			else if (Player *kill = PlayerDataProvider::getInstance().getPlayer(args)) {
 				// Kill by name
 				kill->getStats()->setHp(0);
-				PlayerPacket::showMessage(player, "Killed " + args + ".", PlayerPacket::NoticeTypes::Blue);
+				ChatHandlerFunctions::showInfo(player, "Killed " + args);
 			}
 			else {
 				// Nothing valid
@@ -259,18 +485,18 @@ bool ManagementFunctions::kill(Player *player, const string &args) {
 	return true;
 }
 
-bool ManagementFunctions::ban(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
-		string targetName = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
+auto ManagementFunctions::ban(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches)) {
+		string_t targetName = matches[1];
+		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
 			target->getSession()->disconnect();
 		}
-		string reasonString = matches[2];
+		string_t reasonString = matches[2];
 		int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 		// Ban account
-		string expire("2130-00-00 00:00:00");
+		string_t expire("2130-00-00 00:00:00");
 
 		soci::session &sql = Database::getCharDb();
 		soci::statement st = (sql.prepare
@@ -288,12 +514,12 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
+			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " banned a player with reason " + StringUtilities::lexical_cast<string_t>(reason) + ", player: " + targetName);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
 		}
 
 		return true;
@@ -301,15 +527,15 @@ bool ManagementFunctions::ban(Player *player, const string &args) {
 	return false;
 }
 
-bool ManagementFunctions::tempBan(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (\\d+) (\\d+)", matches)) {
-		string targetName = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
+auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches)) {
+		string_t targetName = matches[1];
+		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
 			target->getSession()->disconnect();
 		}
-		string reasonString = matches[2];
-		string length = matches[3];
+		string_t reasonString = matches[2];
+		string_t length = matches[3];
 		int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 		// Ban account
@@ -329,12 +555,12 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM temporary banned a character with reason " + lexical_cast<string>(reason) + " for " + length + " days. GM: " + player->getName() + ", Character: " + targetName);
+			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " temporary banned with reason " + StringUtilities::lexical_cast<string_t>(reason) + " for " + length + " days, player: " + targetName);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't temporary ban " + targetName + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
 		}
 
 		return true;
@@ -342,15 +568,15 @@ bool ManagementFunctions::tempBan(Player *player, const string &args) {
 	return false;
 }
 
-bool ManagementFunctions::ipBan(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
-		string targetName = matches[1];
-		if (Player *target = PlayerDataProvider::Instance()->getPlayer(targetName)) {
-			const string &targetIp = target->getIp().toString();
+auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches)) {
+		string_t targetName = matches[1];
+		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
+			const string_t &targetIp = target->getIp().toString();
 			target->getSession()->disconnect();
 
-			string reasonString = matches[2];
+			string_t reasonString = matches[2];
 			int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
 
 			// IP ban
@@ -360,20 +586,24 @@ bool ManagementFunctions::ipBan(Player *player, const string &args) {
 			st.execute();
 
 			if (st.get_affected_rows() > 0) {
-				const string &banMessage = targetName + " has been IP banned" + ChatHandlerFunctions::getBanString(reason);
+				const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-				ChannelServer::Instance()->log(LogTypes::GmCommand, "GM IP banned a character with reason " + lexical_cast<string>(reason) + ". GM: " + player->getName() + ", Character: " + targetName);
+				ChannelServer::getInstance().log(LogTypes::GmCommand, "GM IP banned a character with reason " + StringUtilities::lexical_cast<string_t>(reason)+". GM: " + player->getName() + ", Character: " + targetName);
 			}
 			else {
-				PlayerPacket::showMessage(player, "Couldn't IP ban " + targetIp + ".", PlayerPacket::NoticeTypes::Red);
+				ChatHandlerFunctions::showError(player, "Unknown error, couldn't ban " + targetIp);
 			}
+		}
+		else {
+			// TODO FIXME add raw IP banning
+			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::unban(Player *player, const string &args) {
+auto ManagementFunctions::unban(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		// Unban account
 		soci::session &sql = Database::getCharDb();
@@ -390,43 +620,43 @@ bool ManagementFunctions::unban(Player *player, const string &args) {
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string &banMessage = args + " has been unbanned.";
-			PlayerPacket::showMessage(player, banMessage, PlayerPacket::NoticeTypes::Blue);
-			ChannelServer::Instance()->log(LogTypes::GmCommand, "GM unbanned a character. GM: " + player->getName() + ", Character: " + args);
+			const string_t &banMessage = args + " has been unbanned";
+			ChatHandlerFunctions::showInfo(player, banMessage);
+			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " unbanned a player: " + args);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't unban " + args + ". Character not found.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid player: " + args);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ManagementFunctions::rehash(Player *player, const string &args) {
+auto ManagementFunctions::rehash(Player *player, const string_t &args) -> bool {
 	WorldServerConnectPacket::rehashConfig();
-	PlayerPacket::showMessage(player, "Sent a signal to force rehashing world configurations.", PlayerPacket::NoticeTypes::Blue);
+	ChatHandlerFunctions::showInfo(player, "Sent a signal to force rehashing world configurations");
 	return true;
 }
 
-bool ManagementFunctions::rates(Player *player, const string &args) {
-	cmatch matches;
+auto ManagementFunctions::rates(Player *player, const string_t &args) -> bool {
+	match_t matches;
 	if (args.length() > 0) {
-		if (!ChatHandlerFunctions::runRegexPattern(args, "(\\w+) ?(\\d+)?", matches)) {
+		if (!ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches)) {
 			return false;
 		}
-		string type = matches[1];
+		string_t type = matches[1];
 		if (type == "view") {
-			auto display = [=](const string &type, int32_t rate) {
-				PlayerPacket::showMessage(player, type + " Rate: " + StringUtilities::lexical_cast<string>(rate) + "x", PlayerPacket::NoticeTypes::Blue);
+			auto display = [=](const string_t &type, int32_t rate) {
+				ChatHandlerFunctions::showInfo(player, type + " rate: " + StringUtilities::lexical_cast<string_t>(rate) + "x");
 			};
-			PlayerPacket::showMessage(player, "Current Rates", PlayerPacket::NoticeTypes::Blue);
-			display("Mob EXP", ChannelServer::Instance()->getMobExpRate());
-			display("Mob Meso", ChannelServer::Instance()->getMobMesoRate());
-			display("Quest EXP", ChannelServer::Instance()->getQuestExpRate());
-			display("Drop", ChannelServer::Instance()->getDropRate());
+			ChatHandlerFunctions::showInfo(player, "Current rates");
+			display("Mob EXP", ChannelServer::getInstance().getMobExpRate());
+			display("Mob meso", ChannelServer::getInstance().getMobMesoRate());
+			display("Quest EXP", ChannelServer::getInstance().getQuestExpRate());
+			display("Drop", ChannelServer::getInstance().getDropRate());
 		}
-		else if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (\\d+)", matches)) {
-			string value = matches[2];
+		else if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+))", matches)) {
+			string_t value = matches[2];
 			int32_t rateType = 0;
 			int32_t newAmount = value.length() > 0 ? atoi(value.c_str()) : 1;
 
@@ -434,15 +664,15 @@ bool ManagementFunctions::rates(Player *player, const string &args) {
 			if (type == "mobmeso") rateType = Rates::Types::MobMesoRate;
 			if (type == "questexp") rateType = Rates::Types::QuestExpRate;
 			if (type == "drop") rateType = Rates::Types::DropRate;
-			ChannelServer::Instance()->modifyRate(rateType, newAmount);
-			PlayerPacket::showMessage(player, "Sent request to modify rate", PlayerPacket::NoticeTypes::Blue);
+			ChannelServer::getInstance().modifyRate(rateType, newAmount);
+			ChatHandlerFunctions::showInfo(player, "Sent request to modify rate");
 		}
 		else {
 			return false;
 		}
 	}
 	else {
-		PlayerPacket::showMessage(player, "Sent request to reset rates", PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, "Sent request to reset rates");
 		SyncPacket::ConfigPacket::resetRates();
 	}
 	return true;

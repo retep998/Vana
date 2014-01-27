@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-void LoginServerAcceptPacket::connect(World *world) {
+auto LoginServerAcceptPacket::connect(World *world) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(world->getId());
@@ -35,14 +35,14 @@ void LoginServerAcceptPacket::connect(World *world) {
 	world->send(packet);
 }
 
-void LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) {
+auto LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_WORLD_CONNECT);
 	packet.add<int8_t>(-1);
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port) {
+auto LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT);
 	packet.add<int8_t>(worldId);
@@ -51,7 +51,7 @@ void LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connec
 	connection->getSession()->send(packet);
 }
 
-void LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip) {
+auto LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_NEW_PLAYER);
 	packet.add<uint16_t>(channel);
@@ -60,7 +60,7 @@ void LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t 
 	world->send(packet);
 }
 
-void LoginServerAcceptPacket::rehashConfig(World *world) {
+auto LoginServerAcceptPacket::rehashConfig(World *world) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REHASH_CONFIG);
 	packet.addClass<WorldConfig>(world->getConfig());

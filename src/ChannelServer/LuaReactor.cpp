@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactor.h"
 #include <string>
 
-LuaReactor::LuaReactor(const string &filename, int32_t playerId, int32_t reactorId, int32_t mapId) :
+LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t reactorId, int32_t mapId) :
 	LuaScriptable(filename, playerId),
 	m_reactorId(reactorId)
 {
@@ -51,7 +51,7 @@ LuaReactor::LuaReactor(const string &filename, int32_t playerId, int32_t reactor
 	run();
 }
 
-Reactor * LuaExports::getReactor(lua_State *luaVm) {
+auto LuaExports::getReactor(lua_State *luaVm) -> Reactor * {
 	lua_getglobal(luaVm, "system_reactorId");
 	lua_getglobal(luaVm, "system_mapId");
 	int32_t reactorId = lua_tointeger(luaVm, -2);
@@ -60,25 +60,25 @@ Reactor * LuaExports::getReactor(lua_State *luaVm) {
 }
 
 // Reactor
-int LuaExports::getState(lua_State *luaVm) {
+auto LuaExports::getState(lua_State *luaVm) -> int {
 	lua_pushinteger(luaVm, getReactor(luaVm)->getState());
 	return 1;
 }
 
-int LuaExports::reset(lua_State *luaVm) {
+auto LuaExports::reset(lua_State *luaVm) -> int {
 	getReactor(luaVm)->revive();
 	getReactor(luaVm)->setState(0, true);
 	ReactorPacket::triggerReactor(getReactor(luaVm));
 	return 0;
 }
 
-int LuaExports::setStateReactor(lua_State *luaVm) {
+auto LuaExports::setStateReactor(lua_State *luaVm) -> int {
 	getReactor(luaVm)->setState(lua_tointeger(luaVm, -1), true);
 	return 0;
 }
 
 // Miscellaneous
-int LuaExports::dropItemReactor(lua_State *luaVm) {
+auto LuaExports::dropItemReactor(lua_State *luaVm) -> int {
 	int32_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 2)) {
@@ -100,26 +100,26 @@ int LuaExports::dropItemReactor(lua_State *luaVm) {
 	return 0;
 }
 
-int LuaExports::getDistanceReactor(lua_State *luaVm) {
+auto LuaExports::getDistanceReactor(lua_State *luaVm) -> int {
 	lua_pushinteger(luaVm, getPlayer(luaVm)->getPos() - getReactor(luaVm)->getPos());
 	return 1;
 }
 
 // Mob
-int LuaExports::spawnMobReactor(lua_State *luaVm) {
+auto LuaExports::spawnMobReactor(lua_State *luaVm) -> int {
 	int32_t mobId = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
-	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobId, reactor->getPos()));
+	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobId, reactor->getPos())->getMapMobId());
 	return 1;
 }
 
-int LuaExports::spawnZakum(lua_State *luaVm) {
+auto LuaExports::spawnZakum(lua_State *luaVm) -> int {
 	int16_t x = lua_tointeger(luaVm, 1);
 	int16_t y = lua_tointeger(luaVm, 2);
-	int16_t fh = 0;
+	int16_t foothold = 0;
 	if (lua_isnumber(luaVm, 3)) {
-		fh = lua_tointeger(luaVm, 3);
+		foothold = lua_tointeger(luaVm, 3);
 	}
-	Maps::getMap(getReactor(luaVm)->getMapId())->spawnZakum(Pos(x, y), fh);
+	Maps::getMap(getReactor(luaVm)->getMapId())->spawnZakum(Pos(x, y), foothold);
 	return 0;
 }

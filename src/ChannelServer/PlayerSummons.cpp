@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,9 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <functional>
 
-using std::bind;
-
-void PlayerSummons::addSummon(Summon *summon, int32_t time) {
+auto PlayerSummons::addSummon(Summon *summon, int32_t time) -> void {
 	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());
 	if (!puppet) {
 		m_summon = summon;
@@ -39,15 +37,15 @@ void PlayerSummons::addSummon(Summon *summon, int32_t time) {
 		m_puppet = summon;
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	Timer::create([this, puppet]() { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
-		id, m_player->getTimers(), seconds_t(time));
+	Timer::create([this, puppet](const time_point_t &now) { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
+		id, m_player->getTimerContainer(), seconds_t(time));
 }
 
-void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
+auto PlayerSummons::removeSummon(bool puppet, bool fromTimer) -> void {
 	if (!puppet && m_summon != nullptr) {
 		if (!fromTimer) {
 			Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
-			m_player->getTimers()->removeTimer(id);
+			m_player->getTimerContainer()->removeTimer(id);
 		}
 		delete m_summon;
 		m_summon = nullptr;
@@ -55,14 +53,14 @@ void PlayerSummons::removeSummon(bool puppet, bool fromTimer) {
 	else if (m_puppet != nullptr) {
 		if (!fromTimer) {
 			Timer::Id id(Timer::Types::BuffTimer, m_puppet->getSummonId(), 0);
-			m_player->getTimers()->removeTimer(id);
+			m_player->getTimerContainer()->removeTimer(id);
 		}
 		delete m_puppet;
 		m_puppet = nullptr;
 	}
 }
 
-Summon * PlayerSummons::getSummon(int32_t summonId) {
+auto PlayerSummons::getSummon(int32_t summonId) -> Summon * {
 	if (m_summon != nullptr && m_summon->getId() == summonId) {
 		return m_summon;
 	}
@@ -72,12 +70,12 @@ Summon * PlayerSummons::getSummon(int32_t summonId) {
 	return nullptr;
 }
 
-seconds_t PlayerSummons::getSummonTimeRemaining() const {
+auto PlayerSummons::getSummonTimeRemaining() const -> seconds_t {
 	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
-	return m_player->getTimers()->getSecondsRemaining(id);
+	return m_player->getTimerContainer()->getSecondsRemaining(id);
 }
 
-void PlayerSummons::write(PacketCreator &packet) const {
+auto PlayerSummons::write(PacketCreator &packet) const -> void {
 	int32_t summonId = 0;
 	int32_t timeLeft = 0;
 	uint8_t level = 0;
@@ -91,7 +89,7 @@ void PlayerSummons::write(PacketCreator &packet) const {
 	packet.add<uint8_t>(level);
 }
 
-void PlayerSummons::read(PacketReader &packet) {
+auto PlayerSummons::read(PacketReader &packet) -> void {
 	int32_t skillId = packet.get<int32_t>();
 	int32_t timeLeft = packet.get<int32_t>();
 	uint8_t level = packet.get<uint8_t>();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,72 +23,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::unordered_map;
-using std::vector;
-
 class Item;
 
 class ItemDataProvider {
+	SINGLETON(ItemDataProvider);
 public:
-	static ItemDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new ItemDataProvider;
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	int32_t getCardId(int32_t mobId);
-	int32_t getMobId(int32_t cardId);
-	bool itemExists(int32_t id) { return (m_itemInfo.find(id) != m_itemInfo.end()); }
-	bool petExists(int32_t itemId) { return (m_petInfo.find(itemId) != m_petInfo.end()); }
-	bool consumeInfoExists(int32_t itemId) { return (m_consumeInfo.find(itemId) != m_consumeInfo.end()); }
-	bool skillItemExists(int32_t itemId) { return (m_skillbooks.find(itemId) != m_skillbooks.end()); }
-	bool summonBagExists(int32_t itemId) { return (m_summonBags.find(itemId) != m_summonBags.end()); }
-	bool isTradeable(int32_t itemId) { return (!(m_itemInfo[itemId].noTrade || m_itemInfo[itemId].quest)); }
-	bool isCash(int32_t itemId) { return m_itemInfo[itemId].cash; }
-	bool isQuest(int32_t itemId) { return m_itemInfo[itemId].quest; }
-	bool canKarma(int32_t itemId) { return m_itemInfo[itemId].karmaScissors; }
-	uint16_t getMaxSlot(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].maxSlot : 0); }
-	int32_t getPrice(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].price : 0); }
-	int32_t getMesoBonus(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].mesos : 0); }
-	int32_t getHunger(int32_t itemId) { return (petExists(itemId) ? m_petInfo[itemId].hunger : 0); }
-	int32_t getItemNpc(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].npc : 0); }
-	string getItemName(int32_t itemId) { return (itemExists(itemId) ? m_itemInfo[itemId].name : ""); }
-	ItemRewardInfo * getRandomReward(int32_t itemId);
+	auto getCardId(int32_t mobId) -> int32_t;
+	auto getMobId(int32_t cardId) -> int32_t;
+	auto itemExists(int32_t id) -> bool { return m_itemInfo.find(id) != std::end(m_itemInfo); }
+	auto petExists(int32_t itemId) -> bool { return m_petInfo.find(itemId) != std::end(m_petInfo); }
+	auto consumeInfoExists(int32_t itemId) -> bool { return m_consumeInfo.find(itemId) != std::end(m_consumeInfo); }
+	auto skillItemExists(int32_t itemId) -> bool { return m_skillbooks.find(itemId) != std::end(m_skillbooks); }
+	auto summonBagExists(int32_t itemId) -> bool { return m_summonBags.find(itemId) != std::end(m_summonBags); }
+	auto isTradeable(int32_t itemId) -> bool { return !(m_itemInfo[itemId].noTrade || m_itemInfo[itemId].quest); }
+	auto isCash(int32_t itemId) -> bool { return m_itemInfo[itemId].cash; }
+	auto isQuest(int32_t itemId) -> bool { return m_itemInfo[itemId].quest; }
+	auto canKarma(int32_t itemId) -> bool { return m_itemInfo[itemId].karmaScissors; }
+	auto getMaxSlot(int32_t itemId) -> uint16_t { return itemExists(itemId) ? m_itemInfo[itemId].maxSlot : 0; }
+	auto getPrice(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].price : 0; }
+	auto getMesoBonus(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].mesos : 0; }
+	auto getHunger(int32_t itemId) -> int32_t { return petExists(itemId) ? m_petInfo[itemId].hunger : 0; }
+	auto getItemNpc(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].npc : 0; }
+	auto getItemName(int32_t itemId) -> string_t { return itemExists(itemId) ? m_itemInfo[itemId].name : ""; }
+	auto getRandomReward(int32_t itemId) -> ItemRewardInfo *;
 
-	void scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool whiteScroll);
-	ItemInfo * getItemInfo(int32_t itemId) { return &m_itemInfo[itemId]; }
-	ConsumeInfo * getConsumeInfo(int32_t itemId) { return (consumeInfoExists(itemId) ? &m_consumeInfo[itemId] : nullptr); }
-	PetInfo * getPetInfo(int32_t itemId) { return &m_petInfo[itemId]; }
-	PetInteractInfo * getInteraction(int32_t itemId, int32_t action);
-	vector<Skillbook> * getItemSkills(int32_t itemId) { return &m_skillbooks[itemId]; }
-	vector<SummonBag> * getItemSummons(int32_t itemId) { return &m_summonBags[itemId]; }
+	auto scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) -> void;
+	auto getItemInfo(int32_t itemId) -> ItemInfo * { return &m_itemInfo[itemId]; }
+	auto getConsumeInfo(int32_t itemId) -> ConsumeInfo * { return consumeInfoExists(itemId) ? &m_consumeInfo[itemId] : nullptr; }
+	auto getPetInfo(int32_t itemId) -> PetInfo * { return &m_petInfo[itemId]; }
+	auto getInteraction(int32_t itemId, int32_t action) -> PetInteractInfo *;
+	auto getItemSkills(int32_t itemId) -> vector_t<Skillbook> * { return &m_skillbooks[itemId]; }
+	auto getItemSummons(int32_t itemId) -> vector_t<SummonBag> * { return &m_summonBags[itemId]; }
 private:
-	ItemDataProvider() { }
-	static ItemDataProvider *singleton;
+	auto loadItems() -> void;
+	auto loadScrolls() -> void;
+	auto loadConsumes() -> void;
+	auto loadMapRanges() -> void;
+	auto loadMultiMorphs() -> void;
+	auto loadMonsterCardData() -> void;
+	auto loadItemSkills() -> void;
+	auto loadSummonBags() -> void;
+	auto loadItemRewards() -> void;
+	auto loadPets() -> void;
+	auto loadPetInteractions() -> void;
 
-	void loadItems();
-	void loadScrolls();
-	void loadConsumes();
-	void loadMapRanges();
-	void loadMultiMorphs();
-	void loadMonsterCardData();
-	void loadItemSkills();
-	void loadSummonBags();
-	void loadItemRewards();
-	void loadPets();
-	void loadPetInteractions();
-	int16_t getStatVariance(int8_t mod, uint16_t variance);
-
-	unordered_map<int32_t, ItemInfo> m_itemInfo;
-	unordered_map<int32_t, ScrollInfo> m_scrollInfo;
-	unordered_map<int32_t, ConsumeInfo> m_consumeInfo;
-	unordered_map<int32_t, vector<SummonBag>> m_summonBags;
-	unordered_map<int32_t, vector<Skillbook>> m_skillbooks;
-	unordered_map<int32_t, vector<ItemRewardInfo>> m_itemRewards;
-	unordered_map<int32_t, PetInfo> m_petInfo;
-	unordered_map<int32_t, unordered_map<int32_t, PetInteractInfo>> m_petInteractInfo;
-	unordered_map<int32_t, int32_t> m_cardsToMobs;
-	unordered_map<int32_t, int32_t> m_mobsToCards;
+	hash_map_t<int32_t, ItemInfo> m_itemInfo;
+	hash_map_t<int32_t, ScrollInfo> m_scrollInfo;
+	hash_map_t<int32_t, ConsumeInfo> m_consumeInfo;
+	hash_map_t<int32_t, vector_t<SummonBag>> m_summonBags;
+	hash_map_t<int32_t, vector_t<Skillbook>> m_skillbooks;
+	hash_map_t<int32_t, vector_t<ItemRewardInfo>> m_itemRewards;
+	hash_map_t<int32_t, PetInfo> m_petInfo;
+	hash_map_t<int32_t, hash_map_t<int32_t, PetInteractInfo>> m_petInteractInfo;
+	hash_map_t<int32_t, int32_t> m_cardsToMobs;
+	hash_map_t<int32_t, int32_t> m_mobsToCards;
 };

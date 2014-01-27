@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,57 +24,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 class Player : public AbstractConnection {
+	NONCOPYABLE(Player);
 public:
-	Player();
+	Player() = default;
 	~Player();
 
-	void handleRequest(PacketReader &packet) override;
+	auto setGender(int8_t gender) -> void { m_gender = gender; }
+	auto setWorldId(int8_t worldId) -> void { m_worldId = worldId; }
+	auto setAdmin(bool value) -> void { m_admin = value; }
+	auto setChannel(uint16_t channel) -> void {	m_channel = channel; }
+	auto setUserId(int32_t id) -> void { m_userId = id; }
+	auto setStatus(PlayerStatus::PlayerStatus status) -> void { m_status = status; }
+	auto setPin(int32_t pin) -> void { m_pin = pin; }
+	auto setCharDeletePassword(opt_int32_t charDeletePassword) -> void { m_charDeletePassword = charDeletePassword; }
+	auto setQuietBanReason(int8_t reason) -> void { m_quietBanReason = reason; }
+	auto setQuietBanTime(int64_t banTime) -> void { m_quietBanTime = banTime; }
+	auto setCreationTime(int64_t creationTime) -> void { m_userCreation = creationTime; }
 
-	void setGender(int8_t gender) { m_gender = gender; }
-	void setWorldId(int8_t worldId) { m_worldId = worldId; }
-	void setAdmin(bool value) { m_admin = value; }
-	void setChannel(uint16_t channel) {	m_channel = channel; }
-	void setUserId(int32_t id) { m_userId = id; }
-	void setStatus(PlayerStatus::PlayerStatus status) { m_status = status; }
-	void setPin(int32_t pin) { m_pin = pin; }
-	void setCharDeletePassword(opt_int32_t charDeletePassword) { m_charDeletePassword = charDeletePassword; }
-	void setQuietBanReason(int8_t reason) { m_quietBanReason = reason; }
-	void setQuietBanTime(int64_t t) { m_quietBanTime = t; }
-	void setCreationTime(int64_t t) { m_userCreation = t; }
+	auto getGender() const -> int8_t { return m_gender; }
+	auto getWorldId() const -> int8_t { return m_worldId; }
+	auto isAdmin() const -> bool { return m_admin; }
+	auto getChannel() const -> uint16_t { return m_channel; }
+	auto getUserId() const -> int32_t { return m_userId; }
+	auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
+	auto getPin() const -> int32_t { return m_pin; }
+	auto getCharDeletePassword() const -> opt_int32_t { return m_charDeletePassword; }
+	auto getQuietBanReason() const -> int8_t { return m_quietBanReason; }
+	auto getQuietBanTime() const -> int64_t { return m_quietBanTime; }
+	auto getCreationTime() const -> int64_t { return m_userCreation; }
 
-	int8_t getGender() const { return m_gender; }
-	int8_t getWorldId() const { return m_worldId; }
-	bool isAdmin() const { return m_admin; }
-	uint16_t getChannel() const { return m_channel; }
-	int32_t getUserId() const { return m_userId; }
-	PlayerStatus::PlayerStatus getStatus() const { return m_status; }
-	int32_t getPin() const { return m_pin; }
-	opt_int32_t getCharDeletePassword() const { return m_charDeletePassword; }
-	int8_t getQuietBanReason() const { return m_quietBanReason; }
-	int64_t getQuietBanTime() const { return m_quietBanTime; }
-	int64_t getCreationTime() const { return m_userCreation; }
-
-	int32_t addInvalidLogin() {	return ++m_invalidLogins; }
-	void setOnline(bool online);
+	auto addInvalidLogin() -> int32_t { return ++m_invalidLogins; }
+	auto setOnline(bool online) -> void;
+protected:
+	auto handleRequest(PacketReader &packet) -> void override;
 private:
-	int8_t m_gender;
-	int8_t m_worldId;
-	int8_t m_quietBanReason;
-	uint16_t m_channel;
-	int32_t m_userId;
-	int32_t m_pin;
-	int32_t m_invalidLogins;
+	bool m_admin = false;
+	bool m_checkedPin = false;
+	int8_t m_gender = -1;
+	int8_t m_worldId = -1;
+	int8_t m_quietBanReason = 0;
+	uint16_t m_channel = 0;
+	int32_t m_userId = 0;
+	int32_t m_pin = 0;
+	int32_t m_invalidLogins = 0;
 	opt_int32_t m_charDeletePassword;
-	int64_t m_quietBanTime;
-	int64_t m_userCreation;
-	bool m_admin;
-	bool m_checkedPin;
-	PlayerStatus::PlayerStatus m_status;
+	int64_t m_quietBanTime = 0;
+	int64_t m_userCreation = 0;
+	PlayerStatus::PlayerStatus m_status = PlayerStatus::NotLoggedIn;
 };
 
 class PlayerFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() override {
+	auto createConnection() -> AbstractConnection * override {
 		return new Player();
 	}
 };

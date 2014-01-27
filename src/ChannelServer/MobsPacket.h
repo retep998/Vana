@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,27 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <vector>
 
-using std::vector;
-
-class Player;
 class Mob;
+class Player;
 struct Pos;
 struct StatusInfo;
 
 namespace MobsPacket {
-	void spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner = nullptr, bool spawn = false, bool show = false);
-	void requestControl(Player *player, Mob *mob, bool spawn = false, Player *display = nullptr);
-	void endControlMob(Player *player, Mob *mob);
-	void moveMobResponse(Player *player, int32_t mobId, int16_t moveId, bool useSkill, int32_t mp, uint8_t skill = 0, uint8_t level = 0);
-	void moveMob(Player *player, int32_t mobId, bool useSkill, int8_t skill, const Pos &projectileTarget, unsigned char *buf, int32_t len);
-	void healMob(Mob *mob, int32_t amount);
-	void hurtMob(Mob *mob, int32_t amount);
-	void damageFriendlyMob(Mob *mob, int32_t damage);
-	void applyStatus(Mob *mob, int32_t statusMask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection);
-	void removeStatus(Mob *mob, int32_t status);
-	void showHp(Player *player, int32_t mobId, int8_t percentage);
-	void showHp(int32_t mapId, int32_t mobId, int8_t percentage);
-	void showBossHp(Mob *mob); // For major bosses
-	void dieMob(Mob *mob, int8_t death = 1);
-	void showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos);
+	auto spawnMob(Player *player, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, bool spawn = false, bool show = false) -> void;
+	auto requestControl(Player *player, ref_ptr_t<Mob> mob, bool spawn = false, Player *display = nullptr) -> void;
+	auto endControlMob(Player *player, int32_t mapId, int32_t mapMobId) -> void;
+	auto moveMobResponse(Player *player, int32_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, uint8_t skill, uint8_t level) -> void;
+	auto moveMob(Player *player, int32_t mapMobId, bool skillPossible, int8_t rawAction, uint8_t skill, uint8_t level, int16_t option, unsigned char *buf, int32_t len) -> void;
+	auto healMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void;
+	auto hurtMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void;
+	auto damageFriendlyMob(ref_ptr_t<Mob> mob, int32_t damage) -> void;
+	auto applyStatus(int32_t mapId, int32_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection) -> void;
+	auto removeStatus(int32_t mapId, int32_t mapMobId, int32_t status) -> void;
+	auto showHp(Player *player, int32_t mapMobId, int8_t percentage) -> void;
+	auto showHp(int32_t mapId, int32_t mapMobId, int8_t percentage) -> void;
+	auto showBossHp(ref_ptr_t<Mob> mob) -> void; // For major bosses
+	auto dieMob(int32_t mapId, int32_t mapMobId, int8_t death = 1) -> void;
+	auto showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) -> void;
 }

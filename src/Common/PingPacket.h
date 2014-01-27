@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,6 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractConnection;
 
 namespace PingPacket {
-	void ping(AbstractConnection *connection);
-	void pong(AbstractConnection *connection);
+	auto ping(AbstractConnection *connection) -> void;
+	auto pong(AbstractConnection *connection) -> void;
 }

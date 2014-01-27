@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 showMapMessage("The crack of dimension was filled by the <Piece of Cracked Dimension>.", env_redMessage);
 setMusic("Bgm09/TimeAttack");
-spawnMobPos(8500000, -410, -385);
+spawnMobPos(8500000, -410, -386);
 setReactorState(220080000, 2208001, 1);
 setReactorState(220080000, 2208003, 1);
 createInstance("papulatus", 0, false);

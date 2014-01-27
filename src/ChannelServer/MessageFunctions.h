@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace MessageFunctions {
-	bool worldMessage(Player *player, const string &args);
-	bool globalMessage(Player *player, const string &args);
-	bool channelMessage(Player *player, const string &args);
-	bool gmMessage(Player *player, const string &args);
+	auto worldMessage(Player *player, const string_t &args) -> bool;
+	auto globalMessage(Player *player, const string_t &args) -> bool;
+	auto channelMessage(Player *player, const string_t &args) -> bool;
+	auto gmMessage(Player *player, const string_t &args) -> bool;
 }

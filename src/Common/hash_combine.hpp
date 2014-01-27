@@ -10,10 +10,21 @@
 #include <functional>
 
 namespace MiscUtilities {
-	// This function is based on boost::hash_combine
-	template <typename T>
-	inline void hash_combine(std::size_t &seed, const T &v) {
-		std::hash<T> hasher;
-		seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	template <typename TValue>
+	inline
+	size_t hash_combine(size_t seed, const TValue &value) {
+		std::hash<TValue> hasher;
+		return seed ^ (hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+	}
+
+	inline
+	size_t hash_combinator() {
+		return 0;
+	}
+
+	template <typename THead, typename ... TTail>
+	inline
+	size_t hash_combinator(const THead &value, const TTail & ... rest) {
+		return hash_combine(hash_combinator(rest...), value);
 	}
 }

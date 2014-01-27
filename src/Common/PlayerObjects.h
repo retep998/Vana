@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,18 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 struct PlayerData {
-	PlayerData() : cashShop(false), admin(false), party(0), gmLevel(0), connectionTime(0) { }
-	bool cashShop;
-	bool admin;
-	int16_t level;
-	int16_t job;
-	int16_t channel;
-	int32_t map;
-	int32_t party;
-	int32_t gmLevel;
-	uint32_t connectionTime;
-	string name;
+	bool cashShop = false;
+	bool admin = false;
+	int16_t level = 0;
+	int16_t job = 0;
+	int16_t channel = 0;
+	int32_t map = 0;
+	int32_t party = 0;
+	int32_t gmLevel = 0;
+	uint32_t connectionTime = 0;
+	string_t name;
 };

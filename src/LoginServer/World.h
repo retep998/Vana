@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,53 +26,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::function;
-using std::vector;
-
 class Channel;
 class LoginServerAcceptConnection;
 class PacketCreator;
 
 class World {
+	NONCOPYABLE(World);
 public:
-	World() : m_connected(false), m_playerLoad(0), m_connection(nullptr) { }
+	World() = default;
 
-	void setConnected(bool connected) { m_connected = connected; }
-	void setId(int8_t id) { m_id = id; }
-	void setPort(port_t port) { m_port = port; }
-	void setPlayerLoad(int32_t load) { m_playerLoad = load; }
-	void setConnection(LoginServerAcceptConnection *connection) { m_connection = connection; }
-	void setConfiguration(const WorldConfig &config) { m_config = config; }
-	void setEventMessage(const string &message) { m_config.eventMsg = message; }
-	void runChannelFunction(function<void (Channel *)> func);
-	void clearChannels() { m_channels.clear(); }
-	void removeChannel(int32_t id) { m_channels.erase(id); }
-	void addChannel(int32_t id, Channel *channel) { m_channels[id].reset(channel); }
-	void send(const PacketCreator &packet);
+	auto setConnected(bool connected) -> void { m_connected = connected; }
+	auto setId(int8_t id) -> void { m_id = id; }
+	auto setPort(port_t port) -> void { m_port = port; }
+	auto setPlayerLoad(int32_t load) -> void { m_playerLoad = load; }
+	auto setConnection(LoginServerAcceptConnection *connection) -> void { m_connection = connection; }
+	auto setConfiguration(const WorldConfig &config) -> void { m_config = config; }
+	auto setEventMessage(const string_t &message) -> void { m_config.eventMsg = message; }
+	auto runChannelFunction(function_t<void (Channel *)> func) -> void;
+	auto clearChannels() -> void { m_channels.clear(); }
+	auto removeChannel(int32_t id) -> void { m_channels.erase(id); }
+	auto addChannel(int32_t id, Channel *channel) -> void { m_channels[id].reset(channel); }
+	auto send(const PacketCreator &packet) -> void;
 
-	bool isConnected() const { return m_connected; }
-	int8_t getId() const { return m_id; }
-	int8_t getRibbon() const { return m_config.ribbon; }
-	port_t getPort() const { return m_port; }
-	uint16_t getRandomChannel() const;
-	size_t getMaxChannels() const { return m_config.maxChannels; }
-	int32_t getPlayerLoad() const { return m_playerLoad; }
-	int32_t getMaxPlayerLoad() const { return m_config.maxPlayerLoad; }
-	Ip matchSubnet(const Ip &test);
-	size_t getChannelCount() const { return m_channels.size(); }
-	string getName() const { return m_config.name; }
-	string getEventMessage() const { return m_config.eventMsg; }
-	Channel * getChannel(int32_t id) { return (m_channels.find(id) != m_channels.end() ? m_channels[id].get() : nullptr); }
-	const WorldConfig & getConfig() const { return m_config; }
+	auto isConnected() const -> bool { return m_connected; }
+	auto getId() const -> int8_t { return m_id; }
+	auto getRibbon() const -> int8_t { return m_config.ribbon; }
+	auto getPort() const -> port_t { return m_port; }
+	auto getRandomChannel() const -> uint16_t;
+	auto getMaxChannels() const -> size_t { return m_config.maxChannels; }
+	auto getPlayerLoad() const -> int32_t { return m_playerLoad; }
+	auto getMaxPlayerLoad() const -> int32_t { return m_config.maxPlayerLoad; }
+	auto matchSubnet(const Ip &test) -> Ip;
+	auto getChannelCount() const -> size_t { return m_channels.size(); }
+	auto getName() const -> string_t { return m_config.name; }
+	auto getEventMessage() const -> string_t { return m_config.eventMsg; }
+	auto getChannel(int32_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }
+	auto getConfig() const -> const WorldConfig & { return m_config; }
 private:
-	typedef std::unordered_map<int32_t, std::shared_ptr<Channel>> ChannelMap;
-
-	bool m_connected;
-	int8_t m_id;
-	port_t m_port;
-	int32_t m_playerLoad;
+	bool m_connected = false;
+	int8_t m_id = -1;
+	port_t m_port = 0;
+	int32_t m_playerLoad = 0;
+	LoginServerAcceptConnection *m_connection = nullptr;
 	WorldConfig m_config;
-	ChannelMap m_channels;
-	LoginServerAcceptConnection *m_connection;
+	hash_map_t<int32_t, ref_ptr_t<Channel>> m_channels;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-PlayerMounts::PlayerMounts(Player *p) : m_player(p), m_currentMount(0) {
+PlayerMounts::PlayerMounts(Player *p) :
+	m_player(p)
+{
 	load();
 }
 
-void PlayerMounts::save() {
+auto PlayerMounts::save() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 	int32_t itemId = 0;
@@ -56,7 +58,7 @@ void PlayerMounts::save() {
 	}
 }
 
-void PlayerMounts::load() {
+auto PlayerMounts::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 	MountData c;
@@ -72,31 +74,31 @@ void PlayerMounts::load() {
 	}
 }
 
-int16_t PlayerMounts::getCurrentExp() {
-	return (m_currentMount != 0 ? m_mounts[m_currentMount].exp : 0);
+auto PlayerMounts::getCurrentExp() -> int16_t {
+	return m_currentMount != 0 ? m_mounts[m_currentMount].exp : 0;
 }
 
-int8_t PlayerMounts::getCurrentLevel() {
-	return (m_currentMount != 0 ? m_mounts[m_currentMount].level : 0);
+auto PlayerMounts::getCurrentLevel() -> int8_t {
+	return m_currentMount != 0 ? m_mounts[m_currentMount].level : 0;
 }
 
-int8_t PlayerMounts::getCurrentTiredness() {
-	return (m_currentMount != 0 ? m_mounts[m_currentMount].tiredness : 0);
+auto PlayerMounts::getCurrentTiredness() -> int8_t {
+	return m_currentMount != 0 ? m_mounts[m_currentMount].tiredness : 0;
 }
 
-int16_t PlayerMounts::getMountExp(int32_t id) {
-	return (m_mounts.find(id) != m_mounts.end() ? m_mounts[id].exp : 0);
+auto PlayerMounts::getMountExp(int32_t id) -> int16_t {
+	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].exp : 0;
 }
 
-int8_t PlayerMounts::getMountLevel(int32_t id) {
-	return (m_mounts.find(id) != m_mounts.end() ? m_mounts[id].level : 0);
+auto PlayerMounts::getMountLevel(int32_t id) -> int8_t {
+	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].level : 0;
 }
 
-int8_t PlayerMounts::getMountTiredness(int32_t id) {
-	return (m_mounts.find(id) != m_mounts.end() ? m_mounts[id].tiredness : 0);
+auto PlayerMounts::getMountTiredness(int32_t id) -> int8_t {
+	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].tiredness : 0;
 }
 
-void PlayerMounts::addMount(int32_t id) {
+auto PlayerMounts::addMount(int32_t id) -> void {
 	MountData c;
 	c.exp = 0;
 	c.level = 1;
@@ -104,7 +106,7 @@ void PlayerMounts::addMount(int32_t id) {
 	m_mounts[id] = c;
 }
 
-void PlayerMounts::setCurrentExp(int16_t exp) {
+auto PlayerMounts::setCurrentExp(int16_t exp) -> void {
 	if (m_currentMount != 0) {
 		MountData c = m_mounts[m_currentMount];
 		c.exp = exp;
@@ -112,7 +114,7 @@ void PlayerMounts::setCurrentExp(int16_t exp) {
 	}
 }
 
-void PlayerMounts::setCurrentLevel(int8_t level) {
+auto PlayerMounts::setCurrentLevel(int8_t level) -> void {
 	if (m_currentMount != 0) {
 		MountData c = m_mounts[m_currentMount];
 		c.level = level;
@@ -120,7 +122,7 @@ void PlayerMounts::setCurrentLevel(int8_t level) {
 	}
 }
 
-void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
+auto PlayerMounts::setCurrentTiredness(int8_t tiredness) -> void {
 	if (m_currentMount != 0) {
 		MountData c = m_mounts[m_currentMount];
 		c.tiredness = tiredness;
@@ -128,7 +130,7 @@ void PlayerMounts::setCurrentTiredness(int8_t tiredness) {
 	}
 }
 
-void PlayerMounts::mountInfoPacket(PacketCreator &packet) {
+auto PlayerMounts::mountInfoPacket(PacketCreator &packet) -> void {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
 		packet.add<bool>(true);
 		packet.add<int32_t>(getCurrentLevel());

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,53 +27,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.h"
 #include "WorldServerAcceptPacket.h"
 
-void WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) {
+auto WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();
 	int8_t type = packet.get<int8_t>(); // Buddy = 0, party = 1, guild = 2, alliance = 3
-	const string &message = packet.getString();
-	const vector<int32_t> &receivers = packet.getVector<int32_t>();
-	const string &sender = PlayerDataProvider::Instance()->getPlayer(playerId)->getName();
+	const string_t &message = packet.getString();
+	const vector_t<int32_t> &receivers = packet.getVector<int32_t>();
+	const string_t &sender = PlayerDataProvider::getInstance().getPlayer(playerId)->getName();
 	for (size_t i = 0; i < receivers.size(); i++) {
 		int32_t receiver = receivers[i];
-		if (Player *p = PlayerDataProvider::Instance()->getPlayer(receiver)) {
+		if (Player *p = PlayerDataProvider::getInstance().getPlayer(receiver)) {
 			uint16_t channel = p->getChannel();
 			WorldServerAcceptPacket::groupChat(channel, receiver, type, message, sender);
 		}
 	}
 }
 
-void WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
+auto WorldServerAcceptHandler::findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t finder = packet.get<int32_t>();
-	const string &findeeName = packet.getString();
+	const string_t &findeeName = packet.getString();
 
-	Player *findee = PlayerDataProvider::Instance()->getPlayer(findeeName);
+	Player *findee = PlayerDataProvider::getInstance().getPlayer(findeeName);
 
 	WorldServerAcceptPacket::findPlayer(connection, finder, findee->getChannel(), (findee->isOnline() ? findee->getName() : findeeName));
 }
 
-void WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) {
+auto WorldServerAcceptHandler::whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t whisperer = packet.get<int32_t>();
-	const string &whispereeName = packet.getString();
-	const string &message = packet.getString();
+	const string_t &whispereeName = packet.getString();
+	const string_t &message = packet.getString();
 
-	Player *whisperee = PlayerDataProvider::Instance()->getPlayer(whispereeName);
+	Player *whisperee = PlayerDataProvider::getInstance().getPlayer(whispereeName);
 	if (whisperee->isOnline()) {
 		WorldServerAcceptPacket::findPlayer(connection, whisperer, -1, whisperee->getName(), 1);
-		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::Instance()->getPlayer(whisperer)->getName(), connection->getChannel(),  message);
+		WorldServerAcceptPacket::whisperPlayer(whisperee->getChannel(), whisperee->getId(), PlayerDataProvider::getInstance().getPlayer(whisperer)->getName(), connection->getChannel(),  message);
 	}
 	else {
 		WorldServerAcceptPacket::findPlayer(connection, whisperer, whisperee->getChannel(), whispereeName);
 	}
 }
 
-void WorldServerAcceptHandler::sendPacketToChannels(PacketReader &packet) {
+auto WorldServerAcceptHandler::sendPacketToChannels(PacketReader &packet) -> void {
 	PacketCreator pack;
 	pack.addBuffer(packet);
-	Channels::Instance()->sendToAll(pack);
+	Channels::getInstance().sendToAll(pack);
 }
 
-void WorldServerAcceptHandler::sendPacketToLogin(PacketReader &packet) {
+auto WorldServerAcceptHandler::sendPacketToLogin(PacketReader &packet) -> void {
 	PacketCreator pack;
 	pack.addBuffer(packet);
-	WorldServer::Instance()->sendPacketToLogin(pack);
+	WorldServer::getInstance().sendPacketToLogin(pack);
 }

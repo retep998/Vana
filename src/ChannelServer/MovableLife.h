@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,21 +21,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // A base class for player, mobs that can move
 class MovableLife {
+	NONCOPYABLE(MovableLife);
+	NO_DEFAULT_CONSTRUCTOR(MovableLife);
 public:
-	MovableLife() { }
 	MovableLife(int16_t foothold, const Pos &pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
-	virtual ~MovableLife() { }
+	virtual ~MovableLife() = default;
 
-	bool isFacingRight() const { return m_stance % 2 == 0; }
-	int8_t getStance() const { return m_stance; }
-	int16_t getFh() const { return m_foothold; }
-	virtual Pos getPos() const { return m_pos; }
+	auto isFacingRight() const -> bool { return m_stance % 2 == 0; }
+	auto isFacingLeft() const -> bool { return m_stance % 2 == 1; }
+	auto getStance() const -> int8_t { return m_stance; }
+	auto getFoothold() const -> int16_t { return m_foothold; }
+	virtual auto getPos() const -> Pos { return m_pos; }
 
-	void setStance(int8_t val) { m_stance = val; }
-	void setFh(int16_t val) { m_foothold = val; }
-	void setPos(const Pos &val) { m_pos = val; }
+	auto setPos(const Pos &val) -> void { m_pos = val; }
+	auto resetMovement(int16_t foothold, const Pos &pos, int8_t stance) -> void {
+		m_stance = stance;
+		m_foothold = foothold;
+		m_pos = pos;
+	}
 protected:
-	int8_t m_stance;
-	int16_t m_foothold;
+	auto setStance(int8_t val) -> void { m_stance = val; }
+	auto setFoothold(int16_t val) -> void { m_foothold = val; }
+
+	int8_t m_stance = 0;
+	int16_t m_foothold = 0;
 	Pos m_pos;
 };

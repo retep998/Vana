@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) {
+auto DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_DROP_ITEM);
 	packet.add<int8_t>(type);
@@ -57,7 +57,7 @@ void DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop
 	}
 }
 
-void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t petIndex) {
+auto DropsPacket::takeDrop(Player *player, Drop *drop, int8_t petIndex) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(petIndex != -1 ? 5 : 2);
@@ -74,14 +74,14 @@ void DropsPacket::takeDrop(Player *player, Drop *drop, int8_t petIndex) {
 	}
 }
 
-void DropsPacket::dontTake(Player *player) {
+auto DropsPacket::dontTake(Player *player) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.add<header_t>(SMSG_INVENTORY_OPERATION);
 	packet.add<int16_t>(1);
 	player->getSession()->send(packet);
 }
 
-void DropsPacket::removeDrop(Drop *drop) {
+auto DropsPacket::removeDrop(Drop *drop) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(0);
@@ -89,7 +89,7 @@ void DropsPacket::removeDrop(Drop *drop) {
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
-void DropsPacket::explodeDrop(Drop *drop) {
+auto DropsPacket::explodeDrop(Drop *drop) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_DROP_PICKUP);
 	packet.add<int8_t>(4);
@@ -98,7 +98,7 @@ void DropsPacket::explodeDrop(Drop *drop) {
 	Maps::getMap(drop->getMap())->sendPacket(packet);
 }
 
-void DropsPacket::dropNotAvailableForPickup(Player *player) {
+auto DropsPacket::dropNotAvailableForPickup(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(0);
@@ -106,7 +106,7 @@ void DropsPacket::dropNotAvailableForPickup(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void DropsPacket::cantGetAnymoreItems(Player *player) {
+auto DropsPacket::cantGetAnymoreItems(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(0);
@@ -114,7 +114,7 @@ void DropsPacket::cantGetAnymoreItems(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
+auto DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(0);
@@ -135,7 +135,7 @@ void DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool is
 	player->getSession()->send(packet);
 }
 
-void DropsPacket::pickupDropSpecial(Player *player, int32_t id) {
+auto DropsPacket::pickupDropSpecial(Player *player, int32_t id) -> void {
 	// This packet is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);

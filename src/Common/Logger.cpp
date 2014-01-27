@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,15 +16,144 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Logger.h"
-#include "LogReplacements.h"
 #include "TimeUtilities.h"
 #include "VanaConstants.h"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-string Logger::getLevelString(LogTypes::LogTypes type) {
-	string ret;
+Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
+	m_format(format),
+	m_timeFormat(timeFormat),
+	m_serverType(serverType)
+{
+}
+
+auto Logger::formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t {
+	return formatLog(format, type, logger, time(nullptr), id, message);
+}
+
+auto Logger::formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t {
+	string_t ret = format;
+	ReplacementArgs args{type, logger, time, id, message};
+	static LogReplacements replacements;
+
+	for (const auto &kvp : replacements.m_replacementMap) {
+		size_t x = ret.find(kvp.first);
+		if (x != string_t::npos) {
+			out_stream_t strm;
+			kvp.second(strm, args);
+			const string_t &y = strm.str();
+			ret.replace(x, kvp.first.size(), y.c_str(), y.size());
+		}
+	}
+	return ret;
+}
+
+Logger::ReplacementArgs::ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg) :
+	logType(logType),
+	logger(logger),
+	time(time),
+	id(id),
+	msg(msg)
+{
+}
+
+Logger::LogReplacements::LogReplacements() {
+	add("%yy", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getYear(true, args.time);
+	});
+	add("%YY", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getYear(false, args.time);
+	});
+	add("%mm", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonth(args.time);
+	});
+	add("%MM", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMonth(args.time);
+	});
+	add("%oo", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonthString(true, args.time);
+	});
+	add("%OO", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMonthString(false, args.time);
+	});
+	add("%dd", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDate(args.time);
+	});
+	add("%DD", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getDate(args.time);
+	});
+	add("%aa", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDayString(true, args.time);
+	});
+	add("%AA", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getDayString(false, args.time);
+	});
+	add("%hh", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getHour(true, args.time);
+	});
+	add("%HH", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(true, args.time);
+	});
+	add("%mi", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getHour(false, args.time);
+	});
+	add("%MI", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getHour(false, args.time);
+	});
+	add("%ii", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getMinute(args.time);
+	});
+	add("%II", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getMinute(args.time);
+	});
+	add("%ss", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getSecond(args.time);
+	});
+	add("%SS", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << std::setw(2) << std::setfill('0') << TimeUtilities::getSecond(args.time);
+	});
+	add("%ww", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "pm" : "am";
+	});
+	add("%WW", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "PM" : "AM";
+	});
+	add("%qq", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "p" : "a";
+	});
+	add("%QQ", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << !(TimeUtilities::getHour(false, args.time) < 12) ? "P" : "A";
+	});
+	add("%zz", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << TimeUtilities::getTimeZone();
+	});
+	add("%id", [](out_stream_t &stream, const ReplacementArgs &args) {
+		if (args.id.is_initialized()) {
+			stream << args.id.get();
+		}
+	});
+	add("%t", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << Logger::formatLog(args.logger->getTimeFormat(), args.logType, args.logger, args.time, args.id, args.msg);
+	});
+	add("%e", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << getLevelString(args.logType);
+	});
+	add("%orig", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << getServerTypeString(args.logger->getServerType());
+	});
+	add("%msg", [](out_stream_t &stream, const ReplacementArgs &args) {
+		stream << args.msg;
+	});
+}
+
+auto Logger::LogReplacements::add(const string_t &key, func_t func) -> void {
+	m_replacementMap.emplace(key, func);
+}
+
+auto Logger::LogReplacements::getLevelString(LogTypes::LogTypes type) -> string_t {
+	string_t ret;
 	switch (type) {
 		case LogTypes::Info: ret = "INFO"; break;
 		case LogTypes::Warning: ret = "WARNING"; break;
@@ -55,8 +184,8 @@ string Logger::getLevelString(LogTypes::LogTypes type) {
 	return ret;
 }
 
-string Logger::getServerTypeString(int16_t serverType) {
-	string ret;
+auto Logger::LogReplacements::getServerTypeString(int16_t serverType) -> string_t {
+	string_t ret;
 	switch (serverType) {
 		case ServerTypes::Cash: ret = "Cash"; break;
 		case ServerTypes::Channel: ret = "Channel"; break;
@@ -65,15 +194,4 @@ string Logger::getServerTypeString(int16_t serverType) {
 		case ServerTypes::World: ret = "World"; break;
 	}
 	return ret;
-}
-
-string Logger::formatLog(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message) {
-	return LogReplacements::format(logger->getFormat(), type, logger, time(nullptr), id, message);
-}
-
-Logger::Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
-	m_format(format),
-	m_timeFormat(timeFormat),
-	m_serverType(serverType)
-{
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -181,7 +181,7 @@ namespace Items {
 
 	namespace Flags {
 		enum ItemFlags : int16_t {
-			// TODO: Update flags to be unsigned
+			// TODO FIXME: Update flags to be unsigned
 			Lock = 0x01,
 			Spikes = 0x02,
 			ColdProtection = 0x04,
@@ -191,25 +191,25 @@ namespace Items {
 	}
 
 	namespace StatVariance {
-		const uint16_t Str = 2;
-		const uint16_t Dex = 2;
-		const uint16_t Int = 2;
-		const uint16_t Luk = 2;
-		const uint16_t Hp = 10;
-		const uint16_t Mp = 10;
-		const uint16_t Watk = 10;
-		const uint16_t Wdef = 10;
-		const uint16_t Matk = 10;
-		const uint16_t Mdef = 10;
-		const uint16_t Acc = 2;
-		const uint16_t Avoid = 2;
-		const uint16_t Hands = 4;
-		const uint16_t Speed = 4;
-		const uint16_t Jump = 2;
+		const int16_t Str = 3;
+		const int16_t Dex = 3;
+		const int16_t Int = 3;
+		const int16_t Luk = 3;
+		const int16_t Hp = 5;
+		const int16_t Mp = 5;
+		const int16_t Watk = 5;
+		const int16_t Wdef = 5;
+		const int16_t Matk = 5;
+		const int16_t Mdef = 5;
+		const int16_t Acc = 3;
+		const int16_t Avoid = 3;
+		const int16_t Hands = 3;
+		const int16_t Speed = 3;
+		const int16_t Jump = 2;
 
 		namespace Chaos {
-			const uint16_t Normal = 5;
-			const uint16_t High = 10;
+			const int16_t Normal = 5;
+			const int16_t High = 10;
 		}
 	}
 

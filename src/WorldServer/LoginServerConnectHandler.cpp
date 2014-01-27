@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,45 +27,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include <iostream>
 
-void LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) {
+auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) -> void {
 	int8_t worldId = packet.get<int8_t>();
 	if (worldId != -1) {
-		WorldServer::Instance()->setWorldId(worldId);
-		WorldServer::Instance()->setInterPort(packet.get<port_t>());
+		WorldServer::getInstance().setWorldId(worldId);
+		WorldServer::getInstance().setInterPort(packet.get<port_t>());
 
 		const WorldConfig &conf = packet.getClass<WorldConfig>();
-		WorldServer::Instance()->setConfig(conf);
+		WorldServer::getInstance().setConfig(conf);
 
-		WorldServer::Instance()->listen();
+		WorldServer::getInstance().listen();
 		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
 
 		Initializing::worldEstablished();
 
-		WorldServer::Instance()->displayLaunchTime();
+		WorldServer::getInstance().displayLaunchTime();
 	}
 	else {
 		std::cerr << "ERROR: No world to handle" << std::endl;
-		WorldServer::Instance()->shutdown();
+		WorldServer::getInstance().shutdown();
 	}
 }
 
-void LoginServerConnectHandler::newPlayer(PacketReader &packet) {
+auto LoginServerConnectHandler::newPlayer(PacketReader &packet) -> void {
 	uint16_t channel = packet.get<int16_t>();
 	int32_t playerId = packet.get<int32_t>();
 	const Ip &ip = packet.getClass<Ip>();
 
-	if (Channels::Instance()->getChannel(channel)) {
-		Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+	if (Channels::getInstance().getChannel(channel)) {
+		Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 		if (player == nullptr || !player->isOnline()) {
 			// Do not create the connectable if the player is already online
 			// (extra security if the client ignores CC packet)
-			PlayerDataProvider::Instance()->initialPlayerConnect(playerId, channel, ip);
+			PlayerDataProvider::getInstance().initialPlayerConnect(playerId, channel, ip);
 			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip, packet);
 		}
 	}
 }
 
-void LoginServerConnectHandler::rehashConfig(PacketReader &packet) {
+auto LoginServerConnectHandler::rehashConfig(PacketReader &packet) -> void {
 	const WorldConfig &config = packet.getClass<WorldConfig>();
-	WorldServer::Instance()->rehashConfig(config);
+	WorldServer::getInstance().rehashConfig(config);
 }

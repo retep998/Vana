@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,18 +28,15 @@ namespace Timer {
 
 class Timer;
 
-using std::shared_ptr;
-using std::unordered_map;
-
 class Container {
 public:
-	seconds_t getSecondsRemaining(const Id &id);
-	milliseconds_t getMillisecondsRemaining(const Id &id);
-	bool isTimerRunning(const Id &id);
-	void registerTimer(shared_ptr<Timer> timer);
-	void removeTimer(const Id &id);
+	auto getSecondsRemaining(const Id &id) -> seconds_t;
+	auto getMillisecondsRemaining(const Id &id) -> milliseconds_t;
+	auto isTimerRunning(const Id &id) -> bool;
+	auto registerTimer(ref_ptr_t<Timer> timer) -> void;
+	auto removeTimer(const Id &id) -> void;
 private:
-	unordered_map<Id, shared_ptr<Timer>, std::hash<Id>> m_timers;
+	hash_map_t<Id, ref_ptr_t<Timer>> m_timers;
 };
 
 }

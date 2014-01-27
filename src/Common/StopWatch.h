@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,11 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ctime>
 
 class StopWatch {
+	NONCOPYABLE(StopWatch);
 public:
 	StopWatch() : m_start(effective_clock_t::now()) { }
-	void restart() { m_start = effective_clock_t::now(); }
-	template <typename T>
-	typename T::rep elapsed() const { return std::chrono::duration_cast<T>(effective_clock_t::now() - m_start).count(); }
+	auto restart() -> void { m_start = effective_clock_t::now(); }
+	template <typename TDuration>
+	auto elapsed() const -> typename TDuration::rep { return duration_cast<TDuration>(effective_clock_t::now() - m_start).count(); }
 private:
 	time_point_t m_start;
 };

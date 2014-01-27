@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,31 +18,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "ItemDataObjects.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
+#include <vector>
 
-using std::unordered_map;
-
-class DropDataProvider : boost::noncopyable {
+class DropDataProvider {
+	SINGLETON(DropDataProvider);
 public:
-	static DropDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new DropDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool hasDrops(int32_t objectId) { return (m_dropInfo.find(objectId) != m_dropInfo.end()); }
-	DropsInfo getDrops(int32_t objectId) { return m_dropInfo[objectId]; }
-	GlobalDrops * getGlobalDrops() { return (m_globalDrops.size() > 0 ? &m_globalDrops : nullptr); }
+	auto hasDrops(int32_t objectId) -> bool { return m_dropInfo.find(objectId) != std::end(m_dropInfo); }
+	auto getDrops(int32_t objectId) -> vector_t<DropInfo> { return m_dropInfo[objectId]; }
+	auto getGlobalDrops() -> vector_t<GlobalDrop> * { return m_globalDrops.size() > 0 ? &m_globalDrops : nullptr; }
 private:
-	DropDataProvider() {}
-	static DropDataProvider *singleton;
+	auto loadDrops() -> void;
+	auto loadGlobalDrops() -> void;
 
-	void loadDrops();
-	void loadGlobalDrops();
-
-	unordered_map<int32_t, DropsInfo> m_dropInfo;
-	GlobalDrops m_globalDrops;
+	hash_map_t<int32_t, vector_t<DropInfo>> m_dropInfo;
+	vector_t<GlobalDrop> m_globalDrops;
 };

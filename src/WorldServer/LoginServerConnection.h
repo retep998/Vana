@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,15 +22,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 class LoginServerConnection : public AbstractServerConnection {
+	NONCOPYABLE(LoginServerConnection);
 public:
 	LoginServerConnection();
 	~LoginServerConnection();
-	void handleRequest(PacketReader &packet) override;
+protected:
+	auto handleRequest(PacketReader &packet) -> void override;
 };
 
 class LoginServerConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() override {
+	auto createConnection() -> AbstractConnection * override {
 		return new LoginServerConnection();
 	}
 };

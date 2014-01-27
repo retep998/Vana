@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,47 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServer.h"
-#include "ConnectionManager.h"
-#include "ExitCodes.h"
-#include <botan/botan.h>
-#include <exception>
-#include <functional>
-#include <iostream>
+#include "VanaMain.h"
 
-#ifdef _WIN32
-std::function<void()> console_ctrl_function;
-
-BOOL WINAPI console_ctrl_handler(DWORD ctrl_type) {
-	switch (ctrl_type) {
-		case CTRL_C_EVENT:
-		case CTRL_BREAK_EVENT:
-		case CTRL_CLOSE_EVENT:
-		case CTRL_SHUTDOWN_EVENT:
-			console_ctrl_function();
-			return TRUE;
-	}
-	return FALSE;
-}
-#endif
-
-int main() {
-	Botan::LibraryInitializer init("thread_safe=true");
-	try {
-		LoginServer *server = LoginServer::Instance();
-		ConnectionManager *connMan = ConnectionManager::Instance();
-
-		server->initialize();
-#ifdef _WIN32
-		// Allow the server to stop on windows console events
-		console_ctrl_function = [server]() { server->shutdown(); };
-		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
-		connMan->run();
-		connMan->join();
-#endif
-	}
-	catch (std::exception &e) {
-		std::cerr << "ERROR: " << e.what() << std::endl;
-		ExitCodes::exit(ExitCodes::ProgramException);
-	}
-	return ExitCodes::Ok;
+auto main() -> int {
+	return Vana::main<LoginServer>();
 }

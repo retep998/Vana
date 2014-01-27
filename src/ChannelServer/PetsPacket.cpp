@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) {
+auto PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_SUMMON);
 	packet.add<int32_t>(player->getId());
@@ -40,7 +40,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 		packet.add<int64_t>(pet->getId());
 		packet.addClass<Pos>(pet->getPos());
 		packet.add<int8_t>(pet->getStance());
-		packet.add<int16_t>(pet->getFh());
+		packet.add<int16_t>(pet->getFoothold());
 		packet.add<bool>(pet->hasNameTag());
 		packet.add<bool>(pet->hasQuoteItem());
 	}
@@ -52,7 +52,7 @@ void PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlaye
 	}
 }
 
-void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_t act) {
+auto PetsPacket::showChat(Player *player, Pet *pet, const string_t &message, int8_t act) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_MESSAGE);
 	packet.add<int32_t>(player->getId());
@@ -64,7 +64,7 @@ void PetsPacket::showChat(Player *player, Pet *pet, const string &message, int8_
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen) {
+auto PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_MOVEMENT);
 	packet.add<int32_t>(player->getId());
@@ -73,7 +73,7 @@ void PetsPacket::showMovement(Player *player, Pet *pet, unsigned char *buf, int3
 	player->getMap()->sendPacket(packet, player);
 }
 
-void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
+auto PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_ANIMATION);
 	packet.add<int32_t>(player->getId());
@@ -85,23 +85,22 @@ void PetsPacket::showAnimation(Player *player, Pet *pet, int8_t animation) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::updatePet(Player *player, Pet *pet, Item *petItem) {
+auto PetsPacket::updatePet(Player *player, Pet *pet, Item *petItem) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
+	packet.add<header_t>(SMSG_INVENTORY_OPERATION);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(2);
 	packet.add<int8_t>(3);
 	packet.add<int8_t>(5);
-	packet.add<int8_t>(pet->getInventorySlot());
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(5);
-	packet.add<int8_t>(pet->getInventorySlot());
+	packet.add<int16_t>(pet->getInventorySlot());
 	packet.add<int8_t>(0);
+	packet.add<int8_t>(5);
+	packet.add<int16_t>(pet->getInventorySlot());
 	addInfo(packet, pet, petItem);
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::levelUp(Player *player, Pet *pet) {
+auto PetsPacket::levelUp(Player *player, Pet *pet) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(4);
@@ -117,7 +116,7 @@ void PetsPacket::levelUp(Player *player, Pet *pet) {
 	player->getMap()->sendPacket(packet);
 }
 
-void PetsPacket::changeName(Player *player, Pet *pet) {
+auto PetsPacket::changeName(Player *player, Pet *pet) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_NAME_CHANGE);
 	packet.add<int32_t>(player->getId());
@@ -127,7 +126,7 @@ void PetsPacket::changeName(Player *player, Pet *pet) {
 	player->getMap()->sendPacket(packet);
 }
 
-void PetsPacket::showPet(Player *player, Pet *pet) {
+auto PetsPacket::showPet(Player *player, Pet *pet) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PET_SHOW);
 	packet.add<int32_t>(player->getId());
@@ -137,7 +136,7 @@ void PetsPacket::showPet(Player *player, Pet *pet) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::updateSummonedPets(Player *player) {
+auto PetsPacket::updateSummonedPets(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(0);
@@ -155,7 +154,7 @@ void PetsPacket::updateSummonedPets(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::blankUpdate(Player *player) {
+auto PetsPacket::blankUpdate(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int8_t>(1);
@@ -163,7 +162,7 @@ void PetsPacket::blankUpdate(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void PetsPacket::addInfo(PacketCreator &packet, Pet *pet, Item *petItem) {
+auto PetsPacket::addInfo(PacketCreator &packet, Pet *pet, Item *petItem) -> void {
 	packet.add<int8_t>(3);
 	packet.add<int32_t>(pet->getItemId());
 	packet.add<int8_t>(1);

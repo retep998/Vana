@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,37 +20,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include "PlayerDataProvider.h"
 
-bool MessageFunctions::worldMessage(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (.+)", matches)) {
-		int8_t type = ChatHandlerFunctions::getMessageType((string) matches[1]);
+auto MessageFunctions::worldMessage(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches)) {
+		string_t rawType = matches[1];
+		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
-			PlayerPacket::showMessageWorld((string) matches[2], type);
+			string_t message = matches[2];
+			PlayerPacket::showMessageWorld(message, type);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool MessageFunctions::globalMessage(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (.+)", matches)) {
-		int8_t type = ChatHandlerFunctions::getMessageType((string) matches[1]);
+auto MessageFunctions::globalMessage(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches)) {
+		string_t rawType = matches[1];
+		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
-			PlayerPacket::showMessageGlobal((string) matches[2], type);
+			string_t message = matches[2];
+			PlayerPacket::showMessageGlobal(message, type);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid message type - valid options are: {notice, box, red, blue}", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool MessageFunctions::channelMessage(Player *player, const string &args) {
+auto MessageFunctions::channelMessage(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		PlayerPacket::showMessageChannel(args, PlayerPacket::NoticeTypes::Notice);
 		return true;
@@ -58,12 +62,12 @@ bool MessageFunctions::channelMessage(Player *player, const string &args) {
 	return false;
 }
 
-bool MessageFunctions::gmMessage(Player *player, const string &args) {
+auto MessageFunctions::gmMessage(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
-		const string &msg = player->getName() + " : " + args;
-		PlayerDataProvider::Instance()->run([&msg](Player *gmPlayer) {
+		const string_t &msg = player->getName() + " : " + args;
+		PlayerDataProvider::getInstance().run([&msg](Player *gmPlayer) {
 			if (gmPlayer->isGm()) {
-				PlayerPacket::showMessage(gmPlayer, msg, PlayerPacket::NoticeTypes::Blue);
+				ChatHandlerFunctions::showInfo(gmPlayer, msg);
 			}
 		});
 		return true;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,20 +33,21 @@ PlayerStorage::PlayerStorage(Player *player) :
 }
 
 PlayerStorage::~PlayerStorage() {
-	std::for_each(m_items.begin(), m_items.end(), MiscUtilities::DeleterSeq<Item>());
+	/* TODO FIXME just convert the damn Item * to ref_ptr_t or owned_ptr_t */
+	std::for_each(std::begin(m_items), std::end(m_items), [](Item *item) { delete item; });
 }
 
-void PlayerStorage::takeItem(uint8_t slot) {
-	vector<Item *>::iterator iter = m_items.begin() + slot;
+auto PlayerStorage::takeItem(uint8_t slot) -> void {
+	auto iter = std::begin(m_items) + slot;
 	delete *iter;
 	m_items.erase(iter);
 }
 
-void PlayerStorage::setSlots(uint8_t slots) {
+auto PlayerStorage::setSlots(uint8_t slots) -> void {
 	m_slots = MiscUtilities::constrainToRange(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
 }
 
-void PlayerStorage::addItem(Item *item) {
+auto PlayerStorage::addItem(Item *item) -> void {
 	uint8_t inv = GameLogicUtilities::getInventory(item->getId());
 	uint8_t i;
 	for (i = 0; i < m_items.size(); ++i) {
@@ -54,10 +55,10 @@ void PlayerStorage::addItem(Item *item) {
 			break;
 		}
 	}
-	m_items.insert(m_items.begin() + i, item);
+	m_items.insert(std::begin(m_items) + i, item);
 }
 
-uint8_t PlayerStorage::getNumItems(uint8_t inv) {
+auto PlayerStorage::getNumItems(uint8_t inv) -> uint8_t {
 	int8_t itemNum = 0;
 	for (uint8_t i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
@@ -67,12 +68,12 @@ uint8_t PlayerStorage::getNumItems(uint8_t inv) {
 	return itemNum;
 }
 
-void PlayerStorage::changeMesos(int32_t mesos) {
+auto PlayerStorage::changeMesos(int32_t mesos) -> void {
 	m_mesos -= mesos;
 	StoragePacket::changeMesos(m_player, m_mesos);
 }
 
-void PlayerStorage::load() {
+auto PlayerStorage::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
 	int32_t userId = m_player->getUserId();
@@ -93,9 +94,9 @@ void PlayerStorage::load() {
 		m_charSlots = row.get<int32_t>("char_slots");
 	}
 	else {
-		m_slots = ChannelServer::Instance()->getDefaultStorageSlots();
+		m_slots = ChannelServer::getInstance().getDefaultStorageSlots();
 		m_mesos = 0;
-		m_charSlots = ChannelServer::Instance()->getDefaultChars();
+		m_charSlots = ChannelServer::getInstance().getDefaultChars();
 		sql.once
 			<< "INSERT INTO storage (user_id, world_id, slots, mesos, char_slots) "
 			<< "VALUES (:user, :world, :slots, :mesos, :chars)",
@@ -108,7 +109,7 @@ void PlayerStorage::load() {
 
 	m_items.reserve(m_slots);
 
-	string location = "storage";
+	string_t location = "storage";
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.* "
@@ -125,7 +126,7 @@ void PlayerStorage::load() {
 	}
 }
 
-void PlayerStorage::save() {
+auto PlayerStorage::save() -> void {
 	using namespace soci;
 	int8_t worldId = m_player->getWorldId();
 	int32_t userId = m_player->getUserId();
@@ -152,7 +153,7 @@ void PlayerStorage::save() {
 	uint8_t max = getNumItems();
 
 	if (max > 0) {
-		vector<ItemDbRecord> v;
+		vector_t<ItemDbRecord> v;
 		for (uint8_t i = 0; i < max; ++i) {
 			ItemDbRecord rec(i, playerId, userId, worldId, Item::Storage, getItem(i));
 			v.push_back(rec);

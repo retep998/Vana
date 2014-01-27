@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,12 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string>
 
-using std::string;
-
 class Player;
 
 namespace ServerPacket {
-	void showScrollingHeader(Player *player, const string &msg);
-	void changeScrollingHeader(const string &msg);
-	void scrollingHeaderOff();
+	auto showScrollingHeader(Player *player, const string_t &msg) -> void;
+	auto changeScrollingHeader(const string_t &msg) -> void;
+	auto scrollingHeaderOff() -> void;
 }

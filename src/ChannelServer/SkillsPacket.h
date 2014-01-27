@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,16 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 struct PlayerSkillInfo;
-struct SpecialSkillInfo;
+struct ChargeOrStationarySkillInfo;
 
 namespace SkillsPacket {
-	void addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo);
-	void showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party = false, bool self = false);
-	void healHp(Player *player, int16_t hp);
-	void showSkillEffect(Player *player, int32_t skillId, uint8_t level = 0);
-	void showSpecialSkill(Player *player, const SpecialSkillInfo &info); // Hurricane/Pierce/Big Bang/Monster Magnet
-	void endSpecialSkill(Player *player, const SpecialSkillInfo &info);
-	void showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success); // New packet in .56
-	void sendCooldown(Player *player, int32_t skillId, int16_t time);
-	void showBerserk(Player *player, uint8_t level, bool on);
+	auto addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) -> void;
+	auto showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party = false, bool self = false) -> void;
+	auto healHp(Player *player, int16_t hp) -> void;
+	auto showSkillEffect(Player *player, int32_t skillId, uint8_t level = 0) -> void;
+	auto showChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void;
+	auto endChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void;
+	auto showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) -> void;
+	auto sendCooldown(Player *player, int32_t skillId, int16_t time) -> void;
+	auto showBerserk(Player *player, uint8_t level, bool on) -> void;
 }

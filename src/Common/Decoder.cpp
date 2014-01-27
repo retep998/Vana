@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ Decoder::Decoder(bool encrypted) :
 	m_botanKey = Botan::SymmetricKey(AesKey, AesKeySize);
 }
 
-void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
+auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void {
 	if (!isEncrypted()) {
 		return;
 	}
@@ -48,7 +48,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 		for (j = size; j > 0; --j) {
 			c = buffer[size - j];
 			c = BitUtilities::RotateLeft(c, 3);
-			c = (uint8_t)(c + j); // Guess this is supposed to be right?
+			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = BitUtilities::RotateRight(a, j);
@@ -60,7 +60,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 		for (j = size; j > 0; --j) {
 			c = buffer[j - 1];
 			c = BitUtilities::RotateLeft(c, 4);
-			c = (uint8_t)(c + j); // Guess this is supposed to be right?
+			c = static_cast<uint8_t>(c + j); // Guess this is supposed to be right?
 			c = c ^ a;
 			a = c;
 			c = c ^ 0x13;
@@ -97,7 +97,7 @@ void Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 	m_send.shuffle();
 }
 
-void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
+auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void {
 	if (!isEncrypted()) {
 		return;
 	}
@@ -141,7 +141,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 			c = c ^ 0x13;
 			a = c;
 			c = c ^ b;
-			c = (uint8_t)(c - j); // Guess this is supposed to be right?
+			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
 			c = BitUtilities::RotateRight(c, 4);
 			b = a;
 			buffer[j - 1] = c;
@@ -155,7 +155,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 			c = BitUtilities::RotateLeft(c, j);
 			a = c;
 			c = c ^ b;
-			c = (uint8_t)(c - j); // Guess this is supposed to be right?
+			c = static_cast<uint8_t>(c - j); // Guess this is supposed to be right?
 			c = BitUtilities::RotateRight(c, 3);
 			b = a;
 			buffer[size - j] = c;
@@ -163,7 +163,7 @@ void Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) {
 	}
 }
 
-void Decoder::createHeader(unsigned char *header, uint16_t size) {
+auto Decoder::createHeader(unsigned char *header, uint16_t size) -> void {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
 	if (isEncrypted()) {

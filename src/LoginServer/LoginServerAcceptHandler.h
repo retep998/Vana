@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,8 +21,8 @@ class LoginServerAcceptConnection;
 class PacketReader;
 
 namespace LoginServerAcceptHandler {
-	void registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet);
-	void updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet);
-	void removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet);
-	void sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet);
+	auto registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
 }

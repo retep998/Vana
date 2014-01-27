@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,42 +18,81 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <algorithm>
+#include <iterator>
 #include <limits>
 #include <random>
-
-using std::mt19937;
-using std::uniform_int_distribution;
+#include <type_traits>
 
 class Randomizer {
 public:
-	template <typename TInteger>
-	static TInteger rand() {
-		return rand(std::numeric_limits<TInteger>::max(), std::numeric_limits<TInteger>::min());
+	template <typename TNumber>
+	static auto rand() -> TNumber {
+		return rand(std::numeric_limits<TNumber>::max(), std::numeric_limits<TNumber>::min());
 	}
 
-	template <typename TInteger>
-	static TInteger rand(TInteger max, TInteger min = 0) {
-		return s_rand.rand<TInteger>(max, min);
+	template <typename TNumber>
+	static auto rand(TNumber max, TNumber min = 0) -> TNumber {
+		return s_rand.rand(max, min);
 	}
 
+	template <typename TContainer>
+	static auto shuffle(TContainer &c) -> void {
+		shuffle(std::begin(c), std::end(c));
+	}
+
+	template <typename TIterator>
+	static auto shuffle(TIterator begin, TIterator end) -> void {
+		std::shuffle(begin, end, s_rand.engine());
+	}
+
+	template <typename TContainer>
+	static auto select(const TContainer &c) -> decltype(std::cbegin(c)) {
+		return select(std::cbegin(c), std::cend(c));
+	}
+
+	template <typename TIterator>
+	static auto select(TIterator begin, TIterator end) -> TIterator {
+		auto distance = rand(std::distance(begin, end) - 1);
+		TIterator element = begin;
+		std::advance(element, distance);
+		return element;
+	}
 private:
 	class _impl {
 	public:
 		_impl() {
-			m_engine.seed(std::rand());
-			m_distribution = uniform_int_distribution<uint64_t>(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
+			std::random_device seedingEngine;
+			m_engine.seed(seedingEngine());
 		}
 
-		template <typename TInteger>
-		TInteger rand(TInteger max, TInteger min = 0) {
-			TInteger diff = (max - min) + 1;
-			uint64_t result = m_distribution(m_engine);
-			if (diff != 0) result = (result % diff) + min;
-			return static_cast<TInteger>(result);
+		template <typename TNumber>
+		auto rand(TNumber max, TNumber min = 0) -> TNumber {
+			static_assert(std::is_integral<TNumber>::value || std::is_floating_point<TNumber>::value, "TNumber must be integral or floating point");
+
+			TNumber result;
+			if (std::is_integral<TNumber>::value) {
+				if (std::is_unsigned<TNumber>::value) {
+					std::uniform_int_distribution<uint64_t> distribution(static_cast<uint64_t>(min), static_cast<uint64_t>(max));
+					result = static_cast<TNumber>(distribution(m_engine));
+				}
+				else {
+					std::uniform_int_distribution<int64_t> distribution(static_cast<int64_t>(min), static_cast<int64_t>(max));
+					result = static_cast<TNumber>(distribution(m_engine));
+				}
+			}
+			else {
+				std::uniform_real_distribution<long double> distribution(static_cast<long double>(min), static_cast<long double>(max));
+				return static_cast<TNumber>(distribution(m_engine));
+			}
+			return result;
+		}
+
+		auto engine() -> std::mt19937 & {
+			return m_engine;
 		}
 	private:
-		mt19937 m_engine;
-		uniform_int_distribution<uint64_t> m_distribution;
+		std::mt19937 m_engine;
 	};
 
 	static _impl s_rand;

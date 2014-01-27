@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,19 +27,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 struct WidePos : public IPacketSerializable {
 	WidePos(const Pos &pos) : x(pos.x), y(pos.y) { }
 	WidePos(int32_t x, int32_t y) : x(x), y(y) { }
-	WidePos() : x(0), y(0) { }
-	int32_t x;
-	int32_t y;
-	int32_t operator-(const WidePos &p) const {
+	WidePos() = default;
+
+	auto operator-(const WidePos &p) const -> int32_t {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	void write(PacketCreator &packet) const override {
+	auto write(PacketCreator &packet) const -> void override {
 		packet.add<int32_t>(x);
 		packet.add<int32_t>(y);
 	}
-	void read(PacketReader &packet) override {
+
+	auto read(PacketReader &packet) -> void override {
 		x = packet.get<int32_t>();
 		y = packet.get<int32_t>();
 	}
+
+	int32_t x = 0;
+	int32_t y = 0;
+	friend auto operator <<(std::ostream &out, const WidePos &pos) -> std::ostream &;
 };
+
+inline
+auto operator <<(std::ostream &out, const WidePos &pos) -> std::ostream & {
+	return out << "{" << pos.x << ", " << pos.y << "}";
+}

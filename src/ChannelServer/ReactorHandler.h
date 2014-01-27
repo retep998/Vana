@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,8 +24,8 @@ class PacketReader;
 class Player;
 
 namespace ReactorHandler {
-	void hitReactor(Player *player, PacketReader &packet);
-	void touchReactor(Player *player, PacketReader &packet);
-	void checkDrop(Player *player, Drop *drop);
-	void checkLoot(Drop *drop);
+	auto hitReactor(Player *player, PacketReader &packet) -> void;
+	auto touchReactor(Player *player, PacketReader &packet) -> void;
+	auto checkDrop(Player *player, Drop *drop) -> void;
+	auto checkLoot(Drop *drop) -> void;
 }

@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 map = 0;
 
 if getMap() == 240060000 then
-	if getInstanceVariable("lefthead", true) and countMobs(getMap(), 8810000) == 0 then
+	if isGm() or (getInstanceVariable("lefthead") and countMobs(getMap(), 8810000) == 0) then
 		map = 240060100;
 	end
 else
-	if getInstanceVariable("righthead", true) and countMobs(getMap(), 8810001) == 0 then
+	if isGm() or (getInstanceVariable("righthead") and countMobs(getMap(), 8810001) == 0) then
 		map = 240060200;
 	end
 end

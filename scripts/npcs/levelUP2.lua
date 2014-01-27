@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NimaKIN, credits TerraEnvy of Ragezone/Terra of dev.chisoft & Bri/Zak for adding new skills
 
-if isGm() == 1 then
+if isGm() then
 	addText("Hi #h #! What do you wish?\r\n");
 	addText("#b#L1#I would like my inventory slots maxed#l\r\n");
 	addText("#L2#I would like my skills maxed#l\r\n");

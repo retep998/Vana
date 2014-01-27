@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,42 +17,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "GameConstants.h"
 #include "MobDataObjects.h"
-#include "noncopyable.hpp"
 #include "Types.h"
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::unordered_map;
-using std::vector;
-
-class MobDataProvider : boost::noncopyable {
+class MobDataProvider {
+	SINGLETON(MobDataProvider);
 public:
-	static MobDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new MobDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool mobExists(int32_t mobId) { return m_mobInfo.find(mobId) != m_mobInfo.end(); }
-	MobInfo getMobInfo(int32_t mobId) { return m_mobInfo[mobId]; }
-	MobAttackInfo * getMobAttack(int32_t mobId, uint8_t index);
-	MobSkillInfo * getMobSkill(int32_t mobId, uint8_t index);
-	uint8_t getSkillCount(int32_t mobId);
+	auto mobExists(int32_t mobId) -> bool { return m_mobInfo.find(mobId) != std::end(m_mobInfo); }
+	auto getMobInfo(int32_t mobId) -> ref_ptr_t<MobInfo> { return m_mobInfo[mobId]; }
+	auto getMobAttack(int32_t mobId, uint8_t index) -> MobAttackInfo *;
+	auto getMobSkill(int32_t mobId, uint8_t index) -> MobSkillInfo *;
+	auto getSkills(int32_t mobId) -> const vector_t<MobSkillInfo> &;
 private:
-	MobDataProvider() {}
-	static MobDataProvider *singleton;
+	auto loadMobs() -> void;
+	auto loadAttacks() -> void;
+	auto loadSkills() -> void;
+	auto loadSummons() -> void;
 
-	void loadMobs();
-	void loadAttacks();
-	void loadSkills();
-	void loadSummons();
-	int8_t getElemModifier(const string &elemAttr);
-
-	unordered_map<int32_t, MobInfo> m_mobInfo;
-	unordered_map<int32_t, vector<MobAttackInfo>> m_attacks;
-	unordered_map<int32_t, vector<MobSkillInfo>> m_skills;
+	hash_map_t<int32_t, ref_ptr_t<MobInfo>> m_mobInfo;
+	hash_map_t<int32_t, vector_t<MobAttackInfo>> m_attacks;
+	hash_map_t<int32_t, vector_t<MobSkillInfo>> m_skills;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -68,20 +68,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 Player::Player() :
-	m_fallCounter(0),
-	m_shop(0),
-	m_itemEffect(0),
-	m_chair(0),
-	m_mapChair(0),
-	m_tradeId(0),
-	m_portalCount(0),
-	m_tradeState(false),
-	m_saveOnDc(true),
-	m_isConnect(false),
-	m_npc(nullptr),
-	m_party(nullptr),
-	m_instance(nullptr),
-	m_changingChannel(false)
+	MovableLife(0, Pos(), 0)
 {
 }
 
@@ -91,12 +78,14 @@ Player::~Player() {
 		if (getMapChair() != 0) {
 			curMap->playerSeated(getMapChair(), nullptr);
 		}
+
 		curMap->removePlayer(this);
 		m_isConnect = false;
 
 		if (isTrading()) {
 			TradeHandler::cancelTrade(this);
 		}
+
 		int32_t isLeader = 0;
 		if (Party *party = getParty()) {
 			party->setMember(getId(), nullptr);
@@ -120,18 +109,19 @@ Player::~Player() {
 			saveAll(true);
 			setOnline(false);
 		}
-		if (ChannelServer::Instance()->isConnected()) {
+
+		if (ChannelServer::getInstance().isConnected()) {
 			if (!isChangingChannel()) {
 				SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false);
 			}
 			// Do not connect to worldserver if the worldserver has disconnected
 			SyncPacket::PlayerPacket::disconnect(getId());
 		}
-		PlayerDataProvider::Instance()->removePlayer(this);
+		PlayerDataProvider::getInstance().removePlayer(this);
 	}
 }
 
-void Player::handleRequest(PacketReader &packet) {
+auto Player::handleRequest(PacketReader &packet) -> void {
 	try {
 		header_t header = packet.getHeader();
 		if (!m_isConnect) {
@@ -220,22 +210,22 @@ void Player::handleRequest(PacketReader &packet) {
 			}
 		}
 	}
-	catch (std::range_error) {
+	catch (const PacketContentException &e) {
 		// Packet data didn't match the packet length somewhere
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
 		packet.reset();
-		std::ostringstream x;
-		x << "Player ID: " << getId() << "; Packet: " << packet;
-		ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+		out_stream_t x;
+		x << "Player ID: " << getId() << "; Packet: " << packet << "; Error: " << e.what();
+		ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}
 }
 
-void Player::playerConnect(PacketReader &packet) {
+auto Player::playerConnect(PacketReader &packet) -> void {
 	int32_t id = packet.get<int32_t>();
-	if (!Connectable::Instance()->checkPlayer(id, getIp())) {
+	if (!Connectable::getInstance().checkPlayer(id, getIp())) {
 		// Hacking
 		getSession()->disconnect();
 		return;
@@ -257,7 +247,7 @@ void Player::playerConnect(PacketReader &packet) {
 		return;
 	}
 
-	m_name = row.get<string>("name");
+	m_name = row.get<string_t>("name");
 	m_userId = row.get<int32_t>("user_id");
 	m_map = row.get<int32_t>("map");
 	m_gmLevel = row.get<int32_t>("gm_level");
@@ -293,26 +283,26 @@ void Player::playerConnect(PacketReader &packet) {
 	);
 
 	// Inventory
-	m_mounts = std::make_unique<PlayerMounts>(this);
-	m_pets = std::make_unique<PlayerPets>(this);
-	std::array<uint8_t, Inventories::InventoryCount> maxSlots;
+	m_mounts = make_owned_ptr<PlayerMounts>(this);
+	m_pets = make_owned_ptr<PlayerPets>(this);
+	array_t<uint8_t, Inventories::InventoryCount> maxSlots;
 	maxSlots[0] = row.get<uint8_t>("equip_slots");
 	maxSlots[1] = row.get<uint8_t>("use_slots");
 	maxSlots[2] = row.get<uint8_t>("setup_slots");
 	maxSlots[3] = row.get<uint8_t>("etc_slots");
 	maxSlots[4] = row.get<uint8_t>("cash_slots");
-	m_inventory = std::make_unique<PlayerInventory>(this, maxSlots, row.get<int32_t>("mesos"));
-	m_storage = std::make_unique<PlayerStorage>(this);
+	m_inventory = make_owned_ptr<PlayerInventory>(this, maxSlots, row.get<int32_t>("mesos"));
+	m_storage = make_owned_ptr<PlayerStorage>(this);
 
 	// Skills
-	m_skills = std::make_unique<PlayerSkills>(this);
+	m_skills = make_owned_ptr<PlayerSkills>(this);
 
 	// Buffs/summons
-	m_activeBuffs = std::make_unique<PlayerActiveBuffs>(this);
-	m_summons = std::make_unique<PlayerSummons>(this);
+	m_activeBuffs = make_owned_ptr<PlayerActiveBuffs>(this);
+	m_summons = make_owned_ptr<PlayerSummons>(this);
 
 	bool checked = false;
-	if (PacketReader *pack = Connectable::Instance()->getPacket(id)) {
+	if (PacketReader *pack = Connectable::getInstance().getPacket(id)) {
 		// Packet transferring on channel switch
 		checked = true;
 		setConnectionTime(pack->get<int64_t>());
@@ -322,7 +312,7 @@ void Player::playerConnect(PacketReader &packet) {
 		if (buffs->hasHyperBody()) {
 			int32_t skillId = buffs->getHyperBody();
 			uint8_t hbLevel = buffs->getActiveSkillLevel(skillId);
-			SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
+			SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
 			getStats()->setHyperBody(hb->x, hb->y);
 		}
 
@@ -333,17 +323,16 @@ void Player::playerConnect(PacketReader &packet) {
 		setConnectionTime(time(nullptr));
 	}
 
-	Connectable::Instance()->playerEstablished(id);
+	Connectable::getInstance().playerEstablished(id);
 
 	// The rest
-	m_variables = std::make_unique<PlayerVariables>(this);
-	m_buddyList = std::make_unique<PlayerBuddyList>(this);
-	m_quests = std::make_unique<PlayerQuests>(this);
-	m_monsterBook = std::make_unique<PlayerMonsterBook>(this);
+	m_variables = make_owned_ptr<PlayerVariables>(this);
+	m_buddyList = make_owned_ptr<PlayerBuddyList>(this);
+	m_quests = make_owned_ptr<PlayerQuests>(this);
+	m_monsterBook = make_owned_ptr<PlayerMonsterBook>(this);
 
 	opt_int32_t bookCover = row.get<opt_int32_t>("book_cover");
-	int32_t cover = bookCover.is_initialized() ? bookCover.get() : 0;
-	getMonsterBook()->setCover(cover);
+	getMonsterBook()->setCover(bookCover.getOrDefault(0));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -377,8 +366,8 @@ void Player::playerConnect(PacketReader &packet) {
 
 	PlayerPacket::connectData(this);
 
-	if (ChannelServer::Instance()->getScrollingHeader().size() > 0) {
-		ServerPacket::showScrollingHeader(this, ChannelServer::Instance()->getScrollingHeader());
+	if (ChannelServer::getInstance().getScrollingHeader().size() > 0) {
+		ServerPacket::showScrollingHeader(this, ChannelServer::getInstance().getScrollingHeader());
 	}
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
@@ -396,9 +385,9 @@ void Player::playerConnect(PacketReader &packet) {
 
 	Maps::addPlayer(this, m_map);
 
-	std::ostringstream x;
+	out_stream_t x;
 	x << getName() << " (" << getId() << ") connected from " << getIp().toString();
-	ChannelServer::Instance()->log(LogTypes::Info, x.str());
+	ChannelServer::getInstance().log(LogTypes::Info, x.str());
 
 	setOnline(true);
 	m_isConnect = true;
@@ -406,11 +395,11 @@ void Player::playerConnect(PacketReader &packet) {
 	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
 
-Map * Player::getMap() const {
+auto Player::getMap() const -> Map * {
 	return Maps::getMap(getMapId());
 }
 
-void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
+auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 	if (!Maps::getMap(mapId)) {
 		MapPacket::portalBlocked(this);
 		return;
@@ -440,7 +429,7 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 	m_usedPortals.clear();
 	setPos(Pos(portal->pos.x, portal->pos.y - 40));
 	setStance(0);
-	setFh(0);
+	setFoothold(0);
 	setFallCounter(0);
 
 	// Prevent chair Denial of Service
@@ -477,21 +466,21 @@ void Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) {
 	Maps::addPlayer(this, mapId);
 }
 
-string Player::getMedalName() {
-	std::ostringstream ret;
+auto Player::getMedalName() -> string_t {
+	out_stream_t ret;
 	if (int32_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
-		ret << "<" << ItemDataProvider::Instance()->getItemName(itemId) << "> ";
+		ret << "<" << ItemDataProvider::getInstance().getItemName(itemId) << "> ";
 	}
 	ret << getName();
 	return ret.str();
 }
 
-void Player::changeChannel(int8_t channel) {
+auto Player::changeChannel(int8_t channel) -> void {
 	SyncPacket::PlayerPacket::changeChannel(this, channel);
 }
 
-void Player::changeKey(PacketReader &packet) {
+auto Player::changeKey(PacketReader &packet) -> void {
 	int32_t mode = packet.get<int32_t>();
 	int32_t howMany = packet.get<int32_t>();
 
@@ -525,14 +514,14 @@ void Player::changeKey(PacketReader &packet) {
 	}
 }
 
-void Player::changeSkillMacros(PacketReader &packet) {
+auto Player::changeSkillMacros(PacketReader &packet) -> void {
 	uint8_t num = packet.get<int8_t>();
 	if (num == 0) {
 		return;
 	}
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
-		const string &name = packet.getString();
+		const string_t &name = packet.getString();
 		bool shout = packet.get<bool>();
 		int32_t skill1 = packet.get<int32_t>();
 		int32_t skill2 = packet.get<int32_t>();
@@ -543,22 +532,22 @@ void Player::changeSkillMacros(PacketReader &packet) {
 	skillMacros.save(getId());
 }
 
-void Player::setHair(int32_t id) {
+auto Player::setHair(int32_t id) -> void {
 	m_hair = id;
 	PlayerPacket::updateStat(this, Stats::Hair, id);
 }
 
-void Player::setEyes(int32_t id) {
+auto Player::setEyes(int32_t id) -> void {
 	m_eyes = id;
 	PlayerPacket::updateStat(this, Stats::Eyes, id);
 }
 
-void Player::setSkin(int8_t id) {
+auto Player::setSkin(int8_t id) -> void {
 	m_skin = id;
 	PlayerPacket::updateStat(this, Stats::Skin, id);
 }
 
-void Player::saveStats() {
+auto Player::saveStats() -> void {
 	PlayerStats *s = getStats();
 	PlayerInventory *i = getInventory();
 	// Need local bindings
@@ -657,7 +646,7 @@ void Player::saveStats() {
 		soci::use(cover, "cover");
 }
 
-void Player::saveAll(bool saveCooldowns) {
+auto Player::saveAll(bool saveCooldowns) -> void {
 	saveStats();
 	getInventory()->save();
 	getStorage()->save();
@@ -669,8 +658,8 @@ void Player::saveAll(bool saveCooldowns) {
 	getVariables()->save();
 }
 
-void Player::setOnline(bool online) {
-	int32_t onlineId = online ? ChannelServer::Instance()->getOnlineId() : 0;
+auto Player::setOnline(bool online) -> void {
+	int32_t onlineId = online ? ChannelServer::getInstance().getOnlineId() : 0;
 	Database::getCharDb().once
 		<< "UPDATE user_accounts u "
 		<< "INNER JOIN characters c ON u.user_id = c.user_id "
@@ -683,11 +672,11 @@ void Player::setOnline(bool online) {
 		soci::use(onlineId, "onlineId");
 }
 
-void Player::setLevelDate() {
+auto Player::setLevelDate() -> void {
 	Database::getCharDb().once << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
 }
 
-void Player::acceptDeath(bool wheel) {
+auto Player::acceptDeath(bool wheel) -> void {
 	int32_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
 	if (wheel) {
 		toMap = getMapId();
@@ -698,7 +687,7 @@ void Player::acceptDeath(bool wheel) {
 	setMap(toMap);
 }
 
-bool Player::hasGmEquip() const {
+auto Player::hasGmEquip() const -> bool {
 	auto equippedUtility = [this](int16_t slot, int32_t itemId) -> bool {
 		return this->getInventory()->getEquippedId(slot) == itemId;
 	};
@@ -718,32 +707,32 @@ bool Player::hasGmEquip() const {
 	return false;
 }
 
-bool Player::isUsingGmHide() const {
+auto Player::isUsingGmHide() const -> bool {
 	return m_activeBuffs->isUsingGmHide();
 }
 
-bool Player::hasGmBenefits() const {
+auto Player::hasGmBenefits() const -> bool {
 	return isUsingGmHide() || hasGmEquip();
 }
 
-void Player::setBuddyListSize(uint8_t size) {
+auto Player::setBuddyListSize(uint8_t size) -> void {
 	m_buddylistSize = size;
 	BuddyListPacket::showSize(this);
 }
 
-uint8_t Player::getPortalCount(bool add) {
+auto Player::getPortalCount(bool add) -> uint8_t {
 	if (add) {
 		m_portalCount++;
 	}
 	return m_portalCount;
 }
 
-void Player::initializeRng(PacketCreator &packet) {
+auto Player::initializeRng(PacketCreator &packet) -> void {
 	uint32_t seed1 = Randomizer::rand<uint32_t>();
 	uint32_t seed2 = Randomizer::rand<uint32_t>();
 	uint32_t seed3 = Randomizer::rand<uint32_t>();
 
-	m_randStream = std::make_unique<TauswortheGenerator>(seed1, seed2, seed3);
+	m_randStream = make_owned_ptr<TauswortheGenerator>(seed1, seed2, seed3);
 
 	packet.add<uint32_t>(seed1);
 	packet.add<uint32_t>(seed2);

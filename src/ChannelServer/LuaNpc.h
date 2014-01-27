@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,54 +20,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaScriptable.h"
 #include <string>
 
-using std::string;
-
 class Npc;
 
 class LuaNpc : public LuaScriptable {
+	NONCOPYABLE(LuaNpc);
+	NO_DEFAULT_CONSTRUCTOR(LuaNpc);
 public:
-	LuaNpc(const string &filename, int32_t playerId);
+	LuaNpc(const string_t &filename, int32_t playerId);
 
-	bool run() override;
-	bool proceedNext();
-	bool proceedSelection(uint8_t selected);
-	bool proceedNumber(int32_t number);
-	bool proceedText(const string &text);
+	auto run() -> bool override;
+	auto proceedNext() -> bool;
+	auto proceedSelection(uint8_t selected) -> bool;
+	auto proceedNumber(int32_t number) -> bool;
+	auto proceedText(const string_t &text) -> bool;
 protected:
-	bool resume(int32_t nArgs);
-	void handleError() override;
+	auto resume(int32_t nArgs) -> bool;
+	auto handleError() -> void override;
 
-	lua_State *m_luaThread; // For executing scripts (pausable)
+	lua_State *m_luaThread = nullptr; // For pausing script execution e.g. while a player makes a selection
 };
 
 namespace LuaExports {
-	Npc * getNpc(lua_State *luaVm);
+	auto getNpc(lua_State *luaVm) -> Npc *;
 
 	// NPC exports
 
 	// Miscellaneous
-	int showStorage(lua_State *luaVm);
-	int getDistanceNpc(lua_State *luaVm);
-	int getNpcId(lua_State *luaVm);
-	int npcRunNpc(lua_State *luaVm);
+	auto showStorage(lua_State *luaVm) -> int;
+	auto getDistanceNpc(lua_State *luaVm) -> int;
+	auto getNpcId(lua_State *luaVm) -> int;
+	auto npcRunNpc(lua_State *luaVm) -> int;
 
 	// NPC interaction
-	int addText(lua_State *luaVm);
-	int sendBackNext(lua_State *luaVm);
-	int sendBackOk(lua_State *luaVm);
-	int sendNext(lua_State *luaVm);
-	int sendOk(lua_State *luaVm);
-	int askAcceptDecline(lua_State *luaVm);
-	int askAcceptDeclineNoExit(lua_State *luaVm);
-	int askChoice(lua_State *luaVm);
-	int askNumber(lua_State *luaVm);
-	int askStyle(lua_State *luaVm);
-	int askText(lua_State *luaVm);
-	int askYesNo(lua_State *luaVm);
-	int askQuiz(lua_State *luaVm);
-	int askQuestion(lua_State *luaVm);
+	auto addText(lua_State *luaVm) -> int;
+	auto sendBackNext(lua_State *luaVm) -> int;
+	auto sendBackOk(lua_State *luaVm) -> int;
+	auto sendNext(lua_State *luaVm) -> int;
+	auto sendOk(lua_State *luaVm) -> int;
+	auto askAcceptDecline(lua_State *luaVm) -> int;
+	auto askAcceptDeclineNoExit(lua_State *luaVm) -> int;
+	auto askChoice(lua_State *luaVm) -> int;
+	auto askNumber(lua_State *luaVm) -> int;
+	auto askStyle(lua_State *luaVm) -> int;
+	auto askText(lua_State *luaVm) -> int;
+	auto askYesNo(lua_State *luaVm) -> int;
+	auto askQuiz(lua_State *luaVm) -> int;
+	auto askQuestion(lua_State *luaVm) -> int;
 
 	// Quest
-	int addQuest(lua_State *luaVm);
-	int endQuest(lua_State *luaVm);
+	auto addQuest(lua_State *luaVm) -> int;
+	auto endQuest(lua_State *luaVm) -> int;
 }

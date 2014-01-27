@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,10 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
-void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcId) {
+auto QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -48,7 +45,7 @@ void QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcId) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
+auto QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -58,14 +55,14 @@ void QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::doneQuest(Player *player, int16_t questId) {
+auto QuestsPacket::doneQuest(Player *player, int16_t questId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_QUEST_COMPLETED);
 	packet.add<int16_t>(questId);
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questError(Player *player, int16_t questId, int8_t errorCode) {
+auto QuestsPacket::questError(Player *player, int16_t questId, int8_t errorCode) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(errorCode);
@@ -73,7 +70,7 @@ void QuestsPacket::questError(Player *player, int16_t questId, int8_t errorCode)
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questExpire(Player *player, int16_t questId) {
+auto QuestsPacket::questExpire(Player *player, int16_t questId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_QUEST_UPDATE);
 	packet.add<int8_t>(0x0F);
@@ -81,7 +78,7 @@ void QuestsPacket::questExpire(Player *player, int16_t questId) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) {
+auto QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -110,7 +107,7 @@ void QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, i
 	player->getMap()->sendPacket(packet, player);
 }
 
-void QuestsPacket::forfeitQuest(Player *player, int16_t questId) {
+auto QuestsPacket::forfeitQuest(Player *player, int16_t questId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(1);
@@ -119,7 +116,7 @@ void QuestsPacket::forfeitQuest(Player *player, int16_t questId) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) {
+auto QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(3);
@@ -129,7 +126,7 @@ void QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveMesos(Player *player, int32_t amount) {
+auto QuestsPacket::giveMesos(Player *player, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(5);
@@ -137,7 +134,7 @@ void QuestsPacket::giveMesos(Player *player, int32_t amount) {
 	player->getSession()->send(packet);
 }
 
-void QuestsPacket::giveFame(Player *player, int32_t amount) {
+auto QuestsPacket::giveFame(Player *player, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(4);

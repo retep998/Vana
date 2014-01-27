@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,8 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class ConfigFile;
 
-template <typename T>
 class IConfigReadable {
 public:
-	virtual void read(ConfigFile &file, const std::string &prefix = "") = 0;
+	virtual auto read(ConfigFile &file, const string_t &prefix = "") -> void = 0;
 };

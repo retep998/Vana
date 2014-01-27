@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,43 +33,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <utility>
 
-using std::bind;
-
-Instance::Instance(const string &name, int32_t map, int32_t playerId, const seconds_t &time, const duration_t &persistent, bool showTimer, bool appLaunch) :
+Instance::Instance(const string_t &name, int32_t map, int32_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch) :
 	m_name(name),
-	m_maxPlayers(0),
-	m_timerCounter(0),
 	m_persistent(persistent),
 	m_showTimer(showTimer),
-	m_start(TimeUtilities::getNow()),
-	m_resetOnDestroy(true),
-	m_markedForDeletion(false)
+	m_start(TimeUtilities::getNow())
 {
-	m_timers = std::make_unique<Timer::Container>();
-	m_variables = std::make_unique<Variables>();
-	m_luaInstance = std::make_unique<LuaInstance>(name, playerId);
+	m_variables = make_owned_ptr<Variables>();
+	m_luaInstance = make_owned_ptr<LuaInstance>(name, playerId);
 
 	if (!appLaunch) {
-		std::ostringstream x;
-		x << name << " started by player " << playerId;
-		ChannelServer::Instance()->log(LogTypes::InstanceBegin, x.str());
+		out_stream_t x;
+		x << name << " started by player ID " << playerId;
+		ChannelServer::getInstance().log(LogTypes::InstanceBegin, x.str());
 	}
 	setInstanceTimer(time, true);
 }
 
 Instance::~Instance() {
 	// Maps
-	for (size_t i = 0; i < getMapNum(); ++i) {
-		Map *map = m_maps[i];
-		map->setInstance(nullptr);
-		map->setMusic("default");
-		map->clearDrops(false);
-		map->killMobs(nullptr, 0, false, false);
-		map->killReactors(false);
-		if (m_resetOnDestroy) {
-			// Reset all mobs/reactors
-			map->respawn();
-		}
+	for (const auto &map : m_maps) {
+		map->endInstance(m_resetOnDestroy);
 	}
 	m_maps.clear();
 
@@ -84,161 +68,155 @@ Instance::~Instance() {
 		kvp.second->setInstance(nullptr);
 	}
 	m_players.clear();
-	Instances::InstancePtr()->removeInstance(this);
+	Instances::getInstance().removeInstance(this);
 }
 
-const string Instance::getBannedPlayerByIndex(uint32_t index) const {
+auto Instance::getBannedPlayerByIndex(uint32_t index) const -> const string_t {
 	--index;
 	return m_banned[(index > m_banned.size() ? m_banned.size() : index)];
 }
 
-void Instance::setBanned(const string &name, bool isbanned) {
-	if (isbanned) {
+auto Instance::setBanned(const string_t &name, bool isBanned) -> void {
+	if (isBanned) {
 		m_banned.push_back(name);
 		removePlayerSignUp(name);
 	}
 	else {
 		for (size_t i = 0; i < m_banned.size(); ++i) {
 			if (m_banned[i] == name) {
-				m_banned.erase(m_banned.begin() + i);
+				m_banned.erase(std::begin(m_banned) + i);
 				break;
 			}
 		}
 	}
 }
 
-bool Instance::isBanned(const string &name) {
-	for (size_t i = 0; i < m_banned.size(); ++i) {
-		if (m_banned[i] == name) {
+auto Instance::isBanned(const string_t &name) -> bool {
+	for (const auto &bannedName : m_banned) {
+		if (bannedName == name) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void Instance::addPlayer(Player *player) {
+auto Instance::addPlayer(Player *player) -> void {
 	if (player != nullptr) {
 		m_players[player->getId()] = player;
 		player->setInstance(this);
 	}
 }
 
-void Instance::removePlayer(Player *player) {
+auto Instance::removePlayer(Player *player) -> void {
 	removePlayer(player->getId());
 	player->setInstance(nullptr);
 }
 
-void Instance::removePlayer(int32_t id) {
+auto Instance::removePlayer(int32_t id) -> void {
 	auto kvp = m_players.find(id);
-	if (kvp != m_players.end()) {
+	if (kvp != std::end(m_players)) {
 		m_players.erase(kvp);
 	}
 }
 
-void Instance::removeAllPlayers() {
-	unordered_map<int32_t, Player *> temp = m_players;
-	for (const auto &kvp : temp) {
+auto Instance::removeAllPlayers() -> void {
+	auto copy = m_players;
+	for (const auto &kvp : copy) {
 		removePlayer(kvp.second);
 	}
 }
 
-void Instance::addPlayerSignUp(Player *player) {
+auto Instance::addPlayerSignUp(Player *player) -> void {
 	m_playersOrder.push_back(player->getName());
 }
 
-void Instance::removePlayerSignUp(const string &name) {
+auto Instance::removePlayerSignUp(const string_t &name) -> void {
 	for (size_t i = 0; i < m_playersOrder.size(); ++i) {
 		if (m_playersOrder[i] == name) {
-			m_playersOrder.erase(m_playersOrder.begin() + i);
+			m_playersOrder.erase(std::begin(m_playersOrder) + i);
 		}
 	}
 }
 
-void Instance::moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal) {
+auto Instance::moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal) -> void {
 	if (!Maps::getMap(mapId)) {
 		return;
 	}
-	unordered_map<int32_t, Player *> tmp = m_players; // Copy in the event that we don't respect instances
-	for (const auto &kvp : tmp) {
+	// Copy in the event that we don't respect instances
+	auto copy = m_players;
+	for (const auto &kvp : copy) {
 		kvp.second->setMap(mapId, portal, respectInstances);
 	}
 }
 
-bool Instance::isPlayerSignedUp(const string &name) {
-	for (size_t i = 0; i < m_playersOrder.size(); ++i) {
-		if (m_playersOrder[i] == name) {
+auto Instance::isPlayerSignedUp(const string_t &name) -> bool {
+	for (const auto &playerName : m_playersOrder) {
+		if (playerName == name) {
 			return true;
 		}
 	}
 	return false;
 }
 
-vector<int32_t> Instance::getAllPlayerIds() {
-	vector<int32_t> playerIds;
+auto Instance::getAllPlayerIds() -> vector_t<int32_t> {
+	vector_t<int32_t> playerIds;
 	for (const auto &kvp : m_players) {
 		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
 }
 
-const string Instance::getPlayerByIndex(uint32_t index) const {
+auto Instance::getPlayerByIndex(uint32_t index) const -> const string_t {
 	--index;
 	return m_playersOrder[(index > m_playersOrder.size() ? m_playersOrder.size() : index)];
 }
 
-bool Instance::instanceHasPlayers() const {
-	for (size_t i = 0; i < m_maps.size(); ++i) {
-		if (m_maps[i]->getNumPlayers() != 0) {
+auto Instance::instanceHasPlayers() const -> bool {
+	for (const auto &map : m_maps) {
+		if (map->getNumPlayers() != 0) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void Instance::addMap(Map *map) {
+auto Instance::addMap(Map *map) -> void {
 	m_maps.push_back(map);
 	map->setInstance(this);
 }
 
-void Instance::addMap(int32_t mapId) {
+auto Instance::addMap(int32_t mapId) -> void {
 	Map *map = Maps::getMap(mapId);
 	addMap(map);
 }
 
-Map * Instance::getMap(int32_t mapId) {
-	Map *map = nullptr;
-	for (size_t i = 0; i < getMapNum(); ++i) {
-		Map *tmap = m_maps[i];
-		if (tmap->getId() == mapId) {
-			map = tmap;
-			break;
+auto Instance::isInstanceMap(int32_t mapId) const -> bool {
+	for (const auto &map : m_maps) {
+		if (map->getId() == mapId) {
+			return true;
 		}
 	}
-	return map;
+	return false;
 }
 
-size_t Instance::getMapNum() {
-	return m_maps.size();
-}
-
-void Instance::addParty(Party *party) {
+auto Instance::addParty(Party *party) -> void {
 	m_parties.push_back(party);
 	party->setInstance(this);
 }
 
-bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
-	if (m_timerActions.find(timerName) == m_timerActions.end()) {
-		m_timerActions.insert(std::make_pair(timerName, timer));
+auto Instance::addTimer(const string_t &timerName, const TimerAction &timer) -> bool {
+	if (m_timerActions.find(timerName) == std::end(m_timerActions)) {
+		m_timerActions.emplace(timerName, timer);
 
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
-			Timer::create([this, timerName]() { this->timerEnd(timerName, true); },
+			Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
 				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
 		}
 		else {
 			// Negative, occurs nth second of hour
-			Timer::create([this, timerName]() { this->timerEnd(timerName, true); },
+			Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
 				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
 		}
 		return true;
@@ -246,10 +224,10 @@ bool Instance::addTimer(const string &timerName, const TimerAction &timer) {
 	return false;
 }
 
-seconds_t Instance::getTimerSecondsRemaining(const string &timerName) {
+auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t {
 	seconds_t timeLeft(0);
 	auto kvp = m_timerActions.find(timerName);
-	if (kvp != m_timerActions.end()) {
+	if (kvp != std::end(m_timerActions)) {
 		const TimerAction &timer = kvp->second;
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		timeLeft = getTimers()->getSecondsRemaining(id);
@@ -257,9 +235,9 @@ seconds_t Instance::getTimerSecondsRemaining(const string &timerName) {
 	return timeLeft;
 }
 
-void Instance::removeTimer(const string &timerName) {
+auto Instance::removeTimer(const string_t &timerName) -> void {
 	auto kvp = m_timerActions.find(timerName);
-	if (kvp != m_timerActions.end()) {
+	if (kvp != std::end(m_timerActions)) {
 		const TimerAction &timer = kvp->second;
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
@@ -270,14 +248,14 @@ void Instance::removeTimer(const string &timerName) {
 	}
 }
 
-void Instance::removeAllTimers() {
+auto Instance::removeAllTimers() -> void {
 	for (const auto &kvp : m_timerActions) {
 		removeTimer(kvp.first);
 	}
 	setInstanceTimer(seconds_t(0));
 }
 
-seconds_t Instance::checkInstanceTimer() {
+auto Instance::checkInstanceTimer() -> seconds_t {
 	seconds_t timeLeft(0);
 	if (m_time.count() > 0) {
 		const Timer::Id id = getTimerId();
@@ -286,27 +264,17 @@ seconds_t Instance::checkInstanceTimer() {
 	return timeLeft;
 }
 
-void Instance::setInstanceTimer(const seconds_t &time, bool firstRun) {
+auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 	if (checkInstanceTimer().count() > 0) {
 		const Timer::Id id = getTimerId();
 		getTimers()->removeTimer(id);
 	}
 	if (time.count() != 0) {
-		duration_t difference;
-		int32_t timeCount = static_cast<int32_t>(time.count());
+		m_time = duration_cast<seconds_t>(time);
 
-		if (timeCount < 0) {
-			m_time = seconds_t(-(timeCount + 1));
-			difference = TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(m_time.count()));
-		}
-		else if (timeCount > 0) {
-			m_time = seconds_t(timeCount);
-			difference = milliseconds_t(m_time);
-		}
-
-		Timer::create([this]() { this->instanceEnd(true); },
+		Timer::create([this](const time_point_t &now) { this->instanceEnd(true); },
 			getTimerId(),
-			getTimers(), difference, m_persistent);
+			getTimers(), m_time, m_persistent);
 
 		if (!firstRun && showTimer()) {
 			showTimer(true, true);
@@ -314,42 +282,42 @@ void Instance::setInstanceTimer(const seconds_t &time, bool firstRun) {
 	}
 }
 
-void Instance::sendMessage(InstanceMessages message) {
+auto Instance::sendMessage(InstanceMessages message) -> void {
 	getLuaInstance()->run(message);
 }
 
-void Instance::sendMessage(InstanceMessages message, int32_t parameter) {
+auto Instance::sendMessage(InstanceMessages message, int32_t parameter) -> void {
 	getLuaInstance()->run(message, parameter);
 }
 
-void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
+auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
-void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
+auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3);
 }
 
-void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) {
+auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4);
 }
 
-void Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) {
+auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4, parameter5);
 }
 
-void Instance::sendMessage(InstanceMessages message, const string &parameter1, int32_t parameter2) {
+auto Instance::sendMessage(InstanceMessages message, const string_t &parameter1, int32_t parameter2) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
-void Instance::timerEnd(const string &name, bool fromTimer) {
+auto Instance::timerEnd(const string_t &name, bool fromTimer) -> void {
 	sendMessage(TimerNaturalEnd, name, fromTimer ? 1 : 0);
 	if (!fromTimer || (fromTimer && !isTimerPersistent(name))) {
 		removeTimer(name);
 	}
 }
 
-void Instance::instanceEnd(bool fromTimer) {
+auto Instance::instanceEnd(bool fromTimer) -> void {
 	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
 	showTimer(false);
 	if (getPersistence().count() == 0) {
@@ -357,22 +325,22 @@ void Instance::instanceEnd(bool fromTimer) {
 	}
 }
 
-bool Instance::isTimerPersistent(const string &name) {
-	return (m_timerActions.find(name) != m_timerActions.end() ? (m_timerActions[name].persistent > 0) : false);
+auto Instance::isTimerPersistent(const string_t &name) -> bool {
+	return m_timerActions.find(name) != std::end(m_timerActions) ? (m_timerActions[name].persistent > 0) : false;
 }
 
-int32_t Instance::getCounterId() {
+auto Instance::getCounterId() -> int32_t {
 	return ++m_timerCounter;
 }
 
-void Instance::markForDelete() {
+auto Instance::markForDelete() -> void {
 	m_markedForDeletion = true;
 }
 
-void Instance::respawnMobs(int32_t mapId) {
+auto Instance::respawnMobs(int32_t mapId) -> void {
 	if (mapId == Maps::NoMap) {
-		for (size_t i = 0; i < getMapNum(); ++i) {
-			m_maps[i]->respawn(SpawnTypes::Mob);
+		for (const auto &map : m_maps) {
+			map->respawn(SpawnTypes::Mob);
 		}
 	}
 	else {
@@ -380,10 +348,10 @@ void Instance::respawnMobs(int32_t mapId) {
 	}
 }
 
-void Instance::respawnReactors(int32_t mapId) {
+auto Instance::respawnReactors(int32_t mapId) -> void {
 	if (mapId == Maps::NoMap) {
-		for (size_t i = 0; i < getMapNum(); ++i) {
-			m_maps[i]->respawn(SpawnTypes::Reactor);
+		for (const auto &map : m_maps) {
+			map->respawn(SpawnTypes::Reactor);
 		}
 	}
 	else {
@@ -391,19 +359,19 @@ void Instance::respawnReactors(int32_t mapId) {
 	}
 }
 
-void Instance::showTimer(bool show, bool doIt) {
+auto Instance::showTimer(bool show, bool doIt) -> void {
 	if (!show && (doIt || m_showTimer)) {
-		for (size_t i = 0; i < getMapNum(); ++i) {
-			MapPacket::showTimer(m_maps[i]->getId(), seconds_t(0));
+		for (const auto &map : m_maps) {
+			MapPacket::showTimer(map->getId(), seconds_t(0));
 		}
 	}
 	else if (show && (doIt || !m_showTimer)) {
-		for (size_t i = 0; i < getMapNum(); ++i) {
-			MapPacket::showTimer(m_maps[i]->getId(), checkInstanceTimer());
+		for (const auto &map : m_maps) {
+			MapPacket::showTimer(map->getId(), checkInstanceTimer());
 		}
 	}
 }
 
-Timer::Id Instance::getTimerId() const {
+auto Instance::getTimerId() const -> Timer::Id {
 	return Timer::Id(Timer::Types::InstanceTimer, static_cast<int32_t>(m_time.count()), -1);
 }

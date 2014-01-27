@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) {
+auto SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_ADD);
 	packet.add<int8_t>(1);
@@ -37,7 +37,7 @@ void SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillIn
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) {
+auto SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -67,7 +67,7 @@ void SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uin
 	}
 }
 
-void SkillsPacket::healHp(Player *player, int16_t hp) {
+auto SkillsPacket::healHp(Player *player, int16_t hp) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0A);
@@ -75,7 +75,7 @@ void SkillsPacket::healHp(Player *player, int16_t hp) {
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t level) {
+auto SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t level) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS); // For the using player
 	bool send = false;
@@ -125,12 +125,12 @@ void SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t leve
 	}
 }
 
-void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info) { // Hurricane, Pierce, Big Bang, Monster Magnet
+auto SkillsPacket::showChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<header_t>(SMSG_SPECIAL_SKILL);
+	packet.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(info.skillId);
 	packet.add<int8_t>(info.level);
@@ -139,18 +139,18 @@ void SkillsPacket::showSpecialSkill(Player *player, const SpecialSkillInfo &info
 	player->getMap()->sendPacket(packet, player);
 }
 
-void SkillsPacket::endSpecialSkill(Player *player, const SpecialSkillInfo &info) {
+auto SkillsPacket::endChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
 	PacketCreator packet;
-	packet.add<header_t>(SMSG_SPECIAL_SKILL_END);
+	packet.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END);
 	packet.add<int32_t>(player->getId());
 	packet.add<int32_t>(info.skillId);
 	player->getMap()->sendPacket(packet, player);
 }
 
-void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) {
+auto SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_DRAGGED);
 	packet.add<int32_t>(mapMobId);
@@ -158,7 +158,7 @@ void SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t s
 	player->getMap()->sendPacket(packet, player);
 }
 
-void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
+auto SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_COOLDOWN);
 	packet.add<int32_t>(skillId);
@@ -166,7 +166,7 @@ void SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) {
 	player->getSession()->send(packet);
 }
 
-void SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) {
+auto SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) -> void {
 	// Sends to map/user
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);

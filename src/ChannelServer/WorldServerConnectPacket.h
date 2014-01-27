@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,20 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 class PacketCreator;
 class Player;
 struct Rates;
 
 namespace WorldServerConnectPacket {
-	void findPlayer(int32_t playerId, const string &findeeName);
-	void whisperPlayer(int32_t playerId, const string &whisperee, const string &message);
-	void groupChat(int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat);
-	void rankingCalculation();
-	void sendToChannels(PacketCreator &packet);
-	void sendToWorlds(PacketCreator &packet);
-	void reloadMcdb(const string &type);
-	void rehashConfig();
+	auto findPlayer(int32_t playerId, const string_t &findeeName) -> void;
+	auto whisperPlayer(int32_t playerId, const string_t &whisperee, const string_t &message) -> void;
+	auto groupChat(int8_t type, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
+	auto rankingCalculation() -> void;
+	auto sendToChannels(PacketCreator &packet) -> void;
+	auto sendToWorlds(PacketCreator &packet) -> void;
+	auto reloadMcdb(const string_t &type) -> void;
+	auto rehashConfig() -> void;
 }

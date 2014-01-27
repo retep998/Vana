@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,46 +18,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Session.h"
-#include "TimerContainer.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
-#include <memory>
 #include <string>
-
-using std::string;
 
 class PacketReader;
 
-class AbstractConnection {
+class AbstractConnection : public TimerContainerHolder {
 public:
 	AbstractConnection();
-	virtual ~AbstractConnection() { }
+	virtual ~AbstractConnection() = default;
 
-	virtual void handleRequest(PacketReader &packet) = 0;
-	void baseHandleRequest(PacketReader &packet);
-	void setTimer();
-	void ping();
-
-	Session * getSession() const { return m_session; }
-	void setSession(Session *val);
-	const Ip & getIp() const { return m_ip; }
-	void setIp(const Ip &ip) { m_ip = ip; }
-	void setPinging(bool ping) { m_doesPing = ping; }
-	Timer::Container * getTimers() const { return m_timers.get(); }
-	milliseconds_t getLatency() const { return m_latency; }
+	auto getSession() const -> Session * { return m_session; }
+	auto getIp() const -> const Ip & { return m_ip; }
+	auto getLatency() const -> milliseconds_t { return m_latency; }
 protected:
-	Session *m_session;
+	virtual auto handleRequest(PacketReader &packet) -> void = 0;
+	bool m_isServer = false;
+	bool m_doesPing = true;
+	Session *m_session = nullptr;
 	Ip m_ip;
-	bool m_isServer;
-	bool m_doesPing;
 private:
-	bool m_isPinged;
-	milliseconds_t m_latency;
+	friend class Session;
+	auto ping() -> void;
+	auto setTimer() -> void;
+	auto setSession(Session *val) -> void;
+	auto setIp(const Ip &ip) -> void { m_ip = ip; }
+	auto setPinging(bool ping) -> void { m_doesPing = ping; }
+	auto baseHandleRequest(PacketReader &packet) -> void;
+
+	bool m_isPinged = false;
+	milliseconds_t m_latency = milliseconds_t(0);
 	time_point_t m_lastPing;
-	std::unique_ptr<Timer::Container> m_timers;
 };
 
 class AbstractConnectionFactory {
 public:
-	virtual AbstractConnection * createConnection() = 0;
-	virtual ~AbstractConnectionFactory() { }
+	virtual auto createConnection() -> AbstractConnection * = 0;
+	virtual ~AbstractConnectionFactory() = default;
 };

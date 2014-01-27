@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,19 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class Player;
 
 namespace EffectPacket {
-	void playMusic(int32_t mapId, const string &music);
-	void playMusic(Player *player, const string &music);
-	void sendEvent(int32_t mapId, const string &id);
-	void sendEffect(int32_t mapId, const string &effect);
-	void playPortalSoundEffect(Player *player);
-	void sendFieldSound(int32_t mapId, const string &sound);
-	void sendFieldSound(Player *player, const string &sound);
-	void sendMinigameSound(int32_t mapId, const string &sound);
-	void sendMinigameSound(Player *player, const string &sound);
-	void sendMobItemBuffEffect(Player *player, int32_t itemId);
+	auto playMusic(int32_t mapId, const string_t &music) -> void;
+	auto playMusic(Player *player, const string_t &music) -> void;
+	auto sendEvent(int32_t mapId, const string_t &id) -> void;
+	auto sendEffect(int32_t mapId, const string_t &effect) -> void;
+	auto playPortalSoundEffect(Player *player) -> void;
+	auto sendFieldSound(int32_t mapId, const string_t &sound) -> void;
+	auto sendFieldSound(Player *player, const string_t &sound) -> void;
+	auto sendMinigameSound(int32_t mapId, const string_t &sound) -> void;
+	auto sendMinigameSound(Player *player, const string_t &sound) -> void;
+	auto sendMobItemBuffEffect(Player *player, int32_t itemId) -> void;
 }

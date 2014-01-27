@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,13 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <array>
 #include <memory>
 
-using std::unique_ptr;
-
 class Item;
 class Player;
 
 struct TradeInfo {
-	TradeInfo() : count(0), mesos(0), accepted(false) {
+	TradeInfo()
+	{
 		for (uint8_t i = 0; i < TradeSize; i++) {
 			slot[i] = false;
 			items[i] = 0;
@@ -36,41 +35,42 @@ struct TradeInfo {
 
 	const static uint8_t TradeSize = 9;
 
-	int32_t mesos;
-	uint8_t count;
-	bool accepted;
-	std::array<Item *, TradeSize> items;
-	std::array<bool, TradeSize> slot;
+	bool accepted = false;
+	uint8_t count = 0;
+	int32_t mesos = 0;
+	array_t<Item *, TradeSize> items;
+	array_t<bool, TradeSize> slot;
 };
 
 class ActiveTrade {
+	NONCOPYABLE(ActiveTrade);
+	NO_DEFAULT_CONSTRUCTOR(ActiveTrade);
 public:
 	ActiveTrade(Player *starter, Player *receiver, int32_t id);
 
-	int32_t getId() const { return m_id; }
-	TradeInfo * getSenderTrade() const { return m_sender.get(); }
-	TradeInfo * getReceiverTrade() const { return m_receiver.get(); }
+	auto getId() const -> int32_t { return m_id; }
+	auto getSenderTrade() const -> TradeInfo * { return m_sender.get(); }
+	auto getReceiverTrade() const -> TradeInfo * { return m_receiver.get(); }
 
-	// Wrapper functions using their IDs in case the pointers are now bad
-	Player * getSender();
-	Player * getReceiver();
+	auto getSender() -> Player *;
+	auto getReceiver() -> Player *;
 
-	bool bothCanTrade();
-	bool bothAccepted();
-	void returnTrade();
-	void swapTrade();
-	void accept(TradeInfo *unit);
-	int32_t addMesos(Player *holder, TradeInfo *unit, int32_t amount);
-	Item * addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount);
-	bool isItemInSlot(TradeInfo *unit, uint8_t tradeSlot) { return (tradeSlot > TradeInfo::TradeSize ? true : unit->slot[tradeSlot - 1]); }
+	auto bothCanTrade() -> bool;
+	auto bothAccepted() -> bool;
+	auto returnTrade() -> void;
+	auto swapTrade() -> void;
+	auto accept(TradeInfo *unit) -> void;
+	auto addMesos(Player *holder, TradeInfo *unit, int32_t amount) -> int32_t;
+	auto addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) -> Item *;
+	auto isItemInSlot(TradeInfo *unit, uint8_t tradeSlot) -> bool { return (tradeSlot > TradeInfo::TradeSize ? true : unit->slot[tradeSlot - 1]); }
 private:
-	unique_ptr<TradeInfo> m_sender;
-	unique_ptr<TradeInfo> m_receiver;
-	int32_t m_id;
-	int32_t m_senderId;
-	int32_t m_receiverId;
+	auto canTrade(Player *target, TradeInfo *unit) -> bool;
+	auto giveItems(Player *target, TradeInfo *unit) -> void;
+	auto giveMesos(Player *player, TradeInfo *info, bool traded = false) -> void;
 
-	bool canTrade(Player *target, TradeInfo *unit);
-	void giveItems(Player *target, TradeInfo *unit);
-	void giveMesos(Player *player, TradeInfo *info, bool traded = false);
+	int32_t m_id = 0;
+	int32_t m_senderId = 0;
+	int32_t m_receiverId = 0;
+	owned_ptr_t<TradeInfo> m_sender;
+	owned_ptr_t<TradeInfo> m_receiver;
 };

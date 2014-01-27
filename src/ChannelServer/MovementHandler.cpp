@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
+auto MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) -> Pos {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
@@ -116,13 +116,12 @@ Pos MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) {
 				stance = packet.get<int8_t>();
 				break;
 			default:
-				std::cerr << "New type of movement: 0x" << std::hex << (int16_t) type << std::endl;
+				std::cerr << "New type of movement: 0x" << std::hex << static_cast<int16_t>(type) << std::endl;
 				break;
 		}
 	}
+
 	Pos pos(x, y);
-	life->setPos(pos);
-	life->setFh(foothold);
-	life->setStance(stance);
+	life->resetMovement(foothold, pos, stance);
 	return pos;
 }

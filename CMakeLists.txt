@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Vana)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -m32)
 
 set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/build/bin")

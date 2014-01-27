@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,9 +24,9 @@ class Player;
 struct TradeInfo;
 
 namespace TradeHandler {
-	void tradeHandler(Player *player, PacketReader &packet);
-	void removeTrade(int32_t id);
-	void cancelTrade(Player *player);
+	auto tradeHandler(Player *player, PacketReader &packet) -> void;
+	auto removeTrade(int32_t id) -> void;
+	auto cancelTrade(Player *player) -> void;
 
-	int32_t getTaxLevel(int32_t mesos);
+	auto getTaxLevel(int32_t mesos) -> int32_t;
 }

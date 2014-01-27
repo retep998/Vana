@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,18 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Variables.h"
 
-void Variables::deleteVariable(const string &name) {
+auto Variables::deleteVariable(const string_t &name) -> void {
 	auto kvp = m_variables.find(name);
-	if (kvp != m_variables.end()) {
+	if (kvp != std::end(m_variables)) {
 		m_variables.erase(kvp);
 	}
 }
 
-void Variables::setVariable(const string &name, const string &val) {
+auto Variables::setVariable(const string_t &name, const string_t &val) -> void {
 	m_variables[name] = val;
 }
 
-string Variables::getVariable(const string &name) {
+auto Variables::getVariable(const string_t &name) -> string_t {
 	auto kvp = m_variables.find(name);
-	return kvp != m_variables.end() ? kvp->second : "";
+	return kvp != std::end(m_variables) ? kvp->second : "";
 }

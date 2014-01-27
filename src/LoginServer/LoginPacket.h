@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,9 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <vector>
 #include <string>
-
-using std::string;
-using std::vector;
 
 class Player;
 class World;
@@ -52,23 +49,23 @@ namespace LoginPacket {
 			MaxLoad = 0x02
 		};
 	}
-	void loginError(Player *player, int16_t errorId);
-	void loginBan(Player *player, int8_t reason, int32_t expire);
-	void loginProcess(Player *player, int8_t id);
-	void loginConnect(Player *player, const string &username);
-	void pinAssigned(Player *player);
-	void genderDone(Player *player, int8_t gender);
-	void showWorld(Player *player, World *world);
-	void worldEnd(Player *player);
-	void showChannels(Player *player, int8_t status);
-	void channelSelect(Player *player);
-	void channelOffline(Player *player);
-	void showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk);
-	void showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars); // Used for "view all characters"
-	void showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars);
-	void showCharacter(Player *player, const Character &charc);
-	void checkName(Player *player, const string &name, uint8_t message);
-	void deleteCharacter(Player *player, int32_t id, uint8_t result);
-	void connectIp(Player *player, int32_t charId);
-	void relogResponse(Player *player);
+	auto loginError(Player *player, int16_t errorId) -> void;
+	auto loginBan(Player *player, int8_t reason, int32_t expire) -> void;
+	auto loginProcess(Player *player, int8_t id) -> void;
+	auto loginConnect(Player *player, const string_t &username) -> void;
+	auto pinAssigned(Player *player) -> void;
+	auto genderDone(Player *player, int8_t gender) -> void;
+	auto showWorld(Player *player, World *world) -> void;
+	auto worldEnd(Player *player) -> void;
+	auto showChannels(Player *player, int8_t status) -> void;
+	auto channelSelect(Player *player) -> void;
+	auto channelOffline(Player *player) -> void;
+	auto showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) -> void;
+	auto showViewAllCharacters(Player *player, uint8_t worldId, const vector_t<Character> &chars) -> void;
+	auto showCharacters(Player *player, const vector_t<Character> &chars, int32_t maxChars) -> void;
+	auto showCharacter(Player *player, const Character &charc) -> void;
+	auto checkName(Player *player, const string_t &name, uint8_t message) -> void;
+	auto deleteCharacter(Player *player, int32_t id, uint8_t result) -> void;
+	auto connectIp(Player *player, int32_t charId) -> void;
+	auto relogResponse(Player *player) -> void;
 }

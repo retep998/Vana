@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,34 +20,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LuaScriptable.h"
 #include <string>
 
-using std::string;
-
 class Reactor;
 
 class LuaReactor : LuaScriptable {
+	NONCOPYABLE(LuaReactor);
+	NO_DEFAULT_CONSTRUCTOR(LuaReactor);
 public:
-	LuaReactor(const string &filename, int32_t playerId, int32_t reactorId, int32_t mapId);
+	LuaReactor(const string_t &filename, int32_t playerId, int32_t reactorId, int32_t mapId);
 private:
-	int32_t m_reactorId;
-	int32_t m_mapId;
-	Reactor *m_reactor;
+	int32_t m_reactorId = -1;
+	int32_t m_mapId = -1;
 };
 
 namespace LuaExports {
-	Reactor * getReactor(lua_State *luaVm);
+	auto getReactor(lua_State *luaVm) -> Reactor *;
 
 	// Reactor exports
 
 	// Reactor
-	int getState(lua_State *luaVm);
-	int reset(lua_State *luaVm);
-	int setStateReactor(lua_State *luaVm);
+	auto getState(lua_State *luaVm) -> int;
+	auto reset(lua_State *luaVm) -> int;
+	auto setStateReactor(lua_State *luaVm) -> int;
 
 	// Miscellaneous
-	int dropItemReactor(lua_State *luaVm);
-	int getDistanceReactor(lua_State *luaVm);
+	auto dropItemReactor(lua_State *luaVm) -> int;
+	auto getDistanceReactor(lua_State *luaVm) -> int;
 
 	// Mob
-	int spawnMobReactor(lua_State *luaVm);
-	int spawnZakum(lua_State *luaVm);
+	auto spawnMobReactor(lua_State *luaVm) -> int;
+	auto spawnZakum(lua_State *luaVm) -> int;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 #include "SmsgHeader.h"
 
-void BuffsPacket::useSkill(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
+auto BuffsPacket::useSkill(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
 
@@ -70,7 +70,7 @@ void BuffsPacket::useSkill(Player *player, int32_t skillId, const seconds_t &tim
 	}
 }
 
-void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
+auto BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
 
@@ -107,7 +107,7 @@ void BuffsPacket::giveDebuff(Player *player, uint8_t skillId, uint8_t level, con
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
+auto BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_CANCEL);
 
@@ -127,7 +127,7 @@ void BuffsPacket::endDebuff(Player *player, const ActiveBuff &playerSkill) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
+auto BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_CANCEL);
 
@@ -147,7 +147,7 @@ void BuffsPacket::endSkill(Player *player, const ActiveBuff &playerSkill) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) {
+auto BuffsPacket::usePirateBuff(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill) -> void {
 	PacketCreator packet;
 	int16_t castedTime = static_cast<int16_t>(time.count());
 	packet.add<header_t>(SMSG_SKILL_USE);
@@ -188,7 +188,7 @@ void BuffsPacket::usePirateBuff(Player *player, int32_t skillId, const seconds_t
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) {
+auto BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) -> void {
 	int32_t castedValue = static_cast<int32_t>(playerSkill.vals[0]);
 	int16_t castedTime = static_cast<int16_t>(time.count());
 	PacketCreator packet;
@@ -225,7 +225,7 @@ void BuffsPacket::useSpeedInfusion(Player *player, int32_t skillId, const second
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::useMount(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId) {
+auto BuffsPacket::useMount(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
 
@@ -260,7 +260,7 @@ void BuffsPacket::useMount(Player *player, int32_t skillId, const seconds_t &tim
 	player->getMap()->sendPacket(packet, player);
 }
 
-void BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId) {
+auto BuffsPacket::useHomingBeacon(Player *player, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_USE);
 

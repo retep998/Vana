@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,22 +21,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 
 class BlockCipherIv {
-	// Friended because the Decoder has a legit need for bytes (to do encryption) while nothing else does
-	friend class Decoder;
 public:
 	BlockCipherIv();
-	BlockCipherIv(uint32_t iv);
+	explicit BlockCipherIv(uint32_t iv);
 
-	void updateIv(uint32_t iv);
-	void shuffle();
-	uint32_t getIv() const { return *(uint32_t*) m_iv; }
+	auto updateIv(uint32_t iv) -> void;
+	auto shuffle() -> void;
+	auto getIv() const -> uint32_t { return *(uint32_t *)(m_iv); }
 private:
-	unsigned char * getBytes() { return m_iv; }
-	inline void setIv(unsigned char *dest, unsigned char *source) {
+	// Friended because the Decoder has a legit need for bytes (to do encryption) while nothing else does
+	friend class Decoder;
+
+	auto getBytes() -> unsigned char * { return m_iv; }
+
+	inline
+	auto setIv(unsigned char *dest, unsigned char *source) -> void {
 		// The 16 byte IV is the 4 byte IV repeated 4 times
 		for (uint8_t i = 0; i < 4; ++i) {
 			memcpy(dest + i * 4, source, 4);
 		}
 	}
+
 	unsigned char m_iv[16];
 };

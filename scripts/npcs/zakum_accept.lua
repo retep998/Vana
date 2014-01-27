@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,9 +46,20 @@ end
 function compatibilityCheck()
 	if setInstance("zakumSignup") then
 		gm = isGm();
-		gmInstance = getInstanceVariable("gm", true);
-		return (not gm and gmInstance ~= 1) or (gm and gmInstance == 1);
+		gmInstance = getInstanceVariable("gm");
+		revertInstance();
+		return gm == gmInstance;
 	end
+	return false;
+end
+
+function summonedCheck()
+	if setInstance("zakum") then
+		summoned = getInstanceVariable("summoned");
+		revertInstance();
+		return summoned;
+	end
+	return false;
 end
 
 if getLevel() < 50 then
@@ -81,7 +92,7 @@ if not verifyInstance() then
 					if not isGm() and (not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Zakum Expedition Squad.");
 					else
-						createInstance("zakumSignup", 5 * 60, true);
+						createInstance("zakumSignup", 2 * 60, true);
 						addPlayerSignUp(getName());
 						setInstanceVariable("master", getName());
 						setInstanceVariable("gm", isGm());
@@ -103,8 +114,8 @@ if not verifyInstance() then
 	sendOk();
 else
 	if getName() == getInstanceVariable("master") then
-		if getInstanceVariable("enter", true) then
-			if getReactorState(211042300, 2118002) == 1 then
+		if getInstanceVariable("enter") then
+			if summonedCheck() then
 				addText("The battle has already begun.");
 				sendOk();
 			else
@@ -168,12 +179,13 @@ else
 				end
 			elseif choice == 3 then
 				if isGm() or getInstanceSignupCount() >= 6 then
-					setInstanceVariable("enter", "1");
+					setInstanceVariable("enter", true);
 					messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
 					createInstance("zakum", 0, false);
 
 					if isGm() and setInstance("zakum") then
-						setInstanceVariable("gm", 1);
+						setInstanceVariable("gm", true);
+						revertInstance();
 					end
 
 					enterBossMap();
@@ -184,14 +196,14 @@ else
 			end
 		end
 	else
-		if getInstanceVariable("enter", true) and getReactorState(211042300, 2118002) == 0 then
+		if getInstanceVariable("enter") and not summonedCheck() then
 			if isPlayerSignedUp(getName()) then
 				enterBossMap();
 			else
 				addText("You may not enter this premise if you are not a member of the Zakum Expedition Squad.");
 				sendOk();
 			end
-		elseif getReactorState(211042300, 2118002) == 1 then
+		elseif summonedCheck() then
 			addText("The battle has already begun.");
 			sendOk();
 		else
@@ -210,7 +222,7 @@ else
 					addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
 				elseif isPlayerSignedUp(getName()) then
 					addText("You are already part of the expedition squad.");
-				elseif getInstanceVariable("enter", true) then
+				elseif getInstanceVariable("enter") then
 					addText("The application process for the Zakum Expedition Squad had already been concluded.");
 				else
 					addPlayerSignUp(getName());

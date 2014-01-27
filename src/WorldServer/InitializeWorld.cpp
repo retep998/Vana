@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeWorld.h"
 #include "PlayerDataProvider.h"
 
-void Initializing::loadData() {
+auto Initializing::loadData() -> void {
 	// Used to load things on world startup
 }
 
-void Initializing::worldEstablished() {
+auto Initializing::worldEstablished() -> void {
 	// Used to load things when the world ID is assigned
-	PlayerDataProvider::Instance()->loadData();
+	PlayerDataProvider::getInstance().loadData();
 }

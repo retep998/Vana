@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,89 +24,85 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::shared_ptr;
-using std::string;
-using std::unique_ptr;
-using std::vector;
-
 class PacketCreator;
 class Player;
 
 class Npc {
+	NONCOPYABLE(Npc);
+	NO_DEFAULT_CONSTRUCTOR(Npc);
 public:
 	Npc(int32_t npcId, Player *player, int16_t questId = 0, bool isStart = false);
 	Npc(int32_t npcId, Player *player, const Pos &pos, int16_t questId = 0, bool isStart = false);
-	Npc(int32_t npcId, Player *player, const string &script);
+	Npc(int32_t npcId, Player *player, const string_t &script);
 
-	static bool hasScript(int32_t npcId, int16_t questId, bool start);
+	static auto hasScript(int32_t npcId, int16_t questId, bool start) -> bool;
 
-	void run();
+	auto run() -> void;
 
-	PacketCreator npcPacket(int8_t type, bool addText = true);
+	auto npcPacket(int8_t type, bool addText = true) -> PacketCreator;
 
-	void sendSimple();
-	void sendYesNo();
-	void sendDialog(bool back, bool next, bool save = true);
-	void sendAcceptDecline();
-	void sendAcceptDeclineNoExit();
-	void sendGetText(int16_t min, int16_t max, const string &def = "");
-	void sendGetNumber(int32_t def, int32_t min, int32_t max);
-	void sendStyle(int32_t styles[], uint8_t size);
-	void sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time);
-	void sendQuestion(const string &question, const string &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time);
-	void addText(const string &text) { m_text += text; }
-	void end() { m_cend = true; }
+	auto sendSimple() -> void;
+	auto sendYesNo() -> void;
+	auto sendDialog(bool back, bool next, bool save = true) -> void;
+	auto sendAcceptDecline() -> void;
+	auto sendAcceptDeclineNoExit() -> void;
+	auto sendGetText(int16_t min, int16_t max, const string_t &def = "") -> void;
+	auto sendGetNumber(int32_t def, int32_t min, int32_t max) -> void;
+	auto sendStyle(int32_t styles[], uint8_t size) -> void;
+	auto sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void;
+	auto sendQuestion(const string_t &question, const string_t &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) -> void;
+	auto addText(const string_t &text) -> void { m_text += text; }
+	auto end() -> void { m_cend = true; }
 
-	void proceedBack();
-	void proceedNext();
-	void proceedSelection(uint8_t selected); // Yes/No, Accept/Decline, List
-	void proceedNumber(int32_t number); // sendGetNumber
-	void proceedText(const string &text); // sendGetText and sendQuiz
+	auto proceedBack() -> void;
+	auto proceedNext() -> void;
+	auto proceedSelection(uint8_t selected) -> void;
+	auto proceedNumber(int32_t number) -> void;
+	auto proceedText(const string_t &text) -> void;
 
-	Player * getPlayer() const { return m_player; }
-	uint8_t getSentDialog() const { return m_sentDialog; }
-	int32_t getNpcId() const { return m_npcId; }
-	int32_t getNumber() const { return m_getNum; }
-	int32_t getSelected() const { return m_selected; }
-	string & getText() { return m_getText; }
+	auto getPlayer() const -> Player * { return m_player; }
+	auto getSentDialog() const -> uint8_t { return m_sentDialog; }
+	auto getNpcId() const -> int32_t { return m_npcId; }
+	auto getNumber() const -> int32_t { return m_getNum; }
+	auto getSelected() const -> int32_t { return m_selected; }
+	auto getText() -> string_t & { return m_getText; }
 
-	bool isEnd() const { return m_cend; }
-	Pos getPos() const { return m_pos; }
+	auto isEnd() const -> bool { return m_cend; }
+	auto getPos() const -> Pos { return m_pos; }
 
-	void setEndScript(int32_t npcId, const string &fullscript);
+	auto setEndScript(int32_t npcId, const string_t &fullscript) -> void;
 
-	bool checkEnd();
-	void showShop();
+	auto checkEnd() -> bool;
+	auto showShop() -> void;
 private:
-	struct State { // For "back" button
-		State(const string &text, bool back, bool next) : text(text), back(back), next(next) {}
-		string text;
-		bool back;
-		bool next;
+	struct NpcChatState {
+		NONCOPYABLE(NpcChatState);
+	public:
+		NpcChatState(const string_t &text, bool back, bool next) : text(text), back(back), next(next) { }
+
+		bool back = false;
+		bool next = false;
+		string_t text;
 	};
-	typedef shared_ptr<State> StatePtr;
 
-	void sendDialog(StatePtr npcState);
-	void initData(Player *p, int32_t id);
-	string getScript(int16_t questId, bool start);
-	void initScript(Player *player, int32_t npcId, const string &filename);
+	auto sendDialog(ref_ptr_t<NpcChatState> npcState) -> void;
+	auto getScript(int16_t questId, bool start) -> string_t;
+	auto initScript(const string_t &filename) -> void;
 
-	bool m_cend;
-	uint8_t m_sentDialog; // Used to check if the user respond with the same type of the dialog sent
-	uint8_t m_selected;
-	int32_t m_nextNpc;
-	int32_t m_npcId;
-	int32_t m_getNum;
-	string m_text;
-	string m_getText;
-	string m_script;
-	Player *m_player;
+	bool m_cend = false;
+	uint8_t m_sentDialog = 0; // Used to check if the user respond with the same type of the dialog sent
+	uint8_t m_selected = 0;
+	int32_t m_nextNpc = 0;
+	int32_t m_npcId = 0;
+	int32_t m_getNum = 0;
+	uint32_t m_state = 0;
+	Player *m_player = nullptr;
+	string_t m_text;
+	string_t m_getText;
+	string_t m_script;
 	Pos m_pos;
-
-	uint32_t m_state; // For "back" button
-	vector<StatePtr> m_previousStates; // For "back" button
-
-	unique_ptr<LuaNpc> m_luaNpc;
+	owned_ptr_t<LuaNpc> m_luaNpc;
+	vector_t<ref_ptr_t<NpcChatState>> m_previousStates;
 };
 
 namespace NpcDialogs {

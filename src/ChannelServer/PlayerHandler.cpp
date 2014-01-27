@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,12 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::bind;
-
-void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) -> void {
 	int32_t doorId = packet.get<int32_t>();
 	bool toTown = !packet.get<bool>();
-	//Player *doorHolder = PlayerDataProvider::Instance()->getPlayer(doorId);
+	//Player *doorHolder = PlayerDataProvider::getInstance().getPlayer(doorId);
 	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
 	//	// Hacking or lag
 	//	return;
@@ -56,7 +54,7 @@ void PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) {
 	//doorHolder->getDoor()->warp(player, toTown);
 }
 
-void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
@@ -79,15 +77,15 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	if (type != MapDamage) {
 		mobId = packet.get<int32_t>();
 		mapMobId = packet.get<int32_t>();
-		Mob *mob = player->getMap()->getMob(mapMobId);
+		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob != nullptr && mob->getMobId() != mobId) {
 			// Hacking
 			return;
 		}
-		MobInfo mobInfo = (mob != nullptr ? mob->getInfo() : MobDataProvider::Instance()->getMobInfo(mobId));
+		auto mobInfo = MobDataProvider::getInstance().getMobInfo(mobId);
 		if (type != BumpDamage) {
 			int32_t attackerId = (mobInfo->link != 0 ? mobInfo->link : mobId);
-			MobAttackInfo *attack = MobDataProvider::Instance()->getMobAttack(attackerId, type);
+			MobAttackInfo *attack = MobDataProvider::getInstance().getMobAttack(attackerId, type);
 			if (attack == nullptr) {
 				// Hacking, I think
 				return;
@@ -167,7 +165,7 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 
 			if (newMesos < 0) {
 				// Special damage calculation for not having enough mesos
-				double reduction = 2.0 - ((double)(mesos / mesoLoss)) / 2.0;
+				double reduction = 2.0 - static_cast<double>(mesos / mesoLoss) / 2.0;
 				damage = static_cast<uint16_t>(damage / reduction);
 				// This puts us pretty close to the damage observed clientside, needs improvement
 				// TODO: Improve formula
@@ -257,19 +255,19 @@ void PlayerHandler::handleDamage(Player *player, PacketReader &packet) {
 	PlayersPacket::damagePlayer(player, damage, mobId, hit, type, stance, noDamageId, pgmr);
 }
 
-void PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) -> void {
 	int32_t face = packet.get<int32_t>();
 	PlayersPacket::faceExpression(player, face);
 }
 
-void PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
-	if (Player *info = PlayerDataProvider::Instance()->getPlayer(packet.get<int32_t>())) {
+	if (Player *info = PlayerDataProvider::getInstance().getPlayer(packet.get<int32_t>())) {
 		PlayersPacket::showInfo(player, info, packet.get<bool>());
 	}
 }
 
-void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleHeal(Player *player, PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
 	int16_t hp = packet.get<int16_t>();
 	int16_t mp = packet.get<int16_t>();
@@ -281,7 +279,7 @@ void PlayerHandler::handleHeal(Player *player, PacketReader &packet) {
 	player->getStats()->modifyMp(mp);
 }
 
-void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleMoving(Player *player, PacketReader &packet) -> void {
 	if (packet.get<uint8_t>() != player->getPortalCount()) {
 		// Portal count doesn't match, usually an indication of hacking
 		return;
@@ -291,14 +289,14 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	packet.reset(11);
 	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
 
-	if (player->getFh() == 0) {
+	if (player->getFoothold() == 0) {
 		// Player is floating in the air
 		int32_t mapId = player->getMapId();
 		const Pos &playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
-		const Pos &floor = map->findFloor(playerPos);
-		if (floor.y == playerPos.y) {
+		Pos floor;
+		if (map->findFloor(playerPos, floor) == FindFloorResult::NotFound) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
 			if (count > 3) {
@@ -314,7 +312,7 @@ void PlayerHandler::handleMoving(Player *player, PacketReader &packet) {
 	}
 }
 
-void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) -> void {
 	int32_t skillId = packet.get<int32_t>();
 	switch (skillId) {
 		case Skills::Hero::MonsterMagnet:
@@ -324,13 +322,13 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 		case Skills::FpArchMage::BigBang:
 		case Skills::IlArchMage::BigBang:
 		case Skills::Bishop::BigBang: {
-			SpecialSkillInfo info;
+			ChargeOrStationarySkillInfo info;
 			info.skillId = skillId;
 			info.level = packet.get<uint8_t>();
 			info.direction = packet.get<uint8_t>();
 			info.weaponSpeed = packet.get<uint8_t>();
-			player->setSpecialSkill(info);
-			SkillsPacket::showSpecialSkill(player, info);
+			player->setChargeOrStationarySkill(info);
+			SkillsPacket::showChargeOrStationarySkill(player, info);
 			break;
 		}
 		case Skills::ChiefBandit::Chakra: {
@@ -348,7 +346,7 @@ void PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) {
 	}
 }
 
-void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) -> void {
 	int32_t cardId = packet.get<int32_t>();
 	if (cardId != 0 && player->getMonsterBook()->getCard(cardId) == 0) {
 		// Hacking
@@ -356,13 +354,13 @@ void PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) {
 	}
 	int32_t newCover = 0;
 	if (cardId != 0) {
-		newCover = ItemDataProvider::Instance()->getMobId(cardId);
+		newCover = ItemDataProvider::getInstance().getMobId(cardId);
 	}
 	player->getMonsterBook()->setCover(newCover);
 	MonsterBookPacket::changeCover(player, cardId);
 }
 
-void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
+auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) -> void {
 	if (!player->isAdmin()) {
 		// Hacking
 		return;
@@ -378,13 +376,13 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		return;
 	}
 
-	const string &line1 = packet.getString();
-	const string &line2 = packet.getString();
-	const string &line3 = packet.getString();
-	const string &line4 = packet.getString();
-	const string &line5 = packet.getString();
+	const string_t &line1 = packet.getString();
+	const string_t &line2 = packet.getString();
+	const string_t &line3 = packet.getString();
+	const string_t &line4 = packet.getString();
+	const string_t &line5 = packet.getString();
 	if (hasTarget) {
-		receiver = PlayerDataProvider::Instance()->getPlayer(packet.getString());
+		receiver = PlayerDataProvider::getInstance().getPlayer(packet.getString());
 	}
 
 	int32_t time = 15;
@@ -393,15 +391,15 @@ void PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) {
 		case 2: time = 60; break;
 	}
 
-	MapleTvs::Instance()->addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	MapleTvs::getInstance().addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1) {
-		std::ostringstream output;
+		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
 		InventoryPacket::showSuperMegaphone(player, output.str(), useWhisper);
 	}
 }
 
-void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
+auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void {
 	const Attack &attack = compileAttack(player, packet, SkillTypes::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -419,14 +417,14 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	int32_t map = player->getMapId();
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
-	SkillLevelInfo *picking = SkillDataProvider::Instance()->getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
+	SkillLevelInfo *picking = SkillDataProvider::getInstance().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
 	Pos origin;
-	vector<int32_t> ppDamages;
+	vector_t<int32_t> ppDamages;
 
 	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
 		int8_t connectedHits = 0;
-		Mob *mob = Maps::getMap(map)->getMob(target.first);
+		auto mob = Maps::getMap(map)->getMob(target.first);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -452,7 +450,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				damage = (mob->isBoss() ? Stats::MaxDamage : (mob->getHp() - 1)); // If a Paladin wants to prove that it does something else, feel free
 			}
 			else if (skillId == Skills::Bandit::Steal && !mob->isBoss()) {
-				DropHandler::doDrops(player->getId(), map, mob->getInfo()->level, mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
+				DropHandler::doDrops(player->getId(), map, mob->getLevel(), mob->getMobId(), mob->getPos(), false, false, mob->getTauntEffect(), true);
 			}
 			int32_t tempHp = mob->getHp();
 			mob->applyDamage(player->getId(), damage);
@@ -479,7 +477,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
-			Timer::create([ppDrop, origin]() { ppDrop->doDrop(origin); },
+			Timer::create([ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				nullptr, milliseconds_t(175 * pickpocket));
 		}
@@ -516,7 +514,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 				player->getStats()->setHp(player->getStats()->getMaxHp());
 			}
 			else {
-				player->getStats()->modifyHp((int16_t) hpRecover);
+				player->getStats()->modifyHp(static_cast<int16_t>(hpRecover));
 			}
 			break;
 		}
@@ -533,7 +531,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 		case Skills::SuperGm::SuperDragonRoar:
 			break;
 		case Skills::DragonKnight::DragonRoar: {
-			int16_t xProperty = SkillDataProvider::Instance()->getSkill(skillId, level)->x;
+			int16_t xProperty = SkillDataProvider::getInstance().getSkill(skillId, level)->x;
 			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
 			if (reduction < player->getStats()->getHp()) {
 				player->getStats()->damageHp(reduction);
@@ -562,7 +560,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 			int8_t skillLevel = player->getSkills()->getSkillLevel(Skills::Paladin::AdvancedCharge);
 			int16_t xProperty = 0;
 			if (skillLevel > 0) {
-				xProperty = SkillDataProvider::Instance()->getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
+				xProperty = SkillDataProvider::getInstance().getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
 			if ((xProperty != 100) && (xProperty == 0 || Randomizer::rand<int16_t>(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
@@ -576,7 +574,7 @@ void PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) {
 	}
 }
 
-void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
+auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> void {
 	const Attack &attack = compileAttack(player, packet, SkillTypes::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -590,14 +588,14 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 		case Skills::Bowmaster::Hurricane:
 		case Skills::WindArcher::Hurricane:
 		case Skills::Corsair::RapidFire:
-			if (player->getSpecialSkill() == 0) {
-				SpecialSkillInfo info;
+			if (!player->hasChargeOrStationarySkill()) {
+				ChargeOrStationarySkillInfo info;
 				info.skillId = skillId;
 				info.direction = attack.animation;
 				info.weaponSpeed = attack.weaponSpeed;
 				info.level = level;
-				player->setSpecialSkill(info);
-				SkillsPacket::showSpecialSkill(player, info);
+				player->setChargeOrStationarySkill(info);
+				SkillsPacket::showChargeOrStationarySkill(player, info);
 			}
 			break;
 	}
@@ -609,7 +607,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 
 	for (const auto &target : attack.damages) {
 		int32_t mapMobId = target.first;
-		Mob *mob = player->getMap()->getMob(mapMobId);
+		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -681,7 +679,7 @@ void PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) {
 	}
 }
 
-void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
+auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void {
 	const Attack &attack = compileAttack(player, packet, SkillTypes::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
@@ -696,7 +694,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	eater.skillId = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
 	if (eater.level > 0) {
-		SkillLevelInfo *eaaat = SkillDataProvider::Instance()->getSkill(eater.skillId, eater.level);
+		SkillLevelInfo *eaaat = SkillDataProvider::getInstance().getSkill(eater.skillId, eater.level);
 		eater.prop = eaaat->prop;
 		eater.x = eaaat->x;
 	}
@@ -710,7 +708,7 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
-		Mob *mob = player->getMap()->getMob(mapMobId);
+		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -748,13 +746,14 @@ void PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) {
 	switch (skillId) {
 		case Skills::FpMage::PoisonMist:
 		case Skills::BlazeWizard::FlameGear: {
-			Mist *mist = new Mist(player->getMapId(), player, player->getPos(), SkillDataProvider::Instance()->getSkill(skillId, level), skillId, level, true);
+			SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level, true);
 			break;
 		}
 	}
 }
 
-void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) {
+auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) -> void {
 	const Attack &attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
 	PlayersPacket::useEnergyChargeAttack(player, attack);
 
@@ -765,7 +764,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
-		Mob *mob = player->getMap()->getMob(mapMobId);
+		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -793,7 +792,7 @@ void PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	}
 }
 
-void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
+auto PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) -> void {
 	const Attack &attack = compileAttack(player, packet, SkillTypes::Summon);
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
@@ -806,7 +805,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 		int32_t targetTotal = 0;
 		int32_t mapMobId = target.first;
 		int8_t connectedHits = 0;
-		Mob *mob = player->getMap()->getMob(mapMobId);
+		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob == nullptr) {
 			continue;
 		}
@@ -833,7 +832,7 @@ void PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) {
 	}
 }
 
-Attack PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t skillType) {
+auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t skillType) -> Attack {
 	Attack attack;
 	int8_t targets = 0;
 	int8_t hits = 0;

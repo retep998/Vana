@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerDataProvider.h"
 
-LuaInstance::LuaInstance(const string &name, int32_t playerId) : LuaScriptable("scripts/instances/" + name + ".lua", playerId) {
+LuaInstance::LuaInstance(const string_t &name, int32_t playerId) :
+	LuaScriptable("scripts/instances/" + name + ".lua", playerId)
+{
 	initialize();
 	setVariable("system_instanceName", name);
 
@@ -30,7 +32,7 @@ LuaInstance::LuaInstance(const string &name, int32_t playerId) : LuaScriptable("
 	LuaScriptable::run(); // Running is loading the functions
 }
 
-bool LuaInstance::run(InstanceMessages message) {
+auto LuaInstance::run(InstanceMessages message) -> bool {
 	switch (message) {
 		case BeginInstance:
 			lua_getglobal(luaVm, "beginInstance");
@@ -43,7 +45,7 @@ bool LuaInstance::run(InstanceMessages message) {
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
+auto LuaInstance::run(InstanceMessages message, int32_t parameter) -> bool {
 	switch (message) {
 		case PlayerDeath:
 			lua_getglobal(luaVm, "playerDeath");
@@ -52,7 +54,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 		case InstanceTimerEnd:
 		case InstanceTimerNaturalEnd:
 			lua_getglobal(luaVm, "instanceTimerEnd");
-			lua_pushboolean(luaVm, (parameter != 0));
+			lua_pushboolean(luaVm, parameter != 0);
 			break;
 		case PartyDisband:
 			lua_getglobal(luaVm, "partyDisband");
@@ -66,13 +68,13 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter) {
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_t parameter2) {
+auto LuaInstance::run(InstanceMessages message, const string_t &parameter1, int32_t parameter2) -> bool {
 	switch (message) {
 		case TimerEnd:
 		case TimerNaturalEnd:
 			lua_getglobal(luaVm, "timerEnd");
 			lua_pushstring(luaVm, parameter1.c_str());
-			lua_pushboolean(luaVm, (parameter2 != 0));
+			lua_pushboolean(luaVm, parameter2 != 0);
 			break;
 	}
 	if (lua_pcall(luaVm, 2, 0, 0)) {
@@ -82,7 +84,7 @@ bool LuaInstance::run(InstanceMessages message, const string &parameter1, int32_
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) {
+auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) -> bool {
 	switch (message) {
 		case PlayerDisconnect:
 			lua_getglobal(luaVm, "playerDisconnect");
@@ -103,7 +105,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) {
+auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> bool {
 	switch (message) {
 		case MobDeath:
 			lua_getglobal(luaVm, "mobDeath");
@@ -122,7 +124,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) {
+auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> bool {
 	switch (message) {
 		case PlayerChangeMap:
 			lua_getglobal(luaVm, "changeMap");
@@ -139,7 +141,7 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) {
+auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> bool {
 	switch (message) {
 		case FriendlyMobHit:
 			lua_getglobal(luaVm, "friendlyHit");
@@ -157,8 +159,8 @@ bool LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-int LuaExports::createInstanceInstance(lua_State *luaVm) {
-	string name = lua_tostring(luaVm, 1);
+auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
+	string_t name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
 	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
@@ -167,7 +169,7 @@ int LuaExports::createInstanceInstance(lua_State *luaVm) {
 	}
 
 	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
-	Instances::InstancePtr()->addInstance(instance);
+	Instances::getInstance().addInstance(instance);
 	instance->sendMessage(BeginInstance);
 
 	if (instance->showTimer()) {

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,29 +20,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include <functional>
 
-ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation) :
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation) :
 	m_acceptor(ioService, endpoint),
 	m_apf(apf),
 	m_patchLocation(patchLocation),
 	m_loginConfig(loginConfig),
 	m_isServer(isServer)
 {
-	m_sessionManager = std::make_shared<SessionManager>();
+	m_sessionManager = make_ref_ptr<SessionManager>();
 	startAccepting();
 }
 
-void ConnectionAcceptor::stop() {
+auto ConnectionAcceptor::stop() -> void {
 	m_acceptor.close();
 	m_sessionManager->stopAll();
 }
 
-void ConnectionAcceptor::startAccepting() {
+auto ConnectionAcceptor::startAccepting() -> void {
 	bool ping = (m_isServer ? m_loginConfig.serverPing : m_loginConfig.clientPing);
-	SessionPtr newSession = std::make_shared<Session>(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation);
+	ref_ptr_t<Session> newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation);
 	m_acceptor.async_accept(newSession->getSocket(), std::bind(&ConnectionAcceptor::handleConnection, this, newSession, std::placeholders::_1));
 }
 
-void ConnectionAcceptor::handleConnection(SessionPtr newSession, const boost::system::error_code &error) {
+auto ConnectionAcceptor::handleConnection(ref_ptr_t<Session> newSession, const boost::system::error_code &error) -> void {
 	if (!error) {
 		newSession->start();
 		startAccepting();

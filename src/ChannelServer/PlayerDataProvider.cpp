@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,9 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cstring>
 
-PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
-
-void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
+auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) -> void {
 	// Players
 	int32_t quantity = packet.get<int32_t>();
 	int32_t i;
@@ -44,9 +42,9 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	// Parties
 	quantity = packet.get<int32_t>();
 	int8_t members, j;
-	std::shared_ptr<Party> party;
+	ref_ptr_t<Party> party;
 	for (i = 0; i < quantity; i++) {
-		party = std::make_shared<Party>(packet.get<int32_t>());
+		party = make_ref_ptr<Party>(packet.get<int32_t>());
 		party->setLeader(packet.get<int32_t>());
 		members = packet.get<int8_t>();
 
@@ -58,8 +56,8 @@ void PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) {
 	}
 }
 
-void PlayerDataProvider::parsePlayer(PacketReader &packet) {
-	std::shared_ptr<PlayerData> player = std::make_shared<PlayerData>();
+auto PlayerDataProvider::parsePlayer(PacketReader &packet) -> void {
+	ref_ptr_t<PlayerData> player = make_ref_ptr<PlayerData>();
 	player->gmLevel = packet.get<int32_t>();
 	player->admin = packet.get<bool>();
 	player->level = packet.get<uint8_t>();
@@ -72,23 +70,21 @@ void PlayerDataProvider::parsePlayer(PacketReader &packet) {
 }
 
 // Players
-void PlayerDataProvider::addPlayer(Player *player) {
+auto PlayerDataProvider::addPlayer(Player *player) -> void {
 	m_players[player->getId()] = player;
-	string upper = StringUtilities::toUpper(player->getName());
-	m_playersByName[upper] = player;
+	m_playersByName[player->getName()] = player;
 }
 
-void PlayerDataProvider::newPlayer(PacketReader &packet) {
+auto PlayerDataProvider::newPlayer(PacketReader &packet) -> void {
 	parsePlayer(packet);
 }
 
-void PlayerDataProvider::removePlayer(Player *player) {
+auto PlayerDataProvider::removePlayer(Player *player) -> void {
 	m_players.erase(player->getId());
-	string upper = StringUtilities::toUpper(player->getName());
-	m_playersByName.erase(upper);
+	m_playersByName.erase(player->getName());
 }
 
-void PlayerDataProvider::changeChannel(PacketReader &packet) {
+auto PlayerDataProvider::changeChannel(PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();
 	const Ip &ip = packet.getClass<Ip>();
 	port_t port = packet.get<port_t>();
@@ -106,35 +102,34 @@ void PlayerDataProvider::changeChannel(PacketReader &packet) {
 	}
 }
 
-void PlayerDataProvider::newConnectable(PacketReader &packet) {
+auto PlayerDataProvider::newConnectable(PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();
 	const Ip &ip = packet.getClass<Ip>();
-	Connectable::Instance()->newPlayer(playerId, ip, packet);
+	Connectable::getInstance().newPlayer(playerId, ip, packet);
 	SyncPacket::PlayerPacket::connectableEstablished(playerId);
 }
 
-void PlayerDataProvider::deleteConnectable(int32_t id) {
-	Connectable::Instance()->playerEstablished(id);
+auto PlayerDataProvider::deleteConnectable(int32_t id) -> void {
+	Connectable::getInstance().playerEstablished(id);
 }
 
-Player * PlayerDataProvider::getPlayer(int32_t id) {
+auto PlayerDataProvider::getPlayer(int32_t id) -> Player * {
 	auto kvp = m_players.find(id);
-	return kvp != m_players.end() ? kvp->second : nullptr;
+	return kvp != std::end(m_players) ? kvp->second : nullptr;
 }
 
-Player * PlayerDataProvider::getPlayer(const string &name) {
-	string upper = StringUtilities::toUpper(name);
-	auto kvp = m_playersByName.find(upper);
-	return kvp != m_playersByName.end() ? kvp->second : nullptr;
+auto PlayerDataProvider::getPlayer(const string_t &name) -> Player * {
+	auto kvp = m_playersByName.find(name);
+	return kvp != std::end(m_playersByName) ? kvp->second : nullptr;
 }
 
-void PlayerDataProvider::run(function<void (Player *)> func) {
+auto PlayerDataProvider::run(function_t<void(Player *)> func) -> void {
 	for (const auto &kvp : m_players) {
 		func(kvp.second);
 	}
 }
 
-void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
+auto PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) -> void {
 	for (const auto &kvp : m_players) {
 		Player *player = kvp.second;
 		if (player->getGmLevel() >= minGmLevel) {
@@ -143,7 +138,7 @@ void PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) {
 	}
 }
 
-void PlayerDataProvider::updatePlayer(PacketReader &packet) {
+auto PlayerDataProvider::updatePlayer(PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();
 	if (PlayerData *player = getPlayerData(playerId)) {
 		int8_t updateBits = packet.get<int8_t>();
@@ -173,18 +168,18 @@ void PlayerDataProvider::updatePlayer(PacketReader &packet) {
 	}
 }
 
-PlayerData * PlayerDataProvider::getPlayerData(int32_t id) {
+auto PlayerDataProvider::getPlayerData(int32_t id) -> PlayerData * {
 	auto kvp = m_playerData.find(id);
-	return kvp != m_playerData.end() ? kvp->second.get() : nullptr;
+	return kvp != std::end(m_playerData) ? kvp->second.get() : nullptr;
 }
 
 // Parties
-Party * PlayerDataProvider::getParty(int32_t id) {
-	return (m_parties.find(id) == m_parties.end() ? nullptr : m_parties[id].get());
+auto PlayerDataProvider::getParty(int32_t id) -> Party * {
+	return m_parties.find(id) == std::end(m_parties) ? nullptr : m_parties[id].get();
 }
 
-void PlayerDataProvider::newParty(int32_t id, int32_t leaderId) {
-	std::shared_ptr<Party> p = std::make_shared<Party>(id);
+auto PlayerDataProvider::newParty(int32_t id, int32_t leaderId) -> void {
+	ref_ptr_t<Party> p = make_ref_ptr<Party>(id);
 	Player *leader = getPlayer(leaderId);
 	if (leader == 0) {
 		p->addMember(leaderId);
@@ -196,20 +191,20 @@ void PlayerDataProvider::newParty(int32_t id, int32_t leaderId) {
 	m_parties[id] = p;
 }
 
-void PlayerDataProvider::disbandParty(int32_t id) {
+auto PlayerDataProvider::disbandParty(int32_t id) -> void {
 	if (Party *party = getParty(id)) {
 		party->disband();
 		m_parties.erase(id);
 	}
 }
 
-void PlayerDataProvider::switchPartyLeader(int32_t id, int32_t leaderId) {
+auto PlayerDataProvider::switchPartyLeader(int32_t id, int32_t leaderId) -> void {
 	if (Party *party = getParty(id)) {
 		party->setLeader(leaderId);
 	}
 }
 
-void PlayerDataProvider::removePartyMember(int32_t id, int32_t playerId, bool kicked) {
+auto PlayerDataProvider::removePartyMember(int32_t id, int32_t playerId, bool kicked) -> void {
 	if (Party *party = getParty(id)) {
 		if (Player *member = getPlayer(playerId)) {
 			party->deleteMember(member, kicked);
@@ -220,7 +215,7 @@ void PlayerDataProvider::removePartyMember(int32_t id, int32_t playerId, bool ki
 	}
 }
 
-void PlayerDataProvider::addPartyMember(int32_t id, int32_t playerId) {
+auto PlayerDataProvider::addPartyMember(int32_t id, int32_t playerId) -> void {
 	if (Party *party = getParty(id)) {
 		if (Player *member = getPlayer(playerId)) {
 			party->addMember(member);

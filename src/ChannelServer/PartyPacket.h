@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class Party;
 class Player;
 
@@ -34,12 +32,12 @@ namespace PartyPacket {
 		};
 	}
 
-	void error(Player *player, int8_t error);
-	void createParty(Player *packetTarget, Party *party);
-	void joinParty(Player *packetTarget, Party *party, const string &player);
-	void leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string &name, bool kicked);
-	void invitePlayer(Player *packetTarget, Party *party, const string &inviter);
-	void disbandParty(Player *packetTarget, Party *party);
-	void setLeader(Player *packetTarget, Party *party, int32_t newLeader);
-	void silentUpdate(Player *packetTarget, Party *party);
+	auto error(Player *player, int8_t error) -> void;
+	auto createParty(Player *packetTarget, Party *party) -> void;
+	auto joinParty(Player *packetTarget, Party *party, const string_t &player) -> void;
+	auto leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string_t &name, bool kicked) -> void;
+	auto invitePlayer(Player *packetTarget, Party *party, const string_t &inviter) -> void;
+	auto disbandParty(Player *packetTarget, Party *party) -> void;
+	auto setLeader(Player *packetTarget, Party *party, int32_t newLeader) -> void;
+	auto silentUpdate(Player *packetTarget, Party *party) -> void;
 }

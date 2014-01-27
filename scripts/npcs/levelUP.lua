@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,6 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- KIN
+
+if not isGm() then
+	return;
+end
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
 
@@ -38,9 +42,6 @@ else
 	elseif what == 2 then getHairColours(styles);
 	elseif what == 3 then getEyeStyles(styles);
 	elseif what == 4 then getEyeColour(styles);
-	elseif what == 5 then
-		setStyle(getRandomFace());
-		setStyle(getRandomHair());
 	end
 	style = askStyle(styles) + 1;
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,39 +19,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ExternalIp.h"
 #include "Ip.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-using std::shared_ptr;
-using std::string;
-using std::unordered_map;
 
 class Channel;
 class PacketCreator;
 class WorldServerAcceptConnection;
 
 class Channels {
+	SINGLETON(Channels);
 public:
-	static Channels * Instance() {
-		if (singleton == nullptr)
-			singleton = new Channels;
-		return singleton;
-	}
-	void registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port);
-	void removeChannel(uint16_t channel);
-	Channel * getChannel(uint16_t num);
-	void increasePopulation(uint16_t channel);
-	void decreasePopulation(uint16_t channel);
-	void sendToChannel(uint16_t channel, const PacketCreator &packet);
-	void sendToAll(const PacketCreator &packet);
-	uint16_t size();
-	uint16_t getAvailableChannel();
+	auto registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
+	auto removeChannel(uint16_t channel) -> void;
+	auto getChannel(uint16_t num) -> Channel *;
+	auto increasePopulation(uint16_t channel) -> void;
+	auto decreasePopulation(uint16_t channel) -> void;
+	auto sendToChannel(uint16_t channel, const PacketCreator &packet) -> void;
+	auto sendToAll(const PacketCreator &packet) -> void;
+	auto size() -> uint16_t;
+	auto getAvailableChannel() -> uint16_t;
 private:
-	Channels();
-	static Channels *singleton;
-
-	unordered_map<uint16_t, shared_ptr<Channel>> m_channels;
+	hash_map_t<uint16_t, ref_ptr_t<Channel>> m_channels;
 };

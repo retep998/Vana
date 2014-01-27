@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,46 +17,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "SkillConstants.h"
 #include "SkillDataObjects.h"
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-class SkillDataProvider : boost::noncopyable {
+class SkillDataProvider {
+	SINGLETON(SkillDataProvider);
 public:
-	static SkillDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new SkillDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool isSkill(int32_t skillId) { return (m_skills.find(skillId) != m_skills.end()); }
-	uint8_t getMaxLevel(int32_t skillId) { return (m_skillMaxLevels.find(skillId) != m_skillMaxLevels.end() ? m_skillMaxLevels[skillId] : 0); }
-	SkillLevelInfo * getSkill(int32_t skill, uint8_t level);
-	MobSkillLevelInfo * getMobSkill(uint8_t skill, uint8_t level);
+	auto isValidSkill(int32_t skillId) -> bool { return m_skillLevels.find(skillId) != std::end(m_skillLevels); }
+	auto getMaxLevel(int32_t skillId) -> uint8_t { return m_skillMaxLevels.find(skillId) != std::end(m_skillMaxLevels) ? m_skillMaxLevels[skillId] : 0; }
+	auto getSkill(int32_t skill, uint8_t level) -> SkillLevelInfo *;
+	auto getMobSkill(uint8_t skill, uint8_t level) -> MobSkillLevelInfo *;
 
-	bool hasBanishData(int32_t mobId) { return (m_banishInfo.find(mobId) != m_banishInfo.end()); }
-	BanishField * getBanishData(int32_t mobId) { return (hasBanishData(mobId) ? &m_banishInfo[mobId] : nullptr); }
+	auto hasBanishData(int32_t mobId) -> bool { return m_banishInfo.find(mobId) != std::end(m_banishInfo); }
+	auto getBanishData(int32_t mobId) -> BanishField * { return hasBanishData(mobId) ? &m_banishInfo[mobId] : nullptr; }
 
-	bool hasMorphData(int16_t morph) { return (m_morphInfo.find(morph) != m_morphInfo.end()); }
-	MorphData * getMorphData(int16_t morph) { return (hasMorphData(morph) ? &m_morphInfo[morph] : nullptr); }
+	auto hasMorphData(int16_t morph) -> bool { return m_morphInfo.find(morph) != std::end(m_morphInfo); }
+	auto getMorphData(int16_t morph) -> MorphData * { return hasMorphData(morph) ? &m_morphInfo[morph] : nullptr; }
 private:
-	SkillDataProvider() {}
-	static SkillDataProvider *singleton;
+	auto loadPlayerSkills() -> void;
+	auto loadPlayerSkillLevels() -> void;
+	auto loadMobSkills() -> void;
+	auto loadMobSummons() -> void;
+	auto loadBanishData() -> void;
+	auto loadMorphs() -> void;
 
-	void loadPlayerSkills();
-	void loadMobSkills();
-	void loadMobSummons();
-	void loadBanishData();
-	void loadMorphs();
-
-	unordered_map<uint8_t, MobSkillsLevelInfo> m_mobSkills;
-	unordered_map<int32_t, SkillsLevelInfo> m_skills;
-	unordered_map<int32_t, uint8_t> m_skillMaxLevels;
-	unordered_map<int32_t, BanishField> m_banishInfo;
-	unordered_map<int16_t, MorphData> m_morphInfo;
+	hash_map_t<uint8_t, hash_map_t<uint8_t, MobSkillLevelInfo>> m_mobSkills;
+	hash_map_t<int32_t, hash_map_t<uint8_t, SkillLevelInfo>> m_skillLevels;
+	hash_map_t<int32_t, uint8_t> m_skillMaxLevels;
+	hash_map_t<int32_t, BanishField> m_banishInfo;
+	hash_map_t<int16_t, MorphData> m_morphInfo;
 };

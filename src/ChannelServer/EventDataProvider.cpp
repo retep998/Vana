@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,24 +26,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using std::bind;
-using Initializing::OutputWidth;
-
-EventDataProvider * EventDataProvider::singleton = nullptr;
-
 EventDataProvider::EventDataProvider()
 {
-	m_timers = std::make_unique<Timer::Container>();
-	m_variables = std::make_unique<Variables>();
+	m_variables = make_owned_ptr<Variables>();
 }
 
-void EventDataProvider::loadData() {
+auto EventDataProvider::loadData() -> void {
 	loadEvents();
 	loadInstances();
 }
 
-void EventDataProvider::loadEvents() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Events... ";
+auto EventDataProvider::loadEvents() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Events... ";
 
 	// Declarations go here for regular server events or whatever you want to put on a timer
 
@@ -60,22 +54,23 @@ void EventDataProvider::loadEvents() {
 	std::cout << "DONE" << std::endl;
 }
 
-void EventDataProvider::loadInstances() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Instances... ";
+auto EventDataProvider::loadInstances() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Instances... ";
 
 	// Most common intervals with boats
 	const time_point_t &now = TimeUtilities::getNow();
-	const seconds_t &nearestTen = -TimeUtilities::getDistanceToNextMinuteMark(10,  now);
-	const seconds_t &nearestFifteen = -TimeUtilities::getDistanceToNextMinuteMark(15,  now);
+	const seconds_t &nearestFive = TimeUtilities::getDistanceToNextMinuteMark(5, now);
+	const seconds_t &nearestTen = TimeUtilities::getDistanceToNextMinuteMark(10, now);
+	const seconds_t &nearestFifteen = TimeUtilities::getDistanceToNextMinuteMark(15, now);
 
-	//startInstance("kerningToNlcBoarding", nearestTen, minutes_t(10));
-	//startInstance("nlcToKerningBoarding", nearestTen, minutes_t(10));
+	startInstance("kerningToNlcBoarding", nearestFive, minutes_t(5));
+	startInstance("nlcToKerningBoarding", nearestFive, minutes_t(5));
 
 	std::cout << "DONE" << std::endl;
 }
 
-void EventDataProvider::startInstance(const string &name, const seconds_t &time, const seconds_t &repeat) {
+auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
 	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
-	Instances::InstancePtr()->addInstance(instance);
+	Instances::getInstance().addInstance(instance);
 	instance->sendMessage(BeginInstance);
 }

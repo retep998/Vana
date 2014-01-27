@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,36 +26,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Worlds.h"
 #include <iostream>
 
-using StringUtilities::lexical_cast;
-
-void LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
+auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	const Ip &ip = packet.getClass<Ip>();
 	chan->setExternalIpInformation(ip, packet.getClassVector<ExternalIp>());
 	chan->setPort(packet.get<port_t>());
-	Worlds::Instance()->getWorld(connection->getWorldId())->addChannel(channel, chan);
-	LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));
+	Worlds::getInstance().getWorld(connection->getWorldId())->addChannel(channel, chan);
+	LoginServer::getInstance().log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string_t>(connection->getWorldId()) + "; Channel " + StringUtilities::lexical_cast<string_t>(channel));
 }
 
-void LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) {
+auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t channel = packet.get<int32_t>();
 	int32_t population = packet.get<int32_t>();
 
-	World *world = Worlds::Instance()->getWorld(connection->getWorldId());
+	World *world = Worlds::getInstance().getWorld(connection->getWorldId());
 	world->getChannel(channel)->setPopulation(population);
-	Worlds::Instance()->calculatePlayerLoad(world);
+	Worlds::getInstance().calculatePlayerLoad(world);
 }
 
-void LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) {
+auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t channel = packet.get<int32_t>();
 
-	Worlds::Instance()->getWorld(connection->getWorldId())->removeChannel(channel);
-	LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + lexical_cast<string>(connection->getWorldId()) + "; Channel " + lexical_cast<string>(channel));
+	Worlds::getInstance().getWorld(connection->getWorldId())->removeChannel(channel);
+	LoginServer::getInstance().log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string_t>(connection->getWorldId()) + "; Channel " + StringUtilities::lexical_cast<string_t>(channel));
 }
 
-void LoginServerAcceptHandler::sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) {
+auto LoginServerAcceptHandler::sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
 	PacketCreator pack;
 	pack.addBuffer(packet);
-	Worlds::Instance()->toWorlds(pack);
+	Worlds::getInstance().toWorlds(pack);
 }

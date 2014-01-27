@@ -301,9 +301,6 @@
     <ClCompile Include="src\ChannelServer\ChatHandlerFunctions.cpp">
       <Filter>Handlers\Chat Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\WarpFunctions.cpp">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\CommandHandler.cpp">
       <Filter>Handlers\Chat Handlers</Filter>
     </ClCompile>
@@ -337,6 +334,9 @@
     <ClCompile Include="src\ChannelServer\ChannelServer.cpp" />
     <ClCompile Include="src\ChannelServer\InitializeChannel.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp" />
+    <ClCompile Include="src\ChannelServer\StatusInfo.cpp">
+      <Filter>ChannelServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.h">
@@ -600,9 +600,6 @@
     <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.h">
       <Filter>Handlers\Chat Handlers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\WarpFunctions.h">
-      <Filter>Handlers\Chat Handlers\GM Commands</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChannelServer\CommandHandler.h">
       <Filter>Handlers\Chat Handlers</Filter>
     </ClInclude>
@@ -637,6 +634,9 @@
     <ClInclude Include="src\ChannelServer\InitializeChannel.h" />
     <ClInclude Include="src\ChannelServer\InstanceMessageConstants.h">
       <Filter>Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\StatusInfo.h">
+      <Filter>ChannelServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

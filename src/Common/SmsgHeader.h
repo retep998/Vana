@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_PING 0x11
 #define SMSG_CHANNEL_SELECT 0x14
 #define SMSG_LOGIN_RETURN 0x16
-#define SMSG_INVENTORY_ITEM_MOVE 0x1a
+#define SMSG_INVENTORY_OPERATION 0x1a
 #define SMSG_INVENTORY_SLOT_UPDATE 0x1b
 #define SMSG_PLAYER_UPDATE 0x1c
 #define SMSG_SKILL_USE 0x1d
@@ -126,8 +126,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_ATTACK_RANGED 0xa9
 #define SMSG_ATTACK_MAGIC 0xaa
 #define SMSG_ATTACK_ENERGYCHARGE 0xab
-#define SMSG_SPECIAL_SKILL 0xac
-#define SMSG_SPECIAL_SKILL_END 0xad
+#define SMSG_CHARGE_OR_STATIONARY_SKILL 0xac
+#define SMSG_CHARGE_OR_STATIONARY_SKILL_END 0xad
 #define SMSG_PLAYER_DAMAGE 0xae
 #define SMSG_EMOTE 0xaf
 #define SMSG_ITEM_EFFECT 0xb0

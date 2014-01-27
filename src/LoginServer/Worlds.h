@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,15 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <functional>
 #include <map>
 #include <string>
-
-using std::function;
-using std::map;
-using std::string;
 
 class Channel;
 class LoginServerAcceptConnection;
@@ -34,31 +29,23 @@ class PacketReader;
 class Player;
 class World;
 
-class Worlds : public boost::noncopyable {
+class Worlds {
+	SINGLETON(Worlds);
 public:
-	static Worlds * Instance() {
-		if (singleton == nullptr)
-			singleton = new Worlds;
-		return singleton;
-	}
+	auto channelSelect(Player *player, PacketReader &packet) -> void;
+	auto selectWorld(Player *player, PacketReader &packet) -> void;
+	auto showWorld(Player *player) -> void;
+	auto toWorlds(PacketCreator &packet) -> void;
+	auto addWorld(World *world) -> void;
+	auto calculatePlayerLoad(World *world) -> void;
+	auto runFunction(function_t<bool (World *)> func) -> void;
+	auto setEventMessages(const string_t &message) -> void;
 
-	void channelSelect(Player *player, PacketReader &packet);
-	void selectWorld(Player *player, PacketReader &packet);
-	void showWorld(Player *player);
-	void toWorlds(PacketCreator &packet);
-	void addWorld(World *world);
-	void calculatePlayerLoad(World *world);
-	void runFunction(function<bool (World *)> func);
-	void setEventMessages(const string &message);
-
-	World * getWorld(int8_t id);
+	auto getWorld(int8_t id) -> World *;
 
 	// Inter-server
-	int8_t addWorldServer(LoginServerAcceptConnection *connection);
-	int8_t addChannelServer(LoginServerAcceptConnection *connection);
+	auto addWorldServer(LoginServerAcceptConnection *connection) -> int8_t;
+	auto addChannelServer(LoginServerAcceptConnection *connection) -> int8_t;
 private:
-	Worlds() { }
-	static Worlds *singleton;
-
-	map<int8_t, World *> m_worlds;
+	ord_map_t<int8_t, World *> m_worlds;
 };

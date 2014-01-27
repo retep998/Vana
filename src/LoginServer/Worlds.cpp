@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,9 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include <iostream>
 
-Worlds * Worlds::singleton = nullptr;
-
-void Worlds::showWorld(Player *player) {
+auto Worlds::showWorld(Player *player) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -47,11 +45,11 @@ void Worlds::showWorld(Player *player) {
 	LoginPacket::worldEnd(player);
 }
 
-void Worlds::addWorld(World *world) {
+auto Worlds::addWorld(World *world) -> void {
 	m_worlds[world->getId()] = world;
 }
 
-void Worlds::selectWorld(Player *player, PacketReader &packet) {
+auto Worlds::selectWorld(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -79,7 +77,7 @@ void Worlds::selectWorld(Player *player, PacketReader &packet) {
 	}
 }
 
-void Worlds::channelSelect(Player *player, PacketReader &packet) {
+auto Worlds::channelSelect(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -104,7 +102,7 @@ void Worlds::channelSelect(Player *player, PacketReader &packet) {
 	}
 }
 
-int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
+auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> int8_t {
 	World *world = nullptr;
 	for (const auto &kvp : m_worlds) {
 		if (!kvp.second->isConnected()) {
@@ -122,7 +120,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 
 		LoginServerAcceptPacket::connect(world);
 
-		LoginServer::Instance()->log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string>(worldId));
+		LoginServer::getInstance().log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string_t>(worldId));
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);
@@ -132,7 +130,7 @@ int8_t Worlds::addWorldServer(LoginServerAcceptConnection *connection) {
 	return worldId;
 }
 
-int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
+auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> int8_t {
 	World *validWorld = nullptr;
 	for (const auto &kvp : m_worlds) {
 		World *world = kvp.second;
@@ -156,7 +154,7 @@ int8_t Worlds::addChannelServer(LoginServerAcceptConnection *connection) {
 	return worldId;
 }
 
-void Worlds::toWorlds(PacketCreator &packet) {
+auto Worlds::toWorlds(PacketCreator &packet) -> void {
 	for (const auto &kvp : m_worlds) {
 		if (kvp.second->isConnected()) {
 			kvp.second->send(packet);
@@ -164,7 +162,7 @@ void Worlds::toWorlds(PacketCreator &packet) {
 	}
 }
 
-void Worlds::runFunction(function<bool (World *)> func) {
+auto Worlds::runFunction(function_t<bool (World *)> func) -> void {
 	for (const auto &kvp : m_worlds) {
 		if (func(kvp.second)) {
 			break;
@@ -172,19 +170,19 @@ void Worlds::runFunction(function<bool (World *)> func) {
 	}
 }
 
-void Worlds::calculatePlayerLoad(World *world) {
+auto Worlds::calculatePlayerLoad(World *world) -> void {
 	world->setPlayerLoad(0);
 	world->runChannelFunction([&world](Channel *channel) {
 		world->setPlayerLoad(world->getPlayerLoad() + channel->getPopulation());
 	});
 }
 
-World * Worlds::getWorld(int8_t id) {
+auto Worlds::getWorld(int8_t id) -> World * {
 	auto kvp = m_worlds.find(id);
-	return kvp != m_worlds.end() ? kvp->second : nullptr;
+	return kvp != std::end(m_worlds) ? kvp->second : nullptr;
 }
 
-void Worlds::setEventMessages(const string &message) {
+auto Worlds::setEventMessages(const string_t &message) -> void {
 	for (const auto &kvp : m_worlds) {
 		kvp.second->setEventMessage(message);
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,16 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Variables.h"
 
 class Player;
 
-class PlayerVariables : boost::noncopyable, public Variables {
+class PlayerVariables : public Variables {
+	NONCOPYABLE(PlayerVariables);
+	NO_DEFAULT_CONSTRUCTOR(PlayerVariables);
 public:
 	PlayerVariables(Player *p);
-	void save();
-	void load();
+	auto save() -> void;
+	auto load() -> void;
 private:
-	Player *m_player;
+	Player *m_player = nullptr;
 };

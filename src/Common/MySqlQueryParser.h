@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,10 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
-class MySqlQueryParser {
-public:
-	static vector<string> parseQueries(const string &filename);
+namespace MySqlQueryParser {
+	auto parseQueries(const string_t &filename) -> vector_t<string_t>;
 };

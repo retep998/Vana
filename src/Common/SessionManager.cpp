@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,17 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <functional>
 
-void SessionManager::start(AbstractSessionPtr session) {
+auto SessionManager::start(ref_ptr_t<AbstractSession> session) -> void {
 	m_sessions.insert(session);
 	session->handleStart();
 }
 
-void SessionManager::stop(AbstractSessionPtr session) {
+auto SessionManager::stop(ref_ptr_t<AbstractSession> session) -> void {
 	m_sessions.erase(session);
 	session->handleStop();
 }
 
-void SessionManager::stopAll() {
-	std::for_each(m_sessions.begin(), m_sessions.end(), std::bind(&AbstractSession::handleStop, std::placeholders::_1));
+auto SessionManager::stopAll() -> void {
+	for (const auto &session : m_sessions) session->handleStop();
 	m_sessions.clear();
 }

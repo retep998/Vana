@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,12 +33,12 @@ namespace NpcPacket {
 			NoSlots = 3
 		};
 	}
-	void showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	void animateNpc(Player *player, PacketReader &pack);
-	void showNpcEffect(Player *player, int32_t index, bool show = false);
-	void showNpcEffect(int32_t mapId, int32_t index, bool show = false);
-	void bought(Player *player, uint8_t msg);
+	auto showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
+	auto showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
+	auto showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
+	auto controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
+	auto animateNpc(Player *player, PacketReader &pack) -> void;
+	auto showNpcEffect(Player *player, int32_t index, bool show = false) -> void;
+	auto showNpcEffect(int32_t mapId, int32_t index, bool show = false) -> void;
+	auto bought(Player *player, uint8_t msg) -> void;
 }

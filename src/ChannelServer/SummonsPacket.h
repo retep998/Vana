@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,8 +24,8 @@ class Summon;
 struct Pos;
 
 namespace SummonsPacket {
-	void showSummon(Player *player, Summon *summon, bool animated, Player *toPlayer = nullptr);
-	void moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen);
-	void removeSummon(Player *player, Summon *summon, int8_t message);
-	void damageSummon(Player *player, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId);
+	auto showSummon(Player *player, Summon *summon, bool animated, Player *toPlayer = nullptr) -> void;
+	auto moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) -> void;
+	auto removeSummon(Player *player, Summon *summon, int8_t message) -> void;
+	auto damageSummon(Player *player, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId) -> void;
 }

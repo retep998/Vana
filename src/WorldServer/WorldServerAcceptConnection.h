@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,20 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 class WorldServerAcceptConnection : public AbstractServerAcceptConnection {
+	NONCOPYABLE(WorldServerAcceptConnection);
 public:
+	WorldServerAcceptConnection() = default;
 	~WorldServerAcceptConnection();
 
-	void handleRequest(PacketReader &packet) override;
-	void authenticated(int8_t type) override;
+	auto authenticated(int8_t type) -> void override;
 
-	uint16_t getChannel() const { return m_channel; }
+	auto getChannel() const -> uint16_t { return m_channel; }
+protected:
+	auto handleRequest(PacketReader &packet) -> void override;
 private:
-	uint16_t m_channel;
+	uint16_t m_channel = 0;
 };
 
 class WorldServerAcceptConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() override {
+	auto createConnection() -> AbstractConnection * override {
 		return new WorldServerAcceptConnection();
 	}
 };

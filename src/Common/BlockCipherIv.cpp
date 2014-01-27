@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,11 +46,11 @@ BlockCipherIv::BlockCipherIv(uint32_t iv)
 	updateIv(iv);
 }
 
-void BlockCipherIv::updateIv(uint32_t iv) {
+auto BlockCipherIv::updateIv(uint32_t iv) -> void {
 	setIv(m_iv, reinterpret_cast<unsigned char*>(&iv));
 }
 
-void BlockCipherIv::shuffle() {
+auto BlockCipherIv::shuffle() -> void {
 	uint8_t newIv[4] = {0xF2, 0x53, 0x50, 0xC6};
 	uint8_t input;
 	uint8_t valueInput;

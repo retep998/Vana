@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,13 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 namespace Initializing {
-	void checkSchemaVersion(bool update = false);
-	void checkMcdbVersion();
-	void setUsersOffline(int32_t onlineId);
-	string makeLocale(const string &locale, bool testServer);
+	auto checkSchemaVersion(bool update = false) -> void;
+	auto checkMcdbVersion() -> void;
+	auto setUsersOffline(int32_t onlineId) -> void;
+	auto makeLocale(const string_t &locale, bool testServer) -> string_t;
 
 	const int32_t OutputWidth = 27;
 	const int32_t McdbVersion = 4;

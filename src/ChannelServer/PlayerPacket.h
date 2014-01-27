@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ip.h"
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 class KeyMaps;
 class PacketCreator;
@@ -46,18 +44,18 @@ namespace PlayerPacket {
 			Blue = 0x06
 		};
 	}
-	void connectData(Player *player);
-	void showKeys(Player *player, KeyMaps *keymaps);
-	void showSkillMacros(Player *player, SkillMacros *macros);
-	void updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false);
-	void changeChannel(Player *player, const Ip &ip, port_t port);
-	void showMessage(Player *player, const string &msg, int8_t type);
-	void showMessageChannel(const string &msg, int8_t type);
-	void showMessageWorld(const string &msg, int8_t type);
-	void showMessageGlobal(const string &msg, int8_t type);
-	void showMessagePacket(PacketCreator &packet, const string &msg, int8_t type);
-	void instructionBubble(Player *player, const string &msg, int16_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
-	void showHpBar(Player *player, Player *target);
-	void sendBlockedMessage(Player *player, int8_t type);
-	void sendYellowMessage(Player *player, const string &msg);
+	auto connectData(Player *player) -> void;
+	auto showKeys(Player *player, KeyMaps *keymaps) -> void;
+	auto showSkillMacros(Player *player, SkillMacros *macros) -> void;
+	auto updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false) -> void;
+	auto changeChannel(Player *player, const Ip &ip, port_t port) -> void;
+	auto showMessage(Player *player, const string_t &msg, int8_t type) -> void;
+	auto showMessageChannel(const string_t &msg, int8_t type) -> void;
+	auto showMessageWorld(const string_t &msg, int8_t type) -> void;
+	auto showMessageGlobal(const string_t &msg, int8_t type) -> void;
+	auto showMessagePacket(PacketCreator &packet, const string_t &msg, int8_t type) -> void;
+	auto instructionBubble(Player *player, const string_t &msg, int16_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0) -> void;
+	auto showHpBar(Player *player, Player *target) -> void;
+	auto sendBlockedMessage(Player *player, int8_t type) -> void;
+	auto sendYellowMessage(Player *player, const string_t &msg) -> void;
 }

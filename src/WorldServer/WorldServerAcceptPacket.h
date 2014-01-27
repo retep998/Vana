@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,16 +20,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class PacketReader;
 class WorldServerAcceptConnection;
 struct WorldConfig;
 
 namespace WorldServerAcceptPacket {
-	void connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port);
-	void findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is = 0);
-	void whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message);
-	void groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender);
-	void rehashConfig(const WorldConfig &config);
+	auto connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) -> void;
+	auto findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string_t &findee, uint8_t is = 0) -> void;
+	auto whisperPlayer(int16_t channel, int32_t whisperee, const string_t &whisperer, int16_t whispererChannel, const string_t &message) -> void;
+	auto groupChat(uint16_t channel, int32_t playerId, int8_t type, const string_t &message, const string_t &sender) -> void;
+	auto rehashConfig(const WorldConfig &config) -> void;
 }

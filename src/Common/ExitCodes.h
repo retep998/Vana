@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 namespace ExitCodes {
 	enum : int32_t {
@@ -33,14 +33,16 @@ namespace ExitCodes {
 		ServerVersionMismatch = 8,
 		ServerMalformedIvPacket = 9,
 		ServerConnectionError = 10,
-		ProgramException = 11
+		ProgramException = 11,
+		QueryError = 12,
 	};
 	// Comments for easy searching
 	// exit(0) exit(1) exit(2) exit(3) exit(4)
 	// exit(5) exit(6) exit(7) exit(8) exit(9)
-	// exit(10) exit(11)
+	// exit(10) exit(11) exit(12)
 
-	inline void exit(int32_t code) {
+	inline
+	auto exit(int32_t code) -> void {
 #ifndef DAEMON
 		std::cout << "Please press enter to quit..." << std::endl;
 		getchar();

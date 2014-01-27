@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,95 +20,85 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.h"
 #include "Configuration.h"
 #include "Ip.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
+#include <vector>
 
-using std::string;
-
-class WorldServerConnection;
 class PacketCreator;
+class WorldServerConnection;
 
-// ChannelServer main application class, implemented as singleton
-class ChannelServer : public AbstractServer, boost::noncopyable {
+class ChannelServer : public AbstractServer {
+	SINGLETON_CUSTOM_CONSTRUCTOR(ChannelServer);
 public:
-	static ChannelServer * Instance() {
-		if (singleton == nullptr)
-			singleton = new ChannelServer;
-		return singleton;
-	}
-	void loadData() override;
-	void loadConfig() override;
-	void loadLogConfig() override;
-	void listen() override;
-	void shutdown() override;
-	void connectWorld();
-	opt_string makeLogIdentifier() override;
+	auto loadData() -> void override;
+	auto loadConfig() -> void override;
+	auto loadLogConfig() -> void override;
+	auto listen() -> void override;
+	auto shutdown() -> void override;
+	auto makeLogIdentifier() -> opt_string_t override;
+	auto connectWorld() -> void;
 
-	void setChannelId(int16_t channel) { m_channelId = channel; }
-	void setWorldId(int8_t id) { m_world = id; }
-	void setWorldPort(port_t port) { m_worldPort = port; }
-	void setPort(port_t port) { m_port = port; }
-	void setScrollingHeader(const string &message);
-	void setWorldIp(const Ip &ip) { m_worldIp = ip; }
-	void modifyRate(int32_t rateType, int32_t newValue);
-	void setRates(const Rates &rates);
-	void setConfig(const WorldConfig &config);
+	auto setChannelId(int16_t channel) -> void { m_channelId = channel; }
+	auto setWorldId(int8_t id) -> void { m_world = id; }
+	auto setWorldPort(port_t port) -> void { m_worldPort = port; }
+	auto setPort(port_t port) -> void { m_port = port; }
+	auto setScrollingHeader(const string_t &message) -> void;
+	auto setWorldIp(const Ip &ip) -> void { m_worldIp = ip; }
+	auto modifyRate(int32_t rateType, int32_t newValue) -> void;
+	auto setRates(const Rates &rates) -> void;
+	auto setConfig(const WorldConfig &config) -> void;
 
-	bool isConnected() const { return m_channelId != -1; }
-	int8_t getWorldId() const { return m_world; }
-	uint8_t getMaxMultiLevel() const { return m_config.maxMultiLevel; }
-	uint8_t getDefaultStorageSlots() const { return m_config.defaultStorageSlots; }
-	int16_t getMaxStats() const { return m_config.maxStats; }
-	int16_t getChannelId() const { return m_channelId; }
-	int32_t getOnlineId() const { return 20000 + (int32_t) m_world * 100 + m_channelId; }
-	int32_t getMobExpRate() const { return m_config.rates.mobExpRate; }
-	int32_t getQuestExpRate() const { return m_config.rates.questExpRate; }
-	int32_t getMobMesoRate() const { return m_config.rates.mobMesoRate; }
-	int32_t getDropRate() const { return m_config.rates.dropRate; }
-	int32_t getDefaultChars() const { return m_config.defaultChars; }
-	int32_t getMaxChars() const { return m_config.maxChars; }
-	int32_t getFameTime() const { return m_config.fameTime; }
-	int32_t getFameResetTime() const { return m_config.fameResetTime; }
-	int32_t getMapUnloadTime() const { return m_config.mapUnloadTime; }
-	int16_t getPianusAttempts() const { return m_config.pianus.attempts; }
-	int16_t getPapAttempts() const { return m_config.pap.attempts; }
-	int16_t getZakumAttempts() const { return m_config.zakum.attempts; }
-	int16_t getHorntailAttempts() const { return m_config.horntail.attempts; }
-	int16_t getPinkBeanAttempts() const { return m_config.pinkbean.attempts; }
-	string getScrollingHeader() const { return m_config.scrollingHeader; }
-	void sendPacketToWorld(PacketCreator &packet);
+	auto isConnected() const -> bool { return m_channelId != -1; }
+	auto getWorldId() const -> int8_t { return m_world; }
+	auto getMaxMultiLevel() const -> uint8_t { return m_config.maxMultiLevel; }
+	auto getDefaultStorageSlots() const -> uint8_t { return m_config.defaultStorageSlots; }
+	auto getMaxStats() const -> int16_t { return m_config.maxStats; }
+	auto getChannelId() const -> int16_t { return m_channelId; }
+	auto getOnlineId() const -> int32_t { return 20000 + static_cast<int32_t>(m_world) * 100 + m_channelId; }
+	auto getMobExpRate() const -> int32_t { return m_config.rates.mobExpRate; }
+	auto getQuestExpRate() const -> int32_t { return m_config.rates.questExpRate; }
+	auto getMobMesoRate() const -> int32_t { return m_config.rates.mobMesoRate; }
+	auto getDropRate() const -> int32_t { return m_config.rates.dropRate; }
+	auto getDefaultChars() const -> int32_t { return m_config.defaultChars; }
+	auto getMaxChars() const -> int32_t { return m_config.maxChars; }
+	auto getFameTime() const -> int32_t { return m_config.fameTime; }
+	auto getFameResetTime() const -> int32_t { return m_config.fameResetTime; }
+	auto getMapUnloadTime() const -> int32_t { return m_config.mapUnloadTime; }
+	auto getPianusAttempts() const -> int16_t { return m_config.pianus.attempts; }
+	auto getPapAttempts() const -> int16_t { return m_config.pap.attempts; }
+	auto getZakumAttempts() const -> int16_t { return m_config.zakum.attempts; }
+	auto getHorntailAttempts() const -> int16_t { return m_config.horntail.attempts; }
+	auto getPinkBeanAttempts() const -> int16_t { return m_config.pinkbean.attempts; }
+	auto getScrollingHeader() const -> string_t { return m_config.scrollingHeader; }
+	auto sendPacketToWorld(PacketCreator &packet) -> void;
 
 	// Specific bosses that can be battled on this channel
-	bool isPianusChannel() const { return m_pianusChannel; }
-	bool isPapChannel() const { return m_papChannel; }
-	bool isZakumChannel() const { return m_zakumChannel; }
-	bool isHorntailChannel() const { return m_horntailChannel; }
-	bool isPinkBeanChannel() const { return m_pinkbeanChannel; }
+	auto isPianusChannel() const -> bool { return m_pianusChannel; }
+	auto isPapChannel() const -> bool { return m_papChannel; }
+	auto isZakumChannel() const -> bool { return m_zakumChannel; }
+	auto isHorntailChannel() const -> bool { return m_horntailChannel; }
+	auto isPinkBeanChannel() const -> bool { return m_pinkbeanChannel; }
 	// Boss channel lists
-	vector<int8_t> getPianusChannels() const { return m_config.pianus.channels; }
-	vector<int8_t> getPapChannels() const { return m_config.pap.channels; }
-	vector<int8_t> getZakumChannels() const { return m_config.zakum.channels; }
-	vector<int8_t> getHorntailChannels() const { return m_config.horntail.channels; }
-	vector<int8_t> getPinkBeanChannels() const { return m_config.pinkbean.channels; }
+	auto getPianusChannels() const -> vector_t<int8_t> { return m_config.pianus.channels; }
+	auto getPapChannels() const -> vector_t<int8_t> { return m_config.pap.channels; }
+	auto getZakumChannels() const -> vector_t<int8_t> { return m_config.zakum.channels; }
+	auto getHorntailChannels() const -> vector_t<int8_t> { return m_config.horntail.channels; }
+	auto getPinkBeanChannels() const -> vector_t<int8_t> { return m_config.pinkbean.channels; }
 private:
-	ChannelServer();
-	static ChannelServer *singleton;
+	auto getWorldConnection() const -> WorldServerConnection * { return m_worldConnection; }
 
-	WorldServerConnection * getWorldConnection() const { return m_worldConnection; }
-
-	bool m_pianusChannel;
-	bool m_papChannel;
-	bool m_zakumChannel;
-	bool m_horntailChannel;
-	bool m_pinkbeanChannel;
-	int8_t m_world;
-	int16_t m_channelId;
-	port_t m_worldPort;
-	port_t m_loginPort;
-	port_t m_port;
+	bool m_pianusChannel = false;
+	bool m_papChannel = false;
+	bool m_zakumChannel = false;
+	bool m_horntailChannel = false;
+	bool m_pinkbeanChannel = false;
+	int8_t m_world = -1;
+	int16_t m_channelId = -1;
+	port_t m_worldPort = 0;
+	port_t m_loginPort = 0;
+	port_t m_port = 0;
 	Ip m_worldIp;
 	Ip m_loginIp;
 	WorldConfig m_config;
-	WorldServerConnection *m_worldConnection;
+	WorldServerConnection *m_worldConnection = nullptr;
 };

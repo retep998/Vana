@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,287 +26,289 @@ extern "C" {
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class Instance;
 class Player;
 
 class LuaScriptable {
+	NONCOPYABLE(LuaScriptable);
+	NO_DEFAULT_CONSTRUCTOR(LuaScriptable);
 public:
-	LuaScriptable(const string &filename, int32_t playerId);
+	LuaScriptable(const string_t &filename, int32_t playerId);
 	virtual ~LuaScriptable();
 
-	void initialize();
-	virtual bool run();
+	auto initialize() -> void;
+	virtual auto run() -> bool;
 
-	void setVariable(const string &name, int32_t val);
-	void setVariable(const string &name, const string &val);
+	auto setVariable(const string_t &name, int32_t val) -> void;
+	auto setVariable(const string_t &name, const string_t &val) -> void;
 protected:
-	virtual void handleError();
-	void printError(const string &error);
+	virtual auto handleError() -> void;
+	auto printError(const string_t &error) -> void;
 
-	string m_filename;
-	int32_t m_playerId;
-	lua_State *luaVm;
+	string_t m_filename;
+	int32_t m_playerId = -1;
+	lua_State *luaVm = nullptr;
 private:
-	void setEnvironmentVariables();
+	auto setEnvironmentVariables() -> void;
 };
 
 namespace LuaExports {
-	Player * getPlayer(lua_State *luaVm);
-	Player * getPlayerDeduced(int parameter, lua_State *luaVm);
-	Instance * getInstance(lua_State *luaVm);
+	auto getPlayer(lua_State *luaVm) -> Player *;
+	auto getPlayerDeduced(int parameter, lua_State *luaVm) -> Player *;
+	auto getInstance(lua_State *luaVm) -> Instance *;
+	auto obtainSetVariablePair(lua_State *luaVm) -> pair_t<string_t, string_t>;
+	auto pushGetVariableData(lua_State *luaVm, const string_t &value, bool integralReturn) -> void;
 
 	// Global exports
 
 	// Miscellaneous
-	int consoleOutput(lua_State *luaVm);
-	int getRandomNumber(lua_State *luaVm);
-	int log(lua_State *luaVm);
-	int showGlobalMessage(lua_State *luaVm);
-	int showWorldMessage(lua_State *luaVm);
+	auto consoleOutput(lua_State *luaVm) -> int;
+	auto getRandomNumber(lua_State *luaVm) -> int;
+	auto log(lua_State *luaVm) -> int;
+	auto showGlobalMessage(lua_State *luaVm) -> int;
+	auto showWorldMessage(lua_State *luaVm) -> int;
 
 	// Channel
-	int deleteChannelVariable(lua_State *luaVm);
-	int getChannel(lua_State *luaVm);
-	int getChannelVariable(lua_State *luaVm);
-	int isHorntailChannel(lua_State *luaVm);
-	int isPapChannel(lua_State *luaVm);
-	int isPianusChannel(lua_State *luaVm);
-	int isPinkBeanChannel(lua_State *luaVm);
-	int isZakumChannel(lua_State *luaVm);
-	int setChannelVariable(lua_State *luaVm);
-	int showChannelMessage(lua_State *luaVm);
+	auto deleteChannelVariable(lua_State *luaVm) -> int;
+	auto getChannel(lua_State *luaVm) -> int;
+	auto getChannelVariable(lua_State *luaVm) -> int;
+	auto isHorntailChannel(lua_State *luaVm) -> int;
+	auto isPapChannel(lua_State *luaVm) -> int;
+	auto isPianusChannel(lua_State *luaVm) -> int;
+	auto isPinkBeanChannel(lua_State *luaVm) -> int;
+	auto isZakumChannel(lua_State *luaVm) -> int;
+	auto setChannelVariable(lua_State *luaVm) -> int;
+	auto showChannelMessage(lua_State *luaVm) -> int;
 
 	// Bosses
-	int getHorntailChannels(lua_State *luaVm);
-	int getMaxHorntailBattles(lua_State *luaVm);
-	int getMaxPapBattles(lua_State *luaVm);
-	int getMaxPianusBattles(lua_State *luaVm);
-	int getMaxPinkBeanBattles(lua_State *luaVm);
-	int getMaxZakumBattles(lua_State *luaVm);
-	int getPapChannels(lua_State *luaVm);
-	int getPianusChannels(lua_State *luaVm);
-	int getPinkBeanChannels(lua_State *luaVm);
-	int getZakumChannels(lua_State *luaVm);
+	auto getHorntailChannels(lua_State *luaVm) -> int;
+	auto getMaxHorntailBattles(lua_State *luaVm) -> int;
+	auto getMaxPapBattles(lua_State *luaVm) -> int;
+	auto getMaxPianusBattles(lua_State *luaVm) -> int;
+	auto getMaxPinkBeanBattles(lua_State *luaVm) -> int;
+	auto getMaxZakumBattles(lua_State *luaVm) -> int;
+	auto getPapChannels(lua_State *luaVm) -> int;
+	auto getPianusChannels(lua_State *luaVm) -> int;
+	auto getPinkBeanChannels(lua_State *luaVm) -> int;
+	auto getZakumChannels(lua_State *luaVm) -> int;
 
 	// Npc
-	int isBusy(lua_State *luaVm);
-	int removeNpc(lua_State *luaVm);
-	int runNpc(lua_State *luaVm);
-	int showShop(lua_State *luaVm);
-	int spawnNpc(lua_State *luaVm);
+	auto isBusy(lua_State *luaVm) -> int;
+	auto removeNpc(lua_State *luaVm) -> int;
+	auto runNpc(lua_State *luaVm) -> int;
+	auto showShop(lua_State *luaVm) -> int;
+	auto spawnNpc(lua_State *luaVm) -> int;
 
 	// Beauty
-	int getAllFaces(lua_State *luaVm);
-	int getAllHair(lua_State *luaVm);
-	int getAllSkins(lua_State *luaVm);
-	int getRandomFace(lua_State *luaVm);
-	int getRandomHair(lua_State *luaVm);
-	int getRandomSkin(lua_State *luaVm);
-	int isValidFace(lua_State *luaVm);
-	int isValidHair(lua_State *luaVm);
-	int isValidSkin(lua_State *luaVm);
+	auto getAllFaces(lua_State *luaVm) -> int;
+	auto getAllHair(lua_State *luaVm) -> int;
+	auto getAllSkins(lua_State *luaVm) -> int;
+	auto getRandomFace(lua_State *luaVm) -> int;
+	auto getRandomHair(lua_State *luaVm) -> int;
+	auto getRandomSkin(lua_State *luaVm) -> int;
+	auto isValidFace(lua_State *luaVm) -> int;
+	auto isValidHair(lua_State *luaVm) -> int;
+	auto isValidSkin(lua_State *luaVm) -> int;
 
 	// Buddy
-	int addBuddySlots(lua_State *luaVm);
-	int getBuddySlots(lua_State *luaVm);
+	auto addBuddySlots(lua_State *luaVm) -> int;
+	auto getBuddySlots(lua_State *luaVm) -> int;
 
 	// Skill
-	int addSkillLevel(lua_State *luaVm);
-	int getSkillLevel(lua_State *luaVm);
-	int getMaxSkillLevel(lua_State *luaVm);
-	int setMaxSkillLevel(lua_State *luaVm);
+	auto addSkillLevel(lua_State *luaVm) -> int;
+	auto getSkillLevel(lua_State *luaVm) -> int;
+	auto getMaxSkillLevel(lua_State *luaVm) -> int;
+	auto setMaxSkillLevel(lua_State *luaVm) -> int;
 
 	// Quest
-	int getQuestData(lua_State *luaVm);
-	int isQuestActive(lua_State *luaVm);
-	int isQuestInactive(lua_State *luaVm);
-	int isQuestCompleted(lua_State *luaVm);
-	int setQuestData(lua_State *luaVm);
+	auto getQuestData(lua_State *luaVm) -> int;
+	auto isQuestActive(lua_State *luaVm) -> int;
+	auto isQuestInactive(lua_State *luaVm) -> int;
+	auto isQuestCompleted(lua_State *luaVm) -> int;
+	auto setQuestData(lua_State *luaVm) -> int;
 
 	// Inventory
-	int addSlots(lua_State *luaVm);
-	int addStorageSlots(lua_State *luaVm);
-	int destroyEquippedItem(lua_State *luaVm);
-	int getEquippedItemInSlot(lua_State *luaVm);
-	int getItemAmount(lua_State *luaVm);
-	int getMesos(lua_State *luaVm);
-	int getOpenSlots(lua_State *luaVm);
-	int giveItem(lua_State *luaVm);
-	int giveMesos(lua_State *luaVm);
-	int hasOpenSlotsFor(lua_State *luaVm);
-	int isEquippedItem(lua_State *luaVm);
-	int useItem(lua_State *luaVm);
+	auto addSlots(lua_State *luaVm) -> int;
+	auto addStorageSlots(lua_State *luaVm) -> int;
+	auto destroyEquippedItem(lua_State *luaVm) -> int;
+	auto getEquippedItemInSlot(lua_State *luaVm) -> int;
+	auto getItemAmount(lua_State *luaVm) -> int;
+	auto getMesos(lua_State *luaVm) -> int;
+	auto getOpenSlots(lua_State *luaVm) -> int;
+	auto giveItem(lua_State *luaVm) -> int;
+	auto giveMesos(lua_State *luaVm) -> int;
+	auto hasOpenSlotsFor(lua_State *luaVm) -> int;
+	auto isEquippedItem(lua_State *luaVm) -> int;
+	auto useItem(lua_State *luaVm) -> int;
 
 	// Player
-	int deletePlayerVariable(lua_State *luaVm);
-	int endMorph(lua_State *luaVm);
-	int getAp(lua_State *luaVm);
-	int getDex(lua_State *luaVm);
-	int getExp(lua_State *luaVm);
-	int getEyes(lua_State *luaVm);
-	int getFame(lua_State *luaVm);
-	int getFh(lua_State *luaVm);
-	int getGender(lua_State *luaVm);
-	int getGmLevel(lua_State *luaVm);
-	int getHair(lua_State *luaVm);
-	int getHp(lua_State *luaVm);
-	int getHpMpAp(lua_State *luaVm);
-	int getId(lua_State *luaVm);
-	int getInt(lua_State *luaVm);
-	int getJob(lua_State *luaVm);
-	int getLevel(lua_State *luaVm);
-	int getLuk(lua_State *luaVm);
-	int getMap(lua_State *luaVm);
-	int getMaxHp(lua_State *luaVm);
-	int getMaxMp(lua_State *luaVm);
-	int getMp(lua_State *luaVm);
-	int getName(lua_State *luaVm);
-	int getPlayerVariable(lua_State *luaVm);
-	int getPosX(lua_State *luaVm);
-	int getPosY(lua_State *luaVm);
-	int getRealMaxHp(lua_State *luaVm);
-	int getRealMaxMp(lua_State *luaVm);
-	int getSkin(lua_State *luaVm);
-	int getSp(lua_State *luaVm);
-	int getStr(lua_State *luaVm);
-	int giveAp(lua_State *luaVm);
-	int giveExp(lua_State *luaVm);
-	int giveFame(lua_State *luaVm);
-	int giveSp(lua_State *luaVm);
-	int isActiveItem(lua_State *luaVm);
-	int isActiveSkill(lua_State *luaVm);
-	int isGm(lua_State *luaVm);
-	int isOnline(lua_State *luaVm);
-	int revertPlayer(lua_State *luaVm);
-	int setAp(lua_State *luaVm);
-	int setDex(lua_State *luaVm);
-	int setExp(lua_State *luaVm);
-	int setHp(lua_State *luaVm);
-	int setInt(lua_State *luaVm);
-	int setJob(lua_State *luaVm);
-	int setLevel(lua_State *luaVm);
-	int setLuk(lua_State *luaVm);
-	int setMap(lua_State *luaVm);
-	int setMaxHp(lua_State *luaVm);
-	int setMaxMp(lua_State *luaVm);
-	int setMp(lua_State *luaVm);
-	int setPlayer(lua_State *luaVm);
-	int setPlayerVariable(lua_State *luaVm);
-	int setSp(lua_State *luaVm);
-	int setStr(lua_State *luaVm);
-	int setStyle(lua_State *luaVm);
-	int showInstructionBubble(lua_State *luaVm);
-	int showMessage(lua_State *luaVm);
+	auto deletePlayerVariable(lua_State *luaVm) -> int;
+	auto endMorph(lua_State *luaVm) -> int;
+	auto getAp(lua_State *luaVm) -> int;
+	auto getDex(lua_State *luaVm) -> int;
+	auto getExp(lua_State *luaVm) -> int;
+	auto getEyes(lua_State *luaVm) -> int;
+	auto getFame(lua_State *luaVm) -> int;
+	auto getFh(lua_State *luaVm) -> int;
+	auto getGender(lua_State *luaVm) -> int;
+	auto getGmLevel(lua_State *luaVm) -> int;
+	auto getHair(lua_State *luaVm) -> int;
+	auto getHp(lua_State *luaVm) -> int;
+	auto getHpMpAp(lua_State *luaVm) -> int;
+	auto getId(lua_State *luaVm) -> int;
+	auto getInt(lua_State *luaVm) -> int;
+	auto getJob(lua_State *luaVm) -> int;
+	auto getLevel(lua_State *luaVm) -> int;
+	auto getLuk(lua_State *luaVm) -> int;
+	auto getMap(lua_State *luaVm) -> int;
+	auto getMaxHp(lua_State *luaVm) -> int;
+	auto getMaxMp(lua_State *luaVm) -> int;
+	auto getMp(lua_State *luaVm) -> int;
+	auto getName(lua_State *luaVm) -> int;
+	auto getPlayerVariable(lua_State *luaVm) -> int;
+	auto getPosX(lua_State *luaVm) -> int;
+	auto getPosY(lua_State *luaVm) -> int;
+	auto getRealMaxHp(lua_State *luaVm) -> int;
+	auto getRealMaxMp(lua_State *luaVm) -> int;
+	auto getSkin(lua_State *luaVm) -> int;
+	auto getSp(lua_State *luaVm) -> int;
+	auto getStr(lua_State *luaVm) -> int;
+	auto giveAp(lua_State *luaVm) -> int;
+	auto giveExp(lua_State *luaVm) -> int;
+	auto giveFame(lua_State *luaVm) -> int;
+	auto giveSp(lua_State *luaVm) -> int;
+	auto isActiveItem(lua_State *luaVm) -> int;
+	auto isActiveSkill(lua_State *luaVm) -> int;
+	auto isGm(lua_State *luaVm) -> int;
+	auto isOnline(lua_State *luaVm) -> int;
+	auto revertPlayer(lua_State *luaVm) -> int;
+	auto setAp(lua_State *luaVm) -> int;
+	auto setDex(lua_State *luaVm) -> int;
+	auto setExp(lua_State *luaVm) -> int;
+	auto setHp(lua_State *luaVm) -> int;
+	auto setInt(lua_State *luaVm) -> int;
+	auto setJob(lua_State *luaVm) -> int;
+	auto setLevel(lua_State *luaVm) -> int;
+	auto setLuk(lua_State *luaVm) -> int;
+	auto setMap(lua_State *luaVm) -> int;
+	auto setMaxHp(lua_State *luaVm) -> int;
+	auto setMaxMp(lua_State *luaVm) -> int;
+	auto setMp(lua_State *luaVm) -> int;
+	auto setPlayer(lua_State *luaVm) -> int;
+	auto setPlayerVariable(lua_State *luaVm) -> int;
+	auto setSp(lua_State *luaVm) -> int;
+	auto setStr(lua_State *luaVm) -> int;
+	auto setStyle(lua_State *luaVm) -> int;
+	auto showInstructionBubble(lua_State *luaVm) -> int;
+	auto showMessage(lua_State *luaVm) -> int;
 
 	// Effects
-	int playFieldSound(lua_State *luaVm);
-	int playMinigameSound(lua_State *luaVm);
-	int setMusic(lua_State *luaVm);
-	int showMapEffect(lua_State *luaVm);
-	int showMapEvent(lua_State *luaVm);
+	auto playFieldSound(lua_State *luaVm) -> int;
+	auto playMinigameSound(lua_State *luaVm) -> int;
+	auto setMusic(lua_State *luaVm) -> int;
+	auto showMapEffect(lua_State *luaVm) -> int;
+	auto showMapEvent(lua_State *luaVm) -> int;
 
 	// Map
-	int clearDrops(lua_State *luaVm);
-	int clearMobs(lua_State *luaVm);
-	int countMobs(lua_State *luaVm);
-	int getAllMapPlayerIds(lua_State *luaVm);
-	int getNumPlayers(lua_State *luaVm);
-	int getReactorState(lua_State *luaVm);
-	int killMobs(lua_State *luaVm);
-	int setMapSpawn(lua_State *luaVm);
-	int setReactorState(lua_State *luaVm);
-	int showMapMessage(lua_State *luaVm);
-	int showMapTimer(lua_State *luaVm);
-	int spawnMob(lua_State *luaVm);
-	int spawnMobPos(lua_State *luaVm);
+	auto clearDrops(lua_State *luaVm) -> int;
+	auto clearMobs(lua_State *luaVm) -> int;
+	auto countMobs(lua_State *luaVm) -> int;
+	auto getAllMapPlayerIds(lua_State *luaVm) -> int;
+	auto getNumPlayers(lua_State *luaVm) -> int;
+	auto getReactorState(lua_State *luaVm) -> int;
+	auto killMobs(lua_State *luaVm) -> int;
+	auto setMapSpawn(lua_State *luaVm) -> int;
+	auto setReactorState(lua_State *luaVm) -> int;
+	auto showMapMessage(lua_State *luaVm) -> int;
+	auto showMapTimer(lua_State *luaVm) -> int;
+	auto spawnMob(lua_State *luaVm) -> int;
+	auto spawnMobPos(lua_State *luaVm) -> int;
 
 	// Mob
-	int getMobFh(lua_State *luaVm);
-	int getMobHp(lua_State *luaVm);
-	int getMobMaxHp(lua_State *luaVm);
-	int getMobMaxMp(lua_State *luaVm);
-	int getMobMp(lua_State *luaVm);
-	int getMobPosX(lua_State *luaVm);
-	int getMobPosY(lua_State *luaVm);
-	int getRealMobId(lua_State *luaVm);
-	int killMob(lua_State *luaVm);
-	int mobDropItem(lua_State *luaVm);
+	auto getMobFh(lua_State *luaVm) -> int;
+	auto getMobHp(lua_State *luaVm) -> int;
+	auto getMobMaxHp(lua_State *luaVm) -> int;
+	auto getMobMaxMp(lua_State *luaVm) -> int;
+	auto getMobMp(lua_State *luaVm) -> int;
+	auto getMobPosX(lua_State *luaVm) -> int;
+	auto getMobPosY(lua_State *luaVm) -> int;
+	auto getRealMobId(lua_State *luaVm) -> int;
+	auto killMob(lua_State *luaVm) -> int;
+	auto mobDropItem(lua_State *luaVm) -> int;
 
 	// Time
-	int getDate(lua_State *luaVm);
-	int getDay(lua_State *luaVm);
-	int getHour(lua_State *luaVm);
-	int getMinute(lua_State *luaVm);
-	int getMonth(lua_State *luaVm);
-	int getNearestMinute(lua_State *luaVm);
-	int getSecond(lua_State *luaVm);
-	int getTime(lua_State *luaVm);
-	int getTimeZoneOffset(lua_State *luaVm);
-	int getWeek(lua_State *luaVm);
-	int getYear(lua_State *luaVm);
-	int isDst(lua_State *luaVm);
+	auto getDate(lua_State *luaVm) -> int;
+	auto getDay(lua_State *luaVm) -> int;
+	auto getHour(lua_State *luaVm) -> int;
+	auto getMinute(lua_State *luaVm) -> int;
+	auto getMonth(lua_State *luaVm) -> int;
+	auto getNearestMinute(lua_State *luaVm) -> int;
+	auto getSecond(lua_State *luaVm) -> int;
+	auto getTime(lua_State *luaVm) -> int;
+	auto getTimeZoneOffset(lua_State *luaVm) -> int;
+	auto getWeek(lua_State *luaVm) -> int;
+	auto getYear(lua_State *luaVm) -> int;
+	auto isDst(lua_State *luaVm) -> int;
 
 	// Rates
-	int getDropRate(lua_State *luaVm);
-	int getExpRate(lua_State *luaVm);
-	int getMesoRate(lua_State *luaVm);
-	int getQuestExpRate(lua_State *luaVm);
+	auto getDropRate(lua_State *luaVm) -> int;
+	auto getExpRate(lua_State *luaVm) -> int;
+	auto getMesoRate(lua_State *luaVm) -> int;
+	auto getQuestExpRate(lua_State *luaVm) -> int;
 
 	// Party
-	int checkPartyFootholds(lua_State *luaVm);
-	int getAllPartyPlayerIds(lua_State *luaVm);
-	int getPartyCount(lua_State *luaVm);
-	int getPartyId(lua_State *luaVm);
-	int getPartyMapCount(lua_State *luaVm);
-	int isPartyInLevelRange(lua_State *luaVm);
-	int isPartyLeader(lua_State *luaVm);
-	int verifyPartyFootholds(lua_State *luaVm);
-	int warpParty(lua_State *luaVm);
+	auto checkPartyFootholds(lua_State *luaVm) -> int;
+	auto getAllPartyPlayerIds(lua_State *luaVm) -> int;
+	auto getPartyCount(lua_State *luaVm) -> int;
+	auto getPartyId(lua_State *luaVm) -> int;
+	auto getPartyMapCount(lua_State *luaVm) -> int;
+	auto isPartyInLevelRange(lua_State *luaVm) -> int;
+	auto isPartyLeader(lua_State *luaVm) -> int;
+	auto verifyPartyFootholds(lua_State *luaVm) -> int;
+	auto warpParty(lua_State *luaVm) -> int;
 
 	// Instance
-	int addInstanceMap(lua_State *luaVm);
-	int addInstanceParty(lua_State *luaVm);
-	int addInstancePlayer(lua_State *luaVm);
-	int addPlayerSignUp(lua_State *luaVm);
-	int banInstancePlayer(lua_State *luaVm);
-	int checkInstanceTimer(lua_State *luaVm);
-	int createInstance(lua_State *luaVm);
-	int deleteInstanceVariable(lua_State *luaVm);
-	int getAllInstancePlayerIds(lua_State *luaVm);
-	int getBannedInstancePlayerByIndex(lua_State *luaVm);
-	int getBannedInstancePlayerCount(lua_State *luaVm);
-	int getInstanceMax(lua_State *luaVm);
-	int getInstancePlayerByIndex(lua_State *luaVm);
-	int getInstancePlayerCount(lua_State *luaVm);
-	int getInstancePlayerId(lua_State *luaVm);
-	int getInstanceSignupCount(lua_State *luaVm);
-	int getInstanceTime(lua_State *luaVm);
-	int getInstanceVariable(lua_State *luaVm);
-	int isBannedInstancePlayer(lua_State *luaVm);
-	int isInstance(lua_State *luaVm);
-	int isInstanceMap(lua_State *luaVm);
-	int isInstancePersistent(lua_State *luaVm);
-	int isPlayerSignedUp(lua_State *luaVm);
-	int markForDelete(lua_State *luaVm);
-	int moveAllPlayers(lua_State *luaVm);
-	int passPlayersBetweenInstances(lua_State *luaVm);
-	int removeAllInstancePlayers(lua_State *luaVm);
-	int removeInstancePlayer(lua_State *luaVm);
-	int removePlayerSignUp(lua_State *luaVm);
-	int respawnInstanceMobs(lua_State *luaVm);
-	int respawnInstanceReactors(lua_State *luaVm);
-	int revertInstance(lua_State *luaVm);
-	int setInstance(lua_State *luaVm);
-	int setInstanceMax(lua_State *luaVm);
-	int setInstancePersistence(lua_State *luaVm);
-	int setInstanceReset(lua_State *luaVm);
-	int setInstanceTime(lua_State *luaVm);
-	int setInstanceVariable(lua_State *luaVm);
-	int showInstanceTime(lua_State *luaVm);
-	int startInstanceTimer(lua_State *luaVm);
-	int stopAllInstanceTimers(lua_State *luaVm);
-	int stopInstanceTimer(lua_State *luaVm);
-	int unbanInstancePlayer(lua_State *luaVm);
+	auto addInstanceMap(lua_State *luaVm) -> int;
+	auto addInstanceParty(lua_State *luaVm) -> int;
+	auto addInstancePlayer(lua_State *luaVm) -> int;
+	auto addPlayerSignUp(lua_State *luaVm) -> int;
+	auto banInstancePlayer(lua_State *luaVm) -> int;
+	auto checkInstanceTimer(lua_State *luaVm) -> int;
+	auto createInstance(lua_State *luaVm) -> int;
+	auto deleteInstanceVariable(lua_State *luaVm) -> int;
+	auto getAllInstancePlayerIds(lua_State *luaVm) -> int;
+	auto getBannedInstancePlayerByIndex(lua_State *luaVm) -> int;
+	auto getBannedInstancePlayerCount(lua_State *luaVm) -> int;
+	auto getInstanceMax(lua_State *luaVm) -> int;
+	auto getInstancePlayerByIndex(lua_State *luaVm) -> int;
+	auto getInstancePlayerCount(lua_State *luaVm) -> int;
+	auto getInstancePlayerId(lua_State *luaVm) -> int;
+	auto getInstanceSignupCount(lua_State *luaVm) -> int;
+	auto getInstanceTime(lua_State *luaVm) -> int;
+	auto getInstanceVariable(lua_State *luaVm) -> int;
+	auto isBannedInstancePlayer(lua_State *luaVm) -> int;
+	auto isInstance(lua_State *luaVm) -> int;
+	auto isInstanceMap(lua_State *luaVm) -> int;
+	auto isInstancePersistent(lua_State *luaVm) -> int;
+	auto isPlayerSignedUp(lua_State *luaVm) -> int;
+	auto markForDelete(lua_State *luaVm) -> int;
+	auto moveAllPlayers(lua_State *luaVm) -> int;
+	auto passPlayersBetweenInstances(lua_State *luaVm) -> int;
+	auto removeAllInstancePlayers(lua_State *luaVm) -> int;
+	auto removeInstancePlayer(lua_State *luaVm) -> int;
+	auto removePlayerSignUp(lua_State *luaVm) -> int;
+	auto respawnInstanceMobs(lua_State *luaVm) -> int;
+	auto respawnInstanceReactors(lua_State *luaVm) -> int;
+	auto revertInstance(lua_State *luaVm) -> int;
+	auto setInstance(lua_State *luaVm) -> int;
+	auto setInstanceMax(lua_State *luaVm) -> int;
+	auto setInstancePersistence(lua_State *luaVm) -> int;
+	auto setInstanceReset(lua_State *luaVm) -> int;
+	auto setInstanceTime(lua_State *luaVm) -> int;
+	auto setInstanceVariable(lua_State *luaVm) -> int;
+	auto showInstanceTime(lua_State *luaVm) -> int;
+	auto startInstanceTimer(lua_State *luaVm) -> int;
+	auto stopAllInstanceTimers(lua_State *luaVm) -> int;
+	auto stopInstanceTimer(lua_State *luaVm) -> int;
+	auto unbanInstancePlayer(lua_State *luaVm) -> int;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,14 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-using std::string;
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-DropDataProvider * DropDataProvider::singleton = nullptr;
-
-void DropDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Drops... ";
+auto DropDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Drops... ";
 
 	loadDrops();
 	loadGlobalDrops();
@@ -38,13 +32,13 @@ void DropDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void DropDataProvider::loadDrops() {
+auto DropDataProvider::loadDrops() -> void {
 	m_dropInfo.clear();
 	DropInfo drop;
 	int32_t dropper;
 
-	auto dropFlags = [&drop](const opt_string &flags) {
-		runFlags(flags, [&drop](const string &cmp) {
+	auto dropFlags = [&drop](const opt_string_t &flags) {
+		StringUtilities::runFlags(flags, [&drop](const string_t &cmp) {
 			if (cmp == "is_mesos") drop.isMesos = true;
 		});
 	};
@@ -54,7 +48,6 @@ void DropDataProvider::loadDrops() {
 
 	for (const auto &row : rs) {
 		drop = DropInfo();
-		dropFlags(row.get<opt_string>("flags"));
 
 		dropper = row.get<int32_t>("dropperid");
 		drop.itemId = row.get<int32_t>("itemid");
@@ -62,6 +55,8 @@ void DropDataProvider::loadDrops() {
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
 		drop.questId = row.get<int16_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
+		dropFlags(row.get<opt_string_t>("flags"));
+
 		m_dropInfo[dropper].push_back(drop);
 	}
 
@@ -71,18 +66,19 @@ void DropDataProvider::loadDrops() {
 
 	for (const auto &row : rs) {
 		drop = DropInfo();
-		dropFlags(row.get<opt_string>("flags"));
 
 		dropper = row.get<int32_t>("dropperid");
-		if (dropper != lastDropperId) {
-			dropped = false;
-		}
 		drop.itemId = row.get<int32_t>("itemid");
 		drop.minAmount = row.get<int32_t>("minimum_quantity");
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
 		drop.questId = row.get<int16_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
-		if (!dropped && m_dropInfo.find(dropper) != m_dropInfo.end()) {
+		dropFlags(row.get<opt_string_t>("flags"));
+
+		if (dropper != lastDropperId) {
+			dropped = false;
+		}
+		if (!dropped && m_dropInfo.find(dropper) != std::end(m_dropInfo)) {
 			m_dropInfo.erase(dropper);
 			dropped = true;
 		}
@@ -91,7 +87,7 @@ void DropDataProvider::loadDrops() {
 	}
 }
 
-void DropDataProvider::loadGlobalDrops() {
+auto DropDataProvider::loadGlobalDrops() -> void {
 	m_globalDrops.clear();
 	GlobalDrop drop;
 
@@ -99,9 +95,6 @@ void DropDataProvider::loadGlobalDrops() {
 
 	for (const auto &row : rs) {
 		drop = GlobalDrop();
-		runFlags(row.get<opt_string>("flags"), [&drop](const string &cmp) {
-			if (cmp == "is_mesos") drop.isMesos = true;
-		});
 
 		drop.continent = row.get<int8_t>("continent");
 		drop.itemId = row.get<int32_t>("itemid");
@@ -111,6 +104,10 @@ void DropDataProvider::loadGlobalDrops() {
 		drop.maxLevel = row.get<uint8_t>("maximum_level");
 		drop.questId = row.get<int16_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&drop](const string_t &cmp) {
+			if (cmp == "is_mesos") drop.isMesos = true;
+		});
+
 		m_globalDrops.push_back(drop);
 	}
 }

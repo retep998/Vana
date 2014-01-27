@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,24 +28,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
 
-int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
+auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
 	int8_t inv = GameLogicUtilities::getInventory(item->getId());
 	int16_t freeSlot = 0;
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *oldItem = player->getInventory()->getItem(inv, s);
 		if (oldItem != nullptr) {
-			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
-				if (item->getAmount() + oldItem->getAmount() > ItemDataProvider::Instance()->getMaxSlot(item->getId())) {
-					int16_t amount = ItemDataProvider::Instance()->getMaxSlot(item->getId()) - oldItem->getAmount();
+			uint16_t slotMax = ItemDataProvider::getInstance().getMaxSlot(item->getId());
+			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < slotMax) {
+				if (item->getAmount() + oldItem->getAmount() > slotMax) {
+					int16_t amount = slotMax - oldItem->getAmount();
 					item->decAmount(amount);
-					oldItem->setAmount(ItemDataProvider::Instance()->getMaxSlot(item->getId()));
-					InventoryPacket::addItem(player, inv, s, oldItem, fromDrop);
+					oldItem->setAmount(slotMax);
+
+					vector_t<InventoryPacketOperation> ops;
+					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, oldItem, s);
+					InventoryPacket::inventoryOperation(player, fromDrop, ops);
 				}
 				else {
 					item->incAmount(oldItem->getAmount());
 					player->getInventory()->deleteItem(inv, s);
 					player->getInventory()->addItem(inv, s, item);
-					InventoryPacket::addItem(player, inv, s, item, fromDrop);
+					vector_t<InventoryPacketOperation> ops;
+					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, s);
+					InventoryPacket::inventoryOperation(player, fromDrop, ops);
 					return 0;
 				}
 			}
@@ -59,11 +65,15 @@ int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 	}
 	if (freeSlot != 0) {
 		player->getInventory()->addItem(inv, freeSlot, item);
-		InventoryPacket::addNewItem(player, inv, freeSlot, item, fromDrop);
+
+		vector_t<InventoryPacketOperation> ops;
+		ops.emplace_back(InventoryPacket::OperationTypes::AddItem, item, freeSlot);
+		InventoryPacket::inventoryOperation(player, fromDrop, ops);
+
 		if (GameLogicUtilities::isPet(item->getId())) {
 			Pet *pet = new Pet(player, item);
 			player->getPets()->addPet(pet);
-			pet->setInventorySlot((int8_t) freeSlot);
+			pet->setInventorySlot(static_cast<int8_t>(freeSlot));
 			PetsPacket::updatePet(player, pet, item);
 		}
 		return 0;
@@ -71,12 +81,12 @@ int16_t Inventory::addItem(Player *player, Item *item, bool fromDrop) {
 	return item->getAmount();
 }
 
-void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
-	if (!ItemDataProvider::Instance()->itemExists(itemId)) {
+auto Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount, bool random) -> void {
+	if (!ItemDataProvider::getInstance().itemExists(itemId)) {
 		return;
 	}
 
-	int16_t max = ItemDataProvider::Instance()->getMaxSlot(itemId);
+	int16_t max = ItemDataProvider::getInstance().getMaxSlot(itemId);
 	int16_t thisAmount = 0;
 	if (GameLogicUtilities::isRechargeable(itemId)) {
 		thisAmount = max + player->getSkills()->getRechargeableBonus();
@@ -97,7 +107,7 @@ void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
 
 	Item *item = nullptr;
 	if (GameLogicUtilities::isEquip(itemId)) {
-		item = new Item(itemId, false);
+		item = new Item(itemId, random, player->hasGmBenefits());
 		if (GameLogicUtilities::isMount(itemId)) {
 			player->getMounts()->addMount(itemId);
 		}
@@ -110,7 +120,11 @@ void Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount) {
 	}
 }
 
-void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) {
+auto Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) -> void {
+	if (player->hasGmBenefits()) {
+		return;
+	}
+
 	player->getInventory()->changeItemAmount(itemId, -howMany);
 	int8_t inv = GameLogicUtilities::getInventory(itemId);
 	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
@@ -122,42 +136,61 @@ void Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) {
 			if (item->getAmount() >= howMany) {
 				item->decAmount(howMany);
 				if (item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) {
-					InventoryPacket::moveItem(player, inv, i, 0);
+					vector_t<InventoryPacketOperation> ops;
+					ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, i);
+					InventoryPacket::inventoryOperation(player, true, ops);
+
 					player->getInventory()->deleteItem(inv, i);
 				}
 				else {
-					InventoryPacket::updateItemAmounts(player, inv, i, item->getAmount(), 0, 0);
+					vector_t<InventoryPacketOperation> ops;
+					ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, i);
+					InventoryPacket::inventoryOperation(player, true, ops);
 				}
 				break;
 			}
 			else if (!GameLogicUtilities::isRechargeable(item->getId())) {
 				howMany -= item->getAmount();
 				item->setAmount(0);
-				InventoryPacket::moveItem(player, inv, i, 0);
+
+				vector_t<InventoryPacketOperation> ops;
+				ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, i);
+				InventoryPacket::inventoryOperation(player, true, ops);
+
 				player->getInventory()->deleteItem(inv, i);
 			}
 		}
 	}
 }
 
-void Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) {
+auto Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) -> void {
+	if (player->hasGmBenefits()) {
+		return;
+	}
+
 	Item *item = player->getInventory()->getItem(inv, slot);
 	if (item == nullptr || item->getAmount() - amount < 0) {
 		return;
 	}
 	item->decAmount(amount);
 	if ((item->getAmount() == 0 && !GameLogicUtilities::isRechargeable(item->getId())) || (takeStar && GameLogicUtilities::isRechargeable(item->getId()))) {
-		InventoryPacket::moveItem(player, inv, slot, 0);
+		vector_t<InventoryPacketOperation> ops;
+		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, slot);
+		InventoryPacket::inventoryOperation(player, true, ops);
+
 		player->getInventory()->deleteItem(inv, slot);
 	}
 	else {
 		player->getInventory()->changeItemAmount(item->getId(), -amount);
-		InventoryPacket::updateItemAmounts(player, inv, slot, item->getAmount(), 0, 0);
+
+		vector_t<InventoryPacketOperation> ops;
+		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, slot);
+		InventoryPacket::inventoryOperation(player, true, ops);
 	}
 }
 
-void Inventory::useItem(Player *player, int32_t itemId) {
-	ConsumeInfo *item = ItemDataProvider::Instance()->getConsumeInfo(itemId);
+auto Inventory::useItem(Player *player, int32_t itemId) -> void {
+	ConsumeInfo *item = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 
 	if (item == nullptr) {
 		// No reason not to check

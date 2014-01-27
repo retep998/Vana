@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,29 +23,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void ReactorPacket::spawnReactor(Reactor *reactor) {
+auto ReactorPacket::spawnReactor(Reactor *reactor) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_REACTOR_SPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addClass<Pos>(reactor->getPos());
-	packet.add<int8_t>(0);
+	packet.add<bool>(reactor->facesLeft());
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
 
-void ReactorPacket::showReactor(Player *player, Reactor *reactor) {
+auto ReactorPacket::showReactor(Player *player, Reactor *reactor) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_REACTOR_SPAWN);
 	packet.add<int32_t>(reactor->getId());
 	packet.add<int32_t>(reactor->getReactorId());
 	packet.add<int8_t>(reactor->getState());
 	packet.addClass<Pos>(reactor->getPos());
-	packet.add<int8_t>(0);
+	packet.add<bool>(reactor->facesLeft());
 	player->getSession()->send(packet);
 }
 
-void ReactorPacket::triggerReactor(Reactor *reactor) {
+auto ReactorPacket::triggerReactor(Reactor *reactor) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_REACTOR_TRIGGER);
 	packet.add<int32_t>(reactor->getId());
@@ -55,7 +55,7 @@ void ReactorPacket::triggerReactor(Reactor *reactor) {
 	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }
 
-void ReactorPacket::destroyReactor(Reactor *reactor) {
+auto ReactorPacket::destroyReactor(Reactor *reactor) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_REACTOR_DESPAWN);
 	packet.add<int32_t>(reactor->getId());

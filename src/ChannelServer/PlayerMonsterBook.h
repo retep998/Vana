@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,48 +18,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-class Player;
 class PacketCreator;
+class Player;
 
 struct MonsterCard {
-	MonsterCard() : id(0), level(0) { }
+	MonsterCard() = default;
 	MonsterCard(int32_t id, uint8_t level) : id(id), level(level) { }
-	int32_t id; // Card ID
-	uint8_t level; // 1 - 5
+
+	int32_t id = 0;
+	uint8_t level = 0;
 };
 
-class PlayerMonsterBook : boost::noncopyable {
+class PlayerMonsterBook {
+	NONCOPYABLE(PlayerMonsterBook);
+	NO_DEFAULT_CONSTRUCTOR(PlayerMonsterBook);
 public:
 	PlayerMonsterBook(Player *player);
 
-	void load();
-	void save();
-	void connectData(PacketCreator &packet);
+	auto load() -> void;
+	auto save() -> void;
+	auto connectData(PacketCreator &packet) -> void;
 
-	bool addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false);
-	void calculateLevel();
-	void infoData(PacketCreator &packet);
-	void setCover(int32_t newCover) { m_cover = newCover; }
+	auto addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
+	auto calculateLevel() -> void;
+	auto infoData(PacketCreator &packet) -> void;
+	auto setCover(int32_t newCover) -> void { m_cover = newCover; }
 
-	MonsterCard * getCard(int32_t cardId);
-	uint8_t getCardLevel(int32_t cardId);
-	int32_t getSpecials() const { return m_specialCount; }
-	int32_t getNormals() const { return m_normalCount; }
-	int32_t getSize() const { return (int32_t) m_cards.size(); }
-	int32_t getLevel() const { return m_level; }
-	int32_t getCover() const { return m_cover; }
-	bool isFull(int32_t cardId);
+	auto getCard(int32_t cardId) -> MonsterCard *;
+	auto getCardLevel(int32_t cardId) -> uint8_t;
+	auto getSpecials() const -> int32_t { return m_specialCount; }
+	auto getNormals() const -> int32_t { return m_normalCount; }
+	auto getSize() const -> int32_t { return static_cast<int32_t>(m_cards.size()); }
+	auto getLevel() const -> int32_t { return m_level; }
+	auto getCover() const -> int32_t { return m_cover; }
+	auto isFull(int32_t cardId) -> bool;
 private:
-	int32_t m_specialCount;
-	int32_t m_normalCount;
-	int32_t m_level;
-	int32_t m_cover;
-	Player *m_player;
-	unordered_map<int32_t, MonsterCard> m_cards;
+	int32_t m_specialCount = 0;
+	int32_t m_normalCount = 0;
+	int32_t m_level = 1;
+	int32_t m_cover = 0;
+	Player *m_player = nullptr;
+	hash_map_t<int32_t, MonsterCard> m_cards;
 };

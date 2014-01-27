@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,49 +28,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <queue>
 #include <string>
 
-using boost::asio::ip::tcp;
-using std::queue;
-using std::string;
-
 class AbstractConnection;
 class PacketCreator;
 
-class Session : public AbstractSession, public std::enable_shared_from_this<Session> {
+class Session : public AbstractSession, public enable_shared<Session> {
 public:
-	friend class ConnectionAcceptor;
-	Session(boost::asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation = "");
+	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation = "");
 
-	void disconnect() override;
-	void send(const PacketCreator &packet, bool encrypt = true);
-	const Ip & getIp() const;
+	auto disconnect() -> void override;
+	auto send(const PacketCreator &packet, bool encrypt = true) -> void;
+	auto getIp() const -> const Ip &;
 protected:
-	tcp::socket & getSocket() { return m_socket; }
-	void start() override;
-	void stop() override;
-	void handleStart() override;
-	void handleStop() override;
+	auto getSocket() -> boost::asio::ip::tcp::socket & { return m_socket; }
+	auto start() -> void override;
+	auto stop() -> void override;
+	auto handleStart() -> void override;
+	auto handleStop() -> void override;
 
-	void startReadHeader();
-	void handleWrite(const boost::system::error_code &error, size_t bytesTransferred);
-	void handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred);
-	void handleReadBody(const boost::system::error_code &error, size_t bytesTransferred);
-	void send(const unsigned char *buf, int32_t len, bool encrypt = true);
-	PacketCreator getConnectPacket(const string &patchLocation);
+	auto startReadHeader() -> void;
+	auto handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void;
+	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
+	auto handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void;
+	auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
+	auto getConnectPacket(const string_t &patchLocation) -> PacketCreator;
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
 
-	tcp::socket m_socket;
+	bool m_isForClient = true;
+	bool m_usePing = false;
+	string_t m_patchLocation;
+	ref_ptr_t<AbstractConnection> m_connection;
 	Decoder m_decoder;
-	std::shared_ptr<AbstractConnection> m_connection;
+	boost::asio::ip::tcp::socket m_socket;
 	MiscUtilities::shared_array<unsigned char> m_buffer;
-	bool m_isForClient;
-	bool m_usePing;
-	string m_patchLocation;
 
 	// Packet sending
 	MiscUtilities::shared_array<unsigned char> m_sendPacket;
-	std::mutex m_sendMutex;
+	mutex_t m_sendMutex;
+private:
+	friend class ConnectionAcceptor;
 };
-
-typedef std::shared_ptr<Session> SessionPtr;

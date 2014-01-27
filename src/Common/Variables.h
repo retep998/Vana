@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,19 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <unordered_map>
+#include "Types.h"
 #include <string>
-
-using std::string;
+#include <unordered_map>
 
 class Variables {
 public:
-	Variables() { }
-	void setVariable(const string &name, const string &value);
-	string getVariable(const string &name);
-	void deleteVariable(const string &name);
+	auto setVariable(const string_t &name, const string_t &value) -> void;
+	auto getVariable(const string_t &name) -> string_t;
+	auto deleteVariable(const string_t &name) -> void;
 
-	string & operator[](const string &key) { return m_variables[key]; }
+	auto operator[](const string_t &key) -> string_t & { return m_variables[key]; }
 protected:
-	std::unordered_map<string, string> m_variables;
+	hash_map_t<string_t, string_t> m_variables;
 };

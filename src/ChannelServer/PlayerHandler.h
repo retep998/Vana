@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,20 +25,20 @@ struct Attack;
 struct MpEaterInfo;
 
 namespace PlayerHandler {
-	void handleDoorUse(Player *player, PacketReader &packet);
-	void handleDamage(Player *player, PacketReader &packet);
-	void handleFacialExpression(Player *player, PacketReader &packet);
-	void handleGetInfo(Player *player, PacketReader &packet);
-	void handleHeal(Player *player, PacketReader &packet);
-	void handleMoving(Player *player, PacketReader &packet);
-	void handleSpecialSkills(Player *player, PacketReader &packet);
-	void handleMonsterBook(Player *player, PacketReader &packet);
-	void handleAdminMessenger(Player *player, PacketReader &packet);
+	auto handleDoorUse(Player *player, PacketReader &packet) -> void;
+	auto handleDamage(Player *player, PacketReader &packet) -> void;
+	auto handleFacialExpression(Player *player, PacketReader &packet) -> void;
+	auto handleGetInfo(Player *player, PacketReader &packet) -> void;
+	auto handleHeal(Player *player, PacketReader &packet) -> void;
+	auto handleMoving(Player *player, PacketReader &packet) -> void;
+	auto handleSpecialSkills(Player *player, PacketReader &packet) -> void;
+	auto handleMonsterBook(Player *player, PacketReader &packet) -> void;
+	auto handleAdminMessenger(Player *player, PacketReader &packet) -> void;
 
-	void useMeleeAttack(Player *player, PacketReader &packet);
-	void useRangedAttack(Player *player, PacketReader &packet);
-	void useSpellAttack(Player *player, PacketReader &packet);
-	void useEnergyChargeAttack(Player *player, PacketReader &packet);
-	void useSummonAttack(Player *player, PacketReader &packet);
-	Attack compileAttack(Player *player, PacketReader &packet, int8_t skillType);
+	auto useMeleeAttack(Player *player, PacketReader &packet) -> void;
+	auto useRangedAttack(Player *player, PacketReader &packet) -> void;
+	auto useSpellAttack(Player *player, PacketReader &packet) -> void;
+	auto useEnergyChargeAttack(Player *player, PacketReader &packet) -> void;
+	auto useSummonAttack(Player *player, PacketReader &packet) -> void;
+	auto compileAttack(Player *player, PacketReader &packet, int8_t skillType) -> Attack;
 }

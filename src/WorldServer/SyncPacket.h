@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 class AbstractConnection;
 class Channel;
 class PacketCreator;
@@ -35,30 +32,30 @@ class WorldServerAcceptConnection;
 struct Rates;
 
 namespace SyncPacket {
-	void sendSyncData(WorldServerAcceptConnection *connection);
+	auto sendSyncData(WorldServerAcceptConnection *connection) -> void;
 
 	namespace ConfigPacket {
-		void setRates(const Rates &rates);
-		void scrollingHeader(const string &message);
+		auto setRates(const Rates &rates) -> void;
+		auto scrollingHeader(const string_t &message) -> void;
 	}
 	namespace PartyPacket {
-		void removePartyMember(int32_t partyId, int32_t playerId, bool kicked);
-		void addPartyMember(int32_t partyId, int32_t playerId);
-		void newPartyLeader(int32_t partyId, int32_t playerId);
-		void createParty(int32_t partyId, int32_t playerId);
-		void disbandParty(int32_t partyId);
+		auto removePartyMember(int32_t partyId, int32_t playerId, bool kicked) -> void;
+		auto addPartyMember(int32_t partyId, int32_t playerId) -> void;
+		auto newPartyLeader(int32_t partyId, int32_t playerId) -> void;
+		auto createParty(int32_t partyId, int32_t playerId) -> void;
+		auto disbandParty(int32_t partyId) -> void;
 	}
 	namespace PlayerPacket {
-		void playerChangeChannel(AbstractConnection *connection, int32_t playerId, const Ip &ip, port_t port);
-		void newConnectable(uint16_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer);
-		void deleteConnectable(uint16_t channel, int32_t playerId);
-		void updatePlayerJob(int32_t playerId, int16_t job);
-		void updatePlayerMap(int32_t playerId, int32_t map);
-		void updatePlayerLevel(int32_t playerId, int16_t level);
-		void characterCreated(int32_t playerId);
+		auto playerChangeChannel(AbstractConnection *connection, int32_t playerId, const Ip &ip, port_t port) -> void;
+		auto newConnectable(uint16_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer) -> void;
+		auto deleteConnectable(uint16_t channel, int32_t playerId) -> void;
+		auto updatePlayerJob(int32_t playerId, int16_t job) -> void;
+		auto updatePlayerMap(int32_t playerId, int32_t map) -> void;
+		auto updatePlayerLevel(int32_t playerId, int16_t level) -> void;
+		auto characterCreated(int32_t playerId) -> void;
 	}
 	namespace BuddyPacket {
-		void sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string &name);
-		void sendBuddyOnlineOffline(Channel *channel, const vector<int32_t> &players, int32_t playerId, int32_t channelId);
+		auto sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string_t &name) -> void;
+		auto sendBuddyOnlineOffline(Channel *channel, const vector_t<int32_t> &players, int32_t playerId, int32_t channelId) -> void;
 	}
 }

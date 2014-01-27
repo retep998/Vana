@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void FamePacket::sendError(Player *player, int32_t reason) {
+auto FamePacket::sendError(Player *player, int32_t reason) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_FAME);
 	packet.add<int32_t>(reason);
 	player->getSession()->send(packet);
 }
 
-void FamePacket::sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame) {
+auto FamePacket::sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_FAME);
 	packet.add<int8_t>(0x05);

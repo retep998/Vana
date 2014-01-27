@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,18 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
-class Player;
 class PacketCreator;
+class Player;
 
 namespace GmPacket {
-	void beginHide(Player *player);
-	void endHide(Player *player);
-	void warning(Player *player, bool succeed);
-	void block(Player *player);
-	void invalidCharacterName(Player *player);
-	void hiredMerchantPlace(Player *player, int8_t channel);
-	void hiredMerchantPlace(Player *player, int32_t mapId);
-	void setGetVarResult(Player *player, const string &name, const string &variable, const string &value);
+	auto beginHide(Player *player) -> void;
+	auto endHide(Player *player) -> void;
+	auto warning(Player *player, bool succeed) -> void;
+	auto block(Player *player) -> void;
+	auto invalidCharacterName(Player *player) -> void;
+	auto hiredMerchantPlace(Player *player, int8_t channel) -> void;
+	auto hiredMerchantPlace(Player *player, int32_t mapId) -> void;
+	auto setGetVarResult(Player *player, const string_t &name, const string_t &variable, const string_t &value) -> void;
 }

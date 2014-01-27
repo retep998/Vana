@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,11 +38,17 @@ if getMap() == 280030000 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		if getNumPlayers(280030000) == 1 then
-			setReactorState(280030000, 2111001, 0); -- Zakum's altar
-			setReactorState(211042300, 2118002, 0); -- Zakum's door
-			clearDrops();
-			clearMobs();
+		if setInstance("zakum") then
+			revertInstance();
+		else
+			if getNumPlayers(280030000) == 1 then
+				if getReactorState(280030000, 2111001) == 1 then
+					setReactorState(280030000, 2111001, 0); -- Zakum's altar
+					setReactorState(211042300, 2118002, 0); -- Zakum's door
+				end
+				clearDrops(280030000);
+				clearMobs(280030000);
+			end
 		end
 		setMap(211042300); -- Door to Zakum
 	end

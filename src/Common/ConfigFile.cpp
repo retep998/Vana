@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,11 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileUtilities.h"
 #include <iostream>
 
-using std::cerr;
-using std::cout;
-using std::endl;
 
-ConfigFile::ConfigFile(const string &filename, bool executeFile)
+ConfigFile::ConfigFile(const string_t &filename, bool executeFile)
 {
 	loadFile(filename);
 	if (executeFile) {
@@ -33,116 +30,104 @@ ConfigFile::ConfigFile(const string &filename, bool executeFile)
 	}
 }
 
-ConfigFile::ConfigFile()
-{
-}
-
 ConfigFile::~ConfigFile() {
-	lua_close(getLuaState());
+	lua_close(m_luaVm);
 }
 
-void ConfigFile::loadFile(const string &filename) {
+auto ConfigFile::loadFile(const string_t &filename) -> void {
 	if (!FileUtilities::fileExists(filename)) {
-		cerr << "ERROR: Configuration file " << filename << " does not exist!" << endl;
+		std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
 		ExitCodes::exit(ExitCodes::ConfigFileMissing);
 	}
 
 	m_file = filename;
 	m_luaVm = luaL_newstate();
-	luaopen_base(getLuaState());
+	luaopen_base(m_luaVm);
 }
 
-bool ConfigFile::execute() {
-	if (luaL_dofile(getLuaState(), m_file.c_str())) {
+auto ConfigFile::execute() -> bool {
+	if (luaL_dofile(m_luaVm, m_file.c_str())) {
 		handleError();
 		return false;
 	}
 	return true;
 }
 
-void ConfigFile::handleError() {
-	printError(lua_tostring(getLuaState(), -1));
+auto ConfigFile::handleError() -> void {
+	printError(lua_tostring(m_luaVm, -1));
 }
 
-void ConfigFile::printError(const string &error) {
-	cout << error << endl;
+auto ConfigFile::printError(const string_t &error) -> void {
+	std::cerr << error << std::endl;
 }
 
-bool ConfigFile::keyExists(const string &value) {
-	lua_getglobal(getLuaState(), value.c_str());
-	bool ret = !lua_isnil(getLuaState(), -1);
-	lua_pop(getLuaState(), 1);
+auto ConfigFile::keyExists(const string_t &value) -> bool {
+	lua_getglobal(m_luaVm, value.c_str());
+	bool ret = !lua_isnil(m_luaVm, -1);
+	lua_pop(m_luaVm, 1);
 	return ret;
 }
 
-void ConfigFile::keyMustExist(const string &value) {
+auto ConfigFile::keyMustExist(const string_t &value) -> void {
 	if (!keyExists(value)) {
-		cerr << "ERROR: Couldn't get a value from config file." << endl;
-		cerr << "File: " << m_file << endl;
-		cerr << "Value: " << value << endl;
+		std::cerr << "ERROR: Couldn't get a value from config file." << std::endl;
+		std::cerr << "File: " << m_file << std::endl;
+		std::cerr << "Value: " << value << std::endl;
 		ExitCodes::exit(ExitCodes::ConfigError);
 	}
 }
 
-void ConfigFile::setVariable(const string &name, const string &value) {
-	lua_pushstring(getLuaState(), value.c_str());
-	lua_setglobal(getLuaState(), name.c_str());
+auto ConfigFile::setVariable(const string_t &name, const string_t &value) -> void {
+	lua_pushstring(m_luaVm, value.c_str());
+	lua_setglobal(m_luaVm, name.c_str());
 }
 
-void ConfigFile::setVariable(const string &name, int32_t value) {
-	lua_pushinteger(getLuaState(), value);
-	lua_setglobal(getLuaState(), name.c_str());
+auto ConfigFile::setVariable(const string_t &name, int32_t value) -> void {
+	lua_pushinteger(m_luaVm, value);
+	lua_setglobal(m_luaVm, name.c_str());
 }
 
-string ConfigFile::getString(const string &value) {
-	keyMustExist(value);
-	lua_getglobal(getLuaState(), value.c_str());
-	string x = lua_tostring(getLuaState(), -1);
-	lua_pop(getLuaState(), 1);
-	return x;
-}
-
-IpMatrix ConfigFile::getIpMatrix(const string &value) {
+auto ConfigFile::getIpMatrix(const string_t &value) -> IpMatrix {
 	keyMustExist(value);
 	IpMatrix matrix;
 
-	lua_getglobal(getLuaState(), value.c_str());
-	lua_pushnil(getLuaState());
-	while (lua_next(getLuaState(), -2)) {
-		vector<uint32_t> arr;
+	lua_getglobal(m_luaVm, value.c_str());
+	lua_pushnil(m_luaVm);
+	while (lua_next(m_luaVm, -2)) {
+		vector_t<uint32_t> arr;
 		arr.reserve(2);
 
-		lua_pushnil(getLuaState());
-		while (lua_next(getLuaState(), -2)) {
-			arr.push_back(Ip::stringToIpv4(lua_tostring(getLuaState(), -1)));
-			lua_pop(getLuaState(), 1);
+		lua_pushnil(m_luaVm);
+		while (lua_next(m_luaVm, -2)) {
+			arr.push_back(Ip::stringToIpv4(lua_tostring(m_luaVm, -1)));
+			lua_pop(m_luaVm, 1);
 		}
 
 		if (arr.size() != 2) {
-			std::cerr << "ERROR: " << value << " configuration is malformed!" << endl;
+			std::cerr << "ERROR: " << value << " configuration is malformed!" << std::endl;
 			ExitCodes::exit(ExitCodes::ConfigError);
 		}
 
 		matrix.push_back(ExternalIp(arr[0], arr[1]));
 
-		lua_pop(getLuaState(), 1);
+		lua_pop(m_luaVm, 1);
 	}
-	lua_pop(getLuaState(), 1);
+	lua_pop(m_luaVm, 1);
 
 	return matrix;
 }
 
-vector<int8_t> ConfigFile::getBossChannels(const string &value, size_t maxChannels) {
+auto ConfigFile::getBossChannels(const string_t &value, size_t maxChannels) -> vector_t<int8_t> {
 	keyMustExist(value);
-	vector<int8_t> channels;
+	vector_t<int8_t> channels;
 
-	lua_getglobal(getLuaState(), value.c_str());
-	lua_pushnil(getLuaState());
-	while (lua_next(getLuaState(), -2)) {
-		channels.push_back(static_cast<int8_t>(lua_tointeger(getLuaState(), -1)));
-		lua_pop(getLuaState(), 1);
+	lua_getglobal(m_luaVm, value.c_str());
+	lua_pushnil(m_luaVm);
+	while (lua_next(m_luaVm, -2)) {
+		channels.push_back(static_cast<int8_t>(lua_tointeger(m_luaVm, -1)));
+		lua_pop(m_luaVm, 1);
 	}
-	lua_pop(getLuaState(), 1);
+	lua_pop(m_luaVm, 1);
 
 	if (channels.size() == 1 && channels[0] == -1) {
 		channels.clear();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace asio = boost::asio;
 
-Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string &patchLocation) :
+Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation) :
 	AbstractSession(sessionManager, (!isForClient || isEncrypted)),
 	m_socket(ioService),
 	m_connection(connection),
@@ -37,14 +37,14 @@ Session::Session(asio::io_service &ioService, SessionManagerPtr sessionManager, 
 {
 }
 
-void Session::start() {
+auto Session::start() -> void {
 	m_sessionManager->start(shared_from_this());
 }
 
-void Session::handleStart() {
+auto Session::handleStart() -> void {
 	m_connection->setSession(this);
 	m_connection->setPinging(m_usePing);
-	// TODO FIXME
+	// TODO FIXME support IPv6
 	m_connection->setIp(Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
 
 	if (m_isForClient) {
@@ -58,15 +58,15 @@ void Session::handleStart() {
 	startReadHeader();
 }
 
-void Session::stop() {
+auto Session::stop() -> void {
 	m_sessionManager->stop(shared_from_this());
 }
 
-void Session::disconnect() {
+auto Session::disconnect() -> void {
 	stop();
 }
 
-void Session::handleStop() {
+auto Session::handleStop() -> void {
 	boost::system::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
@@ -74,12 +74,12 @@ void Session::handleStop() {
 	}
 }
 
-void Session::send(const PacketCreator &packet, bool encrypt) {
+auto Session::send(const PacketCreator &packet, bool encrypt) -> void {
 	send(packet.getBuffer(), packet.getSize(), encrypt);
 }
 
-void Session::send(const unsigned char *buf, int32_t len, bool encrypt) {
-	std::unique_lock<std::mutex> l(m_sendMutex);
+auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
+	owned_lock_t<mutex_t> l(m_sendMutex);
 
 	unsigned char *sendBuffer;
 	size_t realLength = len;
@@ -106,7 +106,7 @@ void Session::send(const unsigned char *buf, int32_t len, bool encrypt) {
 			std::placeholders::_2));
 }
 
-void Session::startReadHeader() {
+auto Session::startReadHeader() -> void {
 	m_buffer.reset(new unsigned char[headerLen]);
 
 	asio::async_read(m_socket,
@@ -116,14 +116,14 @@ void Session::startReadHeader() {
 			std::placeholders::_2));
 }
 
-void Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) {
-	std::unique_lock<std::mutex> l(m_sendMutex);
+auto Session::handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void {
+	owned_lock_t<mutex_t> l(m_sendMutex);
 	if (error) {
 		disconnect();
 	}
 }
 
-void Session::handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) {
+auto Session::handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void {
 	if (!error) {
 		// TODO: Figure out how to distinguish between client versions and server versions, can use this after
 		//if (!m_decoder.validPacket(m_buffer.get())) {
@@ -152,7 +152,7 @@ void Session::handleReadHeader(const boost::system::error_code &error, size_t by
 	}
 }
 
-void Session::handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) {
+auto Session::handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void {
 	if (!error) {
 		m_decoder.decrypt(m_buffer.get(), bytesTransferred, headerLen);
 
@@ -166,11 +166,11 @@ void Session::handleReadBody(const boost::system::error_code &error, size_t byte
 	}
 }
 
-const Ip & Session::getIp() const {
+auto Session::getIp() const -> const Ip & {
 	return m_connection->getIp();
 }
 
-PacketCreator Session::getConnectPacket(const string &patchLocation) {
+auto Session::getConnectPacket(const string_t &patchLocation) -> PacketCreator {
 	PacketCreator packet;
 	// IV_PATCH_LOCATION
 	packet.add<header_t>(0);

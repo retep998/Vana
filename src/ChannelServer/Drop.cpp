@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,41 +24,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 
 Drop::Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop) :
-	m_questId(0),
 	m_owner(owner),
 	m_mapId(mapId),
 	m_mesos(mesos),
-	m_playerId(0),
 	m_playerDrop(playerDrop),
-	m_type(Drop::Normal),
-	m_tradeable(true),
 	m_pos(pos)
 {
 }
 
 Drop::Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop) :
-	m_questId(0),
 	m_owner(owner),
 	m_mapId(mapId),
-	m_mesos(0),
-	m_playerId(0),
 	m_playerDrop(playerDrop),
-	m_type(Drop::Normal),
-	m_tradeable(true),
 	m_pos(pos),
 	m_item(item)
 {
 }
 
-int32_t Drop::getObjectId() {
-	return (m_mesos > 0 ? m_mesos : m_item.getId());
+auto Drop::getObjectId() -> int32_t {
+	return m_mesos > 0 ? m_mesos : m_item.getId();
 }
 
-int16_t Drop::getAmount() {
+auto Drop::getAmount() -> int16_t {
 	return m_item.getAmount();
 }
 
-void Drop::doDrop(const Pos &origin) {
+auto Drop::doDrop(const Pos &origin) -> void {
 	setDroppedAtTime(TimeUtilities::getNow());
 	Maps::getMap(m_mapId)->addDrop(this);
 
@@ -71,21 +62,21 @@ void Drop::doDrop(const Pos &origin) {
 			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DropAnimation, true, origin);
 		}
 	}
-	else if (Player *player = PlayerDataProvider::Instance()->getPlayer(m_playerId)) {
+	else if (Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId)) {
 		if (player->getMapId() == m_mapId) {
 			DropsPacket::showDrop(player, this, DropsPacket::DropTypes::DropAnimation, true, origin);
 		}
 	}
 }
 
-void Drop::showDrop(Player *player) {
+auto Drop::showDrop(Player *player) -> void {
 	if (isQuest() && player->getId() != m_playerId) {
 		return;
 	}
 	DropsPacket::showDrop(player, this, DropsPacket::DropTypes::ShowExisting, false, Pos());
 }
 
-void Drop::takeDrop(Player *player, int64_t petId) {
+auto Drop::takeDrop(Player *player, int64_t petId) -> void {
 	Maps::getMap(m_mapId)->removeDrop(m_id);
 	if (petId == 0) {
 		DropsPacket::takeDrop(player, this);
@@ -101,7 +92,7 @@ void Drop::takeDrop(Player *player, int64_t petId) {
 	delete this;
 }
 
-void Drop::removeDrop(bool showPacket) {
+auto Drop::removeDrop(bool showPacket) -> void {
 	Maps::getMap(m_mapId)->removeDrop(m_id);
 	if (showPacket) {
 		DropsPacket::removeDrop(this);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,11 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
-	string::const_iterator iter1 = s1.begin();
-	string::const_iterator iter2 = s2.begin();
+auto StringUtilities::noCaseCompare(const string_t &s1, const string_t &s2) -> int32_t {
+	size_t l1 = s1.size();
+	size_t l2 = s2.size();
+	if (l1 == l2) {
+		return 0;
+	}
 
-	while ((iter1 != s1.end()) && (iter2 != s2.end())) {
+	auto iter1 = std::begin(s1);
+	auto iter2 = std::begin(s2);
+	auto end1 = std::end(s1);
+	auto end2 = std::end(s2);
+
+	while ((iter1 != end1) && (iter2 != end2)) {
 		if (toupper(*iter1) != toupper(*iter2)) {
 			return (toupper(*iter1) < toupper(*iter2)) ? -1 : 1;
 		}
@@ -33,21 +41,16 @@ int32_t StringUtilities::noCaseCompare(const string &s1, const string &s2) {
 		++iter2;
 	}
 
-	// The letters are the same, so let's return based on size
-	size_t l1 = s1.size(), l2 = s2.size();
-	if (l1 == l2) {
-		return 0;
-	}
 	return (l1 < l2) ? -1 : 1;
 }
 
-void StringUtilities::runFlags(const opt_string &flags, function<void (const string &)> func) {
+auto StringUtilities::runFlags(const opt_string_t &flags, function_t<void (const string_t &)> func) -> void {
 	if (flags.is_initialized()) {
 		runFlags(flags.get(), func);
 	}
 }
 
-void StringUtilities::runFlags(const string &flags, function<void (const string &)> func) {
+auto StringUtilities::runFlags(const string_t &flags, function_t<void (const string_t &)> func) -> void {
 	if (flags.length() > 0) {
 		MiscUtilities::tokenizer tokens(flags, ",");
 		for (const auto &token : tokens) {
@@ -56,7 +59,19 @@ void StringUtilities::runFlags(const string &flags, function<void (const string 
 	}
 }
 
-int64_t StringUtilities::atoli(const char *str) {
+auto StringUtilities::runEnum(const opt_string_t &enumText, function_t<void (const string_t &)> func) -> void {
+	if (enumText.is_initialized()) {
+		runEnum(enumText.get(), func);
+	}
+}
+
+auto StringUtilities::runEnum(const string_t &enumText, function_t<void (const string_t &)> func) -> void {
+	if (enumText.length() > 0) {
+		func(enumText);
+	}
+}
+
+auto StringUtilities::atoli(const char *str) -> int64_t {
 	int64_t result = 0;
 	while (*str >= '0' && *str <= '9') {
 		result = (result * 10) + (*str++ - '0');
@@ -64,21 +79,21 @@ int64_t StringUtilities::atoli(const char *str) {
 	return result;
 }
 
-string StringUtilities::replace(const string &input, const string &what, const string &replacement) {
-	string ret = input;
+auto StringUtilities::replace(const string_t &input, const string_t &what, const string_t &replacement) -> string_t {
+	string_t ret = input;
 	size_t searchLen = what.length();
 	size_t foundPos = ret.find(what);
-	while (foundPos != string::npos) {
+	while (foundPos != string_t::npos) {
 		ret.replace(foundPos, searchLen, replacement);
 		foundPos = ret.find(what); // Search the next one
 	}
 	return ret;
 }
 
-string StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase) {
-	string ret;
+auto StringUtilities::bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase) -> string_t {
+	string_t ret;
 	if (inputSize > 0) {
-		std::ostringstream out;
+		out_stream_t out;
 		size_t bufLen = inputSize - 1;
 
 		for (size_t i = 0; i <= bufLen; i++) {

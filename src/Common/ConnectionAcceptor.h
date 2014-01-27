@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,29 +20,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "Session.h"
 #include "SessionManager.h"
+#include "Types.h"
 #include <string>
 #include <boost/asio.hpp>
 #include <memory>
-
-using std::string;
-using boost::asio::ip::tcp;
 
 class AbstractConnectionFactory;
 
 class ConnectionAcceptor {
 public:
-	ConnectionAcceptor(boost::asio::io_service &ioService, const tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation);
-	void stop();
+	ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation);
+	auto stop() -> void;
 private:
-	void startAccepting();
-	void handleConnection(SessionPtr newSession, const boost::system::error_code &error);
+	auto startAccepting() -> void;
+	auto handleConnection(ref_ptr_t<Session> newSession, const boost::system::error_code &error) -> void;
 
-	tcp::acceptor m_acceptor;
-	std::unique_ptr<AbstractConnectionFactory> m_apf;
-	SessionManagerPtr m_sessionManager;
-	string m_patchLocation;
+	bool m_isServer = true;
+	string_t m_patchLocation;
 	LoginConfig m_loginConfig;
-	bool m_isServer;
+	boost::asio::ip::tcp::acceptor m_acceptor;
+	owned_ptr_t<AbstractConnectionFactory> m_apf;
+	ref_ptr_t<SessionManager> m_sessionManager;
 };
-
-typedef std::shared_ptr<ConnectionAcceptor> ConnectionAcceptorPtr;

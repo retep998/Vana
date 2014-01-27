@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapConstants.h"
 #include "PacketCreator.h"
 
-void InventoryPacketHelper::fillRockPacket(PacketCreator &packet, const vector<int32_t> &vec, size_t maxSize) {
+auto InventoryPacketHelper::fillRockPacket(PacketCreator &packet, const vector_t<int32_t> &vec, size_t maxSize) -> void {
 	size_t remaining = 1;
 	while (remaining <= vec.size()) {
 		packet.add<int32_t>(vec[remaining - 1]);

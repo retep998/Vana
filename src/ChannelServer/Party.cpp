@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,31 +30,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.h"
 
 Party::Party(int32_t partyId) :
-	m_partyId(partyId),
-	m_instance(nullptr)
+	m_partyId(partyId)
 {
 }
 
-void Party::setLeader(int32_t playerId) {
+auto Party::setLeader(int32_t playerId) -> void {
 	m_leaderId = playerId;
 }
 
 namespace Functors {
 	struct JoinPartyUpdate {
-		void operator()(Player *target) {
+		auto operator()(Player *target) -> void {
 			PartyPacket::joinParty(target, party, player);
 		}
 		Party *party;
-		string player;
+		string_t player;
 	};
 }
 
-void Party::addMember(Player *player, bool first) {
+auto Party::addMember(Player *player, bool first) -> void {
 	m_members[player->getId()] = player;
 	player->setParty(this);
 
 	if (!first) {
-		PlayerData *pData = PlayerDataProvider::Instance()->getPlayerData(player->getId());
+		PlayerData *pData = PlayerDataProvider::getInstance().getPlayerData(player->getId());
 		pData->party = getId();
 
 		Functors::JoinPartyUpdate func = {this, player->getName()};
@@ -62,10 +61,10 @@ void Party::addMember(Player *player, bool first) {
 	}
 }
 
-void Party::addMember(int32_t id, bool first) {
+auto Party::addMember(int32_t id, bool first) -> void {
 	m_members[id] = nullptr;
 	if (!first) {
-		PlayerData *pData = PlayerDataProvider::Instance()->getPlayerData(id);
+		PlayerData *pData = PlayerDataProvider::getInstance().getPlayerData(id);
 		pData->party = getId();
 
 		Functors::JoinPartyUpdate func = {this, pData->name};
@@ -73,23 +72,23 @@ void Party::addMember(int32_t id, bool first) {
 	}
 }
 
-void Party::setMember(int32_t playerId, Player *player) {
+auto Party::setMember(int32_t playerId, Player *player) -> void {
 	m_members[playerId] = player;
 }
 
 namespace Functors {
 	struct LeavePartyUpdate {
-		void operator()(Player *target) {
+		auto operator()(Player *target) -> void {
 			PartyPacket::leaveParty(target, party, playerId, player, kicked);
 		}
 		Party *party;
 		int32_t playerId;
-		string player;
+		string_t player;
 		bool kicked;
 	};
 }
 
-void Party::deleteMember(Player *player, bool kicked) {
+auto Party::deleteMember(Player *player, bool kicked) -> void {
 	m_members.erase(player->getId());
 	player->setParty(nullptr);
 	if (Instance *instance = getInstance()) {
@@ -100,23 +99,23 @@ void Party::deleteMember(Player *player, bool kicked) {
 	runFunction(func);
 }
 
-void Party::deleteMember(int32_t id, bool kicked) {
+auto Party::deleteMember(int32_t id, bool kicked) -> void {
 	if (Instance *instance = getInstance()) {
 		instance->sendMessage(PartyRemoveMember, getId(), id);
 	}
 	m_members.erase(id);
 
-	PlayerData *player = PlayerDataProvider::Instance()->getPlayerData(id);
+	PlayerData *player = PlayerDataProvider::getInstance().getPlayerData(id);
 	Functors::LeavePartyUpdate func = {this, id, player->name, kicked};
 	runFunction(func);
 }
 
-void Party::disband() {
+auto Party::disband() -> void {
 	if (Instance *instance = getInstance()) {
 		instance->sendMessage(PartyDisband, getId());
 		setInstance(nullptr);
 	}
-	PlayerMap temp = m_members;
+	auto temp = m_members;
 	for (const auto &kvp : temp) {
 		if (Player *player = kvp.second) {
 			player->setParty(nullptr);
@@ -125,13 +124,13 @@ void Party::disband() {
 	}
 }
 
-void Party::silentUpdate() {
+auto Party::silentUpdate() -> void {
 	runFunction([this](Player *player) {
 		PartyPacket::silentUpdate(player, this);
 	});
 }
 
-Player * Party::getMemberByIndex(uint8_t index) {
+auto Party::getMemberByIndex(uint8_t index) -> Player * {
 	Player *member = nullptr;
 	if (index <= m_members.size()) {
 		int8_t f = 0;
@@ -146,7 +145,7 @@ Player * Party::getMemberByIndex(uint8_t index) {
 	return member;
 }
 
-void Party::runFunction(function<void (Player *)> func) {
+auto Party::runFunction(function_t<void(Player *)> func) -> void {
 	for (const auto &kvp : m_members) {
 		if (Player *player = kvp.second) {
 			func(player);
@@ -154,16 +153,16 @@ void Party::runFunction(function<void (Player *)> func) {
 	}
 }
 
-vector<int32_t> Party::getAllPlayerIds() {
-	vector<int32_t> playerIds;
+auto Party::getAllPlayerIds() -> vector_t<int32_t> {
+	vector_t<int32_t> playerIds;
 	for (const auto &kvp : m_members) {
 		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
 }
 
-vector<Player *> Party::getPartyMembers(int32_t mapId) {
-	vector<Player *> players;
+auto Party::getPartyMembers(int32_t mapId) -> vector_t<Player *> {
+	vector_t<Player *> players;
 	runFunction([&players, &mapId](Player *player) {
 		if (mapId == -1 || player->getMapId() == mapId) {
 			players.push_back(player);
@@ -172,7 +171,7 @@ vector<Player *> Party::getPartyMembers(int32_t mapId) {
 	return players;
 }
 
-void Party::showHpBar(Player *player) {
+auto Party::showHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			PlayerPacket::showHpBar(player, testPlayer);
@@ -180,7 +179,7 @@ void Party::showHpBar(Player *player) {
 	});
 }
 
-void Party::receiveHpBar(Player *player) {
+auto Party::receiveHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
 			PlayerPacket::showHpBar(testPlayer, player);
@@ -188,7 +187,7 @@ void Party::receiveHpBar(Player *player) {
 	});
 }
 
-int8_t Party::getMemberCountOnMap(int32_t mapId) {
+auto Party::getMemberCountOnMap(int32_t mapId) -> int8_t {
 	int8_t count = 0;
 	for (const auto &kvp : m_members) {
 		if (Player *test = kvp.second) {
@@ -200,7 +199,7 @@ int8_t Party::getMemberCountOnMap(int32_t mapId) {
 	return count;
 }
 
-bool Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) {
+auto Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) -> bool {
 	bool ret = true;
 	for (const auto &kvp : m_members) {
 		if (Player *test = kvp.second) {
@@ -213,7 +212,7 @@ bool Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) {
 	return ret;
 }
 
-void Party::warpAllMembers(int32_t mapId, const string &portalName) {
+auto Party::warpAllMembers(int32_t mapId, const string_t &portalName) -> void {
 	if (Maps::getMap(mapId)) {
 		PortalInfo *portal = nullptr;
 		if (portalName != "") {
@@ -227,24 +226,23 @@ void Party::warpAllMembers(int32_t mapId, const string &portalName) {
 	}
 }
 
-bool Party::checkFootholds(int8_t memberCount, const vector<vector<int16_t>> &footholds) {
+auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<int16_t>> &footholds) -> bool {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
 	bool winner = true;
 	int8_t membersOnFootholds = 0;
-	TakenFootholds fhs; // foothold group ID = key
+	hash_set_t<size_t> footholdGroupsUsed;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
-		fhs[group] = false;
-		const vector<int16_t> &groupFootholds = footholds[group];
+		const auto &groupFootholds = footholds[group];
 		for (const auto &kvp : m_members) {
 			if (Player *test = kvp.second) {
-				for (const auto &fh : groupFootholds) {
-					if (test->getFh() == fh) {
-						if (fhs[group]) {
+				for (const auto &foothold : groupFootholds) {
+					if (test->getFoothold() == foothold) {
+						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
 							winner = false;
 						}
 						else {
-							fhs[group] = true;
+							footholdGroupsUsed.insert(group);
 							membersOnFootholds++;
 						}
 						break;
@@ -266,23 +264,22 @@ bool Party::checkFootholds(int8_t memberCount, const vector<vector<int16_t>> &fo
 	return winner;
 }
 
-bool Party::verifyFootholds(const vector<vector<int16_t>> &footholds) {
+auto Party::verifyFootholds(const vector_t<vector_t<int16_t>> &footholds) -> bool {
 	// Determines if the players match your selected footholds
 	bool winner = true;
-	TakenFootholds fhs; // Foothold group ID = key
+	hash_set_t<size_t> footholdGroupsUsed;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
-		fhs[group] = false;
-		const vector<int16_t> &groupFootholds = footholds[group];
+		const vector_t<int16_t> &groupFootholds = footholds[group];
 		for (const auto &kvp : m_members) {
 			if (Player *test = kvp.second) {
-				for (const auto &fh : groupFootholds) {
-					if (test->getFh() == fh) {
-						if (fhs[group]) {
+				for (const auto &foothold : groupFootholds) {
+					if (test->getFoothold() == foothold) {
+						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
 							winner = false;
 						}
 						else {
-							fhs[group] = true;
+							footholdGroupsUsed.insert(group);
 						}
 						break;
 					}
@@ -297,22 +294,16 @@ bool Party::verifyFootholds(const vector<vector<int16_t>> &footholds) {
 		}
 	}
 	if (winner) {
-		for (const auto &kvp : fhs) {
-			if (!kvp.second) {
-				winner = false;
-				break;
-			}
-		}
+		winner = footholdGroupsUsed.size() == footholds.size();
 	}
 	return winner;
 }
 
-void Party::updatePacket(PacketCreator &packet) {
+auto Party::updatePacket(PacketCreator &packet) -> void {
 	size_t offset = Parties::MaxMembers - m_members.size();
 	size_t i = 0;
-	PlayerMap::iterator iter;
 	PlayerData *player;
-	int16_t channelId = ChannelServer::Instance()->getChannelId();
+	int16_t channelId = ChannelServer::getInstance().getChannelId();
 
 	// Add party member IDs to packet
 	for (const auto &kvp : m_members) {
@@ -324,7 +315,7 @@ void Party::updatePacket(PacketCreator &packet) {
 
 	// Add party member names to packet
 	for (const auto &kvp : m_members) {
-		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
+		player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		packet.addString(player->name, 13);
 	}
 	for (i = 0; i < offset; i++) {
@@ -333,7 +324,7 @@ void Party::updatePacket(PacketCreator &packet) {
 
 	// Add party member jobs to packet
 	for (const auto &kvp : m_members) {
-		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
+		player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		packet.add<int32_t>(player->job);
 	}
 	for (i = 0; i < offset; i++) {
@@ -342,7 +333,7 @@ void Party::updatePacket(PacketCreator &packet) {
 
 	// Add party member levels to packet
 	for (const auto &kvp : m_members) {
-		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
+		player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		packet.add<int32_t>(player->level);
 	}
 	for (i = 0; i < offset; i++) {
@@ -351,7 +342,7 @@ void Party::updatePacket(PacketCreator &packet) {
 
 	// Add party member channels to packet
 	for (const auto &kvp : m_members) {
-		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
+		player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		if (player->channel != -1) {
 			packet.add<int32_t>(player->channel);
 		}
@@ -367,7 +358,7 @@ void Party::updatePacket(PacketCreator &packet) {
 
 	// Add party member maps to packet
 	for (const auto &kvp : m_members) {
-		player = PlayerDataProvider::Instance()->getPlayerData(kvp.first);
+		player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		if (player->channel == channelId) {
 			packet.add<int32_t>(player->map);
 		}

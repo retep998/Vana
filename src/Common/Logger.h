@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,9 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 #include <unordered_map>
-
-using std::string;
-using std::unordered_map;
 
 namespace LogDestinations {
 	enum LogDestinations : int32_t {
@@ -73,27 +70,47 @@ namespace LogTypes {
 struct LogMessage {
 	LogTypes::LogTypes type;
 	time_t time;
-	string message;
-	opt_string identifier;
+	string_t message;
+	opt_string_t identifier;
 };
 
 // Base logger
 class Logger {
 public:
-	Logger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
-	virtual ~Logger() { }
-	virtual void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) { }
+	Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	virtual ~Logger() = default;
+	virtual auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void { }
 
-	int16_t getServerType() const { return m_serverType; }
-	const string & getFormat() const { return m_format; }
-	const string & getTimeFormat() const { return m_timeFormat; }
-	static string getLevelString(LogTypes::LogTypes type);
-	static string getServerTypeString(int16_t serverType);
+	auto getServerType() const -> int16_t { return m_serverType; }
+	auto getFormat() const -> const string_t & { return m_format; }
+	auto getTimeFormat() const -> const string_t & { return m_timeFormat; }
 protected:
-	Logger() { }
-	static string formatLog(LogTypes::LogTypes type, Logger *logger, const opt_string &id, const string &message);
+	Logger() = default;
+	static auto formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t;
+	static auto formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t;
+private:
+	friend struct LogReplacements;
 
-	string m_format;
-	string m_timeFormat;
+	struct ReplacementArgs {
+		LogTypes::LogTypes logType;
+		Logger *logger;
+		time_t time;
+		const opt_string_t &id;
+		const string_t &msg;
+		ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg);
+	};
+
+	struct LogReplacements {
+		LogReplacements();
+		using func_t = function_t<void(out_stream_t &, const ReplacementArgs &args)>;
+		auto add(const string_t &key, func_t func) -> void;
+		static auto getLevelString(LogTypes::LogTypes type) -> string_t;
+		static auto getServerTypeString(int16_t serverType) -> string_t;
+
+		hash_map_t<string_t, func_t> m_replacementMap;
+	};
+
+	string_t m_format;
+	string_t m_timeFormat;
 	int16_t m_serverType;
 };

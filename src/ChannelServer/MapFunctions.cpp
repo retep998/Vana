@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapFunctions.h"
 #include "ChannelServer.h"
 #include "Map.h"
+#include "Maps.h"
 #include "MapPacket.h"
 #include "MobConstants.h"
 #include "Player.h"
@@ -26,38 +27,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <chrono>
 #include <iostream>
 
-using StringUtilities::lexical_cast;
-
-bool MapFunctions::eventInstruction(Player *player, const string &args) {
+auto MapFunctions::eventInstruction(Player *player, const string_t &args) -> bool {
 	MapPacket::showEventInstructions(player->getMapId());
 	return true;
 }
 
-bool MapFunctions::instruction(Player *player, const string &args) {
+auto MapFunctions::instruction(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		Map *map = player->getMap();
 		for (size_t i = 0; i < map->getNumPlayers(); i++) {
 			PlayerPacket::instructionBubble(map->getPlayer(i), args);
 		}
-		PlayerPacket::showMessage(player, "Showing instruction bubble to everyone on the map.", PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, "Showing instruction bubble to everyone on the map");
 		return true;
 	}
 	return false;
 }
 
-bool MapFunctions::timer(Player *player, const string &args) {
+auto MapFunctions::timer(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		seconds_t time(atoi(args.c_str()));
-		std::ostringstream msg;
-		msg << "Stopped map timer.";
+		out_stream_t msg;
+		msg << "Stopped map timer";
 		if (time.count() > 0) {
 			msg.str("");
 			msg.clear();
 			msg << "Started map timer. Counting down from ";
 
-			hours_t hours = std::chrono::duration_cast<hours_t>(time);
-			minutes_t minutes = std::chrono::duration_cast<minutes_t>(time - hours);
-			seconds_t seconds = std::chrono::duration_cast<seconds_t>(time - hours - minutes);
+			hours_t hours = duration_cast<hours_t>(time);
+			minutes_t minutes = duration_cast<minutes_t>(time - hours);
+			seconds_t seconds = duration_cast<seconds_t>(time - hours - minutes);
 
 			if (hours.count() > 0) {
 				msg << hours.count() << " hours";
@@ -74,142 +73,166 @@ bool MapFunctions::timer(Player *player, const string &args) {
 				}
 				msg << seconds.count() << " seconds";
 			}
-			msg << "!";
 		}
-		PlayerPacket::showMessage(player, msg.str(), PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, msg.str());
 		player->getMap()->setMapTimer(time);
 		return true;
 	}
 	return false;
 }
 
-bool MapFunctions::killMob(Player *player, const string &args) {
+auto MapFunctions::killMob(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		int32_t mobId = atoi(args.c_str());
-		Mob *mob = player->getMap()->getMob(mobId);
+		auto mob = player->getMap()->getMob(mobId);
 		if (mob != nullptr) {
-			PlayerPacket::showMessage(player, "Killed mob with map mob ID " + args + ". Damage applied: " + lexical_cast<string>(mob->getHp()) + ".", PlayerPacket::NoticeTypes::Blue);
+			ChatHandlerFunctions::showInfo(player, "Killed mob with map mob ID " + args + ". Damage applied: " + StringUtilities::lexical_cast<string_t>(mob->getHp()));
 			mob->applyDamage(player->getId(), mob->getHp());
 		}
 		else {
-			PlayerPacket::showMessage(player, "Couldn't kill mob. Mob with map mob ID " + args + " not found.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid mob: " + args);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool MapFunctions::getMobHp(Player *player, const string &args) {
+auto MapFunctions::getMobHp(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		int32_t mobId = atoi(args.c_str());
-		Mob *mob = player->getMap()->getMob(mobId);
+		auto mob = player->getMap()->getMob(mobId);
 		if (mob != nullptr) {
-			std::ostringstream message;
+			out_stream_t message;
 			message << "Mob " << mobId
 					<< " HP: " << mob->getHp() << "/" << mob->getMaxHp()
 					<< " (" << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp() << "%)";
 
-			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
+			ChatHandlerFunctions::showInfo(player, message.str());
 		}
 		else {
-			PlayerPacket::showMessage(player, "Mob does not exist.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid mob: " + args);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool MapFunctions::listMobs(Player *player, const string &args) {
+auto MapFunctions::listMobs(Player *player, const string_t &args) -> bool {
 	if (player->getMap()->countMobs(0) > 0) {
-		auto mobs = player->getMap()->getMobs();
-		std::ostringstream message;
-		for (const auto &kvp : mobs) {
+		out_stream_t message;
+		player->getMap()->runFunctionMobs([&message, &player](ref_ptr_t<const Mob> mob) {
 			message.str("");
 			message.clear();
 
-			message << "Mob " << kvp.first
-					<< " (ID: " << kvp.second->getMobId()
-					<< ", HP: " << kvp.second->getHp()
-					<< "/" << kvp.second->getMaxHp()
-					<< " [" << static_cast<int64_t>(kvp.second->getHp()) * 100 / kvp.second->getMaxHp()
-					<< "%])";
+			message << "Mob " << mob->getMapMobId()
+				<< " (ID: " << mob->getMobId()
+				<< ", HP: " << mob->getHp()
+				<< "/" << mob->getMaxHp()
+				<< " [" << static_cast<int64_t>(mob->getHp()) * 100 / mob->getMaxHp()
+				<< "%])";
 
-			PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
-		}
+			ChatHandlerFunctions::showInfo(player, message.str());
+		});
 	}
 	else {
-		PlayerPacket::showMessage(player, "No mobs on the current map.", PlayerPacket::NoticeTypes::Red);
+		ChatHandlerFunctions::showError(player, "No mobs exist on the current map");
 	}
 	return true;
 }
 
-bool MapFunctions::zakum(Player *player, const string &args) {
+auto MapFunctions::listPortals(Player *player, const string_t &args) -> bool {
+	int32_t mapId = args.length() == 0 ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	Map *map = Maps::getMap(mapId);
+	if (map == nullptr) {
+		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
+		return true;
+	}
+
+	auto portals = map->getPortalNames();
+	string_t rawMapId = StringUtilities::lexical_cast<string_t>(mapId);
+	if (portals.size() == 0) {
+		ChatHandlerFunctions::showError(player, "Map " + rawMapId + " has no portals");
+		return true;
+	}
+
+	ChatHandlerFunctions::showInfo(player, "Portals on map " + std::to_string(mapId) + ": " + StringUtilities::delimit(", ", portals));
+
+	return true;
+}
+
+auto MapFunctions::zakum(Player *player, const string_t &args) -> bool {
 	player->getMap()->spawnZakum(player->getPos());
-	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Zakum on map " + lexical_cast<string>(player->getMap()->getId()) + ". Name: " + player->getName());
+	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " spawned Zakum on map " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
 	return true;
 }
 
-bool MapFunctions::horntail(Player *player, const string &args) {
+auto MapFunctions::horntail(Player *player, const string_t &args) -> bool {
 	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
-	ChannelServer::Instance()->log(LogTypes::GmCommand, "Player spawned Horntail on map " + lexical_cast<string>(player->getMap()->getId()) + ". Name: " + player->getName());
+	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " spawned Horntail on map " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
 	return true;
 }
 
-bool MapFunctions::music(Player *player, const string &args) {
+auto MapFunctions::music(Player *player, const string_t &args) -> bool {
 	soci::session &sql = Database::getDataDb();
-	string music;
+	string_t music;
 
-	sql
-		<< "SELECT m.default_bgm "
-		<< "FROM map_data m "
-		<< "WHERE m.default_bgm = :q "
-		<< "LIMIT 1",
-		soci::use(args, "q"),
-		soci::into(music);
+	if (args == "default") {
+		music = args;
+	}
+	else {
+		sql
+			<< "SELECT m.default_bgm "
+			<< "FROM map_data m "
+			<< "WHERE m.default_bgm = :q "
+			<< "LIMIT 1",
+			soci::use(args, "q"),
+			soci::into(music);
+	}
 
 	if (music.empty()) {
-		PlayerPacket::showMessage(player, "Invalid music: " + args, PlayerPacket::NoticeTypes::Red);
+		ChatHandlerFunctions::showError(player, "Invalid music: " + args);
 	}
 	else {
 		player->getMap()->setMusic(music);
-		PlayerPacket::showMessage(player, "Set music on the map to: " + music, PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, "Set music on the map to: " + music);
 	}
 	return true;
 }
 
-bool MapFunctions::summon(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(\\d+)?", matches)) {
-		int32_t mobId = atoi(string(matches[1]).c_str());
-		if (MobDataProvider::Instance()->mobExists(mobId)) {
-			string countString = matches[2];
+auto MapFunctions::summon(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d+)?)", matches)) {
+		string_t rawMobId = matches[1];
+		int32_t mobId = atoi(rawMobId.c_str());
+		if (MobDataProvider::getInstance().mobExists(mobId)) {
+			string_t countString = matches[2];
 			int32_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 			if (count > 100) count = 100;
 			for (int32_t i = 0; i < count; i++) {
 				player->getMap()->spawnMob(mobId, player->getPos());
 			}
 			if (count > 0) {
-				PlayerPacket::showMessage(player, "Spawned " + lexical_cast<string>(count) + " mobs with ID " + lexical_cast<string>(mobId) + ".", PlayerPacket::NoticeTypes::Blue);
+				ChatHandlerFunctions::showInfo(player, "Spawned " + StringUtilities::lexical_cast<string_t>(count)+" mobs with ID " + StringUtilities::lexical_cast<string_t>(mobId));
 			}
 			else {
-				PlayerPacket::showMessage(player, "No mobs spawned.", PlayerPacket::NoticeTypes::Red);
+				ChatHandlerFunctions::showError(player, "No mobs spawned");
 			}
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid Mob ID.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid mob: " + rawMobId);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool MapFunctions::clearDrops(Player *player, const string &args) {
+auto MapFunctions::clearDrops(Player *player, const string_t &args) -> bool {
 	player->getMap()->clearDrops();
 	return true;
 }
 
-bool MapFunctions::killAllMobs(Player *player, const string &args) {
+auto MapFunctions::killAllMobs(Player *player, const string_t &args) -> bool {
 	int32_t killed = player->getMap()->killMobs(player);
-	PlayerPacket::showMessage(player, "Killed " + lexical_cast<string>(killed) + " mobs!", PlayerPacket::NoticeTypes::Blue);
+	ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(killed)+" mobs");
 	return true;
 }

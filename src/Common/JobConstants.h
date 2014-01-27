@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
+#include <initializer_list>
 
 namespace Jobs {
 	namespace JobIds {
@@ -195,7 +196,7 @@ namespace Jobs {
 		};
 	}
 	namespace JobTypes {
-		enum Types : int8_t {
+		enum class Types : int8_t {
 			Adventurer = 0,
 			Cygnus = 1,
 			Legend = 2,
@@ -222,7 +223,8 @@ namespace Jobs {
 			Thief = 4,
 			Pirate = 5,
 
-			JuniorGm = 8, // ??
+			// Not sure if JuniorGm is correct
+			JuniorGm = 8,
 			Gm = 9,
 
 			Noblesse = 10,
@@ -253,8 +255,7 @@ namespace Jobs {
 			Angelic = 65,
 		};
 
-		const int32_t JobTrackCount = 28;
-		const int8_t JobTracks[JobTrackCount] = {
+		const init_list_t<int8_t> JobTracks = {
 			Beginner, Warrior, Magician, Bowman, Thief, Pirate,
 			Noblesse, DawnWarrior, BlazeWizard, WindArcher, NightWalker, ThunderBreaker,
 			Legend, Aran, Evan, Mercedes, Phantom, Luminous,
@@ -280,8 +281,7 @@ namespace Jobs {
 		};
 	}
 	namespace Beginners {
-		const int32_t JobCount = 13;
-		const int16_t Jobs[JobCount] = {
+		const init_list_t<int16_t> Jobs = {
 			Jobs::JobIds::Beginner, Jobs::JobIds::CannoneerBeginner,
 			Jobs::JobIds::Noblesse,
 			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes, Jobs::JobIds::Phantom, Jobs::JobIds::Luminous,

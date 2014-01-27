@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,10 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SociExtensions.h"
 #include <soci.h>
 
-const string Item::Inventory = "inventory";
-const string Item::Storage = "storage";
-
-Item::Item() { }
+const string_t Item::Inventory = "inventory";
+const string_t Item::Storage = "storage";
 
 // The only places that use this constructor set everything manually
 Item::Item(const soci::row &row)
@@ -36,44 +34,19 @@ Item::Item(const soci::row &row)
 
 Item::Item(int32_t itemId, int16_t amount) :
 	m_id(itemId),
-	m_amount(amount),
-	m_hammers(0),
-	m_slots(0),
-	m_scrolls(0),
-	m_flags(0),
-	m_str(0),
-	m_dex(0),
-	m_int(0),
-	m_luk(0),
-	m_hp(0),
-	m_mp(0),
-	m_watk(0),
-	m_matk(0),
-	m_wdef(0),
-	m_mdef(0),
-	m_accuracy(0),
-	m_avoid(0),
-	m_hands(0),
-	m_jump(0),
-	m_speed(0),
-	m_petId(0),
-	m_expiration(Items::NoExpiration)
+	m_amount(amount)
 {
 }
 
-Item::Item(int32_t equipid, bool random) :
-	m_id(equipid),
-	m_amount(1),
-	m_scrolls(0),
-	m_hammers(0),
-	m_flags(0),
-	m_petId(0),
-	m_expiration(Items::NoExpiration)
+Item::Item(int32_t equipId, bool random, bool isGm) :
+	m_id(equipId),
+	m_amount(1)
 {
-	EquipDataProvider::Instance()->setEquipStats(this, random);
+	EquipDataProvider::getInstance().setEquipStats(this, random, isGm);
 }
 
-Item::Item(Item *item) {
+Item::Item(Item *item)
+{
 	m_id = item->getId();
 	m_amount = item->getAmount();
 	m_hammers = item->getHammers();
@@ -85,10 +58,10 @@ Item::Item(Item *item) {
 	m_luk = item->getLuk();
 	m_hp = item->getHp();
 	m_mp = item->getMp();
-	m_watk = item->getWatk();
-	m_matk = item->getMatk();
-	m_wdef = item->getWdef();
-	m_mdef = item->getMdef();
+	m_wAtk = item->getWatk();
+	m_mAtk = item->getMatk();
+	m_wDef = item->getWdef();
+	m_mDef = item->getMdef();
 	m_accuracy = item->getAccuracy();
 	m_avoid = item->getAvoid();
 	m_hands = item->getHands();
@@ -100,51 +73,51 @@ Item::Item(Item *item) {
 	m_expiration = item->getExpirationTime();
 }
 
-bool Item::hasSlipPrevention() const {
+auto Item::hasSlipPrevention() const -> bool {
 	return testFlags(Items::Flags::Spikes);
 }
 
-bool Item::hasWarmSupport() const {
+auto Item::hasWarmSupport() const -> bool {
 	return testFlags(Items::Flags::ColdProtection);
 }
 
-bool Item::hasLock() const {
+auto Item::hasLock() const -> bool {
 	return testFlags(Items::Flags::Lock);
 }
 
-bool Item::hasKarma() const {
+auto Item::hasKarma() const -> bool {
 	return testFlags(Items::Flags::KarmaScissors);
 }
 
-bool Item::hasTradeBlock() const {
+auto Item::hasTradeBlock() const -> bool {
 	return testFlags(Items::Flags::TradeUnavailable);
 }
 
-bool Item::testFlags(int16_t flags) const {
-	return ((m_flags & flags) != 0);
+auto Item::testFlags(int16_t flags) const -> bool {
+	return (m_flags & flags) != 0;
 }
 
-void Item::setPreventSlip(bool prevent) {
+auto Item::setPreventSlip(bool prevent) -> void {
 	modifyFlags(prevent, Items::Flags::Spikes);
 }
 
-void Item::setWarmSupport(bool warm) {
+auto Item::setWarmSupport(bool warm) -> void {
 	modifyFlags(warm, Items::Flags::ColdProtection);
 }
 
-void Item::setLock(bool lock) {
+auto Item::setLock(bool lock) -> void {
 	modifyFlags(lock, Items::Flags::Lock);
 }
 
-void Item::setKarma(bool karma) {
+auto Item::setKarma(bool karma) -> void {
 	modifyFlags(karma, Items::Flags::KarmaScissors);
 }
 
-void Item::setTradeBlock(bool block) {
+auto Item::setTradeBlock(bool block) -> void {
 	modifyFlags(block, Items::Flags::TradeUnavailable);
 }
 
-void Item::modifyFlags(bool add, int16_t flags) {
+auto Item::modifyFlags(bool add, int16_t flags) -> void {
 	if (add) {
 		m_flags |= flags;
 	}
@@ -153,181 +126,181 @@ void Item::modifyFlags(bool add, int16_t flags) {
 	}
 }
 
-void Item::setStr(int16_t strength) {
+auto Item::setStr(int16_t strength) -> void {
 	m_str = testStat(strength, Items::MaxStats::Str);
 }
 
-void Item::setDex(int16_t dexterity) {
+auto Item::setDex(int16_t dexterity) -> void {
 	m_dex = testStat(dexterity, Items::MaxStats::Dex);
 }
 
-void Item::setInt(int16_t intelligence) {
+auto Item::setInt(int16_t intelligence) -> void {
 	m_int = testStat(intelligence, Items::MaxStats::Int);
 }
 
-void Item::setLuk(int16_t luck) {
+auto Item::setLuk(int16_t luck) -> void {
 	m_luk = testStat(luck, Items::MaxStats::Luk);
 }
 
-void Item::setHp(int16_t hp) {
+auto Item::setHp(int16_t hp) -> void {
 	m_hp = testStat(hp, Items::MaxStats::Hp);
 }
 
-void Item::setMp(int16_t mp) {
+auto Item::setMp(int16_t mp) -> void {
 	m_mp = testStat(mp, Items::MaxStats::Mp);
 }
 
-void Item::setWatk(int16_t watk) {
-	m_watk = testStat(watk, Items::MaxStats::Watk);
+auto Item::setWatk(int16_t wAtk) -> void {
+	m_wAtk = testStat(wAtk, Items::MaxStats::Watk);
 }
 
-void Item::setWdef(int16_t wdef) {
-	m_wdef = testStat(wdef, Items::MaxStats::Wdef);
+auto Item::setWdef(int16_t wDef) -> void {
+	m_wDef = testStat(wDef, Items::MaxStats::Wdef);
 }
 
-void Item::setMatk(int16_t matk) {
-	m_matk = testStat(matk, Items::MaxStats::Matk);
+auto Item::setMatk(int16_t mAtk) -> void {
+	m_mAtk = testStat(mAtk, Items::MaxStats::Matk);
 }
 
-void Item::setMdef(int16_t mdef) {
-	m_mdef = testStat(mdef, Items::MaxStats::Mdef);
+auto Item::setMdef(int16_t mDef) -> void {
+	m_mDef = testStat(mDef, Items::MaxStats::Mdef);
 }
 
-void Item::setAccuracy(int16_t acc) {
+auto Item::setAccuracy(int16_t acc) -> void {
 	m_accuracy = testStat(acc, Items::MaxStats::Acc);
 }
 
-void Item::setAvoid(int16_t avoid) {
+auto Item::setAvoid(int16_t avoid) -> void {
 	m_avoid = testStat(avoid, Items::MaxStats::Avoid);
 }
 
-void Item::setHands(int16_t hands) {
+auto Item::setHands(int16_t hands) -> void {
 	m_hands = testStat(hands, Items::MaxStats::Hands);
 }
 
-void Item::setJump(int16_t jump) {
+auto Item::setJump(int16_t jump) -> void {
 	m_jump = testStat(jump, Items::MaxStats::Jump);
 }
 
-void Item::setSpeed(int16_t speed) {
+auto Item::setSpeed(int16_t speed) -> void {
 	m_speed = testStat(speed, Items::MaxStats::Speed);
 }
 
-int16_t Item::testStat(int16_t stat, int16_t max) {
-	return (stat < 0 ? 0 : (stat > max ? max : stat));
+auto Item::testStat(int16_t stat, int16_t max) -> int16_t {
+	return stat < 0 ? 0 : (stat > max ? max : stat);
 }
 
-void Item::addStr(int16_t strength, bool onlyIfExists) {
+auto Item::addStr(int16_t strength, bool onlyIfExists) -> void {
 	if (testPerform(getStr(), onlyIfExists)) {
 		setStr(getStr() + strength);
 	}
 }
 
-void Item::addDex(int16_t dexterity, bool onlyIfExists) {
+auto Item::addDex(int16_t dexterity, bool onlyIfExists) -> void {
 	if (testPerform(getDex(), onlyIfExists)) {
 		setDex(getDex() + dexterity);
 	}
 }
 
-void Item::addInt(int16_t intelligence, bool onlyIfExists) {
+auto Item::addInt(int16_t intelligence, bool onlyIfExists) -> void {
 	if (testPerform(getInt(), onlyIfExists)) {
 		setInt(getInt() + intelligence);
 	}
 }
 
-void Item::addLuk(int16_t luck, bool onlyIfExists) {
+auto Item::addLuk(int16_t luck, bool onlyIfExists) -> void {
 	if (testPerform(getLuk(), onlyIfExists)) {
 		setLuk(getLuk() + luck);
 	}
 }
 
-void Item::addHp(int16_t hp, bool onlyIfExists) {
+auto Item::addHp(int16_t hp, bool onlyIfExists) -> void {
 	if (testPerform(getHp(), onlyIfExists)) {
 		setHp(getHp() + hp);
 	}
 }
 
-void Item::addMp(int16_t mp, bool onlyIfExists) {
+auto Item::addMp(int16_t mp, bool onlyIfExists) -> void {
 	if (testPerform(getMp(), onlyIfExists)) {
 		setMp(getMp() + mp);
 	}
 }
 
-void Item::addWatk(int16_t watk, bool onlyIfExists) {
+auto Item::addWatk(int16_t wAtk, bool onlyIfExists) -> void {
 	if (testPerform(getWatk(), onlyIfExists)) {
-		setWatk(getWatk() + watk);
+		setWatk(getWatk() + wAtk);
 	}
 }
 
-void Item::addWdef(int16_t wdef, bool onlyIfExists) {
+auto Item::addWdef(int16_t wDef, bool onlyIfExists) -> void {
 	if (testPerform(getWdef(), onlyIfExists)) {
-		setWdef(getWdef() + wdef);
+		setWdef(getWdef() + wDef);
 	}
 }
 
-void Item::addMatk(int16_t matk, bool onlyIfExists) {
+auto Item::addMatk(int16_t mAtk, bool onlyIfExists) -> void {
 	if (testPerform(getMatk(), onlyIfExists)) {
-		setMatk(getMatk() + matk);
+		setMatk(getMatk() + mAtk);
 	}
 }
 
-void Item::addMdef(int16_t mdef, bool onlyIfExists) {
+auto Item::addMdef(int16_t mDef, bool onlyIfExists) -> void {
 	if (testPerform(getMdef(), onlyIfExists)) {
-		setMdef(getMdef() + mdef);
+		setMdef(getMdef() + mDef);
 	}
 }
 
-void Item::addAccuracy(int16_t acc, bool onlyIfExists) {
+auto Item::addAccuracy(int16_t acc, bool onlyIfExists) -> void {
 	if (testPerform(getAccuracy(), onlyIfExists)) {
 		setAccuracy(getAccuracy() + acc);
 	}
 }
 
-void Item::addAvoid(int16_t avoid, bool onlyIfExists) {
+auto Item::addAvoid(int16_t avoid, bool onlyIfExists) -> void {
 	if (testPerform(getAvoid(), onlyIfExists)) {
 		setAvoid(getAvoid() + avoid);
 	}
 }
 
-void Item::addHands(int16_t hands, bool onlyIfExists) {
+auto Item::addHands(int16_t hands, bool onlyIfExists) -> void {
 	if (testPerform(getHands(), onlyIfExists)) {
 		setHands(getHands() + hands);
 	}
 }
 
-void Item::addJump(int16_t jump, bool onlyIfExists) {
+auto Item::addJump(int16_t jump, bool onlyIfExists) -> void {
 	if (testPerform(getJump(), onlyIfExists)) {
 		setJump(getJump() + jump);
 	}
 }
 
-void Item::addSpeed(int16_t speed, bool onlyIfExists) {
+auto Item::addSpeed(int16_t speed, bool onlyIfExists) -> void {
 	if (testPerform(getSpeed(), onlyIfExists)) {
 		setSpeed(getSpeed() + speed);
 	}
 }
 
-bool Item::testPerform(int16_t stat, bool onlyIfExists) {
+auto Item::testPerform(int16_t stat, bool onlyIfExists) -> bool {
 	return !onlyIfExists || stat != 0;
 }
 
-void Item::setAmount(int16_t amount) {
+auto Item::setAmount(int16_t amount) -> void {
 	m_amount = amount;
 }
 
-void Item::setSlots(int8_t slots) {
+auto Item::setSlots(int8_t slots) -> void {
 	m_slots = slots;
 }
 
-void Item::setPetId(int64_t petId) {
+auto Item::setPetId(int64_t petId) -> void {
 	m_petId = petId;
 }
 
-void Item::setName(const string &name) {
+auto Item::setName(const string_t &name) -> void {
 	m_name = name;
 }
 
-void Item::initializeItem(const soci::row &row) {
+auto Item::initializeItem(const soci::row &row) -> void {
 	m_id = row.get<int32_t>("item_id");
 	m_amount = row.get<int16_t>("amount");
 
@@ -352,50 +325,49 @@ void Item::initializeItem(const soci::row &row) {
 	opt_int32_t hammers = row.get<opt_int32_t>("hammers");
 	opt_int64_t petId = row.get<opt_int64_t>("pet_id");
 	opt_int64_t expiration = row.get<opt_int64_t>("expiration");
-	opt_string name = row.get<opt_string>("name");
+	opt_string_t name = row.get<opt_string_t>("name");
 
-	m_slots = slots.is_initialized() ? slots.get() : 0;
-	m_scrolls = scrolls.is_initialized() ? scrolls.get() : 0;
-	m_str = str.is_initialized() ? str.get() : 0;
-	m_dex = dex.is_initialized() ? dex.get() : 0;
-	m_int = intt.is_initialized() ? intt.get() : 0;
-	m_luk = luk.is_initialized() ? luk.get() : 0;
-	m_hp = hp.is_initialized() ? hp.get() : 0;
-	m_mp = mp.is_initialized() ? mp.get() : 0;
-	m_watk = watk.is_initialized() ? watk.get() : 0;
-	m_matk = matk.is_initialized() ? matk.get() : 0;
-	m_wdef = wdef.is_initialized() ? wdef.get() : 0;
-	m_mdef = mdef.is_initialized() ? mdef.get() : 0;
-	m_accuracy = accuracy.is_initialized() ? accuracy.get() : 0;
-	m_avoid = avoid.is_initialized() ? avoid.get() : 0;
-	m_hands = hands.is_initialized() ? hands.get() : 0;
-	m_speed = speed.is_initialized() ? speed.get() : 0;
-	m_jump = jump.is_initialized() ? jump.get() : 0;
-	m_hammers = hammers.is_initialized() ? hammers.get() : 0;
-	m_flags = flags.is_initialized() ? flags.get() : 0;
-	m_expiration = expiration.is_initialized() ? expiration.get() : Items::NoExpiration;
-	m_petId = petId.is_initialized() ? petId.get() : 0;
-	m_name = name.is_initialized() ? name.get() : "";
+	m_slots = slots.getOrDefault(0);
+	m_scrolls = scrolls.getOrDefault(0);
+	m_str = str.getOrDefault(0);
+	m_dex = dex.getOrDefault(0);
+	m_int = intt.getOrDefault(0);
+	m_luk = luk.getOrDefault(0);
+	m_hp = hp.getOrDefault(0);
+	m_mp = mp.getOrDefault(0);
+	m_wAtk = watk.getOrDefault(0);
+	m_mAtk = matk.getOrDefault(0);
+	m_wDef = wdef.getOrDefault(0);
+	m_mDef = mdef.getOrDefault(0);
+	m_accuracy = accuracy.getOrDefault(0);
+	m_avoid = avoid.getOrDefault(0);
+	m_hands = hands.getOrDefault(0);
+	m_speed = speed.getOrDefault(0);
+	m_jump = jump.getOrDefault(0);
+	m_hammers = hammers.getOrDefault(0);
+	m_flags = flags.getOrDefault(0);
+	m_expiration = expiration.getOrDefault(Items::NoExpiration);
+	m_petId = petId.getOrDefault(0);
+	m_name = name.getOrDefault("");
 }
 
-void Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) {
-	vector<ItemDbRecord> v;
+auto Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void {
+	vector_t<ItemDbRecord> v;
 	ItemDbRecord r(info, this);
 	v.push_back(r);
 	Item::databaseInsert(sql, v);
 }
 
-void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items) {
+auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &items) -> void {
 	using namespace soci;
-	using MiscUtilities::NullableMode;
 	using MiscUtilities::getOptional;
 
-	static int8_t nullsInt8[] = {0};
-	static int16_t nullsInt16[] = {0};
-	static int32_t nullsInt32[] = {0};
-	static int64_t nullsInt64[] = {0};
-	static int64_t nullsExpiration[] = {0, Items::NoExpiration};
-	static string nullsString[] = {""};
+	static init_list_t<int8_t> nullsInt8 = {0};
+	static init_list_t<int16_t> nullsInt16 = {0};
+	static init_list_t<int32_t> nullsInt32 = {0};
+	static init_list_t<int64_t> nullsInt64 = {0};
+	static init_list_t<int64_t> nullsExpiration = {0, Items::NoExpiration};
+	static init_list_t<string_t> nullsString = {""};
 
 	uint8_t inventory = 0;
 	int16_t amount = 0;
@@ -404,7 +376,7 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 	int8_t worldId = 0;
 	int32_t userId = 0;
 	int32_t playerId = 0;
-	string location = "";
+	string_t location = "";
 
 	opt_int8_t slots;
 	opt_int8_t scrolls;
@@ -427,7 +399,7 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 	opt_int32_t hammers;
 	opt_int64_t petId;
 	opt_int64_t expiration;
-	opt_string name;
+	opt_string_t name;
 
 	statement st = (sql.prepare
 		<< "INSERT INTO items (character_id, inv, slot, location, user_id, world_id, item_id, amount, slots, scrolls, istr, idex, iint, iluk, ihp, imp, iwatk, imatk, iwdef, imdef, iacc, iavo, ihand, ispeed, ijump, flags, hammers, pet_id, name, expiration) "
@@ -475,8 +447,8 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 		itemId = item->m_id;
 		inventory = GameLogicUtilities::getInventory(itemId);
 		bool equip = (inventory == Inventories::EquipInventory);
-		NullableMode nulls = (equip ? MiscUtilities::NullIfFound : MiscUtilities::ForceNull);
-		NullableMode required = (equip ? MiscUtilities::ForceNotNull : MiscUtilities::ForceNull);
+		MiscUtilities::NullableMode nulls = (equip ? MiscUtilities::NullableMode::NullIfFound : MiscUtilities::NullableMode::ForceNull);
+		MiscUtilities::NullableMode required = (equip ? MiscUtilities::NullableMode::ForceNotNull : MiscUtilities::NullableMode::ForceNull);
 
 		slots = getOptional(item->m_slots, required, nullsInt8);
 		scrolls = getOptional(item->m_scrolls, required, nullsInt8);
@@ -486,10 +458,10 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 		iLuk = getOptional(item->m_luk, nulls, nullsInt16);
 		iHp = getOptional(item->m_hp, nulls, nullsInt16);
 		iMp = getOptional(item->m_mp, nulls, nullsInt16);
-		iWatk = getOptional(item->m_watk, nulls, nullsInt16);
-		iMatk = getOptional(item->m_matk, nulls, nullsInt16);
-		iWdef = getOptional(item->m_wdef, nulls, nullsInt16);
-		iMdef = getOptional(item->m_mdef, nulls, nullsInt16);
+		iWatk = getOptional(item->m_wAtk, nulls, nullsInt16);
+		iMatk = getOptional(item->m_mAtk, nulls, nullsInt16);
+		iWdef = getOptional(item->m_wDef, nulls, nullsInt16);
+		iMdef = getOptional(item->m_mDef, nulls, nullsInt16);
 		iAcc = getOptional(item->m_accuracy, nulls, nullsInt16);
 		iAvo = getOptional(item->m_avoid, nulls, nullsInt16);
 		iHands = getOptional(item->m_hands, nulls, nullsInt16);
@@ -499,7 +471,7 @@ void Item::databaseInsert(soci::session &sql, const vector<ItemDbRecord> &items)
 		hammers = getOptional(item->m_hammers, nulls, nullsInt32);
 		petId = getOptional(item->m_petId, nulls, nullsInt64);
 		name = getOptional(item->m_name, nulls, nullsString);
-		expiration = getOptional(item->m_expiration, nulls, nullsExpiration, 2);
+		expiration = getOptional(item->m_expiration, nulls, nullsExpiration);
 
 		st.execute(true);
 	}

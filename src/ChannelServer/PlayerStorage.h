@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,44 +17,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <vector>
-
-using std::vector;
 
 class Item;
 class Player;
 
-class PlayerStorage : boost::noncopyable {
+class PlayerStorage {
+	NONCOPYABLE(PlayerStorage);
+	NO_DEFAULT_CONSTRUCTOR(PlayerStorage);
 public:
 	PlayerStorage(Player *player);
 	~PlayerStorage();
 
-	void setSlots(uint8_t slots);
-	void addItem(Item *item);
-	void takeItem(uint8_t slot);
-	void setMesos(int32_t mesos) { m_mesos = mesos; }
-	void changeMesos(int32_t mesos);
+	auto setSlots(uint8_t slots) -> void;
+	auto addItem(Item *item) -> void;
+	auto takeItem(uint8_t slot) -> void;
+	auto setMesos(int32_t mesos) -> void { m_mesos = mesos; }
+	auto changeMesos(int32_t mesos) -> void;
 
-	uint8_t getSlots() const { return m_slots; }
-	uint8_t getNumItems() const { return m_items.size(); }
-	uint8_t getNumItems(uint8_t m_inv);
-	int32_t getMesos() const { return m_mesos; }
-	bool isFull() const { return (m_items.size() == m_slots); }
-	Item * getItem(uint8_t slot) const {
+	auto getSlots() const -> uint8_t { return m_slots; }
+	auto getNumItems() const -> uint8_t { return m_items.size(); }
+	auto getNumItems(uint8_t m_inv) -> uint8_t;
+	auto getMesos() const -> int32_t { return m_mesos; }
+	auto isFull() const -> bool { return m_items.size() == m_slots; }
+	auto getItem(uint8_t slot) const -> Item * {
 		if (slot < m_items.size()) {
 			return m_items[slot];
 		}
-		return 0;
+		return nullptr;
 	}
 
-	void load();
-	void save();
+	auto load() -> void;
+	auto save() -> void;
 private:
-	Player *m_player;
-	vector<Item *> m_items;
-	uint8_t m_slots;
-	int32_t m_mesos;
-	int32_t m_charSlots;
+	uint8_t m_slots = 0;
+	int32_t m_mesos = 0;
+	int32_t m_charSlots = 0;
+	vector_t<Item *> m_items;
+	Player *m_player = nullptr;
 };

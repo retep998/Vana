@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/bossHelper.lua");
 
-if not isPapChannel() then
+if not isGm() and not isPapChannel() then
 	channels = getPapChannels();
 	if #channels == 0 then
 		showMessage("You may not battle Papulatus at this time.", env_redMessage);
@@ -29,14 +29,14 @@ if not isPapChannel() then
 	return;
 end
 
-if getItemAmount(4031172) > 0 then -- Medal
-	if getNumPlayers(220080001) < 12 then
-		if isInstance("papulatus") == false then
+if isGm() or getItemAmount(4031172) > 0 then -- Medal
+	if isGm() or getNumPlayers(220080001) < 12 then
+		if isGm() or isInstance("papulatus") == false then
 			x = getMaxPapBattles();
-			if x == 0 then
+			if not isGm() or x == 0 then
 				showMessage("You may not battle Papulatus at this time.", env_redMessage);
 			else
-				if enterBoss("Papulatus", x) then
+				if isGm() or enterBoss("Papulatus", x) then
 					playPortalSe();
 					setMap(220080001, "st00");
 				else

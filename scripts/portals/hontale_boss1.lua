@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,15 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- First Horntail room portal in the middle
 
-leftHead = not getInstanceVariable("lefthead", true);
+if not isInstance("horntail") then
+	return;
+end
+
+leftHead = not getInstanceVariable("lefthead");
 
 if not leftHead then
 	gm = isGm();
-	gmInstance = getInstanceVariable("gm", true);
-	if (gm and gmInstance) or (not gm and not gmInstance) then
+	gmInstance = getInstanceVariable("gm");
+	if gm == gmInstance then
 		showMessage("The enormous creature is approaching from the deep cave.", env_blueMessage);
 		setReactorState(getMap(), 2408003, 0);
 		spawnMobPos(8810024, 880, 220);
-		setInstanceVariable("lefthead", "1");
+		setInstanceVariable("lefthead", true);
 	end
 end

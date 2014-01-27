@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show) {
+auto NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show) -> void {
 	PacketCreator packet;
 	showNpc(packet, npc, id, show);
 	player->getSession()->send(packet);
@@ -33,7 +33,7 @@ void NpcPacket::showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, boo
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show) {
+auto NpcPacket::showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show) -> void {
 	PacketCreator packet;
 	showNpc(packet, npc, id, show);
 	Maps::getMap(mapId)->sendPacket(packet);
@@ -43,32 +43,32 @@ void NpcPacket::showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
+auto NpcPacket::showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) -> void {
 	packet.add<header_t>(SMSG_NPC_SHOW);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addClass<Pos>(npc.pos);
-	packet.add<bool>(npc.facesRight);
+	packet.add<bool>(!npc.facesLeft);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
 	packet.add<bool>(show);
 }
 
-void NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) {
+auto NpcPacket::controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show) -> void {
 	packet.add<header_t>(SMSG_NPC_CONTROL);
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(id);
 	packet.add<int32_t>(npc.id);
 	packet.addClass<Pos>(npc.pos);
-	packet.add<bool>(npc.facesRight);
+	packet.add<bool>(!npc.facesLeft);
 	packet.add<int16_t>(npc.foothold);
 	packet.add<int16_t>(npc.rx0);
 	packet.add<int16_t>(npc.rx1);
 	packet.add<bool>(show);
 }
 
-void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
+auto NpcPacket::animateNpc(Player *player, PacketReader &pack) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_ANIMATE);
 
@@ -86,7 +86,7 @@ void NpcPacket::animateNpc(Player *player, PacketReader &pack) {
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
+auto NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
@@ -94,7 +94,7 @@ void NpcPacket::showNpcEffect(Player *player, int32_t index, bool show) {
 	player->getSession()->send(packet);
 }
 
-void NpcPacket::showNpcEffect(int32_t mapId, int32_t index, bool show) {
+auto NpcPacket::showNpcEffect(int32_t mapId, int32_t index, bool show) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NPC_SHOW_EFFECT);
 	packet.add<int32_t>(index);
@@ -102,7 +102,7 @@ void NpcPacket::showNpcEffect(int32_t mapId, int32_t index, bool show) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void NpcPacket::bought(Player *player, uint8_t msg) {
+auto NpcPacket::bought(Player *player, uint8_t msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ITEM_PURCHASED);
 	packet.add<int8_t>(msg);

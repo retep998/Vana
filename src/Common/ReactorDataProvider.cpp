@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,14 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <string>
 
-using std::string;
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-ReactorDataProvider * ReactorDataProvider::singleton = nullptr;
-
-void ReactorDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Reactors... ";
+auto ReactorDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Reactors... ";
 
 	loadReactors();
 	loadStates();
@@ -39,7 +33,7 @@ void ReactorDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ReactorDataProvider::loadReactors() {
+auto ReactorDataProvider::loadReactors() -> void {
 	m_reactorInfo.clear();
 	ReactorData reactor;
 	int32_t id;
@@ -49,7 +43,7 @@ void ReactorDataProvider::loadReactors() {
 	for (const auto &row : rs) {
 		id = row.get<int32_t>("reactorid");
 		reactor = ReactorData();
-		runFlags(row.get<opt_string>("flags"), [&reactor](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reactor](const string_t &cmp) {
 			if (cmp == "remove_in_field_set") reactor.removeInFieldSet = true;
 			else if (cmp == "activate_by_touch") reactor.activateByTouch = true;
 		});
@@ -61,7 +55,7 @@ void ReactorDataProvider::loadReactors() {
 	}
 }
 
-void ReactorDataProvider::loadStates() {
+auto ReactorDataProvider::loadStates() -> void {
 	ReactorStateInfo state;
 	int32_t id;
 	int8_t stateId;
@@ -73,7 +67,7 @@ void ReactorDataProvider::loadStates() {
 		stateId = row.get<int8_t>("state");
 		state = ReactorStateInfo();
 
-		runFlags(row.get<opt_string>("event_type"), [&state](const string &cmp) {
+		StringUtilities::runEnum(row.get<string_t>("event_type"), [&state](const string_t &cmp) {
 			if (cmp == "plain_advance_state") state.type = 0;
 			else if (cmp == "no_clue") state.type = 0;
 			else if (cmp == "no_clue2") state.type = 0;
@@ -85,8 +79,8 @@ void ReactorDataProvider::loadStates() {
 
 		state.itemId = row.get<int32_t>("itemid");
 		state.itemQuantity = row.get<int16_t>("quantity");
-		state.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		state.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		state.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
+								Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
 		state.nextState = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
@@ -94,7 +88,7 @@ void ReactorDataProvider::loadStates() {
 	}
 }
 
-void ReactorDataProvider::loadTriggerSkills() {
+auto ReactorDataProvider::loadTriggerSkills() -> void {
 	int32_t id;
 	int8_t state;
 	int32_t skillId;
@@ -113,8 +107,8 @@ void ReactorDataProvider::loadTriggerSkills() {
 	}
 }
 
-ReactorData * ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) {
-	if (m_reactorInfo.find(reactorId) !=m_reactorInfo.end()) {
+auto ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) -> ReactorData * {
+	if (m_reactorInfo.find(reactorId) != std::end(m_reactorInfo)) {
 		ReactorData *retval = &m_reactorInfo[reactorId];
 		if (respectLink && retval->link) {
 			return &m_reactorInfo[retval->link];

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,24 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimerContainer.h"
 #include <functional>
 
-using std::bind;
-
-Trades * Trades::singleton = nullptr;
+seconds_t Trades::TradeTimeout = seconds_t(180);
 
 Trades::Trades() :
 	m_tradeIds(1, 100000)
 {
-	m_container = std::make_unique<Timer::Container>();
 }
 
-int32_t Trades::newTrade(Player *start, Player *recv) {
+auto Trades::newTrade(Player *start, Player *recv) -> int32_t {
 	int32_t id = getNewId();
-	m_trades[id] = std::make_shared<ActiveTrade>(start, recv, id);
+	m_trades[id] = make_ref_ptr<ActiveTrade>(start, recv, id);
 	startTimeout(id, start);
 	return id;
 }
 
-void Trades::removeTrade(int32_t id) {
+auto Trades::removeTrade(int32_t id) -> void {
 	if (getTimerSecondsRemaining(id).count() > 0) {
 		stopTimeout(id);
 	}
@@ -58,26 +55,26 @@ void Trades::removeTrade(int32_t id) {
 	m_trades.erase(id);
 }
 
-ActiveTrade * Trades::getTrade(int32_t id) {
-	return (m_trades.find(id) != m_trades.end() ? m_trades[id].get() : nullptr);
+auto Trades::getTrade(int32_t id) -> ActiveTrade * {
+	return m_trades.find(id) != std::end(m_trades) ? m_trades[id].get() : nullptr;
 }
 
-seconds_t Trades::getTimerSecondsRemaining(int32_t id) {
+auto Trades::getTimerSecondsRemaining(int32_t id) -> seconds_t {
 	Timer::Id check(Timer::Types::TradeTimer, id, 0);
 	return getTimers()->getSecondsRemaining(check);
 }
 
-void Trades::timeout(Player *sender) {
+auto Trades::timeout(Player *sender) -> void {
 	TradeHandler::cancelTrade(sender);
 }
 
-void Trades::stopTimeout(int32_t id) {
+auto Trades::stopTimeout(int32_t id) -> void {
 	Timer::Id rid(Timer::Types::TradeTimer, id, 0);
 	getTimers()->removeTimer(rid);
 }
 
-void Trades::startTimeout(int32_t id, Player *sender) {
+auto Trades::startTimeout(int32_t id, Player *sender) -> void {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
-	Timer::create([this, sender]() { this->timeout(sender); },
-		tid, nullptr, seconds_t(TradeTimeout));
+	Timer::create([this, sender](const time_point_t &now) { this->timeout(sender); },
+		tid, nullptr, TradeTimeout);
 }

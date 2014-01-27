@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,27 +18,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "ConfigFile.h"
 #include "Configuration.h"
-#include "soci-mysql.h"
+#include <soci-mysql.h>
 
 thread_local soci::session * Database::m_chardb = nullptr;
 thread_local soci::session * Database::m_datadb = nullptr;
 
-void Database::connectCharDb() {
+auto Database::connectCharDb() -> void {
 	ConfigFile config("conf/database.lua");
 	DbConfig conf = config.getClass<DbConfig>("chardb");
 	m_chardb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_chardb->reconnect();
 }
 
-void Database::connectDataDb() {
+auto Database::connectDataDb() -> void {
 	ConfigFile config("conf/database.lua");
 	DbConfig conf = config.getClass<DbConfig>("datadb");
 	m_datadb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_datadb->reconnect();
 }
 
-string Database::buildConnectionString(const DbConfig &conf) {
-	std::ostringstream str;
+auto Database::buildConnectionString(const DbConfig &conf) -> string_t {
+	out_stream_t str;
 
 	str << "dbname=" << conf.database
 		<< " user=" << conf.username

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,17 +28,17 @@ class PacketReader;
 
 class ExternalIp : public Ip {
 public:
-	ExternalIp(const std::string &addr, uint32_t ipv4SubnetMask);
+	ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask);
 	ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask);
 
-	bool tryMatchIpToSubnet(const Ip &test, Ip &result) const;
-	void write(PacketCreator &packet) const override;
-	void read(PacketReader &packet) override;
+	auto tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool;
+	auto write(PacketCreator &packet) const -> void override;
+	auto read(PacketReader &packet) -> void override;
 private:
 	friend class PacketReader;
 	ExternalIp() : Ip() { }
 
-	uint32_t m_ipv4SubnetMask;
+	uint32_t m_ipv4SubnetMask = 0;
 };
 
-typedef std::vector<ExternalIp> IpMatrix;
+using IpMatrix = vector_t<ExternalIp>;

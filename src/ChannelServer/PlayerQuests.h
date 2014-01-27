@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Quest.h"
 #include "QuestDataProvider.h"
 #include "Quests.h"
@@ -27,59 +26,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <string>
 #include <unordered_map>
-
-using std::map;
-using std::string;
-using std::unordered_map;
+#include <vector>
 
 class PacketCreator;
 class Player;
 
 struct ActiveQuest {
-	ActiveQuest() : done(false) { }
-
-	string getQuestData() const {
+	auto getQuestData() const -> string_t {
 		if (kills.size() == 0) {
 			return data;
 		}
 
-		std::ostringstream info;
+		out_stream_t info;
 		for (const auto &kvp : kills) {
 			info << std::setw(3) << std::setfill('0') << kvp.second;
 		}
 		return info.str();
 	}
 
-	int16_t id;
-	bool done;
-	string data;
-	map<int32_t, int16_t, std::less<int32_t>> kills;
+	int16_t id = 0;
+	bool done = false;
+	string_t data;
+	ord_map_t<int32_t, int16_t> kills;
 };
 
-class PlayerQuests : boost::noncopyable {
+class PlayerQuests {
+	NONCOPYABLE(PlayerQuests);
+	NO_DEFAULT_CONSTRUCTOR(PlayerQuests);
 public:
 	PlayerQuests(Player *player);
 
-	void load();
-	void save();
-	void connectData(PacketCreator &packet);
+	auto load() -> void;
+	auto save() -> void;
+	auto connectData(PacketCreator &packet) -> void;
 
-	void addQuest(int16_t questId, int32_t npcId);
-	void updateQuestMob(int32_t mobId);
-	void checkDone(ActiveQuest &quest);
-	void finishQuest(int16_t questId, int32_t npcId);
-	void removeQuest(int16_t questId);
-	bool isQuestActive(int16_t questId);
-	bool isQuestComplete(int16_t questId);
-	void setQuestData(int16_t id, const string &data);
-	string getQuestData(int16_t id);
+	auto addQuest(int16_t questId, int32_t npcId) -> void;
+	auto updateQuestMob(int32_t mobId) -> void;
+	auto checkDone(ActiveQuest &quest) -> void;
+	auto finishQuest(int16_t questId, int32_t npcId) -> void;
+	auto removeQuest(int16_t questId) -> void;
+	auto isQuestActive(int16_t questId) -> bool;
+	auto isQuestComplete(int16_t questId) -> bool;
+	auto setQuestData(int16_t id, const string_t &data) -> void;
+	auto getQuestData(int16_t id) -> string_t;
 private:
-	Player *m_player;
-	unordered_map<int32_t, vector<int16_t>> m_mobToQuestMapping;
-	map<int16_t, ActiveQuest> m_quests;
-	map<int16_t, int64_t> m_completed;
+	auto giveRewards(int16_t questId, bool start) -> bool;
+	auto addQuest(int16_t questId) -> void;
+	auto addQuestMobs(int16_t questId) -> void;
 
-	bool giveRewards(int16_t questId, bool start);
-	void addQuest(int16_t questId);
-	void addQuestMobs(int16_t questId);
+	Player *m_player = nullptr;
+	hash_map_t<int32_t, vector_t<int16_t>> m_mobToQuestMapping;
+	ord_map_t<int16_t, ActiveQuest> m_quests;
+	ord_map_t<int16_t, int64_t> m_completed;
 };

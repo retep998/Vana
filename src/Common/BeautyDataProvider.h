@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,51 +17,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <vector>
 
-using std::vector;
-
 struct ValidLook {
-	void clear() {
+	auto clear() -> void {
 		hair.clear();
 		faces.clear();
 	}
-	vector<int32_t> hair;
-	vector<int32_t> faces;
+
+	vector_t<int32_t> hair;
+	vector_t<int32_t> faces;
 };
 
-class BeautyDataProvider : boost::noncopyable {
+class BeautyDataProvider {
+	SINGLETON(BeautyDataProvider);
 public:
-	static BeautyDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new BeautyDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	int8_t getRandomSkin();
-	int32_t getRandomHair(int8_t gender);
-	int32_t getRandomFace(int8_t gender);
+	auto getRandomSkin() -> int8_t;
+	auto getRandomHair(int8_t gender) -> int32_t;
+	auto getRandomFace(int8_t gender) -> int32_t;
 
-	vector<int8_t> getSkins();
-	vector<int32_t> getHair(int8_t gender);
-	vector<int32_t> getFaces(int8_t gender);
+	auto getSkins() -> vector_t<int8_t>;
+	auto getHair(int8_t gender) -> vector_t<int32_t>;
+	auto getFaces(int8_t gender) -> vector_t<int32_t>;
 
-	bool isValidSkin(int8_t skin);
-	bool isValidHair(int8_t gender, int32_t hair);
-	bool isValidFace(int8_t gender, int32_t face);
+	auto isValidSkin(int8_t skin) -> bool;
+	auto isValidHair(int8_t gender, int32_t hair) -> bool;
+	auto isValidFace(int8_t gender, int32_t face) -> bool;
 private:
-	BeautyDataProvider() {}
-	static BeautyDataProvider *singleton;
-
-	void loadSkins();
-	void loadHair();
-	void loadFaces();
-	ValidLook * getGender(int8_t gender);
+	auto loadSkins() -> void;
+	auto loadHair() -> void;
+	auto loadFaces() -> void;
+	auto getGender(int8_t gender) -> ValidLook *;
 
 	ValidLook m_male;
 	ValidLook m_female;
-	vector<int8_t> m_skins;
+	vector_t<int8_t> m_skins;
 };

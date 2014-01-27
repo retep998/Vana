@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "SyncPacket.h"
 
-void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
+auto PartyHandler::handleRequest(Player *player, PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case PartyActions::Create:
@@ -33,7 +33,7 @@ void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 			break;
 		case PartyActions::Join: {
 			int32_t partyId = packet.get<int32_t>();
-			if (Party *party = PlayerDataProvider::Instance()->getParty(partyId)) {
+			if (Party *party = PlayerDataProvider::getInstance().getParty(partyId)) {
 				if (party->getMembersCount() == Parties::MaxMembers) {
 					PartyPacket::error(player, PartyPacket::Errors::PartyFull);
 				}
@@ -49,12 +49,12 @@ void PartyHandler::handleRequest(Player *player, PacketReader &packet) {
 			break;
 		}
 		case PartyActions::Invite: {
-			const string &invName = packet.getString();
+			const string_t &invName = packet.getString();
 			if (player->getParty() == nullptr) {
 				// ??
 				return;
 			}
-			if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(invName)) {
+			if (Player *invitee = PlayerDataProvider::getInstance().getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
 					PartyPacket::error(player, PartyPacket::Errors::PlayerHasParty);
 				}

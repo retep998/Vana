@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,42 +27,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "ServerPacket.h"
 #include "SyncPacket.h"
+#include "VanaConstants.h"
 #include "WorldServerConnection.h"
 #include "WorldServerConnectPacket.h"
 
-ChannelServer * ChannelServer::singleton = nullptr;
-
 ChannelServer::ChannelServer() :
-	m_channelId(-1),
-	m_worldIp(0),
-	m_loginIp(0)
+	m_loginIp(0),
+	m_worldIp(0)
 {
+	setServerType(ServerTypes::Channel);
 }
 
-void ChannelServer::listen() {
-	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false);
+auto ChannelServer::listen() -> void {
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false);
 	Initializing::setUsersOffline(getOnlineId());
 }
 
-void ChannelServer::shutdown() {
+auto ChannelServer::shutdown() -> void {
 	m_channelId = -1; // Otherwise when WorldServerConnection disconnects, it will try to call shutdown() again
 	AbstractServer::shutdown();
 }
 
-void ChannelServer::loadData() {
+auto ChannelServer::loadData() -> void {
 	Initializing::checkSchemaVersion();
 	Initializing::checkMcdbVersion();
 	Initializing::loadData();
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
-	const string &interPassword = getInterPassword();
-	const string &salt = getSalt();
+	ConnectionManager::getInstance().connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
+	const string_t &interPassword = getInterPassword();
+	const string_t &salt = getSalt();
 	const IpMatrix &externalIps = getExternalIps();
 	loginPlayer->sendAuth(interPassword, salt, externalIps);
 }
 
-void ChannelServer::loadLogConfig() {
+auto ChannelServer::loadLogConfig() -> void {
 	ConfigFile conf("conf/logger.lua", false);
 	initializeLoggingConstants(conf);
 	conf.execute();
@@ -74,43 +73,34 @@ void ChannelServer::loadLogConfig() {
 	}
 }
 
-opt_string ChannelServer::makeLogIdentifier() {
-	std::ostringstream identifier;
+auto ChannelServer::makeLogIdentifier() -> opt_string_t {
+	out_stream_t identifier;
 	identifier << "World: " << static_cast<int16_t>(getWorldId()) << "; ID: " << getChannelId();
 	return identifier.str();
 }
 
-void ChannelServer::connectWorld() {
+auto ChannelServer::connectWorld() -> void {
 	m_worldConnection = new WorldServerConnection;
-	ConnectionManager::Instance()->connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
-	const string &interPassword = getInterPassword();
-	const string &salt = getSalt();
+	ConnectionManager::getInstance().connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
+	const string_t &interPassword = getInterPassword();
+	const string_t &salt = getSalt();
 	const IpMatrix &externalIps = getExternalIps();
 	getWorldConnection()->sendAuth(interPassword, salt, externalIps);
 }
 
-void ChannelServer::loadConfig() {
+auto ChannelServer::loadConfig() -> void {
 	ConfigFile config("conf/interserver.lua");
 	InterServerConfig conf = config.getClass<InterServerConfig>();
 
 	m_loginIp = conf.loginIp;
 	m_loginPort = conf.port;
-
-	 // Will get from WorldServer later
-	m_world = -1;
-	m_port = -1;
-	m_pianusChannel = false;
-	m_papChannel = false;
-	m_zakumChannel = false;
-	m_horntailChannel = false;
-	m_pinkbeanChannel = false;
 }
 
-void ChannelServer::sendPacketToWorld(PacketCreator &packet) {
+auto ChannelServer::sendPacketToWorld(PacketCreator &packet) -> void {
 	getWorldConnection()->getSession()->send(packet);
 }
 
-void ChannelServer::setScrollingHeader(const string &message) {
+auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 	if (getScrollingHeader() != message) {
 		m_config.scrollingHeader = message;
 		if (message.size() == 0) {
@@ -122,7 +112,7 @@ void ChannelServer::setScrollingHeader(const string &message) {
 	}
 }
 
-void ChannelServer::modifyRate(int32_t rateType, int32_t newValue) {
+auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
 	Rates currentRates = m_config.rates;
 	if (rateType & Rates::Types::MobExpRate) currentRates.mobExpRate = newValue;
 	if (rateType & Rates::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
@@ -131,11 +121,11 @@ void ChannelServer::modifyRate(int32_t rateType, int32_t newValue) {
 	SyncPacket::ConfigPacket::modifyRates(currentRates);
 }
 
-void ChannelServer::setRates(const Rates &rates) {
+auto ChannelServer::setRates(const Rates &rates) -> void {
 	m_config.rates = rates;
 }
 
-void ChannelServer::setConfig(const WorldConfig &config) {
+auto ChannelServer::setConfig(const WorldConfig &config) -> void {
 	setScrollingHeader(config.scrollingHeader);
 	m_config = config;
 	int8_t channelId = static_cast<int8_t>(m_channelId + 1);

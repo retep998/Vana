@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "SyncPacket.h"
 
-void SyncHandler::handle(PacketReader &packet) {
+auto SyncHandler::handle(PacketReader &packet) -> void {
 	switch (packet.get<int8_t>()) {
 		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
 		case Sync::SyncTypes::ChannelStart: handleChannelSync(packet); break;
@@ -43,54 +43,54 @@ void SyncHandler::handle(PacketReader &packet) {
 	}
 }
 
-void SyncHandler::handleConfigSync(PacketReader &packet) {
+auto SyncHandler::handleConfigSync(PacketReader &packet) -> void {
 	switch (packet.get<int8_t>()) {
 		case Sync::Config::RateSet: setRates(packet); break;
-		case Sync::Config::ScrollingHeader: ChannelServer::Instance()->setScrollingHeader(packet.getString()); break;
+		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(packet.getString()); break;
 	}
 }
 
-void SyncHandler::handleChannelSync(PacketReader &packet) {
-	PlayerDataProvider::Instance()->parseChannelConnectPacket(packet);
+auto SyncHandler::handleChannelSync(PacketReader &packet) -> void {
+	PlayerDataProvider::getInstance().parseChannelConnectPacket(packet);
 }
 
-void SyncHandler::handlePlayerSync(PacketReader &packet) {
+auto SyncHandler::handlePlayerSync(PacketReader &packet) -> void {
 	switch (packet.get<int8_t>()) {
-		case Sync::Player::NewConnectable: PlayerDataProvider::Instance()->newConnectable(packet); break;
-		case Sync::Player::DeleteConnectable: PlayerDataProvider::Instance()->deleteConnectable(packet.get<int32_t>()); break;
-		case Sync::Player::ChangeChannelGo: PlayerDataProvider::Instance()->changeChannel(packet); break;
-		case Sync::Player::UpdatePlayer: PlayerDataProvider::Instance()->updatePlayer(packet); break;
-		case Sync::Player::CharacterCreated: PlayerDataProvider::Instance()->newPlayer(packet); break;
+		case Sync::Player::NewConnectable: PlayerDataProvider::getInstance().newConnectable(packet); break;
+		case Sync::Player::DeleteConnectable: PlayerDataProvider::getInstance().deleteConnectable(packet.get<int32_t>()); break;
+		case Sync::Player::ChangeChannelGo: PlayerDataProvider::getInstance().changeChannel(packet); break;
+		case Sync::Player::UpdatePlayer: PlayerDataProvider::getInstance().updatePlayer(packet); break;
+		case Sync::Player::CharacterCreated: PlayerDataProvider::getInstance().newPlayer(packet); break;
 	}
 }
 
-void SyncHandler::handlePartySync(PacketReader &packet) {
+auto SyncHandler::handlePartySync(PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();
 	int32_t partyId = packet.get<int32_t>();
 	switch (type) {
-		case Sync::Party::Create: PlayerDataProvider::Instance()->newParty(partyId, packet.get<int32_t>()); break;
-		case Sync::Party::Disband: PlayerDataProvider::Instance()->disbandParty(partyId); break;
-		case Sync::Party::SwitchLeader: PlayerDataProvider::Instance()->switchPartyLeader(partyId, packet.get<int32_t>()); break;
-		case Sync::Party::AddMember: PlayerDataProvider::Instance()->addPartyMember(partyId, packet.get<int32_t>()); break;
+		case Sync::Party::Create: PlayerDataProvider::getInstance().newParty(partyId, packet.get<int32_t>()); break;
+		case Sync::Party::Disband: PlayerDataProvider::getInstance().disbandParty(partyId); break;
+		case Sync::Party::SwitchLeader: PlayerDataProvider::getInstance().switchPartyLeader(partyId, packet.get<int32_t>()); break;
+		case Sync::Party::AddMember: PlayerDataProvider::getInstance().addPartyMember(partyId, packet.get<int32_t>()); break;
 		case Sync::Party::RemoveMember: {
 			int32_t playerId = packet.get<int32_t>();
-			PlayerDataProvider::Instance()->removePartyMember(partyId, playerId, packet.get<bool>());
+			PlayerDataProvider::getInstance().removePartyMember(partyId, playerId, packet.get<bool>());
 			break;
 		}
 	}
 }
 
-void SyncHandler::handleBuddySync(PacketReader &packet) {
+auto SyncHandler::handleBuddySync(PacketReader &packet) -> void {
 	switch (packet.get<int8_t>()) {
 		case Sync::Buddy::Invite: SyncHandler::buddyInvite(packet); break;
 		case Sync::Buddy::OnlineOffline: SyncHandler::buddyOnlineOffline(packet); break;
 	}
 }
 
-void SyncHandler::buddyInvite(PacketReader &packet) {
+auto SyncHandler::buddyInvite(PacketReader &packet) -> void {
 	int32_t inviterId = packet.get<int32_t>();
 	int32_t inviteeId = packet.get<int32_t>();
-	if (Player *invitee = PlayerDataProvider::Instance()->getPlayer(inviteeId)) {
+	if (Player *invitee = PlayerDataProvider::getInstance().getPlayer(inviteeId)) {
 		BuddyInvite invite;
 		invite.id = inviterId;
 		invite.name = packet.getString();
@@ -99,14 +99,14 @@ void SyncHandler::buddyInvite(PacketReader &packet) {
 	}
 }
 
-void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
+auto SyncHandler::buddyOnlineOffline(PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>(); // The id of the player coming online
 	int32_t channel = packet.get<int32_t>();
-	const vector<int32_t> &players = packet.getVector<int32_t>(); // Holds the buddy IDs
+	const vector_t<int32_t> &players = packet.getVector<int32_t>(); // Holds the buddy IDs
 
 	for (size_t i = 0; i < players.size(); i++) {
-		if (Player *player = PlayerDataProvider::Instance()->getPlayer(players[i])) {
-			if (BuddyPtr ptr = player->getBuddyList()->getBuddy(playerId)) {
+		if (Player *player = PlayerDataProvider::getInstance().getPlayer(players[i])) {
+			if (ref_ptr_t<Buddy> ptr = player->getBuddyList()->getBuddy(playerId)) {
 				ptr->channel = channel;
 				BuddyListPacket::online(player, playerId, channel);
 			}
@@ -114,7 +114,7 @@ void SyncHandler::buddyOnlineOffline(PacketReader &packet) {
 	}
 }
 
-void SyncHandler::setRates(PacketReader &packet) {
+auto SyncHandler::setRates(PacketReader &packet) -> void {
 	Rates rates = packet.getClass<Rates>();
-	ChannelServer::Instance()->setRates(rates);
+	ChannelServer::getInstance().setRates(rates);
 }

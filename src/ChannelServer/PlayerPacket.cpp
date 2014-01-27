@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,12 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-void PlayerPacket::connectData(Player *player) {
+auto PlayerPacket::connectData(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
+	packet.add<int32_t>(ChannelServer::getInstance().getChannelId());
 	packet.add<uint8_t>(player->getPortalCount(true));
 	packet.add<bool>(true); // Is a connect packet
 	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
@@ -93,7 +91,7 @@ void PlayerPacket::connectData(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
+auto PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_KEYMAP);
 	packet.add<int8_t>(0);
@@ -111,7 +109,7 @@ void PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
+auto PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MACRO_LIST);
 	packet.add<int8_t>(macros->getMax() + 1);
@@ -136,7 +134,7 @@ void PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) {
+auto PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<bool>(itemResponse);
@@ -171,7 +169,7 @@ void PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value,
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::changeChannel(Player *player, const Ip &ip, port_t port) {
+auto PlayerPacket::changeChannel(Player *player, const Ip &ip, port_t port) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_CHANGE);
 	packet.add<bool>(true);
@@ -180,37 +178,37 @@ void PlayerPacket::changeChannel(Player *player, const Ip &ip, port_t port) {
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showMessage(Player *player, const string &msg, int8_t type) {
+auto PlayerPacket::showMessage(Player *player, const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
 	showMessagePacket(packet, msg, type);
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showMessageChannel(const string &msg, int8_t type) {
+auto PlayerPacket::showMessageChannel(const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
 	showMessagePacket(packet, msg, type);
-	PlayerDataProvider::Instance()->sendPacket(packet);
+	PlayerDataProvider::getInstance().sendPacket(packet);
 }
 
-void PlayerPacket::showMessageWorld(const string &msg, int8_t type) {
+auto PlayerPacket::showMessageWorld(const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_CHANNELS);
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	showMessagePacket(packet, msg, type);
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void PlayerPacket::showMessageGlobal(const string &msg, int8_t type) {
+auto PlayerPacket::showMessageGlobal(const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_LOGIN);
 	packet.add<header_t>(IMSG_TO_WORLDS);
 	packet.add<header_t>(IMSG_TO_CHANNELS);
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	showMessagePacket(packet, msg, type);
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, int8_t type) {
+auto PlayerPacket::showMessagePacket(PacketCreator &packet, const string_t &msg, int8_t type) -> void {
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(type);
 	packet.addString(msg);
@@ -219,7 +217,7 @@ void PlayerPacket::showMessagePacket(PacketCreator &packet, const string &msg, i
 	}
 }
 
-void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
+auto PlayerPacket::instructionBubble(Player *player, const string_t &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) -> void {
 	if (width == -1) {
 		width = msg.size() * 10;
 		if (width < 40) {
@@ -242,7 +240,7 @@ void PlayerPacket::instructionBubble(Player *player, const string &msg, int16_t 
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::showHpBar(Player *player, Player *target) {
+auto PlayerPacket::showHpBar(Player *player, Player *target) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PARTY_HP_DISPLAY);
 	packet.add<int32_t>(player->getId());
@@ -251,14 +249,14 @@ void PlayerPacket::showHpBar(Player *player, Player *target) {
 	target->getSession()->send(packet);
 }
 
-void PlayerPacket::sendBlockedMessage(Player *player, int8_t type) {
+auto PlayerPacket::sendBlockedMessage(Player *player, int8_t type) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_BLOCKED);
 	packet.add<int8_t>(type);
 	player->getSession()->send(packet);
 }
 
-void PlayerPacket::sendYellowMessage(Player *player, const string &msg) {
+auto PlayerPacket::sendYellowMessage(Player *player, const string_t &msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_YELLOW_MESSAGE);
 	packet.add<bool>(true);

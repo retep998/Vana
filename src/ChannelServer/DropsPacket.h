@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,13 +33,13 @@ namespace DropsPacket {
 			DisappearDuringDrop = 3
 		};
 	}
-	void showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin);
-	void takeDrop(Player *player, Drop *drop, int8_t petIndex = -1);
-	void dontTake(Player *player);
-	void removeDrop(Drop *drop);
-	void explodeDrop(Drop *drop);
-	void dropNotAvailableForPickup(Player *player);
-	void cantGetAnymoreItems(Player *player);
-	void pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
-	void pickupDropSpecial(Player *player, int32_t id);
+	auto showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) -> void;
+	auto takeDrop(Player *player, Drop *drop, int8_t petIndex = -1) -> void;
+	auto dontTake(Player *player) -> void;
+	auto removeDrop(Drop *drop) -> void;
+	auto explodeDrop(Drop *drop) -> void;
+	auto dropNotAvailableForPickup(Player *player) -> void;
+	auto cantGetAnymoreItems(Player *player) -> void;
+	auto pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0) -> void;
+	auto pickupDropSpecial(Player *player, int32_t id) -> void;
 }

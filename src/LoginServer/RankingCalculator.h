@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace RankingCalculator {
 	struct Rank {
 		opt_int32_t oldRank;
@@ -45,16 +42,16 @@ namespace RankingCalculator {
 		Rank fame;
 	};
 
-	void setTimer();
-	void runThread();
-	void all();
-	void overall(vector<RankPlayer> &v);
-	void world(vector<RankPlayer> &v);
-	void job(vector<RankPlayer> &v);
-	void fame(vector<RankPlayer> &v);
-	bool increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job);
-	bool baseCompare(const RankPlayer &t1, const RankPlayer &t2);
-	void updateRank(Rank &r, int32_t newRank);
+	auto setTimer() -> void;
+	auto runThread() -> void;
+	auto all() -> void;
+	auto overall(vector_t<RankPlayer> &v) -> void;
+	auto world(vector_t<RankPlayer> &v) -> void;
+	auto job(vector_t<RankPlayer> &v) -> void;
+	auto fame(vector_t<RankPlayer> &v) -> void;
+	auto increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) -> bool;
+	auto baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool;
+	auto updateRank(Rank &r, int32_t newRank) -> void;
 
-	extern std::mutex RankingsMutex;
+	extern mutex_t RankingsMutex;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,23 +27,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <iostream>
 
-using std::bind;
-
 const milliseconds_t InitialPing = milliseconds_t(60000);
 const milliseconds_t PingTime = milliseconds_t(15000);
 
 AbstractConnection::AbstractConnection() :
-	m_isServer(false),
-	m_isPinged(false),
-	m_doesPing(true),
 	m_latency(InitialPing),
 	m_lastPing(),
 	m_ip(0)
 {
-	m_timers = std::make_unique<Timer::Container>();
 }
 
-void AbstractConnection::baseHandleRequest(PacketReader &packet) {
+auto AbstractConnection::baseHandleRequest(PacketReader &packet) -> void {
 	try {
 		switch (packet.getHeader(false)) {
 			case SMSG_PING:
@@ -59,7 +53,7 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 				}
 				m_isPinged = false;
 				// This is for the trip to and from, so latency is averaged between them
-				m_latency = std::chrono::duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
+				m_latency = duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
 				break;
 		}
 		handleRequest(packet);
@@ -69,13 +63,13 @@ void AbstractConnection::baseHandleRequest(PacketReader &packet) {
 	}
 }
 
-void AbstractConnection::setTimer() {
-	Timer::create(bind(&AbstractConnection::ping, this),
+auto AbstractConnection::setTimer() -> void {
+	Timer::create([this](const time_point_t &now) { this->ping(); },
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
 		getTimers(), InitialPing, PingTime);
 }
 
-void AbstractConnection::ping() {
+auto AbstractConnection::ping() -> void {
 	if (m_doesPing) {
 		if (m_isPinged) {
 			// We have a timeout now
@@ -89,7 +83,7 @@ void AbstractConnection::ping() {
 	}
 }
 
-void AbstractConnection::setSession(Session *val) {
+auto AbstractConnection::setSession(Session *val) -> void {
 	m_session = val;
 	setTimer();
 }

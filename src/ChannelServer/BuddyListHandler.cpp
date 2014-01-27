@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include <string>
 
-using std::string;
-
 namespace BuddyOpcodes {
 	enum Opcodes : int8_t {
 		Add = 0x01,
@@ -31,12 +29,12 @@ namespace BuddyOpcodes {
 	};
 }
 
-void BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) {
+auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();
 	switch (type) {
 		case BuddyOpcodes::Add: {
-			const string &name = packet.getString();
-			const string &group = packet.getString();
+			const string_t &name = packet.getString();
+			const string_t &group = packet.getString();
 
 			uint8_t error = player->getBuddyList()->addBuddy(name, group);
 

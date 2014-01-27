@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,24 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Player::Player() :
 	m_ip(0)
 {
-	initialize();
 }
 
 Player::Player(int32_t id) :
 	m_id(id),
 	m_ip(0)
 {
-	initialize();
-}
-
-void Player::initialize() {
-	m_online = false;
-	m_cashShop = false;
-	m_level = 0;
-	m_channel = -1;
-	m_job = -1;
-	m_map = Maps::NoMap;
-	m_onlineTime = 0;
-	m_inviteTime = 0;
-	m_party = nullptr;
 }

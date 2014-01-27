@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SmsgHeader.h"
 
-void EffectPacket::playMusic(int32_t mapId, const string &music) {
+auto EffectPacket::playMusic(int32_t mapId, const string_t &music) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
@@ -29,7 +29,7 @@ void EffectPacket::playMusic(int32_t mapId, const string &music) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void EffectPacket::playMusic(Player *player, const string &music) {
+auto EffectPacket::playMusic(Player *player, const string_t &music) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x06);
@@ -37,7 +37,7 @@ void EffectPacket::playMusic(Player *player, const string &music) {
 	player->getSession()->send(packet);
 }
 
-void EffectPacket::sendEvent(int32_t mapId, const string &id) {
+auto EffectPacket::sendEvent(int32_t mapId, const string_t &id) -> void {
 	// Look in Map.wz/Effect.img to find valid strings
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
@@ -46,7 +46,7 @@ void EffectPacket::sendEvent(int32_t mapId, const string &id) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
+auto EffectPacket::sendEffect(int32_t mapId, const string_t &effect) -> void {
 	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
@@ -55,14 +55,14 @@ void EffectPacket::sendEffect(int32_t mapId, const string &effect) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void EffectPacket::playPortalSoundEffect(Player *player) {
+auto EffectPacket::playPortalSoundEffect(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x07);
 	player->getSession()->send(packet);
 }
 
-void EffectPacket::sendFieldSound(int32_t mapId, const string &sound) {
+auto EffectPacket::sendFieldSound(int32_t mapId, const string_t &sound) -> void {
 	// Look in Sound.wz/Field.img to find valid strings
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
@@ -71,7 +71,7 @@ void EffectPacket::sendFieldSound(int32_t mapId, const string &sound) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void EffectPacket::sendFieldSound(Player *player, const string &sound) {
+auto EffectPacket::sendFieldSound(Player *player, const string_t &sound) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x04);
@@ -79,7 +79,7 @@ void EffectPacket::sendFieldSound(Player *player, const string &sound) {
 	player->getSession()->send(packet);
 }
 
-void EffectPacket::sendMinigameSound(int32_t mapId, const string &sound) {
+auto EffectPacket::sendMinigameSound(int32_t mapId, const string_t &sound) -> void {
 	// Look in Sound.wz/MiniGame.img to find valid strings
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SOUND);
@@ -87,14 +87,14 @@ void EffectPacket::sendMinigameSound(int32_t mapId, const string &sound) {
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void EffectPacket::sendMinigameSound(Player *player, const string &sound) {
+auto EffectPacket::sendMinigameSound(Player *player, const string_t &sound) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SOUND);
 	packet.addString(sound);
 	player->getSession()->send(packet);
 }
 
-void EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemId) {
+auto EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0B);

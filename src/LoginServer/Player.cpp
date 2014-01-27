@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,28 +27,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-Player::Player() :
-	m_status(PlayerStatus::NotLoggedIn),
-	m_invalidLogins(0),
-	m_quietBanTime(0),
-	m_quietBanReason(0)
-{
+Player::~Player() {
+	setOnline(false);
 }
 
-void Player::handleRequest(PacketReader &packet) {
+auto Player::handleRequest(PacketReader &packet) -> void {
 	try {
 		switch (packet.getHeader()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
-			case CMSG_PLAYER_LIST: Worlds::Instance()->channelSelect(this, packet); break;
-			case CMSG_WORLD_STATUS: Worlds::Instance()->selectWorld(this, packet); break;
+			case CMSG_PLAYER_LIST: Worlds::getInstance().channelSelect(this, packet); break;
+			case CMSG_WORLD_STATUS: Worlds::getInstance().selectWorld(this, packet); break;
 			case CMSG_PIN: Login::handleLogin(this, packet); break;
 			case CMSG_WORLD_LIST:
-			case CMSG_WORLD_LIST_REFRESH: Worlds::Instance()->showWorld(this); break;
+			case CMSG_WORLD_LIST_REFRESH: Worlds::getInstance().showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
-			case CMSG_CLIENT_ERROR: LoginServer::Instance()->log(LogTypes::ClientError, packet.getString()); break;
-			case CMSG_CLIENT_STARTED: LoginServer::Instance()->log(LogTypes::Info, "Client connected and started from " + this->getIp().toString()); break;
+			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogTypes::ClientError, packet.getString()); break;
+			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogTypes::Info, "Client connected and started from " + this->getIp().toString()); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
-			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorld(this, packet); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
 			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
 			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
@@ -57,24 +53,21 @@ void Player::handleRequest(PacketReader &packet) {
 			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this); break;
 		}
 	}
-	catch (std::range_error) {
+	catch (const PacketContentException &e) {
 		// Packet data didn't match the packet length somewhere
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
 		packet.reset();
-		std::ostringstream x;
-		x << "User ID: " << getUserId() << "; Packet: " << packet;
-		LoginServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+		out_stream_t x;
+		x << "User ID: " << getUserId() << "; Packet: " << packet << "; Error: " << e.what();
+
+		LoginServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 		getSession()->disconnect();
 	}
 }
 
-Player::~Player() {
-	setOnline(false);
-}
-
-void Player::setOnline(bool online) {
+auto Player::setOnline(bool online) -> void {
 	Database::getCharDb()
 		<< "UPDATE user_accounts u "
 		<< "SET "
@@ -82,5 +75,5 @@ void Player::setOnline(bool online) {
 		<< "	u.last_login = NOW() "
 		<< "WHERE u.user_id = :id",
 		soci::use((online ? 1 : 0), "online"),
-		soci::use(getUserId(), "id");
+		soci::use(m_userId, "id");
 }

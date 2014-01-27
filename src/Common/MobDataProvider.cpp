@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,16 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
-using std::string;
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-MobDataProvider * MobDataProvider::singleton = nullptr;
-
-void MobDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Mobs... ";
+auto MobDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Mobs... ";
 
 	loadAttacks();
 	loadSkills();
@@ -41,7 +36,7 @@ void MobDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void MobDataProvider::loadAttacks() {
+auto MobDataProvider::loadAttacks() -> void {
 	m_attacks.clear();
 	int32_t mobId;
 	MobAttackInfo mobAttack;
@@ -50,9 +45,6 @@ void MobDataProvider::loadAttacks() {
 
 	for (const auto &row : rs) {
 		mobAttack = MobAttackInfo();
-		runFlags(row.get<opt_string>("flags"), [&mobAttack](const string &cmp) {
-			if (cmp == "deadly") mobAttack.deadlyAttack = true;
-		});
 
 		mobId = row.get<int32_t>("mobid");
 		mobAttack.id = row.get<int8_t>("attackid");
@@ -61,11 +53,22 @@ void MobDataProvider::loadAttacks() {
 		mobAttack.disease = row.get<uint8_t>("mob_skillid");
 		mobAttack.level = row.get<uint8_t>("mob_skill_level");
 
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mobAttack](const string_t &cmp) {
+			if (cmp == "deadly") mobAttack.deadlyAttack = true;
+		});
+		StringUtilities::runEnum(row.get<string_t>("attack_type"), [&mobAttack](const string_t &cmp) {
+			if (cmp == "normal") mobAttack.attackType = MobAttackType::Normal;
+			else if (cmp == "projectile") mobAttack.attackType = MobAttackType::Projectile;
+			else if (cmp == "single_target") mobAttack.attackType = MobAttackType::SingleTarget;
+			else if (cmp == "area_effect") mobAttack.attackType = MobAttackType::AreaEffect;
+			else if (cmp == "area_effect_plus") mobAttack.attackType = MobAttackType::AreaEffectPlus;
+		});
+
 		m_attacks[mobId].push_back(mobAttack);
 	}
 }
 
-void MobDataProvider::loadSkills() {
+auto MobDataProvider::loadSkills() -> void {
 	m_skills.clear();
 	int32_t mobId;
 	MobSkillInfo mobSkill;
@@ -82,17 +85,17 @@ void MobDataProvider::loadSkills() {
 	}
 }
 
-void MobDataProvider::loadMobs() {
+auto MobDataProvider::loadMobs() -> void {
 	m_mobInfo.clear();
 	int32_t mobId;
-	MobInfo mob;
+	ref_ptr_t<MobInfo> mob;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
 
 	for (const auto &row : rs) {
-		mob = std::make_shared<MobInfoRaw>();
+		mob = make_ref_ptr<MobInfo>();
 
-		runFlags(row.get<opt_string>("flags"), [&mob](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mob](const string_t &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
 			else if (cmp == "flying") mob->flying = true;
@@ -103,7 +106,7 @@ void MobDataProvider::loadMobs() {
 			else if (cmp == "auto_aggro") mob->autoAggro = true;
 			else if (cmp == "damaged_by_normal_attacks_only") mob->onlyNormalAttacks = true;
 			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
-			else if (cmp == "cannot_damage_player") mob->canDamage = false;
+			else if (cmp == "cannot_damage_player") mob->canDoBumpDamage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
 		});
 
@@ -130,28 +133,41 @@ void MobDataProvider::loadMobs() {
 		mob->mAtk = row.get<int16_t>("magical_attack");
 		mob->mDef = row.get<int16_t>("magical_defense");
 		mob->traction = row.get<double>("traction");
-		mob->damageSkill = row.get<int32_t>("damaged_by_skill_only");
-		mob->damageMob = row.get<int32_t>("damaged_by_mob_only");
+		mob->damagedBySkill = row.get<int32_t>("damaged_by_skill_only");
+		mob->damagedByMob = row.get<int32_t>("damaged_by_mob_only");
 		mob->knockback = row.get<int32_t>("knockback");
 		mob->summonType = row.get<int16_t>("summon_type");
 		mob->fixedDamage = row.get<int32_t>("fixed_damage");
 
-		mob->iceAttr = getElemModifier(row.get<string>("ice_modifier"));
-		mob->fireAttr = getElemModifier(row.get<string>("fire_modifier"));
-		mob->poisonAttr = getElemModifier(row.get<string>("poison_modifier"));
-		mob->lightningAttr = getElemModifier(row.get<string>("lightning_modifier"));
-		mob->holyAttr = getElemModifier(row.get<string>("holy_modifier"));
-		mob->nonElemAttr = getElemModifier(row.get<string>("nonelemental_modifier"));
+		auto getElement = [&row](const string_t &modifier) -> MobElementalAttribute {
+			MobElementalAttribute ret;
+			StringUtilities::runEnum(row.get<string_t>(modifier), [&ret](const string_t &cmp) {
+				if (cmp == "normal") ret = MobElementalAttribute::Normal;
+				else if (cmp == "immune") ret = MobElementalAttribute::Immune;
+				else if (cmp == "strong") ret = MobElementalAttribute::Strong;
+				else if (cmp == "weak") ret = MobElementalAttribute::Weak;
+			});
+			return ret;
+		};
 
-		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElements::Immune && mob->iceAttr != MobElements::Strong);
-		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElements::Immune && mob->poisonAttr != MobElements::Strong);
+		mob->iceAttr = getElement("ice_modifier");
+		mob->fireAttr = getElement("fire_modifier");
+		mob->poisonAttr = getElement("poison_modifier");
+		mob->lightningAttr = getElement("lightning_modifier");
+		mob->holyAttr = getElement("holy_modifier");
+		mob->nonElemAttr = getElement("nonelemental_modifier");
 
-		mob->skillCount = getSkillCount(mobId); // Relies on skills being loaded first
+		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElementalAttribute::Immune && mob->iceAttr != MobElementalAttribute::Strong);
+		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElementalAttribute::Immune && mob->poisonAttr != MobElementalAttribute::Strong);
+
+		// Skill count relies on skills being loaded first
+		auto kvp = m_skills.find(mobId);
+		mob->skillCount = kvp != m_skills.end() ? kvp->second.size() : 0; 
 		m_mobInfo[mobId] = mob;
 	}
 }
 
-void MobDataProvider::loadSummons() {
+auto MobDataProvider::loadSummons() -> void {
 	int32_t mobId;
 	int32_t summonId;
 
@@ -165,7 +181,7 @@ void MobDataProvider::loadSummons() {
 	}
 }
 
-MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) {
+auto MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) -> MobAttackInfo * {
 	try {
 		return &m_attacks[mobId].at(index);
 	}
@@ -175,7 +191,7 @@ MobAttackInfo * MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) {
 	return nullptr;
 }
 
-MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) {
+auto MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) -> MobSkillInfo * {
 	try {
 		return &m_skills[mobId].at(index);
 	}
@@ -185,14 +201,10 @@ MobSkillInfo * MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) {
 	return nullptr;
 }
 
-uint8_t MobDataProvider::getSkillCount(int32_t mobId) {
-	return static_cast<uint8_t>(m_skills.find(mobId) != m_skills.end() ? m_skills[mobId].size() : 0);
-}
-
-int8_t MobDataProvider::getElemModifier(const string &elemAttr) {
-	int8_t ret = MobElements::Normal;
-	if (elemAttr == "immune") ret = MobElements::Immune;
-	else if (elemAttr == "strong") ret = MobElements::Strong;
-	else if (elemAttr == "weak") ret = MobElements::Weak;
-	return ret;
+auto MobDataProvider::getSkills(int32_t mobId) -> const vector_t<MobSkillInfo> & {
+	auto kvp = m_skills.find(mobId);
+	if (kvp == std::end(m_skills)) {
+		throw std::runtime_error("Missing mob ID in skill query");
+	}
+	return kvp->second;
 }

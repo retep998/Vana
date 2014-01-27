@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,17 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.h"
+#include <cstdint>
 
 namespace BitUtilities {
-	template <typename T> inline T RotateRight(T val, int32_t shifts) {
-		const size_t size = sizeof(T) * 8;
+	template <typename TInteger>
+	inline
+	auto RotateRight(TInteger val, int32_t shifts) -> TInteger {
+		const size_t size = sizeof(TInteger) * 8;
 		shifts &= size - 1;
-		return static_cast<T>((val >> shifts) | (val << (size - shifts)));
+		return static_cast<TInteger>((val >> shifts) | (val << (size - shifts)));
 	}
-	template <typename T> inline T RotateLeft(T val, int32_t shifts) {
-		const size_t size = sizeof(T) * 8;
+
+	template <typename TInteger>
+	inline
+	auto RotateLeft(TInteger val, int32_t shifts) -> TInteger {
+		const size_t size = sizeof(TInteger) * 8;
 		shifts &= size - 1;
-		return static_cast<T>((val << shifts) | (val >> (size - shifts)));
+		return static_cast<TInteger>((val << shifts) | (val >> (size - shifts)));
 	}
 }

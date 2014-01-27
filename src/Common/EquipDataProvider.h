@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,29 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
 class EquipDataProvider {
+	SINGLETON(EquipDataProvider);
 public:
-	static EquipDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new EquipDataProvider;
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	void setEquipStats(Item *equip, bool random);
-	bool canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame);
-	bool validSlot(int32_t equipId, int16_t target);
-	int8_t getSlots(int32_t equipId) { return getEquipInfo(equipId)->slots; }
+	auto setEquipStats(Item *equip, bool random, bool isGm) -> void;
+	auto canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) -> bool;
+	auto validSlot(int32_t equipId, int16_t target) -> bool;
+	auto getSlots(int32_t equipId) -> int8_t { return getEquipInfo(equipId).slots; }
+	auto getEquipInfo(int32_t equipId) -> const EquipInfo & { return m_equipInfo[equipId]; }
 private:
-	EquipDataProvider() { }
-	static EquipDataProvider *singleton;
+	auto loadEquips() -> void;
 
-	void loadEquips();
-	int16_t getStatVariance(uint16_t amount);
-	int16_t getRandomStat(int16_t equipAmount, uint16_t variance);
-	EquipInfo * getEquipInfo(int32_t equipId) { return &m_equipInfo[equipId]; }
-
-	unordered_map<int32_t, EquipInfo> m_equipInfo;
+	hash_map_t<int32_t, EquipInfo> m_equipInfo;
 };

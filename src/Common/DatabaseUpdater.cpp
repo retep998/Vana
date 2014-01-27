@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,7 +36,6 @@ namespace fs = boost::filesystem;
 #endif
 
 DatabaseUpdater::DatabaseUpdater(bool update) :
-	m_sqlVersion(0),
 	m_update(update)
 {
 	loadDatabaseInfo();
@@ -44,30 +43,29 @@ DatabaseUpdater::DatabaseUpdater(bool update) :
 }
 
 // Returns true if the database is up-to-date.
-bool DatabaseUpdater::checkVersion() {
-	return m_sqlVersion <= m_version;
+auto DatabaseUpdater::checkVersion() -> bool {
+	return m_sqlVersion <= m_fileVersion;
 }
 
 // Updates the database to the latest version
-void DatabaseUpdater::update() {
+auto DatabaseUpdater::update() -> void {
 	update(m_sqlVersion);
 }
 
 // Updates the database to the specified version
-void DatabaseUpdater::update(size_t version) {
-	if (version <= m_version) {
-		// TODO: Throw exception
-		return;
+auto DatabaseUpdater::update(size_t version) -> void {
+	if (version <= m_fileVersion) {
+		throw std::out_of_range("SQL version to update to is less than the highest query file");
 	}
 
-	for (SqlFiles::iterator iter = m_sqlFiles.find(m_version + 1); iter != m_sqlFiles.end(); ++iter) {
+	for (auto iter = m_sqlFiles.find(m_fileVersion + 1); iter != std::end(m_sqlFiles); ++iter) {
 		runQueries(iter->second);
 	}
 
 	updateInfoTable(version);
 }
 
-void DatabaseUpdater::loadDatabaseInfo() {
+auto DatabaseUpdater::loadDatabaseInfo() -> void {
 	// vana_info table for checking database version
 	opt_int32_t version;
 	bool retrievedData = false;
@@ -83,14 +81,14 @@ void DatabaseUpdater::loadDatabaseInfo() {
 		if (m_update) {
 			createInfoTable();
 		}
-		m_version = 0;
+		m_fileVersion = 0;
 	}
 	else {
-		m_version = (!version.is_initialized() ? 0 : version.get());
+		m_fileVersion = version.getOrDefault(0);
 	}
 }
 
-void DatabaseUpdater::loadSqlFiles() {
+auto DatabaseUpdater::loadSqlFiles() -> void {
 	fs::path fullPath = fs::system_complete(fs::path("sql"));
 	if (!fs::exists(fullPath)) {
 #ifdef WIN32
@@ -104,18 +102,18 @@ void DatabaseUpdater::loadSqlFiles() {
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
 #ifdef WIN32
-		const string &filename = dir->path().filename();
-		const string &fileString = (fullPath / dir->path()).file_string();
+		const string_t &filename = dir->path().filename();
+		const string_t &fileString = (fullPath / dir->path()).file_string();
 #else
-		const string &filename = dir->path().filename().generic_string();
-		const string &fileString = dir->path().generic_string();
+		const string_t &filename = dir->path().filename().generic_string();
+		const string_t &fileString = dir->path().generic_string();
 #endif
-		if (filename.find(".sql") == string::npos) {
+		if (filename.find(".sql") == string_t::npos) {
 			// Not an SQL file
 			continue;
 		}
 
-		string version = filename;
+		string_t version = filename;
 		version.erase(version.find_first_of("_"));
 		size_t v = StringUtilities::lexical_cast<size_t>(version);
 
@@ -131,20 +129,20 @@ void DatabaseUpdater::loadSqlFiles() {
 }
 
 // Create the info table
-void DatabaseUpdater::createInfoTable() {
+auto DatabaseUpdater::createInfoTable() -> void {
 	soci::session &sql = Database::getCharDb();
 	sql.once << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
 	sql.once << "INSERT INTO vana_info VALUES (NULL)";
 }
 
 // Set version number in the info table
-void DatabaseUpdater::updateInfoTable(size_t version) {
+auto DatabaseUpdater::updateInfoTable(size_t version) -> void {
 	Database::getCharDb().once << "UPDATE vana_info SET version = :version", soci::use(version, "version");
 }
 
-void DatabaseUpdater::runQueries(const string &filename) {
+auto DatabaseUpdater::runQueries(const string_t &filename) -> void {
 	soci::session &sql = Database::getCharDb();
-	const std::vector<string> &queries = MySqlQueryParser::parseQueries(filename);
+	const vector_t<string_t> &queries = MySqlQueryParser::parseQueries(filename);
 
 	// Run them
 	for (const auto &query : queries) {
@@ -152,9 +150,9 @@ void DatabaseUpdater::runQueries(const string &filename) {
 			sql.once << query;
 		}
 		catch (soci::soci_error &e) {
-			std::cerr << "\nERROR: " << e.what() << std::endl;
+			std::cerr << "\nQUERY ERROR: " << e.what() << std::endl;
 			std::cerr << "File: " << filename << std::endl;
-			// TODO: Handle the error
+			ExitCodes::exit(ExitCodes::QueryError);
 		}
 	}
 }

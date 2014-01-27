@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,22 +24,22 @@ class Player;
 class PacketReader;
 
 namespace InventoryHandler {
-	void itemMove(Player *player, PacketReader &packet);
-	void dropItem(Player *player, PacketReader &packet, Item *item, int16_t slot, int8_t inv);
-	void moveItem(Player *player, PacketReader &packet);
-	void useItem(Player *player, PacketReader &packet);
-	void cancelItem(Player *player, PacketReader &packet);
-	void useSkillbook(Player *player, PacketReader &packet);
-	void useChair(Player *player, PacketReader &packet);
-	void useItemEffect(Player *player, PacketReader &packet);
-	void handleChair(Player *player, PacketReader &packet);
-	void useSummonBag(Player *player, PacketReader &packet);
-	void useReturnScroll(Player *player, PacketReader &packet);
-	void useScroll(Player *player, PacketReader &packet);
-	void useCashItem(Player *player, PacketReader &packet);
-	void handleRockFunctions(Player *player, PacketReader &packet);
-	bool handleRockTeleport(Player *player, int32_t itemId, PacketReader &packet);
-	void handleHammerTime(Player *player);
-	void handleRewardItem(Player *player, PacketReader &packet);
-	void handleScriptItem(Player *player, PacketReader &packet);
+	auto itemMove(Player *player, PacketReader &packet) -> void;
+	auto dropItem(Player *player, PacketReader &packet, Item *item, int16_t slot, int8_t inv) -> void;
+	auto moveItem(Player *player, PacketReader &packet) -> void;
+	auto useItem(Player *player, PacketReader &packet) -> void;
+	auto cancelItem(Player *player, PacketReader &packet) -> void;
+	auto useSkillbook(Player *player, PacketReader &packet) -> void;
+	auto useChair(Player *player, PacketReader &packet) -> void;
+	auto useItemEffect(Player *player, PacketReader &packet) -> void;
+	auto handleChair(Player *player, PacketReader &packet) -> void;
+	auto useSummonBag(Player *player, PacketReader &packet) -> void;
+	auto useReturnScroll(Player *player, PacketReader &packet) -> void;
+	auto useScroll(Player *player, PacketReader &packet) -> void;
+	auto useCashItem(Player *player, PacketReader &packet) -> void;
+	auto handleRockFunctions(Player *player, PacketReader &packet) -> void;
+	auto handleRockTeleport(Player *player, int32_t itemId, PacketReader &packet) -> bool;
+	auto handleHammerTime(Player *player) -> void;
+	auto handleRewardItem(Player *player, PacketReader &packet) -> void;
+	auto handleScriptItem(Player *player, PacketReader &packet) -> void;
 }
