@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Party.h"
-#include "ChannelServer.h"
-#include "GameConstants.h"
-#include "Instance.h"
-#include "InstanceMessageConstants.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "PartyPacket.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PlayerObjects.h"
-#include "PlayerPacket.h"
-#include "WorldServerConnectPacket.h"
+#include "Party.hpp"
+#include "ChannelServer.hpp"
+#include "GameConstants.hpp"
+#include "Instance.hpp"
+#include "InstanceMessageConstants.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "PartyPacket.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PlayerObjects.hpp"
+#include "PlayerPacket.hpp"
+#include "WorldServerConnectPacket.hpp"
 
 Party::Party(int32_t partyId) :
 	m_partyId(partyId)

@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LuaInstance.h"
-#include "Instance.h"
-#include "Instances.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
+#include "LuaInstance.hpp"
+#include "Instance.hpp"
+#include "Instances.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
 
 LuaInstance::LuaInstance(const string_t &name, int32_t playerId) :
 	LuaScriptable("scripts/instances/" + name + ".lua", playerId)

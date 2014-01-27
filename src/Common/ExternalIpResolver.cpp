@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include "ExternalIpResolver.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
+#include "ExternalIpResolver.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
 #include <stdexcept>
 
 ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps) :

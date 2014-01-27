@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Instance.h"
-#include "ChannelServer.h"
-#include "Instances.h"
-#include "LuaInstance.h"
-#include "MapPacket.h"
-#include "Map.h"
-#include "Maps.h"
-#include "Party.h"
-#include "Player.h"
-#include "Reactor.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
-#include "TimerContainer.h"
-#include "TimeUtilities.h"
+#include "Instance.hpp"
+#include "ChannelServer.hpp"
+#include "Instances.hpp"
+#include "LuaInstance.hpp"
+#include "MapPacket.hpp"
+#include "Map.hpp"
+#include "Maps.hpp"
+#include "Party.hpp"
+#include "Player.hpp"
+#include "Reactor.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
+#include "TimerContainer.hpp"
+#include "TimeUtilities.hpp"
 #include <functional>
 #include <sstream>
 #include <utility>

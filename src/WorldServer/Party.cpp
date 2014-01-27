@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Party.h"
-#include "GameConstants.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "SyncPacket.h"
+#include "Party.hpp"
+#include "GameConstants.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "SyncPacket.hpp"
 
 Party::Party(int32_t id, int32_t leaderId) :
 	m_id(id),

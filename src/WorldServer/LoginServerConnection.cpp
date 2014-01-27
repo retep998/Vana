@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnection.h"
-#include "LoginServerConnectHandler.h"
-#include "InterHeader.h"
-#include "PacketReader.h"
-#include "SyncHandler.h"
-#include "VanaConstants.h"
-#include "WorldServer.h"
-#include "WorldServerAcceptHandler.h"
+#include "LoginServerConnection.hpp"
+#include "LoginServerConnectHandler.hpp"
+#include "InterHeader.hpp"
+#include "PacketReader.hpp"
+#include "SyncHandler.hpp"
+#include "VanaConstants.hpp"
+#include "WorldServer.hpp"
+#include "WorldServerAcceptHandler.hpp"
 #include <iostream>
 
 LoginServerConnection::LoginServerConnection()

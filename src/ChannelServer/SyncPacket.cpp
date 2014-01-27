@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "SyncPacket.h"
-#include "ChannelServer.h"
-#include "Configuration.h"
-#include "InterHeader.h"
-#include "InterHelper.h"
-#include "PacketCreator.h"
-#include "Party.h"
-#include "Player.h"
-#include "Session.h"
+#include "SyncPacket.hpp"
+#include "ChannelServer.hpp"
+#include "Configuration.hpp"
+#include "InterHeader.hpp"
+#include "InterHelper.hpp"
+#include "PacketCreator.hpp"
+#include "Party.hpp"
+#include "Player.hpp"
+#include "Session.hpp"
 
 auto SyncPacket::ConfigPacket::scrollingHeader(const string_t &message) -> void {
 	PacketCreator sendPacket;

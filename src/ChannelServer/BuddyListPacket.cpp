@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "BuddyListPacket.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "PlayerBuddyList.h"
-#include "SmsgHeader.h"
+#include "BuddyListPacket.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "PlayerBuddyList.hpp"
+#include "SmsgHeader.hpp"
 
 auto BuddyListPacket::error(Player *player, uint8_t error) -> void {
 	PacketCreator packet;

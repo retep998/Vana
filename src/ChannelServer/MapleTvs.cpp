@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapleTvs.h"
-#include "Map.h"
-#include "Player.h"
-#include "PlayerPacketHelper.h"
-#include "SmsgHeader.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
+#include "MapleTvs.hpp"
+#include "Map.hpp"
+#include "Player.hpp"
+#include "PlayerPacketHelper.hpp"
+#include "SmsgHeader.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
 #include <functional>
 
 auto MapleTvs::addMap(Map *map) -> void {

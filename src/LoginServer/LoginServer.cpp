@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServer.h"
-#include "Configuration.h"
-#include "ConnectionManager.h"
-#include "InitializeCommon.h"
-#include "InitializeLogin.h"
-#include "LoginServerAcceptPacket.h"
-#include "MapleVersion.h"
-#include "RankingCalculator.h"
-#include "VanaConstants.h"
-#include "World.h"
-#include "Worlds.h"
+#include "LoginServer.hpp"
+#include "Configuration.hpp"
+#include "ConnectionManager.hpp"
+#include "InitializeCommon.hpp"
+#include "InitializeLogin.hpp"
+#include "LoginServerAcceptPacket.hpp"
+#include "MapleVersion.hpp"
+#include "RankingCalculator.hpp"
+#include "VanaConstants.hpp"
+#include "World.hpp"
+#include "Worlds.hpp"
 #include <sstream>
 #include <iostream>
 

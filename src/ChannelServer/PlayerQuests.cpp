@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerQuests.h"
-#include "ChannelServer.h"
-#include "Database.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "QuestDataProvider.h"
-#include "QuestsPacket.h"
-#include "Randomizer.h"
-#include "TimeUtilities.h"
+#include "PlayerQuests.hpp"
+#include "ChannelServer.hpp"
+#include "Database.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "QuestDataProvider.hpp"
+#include "QuestsPacket.hpp"
+#include "Randomizer.hpp"
+#include "TimeUtilities.hpp"
 #include <array>
 
 PlayerQuests::PlayerQuests(Player *player) :

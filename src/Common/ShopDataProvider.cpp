@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ShopDataProvider.h"
-#include "Database.h"
-#include "GameLogicUtilities.h"
-#include "InitializeCommon.h"
-#include "ItemDataProvider.h"
-#include "PacketCreator.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "ShopDataProvider.hpp"
+#include "Database.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InitializeCommon.hpp"
+#include "ItemDataProvider.hpp"
+#include "PacketCreator.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 #include <iomanip>
 #include <iostream>
 

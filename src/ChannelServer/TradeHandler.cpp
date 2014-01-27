@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "TradeHandler.h"
-#include "GameLogicUtilities.h"
-#include "ItemDataProvider.h"
-#include "MapleVersion.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PacketReader.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
-#include "TimerThread.h"
-#include "Trade.h"
-#include "Trades.h"
-#include "TradesPacket.h"
+#include "TradeHandler.hpp"
+#include "GameLogicUtilities.hpp"
+#include "ItemDataProvider.hpp"
+#include "MapleVersion.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PacketReader.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
+#include "TimerThread.hpp"
+#include "Trade.hpp"
+#include "Trades.hpp"
+#include "TradesPacket.hpp"
 #include <functional>
 #include <string>
 

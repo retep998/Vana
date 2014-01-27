@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerMounts.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "PacketCreator.h"
-#include "Player.h"
+#include "PlayerMounts.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
 
 PlayerMounts::PlayerMounts(Player *p) :
 	m_player(p)

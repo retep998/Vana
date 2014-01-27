@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InitializeLogin.h"
-#include "EquipDataProvider.h"
-#include "CurseDataProvider.h"
-#include "ValidCharDataProvider.h"
+#include "InitializeLogin.hpp"
+#include "EquipDataProvider.hpp"
+#include "CurseDataProvider.hpp"
+#include "ValidCharDataProvider.hpp"
 
 auto Initializing::loadData() -> void {
 	EquipDataProvider::getInstance().loadData();

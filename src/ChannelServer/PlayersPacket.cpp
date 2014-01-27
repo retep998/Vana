@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayersPacket.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Pet.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "PlayersPacket.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Pet.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 
 auto PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) -> void {
 	if (player->isUsingGmHide()) {

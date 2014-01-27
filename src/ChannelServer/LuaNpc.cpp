@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LuaNpc.h"
-#include "Npc.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "Quests.h"
-#include "ScriptDataProvider.h"
-#include "StoragePacket.h"
+#include "LuaNpc.hpp"
+#include "Npc.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "Quests.hpp"
+#include "ScriptDataProvider.hpp"
+#include "StoragePacket.hpp"
 #include <vector>
 
 LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :

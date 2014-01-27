@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Trade.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "InventoryPacket.h"
-#include "ItemDataProvider.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "TradeHandler.h"
-#include "Trades.h"
+#include "Trade.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "InventoryPacket.hpp"
+#include "ItemDataProvider.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "TradeHandler.hpp"
+#include "Trades.hpp"
 
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
 	m_id(id)

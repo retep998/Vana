@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "StoragePacket.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "PlayerPacketHelper.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "StoragePacket.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "PlayerPacketHelper.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 
 auto StoragePacket::showStorage(Player *player, int32_t npcId) -> void {
 	PacketCreator packet;

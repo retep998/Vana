@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServer.h"
-#include "ConnectionManager.h"
-#include "InitializeCommon.h"
-#include "InitializeWorld.h"
-#include "PacketCreator.h"
-#include "StringUtilities.h"
-#include "SyncPacket.h"
-#include "VanaConstants.h"
-#include "WorldServerAcceptPacket.h"
+#include "WorldServer.hpp"
+#include "ConnectionManager.hpp"
+#include "InitializeCommon.hpp"
+#include "InitializeWorld.hpp"
+#include "PacketCreator.hpp"
+#include "StringUtilities.hpp"
+#include "SyncPacket.hpp"
+#include "VanaConstants.hpp"
+#include "WorldServerAcceptPacket.hpp"
 
 WorldServer::WorldServer() :
 	m_loginIp(0)

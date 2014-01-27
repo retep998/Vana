@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Mist.h"
-#include "Maps.h"
-#include "Mob.h"
-#include "Player.h"
-#include "SkillDataProvider.h"
+#include "Mist.hpp"
+#include "Maps.hpp"
+#include "Mob.hpp"
+#include "Player.hpp"
+#include "SkillDataProvider.hpp"
 
 Mist::Mist(int32_t mapId, Player *owner, int32_t time, const Rect &area, int32_t skillId, uint8_t level, bool isPoison) :
 	m_ownerMap(mapId),

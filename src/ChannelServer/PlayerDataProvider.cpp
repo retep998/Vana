@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerDataProvider.h"
-#include "ChannelServer.h"
-#include "Connectable.h"
-#include "Database.h"
-#include "InterHelper.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Party.h"
-#include "Player.h"
-#include "PlayerPacket.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "SyncPacket.h"
+#include "PlayerDataProvider.hpp"
+#include "ChannelServer.hpp"
+#include "Connectable.hpp"
+#include "Database.hpp"
+#include "InterHelper.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Party.hpp"
+#include "Player.hpp"
+#include "PlayerPacket.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "SyncPacket.hpp"
 #include <algorithm>
 #include <cstring>
 

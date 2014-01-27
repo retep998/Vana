@@ -1,5 +1,5 @@
 file(GLOB COMMON_SRC *.cpp)
-file(GLOB COMMON_HEADERS *.h)
+file(GLOB COMMON_HEADERS *.hpp)
 source_group("Common Sources" FILES ${COMMON_SRC})
 source_group("Common Headers" FILES ${COMMON_HEADERS})
 

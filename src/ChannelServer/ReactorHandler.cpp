@@ -15,22 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ReactorHandler.h"
-#include "Drop.h"
-#include "FileUtilities.h"
-#include "GameLogicUtilities.h"
-#include "LuaReactor.h"
-#include "Maps.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "Pos.h"
-#include "Reactor.h"
-#include "ReactorDataProvider.h"
-#include "ReactorPacket.h"
-#include "ScriptDataProvider.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
-#include "TimerThread.h"
+#include "ReactorHandler.hpp"
+#include "Drop.hpp"
+#include "FileUtilities.hpp"
+#include "GameLogicUtilities.hpp"
+#include "LuaReactor.hpp"
+#include "Maps.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "Pos.hpp"
+#include "Reactor.hpp"
+#include "ReactorDataProvider.hpp"
+#include "ReactorPacket.hpp"
+#include "ScriptDataProvider.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
+#include "TimerThread.hpp"
 #include <functional>
 #include <iostream>
 #include <sstream>

@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerBuddyList.h"
-#include "BuddyListPacket.h"
-#include "ChannelServer.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "MiscUtilities.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "StringUtilities.h"
-#include "SyncPacket.h"
+#include "PlayerBuddyList.hpp"
+#include "BuddyListPacket.hpp"
+#include "ChannelServer.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "MiscUtilities.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "StringUtilities.hpp"
+#include "SyncPacket.hpp"
 #include <algorithm>
 
 PlayerBuddyList::PlayerBuddyList(Player *player) :

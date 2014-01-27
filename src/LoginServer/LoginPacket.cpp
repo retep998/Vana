@@ -15,18 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginPacket.h"
-#include "Channel.h"
-#include "Characters.h"
-#include "ClientIp.h"
-#include "LoginPacketHelper.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "PlayerStatus.h"
-#include "Session.h"
-#include "SmsgHeader.h"
-#include "World.h"
-#include "Worlds.h"
+#include "LoginPacket.hpp"
+#include "Channel.hpp"
+#include "Characters.hpp"
+#include "ClientIp.hpp"
+#include "LoginPacketHelper.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "PlayerStatus.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
+#include "World.hpp"
+#include "Worlds.hpp"
 
 auto LoginPacket::loginError(Player *player, int16_t errorId) -> void {
 	PacketCreator packet;

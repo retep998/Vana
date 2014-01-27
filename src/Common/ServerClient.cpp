@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ServerClient.h"
-#include "AbstractConnection.h"
-#include "ExitCodes.h"
-#include "MapleVersion.h"
-#include "PacketReader.h"
+#include "ServerClient.hpp"
+#include "AbstractConnection.hpp"
+#include "ExitCodes.hpp"
+#include "MapleVersion.hpp"
+#include "PacketReader.hpp"
 #include <cstdio>
 #include <iostream>
 #include <stdexcept>

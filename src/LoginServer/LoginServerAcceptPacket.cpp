@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptPacket.h"
-#include "Configuration.h"
-#include "InterHeader.h"
-#include "LoginServerAcceptConnection.h"
-#include "PacketCreator.h"
-#include "Session.h"
-#include "World.h"
-#include "Worlds.h"
+#include "LoginServerAcceptPacket.hpp"
+#include "Configuration.hpp"
+#include "InterHeader.hpp"
+#include "LoginServerAcceptConnection.hpp"
+#include "PacketCreator.hpp"
+#include "Session.hpp"
+#include "World.hpp"
+#include "Worlds.hpp"
 
 auto LoginServerAcceptPacket::connect(World *world) -> void {
 	PacketCreator packet;

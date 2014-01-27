@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "SyncPacket.h"
-#include "InterHeader.h"
-#include "InterHelper.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Session.h"
-#include "World.h"
+#include "SyncPacket.hpp"
+#include "InterHeader.hpp"
+#include "InterHelper.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Session.hpp"
+#include "World.hpp"
 
 auto SyncPacket::PlayerPacket::characterCreated(World *world, int32_t playerId) -> void {
 	PacketCreator packet;

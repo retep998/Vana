@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapDataProvider.h"
-#include "Database.h"
-#include "GameLogicUtilities.h"
-#include "InitializeCommon.h"
-#include "Map.h"
-#include "MapleTvs.h"
-#include "MapObjects.h"
-#include "StringUtilities.h"
+#include "MapDataProvider.hpp"
+#include "Database.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InitializeCommon.hpp"
+#include "Map.hpp"
+#include "MapleTvs.hpp"
+#include "MapObjects.hpp"
+#include "StringUtilities.hpp"
 #include <utility>
 
 auto MapDataProvider::getMap(int32_t mapId) -> Map * {

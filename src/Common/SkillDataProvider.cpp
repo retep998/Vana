@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "SkillDataProvider.h"
-#include "Database.h"
-#include "InitializeCommon.h"
-#include "SkillConstants.h"
-#include "StringUtilities.h"
+#include "SkillDataProvider.hpp"
+#include "Database.hpp"
+#include "InitializeCommon.hpp"
+#include "SkillConstants.hpp"
+#include "StringUtilities.hpp"
 #include <iomanip>
 #include <iostream>
 

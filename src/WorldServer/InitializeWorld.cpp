@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InitializeWorld.h"
-#include "PlayerDataProvider.h"
+#include "InitializeWorld.hpp"
+#include "PlayerDataProvider.hpp"
 
 auto Initializing::loadData() -> void {
 	// Used to load things on world startup

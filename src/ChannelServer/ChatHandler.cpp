@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ChatHandler.h"
-#include "ChatHandlerFunctions.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerPacket.h"
-#include "PlayersPacket.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "WorldServerConnectPacket.h"
+#include "ChatHandler.hpp"
+#include "ChatHandlerFunctions.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerPacket.hpp"
+#include "PlayersPacket.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "WorldServerConnectPacket.hpp"
 #include <algorithm>
 
 auto ChatHandler::initializeCommands() -> void {

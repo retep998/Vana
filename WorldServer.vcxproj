@@ -55,10 +55,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -85,10 +85,10 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -126,22 +126,22 @@
     <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\WorldServer\Channel.h" />
-    <ClInclude Include="src\WorldServer\InitializeWorld.h" />
-    <ClInclude Include="src\WorldServer\Party.h" />
-    <ClInclude Include="src\WorldServer\Player.h" />
-    <ClInclude Include="src\WorldServer\PlayerDataProvider.h" />
-    <ClInclude Include="src\WorldServer\PrecompiledHeader.h" />
-    <ClInclude Include="src\WorldServer\Channels.h" />
-    <ClInclude Include="src\WorldServer\SyncHandler.h" />
-    <ClInclude Include="src\WorldServer\SyncPacket.h" />
-    <ClInclude Include="src\WorldServer\WorldServer.h" />
-    <ClInclude Include="src\WorldServer\LoginServerConnection.h" />
-    <ClInclude Include="src\WorldServer\LoginServerConnectPacket.h" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.h" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.h" />
-    <ClInclude Include="src\WorldServer\LoginServerConnectHandler.h" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.h" />
+    <ClInclude Include="src\WorldServer\Channel.hpp" />
+    <ClInclude Include="src\WorldServer\InitializeWorld.hpp" />
+    <ClInclude Include="src\WorldServer\Party.hpp" />
+    <ClInclude Include="src\WorldServer\Player.hpp" />
+    <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp" />
+    <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\WorldServer\Channels.hpp" />
+    <ClInclude Include="src\WorldServer\SyncHandler.hpp" />
+    <ClInclude Include="src\WorldServer\SyncPacket.hpp" />
+    <ClInclude Include="src\WorldServer\WorldServer.hpp" />
+    <ClInclude Include="src\WorldServer\LoginServerConnection.hpp" />
+    <ClInclude Include="src\WorldServer\LoginServerConnectPacket.hpp" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp" />
+    <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp" />
+    <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

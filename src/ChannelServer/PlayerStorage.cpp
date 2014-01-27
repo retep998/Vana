@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerStorage.h"
-#include "ChannelServer.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "MiscUtilities.h"
-#include "Player.h"
-#include "StoragePacket.h"
+#include "PlayerStorage.hpp"
+#include "ChannelServer.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "MiscUtilities.hpp"
+#include "Player.hpp"
+#include "StoragePacket.hpp"
 #include <algorithm>
 
 PlayerStorage::PlayerStorage(Player *player) :

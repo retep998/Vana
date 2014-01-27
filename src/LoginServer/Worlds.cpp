@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Worlds.h"
-#include "Channel.h"
-#include "Characters.h"
-#include "LoginPacket.h"
-#include "LoginServer.h"
-#include "LoginServerAcceptConnection.h"
-#include "LoginServerAcceptPacket.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerStatus.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "World.h"
+#include "Worlds.hpp"
+#include "Channel.hpp"
+#include "Characters.hpp"
+#include "LoginPacket.hpp"
+#include "LoginServer.hpp"
+#include "LoginServerAcceptConnection.hpp"
+#include "LoginServerAcceptPacket.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerStatus.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "World.hpp"
 #include <iostream>
 
 auto Worlds::showWorld(Player *player) -> void {

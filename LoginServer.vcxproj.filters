@@ -63,50 +63,50 @@
     <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LoginServer\Channel.h">
+    <ClInclude Include="src\LoginServer\Channel.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\Worlds.h">
+    <ClInclude Include="src\LoginServer\Worlds.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\Characters.h">
+    <ClInclude Include="src\LoginServer\Characters.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\Login.h">
+    <ClInclude Include="src\LoginServer\Login.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\Player.h">
+    <ClInclude Include="src\LoginServer\Player.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\PlayerStatus.h">
+    <ClInclude Include="src\LoginServer\PlayerStatus.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\RankingCalculator.h">
+    <ClInclude Include="src\LoginServer\RankingCalculator.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\World.h">
+    <ClInclude Include="src\LoginServer\World.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginPacketHelper.h">
+    <ClInclude Include="src\LoginServer\LoginPacketHelper.hpp">
       <Filter>Packets\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginPacket.h">
+    <ClInclude Include="src\LoginServer\LoginPacket.hpp">
       <Filter>Packets</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h">
+    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h">
+    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h">
+    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.hpp">
       <Filter>Inter-Server\Channel/World</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\SyncPacket.h">
+    <ClInclude Include="src\LoginServer\SyncPacket.hpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
-    <ClInclude Include="src\LoginServer\PrecompiledHeader.h" />
-    <ClInclude Include="src\LoginServer\InitializeLogin.h" />
-    <ClInclude Include="src\LoginServer\LoginServer.h" />
+    <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />
+    <ClInclude Include="src\LoginServer\LoginServer.hpp" />
   </ItemGroup>
 </Project>

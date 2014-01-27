@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ChatHandlerFunctions.h"
-#include "CustomFunctions.h"
-#include "InfoFunctions.h"
-#include "JobConstants.h"
-#include "MapFunctions.h"
-#include "Maps.h"
-#include "ManagementFunctions.h"
-#include "MessageFunctions.h"
-#include "Player.h"
-#include "PlayerModFunctions.h"
-#include "PlayerPacket.h"
+#include "ChatHandlerFunctions.hpp"
+#include "CustomFunctions.hpp"
+#include "InfoFunctions.hpp"
+#include "JobConstants.hpp"
+#include "MapFunctions.hpp"
+#include "Maps.hpp"
+#include "ManagementFunctions.hpp"
+#include "MessageFunctions.hpp"
+#include "Player.hpp"
+#include "PlayerModFunctions.hpp"
+#include "PlayerPacket.hpp"
 
 CommandListType ChatHandlerFunctions::CommandList;
 

@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include "ExternalIp.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
+#include "ExternalIp.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
 #include <stdexcept>
 
 ExternalIp::ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask) :

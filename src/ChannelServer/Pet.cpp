@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Pet.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "ItemDataProvider.h"
-#include "PetsPacket.h"
-#include "Player.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
+#include "Pet.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "ItemDataProvider.hpp"
+#include "PetsPacket.hpp"
+#include "Player.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
 #include <functional>
 
 Pet::Pet(Player *player, Item *item) :

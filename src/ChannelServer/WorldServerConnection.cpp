@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerConnection.h"
-#include "ChannelServer.h"
-#include "InterHeader.h"
-#include "PacketReader.h"
-#include "PartyHandler.h"
-#include "SyncHandler.h"
-#include "VanaConstants.h"
-#include "WorldServerConnectHandler.h"
-#include "WorldServerConnectPacket.h"
+#include "WorldServerConnection.hpp"
+#include "ChannelServer.hpp"
+#include "InterHeader.hpp"
+#include "PacketReader.hpp"
+#include "PartyHandler.hpp"
+#include "SyncHandler.hpp"
+#include "VanaConstants.hpp"
+#include "WorldServerConnectHandler.hpp"
+#include "WorldServerConnectPacket.hpp"
 #include <iostream>
 
 WorldServerConnection::WorldServerConnection()

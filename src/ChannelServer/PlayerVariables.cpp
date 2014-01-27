@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerVariables.h"
-#include "Database.h"
-#include "Player.h"
+#include "PlayerVariables.hpp"
+#include "Database.hpp"
+#include "Player.hpp"
 
 PlayerVariables::PlayerVariables(Player *p) :
 	m_player(p)

@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Channel.h"
-#include "PacketCreator.h"
-#include "WorldServerAcceptConnection.h"
+#include "Channel.hpp"
+#include "PacketCreator.hpp"
+#include "WorldServerAcceptConnection.hpp"
 
 auto Channel::send(const PacketCreator &packet) -> void {
 	m_connection->getSession()->send(packet);

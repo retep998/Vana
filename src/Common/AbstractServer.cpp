@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AbstractServer.h"
-#include "ComboLoggers.h"
-#include "ConfigFile.h"
-#include "Configuration.h"
-#include "ConnectionManager.h"
-#include "ConsoleLogger.h"
-#include "ExitCodes.h"
-#include "FileLogger.h"
-#include "Logger.h"
-#include "MiscUtilities.h"
-#include "SqlLogger.h"
-#include "TimerThread.h"
-#include "TimeUtilities.h"
+#include "AbstractServer.hpp"
+#include "ComboLoggers.hpp"
+#include "ConfigFile.hpp"
+#include "Configuration.hpp"
+#include "ConnectionManager.hpp"
+#include "ConsoleLogger.hpp"
+#include "ExitCodes.hpp"
+#include "FileLogger.hpp"
+#include "Logger.hpp"
+#include "MiscUtilities.hpp"
+#include "SqlLogger.hpp"
+#include "TimerThread.hpp"
+#include "TimeUtilities.hpp"
 #include <chrono>
 #include <ctime>
 #include <iomanip>

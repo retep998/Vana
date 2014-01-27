@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Database.h"
-#include "ConfigFile.h"
-#include "Configuration.h"
+#include "Database.hpp"
+#include "ConfigFile.hpp"
+#include "Configuration.hpp"
 #include <soci-mysql.h>
 
 thread_local soci::session * Database::m_chardb = nullptr;

@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerSkills.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "Randomizer.h"
-#include "SkillDataProvider.h"
-#include "Skills.h"
-#include "SkillsPacket.h"
+#include "PlayerSkills.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "Randomizer.hpp"
+#include "SkillDataProvider.hpp"
+#include "Skills.hpp"
+#include "SkillsPacket.hpp"
 
 auto PlayerSkills::load() -> void {
 	soci::session &sql = Database::getCharDb();

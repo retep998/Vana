@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ReactorDataProvider.h"
-#include "Database.h"
-#include "InitializeCommon.h"
-#include "StringUtilities.h"
+#include "ReactorDataProvider.hpp"
+#include "Database.hpp"
+#include "InitializeCommon.hpp"
+#include "StringUtilities.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>

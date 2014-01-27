@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Item.h"
-#include "EquipDataProvider.h"
-#include "GameLogicUtilities.h"
-#include "ItemConstants.h"
-#include "MiscUtilities.h"
-#include "SociExtensions.h"
+#include "Item.hpp"
+#include "EquipDataProvider.hpp"
+#include "GameLogicUtilities.hpp"
+#include "ItemConstants.hpp"
+#include "MiscUtilities.hpp"
+#include "SociExtensions.hpp"
 #include <soci.h>
 
 const string_t Item::Inventory = "inventory";
