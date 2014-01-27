@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,29 +22,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "WorldServer.h"
 
-void LoginServerConnectPacket::registerChannel(int32_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
+auto LoginServerConnectPacket::registerChannel(int32_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REGISTER_CHANNEL);
 	packet.add<int32_t>(channel);
 	packet.addClass<Ip>(channelIp);
 	packet.addClassVector<ExternalIp>(extIp);
 	packet.add<port_t>(port);
-	WorldServer::Instance()->sendPacketToLogin(packet);
+	WorldServer::getInstance().sendPacketToLogin(packet);
 }
 
-void LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t population) {
+auto LoginServerConnectPacket::updateChannelPop(int32_t channel, int32_t population) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_UPDATE_CHANNEL_POP);
 	packet.add<int32_t>(channel);
 	packet.add<int32_t>(population);
 
-	WorldServer::Instance()->sendPacketToLogin(packet);
+	WorldServer::getInstance().sendPacketToLogin(packet);
 }
 
-void LoginServerConnectPacket::removeChannel(int32_t channel) {
+auto LoginServerConnectPacket::removeChannel(int32_t channel) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REMOVE_CHANNEL);
 	packet.add<int32_t>(channel);
 
-	WorldServer::Instance()->sendPacketToLogin(packet);
+	WorldServer::getInstance().sendPacketToLogin(packet);
 }

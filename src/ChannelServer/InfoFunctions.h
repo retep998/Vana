@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace InfoFunctions {
-	bool help(Player *player, const string &args);
-	bool lookup(Player *player, const string &args);
-	bool pos(Player *player, const string &args);
-	bool online(Player *player, const string &args);
-	bool variable(Player *player, const string &args);
+	auto help(Player *player, const string_t &args) -> bool;
+	auto lookup(Player *player, const string_t &args) -> bool;
+	auto pos(Player *player, const string_t &args) -> bool;
+	auto online(Player *player, const string_t &args) -> bool;
+	auto variable(Player *player, const string_t &args) -> bool;
 }

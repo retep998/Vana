@@ -51,7 +51,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -73,7 +73,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -98,8 +98,8 @@
     <ClCompile Include="src\Common\Ip.cpp" />
     <ClCompile Include="src\Common\Item.cpp" />
     <ClCompile Include="src\Common\BlockCipherIv.cpp" />
+    <ClCompile Include="src\Common\Line.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
-    <ClCompile Include="src\Common\LogReplacements.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -116,6 +116,7 @@
     <ClCompile Include="src\Common\Quest.cpp" />
     <ClCompile Include="src\Common\QuestDataProvider.cpp" />
     <ClCompile Include="src\Common\ReactorDataProvider.cpp" />
+    <ClCompile Include="src\Common\Rect.cpp" />
     <ClCompile Include="src\Common\ScriptDataProvider.cpp" />
     <ClCompile Include="src\Common\Session.cpp" />
     <ClCompile Include="src\Common\ShopDataProvider.cpp" />
@@ -151,6 +152,8 @@
   <ItemGroup>
     <ClInclude Include="src\Common\AbstractSession.h" />
     <ClInclude Include="src\Common\BitUtilities.h" />
+    <ClInclude Include="src\Common\CaseInsensitiveEquals.h" />
+    <ClInclude Include="src\Common\CaseInsensitiveHash.h" />
     <ClInclude Include="src\Common\ClientIp.h" />
     <ClInclude Include="src\Common\ComboLoggers.h" />
     <ClInclude Include="src\Common\Configuration.h" />
@@ -171,15 +174,14 @@
     <ClInclude Include="src\Common\ItemDataObjects.h" />
     <ClInclude Include="src\Common\BlockCipherIv.h" />
     <ClInclude Include="src\Common\JobConstants.h" />
+    <ClInclude Include="src\Common\Line.h" />
     <ClInclude Include="src\Common\Logger.h" />
-    <ClInclude Include="src\Common\LogReplacements.h" />
     <ClInclude Include="src\Common\make_unique.hpp" />
     <ClInclude Include="src\Common\MapConstants.h" />
     <ClInclude Include="src\Common\MapleVersion.h" />
     <ClInclude Include="src\Common\MapObjects.h" />
     <ClInclude Include="src\Common\MobConstants.h" />
     <ClInclude Include="src\Common\MobDataObjects.h" />
-    <ClInclude Include="src\Common\noncopyable.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.h" />
     <ClInclude Include="src\Common\optional.hpp" />
     <ClInclude Include="src\Common\PlayerObjects.h" />
@@ -196,6 +198,7 @@
     <ClInclude Include="src\Common\TauswortheGenerator.h" />
     <ClInclude Include="src\Common\Timer.h" />
     <ClInclude Include="src\Common\TimerContainer.h" />
+    <ClInclude Include="src\Common\TimerContainerHolder.h" />
     <ClInclude Include="src\Common\TimerId.h" />
     <ClInclude Include="src\Common\TimerThread.h" />
     <ClInclude Include="src\Common\TimerTypes.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="src\Common\GameObjects.h" />
     <ClInclude Include="src\Common\Pos.h" />
     <ClInclude Include="src\Common\VanaConstants.h" />
+    <ClInclude Include="src\Common\VanaMain.h" />
     <ClInclude Include="src\Common\Variables.h" />
     <ClInclude Include="src\Common\DatabaseUpdater.h" />
     <ClInclude Include="src\Common\WidePos.h" />

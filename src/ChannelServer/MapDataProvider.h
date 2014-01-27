@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Pos.h"
 #include "Rect.h"
 #include "Types.h"
@@ -27,110 +26,80 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::shared_ptr;
-using std::string;
-using std::unordered_map;
-using std::vector;
-
 class Map;
 class Player;
 
 struct TimeMob {
-	TimeMob() : startHour(0), endHour(0), id(0) { }
-	int8_t startHour;
-	int8_t endHour;
-	int32_t id;
-	string message;
+	int8_t startHour = 0;
+	int8_t endHour = 0;
+	int32_t id = 0;
+	string_t message;
 };
-typedef shared_ptr<TimeMob> TimeMobPtr;
 
 struct FieldLimit {
-	FieldLimit();
-	bool jump;
-	bool movementSkills;
-	bool summoningBag;
-	bool mysticDoor;
-	bool channelSwitching;
-	bool regularExpLoss;
-	bool vipRock;
-	bool minigames;
-	bool mount;
-	bool potionUse;
-	bool dropDown;
-	bool chalkboard;
+	bool jump = false;
+	bool movementSkills = false;
+	bool summoningBag = false;
+	bool mysticDoor = false;
+	bool channelSwitching = false;
+	bool regularExpLoss = false;
+	bool vipRock = false;
+	bool minigames = false;
+	bool mount = false;
+	bool potionUse = false;
+	bool dropDown = false;
+	bool chalkboard = false;
 };
 
 struct MapInfo {
-	MapInfo() :
-		clock(false),
-		town(false),
-		swim(false),
-		fly(false),
-		everlast(false),
-		noLeaderPass(false),
-		shop(false),
-		scrollDisable(false),
-		shuffleReactors(false),
-		forceMapEquip(false),
-		damagePerSecond(0)
-		{ }
-	bool clock;
-	bool town;
-	bool swim;
-	bool fly;
-	bool everlast;
-	bool noLeaderPass;
-	bool shop;
-	bool scrollDisable;
-	bool shuffleReactors;
-	bool forceMapEquip;
-	int8_t continent;
-	int8_t regenRate;
-	int8_t shipKind;
-	uint8_t minLevel;
-	uint8_t decHp;
-	uint16_t dps;
-	int32_t rm;
-	int32_t forcedReturn;
-	int32_t link;
-	int32_t timeLimit;
-	int32_t protectItem;
-	int32_t damagePerSecond;
-	double spawnRate;
-	double traction;
-	string defaultMusic;
-	string shuffleName;
-	string message;
+	bool clock = false;
+	bool town = false;
+	bool swim = false;
+	bool fly = false;
+	bool everlast = false;
+	bool noLeaderPass = false;
+	bool shop = false;
+	bool scrollDisable = false;
+	bool shuffleReactors = false;
+	bool forceMapEquip = false;
+	int8_t continent = -1;
+	int8_t regenRate = 0;
+	int8_t shipKind = 0;
+	uint8_t minLevel = 0;
+	uint8_t decHp = 0;
+	uint16_t dps = 0;
+	int32_t rm = 0;
+	int32_t forcedReturn = 0;
+	int32_t link = 0;
+	int32_t timeLimit = 0;
+	int32_t protectItem = 0;
+	int32_t damagePerSecond = 0;
+	double spawnRate = 0.;
+	double traction = 0.;
+	string_t defaultMusic;
+	string_t shuffleName;
+	string_t message;
 	Rect dimensions;
 	FieldLimit limitations;
 };
-typedef shared_ptr<MapInfo> MapInfoPtr;
 
-class MapDataProvider : boost::noncopyable {
+class MapDataProvider {
+	SINGLETON(MapDataProvider);
 public:
-	static MapDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new MapDataProvider();
-		return singleton;
-	}
-
-	void loadData();
-	Map * getMap(int32_t mapId);
-	void unloadMap(int32_t mapId);
-	int8_t getContinent(int32_t mapId);
+	auto loadData() -> void;
+	auto getMap(int32_t mapId) -> Map *;
+	auto unloadMap(int32_t mapId) -> void;
+	auto getContinent(int32_t mapId) -> int8_t;
 private:
-	MapDataProvider();
-	static MapDataProvider *singleton;
+	auto loadMapData(int32_t mapId, Map *&map) -> int32_t;
+	auto loadMapTimeMob(Map *map) -> void;
+	auto loadFootholds(Map *map, int32_t link) -> void;
+	auto loadMapLife(Map *map, int32_t link) -> void;
+	auto loadPortals(Map *map, int32_t link) -> void;
+	auto loadSeats(Map *map, int32_t link) -> void;
+	auto loadMap(int32_t mapId, Map *&map) -> void;
 
-	int32_t loadMapData(int32_t mapId, Map *&map);
-	void loadMapTimeMob(Map *map);
-	void loadFootholds(Map *map, int32_t link);
-	void loadMapLife(Map *map, int32_t link);
-	void loadPortals(Map *map, int32_t link);
-	void loadSeats(Map *map, int32_t link);
-	void loadMap(int32_t mapId, Map *&map);
-
-	unordered_map<int32_t, Map *> m_maps;
-	unordered_map<int8_t, int8_t> m_continents;
-	std::mutex m_loadMutex;
+	mutex_t m_loadMutex;
+	hash_map_t<int32_t, Map *> m_maps;
+	hash_map_t<int8_t, int8_t> m_continents;
 };

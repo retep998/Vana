@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,15 +35,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
-using std::string;
-
-void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
+auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 
 	Reactor *reactor = player->getMap()->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
-		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
+		ReactorData *data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
 		if (data == nullptr) {
 			// Not sure how this would happen, but whatever
 			return;
@@ -59,7 +57,7 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 				return;
 			}
 			else {
-				const string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				const string_t &filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
@@ -78,7 +76,7 @@ void ReactorHandler::hitReactor(Player *player, PacketReader &packet) {
 	}
 }
 
-void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
+auto ReactorHandler::touchReactor(Player *player, PacketReader &packet) -> void {
 	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
 	bool isTouching = packet.get<bool>();
 
@@ -92,25 +90,25 @@ void ReactorHandler::touchReactor(Player *player, PacketReader &packet) {
 }
 
 struct Reaction {
-	void operator()() {
+	auto operator()(const time_point_t &now) -> void {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		const string &filename = ScriptDataProvider::Instance()->getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+		const string_t &filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
-		return;
 	}
-	Reactor *reactor;
-	Drop *drop;
-	Player *player;
-	int8_t state;
+
+	Reactor *reactor = nullptr;
+	Drop *drop = nullptr;
+	Player *player = nullptr;
+	int8_t state = 0;
 };
 
-void ReactorHandler::checkDrop(Player *player, Drop *drop) {
+auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 	Reactor *reactor;
 	Map *map = Maps::getMap(drop->getMap());
 	for (size_t i = 0; i < map->getNumReactors(); ++i) {
 		reactor = map->getReactor(i);
-		ReactorData *data = ReactorDataProvider::Instance()->getReactorData(reactor->getReactorId(), true);
+		ReactorData *data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
 		if (data == nullptr) {
 			// Not sure how this would happen, but whatever
 			continue;
@@ -120,7 +118,7 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); ++j) {
 				reactorEvent = &(data->states[reactor->getState()][j]);
 				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
-					if (GameLogicUtilities::isInBox(reactor->getPos(), reactorEvent->dimensions, drop->getPos())) {
+					if (reactorEvent->dimensions.move(reactor->getPos()).contains(drop->getPos())) {
 						Reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;
@@ -137,7 +135,7 @@ void ReactorHandler::checkDrop(Player *player, Drop *drop) {
 	}
 }
 
-void ReactorHandler::checkLoot(Drop *drop) {
+auto ReactorHandler::checkLoot(Drop *drop) -> void {
 	Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
-	Timer::Thread::Instance()->getContainer()->removeTimer(id);
+	Timer::TimerThread::getInstance().getTimerContainer()->removeTimer(id);
 }

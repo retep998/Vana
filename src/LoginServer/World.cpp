@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,20 +20,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Randomizer.h"
 
-void World::runChannelFunction(function<void (Channel *)> func) {
+auto World::runChannelFunction(function_t<void (Channel *)> func) -> void {
 	for (const auto &kvp : m_channels) {
 		func(kvp.second.get());
 	}
 }
 
-uint16_t World::getRandomChannel() const {
+auto World::getRandomChannel() const -> uint16_t {
 	return Randomizer::rand<uint16_t>(getMaxChannels() - 1);
 }
 
-void World::send(const PacketCreator &packet) {
+auto World::send(const PacketCreator &packet) -> void {
 	m_connection->getSession()->send(packet);
 }
 
-Ip World::matchSubnet(const Ip &test) {
+auto World::matchSubnet(const Ip &test) -> Ip {
 	return m_connection->matchSubnet(test);
 }

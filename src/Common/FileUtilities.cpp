@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileUtilities.h"
 #include <sys/stat.h>
 
-bool FileUtilities::fileExists(const string &file) {
+auto FileUtilities::fileExists(const string_t &file) -> bool {
 	struct stat fileInfo;
 	return (!stat(file.c_str(), &fileInfo)) != 0;
 }

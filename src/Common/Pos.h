@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,22 +22,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include "Types.h"
 #include <cmath>
+#include <ostream>
 
 struct Pos : public IPacketSerializable {
 	Pos(int16_t x, int16_t y) : x(x), y(y) { }
-	Pos() : x(0), y(0) { }
-	int16_t x;
-	int16_t y;
-	int32_t operator-(const Pos &p) const {
+	Pos() = default;
+
+	auto operator-(const Pos &p) const -> int32_t {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	void write(PacketCreator &packet) const override {
+	auto write(PacketCreator &packet) const -> void override {
 		packet.add<int16_t>(x);
 		packet.add<int16_t>(y);
 	}
-	void read(PacketReader &packet) override {
+
+	auto read(PacketReader &packet) -> void override {
 		x = packet.get<int16_t>();
 		y = packet.get<int16_t>();
 	}
+
+	int16_t x = 0;
+	int16_t y = 0;
+	friend auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream &;
 };
+
+inline
+auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream & {
+	return out << "{" << pos.x << ", " << pos.y << "}";
+}

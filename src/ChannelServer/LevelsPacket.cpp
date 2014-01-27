@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat) {
+auto LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_NOTICE);
 	packet.add<int8_t>(3);
@@ -42,7 +42,7 @@ void LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat)
 	player->getSession()->send(packet);
 }
 
-void LevelsPacket::levelUp(Player *player) {
+auto LevelsPacket::levelUp(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());
@@ -50,7 +50,7 @@ void LevelsPacket::levelUp(Player *player) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void LevelsPacket::statOk(Player *player) {
+auto LevelsPacket::statOk(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_UPDATE);
 	packet.add<int16_t>(1);
@@ -58,7 +58,7 @@ void LevelsPacket::statOk(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void LevelsPacket::jobChange(Player *player) {
+auto LevelsPacket::jobChange(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILL_SHOW);
 	packet.add<int32_t>(player->getId());

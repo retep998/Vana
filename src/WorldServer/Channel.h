@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,32 +20,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ip.h"
 #include "ExternalIp.h"
 #include "ExternalIpResolver.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <vector>
-
-using std::vector;
 
 class PacketCreator;
 class WorldServerAcceptConnection;
 
-class Channel : public boost::noncopyable, public ExternalIpResolver {
+class Channel : public ExternalIpResolver {
+	NONCOPYABLE(Channel);
 public:
-	Channel();
-	void setId(uint16_t id) { m_id = id; }
-	void setPort(port_t port) { m_port = port; }
-	void setConnection(WorldServerAcceptConnection *connection) { m_connection = connection; }
-	void setPlayers(int32_t players) { m_players = players; }
+	Channel() = default;
+	auto setId(uint16_t id) -> void { m_id = id; }
+	auto setPort(port_t port) -> void { m_port = port; }
+	auto setConnection(WorldServerAcceptConnection *connection) -> void { m_connection = connection; }
+	auto setPlayers(int32_t players) -> void { m_players = players; }
 
-	int32_t increasePlayers() { return ++m_players; }
-	int32_t decreasePlayers() { return --m_players; }
-	uint16_t getId() const { return m_id; }
-	port_t getPort() const { return m_port; }
-	WorldServerAcceptConnection * getConnection() const { return m_connection; }
-	void send(const PacketCreator &packet);
+	auto increasePlayers() -> int32_t { return ++m_players; }
+	auto decreasePlayers() -> int32_t { return --m_players; }
+	auto getId() const -> uint16_t { return m_id; }
+	auto getPort() const -> port_t { return m_port; }
+	auto getConnection() const -> WorldServerAcceptConnection * { return m_connection; }
+	auto send(const PacketCreator &packet) -> void;
 private:
-	uint16_t m_id;
-	port_t m_port;
-	int32_t m_players;
-	WorldServerAcceptConnection *m_connection;
+	uint16_t m_id = 0;
+	port_t m_port = 0;
+	int32_t m_players = 0;
+	WorldServerAcceptConnection *m_connection = nullptr;
 };

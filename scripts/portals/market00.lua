@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Exiting the Free Market
 
 playPortalSe();
-setMap(getPlayerVariable("fm_origin", true), getPlayerVariable("fm_origin_portal"));
+map = getPlayerVariable("fm_origin");
+portal = getPlayerVariable("fm_origin_portal");
+if map == nil then
+	map = 100000100;
+	portal = "market00";
+end
+
+setMap(map, portal);
 deletePlayerVariable("fm_origin");
 deletePlayerVariable("fm_origin_portal");

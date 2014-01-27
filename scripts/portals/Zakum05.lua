@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,33 +21,34 @@ dofile("scripts/lua_functions/bossHelper.lua");
 
 zStatus = getPlayerVariable("zakum_quest_status", true);
 
-if zStatus == nil or zStatus < 3 or getItemAmount(4001017) < 1 then
-	showMessage("You may only enter this place after clearing level 3. You'll also need to have the Eye of Fire in possession.", env_redMessage);
-	return;
-end
-
-if not isZakumChannel() then
-	channels = getZakumChannels();
-	if #channels == 0 then
-		showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
-	else
-		showMessage("You can only enter the altar of Zakum on " .. getChannelString(channels) .. ".", env_redMessage);
+if not isGm() then
+	if zStatus == nil or zStatus < 3 or getItemAmount(4001017) < 1 then
+		showMessage("You may only enter this place after clearing level 3. You'll also need to have the Eye of Fire in possession.", env_redMessage);
+		return;
 	end
-	return;
+	if not isZakumChannel() then
+		channels = getZakumChannels();
+		if #channels == 0 then
+			showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
+		else
+			showMessage("You can only enter the altar of Zakum on " .. getChannelString(channels) .. ".", env_redMessage);
+		end
+		return;
+	end
+	if getReactorState(211042300, 2118002) == 1 then
+		showMessage("The battle against the boss has already begun, so you can't go in.", env_redMessage);
+		return;
+	end
 end
 
-if getReactorState(211042300, 2118002) == 1 then
-	showMessage("The battle against the boss has already begun, so you can't go in.", env_redMessage);
+x = getMaxZakumBattles();
+if not isGm() and x == 0 then
+	showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
 else
-	x = getMaxZakumBattles();
-	if x == 0 then
-		showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
+	if isGm() or getEntryCount("Zakum", x) < x then
+		playPortalSe();
+		setMap(211042400, "west00");
 	else
-		if getEntryCount("Zakum", x) < x then
-			playPortalSe();
-			setMap(211042400, "west00");
-		else
-			showMessage("You can only enter the altar of Zakum" .. x .. " " .. timeString(x) .. " per day.", env_redMessage);
-		end
+		showMessage("You can only enter the altar of Zakum" .. x .. " " .. timeString(x) .. " per day.", env_redMessage);
 	end
 end

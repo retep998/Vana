@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,16 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillDataProvider.h"
 
 Summon::Summon(int32_t id, int32_t summonId, uint8_t level) :
+	MovableLife(0, Pos(), 0),
 	m_id(id),
 	m_summonId(summonId),
-	m_level(level),
-	m_hp(0)
+	m_level(level)
 {
 	switch (summonId) {
 		case Skills::Ranger::Puppet:
 		case Skills::Sniper::Puppet:
 		case Skills::WindArcher::Puppet:
-			m_hp = SkillDataProvider::Instance()->getSkill(summonId, level)->x; // Get HP for puppet
+			m_hp = SkillDataProvider::getInstance().getSkill(summonId, level)->x;
 		case Skills::Outlaw::Octopus:
 		case Skills::Corsair::WrathOfTheOctopi:
 			m_type = Static;

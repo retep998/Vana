@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,24 +22,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class LuaInstance : public LuaScriptable {
+	NONCOPYABLE(LuaInstance);
+	NO_DEFAULT_CONSTRUCTOR(LuaInstance);
 public:
-	LuaInstance(const string &name, int32_t playerId);
+	LuaInstance(const string_t &name, int32_t playerId);
 
-	bool run(InstanceMessages message);
-	bool run(InstanceMessages message, int32_t);
-	bool run(InstanceMessages message, const string &);
-	bool run(InstanceMessages message, int32_t, int32_t);
-	bool run(InstanceMessages message, const string &, int32_t);
-	bool run(InstanceMessages message, int32_t, int32_t, int32_t);
-	bool run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t);
-	bool run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t);
+	auto run(InstanceMessages message) -> bool;
+	auto run(InstanceMessages message, int32_t) -> bool;
+	auto run(InstanceMessages message, const string_t &) -> bool;
+	auto run(InstanceMessages message, int32_t, int32_t) -> bool;
+	auto run(InstanceMessages message, const string_t &, int32_t) -> bool;
+	auto run(InstanceMessages message, int32_t, int32_t, int32_t) -> bool;
+	auto run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t) -> bool;
+	auto run(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t) -> bool;
 };
 
 namespace LuaExports {
-	int revertPlayerInstance(lua_State *luaVm);
-	int setPlayerInstance(lua_State *luaVm);
-	int createInstanceInstance(lua_State *luaVm);
+	auto createInstanceInstance(lua_State *luaVm) -> int;
 }

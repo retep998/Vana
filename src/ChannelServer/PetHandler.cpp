@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.h"
 #include "SkillConstants.h"
 
-void PetHandler::handleMovement(Player *player, PacketReader &packet) {
+auto PetHandler::handleMovement(Player *player, PacketReader &packet) -> void {
 	int64_t petId = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
@@ -42,7 +42,7 @@ void PetHandler::handleMovement(Player *player, PacketReader &packet) {
 	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
 }
 
-void PetHandler::handleChat(Player *player, PacketReader &packet) {
+auto PetHandler::handleChat(Player *player, PacketReader &packet) -> void {
 	int64_t petId = packet.get<int64_t>();
 	if (player->getPets()->getPet(petId) == nullptr) {
 		// Hacking
@@ -50,11 +50,11 @@ void PetHandler::handleChat(Player *player, PacketReader &packet) {
 	}
 	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
-	const string &message = packet.getString();
+	const string_t &message = packet.getString();
 	PetsPacket::showChat(player, player->getPets()->getPet(petId), message, act);
 }
 
-void PetHandler::handleSummon(Player *player, PacketReader &packet) {
+auto PetHandler::handleSummon(Player *player, PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	bool master = packet.get<int8_t>() == 1; // Might possibly fit under getBool criteria
@@ -72,7 +72,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 		player->getPets()->setSummoned(index, 0);
 		if (index == 0) {
 			Timer::Id id(Timer::Types::PetTimer, index, 0);
-			player->getTimers()->removeTimer(id);
+			player->getTimerContainer()->removeTimer(id);
 		}
 		if (multipet) {
 			for (int8_t i = index; i < Inventories::MaxPetCount; ++i) {
@@ -110,7 +110,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 			}
 			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
 				Timer::Id id(Timer::Types::PetTimer, kicked->getIndex().get(), 0);
-				player->getTimers()->removeTimer(id);
+				player->getTimerContainer()->removeTimer(id);
 				kicked->desummon();
 				PetsPacket::petSummoned(player, pet, true);
 			}
@@ -135,7 +135,7 @@ void PetHandler::handleSummon(Player *player, PacketReader &packet) {
 	PetsPacket::blankUpdate(player);
 }
 
-void PetHandler::handleFeed(Player *player, PacketReader &packet) {
+auto PetHandler::handleFeed(Player *player, PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
@@ -159,7 +159,7 @@ void PetHandler::handleFeed(Player *player, PacketReader &packet) {
 	}
 }
 
-void PetHandler::handleCommand(Player *player, PacketReader &packet) {
+auto PetHandler::handleCommand(Player *player, PacketReader &packet) -> void {
 	int64_t petId = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
@@ -168,7 +168,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	}
 	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
-	PetInteractInfo *action = ItemDataProvider::Instance()->getInteraction(pet->getItemId(), act);
+	PetInteractInfo *action = ItemDataProvider::getInstance().getInteraction(pet->getItemId(), act);
 	if (action == nullptr) {
 		// Hacking or no action info available
 		return;
@@ -180,7 +180,7 @@ void PetHandler::handleCommand(Player *player, PacketReader &packet) {
 	PetsPacket::showAnimation(player, pet, act);
 }
 
-void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
+auto PetHandler::handleConsumePotion(Player *player, PacketReader &packet) -> void {
 	int64_t petId = packet.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
@@ -192,7 +192,7 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	ConsumeInfo *info = ItemDataProvider::Instance()->getConsumeInfo(itemId);
+	ConsumeInfo *info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking
 		return;
@@ -214,13 +214,13 @@ void PetHandler::handleConsumePotion(Player *player, PacketReader &packet) {
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 }
 
-void PetHandler::changeName(Player *player, const string &name) {
+auto PetHandler::changeName(Player *player, const string_t &name) -> void {
 	if (Pet *pet = player->getPets()->getSummoned(0)) {
 		pet->setName(name);
 	}
 }
 
-void PetHandler::showPets(Player *player) {
+auto PetHandler::showPets(Player *player) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());

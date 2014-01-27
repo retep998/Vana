@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "World.h"
 
-void SyncPacket::PlayerPacket::characterCreated(World *world, int32_t playerId) {
+auto SyncPacket::PlayerPacket::characterCreated(World *world, int32_t playerId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
 	packet.add<int8_t>(Sync::SyncTypes::Player);

@@ -51,7 +51,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;DEBUG;_DEBUG;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -77,7 +77,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(MySqlDirectory32)\include;src\Common;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\core;$(LazurBeemz)\$(PlatformToolsetVersion)\soci-$(SociVersion)\backends\mysql;$(LazurBeemz)\$(PlatformToolsetVersion)\lua\include;$(LazurBeemz)\$(PlatformToolsetVersion)\Botan-$(BotanVersion)\build\include;$(LazurBeemz)\$(PlatformToolsetVersion)\boost_$(BoostVersion)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;MSVC;NDEBUG;RELEASE;X86;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;SOCI_USE_BOOST;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -136,6 +136,7 @@
     <ClCompile Include="src\ChannelServer\ReactorHandler.cpp" />
     <ClCompile Include="src\ChannelServer\SkillMacros.cpp" />
     <ClCompile Include="src\ChannelServer\Skills.cpp" />
+    <ClCompile Include="src\ChannelServer\StatusInfo.cpp" />
     <ClCompile Include="src\ChannelServer\SummonHandler.cpp" />
     <ClCompile Include="src\ChannelServer\Summon.cpp" />
     <ClCompile Include="src\ChannelServer\SyncHandler.cpp" />
@@ -167,7 +168,6 @@
     <ClCompile Include="src\ChannelServer\PlayerPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\InitializeChannel.cpp" />
     <ClCompile Include="src\ChannelServer\MapDataProvider.cpp" />
-    <ClCompile Include="src\ChannelServer\WarpFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectHandler.cpp" />
@@ -238,6 +238,7 @@
     <ClInclude Include="src\ChannelServer\ReactorHandler.h" />
     <ClInclude Include="src\ChannelServer\SkillMacros.h" />
     <ClInclude Include="src\ChannelServer\Skills.h" />
+    <ClInclude Include="src\ChannelServer\StatusInfo.h" />
     <ClInclude Include="src\ChannelServer\SummonHandler.h" />
     <ClInclude Include="src\ChannelServer\Summon.h" />
     <ClInclude Include="src\ChannelServer\SyncHandler.h" />
@@ -269,7 +270,6 @@
     <ClInclude Include="src\ChannelServer\PlayerPacketHelper.h" />
     <ClInclude Include="src\ChannelServer\InitializeChannel.h" />
     <ClInclude Include="src\ChannelServer\MapDataProvider.h" />
-    <ClInclude Include="src\ChannelServer\WarpFunctions.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnection.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h" />

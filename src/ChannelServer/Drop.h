@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,59 +24,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 class Drop {
+	NO_DEFAULT_CONSTRUCTOR(Drop);
+	NONCOPYABLE(Drop);
 public:
 	Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop = false);
 	Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop = false);
 
-	void setQuest(int16_t questId) { m_questId = questId; }
-	void setTradeable(bool isTrade) { m_tradeable = isTrade; }
-	void setItemAmount(int16_t amount) { m_item.setAmount(amount); }
-	void setId(int32_t id) { m_id = id; }
-	void setTime(int32_t time) { m_time = time; }
-	void setPlayerId(int32_t playerId) { m_playerId = playerId; }
-	void setOwner(int32_t owner) { m_owner = owner; }
-	void setPos(Pos pos) { m_pos = pos; }
-	void setType(int8_t t) { m_type = t; }
-	void setDroppedAtTime(time_point_t time) { m_droppedAtTime = time; }
+	auto setQuest(int16_t questId) -> void { m_questId = questId; }
+	auto setTradeable(bool isTrade) -> void { m_tradeable = isTrade; }
+	auto setItemAmount(int16_t amount) -> void { m_item.setAmount(amount); }
+	auto setId(int32_t id) -> void { m_id = id; }
+	auto setTime(int32_t time) -> void { m_time = time; }
+	auto setPlayerId(int32_t playerId) -> void { m_playerId = playerId; }
+	auto setOwner(int32_t owner) -> void { m_owner = owner; }
+	auto setPos(Pos pos) -> void { m_pos = pos; }
+	auto setType(int8_t t) -> void { m_type = t; }
+	auto setDroppedAtTime(time_point_t time) -> void { m_droppedAtTime = time; }
 
-	int8_t getType() const { return m_type; }
-	int16_t getQuest() const { return m_questId; }
-	int32_t getId() const { return m_id; }
-	int32_t getTime() const { return m_time; }
-	int32_t getOwner() const { return m_owner; }
-	int32_t getMap() const { return m_mapId; }
-	bool isplayerDrop() const { return m_playerDrop; }
-	bool isMesos() const { return m_mesos > 0; }
-	bool isQuest() const { return m_questId > 0; }
-	bool isTradeable() const { return m_tradeable; }
-	Pos getPos() const { return m_pos; }
-	Item getItem() const { return m_item; }
-	time_point_t getDroppedAtTime() const { return m_droppedAtTime; }
+	auto getType() const -> int8_t { return m_type; }
+	auto getQuest() const -> int16_t { return m_questId; }
+	auto getId() const -> int32_t { return m_id; }
+	auto getTime() const -> int32_t { return m_time; }
+	auto getOwner() const -> int32_t { return m_owner; }
+	auto getMap() const -> int32_t { return m_mapId; }
+	auto isplayerDrop() const -> bool { return m_playerDrop; }
+	auto isMesos() const -> bool { return m_mesos > 0; }
+	auto isQuest() const -> bool { return m_questId > 0; }
+	auto isTradeable() const -> bool { return m_tradeable; }
+	auto getPos() const -> Pos { return m_pos; }
+	auto getItem() const -> Item { return m_item; }
+	auto getDroppedAtTime() const -> time_point_t { return m_droppedAtTime; }
 
-	int16_t getAmount();
-	int32_t getObjectId();
+	auto getAmount() -> int16_t;
+	auto getObjectId() -> int32_t;
 
-	void doDrop(const Pos &origin);
-	void showDrop(Player *player);
-	void takeDrop(Player *player, int64_t petId);
-	void removeDrop(bool showPacket = true);
+	auto doDrop(const Pos &origin) -> void;
+	auto showDrop(Player *player) -> void;
+	auto takeDrop(Player *player, int64_t petId) -> void;
+	auto removeDrop(bool showPacket = true) -> void;
 
 	static const int8_t Explosive = 3;
 	static const int8_t FreeForAll = 2;
 	static const int8_t Party = 1;
 	static const int8_t Normal = 0;
 private:
-	int8_t m_type;
-	int16_t m_questId;
-	int32_t m_owner;
-	int32_t m_mapId;
-	int32_t m_id;
-	int32_t m_mesos;
-	int32_t m_time;
-	int32_t m_playerId;
-	bool m_playerDrop;
-	bool m_tradeable;
+	bool m_playerDrop = false;
+	bool m_tradeable = true;
+	int8_t m_type = Drop::Normal;
+	int16_t m_questId = 0;
+	int32_t m_owner = 0;
+	int32_t m_mapId = 0;
+	int32_t m_id = 0;
+	int32_t m_mesos = 0;
+	int32_t m_time = 0;
+	int32_t m_playerId = 0;
+	time_point_t m_droppedAtTime;
 	Pos m_pos;
 	Item m_item;
-	time_point_t m_droppedAtTime;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,37 +27,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-LoginServerAcceptConnection::LoginServerAcceptConnection() :
-	m_worldId(-1)
-{
-}
-
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {
-		World *world = Worlds::Instance()->getWorld(m_worldId);
+		World *world = Worlds::getInstance().getWorld(m_worldId);
 		world->setConnected(false);
 		world->clearChannels();
 
-		LoginServer::Instance()->log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string>(m_worldId));
+		LoginServer::getInstance().log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string_t>(m_worldId));
 	}
 }
 
-void LoginServerAcceptConnection::handleRequest(PacketReader &packet) {
-	if (!processAuth(LoginServer::Instance(), packet)) return;
+auto LoginServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
+	if (!processAuth(LoginServer::getInstance(), packet)) return;
 	switch (packet.getHeader()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLDS: LoginServerAcceptHandler::sendPacketToWorlds(this, packet); break;
-		case IMSG_REHASH_CONFIG: LoginServer::Instance()->rehashConfig(); break;
+		case IMSG_REHASH_CONFIG: LoginServer::getInstance().rehashConfig(); break;
 	}
 }
 
-void LoginServerAcceptConnection::authenticated(int8_t type) {
+auto LoginServerAcceptConnection::authenticated(int8_t type) -> void {
 	switch (type) {
-		case ServerTypes::World: Worlds::Instance()->addWorldServer(this); break;
-		case ServerTypes::Channel: Worlds::Instance()->addChannelServer(this); break;
+		case ServerTypes::World: Worlds::getInstance().addWorldServer(this); break;
+		case ServerTypes::Channel: Worlds::getInstance().addChannelServer(this); break;
 		default: getSession()->disconnect();
 	}
 }

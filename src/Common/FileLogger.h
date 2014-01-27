@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,24 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 struct FileLog {
-	string message;
-	string file;
+	string_t message;
+	string_t file;
 };
 
 class FileLogger : public Logger {
 public:
-	FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
 	~FileLogger();
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override;
-	void flush();
-	const string & getFilenameFormat() const { return m_filenameFormat; }
+	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override;
+	auto flush() -> void;
+	auto getFilenameFormat() const -> const string_t & { return m_filenameFormat; }
 private:
-	string m_filenameFormat;
+	string_t m_filenameFormat;
 	size_t m_bufferSize;
-	vector<FileLog> m_buffer;
+	vector_t<FileLog> m_buffer;
 };

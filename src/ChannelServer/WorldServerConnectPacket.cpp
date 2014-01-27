@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,64 +25,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.h"
 #include "WorldServerConnection.h"
 
-void WorldServerConnectPacket::groupChat(int8_t type, int32_t playerId, const vector<int32_t> &receivers, const string &chat) {
+auto WorldServerConnectPacket::groupChat(int8_t type, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_GROUP_CHAT);
 	sendPacket.add<int32_t>(playerId);
 	sendPacket.add<int8_t>(type);
 	sendPacket.addString(chat);
 	sendPacket.addVector(receivers);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::findPlayer(int32_t playerId, const string &findeeName) {
+auto WorldServerConnectPacket::findPlayer(int32_t playerId, const string_t &findeeName) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_FIND);
 	sendPacket.add<int32_t>(playerId);
 	sendPacket.addString(findeeName);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::whisperPlayer(int32_t playerId, const string &whisperee, const string &message) {
+auto WorldServerConnectPacket::whisperPlayer(int32_t playerId, const string_t &whisperee, const string_t &message) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_WHISPER);
 	sendPacket.add<int32_t>(playerId);
 	sendPacket.addString(whisperee);
 	sendPacket.addString(message);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::rankingCalculation() {
+auto WorldServerConnectPacket::rankingCalculation() -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_TO_LOGIN);
 	sendPacket.add<header_t>(IMSG_CALCULATE_RANKING);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::sendToChannels(PacketCreator &packet) {
+auto WorldServerConnectPacket::sendToChannels(PacketCreator &packet) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<int16_t>(IMSG_TO_CHANNELS);
 	sendPacket.addBuffer(packet);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::sendToWorlds(PacketCreator &packet) {
+auto WorldServerConnectPacket::sendToWorlds(PacketCreator &packet) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<int16_t>(IMSG_TO_WORLDS);
 	sendPacket.addBuffer(packet);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-void WorldServerConnectPacket::reloadMcdb(const string &type) {
+auto WorldServerConnectPacket::reloadMcdb(const string_t &type) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_REFRESH_DATA);
 	sendPacket.addString(type);
 	sendToChannels(sendPacket);
 }
 
-void WorldServerConnectPacket::rehashConfig() {
+auto WorldServerConnectPacket::rehashConfig() -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_TO_LOGIN);
 	sendPacket.add<header_t>(IMSG_REHASH_CONFIG);
-	ChannelServer::Instance()->sendPacketToWorld(sendPacket);
+	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }

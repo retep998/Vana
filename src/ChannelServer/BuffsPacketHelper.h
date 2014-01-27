@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,5 +24,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketCreator;
 
 namespace BuffsPacketHelper {
-	void addBytes(PacketCreator &packet, const std::array<uint8_t, BuffBytes::ByteQuantity> &bytes);
+	auto addBytes(PacketCreator &packet, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes) -> void;
 }

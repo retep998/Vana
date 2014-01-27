@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,28 +24,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-using std::bind;
-
-Thread * Thread::singleton = nullptr;
-
-Thread::Thread() :
-	m_terminate(false)
+TimerThread::TimerThread()
 {
-	m_container = std::make_unique<Container>();
-	m_thread = std::make_unique<std::thread>([this]() { this->runThread(); });
+	m_runThread = true;
+	m_container = make_ref_ptr<Container>();
+	m_thread = make_owned_ptr<thread_t>([this]() { this->runThread(); });
 }
 
-Thread::~Thread() {
-	m_terminate = true;
+TimerThread::~TimerThread() {
+	m_runThread.store(false, std::memory_order_relaxed);
+	m_mainLoopCondition.notify_one();
+	m_thread->join();
 }
 
-void Thread::registerTimer(shared_ptr<Timer> timer) {
-	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
-	m_timers.push(std::make_pair(timer->getRunAt(), timer));
+auto TimerThread::registerTimer(ref_ptr_t<Timer> timer) -> void {
+	owned_lock_t<recursive_mutex_t> l(m_timersMutex);
+	m_timers.emplace(timer->getRunAt(), timer);
 	m_mainLoopCondition.notify_one();
 }
 
-time_point_t Thread::getWaitTime() const {
+auto TimerThread::getWaitTime() const -> time_point_t {
 	if (m_timers.size() > 0) {
 		return m_timers.top().first;
 	}
@@ -53,30 +51,34 @@ time_point_t Thread::getWaitTime() const {
 	return TimeUtilities::getNowWithTimeAdded(milliseconds_t(1000000000));
 }
 
-void Thread::runThread() {
-	std::unique_lock<std::recursive_mutex> l(m_timersMutex);
-	while (!m_terminate) {
+auto TimerThread::runThread() -> void {
+	owned_lock_t<recursive_mutex_t> l(m_timersMutex);
+	while (m_runThread.load(std::memory_order_relaxed)) {
 		time_point_t waitTime = getWaitTime();
 		time_point_t now = TimeUtilities::getNow();
 
 		while (waitTime <= now && m_timers.size() > 0) {
-			pair<time_point_t, weak_ptr<Timer>> top = m_timers.top();
-			if (top.second.expired()) {
+			timer_pair_t top = m_timers.top();
+
+			if (ref_ptr_t<Timer> timer = top.second.lock()) {
+				m_timers.pop();
+
+				if (timer->run(now) == RunResult::Reset) {
+					m_timers.emplace(timer->reset(now), timer);
+				}
+				else {
+					if (ref_ptr_t<Container> container = timer->getContainer().lock()) {
+						container->removeTimer(timer->getId());
+					}
+				}
+
+				waitTime = getWaitTime();
+			}
+			else {
+				// Expired timer
 				m_timers.pop();
 				continue;
 			}
-
-			shared_ptr<Timer> timer = top.second.lock();
-			m_timers.pop();
-
-			if (timer->run() == TimerRunResult::Reset) {
-				m_timers.push(std::make_pair(timer->reset(now), timer));
-			}
-			else {
-				timer->getContainer()->removeTimer(timer->getId());
-			}
-
-			waitTime = getWaitTime();
 		}
 
 		if (m_mainLoopCondition.wait_until(l, waitTime) == std::cv_status::no_timeout) {

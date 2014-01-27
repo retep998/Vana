@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,31 +22,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "Session.h"
 #include "SmsgHeader.h"
+#include "StatusInfo.h"
 #include "WidePos.h"
 
-void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *owner, bool spawn, bool show) {
+auto MobsPacket::spawnMob(Player *player, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, bool spawn, bool show) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_SHOW);
-	packet.add<int32_t>(mob->getId());
-	packet.add<int8_t>(mob->getControlStatus());
+	packet.add<int32_t>(mob->getMapMobId());
+	packet.add<int8_t>(static_cast<int8_t>(mob->getControlStatus()));
 	packet.add<int32_t>(mob->getMobId());
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addClass<Pos>(mob->getPos());
 
-	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | mob->getFacingDirection();
+	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | (mob->isFacingLeft() ? 0x01 : 0);
 	if (mob->canFly()) {
 		bitfield |= 0x04;
 	}
 
-	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces left
 
-	packet.add<int16_t>(mob->getFh());
-	packet.add<int16_t>(mob->getOriginFh());
+	packet.add<int16_t>(mob->getFoothold());
+	packet.add<int16_t>(mob->getOriginFoothold());
 
 	if (owner != nullptr) {
 		packet.add<int8_t>(summonEffect != 0 ? summonEffect : -3);
-		packet.add<int32_t>(owner->getId());
+		packet.add<int32_t>(owner->getMapMobId());
 	}
 	else {
 		packet.add<int8_t>(spawn ? -2 : -1);
@@ -61,27 +62,27 @@ void MobsPacket::spawnMob(Player *player, Mob *mob, int8_t summonEffect, Mob *ow
 	}
 }
 
-void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *display) {
+auto MobsPacket::requestControl(Player *player, ref_ptr_t<Mob> mob, bool spawn, Player *display) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL);
 	packet.add<int8_t>(1);
-	packet.add<int32_t>(mob->getId());
-	packet.add<int8_t>(mob->getControlStatus());
+	packet.add<int32_t>(mob->getMapMobId());
+	packet.add<int8_t>(static_cast<int8_t>(mob->getControlStatus()));
 	packet.add<int32_t>(mob->getMobId());
 
 	mob->statusPacket(packet); // Mob's status such as frozen, stunned, and etc
 
 	packet.addClass<Pos>(mob->getPos());
 
-	int8_t bitfield = 0x02 | mob->getFacingDirection();
+	int8_t bitfield = 0x02 | (mob->isFacingLeft() ? 0x01 : 0);
 	if (mob->canFly()) {
 		bitfield |= 0x04;
 	}
 
-	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces right
+	packet.add<int8_t>(bitfield); // 0x08 - a summon, 0x04 - flying, 0x02 - ???, 0x01 - faces left
 
-	packet.add<int16_t>(mob->getFh());
-	packet.add<int16_t>(mob->getOriginFh());
+	packet.add<int16_t>(mob->getFoothold());
+	packet.add<int16_t>(mob->getOriginFoothold());
 	packet.add<int8_t>(spawn ? -2 : -1);
 	packet.add<int8_t>(-1);
 	packet.add<int32_t>(0);
@@ -96,70 +97,72 @@ void MobsPacket::requestControl(Player *player, Mob *mob, bool spawn, Player *di
 	}
 }
 
-void MobsPacket::endControlMob(Player *player, Mob *mob) {
+auto MobsPacket::endControlMob(Player *player, int32_t mapId, int32_t mapMobId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL);
 	packet.add<int8_t>(0);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	if (player != nullptr) {
 		player->getSession()->send(packet);
 	}
 	else {
-		Maps::getMap(mob->getMapId())->sendPacket(packet);
+		Maps::getMap(mapId)->sendPacket(packet);
 	}
 }
 
-void MobsPacket::moveMobResponse(Player *player, int32_t mobId, int16_t moveId, bool useSkill, int32_t mp, uint8_t skill, uint8_t level) {
+auto MobsPacket::moveMobResponse(Player *player, int32_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, uint8_t skill, uint8_t level) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_MOVEMENT);
-	packet.add<int32_t>(mobId);
+	packet.add<int32_t>(mapMobId);
 	packet.add<int16_t>(moveId);
-	packet.add<bool>(useSkill);
+	packet.add<bool>(skillPossible);
 	packet.add<int16_t>(static_cast<int16_t>(mp));
 	packet.add<uint8_t>(skill);
 	packet.add<uint8_t>(level);
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::moveMob(Player *player, int32_t mobId, bool useSkill, int8_t skill, const Pos &projectileTarget, unsigned char *buf, int32_t len) {
+auto MobsPacket::moveMob(Player *player, int32_t mapMobId, bool skillPossible, int8_t rawAction, uint8_t skill, uint8_t level, int16_t option, unsigned char *buf, int32_t len) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_CONTROL_MOVEMENT);
-	packet.add<int32_t>(mobId);
-	packet.add<bool>(useSkill);
-	packet.add<int8_t>(skill);
-	packet.addClass<Pos>(projectileTarget);
+	packet.add<int32_t>(mapMobId);
+	packet.add<bool>(skillPossible);
+	packet.add<int8_t>(rawAction);
+	packet.add<uint8_t>(skill);
+	packet.add<uint8_t>(level);
+	packet.add<int16_t>(option);
 	packet.addBuffer(buf, len);
 	player->getMap()->sendPacket(packet, player);
 }
 
-void MobsPacket::healMob(Mob *mob, int32_t amount) {
+auto MobsPacket::healMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_DAMAGE);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(-amount);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
-	Maps::getMap(mob->getMapId())->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::hurtMob(Mob *mob, int32_t amount) {
+auto MobsPacket::hurtMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_DAMAGE);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	packet.add<int8_t>(0);
 	packet.add<int32_t>(amount);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
 	packet.add<int8_t>(0);
-	Maps::getMap(mob->getMapId())->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
+auto MobsPacket::damageFriendlyMob(ref_ptr_t<Mob> mob, int32_t damage) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_DAMAGE);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mob->getMapMobId());
 	packet.add<int8_t>(1);
 	packet.add<int32_t>(damage);
 	packet.add<int32_t>(mob->getHp());
@@ -167,10 +170,10 @@ void MobsPacket::damageFriendlyMob(Mob *mob, int32_t damage) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::applyStatus(Mob *mob, int32_t statusMask, const vector<StatusInfo> &info, int16_t delay, const vector<int32_t> &reflection) {
+auto MobsPacket::applyStatus(int32_t mapId, int32_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_STATUS_ADDITION);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	packet.add<int32_t>(statusMask);
 
 	for (size_t i = 0; i < info.size(); i++) {
@@ -191,41 +194,41 @@ void MobsPacket::applyStatus(Mob *mob, int32_t statusMask, const vector<StatusIn
 
 	packet.add<int16_t>(delay);
 
-	uint8_t buffcount = info.size();
+	uint8_t buffCount = info.size();
 	if (reflection.size() > 0) {
-		buffcount /= 2; // This gives 2 buffs per reflection but it's really one buff
+		buffCount /= 2; // This gives 2 buffs per reflection but it's really one buff
 	}
-	packet.add<int8_t>(buffcount);
+	packet.add<int8_t>(buffCount);
 
-	Maps::getMap(mob->getMapId())->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::removeStatus(Mob *mob, int32_t status) {
+auto MobsPacket::removeStatus(int32_t mapId, int32_t mapMobId, int32_t status) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_STATUS_REMOVE);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	packet.add<int32_t>(status);
 	packet.add<int8_t>(1);
-	Maps::getMap(mob->getMapId())->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::showHp(Player *player, int32_t mobId, int8_t percentage) {
+auto MobsPacket::showHp(Player *player, int32_t mapMobId, int8_t percentage) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_HP_DISPLAY);
-	packet.add<int32_t>(mobId);
+	packet.add<int32_t>(mapMobId);
 	packet.add<int8_t>(percentage);
 	player->getSession()->send(packet);
 }
 
-void MobsPacket::showHp(int32_t mapId, int32_t mobId, int8_t percentage) {
+auto MobsPacket::showHp(int32_t mapId, int32_t mapMobId, int8_t percentage) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_HP_DISPLAY);
-	packet.add<int32_t>(mobId);
+	packet.add<int32_t>(mapMobId);
 	packet.add<int8_t>(percentage);
 	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::showBossHp(Mob *mob) {
+auto MobsPacket::showBossHp(ref_ptr_t<Mob> mob) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x05);
@@ -237,15 +240,15 @@ void MobsPacket::showBossHp(Mob *mob) {
 	Maps::getMap(mob->getMapId())->sendPacket(packet);
 }
 
-void MobsPacket::dieMob(Mob *mob, int8_t death) {
+auto MobsPacket::dieMob(int32_t mapId, int32_t mapMobId, int8_t death) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MOB_DEATH);
-	packet.add<int32_t>(mob->getId());
+	packet.add<int32_t>(mapMobId);
 	packet.add<int8_t>(death);
-	Maps::getMap(mob->getMapId())->sendPacket(packet);
+	Maps::getMap(mapId)->sendPacket(packet);
 }
 
-void MobsPacket::showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) {
+auto MobsPacket::showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MAP_EFFECT);
 	packet.add<int8_t>(0x00);

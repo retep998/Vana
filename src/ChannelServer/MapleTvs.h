@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,74 +17,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "PacketCreator.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
-#include <list>
 #include <memory>
+#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-using std::list;
-using std::string;
-using std::unordered_map;
-using std::vector;
-
 class Map;
 class Player;
-namespace Timer {
-	class Container;
-}
 
 struct MapleTvMessage {
-	MapleTvMessage() : msg1(""), msg2(""), msg3(""), msg4(""), msg5(""), time(0), megaphoneId(0), hasReceiver(false) { }
-	string msg1;
-	string msg2;
-	string msg3;
-	string msg4;
-	string msg5;
-	string sendName;
-	string recvName;
-	int32_t time;
-	int32_t megaphoneId;
-	int32_t senderId;
-	uint32_t counter;
-	bool hasReceiver;
+	bool hasReceiver = false;
+	int32_t time = 0;
+	int32_t megaphoneId = 0;
+	int32_t senderId = 0;
+	uint32_t counter = 0;
+	string_t msg1;
+	string_t msg2;
+	string_t msg3;
+	string_t msg4;
+	string_t msg5;
+	string_t sendName;
+	string_t recvName;
 	PacketCreator recvDisplay;
 	PacketCreator sendDisplay;
 };
 
-class MapleTvs : boost::noncopyable {
+class MapleTvs : public TimerContainerHolder {
+	SINGLETON(MapleTvs);
 public:
-	static MapleTvs * Instance() {
-		if (singleton == nullptr)
-			singleton = new MapleTvs;
-		return singleton;
-	}
+	auto addMap(Map *map) -> void;
 
-	void addMap(Map *map);
-
-	void addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneId, int32_t time);
-	void getMapleTvEntryPacket(PacketCreator &packet);
-	bool isMapleTvMap(int32_t id) const { return (m_maps.find(id) != m_maps.end()); }
-	bool hasMessage() const { return m_hasMessage; }
-	uint32_t getCounter() { return ++m_counter; }
+	auto addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, int32_t megaphoneId, int32_t time) -> void;
+	auto getMapleTvEntryPacket(PacketCreator &packet) -> void;
+	auto isMapleTvMap(int32_t id) const -> bool { return m_maps.find(id) != std::end(m_maps); }
+	auto hasMessage() const -> bool { return m_hasMessage; }
+	auto getCounter() -> uint32_t { return ++m_counter; }
 private:
-	MapleTvs();
-	static MapleTvs *singleton;
+	auto parseBuffer() -> void;
+	auto getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft = seconds_t(0)) -> void;
+	auto endMapleTvPacket(PacketCreator &packet) -> void;
+	auto sendPacket(PacketCreator &packet) -> void;
+	auto checkMessageTimer() const -> seconds_t;
 
-	void parseBuffer();
-	void getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft = seconds_t(0));
-	void endMapleTvPacket(PacketCreator &packet);
-	void sendPacket(PacketCreator &packet);
-	seconds_t checkMessageTimer() const;
-	Timer::Container * getTimers() const { return m_timers.get(); }
-
-	std::unique_ptr<Timer::Container> m_timers;
-	unordered_map<int32_t, Map *> m_maps;
-	list<MapleTvMessage> m_buffer;
-	bool m_hasMessage;
-	uint32_t m_counter;
+	bool m_hasMessage = false;
+	uint32_t m_counter = 0;
 	MapleTvMessage m_currentMessage;
+	queue_t<MapleTvMessage> m_buffer;
+	hash_map_t<int32_t, Map *> m_maps;
 };

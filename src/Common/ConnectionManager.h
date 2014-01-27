@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,43 +19,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ConnectionAcceptor.h"
 #include "Ip.h"
-#include "noncopyable.hpp"
 #include "SessionManager.h"
 #include "Types.h"
-#include <list>
 #include <memory>
 #include <string>
 #include <thread>
-
-using std::string;
+#include <vector>
 
 class AbstractConnectionFactory;
 class ConnectionAcceptor;
 
-class ConnectionManager : private boost::noncopyable {
+class ConnectionManager {
+	SINGLETON_CUSTOM_CONSTRUCTOR(ConnectionManager);
 public:
-	static ConnectionManager * Instance() {
-		if (singleton == nullptr)
-			singleton = new ConnectionManager;
-		return singleton;
-	}
-
-	void accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string &patchLocation = "");
-	void connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection);
-	void stop();
-
-	void run();
-	void join();
+	auto accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation = "") -> void;
+	auto connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) -> void;
+	auto stop() -> void;
+	auto run() -> void;
+	auto join() -> void;
 private:
-	void handleRun();
-	void handleStop();
+	auto handleRun() -> void;
+	auto handleStop() -> void;
 
-	ConnectionManager();
-	static ConnectionManager *singleton;
-
-	std::unique_ptr<std::thread> m_thread;
+	vector_t<ref_ptr_t<ConnectionAcceptor>> m_servers;
+	ref_ptr_t<SessionManager> m_clients;
+	owned_ptr_t<thread_t> m_thread;
+	owned_ptr_t<boost::asio::io_service::work> m_work;
 	boost::asio::io_service m_ioService;
-	SessionManagerPtr m_clients;
-	std::list<ConnectionAcceptorPtr> m_servers;
-	std::unique_ptr<boost::asio::io_service::work> m_work; // "Work" for io_service
 };

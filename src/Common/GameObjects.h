@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,23 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameConstants.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <array>
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 struct GuildLogo {
-	GuildLogo() : logo(0), color(0), background(0), backgroundColor(0) { }
-	GuildLogo(const GuildLogo &logo) : logo(logo.logo), color(logo.color), background(logo.background), backgroundColor(logo.backgroundColor) { }
-
-	int8_t color;
-	int8_t backgroundColor;
-	int16_t logo;
-	int16_t background;
+	int8_t color = 0;
+	int8_t backgroundColor = 0;
+	int16_t logo = 0;
+	int16_t background = 0;
 };
-
-typedef std::array<string, GuildsAndAlliances::RankQuantity> GuildRanks;

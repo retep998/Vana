@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,27 +23,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 class Reactor {
+	NONCOPYABLE(Reactor);
+	NO_DEFAULT_CONSTRUCTOR(Reactor);
 public:
-	Reactor(int32_t mapId, int32_t reactorId, const Pos &pos);
-	void kill() { m_alive = false; }
-	void revive() { m_alive = true; }
-	void setState(int8_t state, bool sendPacket);
-	void setId(int32_t id) { m_id = id; }
+	Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLeft);
 
-	int8_t getState() const { return m_state; }
-	int32_t getId() const { return m_id; }
-	int32_t getReactorId() const { return m_reactorId; }
-	int32_t getMapId() const { return m_mapId; }
-	bool isAlive() const { return m_alive; }
-	Pos getPos() const { return m_pos; }
+	auto kill() -> void { m_alive = false; }
+	auto revive() -> void { m_alive = true; }
+	auto setState(int8_t state, bool sendPacket) -> void;
+	auto setId(int32_t id) -> void { m_id = id; }
 
-	void restore();
-	void drop(Player *player);
+	auto getState() const -> int8_t { return m_state; }
+	auto getId() const -> int32_t { return m_id; }
+	auto getReactorId() const -> int32_t { return m_reactorId; }
+	auto getMapId() const -> int32_t { return m_mapId; }
+	auto isAlive() const -> bool { return m_alive; }
+	auto getPos() const -> Pos { return m_pos; }
+	auto facesLeft() const -> bool { return m_facesLeft; }
+
+	auto restore() -> void;
+	auto drop(Player *player) -> void;
 private:
-	int8_t m_state;
-	int32_t m_id;
-	int32_t m_reactorId;
-	int32_t m_mapId;
-	bool m_alive;
+	bool m_alive = true;
+	bool m_facesLeft = false;
+	int8_t m_state = 0;
+	int32_t m_id = 0;
+	int32_t m_reactorId = 0;
+	int32_t m_mapId = 0;
 	Pos m_pos;
 };

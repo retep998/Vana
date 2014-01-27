@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class AbstractConnection;
 class PacketCreator;
 class PacketReader;
@@ -29,23 +27,23 @@ class Player;
 
 namespace SyncHandler {
 	// Dispatch
-	void handle(AbstractConnection *connection, PacketReader &packet);
+	auto handle(AbstractConnection *connection, PacketReader &packet) -> void;
 	// Config
-	void handleConfigSync(PacketReader &packet);
-	void handleSetRates(PacketReader &packet);
-	void handleScrollingHeader(PacketReader &packet);
+	auto handleConfigSync(PacketReader &packet) -> void;
+	auto handleSetRates(PacketReader &packet) -> void;
+	auto handleScrollingHeader(PacketReader &packet) -> void;
 	// Party
-	void handlePartySync(PacketReader &packet);
+	auto handlePartySync(PacketReader &packet) -> void;
 	// Player
-	void handlePlayerSync(AbstractConnection *connection, PacketReader &packet);
-	void playerConnect(int16_t channel, PacketReader &packet);
-	void playerDisconnect(int16_t channel, PacketReader &packet);
-	void playerChangeChannel(AbstractConnection *connection, PacketReader &packet);
-	void handleChangeChannel(AbstractConnection *connection, PacketReader &packet);
-	void handlePlayerUpdate(PacketReader &packet);
-	void handleCharacterCreated(PacketReader &packet);
+	auto handlePlayerSync(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto playerConnect(int16_t channel, PacketReader &packet) -> void;
+	auto playerDisconnect(int16_t channel, PacketReader &packet) -> void;
+	auto playerChangeChannel(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handleChangeChannel(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handlePlayerUpdate(PacketReader &packet) -> void;
+	auto handleCharacterCreated(PacketReader &packet) -> void;
 	// Buddy
-	void handleBuddySync(PacketReader &packet);
-	void buddyInvite(PacketReader &packet);
-	void buddyOnline(PacketReader &packet);
+	auto handleBuddySync(PacketReader &packet) -> void;
+	auto buddyInvite(PacketReader &packet) -> void;
+	auto buddyOnline(PacketReader &packet) -> void;
 }

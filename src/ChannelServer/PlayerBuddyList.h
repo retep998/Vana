@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,17 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Types.h"
-#include "noncopyable.hpp"
-#include <list>
 #include <memory>
+#include <queue>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-using std::list;
-using std::string;
-using std::unordered_map;
-using std::vector;
 
 class PacketCreator;
 class Player;
@@ -38,41 +32,42 @@ namespace soci {
 }
 
 struct Buddy {
-	string name;
-	string groupName;
-	uint8_t oppositeStatus;
-	int32_t channel;
-	int32_t charId;
+	uint8_t oppositeStatus = 0;
+	int32_t channel = 0;
+	int32_t charId = 0;
+	string_t name;
+	string_t groupName;
 };
-typedef std::shared_ptr<Buddy> BuddyPtr;
 
 struct BuddyInvite {
-	BuddyInvite() : send(true) { }
-	bool send;
-	string name;
-	int32_t id;
+	bool send = true;
+	int32_t id = 0;
+	string_t name;
 };
 
-class PlayerBuddyList : boost::noncopyable {
+class PlayerBuddyList {
+	NONCOPYABLE(PlayerBuddyList);
+	NO_DEFAULT_CONSTRUCTOR(PlayerBuddyList);
 public:
 	PlayerBuddyList(Player *player);
-	uint8_t addBuddy(const string &name, const string &group, bool invite = true);
-	void removeBuddy(int32_t charId);
 
-	BuddyPtr getBuddy(int32_t charId) { return m_buddies[charId]; }
-	uint8_t listSize() const { return m_buddies.size(); }
-	vector<int32_t> getBuddyIds(); // For sending the online packet to the players.
-	void addBuddyInvite(const BuddyInvite &invite) { m_pendingBuddies.push_back(invite); }
+	auto addBuddy(const string_t &name, const string_t &group, bool invite = true) -> uint8_t;
+	auto removeBuddy(int32_t charId) -> void;
 
-	void addBuddies(PacketCreator &packet);
-	void checkForPendingBuddy();
-	void removePendingBuddy(int32_t id, bool accepted);
+	auto getBuddy(int32_t charId) -> ref_ptr_t<Buddy> { return m_buddies[charId]; }
+	auto listSize() const -> uint8_t { return m_buddies.size(); }
+	auto getBuddyIds() -> vector_t<int32_t>;
+	auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
+
+	auto addBuddies(PacketCreator &packet) -> void;
+	auto checkForPendingBuddy() -> void;
+	auto removePendingBuddy(int32_t id, bool accepted) -> void;
 private:
-	void addBuddy(soci::session &sql, const soci::row &row);
-	void load();
+	auto addBuddy(soci::session &sql, const soci::row &row) -> void;
+	auto load() -> void;
 
-	bool m_sentRequest;
-	list<BuddyInvite> m_pendingBuddies;
-	unordered_map<int32_t, BuddyPtr> m_buddies;
-	Player *m_player;
+	bool m_sentRequest = false;
+	Player *m_player = nullptr;
+	queue_t<BuddyInvite> m_pendingBuddies;
+	hash_map_t<int32_t, ref_ptr_t<Buddy>> m_buddies;
 };

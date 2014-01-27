@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ yes = askYesNo();
 
 if yes == 1 then
 	m = getMap();
-	toMap = 0;
+	toMap = nil;
 	if m == 101000301 then toMap = 101000300;
 	elseif m == 200000112 then toMap = 200000100;
 	elseif m == 200000122 then toMap = 200000100;
@@ -31,12 +31,12 @@ if yes == 1 then
 	elseif m == 220000110 then toMap = 220000100;
 	elseif m == 240000111 then toMap = 240000100;
 	elseif m == 260000110 then toMap = 260000100;
-	else consoleOutput("Unsupported goOutWaitingRoom map: " .. m);
+	else
+		consoleOutput("Unsupported goOutWaitingRoom map: " .. m);
+		return;
 	end
 
-	if toMap ~= 0 then
-		setMap(toMap, "sp");
-	end
+	setMap(toMap, "sp");
 else
 	addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
 	sendNext();

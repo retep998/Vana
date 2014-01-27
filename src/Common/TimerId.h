@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,12 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Timer {
 
 struct Id {
+	NO_DEFAULT_CONSTRUCTOR(Id);
+public:
 	Id(uint32_t type, uint32_t id, uint32_t id2);
 	uint32_t type;
 	uint32_t id;
 	uint32_t id2;
 
-	bool operator==(const Id &other) const;
+	auto operator==(const Id &other) const -> bool;
 };
 
 inline
@@ -43,7 +45,7 @@ Id::Id(uint32_t type, uint32_t id, uint32_t id2) :
 }
 
 inline
-bool Id::operator==(const Id &other) const {
+auto Id::operator==(const Id &other) const -> bool {
 	return type == other.type && id == other.id && id2 == other.id2;
 }
 
@@ -52,14 +54,8 @@ bool Id::operator==(const Id &other) const {
 namespace std {
 	template <>
 	struct hash<Timer::Id> {
-		size_t operator()(const Timer::Id &v) const {
-			size_t seed = 0;
-
-			MiscUtilities::hash_combine(seed, v.type);
-			MiscUtilities::hash_combine(seed, v.id);
-			MiscUtilities::hash_combine(seed, v.id2);
-
-			return seed;
+		auto operator()(const Timer::Id &v) const -> size_t {
+			return MiscUtilities::hash_combinator(v.type, v.id, v.id2);
 		}
 	};
 }

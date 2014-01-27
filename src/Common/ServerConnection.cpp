@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,13 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/asio.hpp>
 #include <iostream>
 
-void AbstractServerConnection::sendAuth(const string &pass, const string &salt, const IpMatrix &extIp) {
+auto AbstractServerConnection::sendAuth(const string_t &pass, const string_t &salt, const IpMatrix &extIp) -> void {
 	AuthenticationPacket::sendPassword(this, MiscUtilities::hashPassword(pass, salt), extIp);
 }
 
-bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketReader &packet) {
+auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &packet) -> bool {
 	if (packet.getHeader() == IMSG_PASSWORD) {
-		string pass = MiscUtilities::hashPassword(server->getInterPassword(), server->getSalt());
+		string_t pass = MiscUtilities::hashPassword(server.getInterPassword(), server.getSalt());
 		if (packet.getString() == pass) {
 			m_isAuthenticated = true;
 
@@ -42,7 +42,7 @@ bool AbstractServerAcceptConnection::processAuth(AbstractServer *server, PacketR
 			authenticated(type);
 		}
 		else {
-			server->log(LogTypes::ServerAuthFailure, "IP: " + getSession()->getIp().toString());
+			server.log(LogTypes::ServerAuthFailure, "IP: " + getSession()->getIp().toString());
 
 			getSession()->disconnect();
 			return false;

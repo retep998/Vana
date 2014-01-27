@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,27 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
-class CurseDataProvider : boost::noncopyable {
+class CurseDataProvider {
+	SINGLETON(CurseDataProvider);
 public:
-	static CurseDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new CurseDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool isCurseWord(const string &cmp);
+	auto isCurseWord(const string_t &cmp) -> bool;
 private:
-	CurseDataProvider() {}
-	static CurseDataProvider *singleton;
-
-	vector<string> m_curseWords;
+	vector_t<string_t> m_curseWords;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,14 +23,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 
 class Channel : public ExternalIpResolver {
+	NONCOPYABLE(Channel);
 public:
-	Channel() : m_population(0) { }
-
-	void setPort(port_t port) { m_port = port; }
-	void setPopulation(int32_t population) { m_population = population; }
-	port_t getPort() const { return m_port; }
-	int32_t getPopulation() const { return m_population; }
+	Channel() = default;
+	auto setPort(port_t port) -> void { m_port = port; }
+	auto setPopulation(int32_t population) -> void { m_population = population; }
+	auto getPort() const -> port_t { return m_port; }
+	auto getPopulation() const -> int32_t { return m_population; }
 private:
-	port_t m_port;
-	int32_t m_population;
+	port_t m_port = 0;
+	int32_t m_population = 0;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace LevelsPacket {
-	void showExp(Player *player, int32_t exp, bool white, bool inChat);
-	void levelUp(Player *player);
-	void jobChange(Player *player);
-	void statOk(Player *player);
+	auto showExp(Player *player, int32_t exp, bool white, bool inChat) -> void;
+	auto levelUp(Player *player) -> void;
+	auto jobChange(Player *player) -> void;
+	auto statOk(Player *player) -> void;
 }

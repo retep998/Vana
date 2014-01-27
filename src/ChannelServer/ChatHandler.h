@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,14 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
-class Player;
 class PacketReader;
+class Player;
 
 namespace ChatHandler {
-	void initializeCommands();
-	void handleChat(Player *player, PacketReader &packet);
-	bool handleCommand(Player *player, const string &message);
-	void handleGroupChat(Player *player, PacketReader &packet);
+	auto initializeCommands() -> void;
+	auto handleChat(Player *player, PacketReader &packet) -> void;
+	auto handleCommand(Player *player, const string_t &message) -> bool;
+	auto handleGroupChat(Player *player, PacketReader &packet) -> void;
 }

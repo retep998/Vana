@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ class LoginServerConnection;
 class PacketReader;
 
 namespace LoginServerConnectHandler {
-	void connect(LoginServerConnection *connection, PacketReader &packet);
-	void newPlayer(PacketReader &packet);
-	void rehashConfig(PacketReader &packet);
+	auto connect(LoginServerConnection *connection, PacketReader &packet) -> void;
+	auto newPlayer(PacketReader &packet) -> void;
+	auto rehashConfig(PacketReader &packet) -> void;
 }

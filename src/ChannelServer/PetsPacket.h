@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,23 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
 class Item;
 class PacketCreator;
 class Pet;
 class Player;
 
 namespace PetsPacket {
-	void petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false, int8_t index = -1);
-	void showChat(Player *player, Pet *pet, const string &message, int8_t act);
-	void showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen);
-	void showAnimation(Player *player, Pet *pet, int8_t animation);
-	void updatePet(Player *player, Pet *pet, Item *petItem);
-	void levelUp(Player *player, Pet *pet);
-	void changeName(Player *player, Pet *pet);
-	void showPet(Player *player, Pet *pet);
-	void updateSummonedPets(Player *player);
-	void blankUpdate(Player *player);
-	void addInfo(PacketCreator &packet, Pet *pet, Item *petItem);
+	auto petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false, int8_t index = -1) -> void;
+	auto showChat(Player *player, Pet *pet, const string_t &message, int8_t act) -> void;
+	auto showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen) -> void;
+	auto showAnimation(Player *player, Pet *pet, int8_t animation) -> void;
+	auto updatePet(Player *player, Pet *pet, Item *petItem) -> void;
+	auto levelUp(Player *player, Pet *pet) -> void;
+	auto changeName(Player *player, Pet *pet) -> void;
+	auto showPet(Player *player, Pet *pet) -> void;
+	auto updateSummonedPets(Player *player) -> void;
+	auto blankUpdate(Player *player) -> void;
+	auto addInfo(PacketCreator &packet, Pet *pet, Item *petItem) -> void;
 }

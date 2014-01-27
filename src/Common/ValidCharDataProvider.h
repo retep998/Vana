@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,16 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 struct ValidItems {
-	void clear() {
+	auto clear() -> void {
 		hair.clear();
 		haircolor.clear();
 		faces.clear();
@@ -36,21 +32,23 @@ struct ValidItems {
 		shoes.clear();
 		weapons.clear();
 	}
-	vector<int32_t> hair;
-	vector<int32_t> haircolor;
-	vector<int32_t> faces;
-	vector<int32_t> skin;
-	vector<int32_t> top;
-	vector<int32_t> bottom;
-	vector<int32_t> shoes;
-	vector<int32_t> weapons;
+
+	vector_t<int32_t> hair;
+	vector_t<int32_t> haircolor;
+	vector_t<int32_t> faces;
+	vector_t<int32_t> skin;
+	vector_t<int32_t> top;
+	vector_t<int32_t> bottom;
+	vector_t<int32_t> shoes;
+	vector_t<int32_t> weapons;
 };
 
 struct ClassValidItems {
-	void clear() {
+	auto clear() -> void {
 		male.clear();
 		female.clear();
 	}
+
 	ValidItems male;
 	ValidItems female;
 };
@@ -68,32 +66,25 @@ namespace ValidItemType {
 	};
 }
 
-class ValidCharDataProvider : boost::noncopyable {
+class ValidCharDataProvider {
+	SINGLETON(ValidCharDataProvider);
 public:
-	static ValidCharDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new ValidCharDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool isForbiddenName(const string &cmp);
-	bool isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer);
+	auto isForbiddenName(const string_t &cmp) -> bool;
+	auto isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer) -> bool;
 
 	const static int8_t Adventurer = 1;
 	const static int8_t Cygnus = 2;
 private:
-	ValidCharDataProvider() {}
-	static ValidCharDataProvider *singleton;
+	auto loadForbiddenNames() -> void;
+	auto loadCreationItems() -> void;
 
-	void loadForbiddenNames();
-	void loadCreationItems();
+	auto isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) -> bool;
+	auto iterateTest(int32_t id, vector_t<int32_t> *test) -> bool;
+	auto getItems(int8_t gender, int8_t classId) -> ValidItems *;
 
-	bool isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type);
-	bool iterateTest(int32_t id, vector<int32_t> *test);
-	ValidItems * getItems(int8_t gender, int8_t classId);
-
-	vector<string> m_forbiddenNames;
+	vector_t<string_t> m_forbiddenNames;
 	ClassValidItems m_adventurer;
 	ClassValidItems m_cygnus;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,15 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-SkillDataProvider * SkillDataProvider::singleton = nullptr;
-
-void SkillDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Skills... ";
+auto SkillDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Skills... ";
 
 	loadPlayerSkills();
+	loadPlayerSkillLevels();
 	loadMobSkills();
 	loadMobSummons();
 	loadBanishData();
@@ -40,9 +36,22 @@ void SkillDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void SkillDataProvider::loadPlayerSkills() {
+auto SkillDataProvider::loadPlayerSkills() -> void {
+	m_skillLevels.clear();
 	m_skillMaxLevels.clear();
-	m_skills.clear();
+	int32_t skillId;
+
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM skill_player_data");
+
+	for (const auto &row : rs) {
+		skillId = row.get<int32_t>("skillid");
+
+		m_skillLevels[skillId] = hash_map_t<uint8_t, SkillLevelInfo>();
+		m_skillMaxLevels[skillId] = 1;
+	}
+}
+
+auto SkillDataProvider::loadPlayerSkillLevels() -> void {
 	SkillLevelInfo level;
 	int32_t skillId;
 	uint8_t skillLevel;
@@ -83,18 +92,18 @@ void SkillDataProvider::loadPlayerSkills() {
 		level.mpProp = row.get<uint16_t>("mp");
 		level.prop = row.get<uint16_t>("prop");
 		level.morph = row.get<int16_t>("morph");
-		level.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		level.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		level.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
+								Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
 		level.coolTime = row.get<int16_t>("cooldown_time");
 
-		m_skills[skillId][skillLevel] = level;
-		if (m_skillMaxLevels.find(skillId) == m_skillMaxLevels.end() || m_skillMaxLevels[skillId] < skillLevel) {
+		m_skillLevels[skillId][skillLevel] = level;
+		if (m_skillMaxLevels.find(skillId) == std::end(m_skillMaxLevels) || m_skillMaxLevels[skillId] < skillLevel) {
 			m_skillMaxLevels[skillId] = skillLevel;
 		}
 	}
 }
 
-void SkillDataProvider::loadMobSkills() {
+auto SkillDataProvider::loadMobSkills() -> void {
 	m_mobSkills.clear();
 	uint8_t skillId;
 	uint8_t level;
@@ -111,9 +120,9 @@ void SkillDataProvider::loadMobSkills() {
 		mobLevel.y = row.get<int32_t>("y_property");
 		mobLevel.prop = row.get<int16_t>("chance");
 		mobLevel.count = row.get<uint8_t>("target_count");
-		mobLevel.interval = row.get<int16_t>("cooldown");
-		mobLevel.dimensions.leftTop = Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty"));
-		mobLevel.dimensions.rightBottom = Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby"));
+		mobLevel.cooldown = row.get<int16_t>("cooldown");
+		mobLevel.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
+									Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
 		mobLevel.hp = row.get<uint8_t>("hp_limit_percentage");
 		mobLevel.limit = row.get<int16_t>("summon_limit");
 		mobLevel.summonEffect = row.get<int8_t>("summon_effect");
@@ -122,7 +131,7 @@ void SkillDataProvider::loadMobSkills() {
 	}
 }
 
-void SkillDataProvider::loadMobSummons() {
+auto SkillDataProvider::loadMobSummons() -> void {
 	uint8_t level;
 	int32_t mobId;
 
@@ -136,7 +145,7 @@ void SkillDataProvider::loadMobSummons() {
 	}
 }
 
-void SkillDataProvider::loadBanishData() {
+auto SkillDataProvider::loadBanishData() -> void {
 	m_banishInfo.clear();
 	BanishField banish;
 	int32_t mobId;
@@ -146,15 +155,15 @@ void SkillDataProvider::loadBanishData() {
 	for (const auto &row : rs) {
 		mobId = row.get<int32_t>("mobid");
 
-		banish.message = row.get<string>("message");
+		banish.message = row.get<string_t>("message");
 		banish.field = row.get<int32_t>("destination");
-		banish.portal = row.get<string>("portal");
+		banish.portal = row.get<string_t>("portal");
 
 		m_banishInfo[mobId] = banish;
 	}
 }
 
-void SkillDataProvider::loadMorphs() {
+auto SkillDataProvider::loadMorphs() -> void {
 	m_morphInfo.clear();
 	MorphData morph;
 	int16_t morphId;
@@ -165,7 +174,7 @@ void SkillDataProvider::loadMorphs() {
 		morph = MorphData();
 		morphId = row.get<int16_t>("morphid");
 
-		runFlags(row.get<opt_string>("flags"), [&morph](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&morph](const string_t &cmp) {
 			if (cmp == "superman") morph.superman = true;
 		});
 
@@ -178,18 +187,18 @@ void SkillDataProvider::loadMorphs() {
 	}
 }
 
-SkillLevelInfo * SkillDataProvider::getSkill(int32_t skill, uint8_t level) {
-	if (m_skills.find(skill) != m_skills.end()) {
-		if (m_skills[skill].find(level) != m_skills[skill].end()) {
-			return &m_skills[skill][level];
+auto SkillDataProvider::getSkill(int32_t skill, uint8_t level) -> SkillLevelInfo * {
+	if (m_skillLevels.find(skill) != std::end(m_skillLevels)) {
+		if (m_skillLevels[skill].find(level) != std::end(m_skillLevels[skill])) {
+			return &m_skillLevels[skill][level];
 		}
 	}
 	return nullptr;
 }
 
-MobSkillLevelInfo * SkillDataProvider::getMobSkill(uint8_t skill, uint8_t level) {
-	if (m_mobSkills.find(skill) != m_mobSkills.end()) {
-		if (m_mobSkills[skill].find(level) != m_mobSkills[skill].end()) {
+auto SkillDataProvider::getMobSkill(uint8_t skill, uint8_t level) -> MobSkillLevelInfo * {
+	if (m_mobSkills.find(skill) != std::end(m_mobSkills)) {
+		if (m_mobSkills[skill].find(level) != std::end(m_mobSkills[skill])) {
 			return &m_mobSkills[skill][level];
 		}
 	}

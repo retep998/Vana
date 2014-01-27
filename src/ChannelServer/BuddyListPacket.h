@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 class Player;
 struct BuddyInvite;
@@ -52,9 +50,9 @@ namespace BuddyListPacket {
 		};
 	}
 
-	void error(Player *player, uint8_t error);
-	void update(Player *player, uint8_t type);
-	void showSize(Player *player);
-	void invitation(Player *player, const BuddyInvite &invite);
-	void online(Player *player, int32_t charId, int32_t channel);
+	auto error(Player *player, uint8_t error) -> void;
+	auto update(Player *player, uint8_t type) -> void;
+	auto showSize(Player *player) -> void;
+	auto invitation(Player *player, const BuddyInvite &invite) -> void;
+	auto online(Player *player, int32_t charId, int32_t channel) -> void;
 }

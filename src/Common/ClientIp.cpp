@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ ClientIp::ClientIp(const Ip &ip) :
 {
 }
 
-void ClientIp::write(PacketCreator &packet) const {
+auto ClientIp::write(PacketCreator &packet) const -> void {
 	if (m_ip.getType() == Ip::Type::Ipv4) {
 		packet.add<uint32_t>(htonl(m_ip.asIpv4()));
 	}

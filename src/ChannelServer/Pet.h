@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,50 +23,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <soci.h>
 #include <string>
 
-using std::string;
-
 class Item;
 class Player;
 
 class Pet : public MovableLife {
+	NONCOPYABLE(Pet);
+	NO_DEFAULT_CONSTRUCTOR(Pet);
 public:
 	Pet(Player *player, Item *item);
 	Pet(Player *player, Item *item, const soci::row &row);
 
-	void summon(int8_t index) { m_index = index; }
-	void desummon() { m_index.reset(); }
-	void setInventorySlot(int8_t slot) { m_inventorySlot = slot; }
-	void setName(const string &name);
-	void modifyFullness(int8_t offset, bool sendPacket = true);
-	void addCloseness(int16_t amount);
+	auto summon(int8_t index) -> void { m_index = index; }
+	auto desummon() -> void { m_index.reset(); }
+	auto setInventorySlot(int8_t slot) -> void { m_inventorySlot = slot; }
+	auto setName(const string_t &name) -> void;
+	auto modifyFullness(int8_t offset, bool sendPacket = true) -> void;
+	auto addCloseness(int16_t amount) -> void;
 
-	opt_int8_t getIndex() const { return m_index; }
-	int8_t getLevel() const { return m_level; }
-	int8_t getInventorySlot() const { return m_inventorySlot; }
-	int8_t getFullness() const { return m_fullness; }
-	int16_t getCloseness() const { return m_closeness; }
-	int32_t getItemId() const { return m_itemId; }
-	int64_t getId() const { return m_id; }
-	bool isSummoned() const { return m_index.is_initialized(); }
-	string getName() { return m_name; }
-	Pos getPos() const override { return Pos(m_pos.x, m_pos.y - 1); }
-	bool hasNameTag() const;
-	bool hasQuoteItem() const;
+	auto getIndex() const -> opt_int8_t { return m_index; }
+	auto getLevel() const -> int8_t { return m_level; }
+	auto getInventorySlot() const -> int8_t { return m_inventorySlot; }
+	auto getFullness() const -> int8_t { return m_fullness; }
+	auto getCloseness() const -> int16_t { return m_closeness; }
+	auto getItemId() const -> int32_t { return m_itemId; }
+	auto getId() const -> int64_t { return m_id; }
+	auto isSummoned() const -> bool { return m_index.is_initialized(); }
+	auto getName() -> string_t { return m_name; }
+	auto getPos() const -> Pos override { return Pos(m_pos.x, m_pos.y - 1); }
+	auto hasNameTag() const -> bool;
+	auto hasQuoteItem() const -> bool;
 
-	void startTimer();
+	auto startTimer() -> void;
 private:
-	void initializePet(const soci::row &row);
+	auto initializePet(const soci::row &row) -> void;
+	auto levelUp() -> void;
 
 	opt_int8_t m_index;
-	int8_t m_level;
-	int8_t m_fullness;
-	int8_t m_inventorySlot;
-	int16_t m_closeness;
-	int32_t m_itemId;
-	int64_t m_id;
-	string m_name;
-	Player *m_player;
-	Item *m_item;
-
-	void levelUp();
+	int8_t m_level = 1;
+	int8_t m_fullness = Stats::MaxFullness;
+	int8_t m_inventorySlot = 0;
+	int16_t m_closeness = 0;
+	int32_t m_itemId = 0;
+	int64_t m_id = 0;
+	Item *m_item = nullptr;
+	Player *m_player = nullptr;
+	string_t m_name;
 };

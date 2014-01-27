@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,10 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Maps.h"
 #include "Player.h"
 
-unordered_map<int32_t, PortalInfo *> LuaExports::portals;
+hash_map_t<int32_t, PortalInfo *> LuaExports::portals;
 
-LuaPortal::LuaPortal(const string &filename, int32_t playerId, PortalInfo *portal) :
-	LuaScriptable(filename, playerId), m_portal(portal)
+LuaPortal::LuaPortal(const string_t &filename, int32_t playerId, PortalInfo *portal) :
+	LuaScriptable(filename, playerId)
 {
 	LuaExports::portals[playerId] = portal;
 
@@ -36,25 +36,25 @@ LuaPortal::LuaPortal(const string &filename, int32_t playerId, PortalInfo *porta
 	run();
 }
 
-PortalInfo * LuaExports::getPortal(lua_State *luaVm) {
+auto LuaExports::getPortal(lua_State *luaVm) -> PortalInfo * {
 	return portals[getPlayer(luaVm)->getId()];
 }
 
 // Portal
-int LuaExports::getPortalName(lua_State *luaVm) {
+auto LuaExports::getPortalName(lua_State *luaVm) -> int {
 	lua_pushstring(luaVm, getPortal(luaVm)->name.c_str());
 	return 1;
 }
 
-int LuaExports::instantWarp(lua_State *luaVm) {
+auto LuaExports::instantWarp(lua_State *luaVm) -> int {
 	Player *player = getPlayer(luaVm);
-	string portal = lua_tostring(luaVm, 1);
+	string_t portal = lua_tostring(luaVm, 1);
 	int8_t portalId = player->getMap()->getPortal(portal)->id;
 	MapPacket::instantWarp(player, portalId);
 	return 0;
 }
 
-int LuaExports::playPortalSe(lua_State *luaVm) {
+auto LuaExports::playPortalSe(lua_State *luaVm) -> int {
 	EffectPacket::playPortalSoundEffect(getPlayer(luaVm));
 	return 0;
 }

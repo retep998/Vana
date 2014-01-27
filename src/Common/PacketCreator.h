@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,99 +25,102 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 class PacketReader;
 
 class PacketCreator {
 public:
 	PacketCreator();
 
-	template <typename T> void add(T value);
-	template <> void add<bool>(bool value);
-	template <typename T> void addVector(const vector<T> &vec);
-	template <typename T> void addClass(const IPacketWritable &obj);
-	template <typename T> void addClassVector(const vector<T> &vec);
-	template <typename T> void set(T value, size_t pos);
+	template <typename TValue>
+	auto add(TValue value) -> void;
+	template <>
+	auto add<bool>(bool value) -> void;
+	template <typename TValue>
+	auto addVector(const vector_t<TValue> &vec) -> void;
+	template <typename TValue>
+	auto addClass(const IPacketWritable &obj) -> void;
+	template <typename TValue>
+	auto addClassVector(const vector_t<TValue> &vec) -> void;
+	template <typename TValue>
+	auto set(TValue value, size_t pos) -> void;
 
-	void addString(const string &str); // Dynamically-lengthed strings
-	void addString(const string &str, size_t len); // Static-lengthed strings
-	void addBytes(const char *hex);
-	void addBuffer(const unsigned char *bytes, size_t len);
-	void addBuffer(const PacketCreator &packet);
-	void addBuffer(const PacketReader &packet);
+	auto addString(const string_t &str) -> void;
+	auto addString(const string_t &str, size_t len) -> void;
+	auto addBytes(const char *hex) -> void;
+	auto addBuffer(const unsigned char *bytes, size_t len) -> void;
+	auto addBuffer(const PacketCreator &packet) -> void;
+	auto addBuffer(const PacketReader &packet) -> void;
 
-	const unsigned char * getBuffer() const;
-	size_t getSize() const;
-	string toString() const;
+	auto getBuffer() const -> const unsigned char *;
+	auto getSize() const -> size_t;
+	auto toString() const -> string_t;
 private:
 	static const size_t bufferLen = 1000; // Initial buffer length
-	friend std::ostream & operator <<(std::ostream &out, const PacketCreator &packet);
+	friend auto operator <<(std::ostream &out, const PacketCreator &packet) -> std::ostream &;
 
-	unsigned char * getBuffer(size_t pos, size_t len);
-	unsigned char getHexByte(unsigned char input);
+	auto getBuffer(size_t pos, size_t len) -> unsigned char *;
+	auto getHexByte(unsigned char input) -> unsigned char;
 
-	size_t m_pos;
+	size_t m_pos = 0;
+	size_t m_packetCapacity = 0;
 	MiscUtilities::shared_array<unsigned char> m_packet;
-	size_t m_packetCapacity;
 };
 
-template <typename T>
-void PacketCreator::add(T value) {
-	(*(T *) getBuffer(m_pos, sizeof(T))) = value;
-	m_pos += sizeof(T);
+template <typename TValue>
+auto PacketCreator::add(TValue value) -> void {
+	(*(TValue *) getBuffer(m_pos, sizeof(TValue))) = value;
+	m_pos += sizeof(TValue);
 }
 
 template <>
-void PacketCreator::add<bool>(bool value) {
+auto PacketCreator::add<bool>(bool value) -> void {
 	add<int8_t>(value ? 1 : 0);
 }
 
-template <typename T>
-void PacketCreator::set(T value, size_t pos) {
-	(*(T *) getBuffer(pos, sizeof(T))) = value;
+template <typename TValue>
+auto PacketCreator::set(TValue value, size_t pos) -> void {
+	(*(TValue *) getBuffer(pos, sizeof(TValue))) = value;
 }
 
-template <typename T>
-void PacketCreator::addVector(const vector<T> &vec) {
+template <typename TValue>
+auto PacketCreator::addVector(const vector_t<TValue> &vec) -> void {
 	add<uint32_t>(vec.size());
 	for (const auto &iter : vec) {
 		add(iter);
 	}
 }
 
-template <typename T>
-void PacketCreator::addClass(const IPacketWritable &obj) {
+template <typename TValue>
+auto PacketCreator::addClass(const IPacketWritable &obj) -> void {
 	obj.write(*this);
 }
 
-template <typename T>
-void PacketCreator::addClassVector(const vector<T> &vec) {
+template <typename TValue>
+auto PacketCreator::addClassVector(const vector_t<TValue> &vec) -> void {
 	add<uint32_t>(vec.size());
 	for (const auto &iter : vec) {
-		addClass<T>(iter);
+		addClass<TValue>(iter);
 	}
 }
 
 inline
-const unsigned char * PacketCreator::getBuffer() const {
+auto PacketCreator::getBuffer() const -> const unsigned char * {
 	return m_packet.get();
 }
 
 inline
-void PacketCreator::addBuffer(const unsigned char *bytes, size_t len) {
+auto PacketCreator::addBuffer(const unsigned char *bytes, size_t len) -> void {
 	memcpy(getBuffer(m_pos, len), bytes, len);
 	m_pos += len;
 }
 
 inline
-size_t PacketCreator::getSize() const {
+auto PacketCreator::getSize() const -> size_t {
 	return m_pos;
 }
 
 inline
-std::ostream & operator <<(std::ostream &out, const PacketCreator &packet) {
+auto operator <<(std::ostream &out, const PacketCreator &packet) -> std::ostream & {
 	out << packet.toString();
 	return out;
 }

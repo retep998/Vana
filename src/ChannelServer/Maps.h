@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,10 +24,10 @@ class PacketReader;
 class Player;
 
 namespace Maps {
-	Map * getMap(int32_t mapId);
-	void unloadMap(int32_t mapId);
-	void usePortal(Player *player, PortalInfo *portal);
-	void usePortal(Player *player, PacketReader &packet);
-	void useScriptedPortal(Player *player, PacketReader &packet);
-	void addPlayer(Player *player, int32_t mapId);
+	auto getMap(int32_t mapId) -> Map *;
+	auto unloadMap(int32_t mapId) -> void;
+	auto usePortal(Player *player, PortalInfo *portal) -> void;
+	auto usePortal(Player *player, PacketReader &packet) -> void;
+	auto useScriptedPortal(Player *player, PacketReader &packet) -> void;
+	auto addPlayer(Player *player, int32_t mapId) -> void;
 }

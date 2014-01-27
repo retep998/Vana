@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,8 +21,8 @@ class Player;
 class Reactor;
 
 namespace ReactorPacket {
-	void spawnReactor(Reactor *reactor);
-	void showReactor(Player *player, Reactor *reactor);
-	void triggerReactor(Reactor *reactor);
-	void destroyReactor(Reactor *reactor);
+	auto spawnReactor(Reactor *reactor) -> void;
+	auto showReactor(Player *player, Reactor *reactor) -> void;
+	auto triggerReactor(Reactor *reactor) -> void;
+	auto destroyReactor(Reactor *reactor) -> void;
 }

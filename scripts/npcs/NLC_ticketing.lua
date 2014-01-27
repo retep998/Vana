@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,13 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 map = getMap();
 cost = 5000;
-item = 0;
+item = nil;
 
-function isNoob()
+function isBasicTicket()
 	return getLevel() <= 10;
 end
 
-if isNoob() then
+if isBasicTicket() then
 	cost = 1000;
 end
 
@@ -35,8 +35,8 @@ if map == 103000100 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		if isNoob() then item = 4031711;
-		else item = 4031712;
+		if isBasicTicket() then item = 4031710;
+		else item = 4031711;
 		end
 	else
 		addText("Ok, come talk to me again when you want to go to NLC.");
@@ -47,8 +47,8 @@ elseif map == 600010001 then
 	yes = askYesNo();
 
 	if yes == 1 then
-		if isNoob() then item = 4031713;
-		else item = 4031714;
+		if isBasicTicket() then item = 4031712;
+		else item = 4031713;
 		end
 	else
 		addText("Ok, come talk to me again when you want to go back to Kerning City.");
@@ -76,8 +76,8 @@ elseif map == 600010002 then
 	end
 end
 
-if item ~= 0 then
-	if giveMesos(-cost) then
+if item then
+	if hasOpenSlotsFor(item, 1) and giveMesos(-cost) then
 		giveItem(item, 1);
 	else
 		addText("I'm sorry, but you don't have enough money. It costs #b" .. cost .. " Mesos#k. ");

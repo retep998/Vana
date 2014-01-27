@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,10 +25,9 @@ class Player;
 struct MobSkillLevelInfo;
 
 namespace MobHandler {
-	int32_t handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage = 0);
-	void handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillInfo);
-	void handleBomb(Player *player, PacketReader &packet);
-	void monsterControl(Player *player, PacketReader &packet);
-	void friendlyDamaged(Player *player, PacketReader &packet);
-	void handleTurncoats(Player *player, PacketReader &packet);
+	auto handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage = 0) -> int32_t;
+	auto handleBomb(Player *player, PacketReader &packet) -> void;
+	auto monsterControl(Player *player, PacketReader &packet) -> void;
+	auto friendlyDamaged(Player *player, PacketReader &packet) -> void;
+	auto handleTurncoats(Player *player, PacketReader &packet) -> void;
 }

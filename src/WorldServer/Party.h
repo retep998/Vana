@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,31 +23,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::function;
-using std::map;
-using std::string;
-using std::vector;
-
 class PacketCreator;
 class Player;
 
 class Party {
+	NONCOPYABLE(Party);
+	NO_DEFAULT_CONSTRUCTOR(Party);
 public:
 	Party(int32_t id, int32_t leaderId);
 
-	void setLeader(Player *newLeader);
-	void addMember(Player *player, bool first = false);
-	void deleteMember(Player *player, bool kicked);
-	void disband();
-	bool isLeader(int32_t playerId) const { return (playerId == m_leaderId); }
-	int8_t getMemberCount() const { return m_members.size(); }
-	int32_t getId() const { return m_id; }
-	int32_t getLeaderId() const { return m_leaderId; }
+	auto setLeader(Player *newLeader) -> void;
+	auto addMember(Player *player, bool first = false) -> void;
+	auto deleteMember(Player *player, bool kicked) -> void;
+	auto disband() -> void;
+	auto isLeader(int32_t playerId) const -> bool { return playerId == m_leaderId; }
+	auto getMemberCount() const -> int8_t { return m_members.size(); }
+	auto getId() const -> int32_t { return m_id; }
+	auto getLeaderId() const -> int32_t { return m_leaderId; }
 
-	void runFunction(function<void (Player *)> func);
+	auto runFunction(function_t<void(Player *)> func) -> void;
 private:
-	int32_t m_id;
-	int32_t m_leaderId;
-	vector<int32_t> m_oldLeaders;
-	map<int32_t, Player *> m_members;
+	int32_t m_id = 0;
+	int32_t m_leaderId = 0;
+	vector_t<int32_t> m_oldLeaders;
+	ord_map_t<int32_t, Player *> m_members;
 };

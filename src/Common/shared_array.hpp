@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,24 +21,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace MiscUtilities {
 	// Sorta based on Boost's, not really
-	template<typename T>
+	template <typename TElement>
 	class shared_array {
 	private:
-		template<typename U>
+		template <typename TPointer>
 		struct array_deleter {
-			void operator()(U *p) {
+			auto operator()(TPointer *p) -> void {
 				delete[] p;
 			}
 		};
 
-		std::shared_ptr<T> m_ptr;
+		std::shared_ptr<TElement> m_ptr;
 	public:
-		explicit shared_array(T *p = nullptr): m_ptr(p, array_deleter<T>()) { }
+		explicit shared_array(TElement *p = nullptr): m_ptr(p, array_deleter<TElement>()) { }
 		shared_array(const shared_array &r): m_ptr(r.m_ptr) { }
 
-		void reset(T *p = nullptr) { m_ptr.reset(p); }
-		T & operator[] (std::ptrdiff_t i) const { return m_ptr.get()[i]; }
-		T * get() const { return m_ptr.get(); }
+		auto reset(TElement *p = nullptr) -> void { m_ptr.reset(p); }
+		auto operator[](std::ptrdiff_t i) const -> TElement & { return m_ptr.get()[i]; }
+		auto get() const -> TElement * { return m_ptr.get(); }
 		operator bool() const { return m_ptr.get() != nullptr; }
 	};
 }

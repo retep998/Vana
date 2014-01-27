@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,7 +16,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "FileLogger.h"
-#include "LogReplacements.h"
 #include "TimeUtilities.h"
 #ifdef WIN32
 #include <filesystem>
@@ -34,7 +33,7 @@ namespace fs = std::tr2::sys;
 namespace fs = boost::filesystem;
 #endif
 
-FileLogger::FileLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
+FileLogger::FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),
 	m_bufferSize(bufferSize),
 	m_filenameFormat(filename)
@@ -46,19 +45,19 @@ FileLogger::~FileLogger() {
 	flush();
 }
 
-void FileLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
+auto FileLogger::log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void {
 	FileLog file;
-	file.message = Logger::formatLog(type, this, identifier, message);
-	file.file = LogReplacements::format(getFilenameFormat(), type, this, time(nullptr), identifier, message);
+	file.message = Logger::formatLog(getFormat(), type, this, identifier, message);
+	file.file = Logger::formatLog(getFilenameFormat(), type, this, identifier, message);
 	m_buffer.push_back(file);
 	if (m_buffer.size() >= m_bufferSize) {
 		flush();
 	}
 }
 
-void FileLogger::flush() {
+auto FileLogger::flush() -> void {
 	for (const auto &bufferedMessage : m_buffer) {
-		const string &file = bufferedMessage.file;
+		const string_t &file = bufferedMessage.file;
 		fs::path fullPath = fs::system_complete(fs::path(file.substr(0, file.find_last_of("/"))));
 		if (!fs::exists(fullPath)) {
 			fs::create_directories(fullPath);

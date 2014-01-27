@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,5 +22,5 @@ class PacketReader;
 struct Pos;
 
 namespace MovementHandler {
-	Pos parseMovement(MovableLife *life, PacketReader &packet);
+	auto parseMovement(MovableLife *life, PacketReader &packet) -> Pos;
 }

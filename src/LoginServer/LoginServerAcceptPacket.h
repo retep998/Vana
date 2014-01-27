@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,17 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Ip.h"
 #include "Types.h"
-#include <string>
-
-using std::string;
 
 class LoginServerAcceptConnection;
 class World;
 
 namespace LoginServerAcceptPacket {
-	void connect(World *world);
-	void noMoreWorld(LoginServerAcceptConnection *connection);
-	void connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port);
-	void newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip);
-	void rehashConfig(World *world);
+	auto connect(World *world) -> void;
+	auto noMoreWorld(LoginServerAcceptConnection *connection) -> void;
+	auto connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port) -> void;
+	auto newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip) -> void;
+	auto rehashConfig(World *world) -> void;
 }

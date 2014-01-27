@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,22 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::bind;
-
-MapleTvs * MapleTvs::singleton = nullptr;
-
-MapleTvs::MapleTvs() :
-	m_counter(0),
-	m_hasMessage(false)
-{
-	m_timers = std::make_unique<Timer::Container>();
-}
-
-void MapleTvs::addMap(Map *map) {
+auto MapleTvs::addMap(Map *map) -> void {
 	m_maps[map->getId()] = map;
 }
 
-void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, const string &msg2, const string &msg3, const string &msg4, const string &msg5, int32_t megaphoneId, int32_t time) {
+auto MapleTvs::addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, int32_t megaphoneId, int32_t time) -> void {
 	MapleTvMessage message;
 	message.hasReceiver = (receiver != nullptr);
 	message.megaphoneId = megaphoneId;
@@ -67,7 +56,7 @@ void MapleTvs::addMessage(Player *sender, Player *receiver, const string &msg, c
 	}
 }
 
-void MapleTvs::parseBuffer() {
+auto MapleTvs::parseBuffer() -> void {
 	PacketCreator packet;
 	if (m_buffer.size() > 0) {
 		MapleTvMessage message = m_buffer.front();
@@ -79,7 +68,7 @@ void MapleTvs::parseBuffer() {
 		m_currentMessage = message;
 
 		Timer::Id id(Timer::Types::MapleTvTimer, message.senderId, message.counter);
-		Timer::create([this]() { this->parseBuffer(); },
+		Timer::create([this](const time_point_t &now) { this->parseBuffer(); },
 			id, getTimers(), seconds_t(message.time));
 	}
 	else {
@@ -89,25 +78,25 @@ void MapleTvs::parseBuffer() {
 	}
 }
 
-void MapleTvs::sendPacket(PacketCreator &packet) {
+auto MapleTvs::sendPacket(PacketCreator &packet) -> void {
 	for (const auto &kvp : m_maps) {
 		kvp.second->sendPacket(packet);
 	}
 }
 
-seconds_t MapleTvs::checkMessageTimer() const {
+auto MapleTvs::checkMessageTimer() const -> seconds_t {
 	Timer::Id id(Timer::Types::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter);
 	return getTimers()->getSecondsRemaining(id);
 }
 
-void MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) {
-	 getMapleTvPacket(m_currentMessage, packet, checkMessageTimer());
+auto MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) -> void {
+	getMapleTvPacket(m_currentMessage, packet, checkMessageTimer());
 }
 
-void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft) {
+auto MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft) -> void {
 	packet.add<header_t>(SMSG_MAPLETV_ON);
 	packet.add<int8_t>(message.hasReceiver ? 3 : 1);
-	packet.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000)); // Positively will be within -128 to 127
+	packet.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000));
 	packet.addBuffer(message.sendDisplay);
 	packet.addString(message.sendName);
 	packet.addString(message.hasReceiver ? message.recvName : "");
@@ -122,6 +111,6 @@ void MapleTvs::getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, 
 	}
 }
 
-void MapleTvs::endMapleTvPacket(PacketCreator &packet) {
+auto MapleTvs::endMapleTvPacket(PacketCreator &packet) -> void {
 	packet.add<header_t>(SMSG_MAPLETV_OFF);
 }

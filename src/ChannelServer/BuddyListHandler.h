@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,5 +21,5 @@ class Player;
 class PacketReader;
 
 namespace BuddyListHandler {
-	void handleBuddyList(Player *player, PacketReader &packet);
+	auto handleBuddyList(Player *player, PacketReader &packet) -> void;
 }

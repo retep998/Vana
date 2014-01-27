@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,34 +22,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-seconds_t Container::getSecondsRemaining(const Id &id) {
+auto Container::getSecondsRemaining(const Id &id) -> seconds_t {
 	auto iter = m_timers.find(id);
-	if (iter != m_timers.end()) {
-		return std::chrono::duration_cast<seconds_t>(iter->second->getTimeLeft());
+	if (iter != std::end(m_timers)) {
+		return duration_cast<seconds_t>(iter->second->getTimeLeft());
 	}
 	return seconds_t(0);
 }
 
-milliseconds_t Container::getMillisecondsRemaining(const Id &id) {
+auto Container::getMillisecondsRemaining(const Id &id) -> milliseconds_t {
 	auto iter = m_timers.find(id);
-	if (iter != m_timers.end()) {
-		return std::chrono::duration_cast<milliseconds_t>(iter->second->getTimeLeft());
+	if (iter != std::end(m_timers)) {
+		return duration_cast<milliseconds_t>(iter->second->getTimeLeft());
 	}
 	return milliseconds_t(0);
 }
 
-bool Container::isTimerRunning(const Id &id) {
-	return m_timers.find(id) != m_timers.end();
+auto Container::isTimerRunning(const Id &id) -> bool {
+	return m_timers.find(id) != std::end(m_timers);
 }
 
-void Container::registerTimer(shared_ptr<Timer> timer) {
+auto Container::registerTimer(ref_ptr_t<Timer> timer) -> void {
 	m_timers[timer->getId()] = timer;
-	Thread::Instance()->registerTimer(timer);
+	TimerThread::getInstance().registerTimer(timer);
 }
 
-void Container::removeTimer(const Id &id) {
+auto Container::removeTimer(const Id &id) -> void {
 	auto iter = m_timers.find(id);
-	if (iter != m_timers.end()) {
+	if (iter != std::end(m_timers)) {
 		m_timers.erase(iter);
 	}
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,10 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <map>
 
-using std::map;
-using std::unordered_map;
-
-void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string &message, const string &sender) {
+auto WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8_t type, const string_t &message, const string_t &sender) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_PLAYER);
 	packet.add<int32_t>(playerId);
@@ -44,21 +41,21 @@ void WorldServerAcceptPacket::groupChat(uint16_t channel, int32_t playerId, int8
 	packet.addString(sender);
 	packet.addString(message);
 
-	Channels::Instance()->sendToChannel(channel, packet);
+	Channels::getInstance().sendToChannel(channel, packet);
 }
 
-void WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) {
+auto WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(channel);
 	packet.add<port_t>(port);
 
-	packet.addClass<WorldConfig>(WorldServer::Instance()->getConfig());
+	packet.addClass<WorldConfig>(WorldServer::getInstance().getConfig());
 
 	connection->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string &findee, uint8_t is) {
+auto WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string_t &findee, uint8_t is) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_FIND);
 	packet.add<int32_t>(finder);
@@ -69,7 +66,7 @@ void WorldServerAcceptPacket::findPlayer(WorldServerAcceptConnection *connection
 	connection->getSession()->send(packet);
 }
 
-void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string &whisperer, int16_t whispererChannel, const string &message) {
+auto WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, const string_t &whisperer, int16_t whispererChannel, const string_t &message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_WHISPER);
 	packet.add<int32_t>(whisperee);
@@ -77,13 +74,13 @@ void WorldServerAcceptPacket::whisperPlayer(int16_t channel, int32_t whisperee, 
 	packet.add<int16_t>(whispererChannel);
 	packet.addString(message);
 
-	Channels::Instance()->sendToChannel(channel, packet);
+	Channels::getInstance().sendToChannel(channel, packet);
 }
 
-void WorldServerAcceptPacket::rehashConfig(const WorldConfig &config) {
+auto WorldServerAcceptPacket::rehashConfig(const WorldConfig &config) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_REHASH_CONFIG);
 	packet.addClass<WorldConfig>(config);
 
-	Channels::Instance()->sendToAll(packet);
+	Channels::getInstance().sendToAll(packet);
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,48 +20,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <locale>
 #include <sstream>
 #include <string>
-
-using std::function;
-using std::string;
+#include <vector>
 
 namespace StringUtilities {
-	int32_t noCaseCompare(const string &s1, const string &s2);
-	void runFlags(const opt_string &flags, function<void (const string &)> func);
-	void runFlags(const string &flags, function<void (const string &)> func);
-	int64_t atoli(const char *str); // ASCII to long int
-	string replace(const string &input, const string &what, const string &replacement);
-	template<typename T> string delimit(const string &delimiter, const T arr[], size_t arrSize);
-	string bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase = true);
-	template<typename Dst, typename Src> inline Dst lexical_cast(const Src &arg);
-	// trim from both ends
-	inline string trim(string &s);
-	inline string leftTrim(string &s);
-	inline string rightTrim(string &s);
-	inline string toUpper(const string &s);
-	inline string toLower(const string &s);
-	inline string removeSpaces(const string &s);
+	auto runFlags(const opt_string_t &flags, function_t<void (const string_t &)> func) -> void;
+	auto runFlags(const string_t &flags, function_t<void (const string_t &)> func) -> void;
+	auto runEnum(const opt_string_t &enumText, function_t<void (const string_t &)> func) -> void;
+	auto runEnum(const string_t &enumText, function_t<void (const string_t &)> func) -> void;
+	auto noCaseCompare(const string_t &s1, const string_t &s2) -> int32_t;
+	auto atoli(const char *str) -> int64_t;
+	auto replace(const string_t &input, const string_t &what, const string_t &replacement) -> string_t;
+	auto bytesToHex(const unsigned char *input, size_t inputSize, bool uppercase = true) -> string_t;
+	template <typename TElement>
+	auto delimit(const string_t &delimiter, const init_list_t<TElement> &elements) -> string_t;
+	template <typename TElement>
+	auto delimit(const string_t &delimiter, const vector_t<TElement> &elements) -> string_t;
+	template <typename Dst, typename Src>
+	inline
+	auto lexical_cast(const Src &arg) -> Dst;
+
+	inline
+	auto trim(string_t &s) -> string_t;
+	inline
+	auto leftTrim(string_t &s) -> string_t;
+	inline
+	auto rightTrim(string_t &s) -> string_t;
+	inline
+	auto toUpper(const string_t &s) -> string_t;
+	inline
+	auto toLower(const string_t &s) -> string_t;
+	inline
+	auto removeSpaces(const string_t &s) -> string_t;
 }
 
 namespace _impl {
-	template<typename Dst, typename Src>
+	template <typename Dst, typename Src>
 	struct lexical_cast {
-		typedef Src input_type;
-		typedef Dst output_type;
-		static output_type cast(const input_type &input) {
+		using input_type = Src;
+		using output_type = Dst;
+		static auto cast(const input_type &input) -> output_type {
 			// Merely exists to dispatch a common interface to template specializations
 			// This hopefully errors in the event that it actually gets selected and compiles
 			return nullptr;
 		}
 	};
 
-	template<typename Dst>
-	struct lexical_cast<Dst, string> {
-		typedef string input_type;
-		typedef Dst output_type;
-		static output_type cast(const input_type &input) {
+	template <typename Dst>
+	struct lexical_cast<Dst, string_t> {
+		using input_type = string_t;
+		using output_type = Dst;
+		static auto cast(const input_type &input) -> output_type {
 			std::istringstream strm(input);
 			output_type out;
 			strm >> out;
@@ -69,106 +81,123 @@ namespace _impl {
 		}
 	};
 
-	template<typename Src>
-	struct lexical_cast<string, Src> {
-		typedef Src input_type;
-		typedef string output_type;
-		static output_type cast(const input_type &input) {
-			std::ostringstream strm;
+	template <typename Src>
+	struct lexical_cast<string_t, Src> {
+		using input_type = Src;
+		using output_type = string_t;
+		static auto cast(const input_type &input) -> output_type {
+			out_stream_t strm;
 			strm << input;
 			return strm.str();
 		}
 	};
 
-	template<>
-	struct lexical_cast<uint8_t, string> {
-		typedef string input_type;
-		typedef uint8_t output_type;
-		static output_type cast(const input_type &input) {
+	template <>
+	struct lexical_cast<uint8_t, string_t> {
+		using input_type = string_t;
+		using output_type = uint8_t;
+		static auto cast(const input_type &input) -> output_type {
 			return static_cast<output_type>(lexical_cast<uint16_t, input_type>::cast(input));
 		}
 	};
 
-	template<>
-	struct lexical_cast<int8_t, string> {
-		typedef string input_type;
-		typedef int8_t output_type;
-		static output_type cast(const input_type &input) {
+	template <>
+	struct lexical_cast<int8_t, string_t> {
+		using input_type = string_t;
+		using output_type = int8_t;
+		static auto cast(const input_type &input) -> output_type {
 			return static_cast<output_type>(lexical_cast<int16_t, input_type>::cast(input));
 		}
 	};
 
-	template<>
-	struct lexical_cast<string, uint8_t> {
-		typedef uint8_t input_type;
-		typedef string output_type;
-		static output_type cast(const input_type &input) {
+	template <>
+	struct lexical_cast<string_t, uint8_t> {
+		using input_type = uint8_t;
+		using output_type = string_t;
+		static auto cast(const input_type &input) -> output_type {
 			return lexical_cast<output_type, uint16_t>::cast(static_cast<uint16_t>(input));
 		}
 	};
 
-	template<>
-	struct lexical_cast<string, int8_t> {
-		typedef int8_t input_type;
-		typedef string output_type;
-		static output_type cast(const input_type &input) {
+	template <>
+	struct lexical_cast<string_t, int8_t> {
+		using input_type = int8_t;
+		using output_type = string_t;
+		static auto cast(const input_type &input) -> output_type {
 			return lexical_cast<output_type, int16_t>::cast(static_cast<int16_t>(input));
 		}
 	};
 }
 
-template<typename T>
-string StringUtilities::delimit(const string &delimiter, const T arr[], size_t arrSize) {
-	std::ostringstream q("");
-	for (size_t i = 0; i < arrSize; ++i) {
-		if (i != 0) {
+template <typename TElement>
+auto StringUtilities::delimit(const string_t &delimiter, const init_list_t<TElement> &elements) -> string_t {
+	out_stream_t q("");
+	bool addDelimiter = false;
+	for (const auto &element : elements) {
+		if (addDelimiter) {
 			q << delimiter;
 		}
-		q << arr[i];
+		q << element;
+		addDelimiter = true;
 	}
 	return q.str();
 }
 
-template<typename Dst, typename Src>
-inline Dst StringUtilities::lexical_cast(const Src &arg) {
+template <typename TElement>
+auto StringUtilities::delimit(const string_t &delimiter, const vector_t<TElement> &elements) -> string_t {
+	out_stream_t q("");
+	bool addDelimiter = false;
+	for (const auto &element : elements) {
+		if (addDelimiter) {
+			q << delimiter;
+		}
+		q << element;
+		addDelimiter = true;
+	}
+	return q.str();
+}
+
+template <typename Dst, typename Src>
+inline
+auto StringUtilities::lexical_cast(const Src &arg) -> Dst {
 	return _impl::lexical_cast<Dst, Src>::cast(arg);
 }
 
 inline
-string StringUtilities::trim(string &s) {
-	string r = rightTrim(s);
+auto StringUtilities::trim(string_t &s) -> string_t {
+	string_t r = rightTrim(s);
 	return leftTrim(r);
 }
 
 inline
-string StringUtilities::leftTrim(string &s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+auto StringUtilities::leftTrim(string_t &s) -> string_t {
+	s.erase(std::begin(s), std::find_if(std::begin(s), std::end(s), std::not1(std::ptr_fun<int, int>(std::isspace))));
 	return s;
 }
 
 inline
-string StringUtilities::rightTrim(string &s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+auto StringUtilities::rightTrim(string_t &s) -> string_t {
+	s.erase(std::find_if(std::rbegin(s), std::rend(s), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), std::end(s));
 	return s;
 }
 
 inline
-string StringUtilities::toUpper(const string &s) {
-	string ret = s;
-	std::transform(ret.begin(), ret.end(), ret.begin(), [](char x) -> char { return static_cast<char>(std::toupper(x)); });
+auto StringUtilities::toUpper(const string_t &s) -> string_t {
+	string_t ret = s;
+	std::transform(std::begin(ret), std::end(ret), std::begin(ret), [](char x) -> char { return static_cast<char>(std::toupper(x)); });
 	return ret;
 }
 
 inline
-string StringUtilities::toLower(const string &s) {
-	string ret = s;
-	std::transform(ret.begin(), ret.end(), ret.begin(), [](char x) -> char { return static_cast<char>(std::tolower(x)); });
+auto StringUtilities::toLower(const string_t &s) -> string_t {
+	string_t ret = s;
+	std::transform(std::begin(ret), std::end(ret), std::begin(ret), [](char x) -> char { return static_cast<char>(std::tolower(x)); });
 	return ret;
 }
 
 inline
-string StringUtilities::removeSpaces(const string &s) {
-	string ret = s;
-	ret.erase(std::remove_if(ret.begin(), ret.end(), ::isspace), ret.end());
+auto StringUtilities::removeSpaces(const string_t &s) -> string_t {
+	string_t ret = s;
+	ret.erase(std::remove_if(std::begin(ret), std::end(ret), ::isspace), std::end(ret));
 	return ret;
 }

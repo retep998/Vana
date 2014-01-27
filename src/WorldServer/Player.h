@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,51 +18,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.h"
+#include "MapConstants.h"
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 class Party;
 
 class Player {
+	NONCOPYABLE(Player);
 public:
 	Player();
 	Player(int32_t id);
-	void setOnline(bool isOnline) { m_online = isOnline; }
-	void setIp(const Ip &newIp) { m_ip = newIp; }
-	void setChannel(int16_t newChannel) { m_channel = newChannel; }
-	void setOnlineTime(int64_t newTime) { m_onlineTime = newTime; }
-	void setMap(int32_t mapId) { m_map = mapId; }
-	void setJob(int16_t jobId) { m_job = jobId; }
-	void setLevel(uint8_t level) { m_level = level; }
-	void setName(const string &newName) { m_name = newName; }
-	bool isOnline() const { return m_online; }
-	uint8_t getLevel() const { return m_level; }
-	int16_t getChannel() const { return m_channel; }
-	int16_t getJob() const { return m_job; }
-	int32_t getMap() const { return m_map; }
-	int32_t getId() const { return m_id; }
-	int64_t getOnlineTime() const { return m_onlineTime; }
-	string getName() const { return m_name; }
-	const Ip & getIp() const { return m_ip; }
+	auto setOnline(bool isOnline) -> void { m_online = isOnline; }
+	auto setIp(const Ip &newIp) -> void { m_ip = newIp; }
+	auto setChannel(int16_t newChannel) -> void { m_channel = newChannel; }
+	auto setOnlineTime(int64_t newTime) -> void { m_onlineTime = newTime; }
+	auto setMap(int32_t mapId) -> void { m_map = mapId; }
+	auto setJob(int16_t jobId) -> void { m_job = jobId; }
+	auto setLevel(uint8_t level) -> void { m_level = level; }
+	auto setName(const string_t &newName) -> void { m_name = newName; }
+	auto isOnline() const -> bool { return m_online; }
+	auto getLevel() const -> uint8_t { return m_level; }
+	auto getChannel() const -> int16_t { return m_channel; }
+	auto getJob() const -> int16_t { return m_job; }
+	auto getMap() const -> int32_t { return m_map; }
+	auto getId() const -> int32_t { return m_id; }
+	auto getOnlineTime() const -> int64_t { return m_onlineTime; }
+	auto getName() const -> string_t { return m_name; }
+	auto getIp() const -> const Ip & { return m_ip; }
 
 	// Party
-	void setParty(Party *party) { m_party = party; }
-	Party * getParty() const { return m_party; }
+	auto setParty(Party *party) -> void { m_party = party; }
+	auto getParty() const -> Party * { return m_party; }
 private:
-	void initialize();
-
-	bool m_online;
-	bool m_cashShop; // No, we're not adding it at the moment
-	uint8_t m_level;
-	int16_t m_channel;
-	int16_t m_job;
-	int32_t m_id;
-	int32_t m_map;
-	int64_t m_onlineTime;
-	int64_t m_inviteTime;
-	string m_name;
+	bool m_online = false;
+	bool m_cashShop = false;
+	uint8_t m_level = 0;
+	int16_t m_channel = -1;
+	int16_t m_job = -1;
+	int32_t m_id = 0;
+	int32_t m_map = Maps::NoMap;
+	int64_t m_onlineTime = 0;
+	int64_t m_inviteTime = 0;
+	Party *m_party = nullptr;
+	string_t m_name;
 	Ip m_ip;
-	Party *m_party;
 };

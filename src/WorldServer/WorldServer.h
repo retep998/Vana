@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,52 +22,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.h"
 #include "Ip.h"
 #include "LoginServerConnection.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include "WorldServerAcceptConnection.h"
 #include <string>
 
-using std::string;
-
 class PacketCreator;
 
-class WorldServer : public AbstractServer, boost::noncopyable {
+class WorldServer : public AbstractServer {
+	SINGLETON_CUSTOM_CONSTRUCTOR(WorldServer);
 public:
-	static WorldServer * Instance() {
-		if (singleton == nullptr)
-			singleton = new WorldServer;
-		return singleton;
-	}
-	void loadData() override;
-	void loadConfig() override;
-	void loadLogConfig() override;
-	void rehashConfig(const WorldConfig &config);
-	void listen() override;
-	opt_string makeLogIdentifier() override;
+	auto loadData() -> void override;
+	auto loadConfig() -> void override;
+	auto loadLogConfig() -> void override;
+	auto listen() -> void override;
+	auto makeLogIdentifier() -> opt_string_t override;
 
-	void setWorldId(int8_t id) { m_worldId = id; }
-	void setInterPort(port_t port) { m_port = port; }
-	void setScrollingHeader(const string &message);
-	void setConfig(const WorldConfig &config);
-	void setRates(const Rates &rates);
-	void resetRates();
-	void sendPacketToLogin(const PacketCreator &packet);
+	auto rehashConfig(const WorldConfig &config) -> void;
 
-	bool isConnected() const { return (m_worldId != -1); }
-	int8_t getWorldId() const { return m_worldId; }
-	port_t getInterPort() const { return m_port; }
-	int32_t getMaxChannels() const { return m_config.maxChannels; }
-	string getScrollingHeader() { return m_config.scrollingHeader.c_str(); }
-	WorldConfig & getConfig() { return m_config; }
+	auto setWorldId(int8_t id) -> void { m_worldId = id; }
+	auto setInterPort(port_t port) -> void { m_port = port; }
+	auto setScrollingHeader(const string_t &message) -> void;
+	auto setConfig(const WorldConfig &config) -> void;
+	auto setRates(const Rates &rates) -> void;
+	auto resetRates() -> void;
+	auto sendPacketToLogin(const PacketCreator &packet) -> void;
+
+	auto isConnected() const -> bool { return m_worldId != -1; }
+	auto getWorldId() const -> int8_t { return m_worldId; }
+	auto getInterPort() const -> port_t { return m_port; }
+	auto getMaxChannels() const -> int32_t { return m_config.maxChannels; }
+	auto getScrollingHeader() -> string_t { return m_config.scrollingHeader.c_str(); }
+	auto getConfig() -> WorldConfig & { return m_config; }
 private:
-	WorldServer();
-	static WorldServer *singleton;
-
-	int8_t m_worldId;
-	port_t m_loginPort;
-	port_t m_port;
+	int8_t m_worldId = -1;
+	port_t m_loginPort = 0;
+	port_t m_port = 0;
 	Ip m_loginIp;
 	WorldConfig m_config;
 	Rates m_defaultRates;
-	LoginServerConnection *m_loginConnection;
+	LoginServerConnection *m_loginConnection = nullptr;
 };

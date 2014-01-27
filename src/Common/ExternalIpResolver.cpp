@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ ExternalIpResolver::ExternalIpResolver(const Ip &defaultIp, const IpMatrix &exte
 {
 }
 
-Ip ExternalIpResolver::matchIpToSubnet(const Ip &test) const {
+auto ExternalIpResolver::matchIpToSubnet(const Ip &test) const -> Ip {
 	if (test.getType() != m_defaultIp.getType()) throw std::invalid_argument("IP type must match the external IP type");
 
 	Ip ret = m_defaultIp;

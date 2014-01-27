@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,19 +23,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.h"
 #include <iostream>
 
-bool InfoFunctions::help(Player *player, const string &args) {
+auto InfoFunctions::help(Player *player, const string_t &args) -> bool {
 	using ChatHandlerFunctions::CommandList;
 	if (args.length() != 0) {
-		if (CommandList.find(args) != CommandList.end()) {
+		if (CommandList.find(args) != std::end(CommandList)) {
 			ChatHandlerFunctions::showSyntax(player, args, true);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Command \"" + args + "\" does not exist.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid command: " + args);
 		}
 	}
 	else {
 		bool has = false;
-		std::ostringstream strm;
+		out_stream_t strm;
 		strm << "You may not use any commands.";
 		for (const auto &kvp : CommandList) {
 			if (player->getGmLevel() >= kvp.second.level) {
@@ -48,46 +48,46 @@ bool InfoFunctions::help(Player *player, const string &args) {
 				strm << kvp.first << " ";
 			}
 		}
-		PlayerPacket::showMessage(player, strm.str(), PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, strm.str());
 	}
 	return true;
 }
 
-bool InfoFunctions::lookup(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\w+) (.+)", matches)) {
+auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches)) {
 		uint16_t type = 0;
 		uint16_t subType = 0;
 
-		string test = matches[1];
+		string_t rawType = matches[1];
 		// These constants correspond to MCDB enum types
-		if (test == "item") type = 1;
-		else if (test == "equip") { type = 1; subType = 1; }
-		else if (test == "use") { type = 1; subType = 2; }
-		else if (test == "etc") { type = 1; subType = 4; }
-		else if (test == "cash") { type = 1; subType = 5; }
-		else if (test == "skill") type = 2;
-		else if (test == "map") type = 3;
-		else if (test == "mob") type = 4;
-		else if (test == "npc") type = 5;
-		else if (test == "quest") type = 6;
+		if (rawType == "item") type = 1;
+		else if (rawType == "equip") { type = 1; subType = 1; }
+		else if (rawType == "use") { type = 1; subType = 2; }
+		else if (rawType == "etc") { type = 1; subType = 4; }
+		else if (rawType == "cash") { type = 1; subType = 5; }
+		else if (rawType == "skill") type = 2;
+		else if (rawType == "map") type = 3;
+		else if (rawType == "mob") type = 4;
+		else if (rawType == "npc") type = 5;
+		else if (rawType == "quest") type = 6;
 		// The rest of the constants don't, they're merely there for later processing
-		else if (test == "id") type = 100;
-		else if (test == "continent") type = 200;
-		else if (test == "scriptbyname") type = 300;
-		else if (test == "scriptbyid") type = 400;
-		else if (test == "whatdrops") type = 500;
-		else if (test == "whatmaps") type = 600;
-		else if (test == "music") type = 700;
-		else if (test == "drops") type = 800;
+		else if (rawType == "id") type = 100;
+		else if (rawType == "continent") type = 200;
+		else if (rawType == "scriptbyname") type = 300;
+		else if (rawType == "scriptbyid") type = 400;
+		else if (rawType == "whatdrops") type = 500;
+		else if (rawType == "whatmaps") type = 600;
+		else if (rawType == "music") type = 700;
+		else if (rawType == "drops") type = 800;
 
 		if (type != 0) {
 			soci::session &sql = Database::getDataDb();
-			auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function<void(const soci::row &row, std::ostringstream &str)> formatMessage) {
+			auto displayFunc = [&sql, &player](const soci::rowset<> &rs, function_t<void(const soci::row &row, out_stream_t &str)> formatMessage) {
 				// Bug in the behavior of SOCI
 				// In the case where you use dynamic resultset binding, got_data() will not properly report that it got results
 
-				std::ostringstream str("");
+				out_stream_t str("");
 				bool found = false;
 				for (const auto &row : rs) {
 					found = true;
@@ -95,18 +95,18 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 					str.str("");
 					str.clear();
 					formatMessage(row, str);
-					PlayerPacket::showMessage(player, str.str(), PlayerPacket::NoticeTypes::Blue);
+					ChatHandlerFunctions::showInfo(player, str.str());
 				}
 
 				if (!found) {
-					PlayerPacket::showMessage(player, "No results.", PlayerPacket::NoticeTypes::Red);
+					ChatHandlerFunctions::showError(player, "No results");
 				}
 			};
 
-			string q = matches[2];
+			string_t q = matches[2];
 			if (type < 200) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 				};
 
 				if (type == 100) {
@@ -139,19 +139,20 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				}
 			}
 			else if (type == 200) {
-				int32_t mapId = ChatHandlerFunctions::getMap(matches[2], player);
+				string_t rawMap = matches[2];
+				int32_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
 				if (Maps::getMap(mapId) != nullptr) {
-					std::ostringstream message;
-					message << mapId << " : " << static_cast<int32_t>(MapDataProvider::Instance()->getContinent(mapId));
-					PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
+					out_stream_t message;
+					message << mapId << " : " << static_cast<int32_t>(MapDataProvider::getInstance().getContinent(mapId));
+					ChatHandlerFunctions::showInfo(player, message.str());
 				}
 				else {
-					PlayerPacket::showMessage(player, "Invalid map.", PlayerPacket::NoticeTypes::Red);
+					ChatHandlerFunctions::showError(player, "Invalid map: " + rawMap);
 				}
 			}
 			else if (type == 300 || type == 400) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<int32_t>(1) << " (" << row.get<string>(0) << "): " << row.get<string>(2);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(1) << " (" << row.get<string_t>(0) << "): " << row.get<string_t>(2);
 				};
 
 				if (type == 300) {
@@ -165,8 +166,8 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				}
 			}
 			else if (type == 500) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 				};
 
 				soci::rowset<> rs = (sql.prepare
@@ -184,8 +185,8 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				displayFunc(rs, format);
 			}
 			else if (type == 600) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 				};
 
 				soci::rowset<> rs = (sql.prepare
@@ -198,8 +199,8 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				displayFunc(rs, format);
 			}
 			else if (type == 700) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<string>(0);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<string_t>(0);
 				};
 
 				q = "%" + q + "%";
@@ -212,17 +213,17 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 				displayFunc(rs, format);
 			}
 			else if (type == 800) {
-				auto format = [](const soci::row &row, std::ostringstream &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string>(1);
+				auto format = [](const soci::row &row, out_stream_t &str) {
+					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1) << " (base rate " << (static_cast<double>(row.get<int32_t>(2)) / 1000000. * 100.) << "%)";
 				};
 
 				soci::rowset<> rs = (sql.prepare
-					<< "SELECT d.itemid, s.label "
+					<< "SELECT d.itemid, s.label, d.chance "
 					<< "FROM drop_data d "
 					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
 					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM user_drop_data) AND d.dropperid = :q "
 					<< "UNION ALL "
-					<< "SELECT d.itemid, s.label "
+					<< "SELECT d.itemid, s.label, d.chance "
 					<< "FROM user_drop_data d "
 					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
 					<< "WHERE d.dropperid = :q "
@@ -233,27 +234,27 @@ bool InfoFunctions::lookup(Player *player, const string &args) {
 			}
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid search type - valid options are: {item, equip, use, etc, cash, skill, map, mob, npc, quest, continent, id, scriptbyname, scriptbyid}", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid search type: " + rawType);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool InfoFunctions::pos(Player *player, const string &args) {
+auto InfoFunctions::pos(Player *player, const string_t &args) -> bool {
 	Pos p = player->getPos();
-	std::ostringstream msg;
-	msg << "(FH, X, Y): (" << player->getFh() << ", " << p.x << ", " << p.y << ")";
-	PlayerPacket::showMessage(player, msg.str(), PlayerPacket::NoticeTypes::Blue);
+	out_stream_t msg;
+	msg << "(Foothold, {X, Y}): (" << player->getFoothold() << ", " << p << ")";
+	ChatHandlerFunctions::showInfo(player, msg.str());
 	return true;
 }
 
-bool InfoFunctions::online(Player *player, const string &args) {
-	std::ostringstream igns;
+auto InfoFunctions::online(Player *player, const string_t &args) -> bool {
+	out_stream_t igns;
 	igns << "IGNs: ";
 	int32_t i = 0;
 	const int32_t max = 100;
-	PlayerDataProvider::Instance()->run([&i, &max, &igns](Player *player) {
+	PlayerDataProvider::getInstance().run([&i, &max, &igns](Player *player) {
 		if (i < max) {
 			if (i != 0) {
 				igns << ", ";
@@ -262,23 +263,23 @@ bool InfoFunctions::online(Player *player, const string &args) {
 			i++;
 		}
 	});
-	PlayerPacket::showMessage(player, igns.str(), PlayerPacket::NoticeTypes::Blue);
+	ChatHandlerFunctions::showInfo(player, igns.str());
 	return true;
 }
 
-bool InfoFunctions::variable(Player *player, const string &args) {
-	cmatch matches;
-	if (!ChatHandlerFunctions::runRegexPattern(args, "(\\w+)", matches)) {
+auto InfoFunctions::variable(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches)) {
 		return false;
 	}
 
-	string test = matches[1];
-	string val = player->getVariables()->getVariable(test);
+	string_t key = matches[1];
+	string_t val = player->getVariables()->getVariable(key);
 	if (!val.empty()) {
-		PlayerPacket::showMessage(player, test + ": " + val, PlayerPacket::NoticeTypes::Blue);
+		ChatHandlerFunctions::showInfo(player, key + ": " + val);
 	}
 	else {
-		PlayerPacket::showMessage(player, "Variable '" + test + "' did not exist or has a blank value", PlayerPacket::NoticeTypes::Red);
+		ChatHandlerFunctions::showError(player, "Invalid variable: " + key);
 	}
 	return true;
 }

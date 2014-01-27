@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,22 +33,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <memory>
 
-using Initializing::OutputWidth;
-
-PlayerDataProvider * PlayerDataProvider::singleton = nullptr;
-
 PlayerDataProvider::PlayerDataProvider() :
 	m_partyIds(1, 100000)
 {
 }
 
-void PlayerDataProvider::loadData() {
-	int16_t worldId = WorldServer::Instance()->getWorldId();
+auto PlayerDataProvider::loadData() -> void {
+	int16_t worldId = WorldServer::getInstance().getWorldId();
 	loadPlayers(worldId);
 }
 
-void PlayerDataProvider::loadPlayers(int16_t worldId) {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Players... ";
+auto PlayerDataProvider::loadPlayers(int16_t worldId) -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Players... ";
 
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT c.character_id, c.name "
@@ -63,8 +59,8 @@ void PlayerDataProvider::loadPlayers(int16_t worldId) {
 	std::cout << "DONE" << std::endl;
 }
 
-void PlayerDataProvider::loadPlayer(int32_t playerId) {
-	if (m_players.find(playerId) != m_players.end()) {
+auto PlayerDataProvider::loadPlayer(int32_t playerId) -> void {
+	if (m_players.find(playerId) != std::end(m_players)) {
 		return;
 	}
 
@@ -81,9 +77,9 @@ void PlayerDataProvider::loadPlayer(int32_t playerId) {
 	SyncPacket::PlayerPacket::characterCreated(playerId);
 }
 
-void PlayerDataProvider::loadPlayer(const soci::row &row) {
+auto PlayerDataProvider::loadPlayer(const soci::row &row) -> void {
 	Player *p = new Player(row.get<int32_t>("character_id"));
-	p->setName(row.get<string>("name"));
+	p->setName(row.get<string_t>("name"));
 	p->setJob(-1);
 	p->setLevel(-1);
 	p->setMap(-1);
@@ -91,11 +87,11 @@ void PlayerDataProvider::loadPlayer(const soci::row &row) {
 	playerConnect(p, false);
 }
 
-void PlayerDataProvider::getPlayerDataPacket(PacketCreator &packet, int32_t playerId) {
+auto PlayerDataProvider::getPlayerDataPacket(PacketCreator &packet, int32_t playerId) -> void {
 	generatePlayerDataPacket(packet, m_players[playerId].get());
 }
 
-void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
+auto PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) -> void {
 	packet.add<uint32_t>(m_players.size());
 	for (const auto &kvp : m_players) {
 		Player *player = kvp.second.get();
@@ -116,7 +112,7 @@ void PlayerDataProvider::getChannelConnectPacket(PacketCreator &packet) {
 	}
 }
 
-void PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player *player) {
+auto PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player *player) -> void {
 	packet.add<int32_t>(0);
 	packet.add<bool>(false);
 	packet.add<uint8_t>(player->getLevel());
@@ -128,13 +124,13 @@ void PlayerDataProvider::generatePlayerDataPacket(PacketCreator &packet, Player 
 }
 
 // Players
-void PlayerDataProvider::initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip) {
-	std::shared_ptr<Player> player = m_players[id];
+auto PlayerDataProvider::initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip) -> void {
+	ref_ptr_t<Player> player = m_players[id];
 	player->setIp(ip);
 }
 
-void PlayerDataProvider::playerConnect(Player *player, bool online) {
-	if (m_players.find(player->getId()) == m_players.end()) {
+auto PlayerDataProvider::playerConnect(Player *player, bool online) -> void {
+	if (m_players.find(player->getId()) == std::end(m_players)) {
 		m_players[player->getId()].reset(player);
 	}
 	if (online) {
@@ -142,22 +138,22 @@ void PlayerDataProvider::playerConnect(Player *player, bool online) {
 		if (player->getParty() != nullptr) {
 			//SyncHandler::logInLogOut(player->getId());
 		}
-		Channels::Instance()->increasePopulation(player->getChannel());
+		Channels::getInstance().increasePopulation(player->getChannel());
 	}
 }
 
-void PlayerDataProvider::playerDisconnect(int32_t id, int16_t channel) {
+auto PlayerDataProvider::playerDisconnect(int32_t id, int16_t channel) -> void {
 	Player *player = m_players[id].get();
 	if (channel == -1 || player->getChannel() == channel) {
 		player->setOnline(false);
 		if (player->getParty() != nullptr) {
 			//SyncHandler::logInLogOut(id);
 		}
-		Channels::Instance()->decreasePopulation(channel);
+		Channels::getInstance().decreasePopulation(channel);
 	}
 }
 
-Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) {
+auto PlayerDataProvider::getPlayer(const string_t &name, bool includeOffline) -> Player * {
 	Player *player = nullptr;
 	bool found = false;
 	for (const auto &kvp : m_players) {
@@ -176,13 +172,13 @@ Player * PlayerDataProvider::getPlayer(const string &name, bool includeOffline) 
 	return player;
 }
 
-int32_t PlayerDataProvider::getPlayerQuantity() {
+auto PlayerDataProvider::getPlayerQuantity() -> int32_t {
 	return m_players.size();
 }
 
-Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
+auto PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) -> Player * {
 	auto kvp = m_players.find(id);
-	if (kvp != m_players.end()) {
+	if (kvp != std::end(m_players)) {
 		Player *player = kvp->second.get();
 		if (player->isOnline() || includeOffline) {
 			return player;
@@ -191,7 +187,7 @@ Player * PlayerDataProvider::getPlayer(int32_t id, bool includeOffline) {
 	return nullptr;
 }
 
-void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
+auto PlayerDataProvider::removeChannelPlayers(uint16_t channel) -> void {
 	for (const auto &kvp : m_players) {
 		Player *player = kvp.second.get();
 		if (player->getChannel() == channel) {
@@ -202,43 +198,43 @@ void PlayerDataProvider::removeChannelPlayers(uint16_t channel) {
 }
 
 // Channel changes
-void PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelId) {
+auto PlayerDataProvider::addPendingPlayer(int32_t id, uint16_t channelId) -> void {
 	m_channelSwitches[id] = channelId;
 }
 
-void PlayerDataProvider::removePendingPlayer(int32_t id) {
+auto PlayerDataProvider::removePendingPlayer(int32_t id) -> void {
 	auto kvp = m_channelSwitches.find(id);
-	if (kvp != m_channelSwitches.end()) {
+	if (kvp != std::end(m_channelSwitches)) {
 		m_channelSwitches.erase(kvp);
 	}
 }
 
-int16_t PlayerDataProvider::removePendingPlayerEarly(int32_t id) {
+auto PlayerDataProvider::removePendingPlayerEarly(int32_t id) -> int16_t {
 	int16_t channel = -1;
 	auto kvp = m_channelSwitches.find(id);
-	if (kvp != m_channelSwitches.end()) {
+	if (kvp != std::end(m_channelSwitches)) {
 		channel = kvp->second;
 		m_channelSwitches.erase(kvp);
 	}
 	return channel;
 }
 
-uint16_t PlayerDataProvider::getPendingPlayerChannel(int32_t id) {
+auto PlayerDataProvider::getPendingPlayerChannel(int32_t id) -> uint16_t {
 	auto kvp = m_channelSwitches.find(id);
-	return (kvp != m_channelSwitches.end() ? kvp->second : -1);
+	return (kvp != std::end(m_channelSwitches) ? kvp->second : -1);
 }
 
 // Parties
-int32_t PlayerDataProvider::getPartyId() {
+auto PlayerDataProvider::getPartyId() -> int32_t {
 	return m_partyIds.next();
 }
 
-Party * PlayerDataProvider::getParty(int32_t id) {
+auto PlayerDataProvider::getParty(int32_t id) -> Party * {
 	auto kvp = m_parties.find(id);
-	return (kvp != m_parties.end() ? kvp->second.get() : nullptr);
+	return (kvp != std::end(m_parties) ? kvp->second.get() : nullptr);
 }
 
-void PlayerDataProvider::createParty(int32_t playerId) {
+auto PlayerDataProvider::createParty(int32_t playerId) -> void {
 	Player *player = getPlayer(playerId);
 	if (player->getParty() != nullptr) {
 		// Hacking
@@ -250,7 +246,7 @@ void PlayerDataProvider::createParty(int32_t playerId) {
 	m_parties[party->getId()].reset(party);
 }
 
-void PlayerDataProvider::removePartyMember(int32_t playerId) {
+auto PlayerDataProvider::removePartyMember(int32_t playerId) -> void {
 	Player *player = getPlayer(playerId);
 	Party *party = player->getParty();
 	if (party == nullptr) {
@@ -268,20 +264,20 @@ void PlayerDataProvider::removePartyMember(int32_t playerId) {
 	}
 }
 
-void PlayerDataProvider::removePartyMember(int32_t playerId, int32_t target) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+auto PlayerDataProvider::removePartyMember(int32_t playerId, int32_t target) -> void {
+	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	Party *party = player->getParty();
 	if (party == nullptr || !party->isLeader(playerId)) {
 		// Hacking
 		return;
 	}
 
-	Player *targetPlayer = PlayerDataProvider::Instance()->getPlayer(target, true);
+	Player *targetPlayer = PlayerDataProvider::getInstance().getPlayer(target, true);
 	party->deleteMember(targetPlayer, true);
 }
 
-void PlayerDataProvider::addPartyMember(int32_t playerId) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+auto PlayerDataProvider::addPartyMember(int32_t playerId) -> void {
+	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	Party *party = player->getParty();
 	if (party != nullptr) {
 		// Hacking
@@ -293,8 +289,8 @@ void PlayerDataProvider::addPartyMember(int32_t playerId) {
 	}
 }
 
-void PlayerDataProvider::setPartyLeader(int32_t playerId, int32_t leaderId) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
+auto PlayerDataProvider::setPartyLeader(int32_t playerId, int32_t leaderId) -> void {
+	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	Party *party = player->getParty();
 	if (party == nullptr || !party->isLeader(playerId)) {
 		// Hacking

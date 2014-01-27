@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,42 +21,66 @@ function beginInstance()
 end
 
 function playerDisconnect(playerId, isPartyLeader)
-	startInstanceTimer("clean", 1, false);
+	cleanUpZakum();
 end
 
 function timerEnd(name, fromTimer)
-	cleanUpZakum();
+	if fromTimer then
+		if name == "delayedMarkForDelete" then
+			cleanUpZakum();
+		end
+	end
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	b = isInstanceMap(newMap);
 	if not b then
-		-- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerId);
-		startInstanceTimer("clean", 1, false);
+		cleanUpZakum();
 	elseif b then
 		if setPlayer(playerId) then
 			gm = isGm();
-			gmInstance = getInstanceVariable("gm", true);
-			if (gm and gmInstance) or (not gm and not gmInstance) then
+			gmInstance = getInstanceVariable("gm");
+			if gm == gmInstance then
 				addInstancePlayer(playerId);
+				stopInstanceTimer("delayedMarkForDelete");
 			end
 			revertPlayer();
 		end
 	end
 end
 
+function mobDeath(mobId, mapMobId, mapId)
+	-- Expire Zakum timer and add a get out timer to this if holding becomes a problem
+end
+
+function mobSpawn(mobId, mapMobId, mapId)
+	if mobId == 8800000 then
+		setInstanceVariable("summoned", true);
+	end
+	-- Summon holding timer can expire here and this is where the actual Zakum timer would start
+end
+
 function cleanUpZakum()
 	if getInstancePlayerCount() == 0 then
-		setReactorState(211042300, 2118002, 0);
+		instanceDelay = nil;
+		if setInstance("zakumSignup") then
+			instanceDelay = getInstanceTime();
+			revertInstance();
+		end
+		if instanceDelay then
+			startInstanceTimer("delayedMarkForDelete", instanceDelay + 5);
+			return;
+		end
+		if getInstanceVariable("summoned") then
+			setReactorState(211042300, 2118002, 0);
+		end
 		markForDelete();
 	end
 end
 
 function playerDeath(playerId) end
 function instanceTimerEnd(fromTimer) end
-function mobDeath(mobId, mapMobId, mapId) end -- Add a timer to this if holding becomes a problem
-function mobSpawn(mobId, mapMobId, mapId) end -- Remove timer here
 function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
 function partyDisband(partyId) end
 function partyRemoveMember(partyId, playerId) end

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,31 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
-
-using std::unordered_map;
 
 class PacketCreator;
 class Pet;
 class Player;
 
-class PlayerPets : boost::noncopyable {
+class PlayerPets {
+	NONCOPYABLE(PlayerPets);
+	NO_DEFAULT_CONSTRUCTOR(PlayerPets);
 public:
 	PlayerPets(Player *player) : m_player(player) { }
 
-	void save();
-	void petInfoPacket(PacketCreator &packet);
-	void connectData(PacketCreator &packet);
+	auto save() -> void;
+	auto petInfoPacket(PacketCreator &packet) -> void;
+	auto connectData(PacketCreator &packet) -> void;
 
-	Pet * getPet(int64_t petId);
-	Pet * getSummoned(int8_t index);
+	auto getPet(int64_t petId) -> Pet *;
+	auto getSummoned(int8_t index) -> Pet *;
 
-	void addPet(Pet *pet);
-	void setSummoned(int8_t index, int64_t petId);
+	auto addPet(Pet *pet) -> void;
+	auto setSummoned(int8_t index, int64_t petId) -> void;
 private:
-	unordered_map<int64_t, Pet *> m_pets;
-	unordered_map<int8_t, int64_t> m_summoned;
-	Player *m_player;
+	Player *m_player = nullptr;
+	hash_map_t<int64_t, Pet *> m_pets;
+	hash_map_t<int8_t, int64_t> m_summoned;
 };

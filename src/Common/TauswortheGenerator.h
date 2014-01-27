@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,18 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 
-class TauswortheGenerator : boost::noncopyable {
+class TauswortheGenerator {
+	NONCOPYABLE(TauswortheGenerator);
+	NO_DEFAULT_CONSTRUCTOR(TauswortheGenerator);
 public:
-	TauswortheGenerator();
 	TauswortheGenerator(uint32_t seed1, uint32_t seed2, uint32_t seed3);
 
-	void reset(uint32_t seed1, uint32_t seed2, uint32_t seed3);
-	void skip();
-	void skip(int32_t skipStateCount);
-	uint32_t next();
+	auto reset(uint32_t seed1, uint32_t seed2, uint32_t seed3) -> void;
+	auto skip() -> void;
+	auto skip(int32_t skipStateCount) -> void;
+	auto next() -> uint32_t;
 private:
 	uint32_t m_seed1;
 	uint32_t m_seed2;

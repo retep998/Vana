@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace StoragePacket {
-	void showStorage(Player *player, int32_t npcId);
-	void addItem(Player *player, int8_t inv);
-	void takeItem(Player *player, int8_t inv);
-	void changeMesos(Player *player, int32_t mesos);
-	void storageFull(Player *player);
-	void noMesos(Player *player);
+	auto showStorage(Player *player, int32_t npcId) -> void;
+	auto addItem(Player *player, int8_t inv) -> void;
+	auto takeItem(Player *player, int8_t inv) -> void;
+	auto changeMesos(Player *player, int32_t mesos) -> void;
+	auto storageFull(Player *player) -> void;
+	auto noMesos(Player *player) -> void;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,39 +24,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 class AbstractServer;
 class PacketReader;
 
 class AbstractServerConnection : public AbstractConnection {
 public:
-	AbstractServerConnection() { m_isServer = true; }
-	void sendAuth(const string &pass, const string &salt, const IpMatrix &extIp);
-	int8_t getType() const { return m_type; }
+	AbstractServerConnection()
+	{
+		m_isServer = true;
+	}
+
+	auto sendAuth(const string_t &pass, const string_t &salt, const IpMatrix &extIp) -> void;
+	auto getType() const -> int8_t { return m_type; }
 protected:
-	void setType(int8_t type) { m_type = type; }
+	auto setType(int8_t type) -> void { m_type = type; }
 private:
-	int8_t m_type;
+	int8_t m_type = -1;
 };
 
 class AbstractServerAcceptConnection : public AbstractConnection {
 public:
-	AbstractServerAcceptConnection() : m_isAuthenticated(false) { m_isServer = true; }
-	bool processAuth(AbstractServer *server, PacketReader &packet);
-	virtual void authenticated(int8_t type) = 0;
+	AbstractServerAcceptConnection()
+	{
+		m_isServer = true;
+	}
 
-	bool isAuthenticated() const { return m_isAuthenticated; }
-	int8_t getType() const { return m_type; }
+	auto processAuth(AbstractServer &server, PacketReader &packet) -> bool;
+	virtual auto authenticated(int8_t type) -> void = 0;
 
-	Ip matchSubnet(const Ip &test) const { return m_resolver.matchIpToSubnet(test); }
-	void setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) { m_resolver.setExternalIpInformation(defaultIp, matrix); }
-	const IpMatrix & getExternalIps() const { return m_resolver.getExternalIps(); }
+	auto isAuthenticated() const -> bool { return m_isAuthenticated; }
+	auto getType() const -> int8_t { return m_type; }
+
+	auto matchSubnet(const Ip &test) const -> Ip { return m_resolver.matchIpToSubnet(test); }
+	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void { m_resolver.setExternalIpInformation(defaultIp, matrix); }
+	auto getExternalIps() const -> const IpMatrix & { return m_resolver.getExternalIps(); }
 protected:
-	void setType(int8_t type) { m_type = type; }
+	auto setType(int8_t type) -> void { m_type = type; }
 private:
-	int8_t m_type;
-	bool m_isAuthenticated;
+	bool m_isAuthenticated = false;
+	int8_t m_type = -1;
 	ExternalIpResolver m_resolver;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-void PlayerPets::addPet(Pet *pet) {
+auto PlayerPets::addPet(Pet *pet) -> void {
 	m_pets[pet->getId()] = pet;
 
 	if (pet->isSummoned()) {
@@ -29,23 +29,23 @@ void PlayerPets::addPet(Pet *pet) {
 	}
 }
 
-Pet * PlayerPets::getPet(int64_t petId) {
-	return m_pets.find(petId) != m_pets.end() ? m_pets[petId] : nullptr;
+auto PlayerPets::getPet(int64_t petId) -> Pet * {
+	return m_pets.find(petId) != std::end(m_pets) ? m_pets[petId] : nullptr;
 }
 
-void PlayerPets::setSummoned(int8_t index, int64_t petId) {
+auto PlayerPets::setSummoned(int8_t index, int64_t petId) -> void {
 	m_summoned[index] = petId;
 }
 
-Pet * PlayerPets::getSummoned(int8_t index) {
+auto PlayerPets::getSummoned(int8_t index) -> Pet * {
 	return m_summoned[index] > 0 ? m_pets[m_summoned[index]] : nullptr;
 }
 
-void PlayerPets::save() {
+auto PlayerPets::save() -> void {
 	if (m_pets.size() > 0) {
 		soci::session &sql = Database::getCharDb();
 		opt_int8_t index = 0;
-		string name = "";
+		string_t name = "";
 		int8_t level = 0;
 		int16_t closeness = 0;
 		int8_t fullness = 0;
@@ -80,7 +80,7 @@ void PlayerPets::save() {
 	}
 }
 
-void PlayerPets::petInfoPacket(PacketCreator &packet) {
+auto PlayerPets::petInfoPacket(PacketCreator &packet) -> void {
 	Item *it;
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
@@ -105,7 +105,7 @@ void PlayerPets::petInfoPacket(PacketCreator &packet) {
 	packet.add<int8_t>(0); // End of pets / start of taming mob
 }
 
-void PlayerPets::connectData(PacketCreator &packet) {
+auto PlayerPets::connectData(PacketCreator &packet) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
 			packet.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());

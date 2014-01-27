@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,11 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "PlayerModFunctions.h"
 #include "PlayerPacket.h"
-#include "WarpFunctions.h"
 
 CommandListType ChatHandlerFunctions::CommandList;
 
-void ChatHandlerFunctions::initialize() {
+auto ChatHandlerFunctions::initialize() -> void {
 	// Set up commands and appropriate GM levels
 	ChatCommand command;
 
@@ -43,7 +42,7 @@ void ChatHandlerFunctions::initialize() {
 
 	command.command = &ManagementFunctions::ban;
 	command.syntax = "<$player name> [#reason]";
-	command.notes.push_back("Permanently bans a player by name.");
+	command.notes.push_back("Permanently bans a player by name");
 	command.notes.push_back("Reason codes:");
 	command.notes.push_back("1 - Hacking");
 	command.notes.push_back("2 - Using macro/auto-keyboard");
@@ -62,52 +61,52 @@ void ChatHandlerFunctions::initialize() {
 
 	command.command = &ManagementFunctions::ipBan;
 	command.syntax = "<$player name> [#reason]";
-	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons.");
-	command.notes.push_back("Use !help ban to see the applicable reason codes.");
+	command.notes.push_back("Permanently bans a player's IP based on their name. Does not ban the account for various reasons");
+	command.notes.push_back("Use !help ban to see the applicable reason codes");
 	CommandList["ipban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::tempBan;
 	command.syntax = "<$player name> <#reason> <#length in days>";
-	command.notes.push_back("Temporarily bans a player by name.");
-	command.notes.push_back("Use !help ban to see the applicable reason codes.");
+	command.notes.push_back("Temporarily bans a player by name");
+	command.notes.push_back("Use !help ban to see the applicable reason codes");
 	CommandList["tempban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::unban;
 	command.syntax = "<$player name>";
-	command.notes.push_back("Removes a ban from the database.");
+	command.notes.push_back("Removes a ban from the database");
 	CommandList["unban"] = command.addToMap();
 
 	command.command = &ManagementFunctions::header;
 	command.syntax = "[$message]";
-	command.notes.push_back("Changes the scrolling message at the top of the screen.");
+	command.notes.push_back("Changes the scrolling message at the top of the screen");
 	CommandList["header"] = command.addToMap();
 
 	command.command = &ManagementFunctions::shutdown;
-	command.notes.push_back("Stops the current ChannelServer.");
+	command.notes.push_back("Stops the current ChannelServer");
 	CommandList["shutdown"] = command.addToMap();
 
 	command.command = &MapFunctions::timer;
 	command.syntax = "<#time in seconds>";
-	command.notes.push_back("Displays a timer at the top of the map.");
+	command.notes.push_back("Displays a timer at the top of the map");
 	CommandList["timer"] = command.addToMap();
 
 	command.command = &MapFunctions::instruction;
 	command.syntax = "<$bubble text>";
-	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players.");
+	command.notes.push_back("Displays a bubble. With shiny text. Somewhat useless for managing players");
 	CommandList["instruction"] = command.addToMap();
 
 	command.command = &ManagementFunctions::addNpc;
 	command.syntax = "<#npc ID>";
-	command.notes.push_back("Permanently adds an NPC to a map.");
+	command.notes.push_back("Permanently adds an NPC to a map");
 	CommandList["addnpc"] = command.addToMap();
 
 	command.command = &ManagementFunctions::calculateRanks;
-	command.notes.push_back("Forces ranking recalculation.");
+	command.notes.push_back("Forces ranking recalculation");
 	CommandList["dorankings"] = command.addToMap();
 
 	command.command = &MessageFunctions::globalMessage;
 	command.syntax = "<${notice | box | red | blue}> <$message>";
-	command.notes.push_back("Displays a message to every channel on every world.");
+	command.notes.push_back("Displays a message to every channel on every world");
 	CommandList["globalmessage"] = command.addToMap();
 	#pragma endregion
 
@@ -116,40 +115,42 @@ void ChatHandlerFunctions::initialize() {
 
 	command.command = &MessageFunctions::gmMessage;
 	command.syntax = "<$message>";
-	command.notes.push_back("Displays a message to all other online GMs.");
+	command.notes.push_back("Displays a message to all other online GMs");
 	CommandList["me"] = command.addToMap();
 
 	command.command = &ManagementFunctions::kick;
 	command.syntax = "<$player name>";
-	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level.");
+	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level");
 	CommandList["kick"] = command.addToMap();
 
-	command.command = &WarpFunctions::warp;
-	command.syntax = "<$player name> [#map ID]";
-	command.notes.push_back("Warps the specified player to your map or the map you specify.");
+	command.command = &ManagementFunctions::warp;
+	command.syntax = "<${map | player | self | current | channel}> <${map | player | self | current}> <$map string | #map ID | $player name> [$map string | #map ID | $player name]";
+	command.notes.push_back("Warps the source argument to the destination argument");
+	command.notes.push_back("This is a complicated command, but here are some examples with explanations:");
+	command.notes.push_back("1: !warp player player Bill James");
+	command.notes.push_back("2: !warp map map gm 4th");
+	command.notes.push_back("3: !warp self player James");
+	command.notes.push_back("4: !warp current player James");
+	command.notes.push_back("5: !warp channel map henesys");
+	command.notes.push_back("#1 warps player Bill to player James");
+	command.notes.push_back("#2 warps all players on the GM map to the 4th job map");
+	command.notes.push_back("#3 warps the user to player James");
+	command.notes.push_back("#4 warps all players on the user's map to player James");
+	command.notes.push_back("#5 warps all players on the channel to Henesys");
+	command.notes.push_back("Not all combinations of arguments work (e.g. self self)");
 	CommandList["warp"] = command.addToMap();
 
-	command.command = &WarpFunctions::warpAll;
-	command.syntax = "[#map ID]";
-	command.notes.push_back("Warps all players to your map or the map you specify.");
-	CommandList["warpall"] = command.addToMap();
-
-	command.command = &WarpFunctions::warpMap;
-	command.syntax = "[#map ID]";
-	command.notes.push_back("Warps all players in your current map to your map or the map you specify.");
-	CommandList["warpmap"] = command.addToMap();
-
 	command.command = &MapFunctions::killAllMobs;
-	command.notes.push_back("Kills all mobs on the current map.");
+	command.notes.push_back("Kills all mobs on the current map");
 	CommandList["killall"] = command.addToMap();
 
 	command.command = &MapFunctions::clearDrops;
-	command.notes.push_back("Clears all drops from the current map.");
+	command.notes.push_back("Clears all drops from the current map");
 	CommandList["cleardrops"] = command.addToMap();
 
 	command.command = &MessageFunctions::worldMessage;
 	command.syntax = "<${notice | box | red | blue}> <$message>";
-	command.notes.push_back("Displays a message to every channel on the current world.");
+	command.notes.push_back("Displays a message to every channel on the current world");
 	CommandList["worldmessage"] = command.addToMap();
 	#pragma endregion
 
@@ -158,30 +159,30 @@ void ChatHandlerFunctions::initialize() {
 
 	command.command = &ManagementFunctions::kill;
 	command.syntax = "<${players | gm | all | me} | $player name>";
-	command.notes.push_back("If you are GM level 1, you can only kill yourself with this.");
-	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player.");
+	command.notes.push_back("If you are GM level 1, you can only kill yourself with this");
+	command.notes.push_back("If you are above GM level 1, you may kill GMs, players, everyone on a map, yourself, or the specified player");
 	CommandList["kill"] = command.addToMap();
 
 	command.command = &InfoFunctions::lookup;
 	command.syntax = "<${item | equip | use | etc | cash | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid | whatdrops | whatmaps | music | drops}> <$search | #id>";
-	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value.");
-	command.notes.push_back("Use !help map to see valid string values for continent lookup.");
+	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value");
+	command.notes.push_back("Use !help map to see valid string values for continent lookup");
 	command.notes.push_back("Searches that are based on ID: continent, id, scriptbyid, whatdrops, whatmaps, drops");
 	command.notes.push_back("Searches that are based on search string: item, equip, use, etc, cash, skill, map, mob, npc, quest, scriptbyname, music");
 	CommandList["lookup"] = command.addToMap();
 
 	command.command = &InfoFunctions::variable;
 	command.syntax = "<$variable name>";
-	command.notes.push_back("Displays the value for a given player variable (or an error if the value is blank/doesn't exist).");
+	command.notes.push_back("Displays the value for a given player variable (or an error if the value is blank/doesn't exist)");
 	CommandList["variable"] = command.addToMap();
 
 	command.command = &ManagementFunctions::map;
-	command.syntax = "<${town | map string | boss map string} | #map ID>";
-	command.notes.push_back("Warps you to a desired map.");
+	command.syntax = "<$map string | #map ID>";
+	command.notes.push_back("Warps you to a desired map");
 	command.notes.push_back("-------------");
 	command.notes.push_back("Valid maps");
 	command.notes.push_back("-------------");
-	command.notes.push_back("Special: gm | fm | happyville | town | here | back | 3rd | stone | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
+	command.notes.push_back("Special: town | return | here | back | gm | fm | happyville | 3rd | stone | 4th | grendel | athena | darklord | danceswithbalrog | kyrin");
 	command.notes.push_back("Maple Island: southperry | amherst");
 	command.notes.push_back("Victoria: henesys | hhg | perion | ellinia | sleepywood | lith | florina | kerning | port | sharenian");
 	command.notes.push_back("Ossyria: orbis | nath | leafre | mulung | herbtown | ariant | magatia");
@@ -196,12 +197,12 @@ void ChatHandlerFunctions::initialize() {
 	command.notes.push_back("PQ Bosses: ergoth | lordpirate | alishar | papapixie | kingslime");
 	command.notes.push_back("Area Bosses: mushmom | bluemushmom | zombiemushmom | manon | griffey | jrbalrog | anego | tengu | lilynouch | dodo | lyka");
 	command.notes.push_back("Bosses: pap | zakum | horntail | pianus | grandpa | bean");
-	command.notes.push_back("Boss-Related: zakumdoor | zakumsignup | caveoflifeentrance | caveoflife | horntailsignup");
+	command.notes.push_back("Boss-Related: zakumdoor | zakumsignup | caveoflifeentrance | caveoflife | horntailsignup | beansignup");
 	CommandList["map"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::job;
-	command.syntax = "<${job string} | #job ID>";
-	command.notes.push_back("Sets your job.");
+	command.syntax = "<$job string | #job ID>";
+	command.notes.push_back("Sets your job");
 	command.notes.push_back("Valid job strings:");
 	command.notes.push_back("beginner | noblesse");
 	command.notes.push_back("warrior | fighter | sader | hero | page | wk | paladin | spearman | dk | drk");
@@ -219,190 +220,190 @@ void ChatHandlerFunctions::initialize() {
 
 	command.command = &PlayerModFunctions::level;
 	command.syntax = "<#level>";
-	command.notes.push_back("Sets your player's level to the specified amount.");
+	command.notes.push_back("Sets your player's level to the specified amount");
 	CommandList["level"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::hp;
 	command.syntax = "<#hp>";
-	command.notes.push_back("Sets your player's HP to the specified amount.");
+	command.notes.push_back("Sets your player's HP to the specified amount");
 	CommandList["hp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::mp;
 	command.syntax = "<#mp>";
-	command.notes.push_back("Sets your player's MP to the specified amount.");
+	command.notes.push_back("Sets your player's MP to the specified amount");
 	CommandList["mp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::ap;
 	command.syntax = "<#ap>";
-	command.notes.push_back("Sets your player's AP to the specified amount.");
+	command.notes.push_back("Sets your player's AP to the specified amount");
 	CommandList["ap"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::sp;
 	command.syntax = "<#sp>";
-	command.notes.push_back("Sets your player's SP to the specified amount.");
+	command.notes.push_back("Sets your player's SP to the specified amount");
 	CommandList["sp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::addSp;
 	command.syntax = "<#skill ID> [#skill points]";
-	command.notes.push_back("Adds SP to the desired skill.");
+	command.notes.push_back("Adds SP to the desired skill");
 	CommandList["addsp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::maxSp;
 	command.syntax = "<#skill ID> [#skill points]";
-	command.notes.push_back("Sets the skill's max SP to the desired level.");
+	command.notes.push_back("Sets the skill's max SP to the desired level");
 	CommandList["maxsp"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modInt;
 	command.syntax = "<#int>";
-	command.notes.push_back("Sets your player's INT to the specified amount.");
+	command.notes.push_back("Sets your player's INT to the specified amount");
 	CommandList["int"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modLuk;
 	command.syntax = "<#luk>";
-	command.notes.push_back("Sets your player's LUK to the specified amount.");
+	command.notes.push_back("Sets your player's LUK to the specified amount");
 	CommandList["luk"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modDex;
 	command.syntax = "<#dex>";
-	command.notes.push_back("Sets your player's DEX to the specified amount.");
+	command.notes.push_back("Sets your player's DEX to the specified amount");
 	CommandList["dex"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modStr;
 	command.syntax = "<#str>";
-	command.notes.push_back("Sets your player's STR to the specified amount.");
+	command.notes.push_back("Sets your player's STR to the specified amount");
 	CommandList["str"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::fame;
 	command.syntax = "<#fame>";
-	command.notes.push_back("Sets your player's fame to the specified amount.");
+	command.notes.push_back("Sets your player's fame to the specified amount");
 	CommandList["fame"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::maxStats;
-	command.notes.push_back("Sets all your core stats to their maximum values.");
+	command.notes.push_back("Sets all your core stats to their maximum values");
 	CommandList["maxstats"] = command.addToMap();
 
 	command.command = &ManagementFunctions::npc;
 	command.syntax = "<#npc ID>";
-	command.notes.push_back("Runs the NPC script of the NPC you specify.");
+	command.notes.push_back("Runs the NPC script of the NPC you specify");
 	CommandList["npc"] = command.addToMap();
 
 	command.command = &ManagementFunctions::item;
 	command.syntax = "<#item ID> [#amount]";
-	command.notes.push_back("Gives you an item.");
+	command.notes.push_back("Gives you an item");
 	CommandList["item"] = command.addToMap();
 
 	command.command = &MapFunctions::summon;
 	command.syntax = "<#mob ID> [#amount]";
-	command.notes.push_back("Spawns monsters.");
+	command.notes.push_back("Spawns monsters");
 	CommandList["summon"] = command;
 	CommandList["spawn"] = command.addToMap();
 
 	command.command = &MessageFunctions::channelMessage;
 	command.syntax = "<$message>";
-	command.notes.push_back("Displays a blue GM notice.");
+	command.notes.push_back("Displays a blue GM notice");
 	CommandList["notice"] = command.addToMap();
 
 	command.command = &ManagementFunctions::shop;
 	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID>";
-	command.notes.push_back("Shows you the desired shop.");
+	command.notes.push_back("Shows you the desired shop");
 	CommandList["shop"] = command.addToMap();
 
 	command.command = &InfoFunctions::pos;
-	command.notes.push_back("Displays your current position and foothold on the map.");
+	command.notes.push_back("Displays your current position and foothold on the map");
 	CommandList["pos"] = command.addToMap();
 
 	command.command = &MapFunctions::zakum;
-	command.notes.push_back("Spawns Zakum.");
+	command.notes.push_back("Spawns Zakum");
 	CommandList["zakum"] = command.addToMap();
 
 	command.command = &MapFunctions::horntail;
-	command.notes.push_back("Spawns Horntail.");
+	command.notes.push_back("Spawns Horntail");
 	CommandList["horntail"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::heal;
-	command.notes.push_back("Sets your HP and MP to 100%.");
+	command.notes.push_back("Sets your HP and MP to 100%");
 	CommandList["heal"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::modMesos;
 	command.syntax = "<#meso amount>";
-	command.notes.push_back("Sets your mesos to the specified amount.");
+	command.notes.push_back("Sets your mesos to the specified amount");
 	CommandList["mesos"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::disconnect;
-	command.notes.push_back("Disconnects yourself.");
+	command.notes.push_back("Disconnects yourself");
 	CommandList["dc"] = command.addToMap();
 
 	command.command = &MapFunctions::music;
 	command.syntax = "[$music name]";
-	command.notes.push_back("Sets the music for a given map.");
-	command.notes.push_back("Using \"default\" will reset the map to default music.");
+	command.notes.push_back("Sets the music for a given map");
+	command.notes.push_back("Using \"default\" will reset the map to default music");
 	CommandList["music"] = command.addToMap();
 
 	command.command = &ManagementFunctions::storage;
-	command.notes.push_back("Shows your storage.");
+	command.notes.push_back("Shows your storage");
 	CommandList["storage"] = command.addToMap();
 
 	command.command = &MapFunctions::eventInstruction;
-	command.notes.push_back("Shows event instructions for Ola Ola, etc.");
+	command.notes.push_back("Shows event instructions for Ola Ola, etc");
 	CommandList["eventinstruct"] = command.addToMap();
 
 	command.command = &ManagementFunctions::relog;
-	command.notes.push_back("Logs you back in to the current channel.");
+	command.notes.push_back("Logs you back in to the current channel");
 	CommandList["relog"] = command.addToMap();
 
 	command.command = &PlayerModFunctions::save;
-	command.notes.push_back("Saves your stats.");
+	command.notes.push_back("Saves your stats");
 	CommandList["save"] = command.addToMap();
 
-	command.command = &WarpFunctions::warpTo;
-	command.syntax = "<$player name>";
-	command.notes.push_back("Warps you to the specified player.");
-	CommandList["warpto"] = command.addToMap();
-
 	command.command = &ManagementFunctions::killNpc;
-	command.notes.push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs.");
+	command.notes.push_back("Used when scripts leave an NPC hanging. This command will clear the NPC and allow you to use other NPCs");
 	CommandList["killnpc"] = command.addToMap();
 
 	command.command = &MapFunctions::listMobs;
-	command.notes.push_back("Lists all the mobs on the map.");
+	command.notes.push_back("Lists all the mobs on the map");
 	CommandList["listmobs"] = command.addToMap();
+
+	command.command = &MapFunctions::listPortals;
+	command.syntax = "[$map string | #map ID]";
+	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map");
+	CommandList["listportals"] = command.addToMap();
 
 	command.command = &MapFunctions::getMobHp;
 	command.syntax = "<#map mob ID>";
-	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs.");
+	command.notes.push_back("Gets the HP of a specific mob based on the map mob ID that you can get from !listmobs");
 	CommandList["getmobhp"] = command.addToMap();
 
 	command.command = &MapFunctions::killMob;
 	command.syntax = "<#map mob ID>";
-	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs.");
+	command.notes.push_back("Kills a specific mob based on the map mob ID that you can get from !listmobs");
 	CommandList["killmob"] = command.addToMap();
 
 	command.command = &ManagementFunctions::reload;
 	command.syntax = "<${all | items | drops | mobs | beauty | shops | scripts | reactors | pets | quests | skills}>";
-	command.notes.push_back("Reloads data from the database.");
+	command.notes.push_back("Reloads data from the database");
 	CommandList["reload"] = command.addToMap();
 
 	command.command = &ManagementFunctions::changeChannel;
 	command.syntax = "<#channel>";
-	command.notes.push_back("Allows you to change channels on any map.");
+	command.notes.push_back("Allows you to change channels on any map");
 	CommandList["cc"] = command.addToMap();
 
 	command.command = &InfoFunctions::online;
-	command.notes.push_back("Allows you to see up to 100 players on the current channel.");
+	command.notes.push_back("Allows you to see up to 100 players on the current channel");
 	CommandList["online"] = command.addToMap();
 
 	command.command = &ManagementFunctions::lag;
 	command.syntax = "<$player>";
-	command.notes.push_back("Allows you to view the lag of any player.");
+	command.notes.push_back("Allows you to view the lag of any player");
 	CommandList["lag"] = command.addToMap();
 
 	command.command = &ManagementFunctions::rehash;
-	command.notes.push_back("Rehashes world configurations after modification.");
+	command.notes.push_back("Rehashes world configurations after modification");
 	CommandList["rehash"] = command.addToMap();
 
 	command.command = &ManagementFunctions::rates;
 	command.syntax = "[${view | mobexp | mobmeso | questexp | drop}] [#new rate]";
-	command.notes.push_back("Sets or resets the rates on the current world.");
+	command.notes.push_back("Sets or resets the rates on the current world");
 	CommandList["rates"] = command.addToMap();
 	#pragma endregion
 
@@ -424,12 +425,16 @@ void ChatHandlerFunctions::initialize() {
 	CustomFunctions::initialize(CommandList);
 }
 
-int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
+auto ChatHandlerFunctions::getMap(const string_t &query, Player *player) -> int32_t {
 	int32_t mapId = -1;
 	// Special
 	if (query == "here") mapId = player->getMapId();
 	else if (query == "back") mapId = player->getLastMapId();
 	else if (query == "town") mapId = player->getMap()->getReturnMap();
+	else if (query == "return") {
+		mapId = player->getMap()->getForcedReturn();
+		if (mapId == Maps::NoMap) mapId = player->getMap()->getReturnMap();
+	}
 	else if (query == "gm") mapId = Maps::GmMap;
 	else if (query == "fm") mapId = 910000000;
 	else if (query == "4th") mapId = 240010501;
@@ -528,6 +533,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	else if (query == "caveoflife") mapId = 240050000;
 	else if (query == "zakumsignup") mapId = 211042400;
 	else if (query == "horntailsignup") mapId = 240050400;
+	else if (query == "beansignup") mapId = 270050000;
 	else {
 		char *endptr;
 		mapId = strtol(query.c_str(), &endptr, 0);
@@ -536,7 +542,7 @@ int32_t ChatHandlerFunctions::getMap(const string &query, Player *player) {
 	return mapId;
 }
 
-int16_t ChatHandlerFunctions::getJob(const string &query) {
+auto ChatHandlerFunctions::getJob(const string_t &query) -> int16_t {
 	int16_t job = -1;
 	if (query == "beginner") job = Jobs::JobIds::Beginner;
 	else if (query == "warrior") job = Jobs::JobIds::Swordsman;
@@ -603,19 +609,16 @@ int16_t ChatHandlerFunctions::getJob(const string &query) {
 	else if (query == "thunder2") job = Jobs::JobIds::ThunderBreaker2;
 	else if (query == "thunder3") job = Jobs::JobIds::ThunderBreaker3;
 	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
-	else if (query == "0") job = Jobs::JobIds::Beginner;
 	else {
-		job = atoi(query.c_str());
-		if (job == 0) {
-			// Invalid conversion
-			job = -1;
-		}
+		char *endptr;
+		job = static_cast<int16_t>(strtol(query.c_str(), &endptr, 0));
+		if (strlen(endptr) != 0) job = -1;
 	}
 	return job;
 }
 
-string ChatHandlerFunctions::getBanString(int8_t reason) {
-	string banMessage = ".";
+auto ChatHandlerFunctions::getBanString(int8_t reason) -> string_t {
+	string_t banMessage = ".";
 	switch (reason) {
 		case 0x01: banMessage = " for hacking."; break;
 		case 0x02: banMessage = " for using macro/auto-keyboard."; break;
@@ -634,7 +637,7 @@ string ChatHandlerFunctions::getBanString(int8_t reason) {
 	return banMessage;
 }
 
-int8_t ChatHandlerFunctions::getMessageType(const string &query) {
+auto ChatHandlerFunctions::getMessageType(const string_t &query) -> int8_t {
 	int8_t ret = -1;
 	if (query == "notice") ret = PlayerPacket::NoticeTypes::Notice;
 	else if (query == "box") ret = PlayerPacket::NoticeTypes::Box;
@@ -643,25 +646,33 @@ int8_t ChatHandlerFunctions::getMessageType(const string &query) {
 	return ret;
 }
 
-bool ChatHandlerFunctions::runRegexPattern(const string &args, const string &pattern, cmatch &matches) {
-	regex re;
+auto ChatHandlerFunctions::runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> bool {
+	std::regex re;
 	re = pattern; // Why, C++, why?
 	// Compiles matches if successful and will return true
 	// Otherwise returns false
-	return std::regex_match(args.c_str(), matches, re);
+	return std::regex_match(args, matches, re);
 }
 
-void ChatHandlerFunctions::showSyntax(Player *player, const string &command, bool fromHelp) {
-	if (CommandList.find(command) != CommandList.end()) {
+auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, bool fromHelp) -> void {
+	if (CommandList.find(command) != std::end(CommandList)) {
 		ChatCommand &cmd = CommandList[command];
-		const string &msg = "Usage: !" + command + " " + cmd.syntax;
-		PlayerPacket::showMessage(player, msg, PlayerPacket::NoticeTypes::Blue);
+		auto displayStyle = fromHelp ? showInfo : showError;
+		displayStyle(player, "Usage: !" + command + " " + cmd.syntax);
 
 		if (fromHelp) {
-			PlayerPacket::showMessage(player, "Notes: " + cmd.notes[0], PlayerPacket::NoticeTypes::Blue);
+			displayStyle(player, "Notes: " + cmd.notes[0]);
 			for (size_t i = 1; i < cmd.notes.size(); i++) {
-				PlayerPacket::showMessage(player, cmd.notes[i], PlayerPacket::NoticeTypes::Blue);
+				displayStyle(player, cmd.notes[i]);
 			}
 		}
 	}
+}
+
+auto ChatHandlerFunctions::showError(Player *player, const string_t &message) -> void {
+	PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
+}
+
+auto ChatHandlerFunctions::showInfo(Player *player, const string_t &message) -> void {
+	PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
 }

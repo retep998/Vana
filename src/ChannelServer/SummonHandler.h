@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,11 +34,11 @@ namespace SummonMessages {
 
 namespace SummonHandler {
 	extern LoopingId<int32_t> summonIds;
-	void useSummon(Player *player, int32_t skillId, uint8_t level);
-	void removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false);
-	void showSummon(Player *player);
-	void showSummons(Player *fromPlayer, Player *toPlayer);
-	void moveSummon(Player *player, PacketReader &packet);
-	void damageSummon(Player *player, PacketReader &packet);
-	int32_t loopId();
+	auto useSummon(Player *player, int32_t skillId, uint8_t level) -> void;
+	auto removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
+	auto showSummon(Player *player) -> void;
+	auto showSummons(Player *fromPlayer, Player *toPlayer) -> void;
+	auto moveSummon(Player *player, PacketReader &packet) -> void;
+	auto damageSummon(Player *player, PacketReader &packet) -> void;
+	auto loopId() -> int32_t;
 }

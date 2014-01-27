@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) {
+auto TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x05);
@@ -43,7 +43,7 @@ void TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) {
+auto TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x02);
@@ -53,7 +53,7 @@ void TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tr
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) {
+auto TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(type);
@@ -62,7 +62,7 @@ void TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t typ
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t message) {
+auto TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(type);
@@ -71,7 +71,7 @@ void TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t messag
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendTradeChat(Player *player, bool blue, const string &chat) {
+auto TradesPacket::sendTradeChat(Player *player, bool blue, const string_t &chat) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x06);
@@ -81,7 +81,7 @@ void TradesPacket::sendTradeChat(Player *player, bool blue, const string &chat) 
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) {
+auto TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x04);
@@ -91,7 +91,7 @@ void TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) {
 	original->getSession()->send(packet);
 }
 
-void TradesPacket::sendLeaveTrade(Player *player) {
+auto TradesPacket::sendLeaveTrade(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x0A);
@@ -100,7 +100,7 @@ void TradesPacket::sendLeaveTrade(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) {
+auto TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x0F);
@@ -109,14 +109,14 @@ void TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) 
 	receiver->getSession()->send(packet);
 }
 
-void TradesPacket::sendAccepted(Player *destination) {
+auto TradesPacket::sendAccepted(Player *destination) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x10);
 	destination->getSession()->send(packet);
 }
 
-void TradesPacket::sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) {
+auto TradesPacket::sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_ROOM);
 	packet.add<int8_t>(0x0E);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,29 +23,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-CurseDataProvider * CurseDataProvider::singleton = nullptr;
-
-void CurseDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Curse Info... ";
+auto CurseDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Curse Info... ";
 
 	m_curseWords.clear();
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM curse_data");
 
 	for (const auto &row : rs) {
-		m_curseWords.push_back(row.get<string>("word"));
+		m_curseWords.push_back(row.get<string_t>("word"));
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-bool CurseDataProvider::isCurseWord(const string &cmp) {
-	string c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
-	bool curse = (m_curseWords.end() != std::find_if(m_curseWords.begin(), m_curseWords.end(),
-		[&c](const string &s) -> bool {
-			return c.find(s, 0) != string::npos;
+auto CurseDataProvider::isCurseWord(const string_t &cmp) -> bool {
+	string_t c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
+	bool curse = (std::end(m_curseWords) != std::find_if(std::begin(m_curseWords), std::end(m_curseWords),
+		[&c](const string_t &s) -> bool {
+			return c.find(s, 0) != string_t::npos;
 		})
 	);
 	return curse;

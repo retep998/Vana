@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,15 +25,15 @@ PlayerVariables::PlayerVariables(Player *p) :
 	load();
 }
 
-void PlayerVariables::save() {
+auto PlayerVariables::save() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
 	sql.once << "DELETE FROM character_variables WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_variables.size() > 0) {
-		string key = "";
-		string value = "";
+		string_t key = "";
+		string_t value = "";
 
 		soci::statement st = (sql.prepare
 			<< "INSERT INTO character_variables "
@@ -50,10 +50,10 @@ void PlayerVariables::save() {
 	}
 }
 
-void PlayerVariables::load() {
+auto PlayerVariables::load() -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT * FROM character_variables WHERE character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (const auto &row : rs) {
-		m_variables[row.get<string>("key")] = row.get<string>("value");
+		m_variables[row.get<string_t>("key")] = row.get<string_t>("value");
 	}
 }

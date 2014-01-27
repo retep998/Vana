@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,14 +30,14 @@ namespace QuestsPacket {
 		ErrorEquipWorn = 0x0D,
 		ErrorOnlyOne = 0x0E
 	};
-	void acceptQuest(Player *player, int16_t questId, int32_t npcId);
-	void updateQuest(Player *player, const ActiveQuest &quest);
-	void doneQuest(Player *player, int16_t questId);
-	void questError(Player *player, int16_t questId, int8_t errorCode);
-	void questExpire(Player *player, int16_t questId);
-	void questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time);
-	void forfeitQuest(Player *player, int16_t questId);
-	void giveItem(Player *player, int32_t itemId, int32_t amount);
-	void giveMesos(Player *player, int32_t amount);
-	void giveFame(Player *player, int32_t amount);
+	auto acceptQuest(Player *player, int16_t questId, int32_t npcId) -> void;
+	auto updateQuest(Player *player, const ActiveQuest &quest) -> void;
+	auto doneQuest(Player *player, int16_t questId) -> void;
+	auto questError(Player *player, int16_t questId, int8_t errorCode) -> void;
+	auto questExpire(Player *player, int16_t questId) -> void;
+	auto questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) -> void;
+	auto forfeitQuest(Player *player, int16_t questId) -> void;
+	auto giveItem(Player *player, int32_t itemId, int32_t amount) -> void;
+	auto giveMesos(Player *player, int32_t amount) -> void;
+	auto giveFame(Player *player, int32_t amount) -> void;
 }

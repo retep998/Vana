@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,14 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <utility>
 
-using std::string;
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-ItemDataProvider * ItemDataProvider::singleton = nullptr;
-
-void ItemDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Items... ";
+auto ItemDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Items... ";
 
 	loadItems();
 	loadConsumes();
@@ -55,19 +49,20 @@ void ItemDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ItemDataProvider::loadItems() {
+auto ItemDataProvider::loadItems() -> void {
 	m_itemInfo.clear();
 	int32_t itemId;
 	ItemInfo item;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT id.*, s.label " <<
-															"FROM item_data id " <<
-															"LEFT JOIN strings s ON id.itemId = s.objectid AND s.object_type = :item",
-															soci::use(string("item"), "item"));
+	soci::rowset<> rs = (Database::getDataDb().prepare
+		<< "SELECT id.*, s.label "
+		<< "FROM item_data id "
+		<< "LEFT JOIN strings s ON id.itemId = s.objectid AND s.object_type = :item",
+		soci::use(string_t("item"), "item"));
 
 	for (const auto &row : rs) {
 		item = ItemInfo();
-		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
 			if (cmp == "time_limited") item.timeLimited = true;
 			else if (cmp == "cash_item") item.cash = true;
 			else if (cmp == "no_trade") item.noTrade = true;
@@ -88,13 +83,13 @@ void ItemDataProvider::loadItems() {
 		item.exp = row.get<int32_t>("experience");
 		item.mesos = row.get<int32_t>("money");
 		item.npc = row.get<int32_t>("npc");
-		item.name = row.get<string>("label");
+		item.name = row.get<string_t>("label");
 
 		m_itemInfo[itemId] = item;
 	}
 }
 
-void ItemDataProvider::loadScrolls() {
+auto ItemDataProvider::loadScrolls() -> void {
 	m_scrollInfo.clear();
 	int32_t itemId;
 	ScrollInfo item;
@@ -103,7 +98,7 @@ void ItemDataProvider::loadScrolls() {
 
 	for (const auto &row : rs) {
 		item = ScrollInfo();
-		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
 			if (cmp == "rand_stat") item.randStat = true;
 			else if (cmp == "recover_slot") item.recover = 1;
 			else if (cmp == "warm_support") item.warmSupport = true;
@@ -119,10 +114,10 @@ void ItemDataProvider::loadScrolls() {
 		item.iluk = row.get<int16_t>("iluk");
 		item.ihp = row.get<int16_t>("ihp");
 		item.imp = row.get<int16_t>("imp");
-		item.iwatk = row.get<int16_t>("iwatk");
-		item.imatk = row.get<int16_t>("imatk");
-		item.iwdef = row.get<int16_t>("iwdef");
-		item.imdef = row.get<int16_t>("imdef");
+		item.iwAtk = row.get<int16_t>("iwatk");
+		item.imAtk = row.get<int16_t>("imatk");
+		item.iwDef = row.get<int16_t>("iwdef");
+		item.imDef = row.get<int16_t>("imdef");
 		item.iacc = row.get<int16_t>("iacc");
 		item.iavo = row.get<int16_t>("iavo");
 		item.ijump = row.get<int16_t>("ijump");
@@ -132,7 +127,7 @@ void ItemDataProvider::loadScrolls() {
 	}
 }
 
-void ItemDataProvider::loadConsumes() {
+auto ItemDataProvider::loadConsumes() -> void {
 	m_consumeInfo.clear();
 	int32_t itemId;
 	int16_t morphId;
@@ -144,7 +139,7 @@ void ItemDataProvider::loadConsumes() {
 	for (const auto &row : rs) {
 		item = ConsumeInfo();
 
-		runFlags(row.get<opt_string>("flags"), [&item](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
 			if (cmp == "auto_consume") item.autoConsume = true;
 			else if (cmp == "party_item") item.party = true;
 			else if (cmp == "meso_up") item.mesoUp = true;
@@ -160,7 +155,7 @@ void ItemDataProvider::loadConsumes() {
 			else if (cmp == "drop_up_for_party") item.partyDropUp = true;
 		});
 
-		runFlags(row.get<opt_string>("cure_ailments"), [&item](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("cure_ailments"), [&item](const string_t &cmp) {
 			if (cmp == "darkness") item.ailment |= 0x01;
 			else if (cmp == "poison") item.ailment |= 0x02;
 			else if (cmp == "curse") item.ailment |= 0x04;
@@ -180,24 +175,24 @@ void ItemDataProvider::loadConsumes() {
 		item.cp = row.get<uint8_t>("carnival_points");
 		item.mcProb = row.get<uint16_t>("prob");
 		item.time = row.get<int32_t>("buff_time");
-		item.watk = row.get<int16_t>("weapon_attack");
-		item.matk = row.get<int16_t>("magic_attack");
-		item.wdef = row.get<int16_t>("weapon_defense");
-		item.mdef = row.get<int16_t>("magic_defense");
+		item.wAtk = row.get<int16_t>("weapon_attack");
+		item.mAtk = row.get<int16_t>("magic_attack");
+		item.wDef = row.get<int16_t>("weapon_defense");
+		item.mDef = row.get<int16_t>("magic_defense");
 		item.acc = row.get<int16_t>("accuracy");
 		item.avo = row.get<int16_t>("avoid");
 		item.speed = row.get<int16_t>("speed");
 		item.jump = row.get<int16_t>("jump");
 
 		morphId = row.get<int16_t>("morph");
-		if (morphId) {
+		if (morphId != 0) {
 			morph = Morph();
 			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
 		}
 
-		runFlags(row.get<opt_string>("drop_up"), [&item, &row](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("drop_up"), [&item, &row](const string_t &cmp) {
 			if (cmp == "none") return;
 
 			item.dropUp = true;
@@ -215,12 +210,12 @@ void ItemDataProvider::loadConsumes() {
 		item.sealDef = row.get<int16_t>("defense_vs_seal");
 		item.curseDef = row.get<int16_t>("defense_vs_curse");
 
-		BuffDataProvider::Instance()->addItemInfo(itemId, item);
+		BuffDataProvider::getInstance().addItemInfo(itemId, item);
 		m_consumeInfo[itemId] = item;
 	}
 }
 
-void ItemDataProvider::loadMapRanges() {
+auto ItemDataProvider::loadMapRanges() -> void {
 	int32_t itemId;
 	CardMapRange range;
 
@@ -236,7 +231,7 @@ void ItemDataProvider::loadMapRanges() {
 	}
 }
 
-void ItemDataProvider::loadMultiMorphs() {
+auto ItemDataProvider::loadMultiMorphs() -> void {
 	int32_t itemId;
 	Morph morph;
 
@@ -252,7 +247,7 @@ void ItemDataProvider::loadMultiMorphs() {
 	}
 }
 
-void ItemDataProvider::loadMonsterCardData() {
+auto ItemDataProvider::loadMonsterCardData() -> void {
 	m_cardsToMobs.clear();
 	m_mobsToCards.clear();
 	int32_t cardId;
@@ -264,12 +259,12 @@ void ItemDataProvider::loadMonsterCardData() {
 		cardId = row.get<int32_t>("cardid");
 		mobId = row.get<int32_t>("mobid");
 
-		m_cardsToMobs.insert(std::make_pair(cardId, mobId));
-		m_mobsToCards.insert(std::make_pair(mobId, cardId));
+		m_cardsToMobs.emplace(cardId, mobId);
+		m_mobsToCards.emplace(mobId, cardId);
 	}
 }
 
-void ItemDataProvider::loadItemSkills() {
+auto ItemDataProvider::loadItemSkills() -> void {
 	m_skillbooks.clear();
 	Skillbook skill;
 	int32_t itemId;
@@ -288,7 +283,7 @@ void ItemDataProvider::loadItemSkills() {
 	}
 }
 
-void ItemDataProvider::loadSummonBags() {
+auto ItemDataProvider::loadSummonBags() -> void {
 	m_summonBags.clear();
 	int32_t itemId;
 	SummonBag summon;
@@ -304,7 +299,7 @@ void ItemDataProvider::loadSummonBags() {
 	}
 }
 
-void ItemDataProvider::loadItemRewards() {
+auto ItemDataProvider::loadItemRewards() -> void {
 	m_itemRewards.clear();
 	int32_t itemId;
 	ItemRewardInfo reward;
@@ -316,13 +311,13 @@ void ItemDataProvider::loadItemRewards() {
 		reward.rewardId = row.get<int32_t>("rewardid");
 		reward.prob = row.get<uint16_t>("prob");
 		reward.quantity = row.get<int16_t>("quantity");
-		reward.effect = row.get<string>("effect");
+		reward.effect = row.get<string_t>("effect");
 
 		m_itemRewards[itemId].push_back(reward);
 	}
 }
 
-void ItemDataProvider::loadPets() {
+auto ItemDataProvider::loadPets() -> void {
 	m_petInfo.clear();
 	PetInfo pet;
 	int32_t itemId;
@@ -331,14 +326,14 @@ void ItemDataProvider::loadPets() {
 
 	for (const auto &row : rs) {
 		pet = PetInfo();
-		runFlags(row.get<opt_string>("flags"), [&pet](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&pet](const string_t &cmp) {
 			if (cmp == "no_revive") pet.noRevive = true;
 			else if (cmp == "no_move_to_cash_shop") pet.noStoringInCashShop = true;
 			else if (cmp == "auto_react") pet.autoReact = true;
 		});
 
 		itemId = row.get<int32_t>("itemid");
-		pet.name = row.get<string>("default_name");
+		pet.name = row.get<string_t>("default_name");
 		pet.hunger = row.get<int32_t>("hunger");
 		pet.life = row.get<int32_t>("life");
 		pet.limitedLife = row.get<int32_t>("limited_life");
@@ -349,7 +344,7 @@ void ItemDataProvider::loadPets() {
 	}
 }
 
-void ItemDataProvider::loadPetInteractions() {
+auto ItemDataProvider::loadPetInteractions() -> void {
 	m_petInteractInfo.clear();
 	PetInteractInfo interact;
 	int32_t itemId;
@@ -367,59 +362,57 @@ void ItemDataProvider::loadPetInteractions() {
 	}
 }
 
-int32_t ItemDataProvider::getCardId(int32_t mobId) {
-	if (m_mobsToCards.find(mobId) == m_mobsToCards.end()) {
+auto ItemDataProvider::getCardId(int32_t mobId) -> int32_t {
+	if (m_mobsToCards.find(mobId) == std::end(m_mobsToCards)) {
 		std::cerr << "Mob out of range for mob ID " << mobId << std::endl;
 		return 0;
 	}
 	return m_mobsToCards[mobId];
 }
 
-int32_t ItemDataProvider::getMobId(int32_t cardId) {
-	if (m_cardsToMobs.find(cardId) == m_cardsToMobs.end()) {
+auto ItemDataProvider::getMobId(int32_t cardId) -> int32_t {
+	if (m_cardsToMobs.find(cardId) == std::end(m_cardsToMobs)) {
 		std::cerr << "Card out of range for card ID " << cardId << std::endl;
 		return 0;
 	}
 	return m_cardsToMobs[cardId];
 }
 
-PetInteractInfo * ItemDataProvider::getInteraction(int32_t itemId, int32_t action) {
-	if (m_petInteractInfo.find(itemId) != m_petInteractInfo.end()) {
-		if (m_petInteractInfo[itemId].find(action) != m_petInteractInfo[itemId].end()) {
+auto ItemDataProvider::getInteraction(int32_t itemId, int32_t action) -> PetInteractInfo * {
+	if (m_petInteractInfo.find(itemId) != std::end(m_petInteractInfo)) {
+		if (m_petInteractInfo[itemId].find(action) != std::end(m_petInteractInfo[itemId])) {
 			return &m_petInteractInfo[itemId][action];
 		}
 	}
 	return nullptr;
 }
 
-ItemRewardInfo * ItemDataProvider::getRandomReward(int32_t itemId) {
-	if (m_itemRewards.find(itemId) == m_itemRewards.end()) {
+auto ItemDataProvider::getRandomReward(int32_t itemId) -> ItemRewardInfo * {
+	if (m_itemRewards.find(itemId) == std::end(m_itemRewards)) {
 		return nullptr;
 	}
-	vector<ItemRewardInfo> *rewards = &m_itemRewards[itemId];
-	ItemRewardInfo *info = nullptr;
 
-	for (size_t i = 0; i < rewards->size(); i++) {
-		info = &(*rewards)[i];
-		if (Randomizer::rand<uint16_t>(99) < info->prob) {
-			return info;
+	for (auto &reward : m_itemRewards[itemId]) {
+		if (Randomizer::rand<uint16_t>(99) < reward.prob) {
+			return &reward;
 		}
 	}
 
 	return nullptr;
 }
 
-void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed, bool &cursed, bool whiteScroll) {
-	if (m_scrollInfo.find(scrollId) == m_scrollInfo.end()) {
+auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) -> void {
+	if (m_scrollInfo.find(scrollId) == std::end(m_scrollInfo)) {
 		return;
 	}
-	ScrollInfo *itemInfo = &m_scrollInfo[scrollId];
 
-	// Special scrolls
-	if (itemInfo->preventSlip || itemInfo->warmSupport) {
+	const ScrollInfo &itemInfo = m_scrollInfo[scrollId];
+
+	bool scrollTakesSlot = !(itemInfo.preventSlip || itemInfo.warmSupport || itemInfo.recover);
+	if (itemInfo.preventSlip || itemInfo.warmSupport) {
 		succeed = 0;
-		if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
-			if (itemInfo->preventSlip) {
+		if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+			if (itemInfo.preventSlip) {
 				equip->setPreventSlip(true);
 			}
 			else {
@@ -428,100 +421,90 @@ void ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, int8_t &succeed
 			succeed = 1;
 		}
 	}
+	else if (itemInfo.randStat) {
+		if (equip->getSlots() > 0) {
+			succeed = 0;
+			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+				bool increment = gmScroller || Randomizer::rand<uint8_t>(99) < 50U;
+				int16_t variance = Items::StatVariance::Chaos::Normal;
+				auto getVariance = [gmScroller, increment, variance]() -> int16_t {
+					return gmScroller ? variance : Randomizer::rand<int16_t>(increment ? variance : 0, increment ? 0 : -variance);
+				};
+
+				// Gives/takes stats on every stat on the item
+				equip->addStr(getVariance(), true);
+				equip->addDex(getVariance(), true);
+				equip->addInt(getVariance(), true);
+				equip->addLuk(getVariance(), true);
+				equip->addHp(getVariance(), true);
+				equip->addMp(getVariance(), true);
+				equip->addWatk(getVariance(), true);
+				equip->addMatk(getVariance(), true);
+				equip->addWdef(getVariance(), true);
+				equip->addMdef(getVariance(), true);
+				equip->addAvoid(getVariance(), true);
+				equip->addAccuracy(getVariance(), true);
+				equip->addHands(getVariance(), true);
+				equip->addJump(getVariance(), true);
+				equip->addSpeed(getVariance(), true);
+
+				equip->incScrolls();
+				equip->decSlots();
+				succeed = 1;
+			}
+		}
+	}
+	else if (itemInfo.recover > 0) {
+		// Apparently global doesn't let you use these scrolls on hammer slots
+		//int8_t maxSlots = EquipDataProvider::getInstance().getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
+		int8_t maxSlots = EquipDataProvider::getInstance().getSlots(equip->getId());
+		int8_t maxRecoverableSlots = maxSlots - equip->getScrolls();
+		int8_t recoverSlots = std::min(itemInfo.recover, maxRecoverableSlots);
+		if (recoverSlots > 0) {
+			succeed = 0;
+			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+				// Give back slot(s)
+				equip->incSlots(recoverSlots);
+				succeed = 1;
+			}
+		}
+	}
 	else {
-		// Anything that might have curse on it
-		if (itemInfo->randStat) {
-			if (equip->getSlots() > 0) {
-				succeed = 0;
-				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
-					int8_t n = -1;
-					uint16_t variance = Items::StatVariance::Chaos::Normal;
-					if (Randomizer::rand<uint16_t>(99) < 50U) {
-						// Increase stats
-						n = 1;
-					}
-
-					// Gives/takes stats on every stat on the item
-					equip->addStr(getStatVariance(n, variance), true);
-					equip->addDex(getStatVariance(n, variance), true);
-					equip->addInt(getStatVariance(n, variance), true);
-					equip->addLuk(getStatVariance(n, variance), true);
-					equip->addHp(getStatVariance(n, variance), true);
-					equip->addMp(getStatVariance(n, variance), true);
-					equip->addWatk(getStatVariance(n, variance), true);
-					equip->addMatk(getStatVariance(n, variance), true);
-					equip->addWdef(getStatVariance(n, variance), true);
-					equip->addMdef(getStatVariance(n, variance), true);
-					equip->addAvoid(getStatVariance(n, variance), true);
-					equip->addAccuracy(getStatVariance(n, variance), true);
-					equip->addHands(getStatVariance(n, variance), true);
-					equip->addJump(getStatVariance(n, variance), true);
-					equip->addSpeed(getStatVariance(n, variance), true);
-
-					equip->incScrolls();
-					equip->decSlots();
-					succeed = 1;
-				}
-			}
+		if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
+			// Hacking, equip slot different from the scroll slot
+			return;
 		}
-		else if (itemInfo->recover > 0) {
-			// Apparently global doesn't let you use these scrolls on hammer slots
-			//int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
-			int8_t maxSlots = EquipDataProvider::Instance()->getSlots(equip->getId());
-			int8_t maxRecoverableSlots = maxSlots - equip->getScrolls();
-			int8_t recoverSlots = std::min(itemInfo->recover, maxRecoverableSlots);
-			if (recoverSlots > 0) {
-				succeed = 0;
-				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
-					// Give back slot(s)
-					equip->incSlots(recoverSlots);
-					succeed = 1;
-				}
-			}
-		}
-		else {
-			if (GameLogicUtilities::itemTypeToScrollType(equip->getId()) != GameLogicUtilities::getScrollType(scrollId)) {
-				// Hacking, equip slot different from the scroll slot
-				return;
-			}
-			if (equip->getSlots() > 0) {
-				succeed = 0;
-				if (Randomizer::rand<uint16_t>(99) < itemInfo->success) {
-					succeed = 1;
-					equip->addStr(itemInfo->istr);
-					equip->addDex(itemInfo->idex);
-					equip->addInt(itemInfo->iint);
-					equip->addLuk(itemInfo->iluk);
-					equip->addHp(itemInfo->ihp);
-					equip->addMp(itemInfo->imp);
-					equip->addWatk(itemInfo->iwatk);
-					equip->addMatk(itemInfo->imatk);
-					equip->addWdef(itemInfo->iwdef);
-					equip->addMdef(itemInfo->imdef);
-					equip->addAccuracy(itemInfo->iacc);
-					equip->addAvoid(itemInfo->iavo);
-					equip->addHands(itemInfo->ihand);
-					equip->addJump(itemInfo->ijump);
-					equip->addSpeed(itemInfo->ispeed);
-					equip->incScrolls();
-					equip->decSlots();
-				}
-			}
-		}
-
-		if (succeed == 0) {
-			if (itemInfo->cursed > 0 && Randomizer::rand<uint16_t>(99) < itemInfo->cursed) {
-				cursed = true;
-			}
-			else if (!whiteScroll && itemInfo->recover == 0) {
+		if (equip->getSlots() > 0) {
+			succeed = 0;
+			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
+				succeed = 1;
+				equip->addStr(itemInfo.istr);
+				equip->addDex(itemInfo.idex);
+				equip->addInt(itemInfo.iint);
+				equip->addLuk(itemInfo.iluk);
+				equip->addHp(itemInfo.ihp);
+				equip->addMp(itemInfo.imp);
+				equip->addWatk(itemInfo.iwAtk);
+				equip->addMatk(itemInfo.imAtk);
+				equip->addWdef(itemInfo.iwDef);
+				equip->addMdef(itemInfo.imDef);
+				equip->addAccuracy(itemInfo.iacc);
+				equip->addAvoid(itemInfo.iavo);
+				equip->addHands(itemInfo.ihand);
+				equip->addJump(itemInfo.ijump);
+				equip->addSpeed(itemInfo.ispeed);
+				equip->incScrolls();
 				equip->decSlots();
 			}
 		}
 	}
-}
 
-int16_t ItemDataProvider::getStatVariance(int8_t mod, uint16_t variance) {
-	int16_t s = Randomizer::rand<int16_t>(variance);
-	s *= mod;
-	return s;
+	if (succeed == 0) {
+		if (itemInfo.cursed > 0 && Randomizer::rand<uint16_t>(99) < itemInfo.cursed) {
+			cursed = true;
+		}
+		else if (!whiteScroll && scrollTakesSlot) {
+			equip->decSlots();
+		}
+	}
 }

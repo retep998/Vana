@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,28 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.h"
 
-Quest::Quest() :
-	m_nextQuest(0)
-{
-}
-
-void Quest::addItemRequest(int32_t itemId, int16_t quantity) {
+auto Quest::addItemRequest(int32_t itemId, int16_t quantity) -> void {
 	m_itemRequests[itemId] = quantity;
 }
 
-void Quest::addMobRequest(int32_t mobId, int16_t quantity) {
+auto Quest::addMobRequest(int32_t mobId, int16_t quantity) -> void {
 	m_mobRequests[mobId] = quantity;
 }
 
-void Quest::addQuestRequest(int16_t questId, int8_t state) {
+auto Quest::addQuestRequest(int16_t questId, int8_t state) -> void {
 	m_questRequests[questId] = state;
 }
 
-void Quest::addValidJob(int16_t jobId) {
+auto Quest::addValidJob(int16_t jobId) -> void {
 	m_jobRequests.push_back(jobId);
 }
 
-void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
+auto Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) -> void {
 	QuestRewardsInfo *rewMap = nullptr;
 	if (start) {
 		rewMap = &m_startRewards;
@@ -54,7 +49,7 @@ void Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) {
 	}
 }
 
-void Quest::mobRequestFunc(function<bool (int32_t, int16_t)> func) const {
+auto Quest::mobRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void {
 	for (const auto &kvp : m_mobRequests) {
 		if (func(kvp.first, kvp.second)) {
 			break;
@@ -62,7 +57,7 @@ void Quest::mobRequestFunc(function<bool (int32_t, int16_t)> func) const {
 	}
 }
 
-void Quest::itemRequestFunc(function<bool (int32_t, int16_t)> func) const {
+auto Quest::itemRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void {
 	for (const auto &kvp : m_itemRequests) {
 		if (func(kvp.first, kvp.second)) {
 			break;
@@ -70,7 +65,7 @@ void Quest::itemRequestFunc(function<bool (int32_t, int16_t)> func) const {
 	}
 }
 
-void Quest::questRequestFunc(function<bool (int16_t, int8_t)> func) const {
+auto Quest::questRequestFunc(function_t<bool (int16_t, int8_t)> func) const -> void {
 	for (const auto &kvp : m_questRequests) {
 		if (func(kvp.first, kvp.second)) {
 			break;
@@ -78,11 +73,11 @@ void Quest::questRequestFunc(function<bool (int16_t, int8_t)> func) const {
 	}
 }
 
-bool Quest::rewardsFunc(bool start, function<bool (const QuestRewardInfo &)> func) {
+auto Quest::rewardsFunc(bool start, function_t<bool (const QuestRewardInfo &)> func) -> bool {
 	return rewardsFunc(start, -1, func);
 }
 
-bool Quest::rewardsFunc(bool start, int16_t job, function<bool (const QuestRewardInfo &)> func) {
+auto Quest::rewardsFunc(bool start, int16_t job, function_t<bool (const QuestRewardInfo &)> func) -> bool {
 	bool broken = false;
 	QuestRewardsInfo *rewMap = nullptr;
 	if (start) {
@@ -99,8 +94,8 @@ bool Quest::rewardsFunc(bool start, int16_t job, function<bool (const QuestRewar
 	}
 	if (!broken && job != -1) {
 		auto kvp = rewMap->jobRewards.find(job);
-		if (kvp != rewMap->jobRewards.end()) {
-			const Rewards &rewards = kvp->second;
+		if (kvp != std::end(rewMap->jobRewards)) {
+			const auto &rewards = kvp->second;
 			for (const auto &reward : rewards) {
 				if (func(reward)) {
 					broken = true;

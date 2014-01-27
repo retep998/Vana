@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,36 +23,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::cmatch;
-using std::regex;
-using std::vector;
-
 class Player;
 
-typedef bool (*ChatHandlerFunction)(Player *, const string &args);
+using ChatHandlerFunction = bool(*)(Player *, const string_t &args);
 struct ChatCommand {
-	ChatCommand addToMap() {
-		// Duplicates the command and then clears the data to ease addition syntax
+	auto addToMap() -> ChatCommand {
+		// Duplicates the command and then clears the data to ease addition syntax, intentionally leaving out level
 		ChatCommand x = *this;
 		notes.clear();
 		syntax = "";
 		return x;
 	}
+
 	ChatHandlerFunction command;
-	int32_t level;
-	string syntax;
-	vector<string> notes;
+	int32_t level = 0;
+	string_t syntax;
+	vector_t<string_t> notes;
 };
-typedef std::unordered_map<string, ChatCommand> CommandListType;
+
+using CommandListType = case_insensitive_hash_map_t<ChatCommand>;
 
 namespace ChatHandlerFunctions {
 	extern CommandListType CommandList;
-	void initialize();
-	int8_t getMessageType(const string &query);
-	int32_t getMap(const string &query, Player *player);
-	int16_t getJob(const string &query);
-	string getBanString(int8_t reason);
-	bool runRegexPattern(const string &args, const string &pattern, cmatch &matches);
-	void showSyntax(Player *player, const string &command, bool fromHelp = false);
+	auto initialize() -> void;
+	auto getMessageType(const string_t &query) -> int8_t;
+	auto getMap(const string_t &query, Player *player) -> int32_t;
+	auto getJob(const string_t &query) -> int16_t;
+	auto getBanString(int8_t reason) -> string_t;
+	auto runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> bool;
+	auto showSyntax(Player *player, const string_t &command, bool fromHelp = false) -> void;
+	auto showError(Player *player, const string_t &message) -> void;
+	auto showInfo(Player *player, const string_t &message) -> void;
 }

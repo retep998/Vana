@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 namespace SyncHandler {
-	void handle(PacketReader &packet);
-	void handleConfigSync(PacketReader &packet);
-	void handleChannelSync(PacketReader &packet);
-	void handlePlayerSync(PacketReader &packet);
-	void handlePartySync(PacketReader &packet);
-	void handleBuddySync(PacketReader &packet);
-	void buddyInvite(PacketReader &packet);
-	void buddyOnlineOffline(PacketReader &packet);
-	void setRates(PacketReader &packet);
+	auto handle(PacketReader &packet) -> void;
+	auto handleConfigSync(PacketReader &packet) -> void;
+	auto handleChannelSync(PacketReader &packet) -> void;
+	auto handlePlayerSync(PacketReader &packet) -> void;
+	auto handlePartySync(PacketReader &packet) -> void;
+	auto handleBuddySync(PacketReader &packet) -> void;
+	auto buddyInvite(PacketReader &packet) -> void;
+	auto buddyOnlineOffline(PacketReader &packet) -> void;
+	auto setRates(PacketReader &packet) -> void;
 }

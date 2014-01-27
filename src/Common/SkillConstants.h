@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -550,7 +550,7 @@ namespace Skills {
 		enum Skills : int32_t {
 			Demolition = 5121004,
 			MapleWarrior = 5121000,
-			PiratesRage = 5121008, // Hero's Will
+			HerosWill = 5121008,
 			Snatch = 5121005,
 			SpeedInfusion = 5121009,
 			SuperTransformation = 5121003,
@@ -583,7 +583,7 @@ namespace Skills {
 			Hypnotize = 5221009,
 			MapleWarrior = 5221000,
 			RapidFire = 5221004,
-			SpeedInfusion = 5221010, // Technically Hero's Will
+			HerosWill = 5221010,
 			WrathOfTheOctopi = 5220002
 		};
 	}

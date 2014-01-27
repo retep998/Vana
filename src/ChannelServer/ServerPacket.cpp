@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
+auto ServerPacket::showScrollingHeader(Player *player, const string_t &msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
@@ -31,19 +31,19 @@ void ServerPacket::showScrollingHeader(Player *player, const string &msg) {
 	player->getSession()->send(packet);
 }
 
-void ServerPacket::changeScrollingHeader(const string &msg) {
+auto ServerPacket::changeScrollingHeader(const string_t &msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(1);
 	packet.addString(msg);
-	PlayerDataProvider::Instance()->sendPacket(packet);
+	PlayerDataProvider::getInstance().sendPacket(packet);
 }
 
-void ServerPacket::scrollingHeaderOff() {
+auto ServerPacket::scrollingHeaderOff() -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
 	packet.add<int8_t>(0);
-	PlayerDataProvider::Instance()->sendPacket(packet);
+	PlayerDataProvider::getInstance().sendPacket(packet);
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,20 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void InventoryPacket::moveItem(Player *player, int8_t inv, int16_t slot1, int16_t slot2) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(2);
-	packet.add<int8_t>(inv);
-	packet.add<int16_t>(slot1);
-	packet.add<int16_t>(slot2);
-	packet.add<int8_t>(1);
-	player->getSession()->send(packet);
-}
-
-void InventoryPacket::updatePlayer(Player *player) {
+auto InventoryPacket::updatePlayer(Player *player) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -60,48 +47,42 @@ void InventoryPacket::updatePlayer(Player *player) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void InventoryPacket::addNewItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
+auto InventoryPacket::inventoryOperation(Player *player, bool unk, const vector_t<InventoryPacketOperation> &operations) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<bool>(fromDrop);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(inv);
-	PlayerPacketHelper::addItemInfo(packet, slot, item, true);
-	player->getSession()->send(packet);
-}
-
-void InventoryPacket::addItem(Player *player, int8_t inv, int16_t slot, Item *item, bool fromDrop) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<bool>(fromDrop);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(inv);
-	packet.add<int16_t>(slot);
-	packet.add<int16_t>(item->getAmount());
-	player->getSession()->send(packet);
-}
-
-void InventoryPacket::updateItemAmounts(Player *player, int8_t inv, int16_t slot1, int16_t amount1, int16_t slot2, int16_t amount2) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>((slot2 > 0) + 1);
-	packet.add<int8_t>(1);
-	packet.add<int8_t>(inv);
-	packet.add<int16_t>(slot1);
-	packet.add<int16_t>(amount1);
-	if (slot2 > 0) {
-		packet.add<int8_t>(1);
-		packet.add<int8_t>(inv);
-		packet.add<int16_t>(slot2);
-		packet.add<int16_t>(amount2);
+	packet.add<header_t>(SMSG_INVENTORY_OPERATION);
+	packet.add<bool>(unk);
+	packet.add<uint8_t>(operations.size());
+	for (const auto &operation : operations) {
+		packet.add<int8_t>(operation.operationType);
+		packet.add<int8_t>(GameLogicUtilities::getInventory(operation.item->getId()));
+		switch (operation.operationType) {
+			case InventoryPacket::OperationTypes::AddItem:
+				PlayerPacketHelper::addItemInfo(packet, operation.currentSlot, operation.item, true);
+				break;
+			case InventoryPacket::OperationTypes::ModifyQuantity:
+				packet.add<int16_t>(operation.currentSlot);
+				packet.add<int16_t>(operation.item->getAmount());
+				break;
+			case InventoryPacket::OperationTypes::ModifySlot:
+				packet.add<int16_t>(operation.oldSlot);
+				packet.add<int16_t>(operation.currentSlot);
+				if (operation.oldSlot < 0) {
+					packet.add<int8_t>(1);
+				}
+				else if (operation.currentSlot < 0) {
+					packet.add<int8_t>(2);
+				}
+				break;
+			case InventoryPacket::OperationTypes::RemoveItem:
+				packet.add<int16_t>(operation.currentSlot);
+				break;
+		}
 	}
+
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sitChair(Player *player, int32_t chairId) {
+auto InventoryPacket::sitChair(Player *player, int32_t chairId) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -118,7 +99,7 @@ void InventoryPacket::sitChair(Player *player, int32_t chairId) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void InventoryPacket::sitMapChair(Player *player, int16_t chairId) {
+auto InventoryPacket::sitMapChair(Player *player, int16_t chairId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHAIR);
 	packet.add<int8_t>(1);
@@ -126,7 +107,7 @@ void InventoryPacket::sitMapChair(Player *player, int16_t chairId) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::stopChair(Player *player, bool showMap) {
+auto InventoryPacket::stopChair(Player *player, bool showMap) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHAIR);
 	packet.add<int8_t>(0);
@@ -141,7 +122,7 @@ void InventoryPacket::stopChair(Player *player, bool showMap) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) {
+auto InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -154,26 +135,26 @@ void InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bo
 	player->getMap()->sendPacket(packet);
 }
 
-void InventoryPacket::showMegaphone(Player *player, const string &msg) {
+auto InventoryPacket::showMegaphone(Player *player, const string_t &msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(2);
 	packet.addString(msg);
-	PlayerDataProvider::Instance()->sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
+	PlayerDataProvider::getInstance().sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
 }
 
-void InventoryPacket::showSuperMegaphone(Player *player, const string &msg, bool whisper) {
+auto InventoryPacket::showSuperMegaphone(Player *player, const string_t &msg, bool whisper) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
+	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
 	packet.add<bool>(whisper);
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void InventoryPacket::showMessenger(Player *player, const string &msg, const string &msg2, const string &msg3, const string &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) {
+auto InventoryPacket::showMessenger(Player *player, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	packet.add<header_t>(SMSG_AVATAR_MEGAPHONE);
@@ -183,18 +164,18 @@ void InventoryPacket::showMessenger(Player *player, const string &msg, const str
 	packet.addString(msg2);
 	packet.addString(msg3);
 	packet.addString(msg4);
-	packet.add<int32_t>(ChannelServer::Instance()->getChannelId());
+	packet.add<int32_t>(ChannelServer::getInstance().getChannelId());
 	packet.addBuffer(displayInfo, displayInfoSize);
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool whisper, Item *item) {
+auto InventoryPacket::showItemMegaphone(Player *player, const string_t &msg, bool whisper, Item *item) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
+	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
 	packet.add<bool>(whisper);
 	if (item == nullptr) {
 		packet.add<int8_t>(0);
@@ -202,10 +183,10 @@ void InventoryPacket::showItemMegaphone(Player *player, const string &msg, bool 
 	else {
 		PlayerPacketHelper::addItemInfo(packet, 1, item);
 	}
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string &line1, const string &line2, const string &line3, bool whisper) {
+auto InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
@@ -218,12 +199,12 @@ void InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const st
 	if (lines > 2) {
 		packet.addString(line3);
 	}
-	packet.add<int8_t>((int8_t) ChannelServer::Instance()->getChannelId());
+	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
 	packet.add<bool>(whisper);
-	ChannelServer::Instance()->sendPacketToWorld(packet);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
+auto InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_SKILLBOOK);
 	packet.add<int32_t>(player->getId());
@@ -235,7 +216,7 @@ void InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newM
 	player->getMap()->sendPacket(packet);
 }
 
-void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
+auto InventoryPacket::useItemEffect(Player *player, int32_t itemId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ITEM_EFFECT);
 	packet.add<int32_t>(player->getId());
@@ -243,7 +224,7 @@ void InventoryPacket::useItemEffect(Player *player, int32_t itemId) {
 	player->getMap()->sendPacket(packet, player);
 }
 
-void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) {
+auto InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_INVENTORY_SLOT_UPDATE);
 	packet.add<int8_t>(inventory);
@@ -251,15 +232,12 @@ void InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::blankUpdate(Player *player) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<int8_t>(0x01);
-	packet.add<int8_t>(0x00);
-	player->getSession()->send(packet);
+auto InventoryPacket::blankUpdate(Player *player) -> void {
+	vector_t<InventoryPacketOperation> ops;
+	inventoryOperation(player, true, ops);
 }
 
-void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector<int32_t> &maps) {
+auto InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector_t<int32_t> &maps) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_TELEPORT_ROCK);
 	packet.add<int8_t>(mode);
@@ -270,7 +248,7 @@ void InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, c
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
+auto InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_TELEPORT_ROCK);
 	packet.add<int8_t>(code);
@@ -278,20 +256,20 @@ void InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) {
+auto InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESOBAG_SUCCESS);
 	packet.add<int32_t>(mesos);
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendMesobagFailed(Player *player) {
+auto InventoryPacket::sendMesobagFailed(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESOBAG_FAILURE);
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::useCharm(Player *player, uint8_t charmsLeft, uint8_t daysLeft) {
+auto InventoryPacket::useCharm(Player *player, uint8_t charmsLeft, uint8_t daysLeft) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x06);
@@ -301,7 +279,7 @@ void InventoryPacket::useCharm(Player *player, uint8_t charmsLeft, uint8_t daysL
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendHammerSlots(Player *player, int32_t slots) {
+auto InventoryPacket::sendHammerSlots(Player *player, int32_t slots) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_HAMMER);
 	packet.add<int8_t>(0x34); // No idea... mode of some sort, I think
@@ -310,21 +288,14 @@ void InventoryPacket::sendHammerSlots(Player *player, int32_t slots) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered) {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_ITEM_MOVE);
-	packet.add<int8_t>(0x00);
-	packet.add<int8_t>(0x02);
-	packet.add<int8_t>(0x03);
-	packet.add<int8_t>(GameLogicUtilities::getInventory(hammered->getId()));
-	packet.add<int16_t>(slot);
-	packet.add<int8_t>(0x00);
-	packet.add<int8_t>(0x01);
-	PlayerPacketHelper::addItemInfo(packet, slot, hammered, true);
-	player->getSession()->send(packet);
+auto InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered) -> void {
+	vector_t<InventoryPacketOperation> ops;
+	ops.emplace_back(OperationTypes::RemoveItem, hammered, slot);
+	ops.emplace_back(OperationTypes::AddItem, hammered, slot);
+	inventoryOperation(player, false, ops);
 }
 
-void InventoryPacket::sendHammerUpdate(Player *player) {
+auto InventoryPacket::sendHammerUpdate(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_HAMMER);
 	packet.add<int8_t>(0x38); // No idea... mode of some sort, I think
@@ -332,7 +303,7 @@ void InventoryPacket::sendHammerUpdate(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
+auto InventoryPacket::sendChalkboardUpdate(Player *player, const string_t &msg) -> void {
 	if (player->isUsingGmHide()) {
 		return;
 	}
@@ -344,7 +315,7 @@ void InventoryPacket::sendChalkboardUpdate(Player *player, const string &msg) {
 	player->getMap()->sendPacket(packet);
 }
 
-void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &playerName) {
+auto InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string_t &playerName) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CASH_SONG);
 	packet.add<int32_t>(itemId);
@@ -352,7 +323,7 @@ void InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string &pl
 	Maps::getMap(map)->sendPacket(packet);
 }
 
-void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, const string &effect) {
+auto InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, const string_t &effect) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_THEATRICS);
 	packet.add<int8_t>(0x0E);
@@ -371,7 +342,7 @@ void InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, co
 	player->getMap()->sendPacket(packet, player);
 }
 
-void InventoryPacket::sendItemExpired(Player *player, const vector<int32_t> &items) {
+auto InventoryPacket::sendItemExpired(Player *player, const vector_t<int32_t> &items) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_NOTICE);
 	packet.add<int8_t>(0x08);

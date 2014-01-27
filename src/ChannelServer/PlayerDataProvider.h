@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.h"
-#include "noncopyable.hpp"
 #include "PlayerObjects.h"
 #include "Types.h"
 #include <functional>
@@ -26,56 +25,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-using std::string;
-using std::function;
-using std::unordered_map;
-
 class PacketCreator;
 class PacketReader;
 class Party;
 class Player;
 
-class PlayerDataProvider : boost::noncopyable {
+class PlayerDataProvider {
+	SINGLETON(PlayerDataProvider);
 public:
-	static PlayerDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new PlayerDataProvider;
-		return singleton;
-	}
-
-	void parseChannelConnectPacket(PacketReader &packet);
+	auto parseChannelConnectPacket(PacketReader &packet) -> void;
 
 	// Online players
-	void addPlayer(Player *player);
-	void newPlayer(PacketReader &packet);
-	void changeChannel(PacketReader &packet);
-	void newConnectable(PacketReader &packet);
-	void deleteConnectable(int32_t id);
-	void removePlayer(Player *player);
-	Player * getPlayer(int32_t id);
-	Player * getPlayer(const string &name);
-	void run(function<void (Player *)> func);
-	void sendPacket(PacketCreator &packet, int32_t minGmLevel = 0);
+	auto addPlayer(Player *player) -> void;
+	auto newPlayer(PacketReader &packet) -> void;
+	auto changeChannel(PacketReader &packet) -> void;
+	auto newConnectable(PacketReader &packet) -> void;
+	auto deleteConnectable(int32_t id) -> void;
+	auto removePlayer(Player *player) -> void;
+	auto getPlayer(int32_t id) -> Player *;
+	auto getPlayer(const string_t &name) -> Player *;
+	auto run(function_t<void(Player *)> func) -> void;
+	auto sendPacket(PacketCreator &packet, int32_t minGmLevel = 0) -> void;
 
 	// Player data
-	PlayerData * getPlayerData(int32_t id);
-	void updatePlayer(PacketReader &packet);
+	auto getPlayerData(int32_t id) -> PlayerData *;
+	auto updatePlayer(PacketReader &packet) -> void;
 
 	// Parties
-	Party * getParty(int32_t id);
-	void newParty(int32_t id, int32_t leaderId);
-	void disbandParty(int32_t id);
-	void switchPartyLeader(int32_t id, int32_t leaderId);
-	void removePartyMember(int32_t id, int32_t playerId, bool kicked);
-	void addPartyMember(int32_t id, int32_t playerId);
+	auto getParty(int32_t id) -> Party *;
+	auto newParty(int32_t id, int32_t leaderId) -> void;
+	auto disbandParty(int32_t id) -> void;
+	auto switchPartyLeader(int32_t id, int32_t leaderId) -> void;
+	auto removePartyMember(int32_t id, int32_t playerId, bool kicked) -> void;
+	auto addPartyMember(int32_t id, int32_t playerId) -> void;
 private:
-	PlayerDataProvider() {}
-	static PlayerDataProvider *singleton;
+	auto parsePlayer(PacketReader &packet) -> void;
 
-	void parsePlayer(PacketReader &packet);
-
-	unordered_map<int32_t, std::shared_ptr<PlayerData>> m_playerData;
-	unordered_map<int32_t, std::shared_ptr<Party>> m_parties;
-	unordered_map<int32_t, Player *> m_players;
-	unordered_map<string, Player *> m_playersByName;
+	hash_map_t<int32_t, ref_ptr_t<PlayerData>> m_playerData;
+	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
+	hash_map_t<int32_t, Player *> m_players;
+	case_insensitive_hash_map_t<Player *> m_playersByName;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,33 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Quest.h"
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-class QuestDataProvider : boost::noncopyable {
+class QuestDataProvider {
+	SINGLETON(QuestDataProvider);
 public:
-	static QuestDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new QuestDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool isQuest(uint16_t questId) { return (m_quests.find(questId) != m_quests.end()); }
-	int16_t getItemRequest(uint16_t questId, int32_t itemId);
-	Quest * getInfo(uint16_t questId) { return &m_quests[questId]; }
+	auto isQuest(uint16_t questId) -> bool { return m_quests.find(questId) != std::end(m_quests); }
+	auto getItemRequest(uint16_t questId, int32_t itemId) -> int16_t;
+	auto getInfo(uint16_t questId) -> Quest * { return &m_quests[questId]; }
 private:
-	QuestDataProvider() {}
-	static QuestDataProvider *singleton;
+	auto loadQuestData() -> void;
+	auto loadRequests() -> void;
+	auto loadRequiredJobs() -> void;
+	auto loadRewards() -> void;
 
-	void loadQuestData();
-	void loadRequests();
-	void loadRequiredJobs();
-	void loadRewards();
-
-	unordered_map<uint16_t, Quest> m_quests;
+	hash_map_t<uint16_t, Quest> m_quests;
 };

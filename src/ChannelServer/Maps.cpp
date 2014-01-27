@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,18 +31,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.h"
 #include <string>
 
-using std::string;
-
-Map * Maps::getMap(int32_t mapId) {
-	return MapDataProvider::Instance()->getMap(mapId);
+auto Maps::getMap(int32_t mapId) -> Map * {
+	return MapDataProvider::getInstance().getMap(mapId);
 }
 
-void Maps::unloadMap(int32_t mapId) {
-	MapDataProvider::Instance()->unloadMap(mapId);
+auto Maps::unloadMap(int32_t mapId) -> void {
+	MapDataProvider::getInstance().unloadMap(mapId);
 }
 
-void Maps::usePortal(Player *player, PortalInfo *portal) {
-	if (portal->script.size() != 0) { // Scripted portal
+auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
+	if (portal->script.size() != 0) {
 		// Check for "onlyOnce" portal
 		if (portal->onlyOnce) {
 			if (player->usedPortal(portal->id)) {
@@ -54,19 +52,18 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 			}
 		}
 
-		const string &filename = "scripts/portals/" + portal->script + ".lua";
+		string_t filename = "scripts/portals/" + portal->script + ".lua";
 
-		if (FileUtilities::fileExists(filename)) { // Lua Portal script exists
+		if (FileUtilities::fileExists(filename)) {
 			int32_t map = player->getMapId();
 			LuaPortal(filename, player->getId(), portal);
 
 			if (map == player->getMapId()) {
-				// The portal didn't change the map
 				MapPacket::portalBlocked(player);
 			}
 		}
 		else {
-			string message;
+			string_t message;
 			if (player->isGm()) {
 				message = "Portal '" + portal->script + "' is currently unavailable.";
 			}
@@ -90,14 +87,14 @@ void Maps::usePortal(Player *player, PortalInfo *portal) {
 	}
 }
 
-void Maps::usePortal(Player *player, PacketReader &packet) {
+auto Maps::usePortal(Player *player, PacketReader &packet) -> void {
 	packet.skipBytes(1);
 
 	int32_t opcode = packet.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->isDead()) {
-				const string &unk = packet.getString(); // Useless
+				const string_t &unk = packet.getString(); // Useless
 				packet.skipBytes(1); // Useless
 				bool wheel = packet.get<bool>();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
@@ -109,7 +106,7 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 			}
 			break;
 		case -1: {
-			const string &portalName = packet.getString();
+			const string_t &portalName = packet.getString();
 
 			Map *toMap = player->getMap();
 			if (toMap == nullptr) {
@@ -131,9 +128,9 @@ void Maps::usePortal(Player *player, PacketReader &packet) {
 	}
 }
 
-void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
+auto Maps::useScriptedPortal(Player *player, PacketReader &packet) -> void {
 	packet.skipBytes(1);
-	const string &portalName = packet.getString();
+	const string_t &portalName = packet.getString();
 
 	PortalInfo *portal = player->getMap()->getPortal(portalName);
 	if (portal == nullptr) {
@@ -142,8 +139,8 @@ void Maps::useScriptedPortal(Player *player, PacketReader &packet) {
 	usePortal(player, portal);
 }
 
-void Maps::addPlayer(Player *player, int32_t mapId) {
-	PlayerDataProvider::Instance()->addPlayer(player);
+auto Maps::addPlayer(Player *player, int32_t mapId) -> void {
+	PlayerDataProvider::getInstance().addPlayer(player);
 	getMap(mapId)->addPlayer(player);
 	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);

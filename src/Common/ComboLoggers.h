@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,47 +22,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <string>
 
-using std::string;
-using std::unique_ptr;
-
-template<typename Logger1, typename Logger2>
+template <typename TLogger1, typename TLogger2>
 class DuoLogger : public Logger {
 public:
-	DuoLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
-		m_logger1 = std::make_unique<Logger1>(filename, format, timeFormat, serverType, bufferSize);
-		m_logger2 = std::make_unique<Logger2>(filename, format, timeFormat, serverType, bufferSize);
+	DuoLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+		m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {
+	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 	}
 private:
-	Logger1 * getLogger1() const { return m_logger1.get(); }
-	Logger2 * getLogger2() const { return m_logger2.get(); }
-	unique_ptr<Logger1> m_logger1;
-	unique_ptr<Logger2> m_logger2;
+	auto getLogger1() const -> TLogger1 * { return m_logger1.get(); }
+	auto getLogger2() const -> TLogger2 * { return m_logger2.get(); }
+	owned_ptr_t<TLogger1> m_logger1;
+	owned_ptr_t<TLogger2> m_logger2;
 };
 
-template<typename Logger1, typename Logger2, typename Logger3>
+template <typename TLogger1, typename TLogger2, typename TLogger3>
 class TriLogger : public Logger {
 public:
-	TriLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize = 10) {
-		m_logger1 = std::make_unique<Logger1>(filename, format, timeFormat, serverType, bufferSize);
-		m_logger2 = std::make_unique<Logger2>(filename, format, timeFormat, serverType, bufferSize);
-		m_logger3 = std::make_unique<Logger3>(filename, format, timeFormat, serverType, bufferSize);
+	TriLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+		m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
+		m_logger3 = make_owned_ptr<TLogger3>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
-	void log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) override {
+	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 		getLogger3()->log(type, identifier, message);
 	}
 private:
-	Logger1 * getLogger1() const { return m_logger1.get(); }
-	Logger2 * getLogger2() const { return m_logger2.get(); }
-	Logger3 * getLogger3() const { return m_logger3.get(); }
-	unique_ptr<Logger1> m_logger1;
-	unique_ptr<Logger2> m_logger2;
-	unique_ptr<Logger3> m_logger3;
+	auto getLogger1() const -> TLogger1 * { return m_logger1.get(); }
+	auto getLogger2() const -> TLogger2 * { return m_logger2.get(); }
+	auto getLogger3() const -> TLogger3 * { return m_logger3.get(); }
+	owned_ptr_t<TLogger1> m_logger1;
+	owned_ptr_t<TLogger2> m_logger2;
+	owned_ptr_t<TLogger3> m_logger3;
 };

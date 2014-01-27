@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,14 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.h"
 #include "WorldServerAcceptConnection.h"
 
-Channels * Channels::singleton = nullptr;
-
-Channels::Channels()
-{
-}
-
-void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
-	shared_ptr<Channel> chan = std::make_shared<Channel>();
+auto Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
+	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>();
 	chan->setConnection(connection);
 	chan->setId(channel);
 	chan->setExternalIpInformation(channelIp, extIp);
@@ -38,42 +32,42 @@ void Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t
 	m_channels[channel] = chan;
 }
 
-void Channels::removeChannel(uint16_t channel) {
+auto Channels::removeChannel(uint16_t channel) -> void {
 	m_channels.erase(channel);
 }
 
-Channel * Channels::getChannel(uint16_t num) {
+auto Channels::getChannel(uint16_t num) -> Channel * {
 	auto kvp = m_channels.find(num);
-	return kvp != m_channels.end() ? kvp->second.get() : nullptr;
+	return kvp != std::end(m_channels) ? kvp->second.get() : nullptr;
 }
 
-void Channels::sendToAll(const PacketCreator &packet) {
+auto Channels::sendToAll(const PacketCreator &packet) -> void {
 	for (const auto &kvp : m_channels) {
 		sendToChannel(kvp.first, packet);
 	}
 }
 
-void Channels::sendToChannel(uint16_t channel, const PacketCreator &packet) {
+auto Channels::sendToChannel(uint16_t channel, const PacketCreator &packet) -> void {
 	getChannel(channel)->send(packet);
 }
 
-void Channels::increasePopulation(uint16_t channel) {
+auto Channels::increasePopulation(uint16_t channel) -> void {
 	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers());
 }
 
-void Channels::decreasePopulation(uint16_t channel) {
+auto Channels::decreasePopulation(uint16_t channel) -> void {
 	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers());
 }
 
-uint16_t Channels::size() {
+auto Channels::size() -> uint16_t {
 	return m_channels.size();
 }
 
-uint16_t Channels::getAvailableChannel() {
+auto Channels::getAvailableChannel() -> uint16_t {
 	uint16_t channel = -1;
-	uint16_t max = static_cast<uint16_t>(WorldServer::Instance()->getMaxChannels());
+	uint16_t max = static_cast<uint16_t>(WorldServer::getInstance().getMaxChannels());
 	for (uint16_t i = 0; i < max; ++i) {
-		if (m_channels.find(i) == m_channels.end()) {
+		if (m_channels.find(i) == std::end(m_channels)) {
 			channel = i;
 			break;
 		}

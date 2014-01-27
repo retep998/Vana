@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,34 +27,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 struct MajorBoss : public IPacketSerializable {
-	int16_t attempts;
-	vector<int8_t> channels;
-	
-	MajorBoss() :
-		attempts(0)
-	{
-	}
-
-	void write(PacketCreator &packet) const override {
+	auto write(PacketCreator &packet) const -> void override {
 		packet.add<int16_t>(attempts);
 		packet.addVector(channels);
 	}
-	void read(PacketReader &packet) override {
+
+	auto read(PacketReader &packet) -> void override {
 		attempts = packet.get<int16_t>();
 		channels = packet.getVector<int8_t>();
 	}
+
+	int16_t attempts = 0;
+	vector_t<int8_t> channels;
 };
 
 struct Rates : public IPacketSerializable {
-	int32_t mobExpRate;
-	int32_t questExpRate;
-	int32_t mobMesoRate;
-	int32_t dropRate;
-
 	struct Types {
 		static const int32_t MobExpRate = 0x01;
 		static const int32_t QuestExpRate = 0x02;
@@ -62,66 +50,28 @@ struct Rates : public IPacketSerializable {
 		static const int32_t DropRate = 0x08;
 	};
 
-	Rates() :
-		mobExpRate(1),
-		questExpRate(1),
-		mobMesoRate(1),
-		dropRate(1)
-	{
-	}
-
-	void write(PacketCreator &packet) const override {
+	auto write(PacketCreator &packet) const -> void override {
 		packet.add<int32_t>(mobExpRate);
 		packet.add<int32_t>(questExpRate);
 		packet.add<int32_t>(mobMesoRate);
 		packet.add<int32_t>(dropRate);
 	}
-	void read(PacketReader &packet) override {
+
+	auto read(PacketReader &packet) -> void override {
 		mobExpRate = packet.get<int32_t>();
 		questExpRate = packet.get<int32_t>();
 		mobMesoRate = packet.get<int32_t>();
 		dropRate = packet.get<int32_t>();
 	}
+
+	int32_t mobExpRate = 1;
+	int32_t questExpRate = 1;
+	int32_t mobMesoRate = 1;
+	int32_t dropRate = 1;
 };
 
 struct WorldConfig : public IPacketSerializable {
-	int8_t ribbon;
-	uint8_t maxMultiLevel;
-	uint8_t defaultStorageSlots;
-	int16_t maxStats;
-	int32_t defaultChars;
-	int32_t maxChars;
-	int32_t maxPlayerLoad;
-	int32_t fameTime;
-	int32_t fameResetTime;
-	int32_t mapUnloadTime;
-	size_t maxChannels;
-	string eventMsg;
-	string scrollingHeader;
-	string name;
-	Rates rates;
-	MajorBoss pianus;
-	MajorBoss pap;
-	MajorBoss zakum;
-	MajorBoss horntail;
-	MajorBoss pinkbean;
-
-	WorldConfig() :
-		ribbon(0),
-		maxMultiLevel(1),
-		defaultStorageSlots(4),
-		maxStats(999),
-		defaultChars(3),
-		maxChars(6),
-		maxPlayerLoad(100),
-		fameTime(30 * 60 * 60),
-		fameResetTime(30 * 60 * 60),
-		mapUnloadTime(30 * 60),
-		maxChannels(20)
-	{
-	}
-
-	void write(PacketCreator &packet) const override {
+	auto write(PacketCreator &packet) const -> void override {
 		packet.add<int8_t>(ribbon);
 		packet.add<uint8_t>(maxMultiLevel);
 		packet.add<uint8_t>(defaultStorageSlots);
@@ -143,7 +93,8 @@ struct WorldConfig : public IPacketSerializable {
 		packet.addClass<MajorBoss>(horntail);
 		packet.addClass<MajorBoss>(pinkbean);
 	}
-	void read(PacketReader &packet) override {
+
+	auto read(PacketReader &packet) -> void override {
 		ribbon = packet.get<int8_t>();
 		maxMultiLevel = packet.get<uint8_t>();
 		defaultStorageSlots = packet.get<uint8_t>();
@@ -165,84 +116,86 @@ struct WorldConfig : public IPacketSerializable {
 		horntail = packet.getClass<MajorBoss>();
 		pinkbean = packet.getClass<MajorBoss>();
 	}
+
+	int8_t ribbon = 0;
+	uint8_t maxMultiLevel = 1;
+	uint8_t defaultStorageSlots = 4;
+	int16_t maxStats = 999;
+	int32_t defaultChars = 3;
+	int32_t maxChars = 6;
+	int32_t maxPlayerLoad = 100;
+	int32_t fameTime = 30 * 60 * 60;
+	int32_t fameResetTime = 30 * 60 * 60;
+	int32_t mapUnloadTime = 30 * 60;
+	size_t maxChannels = 20;
+	string_t eventMsg;
+	string_t scrollingHeader;
+	string_t name;
+	Rates rates;
+	MajorBoss pianus;
+	MajorBoss pap;
+	MajorBoss zakum;
+	MajorBoss horntail;
+	MajorBoss pinkbean;
 };
 
-struct LoginConfig : public IConfigReadable<LoginConfig> {
-	bool clientEncryption;
-	bool clientPing;
-	bool serverPing;
-
-	LoginConfig() :
-		clientEncryption(true),
-		clientPing(true),
-		serverPing(true)
-	{
-	}
-
-	void read(ConfigFile &conf, const string &prefix) override {
+struct LoginConfig : public IConfigReadable {
+	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
 		clientEncryption = conf.get<bool>("use_client_encryption");
 		clientPing = conf.get<bool>("use_client_ping");
 		serverPing = conf.get<bool>("use_inter_ping");
 	}
+
+	bool clientEncryption = true;
+	bool clientPing = true;
+	bool serverPing = true;
 };
 
-struct LogConfig : public IConfigReadable<LogConfig> {
-	int32_t destination;
-	uint32_t bufferSize;
-	string format;
-	string timeFormat;
-	string file;
-
-	LogConfig() :
-		destination(0),
-		bufferSize(20)
-	{
-	}
-
-	void read(ConfigFile &conf, const string &prefix) override {
-		const string &fullPrefix = prefix + "_log_";
+struct LogConfig : public IConfigReadable {
+	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
+		const string_t &fullPrefix = prefix + "_log_";
 		destination = conf.get<int32_t>(fullPrefix + "destination");
 		bufferSize = conf.get<uint32_t>(fullPrefix + "buffer_size");
-		format = conf.getString(fullPrefix + "format");
-		file = conf.getString(fullPrefix + "file");
-		timeFormat = conf.getString("log_time_format");
+		format = conf.get<string_t>(fullPrefix + "format");
+		file = conf.get<string_t>(fullPrefix + "file");
+		timeFormat = conf.get<string_t>("log_time_format");
 	}
+
+	int32_t destination = 0;
+	uint32_t bufferSize = 20;
+	string_t format;
+	string_t timeFormat;
+	string_t file;
 };
 
-struct DbConfig : public IConfigReadable<DbConfig> {
-	string database;
-	string host;
-	string username;
-	string password;
-	port_t port;
-
-	DbConfig() :
-		port(0)
-	{
-	}
-
-	void read(ConfigFile &conf, const string &prefix) override {
-		const string &fullPrefix = prefix + "_";
-		database = conf.getString(fullPrefix + "database");
-		host = conf.getString(fullPrefix + "host");
-		username = conf.getString(fullPrefix + "username");
-		password = conf.getString(fullPrefix + "password");
+struct DbConfig : public IConfigReadable {
+	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
+		const string_t &fullPrefix = prefix + "_";
+		database = conf.get<string_t>(fullPrefix + "database");
+		host = conf.get<string_t>(fullPrefix + "host");
+		username = conf.get<string_t>(fullPrefix + "username");
+		password = conf.get<string_t>(fullPrefix + "password");
 		port = conf.get<port_t>(fullPrefix + "port");
 	}
+
+	port_t port = 0;
+	string_t database;
+	string_t host;
+	string_t username;
+	string_t password;
 };
 
-struct InterServerConfig : public IConfigReadable<InterServerConfig> {
-	Ip loginIp;
-	port_t port;
-
+struct InterServerConfig : public IConfigReadable {
 	InterServerConfig() :
-		loginIp(0),
-		port(0)
+		loginIp(0)
 	{
 	}
 
-	void read(ConfigFile &conf, const string &prefix) override {
-		loginIp = Ip(Ip::stringToIpv4(conf.getString("login_ip")));
+	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
+		loginIp = Ip(Ip::stringToIpv4(conf.get<string_t>("login_ip")));
 		port = conf.get<port_t>("login_inter_port");
 	}
+
+	port_t port = 0;
+	Ip loginIp;
 };

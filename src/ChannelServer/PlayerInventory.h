@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,87 +19,80 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Item.h"
 #include "ItemConstants.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <array>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::unordered_map;
-using std::vector;
-
-class Player;
 class PacketCreator;
+class Player;
 
-class PlayerInventory : boost::noncopyable {
+class PlayerInventory {
+	NONCOPYABLE(PlayerInventory);
+	NO_DEFAULT_CONSTRUCTOR(PlayerInventory);
 public:
-	PlayerInventory(Player *player, const std::array<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
+	PlayerInventory(Player *player, const array_t<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos);
 	~PlayerInventory();
 
-	void load();
-	void save();
+	auto load() -> void;
+	auto save() -> void;
 
-	void connectData(PacketCreator &packet);
-	void addEquippedPacket(PacketCreator &packet);
-	void rockPacket(PacketCreator &packet);
-	void wishListPacket(PacketCreator &packet);
+	auto connectData(PacketCreator &packet) -> void;
+	auto addEquippedPacket(PacketCreator &packet) -> void;
+	auto rockPacket(PacketCreator &packet) -> void;
+	auto wishListPacket(PacketCreator &packet) -> void;
 
-	void setMesos(int32_t mesos, bool sendPacket = false);
-	bool modifyMesos(int32_t mod, bool sendPacket = false);
-	void addMaxSlots(int8_t inventory, int8_t rows);
-	void addItem(int8_t inv, int16_t slot, Item *item, bool sendPacketLoading = false);
-	void deleteItem(int8_t inv, int16_t slot, bool updateAmount = true);
-	void setItem(int8_t inv, int16_t slot, Item *item);
-	void changeItemAmount(int32_t itemId, int16_t amount) { m_itemAmounts[itemId] += amount; }
-	void setAutoHpPot(int32_t id) { m_autoHpPotId = id; }
-	void setAutoMpPot(int32_t id) { m_autoMpPotId = id; }
-	void swapItems(int8_t inventory, int16_t slot1, int16_t slot2);
-	void destroyEquippedItem(int32_t itemId);
+	auto setMesos(int32_t mesos, bool sendPacket = false) -> void;
+	auto modifyMesos(int32_t mod, bool sendPacket = false) -> bool;
+	auto addMaxSlots(int8_t inventory, int8_t rows) -> void;
+	auto addItem(int8_t inv, int16_t slot, Item *item, bool sendPacketLoading = false) -> void;
+	auto deleteItem(int8_t inv, int16_t slot, bool updateAmount = true) -> void;
+	auto setItem(int8_t inv, int16_t slot, Item *item) -> void;
+	auto changeItemAmount(int32_t itemId, int16_t amount) -> void { m_itemAmounts[itemId] += amount; }
+	auto setAutoHpPot(int32_t id) -> void { m_autoHpPotId = id; }
+	auto setAutoMpPot(int32_t id) -> void { m_autoMpPotId = id; }
+	auto swapItems(int8_t inventory, int16_t slot1, int16_t slot2) -> void;
+	auto destroyEquippedItem(int32_t itemId) -> void;
 
-	uint8_t getMaxSlots(int8_t inv) const { return m_maxSlots[inv - 1]; }
-	int32_t getMesos() const { return m_mesos; }
-	int32_t getAutoHpPot() const { return m_autoHpPotId; }
-	int32_t getAutoMpPot() const { return m_autoMpPotId; }
+	auto getMaxSlots(int8_t inv) const -> uint8_t { return m_maxSlots[inv - 1]; }
+	auto getMesos() const -> int32_t { return m_mesos; }
+	auto getAutoHpPot() const -> int32_t { return m_autoHpPotId; }
+	auto getAutoMpPot() const -> int32_t { return m_autoMpPotId; }
 
-	int16_t getItemAmountBySlot(int8_t inv, int16_t slot);
-	uint16_t getItemAmount(int32_t itemId);
-	int32_t getEquippedId(int16_t slot, bool cash = false);
-	Item * getItem(int8_t inv, int16_t slot);
-	bool isEquippedItem(int32_t itemId);
+	auto getItemAmountBySlot(int8_t inv, int16_t slot) -> int16_t;
+	auto getItemAmount(int32_t itemId) -> uint16_t;
+	auto getEquippedId(int16_t slot, bool cash = false) -> int32_t;
+	auto getItem(int8_t inv, int16_t slot) -> Item *;
+	auto isEquippedItem(int32_t itemId) -> bool;
 
-	bool hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack = false);
-	int16_t getOpenSlotsNum(int8_t inv);
-	int32_t doShadowStars();
+	auto hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack = false) -> bool;
+	auto getOpenSlotsNum(int8_t inv) -> int16_t;
+	auto doShadowStars() -> int32_t;
 
-	bool isHammering() const { return m_hammer != -1; }
-	int16_t getHammerSlot() const { return m_hammer; }
-	void setHammerSlot(int16_t hammer) { m_hammer = hammer; }
+	auto isHammering() const -> bool { return m_hammer != -1; }
+	auto getHammerSlot() const -> int16_t { return m_hammer; }
+	auto setHammerSlot(int16_t hammer) -> void { m_hammer = hammer; }
 
-	void addRockMap(int32_t mapId, int8_t type);
-	void delRockMap(int32_t mapId, int8_t type);
-	bool ensureRockDestination(int32_t mapId);
+	auto addRockMap(int32_t mapId, int8_t type) -> void;
+	auto delRockMap(int32_t mapId, int8_t type) -> void;
+	auto ensureRockDestination(int32_t mapId) -> bool;
 
-	void addWishListItem(int32_t itemId);
-	void checkExpiredItems();
+	auto addWishListItem(int32_t itemId) -> void;
+	auto checkExpiredItems() -> void;
 private:
-	typedef unordered_map<int16_t, Item *> ItemInventory;
+	auto addEquipped(int16_t slot, int32_t itemId) -> void;
 
-	std::array<uint8_t, Inventories::InventoryCount> m_maxSlots;
-	std::array<std::array<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
-	std::array<ItemInventory, Inventories::InventoryCount> m_items;
-
-	vector<int32_t> m_vipLocations;
-	vector<int32_t> m_rockLocations;
-	vector<int32_t> m_wishlist;
-
-	unordered_map<int32_t, uint16_t> m_itemAmounts;
-	int16_t m_hammer;
-	int32_t m_mesos;
-	int32_t m_autoHpPotId; // For checking the auto HP/MP potion ID
-	int32_t m_autoMpPotId;
-	Player *m_player;
-
-	void addEquipped(int16_t slot, int32_t itemId);
+	int16_t m_hammer = -1;
+	int32_t m_mesos = 0;
+	int32_t m_autoHpPotId = 0;
+	int32_t m_autoMpPotId = 0;
+	Player *m_player = nullptr;
+	array_t<uint8_t, Inventories::InventoryCount> m_maxSlots;
+	array_t<array_t<int32_t, 2>, Inventories::EquippedSlots> m_equipped; // Separate sets of slots for regular items and cash items
+	array_t<hash_map_t<int16_t, Item *>, Inventories::InventoryCount> m_items;
+	vector_t<int32_t> m_vipLocations;
+	vector_t<int32_t> m_rockLocations;
+	vector_t<int32_t> m_wishlist;
+	hash_map_t<int32_t, uint16_t> m_itemAmounts;
 };

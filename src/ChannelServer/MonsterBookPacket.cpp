@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "SmsgHeader.h"
 
-void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, bool full) {
+auto MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, bool full) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MONSTER_BOOK_ADD);
 	packet.add<bool>(!full);
@@ -48,7 +48,7 @@ void MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, b
 	}
 }
 
-void MonsterBookPacket::changeCover(Player *player, int32_t cardId) {
+auto MonsterBookPacket::changeCover(Player *player, int32_t cardId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MONSTER_BOOK_COVER);
 	packet.add<int32_t>(cardId);

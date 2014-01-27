@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,13 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-using StringUtilities::runFlags;
-
-QuestDataProvider * QuestDataProvider::singleton = nullptr;
-
-void QuestDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Quests... ";
+auto QuestDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Quests... ";
 
 	loadQuestData();
 	loadRequests();
@@ -41,7 +36,7 @@ void QuestDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void QuestDataProvider::loadQuestData() {
+auto QuestDataProvider::loadQuestData() -> void {
 	m_quests.clear();
 	Quest curQuest;
 	uint16_t questId;
@@ -57,7 +52,7 @@ void QuestDataProvider::loadQuestData() {
 	}
 }
 
-void QuestDataProvider::loadRequests() {
+auto QuestDataProvider::loadRequests() -> void {
 	uint16_t questId;
 	int32_t reward;
 	int16_t count;
@@ -74,7 +69,7 @@ void QuestDataProvider::loadRequests() {
 		reward = row.get<int32_t>("objectid");
 		count = row.get<int16_t>("quantity");
 
-		runFlags(row.get<opt_string>("request_type"), [&cur, reward, count](const string &cmp) {
+		StringUtilities::runEnum(row.get<string_t>("request_type"), [&cur, reward, count](const string_t &cmp) {
 			if (cmp == "item") cur->addItemRequest(reward, count);
 			else if (cmp == "mob") cur->addMobRequest(reward, count);
 			else if (cmp == "quest") cur->addQuestRequest(static_cast<int16_t>(reward), static_cast<int8_t>(count));
@@ -82,7 +77,7 @@ void QuestDataProvider::loadRequests() {
 	}
 }
 
-void QuestDataProvider::loadRequiredJobs() {
+auto QuestDataProvider::loadRequiredJobs() -> void {
 	uint16_t questId;
 	Quest *cur;
 
@@ -96,8 +91,8 @@ void QuestDataProvider::loadRequiredJobs() {
 	}
 }
 
-void QuestDataProvider::loadRewards() {
-	string jobTracks;
+auto QuestDataProvider::loadRewards() -> void {
+	string_t jobTracks;
 	uint16_t questId;
 	int16_t job;
 	bool start;
@@ -111,10 +106,10 @@ void QuestDataProvider::loadRewards() {
 		cur = &m_quests[questId];
 		reward = QuestRewardInfo();
 		job = row.get<int16_t>("job");
-		jobTracks = row.get<string>("job_tracks");
-		start = (row.get<string>("quest_state") == "start");
+		jobTracks = row.get<string_t>("job_tracks");
+		start = (row.get<string_t>("quest_state") == "start");
 
-		runFlags(row.get<opt_string>("reward_type"), [&reward](const string &cmp) {
+		StringUtilities::runEnum(row.get<string_t>("reward_type"), [&reward](const string_t &cmp) {
 			if (cmp == "item") reward.isItem = true;
 			else if (cmp == "exp") reward.isExp = true;
 			else if (cmp == "mesos") reward.isMesos = true;
@@ -122,22 +117,22 @@ void QuestDataProvider::loadRewards() {
 			else if (cmp == "skill") reward.isSkill = true;
 			else if (cmp == "buff") reward.isBuff = true;
 		});
-		runFlags(row.get<opt_string>("flags"), [&reward](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reward](const string_t &cmp) {
 			if (cmp == "master_level_only") reward.masterLevelOnly = true;
 		});
 
 		reward.id = row.get<int32_t>("rewardid");
 		reward.count = row.get<int16_t>("quantity");
 		reward.masterLevel = row.get<int16_t>("master_level");
-		reward.gender = GameLogicUtilities::getGenderId(row.get<string>("gender"));
+		reward.gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
 		reward.prop = row.get<int32_t>("prop");
 
 		if (job != -1 || jobTracks.length() == 0) {
 			cur->addReward(start, reward, job);
 		}
 		else {
-			runFlags(jobTracks, [&cur, &reward, &start](const string &cmp) {
-				auto addRewardForJobs = [&cur, &reward, &start](std::initializer_list<int16_t> jobs) {
+			StringUtilities::runFlags(jobTracks, [&cur, &reward, &start](const string_t &cmp) {
+				auto addRewardForJobs = [&cur, &reward, &start](init_list_t<int16_t> jobs) {
 					for (const auto &job : jobs) {
 						cur->addReward(start, reward, job);
 					}
@@ -219,8 +214,8 @@ void QuestDataProvider::loadRewards() {
 	}
 }
 
-int16_t QuestDataProvider::getItemRequest(uint16_t questId, int32_t itemId) {
-	if (m_quests.find(questId) != m_quests.end()) {
+auto QuestDataProvider::getItemRequest(uint16_t questId, int32_t itemId) -> int16_t {
+	if (m_quests.find(questId) != std::end(m_quests)) {
 		return m_quests[questId].getItemRequestQuantity(itemId);
 	}
 	return 0;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,21 +23,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 class LoginServerAcceptConnection : public AbstractServerAcceptConnection {
+	NONCOPYABLE(LoginServerAcceptConnection);
 public:
-	LoginServerAcceptConnection();
+	LoginServerAcceptConnection() = default;
 	~LoginServerAcceptConnection();
-	void handleRequest(PacketReader &packet) override;
-	void authenticated(int8_t type) override;
+	auto authenticated(int8_t type) -> void override;
 
-	void setWorldId(int8_t id) { m_worldId = id; }
-	int8_t getWorldId() const { return m_worldId; }
+	auto setWorldId(int8_t id) -> void { m_worldId = id; }
+	auto getWorldId() const -> int8_t { return m_worldId; }
+protected:
+	auto handleRequest(PacketReader &packet) -> void override;
 private:
-	int8_t m_worldId;
+	int8_t m_worldId = -1;
 };
 
 class LoginServerAcceptConnectionFactory : public AbstractConnectionFactory {
 public:
-	AbstractConnection * createConnection() override {
+	auto createConnection() -> AbstractConnection * override {
 		return new LoginServerAcceptConnection();
 	}
 };

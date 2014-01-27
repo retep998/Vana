@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World.h"
 #include "Worlds.h"
 
-void LoginPacket::loginError(Player *player, int16_t errorId) {
+auto LoginPacket::loginError(Player *player, int16_t errorId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int16_t>(errorId);
@@ -36,7 +36,7 @@ void LoginPacket::loginError(Player *player, int16_t errorId) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
+auto LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int16_t>(2);
@@ -47,7 +47,7 @@ void LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginConnect(Player *player, const string &username) {
+auto LoginPacket::loginConnect(Player *player, const string_t &username) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_AUTHENTICATION);
 	packet.add<int32_t>(0);
@@ -70,21 +70,21 @@ void LoginPacket::loginConnect(Player *player, const string &username) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::loginProcess(Player *player, int8_t id) {
+auto LoginPacket::loginProcess(Player *player, int8_t id) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PIN);
 	packet.add<int8_t>(id);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::pinAssigned(Player *player) {
+auto LoginPacket::pinAssigned(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PIN_ASSIGNED);
 	packet.add<int8_t>(0);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::genderDone(Player *player, int8_t gender) {
+auto LoginPacket::genderDone(Player *player, int8_t gender) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_ACCOUNT_GENDER_DONE);
 	packet.add<int8_t>(gender);
@@ -92,7 +92,7 @@ void LoginPacket::genderDone(Player *player, int8_t gender) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showWorld(Player *player, World *world) {
+auto LoginPacket::showWorld(Player *player, World *world) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_WORLD_LIST);
 	packet.add<int8_t>(world->getId());
@@ -104,9 +104,9 @@ void LoginPacket::showWorld(Player *player, World *world) {
 	packet.add<int8_t>(0);
 	packet.add<uint8_t>(world->getMaxChannels());
 	for (size_t i = 0; i < world->getMaxChannels(); i++) {
-		std::ostringstream cnStream;
+		out_stream_t cnStream;
 		cnStream << world->getName() << "-" << i + 1;
-		const string &channelName = cnStream.str();
+		const string_t &channelName = cnStream.str();
 		packet.addString(channelName);
 
 		if (Channel *channel = world->getChannel(i)) {
@@ -128,21 +128,21 @@ void LoginPacket::showWorld(Player *player, World *world) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::worldEnd(Player *player) {
+auto LoginPacket::worldEnd(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_WORLD_LIST);
 	packet.add<int8_t>(-1);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showChannels(Player *player, int8_t status) {
+auto LoginPacket::showChannels(Player *player, int8_t status) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_WORLD_STATUS);
 	packet.add<int16_t>(status);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::channelSelect(Player *player) {
+auto LoginPacket::channelSelect(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_SELECT);
 	packet.add<int16_t>(0);
@@ -150,7 +150,7 @@ void LoginPacket::channelSelect(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacters(Player *player, const vector<Character> &chars, int32_t maxChars) {
+auto LoginPacket::showCharacters(Player *player, const vector_t<Character> &chars, int32_t maxChars) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(0);
@@ -162,14 +162,14 @@ void LoginPacket::showCharacters(Player *player, const vector<Character> &chars,
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::channelOffline(Player *player) {
+auto LoginPacket::channelOffline(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_LIST);
 	packet.add<int8_t>(8);
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::checkName(Player *player, const string &name, uint8_t message) {
+auto LoginPacket::checkName(Player *player, const string_t &name, uint8_t message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_NAME_CHECK);
 	packet.addString(name);
@@ -177,7 +177,7 @@ void LoginPacket::checkName(Player *player, const string &name, uint8_t message)
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) {
+auto LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(1);
@@ -186,7 +186,7 @@ void LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vector<Character> &chars) {
+auto LoginPacket::showViewAllCharacters(Player *player, uint8_t worldId, const vector_t<Character> &chars) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(0);
@@ -198,7 +198,7 @@ void LoginPacket::showCharactersWorld(Player *player, uint8_t worldId, const vec
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::showCharacter(Player *player, const Character &charc) {
+auto LoginPacket::showCharacter(Player *player, const Character &charc) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_CREATE);
 	packet.add<int8_t>(0);
@@ -206,7 +206,7 @@ void LoginPacket::showCharacter(Player *player, const Character &charc) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
+auto LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_DELETE);
 	packet.add<int32_t>(id);
@@ -214,7 +214,7 @@ void LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::connectIp(Player *player, int32_t charId) {
+auto LoginPacket::connectIp(Player *player, int32_t charId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
 	packet.add<int16_t>(0);
@@ -222,7 +222,7 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 	Ip chanIp(0);
 	port_t port = -1;
 
-	if (Channel *channel = Worlds::Instance()->getWorld(player->getWorldId())->getChannel(player->getChannel())) {
+	if (Channel *channel = Worlds::getInstance().getWorld(player->getWorldId())->getChannel(player->getChannel())) {
 		chanIp = channel->matchIpToSubnet(player->getIp());
 		port = channel->getPort();
 	}
@@ -235,7 +235,7 @@ void LoginPacket::connectIp(Player *player, int32_t charId) {
 	player->getSession()->send(packet);
 }
 
-void LoginPacket::relogResponse(Player *player) {
+auto LoginPacket::relogResponse(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_LOGIN_RETURN);
 	packet.add<int8_t>(1);

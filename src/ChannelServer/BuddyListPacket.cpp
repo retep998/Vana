@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerBuddyList.h"
 #include "SmsgHeader.h"
 
-void BuddyListPacket::error(Player *player, uint8_t error) {
+auto BuddyListPacket::error(Player *player, uint8_t error) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(error);
@@ -29,7 +29,7 @@ void BuddyListPacket::error(Player *player, uint8_t error) {
 	player->getSession()->send(packet);
 }
 
-void BuddyListPacket::update(Player *player, uint8_t type) {
+auto BuddyListPacket::update(Player *player, uint8_t type) -> void {
 	uint8_t size = player->getBuddyList()->listSize();
 
 	PacketCreator packet;
@@ -46,7 +46,7 @@ void BuddyListPacket::update(Player *player, uint8_t type) {
 	player->getSession()->send(packet);
 }
 
-void BuddyListPacket::showSize(Player *player) {
+auto BuddyListPacket::showSize(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x15);
@@ -54,7 +54,7 @@ void BuddyListPacket::showSize(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void BuddyListPacket::invitation(Player *invitee, const BuddyInvite &invite) {
+auto BuddyListPacket::invitation(Player *invitee, const BuddyInvite &invite) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x09);
@@ -75,7 +75,7 @@ void BuddyListPacket::invitation(Player *invitee, const BuddyInvite &invite) {
 	invitee->getSession()->send(packet);
 }
 
-void BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) {
+auto BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_BUDDY);
 	packet.add<int8_t>(0x14);

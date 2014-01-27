@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,37 +25,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/lookup.h>
 #include <string>
 
-using std::string;
-
 class PacketCreator;
 
 class Decoder {
 public:
-	Decoder(bool encrypted);
+	explicit Decoder(bool encrypted);
 
-	bool validPacket(unsigned char *header);
-	uint16_t getLength(unsigned char *header);
+	auto validPacket(unsigned char *header) -> bool;
+	auto getLength(unsigned char *header) -> uint16_t;
 
-	void createHeader(unsigned char *header, uint16_t size);
-
-	void encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
-	void decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen);
-	void setRecvIv(uint32_t iv) { m_recv.updateIv(iv); }
-	void setSendIv(uint32_t iv) { m_send.updateIv(iv); }
-	uint32_t getRecvIv() const { return m_recv.getIv(); }
-	uint32_t getSendIv() const { return m_send.getIv(); }
+	auto createHeader(unsigned char *header, uint16_t size) -> void;
+	auto encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
+	auto decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
+	auto setRecvIv(uint32_t iv) -> void { m_recv.updateIv(iv); }
+	auto setSendIv(uint32_t iv) -> void { m_send.updateIv(iv); }
+	auto getRecvIv() const -> uint32_t { return m_recv.getIv(); }
+	auto getSendIv() const -> uint32_t { return m_send.getIv(); }
 private:
-	bool isEncrypted() const { return m_encrypted; }
-	void getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size);
+	auto isEncrypted() const -> bool { return m_encrypted; }
+	auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 
 	BlockCipherIv m_recv;
 	BlockCipherIv m_send;
-	bool m_encrypted;
+	bool m_encrypted = true;
 	Botan::OctetString m_botanKey;
 };
 
 inline
-uint16_t Decoder::getLength(unsigned char *header) {
+auto Decoder::getLength(unsigned char *header) -> uint16_t {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
 	getVersionAndSize(header, version, pSize);
@@ -63,7 +60,7 @@ uint16_t Decoder::getLength(unsigned char *header) {
 }
 
 inline
-bool Decoder::validPacket(unsigned char *header) {
+auto Decoder::validPacket(unsigned char *header) -> bool {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
 	getVersionAndSize(header, version, pSize);
@@ -71,7 +68,7 @@ bool Decoder::validPacket(unsigned char *header) {
 }
 
 inline
-void Decoder::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) {
+auto Decoder::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
 	if (!isEncrypted()) {
 		version = (*(uint16_t *)(header));
 		size = (*(uint16_t *)(header + 2));

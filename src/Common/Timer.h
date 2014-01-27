@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,44 +22,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <ctime>
 #include <functional>
-
-using std::function;
-
-namespace TimerRunResult {
-	enum RunResult {
-		Reset,
-		Complete
-	};
-}
+#include <memory>
 
 namespace Timer {
+
+using timer_func_t = function_t<void(const time_point_t &)>;
+
+enum class RunResult {
+	Reset,
+	Complete
+};
 
 class Container;
 class Thread;
 
-void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow);
-void create(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat);
+auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat = seconds_t(0)) -> void;
 
 class Timer {
+	NONCOPYABLE(Timer);
+	NO_DEFAULT_CONSTRUCTOR(Timer);
 public:
-	Timer(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow);
-	Timer(const function<void()> func, const Id &id, Container *container, const duration_t &differenceFromNow, const duration_t &repeat);
+	Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat);
 
-	Id getId() const { return m_id; }
-	const time_point_t & getRunAt() const { return m_runAt; }
-	duration_t getTimeLeft() const;
-	TimerRunResult::RunResult run();
-	time_point_t reset(const time_point_t &now);
-	Container * getContainer() const { return m_container; }
+	auto getId() const -> Id { return m_id; }
+	auto getRunAt() const -> const time_point_t & { return m_runAt; }
+	auto getTimeLeft() const -> duration_t;
+	auto run(const time_point_t &now) const -> RunResult;
+	auto reset(const time_point_t &now) -> time_point_t;
+	auto getContainer() const -> view_ptr_t<Container> { return m_container; }
 private:
-	Timer() = delete;
-
 	Id m_id;
-	Container *m_container;
+	view_ptr_t<Container> m_container;
 	time_point_t m_runAt;
 	bool m_repeat;
 	duration_t m_repeatTime;
-	function<void ()> m_function;
+	timer_func_t m_function;
 };
 
 }

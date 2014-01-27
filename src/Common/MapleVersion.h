@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 #define MAPLE_LOCALE_GLOBAL 0x08
 #define MAPLE_LOCALE_KOREA 0x01
@@ -71,16 +69,16 @@ namespace Locales {
 }
 
 namespace PatchLocations {
-	const string None = "";
-	const string Global = "0";
+	const string_t None = "";
+	const string_t Global = "0";
 
-	const string GlobalTest = "0";
+	const string_t GlobalTest = "0";
 }
 
 namespace MapleVersion {
 	const uint16_t Version = MAPLE_VERSION;
 	const int8_t Locale = MAPLE_LOCALE;
-	const string LocaleString = MAPLE_LOCALE_STRING;
+	const string_t LocaleString = MAPLE_LOCALE_STRING;
 	const bool TestServer = false;
-	const string PatchLocation = PatchLocations::Global;
+	const string_t PatchLocation = PatchLocations::Global;
 }

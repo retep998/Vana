@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,6 +30,6 @@ namespace FamePacket {
 			FamedThisMonth = 0x04
 		};
 	}
-	void sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame);
-	void sendError(Player *player, int32_t reason);
+	auto sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame) -> void;
+	auto sendError(Player *player, int32_t reason) -> void;
 }

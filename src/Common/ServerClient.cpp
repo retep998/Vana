@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,9 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-using std::endl;
-
-ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, SessionManagerPtr sessionManager, AbstractConnection *connection, bool ping) :
+ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool ping) :
 	Session(ioService, sessionManager, connection, false, true, ping),
 	m_server(serverIp),
 	m_port(serverPort),
@@ -34,7 +32,7 @@ ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverI
 {
 }
 
-void ServerClient::startConnect() {
+auto ServerClient::startConnect() -> void {
 	// Synchronously connect and process the connect packet
 
 	boost::asio::ip::address endAddress;
@@ -44,7 +42,7 @@ void ServerClient::startConnect() {
 	else {
 		throw std::invalid_argument("IPv6 unsupported");
 	}
-	tcp::endpoint endpoint(endAddress, m_port);
+	boost::asio::ip::tcp::endpoint endpoint(endAddress, m_port);
 
 	boost::system::error_code error;
 	m_socket.connect(endpoint, error);
@@ -56,19 +54,19 @@ void ServerClient::startConnect() {
 			// Start the normal Session routine
 			start();
 		}
-		catch (std::range_error) {
-			std::cerr << "ERROR: Malformed IV packet" << endl;
+		catch (PacketContentException) {
+			std::cerr << "ERROR: Malformed IV packet" << std::endl;
 			disconnect();
 			ExitCodes::exit(ExitCodes::ServerMalformedIvPacket);
 		}
 	}
 	else {
-		std::cerr << "ERROR: " << error.message() << endl;
+		std::cerr << "ERROR: " << error.message() << std::endl;
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }
 
-void ServerClient::readConnectPacket() {
+auto ServerClient::readConnectPacket() -> void {
 	boost::system::error_code error;
 
 	m_buffer.reset(new unsigned char[maxBufferLen]);
@@ -96,9 +94,9 @@ void ServerClient::readConnectPacket() {
 	int8_t locale = packet.get<int8_t>();
 
 	if (version != MapleVersion::Version || locale != MapleVersion::Locale) {
-		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << endl;
-		std::cout << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << endl;
-		std::cout << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << endl;
+		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
+		std::cerr << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << std::endl;
+		std::cerr << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << std::endl;
 		disconnect();
 		ExitCodes::exit(ExitCodes::ServerVersionMismatch);
 	}

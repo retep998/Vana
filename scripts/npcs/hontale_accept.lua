@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,10 +45,11 @@ end
 
 function isAtHead()
 	if setInstance("horntail") then
-		if getInstanceVariable("lefthead", true) then
+		leftHead = getInstanceVariable("lefthead");
+		revertInstance();
+		if leftHead then
 			return true;
 		end
-		revertInstance();
 	end
 	return false;
 end
@@ -56,8 +57,9 @@ end
 function compatibilityCheck()
 	if setInstance("horntailSignup") then
 		gm = isGm();
-		gmInstance = getInstanceVariable("gm", true);
-		return (not gm and gmInstance ~= 1) or (gm and gmInstance == 1);
+		gmInstance = getInstanceVariable("gm");
+		revertInstance();
+		return gm == gmInstance;
 	end
 end
 
@@ -123,7 +125,7 @@ if not isInstance("horntailSignup") then
 	end
 else
 	if getName() == getInstanceVariable("master") then
-		if getInstanceVariable("enter", true) then
+		if getInstanceVariable("enter") then
 			if isAtHead() then
 				addText("The battle has already begun.");
 				sendOk();
@@ -188,12 +190,13 @@ else
 				end
 			elseif choice == 3 then
 				if isGm() or getInstanceSignupCount() >= 6 then
-					setInstanceVariable("enter", "1");
+					setInstanceVariable("enter", true);
 					messageAll("The leader of the squad has entered the map. Please enter the map before time runs out on the squad.");
 					createInstance("horntail", 12 * 60 * 60, true);
 
 					if isGm() and setInstance("horntail") then
-						setInstanceVariable("gm", 1);
+						setInstanceVariable("gm", true);
+						revertInstance();
 					end
 
 					enterBossMap();
@@ -204,7 +207,7 @@ else
 			end
 		end
 	else
-		if getInstanceVariable("enter", true) and not isAtHead() then
+		if getInstanceVariable("enter") and not isAtHead() then
 			if isPlayerSignedUp(getName()) then
 				enterBossMap();
 			else
@@ -230,7 +233,7 @@ else
 					addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
 				elseif isPlayerSignedUp(getName()) then
 					addText("You are already part of the expedition squad.");
-				elseif getInstanceVariable("enter", true) then
+				elseif getInstanceVariable("enter") then
 					addText("The application process for the Horntail Expedition Squad had already been concluded.");
 				else
 					addPlayerSignUp(getName());

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,12 +21,12 @@ class PacketReader;
 class WorldServerConnection;
 
 namespace WorldServerConnectHandler {
-	void connectLogin(WorldServerConnection *player, PacketReader &packet);
-	void connect(WorldServerConnection *player, PacketReader &packet);
-	void findPlayer(PacketReader &packet);
-	void whisperPlayer(PacketReader &packet);
-	void forwardPacket(PacketReader &packet);
-	void sendToPlayers(PacketReader &packet);
-	void reloadMcdb(PacketReader &packet);
-	void rehashConfig(PacketReader &packet);
+	auto connectLogin(WorldServerConnection *player, PacketReader &packet) -> void;
+	auto connect(WorldServerConnection *player, PacketReader &packet) -> void;
+	auto findPlayer(PacketReader &packet) -> void;
+	auto whisperPlayer(PacketReader &packet) -> void;
+	auto forwardPacket(PacketReader &packet) -> void;
+	auto sendToPlayers(PacketReader &packet) -> void;
+	auto reloadMcdb(PacketReader &packet) -> void;
+	auto rehashConfig(PacketReader &packet) -> void;
 }

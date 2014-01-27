@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,100 +39,100 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
-void WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) {
+auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) -> void {
 	int8_t worldId = packet.get<int8_t>();
 	if (worldId != -1) {
-		ChannelServer::Instance()->setWorldId(worldId);
-		ChannelServer::Instance()->setWorldIp(packet.getClass<Ip>());
-		ChannelServer::Instance()->setWorldPort(packet.get<port_t>());
-		std::cout << "Connecting to world " << (int16_t) worldId << std::endl;
-		ChannelServer::Instance()->connectWorld();
+		ChannelServer::getInstance().setWorldId(worldId);
+		ChannelServer::getInstance().setWorldIp(packet.getClass<Ip>());
+		ChannelServer::getInstance().setWorldPort(packet.get<port_t>());
+		std::cout << "Connecting to world " << static_cast<int32_t>(worldId) << std::endl;
+		ChannelServer::getInstance().connectWorld();
 	}
 	else {
 		std::cerr << "ERROR: No world server to connect" << std::endl;
-		ChannelServer::Instance()->shutdown();
+		ChannelServer::getInstance().shutdown();
 	}
 }
 
-void WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) {
+auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) -> void {
 	int16_t channel = packet.get<int16_t>();
 	if (channel != -1) {
 		port_t port = packet.get<port_t>();
-		ChannelServer::Instance()->setChannelId(channel);
-		ChannelServer::Instance()->setPort(port);
+		ChannelServer::getInstance().setChannelId(channel);
+		ChannelServer::getInstance().setPort(port);
 
 		const WorldConfig &conf = packet.getClass<WorldConfig>();
 
-		ChannelServer::Instance()->setConfig(conf);
-		ChannelServer::Instance()->listen();
+		ChannelServer::getInstance().setConfig(conf);
+		ChannelServer::getInstance().listen();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
 
-		ChannelServer::Instance()->displayLaunchTime();
+		ChannelServer::getInstance().displayLaunchTime();
 	}
 	else {
 		std::cerr << "ERROR: No channel to handle" << std::endl;
-		ChannelServer::Instance()->shutdown();
+		ChannelServer::getInstance().shutdown();
 	}
 }
 
-void WorldServerConnectHandler::findPlayer(PacketReader &packet) {
+auto WorldServerConnectHandler::findPlayer(PacketReader &packet) -> void {
 	int32_t finder = packet.get<int32_t>();
 	int16_t channel = packet.get<int16_t>();
-	const string &name = packet.getString();
+	const string_t &name = packet.getString();
 	int8_t is = packet.get<int8_t>();
 	if (channel == -1) {
-		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, -1, is);
+		PlayersPacket::findPlayer(PlayerDataProvider::getInstance().getPlayer(finder), name, -1, is);
 	}
 	else {
-		PlayersPacket::findPlayer(PlayerDataProvider::Instance()->getPlayer(finder), name, channel, is, 1);
+		PlayersPacket::findPlayer(PlayerDataProvider::getInstance().getPlayer(finder), name, channel, is, 1);
 	}
 }
 
-void WorldServerConnectHandler::whisperPlayer(PacketReader &packet) {
+auto WorldServerConnectHandler::whisperPlayer(PacketReader &packet) -> void {
 	int32_t whisperee = packet.get<int32_t>();
-	const string &whisperer = packet.getString();
+	const string_t &whisperer = packet.getString();
 	uint16_t channel = packet.get<int16_t>();
-	const string &message = packet.getString();
+	const string_t &message = packet.getString();
 
-	PlayersPacket::whisperPlayer(PlayerDataProvider::Instance()->getPlayer(whisperee), whisperer, channel, message);
+	PlayersPacket::whisperPlayer(PlayerDataProvider::getInstance().getPlayer(whisperee), whisperer, channel, message);
 }
 
-void WorldServerConnectHandler::forwardPacket(PacketReader &packet) {
+auto WorldServerConnectHandler::forwardPacket(PacketReader &packet) -> void {
 	PacketCreator sendPacket;
 	int32_t playerId = packet.get<int32_t>();
 	sendPacket.addBuffer(packet);
-	PlayerDataProvider::Instance()->getPlayer(playerId)->getSession()->send(sendPacket);
+	PlayerDataProvider::getInstance().getPlayer(playerId)->getSession()->send(sendPacket);
 }
 
-void WorldServerConnectHandler::sendToPlayers(PacketReader &packet) {
+auto WorldServerConnectHandler::sendToPlayers(PacketReader &packet) -> void {
 	PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength());
 }
 
-void WorldServerConnectHandler::reloadMcdb(PacketReader &packet) {
-	const string &args = packet.getString();
+auto WorldServerConnectHandler::reloadMcdb(PacketReader &packet) -> void {
+	const string_t &args = packet.getString();
 	if (args == "all") {
-		ItemDataProvider::Instance()->loadData();
-		DropDataProvider::Instance()->loadData();
-		ShopDataProvider::Instance()->loadData();
-		MobDataProvider::Instance()->loadData();
-		BeautyDataProvider::Instance()->loadData();
-		ScriptDataProvider::Instance()->loadData();
-		SkillDataProvider::Instance()->loadData();
-		ReactorDataProvider::Instance()->loadData();
-		QuestDataProvider::Instance()->loadData();
+		ItemDataProvider::getInstance().loadData();
+		DropDataProvider::getInstance().loadData();
+		ShopDataProvider::getInstance().loadData();
+		MobDataProvider::getInstance().loadData();
+		BeautyDataProvider::getInstance().loadData();
+		ScriptDataProvider::getInstance().loadData();
+		SkillDataProvider::getInstance().loadData();
+		ReactorDataProvider::getInstance().loadData();
+		QuestDataProvider::getInstance().loadData();
 	}
-	else if (args == "items") ItemDataProvider::Instance()->loadData();
-	else if (args == "drops") DropDataProvider::Instance()->loadData();
-	else if (args == "shops") ShopDataProvider::Instance()->loadData();
-	else if (args == "mobs") MobDataProvider::Instance()->loadData();
-	else if (args == "beauty") BeautyDataProvider::Instance()->loadData();
-	else if (args == "scripts") ScriptDataProvider::Instance()->loadData();
-	else if (args == "skills") SkillDataProvider::Instance()->loadData();
-	else if (args == "reactors") ReactorDataProvider::Instance()->loadData();
-	else if (args == "quest") QuestDataProvider::Instance()->loadData();
+	else if (args == "items") ItemDataProvider::getInstance().loadData();
+	else if (args == "drops") DropDataProvider::getInstance().loadData();
+	else if (args == "shops") ShopDataProvider::getInstance().loadData();
+	else if (args == "mobs") MobDataProvider::getInstance().loadData();
+	else if (args == "beauty") BeautyDataProvider::getInstance().loadData();
+	else if (args == "scripts") ScriptDataProvider::getInstance().loadData();
+	else if (args == "skills") SkillDataProvider::getInstance().loadData();
+	else if (args == "reactors") ReactorDataProvider::getInstance().loadData();
+	else if (args == "quest") QuestDataProvider::getInstance().loadData();
 }
 
-void WorldServerConnectHandler::rehashConfig(PacketReader &packet) {
+auto WorldServerConnectHandler::rehashConfig(PacketReader &packet) -> void {
 	const WorldConfig &config = packet.getClass<WorldConfig>();
-	ChannelServer::Instance()->setConfig(config);
+	ChannelServer::getInstance().setConfig(config);
 }

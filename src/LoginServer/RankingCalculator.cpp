@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,32 +35,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <thread>
 
-using std::unique_ptr;
-using std::bind;
-using Initializing::OutputWidth;
+mutex_t RankingCalculator::RankingsMutex;
 
-std::mutex RankingCalculator::RankingsMutex;
-
-void RankingCalculator::setTimer() {
+auto RankingCalculator::setTimer() -> void {
 	//Timer::create([]() { RankingCalculator::runThread(); },
 	//	Timer::Id(Timer::Types::RankTimer, 0, 0),
 	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 	// Calculate ranking every 1 hour, starting on the hour
 }
 
-void RankingCalculator::runThread() {
+auto RankingCalculator::runThread() -> void {
 	// Ranking on larger servers may take a long time and we don't want that to be blocking
-	// The std::thread object will be deleted immediately, but the thread will continue to run
-	auto p = std::make_unique<std::thread>([] { RankingCalculator::all(); });
+	// The thread_t object will be deleted immediately, but the thread will continue to run
+	auto p = make_owned_ptr<thread_t>([] { RankingCalculator::all(); });
 	p->detach();
 }
 
-void RankingCalculator::all() {
+auto RankingCalculator::all() -> void {
 	// There's no guarantee what effect running two at once will have, but it's likely to be bad
-	std::unique_lock<std::mutex> l(RankingsMutex, std::try_to_lock);
+	owned_lock_t<mutex_t> l(RankingsMutex, std::try_to_lock);
 	if (!l) return;
 
-	std::cout << std::setw(OutputWidth) << std::left << "Calculating rankings... " << std::endl;
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Calculating rankings... " << std::endl;
 	StopWatch sw;
 
 	soci::session &sql = Database::getCharDb();
@@ -75,10 +71,10 @@ void RankingCalculator::all() {
 		<< "	AND u.admin IS NULL "
 		<< "	AND ("
 		<< "		("
-		<< "			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")"
+		<< "			c.job IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs) << ")"
 		<< "			AND c.level > 9"
 		<< "		)"
-		<< "		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs, Jobs::Beginners::JobCount) << ")"
+		<< "		OR c.job NOT IN (" << StringUtilities::delimit(",", Jobs::Beginners::Jobs) << ")"
 		<< "	) "
 		<< "ORDER BY c.overall_cpos DESC",
 		soci::into(out.charId),
@@ -93,7 +89,7 @@ void RankingCalculator::all() {
 		soci::into(out.job.newRank),
 		soci::into(out.overall.newRank));
 
-	vector<RankPlayer> v;
+	vector_t<RankPlayer> v;
 	statement.execute();
 
 	while (statement.fetch()) {
@@ -158,7 +154,7 @@ void RankingCalculator::all() {
 	l.unlock();
 }
 
-bool RankingCalculator::increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) {
+auto RankingCalculator::increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) -> bool {
 	if (level == maxLevel) {
 		return true;
 	}
@@ -172,7 +168,7 @@ bool RankingCalculator::increaseRank(uint8_t level, uint8_t maxLevel, uint8_t la
 	return false;
 }
 
-bool RankingCalculator::baseCompare(const RankPlayer &t1, const RankPlayer &t2) {
+auto RankingCalculator::baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool {
 	if (t1.levelStat == t2.levelStat) {
 		if (t1.expStat == t2.expStat) {
 			return t1.levelTime < t2.levelTime;
@@ -182,13 +178,13 @@ bool RankingCalculator::baseCompare(const RankPlayer &t1, const RankPlayer &t2) 
 	return t1.levelStat > t2.levelStat;
 }
 
-void RankingCalculator::updateRank(Rank &r, int32_t newRank) {
+auto RankingCalculator::updateRank(Rank &r, int32_t newRank) -> void {
 	r.oldRank = r.newRank;
 	r.newRank = newRank;
 }
 
-void RankingCalculator::overall(vector<RankPlayer> &v) {
-	std::sort(v.begin(), v.end(), &baseCompare);
+auto RankingCalculator::overall(vector_t<RankPlayer> &v) -> void {
+	std::sort(std::begin(v), std::end(v), &baseCompare);
 
 	uint8_t lastLevel = 0;
 	time_t lastTime = 0;
@@ -212,15 +208,15 @@ void RankingCalculator::overall(vector<RankPlayer> &v) {
 	}
 }
 
-void RankingCalculator::world(vector<RankPlayer> &v) {
-	std::sort(v.begin(), v.end(), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
+auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
 		if (t1.worldId == t2.worldId) {
 			return baseCompare(t1, t2);
 		}
 		return t1.worldId > t2.worldId;
 	});
 
-	Worlds::Instance()->runFunction([&v](World *world) -> bool {
+	Worlds::getInstance().runFunction([&v](World *world) -> bool {
 		uint8_t worldId = world->getId();
 		uint8_t lastLevel = 0;
 		time_t lastTime = 0;
@@ -249,8 +245,8 @@ void RankingCalculator::world(vector<RankPlayer> &v) {
 	});
 }
 
-void RankingCalculator::job(vector<RankPlayer> &v) {
-	std::sort(v.begin(), v.end(), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
+auto RankingCalculator::job(vector_t<RankPlayer> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
 		int16_t job1 = GameLogicUtilities::getJobTrack(t1.jobStat);
 		int16_t job2 = GameLogicUtilities::getJobTrack(t2.jobStat);
 
@@ -261,8 +257,7 @@ void RankingCalculator::job(vector<RankPlayer> &v) {
 	});
 
 	// We will iterate through each job track
-	for (int32_t j = 0; j < Jobs::JobTracks::JobTrackCount; ++j) {
-		const int16_t jobTrack = Jobs::JobTracks::JobTracks[j];
+	for (const auto &jobTrack : Jobs::JobTracks::JobTracks) {
 		uint8_t lastLevel = 0;
 		time_t lastTime = 0;
 		int32_t lastExp = 0;
@@ -303,8 +298,8 @@ void RankingCalculator::job(vector<RankPlayer> &v) {
 	}
 }
 
-void RankingCalculator::fame(vector<RankPlayer> &v) {
-	std::sort(v.begin(), v.end(), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
+auto RankingCalculator::fame(vector_t<RankPlayer> &v) -> void {
+	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
 		return t1.fameStat > t2.fameStat;
 	});
 

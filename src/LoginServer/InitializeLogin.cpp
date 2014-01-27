@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CurseDataProvider.h"
 #include "ValidCharDataProvider.h"
 
-void Initializing::loadData() {
-	EquipDataProvider::Instance()->loadData();
-	ValidCharDataProvider::Instance()->loadData();
-	CurseDataProvider::Instance()->loadData();
+auto Initializing::loadData() -> void {
+	EquipDataProvider::getInstance().loadData();
+	ValidCharDataProvider::getInstance().loadData();
+	CurseDataProvider::getInstance().loadData();
 }

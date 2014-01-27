@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,39 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MapDataProvider.h"
 #include "Database.h"
 #include "GameLogicUtilities.h"
+#include "InitializeCommon.h"
 #include "Map.h"
 #include "MapleTvs.h"
 #include "MapObjects.h"
 #include "StringUtilities.h"
 #include <utility>
 
-using StringUtilities::runFlags;
-
-MapDataProvider * MapDataProvider::singleton = nullptr;
-
-FieldLimit::FieldLimit() :
-	jump(false),
-	movementSkills(false),
-	summoningBag(false),
-	mysticDoor(false),
-	channelSwitching(false),
-	regularExpLoss(false),
-	vipRock(false),
-	minigames(false),
-	mount(false),
-	potionUse(false),
-	dropDown(false),
-	chalkboard(false)
-{
-}
-
-MapDataProvider::MapDataProvider()
-{
-	loadData();
-}
-
-Map * MapDataProvider::getMap(int32_t mapId) {
-	if (m_maps.find(mapId) != m_maps.end()) {
+auto MapDataProvider::getMap(int32_t mapId) -> Map * {
+	if (m_maps.find(mapId) != std::end(m_maps)) {
 		return m_maps[mapId];
 	}
 	else {
@@ -60,15 +36,17 @@ Map * MapDataProvider::getMap(int32_t mapId) {
 	}
 }
 
-void MapDataProvider::unloadMap(int32_t mapId) {
+auto MapDataProvider::unloadMap(int32_t mapId) -> void {
 	auto iter = m_maps.find(mapId);
-	if (iter != m_maps.end()) {
+	if (iter != std::end(m_maps)) {
 		delete iter->second;
 		m_maps.erase(iter);
 	}
 }
 
-void MapDataProvider::loadData() {
+auto MapDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Continents... ";
+
 	m_continents.clear();
 	int8_t mapCluster;
 	int8_t continent;
@@ -79,12 +57,14 @@ void MapDataProvider::loadData() {
 		mapCluster = row.get<int8_t>("map_cluster");
 		continent = row.get<int8_t>("continent");
 
-		m_continents.insert(std::make_pair(mapCluster, continent));
+		m_continents.emplace(mapCluster, continent);
 	}
+
+	std::cout << "DONE" << std::endl;
 }
 
-void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
-	std::unique_lock<std::mutex> l(m_loadMutex);
+auto MapDataProvider::loadMap(int32_t mapId, Map *&map) -> void {
+	owned_lock_t<mutex_t> l(m_loadMutex);
 
 	int32_t checkMap = loadMapData(mapId, map);
 	if (checkMap != -1) {
@@ -96,17 +76,17 @@ void MapDataProvider::loadMap(int32_t mapId, Map *&map) {
 	}
 }
 
-int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
+auto MapDataProvider::loadMapData(int32_t mapId, Map *&map) -> int32_t {
 	int32_t link = 0;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (const auto &row : rs) {
-		MapInfoPtr mapInfo = std::make_shared<MapInfo>();
+		ref_ptr_t<MapInfo> mapInfo = make_ref_ptr<MapInfo>();
 		link = row.get<int32_t>("link");
 		mapInfo->link = link;
 
-		runFlags(row.get<opt_string>("flags"), [&mapInfo](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mapInfo](const string_t &cmp) {
 			if (cmp == "town") mapInfo->town = true;
 			else if (cmp == "clock") mapInfo->clock = true;
 			else if (cmp == "swim") mapInfo->swim = true;
@@ -118,11 +98,11 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 			else if (cmp == "shuffle_reactors") mapInfo->shuffleReactors = true;
 		});
 
-		runFlags(row.get<opt_string>("field_type"), [&mapInfo](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("field_type"), [&mapInfo](const string_t &cmp) {
 			if (cmp == "force_map_equip") mapInfo->forceMapEquip = true;
 		});
 
-		runFlags(row.get<opt_string>("field_limitations"), [&mapInfo](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("field_limitations"), [&mapInfo](const string_t &cmp) {
 			FieldLimit *limitations = &mapInfo->limitations;
 			if (cmp == "jump") limitations->jump = true;
 			else if (cmp == "movement_skills") limitations->movementSkills = true;
@@ -142,10 +122,10 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 		mapInfo->rm = row.get<int32_t>("return_map");
 		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
-		mapInfo->defaultMusic = row.get<string>("default_bgm");
-		mapInfo->dimensions.leftTop = Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty"));
-		mapInfo->dimensions.rightBottom = Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby"));
-		mapInfo->shuffleName = row.get<string>("shuffle_name");
+		mapInfo->defaultMusic = row.get<string_t>("default_bgm");
+		mapInfo->dimensions = Rect(Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty")),
+									Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby")));
+		mapInfo->shuffleName = row.get<string_t>("shuffle_name");
 		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
 		mapInfo->dps = row.get<uint16_t>("damage_per_second");
 		mapInfo->traction = row.get<double>("default_traction");
@@ -166,7 +146,7 @@ int32_t MapDataProvider::loadMapData(int32_t mapId, Map *&map) {
 	return (link == 0 ? mapId : link);
 }
 
-void MapDataProvider::loadSeats(Map *map, int32_t link) {
+auto MapDataProvider::loadSeats(Map *map, int32_t link) -> void {
 	SeatInfo chair;
 	int16_t id;
 
@@ -182,44 +162,44 @@ void MapDataProvider::loadSeats(Map *map, int32_t link) {
 	}
 }
 
-void MapDataProvider::loadPortals(Map *map, int32_t link) {
+auto MapDataProvider::loadPortals(Map *map, int32_t link) -> void {
 	PortalInfo portal;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_portals WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		portal = PortalInfo();
-		runFlags(row.get<opt_string>("flags"), [&portal](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&portal](const string_t &cmp) {
 			if (cmp == "only_once") portal.onlyOnce = true;
 		});
 
 		portal.id = row.get<int32_t>("id");
-		portal.name = row.get<string>("label");
+		portal.name = row.get<string_t>("label");
 		portal.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
 		portal.toMap = row.get<int32_t>("destination");
-		portal.toName = row.get<string>("destination_label");
-		portal.script = row.get<string>("script");
+		portal.toName = row.get<string_t>("destination_label");
+		portal.script = row.get<string_t>("script");
 
 		map->addPortal(portal);
 	}
 }
 
-void MapDataProvider::loadMapLife(Map *map, int32_t link) {
+auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
 	NpcSpawnInfo npc;
 	MobSpawnInfo spawn;
 	ReactorSpawnInfo reactor;
 	SpawnInfo life;
-	string type;
+	string_t type;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_life WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		life = SpawnInfo();
-		runFlags(row.get<opt_string>("flags"), [&life](const string &cmp) {
-			if (cmp == "faces_left") life.facesRight = false;
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&life](const string_t &cmp) {
+			if (cmp == "faces_left") life.facesLeft = true;
 		});
 
-		type = row.get<string>("life_type");
+		type = row.get<string_t>("life_type");
 		life.id = row.get<int32_t>("lifeid");
 		life.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
 		life.foothold = row.get<int16_t>("foothold");
@@ -240,26 +220,26 @@ void MapDataProvider::loadMapLife(Map *map, int32_t link) {
 		else if (type == "reactor") {
 			reactor = ReactorSpawnInfo();
 			reactor.setSpawnInfo(life);
-			reactor.name = row.get<string>("life_name");
+			reactor.name = row.get<string_t>("life_name");
 			map->addReactorSpawn(reactor);
 		}
 	}
 }
 
-void MapDataProvider::loadFootholds(Map *map, int32_t link) {
+auto MapDataProvider::loadFootholds(Map *map, int32_t link) -> void {
 	FootholdInfo foot;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_footholds WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		foot = FootholdInfo();
-		runFlags(row.get<opt_string>("flags"), [&foot](const string &cmp) {
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&foot](const string_t &cmp) {
 			if (cmp == "forbid_downward_jump") foot.forbidJumpDown = true;
 		});
 
 		foot.id = row.get<int32_t>("id");
-		foot.pos1 = Pos(row.get<int16_t>("x1"), row.get<int16_t>("y1"));
-		foot.pos2 = Pos(row.get<int16_t>("x2"), row.get<int16_t>("y2"));
+		foot.line = Line(Pos(row.get<int16_t>("x1"), row.get<int16_t>("y1")),
+							Pos(row.get<int16_t>("x2"), row.get<int16_t>("y2")));
 		foot.dragForce = row.get<int16_t>("drag_force");
 		foot.leftEdge = row.get<int16_t>("previousid") == 0;
 		foot.rightEdge = row.get<int16_t>("nextid") == 0;
@@ -267,22 +247,22 @@ void MapDataProvider::loadFootholds(Map *map, int32_t link) {
 	}
 }
 
-void MapDataProvider::loadMapTimeMob(Map *map) {
+auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_time_mob WHERE mapid = :map", soci::use(map->getId(), "map"));
 
 	for (const auto &row : rs) {
-		TimeMobPtr info = std::make_shared<TimeMob>();
+		ref_ptr_t<TimeMob> info = make_ref_ptr<TimeMob>();
 
 		info->id = row.get<int32_t>("mobid");
 		info->startHour = row.get<int8_t>("start_hour");
 		info->endHour = row.get<int8_t>("end_hour");
-		info->message = row.get<string>("message");
+		info->message = row.get<string_t>("message");
 	}
 }
 
-int8_t MapDataProvider::getContinent(int32_t mapId) {
+auto MapDataProvider::getContinent(int32_t mapId) -> int8_t {
 	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
-	if (m_continents.find(cluster) == m_continents.end()) {
+	if (m_continents.find(cluster) == std::end(m_continents)) {
 		std::cerr << "Attempted to get a continent ID that does not exist for map ID " << mapId << std::endl;
 		return 0;
 	}

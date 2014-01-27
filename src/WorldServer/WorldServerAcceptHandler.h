@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,9 +21,9 @@ class PacketReader;
 class WorldServerAcceptConnection;
 
 namespace WorldServerAcceptHandler {
-	void findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void groupChat(WorldServerAcceptConnection *connection, PacketReader &packet);
-	void sendPacketToChannels(PacketReader &packet);
-	void sendPacketToLogin(PacketReader &packet);
+	auto findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto sendPacketToChannels(PacketReader &packet) -> void;
+	auto sendPacketToLogin(PacketReader &packet) -> void;
 }

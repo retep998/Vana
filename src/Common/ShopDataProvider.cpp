@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,12 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-
-ShopDataProvider * ShopDataProvider::singleton = nullptr;
-
-void ShopDataProvider::loadData() {
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Shops... ";
+auto ShopDataProvider::loadData() -> void {
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Shops... ";
 
 	loadShops();
 	loadUserShops();
@@ -40,7 +36,7 @@ void ShopDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void ShopDataProvider::loadShops() {
+auto ShopDataProvider::loadShops() -> void {
 	m_shops.clear();
 	ShopInfo shop;
 	int32_t shopId;
@@ -70,7 +66,7 @@ void ShopDataProvider::loadShops() {
 	}
 }
 
-void ShopDataProvider::loadUserShops() {
+auto ShopDataProvider::loadUserShops() -> void {
 	ShopInfo shop;
 	int32_t shopId;
 
@@ -82,7 +78,7 @@ void ShopDataProvider::loadUserShops() {
 		shopId = row.get<int32_t>("shopid");
 		shop.npc = row.get<int32_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
-		if (m_shops.find(shopId) != m_shops.end()) {
+		if (m_shops.find(shopId) != std::end(m_shops)) {
 			m_shops.erase(shopId);
 		}
 
@@ -103,7 +99,7 @@ void ShopDataProvider::loadUserShops() {
 	}
 }
 
-void ShopDataProvider::loadRechargeTiers() {
+auto ShopDataProvider::loadRechargeTiers() -> void {
 	m_rechargeCosts.clear();
 	int8_t rechargeTier;
 	int32_t itemId;
@@ -120,12 +116,12 @@ void ShopDataProvider::loadRechargeTiers() {
 	}
 }
 
-void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) {
+auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) -> void {
 	ShopInfo &info = m_shops[id];
 	int8_t rechargeTier = info.rechargeTier;
-	const map<int32_t, double> &rechargables = m_rechargeCosts[rechargeTier];
+	const ord_map_t<int32_t, double> &rechargables = m_rechargeCosts[rechargeTier];
 	int16_t shopCount = static_cast<int16_t>(info.items.size() + rechargables.size());
-	unordered_map<int32_t, bool> idsDone;
+	hash_map_t<int32_t, bool> idsDone;
 
 	packet.add<header_t>(SMSG_SHOP);
 	packet.add<int32_t>(info.npc);
@@ -141,7 +137,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 			if (rechargeTier != 0) {
 				shopCount--;
 				auto kvp = rechargables.find(item.itemId);
-				if (kvp != rechargables.end()) {
+				if (kvp != std::end(rechargables)) {
 					cost = kvp->second;
 				}
 			}
@@ -150,7 +146,7 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 		else {
 			packet.add<int16_t>(item.quantity); // Item amount
 		}
-		int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(item.itemId);
+		int16_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(item.itemId);
 		if (GameLogicUtilities::isRechargeable(item.itemId)) {
 			maxSlot += rechargeableBonus;
 		}
@@ -159,41 +155,41 @@ void ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 
 	// Rechargables
 	for (const auto &kvp : rechargables) {
-		if (idsDone.find(kvp.first) == idsDone.end()) {
+		if (idsDone.find(kvp.first) == std::end(idsDone)) {
 			packet.add<int32_t>(kvp.first);
 			packet.add<int32_t>(0);
 			packet.add<double>(kvp.second);
-			packet.add<int16_t>(ItemDataProvider::Instance()->getMaxSlot(kvp.first) + rechargeableBonus);
+			packet.add<int16_t>(ItemDataProvider::getInstance().getMaxSlot(kvp.first) + rechargeableBonus);
 		}
 	}
 
 	packet.set<int16_t>(shopCount, 6);
 }
 
-int32_t ShopDataProvider::getPrice(int32_t shopId, uint16_t shopIndex) {
-	vector<ShopItemInfo> &s = m_shops[shopId].items;
+auto ShopDataProvider::getPrice(int32_t shopId, uint16_t shopIndex) -> int32_t {
+	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
 	return (shopIndex < s.size() ? s[shopIndex].price : 0);
 }
 
-int16_t ShopDataProvider::getAmount(int32_t shopId, uint16_t shopIndex) {
-	vector<ShopItemInfo> &s = m_shops[shopId].items;
+auto ShopDataProvider::getAmount(int32_t shopId, uint16_t shopIndex) -> int16_t {
+	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
 	return (shopIndex < s.size() ? s[shopIndex].quantity : 0);
 }
 
-int32_t ShopDataProvider::getItemId(int32_t shopId, uint16_t shopIndex) {
-	vector<ShopItemInfo> &s = m_shops[shopId].items;
+auto ShopDataProvider::getItemId(int32_t shopId, uint16_t shopIndex) -> int32_t {
+	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
 	return (shopIndex < s.size() ? s[shopIndex].itemId : 0);
 }
 
-int32_t ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) {
+auto ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) -> int32_t {
 	int32_t cost = 1;
 	auto kvp = m_shops.find(shopId);
-	if (kvp != m_shops.end()) {
+	if (kvp != std::end(m_shops)) {
 		int8_t tier = kvp->second.rechargeTier;
 		auto rechargeKvp = m_rechargeCosts.find(tier);
-		if (rechargeKvp != m_rechargeCosts.end()) {
+		if (rechargeKvp != std::end(m_rechargeCosts)) {
 			auto itemKvp = rechargeKvp->second.find(itemId);
-			if (itemKvp != rechargeKvp->second.end()) {
+			if (itemKvp != std::end(rechargeKvp->second)) {
 				cost = -1 * static_cast<int32_t>(itemKvp->second * amount);
 			}
 		}

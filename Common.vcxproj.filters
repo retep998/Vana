@@ -138,9 +138,6 @@
     <ClCompile Include="src\Common\Logger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\LogReplacements.cpp">
-      <Filter>Loggers</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\SqlLogger.cpp">
       <Filter>Loggers</Filter>
     </ClCompile>
@@ -214,6 +211,12 @@
     <ClCompile Include="src\Common\ExternalIpResolver.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\Rect.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\Line.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.h">
@@ -271,9 +274,6 @@
       <Filter>Loggers</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Logger.h">
-      <Filter>Loggers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\LogReplacements.h">
       <Filter>Loggers</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Database.h">
@@ -402,9 +402,6 @@
     <ClInclude Include="src\Common\SkillDataObjects.h">
       <Filter>Data Structures\Data Provider</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\noncopyable.hpp">
-      <Filter>Lib</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\hash_combine.hpp">
       <Filter>Lib</Filter>
     </ClInclude>
@@ -496,6 +493,19 @@
     </ClInclude>
     <ClInclude Include="src\Common\make_unique.hpp">
       <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CaseInsensitiveHash.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\CaseInsensitiveEquals.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\TimerContainerHolder.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\VanaMain.h" />
+    <ClInclude Include="src\Common\Line.h">
+      <Filter>Data Structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

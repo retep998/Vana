@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,11 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketCreator.h"
 #include "Player.h"
 
-PlayerMonsterBook::PlayerMonsterBook(Player *player) : m_player(player),  m_specialCount(0),  m_normalCount(0), m_level(1) {
+PlayerMonsterBook::PlayerMonsterBook(Player *player) :
+	m_player(player)
+{
 	load();
 }
 
-void PlayerMonsterBook::load() {
+auto PlayerMonsterBook::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
@@ -45,7 +47,7 @@ void PlayerMonsterBook::load() {
 	calculateLevel();
 }
 
-void PlayerMonsterBook::save() {
+auto PlayerMonsterBook::save() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
@@ -71,12 +73,12 @@ void PlayerMonsterBook::save() {
 	}
 }
 
-uint8_t PlayerMonsterBook::getCardLevel(int32_t cardId) {
+auto PlayerMonsterBook::getCardLevel(int32_t cardId) -> uint8_t {
 	return m_cards[cardId].level;
 }
 
-bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad) {
-	if (m_cards.find(cardId) == m_cards.end()) {
+auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad) -> bool {
+	if (m_cards.find(cardId) == std::end(m_cards)) {
 		if (GameLogicUtilities::isSpecialCard(cardId)) {
 			++m_specialCount;
 		}
@@ -91,7 +93,7 @@ bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 	}
 	else {
 		auto kvp = m_cards.find(cardId);
-		MonsterCard card = kvp != m_cards.end() ? kvp->second : MonsterCard(cardId, 0);
+		MonsterCard card = kvp != std::end(m_cards) ? kvp->second : MonsterCard(cardId, 0);
 		if (isFull(cardId)) {
 			return true;
 		}
@@ -105,8 +107,8 @@ bool PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 	return false;
 }
 
-void PlayerMonsterBook::connectData(PacketCreator &packet) {
-	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::Instance()->getCardId(getCover()) : 0);
+auto PlayerMonsterBook::connectData(PacketCreator &packet) -> void {
+	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::getInstance().getCardId(getCover()) : 0);
 	packet.add<int8_t>(0);
 
 	packet.add<uint16_t>(m_cards.size());
@@ -116,7 +118,7 @@ void PlayerMonsterBook::connectData(PacketCreator &packet) {
 	}
 }
 
-void PlayerMonsterBook::calculateLevel() {
+auto PlayerMonsterBook::calculateLevel() -> void {
 	int32_t size = getSize();
 	m_level = MonsterCards::MaxPlayerLevel;
 	for (int32_t i = 1; i < MonsterCards::MaxPlayerLevel; i++) {
@@ -128,7 +130,7 @@ void PlayerMonsterBook::calculateLevel() {
 	}
 }
 
-void PlayerMonsterBook::infoData(PacketCreator &packet) {
+auto PlayerMonsterBook::infoData(PacketCreator &packet) -> void {
 	packet.add<int32_t>(getLevel());
 	packet.add<int32_t>(getNormals());
 	packet.add<int32_t>(getSpecials());
@@ -136,12 +138,12 @@ void PlayerMonsterBook::infoData(PacketCreator &packet) {
 	packet.add<int32_t>(getCover());
 }
 
-MonsterCard * PlayerMonsterBook::getCard(int32_t cardId) {
+auto PlayerMonsterBook::getCard(int32_t cardId) -> MonsterCard * {
 	auto kvp = m_cards.find(cardId);
-	return kvp != m_cards.end() ? &kvp->second : nullptr;
+	return kvp != std::end(m_cards) ? &kvp->second : nullptr;
 }
 
-bool PlayerMonsterBook::isFull(int32_t cardId) {
+auto PlayerMonsterBook::isFull(int32_t cardId) -> bool {
 	auto kvp = m_cards.find(cardId);
-	return kvp != m_cards.end() ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
+	return kvp != std::end(m_cards) ? (kvp->second.level == MonsterCards::MaxCardLevel) : false;
 }

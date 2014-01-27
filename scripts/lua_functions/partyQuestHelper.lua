@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@ function getSavedFootholds()
 	for i = 1, n do
 		p = getInstanceVariable("FootholdGroup" .. i .. "Count", true);
 		for k = 1, p do
-			group[k] = tonumber(getInstanceVariable("FootholdGroup" .. i .. "Element" .. k));
+			group[k] = getInstanceVariable("FootholdGroup" .. i .. "Element" .. k, true);
 		end
 		footholds[i] = group;
 		group = {};

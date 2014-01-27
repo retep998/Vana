@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.h"
 #include "Pos.h"
 #include "Rect.h"
+#include "TimerContainerHolder.h"
 #include "Types.h"
 #include <ctime>
 #include <functional>
@@ -33,12 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::function;
-using std::map;
-using std::string;
-using std::unordered_map;
-using std::vector;
-
 class Drop;
 class Instance;
 class Mist;
@@ -46,9 +41,6 @@ class Mob;
 class PacketCreator;
 class Player;
 class Reactor;
-namespace Timer {
-	class Container;
-}
 
 namespace SpawnTypes {
 	enum {
@@ -58,178 +50,186 @@ namespace SpawnTypes {
 	};
 }
 
-class Map {
-public:
-	Map(MapInfoPtr info, int32_t id);
+enum class FindFloorResult {
+	Found,
+	NotFound
+};
 
-	void boatDock(bool isDocked);
+class Map : public TimerContainerHolder {
+	NONCOPYABLE(Map);
+	NO_DEFAULT_CONSTRUCTOR(Map);
+public:
+	Map(ref_ptr_t<MapInfo> info, int32_t id);
+
+	auto boatDock(bool isDocked) -> void;
 
 	// Map info
-	static uint32_t makeNpcId(uint32_t receivedId);
-	static uint32_t makeReactorId(uint32_t receivedId);
-	uint32_t makeNpcId();
-	uint32_t makeReactorId();
-	void setMusic(const string &musicname);
-	void setMobSpawning(int32_t spawn);
-	bool forceMapEquip() const { return (getInfo()->forceMapEquip); }
-	bool hasClock() const { return (getInfo()->clock); }
-	bool canVip() const { return !(getInfo()->limitations.vipRock); }
-	bool canChalkboard() const { return !(getInfo()->limitations.chalkboard); }
-	bool loseOnePercent() const { return (getInfo()->limitations.regularExpLoss || getInfo()->town); }
-	uint8_t getContinent() const { return getInfo()->continent; }
-	int32_t getForcedReturn() const { return getInfo()->forcedReturn; }
-	int32_t getReturnMap() const { return getInfo()->rm; }
-	const string & getMusic() const { return m_music; }
-	const string & getDefaultMusic() const { return getInfo()->defaultMusic; }
-	int32_t getObjectId() { return m_objectIds.next(); }
-	int32_t getId() const { return m_id; }
+	static auto makeNpcId(uint32_t receivedId) -> uint32_t;
+	static auto makeReactorId(uint32_t receivedId) -> uint32_t;
+	auto makeNpcId() -> uint32_t;
+	auto makeReactorId() -> uint32_t;
+	auto setMusic(const string_t &musicName) -> void;
+	auto setMobSpawning(int32_t spawn) -> void;
+	auto canVip() const -> bool { return !m_info->limitations.vipRock; }
+	auto canChalkboard() const -> bool { return !m_info->limitations.chalkboard; }
+	auto loseOnePercent() const -> bool { return m_info->limitations.regularExpLoss || m_info->town || m_mobs.size() == 0; }
+	auto getContinent() const -> uint8_t { return m_info->continent; }
+	auto getForcedReturn() const -> int32_t { return m_info->forcedReturn; }
+	auto getReturnMap() const -> int32_t { return m_info->rm; }
+	auto getObjectId() -> int32_t { return m_objectIds.next(); }
+	auto getId() const -> int32_t { return m_id; }
 
 	// Footholds
-	Pos findFloor(const Pos &pos);
-	Pos findRandomPos();
-	int16_t getFhAtPosition(const Pos &pos);
+	auto findFloor(const Pos &pos, Pos &ret, int16_t yMod = 0) -> FindFloorResult;
+	auto getFhAtPosition(const Pos &pos) -> int16_t;
 
 	// Seats
-	bool seatOccupied(int16_t id);
-	void playerSeated(int16_t id, Player *player);
+	auto seatOccupied(int16_t id) -> bool;
+	auto playerSeated(int16_t id, Player *player) -> void;
 
 	// Portals
-	PortalInfo * getPortal(const string &name);
-	PortalInfo * getSpawnPoint(int8_t portalId = -1);
-	PortalInfo * getNearestSpawnPoint(const Pos &pos);
+	auto getPortal(const string_t &name) -> PortalInfo *;
+	auto getSpawnPoint(int8_t portalId = -1) -> PortalInfo *;
+	auto getNearestSpawnPoint(const Pos &pos) -> PortalInfo *;
+	auto getPortalNames() const -> vector_t<string_t>;
 
 	// Players
-	void addPlayer(Player *player);
-	size_t getNumPlayers() const;
-	Player * getPlayer(uint32_t i) const;
-	string getPlayerNames();
-	void removePlayer(Player *player);
-	void checkPlayerEquip(Player *player);
-	void buffPlayers(int32_t buffId);
-	void runFunctionPlayers(const Pos &origin, const Rect &dimensions, int16_t prop, function<void (Player *)> successFunc);
-	void runFunctionPlayers(const Pos &origin, const Rect &dimensions, int16_t prop, int16_t count, function<void(Player *)> successFunc);
-	void runFunctionPlayers(function<void (Player *)> successFunc);
+	auto addPlayer(Player *player) -> void;
+	auto getNumPlayers() const -> size_t;
+	auto getPlayer(uint32_t i) const -> Player *;
+	auto getPlayerNames() -> string_t;
+	auto removePlayer(Player *player) -> void;
+	auto checkPlayerEquip(Player *player) -> void;
+	auto runFunctionPlayers(const Rect &dimensions, int16_t prop, function_t<void(Player *)> successFunc) -> void;
+	auto runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(Player *)> successFunc) -> void;
+	auto runFunctionPlayers(function_t<void(Player *)> successFunc) -> void;
+	auto gmHideChange(Player *player) -> void;
 
 	// NPCs
-	int32_t addNpc(const NpcSpawnInfo &npc);
-	void removeNpc(uint32_t index);
-	bool isValidNpcIndex(uint32_t id) const;
-	NpcSpawnInfo getNpc(uint32_t id) const;
+	auto addNpc(const NpcSpawnInfo &npc) -> int32_t;
+	auto removeNpc(uint32_t index) -> void;
+	auto isValidNpcIndex(uint32_t id) const -> bool;
+	auto getNpc(uint32_t id) const -> NpcSpawnInfo;
 
 	// Mobs
-	void addWebbedMob(Mob *mob);
-	void removeWebbedMob(int32_t id);
-	void removeMob(int32_t id, int32_t spawnId);
-	void healMobs(int32_t hp, int32_t mp, const Pos &origin, const Rect &dimensions);
-	void statusMobs(vector<StatusInfo> &statuses, const Pos &origin, const Rect &dimensions);
-	void spawnZakum(const Pos &pos, int16_t fh = 0);
-	void updateMobControl(Mob *mob, bool spawn = false, Player *display = nullptr);
-	int32_t spawnShell(int32_t mobId, const Pos &pos, int16_t fh);
-	int32_t spawnMob(int32_t mobId, const Pos &pos, int16_t fh = 0, Mob *owner = nullptr, int8_t summonEffect = 0);
-	int32_t spawnMob(int32_t spawnId, const MobSpawnInfo &info);
-	int32_t killMobs(Player *player, int32_t mobId = 0, bool playerInitiated = true, bool showPacket = true);
-	int32_t countMobs(int32_t mobId = 0);
-	Mob * getMob(int32_t id, bool isMapId = true);
-	unordered_map<int32_t, Mob *> getMobs() const;
+	auto addWebbedMob(int32_t mapMobId) -> void;
+	auto removeWebbedMob(int32_t mapMobId) -> void;
+	auto mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void;
+	auto healMobs(int32_t hp, int32_t mp, const Rect &dimensions) -> void;
+	auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
+	auto spawnZakum(const Pos &pos, int16_t foothold = 0) -> void;
+	auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;
+	auto mobDeath(ref_ptr_t<Mob> mob) -> void;
+	auto spawnMob(int32_t mobId, const Pos &pos, int16_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
+	auto spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob>;
+	auto killMobs(Player *player, int32_t mobId = 0) -> int32_t;
+	auto countMobs(int32_t mobId = 0) -> int32_t;
+	auto getMob(int32_t mapMobId) -> ref_ptr_t<Mob>;
+	auto runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void;
+	auto switchController(ref_ptr_t<Mob> mob, Player *newController) -> void;
+	auto mobSummonSkillUsed(ref_ptr_t<Mob> mob, MobSkillLevelInfo *skill) -> void;
 
 	// Reactors
-	void addReactor(Reactor *reactor);
-	void removeReactor(uint32_t id);
-	void killReactors(bool showPacket = true);
-	Reactor * getReactor(uint32_t id) const;
-	size_t getNumReactors() const;
+	auto addReactor(Reactor *reactor) -> void;
+	auto removeReactor(uint32_t id) -> void;
+	auto killReactors(bool showPacket = true) -> void;
+	auto getReactor(uint32_t id) const -> Reactor *;
+	auto getNumReactors() const -> size_t;
 
 	// Drops
-	void addDrop(Drop *drop);
-	Drop * getDrop(int32_t id);
-	void removeDrop(int32_t id);
-	void clearDrops(bool showPacket = true);
+	auto addDrop(Drop *drop) -> void;
+	auto getDrop(int32_t id) -> Drop *;
+	auto removeDrop(int32_t id) -> void;
+	auto clearDrops(bool showPacket = true) -> void;
 
 	// Mists
-	void addMist(Mist *mist);
-	void removeMist(Mist *mist);
-	void clearMists(bool showPacket = true);
-	Mist * getMist(int32_t id);
+	auto addMist(Mist *mist) -> void;
 
 	// Timer stuff
-	void respawn(int8_t types = SpawnTypes::All);
-	void checkSpawn(time_point_t time);
-	void checkShadowWeb();
-	void checkMists();
-	void clearDrops(time_point_t time);
-	void timeMob(bool firstLoad = true);
-	void setMapTimer(const seconds_t &timer);
-	Timer::Container * getTimers() const { return m_timers.get(); }
+	auto setMapTimer(const seconds_t &timer) -> void;
+	auto respawn(int8_t types = SpawnTypes::All) -> void;
 
 	// Show all map objects
-	void showObjects(Player *player);
+	auto showObjects(Player *player) -> void;
 
 	// Packet stuff
-	void sendPacket(PacketCreator &packet, Player *player = nullptr);
-	void showMessage(const string &message, int8_t type);
+	auto sendPacket(PacketCreator &packet, Player *sender = nullptr) -> void;
+	auto showMessage(const string_t &message, int8_t type) -> void;
 
 	// Instance
-	void setInstance(Instance *instance) { m_instance = instance; }
-	Instance * getInstance() const { return m_instance; }
+	auto setInstance(Instance *instance) -> void { m_instance = instance; }
+	auto endInstance(bool reset) -> void;
+	auto getInstance() const -> Instance * { return m_instance; }
 
 	// Weather cash item
-	bool createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string &message);
+	auto createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool;
 private:
-	int32_t getMistId() { return m_mistIds.next(); }
+	auto getMistId() -> int32_t { return m_mistIds.next(); }
 	static const uint32_t NpcStart = 100;
 	static const uint32_t ReactorStart = 200;
 
 	friend class MapDataProvider;
-	void addFoothold(const FootholdInfo &foothold);
-	void addSeat(const SeatInfo &seat);
-	void addPortal(const PortalInfo &portal);
-	void addMobSpawn(const MobSpawnInfo &spawn);
-	void addReactorSpawn(const ReactorSpawnInfo &spawn);
-	void addTimeMob(TimeMobPtr info);
+	auto addFoothold(const FootholdInfo &foothold) -> void;
+	auto addSeat(const SeatInfo &seat) -> void;
+	auto addPortal(const PortalInfo &portal) -> void;
+	auto addMobSpawn(const MobSpawnInfo &spawn) -> void;
+	auto addReactorSpawn(const ReactorSpawnInfo &spawn) -> void;
+	auto addTimeMob(ref_ptr_t<TimeMob> info) -> void;
+	auto checkSpawn(time_point_t time) -> void;
+	auto checkShadowWeb() -> void;
+	auto checkMists() -> void;
+	auto clearDrops(time_point_t time) -> void;
+	auto timeMob(bool firstLoad = true) -> void;
+	auto spawnShell(int32_t mobId, const Pos &pos, int16_t foothold) -> ref_ptr_t<Mob>;
+	auto updateMobControl(Player *player) -> void;
+	auto updateMobControl(ref_ptr_t<Mob> mob, bool spawn = false, Player *display = nullptr) -> void;
+	auto mapTick(const time_point_t &now) -> void;
+	auto getTimeMobId() const -> int32_t { return m_timeMob; }
+	auto getTimeMob() const -> TimeMob * { return m_timeMobInfo.get(); }
+	auto getMist(int32_t id) -> Mist *;
+	auto findController(ref_ptr_t<Mob> mob) -> Player *;
+	auto clearMists(bool showPacket = true) -> void;
+	auto removeMist(Mist *mist) -> void;
+	auto findRandomFloorPos() -> Pos;
+	auto findRandomFloorPos(const Rect &area) -> Pos;
+	auto buffPlayers(int32_t buffId) -> void;
 
-	void updateMobControl(Player *player);
-	void mapTick();
-	int32_t getTimeMobId() const { return m_timeMob; }
-	MapInfo * getInfo() const { return m_info.get(); }
-	TimeMob * getTimeMob() const { return m_timeMobInfo.get(); }
-
-	// Data
-	bool m_ship;
-	int32_t m_id;
-	int32_t m_timeMob;
-	int32_t m_spawnMobs;
-	int32_t m_emptyMapTicks;
-	int32_t m_minSpawnCount;
-	int32_t m_maxSpawnCount;
-	string m_music;
-	Instance *m_instance;
+	// Longer-lived data
+	bool m_ship = false;
+	int32_t m_id = 0;
+	int32_t m_timeMob = 0;
+	int32_t m_spawnMobs = -1;
+	int32_t m_emptyMapTicks = 0;
+	int32_t m_minSpawnCount = 0;
+	int32_t m_maxSpawnCount = 0;
+	Instance *m_instance = nullptr;
+	seconds_t m_timer = seconds_t(0);
+	time_point_t m_timerStart = seconds_t(0);
+	time_point_t m_lastSpawn = seconds_t(0);
+	string_t m_music;
 	LoopingId<int32_t> m_objectIds;
 	LoopingId<int32_t> m_mistIds;
-	MapInfoPtr m_info;
-	TimeMobPtr m_timeMobInfo;
-	std::recursive_mutex m_dropsMutex;
-	std::shared_ptr<Timer::Container> m_timers;
-	vector<FootholdInfo> m_footholds;
-	vector<ReactorSpawnInfo> m_reactorSpawns;
-	vector<NpcSpawnInfo> m_npcSpawns;
-	vector<MobSpawnInfo> m_mobSpawns;
-	map<int16_t, SeatInfo> m_seats;
-	unordered_map<string, PortalInfo> m_portals;
-	unordered_map<int8_t, PortalInfo> m_spawnPoints;
-	unordered_map<string, Pos> m_reactorPositions;
-	seconds_t m_timer;
-	time_point_t m_timerStart;
-	time_point_t m_lastSpawn;
+	recursive_mutex_t m_dropsMutex;
+	ref_ptr_t<MapInfo> m_info;
+	ref_ptr_t<TimeMob> m_timeMobInfo;
+	vector_t<FootholdInfo> m_footholds;
+	vector_t<ReactorSpawnInfo> m_reactorSpawns;
+	vector_t<NpcSpawnInfo> m_npcSpawns;
+	vector_t<MobSpawnInfo> m_mobSpawns;
+	ord_map_t<int16_t, SeatInfo> m_seats;
+	hash_map_t<string_t, PortalInfo> m_portals;
+	hash_map_t<int8_t, PortalInfo> m_spawnPoints;
+	hash_map_t<string_t, Pos> m_reactorPositions;
 
 	// Shorter-lived objects
-	vector<Player *> m_players;
-	vector<Reactor *> m_reactors;
-	vector<Respawnable> m_mobRespawns;
-	vector<Respawnable> m_reactorRespawns;
-	unordered_map<int32_t, Mob *> m_webbed;
-	unordered_map<int32_t, Mob *> m_mobs;
-	unordered_map<int32_t, Player *> m_playersWithoutProtectItem;
-	unordered_map<int32_t, Drop *> m_drops;
-	unordered_map<int32_t, Mist *> m_poisonMists;
-	unordered_map<int32_t, Mist *> m_mists;
+	vector_t<Player *> m_players;
+	vector_t<Reactor *> m_reactors;
+	vector_t<Respawnable> m_mobRespawns;
+	vector_t<Respawnable> m_reactorRespawns;
+	hash_map_t<int32_t, view_ptr_t<Mob>> m_webbed;
+	hash_map_t<int32_t, ref_ptr_t<Mob>> m_mobs;
+	hash_map_t<int32_t, Player *> m_playersWithoutProtectItem;
+	hash_map_t<int32_t, Drop *> m_drops;
+	hash_map_t<int32_t, Mist *> m_poisonMists;
+	hash_map_t<int32_t, Mist *> m_mists;
 };

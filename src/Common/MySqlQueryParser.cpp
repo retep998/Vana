@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,18 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tokenizer.hpp"
 #include <fstream>
 
-vector<string> MySqlQueryParser::parseQueries(const string &filename) {
-	std::vector<string> queries;
+auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string_t> {
+	vector_t<string_t> queries;
 	std::ifstream filestream;
 
 	filestream.open(filename.c_str());
 
-	string content;
+	string_t content;
 	// Read whole file
 	{
-		std::ostringstream contentStream;
+		out_stream_t contentStream;
 		while (!filestream.eof()) {
-			string line;
+			string_t line;
 			std::getline(filestream, line);
 			contentStream << line << std::endl;
 		}
@@ -44,7 +44,7 @@ vector<string> MySqlQueryParser::parseQueries(const string &filename) {
 		MiscUtilities::tokenizer tokens(content, ";");
 
 		for (const auto &token : tokens) {
-			string q = token;
+			string_t q = token;
 			q = StringUtilities::trim(q);
 			if (q.size() > 0) {
 				queries.push_back(q);

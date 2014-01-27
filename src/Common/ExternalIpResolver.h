@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,13 +26,13 @@ public:
 	ExternalIpResolver(const Ip &defaultIp, const IpMatrix &externalIps);
 	ExternalIpResolver() : m_defaultIp(0) { }
 
-	void setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) {
+	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void {
 		m_defaultIp = defaultIp;
 		m_externalIps = matrix;
 	}
 
-	Ip matchIpToSubnet(const Ip &test) const;
-	const IpMatrix & getExternalIps() const { return m_externalIps; }
+	auto matchIpToSubnet(const Ip &test) const -> Ip;
+	auto getExternalIps() const -> const IpMatrix & { return m_externalIps; }
 protected:
 	IpMatrix m_externalIps;
 	Ip m_defaultIp;

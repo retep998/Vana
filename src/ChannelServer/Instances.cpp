@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,32 +19,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.h"
 #include <algorithm>
 
-Instances * Instances::singleton = nullptr;
-
-void Instances::addInstance(Instance *instance) {
-	string upper = StringUtilities::toUpper(instance->getName());
-	m_instances[upper] = instance;
+auto Instances::addInstance(Instance *instance) -> void {
+	m_instances[instance->getName()] = instance;
 }
 
-void Instances::removeInstance(Instance *instance) {
-	string upper = StringUtilities::toUpper(instance->getName());
-	m_instances.erase(upper);
+auto Instances::removeInstance(Instance *instance) -> void {
+	m_instances.erase(instance->getName());
 }
 
-Instance * Instances::getInstance(const string &name) {
-	string upper = StringUtilities::toUpper(name);
-	auto kvp = m_instances.find(upper);
-	return kvp != m_instances.end() ? kvp->second : nullptr;
+auto Instances::getInstance(const string_t &name) -> Instance * {
+	return isInstance(name) ? m_instances[name] : nullptr;
 }
 
-bool Instances::isInstance(const string &name) {
-	string upper = StringUtilities::toUpper(name);
-	auto kvp = m_instances.find(upper);
-	bool exists = kvp != m_instances.end();
+auto Instances::isInstance(const string_t &name) -> bool {
+	auto kvp = m_instances.find(name);
+	bool exists = kvp != std::end(m_instances);
 	if (exists && kvp->second->getMarkedForDelete()) {
 		exists = false;
 		Instance *instance = kvp->second;
-		m_instances.erase(upper);
+		m_instances.erase(name);
 		delete instance;
 	}
 	return exists;

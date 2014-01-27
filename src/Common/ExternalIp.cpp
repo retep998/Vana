@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.h"
 #include <stdexcept>
 
-ExternalIp::ExternalIp(const std::string &addr, uint32_t ipv4SubnetMask) :
+ExternalIp::ExternalIp(const string_t &addr, uint32_t ipv4SubnetMask) :
 	Ip(addr, Ip::Type::Ipv4),
 	m_ipv4SubnetMask(ipv4SubnetMask)
 {
@@ -33,7 +33,7 @@ ExternalIp::ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask) :
 {
 }
 
-bool ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const {
+auto ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool {
 	if (test.m_type != m_type) throw std::invalid_argument("IP type must match the external IP type");
 
 	if (m_type == Ip::Type::Ipv4) {
@@ -47,7 +47,7 @@ bool ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const {
 	return false;
 }
 
-void ExternalIp::write(PacketCreator &packet) const {
+auto ExternalIp::write(PacketCreator &packet) const -> void {
 	packet.addClass<Ip::Type>(m_type);
 	if (m_type == Ip::Type::Ipv4) {
 		packet.add<uint32_t>(m_ipv4);
@@ -55,7 +55,7 @@ void ExternalIp::write(PacketCreator &packet) const {
 	}
 }
 
-void ExternalIp::read(PacketReader &packet) {
+auto ExternalIp::read(PacketReader &packet) -> void {
 	m_type = packet.getClass<Ip::Type>();
 	if (m_type == Ip::Type::Ipv4) {
 		m_ipv4 = packet.get<uint32_t>();

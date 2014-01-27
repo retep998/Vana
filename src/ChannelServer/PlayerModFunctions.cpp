@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,18 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.h"
 #include "SkillConstants.h"
 
-bool PlayerModFunctions::disconnect(Player *player, const string &args) {
+auto PlayerModFunctions::disconnect(Player *player, const string_t &args) -> bool {
 	player->getSession()->disconnect();
 	return true;
 }
 
-bool PlayerModFunctions::save(Player *player, const string &args) {
+auto PlayerModFunctions::save(Player *player, const string_t &args) -> bool {
 	player->saveAll();
-	PlayerPacket::showMessage(player, "Your progress has been saved.", PlayerPacket::NoticeTypes::Blue);
+	ChatHandlerFunctions::showInfo(player, "Your progress has been saved");
 	return true;
 }
 
-bool PlayerModFunctions::modMesos(Player *player, const string &args) {
+auto PlayerModFunctions::modMesos(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getInventory()->setMesos(atoi(args.c_str()));
 		return true;
@@ -41,7 +41,7 @@ bool PlayerModFunctions::modMesos(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::heal(Player *player, const string &args) {
+auto PlayerModFunctions::heal(Player *player, const string_t &args) -> bool {
 	player->getActiveBuffs()->useDispel();
 	player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 	player->getActiveBuffs()->removeDebuff(MobSkills::CrazySkull);
@@ -50,7 +50,7 @@ bool PlayerModFunctions::heal(Player *player, const string &args) {
 	return true;
 }
 
-bool PlayerModFunctions::modStr(Player *player, const string &args) {
+auto PlayerModFunctions::modStr(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setStr(atoi(args.c_str()));
 		return true;
@@ -58,7 +58,7 @@ bool PlayerModFunctions::modStr(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::modDex(Player *player, const string &args) {
+auto PlayerModFunctions::modDex(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setDex(atoi(args.c_str()));
 		return true;
@@ -66,7 +66,7 @@ bool PlayerModFunctions::modDex(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::modInt(Player *player, const string &args) {
+auto PlayerModFunctions::modInt(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setInt(atoi(args.c_str()));
 		return true;
@@ -74,7 +74,7 @@ bool PlayerModFunctions::modInt(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::modLuk(Player *player, const string &args) {
+auto PlayerModFunctions::modLuk(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setLuk(atoi(args.c_str()));
 		return true;
@@ -82,7 +82,7 @@ bool PlayerModFunctions::modLuk(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::maxStats(Player *player, const string &args) {
+auto PlayerModFunctions::maxStats(Player *player, const string_t &args) -> bool {
 	player->getStats()->setFame(Stats::MaxFame);
 	player->getStats()->setMaxHp(Stats::MaxMaxHp);
 	player->getStats()->setMaxMp(Stats::MaxMaxMp);
@@ -93,7 +93,7 @@ bool PlayerModFunctions::maxStats(Player *player, const string &args) {
 	return true;
 }
 
-bool PlayerModFunctions::hp(Player *player, const string &args) {
+auto PlayerModFunctions::hp(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		uint16_t amount = atoi(args.c_str());
 		player->getStats()->setMaxHp(amount);
@@ -105,7 +105,7 @@ bool PlayerModFunctions::hp(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::mp(Player *player, const string &args) {
+auto PlayerModFunctions::mp(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		uint16_t amount = atoi(args.c_str());
 		player->getStats()->setMaxMp(amount);
@@ -117,7 +117,7 @@ bool PlayerModFunctions::mp(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::sp(Player *player, const string &args) {
+auto PlayerModFunctions::sp(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setSp(atoi(args.c_str()));
 		return true;
@@ -125,7 +125,7 @@ bool PlayerModFunctions::sp(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::ap(Player *player, const string &args) {
+auto PlayerModFunctions::ap(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setAp(atoi(args.c_str()));
 		return true;
@@ -133,7 +133,7 @@ bool PlayerModFunctions::ap(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::fame(Player *player, const string &args) {
+auto PlayerModFunctions::fame(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setFame(atoi(args.c_str()));
 		return true;
@@ -141,7 +141,7 @@ bool PlayerModFunctions::fame(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::level(Player *player, const string &args) {
+auto PlayerModFunctions::level(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		player->getStats()->setLevel(atoi(args.c_str()));
 		return true;
@@ -149,56 +149,58 @@ bool PlayerModFunctions::level(Player *player, const string &args) {
 	return false;
 }
 
-bool PlayerModFunctions::job(Player *player, const string &args) {
+auto PlayerModFunctions::job(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		int16_t job = ChatHandlerFunctions::getJob(args);
 		if (job >= 0) {
 			player->getStats()->setJob(job);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid job: " + args, PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid job: " + args);
 		}
 	}
 	else {
-		std::ostringstream message;
-		message << "Current Job: " << player->getStats()->getJob();
-		PlayerPacket::showMessage(player, message.str(), PlayerPacket::NoticeTypes::Blue);
+		out_stream_t message;
+		message << "Current job: " << player->getStats()->getJob();
+		ChatHandlerFunctions::showInfo(player, message.str());
 	}
 	return true;
 }
 
-bool PlayerModFunctions::addSp(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(-{0,1}\\d+)?", matches)) {
-		int32_t skillId = atoi(string(matches[1]).c_str());
-		if (SkillDataProvider::Instance()->isSkill(skillId)) {
+auto PlayerModFunctions::addSp(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches)) {
+		string_t rawSkill = matches[1];
+		int32_t skillId = atoi(rawSkill.c_str());
+		if (SkillDataProvider::getInstance().isValidSkill(skillId)) {
 			// Don't allow skills that do not exist to be added
-			string countString = matches[2];
+			string_t countString = matches[2];
 			uint8_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 
 			player->getSkills()->addSkillLevel(skillId, count);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid Skill ID.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid skill: " + rawSkill);
 		}
 		return true;
 	}
 	return false;
 }
 
-bool PlayerModFunctions::maxSp(Player *player, const string &args) {
-	cmatch matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, "(\\d+) ?(-{0,1}\\d+)?", matches)) {
-		int32_t skillId = atoi(string(matches[1]).c_str());
-		if (SkillDataProvider::Instance()->isSkill(skillId)) {
+auto PlayerModFunctions::maxSp(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches)) {
+		string_t rawSkill = matches[1];
+		int32_t skillId = atoi(rawSkill.c_str());
+		if (SkillDataProvider::getInstance().isValidSkill(skillId)) {
 			// Don't allow skills that do not exist to be added
-			string max = matches[2];
+			string_t max = matches[2];
 			uint8_t maxLevel = max.length() > 0 ? atoi(max.c_str()) : 1;
 
 			player->getSkills()->setMaxSkillLevel(skillId, maxLevel);
 		}
 		else {
-			PlayerPacket::showMessage(player, "Invalid Skill ID.", PlayerPacket::NoticeTypes::Red);
+			ChatHandlerFunctions::showError(player, "Invalid skill: " + rawSkill);
 		}
 		return true;
 	}

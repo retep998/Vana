@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,61 +21,58 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace soci { class row; }
 class PacketReader;
 class Player;
 
 struct CharEquip {
-	int32_t id;
-	int16_t slot;
+	int32_t id = 0;
+	int16_t slot = 0;
 };
 
 struct Character {
-	int32_t id;
-	string name;
-	int8_t pos;
-	int8_t gender;
-	int8_t skin;
-	uint8_t level;
-	int16_t job;
-	int16_t str;
-	int16_t dex;
-	int16_t intt;
-	int16_t luk;
-	int16_t hp;
-	int16_t mhp;
-	int16_t mp;
-	int16_t mmp;
-	int16_t ap;
-	int16_t sp;
-	int16_t fame;
-	int32_t map;
-	int32_t eyes;
-	int32_t hair;
-	int32_t exp;
-	int32_t worldRankChange;
-	int32_t jobRankChange;
-	uint32_t worldRank;
-	uint32_t jobRank;
-	vector<CharEquip> equips;
+	int8_t pos = 0;
+	int8_t gender = 0;
+	int8_t skin = 0;
+	uint8_t level = 0;
+	int16_t job = 0;
+	int16_t str = 0;
+	int16_t dex = 0;
+	int16_t intt = 0;
+	int16_t luk = 0;
+	int16_t hp = 0;
+	int16_t mhp = 0;
+	int16_t mp = 0;
+	int16_t mmp = 0;
+	int16_t ap = 0;
+	int16_t sp = 0;
+	int16_t fame = 0;
+	int32_t map = 0;
+	int32_t eyes = 0;
+	int32_t hair = 0;
+	int32_t exp = 0;
+	int32_t worldRankChange = 0;
+	int32_t jobRankChange = 0;
+	int32_t id = 0;
+	uint32_t worldRank = 0;
+	uint32_t jobRank = 0;
+	string_t name;
+	vector_t<CharEquip> equips;
 };
 
 namespace Characters {
-	void connectGame(Player *player, int32_t charId);
-	void connectGame(Player *player, PacketReader &packet);
-	void connectGameWorld(Player *player, PacketReader &packet); // From "view all character"
-	void checkCharacterName(Player *player, PacketReader &packet);
-	void createCharacter(Player *player, PacketReader &packet);
-	void deleteCharacter(Player *player, PacketReader &packet);
-	void showAllCharacters(Player *player);
-	void showCharacters(Player *player);
-	void loadCharacter(Character &charc, const soci::row &row);
-	void loadEquips(int32_t id, vector<CharEquip> &vec);
-	void createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1);
-	bool ownerCheck(Player *player, int32_t id);
-	bool nameTaken(const string &name);
-	bool nameInvalid(const string &name);
+	auto connectGame(Player *player, int32_t charId) -> void;
+	auto connectGame(Player *player, PacketReader &packet) -> void;
+	auto connectGameWorldFromViewAllCharacters(Player *player, PacketReader &packet) -> void;
+	auto checkCharacterName(Player *player, PacketReader &packet) -> void;
+	auto createCharacter(Player *player, PacketReader &packet) -> void;
+	auto deleteCharacter(Player *player, PacketReader &packet) -> void;
+	auto showAllCharacters(Player *player) -> void;
+	auto showCharacters(Player *player) -> void;
+	auto loadCharacter(Character &charc, const soci::row &row) -> void;
+	auto loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void;
+	auto createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1) -> void;
+	auto ownerCheck(Player *player, int32_t id) -> bool;
+	auto nameTaken(const string_t &name) -> bool;
+	auto nameInvalid(const string_t &name) -> bool;
 }

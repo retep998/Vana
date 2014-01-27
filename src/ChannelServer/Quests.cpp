@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ namespace QuestOpcodes {
 	};
 }
 
-bool Quests::giveItem(Player *player, int32_t itemId, int16_t amount) {
+auto Quests::giveItem(Player *player, int32_t itemId, int16_t amount) -> bool {
 	// TODO: Clean it up
 	QuestsPacket::giveItem(player, itemId, amount);
 	if (amount > 0) {
@@ -53,7 +53,7 @@ bool Quests::giveItem(Player *player, int32_t itemId, int16_t amount) {
 	return true;
 }
 
-bool Quests::giveMesos(Player *player, int32_t amount) {
+auto Quests::giveMesos(Player *player, int32_t amount) -> bool {
 	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) {
 		// Do a bit of checking if meso is being taken to see if it's enough
 		return false;
@@ -63,16 +63,16 @@ bool Quests::giveMesos(Player *player, int32_t amount) {
 	return true;
 }
 
-void Quests::giveFame(Player *player, int32_t amount) {
+auto Quests::giveFame(Player *player, int32_t amount) -> void {
 	player->getStats()->setFame(player->getStats()->getFame() + static_cast<int16_t>(amount));
 	QuestsPacket::giveFame(player, amount);
 }
 
-void Quests::getQuest(Player *player, PacketReader &packet) {
+auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 	int8_t act = packet.get<int8_t>();
 	int16_t questId = packet.get<int16_t>();
 
-	if (!QuestDataProvider::Instance()->isQuest(questId)) {
+	if (!QuestDataProvider::getInstance().isQuest(questId)) {
 		// Hacking
 		return;
 	}
@@ -81,12 +81,12 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 			player->getQuests()->removeQuest(questId);
 		}
 		else {
-			std::ostringstream x;
+			out_stream_t x;
 			x << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
 				<< ") tried to forfeit a quest that wasn't started yet."
 				<< " (Quest ID: " << questId << ")";
-			ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+			ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 		}
 		return;
 	}
@@ -95,55 +95,55 @@ void Quests::getQuest(Player *player, PacketReader &packet) {
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
-			std::ostringstream x;
+			out_stream_t x;
 			x << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
 				<< ") tried to perform an action with a non-started quest."
 				<< " (NPC ID: " << npcId
 				<< ", Quest ID: " << questId << ")";
-			ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+			ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 			return;
 		}
 	}
 	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
-	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::Instance()->isValidNpcId(npcId)) {
-		std::ostringstream x;
+	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::getInstance().isValidNpcId(npcId)) {
+		out_stream_t x;
 		x << "Player (ID: " << player->getId()
 			<< ", Name: " << player->getName()
 			<< ") tried to do a quest action with an invalid NPC ID."
 			<< " (NPC ID: " << npcId
 			<< ", Quest ID: " << questId << ")";
-		ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+		ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 		return;
 	}
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
 			int32_t itemId = packet.get<int32_t>();
-			if (ItemDataProvider::Instance()->isQuest(itemId)) {
+			if (ItemDataProvider::getInstance().isQuest(itemId)) {
 				QuestsPacket::giveItem(player, itemId, 1);
 				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {
-				std::ostringstream x;
+				out_stream_t x;
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to restore a lost quest item which isn't a quest item."
 					<< " (Item ID: " << itemId
 					<< ", NPC ID: " << npcId
 					<< ", Quest ID: " << questId << ")";
-				ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+				ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 			}
 			break;
 		}
 		case QuestOpcodes::StartQuest:
 			if (player->getQuests()->isQuestActive(questId)) {
-				std::ostringstream x;
+				out_stream_t x;
 				x << "Player (ID: " << player->getId()
 					<< ", Name: " << player->getName()
 					<< ") tried to start an already started quest."
 					<< " (NPC ID: " << npcId
 					<< ", Quest ID: " << questId << ")";
-				ChannelServer::Instance()->log(LogTypes::MalformedPacket, x.str());
+				ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
 			}
 			else {
 				player->getQuests()->addQuest(questId, npcId);

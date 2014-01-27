@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,29 +21,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.h"
 #include "ReactorPacket.h"
 
-Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos) :
-	m_state(0),
+Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLeft) :
 	m_reactorId(reactorId),
 	m_mapId(mapId),
-	m_alive(true),
-	m_pos(pos)
+	m_pos(pos),
+	m_facesLeft(facesLeft)
 {
 	Maps::getMap(mapId)->addReactor(this);
 }
 
-void Reactor::setState(int8_t state, bool sendPacket) {
+auto Reactor::setState(int8_t state, bool sendPacket) -> void {
 	m_state = state;
 	if (sendPacket) {
 		ReactorPacket::triggerReactor(this);
 	}
 }
 
-void Reactor::restore() {
+auto Reactor::restore() -> void {
 	revive();
 	setState(0, false);
 	ReactorPacket::spawnReactor(this);
 }
 
-void Reactor::drop(Player *player) {
+auto Reactor::drop(Player *player) -> void {
 	DropHandler::doDrops(player->getId(), m_mapId, 0, m_reactorId, m_pos, false, false);
 }

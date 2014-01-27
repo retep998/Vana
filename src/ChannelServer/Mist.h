@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,34 +28,32 @@ struct SkillLevelInfo;
 struct MobSkillLevelInfo;
 
 class Mist {
+	NONCOPYABLE(Mist);
+	NO_DEFAULT_CONSTRUCTOR(Mist);
 public:
-	Mist(int32_t mapId, Player *owner, const Pos &origin, SkillLevelInfo *skill, int32_t skillId, uint8_t level, bool isPoison = false);
-	Mist(int32_t mapId, Mob *owner, const Pos &origin, MobSkillLevelInfo *skill, uint8_t skillId, uint8_t level);
+	Mist(int32_t mapId, Player *owner, int32_t time, const Rect &area, int32_t skillId, uint8_t level, bool isPoison = false);
+	Mist(int32_t mapId, Mob *owner, int16_t time, const Rect &area, uint8_t skillId, uint8_t level);
 
-	void setId(int32_t id) { m_id = id; }
-	uint8_t getSkillLevel() const { return m_level; }
-	int16_t getTime() const { return m_time; }
-	int16_t getDelay() const { return m_delay; }
-	int32_t getSkillId() const { return m_skill; }
-	int32_t getId() const { return m_id; }
-	int32_t getOwnerId() const { return m_ownerId; }
-	bool isMobMist() const { return m_isMobMist; }
-	bool isPoison() const { return m_poison; }
-	Rect getArea() const { return m_area; }
-	Rect getSkillDimensions() const { return m_skillDimensions; }
-	Pos getOrigin() const { return m_origin; }
-	Map * getMap() const;
+	auto setId(int32_t id) -> void { m_id = id; }
+	auto getSkillLevel() const -> uint8_t { return m_level; }
+	auto getTime() const -> int16_t { return m_time; }
+	auto getDelay() const -> int16_t { return m_delay; }
+	auto getSkillId() const -> int32_t { return m_skill; }
+	auto getId() const -> int32_t { return m_id; }
+	auto getOwnerId() const -> int32_t { return m_ownerId; }
+	auto isMobMist() const -> bool { return m_isMobMist; }
+	auto isPoison() const -> bool { return m_poison; }
+	auto getArea() const -> Rect { return m_area; }
+	auto getMap() const -> Map *;
 private:
-	uint8_t m_level;
-	int16_t m_time;
-	int16_t m_delay;
-	int32_t m_id;
-	int32_t m_skill;
-	int32_t m_ownerMap;
-	int32_t m_ownerId;
-	bool m_isMobMist;
-	bool m_poison;
+	bool m_isMobMist = true;
+	bool m_poison = true;
+	uint8_t m_level = 0;
+	int16_t m_time = 0;
+	int16_t m_delay = 0;
+	int32_t m_id = 0;
+	int32_t m_skill = 0;
+	int32_t m_ownerMap = 0;
+	int32_t m_ownerId = 0;
 	Rect m_area;
-	Rect m_skillDimensions;
-	Pos m_origin;
 };

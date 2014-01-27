@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,10 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <vector>
 
-using std::vector;
-
 class PacketCreator;
 
 namespace InventoryPacketHelper {
-	void fillRockPacket(PacketCreator &packet, const vector<int32_t> &vec, size_t maxSize);
+	auto fillRockPacket(PacketCreator &packet, const vector_t<int32_t> &vec, size_t maxSize) -> void;
 }

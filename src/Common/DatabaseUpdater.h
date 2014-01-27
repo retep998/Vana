@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,26 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
-using std::map;
-using std::string;
-
 class DatabaseUpdater {
 public:
 	DatabaseUpdater(bool update);
-	bool checkVersion();
-	void update();
-	void update(size_t version);
+	auto checkVersion() -> bool;
+	auto update() -> void;
 private:
-	void loadDatabaseInfo();
-	void loadSqlFiles();
-	void runQueries(const string &filename);
-	static void createInfoTable();
-	static void updateInfoTable(size_t version);
+	auto loadDatabaseInfo() -> void;
+	auto loadSqlFiles() -> void;
+	auto update(size_t version) -> void;
+	auto runQueries(const string_t &filename) -> void;
+	static auto createInfoTable() -> void;
+	static auto updateInfoTable(size_t version) -> void;
 
-	typedef map<int32_t, string> SqlFiles;
-
-	size_t m_version;
-	size_t m_sqlVersion; // Version of the .sql files
-	bool m_update;
-	SqlFiles m_sqlFiles;
+	size_t m_fileVersion = 0;
+	size_t m_sqlVersion = 0;
+	bool m_update = false;
+	ord_map_t<int32_t, string_t> m_sqlFiles;
 };

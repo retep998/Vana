@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,65 +17,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-class Player;
 class PacketCreator;
+class Player;
 struct SkillLevelInfo;
 
 struct PlayerSkillInfo {
-	PlayerSkillInfo() : level(0), maxSkillLevel(0), playerMaxSkillLevel(0) {}
-	uint8_t level;
-	uint8_t maxSkillLevel;
-	uint8_t playerMaxSkillLevel;
+	uint8_t level = 0;
+	uint8_t maxSkillLevel = 0;
+	uint8_t playerMaxSkillLevel = 0;
 };
 
-class PlayerSkills : boost::noncopyable {
+class PlayerSkills {
+	NONCOPYABLE(PlayerSkills);
+	NO_DEFAULT_CONSTRUCTOR(PlayerSkills);
 public:
 	PlayerSkills(Player *m_player) : m_player(m_player) { load(); }
 
-	void load();
-	void save(bool saveCooldowns = false);
-	void connectData(PacketCreator &packet);
+	auto load() -> void;
+	auto save(bool saveCooldowns = false) -> void;
+	auto connectData(PacketCreator &packet) -> void;
 
-	bool addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true);
-	uint8_t getSkillLevel(int32_t skillId);
-	uint8_t getMaxSkillLevel(int32_t skillId);
-	void setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket = true);
-	SkillLevelInfo * getSkillInfo(int32_t skillId);
+	auto addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true) -> bool;
+	auto getSkillLevel(int32_t skillId) -> uint8_t;
+	auto getMaxSkillLevel(int32_t skillId) -> uint8_t;
+	auto setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket = true) -> void;
+	auto getSkillInfo(int32_t skillId) -> SkillLevelInfo *;
 
-	bool hasElementalAmp();
-	bool hasEnergyCharge();
-	bool hasHpIncrease();
-	bool hasMpIncrease();
-	bool hasVenomousWeapon();
-	bool hasAchilles();
-	bool hasNoDamageSkill();
-	int32_t getElementalAmp();
-	int32_t getEnergyCharge();
-	int32_t getComboAttack();
-	int32_t getAdvancedCombo();
-	int32_t getAlchemist();
-	int32_t getHpIncrease();
-	int32_t getMpIncrease();
-	int32_t getMastery();
-	int32_t getMpEater();
-	int32_t getVenomousWeapon();
-	int32_t getAchilles();
-	int32_t getNoDamageSkill();
-	int16_t getRechargeableBonus();
+	auto hasElementalAmp() -> bool;
+	auto hasEnergyCharge() -> bool;
+	auto hasHpIncrease() -> bool;
+	auto hasMpIncrease() -> bool;
+	auto hasVenomousWeapon() -> bool;
+	auto hasAchilles() -> bool;
+	auto hasNoDamageSkill() -> bool;
+	auto getElementalAmp() -> int32_t;
+	auto getEnergyCharge() -> int32_t;
+	auto getComboAttack() -> int32_t;
+	auto getAdvancedCombo() -> int32_t;
+	auto getAlchemist() -> int32_t;
+	auto getHpIncrease() -> int32_t;
+	auto getMpIncrease() -> int32_t;
+	auto getMastery() -> int32_t;
+	auto getMpEater() -> int32_t;
+	auto getVenomousWeapon() -> int32_t;
+	auto getAchilles() -> int32_t;
+	auto getNoDamageSkill() -> int32_t;
+	auto getRechargeableBonus() -> int16_t;
 
-	void addCooldown(int32_t skillId, int16_t time);
-	void removeCooldown(int32_t skillId);
-	void removeAllCooldowns();
+	auto addCooldown(int32_t skillId, int16_t time) -> void;
+	auto removeCooldown(int32_t skillId) -> void;
+	auto removeAllCooldowns() -> void;
 private:
-	bool hasSkill(int32_t skillId);
+	auto hasSkill(int32_t skillId) -> bool;
 
-	unordered_map<int32_t, PlayerSkillInfo> m_skills;
-	unordered_map<int32_t, int16_t> m_cooldowns;
-	Player *m_player;
+	Player *m_player = nullptr;
+	hash_map_t<int32_t, PlayerSkillInfo> m_skills;
+	hash_map_t<int32_t, int16_t> m_cooldowns;
 };

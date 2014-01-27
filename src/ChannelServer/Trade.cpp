@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
 	m_id(id)
 {
-	m_sender = std::make_unique<TradeInfo>();
-	m_receiver = std::make_unique<TradeInfo>();
+	m_sender = make_owned_ptr<TradeInfo>();
+	m_receiver = make_owned_ptr<TradeInfo>();
 
 	sender->setTrading(true);
 	receiver->setTrading(false);
@@ -39,7 +39,7 @@ ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
 	m_receiverId = receiver->getId();
 }
 
-bool ActiveTrade::bothCanTrade() {
+auto ActiveTrade::bothCanTrade() -> bool {
 	if (!canTrade(getSender(), getReceiverTrade())) {
 		return false;
 	}
@@ -49,15 +49,15 @@ bool ActiveTrade::bothCanTrade() {
 	return true;
 }
 
-bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
+auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 	bool canTrade = true;
 	int32_t currentMesos = unit->mesos + target->getInventory()->getMesos();
 	if (currentMesos < 0) {
 		canTrade = false;
 	}
 	if (canTrade && unit->count > 0) {
-		std::array<int8_t, Inventories::InventoryCount> totals = {0};
-		unordered_map<int32_t, int16_t> added;
+		array_t<int8_t, Inventories::InventoryCount> totals = {0};
+		hash_map_t<int32_t, int16_t> added;
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			// Create item structure to determine needed slots among stackable items
 			// Also, determine needed slots for nonstackables
@@ -70,7 +70,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 					totals[inv - 1]++;
 				}
 				else {
-					if (added.find(itemId) != added.end()) {
+					if (added.find(itemId) != std::end(added)) {
 						// Already initialized this item
 						added[itemId] += check->getAmount();
 					}
@@ -88,11 +88,11 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 				int8_t inv = GameLogicUtilities::getInventory(itemId);
 				if (GameLogicUtilities::isStackable(itemId)) {
 					// Already did these
-					if (added.find(itemId) == added.end()) {
+					if (added.find(itemId) == std::end(added)) {
 						// Already did this item
 						continue;
 					}
-					int16_t maxSlot = ItemDataProvider::Instance()->getMaxSlot(itemId);
+					int16_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(itemId);
 					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
 					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
 					int32_t itemSum = lastSlot + added[itemId];
@@ -141,7 +141,7 @@ bool ActiveTrade::canTrade(Player *target, TradeInfo *unit) {
 	return canTrade;
 }
 
-void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
+auto ActiveTrade::giveItems(Player *player, TradeInfo *info) -> void {
 	if (info->count > 0) {
 		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			if (info->slot[i]) {
@@ -157,7 +157,7 @@ void ActiveTrade::giveItems(Player *player, TradeInfo *info) {
 	}
 }
 
-void ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) {
+auto ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) -> void {
 	if (info->mesos > 0) {
 		int32_t taxLevel = TradeHandler::getTaxLevel(info->mesos);
 		if (traded && taxLevel != 0) {
@@ -168,7 +168,7 @@ void ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) {
 	}
 }
 
-void ActiveTrade::returnTrade() {
+auto ActiveTrade::returnTrade() -> void {
 	TradeInfo *send = getSenderTrade();
 	TradeInfo *recv = getReceiverTrade();
 	Player *one = getSender();
@@ -183,7 +183,7 @@ void ActiveTrade::returnTrade() {
 	}
 }
 
-void ActiveTrade::swapTrade() {
+auto ActiveTrade::swapTrade() -> void {
 	TradeInfo *send = getSenderTrade();
 	TradeInfo *recv = getReceiverTrade();
 	Player *one = getSender();
@@ -194,31 +194,39 @@ void ActiveTrade::swapTrade() {
 	giveMesos(two, send, true);
 }
 
-bool ActiveTrade::bothAccepted() {
-	return (getSenderTrade()->accepted && getReceiverTrade()->accepted);
+auto ActiveTrade::bothAccepted() -> bool {
+	return getSenderTrade()->accepted && getReceiverTrade()->accepted;
 }
 
-void ActiveTrade::accept(TradeInfo *unit) {
+auto ActiveTrade::accept(TradeInfo *unit) -> void {
 	unit->accepted = true;
 }
 
-int32_t ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) {
+auto ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) -> int32_t {
 	unit->mesos += amount;
 	holder->getInventory()->modifyMesos(-amount, true);
 	return unit->mesos;
 }
 
-Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) {
+auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) -> Item * {
 	Item *use = new Item(item);
 	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
 		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
-		InventoryPacket::moveItem(holder, inventory, inventorySlot, 0);
+
+		vector_t<InventoryPacketOperation> ops;
+		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, inventorySlot);
+		InventoryPacket::inventoryOperation(holder, true, ops);
+
 		holder->getInventory()->deleteItem(inventory, inventorySlot);
 	}
 	else {
 		item->decAmount(amount);
 		holder->getInventory()->changeItemAmount(item->getId(), item->getAmount());
-		InventoryPacket::updateItemAmounts(holder, inventory, inventorySlot, item->getAmount(), 0, 0);
+
+		vector_t<InventoryPacketOperation> ops;
+		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, inventorySlot);
+		InventoryPacket::inventoryOperation(holder, true, ops);
+
 		use->setAmount(amount);
 	}
 	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
@@ -229,10 +237,10 @@ Item * ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t
 	return use;
 }
 
-Player * ActiveTrade::getSender() {
-	return PlayerDataProvider::Instance()->getPlayer(m_senderId);
+auto ActiveTrade::getSender() -> Player * {
+	return PlayerDataProvider::getInstance().getPlayer(m_senderId);
 }
 
-Player * ActiveTrade::getReceiver() {
-	return PlayerDataProvider::Instance()->getPlayer(m_receiverId);
+auto ActiveTrade::getReceiver() -> Player * {
+	return PlayerDataProvider::getInstance().getPlayer(m_receiverId);
 }

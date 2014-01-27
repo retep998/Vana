@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,77 +17,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "SkillConstants.h"
 #include "Types.h"
 #include <unordered_map>
 #include <vector>
 
-using std::unordered_map;
-using std::vector;
-
 struct ConsumeInfo;
 
 struct Buff {
-	Buff() : type(0), byte(0), value(0) { }
-	uint8_t type;
-	int8_t byte;
-	int8_t value;
+	uint8_t type = 0;
+	int8_t byte = 0;
+	int8_t value = 0;
 };
 
 struct BuffInfo {
-	BuffInfo() : itemVal(0), hasMapVal(false), hasmapentry(false), useVal(false) { }
+	bool hasMapVal = false;
+	bool hasMapEntry = false;
+	bool useVal = false;
+	int16_t itemVal = 0;
 	Buff buff;
-	int16_t itemVal;
-	bool hasMapVal;
-	bool hasmapentry;
-	bool useVal;
 };
 
 struct BuffMapInfo {
-	BuffMapInfo() : useVal(false) { }
+	bool useVal = false;
 	Buff buff;
-	bool useVal;
 };
 
 struct BuffAct {
+	int8_t value = 0;
+	int32_t time = 0;
 	Action type;
-	int8_t value;
-	int32_t time;
 };
 
 struct SkillInfo {
-	SkillInfo() : hasAction(false) { }
-	vector<BuffInfo> player;
-	vector<BuffMapInfo> map;
+	bool hasAction = false;
 	BuffAct act;
-	bool hasAction;
+	vector_t<BuffInfo> player;
+	vector_t<BuffMapInfo> map;
 };
 
 struct MobAilmentInfo {
-	MobAilmentInfo() : delay(0) { }
-	vector<BuffInfo> mob;
-	int16_t delay;
+	int16_t delay = 0;
+	vector_t<BuffInfo> mob;
 };
 
 class BuffDataProvider {
+	SINGLETON(BuffDataProvider);
 public:
-	static BuffDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new BuffDataProvider;
-		return singleton;
-	}
-	void loadData();
-	void addItemInfo(int32_t itemId, const ConsumeInfo &cons);
+	auto loadData() -> void;
+	auto addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> void;
 
-	bool isBuff(int32_t skillId) { return (m_skillInfo.find(skillId) != m_skillInfo.end()); }
-	bool isDebuff(uint8_t skillId) { return (m_mobSkillInfo.find(skillId) != m_mobSkillInfo.end()); }
-	SkillInfo * getSkillInfo(int32_t skillId) { return &m_skillInfo[skillId]; }
-	MobAilmentInfo * getMobSkillInfo(uint8_t skillId) { return (m_mobSkillInfo.find(skillId) != m_mobSkillInfo.end() ? &m_mobSkillInfo[skillId] : nullptr); }
+	auto isBuff(int32_t skillId) -> bool { return m_skillInfo.find(skillId) != std::end(m_skillInfo); }
+	auto isDebuff(uint8_t skillId) -> bool { return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo); }
+	auto getSkillInfo(int32_t skillId) -> SkillInfo * { return &m_skillInfo[skillId]; }
+	auto getMobSkillInfo(uint8_t skillId) -> MobAilmentInfo * { return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo) ? &m_mobSkillInfo[skillId] : nullptr; }
 private:
-	BuffDataProvider() { }
-	static BuffDataProvider *singleton;
-
-	unordered_map<int32_t, SkillInfo> m_skillInfo;
-	unordered_map<uint8_t, MobAilmentInfo> m_mobSkillInfo;
+	hash_map_t<int32_t, SkillInfo> m_skillInfo;
+	hash_map_t<uint8_t, MobAilmentInfo> m_mobSkillInfo;
 };

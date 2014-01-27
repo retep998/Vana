@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,88 +18,73 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Pos.h"
+#include "Line.h"
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 class Player;
 
 struct FootholdInfo {
-	FootholdInfo() : forbidJumpDown(false), leftEdge(false), rightEdge(false) { }
-
-	bool forbidJumpDown;
-	bool leftEdge;
-	bool rightEdge;
-	int16_t id;
-	int16_t dragForce;
-	Pos pos1;
-	Pos pos2;
+	bool forbidJumpDown = false;
+	bool leftEdge = false;
+	bool rightEdge = false;
+	int16_t id = 0;
+	int16_t dragForce = 0;
+	Line line;
 };
 
 struct PortalInfo {
-	PortalInfo() : onlyOnce(false) { }
-
-	bool onlyOnce; // Run it only once per map entry
-	int8_t id;
-	int32_t toMap;
-	string toName;
-	string script;
-	string name;
+	bool onlyOnce = false;
+	int8_t id = 0;
+	int32_t toMap = 0;
+	string_t toName;
+	string_t script;
+	string_t name;
 	Pos pos;
 };
 
 struct SpawnInfo {
-	SpawnInfo() : facesRight(true), spawned(false) { }
-
-	void setSpawnInfo(const SpawnInfo &rhs) {
+	auto setSpawnInfo(const SpawnInfo &rhs) -> void {
 		id = rhs.id;
 		time = rhs.time;
 		foothold = rhs.foothold;
 		pos = rhs.pos;
-		facesRight = rhs.facesRight;
+		facesLeft = rhs.facesLeft;
 		spawned = rhs.spawned;
 	}
-	int32_t id;
-	int32_t time;
-	int16_t foothold;
+
+	bool facesLeft = false;
+	bool spawned = false;
+	int32_t id = 0;
+	int32_t time = 0;
+	int16_t foothold = 0;
 	Pos pos;
-	bool facesRight;
-	bool spawned;
 };
 
 struct NpcSpawnInfo : public SpawnInfo {
-	NpcSpawnInfo() : SpawnInfo() { }
-
-	int16_t rx0;
-	int16_t rx1;
+	int16_t rx0 = 0;
+	int16_t rx1 = 0;
 };
 
 struct MobSpawnInfo : public SpawnInfo {
-	MobSpawnInfo() : SpawnInfo(), link(0) { }
-
-	int32_t link;
+	int32_t link = 0;
 };
 
 struct ReactorSpawnInfo : public SpawnInfo {
-	ReactorSpawnInfo() : SpawnInfo() { }
-
-	string name;
+	string_t name;
 };
 
 struct Respawnable {
-	Respawnable() : spawnAt(seconds_t(0)), spawnId(0), spawn(false) { }
+	Respawnable() = default;
 	Respawnable(size_t spawnId, time_point_t spawnAt) : spawnAt(spawnAt), spawnId(spawnId), spawn(true) { }
 
-	size_t spawnId;
-	time_point_t spawnAt;
-	bool spawn;
+	bool spawn = false;
+	size_t spawnId = 0;
+	time_point_t spawnAt = seconds_t{0};
 };
 
 struct SeatInfo {
-	SeatInfo() : occupant(0) { }
-
-	int16_t id;
+	int16_t id = 0;
+	Player *occupant = nullptr;
 	Pos pos;
-	Player *occupant;
 };

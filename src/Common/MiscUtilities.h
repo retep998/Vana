@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,37 +22,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace MiscUtilities {
-	enum NullableMode {
+	enum class NullableMode {
 		NullIfFound = 1,
 		ForceNotNull = 2,
 		ForceNull = 3
 	};
 
-	string hashPassword(const string &password, const string &salt);
-	string generateSalt(size_t length);
-	bool isBossChannel(const vector<int8_t> &vec, int8_t channelId);
+	auto hashPassword(const string_t &password, const string_t &salt) -> string_t;
+	auto generateSalt(size_t length) -> string_t;
+	auto isBossChannel(const vector_t<int8_t> &vec, int8_t channelId) -> bool;
 
-	template<class T>
-	bool inRangeInclusive(const T val, const T min, const T max) {
+	template <class TElement>
+	auto inRangeInclusive(const TElement val, const TElement min, const TElement max) -> bool {
 		return !(val < min || val > max);
 	}
 
-	template<class T>
-	T constrainToRange(const T val, const T min, const T max) {
+	template <class TElement>
+	auto constrainToRange(const TElement val, const TElement min, const TElement max) -> TElement {
 		return std::min(std::max(val, min), max);
 	}
 
-	template<class T>
-	MiscUtilities::optional<T> getOptional(const T &testVal, NullableMode mode, const T nullableVals[], const size_t nullableValCount = 1) {
-		MiscUtilities::optional<T> ret;
-		if (mode == NullIfFound) {
+	template <class TElement>
+	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> MiscUtilities::optional<TElement> {
+		MiscUtilities::optional<TElement> ret;
+		if (mode == NullableMode::NullIfFound) {
 			bool found = false;
-			for (size_t i = 0; i < nullableValCount; ++i) {
-				if (testVal == nullableVals[i]) {
+			for (const auto &nullableVal : nullableVals) {
+				if (testVal == nullableVal) {
 					found = true;
 					break;
 				}
@@ -61,20 +58,9 @@ namespace MiscUtilities {
 				ret = testVal;
 			}
 		}
-		else if (mode == ForceNotNull) {
+		else if (mode == NullableMode::ForceNotNull) {
 			ret = testVal;
 		}
 		return ret;
 	}
-
-	// The following methods are used for deleting (freeing) pointers in an array
-	template<class T>
-	struct DeleterSeq {
-		void operator()(T *t) { delete t; }
-	};
-
-	template<class T>
-	struct DeleterPairAssoc {
-		void operator()(T pair) { delete pair.second; }
-	};
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,43 +18,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "LoopingId.h"
-#include "noncopyable.hpp"
+#include "TimerContainerHolder.h"
 #include "Types.h"
 #include <memory>
 #include <unordered_map>
 
-using std::unordered_map;
-
 class ActiveTrade;
 class Player;
-namespace Timer {
-	class Container;
-}
 
-class Trades : boost::noncopyable {
+class Trades : public TimerContainerHolder {
+	SINGLETON_CUSTOM_CONSTRUCTOR(Trades);
 public:
-	static Trades * Instance() {
-		if (singleton == nullptr)
-			singleton = new Trades;
-		return singleton;
-	}
-
-	int32_t newTrade(Player *start, Player *recv);
-	void removeTrade(int32_t id);
-	void stopTimeout(int32_t id);
-	ActiveTrade * getTrade(int32_t id);
+	auto newTrade(Player *start, Player *recv) -> int32_t;
+	auto removeTrade(int32_t id) -> void;
+	auto stopTimeout(int32_t id) -> void;
+	auto getTrade(int32_t id) -> ActiveTrade *;
 private:
-	Trades();
-	static Trades *singleton;
-	const static int32_t TradeTimeout = 180; // Trade timeout in seconds
+	static seconds_t TradeTimeout;
 
-	Timer::Container * getTimers() const { return m_container.get(); }
-	int32_t getNewId() { return m_tradeIds.next(); }
-	seconds_t getTimerSecondsRemaining(int32_t m_id);
-	void timeout(Player *sender);
-	void startTimeout(int32_t id, Player *sender);
+	auto getNewId() -> int32_t { return m_tradeIds.next(); }
+	auto getTimerSecondsRemaining(int32_t m_id) -> seconds_t;
+	auto timeout(Player *sender) -> void;
+	auto startTimeout(int32_t id, Player *sender) -> void;
 
-	std::unique_ptr<Timer::Container> m_container;
-	unordered_map<int32_t, std::shared_ptr<ActiveTrade>> m_trades;
 	LoopingId<int32_t> m_tradeIds;
+	hash_map_t<int32_t, ref_ptr_t<ActiveTrade>> m_trades;
 };

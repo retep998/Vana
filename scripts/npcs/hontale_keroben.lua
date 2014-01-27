@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,11 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Keroben, bouncer to Horntail's Cave
 
-if isActiveItem(2210003) then
+if isGm() or isActiveItem(2210003) then
 	addText("Oh, my Brother! Don't worry about human's invasion. I'll protect you all. Come in.");
 	sendNext();
 
-	endMorph();
+	if isActiveItem(2210003) then
+		endMorph();
+	end
 	setMap(240050000, "st00");
 else
 	if getHp() > 500 then

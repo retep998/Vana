@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,10 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-using std::function;
-using std::string;
-using std::unordered_map;
-
 class PacketCreator;
 class Party;
 class Player;
@@ -37,56 +33,47 @@ namespace soci {
 	class row;
 }
 
-class PlayerDataProvider : boost::noncopyable {
+class PlayerDataProvider {
+	SINGLETON_CUSTOM_CONSTRUCTOR(PlayerDataProvider);
 public:
-	static PlayerDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new PlayerDataProvider;
-		return singleton;
-	}
-	void loadData();
-	void getChannelConnectPacket(PacketCreator &packet);
-	void getPlayerDataPacket(PacketCreator &packet, int32_t playerId);
+	auto loadData() -> void;
+	auto getChannelConnectPacket(PacketCreator &packet) -> void;
+	auto getPlayerDataPacket(PacketCreator &packet, int32_t playerId) -> void;
 
 	// Player info
-	void initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip);
-	void playerConnect(Player *player, bool online = true);
-	void playerDisconnect(int32_t id, int16_t channel = -1);
-	void removeChannelPlayers(uint16_t channel);
-	void loadPlayer(int32_t playerId);
-	Player * getPlayer(const string &name, bool includeOffline = false);
-	Player * getPlayer(int32_t id, bool includeOffline = false);
-	int32_t getPlayerQuantity();
+	auto initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip) -> void;
+	auto playerConnect(Player *player, bool online = true) -> void;
+	auto playerDisconnect(int32_t id, int16_t channel = -1) -> void;
+	auto removeChannelPlayers(uint16_t channel) -> void;
+	auto loadPlayer(int32_t playerId) -> void;
+	auto getPlayer(const string_t &name, bool includeOffline = false) -> Player *;
+	auto getPlayer(int32_t id, bool includeOffline = false) -> Player *;
+	auto getPlayerQuantity() -> int32_t;
 
 	// Channel changes
-	void addPendingPlayer(int32_t id, uint16_t channelId);
-	void removePendingPlayer(int32_t id);
-	int16_t removePendingPlayerEarly(int32_t id);
-	uint16_t getPendingPlayerChannel(int32_t id);
+	auto addPendingPlayer(int32_t id, uint16_t channelId) -> void;
+	auto removePendingPlayer(int32_t id) -> void;
+	auto removePendingPlayerEarly(int32_t id) -> int16_t;
+	auto getPendingPlayerChannel(int32_t id) -> uint16_t;
 
 	// Parties
-	int32_t getPartyId();
-	void createParty(int32_t playerId);
-	void addPartyMember(int32_t playerId);
-	void removePartyMember(int32_t playerId, int32_t target);
-	void removePartyMember(int32_t playerId);
-	void setPartyLeader(int32_t playerId, int32_t leaderId);
-	void disbandParty(int32_t id);
-	Party * getParty(int32_t id);
+	auto getPartyId() -> int32_t;
+	auto createParty(int32_t playerId) -> void;
+	auto addPartyMember(int32_t playerId) -> void;
+	auto removePartyMember(int32_t playerId, int32_t target) -> void;
+	auto removePartyMember(int32_t playerId) -> void;
+	auto setPartyLeader(int32_t playerId, int32_t leaderId) -> void;
+	auto disbandParty(int32_t id) -> void;
+	auto getParty(int32_t id) -> Party *;
 private:
-	PlayerDataProvider();
-	static PlayerDataProvider *singleton;
-	typedef unordered_map<int32_t, std::shared_ptr<Party>> PartyMap;
-	typedef unordered_map<int32_t, std::shared_ptr<Player>> PlayerMap;
+	auto loadGuilds(int16_t worldId) -> void;
+	auto loadAlliances(int16_t worldId) -> void;
+	auto loadPlayers(int16_t worldId) -> void;
+	auto loadPlayer(const soci::row &row) -> void;
+	auto generatePlayerDataPacket(PacketCreator &packet, Player *player) -> void;
 
-	void loadGuilds(int16_t worldId);
-	void loadAlliances(int16_t worldId);
-	void loadPlayers(int16_t worldId);
-	void loadPlayer(const soci::row &row);
-	void generatePlayerDataPacket(PacketCreator &packet, Player *player);
-
-	unordered_map<int32_t, uint16_t> m_channelSwitches; // Channel changes
 	LoopingId<int32_t> m_partyIds;
-	PartyMap m_parties;
-	PlayerMap m_players;
+	hash_map_t<int32_t, uint16_t> m_channelSwitches;
+	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
+	hash_map_t<int32_t, ref_ptr_t<Player>> m_players;
 };

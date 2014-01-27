@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "InstanceMessageConstants.h"
 #include "Maps.h"
-#include "Mist.h"
+#include "MiscUtilities.h"
 #include "Mob.h"
 #include "MobConstants.h"
 #include "MobsPacket.h"
@@ -32,15 +32,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.h"
 #include "Randomizer.h"
 #include "SkillDataProvider.h"
+#include "StatusInfo.h"
 #include "TimeUtilities.h"
 #include "Timer.h"
 #include <functional>
 
-using std::bind;
-
-void MobHandler::handleBomb(Player *player, PacketReader &packet) {
+auto MobHandler::handleBomb(Player *player, PacketReader &packet) -> void {
 	int32_t mobId = packet.get<int32_t>();
-	Mob *mob = player->getMap()->getMob(mobId);
+	auto mob = player->getMap()->getMob(mobId);
 	if (player->getStats()->isDead() || mob == nullptr) {
 		return;
 	}
@@ -51,31 +50,31 @@ void MobHandler::handleBomb(Player *player, PacketReader &packet) {
 	mob->explode();
 }
 
-void MobHandler::friendlyDamaged(Player *player, PacketReader &packet) {
+auto MobHandler::friendlyDamaged(Player *player, PacketReader &packet) -> void {
 	int32_t mobFrom = packet.get<int32_t>();
 	int32_t playerId = packet.get<int32_t>();
 	int32_t mobTo = packet.get<int32_t>();
 
 	Map *map = player->getMap();
-	Mob *dealer = map->getMob(mobFrom);
-	Mob *taker = map->getMob(mobTo);
+	auto dealer = map->getMob(mobFrom);
+	auto taker = map->getMob(mobTo);
 	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
-		int32_t damage = dealer->getInfo()->level * Randomizer::rand<int32_t>(100) / 10;
+		int32_t damage = dealer->getLevel() * Randomizer::rand<int32_t>(100) / 10;
 		// Temp for now until I figure out something more effective
-		// TODO: Fix formula
+		// TODO FIXME: Formula
 		int32_t mobId = taker->getMobId();
-		int32_t mapMobId =  taker->getId();
-		int32_t mobHp = (damage > taker->getHp() ? 0 : taker->getHp() - damage);
+		int32_t mapMobId =  taker->getMapMobId();
+		int32_t mobHp = std::max(0, taker->getHp() - damage);
 		int32_t maxHp = taker->getMaxHp();
 
 		taker->applyDamage(playerId, damage);
-		if (Instance *i = map->getInstance()) {
-			i->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
+		if (Instance *instance = map->getInstance()) {
+			instance->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
 	}
 }
 
-void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
+auto MobHandler::handleTurncoats(Player *player, PacketReader &packet) -> void {
 	int32_t mobFrom = packet.get<int32_t>();
 	int32_t playerId = packet.get<int32_t>();
 	int32_t mobTo = packet.get<int32_t>();
@@ -85,273 +84,88 @@ void MobHandler::handleTurncoats(Player *player, PacketReader &packet) {
 	packet.skipBytes(4); // Some type of pos, damage display, I think
 
 	Map *map = player->getMap();
-	Mob *damager = map->getMob(mobFrom);
-	Mob *taker = map->getMob(mobTo);
+	auto damager = map->getMob(mobFrom);
+	auto taker = map->getMob(mobTo);
 	if (damager != nullptr && taker != nullptr) {
 		taker->applyDamage(playerId, damage);
 	}
 }
 
-void MobHandler::monsterControl(Player *player, PacketReader &packet) {
+auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 	int32_t mobId = packet.get<int32_t>();
 
-	Mob *mob = player->getMap()->getMob(mobId);
-
-	if (mob == nullptr || mob->getControlStatus() == Mobs::ControlStatus::ControlNone) {
+	Map *map = player->getMap();
+	auto mob = map->getMob(mobId);
+	if (mob == nullptr || mob->getControlStatus() == MobControlStatus::None) {
 		return;
 	}
 
 	int16_t moveId = packet.get<int16_t>();
-	bool useSkill = packet.get<bool>();
-	int8_t skill = packet.get<int8_t>();
-	uint8_t realSkill = 0;
-	uint8_t level = 0;
-	const Pos &projectileTarget = packet.getClass<Pos>();
-	packet.skipBytes(5); // 1 byte of always 0?, 4 bytes of always 1 or always 0?
-	const Pos &spot = packet.getClass<Pos>();
-
-	MovementHandler::parseMovement(mob, packet);
-
-	if (useSkill && (skill == -1 || skill == 0)) {
-		if (mob->canCastSkills()) {
-			uint8_t size = mob->getSkillCount();
-			bool used = false;
-			if (size > 0) {
-				bool stop = false;
-				uint8_t rand = Randomizer::rand<uint8_t>(size - 1);
-				MobSkillInfo *info = MobDataProvider::Instance()->getMobSkill(mob->getMobId(), rand);
-				realSkill = info->skillId;
-				level = info->level;
-				MobSkillLevelInfo *mobSkill = SkillDataProvider::Instance()->getMobSkill(realSkill, level);
-				switch (realSkill) {
-					case MobSkills::WeaponAttackUp:
-					case MobSkills::WeaponAttackUpAoe:
-						stop = mob->hasStatus(StatusEffects::Mob::Watk);
-						break;
-					case MobSkills::MagicAttackUp:
-					case MobSkills::MagicAttackUpAoe:
-						stop = mob->hasStatus(StatusEffects::Mob::Matk);
-						break;
-					case MobSkills::WeaponDefenseUp:
-					case MobSkills::WeaponDefenseUpAoe:
-						stop = mob->hasStatus(StatusEffects::Mob::Wdef);
-						break;
-					case MobSkills::MagicDefenseUp:
-					case MobSkills::MagicDefenseUpAoe:
-						stop = mob->hasStatus(StatusEffects::Mob::Mdef);
-						break;
-					case MobSkills::WeaponImmunity:
-					case MobSkills::MagicImmunity:
-					case MobSkills::WeaponDamageReflect:
-					case MobSkills::MagicDamageReflect:
-						stop = mob->hasImmunity();
-						break;
-					case MobSkills::McSpeedUp:
-						stop = mob->hasStatus(StatusEffects::Mob::Speed);
-						break;
-					case MobSkills::Summon: {
-						int16_t limit = mobSkill->limit;
-						if (limit == 5000) {
-							// Custom limit based on number of players on map
-							limit = 30 + Maps::getMap(mob->getMapId())->getNumPlayers() * 2;
-						}
-						if (mob->getSpawnCount() >= limit) {
-							stop = true;
-						}
-						break;
-					}
-				}
-				if (!stop) {
-					time_t now = time(nullptr);
-					time_t ls = mob->getLastSkillUse(realSkill);
-					if (ls == 0 || ((int32_t)(now - ls) > mobSkill->interval)) {
-						mob->setLastSkillUse(realSkill, now);
-						int64_t reqhp = mob->getHp() * 100;
-						reqhp /= mob->getMaxHp();
-						if ((uint8_t)(reqhp) <= mobSkill->hp) {
-							if (info->effectAfter == 0) {
-								handleMobSkill(mob, realSkill, level, mobSkill);
-							}
-							else {
-								Timer::create([mob, realSkill, level, mobSkill]() { MobHandler::handleMobSkill(mob, realSkill, level, mobSkill); },
-									Timer::Id(Timer::Types::MobSkillTimer, mob->getMobId(), mob->getCounter()),
-									mob->getTimers(), milliseconds_t(info->effectAfter));
-							}
-							used = true;
-						}
-					}
-				}
-			}
-			if (!used) {
-				realSkill = 0;
-				level = 0;
-			}
-		}
+	if (mob->getController() != player && !mob->getSkillFeasibility()) {
+		map->switchController(mob, player);
 	}
-	MobsPacket::moveMobResponse(player, mobId, moveId, useSkill, mob->getMp(), realSkill, level);
-	packet.reset(19);
-	MobsPacket::moveMob(player, mobId, useSkill, skill, projectileTarget, packet.getBuffer(), packet.getBufferLength());
-}
 
-void MobHandler::handleMobSkill(Mob *mob, uint8_t skillId, uint8_t level, MobSkillLevelInfo *skillInfo) {
-	const Pos &mobPos = mob->getPos();
-	Map *map = Maps::getMap(mob->getMapId());
-	vector<StatusInfo> statuses;
-	bool aoe = false;
-	switch (skillId) {
-		case MobSkills::WeaponAttackUpAoe:
-			aoe = true;
-		case MobSkills::WeaponAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::MagicAttackUpAoe:
-			aoe = true;
-		case MobSkills::MagicAttackUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Matk, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::WeaponDefenseUpAoe:
-			aoe = true;
-		case MobSkills::WeaponDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::MagicDefenseUpAoe:
-			aoe = true;
-		case MobSkills::MagicDefenseUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Mdef, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::HealAoe:
-			map->healMobs(skillInfo->x, skillInfo->y, mobPos, skillInfo->dimensions);
-			break;
-		case MobSkills::Seal:
-		case MobSkills::Darkness:
-		case MobSkills::Weakness:
-		case MobSkills::Stun:
-		case MobSkills::Curse:
-		case MobSkills::Poison:
-		case MobSkills::Slow:
-		case MobSkills::Seduce:
-		case MobSkills::CrazySkull:
-		case MobSkills::Zombify: {
-			auto func = [&skillId, &level](Player *player) {
-				player->getActiveBuffs()->addDebuff(skillId, level);
-			};
-			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, skillInfo->count, func);
-			break;
-		}
-		case MobSkills::Dispel: {
-			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, [](Player *player) {
-				player->getActiveBuffs()->dispelBuffs();
-			});
-			break;
-		}
-		case MobSkills::SendToTown: {
-			int32_t field = map->getReturnMap();
-			PortalInfo *portal = nullptr;
-			string message = "";
-			if (BanishField *ban = SkillDataProvider::Instance()->getBanishData(mob->getMobId())) {
-				field = ban->field;
-				message = ban->message;
-				if (ban->portal != "" && ban->portal != "sp") {
-					portal = Maps::getMap(field)->getPortal(ban->portal);
-				}
-			}
-			auto func = [&message, &field, &portal](Player *player) {
-				if (message != "") {
-					PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
-				}
-				player->setMap(field, portal);
-			};
-			map->runFunctionPlayers(mobPos, skillInfo->dimensions, skillInfo->prop, skillInfo->count, func);
-			break;
-		}
-		case MobSkills::PoisonMist:
-			new Mist(mob->getMapId(), mob, mobPos, skillInfo, skillId, level);
-			break;
-		case MobSkills::WeaponImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::MagicImmunity:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::WeaponDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
-			break;
-		case MobSkills::MagicDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
-			break;
-		case MobSkills::AnyDamageReflect:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicImmunity, skillInfo->x, skillId, level, skillInfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::WeaponDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDamageReflect, skillInfo->x, skillId, level, skillInfo->y, skillInfo->time));
-			break;
-		case MobSkills::McSpeedUp:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skillInfo->x, skillId, level, skillInfo->time));
-			break;
-		case MobSkills::Summon: {
-			int16_t xMin, xMax;
-			int16_t yMin = mobPos.y + skillInfo->dimensions.leftTop.y;
-			int16_t yMax = mobPos.y + skillInfo->dimensions.rightBottom.y;
-			int16_t d = 0;
-			if (mob->isFacingRight()) {
-				xMin = mobPos.x + skillInfo->dimensions.rightBottom.x * -1;
-				xMax = mobPos.x + skillInfo->dimensions.leftTop.x * -1;
-			}
-			else {
-				xMin = mobPos.x + skillInfo->dimensions.leftTop.x;
-				xMax = mobPos.x + skillInfo->dimensions.rightBottom.x;
-			}
-			for (size_t summonSize = 0; summonSize < skillInfo->summons.size(); ++summonSize) {
-				int32_t spawnId = skillInfo->summons[summonSize];
-				int16_t xPos = Randomizer::rand<int16_t>(xMax, xMin);
-				int16_t yPos = Randomizer::rand<int16_t>(yMax, yMin);
-				Pos floor;
-				if (mob->getMapId() == Maps::OriginOfClockTower) {
-					// Papulatus' map
-					if (spawnId == Mobs::HighDarkstar) {
-						// Keep High Darkstars high
-						while ((floor.y > -538 || floor.y == yPos) || !GameLogicUtilities::isInBox(mob->getPos(), skillInfo->dimensions, floor)) {
-							// Mobs spawn on the ground, we need them up top
-							xPos = Randomizer::rand<int16_t>(xMax, xMin);
-							yPos = -590;
-							floor = map->findFloor(Pos(xPos, yPos));
-						}
-					}
-					else if (spawnId == Mobs::LowDarkstar) {
-						// Keep Low Darkstars low
-						floor = map->findFloor(Pos(xPos, mobPos.y));
-					}
-				}
-				else {
-					xPos = mobPos.x + ((d % 2) ? (35 * (d + 1) / 2) : -(40 * (d / 2)));
-					floor = map->findFloor(Pos(xPos, yPos));
-					if (floor.y == yPos) {
-						floor.y = mobPos.y;
-					}
-				}
-				map->spawnMob(spawnId, floor, 0, mob, skillInfo->summonEffect);
-				d++;
-			}
-			break;
-		}
+	int8_t nibbles1 = packet.get<int8_t>();
+	int8_t rawActivity = packet.get<int8_t>();
+	uint8_t useSkillId = packet.get<uint8_t>();
+	uint8_t useSkillLevel = packet.get<uint8_t>();
+	int16_t option = packet.get<int16_t>();
+	packet.skipBytes(1); // unk
+	packet.skipBytes(4); // 4 bytes of always 1 or always 0?
+	packet.skipBytes(4); // Pos?
+
+	// TODO FIXME mob.get() - perhaps movement parsing should be on the MovableLife class itself?
+	MovementHandler::parseMovement(mob.get(), packet);
+
+	int8_t parsedActivity = rawActivity;
+	if (parsedActivity >= 0) {
+		parsedActivity = static_cast<int8_t>(static_cast<uint8_t>(parsedActivity) >> 1);
 	}
-	if (statuses.size() > 0) {
-		if (aoe) {
-			map->statusMobs(statuses, mob->getPos(), skillInfo->dimensions);
+	bool isAttack = MiscUtilities::inRangeInclusive<int8_t>(parsedActivity, 12, 20);
+	bool isSkill = MiscUtilities::inRangeInclusive<int8_t>(parsedActivity, 21, 25);
+	int32_t attackId = isAttack ? parsedActivity - 12 : -1;
+	bool nextMovementCouldBeSkill = (nibbles1 & 0x0F) != 0;
+	bool unk = (nibbles1 & 0xF0) != 0;
+
+	uint8_t nextCastSkill = 0;
+	uint8_t nextCastSkillLevel = 0;
+
+	if (isAttack || isSkill) {
+		if (isAttack) {
+			MobAttackInfo *attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), attackId);
+			if (attack == nullptr) {
+				// Hacks
+				return;
+			}
+			mob->consumeMp(attack->mpConsume);
 		}
 		else {
-			mob->addStatus(0, statuses);
+			if (useSkillId != mob->getAnticipatedSkill() || useSkillLevel != mob->getAnticipatedSkillLevel()) {
+				// Hacking?
+				mob->resetAnticipatedSkill();
+				return;
+			}
+			if (!mob->useAnticipatedSkill()) {
+				return;
+			}
 		}
 	}
+
+	mob->setSkillFeasibility(nextMovementCouldBeSkill);
+	if (nextMovementCouldBeSkill) {
+		mob->chooseRandomSkill(nextCastSkill, nextCastSkillLevel);
+	}
+
+	MobsPacket::moveMobResponse(player, mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel);
+	packet.reset(19);
+	MobsPacket::moveMob(player, mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, packet.getBuffer(), packet.getBufferLength());
 }
 
-int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) {
-	Player *player = PlayerDataProvider::Instance()->getPlayer(playerId);
-	vector<StatusInfo> statuses;
+auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) -> int32_t {
+	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
+	vector_t<StatusInfo> statuses;
 	int16_t y = 0;
-	SkillLevelInfo *skill = SkillDataProvider::Instance()->getSkill(skillId, level);
+	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	bool success = (skillId == 0 ? false : (Randomizer::rand<uint16_t>(99) < skill->prop));
 	if (mob->canFreeze()) {
 		// Freezing stuff
@@ -361,23 +175,23 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 			case Skills::IlMage::ElementComposition:
 			case Skills::Sniper::Blizzard:
 			case Skills::IlArchMage::Blizzard:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time));
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time);
 				break;
 			case Skills::Outlaw::IceSplitter:
 				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = eBoost->y;
 				}
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time + y));
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time + y);
 				break;
 			case Skills::FpArchMage::Elquines:
 			case Skills::Marksman::Frostprey:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x));
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x);
 				break;
 		}
 		if ((GameLogicUtilities::isSword(weapon) || GameLogicUtilities::isMace(weapon)) && player->getActiveBuffs()->hasIceCharge()) {
 			// Ice charges
 			int32_t charge = player->getActiveBuffs()->getCharge();
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, player->getActiveBuffs()->getActiveSkillInfo(charge)->y));
+			statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, player->getActiveBuffs()->getActiveSkillInfo(charge)->y);
 		}
 	}
 	if (mob->canPoison() && mob->getHp() > 1) {
@@ -410,7 +224,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
 						success = (Randomizer::rand<uint16_t>(99) < venom->prop);
 						if (success) {
-							statuses.push_back(StatusInfo(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->time));
+							statuses.emplace_back(StatusEffects::Mob::VenomousWeapon, damage, vSkill, venom->time);
 							mob->addStatus(player->getId(), statuses);
 							statuses.clear();
 						}
@@ -427,7 +241,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 			case Skills::BlazeWizard::FlameGear:
 			case Skills::NightWalker::PoisonBomb:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time);
 				}
 				break;
 		}
@@ -436,13 +250,13 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 		// Seal, Stun, etc
 		switch (skillId) {
 			case Skills::Corsair::Hypnotize:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Hypnotize, 1, skillId, skill->time));
+				statuses.emplace_back(StatusEffects::Mob::Hypnotize, 1, skillId, skill->time);
 				break;
 			case Skills::Brawler::BackspinBlow:
 			case Skills::Brawler::DoubleUppercut:
 			case Skills::Buccaneer::Demolition:
 			case Skills::Buccaneer::Snatch:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time));
+				statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time);
 				break;
 			case Skills::Hunter::ArrowBomb:
 			case Skills::Crusader::SwordComa:
@@ -455,54 +269,54 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 			case Skills::Gunslinger::BlankShot:
 			case Skills::NightLord::NinjaStorm:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->time);
 				}
 				break;
 			case Skills::Ranger::SilverHawk:
 			case Skills::Sniper::GoldenEagle:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->x));
+					statuses.emplace_back(StatusEffects::Mob::Stun, StatusEffects::Mob::Stun, skillId, skill->x);
 				}
 				break;
 			case Skills::FpMage::Seal:
 			case Skills::IlMage::Seal:
 			case Skills::BlazeWizard::Seal:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::Seal, StatusEffects::Mob::Seal, skillId, skill->time);
 				}
 				break;
 			case Skills::Priest::Doom:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::Doom, StatusEffects::Mob::Doom, skillId, skill->time);
 				}
 				break;
 			case Skills::Hermit::ShadowWeb:
 			case Skills::NightWalker::ShadowWeb:
 				if (success) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::ShadowWeb, level, skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::ShadowWeb, level, skillId, skill->time);
 				}
 				break;
 			case Skills::FpArchMage::Paralyze:
 				if (mob->canPoison()) {
-					statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time));
+					statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time);
 				}
 				break;
 			case Skills::IlArchMage::IceDemon:
 			case Skills::FpArchMage::FireDemon:
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time));
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x));
+				statuses.emplace_back(StatusEffects::Mob::Poison, mob->getMaxHp() / (70 - level), skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->x);
 				break;
 			case Skills::Shadower::Taunt:
 			case Skills::NightLord::Taunt:
 				// I know, these status effect types make no sense, that's just how it works
-				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->time));
-				statuses.push_back(StatusInfo(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->time));
+				statuses.emplace_back(StatusEffects::Mob::MagicAttackUp, 100 - skill->x, skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->time);
 				break;
 			case Skills::Outlaw::Flamethrower:
 				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
 					y = eBoost->x;
 				}
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillId, skill->time));
+				statuses.emplace_back(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillId, skill->time);
 				break;
 		}
 	}
@@ -510,25 +324,25 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 		case Skills::Shadower::NinjaAmbush:
 		case Skills::NightLord::NinjaAmbush:
 			damage = 2 * (player->getStats()->getStr(true) + player->getStats()->getLuk(true)) * skill->damage / 100;
-			statuses.push_back(StatusInfo(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->time));
+			statuses.emplace_back(StatusEffects::Mob::NinjaAmbush, damage, skillId, skill->time);
 			break;
 		case Skills::Rogue::Disorder:
 		case Skills::NightWalker::Disorder:
 		case Skills::Page::Threaten:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Watk, skill->x, skillId, skill->time));
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Wdef, skill->y, skillId, skill->time));
+			statuses.emplace_back(StatusEffects::Mob::Watk, skill->x, skillId, skill->time);
+			statuses.emplace_back(StatusEffects::Mob::Wdef, skill->y, skillId, skill->time);
 			break;
 		case Skills::FpWizard::Slow:
 		case Skills::IlWizard::Slow:
 		case Skills::BlazeWizard::Slow:
-			statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, skill->x, skillId, skill->time));
+			statuses.emplace_back(StatusEffects::Mob::Speed, skill->x, skillId, skill->time);
 			break;
 	}
 	if (GameLogicUtilities::isBow(weapon)) {
 		if (SkillLevelInfo *hamstring = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Hamstring)) {
 			// Only triggers if player has the buff
 			if (skillId != Skills::Bowmaster::Phoenix && skillId != Skills::Ranger::SilverHawk) {
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Speed, hamstring->x, Skills::Bowmaster::Hamstring, hamstring->y));
+				statuses.emplace_back(StatusEffects::Mob::Speed, hamstring->x, Skills::Bowmaster::Hamstring, hamstring->y);
 			}
 		}
 	}
@@ -536,7 +350,7 @@ int32_t MobHandler::handleMobStatus(int32_t playerId, Mob *mob, int32_t skillId,
 		if (SkillLevelInfo *blind = player->getActiveBuffs()->getActiveSkillInfo(Skills::Marksman::Blind)) {
 			// Only triggers if player has the buff
 			if (skillId != Skills::Marksman::Frostprey && skillId != Skills::Sniper::GoldenEagle) {
-				statuses.push_back(StatusInfo(StatusEffects::Mob::Acc, -(blind->x), Skills::Marksman::Blind, blind->y));
+				statuses.emplace_back(StatusEffects::Mob::Acc, -(blind->x), Skills::Marksman::Blind, blind->y);
 			}
 		}
 	}

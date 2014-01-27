@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,15 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.h"
 #include <functional>
 
-using std::bind;
-
 Pet::Pet(Player *player, Item *item) :
+	MovableLife(0, Pos(), 0),
 	m_player(player),
 	m_itemId(item->getId()),
-	m_name(ItemDataProvider::Instance()->getItemName(m_itemId)),
-	m_level(1),
-	m_fullness(Stats::MaxFullness),
-	m_closeness(0),
+	m_name(ItemDataProvider::getInstance().getItemName(m_itemId)),
 	m_item(item)
 {
 	soci::session &sql = Database::getCharDb();
@@ -45,6 +41,7 @@ Pet::Pet(Player *player, Item *item) :
 }
 
 Pet::Pet(Player *player, Item *item, const soci::row &row) :
+	MovableLife(0, Pos(), 0),
 	m_player(player),
 	m_id(item->getPetId()),
 	m_itemId(item->getId()),
@@ -59,17 +56,17 @@ Pet::Pet(Player *player, Item *item, const soci::row &row) :
 	}
 }
 
-void Pet::levelUp() {
+auto Pet::levelUp() -> void {
 	m_level += 1;
 	PetsPacket::levelUp(m_player, this);
 }
 
-void Pet::setName(const string &name) {
+auto Pet::setName(const string_t &name) -> void {
 	m_name = name;
 	PetsPacket::changeName(m_player, this);
 }
 
-void Pet::addCloseness(int16_t amount) {
+auto Pet::addCloseness(int16_t amount) -> void {
 	m_closeness += amount;
 	if (m_closeness > Stats::MaxCloseness) {
 		m_closeness = Stats::MaxCloseness;
@@ -80,7 +77,7 @@ void Pet::addCloseness(int16_t amount) {
 	PetsPacket::updatePet(m_player, this, m_item);
 }
 
-void Pet::modifyFullness(int8_t offset, bool sendPacket) {
+auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 	if (m_fullness + offset > Stats::MaxFullness) {
 		m_fullness = Stats::MaxFullness;
 	}
@@ -97,13 +94,13 @@ void Pet::modifyFullness(int8_t offset, bool sendPacket) {
 	}
 }
 
-void Pet::startTimer() {
+auto Pet::startTimer() -> void {
 	Timer::Id id(Timer::Types::PetTimer, getIndex().get(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	duration_t repeat = seconds_t((6 - ItemDataProvider::Instance()->getHunger(getItemId())) * 60); // TODO: Better formula
-	Timer::create([this]() { this->modifyFullness(-1, true); }, id, m_player->getTimers(), seconds_t(0), repeat);
+	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getHunger(getItemId())) * 60); // TODO: Better formula
+	Timer::create([this](const time_point_t &now) { this->modifyFullness(-1, true); }, id, m_player->getTimerContainer(), seconds_t(0), repeat);
 }
 
-bool Pet::hasNameTag() const {
+auto Pet::hasNameTag() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
 			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetLabelRing1, true) != 0;
@@ -114,7 +111,7 @@ bool Pet::hasNameTag() const {
 	return false;
 }
 
-bool Pet::hasQuoteItem() const {
+auto Pet::hasQuoteItem() const -> bool {
 	if (m_index.is_initialized()) {
 		switch (m_index.get()) {
 			case 0: return m_player->getInventory()->getEquippedId(EquipSlots::PetQuoteRing1, true) != 0;
@@ -125,9 +122,9 @@ bool Pet::hasQuoteItem() const {
 	return false;
 }
 
-void Pet::initializePet(const soci::row &row) {
+auto Pet::initializePet(const soci::row &row) -> void {
 	m_index = row.get<opt_int8_t>("index");
-	m_name = row.get<string>("pet_name");
+	m_name = row.get<string_t>("pet_name");
 	m_level = row.get<int8_t>("level");
 	m_closeness = row.get<int16_t>("closeness");
 	m_fullness = row.get<int8_t>("fullness");

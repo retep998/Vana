@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,10 +25,6 @@ function beginInstance()
 end
 
 function playerDisconnect(playerId, isPartyLeader)
-	startInstanceTimer("clean", 1, false);
-end
-
-function timerEnd(name, fromTimer)
 	cleanUpPap();
 end
 
@@ -36,7 +32,7 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if not isInstanceMap(newMap) then
 		-- Player probably died, want to make sure this doesn't keep the room full
 		removeInstancePlayer(playerId);
-		startInstanceTimer("clean", 1, false);
+		cleanUpPap();
 	end
 end
 
@@ -51,6 +47,7 @@ end
 
 function playerDeath(playerId) end
 function instanceTimerEnd(fromTimer) end
+function timerEnd(name, fromTimer) end
 function mobDeath(mobId, mapMobId, mapId) end
 function mobSpawn(mobId, mapMobId, mapId) end
 function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end

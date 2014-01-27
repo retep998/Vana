@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,9 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
-void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
+auto Characters::loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT i.item_id, i.slot "
 		<< "FROM items i "
@@ -57,9 +55,9 @@ void Characters::loadEquips(int32_t id, vector<CharEquip> &vec) {
 	}
 }
 
-void Characters::loadCharacter(Character &charc, const soci::row &row) {
+auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	charc.id = row.get<int32_t>("character_id");
-	charc.name = row.get<string>("name");
+	charc.name = row.get<string_t>("name");
 	charc.gender = row.get<int8_t>("gender");
 	charc.skin = row.get<int8_t>("skin");
 	charc.eyes = row.get<int32_t>("eyes");
@@ -97,22 +95,20 @@ void Characters::loadCharacter(Character &charc, const soci::row &row) {
 	loadEquips(charc.id, charc.equips);
 }
 
-void Characters::showAllCharacters(Player *player) {
+auto Characters::showAllCharacters(Player *player) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT * "
 		<< "FROM characters c "
 		<< "WHERE c.user_id = :user ",
 		soci::use(player->getUserId(), "user"));
 
-	typedef unordered_map<uint8_t, vector<Character>> CharsMap;
-
-	CharsMap chars;
+	hash_map_t<uint8_t, vector_t<Character>> chars;
 	uint32_t charsNum = 0;
 	World *world;
 
 	for (const auto &row : rs) {
 		uint8_t worldId = row.get<uint8_t>("world_id");
-		world = Worlds::Instance()->getWorld(worldId);
+		world = Worlds::getInstance().getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
 			continue;
@@ -127,11 +123,11 @@ void Characters::showAllCharacters(Player *player) {
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
 	LoginPacket::showAllCharactersInfo(player, chars.size(), unk);
 	for (const auto &kvp : chars) {
-		LoginPacket::showCharactersWorld(player, kvp.first, kvp.second);
+		LoginPacket::showViewAllCharacters(player, kvp.first, kvp.second);
 	}
 }
 
-void Characters::showCharacters(Player *player) {
+auto Characters::showCharacters(Player *player) -> void {
 	soci::session &sql = Database::getCharDb();
 	int8_t worldId = player->getWorldId();
 	int32_t userId = player->getUserId();
@@ -143,7 +139,7 @@ void Characters::showCharacters(Player *player) {
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"));
 
-	vector<Character> chars;
+	vector_t<Character> chars;
 	for (const auto &row : rs) {
 		Character charc;
 		loadCharacter(charc, row);
@@ -160,15 +156,15 @@ void Characters::showCharacters(Player *player) {
 		soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
-		const WorldConfig &world = Worlds::Instance()->getWorld(worldId)->getConfig();
+		const WorldConfig &world = Worlds::getInstance().getWorld(worldId)->getConfig();
 		max = world.defaultChars;
 	}
 
 	LoginPacket::showCharacters(player, chars, max.get());
 }
 
-void Characters::checkCharacterName(Player *player, PacketReader &packet) {
-	const string &name = packet.getString();
+auto Characters::checkCharacterName(Player *player, PacketReader &packet) -> void {
+	const string_t &name = packet.getString();
 	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
@@ -184,7 +180,7 @@ void Characters::checkCharacterName(Player *player, PacketReader &packet) {
 	}
 }
 
-void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) {
+auto Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) -> void {
 	soci::session &sql = Database::getCharDb();
 	uint8_t inventory = GameLogicUtilities::getInventory(itemId);
 	ItemDbInformation info(slot, charId, player->getUserId(), player->getWorldId(), Item::Inventory);
@@ -199,13 +195,13 @@ void Characters::createItem(int32_t itemId, Player *player, int32_t charId, int3
 	}
 }
 
-void Characters::createCharacter(Player *player, PacketReader &packet) {
+auto Characters::createCharacter(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 
-	string name = packet.getString();
+	string_t name = packet.getString();
 	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
@@ -230,7 +226,7 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	int32_t weapon = packet.get<int32_t>();
 	int8_t gender = packet.get<int8_t>();
 
-	if (!ValidCharDataProvider::Instance()->isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
+	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
 		player->getSession()->disconnect();
 		return;
@@ -277,10 +273,10 @@ void Characters::createCharacter(Player *player, PacketReader &packet) {
 	Character charc;
 	loadCharacter(charc, row);
 	LoginPacket::showCharacter(player, charc);
-	SyncPacket::PlayerPacket::characterCreated(Worlds::Instance()->getWorld(player->getWorldId()), id);
+	SyncPacket::PlayerPacket::characterCreated(Worlds::getInstance().getWorld(player->getWorldId()), id);
 }
 
-void Characters::deleteCharacter(Player *player, PacketReader &packet) {
+auto Characters::deleteCharacter(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -319,7 +315,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	bool success = false;
 	const opt_int32_t &delPassword = player->getCharDeletePassword();
 	if (!delPassword.is_initialized() || delPassword.get() == data) {
-		Worlds::Instance()->runFunction([&id, &worldId](World *world) -> bool {
+		Worlds::getInstance().runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
 				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
 				// For guilds
@@ -337,7 +333,7 @@ void Characters::deleteCharacter(Player *player, PacketReader &packet) {
 	LoginPacket::deleteCharacter(player, id, result);
 }
 
-void Characters::connectGame(Player *player, int32_t charId) {
+auto Characters::connectGame(Player *player, int32_t charId) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -347,33 +343,33 @@ void Characters::connectGame(Player *player, int32_t charId) {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::Instance()->getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
+	LoginServerAcceptPacket::newPlayer(Worlds::getInstance().getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
 	LoginPacket::connectIp(player, charId);
 }
 
-void Characters::connectGame(Player *player, PacketReader &packet) {
+auto Characters::connectGame(Player *player, PacketReader &packet) -> void {
 	int32_t id = packet.get<int32_t>();
 
 	connectGame(player, id);
 }
 
-void Characters::connectGameWorld(Player *player, PacketReader &packet) {
+auto Characters::connectGameWorldFromViewAllCharacters(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 	int32_t id = packet.get<int32_t>();
-	int8_t worldId = (int8_t) packet.get<int32_t>();
+	int8_t worldId = static_cast<int8_t>(packet.get<int32_t>());
 	player->setWorldId(worldId);
 
 	// Take the player to a random channel
-	uint16_t channel = Worlds::Instance()->getWorld(worldId)->getRandomChannel();
+	uint16_t channel = Worlds::getInstance().getWorld(worldId)->getRandomChannel();
 	player->setChannel(channel);
 
 	connectGame(player, id);
 }
 
-bool Characters::ownerCheck(Player *player, int32_t id) {
+auto Characters::ownerCheck(Player *player, int32_t id) -> bool {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
 
@@ -389,7 +385,7 @@ bool Characters::ownerCheck(Player *player, int32_t id) {
 	return sql.got_data() && exists.is_initialized();
 }
 
-bool Characters::nameTaken(const string &name) {
+auto Characters::nameTaken(const string_t &name) -> bool {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
 
@@ -404,7 +400,6 @@ bool Characters::nameTaken(const string &name) {
 	return sql.got_data() && exists.is_initialized();
 }
 
-bool Characters::nameInvalid(const string &name) {
-	return ValidCharDataProvider::Instance()->isForbiddenName(name) || CurseDataProvider::Instance()->isCurseWord(name);
+auto Characters::nameInvalid(const string_t &name) -> bool {
+	return ValidCharDataProvider::getInstance().isForbiddenName(name) || CurseDataProvider::getInstance().isCurseWord(name);
 }
-

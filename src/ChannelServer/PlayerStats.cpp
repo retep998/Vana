@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,8 +40,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <string>
 
-using std::string;
-
 PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, int32_t exp) :
 	m_player(player),
 	m_level(level),
@@ -58,22 +56,19 @@ PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fam
 	m_maxHp(maxHp),
 	m_mp(mp),
 	m_maxMp(maxMp),
-	m_exp(exp),
-	m_hyperBodyX(0),
-	m_hyperBodyY(0),
-	m_mapleWarrior(0)
+	m_exp(exp)
 {
 	if (isDead()) {
 		m_hp = Stats::DefaultHp;
 	}
 }
 
-bool PlayerStats::isDead() const {
-	return (m_hp == Stats::MinHp);
+auto PlayerStats::isDead() const -> bool {
+	return m_hp == Stats::MinHp;
 }
 
 // Equip stat bonus handling
-void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
+auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 	if (m_mapleWarrior > 0) {
 		setMapleWarrior(m_mapleWarrior);
 	}
@@ -81,7 +76,7 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 		m_equipBonuses = BonusSet();
 		for (const auto &kvp : m_equipStats) {
 			const EquipBonus &info = kvp.second;
-			if (EquipDataProvider::Instance()->canEquip(info.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
+			if (EquipDataProvider::getInstance().canEquip(info.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
 				m_equipBonuses.hp += info.hp;
 				m_equipBonuses.mp += info.mp;
 				m_equipBonuses.str += info.str;
@@ -106,7 +101,7 @@ void PlayerStats::updateBonuses(bool updateEquips, bool isLoading) {
 	}
 }
 
-void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
+auto PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) -> void {
 	slot = abs(slot);
 	if (equip != nullptr) {
 		m_equipStats[slot].id = equip->getId();
@@ -125,7 +120,7 @@ void PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) {
 }
 
 // Data acquisition
-void PlayerStats::connectData(PacketCreator &packet) {
+auto PlayerStats::connectData(PacketCreator &packet) -> void {
 	packet.add<int8_t>(getLevel());
 	packet.add<int16_t>(getJob());
 	packet.add<int16_t>(getStr());
@@ -142,46 +137,46 @@ void PlayerStats::connectData(PacketCreator &packet) {
 	packet.add<int16_t>(getFame());
 }
 
-int16_t PlayerStats::getMaxHp(bool withoutBonus) {
+auto PlayerStats::getMaxHp(bool withoutBonus) -> int16_t {
 	if (!withoutBonus) {
 		return static_cast<int16_t>(std::min<int32_t>(m_maxHp + m_equipBonuses.hp + m_buffBonuses.hp, Stats::MaxMaxHp));
 	}
 	return m_maxHp;
 }
 
-int16_t PlayerStats::getMaxMp(bool withoutBonus) {
+auto PlayerStats::getMaxMp(bool withoutBonus) -> int16_t {
 	if (!withoutBonus) {
 		return static_cast<int16_t>(std::min<int32_t>(m_maxMp + m_equipBonuses.mp + m_buffBonuses.mp, Stats::MaxMaxMp));
 	}
 	return m_maxMp;
 }
 
-int16_t PlayerStats::statUtility(int32_t test) {
+auto PlayerStats::statUtility(int32_t test) -> int16_t {
 	return static_cast<int16_t>(std::min<int32_t>(std::numeric_limits<int16_t>::max(), test));
 }
 
-int16_t PlayerStats::getStr(bool withBonus) {
+auto PlayerStats::getStr(bool withBonus) -> int16_t {
 	if (withBonus) {
 		return statUtility(m_str + m_buffBonuses.str + m_equipBonuses.str);
 	}
 	return m_str;
 }
 
-int16_t PlayerStats::getDex(bool withBonus) {
+auto PlayerStats::getDex(bool withBonus) -> int16_t {
 	if (withBonus) {
 		return statUtility(m_dex + m_buffBonuses.dex + m_equipBonuses.dex);
 	}
 	return m_dex;
 }
 
-int16_t PlayerStats::getInt(bool withBonus) {
+auto PlayerStats::getInt(bool withBonus) -> int16_t {
 	if (withBonus) {
 		return statUtility(m_int + m_buffBonuses.intt + m_equipBonuses.intt);
 	}
 	return m_int;
 }
 
-int16_t PlayerStats::getLuk(bool withBonus) {
+auto PlayerStats::getLuk(bool withBonus) -> int16_t {
 	if (withBonus) {
 		return statUtility(m_luk + m_buffBonuses.luk + m_equipBonuses.luk);
 	}
@@ -189,7 +184,7 @@ int16_t PlayerStats::getLuk(bool withBonus) {
 }
 
 // Data modification
-void PlayerStats::checkHpMp() {
+auto PlayerStats::checkHpMp() -> void {
 	if (m_hp > getMaxHp()) {
 		m_hp = getMaxHp();
 	}
@@ -198,14 +193,14 @@ void PlayerStats::checkHpMp() {
 	}
 }
 
-void PlayerStats::setLevel(uint8_t level) {
+auto PlayerStats::setLevel(uint8_t level) -> void {
 	m_level = level;
 	PlayerPacket::updateStat(m_player, Stats::Level, level);
 	LevelsPacket::levelUp(m_player);
 	SyncPacket::PlayerPacket::updateLevel(m_player->getId(), level);
 }
 
-void PlayerStats::setHp(int16_t hp, bool sendPacket) {
+auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
 	m_hp = MiscUtilities::constrainToRange<int16_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
@@ -213,7 +208,7 @@ void PlayerStats::setHp(int16_t hp, bool sendPacket) {
 	modifiedHp();
 }
 
-void PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) {
+auto PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) -> void {
 	int32_t tempHp = m_hp + hpMod;
 	tempHp = MiscUtilities::constrainToRange<int32_t>(tempHp, Stats::MinHp, getMaxHp());
 	m_hp = static_cast<int16_t>(tempHp);
@@ -224,13 +219,13 @@ void PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) {
 	modifiedHp();
 }
 
-void PlayerStats::damageHp(int32_t damageHp) {
+auto PlayerStats::damageHp(int32_t damageHp) -> void {
 	m_hp = std::max<int32_t>(Stats::MinHp, static_cast<int32_t>(m_hp) - damageHp);
 	PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	modifiedHp();
 }
 
-void PlayerStats::modifiedHp() {
+auto PlayerStats::modifiedHp() -> void {
 	if (Party *p = m_player->getParty()) {
 		p->showHpBar(m_player);
 	}
@@ -244,14 +239,14 @@ void PlayerStats::modifiedHp() {
 	}
 }
 
-void PlayerStats::setMp(int16_t mp, bool sendPacket) {
+auto PlayerStats::setMp(int16_t mp, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		m_mp = MiscUtilities::constrainToRange<int16_t>(mp, Stats::MinMp, getMaxMp());
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
-void PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) {
+auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		int32_t tempMp = m_mp + mpMod;
 		tempMp = MiscUtilities::constrainToRange<int32_t>(tempMp, Stats::MinMp, getMaxMp());
@@ -260,51 +255,51 @@ void PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) {
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
 
-void PlayerStats::damageMp(int32_t damageMp) {
+auto PlayerStats::damageMp(int32_t damageMp) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		m_mp = std::max<int32_t>(Stats::MinMp, static_cast<int32_t>(m_mp) - damageMp);
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
 }
 
-void PlayerStats::setSp(int16_t sp) {
+auto PlayerStats::setSp(int16_t sp) -> void {
 	m_sp = sp;
 	PlayerPacket::updateStat(m_player, Stats::Sp, sp);
 }
 
-void PlayerStats::setAp(int16_t ap) {
+auto PlayerStats::setAp(int16_t ap) -> void {
 	m_ap = ap;
 	PlayerPacket::updateStat(m_player, Stats::Ap, ap);
 }
 
-void PlayerStats::setJob(int16_t job) {
+auto PlayerStats::setJob(int16_t job) -> void {
 	m_job = job;
 	PlayerPacket::updateStat(m_player, Stats::Job, job);
 	LevelsPacket::jobChange(m_player);
 	SyncPacket::PlayerPacket::updateJob(m_player->getId(), job);
 }
 
-void PlayerStats::setStr(int16_t str) {
+auto PlayerStats::setStr(int16_t str) -> void {
 	m_str = str;
 	PlayerPacket::updateStat(m_player, Stats::Str, str);
 }
 
-void PlayerStats::setDex(int16_t dex) {
+auto PlayerStats::setDex(int16_t dex) -> void {
 	m_dex = dex;
 	PlayerPacket::updateStat(m_player, Stats::Dex, dex);
 }
 
-void PlayerStats::setInt(int16_t intt) {
+auto PlayerStats::setInt(int16_t intt) -> void {
 	m_int = intt;
 	PlayerPacket::updateStat(m_player, Stats::Int, intt);
 }
 
-void PlayerStats::setLuk(int16_t luk) {
+auto PlayerStats::setLuk(int16_t luk) -> void {
 	m_luk = luk;
 	PlayerPacket::updateStat(m_player, Stats::Luk, luk);
 }
 
-void PlayerStats::setMapleWarrior(int16_t xMod) {
+auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
 	m_buffBonuses.str = (m_str * xMod) / 100;
 	m_buffBonuses.dex = (m_dex * xMod) / 100;
 	m_buffBonuses.intt = (m_int * xMod) / 100;
@@ -315,18 +310,18 @@ void PlayerStats::setMapleWarrior(int16_t xMod) {
 	}
 }
 
-void PlayerStats::setMaxHp(int16_t maxHp) {
+auto PlayerStats::setMaxHp(int16_t maxHp) -> void {
 	m_maxHp = MiscUtilities::constrainToRange(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	modifiedHp();
 }
 
-void PlayerStats::setMaxMp(int16_t maxMp) {
+auto PlayerStats::setMaxMp(int16_t maxMp) -> void {
 	m_maxMp = MiscUtilities::constrainToRange(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
-void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
+auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
 	m_hyperBodyX = xMod;
 	m_hyperBodyY = yMod;
 	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
@@ -339,27 +334,27 @@ void PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) {
 	m_player->getActiveBuffs()->checkBerserk();
 }
 
-void PlayerStats::modifyMaxHp(int16_t mod) {
+auto PlayerStats::modifyMaxHp(int16_t mod) -> void {
 	m_maxHp = std::min<int16_t>(m_maxHp + mod, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 }
 
-void PlayerStats::modifyMaxMp(int16_t mod) {
+auto PlayerStats::modifyMaxMp(int16_t mod) -> void {
 	m_maxMp = std::min<int16_t>(m_maxMp + mod, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
-void PlayerStats::setExp(int32_t exp) {
+auto PlayerStats::setExp(int32_t exp) -> void {
 	m_exp = std::max(exp, 0);
 	PlayerPacket::updateStat(m_player, Stats::Exp, m_exp);
 }
 
-void PlayerStats::setFame(int16_t fame) {
+auto PlayerStats::setFame(int16_t fame) -> void {
 	m_fame = MiscUtilities::constrainToRange(fame, Stats::MinFame, Stats::MaxFame);
 	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
 }
 
-void PlayerStats::loseExp() {
+auto PlayerStats::loseExp() -> void {
 	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Maps::SorcerersRoom) {
 		uint16_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
@@ -390,7 +385,7 @@ void PlayerStats::loseExp() {
 }
 
 // Level related functions
-void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
+auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 	int16_t fullJob = getJob();
 	uint8_t level = getLevel();
 	uint8_t jobMax = GameLogicUtilities::getMaxLevel(fullJob);
@@ -414,7 +409,7 @@ void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
 	if (curExp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
 		uint8_t levelsGained = 0;
-		uint8_t levelsMax = ChannelServer::Instance()->getMaxMultiLevel();
+		uint8_t levelsMax = ChannelServer::getInstance().getMaxMultiLevel();
 		int16_t apGain = 0;
 		int16_t spGain = 0;
 		int16_t hpGain = 0;
@@ -497,7 +492,7 @@ void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
 				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
+				SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -505,7 +500,7 @@ void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
 			setMp(getMaxMp());
 			m_player->setLevelDate();
 			if (getLevel() == jobMax && !m_player->isGm()) {
-				std::ostringstream message;
+				out_stream_t message;
 				message << "[Congrats] " << m_player->getName() << " has reached Level "
 						<< static_cast<int16_t>(jobMax) << "! Congratulate "
 						<< m_player->getName() << " on such an amazing achievement!";
@@ -519,7 +514,7 @@ void PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) {
 	setExp(static_cast<int32_t>(curExp));
 }
 
-void PlayerStats::addStat(PacketReader &packet) {
+auto PlayerStats::addStat(PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
 	int32_t type = packet.get<int32_t>();
 	if (getAp() == 0) {
@@ -530,7 +525,7 @@ void PlayerStats::addStat(PacketReader &packet) {
 	addStat(type);
 }
 
-void PlayerStats::addStatMulti(PacketReader &packet) {
+auto PlayerStats::addStatMulti(PacketReader &packet) -> void {
 	uint32_t ticks = packet.get<uint32_t>();
 	uint32_t amount = packet.get<uint32_t>();
 
@@ -549,8 +544,8 @@ void PlayerStats::addStatMulti(PacketReader &packet) {
 	}
 }
 
-void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
-	int16_t maxStat = ChannelServer::Instance()->getMaxStats();
+auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
+	int16_t maxStat = ChannelServer::getInstance().getMaxStats();
 	bool isSubtract = mod < 0;
 	switch (type) {
 		case Stats::Str:
@@ -640,7 +635,7 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
 				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::Instance()->getSkill(skillId, hbLevel);
+				SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -658,38 +653,38 @@ void PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) {
 	updateBonuses();
 }
 
-int16_t PlayerStats::randHp() {
+auto PlayerStats::randHp() -> int16_t {
 	return Randomizer::rand<int16_t>(Stats::BaseHp::Variation); // Max HP range per class (e.g. Beginner is 8-12)
 }
 
-int16_t PlayerStats::randMp() {
+auto PlayerStats::randMp() -> int16_t {
 	return Randomizer::rand<int16_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
-int16_t PlayerStats::getX(int32_t skillId) {
+auto PlayerStats::getX(int32_t skillId) -> int16_t {
 	return m_player->getSkills()->getSkillInfo(skillId)->x;
 }
 
-int16_t PlayerStats::getY(int32_t skillId) {
+auto PlayerStats::getY(int32_t skillId) -> int16_t {
 	return m_player->getSkills()->getSkillInfo(skillId)->y;
 }
 
-int16_t PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) {
+auto PlayerStats::apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) -> int16_t {
 	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseHp::Variation) : val) : levelHp(val, sVal));
 }
 
-int16_t PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) {
+auto PlayerStats::apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal) -> int16_t {
 	return (isReset ? (isSubtract ? -(sVal + val + Stats::BaseMp::Variation) : val) : levelMp(val, sVal));
 }
 
-int16_t PlayerStats::levelHp(int16_t val, int16_t bonus) {
+auto PlayerStats::levelHp(int16_t val, int16_t bonus) -> int16_t {
 	return randHp() + val + bonus;
 }
 
-int16_t PlayerStats::levelMp(int16_t val, int16_t bonus) {
+auto PlayerStats::levelMp(int16_t val, int16_t bonus) -> int16_t {
 	return randMp() + val + bonus;
 }
 
-uint32_t PlayerStats::getExp(uint8_t level) {
+auto PlayerStats::getExp(uint8_t level) -> uint32_t {
 	return Stats::PlayerExp[level - 1];
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,13 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
 #include <unordered_map>
-
-using std::string;
-using std::unordered_map;
 
 namespace ScriptTypes {
 	enum ScriptTypes {
@@ -36,32 +32,25 @@ namespace ScriptTypes {
 	};
 }
 
-class ScriptDataProvider : boost::noncopyable {
+class ScriptDataProvider {
+	SINGLETON(ScriptDataProvider);
 public:
-	static ScriptDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new ScriptDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	string getQuestScript(int16_t questId, int8_t state);
-	string getScript(int32_t objectId, ScriptTypes::ScriptTypes type);
-	bool hasQuestScript(int16_t questId, int8_t state);
-	bool hasScript(int32_t objectId, ScriptTypes::ScriptTypes type);
-	int32_t getObjectIdFromScript(const string &script) { return m_scripts.find(script) == m_scripts.end() ? 0 : m_scripts[script]; }
+	auto getQuestScript(int16_t questId, int8_t state) -> string_t;
+	auto getScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> string_t;
+	auto hasQuestScript(int16_t questId, int8_t state) -> bool;
+	auto hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> bool;
+	auto getObjectIdFromScript(const string_t &script) -> int32_t { return m_scripts.find(script) == std::end(m_scripts) ? 0 : m_scripts[script]; }
 private:
-	ScriptDataProvider() {}
-	static ScriptDataProvider *singleton;
+	auto resolve(ScriptTypes::ScriptTypes type) -> hash_map_t<int32_t, string_t> &;
+	auto resolvePath(ScriptTypes::ScriptTypes type) -> string_t;
 
-	unordered_map<int32_t, string> & resolve(ScriptTypes::ScriptTypes type);
-	string resolvePath(ScriptTypes::ScriptTypes type);
-
-	unordered_map<int32_t, string> m_npcScripts;
-	unordered_map<int32_t, string> m_reactorScripts;
-	unordered_map<int32_t, string> m_mapEntryScripts;
-	unordered_map<int32_t, string> m_firstMapEntryScripts;
-	unordered_map<int32_t, string> m_itemScripts;
-	unordered_map<int16_t, unordered_map<int8_t, string>> m_questScripts;
-	unordered_map<string, int32_t> m_scripts;
+	hash_map_t<int32_t, string_t> m_npcScripts;
+	hash_map_t<int32_t, string_t> m_reactorScripts;
+	hash_map_t<int32_t, string_t> m_mapEntryScripts;
+	hash_map_t<int32_t, string_t> m_firstMapEntryScripts;
+	hash_map_t<int32_t, string_t> m_itemScripts;
+	hash_map_t<int16_t, hash_map_t<int8_t, string_t>> m_questScripts;
+	hash_map_t<string_t, int32_t> m_scripts;
 };

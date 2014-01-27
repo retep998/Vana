@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,13 +23,13 @@ class PacketReader;
 class Player;
 
 namespace NpcHandler {
-	void handleNpc(Player *player, PacketReader &packet);
-	void handleNpcIn(Player *player, PacketReader &packet);
-	void handleNpcAnimation(Player *player, PacketReader &packet);
-	void handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId = 0);
-	void useShop(Player *player, PacketReader &packet);
-	void useStorage(Player *player, PacketReader &packet);
-	bool showShop(Player *player, int32_t shopId);
-	bool showStorage(Player *player, int32_t npcId);
-	bool showGuildRank(Player *player, int32_t npcId);
+	auto handleNpc(Player *player, PacketReader &packet) -> void;
+	auto handleNpcIn(Player *player, PacketReader &packet) -> void;
+	auto handleNpcAnimation(Player *player, PacketReader &packet) -> void;
+	auto handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId = 0) -> void;
+	auto useShop(Player *player, PacketReader &packet) -> void;
+	auto useStorage(Player *player, PacketReader &packet) -> void;
+	auto showShop(Player *player, int32_t shopId) -> bool;
+	auto showStorage(Player *player, int32_t npcId) -> bool;
+	auto showGuildRank(Player *player, int32_t npcId) -> bool;
 }

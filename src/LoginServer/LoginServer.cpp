@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,19 +29,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <iostream>
 
-LoginServer * LoginServer::singleton = nullptr;
-
 LoginServer::LoginServer()
 {
 	setServerType(ServerTypes::Login);
 }
 
-void LoginServer::listen() {
-	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
-	ConnectionManager::Instance()->accept(Ip::Type::Ipv4, m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
+auto LoginServer::listen() -> void {
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
 }
 
-void LoginServer::loadData() {
+auto LoginServer::loadData() -> void {
 	Initializing::checkSchemaVersion(true);
 	Initializing::checkMcdbVersion();
 	Initializing::setUsersOffline(1);
@@ -51,7 +49,7 @@ void LoginServer::loadData() {
 	displayLaunchTime();
 }
 
-void LoginServer::loadConfig() {
+auto LoginServer::loadConfig() -> void {
 	ConfigFile config("conf/loginserver.lua");
 	m_pinEnabled = config.get<bool>("pin");
 	m_port = config.get<port_t>("port");
@@ -62,7 +60,7 @@ void LoginServer::loadConfig() {
 	loadWorlds();
 }
 
-void LoginServer::loadLogConfig() {
+auto LoginServer::loadLogConfig() -> void {
 	ConfigFile conf("conf/logger.lua", false);
 	initializeLoggingConstants(conf);
 	conf.execute();
@@ -75,14 +73,14 @@ void LoginServer::loadLogConfig() {
 	}
 }
 
-opt_string LoginServer::makeLogIdentifier() {
+auto LoginServer::makeLogIdentifier() -> opt_string_t {
 	// Login needs no special identifier; there's only one
-	return opt_string();
+	return opt_string_t();
 }
 
-void LoginServer::rehashConfig() {
+auto LoginServer::rehashConfig() -> void {
 	loadWorlds();
-	Worlds::Instance()->runFunction([](World *world) -> bool {
+	Worlds::getInstance().runFunction([](World *world) -> bool {
 		if (world != nullptr && world->isConnected()) {
 			// We only need to inform worlds that are actually connected
 			// Otherwise they'll get the modified config when they connect
@@ -92,13 +90,13 @@ void LoginServer::rehashConfig() {
 	});
 }
 
-void LoginServer::loadWorlds() {
+auto LoginServer::loadWorlds() -> void {
 	ConfigFile config("conf/worlds.lua");
 	WorldConfig conf;
-	std::ostringstream stream;
+	out_stream_t stream;
 	size_t i = 0;
 	bool added = false;
-	auto getKey = [&stream, &i](const string &key) -> string {
+	auto getKey = [&stream, &i](const string_t &key) -> string_t {
 		stream.clear();
 		stream.str("");
 		stream << "world" << i << "_" << key;
@@ -110,22 +108,22 @@ void LoginServer::loadWorlds() {
 		dest.mobMesoRate = config.get<int32_t>(getKey("mob_meso_rate"));
 		dest.dropRate = config.get<int32_t>(getKey("drop_rate"));
 	};
-	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string &src, size_t maxChannels) {
+	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string_t &src, size_t maxChannels) {
 		dest.attempts = config.get<int16_t>(getKey(src + "_attempts"));
 		dest.channels = config.getBossChannels(getKey(src + "_channels"), maxChannels);
 	};
 
 	while (true) {
-		const string &key = getKey("name");
+		const string_t &key = getKey("name");
 		if (!config.keyExists(key)) {
 			// No more worlds
 			break;
 		}
 
-		conf.name = config.getString(key);
+		conf.name = config.get<string_t>(key);
 		int8_t worldId = config.get<int8_t>(getKey("id"));
 
-		World *world = Worlds::Instance()->getWorld(worldId);
+		World *world = Worlds::getInstance().getWorld(worldId);
 		added = (world == nullptr);
 		if (added) {
 			world = new World();
@@ -135,8 +133,8 @@ void LoginServer::loadWorlds() {
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
 		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
 		conf.maxMultiLevel = config.get<uint8_t>(getKey("max_multi_level"));
-		conf.eventMsg = config.getString(getKey("event_message"));
-		conf.scrollingHeader = config.getString(getKey("scrolling_header"));
+		conf.eventMsg = config.get<string_t>(getKey("event_message"));
+		conf.scrollingHeader = config.get<string_t>(getKey("scrolling_header"));
 		conf.maxPlayerLoad = config.get<int32_t>(getKey("max_player_load"));
 		conf.maxChars = config.get<int32_t>(getKey("max_characters"));
 		conf.defaultChars = config.get<int32_t>(getKey("default_characters"));
@@ -157,7 +155,7 @@ void LoginServer::loadWorlds() {
 			world->setId(worldId);
 			world->setPort(config.get<port_t>(getKey("port")));
 
-			Worlds::Instance()->addWorld(world);
+			Worlds::getInstance().addWorld(world);
 		}
 		++i;
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,17 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Buffs.h"
 #include "IPacket.h"
-#include "noncopyable.hpp"
 #include "Types.h"
-#include <list>
 #include <memory>
-#include <vector>
+#include <queue>
 #include <unordered_map>
-
-using std::list;
-using std::shared_ptr;
-using std::unordered_map;
-using std::vector;
+#include <vector>
 
 class PacketCreator;
 class PacketReader;
@@ -41,164 +35,154 @@ namespace Timer {
 }
 
 struct MapEntryBuffs {
-	MapEntryBuffs() : mountId(0), mountSkill(0) {
+	MapEntryBuffs()
+	{
 		for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 			types[i] = 0;
 		}
 	}
-	std::array<uint8_t, BuffBytes::ByteQuantity> types;
-	unordered_map<int8_t, unordered_map<uint8_t, MapEntryVals>> values;
-
-	int32_t mountId;
-	int32_t mountSkill;
+	
+	int32_t mountId = 0;
+	int32_t mountSkill = 0;
+	array_t<uint8_t, BuffBytes::ByteQuantity> types;
+	hash_map_t<int8_t, hash_map_t<uint8_t, MapEntryVals>> values;
 };
 
-typedef unordered_map<int8_t, unordered_map<uint8_t, int32_t>> ActiveBuffsByType; // Used to determine which buffs are affecting which bytes so they can be properly overwritten
-
-class PlayerActiveBuffs : public IPacketSerializable, boost::noncopyable {
+class PlayerActiveBuffs : public IPacketSerializable {
+	NONCOPYABLE(PlayerActiveBuffs);
+	NO_DEFAULT_CONSTRUCTOR(PlayerActiveBuffs);
 public:
 	PlayerActiveBuffs(Player *player) :
-		m_player(player),
-		m_combo(0),
-		m_energyCharge(0),
-		m_activeCharge(0),
-		m_activeBooster(0),
-		m_pickpocketCounter(0),
-		m_battleshipHp(0),
-		m_debuffMask(0),
-		m_markedMob(0),
-		m_berserk(false)
-		{ }
+		m_player(player)
+	{
+	}
 
 	// Buff handling
-	void addBuff(int32_t skill, const seconds_t &time);
-	void removeBuff(int32_t skill, bool fromTimer = false);
-	void removeBuffs();
-	seconds_t getBuffSecondsRemaining(int32_t skill) const;
-	list<int32_t> getBuffs() const { return m_buffs; }
-	void dispelBuffs();
+	auto addBuff(int32_t skill, const seconds_t &time) -> void;
+	auto removeBuff(int32_t skill, bool fromTimer = false) -> void;
+	auto removeBuffs() -> void;
+	auto getBuffSecondsRemaining(int32_t skill) const -> seconds_t;
+	auto dispelBuffs() -> void;
 
 	// Buff info
-	void addBuffInfo(int32_t skillId, const vector<Buff> &buffs);
-	void setActiveSkillLevel(int32_t skillId, uint8_t level);
-	uint8_t getActiveSkillLevel(int32_t skillId) const;
-	ActiveBuff removeBuffInfo(int32_t skillId, const vector<Buff> &buffs);
-	ActiveBuffsByType getBuffTypes() const { return m_activeBuffsByType; }
-	SkillLevelInfo * getActiveSkillInfo(int32_t skillId);
+	auto addBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> void;
+	auto setActiveSkillLevel(int32_t skillId, uint8_t level) -> void;
+	auto getActiveSkillLevel(int32_t skillId) const -> uint8_t;
+	auto removeBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff;
+	auto getActiveSkillInfo(int32_t skillId) -> SkillLevelInfo *;
 
 	// Buff map info
-	void addMapEntryBuffInfo(const ActiveMapBuff &buff);
-	void deleteMapEntryBuffInfo(const ActiveMapBuff &buff);
-	void setMountInfo(int32_t skillId, int32_t mountId);
-	MapEntryBuffs getMapEntryBuffs();
+	auto addMapEntryBuffInfo(const ActiveMapBuff &buff) -> void;
+	auto deleteMapEntryBuffInfo(const ActiveMapBuff &buff) -> void;
+	auto setMountInfo(int32_t skillId, int32_t mountId) -> void;
+	auto getMapEntryBuffs() -> MapEntryBuffs;
 
 	// Skill actions
-	void addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time);
-	Timer::Container * getActTimer(int32_t skill);
-	void removeAction(int32_t skill);
+	auto addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time) -> void;
+	auto getActTimer(int32_t skill) -> ref_ptr_t<Timer::Container>;
+	auto removeAction(int32_t skill) -> void;
 
 	// Debuffs
-	void addDebuff(uint8_t skill, uint8_t level);
-	void useDispel();
-	void useDebuffHealingItem(int32_t mask);
-	void removeDebuff(uint8_t skill, bool fromTimer = false);
-	int32_t getDebuffMask() const { return m_debuffMask; }
-	void setDebuffMask(int32_t newMask) { m_debuffMask = newMask; }
+	auto addDebuff(uint8_t skill, uint8_t level) -> void;
+	auto useDispel() -> void;
+	auto useDebuffHealingItem(int32_t mask) -> void;
+	auto removeDebuff(uint8_t skill, bool fromTimer = false) -> void;
+	auto getDebuffMask() const -> int32_t { return m_debuffMask; }
+	auto setDebuffMask(int32_t newMask) -> void { m_debuffMask = newMask; }
 
 	// Combo Attack
-	void setCombo(uint8_t combo, bool sendPacket);
-	void addCombo();
-	uint8_t getCombo() const { return m_combo; }
+	auto setCombo(uint8_t combo, bool sendPacket) -> void;
+	auto addCombo() -> void;
+	auto getCombo() const -> uint8_t { return m_combo; }
 
 	// Berserk
-	bool getBerserk() const { return m_berserk; }
-	void checkBerserk(bool display = false);
+	auto getBerserk() const -> bool { return m_berserk; }
+	auto checkBerserk(bool display = false) -> void;
 
 	// Energy Charge
-	int16_t getEnergyChargeLevel() const { return m_energyCharge; }
-	void increaseEnergyChargeLevel(int8_t targets = 1);
-	void decreaseEnergyChargeLevel();
-	void setEnergyChargeLevel(int16_t chargeLevel, bool startTimer = false);
-	void resetEnergyChargeLevel();
-	void startEnergyChargeTimer();
-	void stopEnergyChargeTimer();
+	auto getEnergyChargeLevel() const -> int16_t { return m_energyCharge; }
+	auto increaseEnergyChargeLevel(int8_t targets = 1) -> void;
+	auto decreaseEnergyChargeLevel() -> void;
+	auto setEnergyChargeLevel(int16_t chargeLevel, bool startTimer = false) -> void;
+	auto resetEnergyChargeLevel() -> void;
+	auto startEnergyChargeTimer() -> void;
+	auto stopEnergyChargeTimer() -> void;
 
 	// Boosters
-	void setBooster(int32_t skillId) { m_activeBooster = skillId; }
-	void stopBooster();
-	int32_t getBooster() const { return m_activeBooster; }
+	auto setBooster(int32_t skillId) -> void { m_activeBooster = skillId; }
+	auto stopBooster() -> void;
+	auto getBooster() const -> int32_t { return m_activeBooster; }
 
 	// White Knight/Paladin charges
-	void setCharge(int32_t skillId) { m_activeCharge = skillId; }
-	void stopCharge();
-	bool hasIceCharge() const;
-	int32_t getCharge() const { return m_activeCharge; }
+	auto setCharge(int32_t skillId) -> void { m_activeCharge = skillId; }
+	auto stopCharge() -> void;
+	auto hasIceCharge() const -> bool;
+	auto getCharge() const -> int32_t { return m_activeCharge; }
 
 	// Soul Arrow/Shadow Stars
-	void stopBulletSkills();
+	auto stopBulletSkills() -> void;
 
 	// Pickpocket
-	int32_t getPickpocketCounter() { return ++m_pickpocketCounter; }
+	auto getPickpocketCounter() -> int32_t { return ++m_pickpocketCounter; }
 
 	// Battleship
-	int32_t getBattleshipHp() const { return m_battleshipHp; }
-	void setBattleshipHp(int32_t amount) { m_battleshipHp = amount; }
-	void reduceBattleshipHp(uint16_t amount);
-	void resetBattleshipHp();
+	auto getBattleshipHp() const -> int32_t { return m_battleshipHp; }
+	auto setBattleshipHp(int32_t amount) -> void { m_battleshipHp = amount; }
+	auto reduceBattleshipHp(uint16_t amount) -> void;
+	auto resetBattleshipHp() -> void;
 
 	// Homing Beacon
-	int32_t getMarkedMonster() const { return m_markedMob; }
-	bool hasMarkedMonster() const { return (m_markedMob != 0); }
-	void setMarkedMonster(int32_t mapMobId) { m_markedMob = mapMobId; }
+	auto getMarkedMonster() const -> int32_t { return m_markedMob; }
+	auto hasMarkedMonster() const -> bool { return m_markedMob != 0; }
+	auto setMarkedMonster(int32_t mapMobId) -> void { m_markedMob = mapMobId; }
 
 	// Commonly referred to (de)buffs on the server end
-	bool hasInfinity();
-	bool hasMesoUp();
-	bool hasHolySymbol();
-	bool hasPowerStance();
-	bool hasMagicGuard();
-	bool hasMesoGuard();
-	bool hasHyperBody();
-	bool hasHolyShield();
-	bool hasShadowPartner();
-	bool hasShadowStars();
-	bool hasSoulArrow();
-	bool isUsingGmHide();
-	bool isCursed();
-	bool isZombified();
-	int16_t getHolySymbolRate();
-	int32_t getHolySymbol();
-	int32_t getPowerStance();
-	int32_t getHyperBody();
-	int32_t getCurrentMorph();
-	int32_t getMagicGuard();
-	int32_t getMesoGuard();
-	int32_t getHomingBeacon();
+	auto hasInfinity() -> bool;
+	auto hasMesoUp() -> bool;
+	auto hasHolySymbol() -> bool;
+	auto hasPowerStance() -> bool;
+	auto hasMagicGuard() -> bool;
+	auto hasMesoGuard() -> bool;
+	auto hasHyperBody() -> bool;
+	auto hasHolyShield() -> bool;
+	auto hasShadowPartner() -> bool;
+	auto hasShadowStars() -> bool;
+	auto hasSoulArrow() -> bool;
+	auto isUsingGmHide() -> bool;
+	auto isCursed() -> bool;
+	auto isZombified() -> bool;
+	auto getHolySymbolRate() -> int16_t;
+	auto getHolySymbol() -> int32_t;
+	auto getPowerStance() -> int32_t;
+	auto getHyperBody() -> int32_t;
+	auto getCurrentMorph() -> int32_t;
+	auto getMagicGuard() -> int32_t;
+	auto getMesoGuard() -> int32_t;
+	auto getHomingBeacon() -> int32_t;
 
-	void endMorph();
-	void swapWeapon();
+	auto endMorph() -> void;
+	auto swapWeapon() -> void;
 
-	void write(PacketCreator &packet) const override;
-	void read(PacketReader &packet) override;
+	auto write(PacketCreator &packet) const -> void override;
+	auto read(PacketReader &packet) -> void override;
 private:
-	bool hasBuff(int32_t skillId);
+	auto hasBuff(int32_t skillId) -> bool;
+	auto calculateDebuffMaskBit(uint8_t skill) -> int32_t;
 
-	Player *m_player;
-	uint8_t m_combo;
-	int16_t m_energyCharge;
-	int32_t m_activeCharge;
-	int32_t m_activeBooster;
-	int32_t m_pickpocketCounter;
-	int32_t m_battleshipHp;
-	int32_t m_markedMob;
-	uint32_t m_timeSeed;
-	uint32_t m_debuffMask;
-	bool m_berserk;
-	list<int32_t> m_buffs;
-	ActiveBuffsByType m_activeBuffsByType;
+	bool m_berserk = false;
+	uint8_t m_combo = 0;
+	int16_t m_energyCharge = 0;
+	int32_t m_activeCharge = 0;
+	int32_t m_activeBooster = 0;
+	int32_t m_pickpocketCounter = 0;
+	int32_t m_battleshipHp = 0;
+	int32_t m_markedMob = 0;
+	uint32_t m_timeSeed = 0;
+	uint32_t m_debuffMask = 0;
+	Player *m_player = nullptr;
 	MapEntryBuffs m_mapBuffs;
-	unordered_map<int32_t, uint8_t> m_activeLevels;
-	unordered_map<int32_t, shared_ptr<Timer::Container>> m_skillActs;
-
-	int32_t calculateDebuffMaskBit(uint8_t skill);
+	queue_t<int32_t> m_buffs;
+	hash_map_t<int8_t, hash_map_t<uint8_t, int32_t>> m_activeBuffsByType;
+	hash_map_t<int32_t, uint8_t> m_activeLevels;
+	hash_map_t<int32_t, ref_ptr_t<Timer::Container>> m_skillActs;
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,29 +20,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace MiscUtilities {
 	// Sorta based on Boost's, not really
 	class tokenizer {
 	public:
-		tokenizer(const string &content, const string &sep) {
+		tokenizer(const std::string &content, const std::string &sep) {
 			size_t start = 0;
 			size_t end = 0;
-			while (end != string::npos) {
+			while (end != std::string::npos) {
 				end = content.find(sep, start);
-				m_tokens.push_back(content.substr(start, (end == string::npos) ? end : end - start));
-				start = (end > (string::npos - sep.size()) ? string::npos : end + sep.size());
+				m_tokens.push_back(content.substr(start, (end == std::string::npos) ? end : end - start));
+				start = (end > (std::string::npos - sep.size()) ? std::string::npos : end + sep.size());
 			}
 		}
-		typedef vector<string>::iterator iterator;
-		typedef vector<string>::const_iterator const_iterator;
-		iterator begin() { return m_tokens.begin(); }
-		iterator end() { return m_tokens.end(); }
-		const_iterator cbegin() const { return m_tokens.cbegin(); }
-		const_iterator cend() const { return m_tokens.cend(); }
+		using iterator = std::vector<std::string>::iterator;
+		using const_iterator = std::vector<std::string>::const_iterator;
+		auto begin() -> iterator { return std::begin(m_tokens); }
+		auto end() -> iterator { return std::end(m_tokens); }
+		auto cbegin() const -> const_iterator { return std::cbegin(m_tokens); }
+		auto cend() const -> const_iterator { return std::cend(m_tokens); }
 	private:
-		vector<string> m_tokens;
+		std::vector<std::string> m_tokens;
 	};
 }

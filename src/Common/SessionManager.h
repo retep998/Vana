@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,20 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
+#include "Types.h"
 #include <memory>
-#include <set>
+#include <unordered_set>
 
 class AbstractSession;
-typedef std::shared_ptr<AbstractSession> AbstractSessionPtr;
 
-class SessionManager : private boost::noncopyable {
+class SessionManager {
+	NONCOPYABLE(SessionManager);
 public:
-	void start(AbstractSessionPtr session);
-	void stop(AbstractSessionPtr session);
-	void stopAll();
+	SessionManager() = default;
+	auto start(ref_ptr_t<AbstractSession> session) -> void;
+	auto stop(ref_ptr_t<AbstractSession> session) -> void;
+	auto stopAll() -> void;
 private:
-	std::set<AbstractSessionPtr> m_sessions;
+	hash_set_t<ref_ptr_t<AbstractSession>> m_sessions;
 };
-
-typedef std::shared_ptr<SessionManager> SessionManagerPtr;

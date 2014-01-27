@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,35 +17,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <unordered_map>
 
-using std::unordered_map;
-
 struct NpcData {
-	NpcData() : isMapleTv(false), isGuildRank(false), storageCost(0) { }
-	int32_t storageCost;
-	bool isMapleTv;
-	bool isGuildRank;
+	bool isMapleTv = false;
+	bool isGuildRank = false;
+	int32_t storageCost = 0;
 };
 
-class NpcDataProvider : boost::noncopyable {
+class NpcDataProvider {
+	SINGLETON(NpcDataProvider);
 public:
-	static NpcDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new NpcDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	int32_t getStorageCost(int32_t npc) { return m_data[npc].storageCost; }
-	bool isMapleTv(int32_t npc) { return m_data[npc].isMapleTv; }
-	bool isGuildRank(int32_t npc) { return m_data[npc].isGuildRank; }
-	bool isValidNpcId(int32_t npc) { return (m_data.find(npc) != m_data.end()); }
+	auto getStorageCost(int32_t npc) -> int32_t { return m_data[npc].storageCost; }
+	auto isMapleTv(int32_t npc) -> bool { return m_data[npc].isMapleTv; }
+	auto isGuildRank(int32_t npc) -> bool { return m_data[npc].isGuildRank; }
+	auto isValidNpcId(int32_t npc) -> bool { return m_data.find(npc) != std::end(m_data); }
 private:
-	NpcDataProvider() {}
-	static NpcDataProvider *singleton;
-
-	unordered_map<int32_t, NpcData> m_data;
+	hash_map_t<int32_t, NpcData> m_data;
 };

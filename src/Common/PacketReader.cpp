@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,16 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <stdexcept>
 
-PacketReader::PacketReader() : m_length(0), m_pos(0) { }
-PacketReader::PacketReader(unsigned char *buffer, size_t length) : m_buffer(buffer), m_length(length), m_pos(0) { }
+PacketReader::PacketReader(unsigned char *buffer, size_t length) :
+	m_buffer(buffer),
+	m_length(length)
+{
+}
 
-void PacketReader::skipBytes(int32_t len) {
+auto PacketReader::skipBytes(int32_t len) -> void {
 	m_pos += len;
 }
 
-header_t PacketReader::getHeader(bool advanceBuffer) {
+auto PacketReader::getHeader(bool advanceBuffer) -> header_t {
 	if (getSize() < sizeof(header_t)) {
-		throw std::range_error("Packet data longer than buffer allows");
+		throw PacketContentException("Packet data longer than buffer allows");
 	}
 	if (advanceBuffer) {
 		m_pos += sizeof(header_t);
@@ -38,28 +41,32 @@ header_t PacketReader::getHeader(bool advanceBuffer) {
 	return (*(header_t *)(m_buffer));
 }
 
-string PacketReader::getString() {
+auto PacketReader::getString() -> string_t {
 	return getString(get<uint16_t>());
 }
 
-string PacketReader::getString(size_t len) {
+auto PacketReader::getString(size_t len) -> string_t {
 	if (len > getBufferLength()) {
-		throw std::range_error("Packet string longer than buffer allows");
+		throw PacketContentException("Packet string longer than buffer allows");
 	}
-	string s((char *) m_buffer + m_pos, len);
+	string_t s((char *) m_buffer + m_pos, len);
 	m_pos += len;
 	return s;
 }
 
-unsigned char * PacketReader::getBuffer() const {
+auto PacketReader::getBuffer() const -> unsigned char * {
 	return m_buffer + m_pos;
 }
 
-size_t PacketReader::getBufferLength() const {
+auto PacketReader::getBufferLength() const -> size_t {
 	return getSize() - m_pos;
 }
 
-PacketReader & PacketReader::reset(int32_t len) {
+auto PacketReader::getConsumedLength() const -> size_t {
+	return m_pos;
+}
+
+auto PacketReader::reset(int32_t len) -> PacketReader & {
 	if (len >= 0) {
 		m_pos = len;
 	}
@@ -70,6 +77,6 @@ PacketReader & PacketReader::reset(int32_t len) {
 	return *this;
 }
 
-string PacketReader::toString() const {
+auto PacketReader::toString() const -> string_t {
 	return StringUtilities::bytesToHex(getBuffer(), getBufferLength());
 }

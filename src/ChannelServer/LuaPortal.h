@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,26 +21,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-using std::string;
-using std::unordered_map;
-
 struct PortalInfo;
 
 class LuaPortal : public LuaScriptable {
+	NONCOPYABLE(LuaPortal);
+	NO_DEFAULT_CONSTRUCTOR(LuaPortal);
 public:
-	LuaPortal(const string &filename, int32_t playerId, PortalInfo *portal);
-private:
-	PortalInfo *m_portal;
+	LuaPortal(const string_t &filename, int32_t playerId, PortalInfo *portal);
 };
 
 namespace LuaExports {
-	PortalInfo * getPortal(lua_State *luaVm);
-	extern unordered_map<int32_t, PortalInfo *> portals;
+	auto getPortal(lua_State *luaVm) -> PortalInfo *;
+	extern hash_map_t<int32_t, PortalInfo *> portals;
 
 	// Portal exports
 
 	// Portal
-	int getPortalName(lua_State *luaVm);
-	int instantWarp(lua_State *luaVm);
-	int playPortalSe(lua_State *luaVm);
+	auto getPortalName(lua_State *luaVm) -> int;
+	auto instantWarp(lua_State *luaVm) -> int;
+	auto playPortalSe(lua_State *luaVm) -> int;
 }

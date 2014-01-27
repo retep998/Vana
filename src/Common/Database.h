@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,19 +31,20 @@ struct DbConfig;
 
 class Database {
 public:
-	static void connectCharDb();
-	static void connectDataDb();
-	static soci::session & getCharDb();
-	static soci::session & getDataDb();
-	template <typename T> static T getLastId(soci::session &sql);
+	static auto getCharDb() -> soci::session &;
+	static auto getDataDb() -> soci::session &;
+	template <typename TIdentifier>
+	static auto getLastId(soci::session &sql) -> TIdentifier;
 private:
+	static auto connectCharDb() -> void;
+	static auto connectDataDb() -> void;
 	static thread_local soci::session *m_chardb;
 	static thread_local soci::session *m_datadb;
-	static std::string buildConnectionString(const DbConfig &conf);
+	static auto buildConnectionString(const DbConfig &conf) -> string_t;
 };
 
 inline
-soci::session & Database::getCharDb() {
+auto Database::getCharDb() -> soci::session & {
 	if (m_chardb == nullptr) {
 		connectCharDb();
 	}
@@ -51,16 +52,16 @@ soci::session & Database::getCharDb() {
 }
 
 inline
-soci::session & Database::getDataDb() {
+auto Database::getDataDb() -> soci::session & {
 	if (m_datadb == nullptr) {
 		connectDataDb();
 	}
 	return *m_datadb;
 }
 
-template<typename T>
-T Database::getLastId(soci::session &sql) {
-	T val;
+template <typename TIdentifier>
+auto Database::getLastId(soci::session &sql) -> TIdentifier {
+	TIdentifier val;
 	sql.once << "SELECT LAST_INSERT_ID()", soci::into(val);
 	return val;
 }

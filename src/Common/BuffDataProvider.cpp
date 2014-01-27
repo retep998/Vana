@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,13 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-using Initializing::OutputWidth;
-
-BuffDataProvider * BuffDataProvider::singleton = nullptr;
-
-void BuffDataProvider::loadData() {
+auto BuffDataProvider::loadData() -> void {
 	using namespace BuffBytes;
-	std::cout << std::setw(OutputWidth) << std::left << "Initializing Buffs... ";
+	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Buffs... ";
 
 	Buff buff;
 	BuffAct act;
@@ -348,7 +344,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpeed;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Beginner::NimbleFeet].player.push_back(player);
 	m_skillInfo[Skills::Noblesse::NimbleFeet].player.push_back(player);
 	map.buff = buff;
@@ -362,7 +358,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::NightLord::ShadowStars].player.push_back(player);
 	buff.type = 0x00;
 	map.buff = buff;
@@ -375,7 +371,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillMatk;
 	player.buff = buff;
 	player.hasMapVal = false;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::WhiteKnight::BwFireCharge].player.push_back(player);
 	m_skillInfo[Skills::WhiteKnight::BwIceCharge].player.push_back(player);
 	m_skillInfo[Skills::WhiteKnight::BwLitCharge].player.push_back(player);
@@ -391,7 +387,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillMatk;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::WhiteKnight::BwFireCharge].player.push_back(player);
 	m_skillInfo[Skills::WhiteKnight::BwIceCharge].player.push_back(player);
 	m_skillInfo[Skills::WhiteKnight::BwLitCharge].player.push_back(player);
@@ -421,7 +417,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpeed;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::WindArcher::WindWalk].player.push_back(player);
 	map.buff = buff;
 	map.useVal = true;
@@ -459,7 +455,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpeed;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Assassin::Haste].player.push_back(player);
 	m_skillInfo[Skills::Bandit::Haste].player.push_back(player);
 	m_skillInfo[Skills::Gm::Haste].player.push_back(player);
@@ -477,7 +473,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillJump;
 	player.buff = buff;
 	player.hasMapVal = false;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::Assassin::Haste].player.push_back(player);
 	m_skillInfo[Skills::Bandit::Haste].player.push_back(player);
 	m_skillInfo[Skills::Gm::Haste].player.push_back(player);
@@ -490,7 +486,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpeed;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Rogue::DarkSight].player.push_back(player);
 	m_skillInfo[Skills::NightWalker::DarkSight].player.push_back(player);
 	map.buff = buff;
@@ -502,7 +498,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Rogue::DarkSight].player.push_back(player);
 	m_skillInfo[Skills::NightWalker::DarkSight].player.push_back(player);
 	map.buff = buff;
@@ -516,7 +512,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillX;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Hunter::SoulArrow].player.push_back(player);
 	m_skillInfo[Skills::Crossbowman::SoulArrow].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::SoulArrow].player.push_back(player);
@@ -532,7 +528,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Marauder::EnergyCharge].player.push_back(player);
 	m_skillInfo[Skills::ThunderBreaker::EnergyCharge].player.push_back(player);
 	map.buff = buff;
@@ -546,7 +542,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillMorph;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Brawler::OakBarrel].player.push_back(player);
 	map.buff = buff;
 	map.useVal = true;
@@ -558,7 +554,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillWdef;
 	player.buff = buff;
 	player.hasMapVal = false;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
 	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
@@ -568,7 +564,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillMdef;
 	player.buff = buff;
 	player.hasMapVal = false;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
 	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
@@ -578,7 +574,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpeed;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
 	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
@@ -594,7 +590,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillJump;
 	player.buff = buff;
 	player.hasMapVal = false;
-	player.hasmapentry = false;
+	player.hasMapEntry = false;
 	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
 	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
@@ -604,7 +600,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillMorph;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Marauder::Transformation].player.push_back(player);
 	m_skillInfo[Skills::Buccaneer::SuperTransformation].player.push_back(player);
 	m_skillInfo[Skills::WindArcher::EagleEye].player.push_back(player);
@@ -622,7 +618,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Hermit::ShadowPartner].player.push_back(player);
 	m_skillInfo[Skills::NightWalker::ShadowPartner].player.push_back(player);
 	map.buff = buff;
@@ -636,7 +632,7 @@ void BuffDataProvider::loadData() {
 	buff.value = SkillSpecialProc;
 	player.buff = buff;
 	player.hasMapVal = true;
-	player.hasmapentry = true;
+	player.hasMapEntry = true;
 	m_skillInfo[Skills::Crusader::ComboAttack].player.push_back(player);
 	m_skillInfo[Skills::DawnWarrior::ComboAttack].player.push_back(player);
 	map.buff = buff;
@@ -804,31 +800,31 @@ void BuffDataProvider::loadData() {
 	std::cout << "DONE" << std::endl;
 }
 
-void BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) {
+auto BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> void {
 	using namespace BuffBytes;
-	vector<uint8_t> types;
-	vector<int8_t> bytes;
-	vector<int16_t> values;
+	vector_t<uint8_t> types;
+	vector_t<int8_t> bytes;
+	vector_t<int16_t> values;
 
-	if (cons.watk > 0) {
+	if (cons.wAtk > 0) {
 		types.push_back(0x01);
 		bytes.push_back(Byte1);
-		values.push_back(cons.watk);
+		values.push_back(cons.wAtk);
 	}
-	if (cons.wdef > 0) {
+	if (cons.wDef > 0) {
 		types.push_back(0x02);
 		bytes.push_back(Byte1);
-		values.push_back(cons.wdef);
+		values.push_back(cons.wDef);
 	}
-	if (cons.matk > 0) {
+	if (cons.mAtk > 0) {
 		types.push_back(0x04);
 		bytes.push_back(Byte1);
-		values.push_back(cons.matk);
+		values.push_back(cons.mAtk);
 	}
-	if (cons.mdef > 0) {
+	if (cons.mDef > 0) {
 		types.push_back(0x08);
 		bytes.push_back(Byte1);
-		values.push_back(cons.mdef);
+		values.push_back(cons.mDef);
 	}
 	if (cons.acc > 0) {
 		types.push_back(0x10);
@@ -926,7 +922,7 @@ void BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) {
 			player.useVal = true;
 			if ((buff.byte == Byte1 && (buff.type & 0x80) > 0) || buff.byte == Byte5) {
 				player.hasMapVal = true;
-				player.hasmapentry = true;
+				player.hasMapEntry = true;
 				m_skillInfo[itemId].player.push_back(player);
 				map.buff = buff;
 				map.useVal = true;

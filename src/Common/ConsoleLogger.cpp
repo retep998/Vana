@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
-ConsoleLogger::ConsoleLogger(const string &filename, const string &format, const string &timeFormat, int16_t serverType, size_t bufferSize) :
+ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize)
 {
 }
 
-void ConsoleLogger::log(LogTypes::LogTypes type, const opt_string &identifier, const string &message) {
-	std::cout << Logger::formatLog(type, this, identifier, message) << std::endl;
+auto ConsoleLogger::log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void {
+	std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
 }

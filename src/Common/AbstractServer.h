@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,49 +26,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 class ConfigFile;
 struct LogConfig;
 
 class AbstractServer {
 public:
-	virtual ~AbstractServer() { }
+	virtual ~AbstractServer() = default;
 
-	void initialize();
-	virtual void listen() = 0;
-	virtual void loadConfig() = 0;
-	virtual void loadLogConfig() = 0;
-	virtual void loadData() = 0;
-	virtual opt_string makeLogIdentifier() = 0;
-	virtual void shutdown();
+	auto initialize() -> void;
+	virtual auto listen() -> void = 0;
+	virtual auto loadConfig() -> void = 0;
+	virtual auto loadLogConfig() -> void = 0;
+	virtual auto loadData() -> void = 0;
+	virtual auto makeLogIdentifier() -> opt_string_t = 0;
+	virtual auto shutdown() -> void;
 
-	void displayLaunchTime() const;
-	void initializeLoggingConstants(ConfigFile &conf) const;
-	void createLogger(const LogConfig &conf);
-	void setListening(bool toListen) { m_toListen = toListen; }
-	void setServerType(int16_t type) { m_serverType = type; }
-	void log(LogTypes::LogTypes type, const string &message);
-	bool isListening() const { return m_toListen; }
-	int16_t getServerType() const { return m_serverType; }
-	const time_point_t & getStartTime() const { return m_startTime; }
-	IpMatrix getExternalIps() const { return m_externalIps; }
-	string getInterPassword() const { return m_interPassword; }
-	string getSalt() const { return m_salt; }
-	Logger * getLogger() const { return m_logger.get(); }
+	auto displayLaunchTime() const -> void;
+	auto initializeLoggingConstants(ConfigFile &conf) const -> void;
+	auto createLogger(const LogConfig &conf) -> void;
+	auto setListening(bool toListen) -> void { m_toListen = toListen; }
+	auto setServerType(int16_t type) -> void { m_serverType = type; }
+	auto log(LogTypes::LogTypes type, const string_t &message) -> void;
+	auto isListening() const -> bool { return m_toListen; }
+	auto getServerType() const -> int16_t { return m_serverType; }
+	auto getStartTime() const -> const time_point_t & { return m_startTime; }
+	auto getExternalIps() const -> IpMatrix { return m_externalIps; }
+	auto getInterPassword() const -> string_t { return m_interPassword; }
+	auto getSalt() const -> string_t { return m_salt; }
+	auto getLogger() const -> Logger * { return m_logger.get(); }
 protected:
-	AbstractServer();
+	AbstractServer() = default;
 
-	int16_t m_serverType;
-	bool m_toListen;
-	LoginConfig m_loginConfig;
-	string m_interPassword;
-	string m_salt;
-	IpMatrix m_externalIps;
+	int16_t m_serverType = -1;
+	bool m_toListen = false;
 	time_point_t m_startTime;
-	std::unique_ptr<Logger> m_logger;
+	string_t m_interPassword;
+	string_t m_salt;
+	LoginConfig m_loginConfig;
+	IpMatrix m_externalIps;
+	owned_ptr_t<Logger> m_logger;
 private:
-	typedef std::unordered_map<string, int32_t> ConstantMap;
-	void loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const;
+	auto loggerOptions(const hash_map_t<string_t, int32_t> &constants, ConfigFile &conf, const string_t &base, int32_t val, uint32_t depth) const -> void;
 };

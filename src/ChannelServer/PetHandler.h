@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,18 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.h"
 #include <string>
 
-using std::string;
-
-class Player;
 class PacketReader;
+class Player;
 
 namespace PetHandler {
-	void showPets(Player *player);
-	void handleChat(Player *player, PacketReader &packet);
-	void handleFeed(Player *player, PacketReader &packet);
-	void handleMovement(Player *player, PacketReader &packet);
-	void handleSummon(Player *player, PacketReader &packet);
-	void handleCommand(Player *player, PacketReader &packet);
-	void handleConsumePotion(Player *player, PacketReader &packet);
-	void changeName(Player *player, const string &name);
+	auto showPets(Player *player) -> void;
+	auto handleChat(Player *player, PacketReader &packet) -> void;
+	auto handleFeed(Player *player, PacketReader &packet) -> void;
+	auto handleMovement(Player *player, PacketReader &packet) -> void;
+	auto handleSummon(Player *player, PacketReader &packet) -> void;
+	auto handleCommand(Player *player, PacketReader &packet) -> void;
+	auto handleConsumePotion(Player *player, PacketReader &packet) -> void;
+	auto changeName(Player *player, const string_t &name) -> void;
 }

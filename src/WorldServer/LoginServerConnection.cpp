@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,14 +31,14 @@ LoginServerConnection::LoginServerConnection()
 }
 
 LoginServerConnection::~LoginServerConnection() {
-	if (WorldServer::Instance()->isConnected()) {
-		WorldServer::Instance()->setWorldId(-1);
+	if (WorldServer::getInstance().isConnected()) {
+		WorldServer::getInstance().setWorldId(-1);
 		std::cout << "Disconnected from the LoginServer. Shutting down..." << std::endl;
-		WorldServer::Instance()->shutdown();
+		WorldServer::getInstance().shutdown();
 	}
 }
 
-void LoginServerConnection::handleRequest(PacketReader &packet) {
+auto LoginServerConnection::handleRequest(PacketReader &packet) -> void {
 	switch (packet.getHeader()) {
 		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
 		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;

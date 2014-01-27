@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,29 +18,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Instance.h"
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <string>
 #include <unordered_map>
 
-using std::string;
-using std::unordered_map;
-
-class Instances : boost::noncopyable {
+class Instances {
+	SINGLETON(Instances);
 public:
-	static Instances * InstancePtr() { // The irony, it burns!
-		if (singleton == nullptr)
-			singleton = new Instances;
-		return singleton;
-	}
-
-	void addInstance(Instance *instance);
-	void removeInstance(Instance *instance);
-	Instance * getInstance(const string &name);
-	bool isInstance(const string &name);
+	auto addInstance(Instance *instance) -> void;
+	auto removeInstance(Instance *instance) -> void;
+	auto getInstance(const string_t &name) -> Instance *;
+	auto isInstance(const string_t &name) -> bool;
 private:
-	Instances() {}
-	static Instances *singleton;
-
-	unordered_map<string, Instance *> m_instances; // Index of instances by name
+	case_insensitive_hash_map_t<Instance *> m_instances;
 };

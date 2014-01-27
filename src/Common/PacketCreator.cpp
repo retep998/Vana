@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,21 +24,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 PacketCreator::PacketCreator() :
-	m_pos(0),
 	m_packet(new unsigned char[bufferLen]),
 	m_packetCapacity(bufferLen)
 {
 }
 
-void PacketCreator::addBuffer(const PacketCreator &packet) {
+auto PacketCreator::addBuffer(const PacketCreator &packet) -> void {
 	addBuffer(packet.getBuffer(), packet.getSize());
 }
 
-void PacketCreator::addBuffer(const PacketReader &packet) {
+auto PacketCreator::addBuffer(const PacketReader &packet) -> void {
 	addBuffer(packet.getBuffer(), packet.getBufferLength());
 }
 
-void PacketCreator::addBytes(const char *hex) {
+auto PacketCreator::addBytes(const char *hex) -> void {
 	size_t x = 0;
 	for (size_t i = 0; i < strlen(hex) / 2; ++i) {
 		x = i * 2;
@@ -49,7 +48,7 @@ void PacketCreator::addBytes(const char *hex) {
 	}
 }
 
-unsigned char PacketCreator::getHexByte(unsigned char input) {
+auto PacketCreator::getHexByte(unsigned char input) -> unsigned char {
 	input = static_cast<unsigned char>(toupper(input));
 	if (input >= 'A' && input <= 'F') {
 		input -= 'A' - 0xA;
@@ -63,7 +62,7 @@ unsigned char PacketCreator::getHexByte(unsigned char input) {
 	return input;
 }
 
-void PacketCreator::addString(const string &str, size_t len) {
+auto PacketCreator::addString(const string_t &str, size_t len) -> void {
 	size_t slen = str.size();
 	if (len < slen) {
 		throw std::invalid_argument("addString used with a length shorter than string size");
@@ -75,13 +74,13 @@ void PacketCreator::addString(const string &str, size_t len) {
 	m_pos += len;
 }
 
-void PacketCreator::addString(const string &str) {
+auto PacketCreator::addString(const string_t &str) -> void {
 	uint16_t len = static_cast<uint16_t>(str.size());
 	add<uint16_t>(len);
 	addString(str, len);
 }
 
-unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
+auto PacketCreator::getBuffer(size_t pos, size_t len) -> unsigned char * {
 	if (m_packetCapacity < pos + len) {
 		// Buffer is not large enough
 		while (m_packetCapacity < pos + len) {
@@ -95,6 +94,6 @@ unsigned char * PacketCreator::getBuffer(size_t pos, size_t len) {
 	return m_packet.get() + pos;
 }
 
-string PacketCreator::toString() const {
+auto PacketCreator::toString() const -> string_t {
 	return StringUtilities::bytesToHex(getBuffer(), getSize());
 }

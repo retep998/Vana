@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,72 +25,69 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.h"
 #include <string>
 
-using std::string;
-
 namespace GameLogicUtilities {
 	// Inventory
-	inline uint8_t getInventory(int32_t itemId) { return static_cast<uint8_t>(itemId / 1000000); }
-	inline int32_t getItemType(int32_t itemId) { return (itemId / 10000); }
-	inline int32_t getScrollType(int32_t itemId) { return ((itemId % 10000) - (itemId % 100)); }
-	inline int32_t itemTypeToScrollType(int32_t itemId) { return ((getItemType(itemId) % 100) * 100); }
-	inline bool isArrow(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemArrow); }
-	inline bool isStar(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemStar); }
-	inline bool isBullet(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemBullet); }
-	inline bool isRechargeable(int32_t itemId) { return (isBullet(itemId) || isStar(itemId)); }
-	inline bool isEquip(int32_t itemId) { return (getInventory(itemId) == Inventories::EquipInventory); }
-	inline bool isPet(int32_t itemId) {	return ((itemId / 100 * 100) == 5000000); }
-	inline bool isStackable(int32_t itemId) { return !(isRechargeable(itemId) || isEquip(itemId) || isPet(itemId)); }
-	inline bool isOverall(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorOverall); }
-	inline bool isTop(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorTop); }
-	inline bool isBottom(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorBottom); }
-	inline bool isShield(int32_t itemId) { return (getItemType(itemId) == Items::Types::ArmorShield); }
-	inline bool is2hWeapon(int32_t itemId) { return (getItemType(itemId) / 10 == 14); }
-	inline bool is1hWeapon(int32_t itemId) { return (getItemType(itemId) / 10 == 13); }
-	inline bool isBow(int32_t itemId) { return (getItemType(itemId) == Items::Types::WeaponBow); }
-	inline bool isCrossbow(int32_t itemId) { return (getItemType(itemId) == Items::Types::WeaponCrossbow); }
-	inline bool isSword(int32_t itemId) { return (getItemType(itemId) == Items::Types::Weapon1hSword || getItemType(itemId) == Items::Types::Weapon2hSword); }
-	inline bool isMace(int32_t itemId) { return (getItemType(itemId) == Items::Types::Weapon1hMace || getItemType(itemId) == Items::Types::Weapon2hMace); }
-	inline bool isMount(int32_t itemId) { return (getItemType(itemId) == Items::Types::Mount); }
-	inline bool isMedal(int32_t itemId) { return (getItemType(itemId) == Items::Types::Medal); }
-	inline bool isValidInventory(int8_t inv) { return (inv > 0 && inv <= Inventories::InventoryCount); }
-	inline bool isCashSlot(int16_t slot) { return (abs(slot) > 100); }
-	inline int16_t stripCashSlot(int16_t slot) { return static_cast<int16_t>(isCashSlot(slot) ? abs(slot) - 100 : abs(slot)); }
+	inline auto getInventory(int32_t itemId) -> uint8_t { return static_cast<uint8_t>(itemId / 1000000); }
+	inline auto getItemType(int32_t itemId) -> int32_t { return itemId / 10000; }
+	inline auto getScrollType(int32_t itemId) -> int32_t { return (itemId % 10000) - (itemId % 100); }
+	inline auto itemTypeToScrollType(int32_t itemId) -> int32_t { return (getItemType(itemId) % 100) * 100; }
+	inline auto isArrow(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemArrow; }
+	inline auto isStar(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemStar; }
+	inline auto isBullet(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemBullet; }
+	inline auto isRechargeable(int32_t itemId) -> bool { return isBullet(itemId) || isStar(itemId); }
+	inline auto isEquip(int32_t itemId) -> bool { return getInventory(itemId) == Inventories::EquipInventory; }
+	inline auto isPet(int32_t itemId) -> bool {	return (itemId / 100 * 100) == 5000000; }
+	inline auto isStackable(int32_t itemId) -> bool { return !(isRechargeable(itemId) || isEquip(itemId) || isPet(itemId)); }
+	inline auto isOverall(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorOverall; }
+	inline auto isTop(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorTop; }
+	inline auto isBottom(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorBottom; }
+	inline auto isShield(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ArmorShield; }
+	inline auto is2hWeapon(int32_t itemId) -> bool { return getItemType(itemId) / 10 == 14; }
+	inline auto is1hWeapon(int32_t itemId) -> bool { return getItemType(itemId) / 10 == 13; }
+	inline auto isBow(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::WeaponBow; }
+	inline auto isCrossbow(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::WeaponCrossbow; }
+	inline auto isSword(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::Weapon1hSword || getItemType(itemId) == Items::Types::Weapon2hSword; }
+	inline auto isMace(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::Weapon1hMace || getItemType(itemId) == Items::Types::Weapon2hMace; }
+	inline auto isMount(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::Mount; }
+	inline auto isMedal(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::Medal; }
+	inline auto isValidInventory(int8_t inv) -> bool { return inv > 0 && inv <= Inventories::InventoryCount; }
+	inline auto isCashSlot(int16_t slot) -> bool { return abs(slot) > 100; }
+	inline auto stripCashSlot(int16_t slot) -> int16_t { return static_cast<int16_t>(isCashSlot(slot) ? abs(slot) - 100 : abs(slot)); }
+	inline auto isGmEquip(int32_t itemId) -> bool { return itemId == Items::GmBottom || itemId == Items::GmHat || itemId == Items::GmTop || itemId == Items::GmWeapon; }
 
 	// Player
-	inline int8_t getGenderId(const string &gender) { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
+	inline auto getGenderId(const string_t &gender) -> int8_t { return static_cast<int8_t>(gender == "male" ? Gender::Male : (gender == "female" ? Gender::Female : (gender == "both" ? Gender::Both : -1))); }
 
 	// Player skills
-	inline bool isBeginnerSkill(int32_t skillId) { return ((skillId / 1000000) == (skillId < 10000000 ? 0 : 10)); }
-	inline bool isFourthJobSkill(int32_t skillId) { return ((skillId / 10000) % 10 == 2); }
-	inline bool isPuppet(int32_t skillId) { return (skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet); }
-	inline bool isSummon(int32_t skillId) { return (isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning); }
-	inline bool isInBox(const Pos &start, const Pos &lt, const Pos &rb, const Pos &test) { return ((test.y >= start.y + lt.y) && (test.y <= start.y + rb.y) && (test.x >= start.x + lt.x) && (test.x <= start.x + rb.x)); }
-	inline bool isInBox(const Pos &start, const Rect &dimensions, const Pos &test) { return isInBox(start, dimensions.leftTop, dimensions.rightBottom, test); }
-	inline bool isDarkSight(int32_t skillId) { return (skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight); }
-	inline bool skillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 1000000 == job / 100) && (skillId / 10000 <= job)); }
-	inline bool itemSkillMatchesJob(int32_t skillId, int16_t job) { return ((skillId / 10000) == job); }
-	inline int8_t getMasteryDisplay(int8_t level) { return ((level + 1) / 2); }
-	inline int32_t getBattleshipHp(uint8_t shipLevel, uint8_t playerLevel) { return ((4000 * shipLevel) + ((playerLevel - 120) * 2000)); }
+	inline auto isBeginnerSkill(int32_t skillId) -> bool { return (skillId / 1000000) == (skillId < 10000000 ? 0 : 10); }
+	inline auto isFourthJobSkill(int32_t skillId) -> bool { return (skillId / 10000) % 10 == 2; }
+	inline auto isPuppet(int32_t skillId) -> bool { return skillId == Skills::Sniper::Puppet || skillId == Skills::Ranger::Puppet || skillId == Skills::WindArcher::Puppet; }
+	inline auto isSummon(int32_t skillId) -> bool { return isPuppet(skillId) || skillId == Skills::Priest::SummonDragon || skillId == Skills::Ranger::SilverHawk || skillId == Skills::Sniper::GoldenEagle || skillId == Skills::DarkKnight::Beholder || skillId == Skills::FpArchMage::Elquines || skillId == Skills::IlArchMage::Ifrit || skillId == Skills::BlazeWizard::Ifrit || skillId == Skills::Bishop::Bahamut || skillId == Skills::Bowmaster::Phoenix || skillId == Skills::Marksman::Frostprey || skillId == Skills::Outlaw::Octopus || skillId == Skills::Corsair::WrathOfTheOctopi || skillId == Skills::Outlaw::Gaviota || skillId == Skills::DawnWarrior::Soul || skillId == Skills::BlazeWizard::Flame || skillId == Skills::WindArcher::Storm || skillId == Skills::NightWalker::Darkness || skillId == Skills::ThunderBreaker::Lightning; }
+	inline auto isDarkSight(int32_t skillId) -> bool { return skillId == Skills::Rogue::DarkSight || skillId == Skills::NightWalker::DarkSight; }
+	inline auto skillMatchesJob(int32_t skillId, int16_t job) -> bool { return (skillId / 1000000 == job / 100) && (skillId / 10000 <= job); }
+	inline auto itemSkillMatchesJob(int32_t skillId, int16_t job) -> bool { return (skillId / 10000) == job; }
+	inline auto getMasteryDisplay(int8_t level) -> int8_t { return (level + 1) / 2; }
+	inline auto getBattleshipHp(uint8_t shipLevel, uint8_t playerLevel) -> int32_t { return (4000 * shipLevel) + ((playerLevel - 120) * 2000); }
 
 	// Mob skills
-	inline bool isMobSkill(int32_t skillId) { return (skillId >= 100 && skillId <= 200); }
+	inline auto isMobSkill(int32_t skillId) -> bool { return skillId >= 100 && skillId <= 200; }
 
 	// Jobs
-	inline bool isAdventurer(int16_t jobId) { return (jobId != 128 && jobId != 256 && (jobId == Jobs::JobIds::Beginner || (jobId >= 100 && jobId <= 910))); }
-	inline bool isCygnus(int16_t jobId) { return (jobId != 1024 && jobId >= 1000 && jobId < 2000); }
-	inline bool isLegend(int16_t jobId) { return (jobId != 2048 && jobId >= 2000 && jobId < 3000); }
-	inline bool isResistance(int16_t jobId) { return (jobId >= 3000 && jobId < 4000); }
-	inline bool isBeginnerJob(int16_t jobId) {
-		for (int32_t i = 0; i < Jobs::Beginners::JobCount; ++i) {
-			if (jobId == Jobs::Beginners::Jobs[i]) {
+	inline auto isAdventurer(int16_t jobId) -> bool { return jobId != 128 && jobId != 256 && (jobId == Jobs::JobIds::Beginner || (jobId >= 100 && jobId <= 910)); }
+	inline auto isCygnus(int16_t jobId) -> bool { return jobId != 1024 && jobId >= 1000 && jobId < 2000; }
+	inline auto isLegend(int16_t jobId) -> bool { return jobId != 2048 && jobId >= 2000 && jobId < 3000; }
+	inline auto isResistance(int16_t jobId) -> bool { return jobId >= 3000 && jobId < 4000; }
+	inline auto isBeginnerJob(int16_t jobId) -> bool {
+		for (const auto &job : Jobs::Beginners::Jobs) {
+			if (jobId == job) {
 				return true;
 			}
 		}
 		return false;
 	}
-	inline int16_t getJobTrack(int16_t jobId) { return (jobId / 100); }
-	inline int16_t getJobLine(int16_t jobId) { return (isAdventurer(jobId) ? (jobId / 100) : ((jobId / 100) % 10)); }
-	inline int16_t getJobProgression(int16_t jobId) {
+	inline auto getJobTrack(int16_t jobId) -> int16_t { return jobId / 100; }
+	inline auto getJobLine(int16_t jobId) -> int16_t { return isAdventurer(jobId) ? (jobId / 100) : ((jobId / 100) % 10); }
+	inline auto getJobProgression(int16_t jobId) -> int16_t {
 		if (isBeginnerJob(jobId)) {
 			return Jobs::JobProgressions::Beginner;
 		}
@@ -104,21 +101,21 @@ namespace GameLogicUtilities {
 		}
 		return Jobs::JobProgressions::SecondJob + (jobId % 10);
 	}
-	inline uint8_t getMaxLevel(int16_t jobId) { return (isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels); }
+	inline auto getMaxLevel(int16_t jobId) -> uint8_t { return isCygnus(jobId) ? Stats::CygnusLevels : Stats::PlayerLevels; }
 
 	// Monster card
-	inline bool isMonsterCard(int32_t itemId) { return (getItemType(itemId) == Items::Types::ItemMonsterCard); }
-	inline int16_t getCardShortId(int32_t cardId) { return (cardId % 10000); }
-	inline bool isSpecialCard(int32_t cardId) { return (getCardShortId(cardId) >= 8000); }
+	inline auto isMonsterCard(int32_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemMonsterCard; }
+	inline auto getCardShortId(int32_t cardId) -> int16_t { return cardId % 10000; }
+	inline auto isSpecialCard(int32_t cardId) -> bool { return getCardShortId(cardId) >= 8000; }
 
 	// Map
-	inline int8_t getMapCluster(int32_t mapId) { return static_cast<int8_t>(mapId / 10000000); }
+	inline auto getMapCluster(int32_t mapId) -> int8_t { return static_cast<int8_t>(mapId / 10000000); }
 
 	// Party
-	inline int8_t getPartyMember1(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 1 ? (0x40 >> totalMembers) : 0xFF); }
-	inline int8_t getPartyMember2(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 2 ? (0x80 >> totalMembers) : 0xFF); }
-	inline int8_t getPartyMember3(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 3 ? (0x100 >> totalMembers) : 0xFF); }
-	inline int8_t getPartyMember4(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 4 ? (0x200 >> totalMembers) : 0xFF); }
-	inline int8_t getPartyMember5(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 5 ? (0x400 >> totalMembers) : 0xFF); }
-	inline int8_t getPartyMember6(int8_t totalMembers) { return static_cast<int8_t>(totalMembers >= 6 ? (0x800 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember1(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 1 ? (0x40 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember2(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 2 ? (0x80 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember3(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 3 ? (0x100 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember4(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 4 ? (0x200 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember5(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 5 ? (0x400 >> totalMembers) : 0xFF); }
+	inline auto getPartyMember6(int8_t totalMembers) -> int8_t { return static_cast<int8_t>(totalMembers >= 6 ? (0x800 >> totalMembers) : 0xFF); }
 }

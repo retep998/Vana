@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,53 +17,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
 #include "Types.h"
 #include <map>
 #include <unordered_map>
 #include <vector>
 
-using std::map;
-using std::unordered_map;
-using std::vector;
-
 class PacketCreator;
 
 struct ShopItemInfo {
-	int32_t itemId;
-	int32_t price;
-	int16_t quantity;
+	int32_t itemId = 0;
+	int32_t price = 0;
+	int16_t quantity = 0;
 };
 
 struct ShopInfo {
-	int32_t npc;
-	vector<ShopItemInfo> items;
-	int8_t rechargeTier;
+	int8_t rechargeTier = 0;
+	int32_t npc = 0;
+	vector_t<ShopItemInfo> items;
 };
 
-class ShopDataProvider : boost::noncopyable {
+class ShopDataProvider {
+	SINGLETON(ShopDataProvider);
 public:
-	static ShopDataProvider * Instance() {
-		if (singleton == nullptr)
-			singleton = new ShopDataProvider();
-		return singleton;
-	}
-	void loadData();
+	auto loadData() -> void;
 
-	bool isShop(int32_t id) { return (m_shops.find(id) != m_shops.end()); }
-	void showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet);
-	int32_t getPrice(int32_t shopId, uint16_t shopIndex);
-	int32_t getItemId(int32_t shopId, uint16_t shopIndex);
-	int16_t getAmount(int32_t shopId, uint16_t shopIndex);
-	int32_t getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount);
+	auto isShop(int32_t id) -> bool { return m_shops.find(id) != std::end(m_shops); }
+	auto showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) -> void;
+	auto getPrice(int32_t shopId, uint16_t shopIndex) -> int32_t;
+	auto getItemId(int32_t shopId, uint16_t shopIndex) -> int32_t;
+	auto getAmount(int32_t shopId, uint16_t shopIndex) -> int16_t;
+	auto getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) -> int32_t;
 private:
-	ShopDataProvider() {}
-	static ShopDataProvider *singleton;
+	auto loadShops() -> void;
+	auto loadUserShops() -> void;
+	auto loadRechargeTiers() -> void;
 
-	void loadShops();
-	void loadUserShops();
-	void loadRechargeTiers();
-
-	unordered_map<int32_t, ShopInfo> m_shops;
-	unordered_map<int8_t, map<int32_t, double>> m_rechargeCosts;
+	hash_map_t<int32_t, ShopInfo> m_shops;
+	hash_map_t<int8_t, ord_map_t<int32_t, double>> m_rechargeCosts;
 };

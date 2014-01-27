@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,7 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "noncopyable.hpp"
+#include "Types.h"
+#include <atomic>
 #include <condition_variable>
 #include <map>
 #include <memory>
@@ -29,46 +30,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-using std::pair;
-using std::shared_ptr;
-using std::weak_ptr;
-
 class Container;
 class Timer;
 
-class Thread : boost::noncopyable {
+class TimerThread {
+	SINGLETON_CUSTOM_CONSTRUCTOR(TimerThread);
 public:
-	static Thread * Instance() {
-		if (singleton == nullptr)
-			singleton = new Thread;
-		return singleton;
-	}
-
-	~Thread();
-
-	Container * getContainer() const { return m_container.get(); }
-
-	void registerTimer(shared_ptr<Timer> timer);
+	~TimerThread();
+	auto getTimerContainer() const -> ref_ptr_t<Container> { return m_container; }
+	auto registerTimer(ref_ptr_t<Timer> timer) -> void;
 private:
-	Thread();
-	static Thread *singleton;
-	void runThread();
-	time_point_t getWaitTime() const;
+	auto runThread() -> void;
+	auto getWaitTime() const -> time_point_t;
+
+	using timer_pair_t = pair_t<time_point_t, view_ptr_t<Timer>>;
 
 	struct FindClosestTimer {
-		bool operator()(const pair<time_point_t, weak_ptr<Timer>> &t1, const pair<time_point_t, weak_ptr<Timer>> &t2) const {
+		auto operator()(const timer_pair_t &t1, const timer_pair_t &t2) const -> bool {
 			return t1.first > t2.first;
 		}
 	};
 
-	volatile bool m_terminate;
-
-	std::priority_queue<pair<time_point_t, weak_ptr<Timer>>, std::vector<pair<time_point_t, weak_ptr<Timer>>>, FindClosestTimer> m_timers;
-	std::recursive_mutex m_timersMutex;
-	std::unique_ptr<std::thread> m_thread;
+	std::atomic_bool m_runThread;
+	std::priority_queue<timer_pair_t, vector_t<timer_pair_t>, FindClosestTimer> m_timers;
 	std::condition_variable_any m_mainLoopCondition;
-
-	std::unique_ptr<Container> m_container; // Central container for Timers that don't belong to other containers
+	recursive_mutex_t m_timersMutex;
+	owned_ptr_t<thread_t> m_thread;
+	ref_ptr_t<Container> m_container; // Central container for Timers that don't belong to other containers
 };
 
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,22 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.h"
 #include "MiscUtilities.h"
 
-void SkillMacros::load(int32_t charId) {
+auto SkillMacros::load(int32_t charId) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM skill_macros s WHERE s.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string>("name"), row.get<bool>("shout"), row.get<int32_t>("skill1"), row.get<int32_t>("skill2"), row.get<int32_t>("skill3")));
+		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<int32_t>("skill1"), row.get<int32_t>("skill2"), row.get<int32_t>("skill3")));
 	}
 }
 
-void SkillMacros::save(int32_t charId) {
-	using MiscUtilities::getOptional;
-
-	static int32_t nullsInt32[] = {0};
-	MiscUtilities::NullableMode nulls = MiscUtilities::NullIfFound;
+auto SkillMacros::save(int32_t charId) -> void {
+	static init_list_t<int32_t> nullsInt32 = {0};
+	MiscUtilities::NullableMode nulls = MiscUtilities::NullableMode::NullIfFound;
 
 	int8_t i = 0;
-	string name = "";
+	string_t name = "";
 	bool shout = false;
 	opt_int32_t skill1 = 0;
 	opt_int32_t skill2 = 0;
@@ -56,9 +54,9 @@ void SkillMacros::save(int32_t charId) {
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = getOptional(macro->skill1, nulls, nullsInt32);
-			skill2 = getOptional(macro->skill2, nulls, nullsInt32);
-			skill3 = getOptional(macro->skill3, nulls, nullsInt32);
+			skill1 = MiscUtilities::getOptional(macro->skill1, nulls, nullsInt32);
+			skill2 = MiscUtilities::getOptional(macro->skill2, nulls, nullsInt32);
+			skill3 = MiscUtilities::getOptional(macro->skill3, nulls, nullsInt32);
 			st.execute(true);
 		}
 	}

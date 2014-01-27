@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.h"
 #include "SmsgHeader.h"
 
-void GmPacket::beginHide(Player *player) {
+auto GmPacket::beginHide(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
@@ -30,7 +30,7 @@ void GmPacket::beginHide(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::endHide(Player *player) {
+auto GmPacket::endHide(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x10);
@@ -39,7 +39,7 @@ void GmPacket::endHide(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::warning(Player *player, bool succeed) {
+auto GmPacket::warning(Player *player, bool succeed) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x1d);
@@ -48,7 +48,7 @@ void GmPacket::warning(Player *player, bool succeed) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::block(Player *player) {
+auto GmPacket::block(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x04);
@@ -57,7 +57,7 @@ void GmPacket::block(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::invalidCharacterName(Player *player) {
+auto GmPacket::invalidCharacterName(Player *player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x06);
@@ -66,7 +66,7 @@ void GmPacket::invalidCharacterName(Player *player) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
+auto GmPacket::hiredMerchantPlace(Player *player, int8_t channel) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x13);
@@ -76,7 +76,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int8_t channel) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) {
+auto GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x13);
@@ -86,7 +86,7 @@ void GmPacket::hiredMerchantPlace(Player *player, int32_t mapId) {
 	player->getSession()->send(packet);
 }
 
-void GmPacket::setGetVarResult(Player *player, const string &name, const string &variable, const string &value) {
+auto GmPacket::setGetVarResult(Player *player, const string_t &name, const string_t &variable, const string_t &value) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_GM);
 	packet.add<int8_t>(0x09);

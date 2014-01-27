@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,10 +21,10 @@ class PacketReader;
 class Player;
 
 namespace Login {
-	void loginUser(Player *player, PacketReader &packet);
-	void setGender(Player *player, PacketReader &packet);
-	void handleLogin(Player *player, PacketReader &packet);
-	void registerPin(Player *player, PacketReader &packet);
-	void loginBack(Player *player);
-	void checkPin(Player *player, PacketReader &packet);
+	auto loginUser(Player *player, PacketReader &packet) -> void;
+	auto setGender(Player *player, PacketReader &packet) -> void;
+	auto handleLogin(Player *player, PacketReader &packet) -> void;
+	auto registerPin(Player *player, PacketReader &packet) -> void;
+	auto loginBack(Player *player) -> void;
+	auto checkPin(Player *player, PacketReader &packet) -> void;
 }

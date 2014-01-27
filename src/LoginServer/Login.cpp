@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,13 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VanaConstants.h"
 #include <iostream>
 
-using TimeUtilities::timeToTick;
-using TimeUtilities::timeToTick32;
-
-void Login::loginUser(Player *player, PacketReader &packet) {
-	const string &username = packet.getString();
-	const string &password = packet.getString();
-	const string &ip = player->getIp().toString();
+auto Login::loginUser(Player *player, PacketReader &packet) -> void {
+	const string_t &username = packet.getString();
+	const string_t &password = packet.getString();
+	const string_t &ip = player->getIp().toString();
 
 	if (!MiscUtilities::inRangeInclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking
@@ -79,14 +76,14 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 			banTime.tm_year = 7100;
 			banTime.tm_mon = 0;
 			banTime.tm_mday = 1;
-			int32_t time = timeToTick32(mktime(&banTime));
+			int32_t time = TimeUtilities::timeToTick32(mktime(&banTime));
 			LoginPacket::loginBan(player, 0, time);
 			valid = false;
 		}
 		else {
 			userId = row.get<int32_t>("user_id");
-			const string &dbPassword = row.get<string>("password");
-			opt_string salt = row.get<opt_string>("salt");
+			const string_t &dbPassword = row.get<string_t>("password");
+			opt_string_t salt = row.get<opt_string_t>("salt");
 
 			if (!salt.is_initialized()) {
 				// We have an unsalted password
@@ -97,7 +94,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				else {
 					// We have a valid password, so let's hash the password
 					salt = MiscUtilities::generateSalt(VanaConstants::SaltSize);
-					const string &hashedPassword = MiscUtilities::hashPassword(password, salt.get());
+					const string_t &hashedPassword = MiscUtilities::hashPassword(password, salt.get());
 
 					sql.once
 						<< "UPDATE user_accounts u "
@@ -117,25 +114,25 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
-				int32_t time = timeToTick32(row.get<unix_time_t>("ban_expire"));
+				int32_t time = TimeUtilities::timeToTick32(row.get<unix_time_t>("ban_expire"));
 				LoginPacket::loginBan(player, row.get<int8_t>("ban_reason"), time);
 				valid = false;
 			}
 		}
 	}
 	if (!valid) {
-		int32_t threshold = LoginServer::Instance()->getInvalidLoginThreshold();
+		int32_t threshold = LoginServer::getInstance().getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
 			 // Too many invalid logins
 			player->getSession()->disconnect();
 		}
 	}
 	else {
-		LoginServer::Instance()->log(LogTypes::Login, username + " from IP " + player->getIp().toString());
+		LoginServer::getInstance().log(LogTypes::Login, username + " from IP " + player->getIp().toString());
 
 		player->setUserId(userId);
 
-		if (LoginServer::Instance()->getPinEnabled()) {
+		if (LoginServer::getInstance().getPinEnabled()) {
 			opt_int32_t pin = row.get<opt_int32_t>("pin");
 			if (!pin.is_initialized()) {
 				player->setPin(-1);
@@ -169,12 +166,12 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 					soci::use(userId, "user");
 			}
 			else {
-				player->setQuietBanTime(timeToTick(banTime));
+				player->setQuietBanTime(TimeUtilities::timeToTick(banTime));
 				player->setQuietBanReason(row.get<int8_t>("quiet_ban_reason"));
 			}
 		}
 
-		player->setCreationTime(timeToTick(row.get<unix_time_t>("creation_date")));
+		player->setCreationTime(TimeUtilities::timeToTick(row.get<unix_time_t>("creation_date")));
 		player->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		player->setAdmin(row.get<bool>("admin"));
 
@@ -182,7 +179,7 @@ void Login::loginUser(Player *player, PacketReader &packet) {
 	}
 }
 
-void Login::setGender(Player *player, PacketReader &packet) {
+auto Login::setGender(Player *player, PacketReader &packet) -> void {
 	if (player->getStatus() != PlayerStatus::SetGender) {
 		// Hacking
 		return;
@@ -206,7 +203,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 
 		player->setGender(gender);
 
-		if (LoginServer::Instance()->getPinEnabled()) {
+		if (LoginServer::getInstance().getPinEnabled()) {
 			player->setStatus(PlayerStatus::SetPin);
 		}
 		else {
@@ -216,7 +213,7 @@ void Login::setGender(Player *player, PacketReader &packet) {
 	}
 }
 
-void Login::handleLogin(Player *player, PacketReader &packet) {
+auto Login::handleLogin(Player *player, PacketReader &packet) -> void {
 	int32_t status = player->getStatus();
 	if (status == PlayerStatus::SetPin) {
 		LoginPacket::loginProcess(player, PlayerStatus::SetPin);
@@ -235,8 +232,8 @@ void Login::handleLogin(Player *player, PacketReader &packet) {
 	}
 }
 
-void Login::checkPin(Player *player, PacketReader &packet) {
-	if (!LoginServer::Instance()->getPinEnabled()) {
+auto Login::checkPin(Player *player, PacketReader &packet) -> void {
+	if (!LoginServer::getInstance().getPinEnabled()) {
 		// Hacking
 		return;
 	}
@@ -269,8 +266,8 @@ void Login::checkPin(Player *player, PacketReader &packet) {
 	}
 }
 
-void Login::registerPin(Player *player, PacketReader &packet) {
-	if (!LoginServer::Instance()->getPinEnabled() || player->getStatus() != PlayerStatus::SetPin) {
+auto Login::registerPin(Player *player, PacketReader &packet) -> void {
+	if (!LoginServer::getInstance().getPinEnabled() || player->getStatus() != PlayerStatus::SetPin) {
 		// Hacking
 		return;
 	}

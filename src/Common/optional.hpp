@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,19 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace MiscUtilities {
 	// Sorta based on Boost's
-	template<typename T>
+	template <typename TElement>
 	class optional {
 	public:
-		optional() : m_initialized(false) { }
-		optional(const T &val) : m_initialized(true), m_val(val) { }
-		bool is_initialized() const { return m_initialized; }
-		const T & get() const { return m_val; }
-		T & get() { return m_val; }
-		void reset() { m_initialized = false; }
-		optional<T> & operator =(T val) { m_initialized = true; m_val = val; return *this; }
-		optional<T> & operator =(const optional<T> &r) { m_initialized = r.m_initialized; m_val = r.m_val; return *this; }
+		optional() = default;
+		optional(const TElement &val) : m_initialized(true), m_val(val) {}
+		auto is_initialized() const -> bool { return m_initialized; }
+		auto get() const -> const TElement & { return m_val; }
+		auto get() -> TElement & { return m_val; }
+		auto getOrDefault(const TElement &def) -> TElement { return m_initialized ? m_val : def; }
+		auto reset() -> void { m_initialized = false; }
+		auto operator =(TElement val) -> optional<TElement> & { m_initialized = true; m_val = val; return *this; }
+		auto operator =(const optional<TElement> &r) -> optional<TElement> & { m_initialized = r.m_initialized; m_val = r.m_val; return *this; }
 	private:
-		bool m_initialized;
-		T m_val;
+		bool m_initialized = false;
+		TElement m_val;
 	};
 }

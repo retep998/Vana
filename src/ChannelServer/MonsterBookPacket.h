@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,6 +24,6 @@ class Player;
 struct MonsterCard;
 
 namespace MonsterBookPacket {
-	void addCard(Player *player, int32_t cardId, uint8_t level, bool full);
-	void changeCover(Player *player, int32_t cardId);
+	auto addCard(Player *player, int32_t cardId, uint8_t level, bool full) -> void;
+	auto changeCover(Player *player, int32_t cardId) -> void;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,24 +26,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Logger.h"
 #include "MiscUtilities.h"
 #include "SqlLogger.h"
+#include "TimerThread.h"
 #include "TimeUtilities.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 
-AbstractServer::AbstractServer()
-{
-	setListening(false);
-}
-
-void AbstractServer::initialize() {
+auto AbstractServer::initialize() -> void {
 	m_startTime = TimeUtilities::getNow();
 
 	ConfigFile config("conf/connection_properties.lua");
 
-	m_interPassword = config.getString("inter_password");
-	m_salt = config.getString("inter_salt");
+	m_interPassword = config.get<string_t>("inter_password");
+	m_salt = config.get<string_t>("inter_salt");
 
 	if (m_interPassword == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
@@ -65,34 +61,33 @@ void AbstractServer::initialize() {
 	}
 }
 
-void AbstractServer::shutdown() {
-	ConnectionManager::Instance()->stop();
-	m_logger.reset(nullptr);
+auto AbstractServer::shutdown() -> void {
+	ConnectionManager::getInstance().stop();
 }
 
-void AbstractServer::createLogger(const LogConfig &conf) {
-	const string &tForm = conf.timeFormat;
-	const string &form = conf.format;
-	const string &file = conf.file;
-	int16_t sType = getServerType();
-	size_t bSize = conf.bufferSize;
+auto AbstractServer::createLogger(const LogConfig &conf) -> void {
+	const string_t &timeFormat = conf.timeFormat;
+	const string_t &format = conf.format;
+	const string_t &file = conf.file;
+	int16_t serverType = getServerType();
+	size_t bufferSize = conf.bufferSize;
 
 	switch (conf.destination) {
-		case LogDestinations::Console: m_logger = std::make_unique<ConsoleLogger>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::File: m_logger = std::make_unique<FileLogger>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::Sql: m_logger = std::make_unique<SqlLogger>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::FileSql: m_logger = std::make_unique<DuoLogger<FileLogger, SqlLogger>>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::FileConsole: m_logger = std::make_unique<DuoLogger<FileLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::SqlConsole: m_logger = std::make_unique<DuoLogger<SqlLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
-		case LogDestinations::FileSqlConsole: m_logger = std::make_unique<TriLogger<FileLogger, SqlLogger, ConsoleLogger>>(file, form, tForm, sType, bSize); break;
+		case LogDestinations::Console: m_logger = make_owned_ptr<ConsoleLogger>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::File: m_logger = make_owned_ptr<FileLogger>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::Sql: m_logger = make_owned_ptr<SqlLogger>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::FileSql: m_logger = make_owned_ptr<DuoLogger<FileLogger, SqlLogger>>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::FileConsole: m_logger = make_owned_ptr<DuoLogger<FileLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::SqlConsole: m_logger = make_owned_ptr<DuoLogger<SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
+		case LogDestinations::FileSqlConsole: m_logger = make_owned_ptr<TriLogger<FileLogger, SqlLogger, ConsoleLogger>>(file, format, timeFormat, serverType, bufferSize); break;
 	}
 }
 
-void AbstractServer::initializeLoggingConstants(ConfigFile &conf) const {
+auto AbstractServer::initializeLoggingConstants(ConfigFile &conf) const -> void {
 	conf.setVariable("LOG_NONE", LogDestinations::None);
 	conf.setVariable("LOG_ALL", LogDestinations::All);
 
-	ConstantMap constants;
+	hash_map_t<string_t, int32_t> constants;
 	constants["CONSOLE"] = LogDestinations::Console;
 	constants["FILE"] = LogDestinations::File;
 	constants["SQL"] = LogDestinations::Sql;
@@ -101,29 +96,29 @@ void AbstractServer::initializeLoggingConstants(ConfigFile &conf) const {
 	loggerOptions(constants, conf, "LOG", 0, 0);
 }
 
-void AbstractServer::loggerOptions(const ConstantMap &constants, ConfigFile &conf, const string &base, int32_t val, uint32_t depth) const {
-	int32_t oVal = val;
+auto AbstractServer::loggerOptions(const hash_map_t<string_t, int32_t> &constants, ConfigFile &conf, const string_t &base, int32_t val, uint32_t depth) const -> void {
+	int32_t originalVal = val;
 	for (const auto &kvp : constants) {
-		if (base.find(kvp.first) != string::npos) continue;
+		if (base.find(kvp.first) != string_t::npos) continue;
 
-		const string &newBase = base + "_" + kvp.first;
+		const string_t &newBase = base + "_" + kvp.first;
 		val |= kvp.second;
 		conf.setVariable(newBase, val);
 
 		if (depth < constants.size()) {
 			loggerOptions(constants, conf, newBase, val, depth + 1);
 		}
-		val = oVal;
+		val = originalVal;
 	}
 }
 
-void AbstractServer::log(LogTypes::LogTypes type, const string &message) {
+auto AbstractServer::log(LogTypes::LogTypes type, const string_t &message) -> void {
 	if (Logger *logger = getLogger()) {
 		logger->log(type, makeLogIdentifier(), message);
 	}
 }
 
-void AbstractServer::displayLaunchTime() const {
+auto AbstractServer::displayLaunchTime() const -> void {
 	auto loadingTime = TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), getStartTime());
 	std::cout << "Started in " << std::setprecision(3) << loadingTime / 1000.f << " seconds!" << std::endl << std::endl;
 }

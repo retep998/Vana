@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,16 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.h"
 #include <algorithm>
 
-using StringUtilities::lexical_cast;
-
 PlayerBuddyList::PlayerBuddyList(Player *player) :
-	m_player(player),
-	m_sentRequest(false)
+	m_player(player)
 {
 	load();
 }
 
-void PlayerBuddyList::load() {
+auto PlayerBuddyList::load() -> void {
 	soci::session &sql = Database::getCharDb();
 
 	soci::rowset<> rs = (sql.prepare
@@ -57,18 +54,18 @@ void PlayerBuddyList::load() {
 		<< "LEFT JOIN characters c ON c.character_id = p.inviter_character_id "
 		<< "WHERE c.world_id = :world AND p.character_id = :char ",
 		soci::use(m_player->getId(), "char"),
-		soci::use(ChannelServer::Instance()->getWorldId(), "world"));
+		soci::use(ChannelServer::getInstance().getWorldId(), "world"));
 
 	BuddyInvite invite;
 	for (const auto &row : rs) {
 		invite = BuddyInvite();
 		invite.id = row.get<int32_t>("inviter_character_id");
-		invite.name = row.get<string>("inviter_name");
+		invite.name = row.get<string_t>("inviter_name");
 		m_pendingBuddies.push_back(invite);
 	}
 }
 
-uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool invite) {
+auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool invite) -> uint8_t {
 	if (listSize() >= m_player->getBuddyListSize()) {
 		// Buddy list full
 		return BuddyListPacket::Errors::BuddyListFull;
@@ -92,7 +89,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
 		<< "WHERE c.name = :name AND c.world_id = :world ",
 		soci::use(name, "name"),
-		soci::use(ChannelServer::Instance()->getWorldId(), "world"),
+		soci::use(ChannelServer::getInstance().getWorldId(), "world"),
 		soci::into(row);
 
 	if (!sql.got_data()) {
@@ -112,7 +109,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 
 	int32_t charId = row.get<int32_t>("character_id");
 
-	if (m_buddies.find(charId) != m_buddies.end()) {
+	if (m_buddies.find(charId) != std::end(m_buddies)) {
 		if (m_buddies[charId]->groupName == group) {
 			// Already in buddy list
 			return BuddyListPacket::Errors::AlreadyInList;
@@ -165,7 +162,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 			}
 		}
 		else {
-			vector<int32_t> idVector;
+			vector_t<int32_t> idVector;
 			idVector.push_back(charId);
 			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
@@ -174,7 +171,7 @@ uint8_t PlayerBuddyList::addBuddy(const string &name, const string &group, bool 
 	return BuddyListPacket::Errors::None;
 }
 
-void PlayerBuddyList::removeBuddy(int32_t charId) {
+auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 	if (m_pendingBuddies.size() != 0 && m_sentRequest) {
 		BuddyInvite invite = m_pendingBuddies.front();
 		if (invite.id == charId) {
@@ -183,12 +180,12 @@ void PlayerBuddyList::removeBuddy(int32_t charId) {
 		return;
 	}
 
-	if (m_buddies.find(charId) == m_buddies.end()) {
+	if (m_buddies.find(charId) == std::end(m_buddies)) {
 		// Hacking
 		return;
 	}
 	if (m_buddies[charId]->channel != -1) {
-		vector<int32_t> idVector;
+		vector_t<int32_t> idVector;
 		idVector.push_back(charId);
 		SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false);
 	}
@@ -204,12 +201,12 @@ void PlayerBuddyList::removeBuddy(int32_t charId) {
 	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Remove);
 }
 
-void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
+auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void {
 	int32_t charId = row.get<int32_t>("buddy_character_id");
 	int32_t rowId = row.get<int32_t>("id");
-	opt_string name = row.get<opt_string>("name");
-	opt_string group = row.get<opt_string>("group_name");
-	string cache = row.get<string>("name_cache");
+	opt_string_t name = row.get<opt_string_t>("name");
+	opt_string_t group = row.get<opt_string_t>("group_name");
+	string_t cache = row.get<string_t>("name_cache");
 
 	if (name.is_initialized() && name.get() != cache) {
 		// Outdated name cache, i.e. character renamed
@@ -221,7 +218,7 @@ void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
 			soci::use(rowId, "id");
 	}
 
-	BuddyPtr buddy = std::make_shared<Buddy>();
+	ref_ptr_t<Buddy> buddy = make_ref_ptr<Buddy>();
 	buddy->charId = charId;
 
 	// Note that the cache is for displaying the character name when the
@@ -274,9 +271,9 @@ void PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) {
 	m_buddies[charId] = buddy;
 }
 
-void PlayerBuddyList::addBuddies(PacketCreator &packet) {
+auto PlayerBuddyList::addBuddies(PacketCreator &packet) -> void {
 	for (const auto &kvp : m_buddies) {
-		const BuddyPtr &buddy = kvp.second;
+		const ref_ptr_t<Buddy> &buddy = kvp.second;
 		packet.add<int32_t>(buddy->charId);
 		packet.addString(buddy->name, 13);
 		packet.add<uint8_t>(buddy->oppositeStatus);
@@ -296,7 +293,7 @@ void PlayerBuddyList::addBuddies(PacketCreator &packet) {
 	}
 }
 
-void PlayerBuddyList::checkForPendingBuddy() {
+auto PlayerBuddyList::checkForPendingBuddy() -> void {
 	if (m_pendingBuddies.size() == 0 || m_sentRequest) {
 		// No buddies pending or request sent (didn't receive answer yet)
 		return;
@@ -306,7 +303,7 @@ void PlayerBuddyList::checkForPendingBuddy() {
 	m_sentRequest = true;
 }
 
-void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
+auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 	if (m_pendingBuddies.size() == 0 || !m_sentRequest) {
 		// Hacking
 		return;
@@ -315,7 +312,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 	BuddyInvite invite = m_pendingBuddies.front();
 	if (invite.id != id) {
 		// Hacking
-		ChannelServer::Instance()->log(LogTypes::Warning, "Player tried to accept a player with player ID " + lexical_cast<string>(id) + " but the sent player ID was " + lexical_cast<string>(invite.id) + ". Player: " + m_player->getName());
+		ChannelServer::getInstance().log(LogTypes::Warning, "Player tried to accept a player with player ID " + StringUtilities::lexical_cast<string_t>(id)+" but the sent player ID was " + StringUtilities::lexical_cast<string_t>(invite.id) + ". Player: " + m_player->getName());
 		return;
 	}
 
@@ -325,7 +322,7 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 			BuddyListPacket::error(m_player, error);
 		}
 		else {
-			vector<int32_t> idVector;
+			vector_t<int32_t> idVector;
 			idVector.push_back(id);
 			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
 		}
@@ -344,8 +341,8 @@ void PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) {
 	checkForPendingBuddy();
 }
 
-vector<int32_t> PlayerBuddyList::getBuddyIds() {
-	vector<int32_t> ids;
+auto PlayerBuddyList::getBuddyIds() -> vector_t<int32_t> {
+	vector_t<int32_t> ids;
 	for (const auto &kvp : m_buddies) {
 		ids.push_back(kvp.second->charId);
 	}

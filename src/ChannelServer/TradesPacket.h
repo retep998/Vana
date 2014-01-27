@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.h"
 #include <string>
-
-using std::string;
 
 class Item;
 class Player;
@@ -70,14 +68,14 @@ namespace TradesPacket {
 		};
 	}
 
-	void sendOpenTrade(Player *player, Player *player1, Player *player2);
-	void sendTradeRequest(Player *player, Player *receiver, int32_t tradeId);
-	void sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message);
-	void sendTradeMessage(Player *receiver, int8_t type, int8_t message);
-	void sendTradeChat(Player *player, bool blue, const string &chat);
-	void sendLeaveTrade(Player *player);
-	void sendAddUser(Player *original, Player *newb, int8_t slot);
-	void sendAddMesos(Player *receiver, uint8_t slot, int32_t amount);
-	void sendAccepted(Player *desintation);
-	void sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item);
+	auto sendOpenTrade(Player *player, Player *player1, Player *player2) -> void;
+	auto sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) -> void;
+	auto sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) -> void;
+	auto sendTradeMessage(Player *receiver, int8_t type, int8_t message) -> void;
+	auto sendTradeChat(Player *player, bool blue, const string_t &chat) -> void;
+	auto sendLeaveTrade(Player *player) -> void;
+	auto sendAddUser(Player *original, Player *newb, int8_t slot) -> void;
+	auto sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) -> void;
+	auto sendAccepted(Player *desintation) -> void;
+	auto sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) -> void;
 }

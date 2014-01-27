@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,105 +25,91 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-using std::string;
-using std::unordered_map;
-using std::vector;
-
 struct SkillLevelInfo {
-	int8_t mobCount;
-	int8_t hitCount;
-	int8_t mastery;
-	uint8_t criticalDamage;
-	int16_t mp;
-	int16_t hp;
-	int16_t itemCount;
-	int16_t bulletConsume;
-	int16_t moneyConsume;
-	int16_t x;
-	int16_t y;
-	int16_t speed;
-	int16_t jump;
-	int16_t str;
-	int16_t wAtk;
-	int16_t wDef;
-	int16_t mAtk;
-	int16_t mDef;
-	int16_t acc;
-	int16_t avo;
-	int16_t coolTime;
-	int16_t morph;
-	int16_t damage;
-	int16_t range;
-	uint16_t hpProp;
-	uint16_t mpProp;
-	uint16_t prop;
-	int32_t fixedDamage;
-	int32_t item;
-	int32_t time;
-	int32_t optionalItem;
+	int8_t mobCount = 0;
+	int8_t hitCount = 0;
+	int8_t mastery = 0;
+	uint8_t criticalDamage = 0;
+	int16_t mp = 0;
+	int16_t hp = 0;
+	int16_t itemCount = 0;
+	int16_t bulletConsume = 0;
+	int16_t moneyConsume = 0;
+	int16_t x = 0;
+	int16_t y = 0;
+	int16_t speed = 0;
+	int16_t jump = 0;
+	int16_t str = 0;
+	int16_t wAtk = 0;
+	int16_t wDef = 0;
+	int16_t mAtk = 0;
+	int16_t mDef = 0;
+	int16_t acc = 0;
+	int16_t avo = 0;
+	int16_t coolTime = 0;
+	int16_t morph = 0;
+	int16_t damage = 0;
+	int16_t range = 0;
+	uint16_t hpProp = 0;
+	uint16_t mpProp = 0;
+	uint16_t prop = 0;
+	int32_t fixedDamage = 0;
+	int32_t item = 0;
+	int32_t time = 0;
+	int32_t optionalItem = 0;
 	Rect dimensions;
 };
-typedef unordered_map<uint8_t, SkillLevelInfo> SkillsLevelInfo;
 
-struct SpecialSkillInfo {
-	// Hurricane, Big Bang, Monster Magnet, Pierce, etc.
-	SpecialSkillInfo() : level(0), weaponSpeed(0), direction(0), skillId(0) { }
-	uint8_t level;
-	uint8_t weaponSpeed;
-	uint8_t direction;
-	int32_t skillId;
+struct ChargeOrStationarySkillInfo {
+	uint8_t level = 0;
+	uint8_t weaponSpeed = 0;
+	uint8_t direction = 0;
+	int32_t skillId = 0;
 };
 
 struct ReturnDamageInfo {
-	// Power Guard/Mana Reflection
-	ReturnDamageInfo() : reduction(0), damage(0), mapMobId(0), isPhysical(true), pos(0, 0) { }
-	uint8_t reduction;
-	int32_t damage;
-	int32_t mapMobId;
-	bool isPhysical;
+	uint8_t reduction = 0;
+	int32_t damage = 0;
+	int32_t mapMobId = 0;
+	bool isPhysical = true;
 	Pos pos;
 };
 
 struct MpEaterInfo {
-	MpEaterInfo() : skillId(0), level(0), x(0), prop(0), used(false) { }
-	int32_t skillId;
-	uint8_t level;
-	int16_t x;
-	uint16_t prop;
-	bool used;
+	int32_t skillId = 0;
+	uint8_t level = 0;
+	int16_t x = 0;
+	uint16_t prop = 0;
+	bool used = false;
 };
 
 struct MobSkillLevelInfo {
-	int8_t summonEffect;
-	uint8_t mp;
-	uint8_t hp;
-	uint8_t count;
-	int16_t interval;
-	int16_t prop;
-	int16_t limit;
-	int16_t time;
-	int32_t x;
-	int32_t y;
+	int8_t summonEffect = 0;
+	uint8_t mp = 0;
+	uint8_t hp = 0;
+	uint8_t count = 0;
+	int16_t cooldown = 0;
+	int16_t prop = 0;
+	int16_t limit = 0;
+	int16_t time = 0;
+	int32_t x = 0;
+	int32_t y = 0;
 	Rect dimensions;
-	vector<int32_t> summons;
+	vector_t<int32_t> summons;
 };
 
-typedef unordered_map<uint8_t, MobSkillLevelInfo> MobSkillsLevelInfo;
-
 struct BanishField {
-	BanishField() : message(""), portal(""), field(Maps::NoMap) { }
-	string message;
-	string portal;
-	int32_t field;
+	string_t message;
+	string_t portal;
+	int32_t field = Maps::NoMap;
 };
 
 struct MorphData {
-	MorphData() : superman(false) { }
-	uint8_t speed;
-	uint8_t jump;
-	double traction;
-	double swim;
-	bool superman;
+	bool superman = false;
+	uint8_t speed = 0;
+	uint8_t jump = 0;
+	double traction = 0.;
+	double swim = 0.;
 };
 
 namespace SkillTypes {
@@ -137,43 +123,28 @@ namespace SkillTypes {
 }
 
 struct Attack {
-	Attack() :
-		isMesoExplosion(false),
-		isChargeSkill(false),
-		isPiercingArrow(false),
-		isShadowMeso(false),
-		isHeal(false),
-		charge(0),
-		starPos(-1),
-		cashStarPos(-1),
-		starId(0),
-		skillLevel(0),
-		totalDamage(0),
-		portals(0)
-		{ }
-
-	bool isMesoExplosion;
-	bool isShadowMeso;
-	bool isChargeSkill;
-	bool isPiercingArrow;
-	bool isHeal;
-	int8_t targets;
-	int8_t hits;
-	uint8_t display;
-	uint8_t weaponSpeed;
-	uint8_t animation;
-	uint8_t weaponClass;
-	uint8_t skillLevel;
-	uint8_t portals;
-	int16_t starPos;
-	int16_t cashStarPos;
-	int32_t skillId;
-	int32_t summonId;
-	int32_t charge;
-	int32_t starId;
-	uint32_t ticks;
-	int64_t totalDamage;
+	bool isMesoExplosion = false;
+	bool isShadowMeso = false;
+	bool isChargeSkill = false;
+	bool isPiercingArrow = false;
+	bool isHeal = false;
+	int8_t targets = 0;
+	int8_t hits = 0;
+	uint8_t display = 0;
+	uint8_t weaponSpeed = 0;
+	uint8_t animation = 0;
+	uint8_t weaponClass = 0;
+	uint8_t skillLevel = 0;
+	uint8_t portals = 0;
+	int16_t starPos = -1;
+	int16_t cashStarPos = -1;
+	int32_t skillId = 0;
+	int32_t summonId = 0;
+	int32_t charge = 0;
+	int32_t starId = 0;
+	uint32_t ticks = 0;
+	int64_t totalDamage = 0;
 	Pos projectilePos;
 	Pos playerPos;
-	unordered_map<int32_t, vector<int32_t>> damages;
+	hash_map_t<int32_t, vector_t<int32_t>> damages;
 };

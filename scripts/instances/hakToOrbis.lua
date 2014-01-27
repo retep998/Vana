@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,19 +25,17 @@ function playerDisconnect(playerId, isPartyLeader)
 end
 
 function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		moveAllPlayers(200000141);
-		removeAllInstancePlayers();
+	if fromTimer then
+		if getInstancePlayerCount() > 0 then
+			moveAllPlayers(200000141);
+			removeAllInstancePlayers();
+		end
 	end
-end
-
-function changeMap(playerId, newMap, oldMap, isPartyLeader)
-	removeInstancePlayer(playerId);
-	markForDelete();
 end
 
 function playerDeath(playerId) end
 function timerEnd(name, fromTimer) end
+function changeMap(playerId, newMap, oldMap, isPartyLeader) end
 function mobDeath(mobId, mapMobId, mapId) end
 function mobSpawn(mobId, mapMobId, mapId) end
 function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end

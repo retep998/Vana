@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2008-2013 Vana Development Team
+Copyright (C) 2008-2014 Vana Development Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,29 +20,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 
 class SessionManager;
-typedef std::shared_ptr<SessionManager> SessionManagerPtr;
 
 class AbstractSession {
 public:
-	friend class SessionManager;
-	virtual ~AbstractSession() { }
+	virtual ~AbstractSession() = default;
 
-	AbstractSession(SessionManagerPtr sessionManager, bool encrypted = true) :
+	AbstractSession(ref_ptr_t<SessionManager> sessionManager, bool encrypted = true) :
 		m_sessionManager(sessionManager),
 		m_encrypt(encrypted)
 	{
 	}
-	virtual void disconnect() = 0;
+	virtual auto disconnect() -> void = 0;
 protected:
-	virtual void start() = 0;
-	virtual void stop() = 0;
-	virtual void handleStart() = 0;
-	virtual void handleStop() = 0;
-	bool isEncrypted() const { return m_encrypt; }
-	void setEncrypted(bool encrypted) { m_encrypt = encrypted; }
+	virtual auto start() -> void = 0;
+	virtual auto stop() -> void = 0;
+	virtual auto handleStart() -> void = 0;
+	virtual auto handleStop() -> void = 0;
+	auto isEncrypted() const -> bool { return m_encrypt; }
+	auto setEncrypted(bool encrypted) -> void { m_encrypt = encrypted; }
 
-	SessionManagerPtr m_sessionManager;
-	bool m_encrypt;
+	ref_ptr_t<SessionManager> m_sessionManager;
+	bool m_encrypt = true;
+private:
+	friend class SessionManager;
 };
-
-typedef std::shared_ptr<AbstractSession> AbstractSessionPtr;
