@@ -56,10 +56,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <EnablePREfast>false</EnablePREfast>
@@ -77,10 +77,10 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -150,105 +150,105 @@
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Common\AbstractSession.h" />
-    <ClInclude Include="src\Common\BitUtilities.h" />
-    <ClInclude Include="src\Common\CaseInsensitiveEquals.h" />
-    <ClInclude Include="src\Common\CaseInsensitiveHash.h" />
-    <ClInclude Include="src\Common\ClientIp.h" />
-    <ClInclude Include="src\Common\ComboLoggers.h" />
-    <ClInclude Include="src\Common\Configuration.h" />
-    <ClInclude Include="src\Common\ConsoleLogger.h" />
-    <ClInclude Include="src\Common\CurseDataProvider.h" />
-    <ClInclude Include="src\Common\ExitCodes.h" />
-    <ClInclude Include="src\Common\ExternalIp.h" />
-    <ClInclude Include="src\Common\ExternalIpResolver.h" />
-    <ClInclude Include="src\Common\FileLogger.h" />
-    <ClInclude Include="src\Common\GameConstants.h" />
+    <ClInclude Include="src\Common\AbstractSession.hpp" />
+    <ClInclude Include="src\Common\BitUtilities.hpp" />
+    <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp" />
+    <ClInclude Include="src\Common\CaseInsensitiveHash.hpp" />
+    <ClInclude Include="src\Common\ClientIp.hpp" />
+    <ClInclude Include="src\Common\ComboLoggers.hpp" />
+    <ClInclude Include="src\Common\Configuration.hpp" />
+    <ClInclude Include="src\Common\ConsoleLogger.hpp" />
+    <ClInclude Include="src\Common\CurseDataProvider.hpp" />
+    <ClInclude Include="src\Common\ExitCodes.hpp" />
+    <ClInclude Include="src\Common\ExternalIp.hpp" />
+    <ClInclude Include="src\Common\ExternalIpResolver.hpp" />
+    <ClInclude Include="src\Common\FileLogger.hpp" />
+    <ClInclude Include="src\Common\GameConstants.hpp" />
     <ClInclude Include="src\Common\hash_combine.hpp" />
-    <ClInclude Include="src\Common\IConfig.h" />
-    <ClInclude Include="src\Common\InterHelper.h" />
-    <ClInclude Include="src\Common\Ip.h" />
-    <ClInclude Include="src\Common\IPacket.h" />
-    <ClInclude Include="src\Common\Item.h" />
-    <ClInclude Include="src\Common\ItemConstants.h" />
-    <ClInclude Include="src\Common\ItemDataObjects.h" />
-    <ClInclude Include="src\Common\BlockCipherIv.h" />
-    <ClInclude Include="src\Common\JobConstants.h" />
-    <ClInclude Include="src\Common\Line.h" />
-    <ClInclude Include="src\Common\Logger.h" />
+    <ClInclude Include="src\Common\IConfig.hpp" />
+    <ClInclude Include="src\Common\InterHelper.hpp" />
+    <ClInclude Include="src\Common\Ip.hpp" />
+    <ClInclude Include="src\Common\IPacket.hpp" />
+    <ClInclude Include="src\Common\Item.hpp" />
+    <ClInclude Include="src\Common\ItemConstants.hpp" />
+    <ClInclude Include="src\Common\ItemDataObjects.hpp" />
+    <ClInclude Include="src\Common\BlockCipherIv.hpp" />
+    <ClInclude Include="src\Common\JobConstants.hpp" />
+    <ClInclude Include="src\Common\Line.hpp" />
+    <ClInclude Include="src\Common\Logger.hpp" />
     <ClInclude Include="src\Common\make_unique.hpp" />
-    <ClInclude Include="src\Common\MapConstants.h" />
-    <ClInclude Include="src\Common\MapleVersion.h" />
-    <ClInclude Include="src\Common\MapObjects.h" />
-    <ClInclude Include="src\Common\MobConstants.h" />
-    <ClInclude Include="src\Common\MobDataObjects.h" />
-    <ClInclude Include="src\Common\NpcDataProvider.h" />
+    <ClInclude Include="src\Common\MapConstants.hpp" />
+    <ClInclude Include="src\Common\MapleVersion.hpp" />
+    <ClInclude Include="src\Common\MapObjects.hpp" />
+    <ClInclude Include="src\Common\MobConstants.hpp" />
+    <ClInclude Include="src\Common\MobDataObjects.hpp" />
+    <ClInclude Include="src\Common\NpcDataProvider.hpp" />
     <ClInclude Include="src\Common\optional.hpp" />
-    <ClInclude Include="src\Common\PlayerObjects.h" />
-    <ClInclude Include="src\Common\PrecompiledHeader.h" />
-    <ClInclude Include="src\Common\MySqlQueryParser.h" />
-    <ClInclude Include="src\Common\Quest.h" />
-    <ClInclude Include="src\Common\Rect.h" />
+    <ClInclude Include="src\Common\PlayerObjects.hpp" />
+    <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
+    <ClInclude Include="src\Common\Quest.hpp" />
+    <ClInclude Include="src\Common\Rect.hpp" />
     <ClInclude Include="src\Common\shared_array.hpp" />
-    <ClInclude Include="src\Common\SkillConstants.h" />
-    <ClInclude Include="src\Common\SkillDataObjects.h" />
-    <ClInclude Include="src\Common\SociExtensions.h" />
-    <ClInclude Include="src\Common\SqlLogger.h" />
-    <ClInclude Include="src\Common\StopWatch.h" />
-    <ClInclude Include="src\Common\TauswortheGenerator.h" />
-    <ClInclude Include="src\Common\Timer.h" />
-    <ClInclude Include="src\Common\TimerContainer.h" />
-    <ClInclude Include="src\Common\TimerContainerHolder.h" />
-    <ClInclude Include="src\Common\TimerId.h" />
-    <ClInclude Include="src\Common\TimerThread.h" />
-    <ClInclude Include="src\Common\TimerTypes.h" />
+    <ClInclude Include="src\Common\SkillConstants.hpp" />
+    <ClInclude Include="src\Common\SkillDataObjects.hpp" />
+    <ClInclude Include="src\Common\SociExtensions.hpp" />
+    <ClInclude Include="src\Common\SqlLogger.hpp" />
+    <ClInclude Include="src\Common\StopWatch.hpp" />
+    <ClInclude Include="src\Common\TauswortheGenerator.hpp" />
+    <ClInclude Include="src\Common\Timer.hpp" />
+    <ClInclude Include="src\Common\TimerContainer.hpp" />
+    <ClInclude Include="src\Common\TimerContainerHolder.hpp" />
+    <ClInclude Include="src\Common\TimerId.hpp" />
+    <ClInclude Include="src\Common\TimerThread.hpp" />
+    <ClInclude Include="src\Common\TimerTypes.hpp" />
     <ClInclude Include="src\Common\tokenizer.hpp" />
-    <ClInclude Include="src\Common\Types.h" />
-    <ClInclude Include="src\Common\BeautyDataProvider.h" />
-    <ClInclude Include="src\Common\BuffDataProvider.h" />
-    <ClInclude Include="src\Common\DropDataProvider.h" />
-    <ClInclude Include="src\Common\EquipDataProvider.h" />
-    <ClInclude Include="src\Common\InitializeCommon.h" />
-    <ClInclude Include="src\Common\ItemDataProvider.h" />
-    <ClInclude Include="src\Common\MobDataProvider.h" />
-    <ClInclude Include="src\Common\QuestDataProvider.h" />
-    <ClInclude Include="src\Common\ReactorDataProvider.h" />
-    <ClInclude Include="src\Common\ScriptDataProvider.h" />
-    <ClInclude Include="src\Common\ShopDataProvider.h" />
-    <ClInclude Include="src\Common\SkillDataProvider.h" />
-    <ClInclude Include="src\Common\ValidCharDataProvider.h" />
-    <ClInclude Include="src\Common\ConfigFile.h" />
-    <ClInclude Include="src\Common\Database.h" />
-    <ClInclude Include="src\Common\PacketCreator.h" />
-    <ClInclude Include="src\Common\PacketReader.h" />
-    <ClInclude Include="src\Common\PingPacket.h" />
-    <ClInclude Include="src\Common\InterHeader.h" />
-    <ClInclude Include="src\Common\CmsgHeader.h" />
-    <ClInclude Include="src\Common\SmsgHeader.h" />
-    <ClInclude Include="src\Common\AuthenticationPacket.h" />
-    <ClInclude Include="src\Common\FileUtilities.h" />
-    <ClInclude Include="src\Common\GameLogicUtilities.h" />
-    <ClInclude Include="src\Common\LoopingId.h" />
-    <ClInclude Include="src\Common\MiscUtilities.h" />
-    <ClInclude Include="src\Common\Randomizer.h" />
-    <ClInclude Include="src\Common\StringUtilities.h" />
-    <ClInclude Include="src\Common\TimeUtilities.h" />
-    <ClInclude Include="src\Common\ConnectionManager.h" />
-    <ClInclude Include="src\Common\ConnectionAcceptor.h" />
-    <ClInclude Include="src\Common\ServerClient.h" />
-    <ClInclude Include="src\Common\Session.h" />
-    <ClInclude Include="src\Common\SessionManager.h" />
-    <ClInclude Include="src\Common\Decoder.h" />
-    <ClInclude Include="src\Common\AbstractConnection.h" />
-    <ClInclude Include="src\Common\AbstractServer.h" />
-    <ClInclude Include="src\Common\ServerConnection.h" />
-    <ClInclude Include="src\Common\GameObjects.h" />
-    <ClInclude Include="src\Common\Pos.h" />
-    <ClInclude Include="src\Common\VanaConstants.h" />
-    <ClInclude Include="src\Common\VanaMain.h" />
-    <ClInclude Include="src\Common\Variables.h" />
-    <ClInclude Include="src\Common\DatabaseUpdater.h" />
-    <ClInclude Include="src\Common\WidePos.h" />
+    <ClInclude Include="src\Common\Types.hpp" />
+    <ClInclude Include="src\Common\BeautyDataProvider.hpp" />
+    <ClInclude Include="src\Common\BuffDataProvider.hpp" />
+    <ClInclude Include="src\Common\DropDataProvider.hpp" />
+    <ClInclude Include="src\Common\EquipDataProvider.hpp" />
+    <ClInclude Include="src\Common\InitializeCommon.hpp" />
+    <ClInclude Include="src\Common\ItemDataProvider.hpp" />
+    <ClInclude Include="src\Common\MobDataProvider.hpp" />
+    <ClInclude Include="src\Common\QuestDataProvider.hpp" />
+    <ClInclude Include="src\Common\ReactorDataProvider.hpp" />
+    <ClInclude Include="src\Common\ScriptDataProvider.hpp" />
+    <ClInclude Include="src\Common\ShopDataProvider.hpp" />
+    <ClInclude Include="src\Common\SkillDataProvider.hpp" />
+    <ClInclude Include="src\Common\ValidCharDataProvider.hpp" />
+    <ClInclude Include="src\Common\ConfigFile.hpp" />
+    <ClInclude Include="src\Common\Database.hpp" />
+    <ClInclude Include="src\Common\PacketCreator.hpp" />
+    <ClInclude Include="src\Common\PacketReader.hpp" />
+    <ClInclude Include="src\Common\PingPacket.hpp" />
+    <ClInclude Include="src\Common\InterHeader.hpp" />
+    <ClInclude Include="src\Common\CmsgHeader.hpp" />
+    <ClInclude Include="src\Common\SmsgHeader.hpp" />
+    <ClInclude Include="src\Common\AuthenticationPacket.hpp" />
+    <ClInclude Include="src\Common\FileUtilities.hpp" />
+    <ClInclude Include="src\Common\GameLogicUtilities.hpp" />
+    <ClInclude Include="src\Common\LoopingId.hpp" />
+    <ClInclude Include="src\Common\MiscUtilities.hpp" />
+    <ClInclude Include="src\Common\Randomizer.hpp" />
+    <ClInclude Include="src\Common\StringUtilities.hpp" />
+    <ClInclude Include="src\Common\TimeUtilities.hpp" />
+    <ClInclude Include="src\Common\ConnectionManager.hpp" />
+    <ClInclude Include="src\Common\ConnectionAcceptor.hpp" />
+    <ClInclude Include="src\Common\ServerClient.hpp" />
+    <ClInclude Include="src\Common\Session.hpp" />
+    <ClInclude Include="src\Common\SessionManager.hpp" />
+    <ClInclude Include="src\Common\Decoder.hpp" />
+    <ClInclude Include="src\Common\AbstractConnection.hpp" />
+    <ClInclude Include="src\Common\AbstractServer.hpp" />
+    <ClInclude Include="src\Common\ServerConnection.hpp" />
+    <ClInclude Include="src\Common\GameObjects.hpp" />
+    <ClInclude Include="src\Common\Pos.hpp" />
+    <ClInclude Include="src\Common\VanaConstants.hpp" />
+    <ClInclude Include="src\Common\VanaMain.hpp" />
+    <ClInclude Include="src\Common\Variables.hpp" />
+    <ClInclude Include="src\Common\DatabaseUpdater.hpp" />
+    <ClInclude Include="src\Common\WidePos.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

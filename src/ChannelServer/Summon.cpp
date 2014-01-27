@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Summon.h"
-#include "SkillConstants.h"
-#include "SkillDataProvider.h"
+#include "Summon.hpp"
+#include "SkillConstants.hpp"
+#include "SkillDataProvider.hpp"
 
 Summon::Summon(int32_t id, int32_t summonId, uint8_t level) :
 	MovableLife(0, Pos(), 0),

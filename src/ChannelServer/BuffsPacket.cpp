@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "BuffsPacket.h"
-#include "Buffs.h"
-#include "BuffsPacketHelper.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "Session.h"
-#include "SkillConstants.h"
-#include "SmsgHeader.h"
+#include "BuffsPacket.hpp"
+#include "Buffs.hpp"
+#include "BuffsPacketHelper.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "Session.hpp"
+#include "SkillConstants.hpp"
+#include "SmsgHeader.hpp"
 
 auto BuffsPacket::useSkill(Player *player, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo) -> void {
 	PacketCreator packet;

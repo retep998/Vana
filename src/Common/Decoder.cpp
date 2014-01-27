@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Decoder.h"
-#include "BitUtilities.h"
-#include "MapleVersion.h"
-#include "PacketCreator.h"
-#include "Randomizer.h"
-#include "SmsgHeader.h"
+#include "Decoder.hpp"
+#include "BitUtilities.hpp"
+#include "MapleVersion.hpp"
+#include "PacketCreator.hpp"
+#include "Randomizer.hpp"
+#include "SmsgHeader.hpp"
 
 const uint8_t AesKeySize = 32;
 const uint8_t AesKey[AesKeySize] = {

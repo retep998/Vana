@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "EquipDataProvider.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "InitializeCommon.h"
-#include "Randomizer.h"
-#include "StringUtilities.h"
+#include "EquipDataProvider.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InitializeCommon.hpp"
+#include "Randomizer.hpp"
+#include "StringUtilities.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>

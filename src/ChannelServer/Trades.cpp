@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Trades.h"
-#include "Player.h"
-#include "Trade.h"
-#include "TradeHandler.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
-#include "TimerContainer.h"
+#include "Trades.hpp"
+#include "Player.hpp"
+#include "Trade.hpp"
+#include "TradeHandler.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
+#include "TimerContainer.hpp"
 #include <functional>
 
 seconds_t Trades::TradeTimeout = seconds_t(180);

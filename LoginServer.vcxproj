@@ -56,10 +56,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -85,10 +85,10 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -125,23 +125,23 @@
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LoginServer\Channel.h" />
-    <ClInclude Include="src\LoginServer\PrecompiledHeader.h" />
-    <ClInclude Include="src\LoginServer\LoginPacket.h" />
-    <ClInclude Include="src\LoginServer\LoginPacketHelper.h" />
-    <ClInclude Include="src\LoginServer\Characters.h" />
-    <ClInclude Include="src\LoginServer\Login.h" />
-    <ClInclude Include="src\LoginServer\LoginServer.h" />
-    <ClInclude Include="src\LoginServer\Player.h" />
-    <ClInclude Include="src\LoginServer\PlayerStatus.h" />
-    <ClInclude Include="src\LoginServer\RankingCalculator.h" />
-    <ClInclude Include="src\LoginServer\SyncPacket.h" />
-    <ClInclude Include="src\LoginServer\World.h" />
-    <ClInclude Include="src\LoginServer\Worlds.h" />
-    <ClInclude Include="src\LoginServer\InitializeLogin.h" />
-    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.h" />
-    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.h" />
-    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.h" />
+    <ClInclude Include="src\LoginServer\Channel.hpp" />
+    <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
+    <ClInclude Include="src\LoginServer\LoginPacket.hpp" />
+    <ClInclude Include="src\LoginServer\LoginPacketHelper.hpp" />
+    <ClInclude Include="src\LoginServer\Characters.hpp" />
+    <ClInclude Include="src\LoginServer\Login.hpp" />
+    <ClInclude Include="src\LoginServer\LoginServer.hpp" />
+    <ClInclude Include="src\LoginServer\Player.hpp" />
+    <ClInclude Include="src\LoginServer\PlayerStatus.hpp" />
+    <ClInclude Include="src\LoginServer\RankingCalculator.hpp" />
+    <ClInclude Include="src\LoginServer\SyncPacket.hpp" />
+    <ClInclude Include="src\LoginServer\World.hpp" />
+    <ClInclude Include="src\LoginServer\Worlds.hpp" />
+    <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />
+    <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.hpp" />
+    <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.hpp" />
+    <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

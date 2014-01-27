@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PartyHandler.h"
-#include "InterHelper.h"
-#include "PacketReader.h"
-#include "Party.h"
-#include "PartyPacket.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "SyncPacket.h"
+#include "PartyHandler.hpp"
+#include "InterHelper.hpp"
+#include "PacketReader.hpp"
+#include "Party.hpp"
+#include "PartyPacket.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "SyncPacket.hpp"
 
 auto PartyHandler::handleRequest(Player *player, PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();

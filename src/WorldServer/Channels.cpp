@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Channels.h"
-#include "Channel.h"
-#include "LoginServerConnectPacket.h"
-#include "PacketCreator.h"
-#include "Session.h"
-#include "WorldServer.h"
-#include "WorldServerAcceptConnection.h"
+#include "Channels.hpp"
+#include "Channel.hpp"
+#include "LoginServerConnectPacket.hpp"
+#include "PacketCreator.hpp"
+#include "Session.hpp"
+#include "WorldServer.hpp"
+#include "WorldServerAcceptConnection.hpp"
 
 auto Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>();

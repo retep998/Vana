@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerDataProvider.h"
-#include "Database.h"
-#include "Channels.h"
-#include "GameObjects.h"
-#include "InitializeCommon.h"
-#include "InterHelper.h"
-#include "PacketCreator.h"
-#include "Party.h"
-#include "Player.h"
-#include "PlayerObjects.h"
-#include "StringUtilities.h"
-#include "SyncHandler.h"
-#include "SyncPacket.h"
-#include "WorldServer.h"
+#include "PlayerDataProvider.hpp"
+#include "Database.hpp"
+#include "Channels.hpp"
+#include "GameObjects.hpp"
+#include "InitializeCommon.hpp"
+#include "InterHelper.hpp"
+#include "PacketCreator.hpp"
+#include "Party.hpp"
+#include "Player.hpp"
+#include "PlayerObjects.hpp"
+#include "StringUtilities.hpp"
+#include "SyncHandler.hpp"
+#include "SyncPacket.hpp"
+#include "WorldServer.hpp"
 #include <iomanip>
 #include <iostream>
 #include <memory>

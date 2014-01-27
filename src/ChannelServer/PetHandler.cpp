@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PetHandler.h"
-#include "GameConstants.h"
-#include "Inventory.h"
-#include "InventoryPacket.h"
-#include "ItemConstants.h"
-#include "ItemDataProvider.h"
-#include "MovementHandler.h"
-#include "PacketReader.h"
-#include "Pet.h"
-#include "PetsPacket.h"
-#include "Player.h"
-#include "Randomizer.h"
-#include "SkillConstants.h"
+#include "PetHandler.hpp"
+#include "GameConstants.hpp"
+#include "Inventory.hpp"
+#include "InventoryPacket.hpp"
+#include "ItemConstants.hpp"
+#include "ItemDataProvider.hpp"
+#include "MovementHandler.hpp"
+#include "PacketReader.hpp"
+#include "Pet.hpp"
+#include "PetsPacket.hpp"
+#include "Player.hpp"
+#include "Randomizer.hpp"
+#include "SkillConstants.hpp"
 
 auto PetHandler::handleMovement(Player *player, PacketReader &packet) -> void {
 	int64_t petId = packet.get<int64_t>();

@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Maps.h"
-#include "FileUtilities.h"
-#include "Instance.h"
-#include "Inventory.h"
-#include "LuaPortal.h"
-#include "MapDataProvider.h"
-#include "MapObjects.h"
-#include "MapPacket.h"
-#include "PetHandler.h"
-#include "Player.h"
-#include "PlayerPacket.h"
-#include "PlayerDataProvider.h"
-#include "PacketReader.h"
-#include "SummonHandler.h"
+#include "Maps.hpp"
+#include "FileUtilities.hpp"
+#include "Instance.hpp"
+#include "Inventory.hpp"
+#include "LuaPortal.hpp"
+#include "MapDataProvider.hpp"
+#include "MapObjects.hpp"
+#include "MapPacket.hpp"
+#include "PetHandler.hpp"
+#include "Player.hpp"
+#include "PlayerPacket.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PacketReader.hpp"
+#include "SummonHandler.hpp"
 #include <string>
 
 auto Maps::getMap(int32_t mapId) -> Map * {

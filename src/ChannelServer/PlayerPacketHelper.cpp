@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerPacketHelper.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "ItemConstants.h"
-#include "PacketCreator.h"
-#include "Pet.h"
-#include "Player.h"
-#include "TimeUtilities.h"
+#include "PlayerPacketHelper.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "ItemConstants.hpp"
+#include "PacketCreator.hpp"
+#include "Pet.hpp"
+#include "Player.hpp"
+#include "TimeUtilities.hpp"
 #include <cmath>
 
 auto PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) -> void {

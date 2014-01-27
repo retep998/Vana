@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "FileUtilities.h"
+#include "FileUtilities.hpp"
 #include <sys/stat.h>
 
 auto FileUtilities::fileExists(const string_t &file) -> bool {

@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptPacket.h"
-#include "Channels.h"
-#include "Configuration.h"
-#include "InterHeader.h"
-#include "InterHelper.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Party.h"
-#include "PlayerDataProvider.h"
-#include "Session.h"
-#include "SmsgHeader.h"
-#include "TimeUtilities.h"
-#include "WorldServer.h"
-#include "WorldServerAcceptConnection.h"
+#include "WorldServerAcceptPacket.hpp"
+#include "Channels.hpp"
+#include "Configuration.hpp"
+#include "InterHeader.hpp"
+#include "InterHelper.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Party.hpp"
+#include "PlayerDataProvider.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
+#include "TimeUtilities.hpp"
+#include "WorldServer.hpp"
+#include "WorldServerAcceptConnection.hpp"
 #include <unordered_map>
 #include <map>
 

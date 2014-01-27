@@ -1,5 +1,5 @@
 file(GLOB LOGIN_SRC *.cpp)
-file(GLOB LOGIN_HEADERS *.h)
+file(GLOB LOGIN_HEADERS *.hpp)
 source_group("Login Sources" FILES ${LOGIN_SRC})
 source_group("Login Headers" FILES ${LOGIN_HEADERS})
 

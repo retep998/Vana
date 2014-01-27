@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "NpcHandler.h"
-#include "GameLogicUtilities.h"
-#include "Inventory.h"
-#include "InventoryPacket.h"
-#include "ItemDataProvider.h"
-#include "Map.h"
-#include "Maps.h"
-#include "Npc.h"
-#include "NpcDataProvider.h"
-#include "NpcPacket.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "ShopDataProvider.h"
-#include "StoragePacket.h"
+#include "NpcHandler.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Inventory.hpp"
+#include "InventoryPacket.hpp"
+#include "ItemDataProvider.hpp"
+#include "Map.hpp"
+#include "Maps.hpp"
+#include "Npc.hpp"
+#include "NpcDataProvider.hpp"
+#include "NpcPacket.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "ShopDataProvider.hpp"
+#include "StoragePacket.hpp"
 
 namespace ShopOpcodes {
 	enum Opcodes : int8_t {

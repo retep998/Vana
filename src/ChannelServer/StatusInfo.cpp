@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "StatusInfo.h"
-#include "Randomizer.h"
-#include "SkillConstants.h"
+#include "StatusInfo.hpp"
+#include "Randomizer.hpp"
+#include "SkillConstants.hpp"
 
 StatusInfo::StatusInfo(int32_t status, int32_t val, int32_t skillId, int32_t timeInSeconds) :
 	status(status),

@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapFunctions.h"
-#include "ChannelServer.h"
-#include "Map.h"
-#include "Maps.h"
-#include "MapPacket.h"
-#include "MobConstants.h"
-#include "Player.h"
-#include "PlayerPacket.h"
-#include "StringUtilities.h"
+#include "MapFunctions.hpp"
+#include "ChannelServer.hpp"
+#include "Map.hpp"
+#include "Maps.hpp"
+#include "MapPacket.hpp"
+#include "MobConstants.hpp"
+#include "Player.hpp"
+#include "PlayerPacket.hpp"
+#include "StringUtilities.hpp"
 #include <chrono>
 #include <iostream>
 

@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Npc.h"
-#include "FileUtilities.h"
-#include "LuaNpc.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "ScriptDataProvider.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "Npc.hpp"
+#include "FileUtilities.hpp"
+#include "LuaNpc.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "ScriptDataProvider.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 #include <string>
 
 Npc::Npc(int32_t npcId, Player *player, int16_t questId, bool isStart) :

@@ -56,10 +56,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -81,10 +81,10 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PrecompiledHeader.hpp</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>PrecompiledHeader.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>PrecompiledHeader.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
@@ -205,107 +205,107 @@
     <ClCompile Include="src\ChannelServer\ChatHandlerFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ChannelServer\Buffs.h" />
-    <ClInclude Include="src\ChannelServer\ChannelServer.h" />
-    <ClInclude Include="src\ChannelServer\Connectable.h" />
-    <ClInclude Include="src\ChannelServer\CustomFunctions.h" />
-    <ClInclude Include="src\ChannelServer\Drop.h" />
-    <ClInclude Include="src\ChannelServer\EffectPacket.h" />
-    <ClInclude Include="src\ChannelServer\Fame.h" />
-    <ClInclude Include="src\ChannelServer\InfoFunctions.h" />
-    <ClInclude Include="src\ChannelServer\Inventory.h" />
-    <ClInclude Include="src\ChannelServer\InventoryPacketHelper.h" />
-    <ClInclude Include="src\ChannelServer\KeyMaps.h" />
-    <ClInclude Include="src\ChannelServer\ManagementFunctions.h" />
-    <ClInclude Include="src\ChannelServer\Map.h" />
-    <ClInclude Include="src\ChannelServer\MapFunctions.h" />
-    <ClInclude Include="src\ChannelServer\MapleTvs.h" />
-    <ClInclude Include="src\ChannelServer\Maps.h" />
-    <ClInclude Include="src\ChannelServer\MessageFunctions.h" />
-    <ClInclude Include="src\ChannelServer\Mist.h" />
-    <ClInclude Include="src\ChannelServer\Mob.h" />
-    <ClInclude Include="src\ChannelServer\MovableLife.h" />
-    <ClInclude Include="src\ChannelServer\Npc.h" />
-    <ClInclude Include="src\ChannelServer\Party.h" />
-    <ClInclude Include="src\ChannelServer\PartyHandler.h" />
-    <ClInclude Include="src\ChannelServer\PartyPacket.h" />
-    <ClInclude Include="src\ChannelServer\Pet.h" />
-    <ClInclude Include="src\ChannelServer\PetHandler.h" />
-    <ClInclude Include="src\ChannelServer\PlayerDataProvider.h" />
-    <ClInclude Include="src\ChannelServer\PlayerModFunctions.h" />
-    <ClInclude Include="src\ChannelServer\Quests.h" />
-    <ClInclude Include="src\ChannelServer\Reactor.h" />
-    <ClInclude Include="src\ChannelServer\ReactorHandler.h" />
-    <ClInclude Include="src\ChannelServer\SkillMacros.h" />
-    <ClInclude Include="src\ChannelServer\Skills.h" />
-    <ClInclude Include="src\ChannelServer\StatusInfo.h" />
-    <ClInclude Include="src\ChannelServer\SummonHandler.h" />
-    <ClInclude Include="src\ChannelServer\Summon.h" />
-    <ClInclude Include="src\ChannelServer\SyncHandler.h" />
-    <ClInclude Include="src\ChannelServer\SyncPacket.h" />
-    <ClInclude Include="src\ChannelServer\Trade.h" />
-    <ClInclude Include="src\ChannelServer\Trades.h" />
-    <ClInclude Include="src\ChannelServer\BuddyListPacket.h" />
-    <ClInclude Include="src\ChannelServer\BuffsPacket.h" />
-    <ClInclude Include="src\ChannelServer\DropsPacket.h" />
-    <ClInclude Include="src\ChannelServer\FamePacket.h" />
-    <ClInclude Include="src\ChannelServer\GmPacket.h" />
-    <ClInclude Include="src\ChannelServer\InventoryPacket.h" />
-    <ClInclude Include="src\ChannelServer\LevelsPacket.h" />
-    <ClInclude Include="src\ChannelServer\MapPacket.h" />
-    <ClInclude Include="src\ChannelServer\MobsPacket.h" />
-    <ClInclude Include="src\ChannelServer\MonsterBookPacket.h" />
-    <ClInclude Include="src\ChannelServer\NpcPacket.h" />
-    <ClInclude Include="src\ChannelServer\PetsPacket.h" />
-    <ClInclude Include="src\ChannelServer\PlayerPacket.h" />
-    <ClInclude Include="src\ChannelServer\PlayersPacket.h" />
-    <ClInclude Include="src\ChannelServer\QuestsPacket.h" />
-    <ClInclude Include="src\ChannelServer\ReactorPacket.h" />
-    <ClInclude Include="src\ChannelServer\ServerPacket.h" />
-    <ClInclude Include="src\ChannelServer\SkillsPacket.h" />
-    <ClInclude Include="src\ChannelServer\StoragePacket.h" />
-    <ClInclude Include="src\ChannelServer\SummonsPacket.h" />
-    <ClInclude Include="src\ChannelServer\TradesPacket.h" />
-    <ClInclude Include="src\ChannelServer\BuffsPacketHelper.h" />
-    <ClInclude Include="src\ChannelServer\PlayerPacketHelper.h" />
-    <ClInclude Include="src\ChannelServer\InitializeChannel.h" />
-    <ClInclude Include="src\ChannelServer\MapDataProvider.h" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnection.h" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.h" />
-    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.h" />
-    <ClInclude Include="src\ChannelServer\LuaInstance.h" />
-    <ClInclude Include="src\ChannelServer\LuaNpc.h" />
-    <ClInclude Include="src\ChannelServer\LuaPortal.h" />
-    <ClInclude Include="src\ChannelServer\LuaReactor.h" />
-    <ClInclude Include="src\ChannelServer\LuaScriptable.h" />
-    <ClInclude Include="src\ChannelServer\Player.h" />
-    <ClInclude Include="src\ChannelServer\PlayerActiveBuffs.h" />
-    <ClInclude Include="src\ChannelServer\PlayerBuddyList.h" />
-    <ClInclude Include="src\ChannelServer\PlayerInventory.h" />
-    <ClInclude Include="src\ChannelServer\PlayerMonsterBook.h" />
-    <ClInclude Include="src\ChannelServer\PlayerMounts.h" />
-    <ClInclude Include="src\ChannelServer\PlayerPets.h" />
-    <ClInclude Include="src\ChannelServer\PlayerQuests.h" />
-    <ClInclude Include="src\ChannelServer\PlayerSkills.h" />
-    <ClInclude Include="src\ChannelServer\PlayerStats.h" />
-    <ClInclude Include="src\ChannelServer\PlayerStorage.h" />
-    <ClInclude Include="src\ChannelServer\PlayerSummons.h" />
-    <ClInclude Include="src\ChannelServer\PlayerVariables.h" />
-    <ClInclude Include="src\ChannelServer\EventDataProvider.h" />
-    <ClInclude Include="src\ChannelServer\Instance.h" />
-    <ClInclude Include="src\ChannelServer\Instances.h" />
-    <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.h" />
-    <ClInclude Include="src\ChannelServer\InstanceMessageConstants.h" />
-    <ClInclude Include="src\ChannelServer\BuddyListHandler.h" />
-    <ClInclude Include="src\ChannelServer\ChatHandler.h" />
-    <ClInclude Include="src\ChannelServer\CommandHandler.h" />
-    <ClInclude Include="src\ChannelServer\DropHandler.h" />
-    <ClInclude Include="src\ChannelServer\InventoryHandler.h" />
-    <ClInclude Include="src\ChannelServer\MobHandler.h" />
-    <ClInclude Include="src\ChannelServer\MovementHandler.h" />
-    <ClInclude Include="src\ChannelServer\NpcHandler.h" />
-    <ClInclude Include="src\ChannelServer\PlayerHandler.h" />
-    <ClInclude Include="src\ChannelServer\TradeHandler.h" />
+    <ClInclude Include="src\ChannelServer\Buffs.hpp" />
+    <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
+    <ClInclude Include="src\ChannelServer\Connectable.hpp" />
+    <ClInclude Include="src\ChannelServer\CustomFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\Drop.hpp" />
+    <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\Fame.hpp" />
+    <ClInclude Include="src\ChannelServer\InfoFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\Inventory.hpp" />
+    <ClInclude Include="src\ChannelServer\InventoryPacketHelper.hpp" />
+    <ClInclude Include="src\ChannelServer\KeyMaps.hpp" />
+    <ClInclude Include="src\ChannelServer\ManagementFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\Map.hpp" />
+    <ClInclude Include="src\ChannelServer\MapFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\MapleTvs.hpp" />
+    <ClInclude Include="src\ChannelServer\Maps.hpp" />
+    <ClInclude Include="src\ChannelServer\MessageFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\Mist.hpp" />
+    <ClInclude Include="src\ChannelServer\Mob.hpp" />
+    <ClInclude Include="src\ChannelServer\MovableLife.hpp" />
+    <ClInclude Include="src\ChannelServer\Npc.hpp" />
+    <ClInclude Include="src\ChannelServer\Party.hpp" />
+    <ClInclude Include="src\ChannelServer\PartyHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\PartyPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\Pet.hpp" />
+    <ClInclude Include="src\ChannelServer\PetHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerDataProvider.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerModFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\Quests.hpp" />
+    <ClInclude Include="src\ChannelServer\Reactor.hpp" />
+    <ClInclude Include="src\ChannelServer\ReactorHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\SkillMacros.hpp" />
+    <ClInclude Include="src\ChannelServer\Skills.hpp" />
+    <ClInclude Include="src\ChannelServer\StatusInfo.hpp" />
+    <ClInclude Include="src\ChannelServer\SummonHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\Summon.hpp" />
+    <ClInclude Include="src\ChannelServer\SyncHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\SyncPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\Trade.hpp" />
+    <ClInclude Include="src\ChannelServer\Trades.hpp" />
+    <ClInclude Include="src\ChannelServer\BuddyListPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\BuffsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\DropsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\FamePacket.hpp" />
+    <ClInclude Include="src\ChannelServer\GmPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\InventoryPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\LevelsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\MapPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\MobsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\MonsterBookPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\NpcPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\PetsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayersPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\QuestsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\ReactorPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\ServerPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\SkillsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\StoragePacket.hpp" />
+    <ClInclude Include="src\ChannelServer\SummonsPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\TradesPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\BuffsPacketHelper.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerPacketHelper.hpp" />
+    <ClInclude Include="src\ChannelServer\InitializeChannel.hpp" />
+    <ClInclude Include="src\ChannelServer\MapDataProvider.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerConnection.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.hpp" />
+    <ClInclude Include="src\ChannelServer\WorldServerConnectHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\LuaInstance.hpp" />
+    <ClInclude Include="src\ChannelServer\LuaNpc.hpp" />
+    <ClInclude Include="src\ChannelServer\LuaPortal.hpp" />
+    <ClInclude Include="src\ChannelServer\LuaReactor.hpp" />
+    <ClInclude Include="src\ChannelServer\LuaScriptable.hpp" />
+    <ClInclude Include="src\ChannelServer\Player.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerActiveBuffs.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerBuddyList.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerInventory.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerMonsterBook.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerMounts.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerPets.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerQuests.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerSkills.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerStats.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerStorage.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerSummons.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerVariables.hpp" />
+    <ClInclude Include="src\ChannelServer\EventDataProvider.hpp" />
+    <ClInclude Include="src\ChannelServer\Instance.hpp" />
+    <ClInclude Include="src\ChannelServer\Instances.hpp" />
+    <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\InstanceMessageConstants.hpp" />
+    <ClInclude Include="src\ChannelServer\BuddyListHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\ChatHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\CommandHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\DropHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\InventoryHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\MobHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\MovementHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\NpcHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\PlayerHandler.hpp" />
+    <ClInclude Include="src\ChannelServer\TradeHandler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

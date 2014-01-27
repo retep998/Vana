@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ServerConnection.h"
-#include "AbstractServer.h"
-#include "AuthenticationPacket.h"
-#include "InterHeader.h"
-#include "MiscUtilities.h"
-#include "PacketReader.h"
-#include "Session.h"
+#include "ServerConnection.hpp"
+#include "AbstractServer.hpp"
+#include "AuthenticationPacket.hpp"
+#include "InterHeader.hpp"
+#include "MiscUtilities.hpp"
+#include "PacketReader.hpp"
+#include "Session.hpp"
 #include <boost/asio.hpp>
 #include <iostream>
 

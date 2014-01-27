@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Quests.h"
-#include "ChannelServer.h"
-#include "Inventory.h"
-#include "ItemDataProvider.h"
-#include "NpcDataProvider.h"
-#include "NpcHandler.h"
-#include "Player.h"
-#include "QuestDataProvider.h"
-#include "QuestsPacket.h"
-#include "PacketReader.h"
+#include "Quests.hpp"
+#include "ChannelServer.hpp"
+#include "Inventory.hpp"
+#include "ItemDataProvider.hpp"
+#include "NpcDataProvider.hpp"
+#include "NpcHandler.hpp"
+#include "Player.hpp"
+#include "QuestDataProvider.hpp"
+#include "QuestsPacket.hpp"
+#include "PacketReader.hpp"
 
 namespace QuestOpcodes {
 	enum : int8_t {

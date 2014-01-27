@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerActiveBuffs.h"
-#include "BuffsPacket.h"
-#include "GameConstants.h"
-#include "GameLogicUtilities.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "Randomizer.h"
-#include "SkillDataProvider.h"
-#include "Skills.h"
-#include "SkillsPacket.h"
-#include "TimeUtilities.h"
-#include "Timer.h"
-#include "TimerContainer.h"
+#include "PlayerActiveBuffs.hpp"
+#include "BuffsPacket.hpp"
+#include "GameConstants.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "Randomizer.hpp"
+#include "SkillDataProvider.hpp"
+#include "Skills.hpp"
+#include "SkillsPacket.hpp"
+#include "TimeUtilities.hpp"
+#include "Timer.hpp"
+#include "TimerContainer.hpp"
 #include <functional>
 
 // Buff skills

@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LuaPortal.h"
-#include "EffectPacket.h"
-#include "MapPacket.h"
-#include "Maps.h"
-#include "Player.h"
+#include "LuaPortal.hpp"
+#include "EffectPacket.hpp"
+#include "MapPacket.hpp"
+#include "Maps.hpp"
+#include "Player.hpp"
 
 hash_map_t<int32_t, PortalInfo *> LuaExports::portals;
 

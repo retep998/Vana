@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "SkillMacros.h"
-#include "Database.h"
-#include "MiscUtilities.h"
+#include "SkillMacros.hpp"
+#include "Database.hpp"
+#include "MiscUtilities.hpp"
 
 auto SkillMacros::load(int32_t charId) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM skill_macros s WHERE s.character_id = :char", soci::use(charId, "char"));

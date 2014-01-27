@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Fame.h"
-#include "ChannelServer.h"
-#include "Database.h"
-#include "FamePacket.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
+#include "Fame.hpp"
+#include "ChannelServer.hpp"
+#include "Database.hpp"
+#include "FamePacket.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
 
 auto Fame::handleFame(Player *player, PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();

@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerConnectPacket.h"
-#include "ChannelServer.h"
-#include "Configuration.h"
-#include "InterHeader.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "Session.h"
-#include "SmsgHeader.h"
-#include "WorldServerConnection.h"
+#include "WorldServerConnectPacket.hpp"
+#include "ChannelServer.hpp"
+#include "Configuration.hpp"
+#include "InterHeader.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
+#include "WorldServerConnection.hpp"
 
 auto WorldServerConnectPacket::groupChat(int8_t type, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void {
 	PacketCreator sendPacket;

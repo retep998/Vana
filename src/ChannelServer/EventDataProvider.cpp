@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "EventDataProvider.h"
-#include "InitializeCommon.h"
-#include "Instance.h"
-#include "Instances.h"
-#include "Timer.h"
-#include "TimeUtilities.h"
+#include "EventDataProvider.hpp"
+#include "InitializeCommon.hpp"
+#include "Instance.hpp"
+#include "Instances.hpp"
+#include "Timer.hpp"
+#include "TimeUtilities.hpp"
 #include <cstdio>
 #include <functional>
 #include <iomanip>

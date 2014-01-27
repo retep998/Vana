@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "QuestDataProvider.h"
-#include "Database.h"
-#include "GameLogicUtilities.h"
-#include "InitializeCommon.h"
-#include "Quest.h"
-#include "StringUtilities.h"
+#include "QuestDataProvider.hpp"
+#include "Database.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InitializeCommon.hpp"
+#include "Quest.hpp"
+#include "StringUtilities.hpp"
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>

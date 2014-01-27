@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerAcceptConnection.h"
-#include "InterHeader.h"
-#include "LoginServer.h"
-#include "LoginServerAcceptHandler.h"
-#include "PacketReader.h"
-#include "RankingCalculator.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "VanaConstants.h"
-#include "World.h"
-#include "Worlds.h"
+#include "LoginServerAcceptConnection.hpp"
+#include "InterHeader.hpp"
+#include "LoginServer.hpp"
+#include "LoginServerAcceptHandler.hpp"
+#include "PacketReader.hpp"
+#include "RankingCalculator.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "VanaConstants.hpp"
+#include "World.hpp"
+#include "Worlds.hpp"
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {

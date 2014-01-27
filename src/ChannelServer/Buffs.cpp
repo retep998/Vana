@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Buffs.h"
-#include "BuffDataProvider.h"
-#include "BuffsPacket.h"
-#include "GameLogicUtilities.h"
-#include "Player.h"
-#include "SkillConstants.h"
-#include "SkillDataProvider.h"
+#include "Buffs.hpp"
+#include "BuffDataProvider.hpp"
+#include "BuffsPacket.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Player.hpp"
+#include "SkillConstants.hpp"
+#include "SkillDataProvider.hpp"
 
 auto Buffs::getValue(int8_t value, int32_t skillId, uint8_t level) -> int16_t {
 	int16_t rValue = 0;

@@ -15,15 +15,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Player.h"
-#include "Characters.h"
-#include "CmsgHeader.h"
-#include "Database.h"
-#include "Login.h"
-#include "LoginPacket.h"
-#include "LoginServer.h"
-#include "PacketReader.h"
-#include "Worlds.h"
+#include "Player.hpp"
+#include "Characters.hpp"
+#include "CmsgHeader.hpp"
+#include "Database.hpp"
+#include "Login.hpp"
+#include "LoginPacket.hpp"
+#include "LoginServer.hpp"
+#include "PacketReader.hpp"
+#include "Worlds.hpp"
 #include <iostream>
 #include <stdexcept>
 

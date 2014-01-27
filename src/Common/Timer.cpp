@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Timer.h"
-#include "TimerContainer.h"
-#include "TimerThread.h"
-#include "TimeUtilities.h"
+#include "Timer.hpp"
+#include "TimerContainer.hpp"
+#include "TimerThread.hpp"
+#include "TimeUtilities.hpp"
 #include <memory>
 
 namespace Timer {

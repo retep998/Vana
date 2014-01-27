@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LuaReactor.h"
-#include "Drop.h"
-#include "GameLogicUtilities.h"
-#include "Maps.h"
-#include "Mob.h"
-#include "Player.h"
-#include "PlayerPacket.h"
-#include "PlayerDataProvider.h"
-#include "Quests.h"
-#include "ReactorPacket.h"
-#include "Reactor.h"
+#include "LuaReactor.hpp"
+#include "Drop.hpp"
+#include "GameLogicUtilities.hpp"
+#include "Maps.hpp"
+#include "Mob.hpp"
+#include "Player.hpp"
+#include "PlayerPacket.hpp"
+#include "PlayerDataProvider.hpp"
+#include "Quests.hpp"
+#include "ReactorPacket.hpp"
+#include "Reactor.hpp"
 #include <string>
 
 LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t reactorId, int32_t mapId) :

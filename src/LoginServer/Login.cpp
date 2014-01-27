@@ -15,20 +15,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Login.h"
-#include "Database.h"
-#include "GameConstants.h"
-#include "LoginPacket.h"
-#include "LoginServer.h"
-#include "MiscUtilities.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerStatus.h"
-#include "Randomizer.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "TimeUtilities.h"
-#include "VanaConstants.h"
+#include "Login.hpp"
+#include "Database.hpp"
+#include "GameConstants.hpp"
+#include "LoginPacket.hpp"
+#include "LoginServer.hpp"
+#include "MiscUtilities.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerStatus.hpp"
+#include "Randomizer.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "TimeUtilities.hpp"
+#include "VanaConstants.hpp"
 #include <iostream>
 
 auto Login::loginUser(Player *player, PacketReader &packet) -> void {

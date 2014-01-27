@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptHandler.h"
-#include "Channel.h"
-#include "Channels.h"
-#include "InterHelper.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "SyncHandler.h"
-#include "WorldServer.h"
-#include "WorldServerAcceptConnection.h"
-#include "WorldServerAcceptPacket.h"
+#include "WorldServerAcceptHandler.hpp"
+#include "Channel.hpp"
+#include "Channels.hpp"
+#include "InterHelper.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "SyncHandler.hpp"
+#include "WorldServer.hpp"
+#include "WorldServerAcceptConnection.hpp"
+#include "WorldServerAcceptPacket.hpp"
 
 auto WorldServerAcceptHandler::groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) -> void {
 	int32_t playerId = packet.get<int32_t>();

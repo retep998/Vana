@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PingPacket.h"
-#include "AbstractConnection.h"
-#include "CmsgHeader.h"
-#include "PacketCreator.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "PingPacket.hpp"
+#include "AbstractConnection.hpp"
+#include "CmsgHeader.hpp"
+#include "PacketCreator.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 
 auto PingPacket::ping(AbstractConnection *connection) -> void {
 	PacketCreator packet;

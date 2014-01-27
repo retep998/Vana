@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AuthenticationPacket.h"
-#include "InterHeader.h"
-#include "PacketCreator.h"
-#include "ServerConnection.h"
-#include "Session.h"
+#include "AuthenticationPacket.hpp"
+#include "InterHeader.hpp"
+#include "PacketCreator.hpp"
+#include "ServerConnection.hpp"
+#include "Session.hpp"
 #include <algorithm>
 
 auto AuthenticationPacket::sendPassword(AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) -> void {

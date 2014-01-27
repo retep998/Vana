@@ -15,10 +15,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginPacketHelper.h"
-#include "Characters.h"
-#include "ItemConstants.h"
-#include "PacketCreator.h"
+#include "LoginPacketHelper.hpp"
+#include "Characters.hpp"
+#include "ItemConstants.hpp"
+#include "PacketCreator.hpp"
 
 auto LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc) -> void {
 	packet.add<int32_t>(charc.id);

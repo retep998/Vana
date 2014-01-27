@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "WorldServerAcceptConnection.h"
-#include "Channels.h"
-#include "InterHeader.h"
-#include "LoginServerConnectPacket.h"
-#include "MiscUtilities.h"
-#include "PacketReader.h"
-#include "PlayerDataProvider.h"
-#include "Session.h"
-#include "StringUtilities.h"
-#include "SyncHandler.h"
-#include "SyncPacket.h"
-#include "VanaConstants.h"
-#include "WorldServer.h"
-#include "WorldServerAcceptHandler.h"
-#include "WorldServerAcceptPacket.h"
+#include "WorldServerAcceptConnection.hpp"
+#include "Channels.hpp"
+#include "InterHeader.hpp"
+#include "LoginServerConnectPacket.hpp"
+#include "MiscUtilities.hpp"
+#include "PacketReader.hpp"
+#include "PlayerDataProvider.hpp"
+#include "Session.hpp"
+#include "StringUtilities.hpp"
+#include "SyncHandler.hpp"
+#include "SyncPacket.hpp"
+#include "VanaConstants.hpp"
+#include "WorldServer.hpp"
+#include "WorldServerAcceptHandler.hpp"
+#include "WorldServerAcceptPacket.hpp"
 #include <iostream>
 
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {

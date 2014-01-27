@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InfoFunctions.h"
-#include "Database.h"
-#include "Maps.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PlayerPacket.h"
+#include "InfoFunctions.hpp"
+#include "Database.hpp"
+#include "Maps.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PlayerPacket.hpp"
 #include <iostream>
 
 auto InfoFunctions::help(Player *player, const string_t &args) -> bool {

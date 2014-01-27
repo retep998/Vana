@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InitializeCommon.h"
-#include "Database.h"
-#include "DatabaseUpdater.h"
-#include "ExitCodes.h"
-#include "MapleVersion.h"
-#include "TimeUtilities.h"
+#include "InitializeCommon.hpp"
+#include "Database.hpp"
+#include "DatabaseUpdater.hpp"
+#include "ExitCodes.hpp"
+#include "MapleVersion.hpp"
+#include "TimeUtilities.hpp"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>

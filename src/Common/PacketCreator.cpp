@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "StringUtilities.h"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "StringUtilities.hpp"
 #include <cctype>
 #include <iomanip>
 #include <iostream>

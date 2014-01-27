@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Reactor.h"
-#include "DropHandler.h"
-#include "Maps.h"
-#include "Player.h"
-#include "ReactorPacket.h"
+#include "Reactor.hpp"
+#include "DropHandler.hpp"
+#include "Maps.hpp"
+#include "Player.hpp"
+#include "ReactorPacket.hpp"
 
 Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLeft) :
 	m_reactorId(reactorId),

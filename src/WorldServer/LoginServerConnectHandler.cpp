@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnectHandler.h"
-#include "Channels.h"
-#include "Configuration.h"
-#include "InitializeWorld.h"
-#include "LoginServerConnection.h"
-#include "PacketReader.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "SyncPacket.h"
-#include "WorldServer.h"
+#include "LoginServerConnectHandler.hpp"
+#include "Channels.hpp"
+#include "Configuration.hpp"
+#include "InitializeWorld.hpp"
+#include "LoginServerConnection.hpp"
+#include "PacketReader.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "SyncPacket.hpp"
+#include "WorldServer.hpp"
 #include <iostream>
 
 auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) -> void {

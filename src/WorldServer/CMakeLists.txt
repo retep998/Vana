@@ -1,5 +1,5 @@
 file(GLOB WORLD_SRC *.cpp)
-file(GLOB WORLD_HEADERS *.h)
+file(GLOB WORLD_HEADERS *.hpp)
 source_group("World Sources" FILES ${WORLD_SRC})
 source_group("World Headers" FILES ${WORLD_HEADERS})
 

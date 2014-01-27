@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "MapPacket.h"
-#include "Buffs.h"
-#include "ChannelServer.h"
-#include "Inventory.h"
-#include "Map.h"
-#include "Maps.h"
-#include "Mist.h"
-#include "PacketCreator.h"
-#include "Pet.h"
-#include "Player.h"
-#include "PlayerPacketHelper.h"
-#include "Session.h"
-#include "SmsgHeader.h"
-#include "TimeUtilities.h"
-#include "WidePos.h"
+#include "MapPacket.hpp"
+#include "Buffs.hpp"
+#include "ChannelServer.hpp"
+#include "Inventory.hpp"
+#include "Map.hpp"
+#include "Maps.hpp"
+#include "Mist.hpp"
+#include "PacketCreator.hpp"
+#include "Pet.hpp"
+#include "Player.hpp"
+#include "PlayerPacketHelper.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
+#include "TimeUtilities.hpp"
+#include "WidePos.hpp"
 #include <unordered_map>
 
 auto MapPacket::playerPacket(Player *player) -> PacketCreator {

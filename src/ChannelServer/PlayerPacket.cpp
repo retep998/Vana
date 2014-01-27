@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PlayerPacket.h"
-#include "ChannelServer.h"
-#include "ClientIp.h"
-#include "InterHeader.h"
-#include "KeyMaps.h"
-#include "PacketCreator.h"
-#include "Pet.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PlayerPacketHelper.h"
-#include "Session.h"
-#include "SkillMacros.h"
-#include "Skills.h"
-#include "SmsgHeader.h"
-#include "TimeUtilities.h"
+#include "PlayerPacket.hpp"
+#include "ChannelServer.hpp"
+#include "ClientIp.hpp"
+#include "InterHeader.hpp"
+#include "KeyMaps.hpp"
+#include "PacketCreator.hpp"
+#include "Pet.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PlayerPacketHelper.hpp"
+#include "Session.hpp"
+#include "SkillMacros.hpp"
+#include "Skills.hpp"
+#include "SmsgHeader.hpp"
+#include "TimeUtilities.hpp"
 #include <unordered_map>
 
 auto PlayerPacket::connectData(Player *player) -> void {

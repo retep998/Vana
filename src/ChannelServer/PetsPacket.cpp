@@ -15,17 +15,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PetsPacket.h"
-#include "GameConstants.h"
-#include "Item.h"
-#include "ItemConstants.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "PacketReader.h"
-#include "Pet.h"
-#include "Player.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "PetsPacket.hpp"
+#include "GameConstants.hpp"
+#include "Item.hpp"
+#include "ItemConstants.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "PacketReader.hpp"
+#include "Pet.hpp"
+#include "Player.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 
 auto PetsPacket::petSummoned(Player *player, Pet *pet, bool kick, bool onlyPlayer, int8_t index) -> void {
 	PacketCreator packet;

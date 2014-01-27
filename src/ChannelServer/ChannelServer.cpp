@@ -15,21 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ChannelServer.h"
-#include "ConfigFile.h"
-#include "Configuration.h"
-#include "ConnectionManager.h"
-#include "InitializeChannel.h"
-#include "InitializeCommon.h"
-#include "MiscUtilities.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "ServerPacket.h"
-#include "SyncPacket.h"
-#include "VanaConstants.h"
-#include "WorldServerConnection.h"
-#include "WorldServerConnectPacket.h"
+#include "ChannelServer.hpp"
+#include "ConfigFile.hpp"
+#include "Configuration.hpp"
+#include "ConnectionManager.hpp"
+#include "InitializeChannel.hpp"
+#include "InitializeCommon.hpp"
+#include "MiscUtilities.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "ServerPacket.hpp"
+#include "SyncPacket.hpp"
+#include "VanaConstants.hpp"
+#include "WorldServerConnection.hpp"
+#include "WorldServerConnectPacket.hpp"
 
 ChannelServer::ChannelServer() :
 	m_loginIp(0),

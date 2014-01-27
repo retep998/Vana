@@ -15,22 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InventoryPacket.h"
-#include "ChannelServer.h"
-#include "GameLogicUtilities.h"
-#include "InterHeader.h"
-#include "Inventory.h"
-#include "InventoryPacketHelper.h"
-#include "ItemConstants.h"
-#include "Map.h"
-#include "Maps.h"
-#include "PacketCreator.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PlayerInventory.h"
-#include "PlayerPacketHelper.h"
-#include "Session.h"
-#include "SmsgHeader.h"
+#include "InventoryPacket.hpp"
+#include "ChannelServer.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InterHeader.hpp"
+#include "Inventory.hpp"
+#include "InventoryPacketHelper.hpp"
+#include "ItemConstants.hpp"
+#include "Map.hpp"
+#include "Maps.hpp"
+#include "PacketCreator.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PlayerInventory.hpp"
+#include "PlayerPacketHelper.hpp"
+#include "Session.hpp"
+#include "SmsgHeader.hpp"
 
 auto InventoryPacket::updatePlayer(Player *player) -> void {
 	if (player->isUsingGmHide()) {

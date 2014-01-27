@@ -15,19 +15,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ManagementFunctions.h"
-#include "ChannelServer.h"
-#include "Database.h"
-#include "Inventory.h"
-#include "ItemDataProvider.h"
-#include "Maps.h"
-#include "NpcHandler.h"
-#include "Player.h"
-#include "PlayerDataProvider.h"
-#include "PlayerPacket.h"
-#include "StringUtilities.h"
-#include "SyncPacket.h"
-#include "WorldServerConnectPacket.h"
+#include "ManagementFunctions.hpp"
+#include "ChannelServer.hpp"
+#include "Database.hpp"
+#include "Inventory.hpp"
+#include "ItemDataProvider.hpp"
+#include "Maps.hpp"
+#include "NpcHandler.hpp"
+#include "Player.hpp"
+#include "PlayerDataProvider.hpp"
+#include "PlayerPacket.hpp"
+#include "StringUtilities.hpp"
+#include "SyncPacket.hpp"
+#include "WorldServerConnectPacket.hpp"
 
 auto ManagementFunctions::map(Player *player, const string_t &args) -> bool {
 	match_t matches;

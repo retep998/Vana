@@ -15,18 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Inventory.h"
-#include "Buffs.h"
-#include "GameLogicUtilities.h"
-#include "InventoryPacket.h"
-#include "ItemDataProvider.h"
-#include "MonsterBookPacket.h"
-#include "Pet.h"
-#include "PetsPacket.h"
-#include "Player.h"
-#include "PlayerMonsterBook.h"
-#include "Randomizer.h"
-#include "SkillDataProvider.h"
+#include "Inventory.hpp"
+#include "Buffs.hpp"
+#include "GameLogicUtilities.hpp"
+#include "InventoryPacket.hpp"
+#include "ItemDataProvider.hpp"
+#include "MonsterBookPacket.hpp"
+#include "Pet.hpp"
+#include "PetsPacket.hpp"
+#include "Player.hpp"
+#include "PlayerMonsterBook.hpp"
+#include "Randomizer.hpp"
+#include "SkillDataProvider.hpp"
 
 auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
 	int8_t inv = GameLogicUtilities::getInventory(item->getId());

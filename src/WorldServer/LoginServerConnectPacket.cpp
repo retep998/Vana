@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "LoginServerConnectPacket.h"
-#include "InterHeader.h"
-#include "LoginServerConnection.h"
-#include "PacketCreator.h"
-#include "Session.h"
-#include "WorldServer.h"
+#include "LoginServerConnectPacket.hpp"
+#include "InterHeader.hpp"
+#include "LoginServerConnection.hpp"
+#include "PacketCreator.hpp"
+#include "Session.hpp"
+#include "WorldServer.hpp"
 
 auto LoginServerConnectPacket::registerChannel(int32_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	PacketCreator packet;
