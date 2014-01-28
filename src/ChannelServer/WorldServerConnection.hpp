@@ -30,10 +30,3 @@ public:
 protected:
 	auto handleRequest(PacketReader &packet) -> void override;
 };
-
-class WorldServerConnectionFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new WorldServerConnection();
-	}
-};

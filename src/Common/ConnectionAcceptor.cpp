@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include <functional>
 
-ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation) :
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation) :
 	m_acceptor(ioService, endpoint),
-	m_apf(apf),
+	m_connectionCreator(createConnection),
 	m_patchLocation(patchLocation),
 	m_loginConfig(loginConfig),
 	m_isServer(isServer)
@@ -38,7 +38,7 @@ auto ConnectionAcceptor::stop() -> void {
 
 auto ConnectionAcceptor::startAccepting() -> void {
 	bool ping = (m_isServer ? m_loginConfig.serverPing : m_loginConfig.clientPing);
-	ref_ptr_t<Session> newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_apf->createConnection(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation);
+	ref_ptr_t<Session> newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_connectionCreator(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation);
 	m_acceptor.async_accept(newSession->getSocket(), std::bind(&ConnectionAcceptor::handleConnection, this, newSession, std::placeholders::_1));
 }
 

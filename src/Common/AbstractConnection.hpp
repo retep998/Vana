@@ -51,9 +51,3 @@ private:
 	milliseconds_t m_latency = milliseconds_t(0);
 	time_point_t m_lastPing;
 };
-
-class AbstractConnectionFactory {
-public:
-	virtual auto createConnection() -> AbstractConnection * = 0;
-	virtual ~AbstractConnectionFactory() = default;
-};

@@ -29,10 +29,3 @@ public:
 protected:
 	auto handleRequest(PacketReader &packet) -> void override;
 };
-
-class LoginServerConnectionFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new LoginServerConnection();
-	}
-};

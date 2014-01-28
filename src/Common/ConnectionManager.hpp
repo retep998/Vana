@@ -32,7 +32,7 @@ class ConnectionAcceptor;
 class ConnectionManager {
 	SINGLETON_CUSTOM_CONSTRUCTOR(ConnectionManager);
 public:
-	auto accept(const Ip::Type &ipType, port_t port, AbstractConnectionFactory *acf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation = "") -> void;
+	auto accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation = "") -> void;
 	auto connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) -> void;
 	auto stop() -> void;
 	auto run() -> void;

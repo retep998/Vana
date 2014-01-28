@@ -72,10 +72,3 @@ private:
 	int64_t m_userCreation = 0;
 	PlayerStatus::PlayerStatus m_status = PlayerStatus::NotLoggedIn;
 };
-
-class PlayerFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new Player();
-	}
-};

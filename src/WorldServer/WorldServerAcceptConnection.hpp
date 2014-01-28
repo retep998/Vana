@@ -36,10 +36,3 @@ protected:
 private:
 	uint16_t m_channel = 0;
 };
-
-class WorldServerAcceptConnectionFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new WorldServerAcceptConnection();
-	}
-};
