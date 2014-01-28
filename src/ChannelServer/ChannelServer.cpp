@@ -39,7 +39,7 @@ ChannelServer::ChannelServer() :
 }
 
 auto ChannelServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, m_loginConfig, false);
 	Initializing::setUsersOffline(getOnlineId());
 }
 

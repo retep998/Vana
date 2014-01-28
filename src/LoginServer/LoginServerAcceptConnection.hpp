@@ -36,10 +36,3 @@ protected:
 private:
 	int8_t m_worldId = -1;
 };
-
-class LoginServerAcceptConnectionFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new LoginServerAcceptConnection();
-	}
-};

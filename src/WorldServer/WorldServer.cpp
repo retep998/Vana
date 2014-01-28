@@ -32,7 +32,7 @@ WorldServer::WorldServer() :
 }
 
 auto WorldServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new WorldServerAcceptConnectionFactory(), m_loginConfig, true);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, m_loginConfig, true);
 }
 
 auto WorldServer::loadData() -> void {

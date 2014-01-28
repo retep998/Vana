@@ -189,10 +189,3 @@ private:
 	owned_ptr_t<TauswortheGenerator> m_randStream;
 	hash_set_t<int8_t> m_usedPortals;
 };
-
-class PlayerFactory : public AbstractConnectionFactory {
-public:
-	auto createConnection() -> AbstractConnection * override {
-		return new Player();
-	}
-};

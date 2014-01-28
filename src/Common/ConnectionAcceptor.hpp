@@ -25,11 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/asio.hpp>
 #include <memory>
 
-class AbstractConnectionFactory;
-
 class ConnectionAcceptor {
 public:
-	ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, AbstractConnectionFactory *apf, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation);
+	ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation);
 	auto stop() -> void;
 private:
 	auto startAccepting() -> void;
@@ -39,6 +37,6 @@ private:
 	string_t m_patchLocation;
 	LoginConfig m_loginConfig;
 	boost::asio::ip::tcp::acceptor m_acceptor;
-	owned_ptr_t<AbstractConnectionFactory> m_apf;
+	function_t<AbstractConnection *()> m_connectionCreator;
 	ref_ptr_t<SessionManager> m_sessionManager;
 };

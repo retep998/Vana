@@ -35,8 +35,8 @@ LoginServer::LoginServer()
 }
 
 auto LoginServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, new PlayerFactory(), m_loginConfig, false, MapleVersion::PatchLocation);
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, new LoginServerAcceptConnectionFactory(), m_loginConfig, true);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, m_loginConfig, false, MapleVersion::PatchLocation);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, m_loginConfig, true);
 }
 
 auto LoginServer::loadData() -> void {
