@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CurseDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "InitializeCommon.hpp"
 #include "StringUtilities.hpp"
@@ -36,12 +37,9 @@ auto CurseDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto CurseDataProvider::isCurseWord(const string_t &cmp) -> bool {
+auto CurseDataProvider::isCurseWord(const string_t &cmp) const -> bool {
 	string_t c = StringUtilities::removeSpaces(StringUtilities::toLower(cmp));
-	bool curse = (std::end(m_curseWords) != std::find_if(std::begin(m_curseWords), std::end(m_curseWords),
-		[&c](const string_t &s) -> bool {
-			return c.find(s, 0) != string_t::npos;
-		})
-	);
-	return curse;
+	return ext::any_of(m_curseWords, [&c](const string_t &s) -> bool {
+		return c.find(s, 0) != string_t::npos;
+	});
 }

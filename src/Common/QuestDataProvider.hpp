@@ -26,9 +26,8 @@ class QuestDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isQuest(uint16_t questId) -> bool { return m_quests.find(questId) != std::end(m_quests); }
-	auto getItemRequest(uint16_t questId, int32_t itemId) -> int16_t;
-	auto getInfo(uint16_t questId) -> Quest * { return &m_quests[questId]; }
+	auto isQuest(uint16_t questId) const -> bool;
+	auto getInfo(uint16_t questId) const -> const Quest &;
 private:
 	auto loadQuestData() -> void;
 	auto loadRequests() -> void;

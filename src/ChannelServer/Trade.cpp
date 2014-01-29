@@ -92,7 +92,8 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 						// Already did this item
 						continue;
 					}
-					int16_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(itemId);
+					auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+					uint16_t maxSlot = itemInfo->maxSlot;
 					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
 					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
 					int32_t itemSum = lastSlot + added[itemId];

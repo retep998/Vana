@@ -30,10 +30,11 @@ auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 	int32_t channel = packet.get<int32_t>();
 	Channel *chan = new Channel();
 	const Ip &ip = packet.getClass<Ip>();
+
 	chan->setExternalIpInformation(ip, packet.getClassVector<ExternalIp>());
 	chan->setPort(packet.get<port_t>());
 	Worlds::getInstance().getWorld(connection->getWorldId())->addChannel(channel, chan);
-	LoginServer::getInstance().log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string_t>(connection->getWorldId()) + "; Channel " + StringUtilities::lexical_cast<string_t>(channel));
+	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << channel; });
 }
 
 auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
@@ -49,7 +50,7 @@ auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connec
 	int32_t channel = packet.get<int32_t>();
 
 	Worlds::getInstance().getWorld(connection->getWorldId())->removeChannel(channel);
-	LoginServer::getInstance().log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string_t>(connection->getWorldId()) + "; Channel " + StringUtilities::lexical_cast<string_t>(channel));
+	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << channel; });
 }
 
 auto LoginServerAcceptHandler::sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {

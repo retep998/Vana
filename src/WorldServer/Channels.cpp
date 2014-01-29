@@ -65,7 +65,7 @@ auto Channels::size() -> uint16_t {
 
 auto Channels::getAvailableChannel() -> uint16_t {
 	uint16_t channel = -1;
-	uint16_t max = static_cast<uint16_t>(WorldServer::getInstance().getMaxChannels());
+	uint16_t max = static_cast<uint16_t>(WorldServer::getInstance().getConfig().maxChannels);
 	for (uint16_t i = 0; i < max; ++i) {
 		if (m_channels.find(i) == std::end(m_channels)) {
 			channel = i;

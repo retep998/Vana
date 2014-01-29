@@ -29,7 +29,7 @@ Pet::Pet(Player *player, Item *item) :
 	MovableLife(0, Pos(), 0),
 	m_player(player),
 	m_itemId(item->getId()),
-	m_name(ItemDataProvider::getInstance().getItemName(m_itemId)),
+	m_name(ItemDataProvider::getInstance().getItemInfo(m_itemId)->name),
 	m_item(item)
 {
 	soci::session &sql = Database::getCharDb();
@@ -96,7 +96,7 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 
 auto Pet::startTimer() -> void {
 	Timer::Id id(Timer::Types::PetTimer, getIndex().get(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getHunger(getItemId())) * 60); // TODO: Better formula
+	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getPetInfo(getItemId())->hunger) * 60); // TODO: Better formula
 	Timer::create([this](const time_point_t &now) { this->modifyFullness(-1, true); }, id, m_player->getTimerContainer(), seconds_t(0), repeat);
 }
 

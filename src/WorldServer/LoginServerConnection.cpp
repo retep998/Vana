@@ -27,12 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoginServerConnection::LoginServerConnection()
 {
-	setType(ServerTypes::World);
+	setType(ServerType::World);
 }
 
 LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::getInstance().isConnected()) {
-		WorldServer::getInstance().setWorldId(-1);
 		std::cout << "Disconnected from the LoginServer. Shutting down..." << std::endl;
 		WorldServer::getInstance().shutdown();
 	}

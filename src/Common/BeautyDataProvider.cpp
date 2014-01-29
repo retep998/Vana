@@ -16,11 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BeautyDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
 #include "Randomizer.hpp"
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 
@@ -49,17 +51,14 @@ auto BeautyDataProvider::loadSkins() -> void {
 
 auto BeautyDataProvider::loadHair() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Hair... ";
-	int8_t gender;
-	int32_t hair;
-	ValidLook *look;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_hair_data ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
-		gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		hair = row.get<int32_t>("hairid");
-		look = getGender(gender);
-		look->hair.push_back(hair);
+		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		int32_t hair = row.get<int32_t>("hairid");
+		auto &gender = genderId == Gender::Female ? m_female : m_male;
+		gender.hair.push_back(hair);
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -67,86 +66,57 @@ auto BeautyDataProvider::loadHair() -> void {
 
 auto BeautyDataProvider::loadFaces() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Faces... ";
-	int8_t gender;
-	int32_t face;
-	ValidLook *look;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_face_data ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
-		gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		face = row.get<int32_t>("faceid");
-		look = getGender(gender);
-		look->faces.push_back(face);
+		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		int32_t face = row.get<int32_t>("faceid");
+		auto &gender = genderId == Gender::Female ? m_female : m_male;
+		gender.faces.push_back(face);
 	}
 
 	std::cout << "DONE" << std::endl;
 }
 
-auto BeautyDataProvider::getRandomSkin() -> int8_t {
-	return m_skins[Randomizer::rand<int32_t>(m_skins.size() - 1)];
+auto BeautyDataProvider::getRandomSkin() const -> int8_t {
+	return *Randomizer::select(m_skins);
 }
 
-auto BeautyDataProvider::getRandomHair(int8_t gender) -> int32_t {
-	ValidLook *look = getGender(gender);
-	return look->hair[Randomizer::rand<int32_t>(look->hair.size() - 1)];
+auto BeautyDataProvider::getRandomHair(int8_t genderId) const -> int32_t {
+	return *Randomizer::select(getGender(genderId).hair);
 }
 
-auto BeautyDataProvider::getRandomFace(int8_t gender) -> int32_t {
-	ValidLook *look = getGender(gender);
-	return look->faces[Randomizer::rand<int32_t>(look->faces.size() - 1)];
+auto BeautyDataProvider::getRandomFace(int8_t genderId) const -> int32_t {
+	return *Randomizer::select(getGender(genderId).faces);
 }
 
-auto BeautyDataProvider::getSkins() -> vector_t<int8_t> {
+auto BeautyDataProvider::getSkins() const -> const vector_t<int8_t> & {
 	return m_skins;
 }
 
-auto BeautyDataProvider::getHair(int8_t gender) -> vector_t<int32_t> {
-	return getGender(gender)->hair;
+auto BeautyDataProvider::getHair(int8_t genderId) const -> const vector_t<int32_t> & {
+	return getGender(genderId).hair;
 }
 
-auto BeautyDataProvider::getFaces(int8_t gender) -> vector_t<int32_t> {
-	return getGender(gender)->faces;
+auto BeautyDataProvider::getFaces(int8_t genderId) const -> const vector_t<int32_t> & {
+	return getGender(genderId).faces;
 }
 
-auto BeautyDataProvider::isValidHair(int8_t gender, int32_t hair) -> bool {
-	ValidLook *look = getGender(gender);
-	bool valid = false;
-	for (size_t i = 0; i < look->hair.size(); i++) {
-		if (hair == look->hair[i]) {
-			valid = true;
-			break;
-		}
-	}
-	return valid;
+auto BeautyDataProvider::isValidHair(int8_t genderId, int32_t hair) const -> bool {
+	const auto &gender = getGender(genderId);
+	return ext::any_of(gender.hair, [hair](int32_t testHair) { return testHair == hair; });
 }
 
-auto BeautyDataProvider::isValidFace(int8_t gender, int32_t face) -> bool {
-	ValidLook *look = getGender(gender);
-	bool valid = false;
-	for (size_t i = 0; i < look->faces.size(); i++) {
-		if (face == look->faces[i]) {
-			valid = true;
-			break;
-		}
-	}
-	return valid;
+auto BeautyDataProvider::isValidFace(int8_t genderId, int32_t face) const -> bool {
+	const auto &gender = getGender(genderId);
+	return ext::any_of(gender.faces, [face](int32_t testFace) { return testFace == face; });
 }
 
-auto BeautyDataProvider::isValidSkin(int8_t skin) -> bool {
-	bool valid = false;
-	for (size_t i = 0; i < m_skins.size(); i++) {
-		if (skin == m_skins[i]) {
-			valid = true;
-			break;
-		}
-	}
-	return valid;
+auto BeautyDataProvider::isValidSkin(int8_t skin) const -> bool {
+	return ext::any_of(m_skins, [skin](int8_t testSkin) { return testSkin == skin; });
 }
 
-auto BeautyDataProvider::getGender(int8_t gender) -> ValidLook * {
-	if (gender == Gender::Female) {
-		return &m_female;
-	}
-	return &m_male;
+auto BeautyDataProvider::getGender(int8_t genderId) const -> const ValidLook & {
+	return genderId == Gender::Female ? m_female : m_male;
 }

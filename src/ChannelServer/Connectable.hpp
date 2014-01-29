@@ -36,7 +36,7 @@ class Connectable {
 	SINGLETON(Connectable);
 public:
 	auto newPlayer(int32_t id, const Ip &ip, PacketReader &packet) -> void;
-	auto checkPlayer(int32_t id, const Ip &ip) -> bool;
+	auto checkPlayer(int32_t id, const Ip &ip) -> Result;
 	auto getPacket(int32_t id) -> PacketReader *;
 	auto playerEstablished(int32_t id) -> void;
 private:

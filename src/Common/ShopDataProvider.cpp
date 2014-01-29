@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ShopDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
@@ -38,26 +39,23 @@ auto ShopDataProvider::loadData() -> void {
 
 auto ShopDataProvider::loadShops() -> void {
 	m_shops.clear();
-	ShopInfo shop;
-	int32_t shopId;
 
 	soci::session &sql = Database::getDataDb();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM shop_data");
 
 	for (const auto &row : rs) {
-		shop = ShopInfo();
-		shopId = row.get<int32_t>("shopid");
+		ShopInfo shop;
+		int32_t shopId = row.get<int32_t>("shopid");
 		shop.npc = row.get<int32_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		m_shops[shopId] = shop;
 	}
 
 	rs = (sql.prepare << "SELECT * FROM shop_items ORDER BY shopid, sort DESC");
-	ShopItemInfo item;
 
 	for (const auto &row : rs) {
-		item = ShopItemInfo();
-		shopId = row.get<int32_t>("shopid");
+		ShopItemInfo item;
+		int32_t shopId = row.get<int32_t>("shopid");
 		item.itemId = row.get<int32_t>("itemid");
 		item.quantity = row.get<int16_t>("quantity");
 		item.price = row.get<int32_t>("price");
@@ -67,15 +65,12 @@ auto ShopDataProvider::loadShops() -> void {
 }
 
 auto ShopDataProvider::loadUserShops() -> void {
-	ShopInfo shop;
-	int32_t shopId;
-
 	soci::session &sql = Database::getDataDb();
 	soci::rowset<> rs = (sql.prepare << "SELECT * FROM user_shop_data");
 
 	for (const auto &row : rs) {
-		shop = ShopInfo();
-		shopId = row.get<int32_t>("shopid");
+		ShopInfo shop;
+		int32_t shopId = row.get<int32_t>("shopid");
 		shop.npc = row.get<int32_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		if (m_shops.find(shopId) != std::end(m_shops)) {
@@ -86,11 +81,10 @@ auto ShopDataProvider::loadUserShops() -> void {
 	}
 
 	rs = (sql.prepare << "SELECT * FROM user_shop_items ORDER BY shopid, sort DESC");
-	ShopItemInfo item;
 
 	for (const auto &row : rs) {
-		item = ShopItemInfo();
-		shopId = row.get<int32_t>("shopid");
+		ShopItemInfo item;
+		int32_t shopId = row.get<int32_t>("shopid");
 		item.itemId = row.get<int32_t>("itemid");
 		item.quantity = row.get<int16_t>("quantity");
 		item.price = row.get<int32_t>("price");
@@ -101,25 +95,26 @@ auto ShopDataProvider::loadUserShops() -> void {
 
 auto ShopDataProvider::loadRechargeTiers() -> void {
 	m_rechargeCosts.clear();
-	int8_t rechargeTier;
-	int32_t itemId;
-	double price;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM shop_recharge_data");
 
 	for (const auto &row : rs) {
-		rechargeTier = row.get<int8_t>("tierid");
-		itemId = row.get<int32_t>("itemid");
-		price = row.get<double>("price");
+		int8_t rechargeTier = row.get<int8_t>("tierid");
+		int32_t itemId = row.get<int32_t>("itemid");
+		double price = row.get<double>("price");
 
 		m_rechargeCosts[rechargeTier][itemId] = price;
 	}
 }
 
-auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) -> void {
-	ShopInfo &info = m_shops[id];
+auto ShopDataProvider::isShop(int32_t id) const -> bool {
+	return ext::is_element(m_shops, id);
+}
+
+auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) const -> void {
+	const auto &info = m_shops.find(id)->second;
 	int8_t rechargeTier = info.rechargeTier;
-	const ord_map_t<int32_t, double> &rechargables = m_rechargeCosts[rechargeTier];
+	const auto &rechargables = m_rechargeCosts.find(rechargeTier)->second;
 	int16_t shopCount = static_cast<int16_t>(info.items.size() + rechargables.size());
 	hash_map_t<int32_t, bool> idsDone;
 
@@ -146,7 +141,8 @@ auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 		else {
 			packet.add<int16_t>(item.quantity); // Item amount
 		}
-		int16_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(item.itemId);
+		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item.itemId);
+		uint16_t maxSlot = itemInfo->maxSlot;
 		if (GameLogicUtilities::isRechargeable(item.itemId)) {
 			maxSlot += rechargeableBonus;
 		}
@@ -159,40 +155,26 @@ auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCre
 			packet.add<int32_t>(kvp.first);
 			packet.add<int32_t>(0);
 			packet.add<double>(kvp.second);
-			packet.add<int16_t>(ItemDataProvider::getInstance().getMaxSlot(kvp.first) + rechargeableBonus);
+			packet.add<int16_t>(ItemDataProvider::getInstance().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
 		}
 	}
 
 	packet.set<int16_t>(shopCount, 6);
 }
 
-auto ShopDataProvider::getPrice(int32_t shopId, uint16_t shopIndex) -> int32_t {
-	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
-	return (shopIndex < s.size() ? s[shopIndex].price : 0);
+auto ShopDataProvider::getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const {
+	return ext::find_value_ptr(
+		ext::find_value_ptr(m_shops, shopId)->items, shopIndex);
 }
 
-auto ShopDataProvider::getAmount(int32_t shopId, uint16_t shopIndex) -> int16_t {
-	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
-	return (shopIndex < s.size() ? s[shopIndex].quantity : 0);
-}
+auto ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) const -> int32_t {
+	auto price = ext::find_value_ptr(
+		ext::find_value_ptr(m_rechargeCosts,
+			ext::find_value_ptr(m_shops, shopId)->rechargeTier), itemId);
 
-auto ShopDataProvider::getItemId(int32_t shopId, uint16_t shopIndex) -> int32_t {
-	vector_t<ShopItemInfo> &s = m_shops[shopId].items;
-	return (shopIndex < s.size() ? s[shopIndex].itemId : 0);
-}
-
-auto ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) -> int32_t {
-	int32_t cost = 1;
-	auto kvp = m_shops.find(shopId);
-	if (kvp != std::end(m_shops)) {
-		int8_t tier = kvp->second.rechargeTier;
-		auto rechargeKvp = m_rechargeCosts.find(tier);
-		if (rechargeKvp != std::end(m_rechargeCosts)) {
-			auto itemKvp = rechargeKvp->second.find(itemId);
-			if (itemKvp != std::end(rechargeKvp->second)) {
-				cost = -1 * static_cast<int32_t>(itemKvp->second * amount);
-			}
-		}
+	if (price != nullptr) {
+		return -1 * static_cast<int32_t>(*price * amount);
 	}
-	return cost;
+
+	return 1;
 }

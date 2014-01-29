@@ -17,92 +17,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.hpp"
 
-auto Quest::addItemRequest(int32_t itemId, int16_t quantity) -> void {
-	m_itemRequests[itemId] = quantity;
-}
-
-auto Quest::addMobRequest(int32_t mobId, int16_t quantity) -> void {
-	m_mobRequests[mobId] = quantity;
-}
-
-auto Quest::addQuestRequest(int16_t questId, int8_t state) -> void {
-	m_questRequests[questId] = state;
-}
-
-auto Quest::addValidJob(int16_t jobId) -> void {
-	m_jobRequests.push_back(jobId);
-}
-
 auto Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) -> void {
-	QuestRewardsInfo *rewMap = nullptr;
-	if (start) {
-		rewMap = &m_startRewards;
-	}
-	else {
-		rewMap = &m_endRewards;
-	}
-	if (job == -1) {
-		rewMap->rewards.push_back(info);
-	}
-	else {
-		rewMap->jobRewards[job].push_back(info);
-	}
+	auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
+	auto &rewardList = job == -1 ? rewards.universal : rewards.job[job];
+	rewardList.push_back(info);
 }
 
-auto Quest::mobRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void {
-	for (const auto &kvp : m_mobRequests) {
-		if (func(kvp.first, kvp.second)) {
-			break;
-		}
-	}
+auto Quest::addRequest(bool start, const QuestRequestInfo &info) -> void {
+	auto &requests = start ? m_beginState.requests : m_endState.requests;
+	requests.universal.push_back(info);
 }
 
-auto Quest::itemRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void {
-	for (const auto &kvp : m_itemRequests) {
-		if (func(kvp.first, kvp.second)) {
-			break;
-		}
-	}
-}
-
-auto Quest::questRequestFunc(function_t<bool (int16_t, int8_t)> func) const -> void {
-	for (const auto &kvp : m_questRequests) {
-		if (func(kvp.first, kvp.second)) {
-			break;
-		}
-	}
-}
-
-auto Quest::rewardsFunc(bool start, function_t<bool (const QuestRewardInfo &)> func) -> bool {
-	return rewardsFunc(start, -1, func);
-}
-
-auto Quest::rewardsFunc(bool start, int16_t job, function_t<bool (const QuestRewardInfo &)> func) -> bool {
+auto Quest::forEachRequest(bool start, function_t<IterationResult (const QuestRequestInfo &)> func) const -> CompletionResult {
 	bool broken = false;
-	QuestRewardsInfo *rewMap = nullptr;
-	if (start) {
-		rewMap = &m_startRewards;
+	const auto &requests = start ? m_beginState.requests : m_endState.requests;
+	for (const auto &request : requests.universal) {
+		if (func(request) == IterationResult::StopIterating) {
+			broken = true;
+			break;
+		}
 	}
-	else {
-		rewMap = &m_endRewards;
-	}
-	for (const auto &reward : rewMap->rewards) {
-		if (func(reward)) {
+	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
+}
+
+auto Quest::forEachReward(bool start, int16_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult {
+	bool broken = false;
+	const auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
+	for (const auto &reward : rewards.universal) {
+		if (func(reward) == IterationResult::StopIterating) {
 			broken = true;
 			break;
 		}
 	}
 	if (!broken && job != -1) {
-		auto kvp = rewMap->jobRewards.find(job);
-		if (kvp != std::end(rewMap->jobRewards)) {
-			const auto &rewards = kvp->second;
-			for (const auto &reward : rewards) {
-				if (func(reward)) {
+		auto kvp = rewards.job.find(job);
+		if (kvp != std::end(rewards.job)) {
+			for (const auto &reward : kvp->second) {
+				if (func(reward) == IterationResult::StopIterating) {
 					broken = true;
 					break;
 				}
 			}
 		}
 	}
-	return !broken;
+	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
+}
+
+auto Quest::getNextQuest() const -> uint16_t {
+	return m_nextQuest;
+}
+
+auto Quest::getQuestId() const -> uint16_t {
+	return m_id;
+}
+
+auto Quest::setNextQuest(uint16_t questId) -> void {
+	m_nextQuest = questId;
+}
+
+auto Quest::setQuestId(uint16_t questId) -> void {
+	m_id = questId;
 }

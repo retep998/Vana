@@ -195,23 +195,21 @@ auto Rect::combine(const Rect &other) const -> Rect {
 	return ret;
 }
 
-auto Rect::noOverlap(const Rect &other) const -> bool {
+auto Rect::findOverlap(const Rect &other) const -> SearchResult {
 	// Can't overlap when there's nothing to overlap
 	if (other.height() == 0 && other.width() == 0) {
-		return true;
+		return SearchResult::NotFound;
 	}
 	if (height() == 0 && width() == 0) {
-		return true;
+		return SearchResult::NotFound;
 	}
 
 	Rect normalized = normalize();
 	Rect test = other.normalize();
-	return normalized.m_leftTop.x > test.m_rightBottom.x &&
+	bool noOverlap = normalized.m_leftTop.x > test.m_rightBottom.x &&
 		test.m_leftTop.x > normalized.m_rightBottom.x &&
 		normalized.m_leftTop.y < test.m_rightBottom.y &&
 		test.m_leftTop.y < normalized.m_rightBottom.y;
-}
 
-auto Rect::anyOverlap(const Rect &other) const -> bool {
-	return !noOverlap(other);
+	return noOverlap ? SearchResult::NotFound : SearchResult::Found;
 }

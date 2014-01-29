@@ -27,11 +27,11 @@ class EquipDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto setEquipStats(Item *equip, bool random, bool isGm) -> void;
-	auto canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) -> bool;
-	auto validSlot(int32_t equipId, int16_t target) -> bool;
-	auto getSlots(int32_t equipId) -> int8_t { return getEquipInfo(equipId).slots; }
-	auto getEquipInfo(int32_t equipId) -> const EquipInfo & { return m_equipInfo[equipId]; }
+	auto setEquipStats(Item *equip, bool random, bool isGm) const -> void;
+	auto canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) const -> bool;
+	auto isValidSlot(int32_t equipId, int16_t target) const -> bool;
+	auto getSlots(int32_t equipId) const -> int8_t;
+	auto getEquipInfo(int32_t equipId) const -> const EquipInfo &;
 private:
 	auto loadEquips() -> void;
 

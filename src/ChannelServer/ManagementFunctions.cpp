@@ -305,7 +305,7 @@ auto ManagementFunctions::header(Player *player, const string_t &args) -> bool {
 
 auto ManagementFunctions::shutdown(Player *player, const string_t &args) -> bool {
 	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
-	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM shutdown the server. GM: " + player->getName());
+	ChannelServer::getInstance().log(LogType::GmCommand, "GM shutdown the server. GM: " + player->getName());
 	ChannelServer::getInstance().shutdown();
 	return true;
 }
@@ -345,7 +345,7 @@ auto ManagementFunctions::item(Player *player, const string_t &args) -> bool {
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches)) {
 		string_t rawItem = matches[1];
 		int32_t itemId = atoi(rawItem.c_str());
-		if (ItemDataProvider::getInstance().itemExists(itemId)) {
+		if (ItemDataProvider::getInstance().getItemInfo(itemId) != nullptr) {
 			string_t countString = matches[2];
 			uint16_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
 			Inventory::addNewItem(player, itemId, count, true);
@@ -516,7 +516,11 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> bool {
 		if (st.get_affected_rows() > 0) {
 			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " banned a player with reason " + StringUtilities::lexical_cast<string_t>(reason) + ", player: " + targetName);
+			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+				log << "GM " << player->getName()
+					<< " banned a player with reason " << reason
+					<< ", player: " << targetName;
+			});
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
@@ -557,7 +561,12 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> bool 
 		if (st.get_affected_rows() > 0) {
 			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " temporary banned with reason " + StringUtilities::lexical_cast<string_t>(reason) + " for " + length + " days, player: " + targetName);
+			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+				log << "GM " << player->getName()
+					<< " temporary banned a player with reason " << reason
+					<< " for " << length
+					<< " days, player: " << targetName;
+			});
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid player: " + targetName);
@@ -588,7 +597,12 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> bool {
 			if (st.get_affected_rows() > 0) {
 				const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
-				ChannelServer::getInstance().log(LogTypes::GmCommand, "GM IP banned a character with reason " + StringUtilities::lexical_cast<string_t>(reason)+". GM: " + player->getName() + ", Character: " + targetName);
+
+				ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+					log << "GM " << player->getName()
+						<< " IP banned a player with reason " << reason
+						<< ", player: " << targetName;
+				});
 			}
 			else {
 				ChatHandlerFunctions::showError(player, "Unknown error, couldn't ban " + targetIp);
@@ -622,7 +636,10 @@ auto ManagementFunctions::unban(Player *player, const string_t &args) -> bool {
 		if (st.get_affected_rows() > 0) {
 			const string_t &banMessage = args + " has been unbanned";
 			ChatHandlerFunctions::showInfo(player, banMessage);
-			ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " unbanned a player: " + args);
+			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+				log << "GM " << player->getName()
+					<< " unbanned a player: " << args;
+			});
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid player: " + args);
@@ -646,14 +663,15 @@ auto ManagementFunctions::rates(Player *player, const string_t &args) -> bool {
 		}
 		string_t type = matches[1];
 		if (type == "view") {
-			auto display = [=](const string_t &type, int32_t rate) {
+			auto display = [player](const string_t &type, int32_t rate) {
 				ChatHandlerFunctions::showInfo(player, type + " rate: " + StringUtilities::lexical_cast<string_t>(rate) + "x");
 			};
 			ChatHandlerFunctions::showInfo(player, "Current rates");
-			display("Mob EXP", ChannelServer::getInstance().getMobExpRate());
-			display("Mob meso", ChannelServer::getInstance().getMobMesoRate());
-			display("Quest EXP", ChannelServer::getInstance().getQuestExpRate());
-			display("Drop", ChannelServer::getInstance().getDropRate());
+			auto &config = ChannelServer::getInstance().getConfig();
+			display("Mob EXP", config.rates.mobExpRate);
+			display("Mob meso", config.rates.mobMesoRate);
+			display("Quest EXP", config.rates.questExpRate);
+			display("Drop", config.rates.dropRate);
 		}
 		else if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+))", matches)) {
 			string_t value = matches[2];

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Default logger/console
 class ConsoleLogger : public Logger {
 public:
-	ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
 
-	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override;
+	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
 };

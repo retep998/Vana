@@ -120,7 +120,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> int8_t {
 
 		LoginServerAcceptPacket::connect(world);
 
-		LoginServer::getInstance().log(LogTypes::ServerConnect, "World " + StringUtilities::lexical_cast<string_t>(worldId));
+		LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
 	}
 	else {
 		LoginServerAcceptPacket::noMoreWorld(connection);

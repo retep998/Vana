@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include <functional>
 
-ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation) :
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation) :
 	m_acceptor(ioService, endpoint),
 	m_connectionCreator(createConnection),
+	m_config(config),
 	m_patchLocation(patchLocation),
-	m_loginConfig(loginConfig),
 	m_isServer(isServer)
 {
 	m_sessionManager = make_ref_ptr<SessionManager>();
@@ -37,14 +37,14 @@ auto ConnectionAcceptor::stop() -> void {
 }
 
 auto ConnectionAcceptor::startAccepting() -> void {
-	bool ping = (m_isServer ? m_loginConfig.serverPing : m_loginConfig.clientPing);
-	ref_ptr_t<Session> newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_connectionCreator(), true, m_loginConfig.clientEncryption || m_isServer, ping, m_patchLocation);
-	m_acceptor.async_accept(newSession->getSocket(), std::bind(&ConnectionAcceptor::handleConnection, this, newSession, std::placeholders::_1));
-}
+	bool ping = m_isServer ? m_config.serverPing : m_config.clientPing;
+	bool encrypt = m_config.clientEncryption || m_isServer;
+	auto newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_connectionCreator(), true, encrypt, ping, m_patchLocation);
 
-auto ConnectionAcceptor::handleConnection(ref_ptr_t<Session> newSession, const boost::system::error_code &error) -> void {
-	if (!error) {
-		newSession->start();
-		startAccepting();
-	}
+	m_acceptor.async_accept(newSession->getSocket(), [this, newSession](const boost::system::error_code &error) {
+		if (!error) {
+			newSession->start();
+			startAccepting();
+		}
+	});
 }

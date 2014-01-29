@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 
-class LoginServerConnection : public AbstractServerConnection {
+class LoginServerConnection final : public AbstractServerConnection {
 	NONCOPYABLE(LoginServerConnection);
 public:
 	LoginServerConnection();

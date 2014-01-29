@@ -45,7 +45,7 @@ class ReactorDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getReactorData(int32_t reactorId, bool respectLink = false) -> ReactorData *;
+	auto getReactorData(int32_t reactorId, bool respectLink = false) const -> const ReactorData &;
 private:
 	auto loadReactors() -> void;
 	auto loadStates() -> void;

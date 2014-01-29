@@ -32,19 +32,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 
 ChannelServer::ChannelServer() :
-	m_loginIp(0),
+	AbstractServer(ServerType::Channel),
 	m_worldIp(0)
 {
-	setServerType(ServerTypes::Channel);
 }
 
 auto ChannelServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, m_loginConfig, false);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, getInterServerConfig(), false);
 	Initializing::setUsersOffline(getOnlineId());
 }
 
 auto ChannelServer::shutdown() -> void {
-	m_channelId = -1; // Otherwise when WorldServerConnection disconnects, it will try to call shutdown() again
+	// If we don't do this and the connection disconnects, it will try to call shutdown() again
+	m_channelId = -1;
 	AbstractServer::shutdown();
 }
 
@@ -54,61 +54,65 @@ auto ChannelServer::loadData() -> void {
 	Initializing::loadData();
 
 	WorldServerConnection *loginPlayer = new WorldServerConnection;
-	ConnectionManager::getInstance().connect(m_loginIp, m_loginPort, m_loginConfig, loginPlayer);
-	const string_t &interPassword = getInterPassword();
-	const string_t &salt = getSalt();
-	const IpMatrix &externalIps = getExternalIps();
-	loginPlayer->sendAuth(interPassword, salt, externalIps);
+	auto &config = getInterServerConfig();
+	ConnectionManager::getInstance().connect(config.loginIp, config.loginPort, config, loginPlayer);
+	sendAuth(loginPlayer);
 }
 
-auto ChannelServer::loadLogConfig() -> void {
-	ConfigFile conf("conf/logger.lua", false);
-	initializeLoggingConstants(conf);
-	conf.execute();
-
-	bool enabled = conf.get<bool>("log_channels");
-	if (enabled) {
-		LogConfig log = conf.getClass<LogConfig>("channel");
-		createLogger(log);
-	}
+auto ChannelServer::makeLogIdentifier() const -> opt_string_t {
+	return buildLogIdentifier([&](out_stream_t &id) { id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << m_channelId; });
 }
 
-auto ChannelServer::makeLogIdentifier() -> opt_string_t {
-	out_stream_t identifier;
-	identifier << "World: " << static_cast<int16_t>(getWorldId()) << "; ID: " << getChannelId();
-	return identifier.str();
+auto ChannelServer::getLogPrefix() const -> string_t {
+	return "channel";
 }
 
-auto ChannelServer::connectWorld() -> void {
+auto ChannelServer::connectToWorld(int8_t worldId, port_t port, const Ip &ip) -> void {
+	m_worldId = worldId;
+	m_worldPort = port;
+	m_worldIp = ip;
+
 	m_worldConnection = new WorldServerConnection;
-	ConnectionManager::getInstance().connect(m_worldIp, m_worldPort, m_loginConfig, m_worldConnection);
-	const string_t &interPassword = getInterPassword();
-	const string_t &salt = getSalt();
-	const IpMatrix &externalIps = getExternalIps();
-	getWorldConnection()->sendAuth(interPassword, salt, externalIps);
+	ConnectionManager::getInstance().connect(ip, port, getInterServerConfig(), m_worldConnection);
+	sendAuth(m_worldConnection);
 }
 
-auto ChannelServer::loadConfig() -> void {
-	ConfigFile config("conf/interserver.lua");
-	InterServerConfig conf = config.getClass<InterServerConfig>();
+auto ChannelServer::establishedWorldConnection(int16_t channelId, port_t port, const WorldConfig &config) -> void {
+	m_channelId = channelId;
+	m_port = port;
+	m_config = config;
+	listen();
+	displayLaunchTime();
+}
 
-	m_loginIp = conf.loginIp;
-	m_loginPort = conf.port;
+auto ChannelServer::getConfig() const -> const WorldConfig & {
+	return m_config;
+}
+
+auto ChannelServer::isConnected() const -> bool {
+	return m_channelId != -1;
+}
+
+auto ChannelServer::getWorldId() const -> int8_t {
+	return m_worldId;
+}
+
+auto ChannelServer::getChannelId() const -> int16_t {
+	return m_channelId;
+}
+
+auto ChannelServer::getOnlineId() const -> int32_t {
+	return 20000 + static_cast<int32_t>(m_worldId) * 100 + m_channelId;
 }
 
 auto ChannelServer::sendPacketToWorld(PacketCreator &packet) -> void {
-	getWorldConnection()->getSession()->send(packet);
+	m_worldConnection->getSession()->send(packet);
 }
 
 auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
-	if (getScrollingHeader() != message) {
+	if (m_config.scrollingHeader != message) {
 		m_config.scrollingHeader = message;
-		if (message.size() == 0) {
-			ServerPacket::scrollingHeaderOff();
-		}
-		else {
-			ServerPacket::changeScrollingHeader(message);
-		}
+		ServerPacket::changeScrollingHeader(message);
 	}
 }
 
@@ -128,10 +132,4 @@ auto ChannelServer::setRates(const Rates &rates) -> void {
 auto ChannelServer::setConfig(const WorldConfig &config) -> void {
 	setScrollingHeader(config.scrollingHeader);
 	m_config = config;
-	int8_t channelId = static_cast<int8_t>(m_channelId + 1);
-	m_pianusChannel = MiscUtilities::isBossChannel(config.pianus.channels, channelId);
-	m_papChannel = MiscUtilities::isBossChannel(config.pap.channels, channelId);
-	m_zakumChannel = MiscUtilities::isBossChannel(config.zakum.channels, channelId);
-	m_horntailChannel = MiscUtilities::isBossChannel(config.horntail.channels, channelId);
-	m_pinkbeanChannel = MiscUtilities::isBossChannel(config.pinkbean.channels, channelId);
 }

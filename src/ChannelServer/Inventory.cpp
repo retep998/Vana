@@ -34,12 +34,13 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
 	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *oldItem = player->getInventory()->getItem(inv, s);
 		if (oldItem != nullptr) {
-			uint16_t slotMax = ItemDataProvider::getInstance().getMaxSlot(item->getId());
-			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < slotMax) {
-				if (item->getAmount() + oldItem->getAmount() > slotMax) {
-					int16_t amount = slotMax - oldItem->getAmount();
+			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
+			uint16_t maxSlot = itemInfo->maxSlot;
+			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < maxSlot) {
+				if (item->getAmount() + oldItem->getAmount() > maxSlot) {
+					int16_t amount = maxSlot - oldItem->getAmount();
 					item->decAmount(amount);
-					oldItem->setAmount(slotMax);
+					oldItem->setAmount(maxSlot);
 
 					vector_t<InventoryPacketOperation> ops;
 					ops.emplace_back(InventoryPacket::OperationTypes::AddItem, oldItem, s);
@@ -82,11 +83,12 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
 }
 
 auto Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount, bool random) -> void {
-	if (!ItemDataProvider::getInstance().itemExists(itemId)) {
+	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+	if (itemInfo == nullptr) {
 		return;
 	}
 
-	int16_t max = ItemDataProvider::getInstance().getMaxSlot(itemId);
+	uint16_t max = itemInfo->maxSlot;
 	int16_t thisAmount = 0;
 	if (GameLogicUtilities::isRechargeable(itemId)) {
 		thisAmount = max + player->getSkills()->getRechargeableBonus();
@@ -190,10 +192,9 @@ auto Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 }
 
 auto Inventory::useItem(Player *player, int32_t itemId) -> void {
-	ConsumeInfo *item = ItemDataProvider::getInstance().getConsumeInfo(itemId);
-
+	auto item = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr) {
-		// No reason not to check
+		// Not a consume
 		return;
 	}
 

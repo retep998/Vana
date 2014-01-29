@@ -81,12 +81,12 @@ auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 			player->getQuests()->removeQuest(questId);
 		}
 		else {
-			out_stream_t x;
-			x << "Player (ID: " << player->getId()
-				<< ", Name: " << player->getName()
-				<< ") tried to forfeit a quest that wasn't started yet."
-				<< " (Quest ID: " << questId << ")";
-			ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+				log << "Player (ID: " << player->getId()
+					<< ", Name: " << player->getName()
+					<< ") tried to forfeit a quest that wasn't started yet."
+					<< " (Quest ID: " << questId << ")";
+			});
 		}
 		return;
 	}
@@ -95,55 +95,60 @@ auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
-			out_stream_t x;
-			x << "Player (ID: " << player->getId()
-				<< ", Name: " << player->getName()
-				<< ") tried to perform an action with a non-started quest."
-				<< " (NPC ID: " << npcId
-				<< ", Quest ID: " << questId << ")";
-			ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+			ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+				log << "Player (ID: " << player->getId()
+					<< ", Name: " << player->getName()
+					<< ") tried to perform an action with a non-started quest."
+					<< " (Quest ID: " << questId << ")";
+			});
 			return;
 		}
 	}
 	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
 	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::getInstance().isValidNpcId(npcId)) {
-		out_stream_t x;
-		x << "Player (ID: " << player->getId()
-			<< ", Name: " << player->getName()
-			<< ") tried to do a quest action with an invalid NPC ID."
-			<< " (NPC ID: " << npcId
-			<< ", Quest ID: " << questId << ")";
-		ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+			log << "Player (ID: " << player->getId()
+				<< ", Name: " << player->getName()
+				<< ") tried to do a quest action with an invalid NPC ID."
+				<< " (NPC ID: " << npcId
+				<< " (Quest ID: " << questId << ")";
+		});
 		return;
 	}
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
 			int32_t itemId = packet.get<int32_t>();
-			if (ItemDataProvider::getInstance().isQuest(itemId)) {
+			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+			if (itemInfo == nullptr) {
+				// Hacking
+				return;
+			}
+
+			if (itemInfo->quest) {
 				QuestsPacket::giveItem(player, itemId, 1);
 				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {
-				out_stream_t x;
-				x << "Player (ID: " << player->getId()
-					<< ", Name: " << player->getName()
-					<< ") tried to restore a lost quest item which isn't a quest item."
-					<< " (Item ID: " << itemId
-					<< ", NPC ID: " << npcId
-					<< ", Quest ID: " << questId << ")";
-				ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+				ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+					log << "Player (ID: " << player->getId()
+						<< ", Name: " << player->getName()
+						<< ") tried to restore a lost quest item which isn't a quest item."
+						<< " (Item ID: " << itemId
+						<< ", NPC ID: " << npcId
+						<< ", Quest ID: " << questId << ")";
+				});
 			}
 			break;
 		}
 		case QuestOpcodes::StartQuest:
 			if (player->getQuests()->isQuestActive(questId)) {
-				out_stream_t x;
-				x << "Player (ID: " << player->getId()
-					<< ", Name: " << player->getName()
-					<< ") tried to start an already started quest."
-					<< " (NPC ID: " << npcId
-					<< ", Quest ID: " << questId << ")";
-				ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+				ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+					log << "Player (ID: " << player->getId()
+						<< ", Name: " << player->getName()
+						<< ") tried to start an already started quest."
+						<< " (NPC ID: " << npcId
+						<< ", Quest ID: " << questId << ")";
+				});
 			}
 			else {
 				player->getQuests()->addQuest(questId, npcId);

@@ -32,11 +32,13 @@ class ConnectionAcceptor;
 class ConnectionManager {
 	SINGLETON_CUSTOM_CONSTRUCTOR(ConnectionManager);
 public:
-	auto accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation = "") -> void;
-	auto connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) -> void;
-	auto stop() -> void;
+	auto accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation = "") -> void;
+	auto connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> void;
 	auto run() -> void;
+	auto stop() -> void;
+#ifdef WIN32
 	auto join() -> void;
+#endif
 private:
 	auto handleRun() -> void;
 	auto handleStop() -> void;

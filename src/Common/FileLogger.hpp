@@ -28,10 +28,10 @@ struct FileLog {
 
 class FileLogger : public Logger {
 public:
-	FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
 	~FileLogger();
 
-	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override;
+	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
 	auto flush() -> void;
 	auto getFilenameFormat() const -> const string_t & { return m_filenameFormat; }
 private:

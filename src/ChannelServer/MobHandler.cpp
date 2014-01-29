@@ -69,7 +69,7 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &packet) -> void {
 
 		taker->applyDamage(playerId, damage);
 		if (Instance *instance = map->getInstance()) {
-			instance->sendMessage(FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
+			instance->sendMessage(InstanceMessage::FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
 	}
 }
@@ -132,9 +132,9 @@ auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 
 	if (isAttack || isSkill) {
 		if (isAttack) {
-			MobAttackInfo *attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), attackId);
+			auto attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), attackId);
 			if (attack == nullptr) {
-				// Hacks
+				// Hacking
 				return;
 			}
 			mob->consumeMp(attack->mpConsume);
@@ -145,7 +145,7 @@ auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 				mob->resetAnticipatedSkill();
 				return;
 			}
-			if (!mob->useAnticipatedSkill()) {
+			if (mob->useAnticipatedSkill() == Result::Failure) {
 				return;
 			}
 		}
@@ -165,7 +165,7 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	vector_t<StatusInfo> statuses;
 	int16_t y = 0;
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	bool success = (skillId == 0 ? false : (Randomizer::rand<uint16_t>(99) < skill->prop));
 	if (mob->canFreeze()) {
 		// Freezing stuff
@@ -178,8 +178,8 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time);
 				break;
 			case Skills::Outlaw::IceSplitter:
-				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
-					y = eBoost->y;
+				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
+					y = elementalBoost->y;
 				}
 				statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, skillId, skill->time + y);
 				break;
@@ -211,7 +211,7 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					int32_t vSkill = player->getSkills()->getVenomousWeapon();
-					SkillLevelInfo *venom = player->getSkills()->getSkillInfo(vSkill);
+					auto venom = player->getSkills()->getSkillInfo(vSkill);
 
 					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
 					int32_t part2 = player->getStats()->getDex(true) * 2;
@@ -313,10 +313,10 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 				statuses.emplace_back(StatusEffects::Mob::MagicDefenseUp, 100 - skill->x, skillId, skill->time);
 				break;
 			case Skills::Outlaw::Flamethrower:
-				if (SkillLevelInfo *eBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
-					y = eBoost->x;
+				if (auto elementalBoost = player->getSkills()->getSkillInfo(Skills::Corsair::ElementalBoost)) {
+					y = elementalBoost->x;
 				}
-				statuses.emplace_back(StatusEffects::Mob::Poison, (damage * (5 + y) / 100), skillId, skill->time);
+				statuses.emplace_back(StatusEffects::Mob::Poison, damage * (5 + y) / 100, skillId, skill->time);
 				break;
 		}
 	}
@@ -339,7 +339,7 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 			break;
 	}
 	if (GameLogicUtilities::isBow(weapon)) {
-		if (SkillLevelInfo *hamstring = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Hamstring)) {
+		if (auto hamstring = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Hamstring)) {
 			// Only triggers if player has the buff
 			if (skillId != Skills::Bowmaster::Phoenix && skillId != Skills::Ranger::SilverHawk) {
 				statuses.emplace_back(StatusEffects::Mob::Speed, hamstring->x, Skills::Bowmaster::Hamstring, hamstring->y);
@@ -347,7 +347,7 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 		}
 	}
 	else if (GameLogicUtilities::isCrossbow(weapon)) {
-		if (SkillLevelInfo *blind = player->getActiveBuffs()->getActiveSkillInfo(Skills::Marksman::Blind)) {
+		if (auto blind = player->getActiveBuffs()->getActiveSkillInfo(Skills::Marksman::Blind)) {
 			// Only triggers if player has the buff
 			if (skillId != Skills::Marksman::Frostprey && skillId != Skills::Sniper::GoldenEagle) {
 				statuses.emplace_back(StatusEffects::Mob::Acc, -(blind->x), Skills::Marksman::Blind, blind->y);

@@ -934,3 +934,19 @@ auto BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> v
 		}
 	}
 }
+
+auto BuffDataProvider::isBuff(int32_t skillId) const -> bool {
+	return m_skillInfo.find(skillId) != std::end(m_skillInfo);
+}
+
+auto BuffDataProvider::isDebuff(uint8_t skillId) const -> bool {
+	return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo);
+}
+
+auto BuffDataProvider::getSkillInfo(int32_t skillId) const -> const SkillInfo & {
+	return m_skillInfo.find(skillId)->second;
+}
+
+auto BuffDataProvider::getMobSkillInfo(uint8_t skillId) const -> const MobAilmentInfo & {
+	return m_mobSkillInfo.find(skillId)->second;
+}

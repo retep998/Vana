@@ -147,11 +147,11 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &packet) -> void {
 						// Hacking
 						return;
 					}
-					if (!ItemDataProvider::getInstance().isTradeable(item->getId())) {
-						if (!ItemDataProvider::getInstance().canKarma(item->getId()) || !item->hasKarma()) {
-							// Hacking
-							return;
-						}
+
+					auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
+					if ((itemInfo->quest || itemInfo->noTrade) && !(itemInfo->karmaScissors || item->hasKarma())) {
+						// Hacking
+						return;
 					}
 					if (GameLogicUtilities::isGmEquip(item->getId())) {
 						// We don't allow these to be dropped or traded

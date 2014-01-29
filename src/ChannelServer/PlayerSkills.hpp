@@ -38,40 +38,40 @@ public:
 
 	auto load() -> void;
 	auto save(bool saveCooldowns = false) -> void;
-	auto connectData(PacketCreator &packet) -> void;
+	auto connectData(PacketCreator &packet) const -> void;
 
 	auto addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true) -> bool;
-	auto getSkillLevel(int32_t skillId) -> uint8_t;
-	auto getMaxSkillLevel(int32_t skillId) -> uint8_t;
+	auto getSkillLevel(int32_t skillId) const -> uint8_t;
+	auto getMaxSkillLevel(int32_t skillId) const -> uint8_t;
 	auto setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket = true) -> void;
-	auto getSkillInfo(int32_t skillId) -> SkillLevelInfo *;
+	auto getSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const;
 
-	auto hasElementalAmp() -> bool;
-	auto hasEnergyCharge() -> bool;
-	auto hasHpIncrease() -> bool;
-	auto hasMpIncrease() -> bool;
-	auto hasVenomousWeapon() -> bool;
-	auto hasAchilles() -> bool;
-	auto hasNoDamageSkill() -> bool;
-	auto getElementalAmp() -> int32_t;
-	auto getEnergyCharge() -> int32_t;
-	auto getComboAttack() -> int32_t;
-	auto getAdvancedCombo() -> int32_t;
-	auto getAlchemist() -> int32_t;
-	auto getHpIncrease() -> int32_t;
-	auto getMpIncrease() -> int32_t;
-	auto getMastery() -> int32_t;
-	auto getMpEater() -> int32_t;
-	auto getVenomousWeapon() -> int32_t;
-	auto getAchilles() -> int32_t;
-	auto getNoDamageSkill() -> int32_t;
-	auto getRechargeableBonus() -> int16_t;
+	auto hasElementalAmp() const -> bool;
+	auto hasEnergyCharge() const -> bool;
+	auto hasHpIncrease() const -> bool;
+	auto hasMpIncrease() const -> bool;
+	auto hasVenomousWeapon() const -> bool;
+	auto hasAchilles() const -> bool;
+	auto hasNoDamageSkill() const -> bool;
+	auto getElementalAmp() const -> int32_t;
+	auto getEnergyCharge() const -> int32_t;
+	auto getComboAttack() const -> int32_t;
+	auto getAdvancedCombo() const -> int32_t;
+	auto getAlchemist() const -> int32_t;
+	auto getHpIncrease() const -> int32_t;
+	auto getMpIncrease() const -> int32_t;
+	auto getMastery() const -> int32_t;
+	auto getMpEater() const -> int32_t;
+	auto getVenomousWeapon() const -> int32_t;
+	auto getAchilles() const -> int32_t;
+	auto getNoDamageSkill() const -> int32_t;
+	auto getRechargeableBonus() const -> int16_t;
 
 	auto addCooldown(int32_t skillId, int16_t time) -> void;
 	auto removeCooldown(int32_t skillId) -> void;
 	auto removeAllCooldowns() -> void;
 private:
-	auto hasSkill(int32_t skillId) -> bool;
+	auto hasSkill(int32_t skillId) const -> bool;
 
 	Player *m_player = nullptr;
 	hash_map_t<int32_t, PlayerSkillInfo> m_skills;

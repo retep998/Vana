@@ -54,4 +54,8 @@ namespace ChatHandlerFunctions {
 	auto showSyntax(Player *player, const string_t &command, bool fromHelp = false) -> void;
 	auto showError(Player *player, const string_t &message) -> void;
 	auto showInfo(Player *player, const string_t &message) -> void;
+	auto showError(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void;
+	auto showInfo(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void;
+	auto showError(Player *player, const char *message) -> void;
+	auto showInfo(Player *player, const char *message) -> void;
 }

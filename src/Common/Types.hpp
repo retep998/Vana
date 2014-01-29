@@ -62,6 +62,26 @@ private:
 	time_t m_time;
 };
 
+enum class SearchResult {
+	Found,
+	NotFound,
+};
+
+enum class IterationResult {
+	ContinueIterating,
+	StopIterating
+};
+
+enum class CompletionResult {
+	Complete,
+	Incomplete,
+};
+
+enum class Result {
+	Successful,
+	Failure
+};
+
 using std::chrono::duration_cast;
 
 // Miscellaneous utility types

@@ -97,7 +97,7 @@ auto EquipDataProvider::loadEquips() -> void {
 	}
 }
 
-auto EquipDataProvider::setEquipStats(Item *equip, bool random, bool isGm) -> void {
+auto EquipDataProvider::setEquipStats(Item *equip, bool random, bool isGm) const -> void {
 	const EquipInfo &ei = getEquipInfo(equip->getId());
 	equip->setSlots(ei.slots);
 
@@ -126,12 +126,20 @@ auto EquipDataProvider::setEquipStats(Item *equip, bool random, bool isGm) -> vo
 	equip->setSpeed(getStat(ei.ispeed, Items::StatVariance::Speed));
 }
 
-auto EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) -> bool {
+auto EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) const -> bool {
 	const EquipInfo &ei = getEquipInfo(itemId);
 	return str >= ei.reqStr && dex >= ei.reqDex && intt >= ei.reqInt && luk >= ei.reqLuk && fame >= ei.reqFame;
 }
 
-auto EquipDataProvider::validSlot(int32_t equipId, int16_t target) -> bool {
+auto EquipDataProvider::isValidSlot(int32_t equipId, int16_t target) const -> bool {
 	const EquipInfo &ei = getEquipInfo(equipId);
 	return (ei.validSlots & (1ULL << (target - 1))) != 0;
+}
+
+auto EquipDataProvider::getSlots(int32_t equipId) const -> int8_t {
+	return getEquipInfo(equipId).slots;
+}
+
+auto EquipDataProvider::getEquipInfo(int32_t equipId) const -> const EquipInfo & {
+	return m_equipInfo.find(equipId)->second;
 }

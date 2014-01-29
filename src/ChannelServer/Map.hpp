@@ -50,11 +50,6 @@ namespace SpawnTypes {
 	};
 }
 
-enum class FindFloorResult {
-	Found,
-	NotFound
-};
-
 class Map : public TimerContainerHolder {
 	NONCOPYABLE(Map);
 	NO_DEFAULT_CONSTRUCTOR(Map);
@@ -80,7 +75,7 @@ public:
 	auto getId() const -> int32_t { return m_id; }
 
 	// Footholds
-	auto findFloor(const Pos &pos, Pos &ret, int16_t yMod = 0) -> FindFloorResult;
+	auto findFloor(const Pos &pos, Pos &floorPos, int16_t yMod = 0) -> SearchResult;
 	auto getFhAtPosition(const Pos &pos) -> int16_t;
 
 	// Seats
@@ -104,6 +99,7 @@ public:
 	auto runFunctionPlayers(const Rect &dimensions, int16_t prop, int16_t count, function_t<void(Player *)> successFunc) -> void;
 	auto runFunctionPlayers(function_t<void(Player *)> successFunc) -> void;
 	auto gmHideChange(Player *player) -> void;
+	auto getAllPlayerIds() const -> vector_t<int32_t>;
 
 	// NPCs
 	auto addNpc(const NpcSpawnInfo &npc) -> int32_t;
@@ -127,7 +123,7 @@ public:
 	auto getMob(int32_t mapMobId) -> ref_ptr_t<Mob>;
 	auto runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void;
 	auto switchController(ref_ptr_t<Mob> mob, Player *newController) -> void;
-	auto mobSummonSkillUsed(ref_ptr_t<Mob> mob, MobSkillLevelInfo *skill) -> void;
+	auto mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const skill) -> void;
 
 	// Reactors
 	auto addReactor(Reactor *reactor) -> void;

@@ -379,6 +379,8 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 
 		hash_map_t<int32_t, PartyExp> parties;
 
+		int32_t mobExpRate = ChannelServer::getInstance().getConfig().rates.mobExpRate;
+
 		for (const auto &kvp : m_damages) {
 			int32_t damagerId = kvp.first;
 			uint64_t damage = kvp.second;
@@ -422,7 +424,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 				// Account for EXP increasing junk
 				int16_t hsRate = damager->getActiveBuffs()->getHolySymbolRate();
 				exp = exp * getTauntEffect() / 100;
-				exp *= ChannelServer::getInstance().getMobExpRate();
+				exp *= mobExpRate;
 				exp += ((exp * hsRate) / 100);
 				damager->getStats()->giveExp(exp, false, (damager == killer));
 			}
@@ -451,7 +453,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 					uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damagerLevel / totalLevel) + (partyMember == info.highestDamager ? 2 : 0)) / 10;
 					int16_t hsRate = partyMember->getActiveBuffs()->getHolySymbolRate();
 					exp = exp * getTauntEffect() / 100;
-					exp *= ChannelServer::getInstance().getMobExpRate();
+					exp *= mobExpRate;
 					exp += ((exp * hsRate) / 100);
 					partyMember->getStats()->giveExp(exp, false, (partyMember == killer));
 				}
@@ -539,7 +541,7 @@ auto Mob::chooseRandomSkill(uint8_t &skillId, uint8_t &skillLevel) -> void {
 	auto &skills = MobDataProvider::getInstance().getSkills(getMobIdOrLink());
 	for (const auto &info : skills) {
 		bool stop = false;
-		MobSkillLevelInfo *mobSkill = SkillDataProvider::getInstance().getMobSkill(info.skillId, info.level);
+		auto mobSkill = SkillDataProvider::getInstance().getMobSkill(info.skillId, info.level);
 
 		switch (info.skillId) {
 			case MobSkills::WeaponAttackUp:
@@ -608,21 +610,21 @@ auto Mob::resetAnticipatedSkill() -> void {
 	m_anticipatedSkillLevel = 0;
 }
 
-auto Mob::useAnticipatedSkill() -> bool {
+auto Mob::useAnticipatedSkill() -> Result {
 	uint8_t skillId = m_anticipatedSkill;
 	uint8_t level = m_anticipatedSkillLevel;
 
 	resetAnticipatedSkill();
 
 	if (!canCastSkills()) {
-		return false;
+		return Result::Failure;
 	}
 
 	time_point_t now = TimeUtilities::getNow();
 	m_skillUse[skillId] = now;
 	m_lastSkillUse = now;
 
-	MobSkillLevelInfo *skillLevelInfo = SkillDataProvider::getInstance().getMobSkill(skillId, level);
+	auto skillLevelInfo = SkillDataProvider::getInstance().getMobSkill(skillId, level);
 	consumeMp(skillLevelInfo->mp);
 
 	Rect skillArea = skillLevelInfo->dimensions.move(getPos());
@@ -679,12 +681,12 @@ auto Mob::useAnticipatedSkill() -> bool {
 		case MobSkills::SendToTown: {
 			int32_t field = map->getReturnMap();
 			PortalInfo *portal = nullptr;
-			string_t message = "";
-			if (BanishField *ban = SkillDataProvider::getInstance().getBanishData(getMobId())) {
-				field = ban->field;
-				message = ban->message;
-				if (ban->portal != "" && ban->portal != "sp") {
-					portal = Maps::getMap(field)->getPortal(ban->portal);
+			string_t message;
+			if (auto banishInfo = SkillDataProvider::getInstance().getBanishData(getMobId())) {
+				field = banishInfo->field;
+				message = banishInfo->message;
+				if (banishInfo->portal != "" && banishInfo->portal != "sp") {
+					portal = Maps::getMap(field)->getPortal(banishInfo->portal);
 				}
 			}
 			auto func = [&message, &field, &portal](Player *player) {
@@ -736,7 +738,7 @@ auto Mob::useAnticipatedSkill() -> bool {
 		}
 	}
 
-	return true;
+	return Result::Successful;
 }
 
 auto Mob::canCastSkills() const -> bool {

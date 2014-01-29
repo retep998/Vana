@@ -128,7 +128,7 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 		}
 	}
 	else {
-		LoginServer::getInstance().log(LogTypes::Login, username + " from IP " + player->getIp().toString());
+		LoginServer::getInstance().log(LogType::Login, [&](out_stream_t &log) { log << username << " from IP " << player->getIp(); });
 
 		player->setUserId(userId);
 

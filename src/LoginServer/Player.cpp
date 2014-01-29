@@ -41,8 +41,8 @@ auto Player::handleRequest(PacketReader &packet) -> void {
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::getInstance().showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
-			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogTypes::ClientError, packet.getString()); break;
-			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogTypes::Info, "Client connected and started from " + this->getIp().toString()); break;
+			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, packet.getString()); break;
+			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp(); }); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
 			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(this, packet); break;
 			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
@@ -59,10 +59,11 @@ auto Player::handleRequest(PacketReader &packet) -> void {
 		// We may not process the structure properly
 
 		packet.reset();
-		out_stream_t x;
-		x << "User ID: " << getUserId() << "; Packet: " << packet << "; Error: " << e.what();
-
-		LoginServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+		LoginServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+			log << "User ID: " << getUserId()
+				<< "; Packet: " << packet
+				<< "; Error: " << e.what();
+		});
 		getSession()->disconnect();
 	}
 }

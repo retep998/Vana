@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <sstream>
 
-ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
+ConsoleLogger::ConsoleLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize)
 {
 }
 
-auto ConsoleLogger::log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void {
+auto ConsoleLogger::log(LogType type, const opt_string_t &identifier, const string_t &message) -> void {
 	std::cout << Logger::formatLog(getFormat(), type, this, identifier, message) << std::endl;
 }

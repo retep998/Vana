@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto Buffs::getValue(int8_t value, int32_t skillId, uint8_t level) -> int16_t {
 	int16_t rValue = 0;
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	switch (value) {
 		case SkillX: rValue = skill->x; break;
 		case SkillY: rValue = skill->y; break;
@@ -46,7 +46,7 @@ auto Buffs::getValue(int8_t value, int32_t skillId, uint8_t level) -> int16_t {
 
 auto Buffs::getMobSkillValue(int8_t value, uint8_t skillId, uint8_t level) -> int16_t {
 	int16_t rValue = 0;
-	MobSkillLevelInfo *skill = SkillDataProvider::getInstance().getMobSkill(skillId, level);
+	auto skill = SkillDataProvider::getInstance().getMobSkill(skillId, level);
 	switch (value) {
 		case SkillX: rValue = static_cast<int16_t>(skill->x); break;
 		case SkillY: rValue = static_cast<int16_t>(skill->y); break;
@@ -72,23 +72,22 @@ auto Buffs::parseMountInfo(Player *player, int32_t skillId, uint8_t level) -> in
 
 auto Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveBuff {
 	ActiveBuff playerSkill;
-	BuffInfo cur;
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
-	SkillInfo *skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
 
-	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
-		cur = skillsInfo->player[i];
-		int8_t val = cur.buff.value;
+	for (const auto &buffInfo : skillsInfo.player) {
+		const auto &buff = buffInfo.buff;
+		int8_t val = buff.value;
 		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
-		playerSkill.types[cur.buff.byte] += cur.buff.type;
+		playerSkill.types[buff.byte] += buff.type;
 		int16_t value = 0;
-		if (cur.hasMapVal) {
+		if (buffInfo.hasMapVal) {
 			playerSkill.hasMapBuff = true;
 		}
 		if (val == SkillNone) {
-			value = cur.itemVal;
+			value = buffInfo.itemVal;
 		}
 		else {
 			switch (skillId) {
@@ -111,7 +110,8 @@ auto Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) -> Act
 				case Skills::ThunderBreaker::Transformation:
 					value = getValue(val, skillId, level);
 					if (val == SkillMorph) {
-						value += (player->getGender() * 100); // Females are +100
+						// Females are +100
+						value += player->getGender() * 100;
 					}
 					break;
 				case Skills::Marauder::EnergyCharge:
@@ -130,29 +130,27 @@ auto Buffs::parseBuffInfo(Player *player, int32_t skillId, uint8_t level) -> Act
 
 auto Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	BuffInfo cur;
-	BuffMapInfo map;
 	int32_t maps = 0;
-	SkillInfo *skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
 
-	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
-		cur = skillsInfo->player[i];
-		if (!cur.hasMapVal) {
+	for (const auto &buffInfo : skillsInfo.player) {
+		if (!buffInfo.hasMapVal) {
 			continue;
 		}
-		map = skillsInfo->map[maps++];
-		int8_t val = map.buff.value;
+		const auto &map = skillsInfo.map[maps++];
+		const auto &buff = map.buff;
+		int8_t val = buff.value;
 		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
-		mapSkill.bytes.push_back(map.buff.byte);
-		mapSkill.types.push_back(map.buff.type);
-		mapSkill.typeList[map.buff.byte] += map.buff.type;
+		mapSkill.bytes.push_back(buff.byte);
+		mapSkill.types.push_back(buff.type);
+		mapSkill.typeList[buff.byte] += buff.type;
 		mapSkill.useVals.push_back(map.useVal);
 		if (map.useVal) {
 			int16_t value = 0;
 			if (val == SkillNone) {
-				value = cur.itemVal;
+				value = buffInfo.itemVal;
 			}
 			else {
 				switch (skillId) {
@@ -173,29 +171,28 @@ auto Buffs::parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level) -> 
 
 auto Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	BuffInfo cur;
-	BuffMapInfo map;
 	int8_t mapCounter = 0;
-	SkillInfo *skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
 
-	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
-		cur = skillsInfo->player[i];
-		if (!cur.hasMapEntry) {
+	for (const auto &buffInfo : skillsInfo.player) {
+		if (!buffInfo.hasMapEntry) {
 			continue;
 		}
-		map = skillsInfo->map[mapCounter++];
-		int8_t val = map.buff.value;
+
+		const auto &map = skillsInfo.map[mapCounter++];
+		const auto &buff = map.buff;
+		int8_t val = buff.value;
 		if (!Buffs::buffMayApply(skillId, level, val)) {
 			continue;
 		}
-		mapSkill.bytes.push_back(map.buff.byte);
-		mapSkill.types.push_back(map.buff.type);
-		mapSkill.typeList[map.buff.byte] += map.buff.type;
+		mapSkill.bytes.push_back(buff.byte);
+		mapSkill.types.push_back(buff.type);
+		mapSkill.typeList[buff.byte] += buff.type;
 		mapSkill.useVals.push_back(map.useVal);
 		if (map.useVal) {
 			int16_t value = 0;
 			if (val == SkillNone) {
-				value = cur.itemVal;
+				value = buffInfo.itemVal;
 			}
 			else {
 				switch (skillId) {
@@ -216,27 +213,25 @@ auto Buffs::parseBuffMapEntryInfo(Player *player, int32_t skillId, uint8_t level
 
 auto Buffs::parseBuffs(int32_t skillId, uint8_t level) -> vector_t<Buff> {
 	vector_t<Buff> ret;
-	SkillInfo *skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
 
-	for (size_t i = 0; i < skillsInfo->player.size(); i++) {
-		BuffInfo cur = skillsInfo->player[i];
-		if (!Buffs::buffMayApply(skillId, level, cur.buff.value)) {
+	for (const auto &buffInfo : skillsInfo.player) {
+		if (!Buffs::buffMayApply(skillId, level, buffInfo.buff.value)) {
 			continue;
 		}
-		ret.push_back(cur.buff);
+		ret.push_back(buffInfo.buff);
 	}
 	return ret;
 }
 
 auto Buffs::parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveBuff {
 	ActiveBuff playerSkill;
-	BuffInfo cur;
-	MobAilmentInfo *mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
 
-	for (size_t i = 0; i < mobSkillsInfo->mob.size(); i++) {
-		cur = mobSkillsInfo->mob[i];
-		int8_t val = cur.buff.value;
-		playerSkill.types[cur.buff.byte] += cur.buff.type;
+	for (const auto &buffInfo : mobSkillsInfo.mob) {
+		const auto &buff = buffInfo.buff;
+		int8_t val = buff.value;
+		playerSkill.types[buff.byte] += buff.type;
 		playerSkill.hasMapBuff = true;
 		int16_t value = (val == SkillNone ? (skillId == MobSkills::Seal ? 2 : 1) : getMobSkillValue(val, skillId, level));
 		playerSkill.vals.push_back(value);
@@ -246,16 +241,15 @@ auto Buffs::parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t level) -> 
 
 auto Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	BuffInfo cur;
-	MobAilmentInfo *mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
 
-	for (size_t i = 0; i < mobSkillsInfo->mob.size(); i++) {
-		cur = mobSkillsInfo->mob[i];
-		int8_t val = cur.buff.value;
-		mapSkill.bytes.push_back(cur.buff.byte);
-		mapSkill.types.push_back(cur.buff.type);
-		mapSkill.typeList[cur.buff.byte] += cur.buff.type;
-		mapSkill.useVals.push_back(cur.useVal);
+	for (const auto &buffInfo : mobSkillsInfo.mob) {
+		const auto &buff = buffInfo.buff;
+		int8_t val = buff.value;
+		mapSkill.bytes.push_back(buff.byte);
+		mapSkill.types.push_back(buff.type);
+		mapSkill.typeList[buff.byte] += buff.type;
+		mapSkill.useVals.push_back(buffInfo.useVal);
 		int16_t value = (val == SkillNone ? 1 : getMobSkillValue(val, skillId, level));
 		mapSkill.values.push_back(value);
 	}
@@ -264,15 +258,14 @@ auto Buffs::parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_t level) 
 
 auto Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	BuffInfo cur;
-	MobAilmentInfo *mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
 
-	for (size_t i = 0; i < mobSkillsInfo->mob.size(); i++) {
-		cur = mobSkillsInfo->mob[i];
-		int8_t val = cur.buff.value;
-		mapSkill.bytes.push_back(cur.buff.byte);
-		mapSkill.types.push_back(cur.buff.type);
-		mapSkill.typeList[cur.buff.byte] += cur.buff.type;
+	for (const auto &buffInfo : mobSkillsInfo.mob) {
+		const auto &buff = buffInfo.buff;
+		int8_t val = buff.value;
+		mapSkill.bytes.push_back(buff.byte);
+		mapSkill.types.push_back(buff.type);
+		mapSkill.typeList[buff.byte] += buff.type;
 		mapSkill.useVals.push_back(true);
 		mapSkill.useVals.push_back(false);
 		mapSkill.values.push_back(skillId);
@@ -284,11 +277,10 @@ auto Buffs::parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, uint8_t le
 
 auto Buffs::parseMobBuffs(uint8_t skillId) -> vector_t<Buff> {
 	vector_t<Buff> ret;
-	MobAilmentInfo mobSkillsInfo = *BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
 
-	for (size_t i = 0; i < mobSkillsInfo.mob.size(); i++) {
-		BuffInfo cur = mobSkillsInfo.mob[i];
-		ret.push_back(cur.buff);
+	for (const auto &buffInfo : mobSkillsInfo.mob) {
+		ret.push_back(buffInfo.buff);
 	}
 	return ret;
 }
@@ -299,7 +291,7 @@ auto Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	}
 
 	int32_t mountId = parseMountInfo(player, skillId, level);
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	seconds_t time(skill->time);
 
 	switch (skillId) {
@@ -429,10 +421,10 @@ auto Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 
 auto Buffs::addBuff(Player *player, int32_t itemId, const seconds_t &time) -> void {
 	itemId *= -1; // Make the Item ID negative for the packet and to discern from skill buffs
-	const vector_t<Buff> &buffs = parseBuffs(itemId, 0);
-	const ActiveBuff &playerSkill = parseBuffInfo(player, itemId, 0);
-	const ActiveMapBuff &mapSkill = parseBuffMapInfo(player, itemId, 0);
-	const ActiveMapBuff &enterSkill = parseBuffMapEntryInfo(player, itemId, 0);
+	auto buffs = parseBuffs(itemId, 0);
+	auto playerSkill = parseBuffInfo(player, itemId, 0);
+	auto mapSkill = parseBuffMapInfo(player, itemId, 0);
+	auto enterSkill = parseBuffMapEntryInfo(player, itemId, 0);
 
 	BuffsPacket::useSkill(player, itemId, time, playerSkill, mapSkill, 0);
 
@@ -519,9 +511,9 @@ auto Buffs::endBuff(Player *player, int32_t skill) -> void {
 			break;
 	}
 	uint8_t level = playerBuffs->getActiveSkillLevel(skill);
-	const vector_t<Buff> &buffs = parseBuffs(skill, level);
-	const ActiveMapBuff &enterSkill = parseBuffMapEntryInfo(player, skill, level);
-	const ActiveBuff &playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
+	auto buffs = parseBuffs(skill, level);
+	auto enterSkill = parseBuffMapEntryInfo(player, skill, level);
+	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
 
 	BuffsPacket::endSkill(player, playerSkill);
 
@@ -530,11 +522,11 @@ auto Buffs::endBuff(Player *player, int32_t skill) -> void {
 }
 
 auto Buffs::doAction(Player *player, int32_t skillId, uint8_t level) -> void {
-	SkillInfo *skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
 
-	if (skillsInfo->hasAction) {
-		int16_t value = getValue(skillsInfo->act.value, skillId, level);
-		player->getActiveBuffs()->addAction(skillId, skillsInfo->act.type, value, milliseconds_t(skillsInfo->act.time));
+	if (skillsInfo.hasAction) {
+		int16_t value = getValue(skillsInfo.act.value, skillId, level);
+		player->getActiveBuffs()->addAction(skillId, skillsInfo.act.type, value, milliseconds_t(skillsInfo.act.time));
 	}
 }
 
@@ -544,14 +536,14 @@ auto Buffs::addDebuff(Player *player, uint8_t skillId, uint8_t level) -> void {
 	}
 
 	seconds_t time(SkillDataProvider::getInstance().getMobSkill(skillId, level)->time);
-	MobAilmentInfo *mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
 
-	const vector_t<Buff> &buffs = parseMobBuffs(skillId);
-	const ActiveBuff &playerSkill = parseMobBuffInfo(player, skillId, level);
-	const ActiveMapBuff &mapSkill = parseMobBuffMapInfo(player, skillId, level);
-	const ActiveMapBuff &enterSkill = parseMobBuffMapEntryInfo(player, skillId, level);
+	auto buffs = parseMobBuffs(skillId);
+	auto playerSkill = parseMobBuffInfo(player, skillId, level);
+	auto mapSkill = parseMobBuffMapInfo(player, skillId, level);
+	auto enterSkill = parseMobBuffMapEntryInfo(player, skillId, level);
 
-	BuffsPacket::giveDebuff(player, skillId, level, time, mobSkillsInfo->delay, playerSkill, mapSkill);
+	BuffsPacket::giveDebuff(player, skillId, level, time, mobSkillsInfo.delay, playerSkill, mapSkill);
 
 	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
 	playerBuffs->setActiveSkillLevel(skillId, level);
@@ -562,9 +554,9 @@ auto Buffs::addDebuff(Player *player, uint8_t skillId, uint8_t level) -> void {
 
 auto Buffs::endDebuff(Player *player, uint8_t skill) -> void {
 	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
-	const vector_t<Buff> &buffs = parseMobBuffs(skill);
-	const ActiveMapBuff &enterSkill = parseMobBuffMapEntryInfo(player, skill, 1);
-	const ActiveBuff &playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
+	auto buffs = parseMobBuffs(skill);
+	auto enterSkill = parseMobBuffMapEntryInfo(player, skill, 1);
+	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
 
 	BuffsPacket::endDebuff(player, playerSkill);
 

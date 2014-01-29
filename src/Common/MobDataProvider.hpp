@@ -30,11 +30,11 @@ class MobDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto mobExists(int32_t mobId) -> bool { return m_mobInfo.find(mobId) != std::end(m_mobInfo); }
-	auto getMobInfo(int32_t mobId) -> ref_ptr_t<MobInfo> { return m_mobInfo[mobId]; }
-	auto getMobAttack(int32_t mobId, uint8_t index) -> MobAttackInfo *;
-	auto getMobSkill(int32_t mobId, uint8_t index) -> MobSkillInfo *;
-	auto getSkills(int32_t mobId) -> const vector_t<MobSkillInfo> &;
+	auto mobExists(int32_t mobId) const -> bool;
+	auto getMobInfo(int32_t mobId) const -> ref_ptr_t<MobInfo>;
+	auto getMobAttack(int32_t mobId, uint8_t index) const -> const MobAttackInfo * const;
+	auto getMobSkill(int32_t mobId, uint8_t index) const -> const MobSkillInfo * const;
+	auto getSkills(int32_t mobId) const -> const vector_t<MobSkillInfo> &;
 private:
 	auto loadMobs() -> void;
 	auto loadAttacks() -> void;

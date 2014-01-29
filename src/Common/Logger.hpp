@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Database.hpp"
 #include "Types.hpp"
+#include "VanaConstants.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -36,39 +37,38 @@ namespace LogDestinations {
 	};
 }
 
-namespace LogTypes {
-	enum LogTypes {
-		Info = 1, // Starting at 1 so it's easy enough to simply insert the logtype for SQL
-		Warning,
-		Debug,
-		Error,
-		CriticalError,
-		ServerConnect,
-		ServerDisconnect,
-		ServerAuthFailure,
-		Login,
-		LoginAuthFailure,
-		Logout,
-		ClientError,
-		GmCommand,
-		AdminCommand,
-		BossKill,
-		Trade,
-		ShopTransaction,
-		StorageTransaction,
-		InstanceBegin,
-		Drop,
-		Chat,
-		Whisper,
-		MalformedPacket,
-		ScriptLog,
-		Ban,
-		Unban
-	};
-}
+enum class LogType {
+	None,
+	Info = 1, // Starting at 1 so it's easy enough to simply insert the logtype for SQL
+	Warning,
+	Debug,
+	Error,
+	CriticalError,
+	ServerConnect,
+	ServerDisconnect,
+	ServerAuthFailure,
+	Login,
+	LoginAuthFailure,
+	Logout,
+	ClientError,
+	GmCommand,
+	AdminCommand,
+	BossKill,
+	Trade,
+	ShopTransaction,
+	StorageTransaction,
+	InstanceBegin,
+	Drop,
+	Chat,
+	Whisper,
+	MalformedPacket,
+	ScriptLog,
+	Ban,
+	Unban
+};
 
 struct LogMessage {
-	LogTypes::LogTypes type;
+	LogType type;
 	time_t time;
 	string_t message;
 	opt_string_t identifier;
@@ -77,40 +77,40 @@ struct LogMessage {
 // Base logger
 class Logger {
 public:
-	Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
 	virtual ~Logger() = default;
-	virtual auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void { }
+	virtual auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void { }
 
-	auto getServerType() const -> int16_t { return m_serverType; }
+	auto getServerType() const -> ServerType { return m_serverType; }
 	auto getFormat() const -> const string_t & { return m_format; }
 	auto getTimeFormat() const -> const string_t & { return m_timeFormat; }
 protected:
 	Logger() = default;
-	static auto formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t;
-	static auto formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t;
+	static auto formatLog(const string_t &format, LogType type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t;
+	static auto formatLog(const string_t &format, LogType type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t;
 private:
 	friend struct LogReplacements;
 
 	struct ReplacementArgs {
-		LogTypes::LogTypes logType;
+		LogType logType;
 		Logger *logger;
 		time_t time;
 		const opt_string_t &id;
 		const string_t &msg;
-		ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg);
+		ReplacementArgs(LogType logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg);
 	};
 
 	struct LogReplacements {
 		LogReplacements();
 		using func_t = function_t<void(out_stream_t &, const ReplacementArgs &args)>;
 		auto add(const string_t &key, func_t func) -> void;
-		static auto getLevelString(LogTypes::LogTypes type) -> string_t;
-		static auto getServerTypeString(int16_t serverType) -> string_t;
+		static auto getLevelString(LogType type) -> string_t;
+		static auto getServerTypeString(ServerType type) -> string_t;
 
 		hash_map_t<string_t, func_t> m_replacementMap;
 	};
 
 	string_t m_format;
 	string_t m_timeFormat;
-	int16_t m_serverType;
+	ServerType m_serverType;
 };

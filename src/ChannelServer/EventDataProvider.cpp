@@ -72,5 +72,5 @@ auto EventDataProvider::loadInstances() -> void {
 auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
 	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
 	Instances::getInstance().addInstance(instance);
-	instance->sendMessage(BeginInstance);
+	instance->sendMessage(InstanceMessage::BeginInstance);
 }

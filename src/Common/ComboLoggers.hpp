@@ -25,12 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 template <typename TLogger1, typename TLogger2>
 class DuoLogger : public Logger {
 public:
-	DuoLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+	DuoLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10) {
 		m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
 		m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
-	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override {
+	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 	}
@@ -44,13 +44,13 @@ private:
 template <typename TLogger1, typename TLogger2, typename TLogger3>
 class TriLogger : public Logger {
 public:
-	TriLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10) {
+	TriLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10) {
 		m_logger1 = make_owned_ptr<TLogger1>(filename, format, timeFormat, serverType, bufferSize);
 		m_logger2 = make_owned_ptr<TLogger2>(filename, format, timeFormat, serverType, bufferSize);
 		m_logger3 = make_owned_ptr<TLogger3>(filename, format, timeFormat, serverType, bufferSize);
 	}
 
-	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override {
+	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override {
 		getLogger1()->log(type, identifier, message);
 		getLogger2()->log(type, identifier, message);
 		getLogger3()->log(type, identifier, message);

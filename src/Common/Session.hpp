@@ -39,21 +39,24 @@ public:
 	auto send(const PacketCreator &packet, bool encrypt = true) -> void;
 	auto getIp() const -> const Ip &;
 protected:
-	auto getSocket() -> boost::asio::ip::tcp::socket & { return m_socket; }
+	auto getSocket() -> boost::asio::ip::tcp::socket &;
+	auto getDecoder() -> Decoder &;
+	auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
 	auto start() -> void override;
 	auto stop() -> void override;
 	auto handleStart() -> void override;
 	auto handleStop() -> void override;
-
 	auto startReadHeader() -> void;
 	auto handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
-	auto getConnectPacket(const string_t &patchLocation) -> PacketCreator;
+	auto getConnectPacket(const string_t &patchLocation) const -> PacketCreator;
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
+private:
+	friend class ConnectionAcceptor;
 
 	bool m_isForClient = true;
 	bool m_usePing = false;
@@ -62,10 +65,6 @@ protected:
 	Decoder m_decoder;
 	boost::asio::ip::tcp::socket m_socket;
 	MiscUtilities::shared_array<unsigned char> m_buffer;
-
-	// Packet sending
 	MiscUtilities::shared_array<unsigned char> m_sendPacket;
 	mutex_t m_sendMutex;
-private:
-	friend class ConnectionAcceptor;
 };

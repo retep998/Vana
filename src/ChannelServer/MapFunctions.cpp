@@ -162,13 +162,19 @@ auto MapFunctions::listPortals(Player *player, const string_t &args) -> bool {
 
 auto MapFunctions::zakum(Player *player, const string_t &args) -> bool {
 	player->getMap()->spawnZakum(player->getPos());
-	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " spawned Zakum on map " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
+	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+		log << "GM " << player->getName()
+			<< " spawned Zakum on map " << player->getMapId();
+	});
 	return true;
 }
 
 auto MapFunctions::horntail(Player *player, const string_t &args) -> bool {
 	player->getMap()->spawnMob(Mobs::SummonHorntail, player->getPos());
-	ChannelServer::getInstance().log(LogTypes::GmCommand, "GM " + player->getName() + " spawned Horntail on map " + StringUtilities::lexical_cast<string_t>(player->getMapId()));
+	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
+		log << "GM " << player->getName()
+			<< " spawned Horntail on map " << player->getMapId();
+	});
 	return true;
 }
 
@@ -206,13 +212,15 @@ auto MapFunctions::summon(Player *player, const string_t &args) -> bool {
 		int32_t mobId = atoi(rawMobId.c_str());
 		if (MobDataProvider::getInstance().mobExists(mobId)) {
 			string_t countString = matches[2];
-			int32_t count = countString.length() > 0 ? atoi(countString.c_str()) : 1;
-			if (count > 100) count = 100;
-			for (int32_t i = 0; i < count; i++) {
+			int32_t count = std::max(countString.length() > 0 ? atoi(countString.c_str()) : 1, 100);
+			for (int32_t i = 0; i < count; ++i) {
 				player->getMap()->spawnMob(mobId, player->getPos());
 			}
 			if (count > 0) {
-				ChatHandlerFunctions::showInfo(player, "Spawned " + StringUtilities::lexical_cast<string_t>(count)+" mobs with ID " + StringUtilities::lexical_cast<string_t>(mobId));
+				ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) {
+					message << "Spawned " << count
+						<< " mobs with ID " << mobId;
+				});
 			}
 			else {
 				ChatHandlerFunctions::showError(player, "No mobs spawned");
@@ -233,6 +241,6 @@ auto MapFunctions::clearDrops(Player *player, const string_t &args) -> bool {
 
 auto MapFunctions::killAllMobs(Player *player, const string_t &args) -> bool {
 	int32_t killed = player->getMap()->killMobs(player);
-	ChatHandlerFunctions::showInfo(player, "Killed " + StringUtilities::lexical_cast<string_t>(killed)+" mobs");
+	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "Killed " << killed << " mobs"; });
 	return true;
 }

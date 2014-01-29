@@ -53,7 +53,19 @@ auto Ip::toString() const -> string_t {
 	if (m_type == Ip::Type::Ipv4) {
 		return boost::asio::ip::address_v4(m_ipv4).to_string();
 	}
-	return "";
+	throw std::invalid_argument("m_type");
+}
+
+auto Ip::asIpv4() const -> uint32_t {
+	return m_ipv4;
+}
+
+auto Ip::getType() const -> const Ip::Type & {
+	return m_type;
+}
+
+auto Ip::isInitialized() const -> bool {
+	return m_ipv4 != 0;
 }
 
 auto Ip::write(PacketCreator &packet) const -> void {

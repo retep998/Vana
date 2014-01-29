@@ -94,9 +94,10 @@ auto PlayerStorage::load() -> void {
 		m_charSlots = row.get<int32_t>("char_slots");
 	}
 	else {
-		m_slots = ChannelServer::getInstance().getDefaultStorageSlots();
+		auto &config = ChannelServer::getInstance().getConfig();
+		m_slots = config.defaultStorageSlots;
 		m_mesos = 0;
-		m_charSlots = ChannelServer::getInstance().getDefaultChars();
+		m_charSlots = config.defaultChars;
 		sql.once
 			<< "INSERT INTO storage (user_id, world_id, slots, mesos, char_slots) "
 			<< "VALUES (:user, :world, :slots, :mesos, :chars)",

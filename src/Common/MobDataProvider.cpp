@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "InitializeCommon.hpp"
@@ -38,15 +39,13 @@ auto MobDataProvider::loadData() -> void {
 
 auto MobDataProvider::loadAttacks() -> void {
 	m_attacks.clear();
-	int32_t mobId;
-	MobAttackInfo mobAttack;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_attacks");
 
 	for (const auto &row : rs) {
-		mobAttack = MobAttackInfo();
+		MobAttackInfo mobAttack;
 
-		mobId = row.get<int32_t>("mobid");
+		int32_t mobId = row.get<int32_t>("mobid");
 		mobAttack.id = row.get<int8_t>("attackid");
 		mobAttack.mpConsume = row.get<uint8_t>("mp_cost");
 		mobAttack.mpBurn = row.get<uint16_t>("mp_burn");
@@ -70,13 +69,12 @@ auto MobDataProvider::loadAttacks() -> void {
 
 auto MobDataProvider::loadSkills() -> void {
 	m_skills.clear();
-	int32_t mobId;
-	MobSkillInfo mobSkill;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_skills");
 
 	for (const auto &row : rs) {
-		mobId = row.get<int32_t>("mobid");
+		MobSkillInfo mobSkill;
+		int32_t mobId = row.get<int32_t>("mobid");
 		mobSkill.skillId = row.get<uint8_t>("skillid");
 		mobSkill.level = row.get<uint8_t>("skill_level");
 		mobSkill.effectAfter = row.get<int16_t>("effect_delay");
@@ -87,30 +85,13 @@ auto MobDataProvider::loadSkills() -> void {
 
 auto MobDataProvider::loadMobs() -> void {
 	m_mobInfo.clear();
-	int32_t mobId;
-	ref_ptr_t<MobInfo> mob;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
 
 	for (const auto &row : rs) {
-		mob = make_ref_ptr<MobInfo>();
+		auto mob = make_ref_ptr<MobInfo>();
 
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mob](const string_t &cmp) {
-			if (cmp == "boss") mob->boss = true;
-			else if (cmp == "undead") mob->undead = true;
-			else if (cmp == "flying") mob->flying = true;
-			else if (cmp == "friendly") mob->friendly = true;
-			else if (cmp == "public_reward") mob->publicReward = true;
-			else if (cmp == "explosive_reward") mob->explosiveReward = true;
-			else if (cmp == "invincible") mob->invincible = true;
-			else if (cmp == "auto_aggro") mob->autoAggro = true;
-			else if (cmp == "damaged_by_normal_attacks_only") mob->onlyNormalAttacks = true;
-			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
-			else if (cmp == "cannot_damage_player") mob->canDoBumpDamage = false;
-			else if (cmp == "player_cannot_damage") mob->damageable = false;
-		});
-
-		mobId = row.get<int32_t>("mobid");
+		int32_t mobId = row.get<int32_t>("mobid");
 		mob->level = row.get<uint16_t>("mob_level");
 		mob->hp = row.get<uint32_t>("hp");
 		mob->mp = row.get<uint32_t>("mp");
@@ -160,6 +141,21 @@ auto MobDataProvider::loadMobs() -> void {
 		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElementalAttribute::Immune && mob->iceAttr != MobElementalAttribute::Strong);
 		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElementalAttribute::Immune && mob->poisonAttr != MobElementalAttribute::Strong);
 
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mob](const string_t &cmp) {
+			if (cmp == "boss") mob->boss = true;
+			else if (cmp == "undead") mob->undead = true;
+			else if (cmp == "flying") mob->flying = true;
+			else if (cmp == "friendly") mob->friendly = true;
+			else if (cmp == "public_reward") mob->publicReward = true;
+			else if (cmp == "explosive_reward") mob->explosiveReward = true;
+			else if (cmp == "invincible") mob->invincible = true;
+			else if (cmp == "auto_aggro") mob->autoAggro = true;
+			else if (cmp == "damaged_by_normal_attacks_only") mob->onlyNormalAttacks = true;
+			else if (cmp == "no_remove_on_death") mob->keepCorpse = true;
+			else if (cmp == "cannot_damage_player") mob->canDoBumpDamage = false;
+			else if (cmp == "player_cannot_damage") mob->damageable = false;
+		});
+
 		// Skill count relies on skills being loaded first
 		auto kvp = m_skills.find(mobId);
 		mob->skillCount = kvp != m_skills.end() ? kvp->second.size() : 0; 
@@ -168,43 +164,34 @@ auto MobDataProvider::loadMobs() -> void {
 }
 
 auto MobDataProvider::loadSummons() -> void {
-	int32_t mobId;
-	int32_t summonId;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_summons");
 
 	for (const auto &row : rs) {
-		mobId = row.get<int32_t>("mobid");
-		summonId = row.get<int32_t>("summonid");
+		int32_t mobId = row.get<int32_t>("mobid");
+		int32_t summonId = row.get<int32_t>("summonid");
 
 		m_mobInfo[mobId]->summon.push_back(summonId);
 	}
 }
 
-auto MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) -> MobAttackInfo * {
-	try {
-		return &m_attacks[mobId].at(index);
-	}
-	catch (std::out_of_range) {
-		std::cerr << "Attack does not exist for mobId " << mobId << " at index " << index << std::endl;
-	}
-	return nullptr;
+auto MobDataProvider::mobExists(int32_t mobId) const -> bool {
+	return ext::is_element(m_mobInfo, mobId);
 }
 
-auto MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) -> MobSkillInfo * {
-	try {
-		return &m_skills[mobId].at(index);
-	}
-	catch (std::out_of_range) {
-		std::cerr << "Skill does not exist for mobId " << mobId << " at index " << index << std::endl;
-	}
-	return nullptr;
+auto MobDataProvider::getMobInfo(int32_t mobId) const -> ref_ptr_t<MobInfo> {
+	return m_mobInfo.find(mobId)->second;
 }
 
-auto MobDataProvider::getSkills(int32_t mobId) -> const vector_t<MobSkillInfo> & {
-	auto kvp = m_skills.find(mobId);
-	if (kvp == std::end(m_skills)) {
-		throw std::runtime_error("Missing mob ID in skill query");
-	}
-	return kvp->second;
+auto MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) const -> const MobAttackInfo * const {
+	return ext::find_value_ptr(
+		ext::find_value_ptr(m_attacks, mobId), index);
+}
+
+auto MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) const -> const MobSkillInfo * const {
+	return ext::find_value_ptr(
+		ext::find_value_ptr(m_skills, mobId), index);
+}
+
+auto MobDataProvider::getSkills(int32_t mobId) const -> const vector_t<MobSkillInfo> & {
+	return m_skills.find(mobId)->second;
 }

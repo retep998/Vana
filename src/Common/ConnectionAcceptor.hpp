@@ -27,15 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class ConnectionAcceptor {
 public:
-	ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation);
+	ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation);
 	auto stop() -> void;
 private:
 	auto startAccepting() -> void;
-	auto handleConnection(ref_ptr_t<Session> newSession, const boost::system::error_code &error) -> void;
 
 	bool m_isServer = true;
 	string_t m_patchLocation;
-	LoginConfig m_loginConfig;
+	InterServerConfig m_config;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	function_t<AbstractConnection *()> m_connectionCreator;
 	ref_ptr_t<SessionManager> m_sessionManager;

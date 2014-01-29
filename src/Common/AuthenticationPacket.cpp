@@ -27,6 +27,6 @@ auto AuthenticationPacket::sendPassword(AbstractServerConnection *connection, co
 	packet.add<header_t>(IMSG_PASSWORD);
 	packet.addString(pass);
 	packet.addClassVector<ExternalIp>(extIp);
-	packet.add<int8_t>(connection->getType());
+	packet.add<int8_t>(static_cast<int8_t>(connection->getType()));
 	connection->getSession()->send(packet);
 }

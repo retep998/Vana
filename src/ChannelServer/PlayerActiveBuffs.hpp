@@ -69,7 +69,7 @@ public:
 	auto setActiveSkillLevel(int32_t skillId, uint8_t level) -> void;
 	auto getActiveSkillLevel(int32_t skillId) const -> uint8_t;
 	auto removeBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff;
-	auto getActiveSkillInfo(int32_t skillId) -> SkillLevelInfo *;
+	auto getActiveSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const;
 
 	// Buff map info
 	auto addMapEntryBuffInfo(const ActiveMapBuff &buff) -> void;

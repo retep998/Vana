@@ -26,6 +26,6 @@ namespace Fame {
 	auto handleFame(Player *player, PacketReader &packet) -> void;
 	auto canFame(Player *player, int32_t to) -> int32_t;
 	auto addFameLog(int32_t from, int32_t to) -> void;
-	auto getLastFameLog(int32_t from) -> bool;
-	auto getLastFameSpLog(int32_t from, int32_t to) -> bool;
+	auto getLastFameLog(int32_t from) -> SearchResult;
+	auto getLastFameSpLog(int32_t from, int32_t to) -> SearchResult;
 }

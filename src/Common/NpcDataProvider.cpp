@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
@@ -26,22 +27,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto NpcDataProvider::loadData() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing NPCs... ";
-	int32_t id;
-	NpcData npc;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM npc_data");
 
 	for (const auto &row : rs) {
-		npc = NpcData();
+		NpcData npc;
+		int32_t id = row.get<int32_t>("npcid");
+		npc.storageCost = row.get<int32_t>("storage_cost");
 
-		id = row.get<int32_t>("npcid");
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&npc](const string_t &cmp) {
 			if (cmp == "maple_tv") npc.isMapleTv = true;
 			else if (cmp == "is_guild_rank") npc.isGuildRank = true;
 		});
-		npc.storageCost = row.get<int32_t>("storage_cost");
+
 		m_data[id] = npc;
 	}
 
 	std::cout << "DONE" << std::endl;
+}
+
+auto NpcDataProvider::getStorageCost(int32_t npc) const -> int32_t {
+	return m_data.find(npc)->second.storageCost;
+}
+
+auto NpcDataProvider::isMapleTv(int32_t npc) const -> bool {
+	return m_data.find(npc)->second.isMapleTv;
+}
+
+auto NpcDataProvider::isGuildRank(int32_t npc) const -> bool {
+	return m_data.find(npc)->second.isGuildRank;
+}
+
+auto NpcDataProvider::isValidNpcId(int32_t npc) const -> bool {
+	return ext::is_element(m_data, npc);
 }

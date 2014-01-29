@@ -33,7 +33,7 @@ namespace fs = std::tr2::sys;
 namespace fs = boost::filesystem;
 #endif
 
-FileLogger::FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
+FileLogger::FileLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
 	Logger(filename, format, timeFormat, serverType, bufferSize),
 	m_bufferSize(bufferSize),
 	m_filenameFormat(filename)
@@ -45,7 +45,7 @@ FileLogger::~FileLogger() {
 	flush();
 }
 
-auto FileLogger::log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void {
+auto FileLogger::log(LogType type, const opt_string_t &identifier, const string_t &message) -> void {
 	FileLog file;
 	file.message = Logger::formatLog(getFormat(), type, this, identifier, message);
 	file.file = Logger::formatLog(getFilenameFormat(), type, this, identifier, message);

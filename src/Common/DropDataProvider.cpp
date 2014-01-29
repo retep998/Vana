@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "DropDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "InitializeCommon.hpp"
 #include "StringUtilities.hpp"
@@ -34,9 +35,8 @@ auto DropDataProvider::loadData() -> void {
 
 auto DropDataProvider::loadDrops() -> void {
 	m_dropInfo.clear();
-	DropInfo drop;
-	int32_t dropper;
 
+	DropInfo drop;
 	auto dropFlags = [&drop](const opt_string_t &flags) {
 		StringUtilities::runFlags(flags, [&drop](const string_t &cmp) {
 			if (cmp == "is_mesos") drop.isMesos = true;
@@ -49,7 +49,7 @@ auto DropDataProvider::loadDrops() -> void {
 	for (const auto &row : rs) {
 		drop = DropInfo();
 
-		dropper = row.get<int32_t>("dropperid");
+		int32_t dropper = row.get<int32_t>("dropperid");
 		drop.itemId = row.get<int32_t>("itemid");
 		drop.minAmount = row.get<int32_t>("minimum_quantity");
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
@@ -67,7 +67,7 @@ auto DropDataProvider::loadDrops() -> void {
 	for (const auto &row : rs) {
 		drop = DropInfo();
 
-		dropper = row.get<int32_t>("dropperid");
+		int32_t dropper = row.get<int32_t>("dropperid");
 		drop.itemId = row.get<int32_t>("itemid");
 		drop.minAmount = row.get<int32_t>("minimum_quantity");
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
@@ -89,12 +89,11 @@ auto DropDataProvider::loadDrops() -> void {
 
 auto DropDataProvider::loadGlobalDrops() -> void {
 	m_globalDrops.clear();
-	GlobalDrop drop;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM drop_global_data");
 
 	for (const auto &row : rs) {
-		drop = GlobalDrop();
+		GlobalDrop drop;
 
 		drop.continent = row.get<int8_t>("continent");
 		drop.itemId = row.get<int32_t>("itemid");
@@ -110,4 +109,16 @@ auto DropDataProvider::loadGlobalDrops() -> void {
 
 		m_globalDrops.push_back(drop);
 	}
+}
+
+auto DropDataProvider::hasDrops(int32_t objectId) const -> bool {
+	return ext::is_element(m_dropInfo, objectId);
+}
+
+auto DropDataProvider::getDrops(int32_t objectId) const -> const vector_t<DropInfo> & {
+	return m_dropInfo.find(objectId)->second;
+}
+
+auto DropDataProvider::getGlobalDrops() const -> const vector_t<GlobalDrop> & {
+	return m_globalDrops;
 }

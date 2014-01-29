@@ -67,10 +67,10 @@ public:
 	auto loadData() -> void;
 	auto addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> void;
 
-	auto isBuff(int32_t skillId) -> bool { return m_skillInfo.find(skillId) != std::end(m_skillInfo); }
-	auto isDebuff(uint8_t skillId) -> bool { return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo); }
-	auto getSkillInfo(int32_t skillId) -> SkillInfo * { return &m_skillInfo[skillId]; }
-	auto getMobSkillInfo(uint8_t skillId) -> MobAilmentInfo * { return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo) ? &m_mobSkillInfo[skillId] : nullptr; }
+	auto isBuff(int32_t skillId) const -> bool;
+	auto isDebuff(uint8_t skillId) const -> bool;
+	auto getSkillInfo(int32_t skillId) const -> const SkillInfo &;
+	auto getMobSkillInfo(uint8_t skillId) const -> const MobAilmentInfo &;
 private:
 	hash_map_t<int32_t, SkillInfo> m_skillInfo;
 	hash_map_t<uint8_t, MobAilmentInfo> m_mobSkillInfo;

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 class Player;
 
-class WorldServerConnection : public AbstractServerConnection {
+class WorldServerConnection final : public AbstractServerConnection {
 	NONCOPYABLE(WorldServerConnection);
 public:
 	WorldServerConnection();

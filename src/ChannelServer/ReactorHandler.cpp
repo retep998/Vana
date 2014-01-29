@@ -41,23 +41,19 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
 	Reactor *reactor = player->getMap()->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
-		ReactorData *data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
-		if (data == nullptr) {
-			// Not sure how this would happen, but whatever
-			return;
-		}
-		if (reactor->getState() < (data->maxStates - 1)) {
-			ReactorStateInfo *reactorEvent = &(data->states[reactor->getState()][0]); // There's only one way to hit something
-			if (reactorEvent->nextState < (data->maxStates - 1)) {
-				if (reactorEvent->type == 100) {
+		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
+		if (reactor->getState() < data.maxStates - 1) {
+			const auto &reactorEvent = data.states.at(reactor->getState())[0]; // There's only one way to hit something
+			if (reactorEvent.nextState < data.maxStates - 1) {
+				if (reactorEvent.type == 100) {
 					return;
 				}
 				ReactorPacket::triggerReactor(reactor);
-				reactor->setState(reactorEvent->nextState, true);
+				reactor->setState(reactorEvent.nextState, true);
 				return;
 			}
 			else {
-				const string_t &filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				string_t filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
@@ -67,7 +63,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
 					reactor->drop(player);
 				}
 
-				reactor->setState(reactorEvent->nextState, false);
+				reactor->setState(reactorEvent.nextState, false);
 				reactor->kill();
 				Maps::getMap(reactor->getMapId())->removeReactor(id);
 				ReactorPacket::destroyReactor(reactor);
@@ -108,22 +104,16 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 	Map *map = Maps::getMap(drop->getMap());
 	for (size_t i = 0; i < map->getNumReactors(); ++i) {
 		reactor = map->getReactor(i);
-		ReactorData *data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
-		if (data == nullptr) {
-			// Not sure how this would happen, but whatever
-			continue;
-		}
-		if (reactor->getState() < (data->maxStates - 1)) {
-			ReactorStateInfo *reactorEvent;
-			for (uint8_t j = 0; j < data->states[reactor->getState()].size(); ++j) {
-				reactorEvent = &(data->states[reactor->getState()][j]);
-				if (reactorEvent->type == 100 && drop->getObjectId() == reactorEvent->itemId) {
-					if (reactorEvent->dimensions.move(reactor->getPos()).contains(drop->getPos())) {
+		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
+		if (reactor->getState() < data.maxStates - 1) {
+			for (const auto &reactorEvent : data.states.at(reactor->getState())) {
+				if (reactorEvent.type == 100 && drop->getObjectId() == reactorEvent.itemId) {
+					if (reactorEvent.dimensions.move(reactor->getPos()).contains(drop->getPos())) {
 						Reaction reaction;
 						reaction.reactor = reactor;
 						reaction.drop = drop;
 						reaction.player = player;
-						reaction.state = reactorEvent->nextState;
+						reaction.state = reactorEvent.nextState;
 
 						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
 						Timer::create(reaction, id, nullptr, seconds_t(3));

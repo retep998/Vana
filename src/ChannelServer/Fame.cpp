@@ -53,10 +53,10 @@ auto Fame::canFame(Player *player, int32_t to) -> int32_t {
 	if (player->getStats()->getLevel() < 15) {
 		return FamePacket::Errors::LevelUnder15;
 	}
-	if (getLastFameLog(from)) {
+	if (getLastFameLog(from) == SearchResult::Found) {
 		return FamePacket::Errors::AlreadyFamedToday;
 	}
-	if (getLastFameSpLog(from, to)) {
+	if (getLastFameSpLog(from, to) == SearchResult::Found) {
 		return FamePacket::Errors::FamedThisMonth;
 	}
 	return 0;
@@ -70,13 +70,13 @@ auto Fame::addFameLog(int32_t from, int32_t to) -> void {
 		soci::use(to, "to");
 }
 
-auto Fame::getLastFameLog(int32_t from) -> bool {
-	int32_t fameTime = ChannelServer::getInstance().getFameTime();
+auto Fame::getLastFameLog(int32_t from) -> SearchResult {
+	int32_t fameTime = ChannelServer::getInstance().getConfig().fameTime;
 	if (fameTime == 0) {
-		return true;
+		return SearchResult::Found;
 	}
 	if (fameTime == -1) {
-		return false;
+		return SearchResult::NotFound;
 	}
 
 	soci::session &sql = Database::getCharDb();
@@ -91,16 +91,16 @@ auto Fame::getLastFameLog(int32_t from) -> bool {
 		soci::use(fameTime, "fameTime"),
 		soci::into(time);
 
-	return time.is_initialized();
+	return time.is_initialized() ? SearchResult::Found : SearchResult::NotFound;
 }
 
-auto Fame::getLastFameSpLog(int32_t from, int32_t to) -> bool {
-	int32_t fameResetTime = ChannelServer::getInstance().getFameResetTime();
+auto Fame::getLastFameSpLog(int32_t from, int32_t to) -> SearchResult {
+	int32_t fameResetTime = ChannelServer::getInstance().getConfig().fameResetTime;
 	if (fameResetTime == 0) {
-		return true;
+		return SearchResult::Found;
 	}
 	if (fameResetTime == -1) {
-		return false;
+		return SearchResult::NotFound;
 	}
 
 	soci::session &sql = Database::getCharDb();
@@ -116,5 +116,5 @@ auto Fame::getLastFameSpLog(int32_t from, int32_t to) -> bool {
 		soci::use(fameResetTime, "fameResetTime"),
 		soci::into(time);
 
-	return time.is_initialized();
+	return time.is_initialized() ? SearchResult::Found : SearchResult::NotFound;
 }

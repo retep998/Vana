@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketReader;
 
-class WorldServerAcceptConnection : public AbstractServerAcceptConnection {
+class WorldServerAcceptConnection final : public AbstractServerAcceptConnection {
 	NONCOPYABLE(WorldServerAcceptConnection);
 public:
 	WorldServerAcceptConnection() = default;
 	~WorldServerAcceptConnection();
 
-	auto authenticated(int8_t type) -> void override;
+	auto authenticated(ServerType type) -> void override;
 
 	auto getChannel() const -> uint16_t { return m_channel; }
 protected:

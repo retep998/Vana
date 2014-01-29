@@ -108,13 +108,13 @@ public:
 	auto getTimerSecondsRemaining(const string_t &name) -> seconds_t;
 
 	// Lua interaction
-	auto sendMessage(InstanceMessages message) -> void;
-	auto sendMessage(InstanceMessages message, int32_t) -> void;
-	auto sendMessage(InstanceMessages message, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessages message, int32_t, int32_t, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessages message, const string_t &, int32_t) -> void;
+	auto sendMessage(InstanceMessage message) -> void;
+	auto sendMessage(InstanceMessage message, int32_t) -> void;
+	auto sendMessage(InstanceMessage message, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t, int32_t, int32_t) -> void;
+	auto sendMessage(InstanceMessage message, const string_t &, int32_t) -> void;
 private:
 	auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
 	auto getTimerId() const -> Timer::Id;

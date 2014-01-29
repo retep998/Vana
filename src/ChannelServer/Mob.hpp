@@ -55,7 +55,7 @@ public:
 	auto consumeMp(int32_t mp) -> void;
 	auto mpEat(Player *player, MpEaterInfo *mp) -> void;
 	auto setSkillFeasibility(bool skillFeasible) -> void { m_skillFeasible = skillFeasible; }
-	auto useAnticipatedSkill() -> bool;
+	auto useAnticipatedSkill() -> Result;
 	auto resetAnticipatedSkill() -> void;
 
 	auto chooseRandomSkill(uint8_t &skillId, uint8_t &skillLevel) -> void;

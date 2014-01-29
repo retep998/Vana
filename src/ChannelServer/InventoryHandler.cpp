@@ -115,7 +115,8 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &packet, Item *item
 		InventoryPacket::inventoryOperation(player, true, ops);
 	}
 
-	bool isTradeable = !droppedItem.hasTradeBlock() && ItemDataProvider::getInstance().isTradeable(droppedItem.getId());
+	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(droppedItem.getId());
+	bool isTradeable = !(droppedItem.hasTradeBlock() || itemInfo->quest || itemInfo->noTrade);
 	Drop *drop = new Drop(player->getMapId(), droppedItem, player->getPos(), player->getId(), true);
 	drop->setTime(0);
 	drop->setTradeable(isTradeable);
@@ -165,7 +166,9 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &packet) -> voi
 		// Hacking
 		return;
 	}
-	if (!ItemDataProvider::getInstance().skillItemExists(itemId)) {
+	
+	auto skillbookItems = ItemDataProvider::getInstance().getItemSkills(itemId);
+	if (skillbookItems == nullptr) {
 		// Hacking
 		return;
 	}
@@ -175,9 +178,7 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &packet) -> voi
 	bool use = false;
 	bool succeed = false;
 
-	const vector_t<Skillbook> &skillbookItems = *ItemDataProvider::getInstance().getItemSkills(itemId);
-
-	for (const auto &s : skillbookItems) {
+	for (const auto &s : *skillbookItems) {
 		skillId = s.skillId;
 		newMaxLevel = s.maxLevel;
 		if (GameLogicUtilities::itemSkillMatchesJob(skillId, player->getStats()->getJob())) {
@@ -237,7 +238,8 @@ auto InventoryHandler::useSummonBag(Player *player, PacketReader &packet) -> voi
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 
-	if (!ItemDataProvider::getInstance().summonBagExists(itemId)) {
+	auto itemInfo = ItemDataProvider::getInstance().getItemSummons(itemId);
+	if (itemInfo == nullptr) {
 		// Most likely hacking
 		return;
 	}
@@ -250,12 +252,10 @@ auto InventoryHandler::useSummonBag(Player *player, PacketReader &packet) -> voi
 
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
-	vector_t<SummonBag> *item = ItemDataProvider::getInstance().getItemSummons(itemId);
-	for (size_t i = 0; i < item->size(); i++) {
-		const SummonBag &s = (*item)[i];
-		if (Randomizer::rand<uint32_t>(99) < s.chance) {
-			if (MobDataProvider::getInstance().mobExists(s.mobId)) {
-				player->getMap()->spawnMob(s.mobId, player->getPos());
+	for (const auto &bag : *itemInfo) {
+		if (Randomizer::rand<uint32_t>(99) < bag.chance) {
+			if (MobDataProvider::getInstance().mobExists(bag.mobId)) {
+				player->getMap()->spawnMob(bag.mobId, player->getPos());
 			}
 		}
 	}
@@ -271,7 +271,7 @@ auto InventoryHandler::useReturnScroll(Player *player, PacketReader &packet) -> 
 		// Hacking
 		return;
 	}
-	ConsumeInfo *info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
+	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (info == nullptr) {
 		// Probably hacking
 		return;
@@ -344,6 +344,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &packet) -> void
 		return;
 	}
 
+	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
 		string_t message = packet.getString();
@@ -502,7 +503,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &packet) -> void
 							item->setLock(true);
 							break;
 						case Items::ScissorsOfKarma:
-							if (!ItemDataProvider::getInstance().canKarma(item->getId())) {
+							if (!itemInfo->karmaScissors) {
 								// Hacking
 								return;
 							}
@@ -591,7 +592,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &packet) -> void
 			case Items::BronzeSackOfMesos:
 			case Items::SilverSackOfMesos:
 			case Items::GoldSackOfMesos: {
-				int32_t mesos = ItemDataProvider::getInstance().getMesoBonus(itemId);
+				int32_t mesos = itemInfo->mesos;
 				if (!player->getInventory()->modifyMesos(mesos)) {
 					InventoryPacket::sendMesobagFailed(player);
 				}
@@ -773,13 +774,14 @@ auto InventoryHandler::handleRewardItem(Player *player, PacketReader &packet) ->
 		return;
 	}
 
-	ItemRewardInfo *reward = ItemDataProvider::getInstance().getRandomReward(itemId);
-	if (reward == nullptr) {
+	auto rewards = ItemDataProvider::getInstance().getItemRewards(itemId);
+	if (rewards == nullptr) {
 		// Hacking or no information in the database
 		InventoryPacket::blankUpdate(player); // We don't want stuck players, do we?
 		return;
 	}
 
+	auto reward = Randomizer::select(rewards);
 	Inventory::takeItem(player, itemId, 1);
 	Item *rewardItem = new Item(reward->rewardId, reward->quantity);
 	Inventory::addItem(player, rewardItem, true);
@@ -811,7 +813,7 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &packet) ->
 		return;
 	}
 
-	int32_t npcId = ItemDataProvider::getInstance().getItemNpc(itemId);
+	int32_t npcId = ItemDataProvider::getInstance().getItemInfo(itemId)->npc;
 
 	// Let's run the NPC
 	Npc *npc = new Npc(npcId, player, scriptName);

@@ -51,6 +51,11 @@ public:
 		return select(std::cbegin(c), std::cend(c));
 	}
 
+	template <typename TContainer>
+	static auto select(const TContainer *c) -> decltype(select(*c)) {
+		return select(*c);
+	}
+
 	template <typename TIterator>
 	static auto select(TIterator begin, TIterator end) -> TIterator {
 		auto distance = rand(std::distance(begin, end) - 1);

@@ -21,10 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <string>
 
+enum class VersionCheckResult {
+	FullyUpdated,
+	NeedsUpdate,
+};
+
 class DatabaseUpdater {
 public:
 	DatabaseUpdater(bool update);
-	auto checkVersion() -> bool;
+	auto checkVersion() -> VersionCheckResult;
 	auto update() -> void;
 private:
 	auto loadDatabaseInfo() -> void;

@@ -27,9 +27,9 @@ class DropDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto hasDrops(int32_t objectId) -> bool { return m_dropInfo.find(objectId) != std::end(m_dropInfo); }
-	auto getDrops(int32_t objectId) -> vector_t<DropInfo> { return m_dropInfo[objectId]; }
-	auto getGlobalDrops() -> vector_t<GlobalDrop> * { return m_globalDrops.size() > 0 ? &m_globalDrops : nullptr; }
+	auto hasDrops(int32_t objectId) const -> bool;
+	auto getDrops(int32_t objectId) const -> const vector_t<DropInfo> &;
+	auto getGlobalDrops() const -> const vector_t<GlobalDrop> &;
 private:
 	auto loadDrops() -> void;
 	auto loadGlobalDrops() -> void;

@@ -31,10 +31,10 @@ class NpcDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getStorageCost(int32_t npc) -> int32_t { return m_data[npc].storageCost; }
-	auto isMapleTv(int32_t npc) -> bool { return m_data[npc].isMapleTv; }
-	auto isGuildRank(int32_t npc) -> bool { return m_data[npc].isGuildRank; }
-	auto isValidNpcId(int32_t npc) -> bool { return m_data.find(npc) != std::end(m_data); }
+	auto getStorageCost(int32_t npc) const -> int32_t;
+	auto isMapleTv(int32_t npc) const -> bool;
+	auto isGuildRank(int32_t npc) const -> bool;
+	auto isValidNpcId(int32_t npc) const -> bool;
 private:
 	hash_map_t<int32_t, NpcData> m_data;
 };

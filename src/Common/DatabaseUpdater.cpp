@@ -42,17 +42,14 @@ DatabaseUpdater::DatabaseUpdater(bool update) :
 	loadSqlFiles();
 }
 
-// Returns true if the database is up-to-date.
-auto DatabaseUpdater::checkVersion() -> bool {
-	return m_sqlVersion <= m_fileVersion;
+auto DatabaseUpdater::checkVersion() -> VersionCheckResult {
+	return m_sqlVersion <= m_fileVersion ? VersionCheckResult::FullyUpdated : VersionCheckResult::NeedsUpdate;
 }
 
-// Updates the database to the latest version
 auto DatabaseUpdater::update() -> void {
 	update(m_sqlVersion);
 }
 
-// Updates the database to the specified version
 auto DatabaseUpdater::update(size_t version) -> void {
 	if (version <= m_fileVersion) {
 		throw std::out_of_range("SQL version to update to is less than the highest query file");
@@ -102,11 +99,11 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 	fs::directory_iterator end;
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
 #ifdef WIN32
-		const string_t &filename = dir->path().filename();
-		const string_t &fileString = (fullPath / dir->path()).file_string();
+		string_t filename = dir->path().filename();
+		string_t fileString = (fullPath / dir->path()).file_string();
 #else
-		const string_t &filename = dir->path().filename().generic_string();
-		const string_t &fileString = dir->path().generic_string();
+		string_t filename = dir->path().filename().generic_string();
+		string_t fileString = dir->path().generic_string();
 #endif
 		if (filename.find(".sql") == string_t::npos) {
 			// Not an SQL file
@@ -142,7 +139,7 @@ auto DatabaseUpdater::updateInfoTable(size_t version) -> void {
 
 auto DatabaseUpdater::runQueries(const string_t &filename) -> void {
 	soci::session &sql = Database::getCharDb();
-	const vector_t<string_t> &queries = MySqlQueryParser::parseQueries(filename);
+	vector_t<string_t> queries = MySqlQueryParser::parseQueries(filename);
 
 	// Run them
 	for (const auto &query : queries) {

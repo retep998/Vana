@@ -34,20 +34,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 	if (isAuthenticated()) {
-		if (getType() == ServerTypes::Channel) {
+		if (getType() == ServerType::Channel) {
 			if (WorldServer::getInstance().isConnected()) {
 				LoginServerConnectPacket::removeChannel(m_channel);
 			}
 			PlayerDataProvider::getInstance().removeChannelPlayers(m_channel);
 			Channels::getInstance().removeChannel(m_channel);
 
-			WorldServer::getInstance().log(LogTypes::ServerDisconnect, "Channel " + StringUtilities::lexical_cast<string_t>(m_channel));
+			WorldServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << m_channel; });
 		}
 	}
 }
 
 auto WorldServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
-	if (!processAuth(WorldServer::getInstance(), packet)) return;
+	if (processAuth(WorldServer::getInstance(), packet) == Result::Failure) {
+		return;
+	}
 	switch (packet.getHeader()) {
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
@@ -58,11 +60,11 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
 	}
 }
 
-auto WorldServerAcceptConnection::authenticated(int8_t type) -> void {
-	if (type == ServerTypes::Channel) {
+auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
+	if (type == ServerType::Channel) {
 		m_channel = Channels::getInstance().getAvailableChannel();
 		if (m_channel != -1) {
-			port_t port = WorldServer::getInstance().getInterPort() + m_channel + 1;
+			port_t port = WorldServer::getInstance().makeChannelPort(m_channel);
 			const IpMatrix &ips = getExternalIps();
 			Channels::getInstance().registerChannel(this, m_channel, getIp(), ips, port);
 
@@ -70,7 +72,7 @@ auto WorldServerAcceptConnection::authenticated(int8_t type) -> void {
 			SyncPacket::sendSyncData(this);
 			LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port);
 
-			WorldServer::getInstance().log(LogTypes::ServerConnect, "Channel " + StringUtilities::lexical_cast<string_t>(m_channel));
+			WorldServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << m_channel; });
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);

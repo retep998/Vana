@@ -323,7 +323,8 @@ auto PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 		required = amount; // These aren't stackable
 	}
 	else {
-		int16_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(itemId);
+		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+		uint16_t maxSlot = itemInfo->maxSlot;
 		uint16_t existing = getItemAmount(itemId) % maxSlot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
@@ -425,7 +426,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		int32_t itemId1 = item1->getId();
 		int16_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
 		int16_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
-		if (!EquipDataProvider::getInstance().validSlot(itemId1, strippedSlot2)) {
+		if (!EquipDataProvider::getInstance().isValidSlot(itemId1, strippedSlot2)) {
 			// Hacking
 			return;
 		}
@@ -546,9 +547,11 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		}
 
 		int32_t itemId1 = item1->getId();
-		int32_t itemId2 = (item2 == nullptr ? 0 : item2->getId());
+		int32_t itemId2 = item2 == nullptr ? 0 : item2->getId();
 		if (item2 != nullptr && itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
-			int32_t maxSlot = ItemDataProvider::getInstance().getMaxSlot(itemId1);
+			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId1);
+			uint16_t maxSlot = itemInfo->maxSlot;
+
 			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
 				item2->incAmount(item1->getAmount());
 				deleteItem(inventory, slot1, false);

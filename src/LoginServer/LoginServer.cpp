@@ -29,14 +29,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <iostream>
 
-LoginServer::LoginServer()
+LoginServer::LoginServer() :
+	AbstractServer(ServerType::Login)
 {
-	setServerType(ServerTypes::Login);
 }
 
 auto LoginServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, m_loginConfig, false, MapleVersion::PatchLocation);
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, m_loginConfig, true);
+	auto &config = getInterServerConfig();
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, config, false, MapleVersion::PatchLocation);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true);
 }
 
 auto LoginServer::loadData() -> void {
@@ -55,27 +56,25 @@ auto LoginServer::loadConfig() -> void {
 	m_port = config.get<port_t>("port");
 	m_interPort = config.get<port_t>("inter_port");
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
-	setListening(true);
 
 	loadWorlds();
 }
 
-auto LoginServer::loadLogConfig() -> void {
-	ConfigFile conf("conf/logger.lua", false);
-	initializeLoggingConstants(conf);
-	conf.execute();
-
-	bool enabled = conf.get<bool>("log_login");
-	if (enabled) {
-		LogConfig log;
-		log = conf.getClass<LogConfig>("login");
-		createLogger(log);
-	}
+auto LoginServer::initComplete() -> void {
+	listen();
 }
 
-auto LoginServer::makeLogIdentifier() -> opt_string_t {
+auto LoginServer::makeLogIdentifier() const -> opt_string_t {
 	// Login needs no special identifier; there's only one
 	return opt_string_t();
+}
+
+auto LoginServer::getLogPrefix() const -> string_t {
+	return "login";
+}
+
+auto LoginServer::getPinEnabled() const -> bool {
+	return m_pinEnabled;
 }
 
 auto LoginServer::rehashConfig() -> void {
@@ -88,6 +87,10 @@ auto LoginServer::rehashConfig() -> void {
 		}
 		return false;
 	});
+}
+
+auto LoginServer::getInvalidLoginThreshold() const -> int32_t {
+	return m_maxInvalidLogins;
 }
 
 auto LoginServer::loadWorlds() -> void {
