@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-enum InstanceMessages : int32_t {
+enum class InstanceMessage : int32_t {
 	// 5 parameters
 	FriendlyMobHit, // Mob ID, map mob ID, map ID, HP, max HP
 

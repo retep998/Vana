@@ -1,6 +1,6 @@
 -- Enable logging for a given type of server (applies to all of the given type)
-log_channels = true;
-log_worlds = true;
+log_channel = true;
+log_world = true;
 log_login = true;
 log_cash = false; -- These servers don't exist
 log_mts = false;

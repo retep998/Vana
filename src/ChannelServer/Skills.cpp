@@ -127,7 +127,8 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		// Hacking
 		return;
 	}
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	switch (skillId) {
 		case Skills::Brawler::MpRecovery: {
 			int16_t modHp = player->getStats()->getMaxHp() * skill->x / 100;
@@ -137,7 +138,7 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 			break;
 		}
 		case Skills::Shadower::Smokescreen: {
-			const Pos &origin = packet.getClass<Pos>();
+			Pos origin = packet.getClass<Pos>();
 			Mist *m = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level);
 			break;
 		}
@@ -393,15 +394,15 @@ auto Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 		return;
 	}
 
-	SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
 	int16_t mpUse = skill->mp;
 	int16_t hpUse = skill->hp;
 	int16_t moneyConsume = skill->moneyConsume;
 	int32_t item = skill->item;
 	if (mpUse > 0) {
-		if (SkillLevelInfo *conc = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Concentrate)) {
-			int16_t mpRate = conc->x;
+		if (auto concentrate = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Concentrate)) {
+			int16_t mpRate = concentrate->x;
 			int16_t mpLoss = (mpUse * mpRate) / 100;
 			player->getStats()->modifyMp(-mpLoss, true);
 		}
@@ -429,13 +430,11 @@ auto Skills::applySkillCosts(Player *player, int32_t skillId, uint8_t level, boo
 		int16_t maxMesos = moneyConsume + (80 + level * 5);
 		int16_t amount = Randomizer::rand<int16_t>(maxMesos, minMesos);
 		int32_t mesos = player->getInventory()->getMesos();
-		if (mesos - amount > -1) {
-			player->getInventory()->modifyMesos(-amount);
-		}
-		else {
+		if (mesos - amount < 0) {
 			// Hacking
 			return;
 		}
+		player->getInventory()->modifyMesos(-amount);
 	}
 }
 

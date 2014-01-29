@@ -31,7 +31,6 @@ namespace MiscUtilities {
 
 	auto hashPassword(const string_t &password, const string_t &salt) -> string_t;
 	auto generateSalt(size_t length) -> string_t;
-	auto isBossChannel(const vector_t<int8_t> &vec, int8_t channelId) -> bool;
 
 	template <class TElement>
 	auto inRangeInclusive(const TElement val, const TElement min, const TElement max) -> bool {

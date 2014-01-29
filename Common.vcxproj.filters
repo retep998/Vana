@@ -507,5 +507,8 @@
     <ClInclude Include="src\Common\Line.hpp">
       <Filter>Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\Algorithm.hpp">
+      <Filter>Lib</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

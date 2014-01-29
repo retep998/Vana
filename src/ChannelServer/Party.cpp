@@ -92,7 +92,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 	m_members.erase(player->getId());
 	player->setParty(nullptr);
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(PartyRemoveMember, getId(), player->getId());
+		instance->sendMessage(InstanceMessage::PartyRemoveMember, getId(), player->getId());
 	}
 
 	Functors::LeavePartyUpdate func = {this, player->getId(), player->getName(), kicked};
@@ -101,7 +101,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 
 auto Party::deleteMember(int32_t id, bool kicked) -> void {
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(PartyRemoveMember, getId(), id);
+		instance->sendMessage(InstanceMessage::PartyRemoveMember, getId(), id);
 	}
 	m_members.erase(id);
 
@@ -112,7 +112,7 @@ auto Party::deleteMember(int32_t id, bool kicked) -> void {
 
 auto Party::disband() -> void {
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(PartyDisband, getId());
+		instance->sendMessage(InstanceMessage::PartyDisband, getId());
 		setInstance(nullptr);
 	}
 	auto temp = m_members;

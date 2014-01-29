@@ -53,26 +53,24 @@ struct ClassValidItems {
 	ValidItems female;
 };
 
-namespace ValidItemType {
-	enum : int8_t {
-		Face = 1,
-		Hair = 2,
-		HairColor = 3,
-		Skin = 4,
-		Top = 5,
-		Bottom = 6,
-		Shoes = 7,
-		Weapon = 8
-	};
-}
+enum class ValidItemType {
+	Face = 1,
+	Hair = 2,
+	HairColor = 3,
+	Skin = 4,
+	Top = 5,
+	Bottom = 6,
+	Shoes = 7,
+	Weapon = 8
+};
 
 class ValidCharDataProvider {
 	SINGLETON(ValidCharDataProvider);
 public:
 	auto loadData() -> void;
 
-	auto isForbiddenName(const string_t &cmp) -> bool;
-	auto isValidCharacter(int8_t gender, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer) -> bool;
+	auto isForbiddenName(const string_t &cmp) const -> bool;
+	auto isValidCharacter(int8_t genderId, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId = Adventurer) const -> bool;
 
 	const static int8_t Adventurer = 1;
 	const static int8_t Cygnus = 2;
@@ -80,9 +78,8 @@ private:
 	auto loadForbiddenNames() -> void;
 	auto loadCreationItems() -> void;
 
-	auto isValidItem(int32_t id, int8_t gender, int8_t classId, int8_t type) -> bool;
-	auto iterateTest(int32_t id, vector_t<int32_t> *test) -> bool;
-	auto getItems(int8_t gender, int8_t classId) -> ValidItems *;
+	auto isValidItem(int32_t id, const ValidItems &items, ValidItemType type) const -> bool;
+	auto getItems(int8_t genderId, int8_t classId) const -> const ValidItems &;
 
 	vector_t<string_t> m_forbiddenNames;
 	ClassValidItems m_adventurer;

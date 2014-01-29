@@ -33,12 +33,14 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 		world->setConnected(false);
 		world->clearChannels();
 
-		LoginServer::getInstance().log(LogTypes::ServerDisconnect, "World " + StringUtilities::lexical_cast<string_t>(m_worldId));
+		LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(m_worldId); });
 	}
 }
 
 auto LoginServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
-	if (!processAuth(LoginServer::getInstance(), packet)) return;
+	if (processAuth(LoginServer::getInstance(), packet) == Result::Failure) {
+		return;
+	}
 	switch (packet.getHeader()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
@@ -49,10 +51,10 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
 	}
 }
 
-auto LoginServerAcceptConnection::authenticated(int8_t type) -> void {
+auto LoginServerAcceptConnection::authenticated(ServerType type) -> void {
 	switch (type) {
-		case ServerTypes::World: Worlds::getInstance().addWorldServer(this); break;
-		case ServerTypes::Channel: Worlds::getInstance().addChannelServer(this); break;
+		case ServerType::World: Worlds::getInstance().addWorldServer(this); break;
+		case ServerType::Channel: Worlds::getInstance().addChannelServer(this); break;
 		default: getSession()->disconnect();
 	}
 }

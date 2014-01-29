@@ -47,7 +47,14 @@ struct ActiveQuest {
 	int16_t id = 0;
 	bool done = false;
 	string_t data;
-	ord_map_t<int32_t, int16_t> kills;
+	ord_map_t<int32_t, uint16_t> kills;
+};
+
+// TODO FIXME
+// Potentially refactor quest drop display to the MAP instead of the drops, because that's how global does it
+enum class AllowQuestItemResult {
+	Allow,
+	Disallow,
 };
 
 class PlayerQuests {
@@ -60,22 +67,21 @@ public:
 	auto save() -> void;
 	auto connectData(PacketCreator &packet) -> void;
 
-	auto addQuest(int16_t questId, int32_t npcId) -> void;
+	auto itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQuestItemResult;
+	auto addQuest(uint16_t questId, int32_t npcId) -> void;
 	auto updateQuestMob(int32_t mobId) -> void;
 	auto checkDone(ActiveQuest &quest) -> void;
-	auto finishQuest(int16_t questId, int32_t npcId) -> void;
-	auto removeQuest(int16_t questId) -> void;
-	auto isQuestActive(int16_t questId) -> bool;
-	auto isQuestComplete(int16_t questId) -> bool;
-	auto setQuestData(int16_t id, const string_t &data) -> void;
-	auto getQuestData(int16_t id) -> string_t;
+	auto finishQuest(uint16_t questId, int32_t npcId) -> void;
+	auto removeQuest(uint16_t questId) -> void;
+	auto isQuestActive(uint16_t questId) -> bool;
+	auto isQuestComplete(uint16_t questId) -> bool;
+	auto setQuestData(uint16_t id, const string_t &data) -> void;
+	auto getQuestData(uint16_t id) -> string_t;
 private:
-	auto giveRewards(int16_t questId, bool start) -> bool;
-	auto addQuest(int16_t questId) -> void;
-	auto addQuestMobs(int16_t questId) -> void;
+	auto giveRewards(uint16_t questId, bool start) -> bool;
 
 	Player *m_player = nullptr;
-	hash_map_t<int32_t, vector_t<int16_t>> m_mobToQuestMapping;
-	ord_map_t<int16_t, ActiveQuest> m_quests;
-	ord_map_t<int16_t, int64_t> m_completed;
+	hash_map_t<int32_t, vector_t<uint16_t>> m_mobToQuestMapping;
+	ord_map_t<uint16_t, ActiveQuest> m_quests;
+	ord_map_t<uint16_t, int64_t> m_completed;
 };

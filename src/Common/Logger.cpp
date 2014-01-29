@@ -20,20 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VanaConstants.hpp"
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <sstream>
 
-Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize) :
+Logger::Logger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize) :
 	m_format(format),
 	m_timeFormat(timeFormat),
 	m_serverType(serverType)
 {
 }
 
-auto Logger::formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t {
+auto Logger::formatLog(const string_t &format, LogType type, Logger *logger, const opt_string_t &id, const string_t &message) -> string_t {
 	return formatLog(format, type, logger, time(nullptr), id, message);
 }
 
-auto Logger::formatLog(const string_t &format, LogTypes::LogTypes type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t {
+auto Logger::formatLog(const string_t &format, LogType type, Logger *logger, time_t time, const opt_string_t &id, const string_t &message) -> string_t {
 	string_t ret = format;
 	ReplacementArgs args{type, logger, time, id, message};
 	static LogReplacements replacements;
@@ -50,7 +51,7 @@ auto Logger::formatLog(const string_t &format, LogTypes::LogTypes type, Logger *
 	return ret;
 }
 
-Logger::ReplacementArgs::ReplacementArgs(LogTypes::LogTypes logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg) :
+Logger::ReplacementArgs::ReplacementArgs(LogType logType, Logger *logger, time_t time, const opt_string_t &id, const string_t &msg) :
 	logType(logType),
 	logger(logger),
 	time(time),
@@ -152,46 +153,43 @@ auto Logger::LogReplacements::add(const string_t &key, func_t func) -> void {
 	m_replacementMap.emplace(key, func);
 }
 
-auto Logger::LogReplacements::getLevelString(LogTypes::LogTypes type) -> string_t {
-	string_t ret;
+auto Logger::LogReplacements::getLevelString(LogType type) -> string_t {
 	switch (type) {
-		case LogTypes::Info: ret = "INFO"; break;
-		case LogTypes::Warning: ret = "WARNING"; break;
-		case LogTypes::Debug: ret = "DEBUG"; break;
-		case LogTypes::Error: ret = "ERROR"; break;
-		case LogTypes::CriticalError: ret = "CRITICAL ERROR"; break;
-		case LogTypes::ServerConnect: ret = "SERVER CONNECT"; break;
-		case LogTypes::ServerDisconnect: ret = "SERVER DISCONNECT"; break;
-		case LogTypes::ServerAuthFailure: ret = "SERVER AUTH FAILURE"; break;
-		case LogTypes::Login: ret = "LOGIN"; break;
-		case LogTypes::LoginAuthFailure: ret = "USER AUTH FAILURE"; break;
-		case LogTypes::Logout: ret = "LOGOUT"; break;
-		case LogTypes::ClientError: ret = "CLIENT ERROR"; break;
-		case LogTypes::GmCommand: ret = "GM COMMAND"; break;
-		case LogTypes::AdminCommand: ret = "ADMIN COMMAND"; break;
-		case LogTypes::BossKill: ret = "BOSS KILL"; break;
-		case LogTypes::Trade: ret = "TRADE"; break;
-		case LogTypes::ShopTransaction: ret = "SHOP"; break;
-		case LogTypes::StorageTransaction: ret = "STORAGE"; break;
-		case LogTypes::InstanceBegin: ret = "INSTANCE"; break;
-		case LogTypes::Drop: ret = "DROP"; break;
-		case LogTypes::Chat: ret = "CHAT"; break;
-		case LogTypes::Whisper: ret = "WHISPER"; break;
-		case LogTypes::MalformedPacket: ret = "MALFORMED PACKET"; break;
-		case LogTypes::ScriptLog: ret = "SCRIPT"; break;
-		default: ret = "UNSUPPORTED";
+		case LogType::Info: return "INFO";
+		case LogType::Warning: return "WARNING";
+		case LogType::Debug: return "DEBUG";
+		case LogType::Error: return "ERROR";
+		case LogType::CriticalError: return "CRITICAL ERROR";
+		case LogType::ServerConnect: return "SERVER CONNECT";
+		case LogType::ServerDisconnect: return "SERVER DISCONNECT";
+		case LogType::ServerAuthFailure: return "SERVER AUTH FAILURE";
+		case LogType::Login: return "LOGIN";
+		case LogType::LoginAuthFailure: return "USER AUTH FAILURE";
+		case LogType::Logout: return "LOGOUT";
+		case LogType::ClientError: return "CLIENT ERROR";
+		case LogType::GmCommand: return "GM COMMAND";
+		case LogType::AdminCommand: return "ADMIN COMMAND";
+		case LogType::BossKill: return "BOSS KILL";
+		case LogType::Trade: return "TRADE";
+		case LogType::ShopTransaction: return "SHOP";
+		case LogType::StorageTransaction: return "STORAGE";
+		case LogType::InstanceBegin: return "INSTANCE";
+		case LogType::Drop: return "DROP";
+		case LogType::Chat: return "CHAT";
+		case LogType::Whisper: return "WHISPER";
+		case LogType::MalformedPacket: return "MALFORMED PACKET";
+		case LogType::ScriptLog: return "SCRIPT";
 	}
-	return ret;
+	return "UNSUPPORTED";
 }
 
-auto Logger::LogReplacements::getServerTypeString(int16_t serverType) -> string_t {
-	string_t ret;
-	switch (serverType) {
-		case ServerTypes::Cash: ret = "Cash"; break;
-		case ServerTypes::Channel: ret = "Channel"; break;
-		case ServerTypes::Login: ret = "Login"; break;
-		case ServerTypes::Mts: ret = "MTS"; break;
-		case ServerTypes::World: ret = "World"; break;
+auto Logger::LogReplacements::getServerTypeString(ServerType type) -> string_t {
+	switch (type) {
+		case ServerType::Cash: return "Cash";
+		case ServerType::Channel: return "Channel";
+		case ServerType::Login: return "Login";
+		case ServerType::Mts: return "MTS";
+		case ServerType::World: return "World";
 	}
-	return ret;
+	throw std::invalid_argument("Invalid ServerType");
 }

@@ -28,36 +28,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketCreator;
 
-class WorldServer : public AbstractServer {
+class WorldServer final : public AbstractServer {
 	SINGLETON_CUSTOM_CONSTRUCTOR(WorldServer);
 public:
-	auto loadData() -> void override;
-	auto loadConfig() -> void override;
-	auto loadLogConfig() -> void override;
-	auto listen() -> void override;
-	auto makeLogIdentifier() -> opt_string_t override;
-
+	auto shutdown() -> void override;
+	auto establishedLoginConnection(int8_t worldId, port_t port, const WorldConfig &conf) -> void;
 	auto rehashConfig(const WorldConfig &config) -> void;
-
-	auto setWorldId(int8_t id) -> void { m_worldId = id; }
-	auto setInterPort(port_t port) -> void { m_port = port; }
 	auto setScrollingHeader(const string_t &message) -> void;
-	auto setConfig(const WorldConfig &config) -> void;
 	auto setRates(const Rates &rates) -> void;
 	auto resetRates() -> void;
+	auto isConnected() const -> bool;
+	auto getWorldId() const -> int8_t;
+	auto makeChannelPort(uint16_t channelId) const -> port_t; 
+	auto getConfig() -> const WorldConfig &;
 	auto sendPacketToLogin(const PacketCreator &packet) -> void;
-
-	auto isConnected() const -> bool { return m_worldId != -1; }
-	auto getWorldId() const -> int8_t { return m_worldId; }
-	auto getInterPort() const -> port_t { return m_port; }
-	auto getMaxChannels() const -> int32_t { return m_config.maxChannels; }
-	auto getScrollingHeader() -> string_t { return m_config.scrollingHeader.c_str(); }
-	auto getConfig() -> WorldConfig & { return m_config; }
+protected:
+	auto listen() -> void override;
+	auto loadData() -> void override;
+	auto makeLogIdentifier() const -> opt_string_t override;
+	auto getLogPrefix() const -> string_t override;
 private:
 	int8_t m_worldId = -1;
-	port_t m_loginPort = 0;
 	port_t m_port = 0;
-	Ip m_loginIp;
 	WorldConfig m_config;
 	Rates m_defaultRates;
 	LoginServerConnection *m_loginConnection = nullptr;

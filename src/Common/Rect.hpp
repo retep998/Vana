@@ -59,8 +59,7 @@ public:
 	auto normalize() const -> Rect;
 	auto intersection(const Rect &other) const -> Rect;
 	auto combine(const Rect &other) const -> Rect;
-	auto noOverlap(const Rect &other) const -> bool;
-	auto anyOverlap(const Rect &other) const -> bool;
+	auto findOverlap(const Rect &other) const -> SearchResult;
 private:
 	Pos m_leftTop;
 	Pos m_rightBottom;

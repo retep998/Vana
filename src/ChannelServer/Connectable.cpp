@@ -40,16 +40,16 @@ auto Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) -> v
 	m_map[id] = player;
 }
 
-auto Connectable::checkPlayer(int32_t id, const Ip &ip) -> bool {
-	bool correct = false;
+auto Connectable::checkPlayer(int32_t id, const Ip &ip) -> Result {
+	Result result = Result::Failure;
 	auto kvp = m_map.find(id);
 	if (kvp != std::end(m_map)) {
-		const ConnectingPlayer &test = kvp->second;
+		auto &test = kvp->second;
 		if (test.connectIp == ip && duration_cast<milliseconds_t>(TimeUtilities::getNow() - test.connectTime).count() < MaxMilliseconds) {
-			correct = true;
+			result = Result::Successful;
 		}
 	}
-	return correct;
+	return result;
 }
 
 auto Connectable::getPacket(int32_t id) -> PacketReader * {

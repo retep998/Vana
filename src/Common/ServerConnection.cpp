@@ -19,39 +19,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.hpp"
 #include "AuthenticationPacket.hpp"
 #include "InterHeader.hpp"
-#include "MiscUtilities.hpp"
 #include "PacketReader.hpp"
 #include "Session.hpp"
 #include <boost/asio.hpp>
 #include <iostream>
 
-auto AbstractServerConnection::sendAuth(const string_t &pass, const string_t &salt, const IpMatrix &extIp) -> void {
-	AuthenticationPacket::sendPassword(this, MiscUtilities::hashPassword(pass, salt), extIp);
+auto AbstractServerConnection::sendAuth(const string_t &pass, const IpMatrix &extIp) -> void {
+	AuthenticationPacket::sendPassword(this, pass, extIp);
 }
 
-auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &packet) -> bool {
+auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &packet) -> Result {
 	if (packet.getHeader() == IMSG_PASSWORD) {
-		string_t pass = MiscUtilities::hashPassword(server.getInterPassword(), server.getSalt());
-		if (packet.getString() == pass) {
+		if (packet.getString() == server.getInterPassword()) {
 			m_isAuthenticated = true;
 
 			setExternalIpInformation(getIp(), packet.getClassVector<ExternalIp>());
 
-			int8_t type = packet.get<int8_t>();
+			ServerType type = static_cast<ServerType>(packet.get<int8_t>());
 			setType(type);
 			authenticated(type);
 		}
 		else {
-			server.log(LogTypes::ServerAuthFailure, "IP: " + getSession()->getIp().toString());
+			server.log(LogType::ServerAuthFailure, [&](out_stream_t &log) { log << "IP: " << getSession()->getIp(); });
 
 			getSession()->disconnect();
-			return false;
+			return Result::Failure;
 		}
 	}
 	else if (!m_isAuthenticated) {
 		getSession()->disconnect();
-		return false;
+		return Result::Failure;
 	}
 	packet.reset();
-	return true;
+	return Result::Successful;
 }

@@ -42,7 +42,7 @@ public:
 	auto keyExists(const string_t &value) -> bool;
 	auto execute() -> bool;
 	auto handleError() -> void;
-	auto printError(const string_t &error) -> void;
+	auto printError(const string_t &error) const -> void;
 	auto setVariable(const string_t &name, const string_t &value) -> void;
 	auto setVariable(const string_t &name, int32_t value) -> void;
 	template <typename TInteger>

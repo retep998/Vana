@@ -312,7 +312,11 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 	BuddyInvite invite = m_pendingBuddies.front();
 	if (invite.id != id) {
 		// Hacking
-		ChannelServer::getInstance().log(LogTypes::Warning, "Player tried to accept a player with player ID " + StringUtilities::lexical_cast<string_t>(id)+" but the sent player ID was " + StringUtilities::lexical_cast<string_t>(invite.id) + ". Player: " + m_player->getName());
+		ChannelServer::getInstance().log(LogType::Warning, [&](out_stream_t &log) {
+			log << "Player tried to accept a player with player ID " << id
+				<< " but the sent player ID was " << invite.id
+				<< ". Player: " << m_player->getName();
+		});
 		return;
 	}
 

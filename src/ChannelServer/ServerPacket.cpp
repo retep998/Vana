@@ -35,15 +35,9 @@ auto ServerPacket::changeScrollingHeader(const string_t &msg) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(4);
-	packet.add<int8_t>(1);
-	packet.addString(msg);
-	PlayerDataProvider::getInstance().sendPacket(packet);
-}
-
-auto ServerPacket::scrollingHeaderOff() -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(4);
-	packet.add<int8_t>(0);
+	packet.add<bool>(msg.size() > 0);
+	if (msg.size() > 0) {
+		packet.addString(msg);
+	}
 	PlayerDataProvider::getInstance().sendPacket(packet);
 }

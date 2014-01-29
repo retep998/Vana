@@ -25,20 +25,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "Types.hpp"
 
-class LoginServer : public AbstractServer {
+class LoginServer final : public AbstractServer {
 	SINGLETON_CUSTOM_CONSTRUCTOR(LoginServer);
 public:
+	auto getPinEnabled() const -> bool;
+	auto rehashConfig() -> void;
+	auto getInvalidLoginThreshold() const -> int32_t;
+protected:
+	auto initComplete() -> void override;
+	auto listen() -> void override;
 	auto loadData() -> void override;
 	auto loadConfig() -> void override;
-	auto loadLogConfig() -> void override;
 	auto loadWorlds() -> void;
-	auto listen() -> void override;
-	auto makeLogIdentifier() -> opt_string_t override;
-
-	auto getPinEnabled() const -> bool { return m_pinEnabled; }
-	auto setPinEnabled(bool enabled) -> void { m_pinEnabled = enabled; }
-	auto rehashConfig() -> void;
-	auto getInvalidLoginThreshold() const -> int32_t { return m_maxInvalidLogins; }
+	auto makeLogIdentifier() const -> opt_string_t override;
+	auto getLogPrefix() const -> string_t override;
 private:
 	bool m_pinEnabled = false;
 	port_t m_port = 0;

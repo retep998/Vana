@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class SqlLogger : public Logger {
 public:
-	SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, int16_t serverType, size_t bufferSize = 10);
+	SqlLogger(const string_t &filename, const string_t &format, const string_t &timeFormat, ServerType serverType, size_t bufferSize = 10);
 	~SqlLogger();
 
-	auto log(LogTypes::LogTypes type, const opt_string_t &identifier, const string_t &message) -> void override;
+	auto log(LogType type, const opt_string_t &identifier, const string_t &message) -> void override;
 	auto flush() -> void;
 private:
 	size_t m_bufferSize;

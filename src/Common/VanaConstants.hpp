@@ -23,12 +23,11 @@ namespace VanaConstants {
 	const int32_t SaltSize = 10;
 }
 
-namespace ServerTypes {
-	enum ServerTypes : int16_t {
-		Login = 1, // Started at 1 so it's easy to do logging
-		World,
-		Channel,
-		Cash,
-		Mts
-	};
-}
+enum class ServerType : int16_t {
+	None,
+	Login = 1, // Started at 1 so it's easy to do logging
+	World,
+	Channel,
+	Cash,
+	Mts
+};

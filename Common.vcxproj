@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\AbstractSession.hpp" />
+    <ClInclude Include="src\Common\Algorithm.hpp" />
     <ClInclude Include="src\Common\BitUtilities.hpp" />
     <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp" />
     <ClInclude Include="src\Common\CaseInsensitiveHash.hpp" />

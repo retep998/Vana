@@ -37,6 +37,18 @@ Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionM
 {
 }
 
+auto Session::getSocket() -> boost::asio::ip::tcp::socket & {
+	return m_socket;
+}
+
+auto Session::getDecoder() -> Decoder & {
+	return m_decoder;
+}
+
+auto Session::getBuffer() -> MiscUtilities::shared_array<unsigned char> & {
+	return m_buffer;
+}
+
 auto Session::start() -> void {
 	m_sessionManager->start(shared_from_this());
 }
@@ -170,7 +182,7 @@ auto Session::getIp() const -> const Ip & {
 	return m_connection->getIp();
 }
 
-auto Session::getConnectPacket(const string_t &patchLocation) -> PacketCreator {
+auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketCreator {
 	PacketCreator packet;
 	// IV_PATCH_LOCATION
 	packet.add<header_t>(0);

@@ -60,12 +60,13 @@ public:
 	virtual auto read(PacketReader &packet) -> void override;
 
 	auto toString() const -> string_t;
-	auto asIpv4() const -> uint32_t { return m_ipv4; }
-	auto getType() const -> const Ip::Type & { return m_type; }
-	auto isInitialized() const -> bool { return m_ipv4 != 0; }
+	auto asIpv4() const -> uint32_t;
+	auto getType() const -> const Ip::Type &;
+	auto isInitialized() const -> bool;
 
 	auto operator==(const Ip &right) const -> bool { return right.m_type == this->m_type && right.m_ipv4 == this->m_ipv4; }
 	auto operator!=(const Ip &right) const -> bool { return right.m_type != this->m_type || right.m_ipv4 != this->m_ipv4; }
+	friend auto operator <<(std::ostream &out, const Ip &ip) -> std::ostream &;
 
 	static auto stringToIpv4(const string_t &name) -> uint32_t;
 protected:
@@ -76,3 +77,8 @@ protected:
 	uint32_t m_ipv4 = 0;
 	Ip::Type m_type = Ip::Type::Ipv4;
 };
+
+inline
+auto operator <<(std::ostream &out, const Ip &ip) -> std::ostream & {
+	return out << ip.toString();
+}

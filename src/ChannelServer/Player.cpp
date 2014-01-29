@@ -93,7 +93,7 @@ Player::~Player() {
 		}
 		if (Instance *instance = getInstance()) {
 			instance->removePlayer(getId());
-			instance->sendMessage(PlayerDisconnect, getId(), isLeader);
+			instance->sendMessage(InstanceMessage::PlayerDisconnect, getId(), isLeader);
 		}
 		//if (this->getStats()->isDead()) {
 		//	this->acceptDeath();
@@ -216,20 +216,23 @@ auto Player::handleRequest(PacketReader &packet) -> void {
 		// We may not process the structure properly
 
 		packet.reset();
-		out_stream_t x;
-		x << "Player ID: " << getId() << "; Packet: " << packet << "; Error: " << e.what();
-		ChannelServer::getInstance().log(LogTypes::MalformedPacket, x.str());
+		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
+			log << "Player ID: " << getId()
+				<< "; Packet: " << packet
+				<< "; Error: " << e.what();
+		});
 		getSession()->disconnect();
 	}
 }
 
 auto Player::playerConnect(PacketReader &packet) -> void {
 	int32_t id = packet.get<int32_t>();
-	if (!Connectable::getInstance().checkPlayer(id, getIp())) {
+	if (Connectable::getInstance().checkPlayer(id, getIp()) == Result::Failure) {
 		// Hacking
 		getSession()->disconnect();
 		return;
 	}
+
 	m_id = id;
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
@@ -312,7 +315,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 		if (buffs->hasHyperBody()) {
 			int32_t skillId = buffs->getHyperBody();
 			uint8_t hbLevel = buffs->getActiveSkillLevel(skillId);
-			SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
+			auto hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
 			getStats()->setHyperBody(hb->x, hb->y);
 		}
 
@@ -366,8 +369,9 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 
 	PlayerPacket::connectData(this);
 
-	if (ChannelServer::getInstance().getScrollingHeader().size() > 0) {
-		ServerPacket::showScrollingHeader(this, ChannelServer::getInstance().getScrollingHeader());
+	auto &config = ChannelServer::getInstance().getConfig();
+	if (config.scrollingHeader.size() > 0) {
+		ServerPacket::showScrollingHeader(this, config.scrollingHeader);
 	}
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
@@ -385,9 +389,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 
 	Maps::addPlayer(this, m_map);
 
-	out_stream_t x;
-	x << getName() << " (" << getId() << ") connected from " << getIp().toString();
-	ChannelServer::getInstance().log(LogTypes::Info, x.str());
+	ChannelServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
 
 	setOnline(true);
 	m_isConnect = true;
@@ -415,10 +417,10 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
 		int32_t isPartyLeader = (getParty() != nullptr && getParty()->isLeader(getId()) ? 1 : 0);
 		if (Instance *i = oldMap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
+			i->sendMessage(InstanceMessage::PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
 		}
 		if (Instance *i = newMap->getInstance()) {
-			i->sendMessage(PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
+			i->sendMessage(InstanceMessage::PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
 		}
 	}
 
@@ -470,7 +472,7 @@ auto Player::getMedalName() -> string_t {
 	out_stream_t ret;
 	if (int32_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
-		ret << "<" << ItemDataProvider::getInstance().getItemName(itemId) << "> ";
+		ret << "<" << ItemDataProvider::getInstance().getItemInfo(itemId)->name << "> ";
 	}
 	ret << getName();
 	return ret.str();

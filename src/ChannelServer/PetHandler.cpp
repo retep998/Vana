@@ -168,13 +168,13 @@ auto PetHandler::handleCommand(Player *player, PacketReader &packet) -> void {
 	}
 	packet.skipBytes(1);
 	int8_t act = packet.get<int8_t>();
-	PetInteractInfo *action = ItemDataProvider::getInstance().getInteraction(pet->getItemId(), act);
+	auto action = ItemDataProvider::getInstance().getInteraction(pet->getItemId(), act);
 	if (action == nullptr) {
 		// Hacking or no action info available
 		return;
 	}
-	bool success = (Randomizer::rand<uint32_t>(100) < action->prob);
-	if (success) {
+
+	if (Randomizer::rand<uint32_t>(100) < action->prob) {
 		pet->addCloseness(action->increase);
 	}
 	PetsPacket::showAnimation(player, pet, act);
@@ -192,7 +192,7 @@ auto PetHandler::handleConsumePotion(Player *player, PacketReader &packet) -> vo
 	int16_t slot = packet.get<int16_t>();
 	int32_t itemId = packet.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	ConsumeInfo *info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
+	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking
 		return;

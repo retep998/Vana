@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaScriptable.hpp"
+#include "Algorithm.hpp"
 #include "BeautyDataProvider.hpp"
 #include "ChannelServer.hpp"
 #include "Drop.hpp"
@@ -356,7 +357,7 @@ auto LuaScriptable::handleError() -> void {
 auto LuaScriptable::printError(const string_t &error) -> void {
 	Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId);
 
-	ChannelServer::getInstance().log(LogTypes::ScriptLog, error);
+	ChannelServer::getInstance().log(LogType::ScriptLog, error);
 
 	if (player == nullptr) {
 		std::cerr << "Script error in " << m_filename << ": " << error << std::endl;
@@ -426,6 +427,34 @@ auto LuaExports::pushGetVariableData(lua_State *luaVm, const string_t &value, bo
 	}
 }
 
+auto LuaExports::createTable(lua_State *luaVm, const vector_t<int32_t> &elements) -> int {
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < elements.size(); ++i) {
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, elements[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+auto LuaExports::createTable(lua_State *luaVm, const vector_t<int8_t> &elements) -> int {
+	lua_newtable(luaVm);
+	int top = lua_gettop(luaVm);
+	for (size_t i = 0; i < elements.size(); ++i) {
+		lua_pushinteger(luaVm, i + 1);
+		lua_pushinteger(luaVm, elements[i]);
+		lua_settable(luaVm, top);
+	}
+	return 1;
+}
+
+auto LuaExports::isBossChannel(lua_State *luaVm, const vector_t<int8_t> &elements) -> int {
+	int8_t channel = ChannelServer::getInstance().getChannelId() + 1;
+	lua_pushboolean(luaVm, ext::any_of(elements, [channel](int8_t testChannel) -> bool { return testChannel == channel; }));
+	return 1;
+}
+
 // Miscellaneous
 auto LuaExports::consoleOutput(lua_State *luaVm) -> int {
 	std::cout << lua_tostring(luaVm, 1) << std::endl;
@@ -439,19 +468,20 @@ auto LuaExports::getRandomNumber(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::log(lua_State *luaVm) -> int {
-	ChannelServer::getInstance().log(LogTypes::ScriptLog, lua_tostring(luaVm, 1));
+	string_t message = lua_tostring(luaVm, 1);
+	ChannelServer::getInstance().log(LogType::ScriptLog, message);
 	return 0;
 }
 
 auto LuaExports::showGlobalMessage(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, -2);
+	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageGlobal(msg, type);
 	return 0;
 }
 
 auto LuaExports::showWorldMessage(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, -2);
+	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageWorld(msg, type);
 	return 0;
@@ -459,7 +489,7 @@ auto LuaExports::showWorldMessage(lua_State *luaVm) -> int {
 
 // Channel
 auto LuaExports::deleteChannelVariable(lua_State *luaVm) -> int {
-	const string_t &key = string_t(lua_tostring(luaVm, -1));
+	string_t key = lua_tostring(luaVm, -1);
 	EventDataProvider::getInstance().getVariables()->deleteVariable(key);
 	return 0;
 }
@@ -474,34 +504,29 @@ auto LuaExports::getChannelVariable(lua_State *luaVm) -> int {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	const string_t &val = EventDataProvider::getInstance().getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string_t val = EventDataProvider::getInstance().getVariables()->getVariable(lua_tostring(luaVm, 1));
 	pushGetVariableData(luaVm, val, integral);
 	return 1;
 }
 
 auto LuaExports::isHorntailChannel(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, ChannelServer::getInstance().isHorntailChannel());
-	return 1;
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
 }
 
 auto LuaExports::isPapChannel(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, ChannelServer::getInstance().isPapChannel());
-	return 1;
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
 }
 
 auto LuaExports::isPianusChannel(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, ChannelServer::getInstance().isPianusChannel());
-	return 1;
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pianus.channels);
 }
 
 auto LuaExports::isPinkBeanChannel(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, ChannelServer::getInstance().isPinkBeanChannel());
-	return 1;
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().pinkbean.channels);
 }
 
 auto LuaExports::isZakumChannel(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, ChannelServer::getInstance().isZakumChannel());
-	return 1;
+	return isBossChannel(luaVm, ChannelServer::getInstance().getConfig().zakum.channels);
 }
 
 auto LuaExports::setChannelVariable(lua_State *luaVm) -> int {
@@ -511,7 +536,7 @@ auto LuaExports::setChannelVariable(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::showChannelMessage(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, -2);
+	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessageChannel(msg, type);
 	return 0;
@@ -519,88 +544,48 @@ auto LuaExports::showChannelMessage(lua_State *luaVm) -> int {
 
 // Bosses
 auto LuaExports::getHorntailChannels(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &channels = ChannelServer::getInstance().getHorntailChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
 }
 
 auto LuaExports::getMaxHorntailBattles(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, ChannelServer::getInstance().getHorntailAttempts());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getConfig().horntail.attempts);
 	return 1;
 }
 
 auto LuaExports::getMaxPapBattles(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, ChannelServer::getInstance().getPapAttempts());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getConfig().pap.attempts);
 	return 1;
 }
 
 auto LuaExports::getMaxPianusBattles(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, ChannelServer::getInstance().getPianusAttempts());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getConfig().pianus.attempts);
 	return 1;
 }
 
 auto LuaExports::getMaxPinkBeanBattles(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, ChannelServer::getInstance().getPinkBeanAttempts());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getConfig().pinkbean.attempts);
 	return 1;
 }
 
 auto LuaExports::getMaxZakumBattles(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, ChannelServer::getInstance().getZakumAttempts());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getConfig().zakum.attempts);
 	return 1;
 }
 
 auto LuaExports::getPapChannels(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &channels = ChannelServer::getInstance().getPapChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
 }
 
 auto LuaExports::getPianusChannels(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &channels = ChannelServer::getInstance().getPianusChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, ChannelServer::getInstance().getConfig().pianus.channels);
 }
 
 auto LuaExports::getPinkBeanChannels(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &channels = ChannelServer::getInstance().getPinkBeanChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, ChannelServer::getInstance().getConfig().pinkbean.channels);
 }
 
 auto LuaExports::getZakumChannels(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &channels = ChannelServer::getInstance().getZakumChannels();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < channels.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, channels[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, ChannelServer::getInstance().getConfig().zakum.channels);
 }
 
 // Npc
@@ -621,7 +606,7 @@ auto LuaExports::runNpc(lua_State *luaVm) -> int {
 	string_t script;
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
-		const string_t &specified = lua_tostring(luaVm, 2);
+		string_t specified = lua_tostring(luaVm, 2);
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
@@ -657,39 +642,15 @@ auto LuaExports::spawnNpc(lua_State *luaVm) -> int {
 
 // Beauty
 auto LuaExports::getAllFaces(lua_State *luaVm) -> int {
-	const vector_t<int32_t> &ids = BeautyDataProvider::getInstance().getFaces(getPlayer(luaVm)->getGender());
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, ids[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, BeautyDataProvider::getInstance().getFaces(getPlayer(luaVm)->getGender()));
 }
 
 auto LuaExports::getAllHair(lua_State *luaVm) -> int {
-	const vector_t<int32_t> &ids = BeautyDataProvider::getInstance().getHair(getPlayer(luaVm)->getGender());
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, ids[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, BeautyDataProvider::getInstance().getHair(getPlayer(luaVm)->getGender()));
 }
 
 auto LuaExports::getAllSkins(lua_State *luaVm) -> int {
-	const vector_t<int8_t> &ids = BeautyDataProvider::getInstance().getSkins();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); ++i) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, ids[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, BeautyDataProvider::getInstance().getSkins());
 }
 
 auto LuaExports::getRandomFace(lua_State *luaVm) -> int {
@@ -797,7 +758,7 @@ auto LuaExports::isQuestCompleted(lua_State *luaVm) -> int {
 
 auto LuaExports::setQuestData(lua_State *luaVm) -> int {
 	int16_t questId = lua_tointeger(luaVm, 1);
-	const string_t &data = lua_tostring(luaVm, 2);
+	string_t data = lua_tostring(luaVm, 2);
 	getPlayer(luaVm)->getQuests()->setQuestData(questId, data);
 	return 0;
 }
@@ -892,7 +853,7 @@ auto LuaExports::useItem(lua_State *luaVm) -> int {
 
 // Player
 auto LuaExports::deletePlayerVariable(lua_State *luaVm) -> int {
-	const string_t &key = string_t(lua_tostring(luaVm, -1));
+	string_t key = string_t(lua_tostring(luaVm, -1));
 	getPlayer(luaVm)->getVariables()->deleteVariable(key);
 	return 0;
 }
@@ -1012,7 +973,7 @@ auto LuaExports::getPlayerVariable(lua_State *luaVm) -> int {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	const string_t &val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string_t val = getPlayer(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	pushGetVariableData(luaVm, val, integral);
 	return 1;
 }
@@ -1060,7 +1021,7 @@ auto LuaExports::giveAp(lua_State *luaVm) -> int {
 
 auto LuaExports::giveExp(lua_State *luaVm) -> int {
 	uint32_t exp = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getStats()->giveExp(exp * ChannelServer::getInstance().getQuestExpRate(), true);
+	getPlayer(luaVm)->getStats()->giveExp(exp * ChannelServer::getInstance().getConfig().rates.questExpRate, true);
 	return 0;
 }
 
@@ -1157,7 +1118,7 @@ auto LuaExports::setMap(lua_State *luaVm) -> int {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		const string_t &to = lua_tostring(luaVm, 2);
+		string_t to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -1233,7 +1194,7 @@ auto LuaExports::setStyle(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::showInstructionBubble(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, 1);
+	string_t msg = lua_tostring(luaVm, 1);
 	int16_t width = lua_tointeger(luaVm, 2);
 	int16_t height = lua_tointeger(luaVm, 3);
 
@@ -1249,7 +1210,7 @@ auto LuaExports::showInstructionBubble(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::showMessage(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, -2);
+	string_t msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
 	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
 	return 0;
@@ -1257,7 +1218,7 @@ auto LuaExports::showMessage(lua_State *luaVm) -> int {
 
 // Effects
 auto LuaExports::playFieldSound(lua_State *luaVm) -> int {
-	const string_t &val = lua_tostring(luaVm, 1);
+	string_t val = lua_tostring(luaVm, 1);
 	if (lua_isnumber(luaVm, 2)) {
 		EffectPacket::sendFieldSound(lua_tointeger(luaVm, 2), val);
 	}
@@ -1268,7 +1229,7 @@ auto LuaExports::playFieldSound(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::playMinigameSound(lua_State *luaVm) -> int {
-	const string_t &val = lua_tostring(luaVm, 1);
+	string_t val = lua_tostring(luaVm, 1);
 	if (lua_isnumber(luaVm, 2)) {
 		EffectPacket::sendMinigameSound(lua_tointeger(luaVm, 2), val);
 	}
@@ -1280,7 +1241,7 @@ auto LuaExports::playMinigameSound(lua_State *luaVm) -> int {
 
 auto LuaExports::setMusic(lua_State *luaVm) -> int {
 	int32_t mapId = -1;
-	const string_t &music = lua_tostring(luaVm, 1);
+	string_t music = lua_tostring(luaVm, 1);
 
 	if (lua_isnumber(luaVm, 2)) {
 		mapId = lua_tointeger(luaVm, 2);
@@ -1296,13 +1257,13 @@ auto LuaExports::setMusic(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::showMapEffect(lua_State *luaVm) -> int {
-	const string_t &val = lua_tostring(luaVm, -1);
+	string_t val = lua_tostring(luaVm, -1);
 	EffectPacket::sendEffect(getPlayer(luaVm)->getMapId(), val);
 	return 0;
 }
 
 auto LuaExports::showMapEvent(lua_State *luaVm) -> int {
-	const string_t &val = lua_tostring(luaVm, -1);
+	string_t val = lua_tostring(luaVm, -1);
 	EffectPacket::sendEvent(getPlayer(luaVm)->getMapId(), val);
 	return 0;
 }
@@ -1331,17 +1292,9 @@ auto LuaExports::countMobs(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::getAllMapPlayerIds(lua_State *luaVm) -> int {
-	int32_t mapId = lua_tointeger(luaVm, 1);
-	Map *map = Maps::getMap(mapId);
-	if (map != nullptr) {
-		lua_newtable(luaVm);
-		int top = lua_gettop(luaVm);
-		for (uint32_t i = 0; i < map->getNumPlayers(); i++) {
-			lua_pushinteger(luaVm, i + 1);
-			lua_pushinteger(luaVm, map->getPlayer(i)->getId());
-			lua_settable(luaVm, top);
-		}
-		return 1;
+	int32_t mapId = lua_tointeger(luaVm, 1);	;
+	if (Map *map = Maps::getMap(mapId)) {
+		return createTable(luaVm, map->getAllPlayerIds());
 	}
 	return 0;
 }
@@ -1395,7 +1348,7 @@ auto LuaExports::setReactorState(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::showMapMessage(lua_State *luaVm) -> int {
-	const string_t &msg = lua_tostring(luaVm, -2);
+	string_t msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getMap()->showMessage(msg, type);
 	return 0;
@@ -1562,7 +1515,7 @@ auto LuaExports::getSecond(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::getTime(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, (lua_Integer) time(nullptr)); // Here's to hoping that lua_Integer is an 8-byte type on most platforms!
+	lua_pushnumber(luaVm, static_cast<double>(time(nullptr)));
 	return 1;
 }
 
@@ -1588,22 +1541,26 @@ auto LuaExports::isDst(lua_State *luaVm) -> int {
 
 // Rates
 auto LuaExports::getDropRate(lua_State *luaVm) -> int {
-	lua_pushnumber(luaVm, ChannelServer::getInstance().getDropRate());
+	auto &config = ChannelServer::getInstance().getConfig();
+	lua_pushnumber(luaVm, config.rates.dropRate);
 	return 1;
 }
 
 auto LuaExports::getExpRate(lua_State *luaVm) -> int {
-	lua_pushnumber(luaVm, ChannelServer::getInstance().getMobExpRate());
+	auto &config = ChannelServer::getInstance().getConfig();
+	lua_pushnumber(luaVm, config.rates.mobExpRate);
 	return 1;
 }
 
 auto LuaExports::getQuestExpRate(lua_State *luaVm) -> int {
-	lua_pushnumber(luaVm, ChannelServer::getInstance().getQuestExpRate());
+	auto &config = ChannelServer::getInstance().getConfig();
+	lua_pushnumber(luaVm, config.rates.questExpRate);
 	return 1;
 }
 
 auto LuaExports::getMesoRate(lua_State *luaVm) -> int {
-	lua_pushnumber(luaVm, ChannelServer::getInstance().getMobMesoRate());
+	auto &config = ChannelServer::getInstance().getConfig();
+	lua_pushnumber(luaVm, config.rates.mobMesoRate);
 	return 1;
 }
 
@@ -1633,17 +1590,8 @@ auto LuaExports::checkPartyFootholds(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::getAllPartyPlayerIds(lua_State *luaVm) -> int {
-	Party *p = getPlayer(luaVm)->getParty();
-	if (p != nullptr) {
-		const vector_t<int32_t> &ids = p->getAllPlayerIds();
-		lua_newtable(luaVm);
-		int top = lua_gettop(luaVm);
-		for (size_t i = 0; i < ids.size(); i++) {
-			lua_pushinteger(luaVm, i + 1);
-			lua_pushinteger(luaVm, ids[i]);
-			lua_settable(luaVm, top);
-		}
-		return 1;
+	if (Party *party = getPlayer(luaVm)->getParty()) {
+		return createTable(luaVm, party->getAllPlayerIds());
 	}
 	return 0;
 }
@@ -1778,13 +1726,13 @@ auto LuaExports::banInstancePlayer(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::checkInstanceTimer(lua_State *luaVm) -> int {
-	const string_t &name = lua_tostring(luaVm, 1);
+	string_t name = lua_tostring(luaVm, 1);
 	lua_pushinteger(luaVm, static_cast<int32_t>(getInstance(luaVm)->getTimerSecondsRemaining(name).count()));
 	return 1;
 }
 
 auto LuaExports::createInstance(lua_State *luaVm) -> int {
-	const string_t &name = lua_tostring(luaVm, 1);
+	string_t name = lua_tostring(luaVm, 1);
 	int32_t time = lua_tointeger(luaVm, 2);
 	bool showTimer = lua_toboolean(luaVm, 3) != 0;
 	int32_t persistent = 0;
@@ -1800,7 +1748,7 @@ auto LuaExports::createInstance(lua_State *luaVm) -> int {
 	}
 	Instance *instance = new Instance(name, map, id, seconds_t(time), seconds_t(persistent), showTimer);
 	Instances::getInstance().addInstance(instance);
-	instance->sendMessage(BeginInstance);
+	instance->sendMessage(InstanceMessage::BeginInstance);
 
 	if (instance->showTimer()) {
 		instance->showTimer(true, true);
@@ -1816,15 +1764,7 @@ auto LuaExports::deleteInstanceVariable(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::getAllInstancePlayerIds(lua_State *luaVm) -> int {
-	const vector_t<int32_t> &ids = getInstance(luaVm)->getAllPlayerIds();
-	lua_newtable(luaVm);
-	int top = lua_gettop(luaVm);
-	for (size_t i = 0; i < ids.size(); i++) {
-		lua_pushinteger(luaVm, i + 1);
-		lua_pushinteger(luaVm, ids[i]);
-		lua_settable(luaVm, top);
-	}
-	return 1;
+	return createTable(luaVm, getInstance(luaVm)->getAllPlayerIds());
 }
 
 auto LuaExports::getBannedInstancePlayerByIndex(lua_State *luaVm) -> int {
@@ -1873,7 +1813,7 @@ auto LuaExports::getInstanceVariable(lua_State *luaVm) -> int {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	const string_t &val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string_t val = getInstance(luaVm)->getVariables()->getVariable(lua_tostring(luaVm, 1));
 	pushGetVariableData(luaVm, val, integral);
 	return 1;
 }
@@ -1916,7 +1856,7 @@ auto LuaExports::moveAllPlayers(lua_State *luaVm) -> int {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		const string_t &to = lua_tostring(luaVm, 2);
+		string_t to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -1931,7 +1871,7 @@ auto LuaExports::passPlayersBetweenInstances(lua_State *luaVm) -> int {
 
 	if (lua_isstring(luaVm, 2)) {
 		// Optional portal parameter
-		const string_t &to = lua_tostring(luaVm, 2);
+		string_t to = lua_tostring(luaVm, 2);
 		portal = Maps::getMap(mapId)->getPortal(to);
 	}
 
@@ -2027,7 +1967,7 @@ auto LuaExports::showInstanceTime(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::startInstanceTimer(lua_State *luaVm) -> int {
-	const string_t &name = lua_tostring(luaVm, 1);
+	string_t name = lua_tostring(luaVm, 1);
 	TimerAction t;
 	t.time = lua_tointeger(luaVm, 2);
 	if (lua_isnumber(luaVm, 3)) {
@@ -2044,7 +1984,7 @@ auto LuaExports::stopAllInstanceTimers(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::stopInstanceTimer(lua_State *luaVm) -> int {
-	const string_t &name = lua_tostring(luaVm, 1);
+	string_t name = lua_tostring(luaVm, 1);
 	getInstance(luaVm)->removeTimer(name);
 	return 0;
 }

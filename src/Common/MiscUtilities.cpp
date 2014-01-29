@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <botan/filters.h>
 
 auto MiscUtilities::hashPassword(const string_t &password, const string_t &salt) -> string_t {
-	const string_t &salted = salt + password;
+	string_t salted = salt + password;
 	Botan::Pipe pipe(
 		new Botan::Chain(
 			new Botan::Hash_Filter("SHA-512"),
@@ -36,13 +36,4 @@ auto MiscUtilities::generateSalt(size_t length) -> string_t {
 		salt[i] = Randomizer::rand<uint8_t>(126, 33);
 	}
 	return salt;
-}
-
-auto MiscUtilities::isBossChannel(const vector_t<int8_t> &vec, int8_t channelId) -> bool {
-	for (const auto &channel : vec) {
-		if (channel == channelId) {
-			return true;
-		}
-	}
-	return false;
 }

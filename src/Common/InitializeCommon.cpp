@@ -39,7 +39,7 @@ auto Initializing::checkMcdbVersion() -> void {
 	int32_t subversion = row.get<int32_t>("subversion");
 	int16_t mapleVersion = row.get<int16_t>("maple_version");
 	bool testServer = row.get<bool>("test_server");
-	const string_t &mapleLocale = row.get<string_t>("maple_locale");
+	string_t mapleLocale = row.get<string_t>("maple_locale");
 
 	if (version != McdbVersion || subversion != McdbSubVersion) {
 		std::cerr << "ERROR: MCDB version incompatible." << std::endl;
@@ -54,6 +54,7 @@ auto Initializing::checkMcdbVersion() -> void {
 		std::cerr << "MCDB: " << makeLocale(mapleLocale, testServer) << std::endl;
 		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);
 	}
+
 	if (mapleVersion != MapleVersion::Version) {
 		std::cerr << "WARNING: Your copy of MCDB is based on an incongruent version of the WZ files." << std::endl;
 		std::cerr << "Vana: " << MapleVersion::Version << std::endl;
@@ -72,20 +73,22 @@ auto Initializing::makeLocale(const string_t &locale, bool testServer) -> string
 auto Initializing::checkSchemaVersion(bool update) -> void {
 	DatabaseUpdater db(update);
 
-	bool succeed = db.checkVersion();
+	VersionCheckResult check = db.checkVersion();
 
-	if (!succeed && !update) {
-		// Wrong version and we're not allowed to update, so let's quit
-		std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << std::endl;
-		ExitCodes::exit(ExitCodes::InfoDatabaseError);
-	}
-	else if (!succeed) {
-		// Failed, but we can update it
-		std::cout << std::setw(OutputWidth) << "Updating database...";
+	if (check == VersionCheckResult::NeedsUpdate) {
+		if (!update) {
+			// Wrong version and we're not allowed to update, so let's quit
+			std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << std::endl;
+			ExitCodes::exit(ExitCodes::InfoDatabaseError);
+		}
+		else {
+			// Failed, but we can update it
+			std::cout << std::setw(OutputWidth) << "Updating database...";
 
-		db.update();
+			db.update();
 
-		std::cout << "DONE" << std::endl;
+			std::cout << "DONE" << std::endl;
+		}
 	}
 }
 

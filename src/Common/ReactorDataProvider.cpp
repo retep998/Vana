@@ -35,37 +35,37 @@ auto ReactorDataProvider::loadData() -> void {
 
 auto ReactorDataProvider::loadReactors() -> void {
 	m_reactorInfo.clear();
-	ReactorData reactor;
-	int32_t id;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_data");
 
 	for (const auto &row : rs) {
-		id = row.get<int32_t>("reactorid");
-		reactor = ReactorData();
+		ReactorData reactor;
+		int32_t id = row.get<int32_t>("reactorid");
+		reactor.maxStates = row.get<int8_t>("max_states");
+		reactor.link = row.get<int32_t>("link");
+
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reactor](const string_t &cmp) {
 			if (cmp == "remove_in_field_set") reactor.removeInFieldSet = true;
 			else if (cmp == "activate_by_touch") reactor.activateByTouch = true;
 		});
-
-		reactor.maxStates = row.get<int8_t>("max_states");
-		reactor.link = row.get<int32_t>("link");
 
 		m_reactorInfo[id] = reactor;
 	}
 }
 
 auto ReactorDataProvider::loadStates() -> void {
-	ReactorStateInfo state;
-	int32_t id;
-	int8_t stateId;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_events ORDER BY reactorId, state ASC");
 
 	for (const auto &row : rs) {
-		id = row.get<int32_t>("reactorid");
-		stateId = row.get<int8_t>("state");
-		state = ReactorStateInfo();
+		ReactorStateInfo state;
+		int32_t id = row.get<int32_t>("reactorid");
+		int8_t stateId = row.get<int8_t>("state");
+		state.itemId = row.get<int32_t>("itemid");
+		state.itemQuantity = row.get<int16_t>("quantity");
+		state.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
+								Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
+		state.nextState = row.get<int8_t>("next_state");
+		state.timeout = row.get<int32_t>("timeout");
 
 		StringUtilities::runEnum(row.get<string_t>("event_type"), [&state](const string_t &cmp) {
 			if (cmp == "plain_advance_state") state.type = 0;
@@ -77,43 +77,28 @@ auto ReactorDataProvider::loadStates() -> void {
 			else if (cmp == "hit_by_item") state.type = 100;
 		});
 
-		state.itemId = row.get<int32_t>("itemid");
-		state.itemQuantity = row.get<int16_t>("quantity");
-		state.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
-								Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
-		state.nextState = row.get<int8_t>("next_state");
-		state.timeout = row.get<int32_t>("timeout");
-
 		m_reactorInfo[id].states[stateId].push_back(state);
 	}
 }
 
 auto ReactorDataProvider::loadTriggerSkills() -> void {
-	int32_t id;
-	int8_t state;
-	int32_t skillId;
-	size_t j;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM reactor_event_trigger_skills");
 
 	for (const auto &row : rs) {
-		id = row.get<int32_t>("reactorid");
-		state = row.get<int8_t>("state");
-		skillId = row.get<int32_t>("skillid");
+		int32_t id = row.get<int32_t>("reactorid");
+		int8_t state = row.get<int8_t>("state");
+		int32_t skillId = row.get<int32_t>("skillid");
 
-		for (j = 0; j < m_reactorInfo[id].states[state].size(); ++j) {
+		for (size_t j = 0; j < m_reactorInfo[id].states[state].size(); ++j) {
 			m_reactorInfo[id].states[state][j].triggerSkills.push_back(skillId);
 		}
 	}
 }
 
-auto ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) -> ReactorData * {
-	if (m_reactorInfo.find(reactorId) != std::end(m_reactorInfo)) {
-		ReactorData *retval = &m_reactorInfo[reactorId];
-		if (respectLink && retval->link) {
-			return &m_reactorInfo[retval->link];
-		}
-		return retval;
+auto ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) const -> const ReactorData & {
+	auto kvp = m_reactorInfo.find(reactorId);
+	if (respectLink && kvp->second.link != 0) {
+		kvp = m_reactorInfo.find(kvp->second.link);
 	}
-	return nullptr;
+	return kvp->second;
 }

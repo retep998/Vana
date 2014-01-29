@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.hpp"
 #include "Channels.hpp"
 #include "Configuration.hpp"
-#include "InitializeWorld.hpp"
 #include "LoginServerConnection.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
@@ -30,18 +29,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) -> void {
 	int8_t worldId = packet.get<int8_t>();
 	if (worldId != -1) {
-		WorldServer::getInstance().setWorldId(worldId);
-		WorldServer::getInstance().setInterPort(packet.get<port_t>());
-
-		const WorldConfig &conf = packet.getClass<WorldConfig>();
-		WorldServer::getInstance().setConfig(conf);
-
-		WorldServer::getInstance().listen();
+		port_t port = packet.get<port_t>();
+		WorldConfig conf = packet.getClass<WorldConfig>();
 		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
-
-		Initializing::worldEstablished();
-
-		WorldServer::getInstance().displayLaunchTime();
+		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
 	}
 	else {
 		std::cerr << "ERROR: No world to handle" << std::endl;

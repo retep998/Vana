@@ -26,18 +26,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Vana {
 #ifdef WIN32
-	function_t<void()> consoleControlFunction;
+	function_t<void()> consoleHandler;
 
-	auto WINAPI consoleControlHandler(DWORD ctrl_type) -> BOOL {
-		switch (ctrl_type) {
+	auto WINAPI consoleControlHandler(DWORD ctrlType) -> BOOL {
+		switch (ctrlType) {
 			case CTRL_C_EVENT:
 			case CTRL_BREAK_EVENT:
 			case CTRL_CLOSE_EVENT:
 			case CTRL_SHUTDOWN_EVENT:
-				consoleControlFunction();
+				consoleHandler();
 				return TRUE;
 		}
 		return FALSE;
+	}
+
+	auto hookWin32Console(AbstractServer &server) -> void {
+		ConnectionManager &manager = ConnectionManager::getInstance();
+		consoleHandler = [&server] { server.shutdown(); };
+		SetConsoleCtrlHandler(consoleControlHandler, TRUE);
+		manager.run();
+		manager.join();
 	}
 #endif
 
@@ -45,16 +53,10 @@ namespace Vana {
 	auto main() -> int {
 		Botan::LibraryInitializer init("thread_safe=true");
 		try {
-			TAbstractServer &server = TAbstractServer::getInstance();
-			ConnectionManager &connMan = ConnectionManager::getInstance();
+			AbstractServer &server = TAbstractServer::getInstance().initialize();
 
-			server.initialize();
 #ifdef WIN32
-			// Allow the server to stop on windows console events
-			consoleControlFunction = [&server]() { server.shutdown(); };
-			SetConsoleCtrlHandler(consoleControlHandler, TRUE);
-			connMan.run();
-			connMan.join();
+			hookWin32Console(server);
 #endif
 		}
 		catch (std::exception &e) {

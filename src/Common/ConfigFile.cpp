@@ -57,7 +57,7 @@ auto ConfigFile::handleError() -> void {
 	printError(lua_tostring(m_luaVm, -1));
 }
 
-auto ConfigFile::printError(const string_t &error) -> void {
+auto ConfigFile::printError(const string_t &error) const -> void {
 	std::cerr << error << std::endl;
 }
 

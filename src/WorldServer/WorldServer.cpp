@@ -26,13 +26,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.hpp"
 
 WorldServer::WorldServer() :
-	m_loginIp(0)
+	AbstractServer(ServerType::World)
 {
-	setServerType(ServerTypes::World);
+}
+
+auto WorldServer::shutdown() -> void {
+	// If we don't do this and the connection disconnects, it will try to call shutdown() again
+	m_worldId = -1;
+	AbstractServer::shutdown();
 }
 
 auto WorldServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, m_loginConfig, true);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true);
 }
 
 auto WorldServer::loadData() -> void {
@@ -40,31 +45,25 @@ auto WorldServer::loadData() -> void {
 	Initializing::loadData();
 
 	m_loginConnection = new LoginServerConnection;
-	ConnectionManager::getInstance().connect(m_loginIp, m_loginPort, m_loginConfig, m_loginConnection);
-	const string_t &interPassword = getInterPassword();
-	const string_t &salt = getSalt();
-	const IpMatrix &externalIps = getExternalIps();
-	m_loginConnection->sendAuth(interPassword, salt, externalIps);
-}
-
-auto WorldServer::loadConfig() -> void {
-	ConfigFile config("conf/interserver.lua");
-	InterServerConfig conf = config.getClass<InterServerConfig>();
-
-	m_loginIp = conf.loginIp;
-	m_loginPort = conf.port;
-
-	m_port = -1; // Will get from LoginServer later
+	auto &config = getInterServerConfig();
+	ConnectionManager::getInstance().connect(config.loginIp, config.loginPort, config, m_loginConnection);
+	sendAuth(m_loginConnection);
 }
 
 auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
-	setConfig(config);
+	m_config = config;
+	m_defaultRates = config.rates;
 	WorldServerAcceptPacket::rehashConfig(config);
 }
 
-auto WorldServer::setConfig(const WorldConfig &config) -> void {
-	m_config = config;
-	m_defaultRates = config.rates;
+auto WorldServer::establishedLoginConnection(int8_t worldId, port_t port, const WorldConfig &conf) -> void {
+	m_worldId = worldId;
+	m_port = port;
+	m_config = conf;
+	m_defaultRates = conf.rates;
+	listen();
+	Initializing::worldEstablished();
+	displayLaunchTime();
 }
 
 auto WorldServer::setRates(const Rates &rates) -> void {
@@ -76,20 +75,28 @@ auto WorldServer::resetRates() -> void {
 	setRates(m_defaultRates);
 }
 
-auto WorldServer::loadLogConfig() -> void {
-	ConfigFile conf("conf/logger.lua", false);
-	initializeLoggingConstants(conf);
-	conf.execute();
-
-	bool enabled = conf.get<bool>("log_worlds");
-	if (enabled) {
-		LogConfig log = conf.getClass<LogConfig>("world");
-		createLogger(log);
-	}
+auto WorldServer::makeLogIdentifier() const -> opt_string_t {
+	return buildLogIdentifier([&](out_stream_t &id) { id << "World " << static_cast<int32_t>(m_worldId); });
 }
 
-auto WorldServer::makeLogIdentifier() -> opt_string_t {
-	return "World " + StringUtilities::lexical_cast<string_t>(getWorldId());
+auto WorldServer::getLogPrefix() const -> string_t {
+	return "world";
+}
+
+auto WorldServer::isConnected() const -> bool {
+	return m_worldId != -1;
+}
+
+auto WorldServer::getWorldId() const -> int8_t {
+	return m_worldId;
+}
+
+auto WorldServer::makeChannelPort(uint16_t channelId) const -> port_t {
+	return m_port + channelId + 1;
+}
+
+auto WorldServer::getConfig() -> const WorldConfig & {
+	return m_config;
 }
 
 auto WorldServer::setScrollingHeader(const string_t &message) -> void {

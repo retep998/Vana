@@ -139,18 +139,6 @@ struct WorldConfig : public IPacketSerializable {
 	MajorBoss pinkbean;
 };
 
-struct LoginConfig : public IConfigReadable {
-	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
-		clientEncryption = conf.get<bool>("use_client_encryption");
-		clientPing = conf.get<bool>("use_client_ping");
-		serverPing = conf.get<bool>("use_inter_ping");
-	}
-
-	bool clientEncryption = true;
-	bool clientPing = true;
-	bool serverPing = true;
-};
-
 struct LogConfig : public IConfigReadable {
 	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
 		const string_t &fullPrefix = prefix + "_log_";
@@ -192,10 +180,16 @@ struct InterServerConfig : public IConfigReadable {
 	}
 
 	auto read(ConfigFile &conf, const string_t &prefix) -> void override {
+		clientEncryption = conf.get<bool>("use_client_encryption");
+		clientPing = conf.get<bool>("use_client_ping");
+		serverPing = conf.get<bool>("use_inter_ping");
 		loginIp = Ip(Ip::stringToIpv4(conf.get<string_t>("login_ip")));
-		port = conf.get<port_t>("login_inter_port");
+		loginPort = conf.get<port_t>("login_inter_port");
 	}
 
-	port_t port = 0;
+	bool clientEncryption = true;
+	bool clientPing = true;
+	bool serverPing = true;
+	port_t loginPort = 0;
 	Ip loginIp;
 };

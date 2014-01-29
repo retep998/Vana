@@ -39,11 +39,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
-	auto *gDrops = DropDataProvider::getInstance().getGlobalDrops();
-	if (!DropDataProvider::getInstance().hasDrops(droppingId) && gDrops == nullptr) {
+	auto &globalDrops = DropDataProvider::getInstance().getGlobalDrops();
+	if (!DropDataProvider::getInstance().hasDrops(droppingId) && globalDrops.size() == 0) {
 		return;
 	}
-	auto drops = DropDataProvider::getInstance().getDrops(droppingId); // Make a copy of the data so we can modify the object with global drops
+
+	// Make a copy of the data so we can modify the object with global drops
+	auto drops = DropDataProvider::getInstance().getDrops(droppingId);
+
 	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	int16_t d = 0;
 	int32_t partyId = 0;
@@ -54,11 +57,11 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			partyId = party->getId();
 		}
 	}
-	if (droppingLevel != 0 && gDrops != nullptr) {
-		// Check for global drops, add to the vector if needed
+	if (droppingLevel != 0 && globalDrops.size() != 0) {
 		DropInfo d;
 		int8_t continent = MapDataProvider::getInstance().getContinent(mapId);
-		for (const auto &globalDrop : *gDrops) {
+
+		for (const auto &globalDrop : globalDrops) {
 			if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
 				if (globalDrop.continent == 0 || (continent == globalDrop.continent)) {
 					d = DropInfo();
@@ -77,6 +80,8 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	Randomizer::shuffle(drops);
 
 	int16_t mod = 25;
+	auto &config = ChannelServer::getInstance().getConfig();
+
 	for (const auto &dropInfo : drops) {
 		int16_t amount = static_cast<int16_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
 		Drop *drop = nullptr;
@@ -87,7 +92,7 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 		}
 		else {
 			chance = chance * taunt / 100;
-			chance *= ChannelServer::getInstance().getDropRate();
+			chance *= config.rates.dropRate;
 		}
 
 		if (Randomizer::rand<uint32_t>(999999) < chance) {
@@ -106,12 +111,7 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 				int16_t questId = dropInfo.questId;
 
 				if (questId > 0) {
-					if (player == nullptr || !player->getQuests()->isQuestActive(questId)) {
-						continue;
-					}
-					int16_t request = QuestDataProvider::getInstance().getItemRequest(questId, itemId);
-					int16_t amount = player->getInventory()->getItemAmount(itemId);
-					if (amount >= request) {
+					if (player == nullptr || player->getQuests()->itemDropAllowed(itemId, questId) == AllowQuestItemResult::Disallow) {
 						continue;
 					}
 				}
@@ -127,7 +127,7 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			else {
 				int32_t mesos = amount;
 				if (!isSteal) {
-					mesos *= ChannelServer::getInstance().getMobMesoRate();
+					mesos *= config.rates.mobMesoRate;
 					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
 						// Account for Meso Up
 						mesos = (mesos * player->getActiveBuffs()->getActiveSkillInfo(Skills::Hermit::MesoUp)->x) / 100;
@@ -190,14 +190,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 	}
 
 	if (drop->isQuest()) {
-		if (!player->getQuests()->isQuestActive(drop->getQuest())) {
-			DropsPacket::dropNotAvailableForPickup(player);
-			DropsPacket::dontTake(player);
-			return;
-		}
-
-		int16_t request = QuestDataProvider::getInstance().getItemRequest(drop->getQuest(), drop->getObjectId());
-		if (player->getInventory()->getItemAmount(drop->getObjectId()) >= request) {
+		if (player->getQuests()->itemDropAllowed(drop->getObjectId(), drop->getQuest()) == AllowQuestItemResult::Disallow) {
 			DropsPacket::dropNotAvailableForPickup(player);
 			DropsPacket::dontTake(player);
 			return;
@@ -249,7 +242,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 	}
 	else {
 		Item dropItem = drop->getItem();
-		ConsumeInfo *cons = ItemDataProvider::getInstance().getConsumeInfo(dropItem.getId());
+		auto cons = ItemDataProvider::getInstance().getConsumeInfo(dropItem.getId());
 		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				DropsPacket::pickupDropSpecial(player, drop->getObjectId());

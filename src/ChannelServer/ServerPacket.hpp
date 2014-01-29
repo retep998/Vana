@@ -24,5 +24,4 @@ class Player;
 namespace ServerPacket {
 	auto showScrollingHeader(Player *player, const string_t &msg) -> void;
 	auto changeScrollingHeader(const string_t &msg) -> void;
-	auto scrollingHeaderOff() -> void;
 }

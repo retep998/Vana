@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerQuests.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "GameLogicUtilities.hpp"
@@ -37,14 +38,14 @@ PlayerQuests::PlayerQuests(Player *player) :
 auto PlayerQuests::save() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
-	int16_t questId = 0;
+	uint16_t questId = 0;
 
 	sql.once << "DELETE FROM active_quests WHERE character_id = :char", soci::use(charId, "char");
 	sql.once << "DELETE FROM completed_quests WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_quests.size() > 0) {
 		int32_t mobId = 0;
-		int16_t killed = 0;
+		uint16_t killed = 0;
 		int64_t id = 0;
 		opt_string_t data;
 		// GCC, as usual, bad with operators
@@ -107,8 +108,9 @@ auto PlayerQuests::save() -> void {
 auto PlayerQuests::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
-	int16_t previous = -1;
-	int16_t current = 0;
+	uint16_t previous = 0;
+	uint16_t current = 0;
+	bool init = true;
 	ActiveQuest curQuest;
 
 	soci::rowset<> rs = (sql.prepare
@@ -119,13 +121,14 @@ auto PlayerQuests::load() -> void {
 		soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		current = row.get<int16_t>("quest_id");
+		current = row.get<uint16_t>("quest_id");
 		int32_t mob = row.get<int32_t>("mob_id");
 		const string_t &data = row.get<string_t>("data");
 
-		if (previous == -1) {
+		if (init) {
 			curQuest.id = current;
 			curQuest.data = data;
+			init = false;
 		}
 		else if (previous != -1 && current != previous) {
 			m_quests[previous] = curQuest;
@@ -134,49 +137,41 @@ auto PlayerQuests::load() -> void {
 			curQuest.data = data;
 		}
 		if (mob != 0) {
-			int16_t kills = row.get<int16_t>("quantity_killed");
+			uint16_t kills = row.get<uint16_t>("quantity_killed");
 			curQuest.kills[mob] = kills;
 			m_mobToQuestMapping[mob].push_back(current);
 		}
 		previous = current;
 	}
-	if (previous != -1) {
+	if (!init) {
 		m_quests[previous] = curQuest;
 	}
 
 	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM completed_quests c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		m_completed[row.get<int16_t>("quest_id")] = row.get<int64_t>("end_time");
+		m_completed[row.get<uint16_t>("quest_id")] = row.get<int64_t>("end_time");
 	}
 }
 
-auto PlayerQuests::addQuest(int16_t questId, int32_t npcId) -> void {
+auto PlayerQuests::addQuest(uint16_t questId, int32_t npcId) -> void {
 	QuestsPacket::acceptQuest(m_player, questId, npcId);
 
-	addQuest(questId);
-	giveRewards(questId, true);
-	checkDone(m_quests[questId]);
-}
-
-auto PlayerQuests::addQuest(int16_t questId) -> void {
 	ActiveQuest quest;
 	quest.id = questId;
 	m_quests[questId] = quest;
-	addQuestMobs(questId);
-}
 
-auto PlayerQuests::addQuestMobs(int16_t questId) -> void {
-	Quest *questInfo = QuestDataProvider::getInstance().getInfo(questId);
-	if (questInfo->hasMobRequests()) {
-		auto &questMapping = m_quests;
-		auto &mapping = m_mobToQuestMapping;
-		questInfo->mobRequestFunc([&questId, &questMapping, &mapping](int32_t mobId, int16_t count) -> bool {
-			questMapping[questId].kills[mobId] = 0;
-			mapping[mobId].push_back(questId);
-			return false;
-		});
-	}
+	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+	questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
+		if (info.isMob) {
+			quest.kills[info.id] = 0;
+			m_mobToQuestMapping[info.id].push_back(questId);
+		}
+		return IterationResult::ContinueIterating;
+	});
+
+	giveRewards(questId, true);
+	checkDone(m_quests[questId]);
 }
 
 auto PlayerQuests::updateQuestMob(int32_t mobId) -> void {
@@ -186,95 +181,106 @@ auto PlayerQuests::updateQuestMob(int32_t mobId) -> void {
 	}
 
 	for (const auto &questId : kvp->second) {
-		ActiveQuest &q = m_quests[questId];
-		Quest *realQuest = QuestDataProvider::getInstance().getInfo(questId);
-		int16_t maxCount = realQuest->getMobRequestQuantity(mobId);
-		if (!q.done && q.kills[mobId] < maxCount) {
-			q.kills[mobId] += 1;
-			QuestsPacket::updateQuest(m_player, q);
-			if (q.kills[mobId] == maxCount) {
-				checkDone(q);
+		auto &quest = m_quests[questId];
+		if (quest.done) {
+			continue;
+		}
+
+		auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+		bool possiblyCompleted = false;
+		questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
+			if (info.isMob && quest.kills[info.id] < info.count) {
+				quest.kills[info.id]++;
+				if (info.count == quest.kills[info.id]) {
+					possiblyCompleted = true;
+				}
 			}
-			m_quests[questId] = q;
+			return IterationResult::ContinueIterating;
+		});
+
+		if (possiblyCompleted) {
+			checkDone(quest);
 		}
 	}
 }
 
 auto PlayerQuests::checkDone(ActiveQuest &quest) -> void {
-	Quest *questInfo = QuestDataProvider::getInstance().getInfo(quest.id);
-	quest.done = true;
-	if (!questInfo->hasRequests()) {
-		return;
-	}
-	if (questInfo->hasItemRequests()) {
-		auto player = m_player;
-		questInfo->itemRequestFunc([&quest, &player](int32_t itemId, int16_t amount) -> bool {
-			if ((player->getInventory()->getItemAmount(itemId) < amount && amount > 0) || (amount == 0 && player->getInventory()->getItemAmount(itemId) != 0)) {
-				quest.done = false;
-				return true;
+	auto &questInfo = QuestDataProvider::getInstance().getInfo(quest.id);
+
+	quest.done = CompletionResult::Complete == questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
+		if (info.isMob) {
+			if (quest.kills[info.id] < info.count) {
+				return IterationResult::StopIterating;
 			}
-			return false;
-		});
-	}
-	if (quest.done && questInfo->hasMobRequests()) {
-		questInfo->mobRequestFunc([&quest](int32_t mobId, int16_t count) -> bool {
-			if (quest.kills[mobId] < count) {
-				quest.done = false;
-				return true;
+		}
+		else if (info.isItem) {
+			if (m_player->getInventory()->getItemAmount(info.id) < info.count) {
+				return IterationResult::StopIterating;
 			}
-			return false;
-		});
-	}
+		}
+		return IterationResult::ContinueIterating;
+	});
+
 	if (quest.done) {
 		QuestsPacket::doneQuest(m_player, quest.id);
 	}
 }
 
-auto PlayerQuests::finishQuest(int16_t questId, int32_t npcId) -> void {
-	Quest *questInfo = QuestDataProvider::getInstance().getInfo(questId);
+auto PlayerQuests::finishQuest(uint16_t questId, int32_t npcId) -> void {
+	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
 
 	if (!giveRewards(questId, false)) {
 		// Failed, don't complete the quest yet
 		return;
 	}
 
-	if (questInfo->hasMobRequests()) {
-		auto toQuest = m_mobToQuestMapping;
-		questInfo->mobRequestFunc([&questId, &toQuest](int32_t mobId, int16_t count) -> bool {
-			auto &quests = toQuest[mobId];
-			for (size_t iter = 0; iter < quests.size(); ++iter) {
-				if (quests[iter] == questId) {
-					if (quests.size() == 1) {
-						toQuest.erase(mobId);
-					}
-					else {
-						quests.erase(std::begin(quests) + iter);
-					}
-					break;
-				}
+	questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
+		if (info.isMob) {
+			auto &mapping = m_mobToQuestMapping[info.id];
+			if (mapping.size() == 1) {
+				m_mobToQuestMapping.erase(info.id);
 			}
-			return false;
-		});
-	}
+			else {
+				ext::remove_element(mapping, questId);
+			}
+		}
+		return IterationResult::ContinueIterating;
+	});
+
 	m_quests.erase(questId);
 	int64_t endTime = TimeUtilities::getServerTime();
 	m_completed[questId] = endTime;
-	QuestsPacket::questFinish(m_player, questId, npcId, questInfo->getNextQuest(), endTime);
+	QuestsPacket::questFinish(m_player, questId, npcId, questInfo.getNextQuest(), endTime);
 }
 
-auto PlayerQuests::giveRewards(int16_t questId, bool start) -> bool {
-	Quest *questInfo = QuestDataProvider::getInstance().getInfo(questId);
-
-	if (!questInfo->hasRewards()) {
-		return true;
+auto PlayerQuests::itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQuestItemResult {
+	if (!isQuestActive(questId)) {
+		return AllowQuestItemResult::Disallow;
 	}
+	auto &info = QuestDataProvider::getInstance().getInfo(questId);
+	int16_t questAmount = 0;
+	info.forEachRequest(false, [&questAmount, itemId](const QuestRequestInfo &info) -> IterationResult {
+		if (info.isItem && info.id == itemId) {
+			questAmount += info.count;
+		}
+		return IterationResult::ContinueIterating;
+	});
+
+	if (m_player->getInventory()->getItemAmount(itemId) >= questAmount) {
+		return AllowQuestItemResult::Disallow;
+	}
+
+	return AllowQuestItemResult::Allow;
+}
+
+auto PlayerQuests::giveRewards(uint16_t questId, bool start) -> bool {
+	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
 
 	int16_t job = m_player->getStats()->getJob();
 	array_t<uint8_t, Inventories::InventoryCount> neededSlots = {0};
 	array_t<bool, Inventories::InventoryCount> chanceItem = {false};
-	auto player = m_player;
 
-	auto checkRewards = [&questId, &neededSlots, &chanceItem, &player](const QuestRewardInfo &info) -> bool {
+	auto checkRewards = [this, &questId, &neededSlots, &chanceItem](const QuestRewardInfo &info) -> IterationResult {
 		if (info.isItem) {
 			uint8_t inv = GameLogicUtilities::getInventory(info.id) - 1;
 			if (info.count > 0) {
@@ -288,17 +294,18 @@ auto PlayerQuests::giveRewards(int16_t questId, bool start) -> bool {
 			}
 		}
 		else if (info.isMesos) {
-			int32_t m = info.id + player->getInventory()->getMesos();
-			if (m < 0) {
+			int32_t mesos = info.id + m_player->getInventory()->getMesos();
+			if (mesos < 0) {
 				// Will trigger for both too low and too high
-				QuestsPacket::questError(player, questId, QuestsPacket::ErrorNotEnoughMesos);
-				return true;
+				QuestsPacket::questError(m_player, questId, QuestsPacket::ErrorNotEnoughMesos);
+				return IterationResult::StopIterating;
 			}
 		}
-		return false;
+
+		return IterationResult::ContinueIterating;
 	};
 
-	if (!questInfo->rewardsFunc(start, job, checkRewards)) {
+	if (questInfo.forEachReward(start, job, checkRewards) == CompletionResult::Incomplete) {
 		return false;
 	}
 
@@ -311,46 +318,47 @@ auto PlayerQuests::giveRewards(int16_t questId, bool start) -> bool {
 
 	vector_t<QuestRewardInfo> items;
 	int32_t chance = 0;
-	questInfo->rewardsFunc(start, job, [&chance, &items, &player](const QuestRewardInfo &info) -> bool {
+	questInfo.forEachReward(start, job, [this, &chance, &items](const QuestRewardInfo &info) -> IterationResult {
 		if (info.isItem && info.prop > 0) {
 			chance += info.prop;
 			items.push_back(info);
 		}
 		else if (info.isItem) {
 			if (info.count > 0) {
-				QuestsPacket::giveItem(player, info.id, info.count);
-				Inventory::addNewItem(player, info.id, info.count);
+				QuestsPacket::giveItem(m_player, info.id, info.count);
+				Inventory::addNewItem(m_player, info.id, info.count);
 			}
 			else if (info.count < 0) {
-				QuestsPacket::giveItem(player, info.id, info.count);
-				Inventory::takeItem(player, info.id, -info.count);
+				QuestsPacket::giveItem(m_player, info.id, info.count);
+				Inventory::takeItem(m_player, info.id, -info.count);
 			}
 			else if (info.id > 0) {
-				QuestsPacket::giveItem(player, info.id, -player->getInventory()->getItemAmount(info.id));
-				Inventory::takeItem(player, info.id, player->getInventory()->getItemAmount(info.id));
+				QuestsPacket::giveItem(m_player, info.id, -m_player->getInventory()->getItemAmount(info.id));
+				Inventory::takeItem(m_player, info.id, m_player->getInventory()->getItemAmount(info.id));
 			}
 		}
 		else if (info.isExp) {
-			player->getStats()->giveExp(info.id * ChannelServer::getInstance().getQuestExpRate(), true);
+			m_player->getStats()->giveExp(info.id * ChannelServer::getInstance().getConfig().rates.questExpRate, true);
 		}
 		else if (info.isMesos) {
-			player->getInventory()->modifyMesos(info.id);
-			QuestsPacket::giveMesos(player, info.id);
+			m_player->getInventory()->modifyMesos(info.id);
+			QuestsPacket::giveMesos(m_player, info.id);
 		}
 		else if (info.isFame) {
-			player->getStats()->setFame(player->getStats()->getFame() + static_cast<int16_t>(info.id));
-			QuestsPacket::giveFame(player, info.id);
+			m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<int16_t>(info.id));
+			QuestsPacket::giveFame(m_player, info.id);
 		}
 		else if (info.isBuff) {
-			Inventory::useItem(player, info.id);
+			Inventory::useItem(m_player, info.id);
 		}
 		else if (info.isSkill) {
-			player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterLevel), true);
+			m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterLevel), true);
 			if (!info.masterLevelOnly && info.count) {
-				player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
+				m_player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
 			}
 		}
-		return false;
+
+		return IterationResult::ContinueIterating;
 	});
 
 	if (chance > 0) {
@@ -372,47 +380,47 @@ auto PlayerQuests::giveRewards(int16_t questId, bool start) -> bool {
 			}
 		}
 	}
+
 	return true;
 }
 
-auto PlayerQuests::removeQuest(int16_t questId) -> void {
+auto PlayerQuests::removeQuest(uint16_t questId) -> void {
 	if (isQuestActive(questId)) {
 		m_quests.erase(questId);
 		QuestsPacket::forfeitQuest(m_player, questId);
 	}
 }
 
-auto PlayerQuests::isQuestActive(int16_t questId) -> bool {
+auto PlayerQuests::isQuestActive(uint16_t questId) -> bool {
 	return m_quests.find(questId) != std::end(m_quests);
 }
 
-auto PlayerQuests::isQuestComplete(int16_t questId) -> bool {
+auto PlayerQuests::isQuestComplete(uint16_t questId) -> bool {
 	return m_completed.find(questId) != std::end(m_completed);
 }
 
 auto PlayerQuests::connectData(PacketCreator &packet) -> void {
 	packet.add<uint16_t>(m_quests.size());
 	for (const auto &kvp : m_quests) {
-		packet.add<int16_t>(kvp.first);
+		packet.add<uint16_t>(kvp.first);
 		packet.addString(kvp.second.getQuestData());
 	}
 
 	packet.add<uint16_t>(m_completed.size());
 	for (const auto &kvp : m_completed) {
-		packet.add<int16_t>(kvp.first);
+		packet.add<uint16_t>(kvp.first);
 		packet.add<int64_t>(kvp.second);
 	}
 }
 
-auto PlayerQuests::setQuestData(int16_t id, const string_t &data) -> void {
+auto PlayerQuests::setQuestData(uint16_t id, const string_t &data) -> void {
 	if (isQuestActive(id)) {
-		ActiveQuest &g = m_quests[id];
-		g.data = data;
-		m_quests[id] = g;
-		QuestsPacket::updateQuest(m_player, g);
+		auto &quest = m_quests[id];
+		quest.data = data;
+		QuestsPacket::updateQuest(m_player, quest);
 	}
 }
 
-auto PlayerQuests::getQuestData(int16_t id) -> string_t {
+auto PlayerQuests::getQuestData(uint16_t id) -> string_t {
 	return isQuestActive(id) ? m_quests[id].data : "";
 }

@@ -30,32 +30,16 @@ class ItemDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getCardId(int32_t mobId) -> int32_t;
-	auto getMobId(int32_t cardId) -> int32_t;
-	auto itemExists(int32_t id) -> bool { return m_itemInfo.find(id) != std::end(m_itemInfo); }
-	auto petExists(int32_t itemId) -> bool { return m_petInfo.find(itemId) != std::end(m_petInfo); }
-	auto consumeInfoExists(int32_t itemId) -> bool { return m_consumeInfo.find(itemId) != std::end(m_consumeInfo); }
-	auto skillItemExists(int32_t itemId) -> bool { return m_skillbooks.find(itemId) != std::end(m_skillbooks); }
-	auto summonBagExists(int32_t itemId) -> bool { return m_summonBags.find(itemId) != std::end(m_summonBags); }
-	auto isTradeable(int32_t itemId) -> bool { return !(m_itemInfo[itemId].noTrade || m_itemInfo[itemId].quest); }
-	auto isCash(int32_t itemId) -> bool { return m_itemInfo[itemId].cash; }
-	auto isQuest(int32_t itemId) -> bool { return m_itemInfo[itemId].quest; }
-	auto canKarma(int32_t itemId) -> bool { return m_itemInfo[itemId].karmaScissors; }
-	auto getMaxSlot(int32_t itemId) -> uint16_t { return itemExists(itemId) ? m_itemInfo[itemId].maxSlot : 0; }
-	auto getPrice(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].price : 0; }
-	auto getMesoBonus(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].mesos : 0; }
-	auto getHunger(int32_t itemId) -> int32_t { return petExists(itemId) ? m_petInfo[itemId].hunger : 0; }
-	auto getItemNpc(int32_t itemId) -> int32_t { return itemExists(itemId) ? m_itemInfo[itemId].npc : 0; }
-	auto getItemName(int32_t itemId) -> string_t { return itemExists(itemId) ? m_itemInfo[itemId].name : ""; }
-	auto getRandomReward(int32_t itemId) -> ItemRewardInfo *;
-
-	auto scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) -> void;
-	auto getItemInfo(int32_t itemId) -> ItemInfo * { return &m_itemInfo[itemId]; }
-	auto getConsumeInfo(int32_t itemId) -> ConsumeInfo * { return consumeInfoExists(itemId) ? &m_consumeInfo[itemId] : nullptr; }
-	auto getPetInfo(int32_t itemId) -> PetInfo * { return &m_petInfo[itemId]; }
-	auto getInteraction(int32_t itemId, int32_t action) -> PetInteractInfo *;
-	auto getItemSkills(int32_t itemId) -> vector_t<Skillbook> * { return &m_skillbooks[itemId]; }
-	auto getItemSummons(int32_t itemId) -> vector_t<SummonBag> * { return &m_summonBags[itemId]; }
+	auto getCardId(int32_t mobId) const -> int32_t;
+	auto getMobId(int32_t cardId) const -> int32_t;
+	auto scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void;
+	auto getItemInfo(int32_t itemId) const -> const ItemInfo * const;
+	auto getConsumeInfo(int32_t itemId) const -> const ConsumeInfo * const;
+	auto getPetInfo(int32_t itemId) const -> const PetInfo * const;
+	auto getInteraction(int32_t itemId, int32_t action) const -> const PetInteractInfo * const;
+	auto getItemSkills(int32_t itemId) const -> const vector_t<Skillbook> * const;
+	auto getItemRewards(int32_t itemId) const -> const vector_t<ItemRewardInfo> * const;
+	auto getItemSummons(int32_t itemId) const -> const vector_t<SummonBag> * const;
 private:
 	auto loadItems() -> void;
 	auto loadScrolls() -> void;

@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ExternalIp.hpp"
 #include "ExternalIpResolver.hpp"
 #include "Types.hpp"
+#include "VanaConstants.hpp"
 #include <string>
 #include <vector>
 
@@ -29,39 +30,39 @@ class PacketReader;
 
 class AbstractServerConnection : public AbstractConnection {
 public:
+	auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
+	auto getType() const -> ServerType { return m_type; }
+protected:
 	AbstractServerConnection()
 	{
 		m_isServer = true;
 	}
 
-	auto sendAuth(const string_t &pass, const string_t &salt, const IpMatrix &extIp) -> void;
-	auto getType() const -> int8_t { return m_type; }
-protected:
-	auto setType(int8_t type) -> void { m_type = type; }
+	auto setType(ServerType type) -> void { m_type = type; }
 private:
-	int8_t m_type = -1;
+	ServerType m_type = ServerType::None;
 };
 
 class AbstractServerAcceptConnection : public AbstractConnection {
 public:
-	AbstractServerAcceptConnection()
-	{
-		m_isServer = true;
-	}
-
-	auto processAuth(AbstractServer &server, PacketReader &packet) -> bool;
-	virtual auto authenticated(int8_t type) -> void = 0;
+	auto processAuth(AbstractServer &server, PacketReader &packet) -> Result;
+	virtual auto authenticated(ServerType type) -> void = 0;
 
 	auto isAuthenticated() const -> bool { return m_isAuthenticated; }
-	auto getType() const -> int8_t { return m_type; }
+	auto getType() const -> ServerType { return m_type; }
 
 	auto matchSubnet(const Ip &test) const -> Ip { return m_resolver.matchIpToSubnet(test); }
 	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void { m_resolver.setExternalIpInformation(defaultIp, matrix); }
 	auto getExternalIps() const -> const IpMatrix & { return m_resolver.getExternalIps(); }
 protected:
-	auto setType(int8_t type) -> void { m_type = type; }
+	AbstractServerAcceptConnection()
+	{
+		m_isServer = true;
+	}
+
+	auto setType(ServerType type) -> void { m_type = type; }
 private:
 	bool m_isAuthenticated = false;
-	int8_t m_type = -1;
+	ServerType m_type = ServerType::None;
 	ExternalIpResolver m_resolver;
 };

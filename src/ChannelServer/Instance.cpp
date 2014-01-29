@@ -43,9 +43,7 @@ Instance::Instance(const string_t &name, int32_t map, int32_t playerId, const du
 	m_luaInstance = make_owned_ptr<LuaInstance>(name, playerId);
 
 	if (!appLaunch) {
-		out_stream_t x;
-		x << name << " started by player ID " << playerId;
-		ChannelServer::getInstance().log(LogTypes::InstanceBegin, x.str());
+		ChannelServer::getInstance().log(LogType::InstanceBegin, [&](out_stream_t &log) { log << name << " started by player ID " << playerId; });
 	}
 	setInstanceTimer(time, true);
 }
@@ -242,7 +240,7 @@ auto Instance::removeTimer(const string_t &timerName) -> void {
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
-			sendMessage(TimerEnd, timerName, false);
+			sendMessage(InstanceMessage::TimerEnd, timerName, false);
 		}
 		m_timerActions.erase(kvp);
 	}
@@ -282,43 +280,43 @@ auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 	}
 }
 
-auto Instance::sendMessage(InstanceMessages message) -> void {
+auto Instance::sendMessage(InstanceMessage message) -> void {
 	getLuaInstance()->run(message);
 }
 
-auto Instance::sendMessage(InstanceMessages message, int32_t parameter) -> void {
+auto Instance::sendMessage(InstanceMessage message, int32_t parameter) -> void {
 	getLuaInstance()->run(message, parameter);
 }
 
-auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2) -> void {
+auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
-auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> void {
+auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3);
 }
 
-auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> void {
+auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4);
 }
 
-auto Instance::sendMessage(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> void {
+auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4, parameter5);
 }
 
-auto Instance::sendMessage(InstanceMessages message, const string_t &parameter1, int32_t parameter2) -> void {
+auto Instance::sendMessage(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> void {
 	getLuaInstance()->run(message, parameter1, parameter2);
 }
 
 auto Instance::timerEnd(const string_t &name, bool fromTimer) -> void {
-	sendMessage(TimerNaturalEnd, name, fromTimer ? 1 : 0);
+	sendMessage(InstanceMessage::TimerNaturalEnd, name, fromTimer ? 1 : 0);
 	if (!fromTimer || (fromTimer && !isTimerPersistent(name))) {
 		removeTimer(name);
 	}
 }
 
 auto Instance::instanceEnd(bool fromTimer) -> void {
-	sendMessage(InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
+	sendMessage(InstanceMessage::InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
 	showTimer(false);
 	if (getPersistence().count() == 0) {
 		markForDelete();

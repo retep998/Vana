@@ -41,43 +41,51 @@ struct QuestRewardInfo {
 };
 
 struct QuestRewardsInfo {
-	vector_t<QuestRewardInfo> rewards;
-	hash_map_t<int16_t, vector_t<QuestRewardInfo>> jobRewards;
+	vector_t<QuestRewardInfo> universal;
+	hash_map_t<int16_t, vector_t<QuestRewardInfo>> job;
+};
+
+struct QuestRequestInfo {
+	bool isQuest = false;
+	bool isMob = false;
+	bool isJob = false;
+	bool isItem = false;
+	int32_t id = -1;
+	int32_t count = -1;
+	int8_t questState = -1;
+};
+
+struct QuestRequestsInfo {
+	vector_t<QuestRequestInfo> universal;
+};
+
+struct QuestState {
+	QuestRewardsInfo rewards;
+	QuestRequestsInfo requests;
 };
 
 class Quest {
 public:
-	auto addReward(bool start, const QuestRewardInfo &info, int16_t job = -1) -> void;
-	auto addValidJob(int16_t jobId) -> void;
-	auto addMobRequest(int32_t mobId, int16_t quantity) -> void;
-	auto addItemRequest(int32_t itemId, int16_t quantity) -> void;
-	auto addQuestRequest(int16_t questId, int8_t state) -> void;
-	auto setNextQuest(int16_t questId) -> void { m_nextQuest = questId; }
-	auto setQuestId(int16_t questId) -> void { m_id = questId; }
-
-	auto hasRequests() const -> bool { return hasMobRequests() || hasItemRequests() || hasQuestRequests(); }
-	auto hasMobRequests() const -> bool { return m_mobRequests.size() > 0; }
-	auto hasItemRequests() const -> bool { return m_itemRequests.size() > 0; }
-	auto hasQuestRequests() const -> bool { return m_questRequests.size() > 0; }
-	auto hasStartRewards() const -> bool { return m_startRewards.rewards.size() > 0 || m_startRewards.jobRewards.size() > 0; }
-	auto hasEndRewards() const -> bool { return m_endRewards.rewards.size() > 0 || m_endRewards.jobRewards.size() > 0; }
-	auto hasRewards() const -> bool { return hasStartRewards() || hasEndRewards(); }
-	auto getNextQuest() const -> int16_t { return m_nextQuest; }
-	auto getQuestId() const -> int16_t { return m_id; }
-	auto getMobRequestQuantity(int32_t mobId) -> int16_t { return m_mobRequests.find(mobId) != std::end(m_mobRequests) ? m_mobRequests[mobId] : 0; }
-	auto getItemRequestQuantity(int32_t itemId) -> int16_t { return m_itemRequests.find(itemId) != std::end(m_itemRequests) ? m_itemRequests[itemId] : 0; }
-	auto mobRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void;
-	auto itemRequestFunc(function_t<bool (int32_t, int16_t)> func) const -> void;
-	auto questRequestFunc(function_t<bool (int16_t, int8_t)> func) const -> void;
-	auto rewardsFunc(bool start, function_t<bool (const QuestRewardInfo &)> func) -> bool;
-	auto rewardsFunc(bool start, int16_t job, function_t<bool (const QuestRewardInfo &)> func) -> bool;
+	auto getNextQuest() const -> uint16_t;
+	auto getQuestId() const -> uint16_t;
+	auto forEachRequest(bool start, function_t<IterationResult (const QuestRequestInfo &)> func) const -> CompletionResult;
+	auto forEachReward(bool start, int16_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult;
 private:
+	friend class QuestDataProvider;
+
+	auto setNextQuest(uint16_t questId) -> void;
+	auto setQuestId(uint16_t questId) -> void;
+	auto addReward(bool start, const QuestRewardInfo &info, int16_t job = -1) -> void;
+	auto addRequest(bool start, const QuestRequestInfo &info) -> void;
+
+	QuestState m_beginState;
+	QuestState m_endState;
 	QuestRewardsInfo m_startRewards;
 	QuestRewardsInfo m_endRewards;
 	ord_map_t<int32_t, int16_t> m_mobRequests;
 	hash_map_t<int32_t, int16_t> m_itemRequests;
 	vector_t<int16_t> m_jobRequests;
 	hash_map_t<int16_t, int8_t> m_questRequests;
-	int16_t m_nextQuest = 0;
-	int16_t m_id = 0;
+	uint16_t m_nextQuest = 0;
+	uint16_t m_id = 0;
 };

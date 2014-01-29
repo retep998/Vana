@@ -42,11 +42,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) -> void {
 	int8_t worldId = packet.get<int8_t>();
 	if (worldId != -1) {
-		ChannelServer::getInstance().setWorldId(worldId);
-		ChannelServer::getInstance().setWorldIp(packet.getClass<Ip>());
-		ChannelServer::getInstance().setWorldPort(packet.get<port_t>());
+		Ip ip = packet.getClass<Ip>();
+		port_t port = packet.get<port_t>();
 		std::cout << "Connecting to world " << static_cast<int32_t>(worldId) << std::endl;
-		ChannelServer::getInstance().connectWorld();
+		ChannelServer::getInstance().connectToWorld(worldId, port, ip);
 	}
 	else {
 		std::cerr << "ERROR: No world server to connect" << std::endl;
@@ -58,16 +57,9 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	int16_t channel = packet.get<int16_t>();
 	if (channel != -1) {
 		port_t port = packet.get<port_t>();
-		ChannelServer::getInstance().setChannelId(channel);
-		ChannelServer::getInstance().setPort(port);
-
-		const WorldConfig &conf = packet.getClass<WorldConfig>();
-
-		ChannelServer::getInstance().setConfig(conf);
-		ChannelServer::getInstance().listen();
+		WorldConfig conf = packet.getClass<WorldConfig>();
 		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
-
-		ChannelServer::getInstance().displayLaunchTime();
+		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
 	else {
 		std::cerr << "ERROR: No channel to handle" << std::endl;

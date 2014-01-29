@@ -69,8 +69,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 	uint8_t disease = 0;
 	uint8_t level = 0;
 	uint16_t mpBurn = 0;
-	int32_t mapMobId = 0; // Map Mob ID
-	int32_t mobId = 0; // Actual Mob ID - i.e. 8800000 for Zakum
+	int32_t mapMobId = 0;
+	int32_t mobId = 0;
 	int32_t noDamageId = 0;
 	ReturnDamageInfo pgmr;
 
@@ -82,12 +82,10 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 			// Hacking
 			return;
 		}
-		auto mobInfo = MobDataProvider::getInstance().getMobInfo(mobId);
 		if (type != BumpDamage) {
-			int32_t attackerId = (mobInfo->link != 0 ? mobInfo->link : mobId);
-			MobAttackInfo *attack = MobDataProvider::getInstance().getMobAttack(attackerId, type);
+			auto attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), type);
 			if (attack == nullptr) {
-				// Hacking, I think
+				// Hacking
 				return;
 			}
 			disease = attack->disease;
@@ -296,7 +294,7 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &packet) -> void {
 		Map *map = Maps::getMap(mapId);
 
 		Pos floor;
-		if (map->findFloor(playerPos, floor) == FindFloorResult::NotFound) {
+		if (map->findFloor(playerPos, floor) == SearchResult::NotFound) {
 			// There are no footholds below the player
 			int8_t count = player->getFallCounter();
 			if (count > 3) {
@@ -417,7 +415,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void
 	int32_t map = player->getMapId();
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
-	SkillLevelInfo *picking = SkillDataProvider::getInstance().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
+	auto picking = SkillDataProvider::getInstance().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
 	Pos origin;
 	vector_t<int32_t> ppDamages;
 
@@ -629,9 +627,9 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> voi
 			}
 			maxHp = mob->getMaxHp();
 			if (skillId == Skills::Ranger::MortalBlow || skillId == Skills::Sniper::MortalBlow) {
-				SkillLevelInfo *sk = player->getSkills()->getSkillInfo(skillId);
+				auto sk = player->getSkills()->getSkillInfo(skillId);
 				int32_t hpPercentage = maxHp * sk->x / 100; // Percentage of HP required for Mortal Blow activation
-				if ((mob->getHp() < hpPercentage) && (Randomizer::rand<int16_t>(99) < sk->y)) {
+				if (mob->getHp() < hpPercentage && Randomizer::rand<int16_t>(99) < sk->y) {
 					damage = mob->getHp();
 				}
 			}
@@ -694,9 +692,9 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void
 	eater.skillId = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
 	if (eater.level > 0) {
-		SkillLevelInfo *eaaat = SkillDataProvider::getInstance().getSkill(eater.skillId, eater.level);
-		eater.prop = eaaat->prop;
-		eater.x = eaaat->x;
+		auto skillInfo = SkillDataProvider::getInstance().getSkill(eater.skillId, eater.level);
+		eater.prop = skillInfo->prop;
+		eater.x = skillInfo->x;
 	}
 
 	if (!attack.isHeal) {
@@ -746,7 +744,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void
 	switch (skillId) {
 		case Skills::FpMage::PoisonMist:
 		case Skills::BlazeWizard::FlameGear: {
-			SkillLevelInfo *skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+			auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
 			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level, true);
 			break;
 		}

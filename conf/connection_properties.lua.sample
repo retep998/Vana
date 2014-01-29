@@ -13,6 +13,10 @@ use_inter_ping = true;
 -- Ping clients? This should generally remain enabled, but it's useful for using a debugger
 use_client_ping = true;
 
+-- What IP and port should the server use to connect to the LoginServer?
+login_ip = "127.0.0.1";
+login_inter_port = 8485;
+
 -- External IP configuration
 -- The server will try to check if the client and the server are on the same subnet
 -- If the client is, the IP is sent to the client

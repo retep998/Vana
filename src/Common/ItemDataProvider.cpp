@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ItemDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "BuffDataProvider.hpp"
 #include "Database.hpp"
 #include "EquipDataProvider.hpp"
@@ -91,21 +92,12 @@ auto ItemDataProvider::loadItems() -> void {
 
 auto ItemDataProvider::loadScrolls() -> void {
 	m_scrollInfo.clear();
-	int32_t itemId;
-	ScrollInfo item;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_scroll_data");
 
 	for (const auto &row : rs) {
-		item = ScrollInfo();
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
-			if (cmp == "rand_stat") item.randStat = true;
-			else if (cmp == "recover_slot") item.recover = 1;
-			else if (cmp == "warm_support") item.warmSupport = true;
-			else if (cmp == "prevent_slip") item.preventSlip = true;
-		});
-
-		itemId = row.get<int32_t>("itemid");
+		ScrollInfo item;
+		int32_t itemId = row.get<int32_t>("itemid");
 		item.success = row.get<uint16_t>("success");
 		item.cursed = row.get<uint16_t>("break_item");
 		item.istr = row.get<int16_t>("istr");
@@ -123,47 +115,25 @@ auto ItemDataProvider::loadScrolls() -> void {
 		item.ijump = row.get<int16_t>("ijump");
 		item.ispeed = row.get<int16_t>("ispeed");
 
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
+			if (cmp == "rand_stat") item.randStat = true;
+			else if (cmp == "recover_slot") item.recover = 1;
+			else if (cmp == "warm_support") item.warmSupport = true;
+			else if (cmp == "prevent_slip") item.preventSlip = true;
+		});
+
 		m_scrollInfo[itemId] = item;
 	}
 }
 
 auto ItemDataProvider::loadConsumes() -> void {
 	m_consumeInfo.clear();
-	int32_t itemId;
-	int16_t morphId;
-	ConsumeInfo item;
-	Morph morph;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_consume_data");
 
 	for (const auto &row : rs) {
-		item = ConsumeInfo();
-
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
-			if (cmp == "auto_consume") item.autoConsume = true;
-			else if (cmp == "party_item") item.party = true;
-			else if (cmp == "meso_up") item.mesoUp = true;
-			else if (cmp == "ignore_physical_defense") item.ignoreWdef = true;
-			else if (cmp == "ignore_magical_defense") item.ignoreMdef = true;
-			else if (cmp == "no_mouse_cancel") item.mouseCancel = false;
-			else if (cmp == "ignore_continent") item.ignoreContinent = true;
-			else if (cmp == "ghost") item.ghost = true;
-			else if (cmp == "barrier") item.barrier = true;
-			else if (cmp == "prevent_drowning") item.preventDrown = true;
-			else if (cmp == "prevent_freezing") item.preventFreeze = true;
-			else if (cmp == "override_traction") item.overrideTraction = true;
-			else if (cmp == "drop_up_for_party") item.partyDropUp = true;
-		});
-
-		StringUtilities::runFlags(row.get<opt_string_t>("cure_ailments"), [&item](const string_t &cmp) {
-			if (cmp == "darkness") item.ailment |= 0x01;
-			else if (cmp == "poison") item.ailment |= 0x02;
-			else if (cmp == "curse") item.ailment |= 0x04;
-			else if (cmp == "seal") item.ailment |= 0x08;
-			else if (cmp == "weakness") item.ailment |= 0x10;
-		});
-
-		itemId = row.get<int32_t>("itemid");
+		ConsumeInfo item;
+		int32_t itemId = row.get<int32_t>("itemid");
 		item.effect = row.get<uint8_t>("effect");
 		item.hp = row.get<int16_t>("hp");
 		item.mp = row.get<int16_t>("mp");
@@ -184,21 +154,13 @@ auto ItemDataProvider::loadConsumes() -> void {
 		item.speed = row.get<int16_t>("speed");
 		item.jump = row.get<int16_t>("jump");
 
-		morphId = row.get<int16_t>("morph");
+		int16_t morphId = row.get<int16_t>("morph");
 		if (morphId != 0) {
-			morph = Morph();
+			Morph morph;
 			morph.morph = morphId;
 			morph.chance = 100;
 			item.morphs.push_back(morph);
 		}
-
-		StringUtilities::runFlags(row.get<opt_string_t>("drop_up"), [&item, &row](const string_t &cmp) {
-			if (cmp == "none") return;
-
-			item.dropUp = true;
-			if (cmp == "specific_item") item.dropUpItem = row.get<int32_t>("drop_up_item");
-			else if (cmp == "item_range") item.dropUpItemRange = row.get<int16_t>("drop_up_item_range");
-		});
 
 		item.iceResist = row.get<int16_t>("defense_vs_ice");
 		item.fireResist = row.get<int16_t>("defense_vs_fire");
@@ -210,20 +172,49 @@ auto ItemDataProvider::loadConsumes() -> void {
 		item.sealDef = row.get<int16_t>("defense_vs_seal");
 		item.curseDef = row.get<int16_t>("defense_vs_curse");
 
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
+			if (cmp == "auto_consume") item.autoConsume = true;
+			else if (cmp == "party_item") item.party = true;
+			else if (cmp == "meso_up") item.mesoUp = true;
+			else if (cmp == "ignore_physical_defense") item.ignoreWdef = true;
+			else if (cmp == "ignore_magical_defense") item.ignoreMdef = true;
+			else if (cmp == "no_mouse_cancel") item.mouseCancel = false;
+			else if (cmp == "ignore_continent") item.ignoreContinent = true;
+			else if (cmp == "ghost") item.ghost = true;
+			else if (cmp == "barrier") item.barrier = true;
+			else if (cmp == "prevent_drowning") item.preventDrown = true;
+			else if (cmp == "prevent_freezing") item.preventFreeze = true;
+			else if (cmp == "override_traction") item.overrideTraction = true;
+			else if (cmp == "drop_up_for_party") item.partyDropUp = true;
+		});
+
+		StringUtilities::runFlags(row.get<opt_string_t>("drop_up"), [&item, &row](const string_t &cmp) {
+			if (cmp == "none") return;
+
+			item.dropUp = true;
+			if (cmp == "specific_item") item.dropUpItem = row.get<int32_t>("drop_up_item");
+			else if (cmp == "item_range") item.dropUpItemRange = row.get<int16_t>("drop_up_item_range");
+		});
+
+		StringUtilities::runFlags(row.get<opt_string_t>("cure_ailments"), [&item](const string_t &cmp) {
+			if (cmp == "darkness") item.ailment |= 0x01;
+			else if (cmp == "poison") item.ailment |= 0x02;
+			else if (cmp == "curse") item.ailment |= 0x04;
+			else if (cmp == "seal") item.ailment |= 0x08;
+			else if (cmp == "weakness") item.ailment |= 0x10;
+		});
+
 		BuffDataProvider::getInstance().addItemInfo(itemId, item);
 		m_consumeInfo[itemId] = item;
 	}
 }
 
 auto ItemDataProvider::loadMapRanges() -> void {
-	int32_t itemId;
-	CardMapRange range;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_monster_card_map_ranges");
 
 	for (const auto &row : rs) {
-		range = CardMapRange();
-		itemId = row.get<int32_t>("itemid");
+		CardMapRange range;
+		int32_t itemId = row.get<int32_t>("itemid");
 		range.startMap = row.get<int32_t>("start_map");
 		range.endMap = row.get<int32_t>("end_map");
 
@@ -232,14 +223,11 @@ auto ItemDataProvider::loadMapRanges() -> void {
 }
 
 auto ItemDataProvider::loadMultiMorphs() -> void {
-	int32_t itemId;
-	Morph morph;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_random_morphs");
 
 	for (const auto &row : rs) {
-		morph = Morph();
-		itemId = row.get<int32_t>("itemid");
+		Morph morph;
+		int32_t itemId = row.get<int32_t>("itemid");
 		morph.morph = row.get<int16_t>("morphid");
 		morph.chance = row.get<int8_t>("success");
 
@@ -250,14 +238,12 @@ auto ItemDataProvider::loadMultiMorphs() -> void {
 auto ItemDataProvider::loadMonsterCardData() -> void {
 	m_cardsToMobs.clear();
 	m_mobsToCards.clear();
-	int32_t cardId;
-	int32_t mobId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM monster_card_data");
 
 	for (const auto &row : rs) {
-		cardId = row.get<int32_t>("cardid");
-		mobId = row.get<int32_t>("mobid");
+		int32_t cardId = row.get<int32_t>("cardid");
+		int32_t mobId = row.get<int32_t>("mobid");
 
 		m_cardsToMobs.emplace(cardId, mobId);
 		m_mobsToCards.emplace(mobId, cardId);
@@ -266,14 +252,12 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 
 auto ItemDataProvider::loadItemSkills() -> void {
 	m_skillbooks.clear();
-	Skillbook skill;
-	int32_t itemId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_skills");
 
 	for (const auto &row : rs) {
-		skill = Skillbook();
-		itemId = row.get<int32_t>("itemid");
+		Skillbook skill;
+		int32_t itemId = row.get<int32_t>("itemid");
 		skill.skillId = row.get<int32_t>("skillid");
 		skill.reqLevel = row.get<uint8_t>("req_skill_level");
 		skill.maxLevel = row.get<uint8_t>("master_level");
@@ -285,13 +269,12 @@ auto ItemDataProvider::loadItemSkills() -> void {
 
 auto ItemDataProvider::loadSummonBags() -> void {
 	m_summonBags.clear();
-	int32_t itemId;
-	SummonBag summon;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_summons");
 
 	for (const auto &row : rs) {
-		itemId = row.get<int32_t>("itemid");
+		SummonBag summon;
+		int32_t itemId = row.get<int32_t>("itemid");
 		summon.mobId = row.get<int32_t>("mobid");
 		summon.chance = row.get<uint16_t>("chance");
 
@@ -301,13 +284,12 @@ auto ItemDataProvider::loadSummonBags() -> void {
 
 auto ItemDataProvider::loadItemRewards() -> void {
 	m_itemRewards.clear();
-	int32_t itemId;
-	ItemRewardInfo reward;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_reward_data");
 
 	for (const auto &row : rs) {
-		itemId = row.get<int32_t>("itemid");
+		ItemRewardInfo reward;
+		int32_t itemId = row.get<int32_t>("itemid");
 		reward.rewardId = row.get<int32_t>("rewardid");
 		reward.prob = row.get<uint16_t>("prob");
 		reward.quantity = row.get<int16_t>("quantity");
@@ -319,26 +301,23 @@ auto ItemDataProvider::loadItemRewards() -> void {
 
 auto ItemDataProvider::loadPets() -> void {
 	m_petInfo.clear();
-	PetInfo pet;
-	int32_t itemId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_data");
 
 	for (const auto &row : rs) {
-		pet = PetInfo();
-		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&pet](const string_t &cmp) {
-			if (cmp == "no_revive") pet.noRevive = true;
-			else if (cmp == "no_move_to_cash_shop") pet.noStoringInCashShop = true;
-			else if (cmp == "auto_react") pet.autoReact = true;
-		});
-
-		itemId = row.get<int32_t>("itemid");
+		PetInfo pet;
+		int32_t itemId = row.get<int32_t>("itemid");
 		pet.name = row.get<string_t>("default_name");
 		pet.hunger = row.get<int32_t>("hunger");
 		pet.life = row.get<int32_t>("life");
 		pet.limitedLife = row.get<int32_t>("limited_life");
 		pet.evolveItem = row.get<int32_t>("evolution_item");
 		pet.evolveLevel = row.get<int8_t>("req_level_for_evolution");
+		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&pet](const string_t &cmp) {
+			if (cmp == "no_revive") pet.noRevive = true;
+			else if (cmp == "no_move_to_cash_shop") pet.noStoringInCashShop = true;
+			else if (cmp == "auto_react") pet.autoReact = true;
+		});
 
 		m_petInfo[itemId] = pet;
 	}
@@ -346,67 +325,44 @@ auto ItemDataProvider::loadPets() -> void {
 
 auto ItemDataProvider::loadPetInteractions() -> void {
 	m_petInteractInfo.clear();
-	PetInteractInfo interact;
-	int32_t itemId;
-	int32_t commandId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_interactions");
 
 	for (const auto &row : rs) {
-		interact = PetInteractInfo();
-		itemId = row.get<int32_t>("itemid");
-		interact.increase = row.get<int16_t>("closeness");
-		interact.prob = row.get<uint32_t>("success");
+		PetInteractInfo interaction;
+		int32_t itemId = row.get<int32_t>("itemid");
+		int32_t commandId = row.get<int32_t>("command");
+		interaction.increase = row.get<int16_t>("closeness");
+		interaction.prob = row.get<uint32_t>("success");
 
-		m_petInteractInfo[itemId][commandId] = interact;
+		m_petInteractInfo[itemId][commandId] = interaction;
 	}
 }
 
-auto ItemDataProvider::getCardId(int32_t mobId) -> int32_t {
-	if (m_mobsToCards.find(mobId) == std::end(m_mobsToCards)) {
+auto ItemDataProvider::getCardId(int32_t mobId) const -> int32_t {
+	auto kvp = m_mobsToCards.find(mobId);
+	if (kvp == std::end(m_mobsToCards)) {
 		std::cerr << "Mob out of range for mob ID " << mobId << std::endl;
 		return 0;
 	}
-	return m_mobsToCards[mobId];
+	return kvp->second;
 }
 
-auto ItemDataProvider::getMobId(int32_t cardId) -> int32_t {
-	if (m_cardsToMobs.find(cardId) == std::end(m_cardsToMobs)) {
+auto ItemDataProvider::getMobId(int32_t cardId) const -> int32_t {
+	auto kvp = m_cardsToMobs.find(cardId);
+	if (kvp == std::end(m_cardsToMobs)) {
 		std::cerr << "Card out of range for card ID " << cardId << std::endl;
 		return 0;
 	}
-	return m_cardsToMobs[cardId];
+	return kvp->second;
 }
 
-auto ItemDataProvider::getInteraction(int32_t itemId, int32_t action) -> PetInteractInfo * {
-	if (m_petInteractInfo.find(itemId) != std::end(m_petInteractInfo)) {
-		if (m_petInteractInfo[itemId].find(action) != std::end(m_petInteractInfo[itemId])) {
-			return &m_petInteractInfo[itemId][action];
-		}
-	}
-	return nullptr;
-}
-
-auto ItemDataProvider::getRandomReward(int32_t itemId) -> ItemRewardInfo * {
-	if (m_itemRewards.find(itemId) == std::end(m_itemRewards)) {
-		return nullptr;
-	}
-
-	for (auto &reward : m_itemRewards[itemId]) {
-		if (Randomizer::rand<uint16_t>(99) < reward.prob) {
-			return &reward;
-		}
-	}
-
-	return nullptr;
-}
-
-auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) -> void {
+auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
 	if (m_scrollInfo.find(scrollId) == std::end(m_scrollInfo)) {
 		return;
 	}
 
-	const ScrollInfo &itemInfo = m_scrollInfo[scrollId];
+	auto &itemInfo = m_scrollInfo.find(scrollId)->second;
 
 	bool scrollTakesSlot = !(itemInfo.preventSlip || itemInfo.warmSupport || itemInfo.recover);
 	if (itemInfo.preventSlip || itemInfo.warmSupport) {
@@ -507,4 +463,33 @@ auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScrol
 			equip->decSlots();
 		}
 	}
+}
+
+auto ItemDataProvider::getItemInfo(int32_t itemId) const -> const ItemInfo * const {
+	return ext::find_value_ptr(m_itemInfo, itemId);
+}
+
+auto ItemDataProvider::getConsumeInfo(int32_t itemId) const -> const ConsumeInfo * const {
+	return ext::find_value_ptr(m_consumeInfo, itemId);
+}
+
+auto ItemDataProvider::getPetInfo(int32_t itemId) const -> const PetInfo * const {
+	return ext::find_value_ptr(m_petInfo, itemId);
+}
+
+auto ItemDataProvider::getInteraction(int32_t itemId, int32_t action) const -> const PetInteractInfo * const {
+	return ext::find_value_ptr(
+		ext::find_value_ptr(m_petInteractInfo, itemId), action);
+}
+
+auto ItemDataProvider::getItemSkills(int32_t itemId) const -> const vector_t<Skillbook> * const {
+	return ext::find_value_ptr(m_skillbooks, itemId);
+}
+
+auto ItemDataProvider::getItemRewards(int32_t itemId) const -> const vector_t<ItemRewardInfo> * const {
+	return ext::find_value_ptr(m_itemRewards, itemId);
+}
+
+auto ItemDataProvider::getItemSummons(int32_t itemId) const -> const vector_t<SummonBag> * const {
+	return ext::find_value_ptr(m_summonBags, itemId);
 }

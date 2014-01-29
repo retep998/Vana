@@ -657,7 +657,10 @@ auto ChatHandlerFunctions::runRegexPattern(const string_t &args, const string_t 
 auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, bool fromHelp) -> void {
 	if (CommandList.find(command) != std::end(CommandList)) {
 		ChatCommand &cmd = CommandList[command];
-		auto displayStyle = fromHelp ? showInfo : showError;
+		auto displayStyle = fromHelp ?
+			static_cast<void (*)(Player *, const string_t &)>(showInfo) :
+			static_cast<void (*)(Player *, const string_t &)>(showError);
+
 		displayStyle(player, "Usage: !" + command + " " + cmd.syntax);
 
 		if (fromHelp) {
@@ -675,4 +678,24 @@ auto ChatHandlerFunctions::showError(Player *player, const string_t &message) ->
 
 auto ChatHandlerFunctions::showInfo(Player *player, const string_t &message) -> void {
 	PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+}
+
+auto ChatHandlerFunctions::showError(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void {
+	out_stream_t error;
+	produceMessage(error);
+	showError(player, error.str());
+}
+
+auto ChatHandlerFunctions::showInfo(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void {
+	out_stream_t info;
+	produceMessage(info);
+	showInfo(player, info.str());
+}
+
+auto ChatHandlerFunctions::showError(Player *player, const char *message) -> void {
+	showError(player, string_t{message});
+}
+
+auto ChatHandlerFunctions::showInfo(Player *player, const char *message) -> void {
+	showInfo(player, string_t{message});
 }

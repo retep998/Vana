@@ -21,30 +21,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-namespace ScriptTypes {
-	enum ScriptTypes {
-		Npc,
-		Reactor,
-		Quest,
-		Item,
-		MapEntry,
-		FirstMapEntry
-	};
-}
+enum class ScriptTypes {
+	Npc,
+	Reactor,
+	Quest,
+	Item,
+	MapEntry,
+	FirstMapEntry
+};
 
 class ScriptDataProvider {
 	SINGLETON(ScriptDataProvider);
 public:
 	auto loadData() -> void;
 
-	auto getQuestScript(int16_t questId, int8_t state) -> string_t;
-	auto getScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> string_t;
-	auto hasQuestScript(int16_t questId, int8_t state) -> bool;
-	auto hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> bool;
-	auto getObjectIdFromScript(const string_t &script) -> int32_t { return m_scripts.find(script) == std::end(m_scripts) ? 0 : m_scripts[script]; }
+	auto getQuestScript(int16_t questId, int8_t state) const -> string_t;
+	auto getScript(int32_t objectId, ScriptTypes type) const -> string_t;
+	auto hasQuestScript(int16_t questId, int8_t state) const -> bool;
+	auto hasScript(int32_t objectId, ScriptTypes type) const -> bool;
 private:
-	auto resolve(ScriptTypes::ScriptTypes type) -> hash_map_t<int32_t, string_t> &;
-	auto resolvePath(ScriptTypes::ScriptTypes type) -> string_t;
+	auto resolve(ScriptTypes type) const -> const hash_map_t<int32_t, string_t> &;
+	auto resolvePath(ScriptTypes type) const -> string_t;
 
 	hash_map_t<int32_t, string_t> m_npcScripts;
 	hash_map_t<int32_t, string_t> m_reactorScripts;

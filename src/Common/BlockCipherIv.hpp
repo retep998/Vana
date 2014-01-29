@@ -27,9 +27,8 @@ public:
 
 	auto updateIv(uint32_t iv) -> void;
 	auto shuffle() -> void;
-	auto getIv() const -> uint32_t { return *(uint32_t *)(m_iv); }
+	auto getIv() const -> uint32_t { return *reinterpret_cast<const uint32_t *>(m_iv); }
 private:
-	// Friended because the Decoder has a legit need for bytes (to do encryption) while nothing else does
 	friend class Decoder;
 
 	auto getBytes() -> unsigned char * { return m_iv; }

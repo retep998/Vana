@@ -26,13 +26,13 @@ ConnectionManager::ConnectionManager()
 	m_work = make_owned_ptr<boost::asio::io_service::work>(m_ioService);
 }
 
-auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const LoginConfig &loginConfig, bool isServer, const string_t &patchLocation) -> void {
+auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation) -> void {
 	boost::asio::ip::tcp::endpoint endpoint(ipType == Ip::Type::Ipv4 ? boost::asio::ip::tcp::v4() : boost::asio::ip::tcp::v6(), port);
-	m_servers.push_back(make_ref_ptr<ConnectionAcceptor>(m_ioService, endpoint, createConnection, loginConfig, isServer, patchLocation));
+	m_servers.push_back(make_ref_ptr<ConnectionAcceptor>(m_ioService, endpoint, createConnection, config, isServer, patchLocation));
 }
 
-auto ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const LoginConfig &loginConfig, AbstractConnection *connection) -> void {
-	ref_ptr_t<ServerClient> c = make_ref_ptr<ServerClient>(m_ioService, serverIp, serverPort, m_clients, connection, loginConfig.serverPing);
+auto ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> void {
+	auto c = make_ref_ptr<ServerClient>(m_ioService, serverIp, serverPort, m_clients, connection, config.serverPing);
 	c->startConnect();
 }
 
@@ -45,16 +45,20 @@ auto ConnectionManager::run() -> void {
 	m_thread = make_owned_ptr<thread_t>([this]() { this->handleRun(); });
 }
 
+#ifdef WIN32
 auto ConnectionManager::join() -> void {
 	m_thread->join();
 }
+#endif
 
 auto ConnectionManager::handleRun() -> void {
 	m_ioService.run();
 }
 
 auto ConnectionManager::handleStop() -> void {
-	for (const auto &server : m_servers) server->stop();
+	for (const auto &server : m_servers) {
+		server->stop();
+	}
 
 	m_clients->stopAll();
 

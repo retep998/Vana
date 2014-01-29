@@ -45,7 +45,7 @@ namespace ExitCodes {
 	auto exit(int32_t code) -> void {
 #ifndef DAEMON
 		std::cout << "Please press enter to quit..." << std::endl;
-		getchar();
+		std::cin.get();
 #endif
 		::exit(code);
 	}

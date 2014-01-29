@@ -231,8 +231,8 @@ auto PlayerStats::modifiedHp() -> void {
 	}
 	m_player->getActiveBuffs()->checkBerserk();
 	if (m_hp == Stats::MinHp) {
-		if (Instance *i = m_player->getInstance()) {
-			i->sendMessage(PlayerDeath, m_player->getId());
+		if (Instance *instance = m_player->getInstance()) {
+			instance->sendMessage(InstanceMessage::PlayerDeath, m_player->getId());
 		}
 		loseExp();
 		SummonHandler::removeSummon(m_player, false, false, SummonMessages::Disappearing);
@@ -409,7 +409,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 	if (curExp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
 		uint8_t levelsGained = 0;
-		uint8_t levelsMax = ChannelServer::getInstance().getMaxMultiLevel();
+		uint8_t levelsMax = ChannelServer::getInstance().getConfig().maxMultiLevel;
 		int16_t apGain = 0;
 		int16_t spGain = 0;
 		int16_t hpGain = 0;
@@ -491,8 +491,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 			// Let Hyper Body remain on if on during a level up, as it should
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
-				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
+				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
 				setHyperBody(hb->x, hb->y);
 			}
 
@@ -545,7 +544,7 @@ auto PlayerStats::addStatMulti(PacketReader &packet) -> void {
 }
 
 auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
-	int16_t maxStat = ChannelServer::getInstance().getMaxStats();
+	int16_t maxStat = ChannelServer::getInstance().getConfig().maxStats;
 	bool isSubtract = mod < 0;
 	switch (type) {
 		case Stats::Str:
@@ -634,8 +633,7 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 			}
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
 				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
-				uint8_t hbLevel = m_player->getActiveBuffs()->getActiveSkillLevel(skillId);
-				SkillLevelInfo *hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
+				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
 				setHyperBody(hb->x, hb->y);
 			}
 

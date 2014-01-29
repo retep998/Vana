@@ -236,9 +236,9 @@ auto PlayerActiveBuffs::setActiveSkillLevel(int32_t skillId, uint8_t level) -> v
 	m_activeLevels[skillId] = level;
 }
 
-auto PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) -> SkillLevelInfo * {
+auto PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const {
 	uint8_t level = getActiveSkillLevel(skillId);
-	return level != 0 ? SkillDataProvider::getInstance().getSkill(skillId, level) : 0;
+	return level != 0 ? SkillDataProvider::getInstance().getSkill(skillId, level) : nullptr;
 }
 
 // Buff addition/removal
@@ -312,30 +312,25 @@ auto PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) -> void {
 
 auto PlayerActiveBuffs::addCombo() -> void {
 	int32_t skillId = m_player->getSkills()->getComboAttack();
-	uint8_t cLevel = getActiveSkillLevel(skillId);
-	if (cLevel > 0) {
+	uint8_t comboLevel = getActiveSkillLevel(skillId);
+	if (comboLevel > 0) {
 		int32_t advSkill = m_player->getSkills()->getAdvancedCombo();
 		uint8_t advCombo = m_player->getSkills()->getSkillLevel(advSkill);
-		SkillLevelInfo *combo;
-		uint16_t prop = 0;
-		if (advCombo > 0) {
-			combo = SkillDataProvider::getInstance().getSkill(advSkill, advCombo);
-			prop = combo->prop;
-		}
-		else {
-			combo = SkillDataProvider::getInstance().getSkill(skillId, cLevel);
-		}
-		int8_t maxCombo = static_cast<int8_t>(combo->x);
+		auto skill = SkillDataProvider::getInstance().getSkill(advCombo > 0 ? advSkill : skillId, advCombo > 0 ? advCombo : comboLevel);
+
+		int8_t maxCombo = static_cast<int8_t>(skill->x);
 		if (m_combo == maxCombo) {
 			return;
 		}
-		if (advCombo > 0 && Randomizer::rand<uint16_t>(99) < prop) {
+
+		if (advCombo > 0 && Randomizer::rand<uint16_t>(99) < skill->prop) {
 			m_combo += 1;
 		}
 		m_combo += 1;
 		if (m_combo > maxCombo) {
 			m_combo = maxCombo;
 		}
+
 		setCombo(m_combo, true);
 	}
 }

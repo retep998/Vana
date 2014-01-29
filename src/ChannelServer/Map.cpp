@@ -289,6 +289,15 @@ auto Map::gmHideChange(Player *player) -> void {
 	}
 }
 
+auto Map::getAllPlayerIds() const -> vector_t<int32_t> {
+	auto copy = m_players;
+	vector_t<int32_t> ret;
+	for (const auto &player : copy) {
+		ret.push_back(player->getId());
+	}
+	return ret;
+}
+
 // Reactors
 auto Map::addReactor(Reactor *reactor) -> void {
 	m_reactors.push_back(reactor);
@@ -324,7 +333,7 @@ auto Map::killReactors(bool showPacket) -> void {
 }
 
 // Footholds
-auto Map::findFloor(const Pos &pos, Pos &ret, int16_t yMod) -> FindFloorResult {
+auto Map::findFloor(const Pos &pos, Pos &floorPos, int16_t yMod) -> SearchResult {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
 	int16_t x = pos.x;
@@ -345,11 +354,11 @@ auto Map::findFloor(const Pos &pos, Pos &ret, int16_t yMod) -> FindFloorResult {
 	}
 
 	if (anyFound) {
-		ret.x = x;
-		ret.y = closestValue;
+		floorPos.x = x;
+		floorPos.y = closestValue;
 	}
 
-	return anyFound ? FindFloorResult::Found : FindFloorResult::NotFound;
+	return anyFound ? SearchResult::Found : SearchResult::NotFound;
 }
 
 auto Map::findRandomFloorPos() -> Pos {
@@ -505,7 +514,7 @@ auto Map::spawnMob(int32_t mobId, const Pos &pos, int16_t foothold, ref_ptr_t<Mo
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(MobSpawn, mobId, id, getId());
+		instance->sendMessage(InstanceMessage::MobSpawn, mobId, id, getId());
 	}
 
 	return mob;
@@ -521,7 +530,7 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(MobSpawn, info.id, id, getId());
+		instance->sendMessage(InstanceMessage::MobSpawn, info.id, id, getId());
 	}
 
 	return mob;
@@ -536,7 +545,7 @@ auto Map::spawnShell(int32_t mobId, const Pos &pos, int16_t foothold) -> ref_ptr
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(MobSpawn, mobId, id, getId());
+		instance->sendMessage(InstanceMessage::MobSpawn, mobId, id, getId());
 	}
 
 	return mob;
@@ -596,7 +605,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 		int32_t mapMobId = kvp->first;
 		int32_t mobId = mob->getMobId();
 		if (Instance *instance = getInstance()) {
-			instance->sendMessage(MobDeath, mobId, mapMobId, m_id);
+			instance->sendMessage(InstanceMessage::MobDeath, mobId, mapMobId, m_id);
 		}
 
 		if (mob->hasStatus(StatusEffects::Mob::ShadowWeb)) {
@@ -702,7 +711,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 	}
 }
 
-auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, MobSkillLevelInfo *skill) -> void {
+auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const skill) -> void {
 	if (m_mobs.size() > 50) {
 		return;
 	}
@@ -1018,15 +1027,15 @@ auto Map::clearDrops(time_point_t time) -> void {
 }
 
 auto Map::mapTick(const time_point_t &now) -> void {
-	int32_t mapUnloadTime = ChannelServer::getInstance().getMapUnloadTime();
-	if (mapUnloadTime > 0) {
+	auto &config = ChannelServer::getInstance().getConfig();
+	if (config.mapUnloadTime > 0) {
 		// TODO FIXME need more robust handling of instances active when the map goes to unload
 		if (m_players.size() > 0 || getInstance() != nullptr) {
 			m_emptyMapTicks = 0;
 		}
 		else {
 			m_emptyMapTicks++;
-			if (m_emptyMapTicks > mapUnloadTime) {
+			if (m_emptyMapTicks > config.mapUnloadTime) {
 				Maps::unloadMap(getId());
 				return;
 			}

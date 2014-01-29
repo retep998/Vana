@@ -45,7 +45,7 @@ auto ServerClient::startConnect() -> void {
 	boost::asio::ip::tcp::endpoint endpoint(endAddress, m_port);
 
 	boost::system::error_code error;
-	m_socket.connect(endpoint, error);
+	getSocket().connect(endpoint, error);
 
 	if (!error) {
 		// Now let's process the connect packet
@@ -69,11 +69,12 @@ auto ServerClient::startConnect() -> void {
 auto ServerClient::readConnectPacket() -> void {
 	boost::system::error_code error;
 
-	m_buffer.reset(new unsigned char[maxBufferLen]);
+	auto &buffer = getBuffer();
+	buffer.reset(new unsigned char[maxBufferLen]);
 
 	// Get the size of the connect packet
-	size_t packetSize = boost::asio::read(m_socket,
-		boost::asio::buffer(m_buffer.get(), maxBufferLen),
+	size_t packetSize = boost::asio::read(getSocket(),
+		boost::asio::buffer(buffer.get(), maxBufferLen),
 		boost::asio::transfer_at_least(10), // May require maintenance if the IV packet ever dips below 10 bytes
 		error);
 
@@ -83,7 +84,7 @@ auto ServerClient::readConnectPacket() -> void {
 	}
 
 	// Now process it
-	PacketReader packet(m_buffer.get(), packetSize);
+	PacketReader packet(buffer.get(), packetSize);
 
 	packet.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
 	int16_t version = packet.get<int16_t>();
@@ -100,6 +101,8 @@ auto ServerClient::readConnectPacket() -> void {
 		disconnect();
 		ExitCodes::exit(ExitCodes::ServerVersionMismatch);
 	}
-	m_decoder.setSendIv(sendIv);
-	m_decoder.setRecvIv(recvIv);
+
+	auto &decoder = getDecoder();
+	decoder.setSendIv(sendIv);
+	decoder.setRecvIv(recvIv);
 }

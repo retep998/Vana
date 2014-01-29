@@ -35,22 +35,22 @@ class BeautyDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getRandomSkin() -> int8_t;
-	auto getRandomHair(int8_t gender) -> int32_t;
-	auto getRandomFace(int8_t gender) -> int32_t;
+	auto getRandomSkin() const -> int8_t;
+	auto getRandomHair(int8_t genderId) const -> int32_t;
+	auto getRandomFace(int8_t genderId) const -> int32_t;
 
-	auto getSkins() -> vector_t<int8_t>;
-	auto getHair(int8_t gender) -> vector_t<int32_t>;
-	auto getFaces(int8_t gender) -> vector_t<int32_t>;
+	auto getSkins() const -> const vector_t<int8_t> &;
+	auto getHair(int8_t genderId) const -> const vector_t<int32_t> &;
+	auto getFaces(int8_t genderId) const -> const vector_t<int32_t> &;
 
-	auto isValidSkin(int8_t skin) -> bool;
-	auto isValidHair(int8_t gender, int32_t hair) -> bool;
-	auto isValidFace(int8_t gender, int32_t face) -> bool;
+	auto isValidSkin(int8_t skin) const -> bool;
+	auto isValidHair(int8_t genderId, int32_t hair) const -> bool;
+	auto isValidFace(int8_t genderId, int32_t face) const -> bool;
 private:
 	auto loadSkins() -> void;
 	auto loadHair() -> void;
 	auto loadFaces() -> void;
-	auto getGender(int8_t gender) -> ValidLook *;
+	auto getGender(int8_t genderId) const -> const ValidLook &;
 
 	ValidLook m_male;
 	ValidLook m_female;

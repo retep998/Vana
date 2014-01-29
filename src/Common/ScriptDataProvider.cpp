@@ -16,12 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ScriptDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "FileUtilities.hpp"
 #include "InitializeCommon.hpp"
 #include "StringUtilities.hpp"
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 auto ScriptDataProvider::loadData() -> void {
@@ -33,16 +35,13 @@ auto ScriptDataProvider::loadData() -> void {
 	m_mapEntryScripts.clear();
 	m_firstMapEntryScripts.clear();
 	m_itemScripts.clear();
-	int8_t modifier;
-	int32_t objectId;
-	string_t script;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM scripts");
 
 	for (const auto &row : rs) {
-		objectId = row.get<int32_t>("objectid");
-		script = row.get<string_t>("script");
-		modifier = row.get<int8_t>("helper");
+		int32_t objectId = row.get<int32_t>("objectid");
+		string_t script = row.get<string_t>("script");
+		int8_t modifier = row.get<int8_t>("helper");
 
 		StringUtilities::runEnum(row.get<string_t>("script_type"), [&](const string_t &cmp) {
 			if (cmp == "npc") m_npcScripts[objectId] = script;
@@ -58,60 +57,56 @@ auto ScriptDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> string_t {
+auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes type) const -> string_t {
 	if (hasScript(objectId, type)) {
-		string_t s = "scripts/" + resolvePath(type) + "/" + resolve(type)[objectId] + ".lua";
+		string_t s = "scripts/" + resolvePath(type) + "/" + resolve(type).find(objectId)->second + ".lua";
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 	}
 	out_stream_t filestream;
 	filestream << "scripts/" << resolvePath(type) << "/" << objectId << ".lua";
-	string_t g(filestream.str());
-	return g;
+	return filestream.str();
 }
 
-auto ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) -> string_t {
+auto ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) const -> string_t {
 	if (hasQuestScript(questId, state)) {
-		string_t s = "scripts/quests/" + m_questScripts[questId][state] + ".lua";
+		string_t s = "scripts/quests/" + m_questScripts.find(questId)->second.find(state)->second + ".lua";
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
 	}
 	out_stream_t filestream;
 	filestream << "scripts/quests/" << questId << (state == 0 ? "s" : "e") << ".lua";
-	string_t g(filestream.str());
-	return g;
+	return filestream.str();
 }
 
-auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes::ScriptTypes type) -> bool {
-	hash_map_t<int32_t, string_t> &map = resolve(type);
-	return map.find(objectId) != std::end(map);
+auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes type) const -> bool {
+	return ext::is_element(resolve(type), objectId);
 }
 
-auto ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) -> bool {
-	return m_questScripts.find(questId) != std::end(m_questScripts);
+auto ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) const -> bool {
+	return ext::is_element(m_questScripts, questId);
 }
 
-auto ScriptDataProvider::resolve(ScriptTypes::ScriptTypes type) -> hash_map_t<int32_t, string_t> & {
+auto ScriptDataProvider::resolve(ScriptTypes type) const -> const hash_map_t<int32_t, string_t> & {
 	switch (type) {
-		case ScriptTypes::Item: return m_itemScripts; break;
-		case ScriptTypes::MapEntry: return m_mapEntryScripts; break;
-		case ScriptTypes::FirstMapEntry: return m_firstMapEntryScripts; break;
-		case ScriptTypes::Npc: return m_npcScripts; break;
-		case ScriptTypes::Reactor: return m_reactorScripts; break;
+		case ScriptTypes::Item: return m_itemScripts;
+		case ScriptTypes::MapEntry: return m_mapEntryScripts;
+		case ScriptTypes::FirstMapEntry: return m_firstMapEntryScripts;
+		case ScriptTypes::Npc: return m_npcScripts;
+		case ScriptTypes::Reactor: return m_reactorScripts;
 	}
-	// No point, just return something in global scope
-	return m_itemScripts;
+	throw std::domain_error("Invalid ScriptTypes");
 }
 
-auto ScriptDataProvider::resolvePath(ScriptTypes::ScriptTypes type) -> string_t {
+auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
 	switch (type) {
-		case ScriptTypes::Item: return "items"; break;
-		case ScriptTypes::MapEntry: return "map_entry"; break;
-		case ScriptTypes::FirstMapEntry: return "first_map_entry"; break;
-		case ScriptTypes::Npc: return "npcs"; break;
-		case ScriptTypes::Reactor: return "reactors"; break;
+		case ScriptTypes::Item: return "items";
+		case ScriptTypes::MapEntry: return "map_entry";
+		case ScriptTypes::FirstMapEntry: return "first_map_entry";
+		case ScriptTypes::Npc: return "npcs";
+		case ScriptTypes::Reactor: return "reactors";
 	}
-	return "";
+	throw std::domain_error("Invalid ScriptTypes");
 }

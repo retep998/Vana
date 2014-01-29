@@ -26,7 +26,7 @@ class CurseDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isCurseWord(const string_t &cmp) -> bool;
+	auto isCurseWord(const string_t &cmp) const -> bool;
 private:
 	vector_t<string_t> m_curseWords;
 };

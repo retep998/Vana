@@ -58,6 +58,9 @@ namespace LuaExports {
 	auto getInstance(lua_State *luaVm) -> Instance *;
 	auto obtainSetVariablePair(lua_State *luaVm) -> pair_t<string_t, string_t>;
 	auto pushGetVariableData(lua_State *luaVm, const string_t &value, bool integralReturn) -> void;
+	auto createTable(lua_State *luaVm, const vector_t<int32_t> &elements) -> int;
+	auto createTable(lua_State *luaVm, const vector_t<int8_t> &elements) -> int;
+	auto isBossChannel(lua_State *luaVm, const vector_t<int8_t> &channels) -> int;
 
 	// Global exports
 

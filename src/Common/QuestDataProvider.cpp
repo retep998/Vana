@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "QuestDataProvider.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
@@ -38,76 +39,77 @@ auto QuestDataProvider::loadData() -> void {
 
 auto QuestDataProvider::loadQuestData() -> void {
 	m_quests.clear();
-	Quest curQuest;
-	uint16_t questId;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_data");
 
 	for (const auto &row : rs) {
-		questId = row.get<uint16_t>("questid");
-		curQuest.setNextQuest(row.get<int16_t>("next_quest"));
-		curQuest.setQuestId(questId);
+		Quest quest;
+		uint16_t questId = row.get<uint16_t>("questid");
 
-		m_quests[questId] = curQuest;
+		quest.setNextQuest(row.get<int16_t>("next_quest"));
+		quest.setQuestId(questId);
+
+		m_quests.emplace(questId, quest);
 	}
 }
 
 auto QuestDataProvider::loadRequests() -> void {
-	uint16_t questId;
-	int32_t reward;
-	int16_t count;
-	Quest *cur;
-
 	// TODO: Process the state when you add quest requests
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_requests");
 
 	for (const auto &row : rs) {
-		questId = row.get<uint16_t>("questid");
-		cur = &m_quests[questId];
+		uint16_t questId = row.get<uint16_t>("questid");
+		auto &quest = m_quests[questId];
+		QuestRequestInfo questRequest;
 
-		reward = row.get<int32_t>("objectid");
-		count = row.get<int16_t>("quantity");
+		int32_t request = row.get<int32_t>("objectid");
+		int16_t count = row.get<int16_t>("quantity");
 
-		StringUtilities::runEnum(row.get<string_t>("request_type"), [&cur, reward, count](const string_t &cmp) {
-			if (cmp == "item") cur->addItemRequest(reward, count);
-			else if (cmp == "mob") cur->addMobRequest(reward, count);
-			else if (cmp == "quest") cur->addQuestRequest(static_cast<int16_t>(reward), static_cast<int8_t>(count));
+		StringUtilities::runEnum(row.get<string_t>("request_type"), [&questRequest, request, count](const string_t &cmp) {
+			if (cmp == "item") {
+				questRequest.isItem = true;
+				questRequest.id = request;
+			}
+			else if (cmp == "mob") {
+				questRequest.isMob = true;
+				questRequest.id = request;
+				questRequest.count = count;
+			}
+			else if (cmp == "quest") {
+				questRequest.isQuest = true;
+				questRequest.id = request;
+				questRequest.questState = static_cast<int8_t>(count);
+			}
 		});
+
+		quest.addRequest(false, questRequest);
 	}
 }
 
 auto QuestDataProvider::loadRequiredJobs() -> void {
-	uint16_t questId;
-	Quest *cur;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_required_jobs");
 
 	for (const auto &row : rs) {
-		questId = row.get<uint16_t>("questid");
-		cur = &m_quests[questId];
-
-		cur->addValidJob(row.get<int16_t>("valid_jobid"));
+		uint16_t questId = row.get<uint16_t>("questid");
+		auto &quest = m_quests[questId];
+		QuestRequestInfo request;
+		request.isJob = true;
+		request.id = row.get<int16_t>("valid_jobid");
+		quest.addRequest(true, request);
 	}
 }
 
 auto QuestDataProvider::loadRewards() -> void {
-	string_t jobTracks;
-	uint16_t questId;
-	int16_t job;
-	bool start;
-	Quest *cur;
-	QuestRewardInfo reward;
-
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM quest_rewards");
 
 	for (const auto &row : rs) {
-		questId = row.get<uint16_t>("questid");
-		cur = &m_quests[questId];
-		reward = QuestRewardInfo();
-		job = row.get<int16_t>("job");
-		jobTracks = row.get<string_t>("job_tracks");
-		start = (row.get<string_t>("quest_state") == "start");
+		uint16_t questId = row.get<uint16_t>("questid");
+		Quest &quest = m_quests[questId];
+		QuestRewardInfo reward;
+		int16_t job = row.get<int16_t>("job");
+		string_t jobTracks = row.get<string_t>("job_tracks");
+		bool start = (row.get<string_t>("quest_state") == "start");
 
 		StringUtilities::runEnum(row.get<string_t>("reward_type"), [&reward](const string_t &cmp) {
 			if (cmp == "item") reward.isItem = true;
@@ -128,13 +130,13 @@ auto QuestDataProvider::loadRewards() -> void {
 		reward.prop = row.get<int32_t>("prop");
 
 		if (job != -1 || jobTracks.length() == 0) {
-			cur->addReward(start, reward, job);
+			quest.addReward(start, reward, job);
 		}
 		else {
-			StringUtilities::runFlags(jobTracks, [&cur, &reward, &start](const string_t &cmp) {
-				auto addRewardForJobs = [&cur, &reward, &start](init_list_t<int16_t> jobs) {
+			StringUtilities::runFlags(jobTracks, [&quest, &reward, &start](const string_t &cmp) {
+				auto addRewardForJobs = [&quest, &reward, &start](init_list_t<int16_t> jobs) {
 					for (const auto &job : jobs) {
-						cur->addReward(start, reward, job);
+						quest.addReward(start, reward, job);
 					}
 				};
 				if (cmp == "beginner") {
@@ -214,9 +216,10 @@ auto QuestDataProvider::loadRewards() -> void {
 	}
 }
 
-auto QuestDataProvider::getItemRequest(uint16_t questId, int32_t itemId) -> int16_t {
-	if (m_quests.find(questId) != std::end(m_quests)) {
-		return m_quests[questId].getItemRequestQuantity(itemId);
-	}
-	return 0;
+auto QuestDataProvider::isQuest(uint16_t questId) const -> bool {
+	return ext::is_element(m_quests, questId);
+}
+
+auto QuestDataProvider::getInfo(uint16_t questId) const -> const Quest & {
+	return m_quests.find(questId)->second;
 }

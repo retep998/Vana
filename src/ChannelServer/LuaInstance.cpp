@@ -32,9 +32,9 @@ LuaInstance::LuaInstance(const string_t &name, int32_t playerId) :
 	LuaScriptable::run(); // Running is loading the functions
 }
 
-auto LuaInstance::run(InstanceMessages message) -> bool {
+auto LuaInstance::run(InstanceMessage message) -> bool {
 	switch (message) {
-		case BeginInstance:
+		case InstanceMessage::BeginInstance:
 			lua_getglobal(luaVm, "beginInstance");
 			break;
 	}
@@ -45,18 +45,18 @@ auto LuaInstance::run(InstanceMessages message) -> bool {
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, int32_t parameter) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter) -> bool {
 	switch (message) {
-		case PlayerDeath:
+		case InstanceMessage::PlayerDeath:
 			lua_getglobal(luaVm, "playerDeath");
 			lua_pushinteger(luaVm, parameter);
 			break;
-		case InstanceTimerEnd:
-		case InstanceTimerNaturalEnd:
+		case InstanceMessage::InstanceTimerEnd:
+		case InstanceMessage::InstanceTimerNaturalEnd:
 			lua_getglobal(luaVm, "instanceTimerEnd");
 			lua_pushboolean(luaVm, parameter != 0);
 			break;
-		case PartyDisband:
+		case InstanceMessage::PartyDisband:
 			lua_getglobal(luaVm, "partyDisband");
 			lua_pushinteger(luaVm, parameter);
 			break;
@@ -68,10 +68,10 @@ auto LuaInstance::run(InstanceMessages message, int32_t parameter) -> bool {
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, const string_t &parameter1, int32_t parameter2) -> bool {
+auto LuaInstance::run(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> bool {
 	switch (message) {
-		case TimerEnd:
-		case TimerNaturalEnd:
+		case InstanceMessage::TimerEnd:
+		case InstanceMessage::TimerNaturalEnd:
 			lua_getglobal(luaVm, "timerEnd");
 			lua_pushstring(luaVm, parameter1.c_str());
 			lua_pushboolean(luaVm, parameter2 != 0);
@@ -84,14 +84,14 @@ auto LuaInstance::run(InstanceMessages message, const string_t &parameter1, int3
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> bool {
 	switch (message) {
-		case PlayerDisconnect:
+		case InstanceMessage::PlayerDisconnect:
 			lua_getglobal(luaVm, "playerDisconnect");
 			lua_pushinteger(luaVm, parameter1);
 			lua_pushboolean(luaVm, parameter2 != 0);
 			break;
-		case PartyRemoveMember:
+		case InstanceMessage::PartyRemoveMember:
 			lua_getglobal(luaVm, "partyRemoveMember");
 			lua_pushinteger(luaVm, parameter1);
 			lua_pushinteger(luaVm, parameter2);
@@ -105,12 +105,12 @@ auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> bool {
 	switch (message) {
-		case MobDeath:
+		case InstanceMessage::MobDeath:
 			lua_getglobal(luaVm, "mobDeath");
 			break;
-		case MobSpawn:
+		case InstanceMessage::MobSpawn:
 			lua_getglobal(luaVm, "mobSpawn");
 			break;
 	}
@@ -124,9 +124,9 @@ auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> bool {
 	switch (message) {
-		case PlayerChangeMap:
+		case InstanceMessage::PlayerChangeMap:
 			lua_getglobal(luaVm, "changeMap");
 			lua_pushinteger(luaVm, parameter1);
 			lua_pushinteger(luaVm, parameter2);
@@ -141,9 +141,9 @@ auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t para
 	return true;
 }
 
-auto LuaInstance::run(InstanceMessages message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> bool {
 	switch (message) {
-		case FriendlyMobHit:
+		case InstanceMessage::FriendlyMobHit:
 			lua_getglobal(luaVm, "friendlyHit");
 			lua_pushinteger(luaVm, parameter1);
 			lua_pushinteger(luaVm, parameter2);
@@ -170,7 +170,7 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
 
 	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
 	Instances::getInstance().addInstance(instance);
-	instance->sendMessage(BeginInstance);
+	instance->sendMessage(InstanceMessage::BeginInstance);
 
 	if (instance->showTimer()) {
 		instance->showTimer(true, true);

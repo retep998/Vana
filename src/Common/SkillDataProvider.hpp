@@ -27,16 +27,12 @@ class SkillDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isValidSkill(int32_t skillId) -> bool { return m_skillLevels.find(skillId) != std::end(m_skillLevels); }
-	auto getMaxLevel(int32_t skillId) -> uint8_t { return m_skillMaxLevels.find(skillId) != std::end(m_skillMaxLevels) ? m_skillMaxLevels[skillId] : 0; }
-	auto getSkill(int32_t skill, uint8_t level) -> SkillLevelInfo *;
-	auto getMobSkill(uint8_t skill, uint8_t level) -> MobSkillLevelInfo *;
-
-	auto hasBanishData(int32_t mobId) -> bool { return m_banishInfo.find(mobId) != std::end(m_banishInfo); }
-	auto getBanishData(int32_t mobId) -> BanishField * { return hasBanishData(mobId) ? &m_banishInfo[mobId] : nullptr; }
-
-	auto hasMorphData(int16_t morph) -> bool { return m_morphInfo.find(morph) != std::end(m_morphInfo); }
-	auto getMorphData(int16_t morph) -> MorphData * { return hasMorphData(morph) ? &m_morphInfo[morph] : nullptr; }
+	auto isValidSkill(int32_t skillId) const -> bool;
+	auto getMaxLevel(int32_t skillId) const -> uint8_t;
+	auto getSkill(int32_t skill, uint8_t level) const -> const SkillLevelInfo * const;
+	auto getMobSkill(uint8_t skill, uint8_t level) const -> const MobSkillLevelInfo * const;
+	auto getBanishData(int32_t mobId) const -> const BanishField * const;
+	auto getMorphData(int16_t morph) const -> const MorphData * const;
 private:
 	auto loadPlayerSkills() -> void;
 	auto loadPlayerSkillLevels() -> void;

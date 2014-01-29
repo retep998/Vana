@@ -41,12 +41,10 @@ class ShopDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isShop(int32_t id) -> bool { return m_shops.find(id) != std::end(m_shops); }
-	auto showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) -> void;
-	auto getPrice(int32_t shopId, uint16_t shopIndex) -> int32_t;
-	auto getItemId(int32_t shopId, uint16_t shopIndex) -> int32_t;
-	auto getAmount(int32_t shopId, uint16_t shopIndex) -> int16_t;
-	auto getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) -> int32_t;
+	auto isShop(int32_t id) const -> bool;
+	auto showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) const -> void;
+	auto getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
+	auto getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) const -> int32_t;
 private:
 	auto loadShops() -> void;
 	auto loadUserShops() -> void;

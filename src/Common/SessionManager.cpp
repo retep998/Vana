@@ -31,6 +31,8 @@ auto SessionManager::stop(ref_ptr_t<AbstractSession> session) -> void {
 }
 
 auto SessionManager::stopAll() -> void {
-	for (const auto &session : m_sessions) session->handleStop();
+	for (const auto &session : m_sessions) {
+		session->handleStop();
+	}
 	m_sessions.clear();
 }
