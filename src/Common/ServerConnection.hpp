@@ -33,12 +33,11 @@ public:
 	auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
 	auto getType() const -> ServerType { return m_type; }
 protected:
-	AbstractServerConnection()
+	AbstractServerConnection(ServerType type) :
+		m_type(type)
 	{
 		m_isServer = true;
 	}
-
-	auto setType(ServerType type) -> void { m_type = type; }
 private:
 	ServerType m_type = ServerType::None;
 };
@@ -48,7 +47,6 @@ public:
 	auto processAuth(AbstractServer &server, PacketReader &packet) -> Result;
 	virtual auto authenticated(ServerType type) -> void = 0;
 
-	auto isAuthenticated() const -> bool { return m_isAuthenticated; }
 	auto getType() const -> ServerType { return m_type; }
 
 	auto matchSubnet(const Ip &test) const -> Ip { return m_resolver.matchIpToSubnet(test); }
@@ -60,7 +58,7 @@ protected:
 		m_isServer = true;
 	}
 
-	auto setType(ServerType type) -> void { m_type = type; }
+	auto isAuthenticated() const -> bool { return m_isAuthenticated; }
 private:
 	bool m_isAuthenticated = false;
 	ServerType m_type = ServerType::None;

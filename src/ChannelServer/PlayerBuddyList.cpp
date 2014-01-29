@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerBuddyList.hpp"
+#include "Algorithm.hpp"
 #include "BuddyListPacket.hpp"
 #include "ChannelServer.hpp"
 #include "Database.hpp"
@@ -71,7 +72,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 		return BuddyListPacket::Errors::BuddyListFull;
 	}
 
-	if (!MiscUtilities::inRangeInclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize) || group.size() > Buddies::MaxGroupNameSize) {
+	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize) || group.size() > Buddies::MaxGroupNameSize) {
 		// Invalid name or group length
 		return BuddyListPacket::Errors::UserDoesNotExist;
 	}

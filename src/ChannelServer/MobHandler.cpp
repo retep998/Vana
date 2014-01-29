@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobHandler.hpp"
+#include "Algorithm.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
 #include "InstanceMessageConstants.hpp"
@@ -121,8 +122,8 @@ auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 	if (parsedActivity >= 0) {
 		parsedActivity = static_cast<int8_t>(static_cast<uint8_t>(parsedActivity) >> 1);
 	}
-	bool isAttack = MiscUtilities::inRangeInclusive<int8_t>(parsedActivity, 12, 20);
-	bool isSkill = MiscUtilities::inRangeInclusive<int8_t>(parsedActivity, 21, 25);
+	bool isAttack = ext::in_range_inclusive<int8_t>(parsedActivity, 12, 20);
+	bool isSkill = ext::in_range_inclusive<int8_t>(parsedActivity, 21, 25);
 	int32_t attackId = isAttack ? parsedActivity - 12 : -1;
 	bool nextMovementCouldBeSkill = (nibbles1 & 0x0F) != 0;
 	bool unk = (nibbles1 & 0xF0) != 0;

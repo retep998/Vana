@@ -33,16 +33,6 @@ namespace MiscUtilities {
 	auto generateSalt(size_t length) -> string_t;
 
 	template <class TElement>
-	auto inRangeInclusive(const TElement val, const TElement min, const TElement max) -> bool {
-		return !(val < min || val > max);
-	}
-
-	template <class TElement>
-	auto constrainToRange(const TElement val, const TElement min, const TElement max) -> TElement {
-		return std::min(std::max(val, min), max);
-	}
-
-	template <class TElement>
 	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> MiscUtilities::optional<TElement> {
 		MiscUtilities::optional<TElement> ret;
 		if (mode == NullableMode::NullIfFound) {

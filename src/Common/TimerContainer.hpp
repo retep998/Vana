@@ -30,13 +30,23 @@ class Timer;
 
 class Container {
 public:
-	auto getSecondsRemaining(const Id &id) -> seconds_t;
-	auto getMillisecondsRemaining(const Id &id) -> milliseconds_t;
-	auto isTimerRunning(const Id &id) -> bool;
-	auto registerTimer(ref_ptr_t<Timer> timer) -> void;
+	template <typename TDuration>
+	auto getRemainingTime(const Id &id) const -> TDuration;
+	auto isTimerRunning(const Id &id) const -> bool;
+	auto registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void;
 	auto removeTimer(const Id &id) -> void;
 private:
 	hash_map_t<Id, ref_ptr_t<Timer>> m_timers;
 };
+
+template <typename TDuration>
+auto Container::getRemainingTime(const Id &id) const -> TDuration {
+	auto iter = m_timers.find(id);
+	if (iter != std::end(m_timers)) {
+		return duration_cast<TDuration>(iter->second->getTimeLeft());
+	}
+	return TDuration(0);
+}
+
 
 }

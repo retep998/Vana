@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerConnectPacket.hpp"
 #include <iostream>
 
-WorldServerConnection::WorldServerConnection()
+WorldServerConnection::WorldServerConnection() :
+	AbstractServerConnection(ServerType::Channel)
 {
-	setType(ServerType::Channel);
 }
 
 WorldServerConnection::~WorldServerConnection() {

@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-auto create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) -> void {
+auto Timer::create(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) -> void {
 	if (container == nullptr) {
 		container = TimerThread::getInstance().getTimerContainer();
 	}
 
 	ref_ptr_t<Timer> timer = make_ref_ptr<Timer>(func, id, container, differenceFromNow, repeat);
-	container->registerTimer(timer);
+	container->registerTimer(timer, id, timer->m_runAt);
 }
 
 Timer::Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> container, const duration_t &differenceFromNow, const duration_t &repeat) :
@@ -40,6 +40,12 @@ Timer::Timer(const timer_func_t func, const Id &id, ref_ptr_t<Container> contain
 {
 	m_repeat = repeat.count() != 0;
 	m_runAt = TimeUtilities::getNowWithTimeAdded(differenceFromNow);
+}
+
+auto Timer::removeFromContainer() const -> void {
+	if (ref_ptr_t<Container> container = m_container.lock()) {
+		container->removeTimer(m_id);
+	}
 }
 
 auto Timer::run(const time_point_t &now) const -> RunResult {

@@ -61,7 +61,7 @@ auto Trades::getTrade(int32_t id) -> ActiveTrade * {
 
 auto Trades::getTimerSecondsRemaining(int32_t id) -> seconds_t {
 	Timer::Id check(Timer::Types::TradeTimer, id, 0);
-	return getTimers()->getSecondsRemaining(check);
+	return getTimers()->getRemainingTime<seconds_t>(check);
 }
 
 auto Trades::timeout(Player *sender) -> void {
@@ -75,6 +75,6 @@ auto Trades::stopTimeout(int32_t id) -> void {
 
 auto Trades::startTimeout(int32_t id, Player *sender) -> void {
 	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
-	Timer::create([this, sender](const time_point_t &now) { this->timeout(sender); },
+	Timer::Timer::create([this, sender](const time_point_t &now) { this->timeout(sender); },
 		tid, nullptr, TradeTimeout);
 }

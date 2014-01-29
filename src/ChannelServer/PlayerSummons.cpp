@@ -37,7 +37,7 @@ auto PlayerSummons::addSummon(Summon *summon, int32_t time) -> void {
 		m_puppet = summon;
 	}
 	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	Timer::create([this, puppet](const time_point_t &now) { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
+	Timer::Timer::create([this, puppet](const time_point_t &now) { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
 		id, m_player->getTimerContainer(), seconds_t(time));
 }
 
@@ -72,7 +72,7 @@ auto PlayerSummons::getSummon(int32_t summonId) -> Summon * {
 
 auto PlayerSummons::getSummonTimeRemaining() const -> seconds_t {
 	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
-	return m_player->getTimerContainer()->getSecondsRemaining(id);
+	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
 auto PlayerSummons::write(PacketCreator &packet) const -> void {

@@ -40,11 +40,11 @@ auto PlayerActiveBuffs::addBuff(int32_t skill, const seconds_t &time) -> void {
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
 			uint8_t mobSkill = static_cast<uint8_t>(skill);
-			Timer::create([this, mobSkill](const time_point_t &now) { this->removeDebuff(mobSkill, true); },
+			Timer::Timer::create([this, mobSkill](const time_point_t &now) { this->removeDebuff(mobSkill, true); },
 				id, m_player->getTimerContainer(), time);
 		}
 		else {
-			Timer::create([this, skill](const time_point_t &now) { Skills::stopSkill(m_player, skill, true); },
+			Timer::Timer::create([this, skill](const time_point_t &now) { Skills::stopSkill(m_player, skill, true); },
 				id, m_player->getTimerContainer(), time);
 		}
 	}
@@ -79,7 +79,7 @@ auto PlayerActiveBuffs::removeBuffs() -> void {
 
 auto PlayerActiveBuffs::getBuffSecondsRemaining(int32_t skill) const -> seconds_t {
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
-	return m_player->getTimerContainer()->getSecondsRemaining(id);
+	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
 // Skill actions
@@ -105,7 +105,7 @@ auto PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, cons
 	runAct.value = value;
 
 	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
-	Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
+	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
 }
 
 auto PlayerActiveBuffs::getActTimer(int32_t skill) -> ref_ptr_t<Timer::Container> {
@@ -396,7 +396,7 @@ auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 	m_timeSeed = static_cast<uint32_t>(clock());
 	int32_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
-	Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
+	Timer::Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
 		id, m_player->getTimerContainer(), seconds_t(10));
 }
 

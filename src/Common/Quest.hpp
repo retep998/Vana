@@ -80,12 +80,6 @@ private:
 
 	QuestState m_beginState;
 	QuestState m_endState;
-	QuestRewardsInfo m_startRewards;
-	QuestRewardsInfo m_endRewards;
-	ord_map_t<int32_t, int16_t> m_mobRequests;
-	hash_map_t<int32_t, int16_t> m_itemRequests;
-	vector_t<int16_t> m_jobRequests;
-	hash_map_t<int16_t, int8_t> m_questRequests;
 	uint16_t m_nextQuest = 0;
 	uint16_t m_id = 0;
 };
