@@ -43,8 +43,21 @@ struct ChatCommand {
 
 using CommandListType = case_insensitive_hash_map_t<ChatCommand>;
 
+struct MapPair {
+	MapPair(int32_t mapId, string_t category) :
+		mapId(mapId),
+		category(category)
+	{
+	}
+
+	int32_t mapId;
+	string_t category;
+};
+
 namespace ChatHandlerFunctions {
-	extern CommandListType CommandList;
+	extern CommandListType sCommandList;
+	extern const hash_map_t<string_t, MapPair> sMapAssociations;
+
 	auto initialize() -> void;
 	auto getMessageType(const string_t &query) -> int8_t;
 	auto getMap(const string_t &query, Player *player) -> int32_t;
