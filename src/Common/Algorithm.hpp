@@ -104,4 +104,14 @@ namespace ext {
 	auto remove_element(vector_t<TValue> &map, const TValue &value) -> decltype(std::begin(map)) {
 		return map.erase(std::remove(std::begin(map), std::end(map), value), std::end(map));
 	}
+
+	template <class TElement>
+	auto in_range_inclusive(const TElement val, const TElement min, const TElement max) -> bool {
+		return !(val < min || val > max);
+	}
+
+	template <class TElement>
+	auto constrain_range(const TElement val, const TElement min, const TElement max) -> TElement {
+		return std::min(std::max(val, min), max);
+	}
 }

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Mob.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "DropHandler.hpp"
 #include "GameConstants.hpp"
@@ -63,13 +64,13 @@ Mob::Mob(int32_t mapMobId, int32_t mapId, int32_t mobId, view_ptr_t<Mob> owner, 
 	if (m_info->hpRecovery > 0 || m_info->mpRecovery > 0) {
 		int32_t hpRecovery = m_info->hpRecovery;
 		int32_t mpRecovery = m_info->mpRecovery;
-		Timer::create([this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
+		Timer::Timer::create([this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
 			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
 			getTimers(), seconds_t(1), seconds_t(10));
 	}
 	if (m_info->removeAfter > 0) {
 		int32_t damage = m_info->hp;
-		Timer::create([this, damage](const time_point_t &now) { this->kill(); },
+		Timer::Timer::create([this, damage](const time_point_t &now) { this->kill(); },
 			Timer::Id(Timer::Types::MobRemoveTimer, m_mapMobId, 0),
 			getTimers(), seconds_t(m_info->removeAfter));
 	}
@@ -204,14 +205,14 @@ auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void 
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
 				int32_t poisonDamage = info.val;
-				Timer::create([this, playerId, poisonDamage](const time_point_t &now) { this->applyDamage(playerId, poisonDamage, true); },
+				Timer::Timer::create([this, playerId, poisonDamage](const time_point_t &now) { this->applyDamage(playerId, poisonDamage, true); },
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
 					getTimers(), seconds_t(1), seconds_t(1));
 				break;
 		}
 
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
-		Timer::create([this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
+		Timer::Timer::create([this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
 			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
 			getTimers(), milliseconds_t(info.time.count() * 1000 + 100));
 	}
@@ -483,7 +484,7 @@ auto Mob::skillHeal(int32_t healHp, int32_t healRange) -> void {
 
 	if (auto sponge = m_sponge.lock()) {
 		healHp = sponge->getHp() + amount;
-		healHp = MiscUtilities::constrainToRange<int32_t>(healHp, Stats::MinHp, sponge->getMaxHp());
+		healHp = ext::constrain_range<int32_t>(healHp, Stats::MinHp, sponge->getMaxHp());
 		sponge->m_hp = healHp;
 	}
 

@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptHandler.hpp"
 #include <iostream>
 
-LoginServerConnection::LoginServerConnection()
+LoginServerConnection::LoginServerConnection() :
+	AbstractServerConnection(ServerType::World)
 {
-	setType(ServerType::World);
 }
 
 LoginServerConnection::~LoginServerConnection() {

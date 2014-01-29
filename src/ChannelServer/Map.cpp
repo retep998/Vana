@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Map.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "Drop.hpp"
 #include "EffectPacket.hpp"
@@ -58,14 +59,14 @@ Map::Map(ref_ptr_t<MapInfo> info, int32_t id) :
 	m_music(info->defaultMusic)
 {
 	// Dynamic loading, start the map timer once the object is created
-	Timer::create([this](const time_point_t &now) { this->mapTick(now); },
+	Timer::Timer::create([this](const time_point_t &now) { this->mapTick(now); },
 		Timer::Id(Timer::Types::MapTimer, id, 0),
 		getTimers(), seconds_t(0), seconds_t(1));
 
 	Pos rightBottom = info->dimensions.rightBottom();
 	double mapHeight = std::max<double>(rightBottom.y, 800);
 	double mapWidth = std::max<double>(rightBottom.x - 450, 600);
-	m_minSpawnCount = MiscUtilities::constrainToRange(static_cast<int32_t>((mapHeight * mapWidth * info->spawnRate) / 128000.), 1, 40);
+	m_minSpawnCount = ext::constrain_range(static_cast<int32_t>((mapHeight * mapWidth * info->spawnRate) / 128000.), 1, 40);
 	m_maxSpawnCount = m_minSpawnCount * 2;
 }
 
@@ -130,11 +131,11 @@ auto Map::addPortal(const PortalInfo &portal) -> void {
 }
 
 auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
-	Timer::create([this](const time_point_t &now) { this->timeMob(false); },
+	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(false); },
 		Timer::Id(Timer::Types::MapTimer, getId(), 1),
 		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 
-	Timer::create([this](const time_point_t &now) { this->timeMob(true); },
+	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
 		Timer::Id(Timer::Types::MapTimer, getId(), 2),
 		getTimers(), seconds_t(3)); // First check
 
@@ -880,7 +881,7 @@ auto Map::addMist(Mist *mist) -> void {
 		m_mists[mist->getId()] = mist;
 	}
 
-	Timer::create([this, mist](const time_point_t &now) { this->removeMist(mist); },
+	Timer::Timer::create([this, mist](const time_point_t &now) { this->removeMist(mist); },
 		Timer::Id(Timer::Types::MistTimer, mist->getId(), 0),
 		getTimers(), seconds_t(mist->getTime()));
 
@@ -1094,7 +1095,7 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 
 	MapPacket::showTimer(getId(), timer);
 	if (timer.count() > 0) {
-		Timer::create([this](const time_point_t &now) { this->setMapTimer(seconds_t(0)); },
+		Timer::Timer::create([this](const time_point_t &now) { this->setMapTimer(seconds_t(0)); },
 			Timer::Id(Timer::Types::MapTimer, getId(), 25),
 			getTimers(), timer);
 	}
@@ -1201,7 +1202,7 @@ auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t
 	}
 
 	MapPacket::changeWeather(getId(), adminWeather, itemId, message);
-	Timer::create([this, adminWeather](const time_point_t &now) { MapPacket::changeWeather(this->getId(), adminWeather, 0, ""); },
+	Timer::Timer::create([this, adminWeather](const time_point_t &now) { MapPacket::changeWeather(this->getId(), adminWeather, 0, ""); },
 		timerId, getTimers(), seconds_t(time));
 	return true;
 }

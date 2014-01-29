@@ -63,8 +63,20 @@ auto AbstractConnection::baseHandleRequest(PacketReader &packet) -> void {
 	}
 }
 
+auto AbstractConnection::getSession() const -> Session * {
+	return m_session;
+}
+
+auto AbstractConnection::getIp() const -> const Ip & {
+	return m_ip;
+}
+
+auto AbstractConnection::getLatency() const -> milliseconds_t {
+	return m_latency;
+}
+
 auto AbstractConnection::setTimer() -> void {
-	Timer::create([this](const time_point_t &now) { this->ping(); },
+	Timer::Timer::create([this](const time_point_t &now) { this->ping(); },
 		Timer::Id(Timer::Types::PingTimer, 0, 0),
 		getTimers(), InitialPing, PingTime);
 }

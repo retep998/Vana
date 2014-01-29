@@ -37,8 +37,8 @@ class TimerThread {
 	SINGLETON_CUSTOM_CONSTRUCTOR(TimerThread);
 public:
 	~TimerThread();
-	auto getTimerContainer() const -> ref_ptr_t<Container> { return m_container; }
-	auto registerTimer(ref_ptr_t<Timer> timer) -> void;
+	auto getTimerContainer() const -> ref_ptr_t<Container>;
+	auto registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void;
 private:
 	auto runThread() -> void;
 	auto getWaitTime() const -> time_point_t;

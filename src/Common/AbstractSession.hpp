@@ -37,10 +37,10 @@ protected:
 	virtual auto handleStart() -> void = 0;
 	virtual auto handleStop() -> void = 0;
 	auto isEncrypted() const -> bool { return m_encrypt; }
-	auto setEncrypted(bool encrypted) -> void { m_encrypt = encrypted; }
 
 	ref_ptr_t<SessionManager> m_sessionManager;
-	bool m_encrypt = true;
 private:
 	friend class SessionManager;
+
+	bool m_encrypt = true;
 };

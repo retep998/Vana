@@ -398,7 +398,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) -
 }
 
 auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillTypes::Melee);
+	const Attack &attack = compileAttack(player, packet, SkillType::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -475,7 +475,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void
 			int32_t ppMesos = ((ppDamages[pickpocket] * picking->x) / 10000); // TODO: Check on this formula in different situations
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
-			Timer::create([ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
+			Timer::Timer::create([ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
 				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				nullptr, milliseconds_t(175 * pickpocket));
 		}
@@ -573,7 +573,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void
 }
 
 auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillTypes::Ranged);
+	const Attack &attack = compileAttack(player, packet, SkillType::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -678,7 +678,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> voi
 }
 
 auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillTypes::Magic);
+	const Attack &attack = compileAttack(player, packet, SkillType::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
@@ -752,7 +752,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void
 }
 
 auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillTypes::EnergyCharge);
+	const Attack &attack = compileAttack(player, packet, SkillType::EnergyCharge);
 	PlayersPacket::useEnergyChargeAttack(player, attack);
 
 	int32_t skillId = attack.skillId;
@@ -791,7 +791,7 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 }
 
 auto PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillTypes::Summon);
+	const Attack &attack = compileAttack(player, packet, SkillType::Summon);
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
@@ -830,7 +830,7 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) -> voi
 	}
 }
 
-auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t skillType) -> Attack {
+auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillType skillType) -> Attack {
 	Attack attack;
 	int8_t targets = 0;
 	int8_t hits = 0;
@@ -838,7 +838,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t s
 	bool mesoExplosion = false;
 	bool shadowMeso = false;
 
-	if (skillType != SkillTypes::Summon) {
+	if (skillType != SkillType::Summon) {
 		attack.portals = packet.get<uint8_t>();
 		uint8_t tByte = packet.get<uint8_t>();
 		skillId = packet.get<int32_t>();
@@ -895,7 +895,7 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t s
 		hits = 1;
 	}
 
-	if (skillType == SkillTypes::Ranged) {
+	if (skillType == SkillType::Ranged) {
 		int16_t starSlot = packet.get<int16_t>();
 		int16_t csStar = packet.get<int16_t>();
 		attack.starPos = starSlot;
@@ -937,12 +937,12 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, int8_t s
 			attack.damages[mapMobId].push_back(damage);
 			attack.totalDamage += damage;
 		}
-		if (skillType != SkillTypes::Summon) {
+		if (skillType != SkillType::Summon) {
 			packet.skipBytes(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
 		}
 	}
 
-	if (skillType == SkillTypes::Ranged) {
+	if (skillType == SkillType::Ranged) {
 		attack.projectilePos = packet.getClass<Pos>();
 	}
 	attack.playerPos = packet.getClass<Pos>();

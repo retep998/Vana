@@ -116,7 +116,7 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 						reaction.state = reactorEvent.nextState;
 
 						Timer::Id id(Timer::Types::ReactionTimer, drop->getId(), 0);
-						Timer::create(reaction, id, nullptr, seconds_t(3));
+						Timer::Timer::create(reaction, id, nullptr, seconds_t(3));
 					}
 					return;
 				}

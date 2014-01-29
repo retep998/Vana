@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
+enum class SkillType;
 class PacketReader;
 class Player;
 struct Attack;
@@ -40,5 +41,5 @@ namespace PlayerHandler {
 	auto useSpellAttack(Player *player, PacketReader &packet) -> void;
 	auto useEnergyChargeAttack(Player *player, PacketReader &packet) -> void;
 	auto useSummonAttack(Player *player, PacketReader &packet) -> void;
-	auto compileAttack(Player *player, PacketReader &packet, int8_t skillType) -> Attack;
+	auto compileAttack(Player *player, PacketReader &packet, SkillType skillType) -> Attack;
 }

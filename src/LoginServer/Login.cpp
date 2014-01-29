@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Login.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "LoginPacket.hpp"
@@ -36,11 +37,11 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 	const string_t &password = packet.getString();
 	const string_t &ip = player->getIp().toString();
 
-	if (!MiscUtilities::inRangeInclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
+	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking
 		return;
 	}
-	if (!MiscUtilities::inRangeInclusive<size_t>(password.size(), Characters::MinPasswordSize, Characters::MaxPasswordSize)) {
+	if (!ext::in_range_inclusive<size_t>(password.size(), Characters::MinPasswordSize, Characters::MaxPasswordSize)) {
 		// Hacking
 		return;
 	}

@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 mutex_t RankingCalculator::RankingsMutex;
 
 auto RankingCalculator::setTimer() -> void {
-	//Timer::create([]() { RankingCalculator::runThread(); },
+	//Timer::Timer::create([]() { RankingCalculator::runThread(); },
 	//	Timer::Id(Timer::Types::RankTimer, 0, 0),
 	//	nullptr, TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 	// Calculate ranking every 1 hour, starting on the hour

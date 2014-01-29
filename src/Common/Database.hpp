@@ -38,9 +38,10 @@ public:
 private:
 	static auto connectCharDb() -> void;
 	static auto connectDataDb() -> void;
+	static auto buildConnectionString(const DbConfig &conf) -> string_t;
+
 	static thread_local soci::session *m_chardb;
 	static thread_local soci::session *m_datadb;
-	static auto buildConnectionString(const DbConfig &conf) -> string_t;
 };
 
 inline

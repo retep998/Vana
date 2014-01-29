@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStorage.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
@@ -44,7 +45,7 @@ auto PlayerStorage::takeItem(uint8_t slot) -> void {
 }
 
 auto PlayerStorage::setSlots(uint8_t slots) -> void {
-	m_slots = MiscUtilities::constrainToRange(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
+	m_slots = ext::constrain_range(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
 }
 
 auto PlayerStorage::addItem(Item *item) -> void {

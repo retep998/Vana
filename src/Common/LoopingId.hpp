@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <limits>
 
-// LoopingId, keep track and returns a number between min and max, restarts when number reaches max
+// Keep track and returns a number between min and max, restarts when number reaches max
 template <typename TInteger>
 class LoopingId {
 public:

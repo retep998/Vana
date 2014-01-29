@@ -36,7 +36,7 @@ Decoder::Decoder(bool encrypted) :
 }
 
 auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void {
-	if (!isEncrypted()) {
+	if (!m_encrypted) {
 		return;
 	}
 
@@ -98,7 +98,7 @@ auto Decoder::encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 }
 
 auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void {
-	if (!isEncrypted()) {
+	if (!m_encrypted) {
 		return;
 	}
 
@@ -166,7 +166,7 @@ auto Decoder::decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -
 auto Decoder::createHeader(unsigned char *header, uint16_t size) -> void {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
-	if (isEncrypted()) {
+	if (m_encrypted) {
 		unsigned char *iv = m_send.getBytes();
 		version = ((iv[3] << 8) | iv[2]);
 		version ^= -(MapleVersion::Version + 1);

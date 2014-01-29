@@ -42,7 +42,6 @@ public:
 	auto getRecvIv() const -> uint32_t { return m_recv.getIv(); }
 	auto getSendIv() const -> uint32_t { return m_send.getIv(); }
 private:
-	auto isEncrypted() const -> bool { return m_encrypted; }
 	auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 
 	BlockCipherIv m_recv;
@@ -69,7 +68,7 @@ auto Decoder::validPacket(unsigned char *header) -> bool {
 
 inline
 auto Decoder::getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void {
-	if (!isEncrypted()) {
+	if (!m_encrypted) {
 		version = (*(uint16_t *)(header));
 		size = (*(uint16_t *)(header + 2));
 	}

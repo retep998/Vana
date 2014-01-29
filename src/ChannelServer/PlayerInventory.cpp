@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.hpp"
+#include "Algorithm.hpp"
 #include "Database.hpp"
 #include "EquipDataProvider.hpp"
 #include "GameLogicUtilities.hpp"
@@ -149,7 +150,7 @@ auto PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) -> void {
 	uint8_t &inv = m_maxSlots[inventory];
 	inv += (rows * 4);
 
-	inv = MiscUtilities::constrainToRange(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
+	inv = ext::constrain_range(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
 	InventoryPacket::updateSlots(m_player, inventory + 1, inv);
 }
 

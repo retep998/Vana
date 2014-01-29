@@ -29,9 +29,9 @@ public:
 	AbstractConnection();
 	virtual ~AbstractConnection() = default;
 
-	auto getSession() const -> Session * { return m_session; }
-	auto getIp() const -> const Ip & { return m_ip; }
-	auto getLatency() const -> milliseconds_t { return m_latency; }
+	auto getSession() const -> Session *;
+	auto getIp() const -> const Ip &;
+	auto getLatency() const -> milliseconds_t;
 protected:
 	virtual auto handleRequest(PacketReader &packet) -> void = 0;
 	bool m_isServer = false;

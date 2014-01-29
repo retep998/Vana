@@ -36,7 +36,7 @@ auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketR
 			setExternalIpInformation(getIp(), packet.getClassVector<ExternalIp>());
 
 			ServerType type = static_cast<ServerType>(packet.get<int8_t>());
-			setType(type);
+			m_type = type;
 			authenticated(type);
 		}
 		else {

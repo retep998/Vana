@@ -37,9 +37,13 @@ TimerThread::~TimerThread() {
 	m_thread->join();
 }
 
-auto TimerThread::registerTimer(ref_ptr_t<Timer> timer) -> void {
+auto TimerThread::getTimerContainer() const -> ref_ptr_t<Container> {
+	return m_container;
+}
+
+auto TimerThread::registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void {
 	owned_lock_t<recursive_mutex_t> l(m_timersMutex);
-	m_timers.emplace(timer->getRunAt(), timer);
+	m_timers.emplace(runAt, timer);
 	m_mainLoopCondition.notify_one();
 }
 
@@ -67,9 +71,7 @@ auto TimerThread::runThread() -> void {
 					m_timers.emplace(timer->reset(now), timer);
 				}
 				else {
-					if (ref_ptr_t<Container> container = timer->getContainer().lock()) {
-						container->removeTimer(timer->getId());
-					}
+					timer->removeFromContainer();
 				}
 
 				waitTime = getWaitTime();

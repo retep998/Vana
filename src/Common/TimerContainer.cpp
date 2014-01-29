@@ -22,29 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Timer {
 
-auto Container::getSecondsRemaining(const Id &id) -> seconds_t {
-	auto iter = m_timers.find(id);
-	if (iter != std::end(m_timers)) {
-		return duration_cast<seconds_t>(iter->second->getTimeLeft());
-	}
-	return seconds_t(0);
-}
-
-auto Container::getMillisecondsRemaining(const Id &id) -> milliseconds_t {
-	auto iter = m_timers.find(id);
-	if (iter != std::end(m_timers)) {
-		return duration_cast<milliseconds_t>(iter->second->getTimeLeft());
-	}
-	return milliseconds_t(0);
-}
-
-auto Container::isTimerRunning(const Id &id) -> bool {
+auto Container::isTimerRunning(const Id &id) const -> bool {
 	return m_timers.find(id) != std::end(m_timers);
 }
 
-auto Container::registerTimer(ref_ptr_t<Timer> timer) -> void {
-	m_timers[timer->getId()] = timer;
-	TimerThread::getInstance().registerTimer(timer);
+auto Container::registerTimer(ref_ptr_t<Timer> timer, const Id &id, time_point_t runAt) -> void {
+	m_timers[id] = timer;
+	TimerThread::getInstance().registerTimer(timer, runAt);
 }
 
 auto Container::removeTimer(const Id &id) -> void {

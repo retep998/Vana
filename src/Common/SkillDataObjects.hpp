@@ -68,19 +68,19 @@ struct ChargeOrStationarySkillInfo {
 };
 
 struct ReturnDamageInfo {
+	bool isPhysical = true;
 	uint8_t reduction = 0;
 	int32_t damage = 0;
 	int32_t mapMobId = 0;
-	bool isPhysical = true;
 	Pos pos;
 };
 
 struct MpEaterInfo {
-	int32_t skillId = 0;
+	bool used = false;
 	uint8_t level = 0;
 	int16_t x = 0;
 	uint16_t prop = 0;
-	bool used = false;
+	int32_t skillId = 0;
 };
 
 struct MobSkillLevelInfo {
@@ -99,9 +99,9 @@ struct MobSkillLevelInfo {
 };
 
 struct BanishField {
+	int32_t field = Maps::NoMap;
 	string_t message;
 	string_t portal;
-	int32_t field = Maps::NoMap;
 };
 
 struct MorphData {
@@ -112,15 +112,13 @@ struct MorphData {
 	double swim = 0.;
 };
 
-namespace SkillTypes {
-	enum : int8_t {
-		Melee,
-		Ranged,
-		Magic,
-		Summon,
-		EnergyCharge
-	};
-}
+enum class SkillType {
+	Melee,
+	Ranged,
+	Magic,
+	Summon,
+	EnergyCharge
+};
 
 struct Attack {
 	bool isMesoExplosion = false;

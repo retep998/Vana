@@ -68,7 +68,7 @@ auto MapleTvs::parseBuffer() -> void {
 		m_currentMessage = message;
 
 		Timer::Id id(Timer::Types::MapleTvTimer, message.senderId, message.counter);
-		Timer::create([this](const time_point_t &now) { this->parseBuffer(); },
+		Timer::Timer::create([this](const time_point_t &now) { this->parseBuffer(); },
 			id, getTimers(), seconds_t(message.time));
 	}
 	else {
@@ -86,7 +86,7 @@ auto MapleTvs::sendPacket(PacketCreator &packet) -> void {
 
 auto MapleTvs::checkMessageTimer() const -> seconds_t {
 	Timer::Id id(Timer::Types::MapleTvTimer, m_currentMessage.senderId, m_currentMessage.counter);
-	return getTimers()->getSecondsRemaining(id);
+	return getTimers()->getRemainingTime<seconds_t>(id);
 }
 
 auto MapleTvs::getMapleTvEntryPacket(PacketCreator &packet) -> void {

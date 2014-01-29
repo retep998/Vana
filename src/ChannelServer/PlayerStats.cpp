@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerStats.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "EquipDataProvider.hpp"
 #include "GameConstants.hpp"
@@ -201,7 +202,7 @@ auto PlayerStats::setLevel(uint8_t level) -> void {
 }
 
 auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
-	m_hp = MiscUtilities::constrainToRange<int16_t>(hp, Stats::MinHp, getMaxHp());
+	m_hp = ext::constrain_range<int16_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
 		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
 	}
@@ -210,7 +211,7 @@ auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
 
 auto PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) -> void {
 	int32_t tempHp = m_hp + hpMod;
-	tempHp = MiscUtilities::constrainToRange<int32_t>(tempHp, Stats::MinHp, getMaxHp());
+	tempHp = ext::constrain_range<int32_t>(tempHp, Stats::MinHp, getMaxHp());
 	m_hp = static_cast<int16_t>(tempHp);
 
 	if (sendPacket) {
@@ -241,7 +242,7 @@ auto PlayerStats::modifiedHp() -> void {
 
 auto PlayerStats::setMp(int16_t mp, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
-		m_mp = MiscUtilities::constrainToRange<int16_t>(mp, Stats::MinMp, getMaxMp());
+		m_mp = ext::constrain_range<int16_t>(mp, Stats::MinMp, getMaxMp());
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
 }
@@ -249,7 +250,7 @@ auto PlayerStats::setMp(int16_t mp, bool sendPacket) -> void {
 auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		int32_t tempMp = m_mp + mpMod;
-		tempMp = MiscUtilities::constrainToRange<int32_t>(tempMp, Stats::MinMp, getMaxMp());
+		tempMp = ext::constrain_range<int32_t>(tempMp, Stats::MinMp, getMaxMp());
 		m_mp = static_cast<int16_t>(tempMp);
 	}
 	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
@@ -311,13 +312,13 @@ auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
 }
 
 auto PlayerStats::setMaxHp(int16_t maxHp) -> void {
-	m_maxHp = MiscUtilities::constrainToRange(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
+	m_maxHp = ext::constrain_range(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
 	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
 	modifiedHp();
 }
 
 auto PlayerStats::setMaxMp(int16_t maxMp) -> void {
-	m_maxMp = MiscUtilities::constrainToRange(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
+	m_maxMp = ext::constrain_range(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
 	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
 }
 
@@ -350,7 +351,7 @@ auto PlayerStats::setExp(int32_t exp) -> void {
 }
 
 auto PlayerStats::setFame(int16_t fame) -> void {
-	m_fame = MiscUtilities::constrainToRange(fame, Stats::MinFame, Stats::MaxFame);
+	m_fame = ext::constrain_range(fame, Stats::MinFame, Stats::MaxFame);
 	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
 }
 

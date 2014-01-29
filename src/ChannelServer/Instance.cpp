@@ -209,12 +209,12 @@ auto Instance::addTimer(const string_t &timerName, const TimerAction &timer) -> 
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
-			Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
+			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
 				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
 		}
 		else {
 			// Negative, occurs nth second of hour
-			Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
+			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
 				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
 		}
 		return true;
@@ -226,9 +226,9 @@ auto Instance::getTimerSecondsRemaining(const string_t &timerName) -> seconds_t 
 	seconds_t timeLeft(0);
 	auto kvp = m_timerActions.find(timerName);
 	if (kvp != std::end(m_timerActions)) {
-		const TimerAction &timer = kvp->second;
+		auto &timer = kvp->second;
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
-		timeLeft = getTimers()->getSecondsRemaining(id);
+		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
 	}
 	return timeLeft;
 }
@@ -256,21 +256,21 @@ auto Instance::removeAllTimers() -> void {
 auto Instance::checkInstanceTimer() -> seconds_t {
 	seconds_t timeLeft(0);
 	if (m_time.count() > 0) {
-		const Timer::Id id = getTimerId();
-		timeLeft = getTimers()->getSecondsRemaining(id);
+		Timer::Id id = getTimerId();
+		timeLeft = getTimers()->getRemainingTime<seconds_t>(id);
 	}
 	return timeLeft;
 }
 
 auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 	if (checkInstanceTimer().count() > 0) {
-		const Timer::Id id = getTimerId();
+		Timer::Id id = getTimerId();
 		getTimers()->removeTimer(id);
 	}
 	if (time.count() != 0) {
 		m_time = duration_cast<seconds_t>(time);
 
-		Timer::create([this](const time_point_t &now) { this->instanceEnd(true); },
+		Timer::Timer::create([this](const time_point_t &now) { this->instanceEnd(true); },
 			getTimerId(),
 			getTimers(), m_time, m_persistent);
 
