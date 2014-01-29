@@ -138,9 +138,6 @@ auto MobDataProvider::loadMobs() -> void {
 		mob->holyAttr = getElement("holy_modifier");
 		mob->nonElemAttr = getElement("nonelemental_modifier");
 
-		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElementalAttribute::Immune && mob->iceAttr != MobElementalAttribute::Strong);
-		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElementalAttribute::Immune && mob->poisonAttr != MobElementalAttribute::Strong);
-
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mob](const string_t &cmp) {
 			if (cmp == "boss") mob->boss = true;
 			else if (cmp == "undead") mob->undead = true;
@@ -155,6 +152,9 @@ auto MobDataProvider::loadMobs() -> void {
 			else if (cmp == "cannot_damage_player") mob->canDoBumpDamage = false;
 			else if (cmp == "player_cannot_damage") mob->damageable = false;
 		});
+
+		mob->canFreeze = (!mob->boss && mob->iceAttr != MobElementalAttribute::Immune && mob->iceAttr != MobElementalAttribute::Strong);
+		mob->canPoison = (!mob->boss && mob->poisonAttr != MobElementalAttribute::Immune && mob->poisonAttr != MobElementalAttribute::Strong);
 
 		// Skill count relies on skills being loaded first
 		auto kvp = m_skills.find(mobId);
