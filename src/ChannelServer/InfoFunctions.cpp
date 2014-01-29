@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto InfoFunctions::help(Player *player, const string_t &args) -> bool {
-	using ChatHandlerFunctions::CommandList;
+	using ChatHandlerFunctions::sCommandList;
 	if (args.length() != 0) {
-		if (CommandList.find(args) != std::end(CommandList)) {
+		if (sCommandList.find(args) != std::end(sCommandList)) {
 			ChatHandlerFunctions::showSyntax(player, args, true);
 		}
 		else {
@@ -37,7 +37,7 @@ auto InfoFunctions::help(Player *player, const string_t &args) -> bool {
 		bool has = false;
 		out_stream_t strm;
 		strm << "You may not use any commands.";
-		for (const auto &kvp : CommandList) {
+		for (const auto &kvp : sCommandList) {
 			if (player->getGmLevel() >= kvp.second.level) {
 				if (!has) {
 					strm.str("");

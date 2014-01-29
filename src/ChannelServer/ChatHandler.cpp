@@ -31,7 +31,7 @@ auto ChatHandler::initializeCommands() -> void {
 }
 
 auto ChatHandler::handleChat(Player *player, PacketReader &packet) -> void {
-	const string_t &message = packet.getString();
+	string_t message = packet.getString();
 	bool bubbleOnly = packet.get<bool>(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
@@ -40,7 +40,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &packet) -> void {
 }
 
 auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool {
-	using ChatHandlerFunctions::CommandList;
+	using ChatHandlerFunctions::sCommandList;
 
 	if (player->isAdmin() && message[0] == '/') {
 		// Prevent command printing for Admins
@@ -49,13 +49,13 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string_t command = strtok(chat + 1, " ");
-		const string_t &args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
-
-		if (CommandList.find(command) == std::end(CommandList)) {
+		string_t args = message.length() > command.length() + 2 ? message.substr(command.length() + 2) : "";
+		auto kvp = sCommandList.find(command);
+		if (kvp == std::end(sCommandList)) {
 			ChatHandlerFunctions::showError(player, "Invalid command: " + command);
 		}
 		else {
-			ChatCommand &cmd = CommandList[command];
+			auto &cmd = kvp->second;
 			if (player->getGmLevel() < cmd.level) {
 				ChatHandlerFunctions::showError(player, "You are not at a high enough GM level to use the command");
 			}
@@ -71,8 +71,8 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 auto ChatHandler::handleGroupChat(Player *player, PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();
 	uint8_t amount = packet.get<uint8_t>();
-	const vector_t<int32_t> &receivers = packet.getVector<int32_t>(amount);
-	const string_t &chat = packet.getString();
+	vector_t<int32_t> receivers = packet.getVector<int32_t>(amount);
+	string_t chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
 		WorldServerConnectPacket::groupChat(type, player->getId(), receivers, chat);
