@@ -27,8 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerModFunctions.hpp"
 #include "PlayerPacket.hpp"
 
-CommandListType ChatHandlerFunctions::sCommandList;
-const hash_map_t<string_t, MapPair> ChatHandlerFunctions::sMapAssociations = {
+case_insensitive_hash_map_t<ChatCommand> ChatHandlerFunctions::sCommandList;
+
+const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociations = {
 	// These first maps are here purely for documentation purposes - they are computed by other means
 	{"town", {Maps::NoMap, "Special"}},
 	{"return", {Maps::NoMap, "Special"}},
@@ -38,8 +39,6 @@ const hash_map_t<string_t, MapPair> ChatHandlerFunctions::sMapAssociations = {
 	{"gm", {Maps::GmMap, "Special"}},
 	{"fm", {910000000, "Special"}},
 	{"happyville", {209000000, "Special"}},
-	{"gamezone", {100000203, "Special"}},
-	{"guildhq", {200000301, "Special"}},
 	// Job-Related
 	{"3rd", {211000001, "Job-Related"}},
 	{"4th", {240010501, "Job-Related"}},
@@ -69,6 +68,7 @@ const hash_map_t<string_t, MapPair> ChatHandlerFunctions::sMapAssociations = {
 	{"kerning", {103000000, "Victoria"}},
 	{"port", {120000000, "Victoria"}},
 	// Misc Victoria
+	{"gamezone", {100000203, "Special"}},
 	{"anttunnel", {105070001, "Misc Victoria"}},
 	{"dungeon", {105090200, "Misc Victoria"}},
 	{"subway", {103000100, "Misc Victoria"}},
@@ -98,6 +98,7 @@ const hash_map_t<string_t, MapPair> ChatHandlerFunctions::sMapAssociations = {
 	{"ariant", {260000000, "Ossyria"}},
 	{"magatia", {261000000, "Ossyria"}},
 	// Misc Ossyria
+	{"guildhq", {200000301, "Special"}},
 	{"sharpcliff", {211040300, "Misc Ossyria"}},
 	{"mine", {211041400, "Misc Ossyria"}},
 	{"caveoftrial", {211042000, "Misc Ossyria"}},

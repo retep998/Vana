@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CustomFunctions.hpp"
 #include "Player.hpp"
 
-auto CustomFunctions::initialize(CommandListType &commandList) -> void {
+auto CustomFunctions::initialize(case_insensitive_hash_map_t<ChatCommand> &commandList) -> void {
 	// Define any custom functions you may have here, just like ChatHandlerFunctions::initialize
 	ChatCommand command;
 
