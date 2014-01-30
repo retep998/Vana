@@ -31,8 +31,8 @@ class ChannelServer final : public AbstractServer {
 	SINGLETON_CUSTOM_CONSTRUCTOR(ChannelServer);
 public:
 	auto shutdown() -> void override;
-	auto connectToWorld(int8_t worldId, port_t port, const Ip &ip) -> void;
-	auto establishedWorldConnection(int16_t channelId, port_t port, const WorldConfig &config) -> void;
+	auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void;
+	auto establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void;
 
 	// TODO FIXME
 	// Eyeball these for potential refactoring - they involve world<->channel operations and I don't want to dig into that now
@@ -42,8 +42,8 @@ public:
 	auto setRates(const Rates &rates) -> void;
 
 	auto isConnected() const -> bool;
-	auto getWorldId() const -> int8_t;
-	auto getChannelId() const -> int16_t;
+	auto getWorldId() const -> world_id_t;
+	auto getChannelId() const -> channel_id_t;
 	auto getOnlineId() const -> int32_t;
 	auto getConfig() const -> const WorldConfig &;
 	auto sendPacketToWorld(PacketCreator &packet) -> void;
@@ -53,8 +53,8 @@ protected:
 	auto makeLogIdentifier() const -> opt_string_t override;
 	auto getLogPrefix() const -> string_t override;
 private:
-	int8_t m_worldId = -1;
-	int16_t m_channelId = -1;
+	world_id_t m_worldId = -1;
+	channel_id_t m_channelId = -1;
 	port_t m_worldPort = 0;
 	port_t m_port = 0;
 	Ip m_worldIp;

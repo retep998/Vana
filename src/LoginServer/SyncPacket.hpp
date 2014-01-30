@@ -24,5 +24,6 @@ class World;
 namespace SyncPacket {
 	namespace PlayerPacket {
 		auto characterCreated(World *world, int32_t playerId) -> void;
+		auto characterDeleted(World *world, int32_t playerId) -> void;
 	}
 }

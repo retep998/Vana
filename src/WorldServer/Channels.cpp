@@ -23,22 +23,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
-auto Channels::registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
+auto Channels::registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
 	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>();
 	chan->setConnection(connection);
-	chan->setId(channel);
+	chan->setId(channelId);
 	chan->setExternalIpInformation(channelIp, extIp);
 	chan->setPort(port);
-	m_channels[channel] = chan;
+	m_channels[channelId] = chan;
 }
 
-auto Channels::removeChannel(uint16_t channel) -> void {
+auto Channels::removeChannel(channel_id_t channel) -> void {
 	m_channels.erase(channel);
 }
 
-auto Channels::getChannel(uint16_t num) -> Channel * {
+auto Channels::getChannel(channel_id_t num) -> Channel * {
 	auto kvp = m_channels.find(num);
 	return kvp != std::end(m_channels) ? kvp->second.get() : nullptr;
+}
+
+auto Channels::sendToChannel(channel_id_t channelId, const PacketCreator &packet) -> void {
+	if (Channel *channel = getChannel(channelId)) {
+		channel->send(packet);	
+	}
+}
+
+auto Channels::sendToList(const vector_t<channel_id_t> &channels, const PacketCreator &packet) -> void {
+	for (const auto &channelId : channels) {
+		sendToChannel(channelId, packet);
+	}
 }
 
 auto Channels::sendToAll(const PacketCreator &packet) -> void {
@@ -47,30 +59,26 @@ auto Channels::sendToAll(const PacketCreator &packet) -> void {
 	}
 }
 
-auto Channels::sendToChannel(uint16_t channel, const PacketCreator &packet) -> void {
-	getChannel(channel)->send(packet);
-}
-
-auto Channels::increasePopulation(uint16_t channel) -> void {
+auto Channels::increasePopulation(channel_id_t channel) -> void {
 	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers());
 }
 
-auto Channels::decreasePopulation(uint16_t channel) -> void {
+auto Channels::decreasePopulation(channel_id_t channel) -> void {
 	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers());
 }
 
-auto Channels::size() -> uint16_t {
+auto Channels::size() -> channel_id_t {
 	return m_channels.size();
 }
 
-auto Channels::getAvailableChannel() -> uint16_t {
-	uint16_t channel = -1;
-	uint16_t max = static_cast<uint16_t>(WorldServer::getInstance().getConfig().maxChannels);
-	for (uint16_t i = 0; i < max; ++i) {
+auto Channels::getAvailableChannel() -> channel_id_t {
+	channel_id_t channelId = -1;
+	channel_id_t max = WorldServer::getInstance().getConfig().maxChannels;
+	for (channel_id_t i = 0; i < max; ++i) {
 		if (m_channels.find(i) == std::end(m_channels)) {
-			channel = i;
+			channelId = i;
 			break;
 		}
 	}
-	return channel;
+	return channelId;
 }

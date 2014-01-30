@@ -27,18 +27,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
-	int32_t channel = packet.get<int32_t>();
+	channel_id_t channel = packet.get<channel_id_t>();
 	Channel *chan = new Channel();
 	const Ip &ip = packet.getClass<Ip>();
 
 	chan->setExternalIpInformation(ip, packet.getClassVector<ExternalIp>());
 	chan->setPort(packet.get<port_t>());
 	Worlds::getInstance().getWorld(connection->getWorldId())->addChannel(channel, chan);
-	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << channel; });
+	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
 }
 
 auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
-	int32_t channel = packet.get<int32_t>();
+	channel_id_t channel = packet.get<channel_id_t>();
 	int32_t population = packet.get<int32_t>();
 
 	World *world = Worlds::getInstance().getWorld(connection->getWorldId());
@@ -47,14 +47,28 @@ auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *con
 }
 
 auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
-	int32_t channel = packet.get<int32_t>();
+	channel_id_t channel = packet.get<channel_id_t>();
 
 	Worlds::getInstance().getWorld(connection->getWorldId())->removeChannel(channel);
-	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << channel; });
+	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
 }
 
-auto LoginServerAcceptHandler::sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
+auto LoginServerAcceptHandler::sendPacketToAllWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
 	PacketCreator pack;
 	pack.addBuffer(packet);
-	Worlds::getInstance().toWorlds(pack);
+	Worlds::getInstance().sendPacketToAll(pack);
+}
+
+auto LoginServerAcceptHandler::sendPacketToWorldList(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
+	vector_t<world_id_t> worlds = packet.getVector<world_id_t>();
+	PacketCreator pack;
+	pack.addBuffer(packet);
+	Worlds::getInstance().sendPacketToList(worlds, pack);
+}
+
+auto LoginServerAcceptHandler::sendPacketToWorld(LoginServerAcceptConnection *connection, PacketReader &packet) -> void {
+	world_id_t worldId = packet.get<world_id_t>();
+	PacketCreator pack;
+	pack.addBuffer(packet);
+	Worlds::getInstance().getWorld(worldId)->send(pack);
 }

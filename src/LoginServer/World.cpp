@@ -26,8 +26,8 @@ auto World::runChannelFunction(function_t<void (Channel *)> func) -> void {
 	}
 }
 
-auto World::getRandomChannel() const -> uint16_t {
-	return Randomizer::rand<uint16_t>(getMaxChannels() - 1);
+auto World::getRandomChannel() const -> channel_id_t {
+	return Randomizer::rand<channel_id_t>(getMaxChannels() - 1);
 }
 
 auto World::send(const PacketCreator &packet) -> void {

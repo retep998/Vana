@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class LoginServerConnection;
 
 namespace LoginServerConnectPacket {
-	auto registerChannel(int32_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
-	auto updateChannelPop(int32_t channel, int32_t population) -> void;
-	auto removeChannel(int32_t channel) -> void;
+	auto registerChannel(channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
+	auto updateChannelPop(channel_id_t channel, int32_t population) -> void;
+	auto removeChannel(channel_id_t channel) -> void;
 }

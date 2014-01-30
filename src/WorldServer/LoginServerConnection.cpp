@@ -40,9 +40,10 @@ LoginServerConnection::~LoginServerConnection() {
 auto LoginServerConnection::handleRequest(PacketReader &packet) -> void {
 	switch (packet.getHeader()) {
 		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
-		case IMSG_NEW_PLAYER: LoginServerConnectHandler::newPlayer(packet); break;
 		case IMSG_REHASH_CONFIG: LoginServerConnectHandler::rehashConfig(packet); break;
-		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
+		case IMSG_TO_CHANNEL: WorldServerAcceptHandler::sendPacketToChannel(packet); break;
+		case IMSG_TO_CHANNEL_LIST: WorldServerAcceptHandler::sendPacketToChannelList(packet); break;
+		case IMSG_TO_ALL_CHANNELS: WorldServerAcceptHandler::sendPacketToAllChannels(packet); break;
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
 	}
 }

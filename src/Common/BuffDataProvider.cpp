@@ -216,7 +216,7 @@ auto BuffDataProvider::loadData() -> void {
 	m_skillInfo[Skills::Cleric::Bless].player.push_back(player);
 	m_skillInfo[Skills::SuperGm::Bless].player.push_back(player);
 
-	// Gm Hide
+	// GM Hide
 	buff.type = 0x01;
 	buff.byte = Byte8;
 	buff.value = SkillSpecialProc;

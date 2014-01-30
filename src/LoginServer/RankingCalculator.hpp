@@ -30,7 +30,7 @@ namespace RankingCalculator {
 	struct RankPlayer {
 		uint8_t levelStat;
 		uint8_t jobLevelMax;
-		uint8_t worldId;
+		world_id_t worldId;
 		int16_t jobStat;
 		int16_t fameStat;
 		int32_t expStat;

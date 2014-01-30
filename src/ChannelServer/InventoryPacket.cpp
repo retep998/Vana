@@ -145,7 +145,7 @@ auto InventoryPacket::showMegaphone(Player *player, const string_t &msg) -> void
 
 auto InventoryPacket::showSuperMegaphone(Player *player, const string_t &msg, bool whisper) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(3);
 	packet.addString(msg);
@@ -156,7 +156,7 @@ auto InventoryPacket::showSuperMegaphone(Player *player, const string_t &msg, bo
 
 auto InventoryPacket::showMessenger(Player *player, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	packet.add<header_t>(SMSG_AVATAR_MEGAPHONE);
 	packet.add<int32_t>(itemId);
 	packet.addString(player->getName());
@@ -171,7 +171,7 @@ auto InventoryPacket::showMessenger(Player *player, const string_t &msg, const s
 
 auto InventoryPacket::showItemMegaphone(Player *player, const string_t &msg, bool whisper, Item *item) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(8);
 	packet.addString(msg);
@@ -188,7 +188,7 @@ auto InventoryPacket::showItemMegaphone(Player *player, const string_t &msg, boo
 
 auto InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	packet.add<header_t>(SMSG_MESSAGE);
 	packet.add<int8_t>(0x0a);
 	packet.addString(line1);

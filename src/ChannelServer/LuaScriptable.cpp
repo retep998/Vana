@@ -449,9 +449,9 @@ auto LuaExports::createTable(lua_State *luaVm, const vector_t<int8_t> &elements)
 	return 1;
 }
 
-auto LuaExports::isBossChannel(lua_State *luaVm, const vector_t<int8_t> &elements) -> int {
-	int8_t channel = ChannelServer::getInstance().getChannelId() + 1;
-	lua_pushboolean(luaVm, ext::any_of(elements, [channel](int8_t testChannel) -> bool { return testChannel == channel; }));
+auto LuaExports::isBossChannel(lua_State *luaVm, const vector_t<channel_id_t> &elements) -> int {
+	channel_id_t channel = ChannelServer::getInstance().getChannelId() + 1;
+	lua_pushboolean(luaVm, ext::any_of(elements, [channel](channel_id_t testChannel) -> bool { return testChannel == channel; }));
 	return 1;
 }
 

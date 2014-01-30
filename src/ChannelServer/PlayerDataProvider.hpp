@@ -34,34 +34,57 @@ class PlayerDataProvider {
 	SINGLETON(PlayerDataProvider);
 public:
 	auto parseChannelConnectPacket(PacketReader &packet) -> void;
+	
+	auto handlePlayerSync(PacketReader &packet) -> void;
+	auto handlePartySync(PacketReader &packet) -> void;
+	auto handleBuddySync(PacketReader &packet) -> void;
 
 	// Online players
 	auto addPlayer(Player *player) -> void;
-	auto newPlayer(PacketReader &packet) -> void;
-	auto changeChannel(PacketReader &packet) -> void;
-	auto newConnectable(PacketReader &packet) -> void;
-	auto deleteConnectable(int32_t id) -> void;
 	auto removePlayer(Player *player) -> void;
+	auto updatePlayerLevel(Player *player) -> void;
+	auto updatePlayerMap(Player *player) -> void;
+	auto updatePlayerJob(Player *player) -> void;
 	auto getPlayer(int32_t id) -> Player *;
 	auto getPlayer(const string_t &name) -> Player *;
 	auto run(function_t<void(Player *)> func) -> void;
 	auto sendPacket(PacketCreator &packet, int32_t minGmLevel = 0) -> void;
+	auto sendPacketToList(const vector_t<int32_t> &playerIds, PacketCreator &packet) -> void;
+	auto addFollower(Player *follower, Player *target) -> void;
+	auto stopFollowing(Player *follower) -> void;
 
 	// Player data
-	auto getPlayerData(int32_t id) -> PlayerData *;
-	auto updatePlayer(PacketReader &packet) -> void;
+	auto getPlayerData(int32_t id) const -> const PlayerData * const;
+	auto getPlayerDataByName(const string_t &name) const -> const PlayerData * const;
 
 	// Parties
 	auto getParty(int32_t id) -> Party *;
-	auto newParty(int32_t id, int32_t leaderId) -> void;
-	auto disbandParty(int32_t id) -> void;
-	auto switchPartyLeader(int32_t id, int32_t leaderId) -> void;
-	auto removePartyMember(int32_t id, int32_t playerId, bool kicked) -> void;
-	auto addPartyMember(int32_t id, int32_t playerId) -> void;
-private:
-	auto parsePlayer(PacketReader &packet) -> void;
 
-	hash_map_t<int32_t, ref_ptr_t<PlayerData>> m_playerData;
+	// Chat
+	auto handleGroupChat(int8_t chatType, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
+	auto handleGmChat(Player *player, const string_t &chat) -> void;
+private:
+	auto addPlayerData(const PlayerData &data) -> void;
+	auto handleCharacterCreated(PacketReader &packet) -> void;
+	auto handleCharacterDeleted(PacketReader &packet) -> void;
+	auto handleChangeChannel(PacketReader &packet) -> void;
+	auto handleNewConnectable(PacketReader &packet) -> void;
+	auto handleDeleteConnectable(int32_t id) -> void;
+	auto handleUpdatePlayer(PacketReader &packet) -> void;
+
+	auto handleCreateParty(int32_t id, int32_t leaderId) -> void;
+	auto handleDisbandParty(int32_t id) -> void;
+	auto handlePartyTransfer(int32_t id, int32_t leaderId) -> void;
+	auto handlePartyRemove(int32_t id, int32_t playerId, bool kicked) -> void;
+	auto handlePartyAdd(int32_t id, int32_t playerId) -> void;
+
+	auto buddyInvite(PacketReader &packet) -> void;
+	auto buddyOnlineOffline(PacketReader &packet) -> void;
+
+	hash_set_t<int32_t> m_gmList;
+	hash_map_t<int32_t, PlayerData> m_playerData;
+	hash_map_t<int32_t, vector_t<Player *>> m_followers;
+	case_insensitive_hash_map_t<PlayerData *> m_playerDataByName;
 	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
 	hash_map_t<int32_t, Player *> m_players;
 	case_insensitive_hash_map_t<Player *> m_playersByName;

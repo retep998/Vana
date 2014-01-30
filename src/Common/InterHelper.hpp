@@ -33,9 +33,11 @@ namespace PartyActions {
 	};
 }
 
+using sync_t = int8_t;
+using update_bits_t = uint8_t;
 namespace Sync {
 	namespace SyncTypes {
-		enum SyncTypes : int8_t {
+		enum SyncTypes : sync_t {
 			ChannelStart,
 			Config,
 			Update,
@@ -48,14 +50,14 @@ namespace Sync {
 		};
 	}
 	namespace Config {
-		enum SyncModes : int8_t {
+		enum SyncModes : sync_t {
 			RateSet,
 			RateReset,
 			ScrollingHeader
 		};
 	}
 	namespace Player {
-		enum SyncModes : int8_t {
+		enum SyncModes : sync_t {
 			Connect,
 			Disconnect,
 			ChangeChannelRequest,
@@ -67,16 +69,17 @@ namespace Sync {
 			CharacterDeleted
 		};
 		namespace UpdateBits {
-			enum : int8_t {
+			enum : update_bits_t {
 				Level = 0x01,
 				Job = 0x02,
 				Map = 0x04,
-				Channel = 0x08
+				Channel = 0x08,
+				Full = 0x80,
 			};
 		}
 	}
 	namespace Party {
-		enum SyncModes : int8_t {
+		enum SyncModes : sync_t {
 			Disband,
 			Create,
 			SwitchLeader,
@@ -85,7 +88,7 @@ namespace Sync {
 		};
 	}
 	namespace Buddy {
-		enum SyncModes : int8_t {
+		enum SyncModes : sync_t {
 			Invite,
 			OnlineOffline
 		};

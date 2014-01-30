@@ -232,7 +232,7 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 		buddy->name = name.get();
 	}
 
-	int32_t channelId = -1;
+	channel_id_t channelId = -1;
 	int64_t online = row.get<int64_t>("online");
 	if (online >= 20000) {
 		online -= 20000;

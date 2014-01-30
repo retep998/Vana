@@ -36,7 +36,7 @@ public:
 	World() = default;
 
 	auto setConnected(bool connected) -> void { m_connected = connected; }
-	auto setId(int8_t id) -> void { m_id = id; }
+	auto setId(world_id_t id) -> void { m_id = id; }
 	auto setPort(port_t port) -> void { m_port = port; }
 	auto setPlayerLoad(int32_t load) -> void { m_playerLoad = load; }
 	auto setConnection(LoginServerAcceptConnection *connection) -> void { m_connection = connection; }
@@ -44,30 +44,30 @@ public:
 	auto setEventMessage(const string_t &message) -> void { m_config.eventMsg = message; }
 	auto runChannelFunction(function_t<void (Channel *)> func) -> void;
 	auto clearChannels() -> void { m_channels.clear(); }
-	auto removeChannel(int32_t id) -> void { m_channels.erase(id); }
-	auto addChannel(int32_t id, Channel *channel) -> void { m_channels[id].reset(channel); }
+	auto removeChannel(channel_id_t id) -> void { m_channels.erase(id); }
+	auto addChannel(channel_id_t id, Channel *channel) -> void { m_channels[id].reset(channel); }
 	auto send(const PacketCreator &packet) -> void;
 
 	auto isConnected() const -> bool { return m_connected; }
-	auto getId() const -> int8_t { return m_id; }
+	auto getId() const -> world_id_t { return m_id; }
 	auto getRibbon() const -> int8_t { return m_config.ribbon; }
 	auto getPort() const -> port_t { return m_port; }
-	auto getRandomChannel() const -> uint16_t;
-	auto getMaxChannels() const -> size_t { return m_config.maxChannels; }
+	auto getRandomChannel() const -> channel_id_t;
+	auto getMaxChannels() const -> channel_id_t { return m_config.maxChannels; }
 	auto getPlayerLoad() const -> int32_t { return m_playerLoad; }
 	auto getMaxPlayerLoad() const -> int32_t { return m_config.maxPlayerLoad; }
 	auto matchSubnet(const Ip &test) -> Ip;
-	auto getChannelCount() const -> size_t { return m_channels.size(); }
+	auto getChannelCount() const -> channel_id_t { return m_channels.size(); }
 	auto getName() const -> string_t { return m_config.name; }
 	auto getEventMessage() const -> string_t { return m_config.eventMsg; }
-	auto getChannel(int32_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }
+	auto getChannel(channel_id_t id) -> Channel * { return m_channels.find(id) != std::end(m_channels) ? m_channels[id].get() : nullptr; }
 	auto getConfig() const -> const WorldConfig & { return m_config; }
 private:
 	bool m_connected = false;
-	int8_t m_id = -1;
+	world_id_t m_id = -1;
 	port_t m_port = 0;
 	int32_t m_playerLoad = 0;
 	LoginServerAcceptConnection *m_connection = nullptr;
 	WorldConfig m_config;
-	hash_map_t<int32_t, ref_ptr_t<Channel>> m_channels;
+	hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
 };

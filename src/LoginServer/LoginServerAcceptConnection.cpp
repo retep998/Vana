@@ -46,7 +46,9 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
-		case IMSG_TO_WORLDS: LoginServerAcceptHandler::sendPacketToWorlds(this, packet); break;
+		case IMSG_TO_ALL_WORLDS: LoginServerAcceptHandler::sendPacketToAllWorlds(this, packet); break;
+		case IMSG_TO_WORLD_LIST: LoginServerAcceptHandler::sendPacketToWorldList(this, packet); break;
+		case IMSG_TO_WORLD: LoginServerAcceptHandler::sendPacketToWorld(this, packet); break;
 		case IMSG_REHASH_CONFIG: LoginServer::getInstance().rehashConfig(); break;
 	}
 }

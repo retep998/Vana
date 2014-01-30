@@ -55,7 +55,7 @@ public:
 	template <typename TClass>
 	auto getClass(const string_t &prefix = "") -> TClass;
 	auto getIpMatrix(const string_t &value) -> IpMatrix ;
-	auto getBossChannels(const string_t &value, size_t maxChannels) -> vector_t<int8_t>;
+	auto getBossChannels(const string_t &value, channel_id_t maxChannels) -> vector_t<channel_id_t>;
 private:
 	auto keyMustExist(const string_t &value) -> void;
 	auto loadFile(const string_t &filename) -> void;

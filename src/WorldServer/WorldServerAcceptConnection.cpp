@@ -38,10 +38,10 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 			if (WorldServer::getInstance().isConnected()) {
 				LoginServerConnectPacket::removeChannel(m_channel);
 			}
-			PlayerDataProvider::getInstance().removeChannelPlayers(m_channel);
+			PlayerDataProvider::getInstance().channelDisconnect(m_channel);
 			Channels::getInstance().removeChannel(m_channel);
 
-			WorldServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << m_channel; });
+			WorldServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
 		}
 	}
 }
@@ -52,11 +52,13 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
 	}
 	switch (packet.getHeader()) {
 		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
-		case IMSG_FIND: WorldServerAcceptHandler::findPlayer(this, packet); break;
-		case IMSG_WHISPER: WorldServerAcceptHandler::whisperPlayer(this, packet); break;
-		case IMSG_GROUP_CHAT: WorldServerAcceptHandler::groupChat(this, packet); break;
 		case IMSG_TO_LOGIN: WorldServerAcceptHandler::sendPacketToLogin(packet); break;
-		case IMSG_TO_CHANNELS: WorldServerAcceptHandler::sendPacketToChannels(packet); break;
+		case IMSG_TO_PLAYER: PlayerDataProvider::getInstance().forwardPacketToPlayer(packet); break;
+		case IMSG_TO_PLAYER_LIST: PlayerDataProvider::getInstance().forwardPacketToPlayerList(packet); break;
+		case IMSG_TO_ALL_PLAYERS: PlayerDataProvider::getInstance().forwardPacketToAllPlayers(packet); break;
+		case IMSG_TO_CHANNEL: WorldServerAcceptHandler::sendPacketToChannel(packet); break;
+		case IMSG_TO_CHANNEL_LIST: WorldServerAcceptHandler::sendPacketToChannelList(packet); break;
+		case IMSG_TO_ALL_CHANNELS: WorldServerAcceptHandler::sendPacketToAllChannels(packet); break;
 	}
 }
 
@@ -72,7 +74,7 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 			SyncPacket::sendSyncData(this);
 			LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port);
 
-			WorldServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << m_channel; });
+			WorldServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
 		}
 		else {
 			WorldServerAcceptPacket::connect(this, -1, 0);

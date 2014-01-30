@@ -55,7 +55,7 @@ auto Worlds::selectWorld(Player *player, PacketReader &packet) -> void {
 		return;
 	}
 
-	int8_t worldId = packet.get<int8_t>();
+	world_id_t worldId = packet.get<world_id_t>();
 	if (World *world = getWorld(worldId)) {
 		player->setWorldId(worldId);
 		int32_t load = world->getPlayerLoad();
@@ -83,7 +83,7 @@ auto Worlds::channelSelect(Player *player, PacketReader &packet) -> void {
 		return;
 	}
 	packet.skipBytes(1);
-	int8_t channelId = packet.get<int8_t>();
+	channel_id_t channelId = packet.get<int8_t>();
 
 	LoginPacket::channelSelect(player);
 	World *world = m_worlds[player->getWorldId()];
@@ -102,7 +102,7 @@ auto Worlds::channelSelect(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> int8_t {
+auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t {
 	World *world = nullptr;
 	for (const auto &kvp : m_worlds) {
 		if (!kvp.second->isConnected()) {
@@ -111,7 +111,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> int8_t {
 		}
 	}
 
-	int8_t worldId = -1;
+	world_id_t worldId = -1;
 	if (world != nullptr) {
 		worldId = world->getId();
 		connection->setWorldId(worldId);
@@ -130,7 +130,7 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> int8_t {
 	return worldId;
 }
 
-auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> int8_t {
+auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t {
 	World *validWorld = nullptr;
 	for (const auto &kvp : m_worlds) {
 		World *world = kvp.second;
@@ -140,7 +140,7 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> int8_t
 		}
 	}
 
-	int8_t worldId = -1;
+	world_id_t worldId = -1;
 	if (validWorld != nullptr) {
 		worldId = validWorld->getId();
 		Ip worldIp = validWorld->matchSubnet(connection->getIp());
@@ -154,10 +154,19 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> int8_t
 	return worldId;
 }
 
-auto Worlds::toWorlds(PacketCreator &packet) -> void {
+auto Worlds::sendPacketToAll(const PacketCreator &packet) const -> void {
 	for (const auto &kvp : m_worlds) {
 		if (kvp.second->isConnected()) {
 			kvp.second->send(packet);
+		}
+	}
+}
+
+auto Worlds::sendPacketToList(const vector_t<world_id_t> &worlds, const PacketCreator &packet) const -> void {
+	for (const auto &worldId : worlds) {
+		auto kvp = m_worlds.find(worldId);
+		if (kvp != std::end(m_worlds) && kvp->second->isConnected()) {
+			kvp->second->send(packet);
 		}
 	}
 }
@@ -177,7 +186,7 @@ auto Worlds::calculatePlayerLoad(World *world) -> void {
 	});
 }
 
-auto Worlds::getWorld(int8_t id) -> World * {
+auto Worlds::getWorld(world_id_t id) -> World * {
 	auto kvp = m_worlds.find(id);
 	return kvp != std::end(m_worlds) ? kvp->second : nullptr;
 }

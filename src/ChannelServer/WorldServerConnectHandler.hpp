@@ -23,10 +23,9 @@ class WorldServerConnection;
 namespace WorldServerConnectHandler {
 	auto connectLogin(WorldServerConnection *player, PacketReader &packet) -> void;
 	auto connect(WorldServerConnection *player, PacketReader &packet) -> void;
-	auto findPlayer(PacketReader &packet) -> void;
-	auto whisperPlayer(PacketReader &packet) -> void;
 	auto forwardPacket(PacketReader &packet) -> void;
-	auto sendToPlayers(PacketReader &packet) -> void;
+	auto sendToPlayerList(PacketReader &packet) -> void;
+	auto sendToAllPlayers(PacketReader &packet) -> void;
 	auto reloadMcdb(PacketReader &packet) -> void;
 	auto rehashConfig(PacketReader &packet) -> void;
 }

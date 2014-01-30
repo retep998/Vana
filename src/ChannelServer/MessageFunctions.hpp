@@ -26,4 +26,5 @@ namespace MessageFunctions {
 	auto globalMessage(Player *player, const string_t &args) -> bool;
 	auto channelMessage(Player *player, const string_t &args) -> bool;
 	auto gmMessage(Player *player, const string_t &args) -> bool;
+	auto gmChatMode(Player *player, const string_t &args) -> bool;
 }

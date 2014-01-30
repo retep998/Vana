@@ -26,9 +26,6 @@ class Player;
 struct Rates;
 
 namespace WorldServerConnectPacket {
-	auto findPlayer(int32_t playerId, const string_t &findeeName) -> void;
-	auto whisperPlayer(int32_t playerId, const string_t &whisperee, const string_t &message) -> void;
-	auto groupChat(int8_t type, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
 	auto rankingCalculation() -> void;
 	auto sendToChannels(PacketCreator &packet) -> void;
 	auto sendToWorlds(PacketCreator &packet) -> void;

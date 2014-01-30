@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "InterHelper.hpp"
+#include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
@@ -31,13 +33,11 @@ namespace SyncPacket {
 		auto modifyRates(const Rates &rates) -> void;
 	}
 	namespace PlayerPacket {
-		auto changeChannel(Player *info, uint16_t channel) -> void;
+		auto changeChannel(Player *info, channel_id_t channel) -> void;
 		auto connectableEstablished(int32_t playerId) -> void;
-		auto connect(Player *player) -> void;
+		auto connect(const PlayerData &player) -> void;
 		auto disconnect(int32_t playerId) -> void;
-		auto updateLevel(int32_t playerId, int32_t level) -> void;
-		auto updateJob(int32_t playerId, int32_t job) -> void;
-		auto updateMap(int32_t playerId, int32_t map) -> void;
+		auto updatePlayer(const PlayerData &player, update_bits_t flags) -> void;
 	}
 	namespace PartyPacket {
 		auto sync(int8_t type, int32_t playerId, int32_t target = 0) -> void;

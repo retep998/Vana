@@ -74,3 +74,15 @@ auto MessageFunctions::gmMessage(Player *player, const string_t &args) -> bool {
 	}
 	return false;
 }
+
+auto MessageFunctions::gmChatMode(Player *player, const string_t &args) -> bool {
+	if (player->isGmChat()) {
+		player->setGmChat(false);
+		ChatHandlerFunctions::showInfo(player, "GM chat mode disabled");
+	}
+	else {
+		player->setGmChat(true);
+		ChatHandlerFunctions::showInfo(player, "GM chat mode enabled");
+	}
+	return true;
+}

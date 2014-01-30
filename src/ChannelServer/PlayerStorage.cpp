@@ -78,7 +78,7 @@ auto PlayerStorage::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
 	int32_t userId = m_player->getUserId();
-	int8_t worldId = m_player->getWorldId();
+	world_id_t worldId = m_player->getWorldId();
 
 	sql.once
 		<< "SELECT s.slots, s.mesos, s.char_slots "
@@ -130,7 +130,7 @@ auto PlayerStorage::load() -> void {
 
 auto PlayerStorage::save() -> void {
 	using namespace soci;
-	int8_t worldId = m_player->getWorldId();
+	world_id_t worldId = m_player->getWorldId();
 	int32_t userId = m_player->getUserId();
 	int32_t playerId = m_player->getId();
 

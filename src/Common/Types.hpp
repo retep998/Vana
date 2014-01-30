@@ -87,6 +87,8 @@ using std::chrono::duration_cast;
 // Miscellaneous utility types
 using header_t = uint16_t;
 using port_t = uint16_t;
+using world_id_t = int8_t;
+using channel_id_t = int8_t;
 using effective_clock_t = std::chrono::system_clock;
 using duration_t = effective_clock_t::duration;
 using time_point_t = effective_clock_t::time_point;

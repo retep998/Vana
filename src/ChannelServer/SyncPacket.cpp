@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto SyncPacket::ConfigPacket::scrollingHeader(const string_t &message) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_SYNC);
-	sendPacket.add<int8_t>(Sync::SyncTypes::Config);
-	sendPacket.add<int8_t>(Sync::Config::ScrollingHeader);
+	sendPacket.add<sync_t>(Sync::SyncTypes::Config);
+	sendPacket.add<sync_t>(Sync::Config::ScrollingHeader);
 	sendPacket.addString(message);
 	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
@@ -37,62 +37,59 @@ auto SyncPacket::ConfigPacket::scrollingHeader(const string_t &message) -> void 
 auto SyncPacket::ConfigPacket::resetRates() -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_SYNC);
-	sendPacket.add<int8_t>(Sync::SyncTypes::Config);
-	sendPacket.add<int8_t>(Sync::Config::RateReset);
+	sendPacket.add<sync_t>(Sync::SyncTypes::Config);
+	sendPacket.add<sync_t>(Sync::Config::RateReset);
 	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
 auto SyncPacket::ConfigPacket::modifyRates(const Rates &rates) -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_SYNC);
-	sendPacket.add<int8_t>(Sync::SyncTypes::Config);
-	sendPacket.add<int8_t>(Sync::Config::RateSet);
+	sendPacket.add<sync_t>(Sync::SyncTypes::Config);
+	sendPacket.add<sync_t>(Sync::Config::RateSet);
 	sendPacket.addClass<Rates>(rates);
 	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
-auto SyncPacket::PlayerPacket::updateLevel(int32_t playerId, int32_t level) -> void {
+auto SyncPacket::PlayerPacket::updatePlayer(const PlayerData &player, update_bits_t flags) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int8_t>(Sync::Player::UpdateBits::Level);
-	packet.add<int32_t>(playerId);
-	packet.add<int32_t>(level);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::UpdatePlayer);
+	packet.add<update_bits_t>(flags);
+	packet.add<int32_t>(player.id);
+	if (flags & Sync::Player::UpdateBits::Full) {
+		packet.addClass<PlayerData>(player);
+	}
+	else {
+		if (flags & Sync::Player::UpdateBits::Level) {
+			packet.add<int16_t>(player.level);
+		}
+		if (flags & Sync::Player::UpdateBits::Job) {
+			packet.add<int16_t>(player.job);
+		}
+		if (flags & Sync::Player::UpdateBits::Map) {
+			packet.add<int32_t>(player.map);
+		}
+		if (flags & Sync::Player::UpdateBits::Channel) {
+			packet.add<channel_id_t>(player.channel);
+		}
+	}
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-auto SyncPacket::PlayerPacket::updateJob(int32_t playerId, int32_t job) -> void {
+auto SyncPacket::PlayerPacket::changeChannel(Player *info, channel_id_t channel) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int8_t>(Sync::Player::UpdateBits::Job);
-	packet.add<int32_t>(playerId);
-	packet.add<int32_t>(job);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto SyncPacket::PlayerPacket::updateMap(int32_t playerId, int32_t map) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::UpdatePlayer);
-	packet.add<int8_t>(Sync::Player::UpdateBits::Map);
-	packet.add<int32_t>(playerId);
-	packet.add<int32_t>(map);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::ChangeChannelRequest);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::ChangeChannelRequest);
 	packet.add<int32_t>(info->getId());
-	packet.add<uint16_t>(channel);
+	packet.add<channel_id_t>(channel);
 	packet.addClass<Ip>(info->getIp());
 	packet.add<int64_t>(info->getConnectionTime());
+	Player *followed = info->getFollow();
+	packet.add<int32_t>(followed != nullptr ? followed->getId() : 0);
+	packet.add<bool>(info->isGmChat());
 
 	packet.addClass<PlayerActiveBuffs>(*info->getActiveBuffs());
 	packet.addClass<PlayerSummons>(*info->getSummons());
@@ -100,21 +97,20 @@ auto SyncPacket::PlayerPacket::changeChannel(Player *info, uint16_t channel) -> 
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
-auto SyncPacket::PlayerPacket::connect(Player *player) -> void {
+auto SyncPacket::PlayerPacket::connect(const PlayerData &player) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::Connect);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getMapId());
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::Connect);
+	packet.addClass<PlayerData>(player);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
 auto SyncPacket::PlayerPacket::disconnect(int32_t playerId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::Disconnect);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::Disconnect);
 	packet.add<int32_t>(playerId);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
@@ -122,8 +118,8 @@ auto SyncPacket::PlayerPacket::disconnect(int32_t playerId) -> void {
 auto SyncPacket::PlayerPacket::connectableEstablished(int32_t playerId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::ChangeChannelGo);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::ChangeChannelGo);
 	packet.add<int32_t>(playerId);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
@@ -131,7 +127,7 @@ auto SyncPacket::PlayerPacket::connectableEstablished(int32_t playerId) -> void 
 auto SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Party);
+	packet.add<sync_t>(Sync::SyncTypes::Party);
 	packet.add<int8_t>(type);
 	packet.add<int32_t>(playerId);
 	if (target != 0) {
@@ -143,8 +139,8 @@ auto SyncPacket::PartyPacket::sync(int8_t type, int32_t playerId, int32_t target
 auto SyncPacket::BuddyPacket::buddyInvite(int32_t inviterId, int32_t inviteeId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Buddy);
-	packet.add<int8_t>(Sync::Buddy::Invite);
+	packet.add<sync_t>(Sync::SyncTypes::Buddy);
+	packet.add<sync_t>(Sync::Buddy::Invite);
 	packet.add<int32_t>(inviterId);
 	packet.add<int32_t>(inviteeId);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
@@ -153,8 +149,8 @@ auto SyncPacket::BuddyPacket::buddyInvite(int32_t inviterId, int32_t inviteeId) 
 auto SyncPacket::BuddyPacket::buddyOnline(int32_t playerId, const vector_t<int32_t> &players, bool online) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Buddy);
-	packet.add<int8_t>(Sync::Buddy::OnlineOffline);
+	packet.add<sync_t>(Sync::SyncTypes::Buddy);
+	packet.add<sync_t>(Sync::Buddy::OnlineOffline);
 	packet.add<int32_t>(playerId);
 	packet.add<bool>(online);
 	packet.addVector(players);

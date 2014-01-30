@@ -24,5 +24,7 @@ namespace LoginServerAcceptHandler {
 	auto registerChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
 	auto updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
 	auto removeChannel(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
-	auto sendPacketToWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto sendPacketToAllWorlds(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto sendPacketToWorldList(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
+	auto sendPacketToWorld(LoginServerAcceptConnection *connection, PacketReader &packet) -> void;
 }

@@ -60,14 +60,14 @@ auto ChannelServer::loadData() -> void {
 }
 
 auto ChannelServer::makeLogIdentifier() const -> opt_string_t {
-	return buildLogIdentifier([&](out_stream_t &id) { id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << m_channelId; });
+	return buildLogIdentifier([&](out_stream_t &id) { id << "World: " << static_cast<int32_t>(m_worldId) << "; ID: " << static_cast<int32_t>(m_channelId); });
 }
 
 auto ChannelServer::getLogPrefix() const -> string_t {
 	return "channel";
 }
 
-auto ChannelServer::connectToWorld(int8_t worldId, port_t port, const Ip &ip) -> void {
+auto ChannelServer::connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void {
 	m_worldId = worldId;
 	m_worldPort = port;
 	m_worldIp = ip;
@@ -77,7 +77,7 @@ auto ChannelServer::connectToWorld(int8_t worldId, port_t port, const Ip &ip) ->
 	sendAuth(m_worldConnection);
 }
 
-auto ChannelServer::establishedWorldConnection(int16_t channelId, port_t port, const WorldConfig &config) -> void {
+auto ChannelServer::establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void {
 	m_channelId = channelId;
 	m_port = port;
 	m_config = config;
@@ -93,11 +93,11 @@ auto ChannelServer::isConnected() const -> bool {
 	return m_channelId != -1;
 }
 
-auto ChannelServer::getWorldId() const -> int8_t {
+auto ChannelServer::getWorldId() const -> world_id_t {
 	return m_worldId;
 }
 
-auto ChannelServer::getChannelId() const -> int16_t {
+auto ChannelServer::getChannelId() const -> channel_id_t {
 	return m_channelId;
 }
 

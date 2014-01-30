@@ -103,12 +103,12 @@ auto Characters::showAllCharacters(Player *player) -> void {
 		<< "WHERE c.user_id = :user ",
 		soci::use(player->getUserId(), "user"));
 
-	hash_map_t<uint8_t, vector_t<Character>> chars;
+	hash_map_t<world_id_t, vector_t<Character>> chars;
 	uint32_t charsNum = 0;
 	World *world;
 
 	for (const auto &row : rs) {
-		uint8_t worldId = row.get<uint8_t>("world_id");
+		world_id_t worldId = row.get<world_id_t>("world_id");
 		world = Worlds::getInstance().getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
@@ -130,7 +130,7 @@ auto Characters::showAllCharacters(Player *player) -> void {
 
 auto Characters::showCharacters(Player *player) -> void {
 	soci::session &sql = Database::getCharDb();
-	int8_t worldId = player->getWorldId();
+	world_id_t worldId = player->getWorldId();
 	int32_t userId = player->getUserId();
 
 	soci::rowset<> rs = (sql.prepare
@@ -299,7 +299,7 @@ auto Characters::deleteCharacter(Player *player, PacketReader &packet) -> void {
 
 	uint8_t result = Success;
 	soci::session &sql = Database::getCharDb();
-	opt_int8_t worldId;
+	MiscUtilities::optional<world_id_t> worldId;
 
 	sql.once
 		<< "SELECT world_id "
@@ -331,7 +331,9 @@ auto Characters::deleteCharacter(Player *player, PacketReader &packet) -> void {
 	else {
 		result = IncorrectBirthday;
 	}
+
 	LoginPacket::deleteCharacter(player, id, result);
+	SyncPacket::PlayerPacket::characterDeleted(Worlds::getInstance().getWorld(player->getWorldId()), id);
 }
 
 auto Characters::connectGame(Player *player, int32_t charId) -> void {
@@ -344,7 +346,7 @@ auto Characters::connectGame(Player *player, int32_t charId) -> void {
 		return;
 	}
 
-	LoginServerAcceptPacket::newPlayer(Worlds::getInstance().getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
+	LoginServerAcceptPacket::playerConnectingToChannel(Worlds::getInstance().getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
 	LoginPacket::connectIp(player, charId);
 }
 
@@ -360,11 +362,11 @@ auto Characters::connectGameWorldFromViewAllCharacters(Player *player, PacketRea
 		return;
 	}
 	int32_t id = packet.get<int32_t>();
-	int8_t worldId = static_cast<int8_t>(packet.get<int32_t>());
+	world_id_t worldId = static_cast<world_id_t>(packet.get<int32_t>());
 	player->setWorldId(worldId);
 
 	// Take the player to a random channel
-	uint16_t channel = Worlds::getInstance().getWorld(worldId)->getRandomChannel();
+	channel_id_t channel = Worlds::getInstance().getWorld(worldId)->getRandomChannel();
 	player->setChannel(channel);
 
 	connectGame(player, id);

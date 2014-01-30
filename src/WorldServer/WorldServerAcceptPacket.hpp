@@ -25,9 +25,7 @@ class WorldServerAcceptConnection;
 struct WorldConfig;
 
 namespace WorldServerAcceptPacket {
-	auto connect(WorldServerAcceptConnection *connection, uint16_t channel, port_t port) -> void;
-	auto findPlayer(WorldServerAcceptConnection *connection, int32_t finder, uint16_t channel, const string_t &findee, uint8_t is = 0) -> void;
-	auto whisperPlayer(int16_t channel, int32_t whisperee, const string_t &whisperer, int16_t whispererChannel, const string_t &message) -> void;
-	auto groupChat(uint16_t channel, int32_t playerId, int8_t type, const string_t &message, const string_t &sender) -> void;
+	auto connect(WorldServerAcceptConnection *connection, channel_id_t channel, port_t port) -> void;
 	auto rehashConfig(const WorldConfig &config) -> void;
+	auto forwardPacketToChannel(channel_id_t channelId, const PacketCreator &packet) -> void;
 }

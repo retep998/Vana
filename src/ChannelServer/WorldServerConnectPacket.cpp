@@ -25,33 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "WorldServerConnection.hpp"
 
-auto WorldServerConnectPacket::groupChat(int8_t type, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_GROUP_CHAT);
-	sendPacket.add<int32_t>(playerId);
-	sendPacket.add<int8_t>(type);
-	sendPacket.addString(chat);
-	sendPacket.addVector(receivers);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
-}
-
-auto WorldServerConnectPacket::findPlayer(int32_t playerId, const string_t &findeeName) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_FIND);
-	sendPacket.add<int32_t>(playerId);
-	sendPacket.addString(findeeName);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
-}
-
-auto WorldServerConnectPacket::whisperPlayer(int32_t playerId, const string_t &whisperee, const string_t &message) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_WHISPER);
-	sendPacket.add<int32_t>(playerId);
-	sendPacket.addString(whisperee);
-	sendPacket.addString(message);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
-}
-
 auto WorldServerConnectPacket::rankingCalculation() -> void {
 	PacketCreator sendPacket;
 	sendPacket.add<header_t>(IMSG_TO_LOGIN);
@@ -61,14 +34,14 @@ auto WorldServerConnectPacket::rankingCalculation() -> void {
 
 auto WorldServerConnectPacket::sendToChannels(PacketCreator &packet) -> void {
 	PacketCreator sendPacket;
-	sendPacket.add<int16_t>(IMSG_TO_CHANNELS);
+	sendPacket.add<int16_t>(IMSG_TO_ALL_CHANNELS);
 	sendPacket.addBuffer(packet);
 	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }
 
 auto WorldServerConnectPacket::sendToWorlds(PacketCreator &packet) -> void {
 	PacketCreator sendPacket;
-	sendPacket.add<int16_t>(IMSG_TO_WORLDS);
+	sendPacket.add<int16_t>(IMSG_TO_ALL_WORLDS);
 	sendPacket.addBuffer(packet);
 	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }

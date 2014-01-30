@@ -52,6 +52,7 @@ public:
 	Player();
 	~Player();
 
+	auto setGmChat(bool chat) -> void { m_gmChat = chat; }
 	auto setSaveOnDc(bool save) -> void { m_saveOnDc = save; }
 	auto setTrading(bool state) -> void { m_tradeState = state; }
 	auto setChangingChannel(bool v) -> void { m_changingChannel = v; }
@@ -71,9 +72,11 @@ public:
 	auto setChargeOrStationarySkill(const ChargeOrStationarySkillInfo &info) -> void { m_info = info; }
 	auto setNpc(Npc *npc) -> void { m_npc.reset(npc); }
 	auto setParty(Party *party) -> void { m_party = party; }
+	auto setFollow(Player *target) -> void { m_follow = target; }
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }
 
 	auto isGm() const -> bool { return m_gmLevel > 0; }
+	auto isGmChat() const -> bool { return m_gmChat; }
 	auto isAdmin() const -> bool { return m_admin; }
 	auto isChangingChannel() const -> bool { return m_changingChannel; }
 	auto isTrading() const -> bool { return m_tradeState; }
@@ -81,7 +84,7 @@ public:
 	auto isUsingGmHide() const -> bool;
 	auto hasGmBenefits() const -> bool;
 	auto hasChargeOrStationarySkill() const -> bool { return m_info.skillId != 0; }
-	auto getWorldId() const -> int8_t { return m_worldId; }
+	auto getWorldId() const -> world_id_t { return m_worldId; }
 	auto getGender() const -> int8_t { return m_gender; }
 	auto getSkin() const -> int8_t { return m_skin; }
 	auto getMapPos() const -> int8_t { return m_mapPos; }
@@ -108,6 +111,7 @@ public:
 	auto getChargeOrStationarySkillInfo() const -> ChargeOrStationarySkillInfo { return m_info; }
 
 	auto getMap() const -> Map *;
+	auto getFollow() const -> Player * { return m_follow; }
 	auto getNpc() const -> Npc * { return m_npc.get(); }
 	auto getParty() const -> Party * { return m_party; }
 	auto getInstance() const -> Instance * { return m_instance; }
@@ -129,7 +133,7 @@ public:
 	auto addUsedPortal(int8_t portalId) -> void { m_usedPortals.insert(portalId); }
 	auto usedPortal(int8_t portalId) const -> bool { return m_usedPortals.find(portalId) != std::end(m_usedPortals); }
 
-	auto changeChannel(int8_t channel) -> void;
+	auto changeChannel(channel_id_t channel) -> void;
 	auto saveAll(bool saveCooldowns = false) -> void;
 	auto setOnline(bool online) -> void;
 	auto setLevelDate() -> void;
@@ -148,7 +152,8 @@ private:
 	bool m_isConnect = false;
 	bool m_changingChannel = false;
 	bool m_admin = false;
-	int8_t m_worldId = -1;
+	bool m_gmChat = false;
+	world_id_t m_worldId = -1;
 	int8_t m_mapPos = -1;
 	int8_t m_gender = -1;
 	int8_t m_skin = 0;
@@ -170,6 +175,7 @@ private:
 	int64_t m_onlineTime = 0;
 	Instance *m_instance = nullptr;
 	Party *m_party = nullptr;
+	Player *m_follow = nullptr;
 	string_t m_chalkboard;
 	string_t m_name;
 	ChargeOrStationarySkillInfo m_info;

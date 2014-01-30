@@ -24,6 +24,7 @@ class Player;
 namespace ManagementFunctions {
 	auto map(Player *player, const string_t &args) -> bool;
 	auto warp(Player *player, const string_t &args) -> bool;
+	auto follow(Player *player, const string_t &args) -> bool;
 	auto changeChannel(Player *player, const string_t &args) -> bool;
 	auto lag(Player *player, const string_t &args) -> bool;
 	auto header(Player *player, const string_t &args) -> bool;

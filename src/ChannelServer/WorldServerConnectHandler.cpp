@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 
 auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) -> void {
-	int8_t worldId = packet.get<int8_t>();
+	world_id_t worldId = packet.get<world_id_t>();
 	if (worldId != -1) {
 		Ip ip = packet.getClass<Ip>();
 		port_t port = packet.get<port_t>();
@@ -54,39 +54,17 @@ auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 }
 
 auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) -> void {
-	int16_t channel = packet.get<int16_t>();
+	channel_id_t channel = packet.get<channel_id_t>();
 	if (channel != -1) {
 		port_t port = packet.get<port_t>();
 		WorldConfig conf = packet.getClass<WorldConfig>();
-		std::cout << "Handling channel " << channel << " on port " << port << std::endl;
+		std::cout << "Handling channel " <<static_cast<int32_t>(channel) << " on port " << port << std::endl;
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
 	else {
 		std::cerr << "ERROR: No channel to handle" << std::endl;
 		ChannelServer::getInstance().shutdown();
 	}
-}
-
-auto WorldServerConnectHandler::findPlayer(PacketReader &packet) -> void {
-	int32_t finder = packet.get<int32_t>();
-	int16_t channel = packet.get<int16_t>();
-	const string_t &name = packet.getString();
-	int8_t is = packet.get<int8_t>();
-	if (channel == -1) {
-		PlayersPacket::findPlayer(PlayerDataProvider::getInstance().getPlayer(finder), name, -1, is);
-	}
-	else {
-		PlayersPacket::findPlayer(PlayerDataProvider::getInstance().getPlayer(finder), name, channel, is, 1);
-	}
-}
-
-auto WorldServerConnectHandler::whisperPlayer(PacketReader &packet) -> void {
-	int32_t whisperee = packet.get<int32_t>();
-	const string_t &whisperer = packet.getString();
-	uint16_t channel = packet.get<int16_t>();
-	const string_t &message = packet.getString();
-
-	PlayersPacket::whisperPlayer(PlayerDataProvider::getInstance().getPlayer(whisperee), whisperer, channel, message);
 }
 
 auto WorldServerConnectHandler::forwardPacket(PacketReader &packet) -> void {
@@ -96,8 +74,13 @@ auto WorldServerConnectHandler::forwardPacket(PacketReader &packet) -> void {
 	PlayerDataProvider::getInstance().getPlayer(playerId)->getSession()->send(sendPacket);
 }
 
-auto WorldServerConnectHandler::sendToPlayers(PacketReader &packet) -> void {
-	PlayersPacket::sendToPlayers(packet.getBuffer(), packet.getBufferLength());
+auto WorldServerConnectHandler::sendToAllPlayers(PacketReader &packet) -> void {
+	PlayersPacket::sendToAllPlayers(packet.getBuffer(), packet.getBufferLength());
+}
+
+auto WorldServerConnectHandler::sendToPlayerList(PacketReader &packet) -> void {
+	vector_t<int32_t> playerIds = packet.getVector<int32_t>();
+	PlayersPacket::sendToPlayerList(playerIds, packet.getBuffer(), packet.getBufferLength());
 }
 
 auto WorldServerConnectHandler::reloadMcdb(PacketReader &packet) -> void {

@@ -30,9 +30,9 @@ public:
 	~Player();
 
 	auto setGender(int8_t gender) -> void { m_gender = gender; }
-	auto setWorldId(int8_t worldId) -> void { m_worldId = worldId; }
+	auto setWorldId(world_id_t worldId) -> void { m_worldId = worldId; }
 	auto setAdmin(bool value) -> void { m_admin = value; }
-	auto setChannel(uint16_t channel) -> void {	m_channel = channel; }
+	auto setChannel(channel_id_t channel) -> void {	m_channel = channel; }
 	auto setUserId(int32_t id) -> void { m_userId = id; }
 	auto setStatus(PlayerStatus::PlayerStatus status) -> void { m_status = status; }
 	auto setPin(int32_t pin) -> void { m_pin = pin; }
@@ -42,9 +42,9 @@ public:
 	auto setCreationTime(int64_t creationTime) -> void { m_userCreation = creationTime; }
 
 	auto getGender() const -> int8_t { return m_gender; }
-	auto getWorldId() const -> int8_t { return m_worldId; }
+	auto getWorldId() const -> world_id_t { return m_worldId; }
 	auto isAdmin() const -> bool { return m_admin; }
-	auto getChannel() const -> uint16_t { return m_channel; }
+	auto getChannel() const -> channel_id_t { return m_channel; }
 	auto getUserId() const -> int32_t { return m_userId; }
 	auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
 	auto getPin() const -> int32_t { return m_pin; }
@@ -61,9 +61,9 @@ private:
 	bool m_admin = false;
 	bool m_checkedPin = false;
 	int8_t m_gender = -1;
-	int8_t m_worldId = -1;
+	world_id_t m_worldId = -1;
 	int8_t m_quietBanReason = 0;
-	uint16_t m_channel = 0;
+	channel_id_t m_channel = 0;
 	int32_t m_userId = 0;
 	int32_t m_pin = 0;
 	int32_t m_invalidLogins = 0;

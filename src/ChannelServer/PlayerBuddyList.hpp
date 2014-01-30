@@ -33,8 +33,8 @@ namespace soci {
 
 struct Buddy {
 	uint8_t oppositeStatus = 0;
-	int32_t channel = 0;
 	int32_t charId = 0;
+	channel_id_t channel = 0;
 	string_t name;
 	string_t groupName;
 };

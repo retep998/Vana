@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MapFunctions.hpp"
+#include "Algorithm.hpp"
 #include "ChannelServer.hpp"
 #include "Map.hpp"
 #include "Maps.hpp"
@@ -212,7 +213,7 @@ auto MapFunctions::summon(Player *player, const string_t &args) -> bool {
 		int32_t mobId = atoi(rawMobId.c_str());
 		if (MobDataProvider::getInstance().mobExists(mobId)) {
 			string_t countString = matches[2];
-			int32_t count = std::max(countString.length() > 0 ? atoi(countString.c_str()) : 1, 100);
+			int32_t count = ext::constrain_range(countString.length() > 0 ? atoi(countString.c_str()) : 1, 1, 100);
 			for (int32_t i = 0; i < count; ++i) {
 				player->getMap()->spawnMob(mobId, player->getPos());
 			}

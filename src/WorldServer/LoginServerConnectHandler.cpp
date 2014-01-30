@@ -20,14 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "LoginServerConnection.hpp"
 #include "PacketReader.hpp"
-#include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "SyncPacket.hpp"
 #include "WorldServer.hpp"
 #include <iostream>
 
 auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) -> void {
-	int8_t worldId = packet.get<int8_t>();
+	world_id_t worldId = packet.get<world_id_t>();
 	if (worldId != -1) {
 		port_t port = packet.get<port_t>();
 		WorldConfig conf = packet.getClass<WorldConfig>();
@@ -37,22 +36,6 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	else {
 		std::cerr << "ERROR: No world to handle" << std::endl;
 		WorldServer::getInstance().shutdown();
-	}
-}
-
-auto LoginServerConnectHandler::newPlayer(PacketReader &packet) -> void {
-	uint16_t channel = packet.get<int16_t>();
-	int32_t playerId = packet.get<int32_t>();
-	const Ip &ip = packet.getClass<Ip>();
-
-	if (Channels::getInstance().getChannel(channel)) {
-		Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
-		if (player == nullptr || !player->isOnline()) {
-			// Do not create the connectable if the player is already online
-			// (extra security if the client ignores CC packet)
-			PlayerDataProvider::getInstance().initialPlayerConnect(playerId, channel, ip);
-			SyncPacket::PlayerPacket::newConnectable(channel, playerId, ip, packet);
-		}
 	}
 }
 

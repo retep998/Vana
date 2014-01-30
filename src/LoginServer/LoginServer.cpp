@@ -111,7 +111,7 @@ auto LoginServer::loadWorlds() -> void {
 		dest.mobMesoRate = config.get<int32_t>(getKey("mob_meso_rate"));
 		dest.dropRate = config.get<int32_t>(getKey("drop_rate"));
 	};
-	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string_t &src, size_t maxChannels) {
+	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string_t &src, channel_id_t maxChannels) {
 		dest.attempts = config.get<int16_t>(getKey(src + "_attempts"));
 		dest.channels = config.getBossChannels(getKey(src + "_channels"), maxChannels);
 	};
@@ -124,7 +124,7 @@ auto LoginServer::loadWorlds() -> void {
 		}
 
 		conf.name = config.get<string_t>(key);
-		int8_t worldId = config.get<int8_t>(getKey("id"));
+		world_id_t worldId = config.get<world_id_t>(getKey("id"));
 
 		World *world = Worlds::getInstance().getWorld(worldId);
 		added = (world == nullptr);
@@ -132,7 +132,7 @@ auto LoginServer::loadWorlds() -> void {
 			world = new World();
 		}
 
-		conf.maxChannels = config.get<int32_t>(getKey("channels"));
+		conf.maxChannels = config.get<channel_id_t>(getKey("channels"));
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
 		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
 		conf.maxMultiLevel = config.get<uint8_t>(getKey("max_multi_level"));

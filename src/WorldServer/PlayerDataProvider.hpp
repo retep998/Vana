@@ -20,15 +20,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameObjects.hpp"
 #include "Ip.hpp"
 #include "LoopingId.hpp"
+#include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
+class AbstractConnection;
 class PacketCreator;
-class Party;
 class Player;
+class WorldServerAcceptConnection;
 namespace soci {
 	class row;
 }
@@ -38,42 +40,44 @@ class PlayerDataProvider {
 public:
 	auto loadData() -> void;
 	auto getChannelConnectPacket(PacketCreator &packet) -> void;
-	auto getPlayerDataPacket(PacketCreator &packet, int32_t playerId) -> void;
+	auto channelDisconnect(channel_id_t channel) -> void;
+	auto forwardPacketToPlayer(PacketReader &packet) -> void;
+	auto forwardPacketToPlayerList(PacketReader &packet) -> void;
+	auto forwardPacketToAllPlayers(PacketReader &packet) -> void;
 
-	// Player info
-	auto initialPlayerConnect(int32_t id, uint16_t channel, const Ip &ip) -> void;
-	auto playerConnect(Player *player, bool online = true) -> void;
-	auto playerDisconnect(int32_t id, int16_t channel = -1) -> void;
-	auto removeChannelPlayers(uint16_t channel) -> void;
+	// Handling
+	auto handlePlayerSync(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handlePartySync(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handleBuddySync(AbstractConnection *connection, PacketReader &packet) -> void;
+private:
+	auto loadPlayers(world_id_t worldId) -> void;
 	auto loadPlayer(int32_t playerId) -> void;
-	auto getPlayer(const string_t &name, bool includeOffline = false) -> Player *;
-	auto getPlayer(int32_t id, bool includeOffline = false) -> Player *;
-	auto getPlayerQuantity() -> int32_t;
+	auto addPlayer(const PlayerData &data) -> void;
 
-	// Channel changes
-	auto addPendingPlayer(int32_t id, uint16_t channelId) -> void;
-	auto removePendingPlayer(int32_t id) -> void;
-	auto removePendingPlayerEarly(int32_t id) -> int16_t;
-	auto getPendingPlayerChannel(int32_t id) -> uint16_t;
+	// Players
+	auto removePendingPlayer(int32_t id) -> channel_id_t;
+	auto handlePlayerConnect(channel_id_t channel, PacketReader &packet) -> void;
+	auto handlePlayerDisconnect(channel_id_t channel, PacketReader &packet) -> void;
+	auto handleChangeChannelRequest(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handleChangeChannel(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handlePlayerUpdate(PacketReader &packet) -> void;
+	auto handleCharacterCreated(PacketReader &packet) -> void;
+	auto handleCharacterDeleted(PacketReader &packet) -> void;
 
 	// Parties
-	auto getPartyId() -> int32_t;
-	auto createParty(int32_t playerId) -> void;
-	auto addPartyMember(int32_t playerId) -> void;
-	auto removePartyMember(int32_t playerId, int32_t target) -> void;
-	auto removePartyMember(int32_t playerId) -> void;
-	auto setPartyLeader(int32_t playerId, int32_t leaderId) -> void;
-	auto disbandParty(int32_t id) -> void;
-	auto getParty(int32_t id) -> Party *;
-private:
-	auto loadGuilds(int16_t worldId) -> void;
-	auto loadAlliances(int16_t worldId) -> void;
-	auto loadPlayers(int16_t worldId) -> void;
-	auto loadPlayer(const soci::row &row) -> void;
-	auto generatePlayerDataPacket(PacketCreator &packet, Player *player) -> void;
+	auto handleCreateParty(int32_t playerId) -> void;
+	auto handlePartyAdd(int32_t playerId, int32_t partyId) -> void;
+	auto handlePartyRemove(int32_t playerId, int32_t targetId) -> void;
+	auto handlePartyLeave(int32_t playerId) -> void;
+	auto handlePartyTransfer(int32_t playerId, int32_t newLeaderId) -> void;
+
+	// Buddies
+	auto buddyInvite(PacketReader &packet) -> void;
+	auto buddyOnline(PacketReader &packet) -> void;
 
 	LoopingId<int32_t> m_partyIds;
-	hash_map_t<int32_t, uint16_t> m_channelSwitches;
-	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
-	hash_map_t<int32_t, ref_ptr_t<Player>> m_players;
+	hash_map_t<int32_t, channel_id_t> m_channelSwitches;
+	hash_map_t<int32_t, PartyData> m_parties;
+	hash_map_t<int32_t, PlayerData> m_players;
+	case_insensitive_hash_map_t<PlayerData *> m_playersByName;
 };

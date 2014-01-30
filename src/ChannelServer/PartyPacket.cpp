@@ -48,7 +48,7 @@ auto PartyPacket::joinParty(Player *packetTarget, Party *party, const string_t &
 	packet.add<int8_t>(0x0F);
 	packet.add<int32_t>(party->getId());
 	packet.addString(player);
-	party->updatePacket(packet);
+	party->updatePacket(packetTarget->getMapId(), packet);
 	packetTarget->getSession()->send(packet);
 }
 
@@ -58,9 +58,10 @@ auto PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerI
 	packet.add<int8_t>(0x0C);
 	packet.add<int32_t>(party->getId());
 	packet.add<int32_t>(playerId);
+	packet.add<bool>(true); // Not disbanding
 	packet.add<bool>(kicked);
 	packet.addString(name);
-	party->updatePacket(packet);
+	party->updatePacket(packetTarget->getMapId(), packet);
 	packetTarget->getSession()->send(packet);
 }
 
@@ -80,7 +81,7 @@ auto PartyPacket::disbandParty(Player *packetTarget, Party *party) -> void {
 	packet.add<int8_t>(0x0C);
 	packet.add<int32_t>(party->getId());
 	packet.add<int32_t>(party->getLeaderId());
-	packet.add<int8_t>(0);
+	packet.add<bool>(false); // Disbanding
 	packet.add<int32_t>(party->getId());
 	packetTarget->getSession()->send(packet);
 }
@@ -88,7 +89,7 @@ auto PartyPacket::disbandParty(Player *packetTarget, Party *party) -> void {
 auto PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeader) -> void {
 	PacketCreator packet;
 	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x1A);
+	packet.add<int8_t>(0x1B);
 	packet.add<int32_t>(newLeader);
 	packet.add<bool>(false);
 	packetTarget->getSession()->send(packet);
@@ -99,6 +100,6 @@ auto PartyPacket::silentUpdate(Player *packetTarget, Party *party) -> void {
 	packet.add<int16_t>(SMSG_PARTY);
 	packet.add<int8_t>(0x07);
 	packet.add<int32_t>(party->getId());
-	party->updatePacket(packet);
+	party->updatePacket(packetTarget->getMapId(), packet);
 	packetTarget->getSession()->send(packet);
 }

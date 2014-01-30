@@ -26,8 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto SyncPacket::PlayerPacket::characterCreated(World *world, int32_t playerId) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_SYNC);
-	packet.add<int8_t>(Sync::SyncTypes::Player);
-	packet.add<int8_t>(Sync::Player::CharacterCreated);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::CharacterCreated);
+	packet.add<int32_t>(playerId);
+	world->send(packet);
+}
+
+auto SyncPacket::PlayerPacket::characterDeleted(World *world, int32_t playerId) -> void {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::CharacterDeleted);
 	packet.add<int32_t>(playerId);
 	world->send(packet);
 }

@@ -18,12 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 class PacketReader;
-class WorldServerAcceptConnection;
 
 namespace WorldServerAcceptHandler {
-	auto findPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
-	auto whisperPlayer(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
-	auto groupChat(WorldServerAcceptConnection *connection, PacketReader &packet) -> void;
-	auto sendPacketToChannels(PacketReader &packet) -> void;
 	auto sendPacketToLogin(PacketReader &packet) -> void;
+	auto sendPacketToChannel(PacketReader &packet) -> void;
+	auto sendPacketToChannelList(PacketReader &packet) -> void;
+	auto sendPacketToAllChannels(PacketReader &packet) -> void;
 }

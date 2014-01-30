@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.hpp"
+#include "InterHelper.hpp"
+#include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
@@ -26,8 +28,6 @@ class AbstractConnection;
 class Channel;
 class PacketCreator;
 class PacketReader;
-class Party;
-class Player;
 class WorldServerAcceptConnection;
 struct Rates;
 
@@ -46,16 +46,15 @@ namespace SyncPacket {
 		auto disbandParty(int32_t partyId) -> void;
 	}
 	namespace PlayerPacket {
-		auto playerChangeChannel(AbstractConnection *connection, int32_t playerId, const Ip &ip, port_t port) -> void;
-		auto newConnectable(uint16_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer) -> void;
-		auto deleteConnectable(uint16_t channel, int32_t playerId) -> void;
-		auto updatePlayerJob(int32_t playerId, int16_t job) -> void;
-		auto updatePlayerMap(int32_t playerId, int32_t map) -> void;
-		auto updatePlayerLevel(int32_t playerId, int16_t level) -> void;
-		auto characterCreated(int32_t playerId) -> void;
+		auto playerChangeChannel(AbstractConnection *connection, int32_t playerId, channel_id_t channelId, const Ip &ip, port_t port) -> void;
+		auto newConnectable(channel_id_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer) -> void;
+		auto deleteConnectable(channel_id_t channel, int32_t playerId) -> void;
+		auto updatePlayer(const PlayerData &data, update_bits_t flags) -> void;
+		auto characterCreated(const PlayerData &data) -> void;
+		auto characterDeleted(int32_t id) -> void;
 	}
 	namespace BuddyPacket {
 		auto sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string_t &name) -> void;
-		auto sendBuddyOnlineOffline(Channel *channel, const vector_t<int32_t> &players, int32_t playerId, int32_t channelId) -> void;
+		auto sendBuddyOnlineOffline(Channel *channel, const vector_t<int32_t> &players, int32_t playerId, channel_id_t channelId) -> void;
 	}
 }
