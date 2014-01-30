@@ -88,8 +88,7 @@ Player::~Player() {
 
 		int32_t isLeader = 0;
 		if (Party *party = getParty()) {
-			party->setMember(getId(), nullptr);
-			isLeader = getParty()->isLeader(getId()) ? 1 : 0;
+			isLeader = party->isLeader(getId()) ? 1 : 0;
 		}
 		if (Instance *instance = getInstance()) {
 			instance->removePlayer(getId());
@@ -257,7 +256,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	m_admin = row.get<bool>("admin");
 	m_eyes = row.get<int32_t>("eyes");
 	m_hair = row.get<int32_t>("hair");
-	m_worldId = row.get<int8_t>("world_id");
+	m_worldId = row.get<world_id_t>("world_id");
 	m_gender = row.get<int8_t>("gender");
 	m_skin = row.get<int8_t>("skin");
 	m_mapPos = row.get<int8_t>("pos");
@@ -309,6 +308,14 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 		// Packet transferring on channel switch
 		checked = true;
 		setConnectionTime(pack->get<int64_t>());
+		int32_t followId = pack->get<int32_t>();
+		if (followId != 0) {
+			if (Player *follow = PlayerDataProvider::getInstance().getPlayer(followId)) {
+				PlayerDataProvider::getInstance().addFollower(this, follow);
+			}
+		}
+
+		m_gmChat = pack->get<bool>();
 
 		PlayerActiveBuffs *buffs = getActiveBuffs();
 		buffs->read(*pack);
@@ -324,6 +331,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	else {
 		// No packet, that means that they're connecting for the first time
 		setConnectionTime(time(nullptr));
+		m_gmChat = false;
 	}
 
 	Connectable::getInstance().playerEstablished(id);
@@ -387,13 +395,28 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 
 	PlayerPacket::showSkillMacros(this, &skillMacros);
 
+	PlayerDataProvider::getInstance().addPlayer(this);
 	Maps::addPlayer(this, m_map);
 
 	ChannelServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
 
 	setOnline(true);
 	m_isConnect = true;
-	SyncPacket::PlayerPacket::connect(this);
+
+	PlayerData data;
+	data.cashShop = false;
+	data.admin = m_admin;
+	data.level = getStats()->getLevel();
+	data.job = getStats()->getJob();
+	data.channel = ChannelServer::getInstance().getChannelId();
+	data.map = m_map;
+	data.gmLevel = m_gmLevel;
+	data.party = 0;
+	data.id = m_id;
+	data.name = m_name;
+	data.ip = getIp();
+
+	SyncPacket::PlayerPacket::connect(data);
 	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
 }
 
@@ -463,9 +486,11 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 	if (!getChalkboard().empty() && !newMap->canChalkboard()) {
 		setChalkboard("");
 	}
-	SyncPacket::PlayerPacket::updateMap(getId(), mapId);
+
 	MapPacket::changeMap(this);
 	Maps::addPlayer(this, mapId);
+
+	PlayerDataProvider::getInstance().updatePlayerMap(this);
 }
 
 auto Player::getMedalName() -> string_t {
@@ -478,7 +503,7 @@ auto Player::getMedalName() -> string_t {
 	return ret.str();
 }
 
-auto Player::changeChannel(int8_t channel) -> void {
+auto Player::changeChannel(channel_id_t channel) -> void {
 	SyncPacket::PlayerPacket::changeChannel(this, channel);
 }
 

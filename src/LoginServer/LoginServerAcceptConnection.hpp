@@ -29,10 +29,10 @@ public:
 	~LoginServerAcceptConnection();
 	auto authenticated(ServerType type) -> void override;
 
-	auto setWorldId(int8_t id) -> void { m_worldId = id; }
-	auto getWorldId() const -> int8_t { return m_worldId; }
+	auto setWorldId(world_id_t id) -> void { m_worldId = id; }
+	auto getWorldId() const -> world_id_t { return m_worldId; }
 protected:
 	auto handleRequest(PacketReader &packet) -> void override;
 private:
-	int8_t m_worldId = -1;
+	world_id_t m_worldId = -1;
 };

@@ -33,9 +33,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto Login::loginUser(Player *player, PacketReader &packet) -> void {
-	const string_t &username = packet.getString();
-	const string_t &password = packet.getString();
-	const string_t &ip = player->getIp().toString();
+	string_t username = packet.getString();
+	string_t password = packet.getString();
+	string_t ip = player->getIp().toString();
 
 	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		// Hacking

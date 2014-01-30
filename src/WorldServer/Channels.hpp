@@ -31,15 +31,16 @@ class WorldServerAcceptConnection;
 class Channels {
 	SINGLETON(Channels);
 public:
-	auto registerChannel(WorldServerAcceptConnection *connection, uint16_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
-	auto removeChannel(uint16_t channel) -> void;
-	auto getChannel(uint16_t num) -> Channel *;
-	auto increasePopulation(uint16_t channel) -> void;
-	auto decreasePopulation(uint16_t channel) -> void;
-	auto sendToChannel(uint16_t channel, const PacketCreator &packet) -> void;
+	auto registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
+	auto removeChannel(channel_id_t channelId) -> void;
+	auto getChannel(channel_id_t num) -> Channel *;
+	auto increasePopulation(channel_id_t channelId) -> void;
+	auto decreasePopulation(channel_id_t channelId) -> void;
+	auto sendToChannel(channel_id_t channelId, const PacketCreator &packet) -> void;
+	auto sendToList(const vector_t<channel_id_t> &channels, const PacketCreator &packet) -> void;
 	auto sendToAll(const PacketCreator &packet) -> void;
-	auto size() -> uint16_t;
-	auto getAvailableChannel() -> uint16_t;
+	auto size() -> channel_id_t;
+	auto getAvailableChannel() -> channel_id_t;
 private:
-	hash_map_t<uint16_t, ref_ptr_t<Channel>> m_channels;
+	hash_map_t<channel_id_t, ref_ptr_t<Channel>> m_channels;
 };

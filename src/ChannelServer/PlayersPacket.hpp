@@ -32,8 +32,10 @@ namespace PlayersPacket {
 	auto damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) -> void;
 	auto showInfo(Player *player, Player *getInfo, bool isSelf) -> void;
 	auto findPlayer(Player *player, const string_t &name, int32_t map, uint8_t is = 0, bool isChannel = false) -> void;
-	auto whisperPlayer(Player *target, const string_t &whispererName, uint16_t channel, const string_t &message) -> void;
-	auto sendToPlayers(unsigned char *data, int32_t len) -> void;
+	auto whisperPlayer(Player *target, const string_t &whispererName, channel_id_t channel, const string_t &message) -> void;
+	auto whisperPlayer(int32_t playerId, const string_t &whispererName, channel_id_t sourceChannel, channel_id_t destinationChannel, const string_t &message) -> void;
+	auto sendToAllPlayers(unsigned char *data, int32_t len) -> void;
+	auto sendToPlayerList(const vector_t<int32_t> &playerIds, unsigned char *data, int32_t len) -> void;
 	auto useMeleeAttack(Player *player, const Attack &attack) -> void;
 	auto useRangedAttack(Player *player, const Attack &attack) -> void;
 	auto useSpellAttack(Player *player, const Attack &attack) -> void;

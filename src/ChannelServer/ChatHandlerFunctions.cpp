@@ -68,7 +68,8 @@ const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociation
 	{"kerning", {103000000, "Victoria"}},
 	{"port", {120000000, "Victoria"}},
 	// Misc Victoria
-	{"gamezone", {100000203, "Special"}},
+	{"gamezone", {100000203, "Misc Victoria"}},
+	{"hhg", {104040000, "Misc Victoria"}},
 	{"anttunnel", {105070001, "Misc Victoria"}},
 	{"dungeon", {105090200, "Misc Victoria"}},
 	{"subway", {103000100, "Misc Victoria"}},
@@ -98,7 +99,7 @@ const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociation
 	{"ariant", {260000000, "Ossyria"}},
 	{"magatia", {261000000, "Ossyria"}},
 	// Misc Ossyria
-	{"guildhq", {200000301, "Special"}},
+	{"guildhq", {200000301, "Misc Ossyria"}},
 	{"sharpcliff", {211040300, "Misc Ossyria"}},
 	{"mine", {211041400, "Misc Ossyria"}},
 	{"caveoftrial", {211042000, "Misc Ossyria"}},
@@ -382,6 +383,12 @@ auto ChatHandlerFunctions::initialize() -> void {
 	}
 	sCommandList["map"] = command.addToMap();
 
+	command.command = &ManagementFunctions::follow;
+	command.syntax = "[$player name]";
+	command.notes.push_back("Follows a player through his/her channel changes and map changes");
+	command.notes.push_back("You can stop following by using !follow with no arguments");
+	sCommandList["follow"] = command.addToMap();
+
 	command.command = &PlayerModFunctions::job;
 	command.syntax = "<$job string | #job ID>";
 	command.notes.push_back("Sets your job");
@@ -484,6 +491,10 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.syntax = "<$message>";
 	command.notes.push_back("Displays a blue GM notice");
 	sCommandList["notice"] = command.addToMap();
+
+	command.command = &MessageFunctions::gmChatMode;
+	command.notes.push_back("Toggles whether your all chat is displayed only to other GMs or functions like normal");
+	sCommandList["gmchat"] = command.addToMap();
 
 	command.command = &ManagementFunctions::shop;
 	command.syntax = "<${gear, scrolls, nx, face, ring, chair, mega, pet} | #shop ID>";

@@ -272,11 +272,44 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> bool {
 	return false;
 }
 
+auto ManagementFunctions::follow(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+)?)", matches)) {
+		string_t playerName = matches[1];
+		if (Player *follow = player->getFollow()) {
+			if (playerName.size() > 0) {
+				ChatHandlerFunctions::showError(player, "You're already following player " + follow->getName());
+			}
+			else {
+				PlayerDataProvider::getInstance().stopFollowing(player);
+				ChatHandlerFunctions::showInfo(player, "No longer following " + follow->getName());
+			}
+		}
+		else {
+			if (playerName.size() != 0) {
+				if (Player *target = PlayerDataProvider::getInstance().getPlayer(playerName)) {
+					PlayerDataProvider::getInstance().addFollower(player, target);
+					ChatHandlerFunctions::showInfo(player, "Now following player " + target->getName());
+				}
+				else {
+					ChatHandlerFunctions::showError(player, "Invalid player: " + playerName);
+				}
+			}
+			else {
+				ChatHandlerFunctions::showError(player, "You must specify a player to follow");
+			}
+		}
+		return true;
+	}
+
+	return false;
+}
+
 auto ManagementFunctions::changeChannel(Player *player, const string_t &args) -> bool {
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+))", matches)) {
 		string_t targetChannel = matches[1];
-		int8_t channel = atoi(targetChannel.c_str()) - 1;
+		channel_id_t channel = atoi(targetChannel.c_str()) - 1;
 		player->changeChannel(channel);
 		return true;
 	}
@@ -330,7 +363,7 @@ auto ManagementFunctions::kick(Player *player, const string_t &args) -> bool {
 }
 
 auto ManagementFunctions::relog(Player *player, const string_t &args) -> bool {
-	player->changeChannel(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
+	player->changeChannel(ChannelServer::getInstance().getChannelId());
 	return true;
 }
 

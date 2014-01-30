@@ -60,8 +60,8 @@ namespace LoginPacket {
 	auto showChannels(Player *player, int8_t status) -> void;
 	auto channelSelect(Player *player) -> void;
 	auto channelOffline(Player *player) -> void;
-	auto showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) -> void;
-	auto showViewAllCharacters(Player *player, uint8_t worldId, const vector_t<Character> &chars) -> void;
+	auto showAllCharactersInfo(Player *player, world_id_t worldCount, uint32_t unk) -> void;
+	auto showViewAllCharacters(Player *player, world_id_t worldId, const vector_t<Character> &chars) -> void;
 	auto showCharacters(Player *player, const vector_t<Character> &chars, int32_t maxChars) -> void;
 	auto showCharacter(Player *player, const Character &charc) -> void;
 	auto checkName(Player *player, const string_t &name, uint8_t message) -> void;

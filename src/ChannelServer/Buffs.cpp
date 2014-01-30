@@ -372,10 +372,10 @@ auto Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 			player->getStats()->setMapleWarrior(skill->x); // Take into account Maple Warrior for tracking stats if things are equippable, damage calculations, or w/e else
 			break;
 	}
-	const vector_t<Buff> &buffs = parseBuffs(skillId, level);
-	const ActiveBuff &playerSkill = parseBuffInfo(player, skillId, level);
-	const ActiveMapBuff &mapSkill = parseBuffMapInfo(player, skillId, level);
-	const ActiveMapBuff &enterSkill = parseBuffMapEntryInfo(player, skillId, level);
+	vector_t<Buff> buffs = parseBuffs(skillId, level);
+	ActiveBuff playerSkill = parseBuffInfo(player, skillId, level);
+	ActiveMapBuff mapSkill = parseBuffMapInfo(player, skillId, level);
+	ActiveMapBuff enterSkill = parseBuffMapEntryInfo(player, skillId, level);
 
 	if (mountId > 0) {
 		BuffsPacket::useMount(player, skillId, time, playerSkill, mapSkill, addedInfo, mountId);

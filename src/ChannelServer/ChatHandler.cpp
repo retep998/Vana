@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandlerFunctions.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
+#include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
 #include "PlayersPacket.hpp"
 #include "Session.hpp"
@@ -35,6 +36,11 @@ auto ChatHandler::handleChat(Player *player, PacketReader &packet) -> void {
 	bool bubbleOnly = packet.get<bool>(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
+		if (player->isGmChat()) {
+			PlayerDataProvider::getInstance().handleGmChat(player, message);
+			return;
+		}
+
 		PlayersPacket::showChat(player, message, bubbleOnly);
 	}
 }
@@ -46,6 +52,7 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 		// Prevent command printing for Admins
 		return true;
 	}
+
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
 		char *chat = const_cast<char *>(message.c_str());
 		string_t command = strtok(chat + 1, " ");
@@ -65,6 +72,7 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 		}
 		return true;
 	}
+
 	return false;
 }
 
@@ -75,6 +83,6 @@ auto ChatHandler::handleGroupChat(Player *player, PacketReader &packet) -> void 
 	string_t chat = packet.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
-		WorldServerConnectPacket::groupChat(type, player->getId(), receivers, chat);
+		PlayerDataProvider::getInstance().handleGroupChat(type, player->getId(), receivers, chat);
 	}
 }

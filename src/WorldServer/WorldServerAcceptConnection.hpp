@@ -30,9 +30,9 @@ public:
 
 	auto authenticated(ServerType type) -> void override;
 
-	auto getChannel() const -> uint16_t { return m_channel; }
+	auto getChannel() const -> channel_id_t { return m_channel; }
 protected:
 	auto handleRequest(PacketReader &packet) -> void override;
 private:
-	uint16_t m_channel = 0;
+	channel_id_t m_channel = 0;
 };

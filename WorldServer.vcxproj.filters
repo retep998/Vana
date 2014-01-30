@@ -24,12 +24,6 @@
     <ClCompile Include="src\WorldServer\Channel.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\Party.cpp">
-      <Filter>WorldServer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldServer\Player.cpp">
-      <Filter>WorldServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
@@ -67,12 +61,6 @@
       <Filter>WorldServer</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\Channels.hpp">
-      <Filter>WorldServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\Party.hpp">
-      <Filter>WorldServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\Player.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp">

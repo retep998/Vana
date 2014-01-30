@@ -31,12 +31,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketReader.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
+#include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
 #include "PlayersPacket.hpp"
 #include "Randomizer.hpp"
 #include "SkillDataProvider.hpp"
 #include "SummonHandler.hpp"
-#include "SyncPacket.hpp"
 #include <iostream>
 #include <limits>
 #include <string>
@@ -198,7 +198,7 @@ auto PlayerStats::setLevel(uint8_t level) -> void {
 	m_level = level;
 	PlayerPacket::updateStat(m_player, Stats::Level, level);
 	LevelsPacket::levelUp(m_player);
-	SyncPacket::PlayerPacket::updateLevel(m_player->getId(), level);
+	PlayerDataProvider::getInstance().updatePlayerLevel(m_player);
 }
 
 auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
@@ -277,7 +277,7 @@ auto PlayerStats::setJob(int16_t job) -> void {
 	m_job = job;
 	PlayerPacket::updateStat(m_player, Stats::Job, job);
 	LevelsPacket::jobChange(m_player);
-	SyncPacket::PlayerPacket::updateJob(m_player->getId(), job);
+	PlayerDataProvider::getInstance().updatePlayerJob(m_player);
 }
 
 auto PlayerStats::setStr(int16_t str) -> void {

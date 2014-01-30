@@ -32,14 +32,14 @@ class WorldServer final : public AbstractServer {
 	SINGLETON_CUSTOM_CONSTRUCTOR(WorldServer);
 public:
 	auto shutdown() -> void override;
-	auto establishedLoginConnection(int8_t worldId, port_t port, const WorldConfig &conf) -> void;
+	auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
 	auto rehashConfig(const WorldConfig &config) -> void;
 	auto setScrollingHeader(const string_t &message) -> void;
 	auto setRates(const Rates &rates) -> void;
 	auto resetRates() -> void;
 	auto isConnected() const -> bool;
-	auto getWorldId() const -> int8_t;
-	auto makeChannelPort(uint16_t channelId) const -> port_t; 
+	auto getWorldId() const -> world_id_t;
+	auto makeChannelPort(channel_id_t channelId) const -> port_t; 
 	auto getConfig() -> const WorldConfig &;
 	auto sendPacketToLogin(const PacketCreator &packet) -> void;
 protected:
@@ -48,7 +48,7 @@ protected:
 	auto makeLogIdentifier() const -> opt_string_t override;
 	auto getLogPrefix() const -> string_t override;
 private:
-	int8_t m_worldId = -1;
+	world_id_t m_worldId = -1;
 	port_t m_port = 0;
 	WorldConfig m_config;
 	Rates m_defaultRates;

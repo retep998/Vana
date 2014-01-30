@@ -34,7 +34,7 @@ class Party {
 public:
 	Party(int32_t partyId);
 
-	auto setLeader(int32_t playerId) -> void;
+	auto setLeader(int32_t playerId, bool showPacket = false) -> void;
 	auto setMember(int32_t playerId, Player *player) -> void;
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }
 	auto isLeader(int32_t playerId) const -> bool { return playerId == m_leaderId; }
@@ -47,9 +47,9 @@ public:
 
 	// More complicated specific functions
 	auto addMember(Player *player, bool first = false) -> void;
-	auto addMember(int32_t id, bool first = false) -> void;
+	auto addMember(int32_t id, const string_t &name, bool first = false) -> void;
 	auto deleteMember(Player *player, bool kicked) -> void;
-	auto deleteMember(int32_t id, bool kicked) -> void;
+	auto deleteMember(int32_t id, const string_t &name, bool kicked) -> void;
 	auto disband() -> void;
 	auto showHpBar(Player *player) -> void;
 	auto receiveHpBar(Player *player) -> void;
@@ -65,7 +65,8 @@ public:
 	auto getAllPlayerIds() -> vector_t<int32_t>;
 	auto getPartyMembers(int32_t mapId = -1) -> vector_t<Player *>;
 
-	auto updatePacket(PacketCreator &packet) -> void;
+	auto updatePacket(int32_t mapId, PacketCreator &packet) -> void;
+	auto getMembers() const -> const ord_map_t<int32_t, Player *, std::greater<int32_t>> & { return m_members; }
 private:
 	int32_t m_leaderId = 0;
 	int32_t m_partyId = 0;

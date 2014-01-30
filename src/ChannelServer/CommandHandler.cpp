@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "CommandHandler.hpp"
+#include "Algorithm.hpp"
 #include "Buffs.hpp"
 #include "ChatHandlerFunctions.hpp"
 #include "ChannelServer.hpp"
@@ -80,31 +81,48 @@ namespace AdminOpcodes {
 
 auto CommandHandler::handleCommand(Player *player, PacketReader &packet) -> void {
 	int8_t type = packet.get<int8_t>();
-	const string_t &name = packet.getString();
+	string_t name = packet.getString();
 	Player *receiver = PlayerDataProvider::getInstance().getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
-		case CommandOpcodes::FindPlayer:
+		case CommandOpcodes::FindPlayer: {
+			bool found = false;
 			if (receiver != nullptr) {
-				if (receiver->isUsingGmHide()) {
-					PlayersPacket::findPlayer(player, receiver->getName(), -1, 0);
-				}
-				else {
+				if (!receiver->isUsingGmHide() || player->isGm() || player->isAdmin()) {
 					PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMapId());
+					found = true;
 				}
 			}
 			else {
-				WorldServerConnectPacket::findPlayer(player->getId(), name);
+				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
+				if (targetData != nullptr) {
+					PlayersPacket::findPlayer(player, targetData->name, targetData->channel, 1, true);
+					found = true;
+				}
+			}
+			if (!found) {
+				PlayersPacket::findPlayer(player, name, -1, 0);
 			}
 			break;
+		}
 		case CommandOpcodes::Whisper: {
-			const string_t &chat = packet.getString();
-			if (receiver) {
+			string_t chat = packet.getString();
+			bool found = false;
+			if (receiver != nullptr) {
 				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::getInstance().getChannelId(), chat);
 				PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
+				found = true;
 			}
 			else {
-				WorldServerConnectPacket::whisperPlayer(player->getId(), name, chat);
+				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
+				if (targetData != nullptr && targetData->channel != -1) {
+					PlayersPacket::findPlayer(player, targetData->name, -1, 1);
+					PlayersPacket::whisperPlayer(targetData->id, player->getName(), ChannelServer::getInstance().getChannelId(), targetData->channel, chat);
+					found = true;
+				}
+			}
+			if (!found) {
+				PlayersPacket::findPlayer(player, name, -1, 0);
 			}
 			break;
 		}
@@ -122,9 +140,10 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 		case AdminOpcodes::Hide: {
 			bool hide = packet.get<bool>();
 			if (hide) {
-				MapPacket::removePlayer(player);
-				GmPacket::beginHide(player);
-				Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0);
+				if (Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0)) {
+					GmPacket::beginHide(player);
+					player->getMap()->gmHideChange(player);
+				}
 			}
 			else {
 				Skills::stopSkill(player, Skills::SuperGm::Hide);
@@ -132,7 +151,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::Send: {
-			const string_t &name = packet.getString();
+			string_t name = packet.getString();
 			int32_t mapId = packet.get<int32_t>();
 
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(name)) {
@@ -148,7 +167,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			int32_t mobId = packet.get<int32_t>();
 			int32_t count = packet.get<int32_t>();
 			if (MobDataProvider::getInstance().mobExists(mobId)) {
-				for (int32_t i = 0; i < count && i < 100; i++) {
+				count = ext::constrain_range(count, 1, 100);
+				for (int32_t i = 0; i < count; ++i) {
 					player->getMap()->spawnMob(mobId, player->getPos());
 				}
 			}
@@ -168,7 +188,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 				return;
 			}
 			uint8_t slots = player->getInventory()->getMaxSlots(inv);
-			for (int8_t i = 0; i < slots; i++) {
+			for (int8_t i = 0; i < slots; ++i) {
 				if (Item *item = player->getInventory()->getItem(inv, i)) {
 					Inventory::takeItemSlot(player, inv, i, player->getInventory()->getItemAmountBySlot(inv, i));
 					break;
@@ -182,7 +202,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::Ban: {
-			const string_t &victim = packet.getString();
+			string_t victim = packet.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				receiver->getSession()->disconnect();
 			}
@@ -192,10 +212,10 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::Block: {
-			const string_t &victim = packet.getString();
+			string_t victim = packet.getString();
 			int8_t reason = packet.get<int8_t>();
 			int32_t length = packet.get<int32_t>();
-			const string_t &reasonMessage = packet.getString();
+			string_t reasonMessage = packet.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				Database::getCharDb().once
 					<< "UPDATE user_accounts u "
@@ -211,7 +231,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 					soci::use(reasonMessage, "reasonMessage");
 
 				GmPacket::block(player);
-				const string_t &banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+				string_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
 			}
 			else {
@@ -227,11 +247,11 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = packet.get<int8_t>();
-			const string_t &playerName = packet.getString();
+			string_t playerName = packet.getString();
 			if (Player *victim = PlayerDataProvider::getInstance().getPlayer(playerName)) {
-				const string_t &variableName = packet.getString();
+				string_t variableName = packet.getString();
 				if (type == 0x0a) {
-					const string_t &variableValue = packet.getString();
+					string_t variableValue = packet.getString();
 					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
@@ -244,8 +264,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::Warn: {
-			const string_t &victim = packet.getString();
-			const string_t &message = packet.getString();
+			string_t victim = packet.getString();
+			string_t message = packet.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				PlayerPacket::showMessage(receiver, message, PlayerPacket::NoticeTypes::Box);
 				GmPacket::warning(player, true);

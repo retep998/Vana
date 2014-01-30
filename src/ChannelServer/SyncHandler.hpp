@@ -24,11 +24,4 @@ class PacketReader;
 namespace SyncHandler {
 	auto handle(PacketReader &packet) -> void;
 	auto handleConfigSync(PacketReader &packet) -> void;
-	auto handleChannelSync(PacketReader &packet) -> void;
-	auto handlePlayerSync(PacketReader &packet) -> void;
-	auto handlePartySync(PacketReader &packet) -> void;
-	auto handleBuddySync(PacketReader &packet) -> void;
-	auto buddyInvite(PacketReader &packet) -> void;
-	auto buddyOnlineOffline(PacketReader &packet) -> void;
-	auto setRates(PacketReader &packet) -> void;
 }

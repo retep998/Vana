@@ -374,11 +374,11 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) -
 		return;
 	}
 
-	const string_t &line1 = packet.getString();
-	const string_t &line2 = packet.getString();
-	const string_t &line3 = packet.getString();
-	const string_t &line4 = packet.getString();
-	const string_t &line5 = packet.getString();
+	string_t line1 = packet.getString();
+	string_t line2 = packet.getString();
+	string_t line3 = packet.getString();
+	string_t line4 = packet.getString();
+	string_t line5 = packet.getString();
 	if (hasTarget) {
 		receiver = PlayerDataProvider::getInstance().getPlayer(packet.getString());
 	}

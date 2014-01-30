@@ -117,22 +117,22 @@ auto ConfigFile::getIpMatrix(const string_t &value) -> IpMatrix {
 	return matrix;
 }
 
-auto ConfigFile::getBossChannels(const string_t &value, size_t maxChannels) -> vector_t<int8_t> {
+auto ConfigFile::getBossChannels(const string_t &value, channel_id_t maxChannels) -> vector_t<channel_id_t> {
 	keyMustExist(value);
-	vector_t<int8_t> channels;
+	vector_t<channel_id_t> channels;
 
 	lua_getglobal(m_luaVm, value.c_str());
 	lua_pushnil(m_luaVm);
 	while (lua_next(m_luaVm, -2)) {
-		channels.push_back(static_cast<int8_t>(lua_tointeger(m_luaVm, -1)));
+		channels.push_back(static_cast<channel_id_t>(lua_tointeger(m_luaVm, -1)));
 		lua_pop(m_luaVm, 1);
 	}
 	lua_pop(m_luaVm, 1);
 
 	if (channels.size() == 1 && channels[0] == -1) {
 		channels.clear();
-		for (size_t i = 1; i <= maxChannels; i++) {
-			channels.push_back(static_cast<int8_t>(i));
+		for (channel_id_t i = 1; i <= maxChannels; i++) {
+			channels.push_back(static_cast<channel_id_t>(i));
 		}
 	}
 	return channels;

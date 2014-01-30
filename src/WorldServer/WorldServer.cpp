@@ -56,7 +56,7 @@ auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 	WorldServerAcceptPacket::rehashConfig(config);
 }
 
-auto WorldServer::establishedLoginConnection(int8_t worldId, port_t port, const WorldConfig &conf) -> void {
+auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
 	m_worldId = worldId;
 	m_port = port;
 	m_config = conf;
@@ -87,11 +87,11 @@ auto WorldServer::isConnected() const -> bool {
 	return m_worldId != -1;
 }
 
-auto WorldServer::getWorldId() const -> int8_t {
+auto WorldServer::getWorldId() const -> world_id_t {
 	return m_worldId;
 }
 
-auto WorldServer::makeChannelPort(uint16_t channelId) const -> port_t {
+auto WorldServer::makeChannelPort(channel_id_t channelId) const -> port_t {
 	return m_port + channelId + 1;
 }
 

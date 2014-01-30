@@ -16,8 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayersPacket.hpp"
+#include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
+#include "InterHeader.hpp"
 #include "Maps.hpp"
 #include "PacketCreator.hpp"
 #include "PacketReader.hpp"
@@ -116,7 +118,7 @@ auto PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) -> vo
 	player->getSession()->send(packet);
 }
 
-auto PlayersPacket::whisperPlayer(Player *target, const string_t &whispererName, uint16_t channel, const string_t &message) -> void {
+auto PlayersPacket::whisperPlayer(Player *target, const string_t &whispererName, channel_id_t channel, const string_t &message) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_COMMAND);
 	packet.add<int8_t>(0x12);
@@ -124,6 +126,20 @@ auto PlayersPacket::whisperPlayer(Player *target, const string_t &whispererName,
 	packet.add<int16_t>(channel);
 	packet.addString(message);
 	target->getSession()->send(packet);
+}
+
+auto PlayersPacket::whisperPlayer(int32_t playerId, const string_t &whispererName, channel_id_t sourceChannel, channel_id_t destinationChannel, const string_t &message) -> void {
+	PacketCreator packet;
+	packet.add<header_t>(IMSG_TO_CHANNEL);
+	packet.add<channel_id_t>(destinationChannel);
+	packet.add<header_t>(IMSG_TO_PLAYER);
+	packet.add<int32_t>(playerId);
+	packet.add<header_t>(SMSG_COMMAND);
+	packet.add<int8_t>(0x12);
+	packet.addString(whispererName);
+	packet.add<int16_t>(sourceChannel);
+	packet.addString(message);
+	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
 
 auto PlayersPacket::findPlayer(Player *player, const string_t &name, int32_t map, uint8_t is, bool isChannel) -> void {
@@ -146,10 +162,16 @@ auto PlayersPacket::findPlayer(Player *player, const string_t &name, int32_t map
 	player->getSession()->send(packet);
 }
 
-auto PlayersPacket::sendToPlayers(unsigned char *data, int32_t len) -> void {
+auto PlayersPacket::sendToAllPlayers(unsigned char *data, int32_t len) -> void {
 	PacketCreator packet;
 	packet.addBuffer(data, len);
 	PlayerDataProvider::getInstance().sendPacket(packet);
+}
+
+auto PlayersPacket::sendToPlayerList(const vector_t<int32_t> &playerIds, unsigned char *data, int32_t len) -> void {
+	PacketCreator packet;
+	packet.addBuffer(data, len);
+	PlayerDataProvider::getInstance().sendPacketToList(playerIds, packet);
 }
 
 auto PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) -> void {

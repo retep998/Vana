@@ -35,17 +35,19 @@ public:
 	auto channelSelect(Player *player, PacketReader &packet) -> void;
 	auto selectWorld(Player *player, PacketReader &packet) -> void;
 	auto showWorld(Player *player) -> void;
-	auto toWorlds(PacketCreator &packet) -> void;
+	auto sendPacketToAll(const PacketCreator &packet) const -> void;
+	auto sendPacketToList(const vector_t<world_id_t> &worlds, const PacketCreator &packet) const -> void;
+
 	auto addWorld(World *world) -> void;
 	auto calculatePlayerLoad(World *world) -> void;
 	auto runFunction(function_t<bool (World *)> func) -> void;
 	auto setEventMessages(const string_t &message) -> void;
 
-	auto getWorld(int8_t id) -> World *;
+	auto getWorld(world_id_t id) -> World *;
 
 	// Inter-server
-	auto addWorldServer(LoginServerAcceptConnection *connection) -> int8_t;
-	auto addChannelServer(LoginServerAcceptConnection *connection) -> int8_t;
+	auto addWorldServer(LoginServerAcceptConnection *connection) -> world_id_t;
+	auto addChannelServer(LoginServerAcceptConnection *connection) -> world_id_t;
 private:
-	ord_map_t<int8_t, World *> m_worlds;
+	ord_map_t<world_id_t, World *> m_worlds;
 };

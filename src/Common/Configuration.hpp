@@ -35,11 +35,11 @@ struct MajorBoss : public IPacketSerializable {
 
 	auto read(PacketReader &packet) -> void override {
 		attempts = packet.get<int16_t>();
-		channels = packet.getVector<int8_t>();
+		channels = packet.getVector<channel_id_t>();
 	}
 
 	int16_t attempts = 0;
-	vector_t<int8_t> channels;
+	vector_t<channel_id_t> channels;
 };
 
 struct Rates : public IPacketSerializable {
@@ -79,10 +79,10 @@ struct WorldConfig : public IPacketSerializable {
 		packet.add<int32_t>(defaultChars);
 		packet.add<int32_t>(maxChars);
 		packet.add<int32_t>(maxPlayerLoad);
-		packet.add<int32_t>(maxChannels);
 		packet.add<int32_t>(fameTime);
 		packet.add<int32_t>(fameResetTime);
 		packet.add<int32_t>(mapUnloadTime);
+		packet.add<channel_id_t>(maxChannels);
 		packet.addString(eventMsg);
 		packet.addString(scrollingHeader);
 		packet.addString(name);
@@ -102,10 +102,10 @@ struct WorldConfig : public IPacketSerializable {
 		defaultChars = packet.get<int32_t>();
 		maxChars = packet.get<int32_t>();
 		maxPlayerLoad = packet.get<int32_t>();
-		maxChannels = packet.get<int32_t>();
 		fameTime = packet.get<int32_t>();
 		fameResetTime = packet.get<int32_t>();
 		mapUnloadTime = packet.get<int32_t>();
+		maxChannels = packet.get<channel_id_t>();
 		eventMsg = packet.getString();
 		scrollingHeader = packet.getString();
 		name = packet.getString();
@@ -127,7 +127,7 @@ struct WorldConfig : public IPacketSerializable {
 	int32_t fameTime = 30 * 60 * 60;
 	int32_t fameResetTime = 30 * 60 * 60;
 	int32_t mapUnloadTime = 30 * 60;
-	size_t maxChannels = 20;
+	channel_id_t maxChannels = 20;
 	string_t eventMsg;
 	string_t scrollingHeader;
 	string_t name;

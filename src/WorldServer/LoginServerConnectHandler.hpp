@@ -22,6 +22,5 @@ class PacketReader;
 
 namespace LoginServerConnectHandler {
 	auto connect(LoginServerConnection *connection, PacketReader &packet) -> void;
-	auto newPlayer(PacketReader &packet) -> void;
 	auto rehashConfig(PacketReader &packet) -> void;
 }

@@ -42,10 +42,9 @@ auto WorldServerConnection::handleRequest(PacketReader &packet) -> void {
 	switch (packet.getHeader()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
-		case IMSG_TO_PLAYERS: WorldServerConnectHandler::sendToPlayers(packet); break;
-		case IMSG_FIND: WorldServerConnectHandler::findPlayer(packet); break;
-		case IMSG_WHISPER: WorldServerConnectHandler::whisperPlayer(packet); break;
 		case IMSG_TO_PLAYER: WorldServerConnectHandler::forwardPacket(packet); break;
+		case IMSG_TO_PLAYER_LIST: WorldServerConnectHandler::sendToPlayerList(packet); break;
+		case IMSG_TO_ALL_PLAYERS: WorldServerConnectHandler::sendToAllPlayers(packet); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
 		case IMSG_REHASH_CONFIG: WorldServerConnectHandler::rehashConfig(packet); break;
 

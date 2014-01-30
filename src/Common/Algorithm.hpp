@@ -27,9 +27,9 @@ namespace ext {
 		return map.find(key) != std::end(map);
 	}
 
-	template <typename TKey, typename TValue>
+	template <typename TKey, typename TValue, typename THash, typename TOperation>
 	inline
-	auto find_value_ptr(const hash_map_t<TKey, TValue> &map, const TKey &key) -> const TValue * const {
+	auto find_value_ptr(const hash_map_t<TKey, TValue, THash, TOperation> &map, const TKey &key) -> const TValue * const {
 		auto kvp = map.find(key);
 		if (kvp != std::end(map)) {
 			return &kvp->second;

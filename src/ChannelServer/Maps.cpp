@@ -140,7 +140,6 @@ auto Maps::useScriptedPortal(Player *player, PacketReader &packet) -> void {
 }
 
 auto Maps::addPlayer(Player *player, int32_t mapId) -> void {
-	PlayerDataProvider::getInstance().addPlayer(player);
 	getMap(mapId)->addPlayer(player);
 	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);

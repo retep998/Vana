@@ -32,18 +32,4 @@ namespace SyncHandler {
 	auto handleConfigSync(PacketReader &packet) -> void;
 	auto handleSetRates(PacketReader &packet) -> void;
 	auto handleScrollingHeader(PacketReader &packet) -> void;
-	// Party
-	auto handlePartySync(PacketReader &packet) -> void;
-	// Player
-	auto handlePlayerSync(AbstractConnection *connection, PacketReader &packet) -> void;
-	auto playerConnect(int16_t channel, PacketReader &packet) -> void;
-	auto playerDisconnect(int16_t channel, PacketReader &packet) -> void;
-	auto playerChangeChannel(AbstractConnection *connection, PacketReader &packet) -> void;
-	auto handleChangeChannel(AbstractConnection *connection, PacketReader &packet) -> void;
-	auto handlePlayerUpdate(PacketReader &packet) -> void;
-	auto handleCharacterCreated(PacketReader &packet) -> void;
-	// Buddy
-	auto handleBuddySync(PacketReader &packet) -> void;
-	auto buddyInvite(PacketReader &packet) -> void;
-	auto buddyOnline(PacketReader &packet) -> void;
 }

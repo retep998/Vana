@@ -103,9 +103,9 @@ auto LoginPacket::showWorld(Player *player, World *world) -> void {
 	packet.add<int16_t>(100);
 	packet.add<int8_t>(0);
 	packet.add<uint8_t>(world->getMaxChannels());
-	for (size_t i = 0; i < world->getMaxChannels(); i++) {
+	for (channel_id_t i = 0; i < world->getMaxChannels(); i++) {
 		out_stream_t cnStream;
-		cnStream << world->getName() << "-" << i + 1;
+		cnStream << world->getName() << "-" << static_cast<int32_t>(i + 1);
 		const string_t &channelName = cnStream.str();
 		packet.addString(channelName);
 
@@ -177,20 +177,20 @@ auto LoginPacket::checkName(Player *player, const string_t &name, uint8_t messag
 	player->getSession()->send(packet);
 }
 
-auto LoginPacket::showAllCharactersInfo(Player *player, uint32_t worlds, uint32_t unk) -> void {
+auto LoginPacket::showAllCharactersInfo(Player *player, world_id_t worldCount, uint32_t unk) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(1);
-	packet.add<uint32_t>(worlds);
+	packet.add<int32_t>(worldCount);
 	packet.add<uint32_t>(unk);
 	player->getSession()->send(packet);
 }
 
-auto LoginPacket::showViewAllCharacters(Player *player, uint8_t worldId, const vector_t<Character> &chars) -> void {
+auto LoginPacket::showViewAllCharacters(Player *player, world_id_t worldId, const vector_t<Character> &chars) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
 	packet.add<int8_t>(0);
-	packet.add<uint8_t>(worldId);
+	packet.add<int8_t>(worldId);
 	packet.add<uint8_t>(chars.size());
 	for (size_t i = 0; i < chars.size(); i++) {
 		LoginPacketHelper::addCharacter(packet, chars[i]);

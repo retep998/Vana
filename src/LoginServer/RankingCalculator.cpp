@@ -217,7 +217,7 @@ auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
 	});
 
 	Worlds::getInstance().runFunction([&v](World *world) -> bool {
-		uint8_t worldId = world->getId();
+		world_id_t worldId = world->getId();
 		uint8_t lastLevel = 0;
 		time_t lastTime = 0;
 		int32_t lastExp = 0;

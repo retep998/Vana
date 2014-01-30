@@ -373,7 +373,7 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 	int16_t amount = 0;
 	int32_t itemId = 0;
 	int16_t slot = 0;
-	int8_t worldId = 0;
+	world_id_t worldId = 0;
 	int32_t userId = 0;
 	int32_t playerId = 0;
 	string_t location = "";
@@ -441,7 +441,7 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 		location = rec.location;
 		userId = rec.userId;
 		playerId = rec.charId;
-		worldId = static_cast<int8_t>(rec.worldId);
+		worldId = rec.worldId;
 		slot = rec.slot;
 		amount = item->m_amount;
 		itemId = item->m_id;

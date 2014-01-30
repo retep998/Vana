@@ -30,7 +30,7 @@ class Item;
 struct ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbInformation);
 public:
-	ItemDbInformation(int16_t slot, int32_t charId, int32_t userId, int32_t worldId, const string_t &location) :
+	ItemDbInformation(int16_t slot, int32_t charId, int32_t userId, world_id_t worldId, const string_t &location) :
 		slot(slot),
 		charId(charId),
 		userId(userId),
@@ -42,14 +42,14 @@ public:
 	int16_t slot;
 	int32_t charId;
 	int32_t userId;
-	int32_t worldId;
+	world_id_t worldId;
 	string_t location;
 };
 
 struct ItemDbRecord : ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbRecord);
 public:
-	ItemDbRecord(int16_t slot, int32_t charId, int32_t userId, int32_t worldId, const string_t &location, Item *item) :
+	ItemDbRecord(int16_t slot, int32_t charId, int32_t userId, world_id_t worldId, const string_t &location, Item *item) :
 		ItemDbInformation(slot, charId, userId, worldId, location),
 		item(item)
 	{

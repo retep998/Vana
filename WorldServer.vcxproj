@@ -107,8 +107,6 @@
     <ClCompile Include="src\WorldServer\Channel.cpp" />
     <ClCompile Include="src\WorldServer\InitializeWorld.cpp" />
     <ClCompile Include="src\WorldServer\main_world.cpp" />
-    <ClCompile Include="src\WorldServer\Party.cpp" />
-    <ClCompile Include="src\WorldServer\Player.cpp" />
     <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp" />
     <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -128,8 +126,6 @@
   <ItemGroup>
     <ClInclude Include="src\WorldServer\Channel.hpp" />
     <ClInclude Include="src\WorldServer\InitializeWorld.hpp" />
-    <ClInclude Include="src\WorldServer\Party.hpp" />
-    <ClInclude Include="src\WorldServer\Player.hpp" />
     <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp" />
     <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\WorldServer\Channels.hpp" />

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.hpp"
 #include "Configuration.hpp"
 #include "InterHeader.hpp"
+#include "InterHelper.hpp"
 #include "LoginServerAcceptConnection.hpp"
 #include "PacketCreator.hpp"
 #include "Session.hpp"
@@ -27,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto LoginServerAcceptPacket::connect(World *world) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_WORLD_CONNECT);
-	packet.add<int8_t>(world->getId());
+	packet.add<world_id_t>(world->getId());
 	packet.add<port_t>(world->getPort());
 
 	packet.addClass<WorldConfig>(world->getConfig());
@@ -42,21 +43,26 @@ auto LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connectio
 	connection->getSession()->send(packet);
 }
 
-auto LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, int8_t worldId, const Ip &ip, port_t port) -> void {
+auto LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, world_id_t worldId, const Ip &ip, port_t port) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT);
-	packet.add<int8_t>(worldId);
+	packet.add<world_id_t>(worldId);
 	packet.addClass<Ip>(ip);
 	packet.add<port_t>(port);
 	connection->getSession()->send(packet);
 }
 
-auto LoginServerAcceptPacket::newPlayer(World *world, uint16_t channel, int32_t charId, const Ip &ip) -> void {
+auto LoginServerAcceptPacket::playerConnectingToChannel(World *world, channel_id_t channel, int32_t charId, const Ip &ip) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_NEW_PLAYER);
-	packet.add<uint16_t>(channel);
+	packet.add<header_t>(IMSG_TO_CHANNEL);
+	packet.add<channel_id_t>(channel);
+	packet.add<header_t>(IMSG_SYNC);
+	packet.add<sync_t>(Sync::SyncTypes::Player);
+	packet.add<sync_t>(Sync::Player::NewConnectable);
 	packet.add<int32_t>(charId);
 	packet.addClass<Ip>(ip);
+	// The size of the held packet that should be there - there isn't one
+	packet.add<uint16_t>(0);
 	world->send(packet);
 }
 

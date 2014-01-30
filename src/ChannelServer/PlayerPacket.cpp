@@ -192,8 +192,8 @@ auto PlayerPacket::showMessageChannel(const string_t &msg, int8_t type) -> void 
 
 auto PlayerPacket::showMessageWorld(const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_CHANNELS);
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_CHANNELS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	showMessagePacket(packet, msg, type);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
@@ -201,9 +201,9 @@ auto PlayerPacket::showMessageWorld(const string_t &msg, int8_t type) -> void {
 auto PlayerPacket::showMessageGlobal(const string_t &msg, int8_t type) -> void {
 	PacketCreator packet;
 	packet.add<header_t>(IMSG_TO_LOGIN);
-	packet.add<header_t>(IMSG_TO_WORLDS);
-	packet.add<header_t>(IMSG_TO_CHANNELS);
-	packet.add<header_t>(IMSG_TO_PLAYERS);
+	packet.add<header_t>(IMSG_TO_ALL_WORLDS);
+	packet.add<header_t>(IMSG_TO_ALL_CHANNELS);
+	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
 	showMessagePacket(packet, msg, type);
 	ChannelServer::getInstance().sendPacketToWorld(packet);
 }
