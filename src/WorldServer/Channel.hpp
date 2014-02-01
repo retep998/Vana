@@ -29,16 +29,12 @@ class WorldServerAcceptConnection;
 class Channel : public ExternalIpResolver {
 	NONCOPYABLE(Channel);
 public:
-	Channel() = default;
-	auto setId(channel_id_t id) -> void { m_id = id; }
-	auto setPort(port_t port) -> void { m_port = port; }
-	auto setConnection(WorldServerAcceptConnection *connection) -> void { m_connection = connection; }
-	auto setPlayers(int32_t players) -> void { m_players = players; }
+	Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port);
 
-	auto increasePlayers() -> int32_t { return ++m_players; }
-	auto decreasePlayers() -> int32_t { return --m_players; }
-	auto getId() const -> channel_id_t { return m_id; }
-	auto getPort() const -> port_t { return m_port; }
+	auto increasePlayers() -> int32_t;
+	auto decreasePlayers() -> int32_t;
+	auto getId() const -> channel_id_t;
+	auto getPort() const -> port_t;
 	auto send(const PacketBuilder &builder) -> void;
 private:
 	channel_id_t m_id = 0;

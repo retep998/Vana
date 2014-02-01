@@ -27,136 +27,136 @@ LuaInstance::LuaInstance(const string_t &name, int32_t playerId) :
 	initialize();
 	setVariable("system_instanceName", name);
 
-	lua_register(luaVm, "createInstance", &LuaExports::createInstanceInstance);
+	expose("createInstance", &LuaExports::createInstanceInstance);
 
 	LuaScriptable::run(); // Running is loading the functions
 }
 
-auto LuaInstance::run(InstanceMessage message) -> bool {
+auto LuaInstance::run(InstanceMessage message) -> Result {
 	switch (message) {
 		case InstanceMessage::BeginInstance:
-			lua_getglobal(luaVm, "beginInstance");
+			lua_getglobal(m_luaVm, "beginInstance");
 			break;
 	}
-	if (lua_pcall(luaVm, 0, 0, 0)) {
+	if (lua_pcall(m_luaVm, 0, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, int32_t parameter) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter) -> Result {
 	switch (message) {
 		case InstanceMessage::PlayerDeath:
-			lua_getglobal(luaVm, "playerDeath");
-			lua_pushinteger(luaVm, parameter);
+			lua_getglobal(m_luaVm, "playerDeath");
+			lua_pushinteger(m_luaVm, parameter);
 			break;
 		case InstanceMessage::InstanceTimerEnd:
 		case InstanceMessage::InstanceTimerNaturalEnd:
-			lua_getglobal(luaVm, "instanceTimerEnd");
-			lua_pushboolean(luaVm, parameter != 0);
+			lua_getglobal(m_luaVm, "instanceTimerEnd");
+			lua_pushboolean(m_luaVm, parameter != 0);
 			break;
 		case InstanceMessage::PartyDisband:
-			lua_getglobal(luaVm, "partyDisband");
-			lua_pushinteger(luaVm, parameter);
+			lua_getglobal(m_luaVm, "partyDisband");
+			lua_pushinteger(m_luaVm, parameter);
 			break;
 	}
-	if (lua_pcall(luaVm, 1, 0, 0)) {
+	if (lua_pcall(m_luaVm, 1, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> bool {
+auto LuaInstance::run(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> Result {
 	switch (message) {
 		case InstanceMessage::TimerEnd:
 		case InstanceMessage::TimerNaturalEnd:
-			lua_getglobal(luaVm, "timerEnd");
-			lua_pushstring(luaVm, parameter1.c_str());
-			lua_pushboolean(luaVm, parameter2 != 0);
+			lua_getglobal(m_luaVm, "timerEnd");
+			lua_pushstring(m_luaVm, parameter1.c_str());
+			lua_pushboolean(m_luaVm, parameter2 != 0);
 			break;
 	}
-	if (lua_pcall(luaVm, 2, 0, 0)) {
+	if (lua_pcall(m_luaVm, 2, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> Result {
 	switch (message) {
 		case InstanceMessage::PlayerDisconnect:
-			lua_getglobal(luaVm, "playerDisconnect");
-			lua_pushinteger(luaVm, parameter1);
-			lua_pushboolean(luaVm, parameter2 != 0);
+			lua_getglobal(m_luaVm, "playerDisconnect");
+			lua_pushinteger(m_luaVm, parameter1);
+			lua_pushboolean(m_luaVm, parameter2 != 0);
 			break;
 		case InstanceMessage::PartyRemoveMember:
-			lua_getglobal(luaVm, "partyRemoveMember");
-			lua_pushinteger(luaVm, parameter1);
-			lua_pushinteger(luaVm, parameter2);
+			lua_getglobal(m_luaVm, "partyRemoveMember");
+			lua_pushinteger(m_luaVm, parameter1);
+			lua_pushinteger(m_luaVm, parameter2);
 			break;
 	}
 
-	if (lua_pcall(luaVm, 2, 0, 0)) {
+	if (lua_pcall(m_luaVm, 2, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> Result {
 	switch (message) {
 		case InstanceMessage::MobDeath:
-			lua_getglobal(luaVm, "mobDeath");
+			lua_getglobal(m_luaVm, "mobDeath");
 			break;
 		case InstanceMessage::MobSpawn:
-			lua_getglobal(luaVm, "mobSpawn");
+			lua_getglobal(m_luaVm, "mobSpawn");
 			break;
 	}
-	lua_pushinteger(luaVm, parameter1);
-	lua_pushinteger(luaVm, parameter2);
-	lua_pushinteger(luaVm, parameter3);
-	if (lua_pcall(luaVm, 3, 0, 0)) {
+	lua_pushinteger(m_luaVm, parameter1);
+	lua_pushinteger(m_luaVm, parameter2);
+	lua_pushinteger(m_luaVm, parameter3);
+	if (lua_pcall(m_luaVm, 3, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> Result {
 	switch (message) {
 		case InstanceMessage::PlayerChangeMap:
-			lua_getglobal(luaVm, "changeMap");
-			lua_pushinteger(luaVm, parameter1);
-			lua_pushinteger(luaVm, parameter2);
-			lua_pushinteger(luaVm, parameter3);
-			lua_pushboolean(luaVm, parameter4 != 0);
+			lua_getglobal(m_luaVm, "changeMap");
+			lua_pushinteger(m_luaVm, parameter1);
+			lua_pushinteger(m_luaVm, parameter2);
+			lua_pushinteger(m_luaVm, parameter3);
+			lua_pushboolean(m_luaVm, parameter4 != 0);
 			break;
 	}
-	if (lua_pcall(luaVm, 4, 0, 0)) {
+	if (lua_pcall(m_luaVm, 4, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> bool {
+auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> Result {
 	switch (message) {
 		case InstanceMessage::FriendlyMobHit:
-			lua_getglobal(luaVm, "friendlyHit");
-			lua_pushinteger(luaVm, parameter1);
-			lua_pushinteger(luaVm, parameter2);
-			lua_pushinteger(luaVm, parameter3);
-			lua_pushboolean(luaVm, parameter4);
-			lua_pushboolean(luaVm, parameter5);
+			lua_getglobal(m_luaVm, "friendlyHit");
+			lua_pushinteger(m_luaVm, parameter1);
+			lua_pushinteger(m_luaVm, parameter2);
+			lua_pushinteger(m_luaVm, parameter3);
+			lua_pushboolean(m_luaVm, parameter4);
+			lua_pushboolean(m_luaVm, parameter5);
 			break;
 	}
-	if (lua_pcall(luaVm, 5, 0, 0)) {
+	if (lua_pcall(m_luaVm, 5, 0, 0)) {
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
 auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {

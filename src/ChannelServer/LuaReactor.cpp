@@ -36,17 +36,17 @@ LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t react
 	setVariable("system_mapId", mapId);
 
 	// Reactor
-	lua_register(luaVm, "getState", &LuaExports::getState);
-	lua_register(luaVm, "reset", &LuaExports::reset);
-	lua_register(luaVm, "setState", &LuaExports::setStateReactor);
+	expose("getState", &LuaExports::getState);
+	expose("reset", &LuaExports::reset);
+	expose("setState", &LuaExports::setStateReactor);
 
 	// Miscellaneous
-	lua_register(luaVm, "dropItem", &LuaExports::dropItemReactor);
-	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceReactor);
+	expose("dropItem", &LuaExports::dropItemReactor);
+	expose("getDistanceToPlayer", &LuaExports::getDistanceReactor);
 
 	// Mob
-	lua_register(luaVm, "spawnMob", &LuaExports::spawnMobReactor);
-	lua_register(luaVm, "spawnZakum", &LuaExports::spawnZakum);
+	expose("spawnMob", &LuaExports::spawnMobReactor);
+	expose("spawnZakum", &LuaExports::spawnZakum);
 
 	run();
 }

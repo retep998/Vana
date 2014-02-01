@@ -80,7 +80,7 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 
 auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 	if (type == ServerType::Channel) {
-		m_channel = Channels::getInstance().getAvailableChannel();
+		m_channel = Channels::getInstance().getFirstAvailableChannelId();
 		if (m_channel != -1) {
 			port_t port = WorldServer::getInstance().makeChannelPort(m_channel);
 			const IpMatrix &ips = getExternalIps();

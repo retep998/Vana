@@ -37,17 +37,18 @@ public:
 	virtual ~LuaScriptable();
 
 	auto initialize() -> void;
-	virtual auto run() -> bool;
+	virtual auto run() -> Result;
 
 	auto setVariable(const string_t &name, int32_t val) -> void;
 	auto setVariable(const string_t &name, const string_t &val) -> void;
 protected:
 	virtual auto handleError() -> void;
+	auto expose(const string_t &luaName, int (*func)(lua_State *)) -> void;
 	auto printError(const string_t &error) -> void;
 
 	string_t m_filename;
 	int32_t m_playerId = -1;
-	lua_State *luaVm = nullptr;
+	lua_State *m_luaVm = nullptr;
 private:
 	auto setEnvironmentVariables() -> void;
 };

@@ -24,11 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.hpp"
 
 auto Channels::registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
-	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>();
-	chan->setConnection(connection);
-	chan->setId(channelId);
+	ref_ptr_t<Channel> chan = make_ref_ptr<Channel>(connection, channelId, port);
 	chan->setExternalIpInformation(channelIp, extIp);
-	chan->setPort(port);
 	m_channels[channelId] = chan;
 }
 
@@ -67,11 +64,7 @@ auto Channels::decreasePopulation(channel_id_t channel) -> void {
 	WorldServer::getInstance().sendLogin(LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers()));
 }
 
-auto Channels::size() -> channel_id_t {
-	return m_channels.size();
-}
-
-auto Channels::getAvailableChannel() -> channel_id_t {
+auto Channels::getFirstAvailableChannelId() -> channel_id_t {
 	channel_id_t channelId = -1;
 	channel_id_t max = WorldServer::getInstance().getConfig().maxChannels;
 	for (channel_id_t i = 0; i < max; ++i) {
