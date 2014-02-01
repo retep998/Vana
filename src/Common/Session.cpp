@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace asio = boost::asio;
 
 Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation) :
-	AbstractSession(sessionManager, (!isForClient || isEncrypted)),
+	m_sessionManager(sessionManager),
 	m_socket(ioService),
 	m_connection(connection),
 	m_isForClient(isForClient),

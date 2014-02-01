@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory>
 #include <unordered_set>
 
-class AbstractSession;
+class Session;
 
 class SessionManager {
 	NONCOPYABLE(SessionManager);
 public:
 	SessionManager() = default;
-	auto start(ref_ptr_t<AbstractSession> session) -> void;
-	auto stop(ref_ptr_t<AbstractSession> session) -> void;
+	auto start(ref_ptr_t<Session> session) -> void;
+	auto stop(ref_ptr_t<Session> session) -> void;
 	auto stopAll() -> void;
 private:
-	hash_set_t<ref_ptr_t<AbstractSession>> m_sessions;
+	hash_set_t<ref_ptr_t<Session>> m_sessions;
 };

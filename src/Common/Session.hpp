@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "AbstractSession.hpp"
 #include "Decoder.hpp"
 #include "Ip.hpp"
 #include "shared_array.hpp"
@@ -30,23 +29,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class AbstractConnection;
 class PacketBuilder;
-class PacketBuilder;
+class SessionManager;
 
-class Session : public AbstractSession, public enable_shared<Session> {
+class Session : public enable_shared<Session> {
 public:
 	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation = "");
 
-	auto disconnect() -> void override;
+	auto disconnect() -> void;
 	auto send(const PacketBuilder &builder, bool encrypt = true) -> void;
 	auto getIp() const -> const Ip &;
 protected:
 	auto getSocket() -> boost::asio::ip::tcp::socket &;
 	auto getDecoder() -> Decoder &;
 	auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
-	auto start() -> void override;
-	auto stop() -> void override;
-	auto handleStart() -> void override;
-	auto handleStop() -> void override;
+	auto start() -> void;
+	auto stop() -> void;
+	auto handleStart() -> void;
+	auto handleStop() -> void;
 	auto startReadHeader() -> void;
 	auto handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
@@ -58,11 +57,13 @@ protected:
 	static const size_t maxBufferLen = 65535;
 private:
 	friend class ConnectionAcceptor;
+	friend class SessionManager;
 
 	bool m_isForClient = true;
 	bool m_usePing = false;
 	string_t m_patchLocation;
 	ref_ptr_t<AbstractConnection> m_connection;
+	ref_ptr_t<SessionManager> m_sessionManager;
 	Decoder m_decoder;
 	boost::asio::ip::tcp::socket m_socket;
 	MiscUtilities::shared_array<unsigned char> m_buffer;
