@@ -104,3 +104,7 @@ auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 		}
 	}
 }
+
+auto WorldServerAcceptConnection::getChannel() const -> channel_id_t {
+	return m_channel;
+}

@@ -24,14 +24,13 @@ class BlockCipherIv {
 public:
 	BlockCipherIv();
 	explicit BlockCipherIv(uint32_t iv);
-
-	auto updateIv(uint32_t iv) -> void;
-	auto shuffle() -> void;
-	auto getIv() const -> uint32_t { return *reinterpret_cast<const uint32_t *>(m_iv); }
 private:
 	friend class Decoder;
 
 	auto getBytes() -> unsigned char * { return m_iv; }
+	auto getIv() const -> uint32_t { return *reinterpret_cast<const uint32_t *>(m_iv); }
+	auto shuffle() -> void;
+	auto updateIv(uint32_t iv) -> void;
 
 	inline
 	auto setIv(unsigned char *dest, unsigned char *source) -> void {

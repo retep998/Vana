@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "ServerConnection.hpp"
+#include "AbstractServerAcceptConnection.hpp"
 #include "AbstractServer.hpp"
 #include "AuthenticationPacket.hpp"
 #include "InterHeader.hpp"
@@ -23,10 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include <boost/asio.hpp>
 #include <iostream>
-
-auto AbstractServerConnection::sendAuth(const string_t &pass, const IpMatrix &extIp) -> void {
-	send(AuthenticationPacket::sendPassword(this, pass, extIp));
-}
 
 auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &reader) -> Result {
 	if (reader.getHeader() == IMSG_PASSWORD) {

@@ -80,12 +80,6 @@ auto AbstractConnection::getLatency() const -> milliseconds_t {
 	return m_latency;
 }
 
-auto AbstractConnection::setTimer() -> void {
-	Timer::Timer::create([this](const time_point_t &now) { this->ping(); },
-		Timer::Id(Timer::Types::PingTimer, 0, 0),
-		getTimers(), InitialPing, PingTime);
-}
-
 auto AbstractConnection::ping() -> void {
 	if (m_doesPing) {
 		if (m_isPinged) {
@@ -100,7 +94,12 @@ auto AbstractConnection::ping() -> void {
 	}
 }
 
-auto AbstractConnection::setSession(Session *val) -> void {
+auto AbstractConnection::setSession(Session *val, bool ping, const Ip &ip) -> void {
 	m_session = val;
-	setTimer();
+	m_doesPing = ping;
+	m_ip = ip;
+
+	Timer::Timer::create([this](const time_point_t &now) { this->ping(); },
+		Timer::Id(Timer::Types::PingTimer, 0, 0),
+		getTimers(), InitialPing, PingTime);
 }

@@ -54,7 +54,6 @@ namespace Vana {
 		Botan::LibraryInitializer init("thread_safe=true");
 		try {
 			AbstractServer &server = TAbstractServer::getInstance().initialize();
-
 #ifdef WIN32
 			hookWin32Console(server);
 #endif

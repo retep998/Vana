@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AbstractServer.hpp"
+#include "AbstractServerConnection.hpp"
 #include "ComboLoggers.hpp"
 #include "ConfigFile.hpp"
 #include "Configuration.hpp"
@@ -25,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileLogger.hpp"
 #include "Logger.hpp"
 #include "MiscUtilities.hpp"
-#include "ServerConnection.hpp"
 #include "SqlLogger.hpp"
 #include "TimerThread.hpp"
 #include "TimeUtilities.hpp"

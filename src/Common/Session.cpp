@@ -54,17 +54,15 @@ auto Session::start() -> void {
 }
 
 auto Session::handleStart() -> void {
-	m_connection->setSession(this);
-	m_connection->setPinging(m_usePing);
 	// TODO FIXME support IPv6
-	m_connection->setIp(Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
+	m_connection->setSession(this, m_usePing, Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
 
 	if (m_isForClient) {
 		m_decoder.setRecvIv(Randomizer::rand<uint32_t>());
 		m_decoder.setSendIv(Randomizer::rand<uint32_t>());
 
-		const PacketBuilder &connectPacket = getConnectPacket(m_patchLocation);
-		send(connectPacket, false);
+		PacketBuilder connectPacket = getConnectPacket(m_patchLocation);
+		send(connectPacket.getBuffer(), connectPacket.getSize(), false);
 	}
 
 	startReadHeader();
@@ -86,8 +84,8 @@ auto Session::handleStop() -> void {
 	}
 }
 
-auto Session::send(const PacketBuilder &builder, bool encrypt) -> void {
-	send(builder.getBuffer(), builder.getSize(), encrypt);
+auto Session::send(const PacketBuilder &builder) -> void {
+	send(builder.getBuffer(), builder.getSize(), true);
 }
 
 auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
@@ -183,15 +181,16 @@ auto Session::getIp() const -> const Ip & {
 }
 
 auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketBuilder {
-	PacketBuilder packet;
+	PacketBuilder builder;
 	// IV_PATCH_LOCATION
-	packet.add<header_t>(0);
-	packet.add<uint16_t>(MapleVersion::Version);
-	packet.addString(patchLocation);
-	packet.add<uint32_t>(m_decoder.getRecvIv());
-	packet.add<uint32_t>(m_decoder.getSendIv());
-	packet.add<int8_t>(MapleVersion::Locale);
+	builder
+		.add<header_t>(0)
+		.add<uint16_t>(MapleVersion::Version)
+		.addString(patchLocation)
+		.add<uint32_t>(m_decoder.getRecvIv())
+		.add<uint32_t>(m_decoder.getSendIv())
+		.add<int8_t>(MapleVersion::Locale);
 
-	packet.set<header_t>(static_cast<header_t>(packet.getSize() - sizeof(header_t)), 0);
-	return packet;
+	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
+	return builder;
 }

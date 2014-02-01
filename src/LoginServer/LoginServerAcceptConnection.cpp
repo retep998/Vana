@@ -69,3 +69,11 @@ auto LoginServerAcceptConnection::authenticated(ServerType type) -> void {
 		default: disconnect();
 	}
 }
+
+auto LoginServerAcceptConnection::setWorldId(world_id_t id) -> void {
+	m_worldId = id;
+}
+
+auto LoginServerAcceptConnection::getWorldId() const -> world_id_t {
+	return m_worldId;
+}
