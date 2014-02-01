@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ServerConnection.hpp"
+#include "AbstractServerAcceptConnection.hpp"
 #include "Types.hpp"
 
 class PacketReader;
@@ -28,11 +28,10 @@ public:
 	WorldServerAcceptConnection() = default;
 	~WorldServerAcceptConnection();
 
-	auto authenticated(ServerType type) -> void override;
-
-	auto getChannel() const -> channel_id_t { return m_channel; }
+	auto getChannel() const -> channel_id_t;
 protected:
 	auto handleRequest(PacketReader &reader) -> void override;
+	auto authenticated(ServerType type) -> void override;
 private:
 	channel_id_t m_channel = 0;
 };

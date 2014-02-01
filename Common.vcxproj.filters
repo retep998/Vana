@@ -190,9 +190,6 @@
       <Filter>Connection</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\PrecompiledHeader.cpp" />
-    <ClCompile Include="src\Common\ServerConnection.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Ip.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
@@ -216,6 +213,12 @@
     </ClCompile>
     <ClCompile Include="src\Common\PingPacket.cpp">
       <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractServerConnection.cpp">
+      <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp">
+      <Filter>Connection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -452,9 +455,6 @@
     <ClInclude Include="src\Common\MapleVersion.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\Types.hpp" />
-    <ClInclude Include="src\Common\ServerConnection.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Ip.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -512,6 +512,12 @@
     </ClInclude>
     <ClInclude Include="src\Common\SplitPacketBuilder.hpp">
       <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractServerConnection.hpp">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp">
+      <Filter>Connection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

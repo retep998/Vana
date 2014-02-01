@@ -15,22 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "AuthenticationPacket.hpp"
 #include "AbstractServerConnection.hpp"
-#include "InterHeader.hpp"
-#include "PacketBuilder.hpp"
-#include "Session.hpp"
-#include <algorithm>
+#include "AbstractServer.hpp"
+#include "AuthenticationPacket.hpp"
+#include <boost/asio.hpp>
+#include <iostream>
 
-namespace AuthenticationPacket {
-
-PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) {
-	PacketBuilder builder;
-	builder.add<header_t>(IMSG_PASSWORD);
-	builder.addString(pass);
-	builder.addClassVector<ExternalIp>(extIp);
-	builder.add<server_type_t>(static_cast<server_type_t>(connection->getType()));
-	return builder;
-}
-
+auto AbstractServerConnection::sendAuth(const string_t &pass, const IpMatrix &extIp) -> void {
+	send(AuthenticationPacket::sendPassword(this, pass, extIp));
 }

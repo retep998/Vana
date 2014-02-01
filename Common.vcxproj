@@ -89,6 +89,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp" />
+    <ClCompile Include="src\Common\AbstractServerConnection.cpp" />
     <ClCompile Include="src\Common\ClientIp.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\CurseDataProvider.cpp" />
@@ -146,10 +148,11 @@
     <ClCompile Include="src\Common\AbstractConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServer.cpp" />
     <ClCompile Include="src\Common\DatabaseUpdater.cpp" />
-    <ClCompile Include="src\Common\ServerConnection.cpp" />
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp" />
+    <ClInclude Include="src\Common\AbstractServerConnection.hpp" />
     <ClInclude Include="src\Common\Algorithm.hpp" />
     <ClInclude Include="src\Common\BitUtilities.hpp" />
     <ClInclude Include="src\Common\CaseInsensitiveEquals.hpp" />
@@ -243,7 +246,6 @@
     <ClInclude Include="src\Common\Decoder.hpp" />
     <ClInclude Include="src\Common\AbstractConnection.hpp" />
     <ClInclude Include="src\Common\AbstractServer.hpp" />
-    <ClInclude Include="src\Common\ServerConnection.hpp" />
     <ClInclude Include="src\Common\GameObjects.hpp" />
     <ClInclude Include="src\Common\Pos.hpp" />
     <ClInclude Include="src\Common\VanaConstants.hpp" />

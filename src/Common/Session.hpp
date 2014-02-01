@@ -36,7 +36,7 @@ public:
 	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation = "");
 
 	auto disconnect() -> void;
-	auto send(const PacketBuilder &builder, bool encrypt = true) -> void;
+	auto send(const PacketBuilder &builder) -> void;
 	auto getIp() const -> const Ip &;
 protected:
 	auto getSocket() -> boost::asio::ip::tcp::socket &;

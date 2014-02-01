@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class PacketBuilder;
-class PacketBuilder;
 class PacketReader;
 
 class AbstractConnection : public TimerContainerHolder {
@@ -40,10 +39,7 @@ protected:
 private:
 	friend class Session;
 	auto ping() -> void;
-	auto setTimer() -> void;
-	auto setSession(Session *val) -> void;
-	auto setIp(const Ip &ip) -> void { m_ip = ip; }
-	auto setPinging(bool ping) -> void { m_doesPing = ping; }
+	auto setSession(Session *val, bool ping, const Ip &ip) -> void;
 	auto baseHandleRequest(PacketReader &reader) -> void;
 
 	bool m_isServer = false;

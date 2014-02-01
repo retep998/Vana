@@ -72,7 +72,6 @@ auto ServerClient::readConnectPacket() -> void {
 	auto &buffer = getBuffer();
 	buffer.reset(new unsigned char[maxBufferLen]);
 
-	// Get the size of the connect packet
 	size_t packetSize = boost::asio::read(getSocket(),
 		boost::asio::buffer(buffer.get(), maxBufferLen),
 		boost::asio::transfer_at_least(10), // May require maintenance if the IV packet ever dips below 10 bytes
@@ -83,7 +82,6 @@ auto ServerClient::readConnectPacket() -> void {
 		return;
 	}
 
-	// Now process it
 	PacketReader reader(buffer.get(), packetSize);
 
 	reader.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
