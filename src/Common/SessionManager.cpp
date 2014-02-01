@@ -16,16 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "SessionManager.hpp"
-#include "AbstractSession.hpp"
+#include "Session.hpp"
 #include <algorithm>
 #include <functional>
 
-auto SessionManager::start(ref_ptr_t<AbstractSession> session) -> void {
+auto SessionManager::start(ref_ptr_t<Session> session) -> void {
 	m_sessions.insert(session);
 	session->handleStart();
 }
 
-auto SessionManager::stop(ref_ptr_t<AbstractSession> session) -> void {
+auto SessionManager::stop(ref_ptr_t<Session> session) -> void {
 	m_sessions.erase(session);
 	session->handleStop();
 }
