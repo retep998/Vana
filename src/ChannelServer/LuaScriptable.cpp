@@ -53,275 +53,275 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaScriptable::LuaScriptable(const string_t &filename, int32_t playerId) :
 	m_filename(filename),
 	m_playerId(playerId),
-	luaVm(luaL_newstate())
+	m_luaVm(luaL_newstate())
 {
 	initialize();
 }
 
 LuaScriptable::~LuaScriptable() {
-	lua_close(luaVm);
+	lua_close(m_luaVm);
 }
 
 auto LuaScriptable::initialize() -> void {
-	luaopen_base(luaVm);
+	luaopen_base(m_luaVm);
 	setVariable("system_playerId", m_playerId); // Pushing ID for reference from static functions
 	setEnvironmentVariables();
 
-	Player *player = LuaExports::getPlayer(luaVm);
+	Player *player = LuaExports::getPlayer(m_luaVm);
 	if (player != nullptr && player->getInstance() != nullptr) {
 		setVariable("system_instanceName", player->getInstance()->getName());
 	}
 
 	// Miscellanous
-	lua_register(luaVm, "consoleOutput", &LuaExports::consoleOutput);
-	lua_register(luaVm, "getRandomNumber", &LuaExports::getRandomNumber);
-	lua_register(luaVm, "log", &LuaExports::log);
-	lua_register(luaVm, "showGlobalMessage", &LuaExports::showGlobalMessage);
-	lua_register(luaVm, "showWorldMessage", &LuaExports::showWorldMessage);
+	expose("consoleOutput", &LuaExports::consoleOutput);
+	expose("getRandomNumber", &LuaExports::getRandomNumber);
+	expose("log", &LuaExports::log);
+	expose("showGlobalMessage", &LuaExports::showGlobalMessage);
+	expose("showWorldMessage", &LuaExports::showWorldMessage);
 
 	// Channel
-	lua_register(luaVm, "deleteChannelVariable", &LuaExports::deleteChannelVariable);
-	lua_register(luaVm, "getChannel", &LuaExports::getChannel);
-	lua_register(luaVm, "getChannelVariable", &LuaExports::getChannelVariable);
-	lua_register(luaVm, "isHorntailChannel", &LuaExports::isHorntailChannel);
-	lua_register(luaVm, "isPapChannel", &LuaExports::isPapChannel);
-	lua_register(luaVm, "isPianusChannel", &LuaExports::isPianusChannel);
-	lua_register(luaVm, "isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
-	lua_register(luaVm, "isZakumChannel", &LuaExports::isZakumChannel);
-	lua_register(luaVm, "setChannelVariable", &LuaExports::setChannelVariable);
-	lua_register(luaVm, "showChannelMessage", &LuaExports::showChannelMessage);
+	expose("deleteChannelVariable", &LuaExports::deleteChannelVariable);
+	expose("getChannel", &LuaExports::getChannel);
+	expose("getChannelVariable", &LuaExports::getChannelVariable);
+	expose("isHorntailChannel", &LuaExports::isHorntailChannel);
+	expose("isPapChannel", &LuaExports::isPapChannel);
+	expose("isPianusChannel", &LuaExports::isPianusChannel);
+	expose("isPinkBeanChannel", &LuaExports::isPinkBeanChannel);
+	expose("isZakumChannel", &LuaExports::isZakumChannel);
+	expose("setChannelVariable", &LuaExports::setChannelVariable);
+	expose("showChannelMessage", &LuaExports::showChannelMessage);
 
 	// Bosses
-	lua_register(luaVm, "getHorntailChannels", &LuaExports::getHorntailChannels);
-	lua_register(luaVm, "getMaxHorntailBattles", &LuaExports::getMaxHorntailBattles);
-	lua_register(luaVm, "getMaxPapBattles", &LuaExports::getMaxPapBattles);
-	lua_register(luaVm, "getMaxPianusBattles", &LuaExports::getMaxPianusBattles);
-	lua_register(luaVm, "getMaxPinkBeanBattles", &LuaExports::getMaxPinkBeanBattles);
-	lua_register(luaVm, "getMaxZakumBattles", &LuaExports::getMaxZakumBattles);
-	lua_register(luaVm, "getPapChannels", &LuaExports::getPapChannels);
-	lua_register(luaVm, "getPianusChannels", &LuaExports::getPianusChannels);
-	lua_register(luaVm, "getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
-	lua_register(luaVm, "getZakumChannels", &LuaExports::getZakumChannels);
+	expose("getHorntailChannels", &LuaExports::getHorntailChannels);
+	expose("getMaxHorntailBattles", &LuaExports::getMaxHorntailBattles);
+	expose("getMaxPapBattles", &LuaExports::getMaxPapBattles);
+	expose("getMaxPianusBattles", &LuaExports::getMaxPianusBattles);
+	expose("getMaxPinkBeanBattles", &LuaExports::getMaxPinkBeanBattles);
+	expose("getMaxZakumBattles", &LuaExports::getMaxZakumBattles);
+	expose("getPapChannels", &LuaExports::getPapChannels);
+	expose("getPianusChannels", &LuaExports::getPianusChannels);
+	expose("getPinkBeanChannels", &LuaExports::getPinkBeanChannels);
+	expose("getZakumChannels", &LuaExports::getZakumChannels);
 
 	// Npc
-	lua_register(luaVm, "isBusy", &LuaExports::isBusy);
-	lua_register(luaVm, "removeNpc", &LuaExports::removeNpc);
-	lua_register(luaVm, "runNpc", &LuaExports::runNpc);
-	lua_register(luaVm, "showShop", &LuaExports::showShop);
-	lua_register(luaVm, "spawnNpc", &LuaExports::spawnNpc);
+	expose("isBusy", &LuaExports::isBusy);
+	expose("removeNpc", &LuaExports::removeNpc);
+	expose("runNpc", &LuaExports::runNpc);
+	expose("showShop", &LuaExports::showShop);
+	expose("spawnNpc", &LuaExports::spawnNpc);
 
 	// Beauty
-	lua_register(luaVm, "getAllFaces", &LuaExports::getAllFaces);
-	lua_register(luaVm, "getAllHair", &LuaExports::getAllHair);
-	lua_register(luaVm, "getAllSkins", &LuaExports::getAllSkins);
-	lua_register(luaVm, "getRandomFace", &LuaExports::getRandomFace);
-	lua_register(luaVm, "getRandomHair", &LuaExports::getRandomHair);
-	lua_register(luaVm, "getRandomSkin", &LuaExports::getRandomSkin);
-	lua_register(luaVm, "isValidFace", &LuaExports::isValidFace);
-	lua_register(luaVm, "isValidHair", &LuaExports::isValidHair);
-	lua_register(luaVm, "isValidSkin", &LuaExports::isValidSkin);
+	expose("getAllFaces", &LuaExports::getAllFaces);
+	expose("getAllHair", &LuaExports::getAllHair);
+	expose("getAllSkins", &LuaExports::getAllSkins);
+	expose("getRandomFace", &LuaExports::getRandomFace);
+	expose("getRandomHair", &LuaExports::getRandomHair);
+	expose("getRandomSkin", &LuaExports::getRandomSkin);
+	expose("isValidFace", &LuaExports::isValidFace);
+	expose("isValidHair", &LuaExports::isValidHair);
+	expose("isValidSkin", &LuaExports::isValidSkin);
 
 	// Buddy
-	lua_register(luaVm, "addBuddySlots", &LuaExports::addBuddySlots);
-	lua_register(luaVm, "getBuddySlots", &LuaExports::getBuddySlots);
+	expose("addBuddySlots", &LuaExports::addBuddySlots);
+	expose("getBuddySlots", &LuaExports::getBuddySlots);
 
 	// Skill
-	lua_register(luaVm, "addSkillLevel", &LuaExports::addSkillLevel);
-	lua_register(luaVm, "getSkillLevel", &LuaExports::getSkillLevel);
-	lua_register(luaVm, "getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
-	lua_register(luaVm, "setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
+	expose("addSkillLevel", &LuaExports::addSkillLevel);
+	expose("getSkillLevel", &LuaExports::getSkillLevel);
+	expose("getMaxSkillLevel", &LuaExports::getMaxSkillLevel);
+	expose("setMaxSkillLevel", &LuaExports::setMaxSkillLevel);
 
 	// Quest
-	lua_register(luaVm, "getQuestData", &LuaExports::getQuestData);
-	lua_register(luaVm, "isQuestActive", &LuaExports::isQuestActive);
-	lua_register(luaVm, "isQuestInactive", &LuaExports::isQuestInactive);
-	lua_register(luaVm, "isQuestCompleted", &LuaExports::isQuestCompleted);
-	lua_register(luaVm, "setQuestData", &LuaExports::setQuestData);
+	expose("getQuestData", &LuaExports::getQuestData);
+	expose("isQuestActive", &LuaExports::isQuestActive);
+	expose("isQuestInactive", &LuaExports::isQuestInactive);
+	expose("isQuestCompleted", &LuaExports::isQuestCompleted);
+	expose("setQuestData", &LuaExports::setQuestData);
 
 	// Inventory
-	lua_register(luaVm, "addSlots", &LuaExports::addSlots);
-	lua_register(luaVm, "addStorageSlots", &LuaExports::addStorageSlots);
-	lua_register(luaVm, "destroyEquippedItem", &LuaExports::destroyEquippedItem);
-	lua_register(luaVm, "getEquippedItemInSlot", &LuaExports::getEquippedItemInSlot);
-	lua_register(luaVm, "getItemAmount", &LuaExports::getItemAmount);
-	lua_register(luaVm, "getMesos", &LuaExports::getMesos);
-	lua_register(luaVm, "getOpenSlots", &LuaExports::getOpenSlots);
-	lua_register(luaVm, "giveItem", &LuaExports::giveItem);
-	lua_register(luaVm, "giveMesos", &LuaExports::giveMesos);
-	lua_register(luaVm, "hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
-	lua_register(luaVm, "isEquippedItem", &LuaExports::isEquippedItem);
-	lua_register(luaVm, "useItem", &LuaExports::useItem);
+	expose("addSlots", &LuaExports::addSlots);
+	expose("addStorageSlots", &LuaExports::addStorageSlots);
+	expose("destroyEquippedItem", &LuaExports::destroyEquippedItem);
+	expose("getEquippedItemInSlot", &LuaExports::getEquippedItemInSlot);
+	expose("getItemAmount", &LuaExports::getItemAmount);
+	expose("getMesos", &LuaExports::getMesos);
+	expose("getOpenSlots", &LuaExports::getOpenSlots);
+	expose("giveItem", &LuaExports::giveItem);
+	expose("giveMesos", &LuaExports::giveMesos);
+	expose("hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
+	expose("isEquippedItem", &LuaExports::isEquippedItem);
+	expose("useItem", &LuaExports::useItem);
 
 	// Player
-	lua_register(luaVm, "deletePlayerVariable", &LuaExports::deletePlayerVariable);
-	lua_register(luaVm, "endMorph", &LuaExports::endMorph);
-	lua_register(luaVm, "getAp", &LuaExports::getAp);
-	lua_register(luaVm, "getDex", &LuaExports::getDex);
-	lua_register(luaVm, "getExp", &LuaExports::getExp);
-	lua_register(luaVm, "getEyes", &LuaExports::getEyes);
-	lua_register(luaVm, "getFame", &LuaExports::getFame);
-	lua_register(luaVm, "getFh", &LuaExports::getFh);
-	lua_register(luaVm, "getGender", &LuaExports::getGender);
-	lua_register(luaVm, "getGmLevel", &LuaExports::getGmLevel);
-	lua_register(luaVm, "getHair", &LuaExports::getHair);
-	lua_register(luaVm, "getHp", &LuaExports::getHp);
-	lua_register(luaVm, "getHpMpAp", &LuaExports::getHpMpAp);
-	lua_register(luaVm, "getId", &LuaExports::getId);
-	lua_register(luaVm, "getInt", &LuaExports::getInt);
-	lua_register(luaVm, "getJob", &LuaExports::getJob);
-	lua_register(luaVm, "getLevel", &LuaExports::getLevel);
-	lua_register(luaVm, "getLuk", &LuaExports::getLuk);
-	lua_register(luaVm, "getMap", &LuaExports::getMap);
-	lua_register(luaVm, "getMaxHp", &LuaExports::getMaxHp);
-	lua_register(luaVm, "getMaxMp", &LuaExports::getMaxMp);
-	lua_register(luaVm, "getMp", &LuaExports::getMp);
-	lua_register(luaVm, "getName", &LuaExports::getName);
-	lua_register(luaVm, "getPlayerVariable", &LuaExports::getPlayerVariable);
-	lua_register(luaVm, "getPosX", &LuaExports::getPosX);
-	lua_register(luaVm, "getPosY", &LuaExports::getPosY);
-	lua_register(luaVm, "getRealMaxHp", &LuaExports::getRealMaxHp);
-	lua_register(luaVm, "getRealMaxMp", &LuaExports::getRealMaxMp);
-	lua_register(luaVm, "getSkin", &LuaExports::getSkin);
-	lua_register(luaVm, "getSp", &LuaExports::getSp);
-	lua_register(luaVm, "getStr", &LuaExports::getStr);
-	lua_register(luaVm, "giveAp", &LuaExports::giveAp);
-	lua_register(luaVm, "giveExp", &LuaExports::giveExp);
-	lua_register(luaVm, "giveFame", &LuaExports::giveFame);
-	lua_register(luaVm, "giveSp", &LuaExports::giveSp);
-	lua_register(luaVm, "isActiveItem", &LuaExports::isActiveItem);
-	lua_register(luaVm, "isActiveSkill", &LuaExports::isActiveSkill);
-	lua_register(luaVm, "isGm", &LuaExports::isGm);
-	lua_register(luaVm, "isOnline", &LuaExports::isOnline);
-	lua_register(luaVm, "revertPlayer", &LuaExports::revertPlayer);
-	lua_register(luaVm, "setAp", &LuaExports::setAp);
-	lua_register(luaVm, "setDex", &LuaExports::setDex);
-	lua_register(luaVm, "setExp", &LuaExports::setExp);
-	lua_register(luaVm, "setHp", &LuaExports::setHp);
-	lua_register(luaVm, "setInt", &LuaExports::setInt);
-	lua_register(luaVm, "setJob", &LuaExports::setJob);
-	lua_register(luaVm, "setLevel", &LuaExports::setLevel);
-	lua_register(luaVm, "setLuk", &LuaExports::setLuk);
-	lua_register(luaVm, "setMap", &LuaExports::setMap);
-	lua_register(luaVm, "setMaxHp", &LuaExports::setMaxHp);
-	lua_register(luaVm, "setMaxMp", &LuaExports::setMaxMp);
-	lua_register(luaVm, "setMp", &LuaExports::setMp);
-	lua_register(luaVm, "setPlayer", &LuaExports::setPlayer);
-	lua_register(luaVm, "setPlayerVariable", &LuaExports::setPlayerVariable);
-	lua_register(luaVm, "setSp", &LuaExports::setSp);
-	lua_register(luaVm, "setStr", &LuaExports::setStr);
-	lua_register(luaVm, "setStyle", &LuaExports::setStyle);
-	lua_register(luaVm, "showInstructionBubble", &LuaExports::showInstructionBubble);
-	lua_register(luaVm, "showMessage", &LuaExports::showMessage);
+	expose("deletePlayerVariable", &LuaExports::deletePlayerVariable);
+	expose("endMorph", &LuaExports::endMorph);
+	expose("getAp", &LuaExports::getAp);
+	expose("getDex", &LuaExports::getDex);
+	expose("getExp", &LuaExports::getExp);
+	expose("getEyes", &LuaExports::getEyes);
+	expose("getFame", &LuaExports::getFame);
+	expose("getFh", &LuaExports::getFh);
+	expose("getGender", &LuaExports::getGender);
+	expose("getGmLevel", &LuaExports::getGmLevel);
+	expose("getHair", &LuaExports::getHair);
+	expose("getHp", &LuaExports::getHp);
+	expose("getHpMpAp", &LuaExports::getHpMpAp);
+	expose("getId", &LuaExports::getId);
+	expose("getInt", &LuaExports::getInt);
+	expose("getJob", &LuaExports::getJob);
+	expose("getLevel", &LuaExports::getLevel);
+	expose("getLuk", &LuaExports::getLuk);
+	expose("getMap", &LuaExports::getMap);
+	expose("getMaxHp", &LuaExports::getMaxHp);
+	expose("getMaxMp", &LuaExports::getMaxMp);
+	expose("getMp", &LuaExports::getMp);
+	expose("getName", &LuaExports::getName);
+	expose("getPlayerVariable", &LuaExports::getPlayerVariable);
+	expose("getPosX", &LuaExports::getPosX);
+	expose("getPosY", &LuaExports::getPosY);
+	expose("getRealMaxHp", &LuaExports::getRealMaxHp);
+	expose("getRealMaxMp", &LuaExports::getRealMaxMp);
+	expose("getSkin", &LuaExports::getSkin);
+	expose("getSp", &LuaExports::getSp);
+	expose("getStr", &LuaExports::getStr);
+	expose("giveAp", &LuaExports::giveAp);
+	expose("giveExp", &LuaExports::giveExp);
+	expose("giveFame", &LuaExports::giveFame);
+	expose("giveSp", &LuaExports::giveSp);
+	expose("isActiveItem", &LuaExports::isActiveItem);
+	expose("isActiveSkill", &LuaExports::isActiveSkill);
+	expose("isGm", &LuaExports::isGm);
+	expose("isOnline", &LuaExports::isOnline);
+	expose("revertPlayer", &LuaExports::revertPlayer);
+	expose("setAp", &LuaExports::setAp);
+	expose("setDex", &LuaExports::setDex);
+	expose("setExp", &LuaExports::setExp);
+	expose("setHp", &LuaExports::setHp);
+	expose("setInt", &LuaExports::setInt);
+	expose("setJob", &LuaExports::setJob);
+	expose("setLevel", &LuaExports::setLevel);
+	expose("setLuk", &LuaExports::setLuk);
+	expose("setMap", &LuaExports::setMap);
+	expose("setMaxHp", &LuaExports::setMaxHp);
+	expose("setMaxMp", &LuaExports::setMaxMp);
+	expose("setMp", &LuaExports::setMp);
+	expose("setPlayer", &LuaExports::setPlayer);
+	expose("setPlayerVariable", &LuaExports::setPlayerVariable);
+	expose("setSp", &LuaExports::setSp);
+	expose("setStr", &LuaExports::setStr);
+	expose("setStyle", &LuaExports::setStyle);
+	expose("showInstructionBubble", &LuaExports::showInstructionBubble);
+	expose("showMessage", &LuaExports::showMessage);
 
 	// Effects
-	lua_register(luaVm, "playFieldSound", &LuaExports::playFieldSound);
-	lua_register(luaVm, "playMinigameSound", &LuaExports::playMinigameSound);
-	lua_register(luaVm, "setMusic", &LuaExports::setMusic);
-	lua_register(luaVm, "showMapEffect", &LuaExports::showMapEffect);
-	lua_register(luaVm, "showMapEvent", &LuaExports::showMapEvent);
+	expose("playFieldSound", &LuaExports::playFieldSound);
+	expose("playMinigameSound", &LuaExports::playMinigameSound);
+	expose("setMusic", &LuaExports::setMusic);
+	expose("showMapEffect", &LuaExports::showMapEffect);
+	expose("showMapEvent", &LuaExports::showMapEvent);
 
 	// Map
-	lua_register(luaVm, "clearDrops", &LuaExports::clearDrops);
-	lua_register(luaVm, "clearMobs", &LuaExports::clearMobs);
-	lua_register(luaVm, "countMobs", &LuaExports::countMobs);
-	lua_register(luaVm, "getAllMapPlayerIds", &LuaExports::getAllMapPlayerIds);
-	lua_register(luaVm, "getNumPlayers", &LuaExports::getNumPlayers);
-	lua_register(luaVm, "getReactorState", &LuaExports::getReactorState);
-	lua_register(luaVm, "killMobs", &LuaExports::killMobs);
-	lua_register(luaVm, "setMapSpawn", &LuaExports::setMapSpawn);
-	lua_register(luaVm, "setReactorState", &LuaExports::setReactorState);
-	lua_register(luaVm, "showMapMessage", &LuaExports::showMapMessage);
-	lua_register(luaVm, "showMapTimer", &LuaExports::showMapTimer);
-	lua_register(luaVm, "spawnMob", &LuaExports::spawnMob);
-	lua_register(luaVm, "spawnMobPos", &LuaExports::spawnMobPos);
+	expose("clearDrops", &LuaExports::clearDrops);
+	expose("clearMobs", &LuaExports::clearMobs);
+	expose("countMobs", &LuaExports::countMobs);
+	expose("getAllMapPlayerIds", &LuaExports::getAllMapPlayerIds);
+	expose("getNumPlayers", &LuaExports::getNumPlayers);
+	expose("getReactorState", &LuaExports::getReactorState);
+	expose("killMobs", &LuaExports::killMobs);
+	expose("setMapSpawn", &LuaExports::setMapSpawn);
+	expose("setReactorState", &LuaExports::setReactorState);
+	expose("showMapMessage", &LuaExports::showMapMessage);
+	expose("showMapTimer", &LuaExports::showMapTimer);
+	expose("spawnMob", &LuaExports::spawnMob);
+	expose("spawnMobPos", &LuaExports::spawnMobPos);
 
 	// Mob
-	lua_register(luaVm, "getMobFh", &LuaExports::getMobFh);
-	lua_register(luaVm, "getMobHp", &LuaExports::getMobHp);
-	lua_register(luaVm, "getMobMaxHp", &LuaExports::getMobMaxHp);
-	lua_register(luaVm, "getMobMaxMp", &LuaExports::getMobMaxMp);
-	lua_register(luaVm, "getMobMp", &LuaExports::getMobMp);
-	lua_register(luaVm, "getMobPosX", &LuaExports::getMobPosX);
-	lua_register(luaVm, "getMobPosY", &LuaExports::getMobPosY);
-	lua_register(luaVm, "getRealMobId", &LuaExports::getRealMobId);
-	lua_register(luaVm, "killMob", &LuaExports::killMob);
-	lua_register(luaVm, "mobDropItem", &LuaExports::mobDropItem);
+	expose("getMobFh", &LuaExports::getMobFh);
+	expose("getMobHp", &LuaExports::getMobHp);
+	expose("getMobMaxHp", &LuaExports::getMobMaxHp);
+	expose("getMobMaxMp", &LuaExports::getMobMaxMp);
+	expose("getMobMp", &LuaExports::getMobMp);
+	expose("getMobPosX", &LuaExports::getMobPosX);
+	expose("getMobPosY", &LuaExports::getMobPosY);
+	expose("getRealMobId", &LuaExports::getRealMobId);
+	expose("killMob", &LuaExports::killMob);
+	expose("mobDropItem", &LuaExports::mobDropItem);
 
 	// Time
-	lua_register(luaVm, "getDate", &LuaExports::getDate);
-	lua_register(luaVm, "getDay", &LuaExports::getDay);
-	lua_register(luaVm, "getHour", &LuaExports::getHour);
-	lua_register(luaVm, "getMinute", &LuaExports::getMinute);
-	lua_register(luaVm, "getMonth", &LuaExports::getMonth);
-	lua_register(luaVm, "getNearestMinute", &LuaExports::getNearestMinute);
-	lua_register(luaVm, "getSecond", &LuaExports::getSecond);
-	lua_register(luaVm, "getTime", &LuaExports::getTime);
-	lua_register(luaVm, "getTimeZoneOffset", &LuaExports::getTimeZoneOffset);
-	lua_register(luaVm, "getWeek", &LuaExports::getWeek);
-	lua_register(luaVm, "getYear", &LuaExports::getYear);
-	lua_register(luaVm, "isDst", &LuaExports::isDst);
+	expose("getDate", &LuaExports::getDate);
+	expose("getDay", &LuaExports::getDay);
+	expose("getHour", &LuaExports::getHour);
+	expose("getMinute", &LuaExports::getMinute);
+	expose("getMonth", &LuaExports::getMonth);
+	expose("getNearestMinute", &LuaExports::getNearestMinute);
+	expose("getSecond", &LuaExports::getSecond);
+	expose("getTime", &LuaExports::getTime);
+	expose("getTimeZoneOffset", &LuaExports::getTimeZoneOffset);
+	expose("getWeek", &LuaExports::getWeek);
+	expose("getYear", &LuaExports::getYear);
+	expose("isDst", &LuaExports::isDst);
 
 	// Rates
-	lua_register(luaVm, "getDropRate", &LuaExports::getDropRate);
-	lua_register(luaVm, "getExpRate", &LuaExports::getExpRate);
-	lua_register(luaVm, "getMesoRate", &LuaExports::getMesoRate);
-	lua_register(luaVm, "getQuestExpRate", &LuaExports::getQuestExpRate);
+	expose("getDropRate", &LuaExports::getDropRate);
+	expose("getExpRate", &LuaExports::getExpRate);
+	expose("getMesoRate", &LuaExports::getMesoRate);
+	expose("getQuestExpRate", &LuaExports::getQuestExpRate);
 
 	// Party
-	lua_register(luaVm, "checkPartyFootholds", &LuaExports::checkPartyFootholds);
-	lua_register(luaVm, "getAllPartyPlayerIds", &LuaExports::getAllPartyPlayerIds);
-	lua_register(luaVm, "getPartyCount", &LuaExports::getPartyCount);
-	lua_register(luaVm, "getPartyId", &LuaExports::getPartyId);
-	lua_register(luaVm, "getPartyMapCount", &LuaExports::getPartyMapCount);
-	lua_register(luaVm, "isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
-	lua_register(luaVm, "isPartyLeader", &LuaExports::isPartyLeader);
-	lua_register(luaVm, "verifyPartyFootholds", &LuaExports::verifyPartyFootholds);
-	lua_register(luaVm, "warpParty", &LuaExports::warpParty);
+	expose("checkPartyFootholds", &LuaExports::checkPartyFootholds);
+	expose("getAllPartyPlayerIds", &LuaExports::getAllPartyPlayerIds);
+	expose("getPartyCount", &LuaExports::getPartyCount);
+	expose("getPartyId", &LuaExports::getPartyId);
+	expose("getPartyMapCount", &LuaExports::getPartyMapCount);
+	expose("isPartyInLevelRange", &LuaExports::isPartyInLevelRange);
+	expose("isPartyLeader", &LuaExports::isPartyLeader);
+	expose("verifyPartyFootholds", &LuaExports::verifyPartyFootholds);
+	expose("warpParty", &LuaExports::warpParty);
 
 	// Instance
-	lua_register(luaVm, "addInstanceMap", &LuaExports::addInstanceMap);
-	lua_register(luaVm, "addInstanceParty", &LuaExports::addInstanceParty);
-	lua_register(luaVm, "addInstancePlayer", &LuaExports::addInstancePlayer);
-	lua_register(luaVm, "addPlayerSignUp", &LuaExports::addPlayerSignUp);
-	lua_register(luaVm, "banInstancePlayer", &LuaExports::banInstancePlayer);
-	lua_register(luaVm, "checkInstanceTimer", &LuaExports::checkInstanceTimer);
-	lua_register(luaVm, "createInstance", &LuaExports::createInstance);
-	lua_register(luaVm, "deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
-	lua_register(luaVm, "getAllInstancePlayerIds", &LuaExports::getAllInstancePlayerIds);
-	lua_register(luaVm, "getBannedInstancePlayerByIndex", &LuaExports::getBannedInstancePlayerByIndex);
-	lua_register(luaVm, "getBannedInstancePlayerCount", &LuaExports::getBannedInstancePlayerCount);
-	lua_register(luaVm, "getInstanceMax", &LuaExports::getInstanceMax);
-	lua_register(luaVm, "getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
-	lua_register(luaVm, "getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
-	lua_register(luaVm, "getInstancePlayerId", &LuaExports::getInstancePlayerId);
-	lua_register(luaVm, "getInstanceSignupCount", &LuaExports::getInstanceSignupCount);
-	lua_register(luaVm, "getInstanceTime", &LuaExports::getInstanceTime);
-	lua_register(luaVm, "getInstanceVariable", &LuaExports::getInstanceVariable);
-	lua_register(luaVm, "isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
-	lua_register(luaVm, "isInstance", &LuaExports::isInstance);
-	lua_register(luaVm, "isInstanceMap", &LuaExports::isInstanceMap);
-	lua_register(luaVm, "isInstancePersistent", &LuaExports::isInstancePersistent);
-	lua_register(luaVm, "isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
-	lua_register(luaVm, "markForDelete", &LuaExports::markForDelete);
-	lua_register(luaVm, "moveAllPlayers", &LuaExports::moveAllPlayers);
-	lua_register(luaVm, "passPlayersBetweenInstances", &LuaExports::passPlayersBetweenInstances);
-	lua_register(luaVm, "removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
-	lua_register(luaVm, "removeInstancePlayer", &LuaExports::removeInstancePlayer);
-	lua_register(luaVm, "removePlayerSignUp", &LuaExports::removePlayerSignUp);
-	lua_register(luaVm, "respawnInstanceMobs", &LuaExports::respawnInstanceMobs);
-	lua_register(luaVm, "respawnInstanceReactors", &LuaExports::respawnInstanceReactors);
-	lua_register(luaVm, "revertInstance", &LuaExports::revertInstance);
-	lua_register(luaVm, "setInstance", &LuaExports::setInstance);
-	lua_register(luaVm, "setInstanceMax", &LuaExports::setInstanceMax);
-	lua_register(luaVm, "setInstancePersistence", &LuaExports::setInstancePersistence);
-	lua_register(luaVm, "setInstanceReset", &LuaExports::setInstanceReset);
-	lua_register(luaVm, "setInstanceTime", &LuaExports::setInstanceTime);
-	lua_register(luaVm, "setInstanceVariable", &LuaExports::setInstanceVariable);
-	lua_register(luaVm, "showInstanceTime", &LuaExports::showInstanceTime);
-	lua_register(luaVm, "startInstanceTimer", &LuaExports::startInstanceTimer);
-	lua_register(luaVm, "stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
-	lua_register(luaVm, "stopInstanceTimer", &LuaExports::stopInstanceTimer);
-	lua_register(luaVm, "unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
+	expose("addInstanceMap", &LuaExports::addInstanceMap);
+	expose("addInstanceParty", &LuaExports::addInstanceParty);
+	expose("addInstancePlayer", &LuaExports::addInstancePlayer);
+	expose("addPlayerSignUp", &LuaExports::addPlayerSignUp);
+	expose("banInstancePlayer", &LuaExports::banInstancePlayer);
+	expose("checkInstanceTimer", &LuaExports::checkInstanceTimer);
+	expose("createInstance", &LuaExports::createInstance);
+	expose("deleteInstanceVariable", &LuaExports::deleteInstanceVariable);
+	expose("getAllInstancePlayerIds", &LuaExports::getAllInstancePlayerIds);
+	expose("getBannedInstancePlayerByIndex", &LuaExports::getBannedInstancePlayerByIndex);
+	expose("getBannedInstancePlayerCount", &LuaExports::getBannedInstancePlayerCount);
+	expose("getInstanceMax", &LuaExports::getInstanceMax);
+	expose("getInstancePlayerByIndex", &LuaExports::getInstancePlayerByIndex);
+	expose("getInstancePlayerCount", &LuaExports::getInstancePlayerCount);
+	expose("getInstancePlayerId", &LuaExports::getInstancePlayerId);
+	expose("getInstanceSignupCount", &LuaExports::getInstanceSignupCount);
+	expose("getInstanceTime", &LuaExports::getInstanceTime);
+	expose("getInstanceVariable", &LuaExports::getInstanceVariable);
+	expose("isBannedInstancePlayer", &LuaExports::isBannedInstancePlayer);
+	expose("isInstance", &LuaExports::isInstance);
+	expose("isInstanceMap", &LuaExports::isInstanceMap);
+	expose("isInstancePersistent", &LuaExports::isInstancePersistent);
+	expose("isPlayerSignedUp", &LuaExports::isPlayerSignedUp);
+	expose("markForDelete", &LuaExports::markForDelete);
+	expose("moveAllPlayers", &LuaExports::moveAllPlayers);
+	expose("passPlayersBetweenInstances", &LuaExports::passPlayersBetweenInstances);
+	expose("removeAllInstancePlayers", &LuaExports::removeAllInstancePlayers);
+	expose("removeInstancePlayer", &LuaExports::removeInstancePlayer);
+	expose("removePlayerSignUp", &LuaExports::removePlayerSignUp);
+	expose("respawnInstanceMobs", &LuaExports::respawnInstanceMobs);
+	expose("respawnInstanceReactors", &LuaExports::respawnInstanceReactors);
+	expose("revertInstance", &LuaExports::revertInstance);
+	expose("setInstance", &LuaExports::setInstance);
+	expose("setInstanceMax", &LuaExports::setInstanceMax);
+	expose("setInstancePersistence", &LuaExports::setInstancePersistence);
+	expose("setInstanceReset", &LuaExports::setInstanceReset);
+	expose("setInstanceTime", &LuaExports::setInstanceTime);
+	expose("setInstanceVariable", &LuaExports::setInstanceVariable);
+	expose("showInstanceTime", &LuaExports::showInstanceTime);
+	expose("startInstanceTimer", &LuaExports::startInstanceTimer);
+	expose("stopAllInstanceTimers", &LuaExports::stopAllInstanceTimers);
+	expose("stopInstanceTimer", &LuaExports::stopInstanceTimer);
+	expose("unbanInstancePlayer", &LuaExports::unbanInstancePlayer);
 }
 
 auto LuaScriptable::setEnvironmentVariables() -> void {
@@ -333,27 +333,31 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 	setVariable("env_mapleLocale", MapleVersion::Locale);
 }
 
-auto LuaScriptable::run() -> bool {
-	if (luaL_dofile(luaVm, m_filename.c_str())) {
+auto LuaScriptable::run() -> Result {
+	if (luaL_dofile(m_luaVm, m_filename.c_str())) {
 		// Error in lua script
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
 auto LuaScriptable::setVariable(const string_t &name, int32_t val) -> void {
-	lua_pushinteger(luaVm, val);
-	lua_setglobal(luaVm, name.c_str());
+	lua_pushinteger(m_luaVm, val);
+	lua_setglobal(m_luaVm, name.c_str());
 }
 
 auto LuaScriptable::setVariable(const string_t &name, const string_t &val) -> void {
-	lua_pushstring(luaVm, val.c_str());
-	lua_setglobal(luaVm, name.c_str());
+	lua_pushstring(m_luaVm, val.c_str());
+	lua_setglobal(m_luaVm, name.c_str());
 }
 
 auto LuaScriptable::handleError() -> void {
-	printError(lua_tostring(luaVm, -1));
+	printError(lua_tostring(m_luaVm, -1));
+}
+
+auto LuaScriptable::expose(const string_t &luaName, int (*func)(lua_State *)) -> void {
+	lua_register(m_luaVm, luaName.c_str(), func);
 }
 
 auto LuaScriptable::printError(const string_t &error) -> void {

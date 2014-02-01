@@ -19,6 +19,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PacketBuilder.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
+Channel::Channel(WorldServerAcceptConnection *connection, channel_id_t id, port_t port) :
+	m_connection(connection),
+	m_id(id),
+	m_port(port)
+{
+}
+
 auto Channel::send(const PacketBuilder &builder) -> void {
 	m_connection->send(builder);
+}
+
+auto Channel::increasePlayers() -> int32_t {
+	return ++m_players;
+}
+
+auto Channel::decreasePlayers() -> int32_t {
+	return --m_players;
+}
+
+auto Channel::getId() const -> channel_id_t {
+	return m_id;
+}
+
+auto Channel::getPort() const -> port_t {
+	return m_port;
 }

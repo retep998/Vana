@@ -27,46 +27,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
 	LuaScriptable(filename, playerId)
 {
-	m_luaThread = lua_newthread(luaVm);
+	m_luaThread = lua_newthread(m_luaVm);
 
 	// Miscellaneous
-	lua_register(luaVm, "showStorage", &LuaExports::showStorage);
-	lua_register(luaVm, "getDistanceToPlayer", &LuaExports::getDistanceNpc);
-	lua_register(luaVm, "getNpcId", &LuaExports::getNpcId);
-	lua_register(luaVm, "runNpc", &LuaExports::npcRunNpc);
+	expose("showStorage", &LuaExports::showStorage);
+	expose("getDistanceToPlayer", &LuaExports::getDistanceNpc);
+	expose("getNpcId", &LuaExports::getNpcId);
+	expose("runNpc", &LuaExports::npcRunNpc);
 
 	// NPC interaction
-	lua_register(luaVm, "addText", &LuaExports::addText);
-	lua_register(luaVm, "sendBackNext", &LuaExports::sendBackNext);
-	lua_register(luaVm, "sendBackOk", &LuaExports::sendBackOk);
-	lua_register(luaVm, "sendNext", &LuaExports::sendNext);
-	lua_register(luaVm, "sendOk", &LuaExports::sendOk);
-	lua_register(luaVm, "askAcceptDecline", &LuaExports::askAcceptDecline);
-	lua_register(luaVm, "askAcceptDeclineNoExit", &LuaExports::askAcceptDeclineNoExit);
-	lua_register(luaVm, "askChoice", &LuaExports::askChoice);
-	lua_register(luaVm, "askNumber", &LuaExports::askNumber);
-	lua_register(luaVm, "askStyle", &LuaExports::askStyle);
-	lua_register(luaVm, "askText", &LuaExports::askText);
-	lua_register(luaVm, "askYesNo", &LuaExports::askYesNo);
-	lua_register(luaVm, "askQuiz", &LuaExports::askQuiz);
-	lua_register(luaVm, "askQuestion", &LuaExports::askQuestion);
+	expose("addText", &LuaExports::addText);
+	expose("sendBackNext", &LuaExports::sendBackNext);
+	expose("sendBackOk", &LuaExports::sendBackOk);
+	expose("sendNext", &LuaExports::sendNext);
+	expose("sendOk", &LuaExports::sendOk);
+	expose("askAcceptDecline", &LuaExports::askAcceptDecline);
+	expose("askAcceptDeclineNoExit", &LuaExports::askAcceptDeclineNoExit);
+	expose("askChoice", &LuaExports::askChoice);
+	expose("askNumber", &LuaExports::askNumber);
+	expose("askStyle", &LuaExports::askStyle);
+	expose("askText", &LuaExports::askText);
+	expose("askYesNo", &LuaExports::askYesNo);
+	expose("askQuiz", &LuaExports::askQuiz);
+	expose("askQuestion", &LuaExports::askQuestion);
 
 	// Quest
-	lua_register(luaVm, "addQuest", &LuaExports::addQuest);
-	lua_register(luaVm, "endQuest", &LuaExports::endQuest);
+	expose("addQuest", &LuaExports::addQuest);
+	expose("endQuest", &LuaExports::endQuest);
 }
 
-auto LuaNpc::run() -> bool {
+auto LuaNpc::run() -> Result {
 	if (luaL_loadfile(m_luaThread, m_filename.c_str())) {
 		// Error in lua script
 		handleError();
-		return false;
+		return Result::Failure;
 	}
 	return resume(0); // Start running the script
 }
 
-auto LuaNpc::resume(int32_t nArgs) -> bool {
-	int32_t ret = lua_resume(m_luaThread, luaVm, nArgs);
+auto LuaNpc::resume(int32_t nArgs) -> Result {
+	int32_t ret = lua_resume(m_luaThread, m_luaVm, nArgs);
 	if (ret == 0) {
 		// NPC finished
 		PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
@@ -74,26 +74,26 @@ auto LuaNpc::resume(int32_t nArgs) -> bool {
 	else if (ret != LUA_YIELD) {
 		// Error, a working NPC returns either 0 or LUA_YIELD
 		handleError();
-		return false;
+		return Result::Failure;
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto LuaNpc::proceedNext() -> bool {
+auto LuaNpc::proceedNext() -> Result {
 	return resume(0);
 }
 
-auto LuaNpc::proceedSelection(uint8_t selected) -> bool {
+auto LuaNpc::proceedSelection(uint8_t selected) -> Result {
 	lua_pushinteger(m_luaThread, selected);
 	return resume(1);
 }
 
-auto LuaNpc::proceedNumber(int32_t number) -> bool {
+auto LuaNpc::proceedNumber(int32_t number) -> Result {
 	lua_pushinteger(m_luaThread, number);
 	return resume(1);
 }
 
-auto LuaNpc::proceedText(const string_t &text) -> bool {
+auto LuaNpc::proceedText(const string_t &text) -> Result {
 	lua_pushstring(m_luaThread, text.c_str());
 	return resume(1);
 }

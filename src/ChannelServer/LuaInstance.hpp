@@ -28,14 +28,14 @@ class LuaInstance : public LuaScriptable {
 public:
 	LuaInstance(const string_t &name, int32_t playerId);
 
-	auto run(InstanceMessage message) -> bool;
-	auto run(InstanceMessage message, int32_t) -> bool;
-	auto run(InstanceMessage message, const string_t &) -> bool;
-	auto run(InstanceMessage message, int32_t, int32_t) -> bool;
-	auto run(InstanceMessage message, const string_t &, int32_t) -> bool;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t) -> bool;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t) -> bool;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t, int32_t) -> bool;
+	auto run(InstanceMessage message) -> Result;
+	auto run(InstanceMessage message, int32_t) -> Result;
+	auto run(InstanceMessage message, const string_t &) -> Result;
+	auto run(InstanceMessage message, int32_t, int32_t) -> Result;
+	auto run(InstanceMessage message, const string_t &, int32_t) -> Result;
+	auto run(InstanceMessage message, int32_t, int32_t, int32_t) -> Result;
+	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t) -> Result;
+	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t, int32_t) -> Result;
 };
 
 namespace LuaExports {

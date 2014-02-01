@@ -29,9 +29,9 @@ LuaPortal::LuaPortal(const string_t &filename, int32_t playerId, PortalInfo *por
 	LuaExports::portals[playerId] = portal;
 
 	// Portal
-	lua_register(luaVm, "getPortalName", &LuaExports::getPortalName);
-	lua_register(luaVm, "instantWarp", &LuaExports::instantWarp);
-	lua_register(luaVm, "playPortalSe", &LuaExports::playPortalSe);
+	expose("getPortalName", &LuaExports::getPortalName);
+	expose("instantWarp", &LuaExports::instantWarp);
+	expose("playPortalSe", &LuaExports::playPortalSe);
 
 	run();
 }
