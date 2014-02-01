@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class WorldServerConnection;
 
 class ChannelServer final : public AbstractServer {
@@ -34,7 +34,7 @@ public:
 	auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void;
 	auto establishedWorldConnection(channel_id_t channelId, port_t port, const WorldConfig &config) -> void;
 
-	// TODO FIXME
+	// TODO FIXME api
 	// Eyeball these for potential refactoring - they involve world<->channel operations and I don't want to dig into that now
 	auto setScrollingHeader(const string_t &message) -> void;
 	auto modifyRate(int32_t rateType, int32_t newValue) -> void;
@@ -46,7 +46,7 @@ public:
 	auto getChannelId() const -> channel_id_t;
 	auto getOnlineId() const -> int32_t;
 	auto getConfig() const -> const WorldConfig &;
-	auto sendPacketToWorld(PacketCreator &packet) -> void;
+	auto sendWorld(const PacketBuilder &builder) -> void;
 protected:
 	auto loadData() -> void override;
 	auto listen() -> void override;

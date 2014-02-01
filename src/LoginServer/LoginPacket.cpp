@@ -20,224 +20,247 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.hpp"
 #include "ClientIp.hpp"
 #include "LoginPacketHelper.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerStatus.hpp"
-#include "Session.hpp"
 #include "SmsgHeader.hpp"
 #include "World.hpp"
-#include "Worlds.hpp"
 
-auto LoginPacket::loginError(Player *player, int16_t errorId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_AUTHENTICATION);
-	packet.add<int16_t>(errorId);
-	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+namespace LoginPacket {
+
+PACKET_IMPL(loginError, int16_t errorId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_AUTHENTICATION)
+		.add<int16_t>(errorId)
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto LoginPacket::loginBan(Player *player, int8_t reason, int32_t expire) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_AUTHENTICATION);
-	packet.add<int16_t>(2);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(reason);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
-	player->getSession()->send(packet);
+PACKET_IMPL(loginBan, int8_t reason, int32_t expire) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_AUTHENTICATION)
+		.add<int16_t>(2)
+		.add<int32_t>(0)
+		.add<int8_t>(reason)
+		.add<int32_t>(0)
+		.add<int32_t>(expire); // Ban over: Time, anything >= 00aacb01 (year >= 2011) will cause perma ban
+	return builder;
 }
 
-auto LoginPacket::loginConnect(Player *player, const string_t &username) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_AUTHENTICATION);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
-	packet.add<int32_t>(player->getUserId());
+PACKET_IMPL(loginConnect, Player *player, const string_t &username) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_AUTHENTICATION)
+		.add<int32_t>(0)
+		.add<int16_t>(0)
+		.add<int32_t>(player->getUserId());
+
 	switch (player->getStatus()) {
-		case PlayerStatus::SetGender: packet.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
-		case PlayerStatus::SetPin: packet.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
-		default: packet.add<int8_t>(player->getGender()); break;
+		case PlayerStatus::SetGender: builder.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
+		case PlayerStatus::SetPin: builder.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
+		default: builder.add<int8_t>(player->getGender()); break;
 	}
-	packet.add<bool>(player->isAdmin()); // Admin byte. Enables commands like /c, /ch, /m, /h... but disables trading.
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
-	packet.addString(username);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(player->getQuietBanReason());
-	packet.add<int64_t>(player->getQuietBanTime());
-	packet.add<int64_t>(player->getCreationTime());
-	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+
+	builder
+		.add<bool>(player->isAdmin()) // Enables commands like /c, /ch, /m, /h... but disables trading
+		.add<int8_t>(0)
+		.add<int8_t>(0)
+		.addString(username)
+		.add<int8_t>(0)
+		.add<int8_t>(player->getQuietBanReason())
+		.add<int64_t>(player->getQuietBanTime())
+		.add<int64_t>(player->getCreationTime())
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto LoginPacket::loginProcess(Player *player, int8_t id) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PIN);
-	packet.add<int8_t>(id);
-	player->getSession()->send(packet);
+PACKET_IMPL(loginProcess, int8_t id) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PIN)
+		.add<int8_t>(id);
+	return builder;
 }
 
-auto LoginPacket::pinAssigned(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PIN_ASSIGNED);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+PACKET_IMPL(pinAssigned, ) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PIN_ASSIGNED)
+		.add<int8_t>(0);
+	return builder;
 }
 
-auto LoginPacket::genderDone(Player *player, int8_t gender) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ACCOUNT_GENDER_DONE);
-	packet.add<int8_t>(gender);
-	packet.add<int8_t>(1);
-	player->getSession()->send(packet);
+PACKET_IMPL(genderDone, int8_t gender) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_ACCOUNT_GENDER_DONE)
+		.add<int8_t>(gender)
+		.add<int8_t>(1);
+	return builder;
 }
 
-auto LoginPacket::showWorld(Player *player, World *world) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_WORLD_LIST);
-	packet.add<int8_t>(world->getId());
-	packet.addString(world->getName());
-	packet.add<int8_t>(world->getRibbon());
-	packet.addString(world->getEventMessage());
-	packet.add<int16_t>(100); // EXP rate. x/100. Changing this will show event message.
-	packet.add<int16_t>(100);
-	packet.add<int8_t>(0);
-	packet.add<uint8_t>(world->getMaxChannels());
+PACKET_IMPL(showWorld, World *world) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_WORLD_LIST)
+		.add<int8_t>(world->getId())
+		.addString(world->getName())
+		.add<int8_t>(world->getRibbon())
+		.addString(world->getEventMessage())
+		.add<int16_t>(100) // EXP rate. x/100. Changing this will show event message.
+		.add<int16_t>(100)
+		.add<int8_t>(0);
+
+	builder.add<uint8_t>(world->getMaxChannels());
 	for (channel_id_t i = 0; i < world->getMaxChannels(); i++) {
 		out_stream_t cnStream;
 		cnStream << world->getName() << "-" << static_cast<int32_t>(i + 1);
 		const string_t &channelName = cnStream.str();
-		packet.addString(channelName);
+		builder.addString(channelName);
 
 		if (Channel *channel = world->getChannel(i)) {
-			packet.add<int32_t>(channel->getPopulation());
+			builder.add<int32_t>(channel->getPopulation());
 		}
 		else {
 			// Channel doesn't exist
-			packet.add<int32_t>(0);
+			builder.add<int32_t>(0);
 		}
 
-		packet.add<int8_t>(world->getId());
-		packet.add<uint8_t>(i);
-		packet.add<uint8_t>(0); // Some sort of state
-	}
-	packet.add<int16_t>(0); // Amount of messages
-	// packet.addPos(); // Pos of message
-	// packet.addString("message"); // message
-	// When you set a pos of (0, 0), the message will be on the Scania/first world tab.
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::worldEnd(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_WORLD_LIST);
-	packet.add<int8_t>(-1);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::showChannels(Player *player, int8_t status) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_WORLD_STATUS);
-	packet.add<int16_t>(status);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::channelSelect(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANNEL_SELECT);
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::showCharacters(Player *player, const vector_t<Character> &chars, int32_t maxChars) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_LIST);
-	packet.add<int8_t>(0);
-	packet.add<uint8_t>(chars.size());
-	for (size_t i = 0; i < chars.size(); i++) {
-		LoginPacketHelper::addCharacter(packet, chars[i]);
-	}
-	packet.add<int32_t>(maxChars);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::channelOffline(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_LIST);
-	packet.add<int8_t>(8);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::checkName(Player *player, const string_t &name, uint8_t message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_NAME_CHECK);
-	packet.addString(name);
-	packet.add<uint8_t>(message);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::showAllCharactersInfo(Player *player, world_id_t worldCount, uint32_t unk) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(worldCount);
-	packet.add<uint32_t>(unk);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::showViewAllCharacters(Player *player, world_id_t worldId, const vector_t<Character> &chars) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_GLOBAL_LIST);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(worldId);
-	packet.add<uint8_t>(chars.size());
-	for (size_t i = 0; i < chars.size(); i++) {
-		LoginPacketHelper::addCharacter(packet, chars[i]);
-	}
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::showCharacter(Player *player, const Character &charc) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_CREATE);
-	packet.add<int8_t>(0);
-	LoginPacketHelper::addCharacter(packet, charc);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::deleteCharacter(Player *player, int32_t id, uint8_t result) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_DELETE);
-	packet.add<int32_t>(id);
-	packet.add<uint8_t>(result);
-	player->getSession()->send(packet);
-}
-
-auto LoginPacket::connectIp(Player *player, int32_t charId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANNEL_CONNECT);
-	packet.add<int16_t>(0);
-
-	Ip chanIp(0);
-	port_t port = -1;
-
-	if (Channel *channel = Worlds::getInstance().getWorld(player->getWorldId())->getChannel(player->getChannel())) {
-		chanIp = channel->matchIpToSubnet(player->getIp());
-		port = channel->getPort();
+		builder
+			.add<int8_t>(world->getId())
+			.add<uint8_t>(i)
+			.add<uint8_t>(0); // Some sort of state
 	}
 
-	packet.addClass<ClientIp>(ClientIp(chanIp));
-	packet.add<port_t>(port);
-	packet.add<int32_t>(charId);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+	int16_t messageCount = 0;
+	builder.add<int16_t>(messageCount);
+	for (int16_t i = 0; i < messageCount; ++i) {
+		// When you set a pos of (0, 0), the message will be on the first world tab
+		builder.addClass<Pos>(Pos(i * 10, 0));
+		builder.addString("message");
+	}
+	return builder;
 }
 
-auto LoginPacket::relogResponse(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_LOGIN_RETURN);
-	packet.add<int8_t>(1);
-	player->getSession()->send(packet);
+PACKET_IMPL(worldEnd, ) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_WORLD_LIST)
+		.add<int8_t>(-1);
+	return builder;
+}
+
+PACKET_IMPL(showChannels, int8_t status) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_WORLD_STATUS)
+		.add<int16_t>(status);
+	return builder;
+}
+
+PACKET_IMPL(channelSelect, ) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHANNEL_SELECT)
+		.add<int16_t>(0)
+		.add<int8_t>(0);
+	return builder;
+}
+
+PACKET_IMPL(showCharacters, const vector_t<Character> &chars, int32_t maxChars) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_LIST)
+		.add<int8_t>(0);
+
+	builder.add<uint8_t>(chars.size());
+	for (const auto &elem : chars) {
+		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
+	}
+
+	builder.add<int32_t>(maxChars);
+	return builder;
+}
+
+PACKET_IMPL(channelOffline, ) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_LIST)
+		.add<int8_t>(8);
+	return builder;
+}
+
+PACKET_IMPL(checkName, const string_t &name, uint8_t message) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_NAME_CHECK)
+		.addString(name)
+		.add<uint8_t>(message);
+	return builder;
+}
+
+PACKET_IMPL(showAllCharactersInfo, world_id_t worldCount, uint32_t unk) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_GLOBAL_LIST)
+		.add<int8_t>(1)
+		.add<int32_t>(worldCount)
+		.add<uint32_t>(unk);
+	return builder;
+}
+
+PACKET_IMPL(showViewAllCharacters, world_id_t worldId, const vector_t<Character> &chars) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_GLOBAL_LIST)
+		.add<int8_t>(0)
+		.add<int8_t>(worldId);
+
+	builder.add<uint8_t>(chars.size());
+	for (const auto &elem : chars) {
+		builder.addBuffer(LoginPacketHelper::addCharacter(elem));
+	}
+	return builder;
+}
+
+PACKET_IMPL(showCharacter, const Character &charc) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_CREATE)
+		.add<int8_t>(0)
+		.addBuffer(LoginPacketHelper::addCharacter(charc));
+	return builder;
+}
+
+PACKET_IMPL(deleteCharacter, int32_t id, uint8_t result) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_DELETE)
+		.add<int32_t>(id)
+		.add<uint8_t>(result);
+	return builder;
+}
+
+PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, int32_t charId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHANNEL_CONNECT)
+		.add<int16_t>(0)
+		.addClass<ClientIp>(ip)
+		.add<port_t>(port)
+		.add<int32_t>(charId)
+		.add<int32_t>(0)
+		.add<int8_t>(0);
+	return builder;
+}
+
+PACKET_IMPL(relogResponse, ) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_LOGIN_RETURN)
+		.add<int8_t>(1);
+	return builder;
+}
+
 }

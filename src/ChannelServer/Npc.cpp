@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Npc.hpp"
 #include "FileUtilities.hpp"
 #include "LuaNpc.hpp"
-#include "PacketCreator.hpp"
+#include "NpcPacket.hpp"
 #include "Player.hpp"
 #include "ScriptDataProvider.hpp"
 #include "Session.hpp"
@@ -101,31 +101,14 @@ auto Npc::run() -> void {
 	checkEnd();
 }
 
-auto Npc::npcPacket(int8_t type, bool addText) -> PacketCreator {
-	m_sentDialog = type;
-
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NPC_TALK);
-	packet.add<int8_t>(4);
-	packet.add<int32_t>(m_npcId);
-	packet.add<int8_t>(type);
-	if (addText) {
-		packet.addString(m_text);
-		m_text = "";
-	}
-
-	return packet;
-}
-
 auto Npc::sendSimple() -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::Simple);
-
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::Simple, m_npcId, m_text));
+	m_text = "";
 }
 
 auto Npc::sendYesNo() -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::YesNo);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::YesNo, m_npcId, m_text));
+	m_text = "";
 }
 
 auto Npc::sendDialog(bool back, bool next, bool save) -> void {
@@ -134,10 +117,10 @@ auto Npc::sendDialog(bool back, bool next, bool save) -> void {
 		m_previousStates.push_back(make_ref_ptr<NpcChatState>(m_text, back, next));
 	}
 
-	PacketCreator packet = npcPacket(NpcDialogs::Normal);
-	packet.add<bool>(back);
-	packet.add<bool>(next);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::Normal, m_npcId, m_text)
+		.add<bool>(back)
+		.add<bool>(next));
+	m_text = "";
 }
 
 auto Npc::sendDialog(ref_ptr_t<NpcChatState> npcState) -> void {
@@ -146,61 +129,57 @@ auto Npc::sendDialog(ref_ptr_t<NpcChatState> npcState) -> void {
 }
 
 auto Npc::sendAcceptDecline() -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::AcceptDecline);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::AcceptDecline, m_npcId, m_text));
+	m_text = "";
 }
 
 auto Npc::sendAcceptDeclineNoExit() -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::AcceptDeclineNoExit);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::AcceptDeclineNoExit, m_npcId, m_text));
+	m_text = "";
 }
 
 auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::Quiz, false);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(type); // 0 = NPC, 1 = Mob, 2 = Item
-	packet.add<int32_t>(objectId);
-	packet.add<int32_t>(correct);
-	packet.add<int32_t>(questions);
-	packet.add<int32_t>(time);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::Quiz, m_npcId, "", false)
+		.add<int8_t>(0)
+		.add<int32_t>(type) // 0 = NPC, 1 = Mob, 2 = Item
+		.add<int32_t>(objectId)
+		.add<int32_t>(correct)
+		.add<int32_t>(questions)
+		.add<int32_t>(time));
 }
 
 auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::Question, false);
-	packet.add<int8_t>(0x00); // If it's 0x01, it does something else
-	packet.addString(m_text);
-	packet.addString(question); // Another question thing
-	packet.addString(clue);
-	packet.add<int32_t>(minCharacters);
-	packet.add<int32_t>(maxCharacters);
-	packet.add<int32_t>(time);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::Question, m_npcId, "", false)
+		.add<int8_t>(0x00) // If it's 0x01, it does something else
+		.addString(m_text)
+		.addString(question) // Another question thing
+		.addString(clue)
+		.add<int32_t>(minCharacters)
+		.add<int32_t>(maxCharacters)
+		.add<int32_t>(time));
 }
 
 auto Npc::sendGetText(int16_t min, int16_t max, const string_t &def) -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::GetText);
-	packet.addString(def);
-	packet.add<int16_t>(min);
-	packet.add<int16_t>(max);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::GetText, m_npcId, m_text)
+		.addString(def)
+		.add<int16_t>(min)
+		.add<int16_t>(max));
+	m_text = "";
 }
 
 auto Npc::sendGetNumber(int32_t def, int32_t min, int32_t max) -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::GetNumber);
-	packet.add<int32_t>(def);
-	packet.add<int32_t>(min);
-	packet.add<int32_t>(max);
-	m_player->getSession()->send(packet);
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::GetNumber, m_npcId, m_text)
+		.add<int32_t>(def)
+		.add<int32_t>(min)
+		.add<int32_t>(max));
+	m_text = "";
 }
 
-auto Npc::sendStyle(int32_t styles[], uint8_t size) -> void {
-	PacketCreator packet = npcPacket(NpcDialogs::Style);
-	packet.add<uint8_t>(size);
-	for (uint8_t i = 0; i < size; i++) {
-		packet.add<int32_t>(styles[i]);
-	}
-	m_player->getSession()->send(packet);
+auto Npc::sendStyle(vector_t<int32_t> styles) -> void {
+	m_player->send(NpcPacket::npcChat(NpcPacket::Dialogs::Style, m_npcId, m_text)
+		.add<uint8_t>(styles.size())
+		.addVector<int32_t>(styles, styles.size()));
+	m_text = "";
 }
 
 auto Npc::proceedBack() -> void {

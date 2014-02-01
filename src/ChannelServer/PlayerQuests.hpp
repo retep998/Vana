@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 
 struct ActiveQuest {
@@ -50,7 +50,7 @@ struct ActiveQuest {
 	ord_map_t<int32_t, uint16_t> kills;
 };
 
-// TODO FIXME
+// TODO FIXME accuracy
 // Potentially refactor quest drop display to the MAP instead of the drops, because that's how global does it
 enum class AllowQuestItemResult {
 	Allow,
@@ -65,7 +65,7 @@ public:
 
 	auto load() -> void;
 	auto save() -> void;
-	auto connectData(PacketCreator &packet) -> void;
+	auto connectData(PacketBuilder &packet) -> void;
 
 	auto itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQuestItemResult;
 	auto addQuest(uint16_t questId, int32_t npcId) -> void;
@@ -78,7 +78,7 @@ public:
 	auto setQuestData(uint16_t id, const string_t &data) -> void;
 	auto getQuestData(uint16_t id) -> string_t;
 private:
-	auto giveRewards(uint16_t questId, bool start) -> bool;
+	auto giveRewards(uint16_t questId, bool start) -> Result;
 
 	Player *m_player = nullptr;
 	hash_map_t<int32_t, vector_t<uint16_t>> m_mobToQuestMapping;

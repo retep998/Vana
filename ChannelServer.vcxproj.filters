@@ -337,6 +337,9 @@
     <ClCompile Include="src\ChannelServer\StatusInfo.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
+    <ClCompile Include="src\ChannelServer\MapleTvPacket.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.hpp">
@@ -637,6 +640,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\StatusInfo.hpp">
       <Filter>ChannelServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\MapleTvPacket.hpp">
+      <Filter>Packets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

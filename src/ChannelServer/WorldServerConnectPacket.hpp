@@ -17,18 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 struct Rates;
 
 namespace WorldServerConnectPacket {
-	auto rankingCalculation() -> void;
-	auto sendToChannels(PacketCreator &packet) -> void;
-	auto sendToWorlds(PacketCreator &packet) -> void;
-	auto reloadMcdb(const string_t &type) -> void;
-	auto rehashConfig() -> void;
+	PACKET(rankingCalculation);
+	PACKET(reloadMcdb, const string_t &type);
+	PACKET(rehashConfig);
 }

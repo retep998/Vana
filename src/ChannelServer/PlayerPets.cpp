@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPets.hpp"
 #include "Pet.hpp"
 #include "Database.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 
 auto PlayerPets::addPet(Pet *pet) -> void {
@@ -80,7 +79,7 @@ auto PlayerPets::save() -> void {
 	}
 }
 
-auto PlayerPets::petInfoPacket(PacketCreator &packet) -> void {
+auto PlayerPets::petInfoPacket(PacketBuilder &packet) -> void {
 	Item *it;
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
@@ -105,7 +104,7 @@ auto PlayerPets::petInfoPacket(PacketCreator &packet) -> void {
 	packet.add<int8_t>(0); // End of pets / start of taming mob
 }
 
-auto PlayerPets::connectData(PacketCreator &packet) -> void {
+auto PlayerPets::connectData(PacketBuilder &packet) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = getSummoned(i)) {
 			packet.add<int64_t>(pet->getId()); //pet->getCashId() != 0 ? pet->getCashId() : pet->getId());

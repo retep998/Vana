@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IPacket.hpp"
 #include "Types.hpp"
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Player;
 class Summon;
@@ -38,8 +38,8 @@ public:
 	auto addSummon(Summon *summon, int32_t time) -> void;
 	auto removeSummon(bool puppet, bool fromTimer) -> void;
 
-	auto write(PacketCreator &packet) const -> void override;
-	auto read(PacketReader &packet) -> void override;
+	auto write(PacketBuilder &builder) const -> void override;
+	auto read(PacketReader &reader) -> void override;
 private:
 	auto getSummonTimeRemaining() const -> seconds_t;
 

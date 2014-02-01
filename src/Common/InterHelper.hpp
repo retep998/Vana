@@ -74,6 +74,8 @@ namespace Sync {
 				Job = 0x02,
 				Map = 0x04,
 				Channel = 0x08,
+				Ip = 0x10,
+				Cash = 0x20,
 				Full = 0x80,
 			};
 		}

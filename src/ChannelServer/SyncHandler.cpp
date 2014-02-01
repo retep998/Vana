@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameObjects.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
@@ -33,19 +32,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "SyncPacket.hpp"
 
-auto SyncHandler::handle(PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
-		case Sync::SyncTypes::ChannelStart: PlayerDataProvider::getInstance().parseChannelConnectPacket(packet); break;
-		case Sync::SyncTypes::Player: PlayerDataProvider::getInstance().handlePlayerSync(packet); break;
-		case Sync::SyncTypes::Party: PlayerDataProvider::getInstance().handlePartySync(packet); break;
-		case Sync::SyncTypes::Buddy: PlayerDataProvider::getInstance().handleBuddySync(packet); break;
+auto SyncHandler::handle(PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
+		case Sync::SyncTypes::ChannelStart: PlayerDataProvider::getInstance().parseChannelConnectPacket(reader); break;
+		case Sync::SyncTypes::Player: PlayerDataProvider::getInstance().handlePlayerSync(reader); break;
+		case Sync::SyncTypes::Party: PlayerDataProvider::getInstance().handlePartySync(reader); break;
+		case Sync::SyncTypes::Buddy: PlayerDataProvider::getInstance().handleBuddySync(reader); break;
 	}
 }
 
-auto SyncHandler::handleConfigSync(PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(packet.getClass<Rates>()); break;
-		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(packet.getString()); break;
+auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::Config::RateSet: ChannelServer::getInstance().setRates(reader.getClass<Rates>()); break;
+		case Sync::Config::ScrollingHeader: ChannelServer::getInstance().setScrollingHeader(reader.getString()); break;
 	}
 }

@@ -32,9 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VanaConstants.hpp"
 #include <iostream>
 
-auto Login::loginUser(Player *player, PacketReader &packet) -> void {
-	string_t username = packet.getString();
-	string_t password = packet.getString();
+auto Login::loginUser(Player *player, PacketReader &reader) -> void {
+	string_t username = reader.getString();
+	string_t password = reader.getString();
 	string_t ip = player->getIp().toString();
 
 	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
@@ -59,7 +59,7 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 	bool valid = true;
 	int32_t userId = 0;
 	if (!sql.got_data()) {
-		LoginPacket::loginError(player, LoginPacket::Errors::InvalidUsername);
+		player->send(LoginPacket::loginError(LoginPacket::Errors::InvalidUsername));
 		valid = false;
 	}
 	else {
@@ -78,18 +78,18 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 			banTime.tm_mon = 0;
 			banTime.tm_mday = 1;
 			int32_t time = TimeUtilities::timeToTick32(mktime(&banTime));
-			LoginPacket::loginBan(player, 0, time);
+			player->send(LoginPacket::loginBan(0, time));
 			valid = false;
 		}
 		else {
 			userId = row.get<int32_t>("user_id");
-			const string_t &dbPassword = row.get<string_t>("password");
+			string_t dbPassword = row.get<string_t>("password");
 			opt_string_t salt = row.get<opt_string_t>("salt");
 
 			if (!salt.is_initialized()) {
 				// We have an unsalted password
 				if (dbPassword != password) {
-					LoginPacket::loginError(player, LoginPacket::Errors::InvalidPassword);
+					player->send(LoginPacket::loginError(LoginPacket::Errors::InvalidPassword));
 					valid = false;
 				}
 				else {
@@ -107,16 +107,16 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 				}
 			}
 			else if (dbPassword != MiscUtilities::hashPassword(password, salt.get())) {
-				LoginPacket::loginError(player, LoginPacket::Errors::InvalidPassword);
+				player->send(LoginPacket::loginError(LoginPacket::Errors::InvalidPassword));
 				valid = false;
 			}
 			else if (row.get<bool>("online")) {
-				LoginPacket::loginError(player, LoginPacket::Errors::AlreadyLoggedIn);
+				player->send(LoginPacket::loginError(LoginPacket::Errors::AlreadyLoggedIn));
 				valid = false;
 			}
 			else if (row.get<bool>("banned") && (!row.get<bool>("admin") || row.get<int32_t>("gm_level") == 0)) {
 				int32_t time = TimeUtilities::timeToTick32(row.get<unix_time_t>("ban_expire"));
-				LoginPacket::loginBan(player, row.get<int8_t>("ban_reason"), time);
+				player->send(LoginPacket::loginBan(row.get<int8_t>("ban_reason"), time));
 				valid = false;
 			}
 		}
@@ -125,7 +125,7 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 		int32_t threshold = LoginServer::getInstance().getInvalidLoginThreshold();
 		if (threshold != 0 && player->addInvalidLogin() >= threshold) {
 			 // Too many invalid logins
-			player->getSession()->disconnect();
+			player->disconnect();
 		}
 	}
 	else {
@@ -176,18 +176,18 @@ auto Login::loginUser(Player *player, PacketReader &packet) -> void {
 		player->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		player->setAdmin(row.get<bool>("admin"));
 
-		LoginPacket::loginConnect(player, username);
+		player->send(LoginPacket::loginConnect(player, username));
 	}
 }
 
-auto Login::setGender(Player *player, PacketReader &packet) -> void {
+auto Login::setGender(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::SetGender) {
 		// Hacking
 		return;
 	}
-	if (packet.get<int8_t>() == 1) {
+	if (reader.get<int8_t>() == 1) {
 		// get<bool> candidate?
-		int8_t gender = packet.get<int8_t>();
+		int8_t gender = reader.get<int8_t>();
 		if (gender != Gender::Male && gender != Gender::Female) {
 			// Hacking
 			return;
@@ -210,75 +210,75 @@ auto Login::setGender(Player *player, PacketReader &packet) -> void {
 		else {
 			player->setStatus(PlayerStatus::LoggedIn);
 		}
-		LoginPacket::genderDone(player, gender);
+		player->send(LoginPacket::genderDone(gender));
 	}
 }
 
-auto Login::handleLogin(Player *player, PacketReader &packet) -> void {
+auto Login::handleLogin(Player *player, PacketReader &reader) -> void {
 	int32_t status = player->getStatus();
 	if (status == PlayerStatus::SetPin) {
-		LoginPacket::loginProcess(player, PlayerStatus::SetPin);
+		player->send(LoginPacket::loginProcess(PlayerStatus::SetPin));
 	}
 	else if (status == PlayerStatus::AskPin) {
-		LoginPacket::loginProcess(player, PlayerStatus::CheckPin);
+		player->send(LoginPacket::loginProcess(PlayerStatus::CheckPin));
 		player->setStatus(PlayerStatus::CheckPin);
 	}
 	else if (status == PlayerStatus::CheckPin) {
-		checkPin(player, packet);
+		checkPin(player, reader);
 	}
 	else if (status == PlayerStatus::LoggedIn) {
-		LoginPacket::loginProcess(player, PlayerStatus::LoggedIn);
+		player->send(LoginPacket::loginProcess(PlayerStatus::LoggedIn));
 		// The player successfully logged in, so let set the login column
 		player->setOnline(true);
 	}
 }
 
-auto Login::checkPin(Player *player, PacketReader &packet) -> void {
+auto Login::checkPin(Player *player, PacketReader &reader) -> void {
 	if (!LoginServer::getInstance().getPinEnabled()) {
 		// Hacking
 		return;
 	}
-	int8_t act = packet.get<int8_t>();
-	packet.skipBytes(5);
+	int8_t act = reader.get<int8_t>();
+	reader.skipBytes(5);
 
 	if (act == 0x00) {
 		player->setStatus(PlayerStatus::AskPin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
 		int32_t current = player->getPin();
 		if (pin == current) {
 			player->setStatus(PlayerStatus::LoggedIn);
-			handleLogin(player, packet);
+			handleLogin(player, reader);
 		}
 		else {
-			LoginPacket::loginProcess(player, LoginPacket::Errors::InvalidPin);
+			player->send(LoginPacket::loginProcess(LoginPacket::Errors::InvalidPin));
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
 		if (pin == player->getPin()) {
 			player->setStatus(PlayerStatus::SetPin);
-			handleLogin(player, packet);
+			handleLogin(player, reader);
 		}
 		else {
-			LoginPacket::loginProcess(player, LoginPacket::Errors::InvalidPin);
+			player->send(LoginPacket::loginProcess(LoginPacket::Errors::InvalidPin));
 		}
 	}
 }
 
-auto Login::registerPin(Player *player, PacketReader &packet) -> void {
+auto Login::registerPin(Player *player, PacketReader &reader) -> void {
 	if (!LoginServer::getInstance().getPinEnabled() || player->getStatus() != PlayerStatus::SetPin) {
 		// Hacking
 		return;
 	}
-	if (packet.get<int8_t>() == 0x00) {
+	if (reader.get<int8_t>() == 0x00) {
 		if (player->getPin() != -1) {
 			player->setStatus(PlayerStatus::AskPin);
 		}
 		return;
 	}
-	int32_t pin = StringUtilities::lexical_cast<int32_t>(packet.getString());
+	int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
 	player->setStatus(PlayerStatus::NotLoggedIn);
 	Database::getCharDb().once
 		<< "UPDATE user_accounts u "
@@ -287,5 +287,5 @@ auto Login::registerPin(Player *player, PacketReader &packet) -> void {
 		soci::use(pin, "pin"),
 		soci::use(player->getUserId(), "user");
 
-	LoginPacket::pinAssigned(player);
+	player->send(LoginPacket::pinAssigned());
 }

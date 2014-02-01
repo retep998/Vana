@@ -17,13 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
+#include "PacketBuilder.hpp"
 #include "PlayerMonsterBook.hpp"
+#include "SplitPacketBuilder.hpp"
+#include "Types.hpp"
 
 class Player;
 struct MonsterCard;
 
 namespace MonsterBookPacket {
-	auto addCard(Player *player, int32_t cardId, uint8_t level, bool full) -> void;
-	auto changeCover(Player *player, int32_t cardId) -> void;
+	PACKET(addCard, int32_t cardId, uint8_t level, bool full);
+	SPLIT_PACKET(addCardEffect, int32_t playerId);
+	PACKET(changeCover, int32_t cardId);
 }

@@ -21,43 +21,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InventoryPacket.hpp"
 #include "ItemConstants.hpp"
 #include "ItemDataProvider.hpp"
+#include "Map.hpp"
 #include "MovementHandler.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Pet.hpp"
 #include "PetsPacket.hpp"
 #include "Player.hpp"
 #include "Randomizer.hpp"
 #include "SkillConstants.hpp"
 
-auto PetHandler::handleMovement(Player *player, PacketReader &packet) -> void {
-	int64_t petId = packet.get<int64_t>();
+auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
+	int64_t petId = reader.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(4); // Ticks?
-	MovementHandler::parseMovement(pet, packet);
-	packet.reset(10);
-	PetsPacket::showMovement(player, pet, packet.getBuffer(), packet.getBufferLength() - 9);
+	reader.skipBytes(4); // Ticks?
+	MovementHandler::parseMovement(pet, reader);
+	reader.reset(10);
+	player->sendMap(PetsPacket::showMovement(player->getId(), pet, reader.getBuffer(), reader.getBufferLength() - 9));
 }
 
-auto PetHandler::handleChat(Player *player, PacketReader &packet) -> void {
-	int64_t petId = packet.get<int64_t>();
+auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
+	int64_t petId = reader.get<int64_t>();
 	if (player->getPets()->getPet(petId) == nullptr) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
-	int8_t act = packet.get<int8_t>();
-	const string_t &message = packet.getString();
-	PetsPacket::showChat(player, player->getPets()->getPet(petId), message, act);
+	reader.skipBytes(1);
+	int8_t act = reader.get<int8_t>();
+	const string_t &message = reader.getString();
+	player->sendMap(PetsPacket::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 
-auto PetHandler::handleSummon(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int16_t slot = packet.get<int16_t>();
-	bool master = packet.get<int8_t>() == 1; // Might possibly fit under getBool criteria
+auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int16_t slot = reader.get<int16_t>();
+	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
 	bool multipet = player->getSkills()->getSkillLevel(Skills::Beginner::FollowTheLead) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->getPetId());
 
@@ -90,7 +92,7 @@ auto PetHandler::handleSummon(Player *player, PacketReader &packet) -> void {
 		}
 
 		pet->desummon();
-		PetsPacket::petSummoned(player, pet, false, false, index);
+		player->sendMap(PetsPacket::petSummoned(player->getId(), pet, false, index));
 	}
 	else {
 		// Summoning a Pet
@@ -106,16 +108,16 @@ auto PetHandler::handleSummon(Player *player, PacketReader &packet) -> void {
 						move->summon(i);
 					}
 				}
-				PetsPacket::petSummoned(player, pet);
+				player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
 			}
 			else if (Pet *kicked = player->getPets()->getSummoned(0)) {
 				Timer::Id id(Timer::Types::PetTimer, kicked->getIndex().get(), 0);
 				player->getTimerContainer()->removeTimer(id);
 				kicked->desummon();
-				PetsPacket::petSummoned(player, pet, true);
+				player->sendMap(PetsPacket::petSummoned(player->getId(), pet, true));
 			}
 			else {
-				PetsPacket::petSummoned(player, pet);
+				player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
 			}
 			player->getPets()->setSummoned(0, pet->getId());
 			pet->startTimer();
@@ -125,20 +127,20 @@ auto PetHandler::handleSummon(Player *player, PacketReader &packet) -> void {
 				if (!player->getPets()->getSummoned(i)) {
 					player->getPets()->setSummoned(i, pet->getId());
 					pet->summon(i);
-					PetsPacket::petSummoned(player, pet);
+					player->sendMap(PetsPacket::petSummoned(player->getId(), pet));
 					pet->startTimer();
 					break;
 				}
 			}
 		}
 	}
-	PetsPacket::blankUpdate(player);
+	player->send(PetsPacket::blankUpdate());
 }
 
-auto PetHandler::handleFeed(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int16_t slot = packet.get<int16_t>();
-	int32_t itemId = packet.get<int32_t>();
+auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int16_t slot = reader.get<int16_t>();
+	int32_t itemId = reader.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Pet *pet = player->getPets()->getSummoned(0);
 	if (pet != nullptr && item != nullptr && item->getId() == itemId) {
@@ -146,7 +148,8 @@ auto PetHandler::handleFeed(Player *player, PacketReader &packet) -> void {
 
 		bool success = (pet->getFullness() < Stats::MaxFullness);
 		if (success) {
-			PetsPacket::showAnimation(player, pet, 1);
+			player->send(PetsPacket::showAnimation(player->getId(), pet, 1));
+
 			pet->modifyFullness(Stats::PetFeedFullness, false);
 			if (Randomizer::rand<int32_t>(99) < 60) {
 				// 60% chance for feed to add closeness
@@ -155,19 +158,19 @@ auto PetHandler::handleFeed(Player *player, PacketReader &packet) -> void {
 		}
 	}
 	else {
-		InventoryPacket::blankUpdate(player);
+		player->send(InventoryPacket::blankUpdate());
 	}
 }
 
-auto PetHandler::handleCommand(Player *player, PacketReader &packet) -> void {
-	int64_t petId = packet.get<int64_t>();
+auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
+	int64_t petId = reader.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
-	int8_t act = packet.get<int8_t>();
+	reader.skipBytes(1);
+	int8_t act = reader.get<int8_t>();
 	auto action = ItemDataProvider::getInstance().getInteraction(pet->getItemId(), act);
 	if (action == nullptr) {
 		// Hacking or no action info available
@@ -177,20 +180,21 @@ auto PetHandler::handleCommand(Player *player, PacketReader &packet) -> void {
 	if (Randomizer::rand<uint32_t>(100) < action->prob) {
 		pet->addCloseness(action->increase);
 	}
-	PetsPacket::showAnimation(player, pet, act);
+
+	player->send(PetsPacket::showAnimation(player->getId(), pet, act));
 }
 
-auto PetHandler::handleConsumePotion(Player *player, PacketReader &packet) -> void {
-	int64_t petId = packet.get<int64_t>();
+auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> void {
+	int64_t petId = reader.get<int64_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
-	uint32_t ticks = packet.get<uint32_t>();
-	int16_t slot = packet.get<int16_t>();
-	int32_t itemId = packet.get<int32_t>();
+	reader.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
+	uint32_t ticks = reader.get<uint32_t>();
+	int16_t slot = reader.get<int16_t>();
+	int32_t itemId = reader.get<int32_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr || item->getId() != itemId) {
@@ -224,8 +228,8 @@ auto PetHandler::showPets(Player *player) -> void {
 	for (int8_t i = 0; i < Inventories::MaxPetCount; ++i) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			pet->setPos(player->getPos());
-			PetsPacket::petSummoned(player, pet, false, true);
+			player->send(PetsPacket::petSummoned(player->getId(), pet));
 		}
 	}
-	PetsPacket::updateSummonedPets(player);
+	player->send(PetsPacket::updateSummonedPets(player));
 }

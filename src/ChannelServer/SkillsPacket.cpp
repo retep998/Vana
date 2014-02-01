@@ -18,172 +18,162 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillsPacket.hpp"
 #include "GameConstants.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Session.hpp"
 #include "Skills.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto SkillsPacket::addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SKILL_ADD);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(1);
-	packet.add<int32_t>(skillId);
-	packet.add<int32_t>(skillInfo.level); // Level
-	packet.add<int32_t>(skillInfo.playerMaxSkillLevel); // Master Level
-	packet.add<int8_t>(1);
-	player->getSession()->send(packet);
+namespace SkillsPacket {
+
+PACKET_IMPL(addSkill, int32_t skillId, const PlayerSkillInfo &skillInfo) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_SKILL_ADD)
+		.add<int8_t>(1)
+		.add<int16_t>(1)
+		.add<int32_t>(skillId)
+		.add<int32_t>(skillInfo.level)
+		.add<int32_t>(skillInfo.playerMaxSkillLevel)
+		.add<int8_t>(1);
+	return builder;
 }
 
-auto SkillsPacket::showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	if (party && self) {
-		packet.add<header_t>(SMSG_THEATRICS);
-	}
-	else {
-		packet.add<header_t>(SMSG_SKILL_SHOW);
-		packet.add<int32_t>(player->getId());
-	}
-	packet.add<int8_t>(party ? 2 : 1);
-	packet.add<int32_t>(skillId);
-	packet.add<int8_t>(level); // TODO
+SPLIT_PACKET_IMPL(showSkill, int32_t playerId, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) {
+	SplitPacketBuilder builder;
+	PacketBuilder packet;
+	packet
+		.add<int8_t>(party ? 2 : 1)
+		.add<int32_t>(skillId)
+		.add<int8_t>(level);
+
 	switch (skillId) {
-		case Skills::Hero::MonsterMagnet: // Monster Magnet processing
+		case Skills::Hero::MonsterMagnet:
 		case Skills::Paladin::MonsterMagnet:
 		case Skills::DarkKnight::MonsterMagnet:
 			packet.add<uint8_t>(direction);
 			break;
 	}
+
 	if (self) {
-		player->getSession()->send(packet);
+		if (party) {
+			builder.player.add<header_t>(SMSG_THEATRICS);
+		}
+		else {
+			builder.player
+				.add<header_t>(SMSG_SKILL_SHOW)
+				.add<int32_t>(playerId);
+		}
+		builder.player.addBuffer(packet);
 	}
 	else {
-		player->getMap()->sendPacket(packet, player);
+		builder.map
+			.add<header_t>(SMSG_SKILL_SHOW)
+			.add<int32_t>(playerId)
+			.addBuffer(packet);
 	}
+	return builder;
 }
 
-auto SkillsPacket::healHp(Player *player, int16_t hp) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x0A);
-	packet.add<int16_t>(hp);
-	player->getSession()->send(packet);
+PACKET_IMPL(healHp, int16_t hp) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(0x0A)
+		.add<int16_t>(hp);
+	return builder;
 }
 
-auto SkillsPacket::showSkillEffect(Player *player, int32_t skillId, uint8_t level) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS); // For the using player
-	bool send = false;
+SPLIT_PACKET_IMPL(showSkillEffect, int32_t playerId, int32_t skillId) {
+	SplitPacketBuilder builder;
+	PacketBuilder packet;
 	switch (skillId) {
 		case Skills::FpWizard::MpEater:
 		case Skills::IlWizard::MpEater:
 		case Skills::Cleric::MpEater:
-			packet.add<int8_t>(1);
-			packet.add<int32_t>(skillId);
-			packet.add<int8_t>(1);
-			send = true;
-			break;
-		case Skills::DragonKnight::DragonBlood: // Dragon Blood
-			packet.add<int8_t>(5);
-			packet.add<int32_t>(skillId);
-			send = true;
-			break;
-	}
-	if (send) {
-		player->getSession()->send(packet);
-	}
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	packet = PacketCreator();
-	send = false;
-	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
-	packet.add<int32_t>(player->getId());
-	switch (skillId) {
-		case Skills::FpWizard::MpEater:
-		case Skills::IlWizard::MpEater:
-		case Skills::Cleric::MpEater:
-			packet.add<int8_t>(1);
-			packet.add<int32_t>(skillId);
-			packet.add<int8_t>(1);
-			send = true;
+			packet
+				.add<int8_t>(1)
+				.add<int32_t>(skillId)
+				.add<int8_t>(1);
 			break;
 		case Skills::ChiefBandit::MesoGuard:
 		case Skills::DragonKnight::DragonBlood:
-			packet.add<int8_t>(5);
-			packet.add<int32_t>(skillId);
-			send = true;
+			packet
+				.add<int8_t>(5)
+				.add<int32_t>(skillId);
 			break;
+		default:
+			return builder;
 	}
-	if (send) {
-		player->getMap()->sendPacket(packet, player);
-	}
+
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.addBuffer(packet);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.addBuffer(packet);
+	return builder;
 }
 
-auto SkillsPacket::showChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(info.skillId);
-	packet.add<int8_t>(info.level);
-	packet.add<int8_t>(info.direction);
-	packet.add<int8_t>(info.weaponSpeed);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(showChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL)
+		.add<int32_t>(playerId)
+		.add<int32_t>(info.skillId)
+		.add<int8_t>(info.level)
+		.add<int8_t>(info.direction)
+		.add<int8_t>(info.weaponSpeed);
+	return builder;
 }
 
-auto SkillsPacket::endChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(info.skillId);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(endChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END)
+		.add<int32_t>(playerId)
+		.add<int32_t>(info.skillId);
+	return builder;
 }
 
-auto SkillsPacket::showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MOB_DRAGGED);
-	packet.add<int32_t>(mapMobId);
-	packet.add<uint8_t>(success);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(showMagnetSuccess, int32_t mapMobId, uint8_t success) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_MOB_DRAGGED)
+		.add<int32_t>(mapMobId)
+		.add<uint8_t>(success);
+	return builder;
 }
 
-auto SkillsPacket::sendCooldown(Player *player, int32_t skillId, int16_t time) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SKILL_COOLDOWN);
-	packet.add<int32_t>(skillId);
-	packet.add<int16_t>(time);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendCooldown, int32_t skillId, int16_t time) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_SKILL_COOLDOWN)
+		.add<int32_t>(skillId)
+		.add<int16_t>(time);
+	return builder;
 }
 
-auto SkillsPacket::showBerserk(Player *player, uint8_t level, bool on) -> void {
-	// Sends to map/user
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(Skills::DarkKnight::Berserk);
-	packet.add<int8_t>(level);
-	packet.add<bool>(on);
-	player->getSession()->send(packet);
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_SKILL_SHOW); // For others
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(Skills::DarkKnight::Berserk);
-	packet.add<int8_t>(level);
-	packet.add<bool>(on);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(showBerserk, int32_t playerId, uint8_t level, bool on) {
+	SplitPacketBuilder builder;
+	PacketBuilder packet;
+	packet
+		.add<int8_t>(1)
+		.add<int32_t>(Skills::DarkKnight::Berserk)
+		.add<int8_t>(level)
+		.add<bool>(on);
+
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.addBuffer(packet);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.addBuffer(packet);
+	return builder;
+}
+
 }

@@ -21,21 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IConfig.hpp"
 #include "IPacket.hpp"
 #include "Ip.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
 
 struct MajorBoss : public IPacketSerializable {
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int16_t>(attempts);
-		packet.addVector(channels);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int16_t>(attempts);
+		builder.addVector(channels);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		attempts = packet.get<int16_t>();
-		channels = packet.getVector<channel_id_t>();
+	auto read(PacketReader &reader) -> void override {
+		attempts = reader.get<int16_t>();
+		channels = reader.getVector<channel_id_t>();
 	}
 
 	int16_t attempts = 0;
@@ -50,18 +50,18 @@ struct Rates : public IPacketSerializable {
 		static const int32_t DropRate = 0x08;
 	};
 
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int32_t>(mobExpRate);
-		packet.add<int32_t>(questExpRate);
-		packet.add<int32_t>(mobMesoRate);
-		packet.add<int32_t>(dropRate);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int32_t>(mobExpRate);
+		builder.add<int32_t>(questExpRate);
+		builder.add<int32_t>(mobMesoRate);
+		builder.add<int32_t>(dropRate);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		mobExpRate = packet.get<int32_t>();
-		questExpRate = packet.get<int32_t>();
-		mobMesoRate = packet.get<int32_t>();
-		dropRate = packet.get<int32_t>();
+	auto read(PacketReader &reader) -> void override {
+		mobExpRate = reader.get<int32_t>();
+		questExpRate = reader.get<int32_t>();
+		mobMesoRate = reader.get<int32_t>();
+		dropRate = reader.get<int32_t>();
 	}
 
 	int32_t mobExpRate = 1;
@@ -71,50 +71,50 @@ struct Rates : public IPacketSerializable {
 };
 
 struct WorldConfig : public IPacketSerializable {
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int8_t>(ribbon);
-		packet.add<uint8_t>(maxMultiLevel);
-		packet.add<uint8_t>(defaultStorageSlots);
-		packet.add<int16_t>(maxStats);
-		packet.add<int32_t>(defaultChars);
-		packet.add<int32_t>(maxChars);
-		packet.add<int32_t>(maxPlayerLoad);
-		packet.add<int32_t>(fameTime);
-		packet.add<int32_t>(fameResetTime);
-		packet.add<int32_t>(mapUnloadTime);
-		packet.add<channel_id_t>(maxChannels);
-		packet.addString(eventMsg);
-		packet.addString(scrollingHeader);
-		packet.addString(name);
-		packet.addClass<Rates>(rates);
-		packet.addClass<MajorBoss>(pianus);
-		packet.addClass<MajorBoss>(pap);
-		packet.addClass<MajorBoss>(zakum);
-		packet.addClass<MajorBoss>(horntail);
-		packet.addClass<MajorBoss>(pinkbean);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int8_t>(ribbon);
+		builder.add<uint8_t>(maxMultiLevel);
+		builder.add<uint8_t>(defaultStorageSlots);
+		builder.add<int16_t>(maxStats);
+		builder.add<int32_t>(defaultChars);
+		builder.add<int32_t>(maxChars);
+		builder.add<int32_t>(maxPlayerLoad);
+		builder.add<int32_t>(fameTime);
+		builder.add<int32_t>(fameResetTime);
+		builder.add<int32_t>(mapUnloadTime);
+		builder.add<channel_id_t>(maxChannels);
+		builder.addString(eventMsg);
+		builder.addString(scrollingHeader);
+		builder.addString(name);
+		builder.addClass<Rates>(rates);
+		builder.addClass<MajorBoss>(pianus);
+		builder.addClass<MajorBoss>(pap);
+		builder.addClass<MajorBoss>(zakum);
+		builder.addClass<MajorBoss>(horntail);
+		builder.addClass<MajorBoss>(pinkbean);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		ribbon = packet.get<int8_t>();
-		maxMultiLevel = packet.get<uint8_t>();
-		defaultStorageSlots = packet.get<uint8_t>();
-		maxStats = packet.get<int16_t>();
-		defaultChars = packet.get<int32_t>();
-		maxChars = packet.get<int32_t>();
-		maxPlayerLoad = packet.get<int32_t>();
-		fameTime = packet.get<int32_t>();
-		fameResetTime = packet.get<int32_t>();
-		mapUnloadTime = packet.get<int32_t>();
-		maxChannels = packet.get<channel_id_t>();
-		eventMsg = packet.getString();
-		scrollingHeader = packet.getString();
-		name = packet.getString();
-		rates = packet.getClass<Rates>();
-		pianus = packet.getClass<MajorBoss>();
-		pap = packet.getClass<MajorBoss>();
-		zakum = packet.getClass<MajorBoss>();
-		horntail = packet.getClass<MajorBoss>();
-		pinkbean = packet.getClass<MajorBoss>();
+	auto read(PacketReader &reader) -> void override {
+		ribbon = reader.get<int8_t>();
+		maxMultiLevel = reader.get<uint8_t>();
+		defaultStorageSlots = reader.get<uint8_t>();
+		maxStats = reader.get<int16_t>();
+		defaultChars = reader.get<int32_t>();
+		maxChars = reader.get<int32_t>();
+		maxPlayerLoad = reader.get<int32_t>();
+		fameTime = reader.get<int32_t>();
+		fameResetTime = reader.get<int32_t>();
+		mapUnloadTime = reader.get<int32_t>();
+		maxChannels = reader.get<channel_id_t>();
+		eventMsg = reader.getString();
+		scrollingHeader = reader.getString();
+		name = reader.getString();
+		rates = reader.getClass<Rates>();
+		pianus = reader.getClass<MajorBoss>();
+		pap = reader.getClass<MajorBoss>();
+		zakum = reader.getClass<MajorBoss>();
+		horntail = reader.getClass<MajorBoss>();
+		pinkbean = reader.getClass<MajorBoss>();
 	}
 
 	int8_t ribbon = 0;

@@ -18,18 +18,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PingPacket.hpp"
 #include "AbstractConnection.hpp"
 #include "CmsgHeader.hpp"
-#include "PacketCreator.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto PingPacket::ping(AbstractConnection *connection) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PING);
-	connection->getSession()->send(packet);
+namespace PingPacket {
+
+PACKET_IMPL(ping, AbstractConnection *connection) {
+	PacketBuilder builder;
+	builder.add<header_t>(SMSG_PING);
+	return builder;
 }
 
-auto PingPacket::pong(AbstractConnection *connection) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(CMSG_PONG);
-	connection->getSession()->send(packet);
+PACKET_IMPL(pong, AbstractConnection *connection) {
+	PacketBuilder builder;
+	builder.add<header_t>(CMSG_PONG);
+	return builder;
+}
+
 }

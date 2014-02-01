@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyHandler.hpp"
+#include "ChannelServer.hpp"
 #include "InterHelper.hpp"
 #include "PacketReader.hpp"
 #include "Party.hpp"
@@ -24,46 +25,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "SyncPacket.hpp"
 
-auto PartyHandler::handleRequest(Player *player, PacketReader &packet) -> void {
-	int8_t type = packet.get<int8_t>();
+auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
+	int8_t type = reader.get<int8_t>();
 	switch (type) {
 		case PartyActions::Create:
 		case PartyActions::Leave:
-			SyncPacket::PartyPacket::sync(type, player->getId());
+			ChannelServer::getInstance().sendWorld(SyncPacket::PartyPacket::sync(type, player->getId()));
 			break;
 		case PartyActions::Join: {
-			int32_t partyId = packet.get<int32_t>();
+			int32_t partyId = reader.get<int32_t>();
 			if (Party *party = PlayerDataProvider::getInstance().getParty(partyId)) {
 				if (party->getMembersCount() == Parties::MaxMembers) {
-					PartyPacket::error(player, PartyPacket::Errors::PartyFull);
+					player->send(PartyPacket::error(PartyPacket::Errors::PartyFull));
 				}
 				else {
-					SyncPacket::PartyPacket::sync(type, player->getId(), partyId);
+					ChannelServer::getInstance().sendWorld(SyncPacket::PartyPacket::sync(type, player->getId(), partyId));
 				}
 			}
 			break;
 		}
 		case PartyActions::Expel:
 		case PartyActions::SetLeader: {
-			SyncPacket::PartyPacket::sync(type, player->getId(), packet.get<int32_t>());
+			ChannelServer::getInstance().sendWorld(SyncPacket::PartyPacket::sync(type, player->getId(), reader.get<int32_t>()));
 			break;
 		}
 		case PartyActions::Invite: {
-			const string_t &invName = packet.getString();
+			string_t invName = reader.getString();
 			if (player->getParty() == nullptr) {
 				// ??
 				return;
 			}
 			if (Player *invitee = PlayerDataProvider::getInstance().getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
-					PartyPacket::error(player, PartyPacket::Errors::PlayerHasParty);
+					player->send(PartyPacket::error(PartyPacket::Errors::PlayerHasParty));
 				}
 				else {
-					PartyPacket::invitePlayer(invitee, player->getParty(), player->getName());
+					invitee->send(PartyPacket::invitePlayer(player->getParty(), player->getName()));
 				}
 			}
 			else {
-				PartyPacket::error(player, PartyPacket::Errors::DifferingChannel);
+				player->send(PartyPacket::error(PartyPacket::Errors::DifferingChannel));
 			}
 			break;
 		}

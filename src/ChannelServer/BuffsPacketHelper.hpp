@@ -17,12 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "SkillConstants.hpp"
 #include "Types.hpp"
 #include <array>
 
-class PacketCreator;
-
 namespace BuffsPacketHelper {
-	auto addBytes(PacketCreator &packet, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes) -> void;
+	PACKET(addBytes, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes);
 }

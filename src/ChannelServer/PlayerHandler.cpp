@@ -16,10 +16,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerHandler.hpp"
+#include "ChannelServer.hpp"
 #include "Drop.hpp"
 #include "DropHandler.hpp"
 #include "DropsPacket.hpp"
 #include "GameLogicUtilities.hpp"
+#include "InterHeader.hpp"
 #include "InventoryPacket.hpp"
 #include "ItemDataProvider.hpp"
 #include "MapleTvs.hpp"
@@ -28,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MobHandler.hpp"
 #include "MonsterBookPacket.hpp"
 #include "MovementHandler.hpp"
+#include "PacketWrapper.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerPacket.hpp"
@@ -43,9 +46,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
-auto PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) -> void {
-	int32_t doorId = packet.get<int32_t>();
-	bool toTown = !packet.get<bool>();
+auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
+	int32_t doorId = reader.get<int32_t>();
+	bool toTown = !reader.get<bool>();
 	//Player *doorHolder = PlayerDataProvider::getInstance().getPlayer(doorId);
 	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
 	//	// Hacking or lag
@@ -54,14 +57,14 @@ auto PlayerHandler::handleDoorUse(Player *player, PacketReader &packet) -> void 
 	//doorHolder->getDoor()->warp(player, toTown);
 }
 
-auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
+auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
-	uint32_t ticks = packet.get<uint32_t>();
-	int8_t type = packet.get<int8_t>();
-	packet.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-	int32_t damage = packet.get<int32_t>();
+	uint32_t ticks = reader.get<uint32_t>();
+	int8_t type = reader.get<int8_t>();
+	reader.skipBytes(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+	int32_t damage = reader.get<int32_t>();
 	bool damageApplied = false;
 	bool deadlyAttack = false;
 	uint8_t hit = 0;
@@ -75,8 +78,8 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 	ReturnDamageInfo pgmr;
 
 	if (type != MapDamage) {
-		mobId = packet.get<int32_t>();
-		mapMobId = packet.get<int32_t>();
+		mobId = reader.get<int32_t>();
+		mapMobId = reader.get<int32_t>();
 		auto mob = player->getMap()->getMob(mapMobId);
 		if (mob != nullptr && mob->getMobId() != mobId) {
 			// Hacking
@@ -94,19 +97,19 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 			deadlyAttack = attack->deadlyAttack;
 		}
 
-		hit = packet.get<uint8_t>(); // Knock direction
-		pgmr.reduction = packet.get<uint8_t>();
-		packet.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
+		hit = reader.get<uint8_t>(); // Knock direction
+		pgmr.reduction = reader.get<uint8_t>();
+		reader.skipBytes(1); // I think reduction is a short, but it's a byte in the S -> C packet, so..
 		if (pgmr.reduction != 0) {
-			pgmr.isPhysical = packet.get<bool>();
-			pgmr.mapMobId = packet.get<int32_t>();
+			pgmr.isPhysical = reader.get<bool>();
+			pgmr.mapMobId = reader.get<int32_t>();
 			if (pgmr.mapMobId != mapMobId) {
 				// Hacking
 				return;
 			}
-			packet.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
-			packet.skipBytes(4); // Mob position garbage
-			pgmr.pos = packet.getClass<Pos>();
+			reader.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
+			reader.skipBytes(4); // Mob position garbage
+			pgmr.pos = reader.getClass<Pos>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
 				// Only Power Guard decreases damage
@@ -117,11 +120,11 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 	}
 
 	if (type == MapDamage) {
-		level = packet.get<uint8_t>();
-		disease = packet.get<uint8_t>();
+		level = reader.get<uint8_t>();
+		disease = reader.get<uint8_t>();
 	}
 	else {
-		stance = packet.get<int8_t>(); // Power Stance
+		stance = reader.get<int8_t>(); // Power Stance
 		if (stance > 0 && !player->getActiveBuffs()->hasPowerStance()) {
 			// Hacking
 			return;
@@ -184,7 +187,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 			}
 			damageApplied = true;
 
-			SkillsPacket::showSkillEffect(player, skillId);
+			player->sendMap(SkillsPacket::showSkillEffect(player->getId(), skillId));
 		}
 
 		if (player->getActiveBuffs()->hasMagicGuard()) {
@@ -250,25 +253,25 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &packet) -> void {
 			player->getActiveBuffs()->endMorph();
 		}
 	}
-	PlayersPacket::damagePlayer(player, damage, mobId, hit, type, stance, noDamageId, pgmr);
+	player->sendMap(PlayersPacket::damagePlayer(player->getId(), damage, mobId, hit, type, stance, noDamageId, pgmr));
 }
 
-auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &packet) -> void {
-	int32_t face = packet.get<int32_t>();
-	PlayersPacket::faceExpression(player, face);
+auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &reader) -> void {
+	int32_t face = reader.get<int32_t>();
+	player->sendMap(PlayersPacket::faceExpression(player->getId(), face));
 }
 
-auto PlayerHandler::handleGetInfo(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	if (Player *info = PlayerDataProvider::getInstance().getPlayer(packet.get<int32_t>())) {
-		PlayersPacket::showInfo(player, info, packet.get<bool>());
+auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	if (Player *info = PlayerDataProvider::getInstance().getPlayer(reader.get<int32_t>())) {
+		player->send(PlayersPacket::showInfo(info, reader.get<bool>()));
 	}
 }
 
-auto PlayerHandler::handleHeal(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int16_t hp = packet.get<int16_t>();
-	int16_t mp = packet.get<int16_t>();
+auto PlayerHandler::handleHeal(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int16_t hp = reader.get<int16_t>();
+	int16_t mp = reader.get<int16_t>();
 	if (player->getStats()->isDead() || hp > 400 || mp > 1000 || (hp > 0 && mp > 0)) {
 		// Hacking
 		return;
@@ -277,15 +280,15 @@ auto PlayerHandler::handleHeal(Player *player, PacketReader &packet) -> void {
 	player->getStats()->modifyMp(mp);
 }
 
-auto PlayerHandler::handleMoving(Player *player, PacketReader &packet) -> void {
-	if (packet.get<uint8_t>() != player->getPortalCount()) {
+auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
+	if (reader.get<uint8_t>() != player->getPortalCount()) {
 		// Portal count doesn't match, usually an indication of hacking
 		return;
 	}
-	packet.reset(11);
-	MovementHandler::parseMovement(player, packet);
-	packet.reset(11);
-	PlayersPacket::showMoving(player, packet.getBuffer(), packet.getBufferLength());
+	reader.reset(11);
+	MovementHandler::parseMovement(player, reader);
+	reader.reset(11);
+	player->sendMap(PlayersPacket::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
 
 	if (player->getFoothold() == 0) {
 		// Player is floating in the air
@@ -310,8 +313,8 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) -> void {
-	int32_t skillId = packet.get<int32_t>();
+auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &reader) -> void {
+	int32_t skillId = reader.get<int32_t>();
 	switch (skillId) {
 		case Skills::Hero::MonsterMagnet:
 		case Skills::Paladin::MonsterMagnet:
@@ -322,11 +325,11 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) ->
 		case Skills::Bishop::BigBang: {
 			ChargeOrStationarySkillInfo info;
 			info.skillId = skillId;
-			info.level = packet.get<uint8_t>();
-			info.direction = packet.get<uint8_t>();
-			info.weaponSpeed = packet.get<uint8_t>();
+			info.level = reader.get<uint8_t>();
+			info.direction = reader.get<uint8_t>();
+			info.weaponSpeed = reader.get<uint8_t>();
 			player->setChargeOrStationarySkill(info);
-			SkillsPacket::showChargeOrStationarySkill(player, info);
+			player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), info));
 			break;
 		}
 		case Skills::ChiefBandit::Chakra: {
@@ -344,8 +347,8 @@ auto PlayerHandler::handleSpecialSkills(Player *player, PacketReader &packet) ->
 	}
 }
 
-auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) -> void {
-	int32_t cardId = packet.get<int32_t>();
+auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> void {
+	int32_t cardId = reader.get<int32_t>();
 	if (cardId != 0 && player->getMonsterBook()->getCard(cardId) == 0) {
 		// Hacking
 		return;
@@ -355,32 +358,32 @@ auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &packet) -> v
 		newCover = ItemDataProvider::getInstance().getMobId(cardId);
 	}
 	player->getMonsterBook()->setCover(newCover);
-	MonsterBookPacket::changeCover(player, cardId);
+	player->send(MonsterBookPacket::changeCover(cardId));
 }
 
-auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) -> void {
+auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -> void {
 	if (!player->isAdmin()) {
 		// Hacking
 		return;
 	}
 	Player *receiver = nullptr;
-	bool hasTarget = packet.get<int8_t>() == 2;
-	int8_t sort = packet.get<int8_t>();
-	bool useWhisper = packet.get<bool>();
-	int8_t type = packet.get<int8_t>();
-	int32_t characterId = packet.get<int32_t>();
+	bool hasTarget = reader.get<int8_t>() == 2;
+	int8_t sort = reader.get<int8_t>();
+	bool useWhisper = reader.get<bool>();
+	int8_t type = reader.get<int8_t>();
+	int32_t characterId = reader.get<int32_t>();
 
 	if (player->getId() != characterId) {
 		return;
 	}
 
-	string_t line1 = packet.getString();
-	string_t line2 = packet.getString();
-	string_t line3 = packet.getString();
-	string_t line4 = packet.getString();
-	string_t line5 = packet.getString();
+	string_t line1 = reader.getString();
+	string_t line2 = reader.getString();
+	string_t line3 = reader.getString();
+	string_t line4 = reader.getString();
+	string_t line5 = reader.getString();
 	if (hasTarget) {
-		receiver = PlayerDataProvider::getInstance().getPlayer(packet.getString());
+		receiver = PlayerDataProvider::getInstance().getPlayer(reader.getString());
 	}
 
 	int32_t time = 15;
@@ -393,17 +396,24 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &packet) -
 	if (sort == 1) {
 		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
-		InventoryPacket::showSuperMegaphone(player, output.str(), useWhisper);
+		
+		auto &basePacket = InventoryPacket::showSuperMegaphone(output.str(), useWhisper);
+		ChannelServer::getInstance().sendWorld(
+			Packets::prepend(basePacket, [](PacketBuilder &builder) {
+				builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+			}));
 	}
 }
 
-auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillType::Melee);
+auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void {
+	const Attack &attack = compileAttack(player, reader, SkillType::Melee);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
 	}
-	PlayersPacket::useMeleeAttack(player, attack);
+	int32_t masteryId = player->getSkills()->getMastery();
+	player->sendMap(PlayersPacket::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+
 	int8_t damagedTargets = 0;
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
@@ -488,17 +498,17 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void
 
 	switch (skillId) {
 		case Skills::ChiefBandit::MesoExplosion: {
-			uint8_t items = packet.get<int8_t>();
+			uint8_t items = reader.get<int8_t>();
 			Map *map = player->getMap();
 			for (uint8_t i = 0; i < items; i++) {
-				int32_t objId = packet.get<int32_t>();
-				packet.skipBytes(1); // Some value
+				int32_t objId = reader.get<int32_t>();
+				reader.skipBytes(1); // Some value
 				if (Drop *drop = map->getDrop(objId)) {
 					if (!drop->isMesos()) {
 						// Hacking
 						return;
 					}
-					DropsPacket::explodeDrop(drop);
+					map->send(DropsPacket::explodeDrop(drop->getId()));
 					map->removeDrop(drop->getId());
 					delete drop;
 				}
@@ -572,13 +582,15 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &packet) -> void
 	}
 }
 
-auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillType::Ranged);
+auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> void {
+	const Attack &attack = compileAttack(player, reader, SkillType::Ranged);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
 	}
-	PlayersPacket::useRangedAttack(player, attack);
+	int32_t masteryId = player->getSkills()->getMastery();
+	player->sendMap(PlayersPacket::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
+
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
 
@@ -593,7 +605,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> voi
 				info.weaponSpeed = attack.weaponSpeed;
 				info.level = level;
 				player->setChargeOrStationarySkill(info);
-				SkillsPacket::showChargeOrStationarySkill(player, info);
+				player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), info));
 			}
 			break;
 	}
@@ -677,13 +689,13 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &packet) -> voi
 	}
 }
 
-auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillType::Magic);
+auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void {
+	const Attack &attack = compileAttack(player, reader, SkillType::Magic);
 	if (attack.portals != player->getPortalCount()) {
 		// Usually evidence of hacking
 		return;
 	}
-	PlayersPacket::useSpellAttack(player, attack);
+	player->sendMap(PlayersPacket::useSpellAttack(player->getId(), attack));
 
 	int32_t skillId = attack.skillId;
 	uint8_t level = attack.skillLevel;
@@ -751,9 +763,10 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &packet) -> void
 	}
 }
 
-auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillType::EnergyCharge);
-	PlayersPacket::useEnergyChargeAttack(player, attack);
+auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &reader) -> void {
+	const Attack &attack = compileAttack(player, reader, SkillType::EnergyCharge);
+	int32_t masteryId = player->getSkills()->getMastery();
+	player->sendMap(PlayersPacket::useEnergyChargeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	int32_t skillId = attack.skillId;
 	int8_t level = attack.skillLevel;
@@ -790,14 +803,14 @@ auto PlayerHandler::useEnergyChargeAttack(Player *player, PacketReader &packet) 
 	}
 }
 
-auto PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) -> void {
-	const Attack &attack = compileAttack(player, packet, SkillType::Summon);
+auto PlayerHandler::useSummonAttack(Player *player, PacketReader &reader) -> void {
+	const Attack &attack = compileAttack(player, reader, SkillType::Summon);
 	Summon *summon = player->getSummons()->getSummon();
 	if (summon == nullptr) {
 		// Hacking or some other form of tomfoolery
 		return;
 	}
-	PlayersPacket::useSummonAttack(player, attack);
+	player->sendMap(PlayersPacket::useSummonAttack(player->getId(), attack));
 	int32_t skillId = summon->getSummonId();
 	for (const auto &target : attack.damages) {
 		int32_t targetTotal = 0;
@@ -830,7 +843,7 @@ auto PlayerHandler::useSummonAttack(Player *player, PacketReader &packet) -> voi
 	}
 }
 
-auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillType skillType) -> Attack {
+auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack {
 	Attack attack;
 	int8_t targets = 0;
 	int8_t hits = 0;
@@ -839,9 +852,9 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillTyp
 	bool shadowMeso = false;
 
 	if (skillType != SkillType::Summon) {
-		attack.portals = packet.get<uint8_t>();
-		uint8_t tByte = packet.get<uint8_t>();
-		skillId = packet.get<int32_t>();
+		attack.portals = reader.get<uint8_t>();
+		uint8_t tByte = reader.get<uint8_t>();
+		skillId = reader.get<int32_t>();
 		targets = tByte / 0x10;
 		hits = tByte % 0x10;
 
@@ -849,10 +862,10 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillTyp
 			attack.skillLevel = player->getSkills()->getSkillLevel(skillId);
 		}
 
-		packet.skipBytes(4); // Unk, strange constant that doesn't seem to change
+		reader.skipBytes(4); // Unk, strange constant that doesn't seem to change
 		// Things atttemped: Map changes, character changes, job changes, skill changes, position changes, hitting enemies
 		// It appears as 0xF9B16E60 which is 4189154912 unsigned, -105812384 signed, doesn't seem to be a size, probably a CRC
-		packet.skipBytes(4); // Unk, strange constant dependent on skill, probably a CRC
+		reader.skipBytes(4); // Unk, strange constant dependent on skill, probably a CRC
 
 		switch (skillId) {
 			case Skills::Hermit::ShadowMeso:
@@ -877,33 +890,33 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillTyp
 			case Skills::IlArchMage::BigBang:
 			case Skills::Bishop::BigBang:
 				attack.isChargeSkill = true;
-				attack.charge = packet.get<int32_t>();
+				attack.charge = reader.get<int32_t>();
 				break;
 		}
 
-		attack.display = packet.get<uint8_t>();
-		attack.animation = packet.get<uint8_t>();
-		attack.weaponClass = packet.get<uint8_t>();
-		attack.weaponSpeed = packet.get<uint8_t>();
-		attack.ticks = packet.get<uint32_t>();
+		attack.display = reader.get<uint8_t>();
+		attack.animation = reader.get<uint8_t>();
+		attack.weaponClass = reader.get<uint8_t>();
+		attack.weaponSpeed = reader.get<uint8_t>();
+		attack.ticks = reader.get<uint32_t>();
 	}
 	else {
-		attack.summonId = packet.get<int32_t>(); // Summon ID, not to be confused with summon skill ID
-		attack.ticks = packet.get<uint32_t>();
-		attack.animation = packet.get<uint8_t>();
-		targets = packet.get<int8_t>();
+		attack.summonId = reader.get<int32_t>(); // Summon ID, not to be confused with summon skill ID
+		attack.ticks = reader.get<uint32_t>();
+		attack.animation = reader.get<uint8_t>();
+		targets = reader.get<int8_t>();
 		hits = 1;
 	}
 
 	if (skillType == SkillType::Ranged) {
-		int16_t starSlot = packet.get<int16_t>();
-		int16_t csStar = packet.get<int16_t>();
+		int16_t starSlot = reader.get<int16_t>();
+		int16_t csStar = reader.get<int16_t>();
 		attack.starPos = starSlot;
 		attack.cashStarPos = csStar;
-		packet.skipBytes(1); // 0x00 = AoE?
+		reader.skipBytes(1); // 0x00 = AoE?
 		if (!shadowMeso) {
 			if (player->getActiveBuffs()->hasShadowStars() && skillId != Skills::NightLord::Taunt) {
-				attack.starId = packet.get<int32_t>();
+				attack.starId = reader.get<int32_t>();
 			}
 			else if (csStar > 0) {
 				if (Item *item = player->getInventory()->getItem(Inventories::CashInventory, csStar)) {
@@ -923,29 +936,29 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &packet, SkillTyp
 	attack.skillId = skillId;
 
 	for (int8_t i = 0; i < targets; ++i) {
-		int32_t mapMobId = packet.get<int32_t>();
-		packet.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
-		packet.skipBytes(8); // Mob pos, damage pos
+		int32_t mapMobId = reader.get<int32_t>();
+		reader.skipBytes(4); // Always 0x06, <two bytes of some kind>, 0x01
+		reader.skipBytes(8); // Mob pos, damage pos
 		if (!mesoExplosion) {
-			packet.skipBytes(2); // Distance
+			reader.skipBytes(2); // Distance
 		}
 		else {
-			hits = packet.get<int8_t>(); // Hits for Meso Explosion
+			hits = reader.get<int8_t>(); // Hits for Meso Explosion
 		}
 		for (int8_t k = 0; k < hits; ++k) {
-			int32_t damage = packet.get<int32_t>();
+			int32_t damage = reader.get<int32_t>();
 			attack.damages[mapMobId].push_back(damage);
 			attack.totalDamage += damage;
 		}
 		if (skillType != SkillType::Summon) {
-			packet.skipBytes(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
+			reader.skipBytes(4); // 4 bytes of unknown purpose, differs by the mob, probably a CRC
 		}
 	}
 
 	if (skillType == SkillType::Ranged) {
-		attack.projectilePos = packet.getClass<Pos>();
+		attack.projectilePos = reader.getClass<Pos>();
 	}
-	attack.playerPos = packet.getClass<Pos>();
+	attack.playerPos = reader.getClass<Pos>();
 
 	return attack;
 }

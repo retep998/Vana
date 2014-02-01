@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 struct SkillLevelInfo;
 
@@ -38,7 +38,7 @@ public:
 
 	auto load() -> void;
 	auto save(bool saveCooldowns = false) -> void;
-	auto connectData(PacketCreator &packet) const -> void;
+	auto connectData(PacketBuilder &packet) const -> void;
 
 	auto addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true) -> bool;
 	auto getSkillLevel(int32_t skillId) const -> uint8_t;

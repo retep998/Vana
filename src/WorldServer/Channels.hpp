@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 class Channel;
-class PacketCreator;
+class PacketBuilder;
 class WorldServerAcceptConnection;
 
 class Channels {
@@ -36,9 +36,9 @@ public:
 	auto getChannel(channel_id_t num) -> Channel *;
 	auto increasePopulation(channel_id_t channelId) -> void;
 	auto decreasePopulation(channel_id_t channelId) -> void;
-	auto sendToChannel(channel_id_t channelId, const PacketCreator &packet) -> void;
-	auto sendToList(const vector_t<channel_id_t> &channels, const PacketCreator &packet) -> void;
-	auto sendToAll(const PacketCreator &packet) -> void;
+	auto send(channel_id_t channelId, const PacketBuilder &builder) -> void;
+	auto send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void;
+	auto send(const PacketBuilder &builder) -> void;
 	auto size() -> channel_id_t;
 	auto getAvailableChannel() -> channel_id_t;
 private:

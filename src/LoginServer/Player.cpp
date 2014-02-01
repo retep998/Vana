@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Login.hpp"
 #include "LoginPacket.hpp"
 #include "LoginServer.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "Worlds.hpp"
 #include <iostream>
@@ -31,26 +32,26 @@ Player::~Player() {
 	setOnline(false);
 }
 
-auto Player::handleRequest(PacketReader &packet) -> void {
+auto Player::handleRequest(PacketReader &reader) -> void {
 	try {
-		switch (packet.getHeader()) {
-			case CMSG_AUTHENTICATION: Login::loginUser(this, packet); break;
-			case CMSG_PLAYER_LIST: Worlds::getInstance().channelSelect(this, packet); break;
-			case CMSG_WORLD_STATUS: Worlds::getInstance().selectWorld(this, packet); break;
-			case CMSG_PIN: Login::handleLogin(this, packet); break;
+		switch (reader.getHeader()) {
+			case CMSG_AUTHENTICATION: Login::loginUser(this, reader); break;
+			case CMSG_PLAYER_LIST: Worlds::getInstance().channelSelect(this, reader); break;
+			case CMSG_WORLD_STATUS: Worlds::getInstance().selectWorld(this, reader); break;
+			case CMSG_PIN: Login::handleLogin(this, reader); break;
 			case CMSG_WORLD_LIST:
 			case CMSG_WORLD_LIST_REFRESH: Worlds::getInstance().showWorld(this); break;
-			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, packet); break;
-			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, packet.getString()); break;
+			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, reader); break;
+			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, reader.getString()); break;
 			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp(); }); break;
 			case CMSG_PLAYER_GLOBAL_LIST: Characters::showAllCharacters(this); break;
-			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(this, packet); break;
-			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, packet); break;
-			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, packet); break;
-			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, packet); break;
-			case CMSG_ACCOUNT_GENDER: Login::setGender(this, packet); break;
-			case CMSG_REGISTER_PIN: Login::registerPin(this, packet); break;
-			case CMSG_LOGIN_RETURN: LoginPacket::relogResponse(this); break;
+			case CMSG_PLAYER_GLOBAL_LIST_CHANNEL_CONNECT: Characters::connectGameWorldFromViewAllCharacters(this, reader); break;
+			case CMSG_PLAYER_NAME_CHECK: Characters::checkCharacterName(this, reader); break;
+			case CMSG_PLAYER_CREATE: Characters::createCharacter(this, reader); break;
+			case CMSG_PLAYER_DELETE: Characters::deleteCharacter(this, reader); break;
+			case CMSG_ACCOUNT_GENDER: Login::setGender(this, reader); break;
+			case CMSG_REGISTER_PIN: Login::registerPin(this, reader); break;
+			case CMSG_LOGIN_RETURN: this->send(LoginPacket::relogResponse()); break;
 		}
 	}
 	catch (const PacketContentException &e) {
@@ -58,13 +59,13 @@ auto Player::handleRequest(PacketReader &packet) -> void {
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
-		packet.reset();
+		reader.reset();
 		LoginServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
 			log << "User ID: " << getUserId()
-				<< "; Packet: " << packet
+				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
 		});
-		getSession()->disconnect();
+		disconnect();
 	}
 }
 

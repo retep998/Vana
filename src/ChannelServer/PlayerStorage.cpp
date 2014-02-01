@@ -71,7 +71,7 @@ auto PlayerStorage::getNumItems(uint8_t inv) -> uint8_t {
 
 auto PlayerStorage::changeMesos(int32_t mesos) -> void {
 	m_mesos -= mesos;
-	StoragePacket::changeMesos(m_player, m_mesos);
+	m_player->send(StoragePacket::changeMesos(getSlots(), m_mesos));
 }
 
 auto PlayerStorage::load() -> void {

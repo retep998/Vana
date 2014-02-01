@@ -83,7 +83,7 @@ auto LoginServer::rehashConfig() -> void {
 		if (world != nullptr && world->isConnected()) {
 			// We only need to inform worlds that are actually connected
 			// Otherwise they'll get the modified config when they connect
-			LoginServerAcceptPacket::rehashConfig(world);
+			world->send(LoginServerAcceptPacket::rehashConfig(world));
 		}
 		return false;
 	});

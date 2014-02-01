@@ -291,11 +291,6 @@ auto ChatHandlerFunctions::initialize() -> void {
 	#pragma region GM Level 2
 	command.level = 2;
 
-	command.command = &MessageFunctions::gmMessage;
-	command.syntax = "<$message>";
-	command.notes.push_back("Displays a message to all other online GMs");
-	sCommandList["me"] = command.addToMap();
-
 	command.command = &ManagementFunctions::kick;
 	command.syntax = "<$player name>";
 	command.notes.push_back("Forcibly disconnects a player, cannot be used on players that outrank you in GM level");
@@ -488,8 +483,8 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["spawn"] = command.addToMap();
 
 	command.command = &MessageFunctions::channelMessage;
-	command.syntax = "<$message>";
-	command.notes.push_back("Displays a blue GM notice");
+	command.syntax = "<${notice | box | red | blue}> <$message>";
+	command.notes.push_back("Displays a message to every player on the current channel");
 	sCommandList["notice"] = command.addToMap();
 
 	command.command = &MessageFunctions::gmChatMode;
@@ -772,11 +767,11 @@ auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, b
 }
 
 auto ChatHandlerFunctions::showError(Player *player, const string_t &message) -> void {
-	PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
+	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
 }
 
 auto ChatHandlerFunctions::showInfo(Player *player, const string_t &message) -> void {
-	PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+	player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
 }
 
 auto ChatHandlerFunctions::showError(Player *player, function_t<void(out_stream_t &)> produceMessage) -> void {

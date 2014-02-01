@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
@@ -30,6 +31,8 @@ namespace FamePacket {
 			FamedThisMonth = 0x04
 		};
 	}
-	auto sendFame(Player *player, Player *player2, uint8_t type, int32_t newFame) -> void;
-	auto sendError(Player *player, int32_t reason) -> void;
+
+	PACKET(sendFame, const string_t &name, uint8_t type, int32_t newFame);
+	PACKET(receiveFame, const string_t &name, uint8_t type);
+	PACKET(sendError, int32_t reason);
 }

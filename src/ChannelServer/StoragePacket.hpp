@@ -17,15 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
 
 namespace StoragePacket {
-	auto showStorage(Player *player, int32_t npcId) -> void;
-	auto addItem(Player *player, int8_t inv) -> void;
-	auto takeItem(Player *player, int8_t inv) -> void;
-	auto changeMesos(Player *player, int32_t mesos) -> void;
-	auto storageFull(Player *player) -> void;
-	auto noMesos(Player *player) -> void;
+	PACKET(showStorage, Player *player, int32_t npcId);
+	PACKET(addItem, Player *player, int8_t inv);
+	PACKET(takeItem, Player *player, int8_t inv);
+	PACKET(changeMesos, int8_t slotCount, int32_t mesos);
+	PACKET(storageFull);
+	PACKET(noMesos);
 }

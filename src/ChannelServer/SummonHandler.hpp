@@ -38,7 +38,7 @@ namespace SummonHandler {
 	auto removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
 	auto showSummon(Player *player) -> void;
 	auto showSummons(Player *fromPlayer, Player *toPlayer) -> void;
-	auto moveSummon(Player *player, PacketReader &packet) -> void;
-	auto damageSummon(Player *player, PacketReader &packet) -> void;
+	auto moveSummon(Player *player, PacketReader &reader) -> void;
+	auto damageSummon(Player *player, PacketReader &reader) -> void;
 	auto loopId() -> int32_t;
 }

@@ -79,7 +79,7 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 
 	Randomizer::shuffle(drops);
 
-	int16_t mod = 25;
+	int16_t mod = explosive ? 35 : 25;
 	auto &config = ChannelServer::getInstance().getConfig();
 
 	for (const auto &dropInfo : drops) {
@@ -96,9 +96,6 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 		}
 
 		if (Randomizer::rand<uint32_t>(999999) < chance) {
-			if (explosive) {
-				mod = 35;
-			}
 			pos.x = origin.x + ((d % 2) ? (mod * (d + 1) / 2) : -(mod * (d / 2)));
 			pos.y = origin.y;
 
@@ -156,9 +153,9 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	}
 }
 
-auto DropHandler::dropMesos(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int32_t amount = packet.get<int32_t>();
+auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int32_t amount = reader.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
 		// Hacking
 		return;
@@ -169,19 +166,19 @@ auto DropHandler::dropMesos(Player *player, PacketReader &packet) -> void {
 	drop->doDrop(player->getPos());
 }
 
-auto DropHandler::petLoot(Player *player, PacketReader &packet) -> void {
-	int64_t petId = packet.get<int64_t>();
-	lootItem(player, packet, petId);
+auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
+	int64_t petId = reader.get<int64_t>();
+	lootItem(player, reader, petId);
 }
 
-auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) -> void {
-	packet.skipBytes(5);
-	const Pos &playerPos = packet.getClass<Pos>();
-	int32_t dropId = packet.get<int32_t>();
+auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) -> void {
+	reader.skipBytes(5);
+	Pos playerPos = reader.getClass<Pos>();
+	int32_t dropId = reader.get<int32_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);
 
 	if (drop == nullptr) {
-		DropsPacket::dontTake(player);
+		player->send(DropsPacket::dontTake());
 		return;
 	}
 	else if (drop->getPos() - player->getPos() > 300) {
@@ -191,8 +188,8 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 
 	if (drop->isQuest()) {
 		if (player->getQuests()->itemDropAllowed(drop->getObjectId(), drop->getQuest()) == AllowQuestItemResult::Disallow) {
-			DropsPacket::dropNotAvailableForPickup(player);
-			DropsPacket::dontTake(player);
+			player->send(DropsPacket::dropNotAvailableForPickup());
+			player->send(DropsPacket::dontTake());
 			return;
 		}
 	}
@@ -201,16 +198,16 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 		int32_t rawMesos = drop->getObjectId();
 		auto giveMesos = [](Player *p, int32_t mesos) -> bool {
 			if (p->getInventory()->modifyMesos(mesos, true)) {
-				DropsPacket::pickupDrop(p, mesos, 0, true);
+				p->send(DropsPacket::pickupDrop(mesos, 0, true));
 			}
 			else {
-				DropsPacket::dontTake(p);
+				p->send(DropsPacket::dontTake());
 				return false;
 			}
 			return true;
 		};
 
-		if (player->getParty() != nullptr && !drop->isplayerDrop()) {
+		if (player->getParty() != nullptr && !drop->isPlayerDrop()) {
 			// Player gets 100% unless partied and having others on the map, in which case it's 60%
 			vector_t<Player *> members = player->getParty()->getPartyMembers(player->getMapId());
 			if (members.size() != 1) {
@@ -245,9 +242,9 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 		auto cons = ItemDataProvider::getInstance().getConsumeInfo(dropItem.getId());
 		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
-				DropsPacket::pickupDropSpecial(player, drop->getObjectId());
+				player->send(DropsPacket::pickupDropSpecial(drop->getObjectId()));
 				Inventory::useItem(player, dropItem.getId());
-				DropsPacket::dontTake(player);
+				player->send(DropsPacket::dontTake());
 				drop->takeDrop(player, petId);
 				return;
 			}
@@ -259,15 +256,15 @@ auto DropHandler::lootItem(Player *player, PacketReader &packet, int64_t petId) 
 			int16_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if ((dropAmount - amount) > 0) {
-					DropsPacket::pickupDrop(player, drop->getObjectId(), dropAmount - amount);
+					player->send(DropsPacket::pickupDrop(drop->getObjectId(), dropAmount - amount));
 					drop->setItemAmount(amount);
 				}
-				DropsPacket::cantGetAnymoreItems(player);
-				DropsPacket::dontTake(player);
+				player->send(DropsPacket::cantGetAnymoreItems());
+				player->send(DropsPacket::dontTake());
 				return;
 			}
 		}
-		DropsPacket::pickupDrop(player, drop->getObjectId(), drop->getAmount());
+		player->send(DropsPacket::pickupDrop(drop->getObjectId(), drop->getAmount()));
 	}
 	ReactorHandler::checkLoot(drop);
 	drop->takeDrop(player, petId);

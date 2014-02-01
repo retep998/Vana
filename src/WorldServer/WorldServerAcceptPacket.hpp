@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
@@ -25,7 +26,6 @@ class WorldServerAcceptConnection;
 struct WorldConfig;
 
 namespace WorldServerAcceptPacket {
-	auto connect(WorldServerAcceptConnection *connection, channel_id_t channel, port_t port) -> void;
-	auto rehashConfig(const WorldConfig &config) -> void;
-	auto forwardPacketToChannel(channel_id_t channelId, const PacketCreator &packet) -> void;
+	PACKET(connect, channel_id_t channel, port_t port);
+	PACKET(rehashConfig, const WorldConfig &config);
 }

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.hpp"
 #include "Types.hpp"
 
+class Map;
 class Player;
 
 class Reactor {
@@ -43,6 +44,7 @@ public:
 
 	auto restore() -> void;
 	auto drop(Player *player) -> void;
+	auto getMap() const -> Map *;
 private:
 	bool m_alive = true;
 	bool m_facesLeft = false;

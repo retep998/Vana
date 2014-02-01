@@ -17,27 +17,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
 class Mist;
-class PacketCreator;
 class Player;
 
 namespace MapPacket {
-	auto playerPacket(Player *player) -> PacketCreator;
-	auto showPlayer(Player *player) -> void;
-	auto removePlayer(Player *player) -> void;
-	auto changeMap(Player *player) -> void;
-	auto portalBlocked(Player *player) -> void; // Blocked portals
-	auto showClock(Player *player, int8_t hour, int8_t min, int8_t sec) -> void;
-	auto showTimer(int32_t mapId, const seconds_t &sec) -> void; // Show timer like in PQs
-	auto showTimer(Player *player, const seconds_t &sec) -> void; // Show timer like in PQs
-	auto forceMapEquip(Player *player) -> void;
-	auto showEventInstructions(int32_t mapId) -> void;
-	auto showMist(Player *player, Mist *mist) -> void;
-	auto spawnMist(int32_t mapId, Mist *mist) -> void;
-	auto removeMist(int32_t mapId, int32_t id) -> void;
-	auto instantWarp(Player *player, int8_t portalId) -> void;
-	auto changeWeather(int32_t mapId, bool adminWeather, int32_t itemId = 0, const string_t &message = "") -> void;
+	PACKET(playerPacket, Player *player);
+	PACKET(removePlayer, int32_t playerId);
+	PACKET(changeMap, Player *player);
+	PACKET(portalBlocked);
+	PACKET(showClock, int8_t hour, int8_t min, int8_t sec);
+	PACKET(showTimer, const seconds_t &sec);
+	PACKET(forceMapEquip);
+	PACKET(showEventInstructions);
+	PACKET(spawnMist, Mist *mist, bool mapEntry);
+	PACKET(removeMist, int32_t id);
+	PACKET(instantWarp, int8_t portalId);
+	PACKET(changeWeather, bool adminWeather, int32_t itemId = 0, const string_t &message = "");
 }

@@ -22,5 +22,5 @@ class PacketReader;
 struct Pos;
 
 namespace MovementHandler {
-	auto parseMovement(MovableLife *life, PacketReader &packet) -> Pos;
+	auto parseMovement(MovableLife *life, PacketReader &reader) -> Pos;
 }

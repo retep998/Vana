@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 
 struct ShopItemInfo {
 	int32_t itemId = 0;
@@ -36,13 +36,19 @@ struct ShopInfo {
 	vector_t<ShopItemInfo> items;
 };
 
+struct BuiltShopInfo {
+	int32_t npc;
+	vector_t<const ShopItemInfo *> items;
+	ord_map_t<int32_t, double> rechargeables;
+};
+
 class ShopDataProvider {
 	SINGLETON(ShopDataProvider);
 public:
 	auto loadData() -> void;
 
 	auto isShop(int32_t id) const -> bool;
-	auto showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) const -> void;
+	auto getShop(int32_t id) const -> BuiltShopInfo;
 	auto getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
 	auto getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) const -> int32_t;
 private:

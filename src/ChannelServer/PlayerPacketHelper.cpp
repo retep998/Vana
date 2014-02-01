@@ -19,92 +19,111 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "Inventory.hpp"
 #include "ItemConstants.hpp"
-#include "PacketCreator.hpp"
 #include "Pet.hpp"
 #include "Player.hpp"
 #include "TimeUtilities.hpp"
 #include <cmath>
 
-auto PlayerPacketHelper::addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot) -> void {
+namespace PlayerPacketHelper {
+
+PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
+	PacketBuilder builder;
 	if (slot != 0) {
 		if (shortSlot) {
-			packet.add<int16_t>(slot);
+			builder.add<int16_t>(slot);
 		}
 		else {
 			slot = abs(slot);
 			if (slot > 100) slot -= 100;
-			packet.add<int8_t>(static_cast<int8_t>(slot));
+			builder.add<int8_t>(static_cast<int8_t>(slot));
 		}
 	}
 	bool equip = GameLogicUtilities::isEquip(item->getId());
-	packet.add<int8_t>(equip ? 1 : 2);
-	packet.add<int32_t>(item->getId());
+	builder
+		.add<int8_t>(equip ? 1 : 2)
+		.add<int32_t>(item->getId());
+
 	if (false) { //item->getCashId() != 0) {
-		packet.add<int8_t>(1);
-		packet.add<int64_t>(0); //item->getCashId());
+		builder
+			.add<int8_t>(1)
+			.add<int64_t>(0); //item->getCashId());
 	}
 	else {
-		packet.add<int8_t>(0);
+		builder.add<int8_t>(0);
 	}
-	packet.add<int64_t>(item->getExpirationTime());
+	builder.add<int64_t>(item->getExpirationTime());
 	if (equip) {
-		packet.add<int8_t>(item->getSlots());
-		packet.add<int8_t>(item->getScrolls());
-		packet.add<int16_t>(item->getStr());
-		packet.add<int16_t>(item->getDex());
-		packet.add<int16_t>(item->getInt());
-		packet.add<int16_t>(item->getLuk());
-		packet.add<int16_t>(item->getHp());
-		packet.add<int16_t>(item->getMp());
-		packet.add<int16_t>(item->getWatk());
-		packet.add<int16_t>(item->getMatk());
-		packet.add<int16_t>(item->getWdef());
-		packet.add<int16_t>(item->getMdef());
-		packet.add<int16_t>(item->getAccuracy());
-		packet.add<int16_t>(item->getAvoid());
-		packet.add<int16_t>(item->getHands());
-		packet.add<int16_t>(item->getSpeed());
-		packet.add<int16_t>(item->getJump());
-		packet.addString(item->getName()); // Owner string
-		packet.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
+		builder
+			.add<int8_t>(item->getSlots())
+			.add<int8_t>(item->getScrolls())
+			.add<int16_t>(item->getStr())
+			.add<int16_t>(item->getDex())
+			.add<int16_t>(item->getInt())
+			.add<int16_t>(item->getLuk())
+			.add<int16_t>(item->getHp())
+			.add<int16_t>(item->getMp())
+			.add<int16_t>(item->getWatk())
+			.add<int16_t>(item->getMatk())
+			.add<int16_t>(item->getWdef())
+			.add<int16_t>(item->getMdef())
+			.add<int16_t>(item->getAccuracy())
+			.add<int16_t>(item->getAvoid())
+			.add<int16_t>(item->getHands())
+			.add<int16_t>(item->getSpeed())
+			.add<int16_t>(item->getJump())
+			.addString(item->getName()) // Owner string
+			.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
+
 		if (false) { //item->getCashId() != 0) {
-			packet.addBytes("91174826F700"); // Always the same for cash equips
-			packet.add<int32_t>(0);
+			builder
+				.addBytes("91174826F700") // Always the same for cash equips
+				.add<int32_t>(0);
 		}
 		else {
-			packet.add<int8_t>(0);
-			packet.add<int8_t>(0); // Item level
-			packet.add<int16_t>(0);
-			packet.add<int16_t>(0); // Item EXP of.. some sort
-			packet.add<int32_t>(item->getHammers()); // Vicious' Hammer
-			packet.add<int64_t>(-1);
+			builder
+				.add<int8_t>(0)
+				.add<int8_t>(0) // Item level
+				.add<int16_t>(0)
+				.add<int16_t>(0) // Item EXP of.. some sort
+				.add<int32_t>(item->getHammers()) // Vicious' Hammer
+				.add<int64_t>(-1);
 		}
-		packet.addBytes("0040E0FD3B374F01"); // Always the same?
-		packet.add<int32_t>(-1);
+		builder
+			.addBytes("0040E0FD3B374F01") // Always the same?
+			.add<int32_t>(-1);
 	}
 	else {
-		packet.add<int16_t>(item->getAmount()); // Amount
-		packet.addString(item->getName()); // Specially made by <IGN>
-		packet.add<int16_t>(item->getFlags());
+		builder
+			.add<int16_t>(item->getAmount())
+			.addString(item->getName()) // Specially made by <IGN>
+			.add<int16_t>(item->getFlags());
+
 		if (GameLogicUtilities::isRechargeable(item->getId())) {
-			packet.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
+			builder.add<int64_t>(0); // Might be rechargeable ID for internal tracking/duping tracking
 		}
 	}
+	return builder;
 }
 
-auto PlayerPacketHelper::addPlayerDisplay(PacketCreator &packet, Player *player) -> void {
-	packet.add<int8_t>(player->getGender());
-	packet.add<int8_t>(player->getSkin());
-	packet.add<int32_t>(player->getEyes());
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(player->getHair());
-	player->getInventory()->addEquippedPacket(packet);
+PACKET_IMPL(addPlayerDisplay, Player *player) {
+	PacketBuilder builder;
+	builder
+		.add<int8_t>(player->getGender())
+		.add<int8_t>(player->getSkin())
+		.add<int32_t>(player->getEyes())
+		.add<int8_t>(1)
+		.add<int32_t>(player->getHair());
+
+	player->getInventory()->addEquippedPacket(builder);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			packet.add<int32_t>(pet->getItemId());
+			builder.add<int32_t>(pet->getItemId());
 		}
 		else {
-			packet.add<int32_t>(0);
+			builder.add<int32_t>(0);
 		}
 	}
+	return builder;
+}
+
 }

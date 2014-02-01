@@ -62,11 +62,11 @@ struct Character {
 
 namespace Characters {
 	auto connectGame(Player *player, int32_t charId) -> void;
-	auto connectGame(Player *player, PacketReader &packet) -> void;
-	auto connectGameWorldFromViewAllCharacters(Player *player, PacketReader &packet) -> void;
-	auto checkCharacterName(Player *player, PacketReader &packet) -> void;
-	auto createCharacter(Player *player, PacketReader &packet) -> void;
-	auto deleteCharacter(Player *player, PacketReader &packet) -> void;
+	auto connectGame(Player *player, PacketReader &reader) -> void;
+	auto connectGameWorldFromViewAllCharacters(Player *player, PacketReader &reader) -> void;
+	auto checkCharacterName(Player *player, PacketReader &reader) -> void;
+	auto createCharacter(Player *player, PacketReader &reader) -> void;
+	auto deleteCharacter(Player *player, PacketReader &reader) -> void;
 	auto showAllCharacters(Player *player) -> void;
 	auto showCharacters(Player *player) -> void;
 	auto loadCharacter(Character &charc, const soci::row &row) -> void;

@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.hpp"
 #include "InstanceMessageConstants.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "PartyPacket.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -38,7 +37,7 @@ auto Party::setLeader(int32_t playerId, bool showPacket) -> void {
 	m_leaderId = playerId;
 	if (showPacket) {
 		runFunction([this, playerId](Player *player) {
-			PartyPacket::setLeader(player, this, playerId);
+			player->send(PartyPacket::setLeader(this, playerId));
 		});
 	}
 }
@@ -46,7 +45,7 @@ auto Party::setLeader(int32_t playerId, bool showPacket) -> void {
 namespace Functors {
 	struct JoinPartyUpdate {
 		auto operator()(Player *target) -> void {
-			PartyPacket::joinParty(target, party, player);
+			target->send(PartyPacket::joinParty(target->getMapId(), party, player));
 		}
 		Party *party;
 		string_t player;
@@ -56,6 +55,8 @@ namespace Functors {
 auto Party::addMember(Player *player, bool first) -> void {
 	m_members[player->getId()] = player;
 	player->setParty(this);
+	showHpBar(player);
+	receiveHpBar(player);
 
 	if (!first) {
 		Functors::JoinPartyUpdate func = {this, player->getName()};
@@ -78,7 +79,7 @@ auto Party::setMember(int32_t playerId, Player *player) -> void {
 namespace Functors {
 	struct LeavePartyUpdate {
 		auto operator()(Player *target) -> void {
-			PartyPacket::leaveParty(target, party, playerId, player, kicked);
+			target->send(PartyPacket::leaveParty(target->getMapId(), party, playerId, player, kicked));
 		}
 		Party *party;
 		int32_t playerId;
@@ -118,7 +119,7 @@ auto Party::disband() -> void {
 	for (const auto &kvp : temp) {
 		if (Player *player = kvp.second) {
 			player->setParty(nullptr);
-			PartyPacket::disbandParty(player, this);
+			player->send(PartyPacket::disbandParty(this));
 		}
 		m_members.erase(kvp.first);
 	}
@@ -126,7 +127,7 @@ auto Party::disband() -> void {
 
 auto Party::silentUpdate() -> void {
 	runFunction([this](Player *player) {
-		PartyPacket::silentUpdate(player, this);
+		player->send(PartyPacket::silentUpdate(player->getMapId(), this));
 	});
 }
 
@@ -174,7 +175,7 @@ auto Party::getPartyMembers(int32_t mapId) -> vector_t<Player *> {
 auto Party::showHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			PlayerPacket::showHpBar(player, testPlayer);
+			testPlayer->send(PlayerPacket::showHpBar(player->getId(), player->getStats()->getHp(), player->getStats()->getMaxHp()));
 		}
 	});
 }
@@ -182,7 +183,7 @@ auto Party::showHpBar(Player *player) -> void {
 auto Party::receiveHpBar(Player *player) -> void {
 	runFunction([&player](Player *testPlayer) {
 		if (testPlayer != player && testPlayer->getMapId() == player->getMapId()) {
-			PlayerPacket::showHpBar(testPlayer, player);
+			player->send(PlayerPacket::showHpBar(testPlayer->getId(), testPlayer->getStats()->getHp(), testPlayer->getStats()->getMaxHp()));
 		}
 	});
 }
@@ -297,86 +298,4 @@ auto Party::verifyFootholds(const vector_t<vector_t<int16_t>> &footholds) -> boo
 		winner = footholdGroupsUsed.size() == footholds.size();
 	}
 	return winner;
-}
-
-auto Party::updatePacket(int32_t mapId, PacketCreator &packet) -> void {
-	size_t offset = Parties::MaxMembers - m_members.size();
-	size_t i = 0;
-	channel_id_t channelId = ChannelServer::getInstance().getChannelId();
-
-	// Add party member IDs to packet
-	for (const auto &kvp : m_members) {
-		packet.add<int32_t>(kvp.first);
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(0);
-	}
-
-	// Add party member names to packet
-	for (const auto &kvp : m_members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		packet.addString(player->name, 13);
-	}
-	for (i = 0; i < offset; i++) {
-		packet.addString("", 13);
-	}
-
-	// Add party member jobs to packet
-	for (const auto &kvp : m_members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		packet.add<int32_t>(player->job);
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(0);
-	}
-
-	// Add party member levels to packet
-	for (const auto &kvp : m_members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		packet.add<int32_t>(player->level);
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(0);
-	}
-
-	// Add party member channels to packet
-	for (const auto &kvp : m_members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		packet.add<int32_t>(player->channel != -1 ?
-			player->channel :
-			(player->cashShop ? -1 : -2));
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(-2);
-	}
-
-	packet.add<int32_t>(getLeaderId());
-
-	// Add party member maps to packet
-	for (const auto &kvp : m_members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		if (player->channel == channelId && player->map == mapId) {
-			packet.add<int32_t>(mapId);
-		}
-		else {
-			packet.add<int32_t>(0);
-		}
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(-2);
-	}
-
-	// Add some portal information (Door?)
-	for (const auto &kvp : m_members) {
-		packet.add<int32_t>(Maps::NoMap);
-		packet.add<int32_t>(Maps::NoMap);
-		packet.add<int32_t>(-1);
-		packet.add<int32_t>(-1);
-	}
-	for (i = 0; i < offset; i++) {
-		packet.add<int32_t>(Maps::NoMap);
-		packet.add<int32_t>(Maps::NoMap);
-		packet.add<int32_t>(-1);
-		packet.add<int32_t>(-1);
-	}
 }

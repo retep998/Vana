@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
@@ -50,9 +51,9 @@ namespace BuddyListPacket {
 		};
 	}
 
-	auto error(Player *player, uint8_t error) -> void;
-	auto update(Player *player, uint8_t type) -> void;
-	auto showSize(Player *player) -> void;
-	auto invitation(Player *player, const BuddyInvite &invite) -> void;
-	auto online(Player *player, int32_t charId, int32_t channel) -> void;
+	PACKET(error, uint8_t error);
+	PACKET(update, Player *player, uint8_t type);
+	PACKET(showSize, Player *player);
+	PACKET(invitation, const BuddyInvite &invite);
+	PACKET(online, int32_t charId, int32_t channel);
 }

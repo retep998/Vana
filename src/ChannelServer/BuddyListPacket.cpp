@@ -16,71 +16,75 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuddyListPacket.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerBuddyList.hpp"
 #include "SmsgHeader.hpp"
 
-auto BuddyListPacket::error(Player *player, uint8_t error) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUDDY);
-	packet.add<int8_t>(error);
+namespace BuddyListPacket {
 
-	player->getSession()->send(packet);
+PACKET_IMPL(error, uint8_t error) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_BUDDY)
+		.add<int8_t>(error);
+	return builder;
 }
 
-auto BuddyListPacket::update(Player *player, uint8_t type) -> void {
+PACKET_IMPL(update, Player *player, uint8_t type) {
+	PacketBuilder builder;
 	uint8_t size = player->getBuddyList()->listSize();
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUDDY);
-	packet.add<int8_t>(type);
-	packet.add<uint8_t>(size);
+	builder
+		.add<header_t>(SMSG_BUDDY)
+		.add<int8_t>(type)
+		.add<uint8_t>(size);
 
-	player->getBuddyList()->addBuddies(packet);
+	player->getBuddyList()->addBuddies(builder);
 
 	for (uint8_t i = 0; i < size; i++) {
-		packet.add<int32_t>(0);
+		builder.add<int32_t>(0);
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto BuddyListPacket::showSize(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUDDY);
-	packet.add<int8_t>(0x15);
-	packet.add<uint8_t>(player->getBuddyListSize());
-	player->getSession()->send(packet);
+PACKET_IMPL(showSize, Player *player) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_BUDDY)
+		.add<int8_t>(0x15)
+		.add<uint8_t>(player->getBuddyListSize());
+	return builder;
 }
 
-auto BuddyListPacket::invitation(Player *invitee, const BuddyInvite &invite) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUDDY);
-	packet.add<int8_t>(0x09);
-	packet.add<int32_t>(invite.id);
-	packet.addString(invite.name);
-
-	packet.add<int32_t>(invite.id);
-	packet.addString(invite.name, 13);
-	packet.add<uint8_t>(OppositeStatus::Requested); // Buddy status
-	packet.add<uint32_t>(-1); // Doesn't really matter O.o
-	packet.addString("Default Group", 13); // Needs to be set to "Default Group", because it's automatically added.
-	packet.add<int8_t>(0x00);
-	packet.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
-	packet.add<uint8_t>(0xFD);
-	packet.add<uint8_t>(0xBA);
-
-	packet.add<int8_t>(0); // Unknown
-	invitee->getSession()->send(packet);
+PACKET_IMPL(invitation, const BuddyInvite &invite) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_BUDDY)
+		.add<int8_t>(0x09)
+		.add<int32_t>(invite.id)
+		.addString(invite.name)
+		.add<int32_t>(invite.id)
+		.addString(invite.name, 13)
+		.add<uint8_t>(OppositeStatus::Requested) // Buddy status
+		.add<uint32_t>(-1) // Doesn't appear to matter
+		.addString("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
+		.add<int8_t>(0x00)
+		.add<int8_t>(20) // Seems to be the amount of buddy slots for the character...
+		.add<uint8_t>(0xFD)
+		.add<uint8_t>(0xBA)
+		.add<int8_t>(0); // Unknown
+	return builder;
 }
 
-auto BuddyListPacket::online(Player *player, int32_t charId, int32_t channel) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUDDY);
-	packet.add<int8_t>(0x14);
-	packet.add<int32_t>(charId);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(channel);
-	player->getSession()->send(packet);
+PACKET_IMPL(online, int32_t charId, int32_t channel) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_BUDDY)
+		.add<int8_t>(0x14)
+		.add<int32_t>(charId)
+		.add<int8_t>(0)
+		.add<int32_t>(channel);
+	return builder;
+}
+
 }

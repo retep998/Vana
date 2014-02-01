@@ -17,13 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
-
-class World;
 
 namespace SyncPacket {
 	namespace PlayerPacket {
-		auto characterCreated(World *world, int32_t playerId) -> void;
-		auto characterDeleted(World *world, int32_t playerId) -> void;
+		PACKET(characterCreated, int32_t playerId);
+		PACKET(characterDeleted, int32_t playerId);
 	}
 }

@@ -23,7 +23,7 @@ class PacketReader;
 class Player;
 
 namespace Fame {
-	auto handleFame(Player *player, PacketReader &packet) -> void;
+	auto handleFame(Player *player, PacketReader &reader) -> void;
 	auto canFame(Player *player, int32_t to) -> int32_t;
 	auto addFameLog(int32_t from, int32_t to) -> void;
 	auto getLastFameLog(int32_t from) -> SearchResult;

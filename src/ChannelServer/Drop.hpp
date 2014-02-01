@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Pos.hpp"
 #include "Types.hpp"
 
+class Map;
 class Player;
 
 class Drop {
@@ -46,8 +47,8 @@ public:
 	auto getId() const -> int32_t { return m_id; }
 	auto getTime() const -> int32_t { return m_time; }
 	auto getOwner() const -> int32_t { return m_owner; }
-	auto getMap() const -> int32_t { return m_mapId; }
-	auto isplayerDrop() const -> bool { return m_playerDrop; }
+	auto getMapId() const -> int32_t { return m_mapId; }
+	auto isPlayerDrop() const -> bool { return m_playerDrop; }
 	auto isMesos() const -> bool { return m_mesos > 0; }
 	auto isQuest() const -> bool { return m_questId > 0; }
 	auto isTradeable() const -> bool { return m_tradeable; }
@@ -62,6 +63,8 @@ public:
 	auto showDrop(Player *player) -> void;
 	auto takeDrop(Player *player, int64_t petId) -> void;
 	auto removeDrop(bool showPacket = true) -> void;
+
+	auto getMap() const -> Map *;
 
 	static const int8_t Explosive = 3;
 	static const int8_t FreeForAll = 2;

@@ -19,17 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 
 class IPacketWritable {
 public:
-	virtual auto write(PacketCreator &packet) const -> void = 0;
+	virtual auto write(PacketBuilder &builder) const -> void = 0;
 };
 
 class IPacketReadable {
 public:
-	virtual auto read(PacketReader &packet) -> void = 0;
+	virtual auto read(PacketReader &reader) -> void = 0;
 };
 
 class IPacketSerializable : public IPacketWritable, public IPacketReadable { };

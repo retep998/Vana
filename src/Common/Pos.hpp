@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "Types.hpp"
 #include <cmath>
@@ -32,14 +32,14 @@ struct Pos : public IPacketSerializable {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int16_t>(x);
-		packet.add<int16_t>(y);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int16_t>(x);
+		builder.add<int16_t>(y);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		x = packet.get<int16_t>();
-		y = packet.get<int16_t>();
+	auto read(PacketReader &reader) -> void override {
+		x = reader.get<int16_t>();
+		y = reader.get<int16_t>();
 	}
 
 	int16_t x = 0;

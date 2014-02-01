@@ -16,28 +16,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ServerPacket.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto ServerPacket::showScrollingHeader(Player *player, const string_t &msg) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(4);
-	packet.add<int8_t>(1);
-	packet.addString(msg);
-	player->getSession()->send(packet);
+namespace ServerPacket {
+
+PACKET_IMPL(showScrollingHeader, const string_t &msg) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(4)
+		.add<int8_t>(1)
+		.addString(msg);
+	return builder;
 }
 
-auto ServerPacket::changeScrollingHeader(const string_t &msg) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(4);
-	packet.add<bool>(msg.size() > 0);
+PACKET_IMPL(changeScrollingHeader, const string_t &msg) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(4)
+		.add<bool>(msg.size() > 0);
+
 	if (msg.size() > 0) {
-		packet.addString(msg);
+		builder.addString(msg);
 	}
-	PlayerDataProvider::getInstance().sendPacket(packet);
+	return builder;
+}
+
 }

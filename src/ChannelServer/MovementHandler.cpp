@@ -22,12 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-auto MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) -> Pos {
+auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Pos {
 	int16_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;
-	uint8_t n = packet.get<uint8_t>();
+	uint8_t n = reader.get<uint8_t>();
 
 	enum MovementTypes {
 		NormalMovement = 0,
@@ -51,69 +51,69 @@ auto MovementHandler::parseMovement(MovableLife *life, PacketReader &packet) -> 
 	};
 
 	for (uint8_t i = 0; i < n; ++i) {
-		int8_t type = packet.get<int8_t>();
+		int8_t type = reader.get<int8_t>();
 		switch (type) {
 			case Falling:
-				packet.skipBytes(1);
+				reader.skipBytes(1);
 				break;
 			case Wings:
-				packet.skipBytes(7);
+				reader.skipBytes(7);
 				break;
 			case WingsFalling:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(6);
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				foothold = reader.get<int16_t>();
+				stance = reader.get<int8_t>();
+				reader.skipBytes(6);
 				break;
 			case ExcessiveKb:
-				packet.skipBytes(7);
+				reader.skipBytes(7);
 				break;
 			case Unk2:
-				packet.skipBytes(9);
+				reader.skipBytes(9);
 				break;
 			case NormalMovement:
 			case NormalMovement2:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				packet.skipBytes(4);
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				reader.skipBytes(4);
+				foothold = reader.get<int16_t>();
+				stance = reader.get<int8_t>();
+				reader.skipBytes(2);
 				break;
 			case Jump:
 			case JumpKb:
 			case FlashJump:
 			case RecoilShot:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				foothold = packet.get<int16_t>();
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				stance = reader.get<int8_t>();
+				foothold = reader.get<int16_t>();
 				break;
 			case JumpDown:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				packet.skipBytes(6);
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				reader.skipBytes(6);
+				foothold = reader.get<int16_t>();
+				stance = reader.get<int8_t>();
+				reader.skipBytes(2);
 				break;
 			case Chair:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				foothold = packet.get<int16_t>();
-				stance = packet.get<int8_t>();
-				packet.skipBytes(2);
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				foothold = reader.get<int16_t>();
+				stance = reader.get<int8_t>();
+				reader.skipBytes(2);
 				break;
 			case Unk1:
 			case Teleport:
 			case Assaulter:
 			case Assassinate:
 			case Rush:
-				x = packet.get<int16_t>();
-				y = packet.get<int16_t>();
-				packet.skipBytes(4);
-				stance = packet.get<int8_t>();
+				x = reader.get<int16_t>();
+				y = reader.get<int16_t>();
+				reader.skipBytes(4);
+				stance = reader.get<int8_t>();
 				break;
 			default:
 				std::cerr << "New type of movement: 0x" << std::hex << static_cast<int16_t>(type) << std::endl;

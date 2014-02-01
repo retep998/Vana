@@ -17,49 +17,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ReactorPacket.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Reactor.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto ReactorPacket::spawnReactor(Reactor *reactor) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_REACTOR_SPAWN);
-	packet.add<int32_t>(reactor->getId());
-	packet.add<int32_t>(reactor->getReactorId());
-	packet.add<int8_t>(reactor->getState());
-	packet.addClass<Pos>(reactor->getPos());
-	packet.add<bool>(reactor->facesLeft());
-	Maps::getMap(reactor->getMapId())->sendPacket(packet);
+namespace ReactorPacket {
+
+PACKET_IMPL(spawnReactor, Reactor *reactor) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_REACTOR_SPAWN)
+		.add<int32_t>(reactor->getId())
+		.add<int32_t>(reactor->getReactorId())
+		.add<int8_t>(reactor->getState())
+		.addClass<Pos>(reactor->getPos())
+		.add<bool>(reactor->facesLeft());
+	return builder;
 }
 
-auto ReactorPacket::showReactor(Player *player, Reactor *reactor) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_REACTOR_SPAWN);
-	packet.add<int32_t>(reactor->getId());
-	packet.add<int32_t>(reactor->getReactorId());
-	packet.add<int8_t>(reactor->getState());
-	packet.addClass<Pos>(reactor->getPos());
-	packet.add<bool>(reactor->facesLeft());
-	player->getSession()->send(packet);
+PACKET_IMPL(triggerReactor, Reactor *reactor) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_REACTOR_TRIGGER)
+		.add<int32_t>(reactor->getId())
+		.add<int8_t>(reactor->getState())
+		.addClass<Pos>(reactor->getPos())
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto ReactorPacket::triggerReactor(Reactor *reactor) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_REACTOR_TRIGGER);
-	packet.add<int32_t>(reactor->getId());
-	packet.add<int8_t>(reactor->getState());
-	packet.addClass<Pos>(reactor->getPos());
-	packet.add<int32_t>(0);
-	Maps::getMap(reactor->getMapId())->sendPacket(packet);
+PACKET_IMPL(destroyReactor, Reactor *reactor) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_REACTOR_DESPAWN)
+		.add<int32_t>(reactor->getId())
+		.add<int8_t>(reactor->getState())
+		.addClass<Pos>(reactor->getPos());
+	return builder;
 }
 
-auto ReactorPacket::destroyReactor(Reactor *reactor) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_REACTOR_DESPAWN);
-	packet.add<int32_t>(reactor->getId());
-	packet.add<int8_t>(reactor->getState());
-	packet.addClass<Pos>(reactor->getPos());
-	Maps::getMap(reactor->getMapId())->sendPacket(packet);
 }

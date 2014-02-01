@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 
 struct MountData {
@@ -38,7 +38,7 @@ public:
 	auto save() -> void;
 	auto load() -> void;
 
-	auto mountInfoPacket(PacketCreator &packet) -> void;
+	auto mountInfoPacket(PacketBuilder &packet) -> void;
 	auto getCurrentMount() const -> int32_t { return m_currentMount; }
 	auto getCurrentExp() -> int16_t;
 	auto getCurrentLevel() -> int8_t;

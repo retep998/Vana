@@ -18,25 +18,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
-#include "PacketReader.hpp"
-#include "Session.hpp"
-#include "World.hpp"
 
-auto SyncPacket::PlayerPacket::characterCreated(World *world, int32_t playerId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<sync_t>(Sync::SyncTypes::Player);
-	packet.add<sync_t>(Sync::Player::CharacterCreated);
-	packet.add<int32_t>(playerId);
-	world->send(packet);
+namespace SyncPacket {
+namespace PlayerPacket {
+
+PACKET_IMPL(characterCreated, int32_t playerId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Player)
+		.add<sync_t>(Sync::Player::CharacterCreated)
+		.add<int32_t>(playerId);
+	return builder;
 }
 
-auto SyncPacket::PlayerPacket::characterDeleted(World *world, int32_t playerId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<sync_t>(Sync::SyncTypes::Player);
-	packet.add<sync_t>(Sync::Player::CharacterDeleted);
-	packet.add<int32_t>(playerId);
-	world->send(packet);
+PACKET_IMPL(characterDeleted, int32_t playerId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Player)
+		.add<sync_t>(Sync::Player::CharacterDeleted)
+		.add<int32_t>(playerId);
+	return builder;
+}
+
+}
 }

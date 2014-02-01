@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Channel;
 class LoginServerAcceptConnection;
-class PacketCreator;
+class PacketBuilder;
 
 class World {
 	NONCOPYABLE(World);
@@ -46,7 +46,7 @@ public:
 	auto clearChannels() -> void { m_channels.clear(); }
 	auto removeChannel(channel_id_t id) -> void { m_channels.erase(id); }
 	auto addChannel(channel_id_t id, Channel *channel) -> void { m_channels[id].reset(channel); }
-	auto send(const PacketCreator &packet) -> void;
+	auto send(const PacketBuilder &builder) -> void;
 
 	auto isConnected() const -> bool { return m_connected; }
 	auto getId() const -> world_id_t { return m_id; }

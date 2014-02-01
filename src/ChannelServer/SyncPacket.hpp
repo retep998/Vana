@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "InterHelper.hpp"
+#include "PacketBuilder.hpp"
 #include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <string>
@@ -28,22 +29,22 @@ struct Rates;
 
 namespace SyncPacket {
 	namespace ConfigPacket {
-		auto scrollingHeader(const string_t &message) -> void;
-		auto resetRates() -> void;
-		auto modifyRates(const Rates &rates) -> void;
+		PACKET(scrollingHeader, const string_t &message);
+		PACKET(resetRates);
+		PACKET(modifyRates, const Rates &rates);
 	}
 	namespace PlayerPacket {
-		auto changeChannel(Player *info, channel_id_t channel) -> void;
-		auto connectableEstablished(int32_t playerId) -> void;
-		auto connect(const PlayerData &player) -> void;
-		auto disconnect(int32_t playerId) -> void;
-		auto updatePlayer(const PlayerData &player, update_bits_t flags) -> void;
+		PACKET(changeChannel, Player *info, channel_id_t channel);
+		PACKET(connectableEstablished, int32_t playerId);
+		PACKET(connect, const PlayerData &player, bool firstConnect);
+		PACKET(disconnect, int32_t playerId);
+		PACKET(updatePlayer, const PlayerData &player, update_bits_t flags);
 	}
 	namespace PartyPacket {
-		auto sync(int8_t type, int32_t playerId, int32_t target = 0) -> void;
+		PACKET(sync, int8_t type, int32_t playerId, int32_t target = 0);
 	}
 	namespace BuddyPacket {
-		auto buddyInvite(int32_t inviterId, int32_t inviteeId) -> void;
-		auto buddyOnline(int32_t playerId, const vector_t<int32_t> &players, bool online) -> void;
+		PACKET(buddyInvite, int32_t inviterId, int32_t inviteeId);
+		PACKET(buddyOnline, int32_t playerId, const vector_t<int32_t> &players, bool online);
 	}
 }

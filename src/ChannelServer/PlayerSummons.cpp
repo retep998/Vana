@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerSummons.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
-#include "PacketCreator.hpp"
+#include "Map.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
 #include "Summon.hpp"
@@ -75,7 +75,7 @@ auto PlayerSummons::getSummonTimeRemaining() const -> seconds_t {
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
-auto PlayerSummons::write(PacketCreator &packet) const -> void {
+auto PlayerSummons::write(PacketBuilder &builder) const -> void {
 	int32_t summonId = 0;
 	int32_t timeLeft = 0;
 	uint8_t level = 0;
@@ -84,19 +84,19 @@ auto PlayerSummons::write(PacketCreator &packet) const -> void {
 		timeLeft = static_cast<int32_t>(getSummonTimeRemaining().count());
 		level = m_summon->getLevel();
 	}
-	packet.add<int32_t>(summonId);
-	packet.add<int32_t>(timeLeft);
-	packet.add<uint8_t>(level);
+	builder.add<int32_t>(summonId);
+	builder.add<int32_t>(timeLeft);
+	builder.add<uint8_t>(level);
 }
 
-auto PlayerSummons::read(PacketReader &packet) -> void {
-	int32_t skillId = packet.get<int32_t>();
-	int32_t timeLeft = packet.get<int32_t>();
-	uint8_t level = packet.get<uint8_t>();
+auto PlayerSummons::read(PacketReader &reader) -> void {
+	int32_t skillId = reader.get<int32_t>();
+	int32_t timeLeft = reader.get<int32_t>();
+	uint8_t level = reader.get<uint8_t>();
 	if (skillId != 0) {
 		Summon *summon = new Summon(SummonHandler::loopId(), skillId, level);
 		summon->setPos(m_player->getPos());
 		addSummon(summon, timeLeft);
-		SummonsPacket::showSummon(m_player, summon, true);
+		m_player->sendMap(SummonsPacket::showSummon(m_player->getId(), summon, true));
 	}
 }

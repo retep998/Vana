@@ -17,11 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include <string>
 
 class Player;
 
 namespace ServerPacket {
-	auto showScrollingHeader(Player *player, const string_t &msg) -> void;
-	auto changeScrollingHeader(const string_t &msg) -> void;
+	PACKET(showScrollingHeader, const string_t &msg);
+	PACKET(changeScrollingHeader, const string_t &msg);
 }

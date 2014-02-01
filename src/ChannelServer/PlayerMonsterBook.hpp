@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 
 struct MonsterCard {
@@ -40,11 +40,11 @@ public:
 
 	auto load() -> void;
 	auto save() -> void;
-	auto connectData(PacketCreator &packet) -> void;
+	auto connectData(PacketBuilder &packet) -> void;
 
 	auto addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
 	auto calculateLevel() -> void;
-	auto infoData(PacketCreator &packet) -> void;
+	auto infoData(PacketBuilder &packet) -> void;
 	auto setCover(int32_t newCover) -> void { m_cover = newCover; }
 
 	auto getCard(int32_t cardId) -> MonsterCard *;

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <unordered_map>
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Party;
 class Player;
@@ -33,11 +33,11 @@ class Player;
 class PlayerDataProvider {
 	SINGLETON(PlayerDataProvider);
 public:
-	auto parseChannelConnectPacket(PacketReader &packet) -> void;
+	auto parseChannelConnectPacket(PacketReader &reader) -> void;
 	
-	auto handlePlayerSync(PacketReader &packet) -> void;
-	auto handlePartySync(PacketReader &packet) -> void;
-	auto handleBuddySync(PacketReader &packet) -> void;
+	auto handlePlayerSync(PacketReader &reader) -> void;
+	auto handlePartySync(PacketReader &reader) -> void;
+	auto handleBuddySync(PacketReader &reader) -> void;
 
 	// Online players
 	auto addPlayer(Player *player) -> void;
@@ -48,8 +48,9 @@ public:
 	auto getPlayer(int32_t id) -> Player *;
 	auto getPlayer(const string_t &name) -> Player *;
 	auto run(function_t<void(Player *)> func) -> void;
-	auto sendPacket(PacketCreator &packet, int32_t minGmLevel = 0) -> void;
-	auto sendPacketToList(const vector_t<int32_t> &playerIds, PacketCreator &packet) -> void;
+	auto send(int32_t playerId, const PacketBuilder &packet) -> void;
+	auto send(const vector_t<int32_t> &playerIds, const PacketBuilder &packet) -> void;
+	auto send(const PacketBuilder &packet) -> void;
 	auto addFollower(Player *follower, Player *target) -> void;
 	auto stopFollowing(Player *follower) -> void;
 
@@ -64,13 +65,14 @@ public:
 	auto handleGroupChat(int8_t chatType, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
 	auto handleGmChat(Player *player, const string_t &chat) -> void;
 private:
+	auto sendSync(const PacketBuilder &packet) const -> void;
 	auto addPlayerData(const PlayerData &data) -> void;
-	auto handleCharacterCreated(PacketReader &packet) -> void;
-	auto handleCharacterDeleted(PacketReader &packet) -> void;
-	auto handleChangeChannel(PacketReader &packet) -> void;
-	auto handleNewConnectable(PacketReader &packet) -> void;
+	auto handleCharacterCreated(PacketReader &reader) -> void;
+	auto handleCharacterDeleted(PacketReader &reader) -> void;
+	auto handleChangeChannel(PacketReader &reader) -> void;
+	auto handleNewConnectable(PacketReader &reader) -> void;
 	auto handleDeleteConnectable(int32_t id) -> void;
-	auto handleUpdatePlayer(PacketReader &packet) -> void;
+	auto handleUpdatePlayer(PacketReader &reader) -> void;
 
 	auto handleCreateParty(int32_t id, int32_t leaderId) -> void;
 	auto handleDisbandParty(int32_t id) -> void;
@@ -78,8 +80,8 @@ private:
 	auto handlePartyRemove(int32_t id, int32_t playerId, bool kicked) -> void;
 	auto handlePartyAdd(int32_t id, int32_t playerId) -> void;
 
-	auto buddyInvite(PacketReader &packet) -> void;
-	auto buddyOnlineOffline(PacketReader &packet) -> void;
+	auto buddyInvite(PacketReader &reader) -> void;
+	auto buddyOnlineOffline(PacketReader &reader) -> void;
 
 	hash_set_t<int32_t> m_gmList;
 	hash_map_t<int32_t, PlayerData> m_playerData;

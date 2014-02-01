@@ -17,12 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "Types.hpp"
+
 class Player;
 class Reactor;
 
 namespace ReactorPacket {
-	auto spawnReactor(Reactor *reactor) -> void;
-	auto showReactor(Player *player, Reactor *reactor) -> void;
-	auto triggerReactor(Reactor *reactor) -> void;
-	auto destroyReactor(Reactor *reactor) -> void;
+	PACKET(spawnReactor, Reactor *reactor);
+	PACKET(triggerReactor, Reactor *reactor);
+	PACKET(destroyReactor, Reactor *reactor);
 }

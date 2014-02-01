@@ -16,6 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MessageFunctions.hpp"
+#include "ChannelServer.hpp"
+#include "InterHeader.hpp"
+#include "PacketWrapper.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
 #include "PlayerDataProvider.hpp"
@@ -27,7 +30,11 @@ auto MessageFunctions::worldMessage(Player *player, const string_t &args) -> boo
 		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
 			string_t message = matches[2];
-			PlayerPacket::showMessageWorld(message, type);
+			ChannelServer::getInstance().sendWorld(
+				Packets::prepend(PlayerPacket::showMessage(message, type), [](PacketBuilder &builder) {
+					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
+					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+				}));
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
@@ -44,7 +51,13 @@ auto MessageFunctions::globalMessage(Player *player, const string_t &args) -> bo
 		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
 			string_t message = matches[2];
-			PlayerPacket::showMessageGlobal(message, type);
+			ChannelServer::getInstance().sendWorld(
+				Packets::prepend(PlayerPacket::showMessage(message, type), [](PacketBuilder &builder) {
+					builder.add<header_t>(IMSG_TO_LOGIN);
+					builder.add<header_t>(IMSG_TO_ALL_WORLDS);
+					builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
+					builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+				}));
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
@@ -55,23 +68,20 @@ auto MessageFunctions::globalMessage(Player *player, const string_t &args) -> bo
 }
 
 auto MessageFunctions::channelMessage(Player *player, const string_t &args) -> bool {
-	if (args.length() != 0) {
-		PlayerPacket::showMessageChannel(args, PlayerPacket::NoticeTypes::Notice);
+	match_t matches;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches)) {
+		string_t rawType = matches[1];
+		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
+		if (type != -1) {
+			string_t message = matches[2];
+			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(message, type));
+		}
+		else {
+			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);
+		}
 		return true;
 	}
-	return false;
-}
 
-auto MessageFunctions::gmMessage(Player *player, const string_t &args) -> bool {
-	if (args.length() != 0) {
-		const string_t &msg = player->getName() + " : " + args;
-		PlayerDataProvider::getInstance().run([&msg](Player *gmPlayer) {
-			if (gmPlayer->isGm()) {
-				ChatHandlerFunctions::showInfo(gmPlayer, msg);
-			}
-		});
-		return true;
-	}
 	return false;
 }
 

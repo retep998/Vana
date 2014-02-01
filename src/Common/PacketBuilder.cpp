@@ -15,29 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "StringUtilities.hpp"
 #include <cctype>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
-PacketCreator::PacketCreator() :
+PacketBuilder::PacketBuilder() :
 	m_packet(new unsigned char[bufferLen]),
 	m_packetCapacity(bufferLen)
 {
 }
 
-auto PacketCreator::addBuffer(const PacketCreator &packet) -> void {
-	addBuffer(packet.getBuffer(), packet.getSize());
+auto PacketBuilder::addBuffer(const PacketBuilder &builder) -> PacketBuilder & {
+	return addBuffer(builder.getBuffer(), builder.getSize());
 }
 
-auto PacketCreator::addBuffer(const PacketReader &packet) -> void {
-	addBuffer(packet.getBuffer(), packet.getBufferLength());
+auto PacketBuilder::addBuffer(const PacketReader &reader) -> PacketBuilder & {
+	return addBuffer(reader.getBuffer(), reader.getBufferLength());
 }
 
-auto PacketCreator::addBytes(const char *hex) -> void {
+auto PacketBuilder::addBytes(const char *hex) -> PacketBuilder & {
 	size_t x = 0;
 	for (size_t i = 0; i < strlen(hex) / 2; ++i) {
 		x = i * 2;
@@ -46,9 +47,10 @@ auto PacketCreator::addBytes(const char *hex) -> void {
 		unsigned char byte = byte1 * 0x10 + byte2;
 		add<uint8_t>(byte);
 	}
+	return *this;
 }
 
-auto PacketCreator::getHexByte(unsigned char input) -> unsigned char {
+auto PacketBuilder::getHexByte(unsigned char input) -> unsigned char {
 	input = static_cast<unsigned char>(toupper(input));
 	if (input >= 'A' && input <= 'F') {
 		input -= 'A' - 0xA;
@@ -62,7 +64,7 @@ auto PacketCreator::getHexByte(unsigned char input) -> unsigned char {
 	return input;
 }
 
-auto PacketCreator::addString(const string_t &str, size_t len) -> void {
+auto PacketBuilder::addString(const string_t &str, size_t len) -> PacketBuilder & {
 	size_t slen = str.size();
 	if (len < slen) {
 		throw std::invalid_argument("addString used with a length shorter than string size");
@@ -72,15 +74,16 @@ auto PacketCreator::addString(const string_t &str, size_t len) -> void {
 		m_packet[m_pos + i] = 0;
 	}
 	m_pos += len;
+	return *this;
 }
 
-auto PacketCreator::addString(const string_t &str) -> void {
+auto PacketBuilder::addString(const string_t &str) -> PacketBuilder & {
 	uint16_t len = static_cast<uint16_t>(str.size());
 	add<uint16_t>(len);
-	addString(str, len);
+	return addString(str, len);
 }
 
-auto PacketCreator::getBuffer(size_t pos, size_t len) -> unsigned char * {
+auto PacketBuilder::getBuffer(size_t pos, size_t len) -> unsigned char * {
 	if (m_packetCapacity < pos + len) {
 		// Buffer is not large enough
 		while (m_packetCapacity < pos + len) {
@@ -94,6 +97,6 @@ auto PacketCreator::getBuffer(size_t pos, size_t len) -> unsigned char * {
 	return m_packet.get() + pos;
 }
 
-auto PacketCreator::toString() const -> string_t {
+auto PacketBuilder::toString() const -> string_t {
 	return StringUtilities::bytesToHex(getBuffer(), getSize());
 }

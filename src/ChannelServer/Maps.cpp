@@ -44,7 +44,7 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 		// Check for "onlyOnce" portal
 		if (portal->onlyOnce) {
 			if (player->usedPortal(portal->id)) {
-				MapPacket::portalBlocked(player);
+				player->send(MapPacket::portalBlocked());
 				return;
 			}
 			else {
@@ -59,7 +59,7 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 			LuaPortal(filename, player->getId(), portal);
 
 			if (map == player->getMapId()) {
-				MapPacket::portalBlocked(player);
+				player->send(MapPacket::portalBlocked());
 			}
 		}
 		else {
@@ -70,16 +70,16 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 			else {
 				message = "This portal is currently unavailable.";
 			}
-			PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Red);
-			MapPacket::portalBlocked(player);
+			player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Red));
+			player->send(MapPacket::portalBlocked());
 		}
 	}
 	else {
 		// Normal portal
 		Map *toMap = getMap(portal->toMap);
 		if (toMap == nullptr) {
-			PlayerPacket::showMessage(player, "Bzzt. The map you're attempting to travel to doesn't exist.", PlayerPacket::NoticeTypes::Red);
-			MapPacket::portalBlocked(player);
+			player->send(PlayerPacket::showMessage("Bzzt. The map you're attempting to travel to doesn't exist.", PlayerPacket::NoticeTypes::Red));
+			player->send(MapPacket::portalBlocked());
 			return;
 		}
 		PortalInfo *nextPortal = toMap->getPortal(portal->toName);
@@ -87,16 +87,16 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 	}
 }
 
-auto Maps::usePortal(Player *player, PacketReader &packet) -> void {
-	packet.skipBytes(1);
+auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
+	reader.skipBytes(1);
 
-	int32_t opcode = packet.get<int32_t>();
+	int32_t opcode = reader.get<int32_t>();
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->isDead()) {
-				const string_t &unk = packet.getString(); // Useless
-				packet.skipBytes(1); // Useless
-				bool wheel = packet.get<bool>();
+				string_t unk = reader.getString(); // Useless
+				reader.skipBytes(1); // Useless
+				bool wheel = reader.get<bool>();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
 					player->acceptDeath(false);
 					return;
@@ -106,7 +106,7 @@ auto Maps::usePortal(Player *player, PacketReader &packet) -> void {
 			}
 			break;
 		case -1: {
-			const string_t &portalName = packet.getString();
+			string_t portalName = reader.getString();
 
 			Map *toMap = player->getMap();
 			if (toMap == nullptr) {
@@ -128,9 +128,9 @@ auto Maps::usePortal(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto Maps::useScriptedPortal(Player *player, PacketReader &packet) -> void {
-	packet.skipBytes(1);
-	const string_t &portalName = packet.getString();
+auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
+	reader.skipBytes(1);
+	string_t portalName = reader.getString();
 
 	PortalInfo *portal = player->getMap()->getPortal(portalName);
 	if (portal == nullptr) {

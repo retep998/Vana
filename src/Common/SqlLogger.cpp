@@ -44,7 +44,7 @@ auto SqlLogger::log(LogType type, const opt_string_t &identifier, const string_t
 auto SqlLogger::flush() -> void {
 	if (m_buffer.size() > 0) {
 		soci::session &sql = Database::getCharDb();
-		int16_t serverType = static_cast<int16_t>(getServerType());
+		server_type_t serverType = static_cast<server_type_t>(getServerType());
 		int32_t logType = 0;
 		opt_string_t identifier;
 		// For GCC, GCC doesn't interpret operators very well

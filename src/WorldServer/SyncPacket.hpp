@@ -19,42 +19,41 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Ip.hpp"
 #include "InterHelper.hpp"
+#include "PacketBuilder.hpp"
 #include "PlayerObjects.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
 
 class AbstractConnection;
-class Channel;
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
-class WorldServerAcceptConnection;
 struct Rates;
 
 namespace SyncPacket {
-	auto sendSyncData(WorldServerAcceptConnection *connection) -> void;
+	PACKET(sendSyncData, function_t<void(PacketBuilder &)> buildSyncData);
 
 	namespace ConfigPacket {
-		auto setRates(const Rates &rates) -> void;
-		auto scrollingHeader(const string_t &message) -> void;
+		PACKET(setRates, const Rates &rates);
+		PACKET(scrollingHeader, const string_t &message);
 	}
 	namespace PartyPacket {
-		auto removePartyMember(int32_t partyId, int32_t playerId, bool kicked) -> void;
-		auto addPartyMember(int32_t partyId, int32_t playerId) -> void;
-		auto newPartyLeader(int32_t partyId, int32_t playerId) -> void;
-		auto createParty(int32_t partyId, int32_t playerId) -> void;
-		auto disbandParty(int32_t partyId) -> void;
+		PACKET(removePartyMember, int32_t partyId, int32_t playerId, bool kicked);
+		PACKET(addPartyMember, int32_t partyId, int32_t playerId);
+		PACKET(newPartyLeader, int32_t partyId, int32_t playerId);
+		PACKET(createParty, int32_t partyId, int32_t playerId);
+		PACKET(disbandParty, int32_t partyId);
 	}
 	namespace PlayerPacket {
-		auto playerChangeChannel(AbstractConnection *connection, int32_t playerId, channel_id_t channelId, const Ip &ip, port_t port) -> void;
-		auto newConnectable(channel_id_t channel, int32_t playerId, const Ip &ip, PacketReader &buffer) -> void;
-		auto deleteConnectable(channel_id_t channel, int32_t playerId) -> void;
-		auto updatePlayer(const PlayerData &data, update_bits_t flags) -> void;
-		auto characterCreated(const PlayerData &data) -> void;
-		auto characterDeleted(int32_t id) -> void;
+		PACKET(playerChangeChannel, int32_t playerId, channel_id_t channelId, const Ip &ip, port_t port);
+		PACKET(newConnectable, int32_t playerId, const Ip &ip, PacketReader &buffer);
+		PACKET(deleteConnectable, int32_t playerId);
+		PACKET(updatePlayer, const PlayerData &data, update_bits_t flags);
+		PACKET(characterCreated, const PlayerData &data);
+		PACKET(characterDeleted, int32_t id);
 	}
 	namespace BuddyPacket {
-		auto sendBuddyInvite(Channel *channel, int32_t inviteeId, int32_t inviterId, const string_t &name) -> void;
-		auto sendBuddyOnlineOffline(Channel *channel, const vector_t<int32_t> &players, int32_t playerId, channel_id_t channelId) -> void;
+		PACKET(sendBuddyInvite, int32_t inviteeId, int32_t inviterId, const string_t &name);
+		PACKET(sendBuddyOnlineOffline, const vector_t<int32_t> &players, int32_t playerId, channel_id_t channelId);
 	}
 }

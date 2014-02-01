@@ -25,31 +25,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto AbstractServerConnection::sendAuth(const string_t &pass, const IpMatrix &extIp) -> void {
-	AuthenticationPacket::sendPassword(this, pass, extIp);
+	send(AuthenticationPacket::sendPassword(this, pass, extIp));
 }
 
-auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &packet) -> Result {
-	if (packet.getHeader() == IMSG_PASSWORD) {
-		if (packet.getString() == server.getInterPassword()) {
+auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &reader) -> Result {
+	if (reader.getHeader() == IMSG_PASSWORD) {
+		if (reader.getString() == server.getInterPassword()) {
 			m_isAuthenticated = true;
 
-			setExternalIpInformation(getIp(), packet.getClassVector<ExternalIp>());
+			setExternalIpInformation(getIp(), reader.getClassVector<ExternalIp>());
 
-			ServerType type = static_cast<ServerType>(packet.get<int8_t>());
+			ServerType type = static_cast<ServerType>(reader.get<server_type_t>());
 			m_type = type;
 			authenticated(type);
 		}
 		else {
-			server.log(LogType::ServerAuthFailure, [&](out_stream_t &log) { log << "IP: " << getSession()->getIp(); });
+			server.log(LogType::ServerAuthFailure, [&](out_stream_t &log) { log << "IP: " << getIp(); });
 
-			getSession()->disconnect();
+			disconnect();
 			return Result::Failure;
 		}
 	}
 	else if (!m_isAuthenticated) {
-		getSession()->disconnect();
+		disconnect();
 		return Result::Failure;
 	}
-	packet.reset();
+	reader.reset();
 	return Result::Successful;
 }

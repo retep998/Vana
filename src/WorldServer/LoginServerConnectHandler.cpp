@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServer.hpp"
 #include <iostream>
 
-auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &packet) -> void {
-	world_id_t worldId = packet.get<world_id_t>();
+auto LoginServerConnectHandler::connect(LoginServerConnection *connection, PacketReader &reader) -> void {
+	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
-		port_t port = packet.get<port_t>();
-		WorldConfig conf = packet.getClass<WorldConfig>();
+		port_t port = reader.get<port_t>();
+		WorldConfig conf = reader.getClass<WorldConfig>();
 		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
 		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
 	}
@@ -37,9 +37,4 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 		std::cerr << "ERROR: No world to handle" << std::endl;
 		WorldServer::getInstance().shutdown();
 	}
-}
-
-auto LoginServerConnectHandler::rehashConfig(PacketReader &packet) -> void {
-	const WorldConfig &config = packet.getClass<WorldConfig>();
-	WorldServer::getInstance().rehashConfig(config);
 }

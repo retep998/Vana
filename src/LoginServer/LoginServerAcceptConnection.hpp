@@ -32,7 +32,7 @@ public:
 	auto setWorldId(world_id_t id) -> void { m_worldId = id; }
 	auto getWorldId() const -> world_id_t { return m_worldId; }
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 private:
 	world_id_t m_worldId = -1;
 };

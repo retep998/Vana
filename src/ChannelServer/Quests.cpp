@@ -39,7 +39,7 @@ namespace QuestOpcodes {
 
 auto Quests::giveItem(Player *player, int32_t itemId, int16_t amount) -> bool {
 	// TODO: Clean it up
-	QuestsPacket::giveItem(player, itemId, amount);
+	player->send(QuestsPacket::giveItem(itemId, amount));
 	if (amount > 0) {
 		Inventory::addNewItem(player, itemId, amount);
 	}
@@ -59,18 +59,18 @@ auto Quests::giveMesos(Player *player, int32_t amount) -> bool {
 		return false;
 	}
 	player->getInventory()->modifyMesos(amount);
-	QuestsPacket::giveMesos(player, amount);
+	player->send(QuestsPacket::giveMesos(amount));
 	return true;
 }
 
 auto Quests::giveFame(Player *player, int32_t amount) -> void {
 	player->getStats()->setFame(player->getStats()->getFame() + static_cast<int16_t>(amount));
-	QuestsPacket::giveFame(player, amount);
+	player->send(QuestsPacket::giveFame(amount));
 }
 
-auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
-	int8_t act = packet.get<int8_t>();
-	int16_t questId = packet.get<int16_t>();
+auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
+	int8_t act = reader.get<int8_t>();
+	int16_t questId = reader.get<int16_t>();
 
 	if (!QuestDataProvider::getInstance().isQuest(questId)) {
 		// Hacking
@@ -91,7 +91,7 @@ auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 		return;
 	}
 
-	int32_t npcId = packet.get<int32_t>();
+	int32_t npcId = reader.get<int32_t>();
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
@@ -117,7 +117,7 @@ auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 	}
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
-			int32_t itemId = packet.get<int32_t>();
+			int32_t itemId = reader.get<int32_t>();
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 			if (itemInfo == nullptr) {
 				// Hacking
@@ -125,7 +125,7 @@ auto Quests::getQuest(Player *player, PacketReader &packet) -> void {
 			}
 
 			if (itemInfo->quest) {
-				QuestsPacket::giveItem(player, itemId, 1);
+				player->send(QuestsPacket::giveItem(itemId, 1));
 				Inventory::addNewItem(player, itemId, 1);
 			}
 			else {

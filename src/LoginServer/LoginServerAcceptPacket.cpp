@@ -19,56 +19,59 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "LoginServerAcceptConnection.hpp"
-#include "PacketCreator.hpp"
-#include "Session.hpp"
 #include "World.hpp"
-#include "Worlds.hpp"
 
-auto LoginServerAcceptPacket::connect(World *world) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_WORLD_CONNECT);
-	packet.add<world_id_t>(world->getId());
-	packet.add<port_t>(world->getPort());
+namespace LoginServerAcceptPacket {
 
-	packet.addClass<WorldConfig>(world->getConfig());
-
-	world->send(packet);
+PACKET_IMPL(connect, World *world) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_WORLD_CONNECT)
+		.add<world_id_t>(world->getId())
+		.add<port_t>(world->getPort())
+		.addClass<WorldConfig>(world->getConfig());
+	return builder;
 }
 
-auto LoginServerAcceptPacket::noMoreWorld(LoginServerAcceptConnection *connection) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_WORLD_CONNECT);
-	packet.add<int8_t>(-1);
-	connection->getSession()->send(packet);
+PACKET_IMPL(noMoreWorld) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_WORLD_CONNECT)
+		.add<int8_t>(-1);
+	return builder;
 }
 
-auto LoginServerAcceptPacket::connectChannel(LoginServerAcceptConnection *connection, world_id_t worldId, const Ip &ip, port_t port) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT);
-	packet.add<world_id_t>(worldId);
-	packet.addClass<Ip>(ip);
-	packet.add<port_t>(port);
-	connection->getSession()->send(packet);
+PACKET_IMPL(connectChannel, world_id_t worldId, const Ip &ip, port_t port) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT)
+		.add<world_id_t>(worldId)
+		.addClass<Ip>(ip)
+		.add<port_t>(port);
+	return builder;
 }
 
-auto LoginServerAcceptPacket::playerConnectingToChannel(World *world, channel_id_t channel, int32_t charId, const Ip &ip) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_CHANNEL);
-	packet.add<channel_id_t>(channel);
-	packet.add<header_t>(IMSG_SYNC);
-	packet.add<sync_t>(Sync::SyncTypes::Player);
-	packet.add<sync_t>(Sync::Player::NewConnectable);
-	packet.add<int32_t>(charId);
-	packet.addClass<Ip>(ip);
-	// The size of the held packet that should be there - there isn't one
-	packet.add<uint16_t>(0);
-	world->send(packet);
+PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, int32_t charId, const Ip &ip) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_TO_CHANNEL)
+		.add<channel_id_t>(channel)
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Player)
+		.add<sync_t>(Sync::Player::NewConnectable)
+		.add<int32_t>(charId)
+		.addClass<Ip>(ip)
+		// The size of the held packet that should be there - there isn't one
+		.add<uint16_t>(0);
+	return builder;
 }
 
-auto LoginServerAcceptPacket::rehashConfig(World *world) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_REHASH_CONFIG);
-	packet.addClass<WorldConfig>(world->getConfig());
-	world->send(packet);
+PACKET_IMPL(rehashConfig, World *world) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_REHASH_CONFIG)
+		.addClass<WorldConfig>(world->getConfig());
+	return builder;
+}
+
 }

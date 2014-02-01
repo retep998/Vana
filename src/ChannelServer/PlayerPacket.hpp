@@ -18,11 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.hpp"
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
 class KeyMaps;
-class PacketCreator;
+class PacketBuilder;
 class Player;
 class SkillMacros;
 
@@ -44,18 +45,16 @@ namespace PlayerPacket {
 			Blue = 0x06
 		};
 	}
-	auto connectData(Player *player) -> void;
-	auto showKeys(Player *player, KeyMaps *keymaps) -> void;
-	auto showSkillMacros(Player *player, SkillMacros *macros) -> void;
-	auto updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse = false) -> void;
-	auto changeChannel(Player *player, const Ip &ip, port_t port) -> void;
-	auto showMessage(Player *player, const string_t &msg, int8_t type) -> void;
-	auto showMessageChannel(const string_t &msg, int8_t type) -> void;
-	auto showMessageWorld(const string_t &msg, int8_t type) -> void;
-	auto showMessageGlobal(const string_t &msg, int8_t type) -> void;
-	auto showMessagePacket(PacketCreator &packet, const string_t &msg, int8_t type) -> void;
-	auto instructionBubble(Player *player, const string_t &msg, int16_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0) -> void;
-	auto showHpBar(Player *player, Player *target) -> void;
-	auto sendBlockedMessage(Player *player, int8_t type) -> void;
-	auto sendYellowMessage(Player *player, const string_t &msg) -> void;
+
+	PACKET(connectData, Player *player);
+	PACKET(showKeys, KeyMaps *keymaps);
+	PACKET(showSkillMacros, SkillMacros *macros);
+	PACKET(updateStat, int32_t updateBits, int32_t value, bool itemResponse = false);
+	PACKET(changeChannel, const Ip &ip, port_t port);
+	PACKET(showMessage, const string_t &msg, int8_t type);
+	PACKET(groupChat, const string_t &name, const string_t &msg, int8_t type);
+	PACKET(instructionBubble, const string_t &msg, int16_t width = -1, int16_t time = 5, bool isStatic = false, int32_t x = 0, int32_t y = 0);
+	PACKET(showHpBar, int32_t playerId, int32_t hp, int32_t maxHp);
+	PACKET(sendBlockedMessage, int8_t type);
+	PACKET(sendYellowMessage, const string_t &msg);
 }

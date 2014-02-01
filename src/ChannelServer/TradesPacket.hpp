@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
@@ -68,14 +69,15 @@ namespace TradesPacket {
 		};
 	}
 
-	auto sendOpenTrade(Player *player, Player *player1, Player *player2) -> void;
-	auto sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) -> void;
-	auto sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) -> void;
-	auto sendTradeMessage(Player *receiver, int8_t type, int8_t message) -> void;
-	auto sendTradeChat(Player *player, bool blue, const string_t &chat) -> void;
-	auto sendLeaveTrade(Player *player) -> void;
-	auto sendAddUser(Player *original, Player *newb, int8_t slot) -> void;
-	auto sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) -> void;
-	auto sendAccepted(Player *desintation) -> void;
-	auto sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) -> void;
+	PACKET(sendOpenTrade, Player *player1, Player *player2);
+	PACKET(sendTradeRequest, const string_t &name, int32_t tradeId);
+	PACKET(sendTradeMessage, const string_t &name, int8_t type, int8_t message);
+	PACKET(sendEndTrade, int8_t message);
+	PACKET(sendTradeEntryMessage, int8_t message);
+	PACKET(sendTradeChat, bool blue, const string_t &chat);
+	PACKET(sendLeaveTrade);
+	PACKET(sendAddUser, Player *newPlayer, int8_t slot);
+	PACKET(sendAddMesos, uint8_t slot, int32_t amount);
+	PACKET(sendAccepted);
+	PACKET(sendAddItem, uint8_t player, uint8_t slot, Item *item);
 }

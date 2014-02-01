@@ -29,9 +29,9 @@ struct SkillLevelInfo;
 namespace Skills {
 	auto addSkillLevelInfo(int32_t skillId, uint8_t level, const SkillLevelInfo &levelInfo) -> void;
 	auto addMobSkillLevelInfo(uint8_t skillId, uint8_t level, const MobSkillLevelInfo &levelInfo) -> void;
-	auto addSkill(Player *player, PacketReader &packet) -> void;
-	auto cancelSkill(Player *player, PacketReader &packet) -> void;
-	auto useSkill(Player *player, PacketReader &packet) -> void;
+	auto addSkill(Player *player, PacketReader &reader) -> void;
+	auto cancelSkill(Player *player, PacketReader &reader) -> void;
+	auto useSkill(Player *player, PacketReader &reader) -> void;
 	auto getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<Player *>;
 	auto applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp = false) -> void;
 	auto useAttackSkill(Player *player, int32_t skillId) -> void;

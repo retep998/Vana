@@ -20,127 +20,124 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "ItemConstants.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto DropsPacket::showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_DROP_ITEM);
-	packet.add<int8_t>(type);
-	packet.add<int32_t>(drop->getId());
-	packet.add<bool>(drop->isMesos());
-	packet.add<int32_t>(drop->getObjectId());
-	packet.add<int32_t>(drop->getOwner()); // Owner of drop
-	packet.add<int8_t>(drop->getType());
-	packet.addClass<Pos>(drop->getPos());
-	packet.add<int32_t>(drop->getTime());
+namespace DropsPacket {
+
+PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_DROP_ITEM)
+		.add<int8_t>(type)
+		.add<int32_t>(drop->getId())
+		.add<bool>(drop->isMesos())
+		.add<int32_t>(drop->getObjectId())
+		.add<int32_t>(drop->getOwner()) // Owner of drop
+		.add<int8_t>(drop->getType())
+		.addClass<Pos>(drop->getPos())
+		.add<int32_t>(drop->getTime());
+
 	if (type != DropTypes::ShowExisting) {
 		// Give the point of origin for things that are just being dropped
-		packet.addClass<Pos>(origin);
-		packet.add<int16_t>(0);
+		builder
+			.addClass<Pos>(origin)
+			.add<int16_t>(0);
 	}
 	if (!drop->isMesos()) {
-		packet.add<int64_t>(Items::NoExpiration);
+		builder.add<int64_t>(Items::NoExpiration);
 	}
-	packet.add<bool>(!drop->isplayerDrop()); // Determines whether pets can pick item up or not
-
-	if (player != nullptr) {
-		player->getSession()->send(packet);
-	}
-	else {
-		Maps::getMap(drop->getMap())->sendPacket(packet);
-	}
-	if (newDrop) {
-		showDrop(player, drop, DropTypes::ShowDrop, false, origin);
-	}
+	builder.add<bool>(!drop->isPlayerDrop()); // Determines whether pets can pick item up or not
+	return builder;
 }
 
-auto DropsPacket::takeDrop(Player *player, Drop *drop, int8_t petIndex) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_DROP_PICKUP);
-	packet.add<int8_t>(petIndex != -1 ? 5 : 2);
-	packet.add<int32_t>(drop->getId());
-	packet.add<int32_t>(player->getId());
-	if (petIndex != -1) {
-		packet.add<int8_t>(petIndex);
-	}
-	if (!drop->isQuest()) {
-		Maps::getMap(drop->getMap())->sendPacket(packet);
-	}
-	else {
-		player->getSession()->send(packet);
-	}
+PACKET_IMPL(takeDrop, int32_t playerId, int32_t dropId, int8_t petIndex) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_DROP_PICKUP)
+		.add<int8_t>(petIndex != -1 ? 5 : 2)
+		.add<int32_t>(dropId)
+		.add<int32_t>(playerId);
+	return builder;
 }
 
-auto DropsPacket::dontTake(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_OPERATION);
-	packet.add<int16_t>(1);
-	player->getSession()->send(packet);
+PACKET_IMPL(dontTake) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_INVENTORY_OPERATION)
+		.add<int16_t>(1);
+	return builder;
 }
 
-auto DropsPacket::removeDrop(Drop *drop) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_DROP_PICKUP);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(drop->getId());
-	Maps::getMap(drop->getMap())->sendPacket(packet);
+PACKET_IMPL(removeDrop, int32_t dropId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_DROP_PICKUP)
+		.add<int8_t>(0)
+		.add<int32_t>(dropId);
+	return builder;
 }
 
-auto DropsPacket::explodeDrop(Drop *drop) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_DROP_PICKUP);
-	packet.add<int8_t>(4);
-	packet.add<int32_t>(drop->getId());
-	packet.add<int16_t>(655);
-	Maps::getMap(drop->getMap())->sendPacket(packet);
+PACKET_IMPL(explodeDrop, int32_t dropId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_DROP_PICKUP)
+		.add<int8_t>(4)
+		.add<int32_t>(dropId)
+		.add<int16_t>(655);
+	return builder;
 }
 
-auto DropsPacket::dropNotAvailableForPickup(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(-2);
-	player->getSession()->send(packet);
+PACKET_IMPL(dropNotAvailableForPickup) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(0)
+		.add<int8_t>(-2);
+	return builder;
 }
 
-auto DropsPacket::cantGetAnymoreItems(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(-1);
-	player->getSession()->send(packet);
+PACKET_IMPL(cantGetAnymoreItems) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(0)
+		.add<int8_t>(-1);
+	return builder;
 }
 
-auto DropsPacket::pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(0);
-	packet.add<bool>(isMesos);
-	packet.add<int32_t>(id);
+PACKET_IMPL(pickupDrop, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(0)
+		.add<bool>(isMesos)
+		.add<int32_t>(id);
 
 	if (isMesos) {
-		packet.add<int16_t>(cafeBonus);
+		builder.add<int16_t>(cafeBonus);
 	}
 	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory) {
-		packet.add<int16_t>(static_cast<int16_t>(amount));
+		builder.add<int16_t>(static_cast<int16_t>(amount));
 	}
 	if (!isMesos) {
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
+		builder
+			.add<int32_t>(0)
+			.add<int32_t>(0);
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto DropsPacket::pickupDropSpecial(Player *player, int32_t id) -> void {
-	// This packet is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(2);
-	packet.add<int32_t>(id);
-	player->getSession()->send(packet);
+PACKET_IMPL(pickupDropSpecial, int32_t id) {
+	PacketBuilder builder;
+	// This builder is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(0)
+		.add<int8_t>(2)
+		.add<int32_t>(id);
+	return builder;
+}
+
 }

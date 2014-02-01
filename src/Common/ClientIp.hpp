@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-class PacketCreator;
+class PacketBuilder;
 
 class ClientIp : public IPacketWritable {
 public:
 	explicit ClientIp(const Ip &ip);
 
-	auto write(PacketCreator &packet) const -> void override;
+	auto write(PacketBuilder &builder) const -> void override;
 protected:
 	ClientIp() : m_ip(0) { }
 

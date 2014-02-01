@@ -21,5 +21,5 @@ class Player;
 class PacketReader;
 
 namespace BuddyListHandler {
-	auto handleBuddyList(Player *player, PacketReader &packet) -> void;
+	auto handleBuddyList(Player *player, PacketReader &reader) -> void;
 }

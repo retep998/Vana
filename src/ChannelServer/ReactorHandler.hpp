@@ -24,8 +24,8 @@ class PacketReader;
 class Player;
 
 namespace ReactorHandler {
-	auto hitReactor(Player *player, PacketReader &packet) -> void;
-	auto touchReactor(Player *player, PacketReader &packet) -> void;
+	auto hitReactor(Player *player, PacketReader &reader) -> void;
+	auto touchReactor(Player *player, PacketReader &reader) -> void;
 	auto checkDrop(Player *player, Drop *drop) -> void;
 	auto checkLoot(Drop *drop) -> void;
 }

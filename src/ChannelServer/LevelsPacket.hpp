@@ -17,13 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
 
 namespace LevelsPacket {
-	auto showExp(Player *player, int32_t exp, bool white, bool inChat) -> void;
-	auto levelUp(Player *player) -> void;
-	auto jobChange(Player *player) -> void;
-	auto statOk(Player *player) -> void;
+	PACKET(showExp, int32_t exp, bool white, bool inChat);
+	SPLIT_PACKET(levelUp, int32_t playerId);
+	SPLIT_PACKET(jobChange, int32_t playerId);
+	PACKET(statOk);
 }

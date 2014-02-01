@@ -51,20 +51,23 @@ auto Drop::getAmount() -> int16_t {
 
 auto Drop::doDrop(const Pos &origin) -> void {
 	setDroppedAtTime(TimeUtilities::getNow());
-	Maps::getMap(m_mapId)->addDrop(this);
+	Map *map = getMap();
+	map->addDrop(this);
 
 	if (!isQuest()) {
 		if (!isTradeable()) {
-			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DisappearDuringDrop, false, origin);
+			map->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DisappearDuringDrop, origin));
 			this->removeDrop(false);
 		}
 		else {
-			DropsPacket::showDrop(nullptr, this, DropsPacket::DropTypes::DropAnimation, true, origin);
+			map->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DropAnimation, origin));
+			map->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));
 		}
 	}
 	else if (Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId)) {
 		if (player->getMapId() == m_mapId) {
-			DropsPacket::showDrop(player, this, DropsPacket::DropTypes::DropAnimation, true, origin);
+			player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DropAnimation, origin));
+			player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));
 		}
 	}
 }
@@ -73,13 +76,21 @@ auto Drop::showDrop(Player *player) -> void {
 	if (isQuest() && player->getId() != m_playerId) {
 		return;
 	}
-	DropsPacket::showDrop(player, this, DropsPacket::DropTypes::ShowExisting, false, Pos());
+	player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowExisting, Pos()));
 }
 
 auto Drop::takeDrop(Player *player, int64_t petId) -> void {
-	Maps::getMap(m_mapId)->removeDrop(m_id);
+	Map *map = getMap();
+	map->removeDrop(m_id);
+
 	if (petId == 0) {
-		DropsPacket::takeDrop(player, this);
+		auto &packet = DropsPacket::takeDrop(player->getId(), getId());
+		if (isQuest()) {
+			map->send(packet);
+		}
+		else {
+			player->send(packet);
+		}
 	}
 	else {
 		Pet *pet = player->getPets()->getPet(petId);
@@ -87,15 +98,28 @@ auto Drop::takeDrop(Player *player, int64_t petId) -> void {
 			// nullptr = definitely hacking. Otherwise may be lag.
 			return;
 		}
-		DropsPacket::takeDrop(player, this, pet->getIndex().get());
+
+		auto &packet = DropsPacket::takeDrop(player->getId(), getId(), pet->getIndex().get());
+		if (isQuest()) {
+			map->send(packet);
+		}
+		else {
+			player->send(packet);
+		}
+
 	}
 	delete this;
 }
 
 auto Drop::removeDrop(bool showPacket) -> void {
-	Maps::getMap(m_mapId)->removeDrop(m_id);
+	Map *map = getMap();
+	map->removeDrop(m_id);
 	if (showPacket) {
-		DropsPacket::removeDrop(this);
+		map->send(DropsPacket::removeDrop(getId()));
 	}
 	delete this;
+}
+
+auto Drop::getMap() const -> Map * {
+	return Maps::getMap(m_mapId);
 }

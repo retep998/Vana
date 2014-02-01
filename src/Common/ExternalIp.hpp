@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 
 class ExternalIp : public Ip {
@@ -32,8 +32,8 @@ public:
 	ExternalIp(uint32_t ipv4, uint32_t ipv4SubnetMask);
 
 	auto tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool;
-	auto write(PacketCreator &packet) const -> void override;
-	auto read(PacketReader &packet) -> void override;
+	auto write(PacketBuilder &builder) const -> void override;
+	auto read(PacketReader &reader) -> void override;
 private:
 	friend class PacketReader;
 	ExternalIp() : Ip() { }

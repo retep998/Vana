@@ -50,11 +50,11 @@ auto LuaExports::instantWarp(lua_State *luaVm) -> int {
 	Player *player = getPlayer(luaVm);
 	string_t portal = lua_tostring(luaVm, 1);
 	int8_t portalId = player->getMap()->getPortal(portal)->id;
-	MapPacket::instantWarp(player, portalId);
+	player->send(MapPacket::instantWarp(portalId));
 	return 0;
 }
 
 auto LuaExports::playPortalSe(lua_State *luaVm) -> int {
-	EffectPacket::playPortalSoundEffect(getPlayer(luaVm));
+	getPlayer(luaVm)->send(EffectPacket::playPortalSoundEffect());
 	return 0;
 }

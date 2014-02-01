@@ -121,7 +121,6 @@
     <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp" />
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp" />
     <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp" />
-    <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\WorldServer\Channel.hpp" />
@@ -137,7 +136,6 @@
     <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp" />
     <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp" />
     <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp" />
-    <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common.vcxproj">

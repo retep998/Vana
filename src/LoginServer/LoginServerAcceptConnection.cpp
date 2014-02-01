@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.hpp"
 #include "LoginServerAcceptHandler.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "RankingCalculator.hpp"
 #include "Session.hpp"
 #include "StringUtilities.hpp"
@@ -37,18 +38,26 @@ LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	}
 }
 
-auto LoginServerAcceptConnection::handleRequest(PacketReader &packet) -> void {
-	if (processAuth(LoginServer::getInstance(), packet) == Result::Failure) {
+auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
+	if (processAuth(LoginServer::getInstance(), reader) == Result::Failure) {
 		return;
 	}
-	switch (packet.getHeader()) {
-		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, packet); break;
-		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, packet); break;
-		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, packet); break;
+	switch (reader.getHeader()) {
+		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, reader); break;
+		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, reader); break;
+		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, reader); break;
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
-		case IMSG_TO_ALL_WORLDS: LoginServerAcceptHandler::sendPacketToAllWorlds(this, packet); break;
-		case IMSG_TO_WORLD_LIST: LoginServerAcceptHandler::sendPacketToWorldList(this, packet); break;
-		case IMSG_TO_WORLD: LoginServerAcceptHandler::sendPacketToWorld(this, packet); break;
+		case IMSG_TO_WORLD: {
+			world_id_t worldId = reader.get<world_id_t>();
+			Worlds::getInstance().send(worldId, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_WORLD_LIST: {
+			vector_t<world_id_t> worlds = reader.getVector<world_id_t>();
+			Worlds::getInstance().send(worlds, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_ALL_WORLDS: Worlds::getInstance().send(Packets::identity(reader)); break;
 		case IMSG_REHASH_CONFIG: LoginServer::getInstance().rehashConfig(); break;
 	}
 }
@@ -57,6 +66,6 @@ auto LoginServerAcceptConnection::authenticated(ServerType type) -> void {
 	switch (type) {
 		case ServerType::World: Worlds::getInstance().addWorldServer(this); break;
 		case ServerType::Channel: Worlds::getInstance().addChannelServer(this); break;
-		default: getSession()->disconnect();
+		default: disconnect();
 	}
 }

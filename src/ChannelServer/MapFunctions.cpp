@@ -29,16 +29,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto MapFunctions::eventInstruction(Player *player, const string_t &args) -> bool {
-	MapPacket::showEventInstructions(player->getMapId());
+	player->sendMap(MapPacket::showEventInstructions());
 	return true;
 }
 
 auto MapFunctions::instruction(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
-		Map *map = player->getMap();
-		for (size_t i = 0; i < map->getNumPlayers(); i++) {
-			PlayerPacket::instructionBubble(map->getPlayer(i), args);
-		}
+		player->sendMap(PlayerPacket::instructionBubble(args));
 		ChatHandlerFunctions::showInfo(player, "Showing instruction bubble to everyone on the map");
 		return true;
 	}

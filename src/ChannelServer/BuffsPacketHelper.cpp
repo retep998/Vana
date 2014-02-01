@@ -16,10 +16,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "BuffsPacketHelper.hpp"
-#include "PacketCreator.hpp"
 
-auto BuffsPacketHelper::addBytes(PacketCreator &packet, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes) -> void {
+namespace BuffsPacketHelper {
+	
+PACKET_IMPL(addBytes, const array_t<uint8_t, BuffBytes::ByteQuantity> &bytes) {
+	PacketBuilder builder;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; i++) {
-		packet.add<uint8_t>(bytes[i]);
+		builder.add<uint8_t>(bytes[i]);
 	}
+	return builder;
+}
+
 }

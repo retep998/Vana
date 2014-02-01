@@ -17,110 +17,136 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradesPacket.hpp"
 #include "Inventory.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerPacketHelper.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto TradesPacket::sendOpenTrade(Player *player, Player *player1, Player *player2) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x05);
-	packet.add<int8_t>(0x03);
-	packet.add<int8_t>(0x02);
-	packet.add<int16_t>(((player1 != nullptr && player2 != nullptr) ? 1 : 0));
+namespace TradesPacket {
+
+PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x05)
+		.add<int8_t>(0x03)
+		.add<int8_t>(0x02)
+		.add<int16_t>((player1 != nullptr && player2 != nullptr) ? 1 : 0);
+
 	if (player2 != nullptr) {
-		PlayerPacketHelper::addPlayerDisplay(packet, player2);
-		packet.addString(player2->getName());
-		packet.add<int8_t>(1); // Location in the window
+		builder
+			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player2))
+			.addString(player2->getName())
+			.add<int8_t>(1); // Location in the window
 	}
 	if (player1 != nullptr) {
-		PlayerPacketHelper::addPlayerDisplay(packet, player1);
-		packet.addString(player1->getName());
-		packet.add<int8_t>(-1); // Location in the window
+		builder
+			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player1))
+			.addString(player1->getName())
+			.add<int8_t>(-1); // Location in the window
 	}
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto TradesPacket::sendTradeRequest(Player *player, Player *receiver, int32_t tradeId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x02);
-	packet.add<int8_t>(0x03);
-	packet.addString(player->getName());
-	packet.add<int32_t>(tradeId);
-	receiver->getSession()->send(packet);
+PACKET_IMPL(sendTradeRequest, const string_t &name, int32_t tradeId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x02)
+		.add<int8_t>(0x03)
+		.addString(name)
+		.add<int32_t>(tradeId);
+	return builder;
 }
 
-auto TradesPacket::sendTradeMessage(Player *player, Player *receiver, int8_t type, int8_t message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(type);
-	packet.add<int8_t>(message);
-	packet.addString(player->getName());
-	receiver->getSession()->send(packet);
+PACKET_IMPL(sendTradeMessage, const string_t &name, int8_t type, int8_t message) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(type)
+		.add<int8_t>(message)
+		.addString(name);
+	return builder;
 }
 
-auto TradesPacket::sendTradeMessage(Player *receiver, int8_t type, int8_t message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(type);
-	packet.add<int8_t>(0x00);
-	packet.add<int8_t>(message);
-	receiver->getSession()->send(packet);
+PACKET_IMPL(sendEndTrade, int8_t message) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(TradesPacket::MessageTypes::EndTrade)
+		.add<int8_t>(0x00)
+		.add<int8_t>(message);
+	return builder;
 }
 
-auto TradesPacket::sendTradeChat(Player *player, bool blue, const string_t &chat) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x06);
-	packet.add<int8_t>(0x08);
-	packet.add<bool>(blue);
-	packet.addString(chat);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendTradeEntryMessage, int8_t message) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(TradesPacket::MessageTypes::ShopEntryMessages)
+		.add<int8_t>(0x00)
+		.add<int8_t>(message);
+	return builder;
 }
 
-auto TradesPacket::sendAddUser(Player *original, Player *newb, int8_t slot) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x04);
-	packet.add<int8_t>(slot);
-	PlayerPacketHelper::addPlayerDisplay(packet, newb);
-	packet.addString(newb->getName());
-	original->getSession()->send(packet);
+PACKET_IMPL(sendTradeChat, bool blue, const string_t &chat) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x06)
+		.add<int8_t>(0x08)
+		.add<bool>(blue)
+		.addString(chat);
+	return builder;
 }
 
-auto TradesPacket::sendLeaveTrade(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x0A);
-	packet.add<int8_t>(0x01); // Slot, doesn't matter for trades
-	packet.add<int8_t>(0x02); // Message, doesn't matter for trades
-	player->getSession()->send(packet);
+PACKET_IMPL(sendAddUser, Player *newPlayer, int8_t slot) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x04)
+		.add<int8_t>(slot)
+		.addBuffer(PlayerPacketHelper::addPlayerDisplay(newPlayer))
+		.addString(newPlayer->getName());
+	return builder;
 }
 
-auto TradesPacket::sendAddMesos(Player *receiver, uint8_t slot, int32_t amount) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x0F);
-	packet.add<int8_t>(slot);
-	packet.add<int32_t>(amount);
-	receiver->getSession()->send(packet);
+PACKET_IMPL(sendLeaveTrade) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x0A)
+		.add<int8_t>(0x01) // Slot, doesn't matter for trades
+		.add<int8_t>(0x02); // Message, doesn't matter for trades
+	return builder;
 }
 
-auto TradesPacket::sendAccepted(Player *destination) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x10);
-	destination->getSession()->send(packet);
+PACKET_IMPL(sendAddMesos, uint8_t slot, int32_t amount) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x0F)
+		.add<int8_t>(slot)
+		.add<int32_t>(amount);
+	return builder;
 }
 
-auto TradesPacket::sendAddItem(Player *destination, uint8_t player, uint8_t slot, Item *item) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_ROOM);
-	packet.add<int8_t>(0x0E);
-	packet.add<int8_t>(player);
-	PlayerPacketHelper::addItemInfo(packet, slot, item);
-	destination->getSession()->send(packet);
+PACKET_IMPL(sendAccepted) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x10);
+	return builder;
+}
+
+PACKET_IMPL(sendAddItem, uint8_t player, uint8_t slot, Item *item) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_ROOM)
+		.add<int8_t>(0x0E)
+		.add<int8_t>(player)
+		.addBuffer(PlayerPacketHelper::addItemInfo(slot, item));
+	return builder;
+}
+
 }

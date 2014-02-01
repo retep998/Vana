@@ -35,10 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <sstream>
 
-auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
-	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
+auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
+	uint32_t id = Map::makeReactorId(reader.get<uint32_t>());
 
-	Reactor *reactor = player->getMap()->getReactor(id);
+	Map *map = player->getMap();
+	Reactor *reactor = map->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
 		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
@@ -48,7 +49,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
 				if (reactorEvent.type == 100) {
 					return;
 				}
-				ReactorPacket::triggerReactor(reactor);
+				map->send(ReactorPacket::triggerReactor(reactor));
 				reactor->setState(reactorEvent.nextState, true);
 				return;
 			}
@@ -65,22 +66,23 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &packet) -> void {
 
 				reactor->setState(reactorEvent.nextState, false);
 				reactor->kill();
-				Maps::getMap(reactor->getMapId())->removeReactor(id);
-				ReactorPacket::destroyReactor(reactor);
+				map->removeReactor(id);
+				map->send(ReactorPacket::destroyReactor(reactor));
 			}
 		}
 	}
 }
 
-auto ReactorHandler::touchReactor(Player *player, PacketReader &packet) -> void {
-	uint32_t id = Map::makeReactorId(packet.get<uint32_t>());
-	bool isTouching = packet.get<bool>();
+auto ReactorHandler::touchReactor(Player *player, PacketReader &reader) -> void {
+	uint32_t id = Map::makeReactorId(reader.get<uint32_t>());
+	bool isTouching = reader.get<bool>();
 
-	Reactor *reactor = player->getMap()->getReactor(id);
+	Map *map = player->getMap();
+	Reactor *reactor = map->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
 		int8_t newState = reactor->getState() + (isTouching ? 1 : -1);
-		ReactorPacket::triggerReactor(reactor);
+		map->send(ReactorPacket::triggerReactor(reactor));
 		reactor->setState(newState, true);
 	}
 }
@@ -89,7 +91,7 @@ struct Reaction {
 	auto operator()(const time_point_t &now) -> void {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		const string_t &filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+		string_t filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
 	}
 
@@ -101,7 +103,7 @@ struct Reaction {
 
 auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 	Reactor *reactor;
-	Map *map = Maps::getMap(drop->getMap());
+	Map *map = drop->getMap();
 	for (size_t i = 0; i < map->getNumReactors(); ++i) {
 		reactor = map->getReactor(i);
 		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);

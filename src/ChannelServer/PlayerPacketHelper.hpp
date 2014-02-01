@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
 class Item;
-class PacketCreator;
 class Player;
 
 namespace PlayerPacketHelper {
-	auto addItemInfo(PacketCreator &packet, int16_t slot, Item *item, bool shortSlot = false) -> void;
-	auto addPlayerDisplay(PacketCreator &packet, Player *player) -> void;
+	PACKET(addItemInfo, int16_t slot, Item *item, bool shortSlot = false);
+	PACKET(addPlayerDisplay, Player *player);
 }

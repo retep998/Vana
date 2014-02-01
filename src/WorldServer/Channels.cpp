@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Channels.hpp"
 #include "Channel.hpp"
 #include "LoginServerConnectPacket.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "Session.hpp"
 #include "WorldServer.hpp"
 #include "WorldServerAcceptConnection.hpp"
@@ -41,30 +41,30 @@ auto Channels::getChannel(channel_id_t num) -> Channel * {
 	return kvp != std::end(m_channels) ? kvp->second.get() : nullptr;
 }
 
-auto Channels::sendToChannel(channel_id_t channelId, const PacketCreator &packet) -> void {
+auto Channels::send(channel_id_t channelId, const PacketBuilder &builder) -> void {
 	if (Channel *channel = getChannel(channelId)) {
-		channel->send(packet);	
+		channel->send(builder);
 	}
 }
 
-auto Channels::sendToList(const vector_t<channel_id_t> &channels, const PacketCreator &packet) -> void {
+auto Channels::send(const vector_t<channel_id_t> &channels, const PacketBuilder &builder) -> void {
 	for (const auto &channelId : channels) {
-		sendToChannel(channelId, packet);
+		send(channelId, builder);
 	}
 }
 
-auto Channels::sendToAll(const PacketCreator &packet) -> void {
+auto Channels::send(const PacketBuilder &builder) -> void {
 	for (const auto &kvp : m_channels) {
-		sendToChannel(kvp.first, packet);
+		send(kvp.first, builder);
 	}
 }
 
 auto Channels::increasePopulation(channel_id_t channel) -> void {
-	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers());
+	WorldServer::getInstance().sendLogin(LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->increasePlayers()));
 }
 
 auto Channels::decreasePopulation(channel_id_t channel) -> void {
-	LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers());
+	WorldServer::getInstance().sendLogin(LoginServerConnectPacket::updateChannelPop(channel, getChannel(channel)->decreasePlayers()));
 }
 
 auto Channels::size() -> channel_id_t {

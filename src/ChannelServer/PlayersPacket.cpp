@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "InterHeader.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "Pet.hpp"
 #include "Player.hpp"
@@ -29,152 +28,134 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto PlayersPacket::showMoving(Player *player, unsigned char *buf, size_t size) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_MOVEMENT);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(0);
-	packet.addBuffer(buf, size);
-	player->getMap()->sendPacket(packet, player);
+namespace PlayersPacket {
+
+SPLIT_PACKET_IMPL(showMoving, int32_t playerId, unsigned char *buf, size_t size) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_PLAYER_MOVEMENT)
+		.add<int32_t>(playerId)
+		.add<int32_t>(0)
+		.addBuffer(buf, size);
+	return builder;
 }
 
-auto PlayersPacket::faceExpression(Player *player, int32_t face) -> void {
-	if (player->isUsingGmHide())
-		return;
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_EMOTE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(face);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(faceExpression, int32_t playerId, int32_t face) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_EMOTE)
+		.add<int32_t>(playerId)
+		.add<int32_t>(face);
+	return builder;
 }
 
-auto PlayersPacket::showChat(Player *player, const string_t &msg, bool bubbleOnly) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_CHAT);
-	packet.add<int32_t>(player->getId());
-	packet.add<bool>(player->isGm());
-	packet.addString(msg);
-	packet.add<bool>(bubbleOnly);
-	player->getMap()->sendPacket(packet);
+PACKET_IMPL(showChat, int32_t playerId, bool isGm, const string_t &msg, bool bubbleOnly) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_CHAT)
+		.add<int32_t>(playerId)
+		.add<bool>(isGm)
+		.addString(msg)
+		.add<bool>(bubbleOnly);
+	return builder;
 }
 
-auto PlayersPacket::damagePlayer(Player *player, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
+SPLIT_PACKET_IMPL(damagePlayer, int32_t playerId, int32_t dmg, int32_t mob, uint8_t hit, int8_t type, uint8_t stance, int32_t noDamageSkill, const ReturnDamageInfo &pgmr) {
+	SplitPacketBuilder builder;
 	const int8_t BumpDamage = -1;
 	const int8_t MapDamage = -2;
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_DAMAGE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(type);
+	builder.map
+		.add<header_t>(SMSG_PLAYER_DAMAGE)
+		.add<int32_t>(playerId)
+		.add<int8_t>(type);
 	switch (type) {
 		case MapDamage:
-			packet.add<int32_t>(dmg);
-			packet.add<int32_t>(dmg);
+			builder.map
+				.add<int32_t>(dmg)
+				.add<int32_t>(dmg);
 			break;
 		default:
-			packet.add<int32_t>(pgmr.reduction > 0 ? pgmr.damage : dmg);
-			packet.add<int32_t>(mob);
-			packet.add<int8_t>(hit);
-			packet.add<int8_t>(pgmr.reduction);
+			builder.map
+				.add<int32_t>(pgmr.reduction > 0 ? pgmr.damage : dmg)
+				.add<int32_t>(mob)
+				.add<int8_t>(hit)
+				.add<int8_t>(pgmr.reduction);
+
 			if (pgmr.reduction > 0) {
-				packet.add<bool>(pgmr.isPhysical); // Maybe? No Mana Reflection on global to test with
-				packet.add<int32_t>(pgmr.mapMobId);
-				packet.add<int8_t>(6);
-				packet.addClass<Pos>(pgmr.pos);
+				builder.map
+					.add<bool>(pgmr.isPhysical) // Maybe? No Mana Reflection on global to test with
+					.add<int32_t>(pgmr.mapMobId)
+					.add<int8_t>(6)
+					.addClass<Pos>(pgmr.pos);
 			}
-			packet.add<int8_t>(stance);
-			packet.add<int32_t>(dmg);
+
+			builder.map
+				.add<int8_t>(stance)
+				.add<int32_t>(dmg);
+
 			if (noDamageSkill > 0) {
-				packet.add<int32_t>(noDamageSkill);
+				builder.map.add<int32_t>(noDamageSkill);
 			}
 			break;
 	}
-	player->getMap()->sendPacket(packet);
+	return builder;
 }
 
-auto PlayersPacket::showInfo(Player *player, Player *getInfo, bool isSelf) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_INFO);
-	packet.add<int32_t>(getInfo->getId());
-	packet.add<int8_t>(getInfo->getStats()->getLevel());
-	packet.add<int16_t>(getInfo->getStats()->getJob());
-	packet.add<int16_t>(getInfo->getStats()->getFame());
-	packet.add<bool>(false); // Married
-	packet.addString("-"); // Guild
-	packet.addString(""); // Guild Alliance
-	packet.add<bool>(isSelf); // Is 1 when the character is clicking themselves
+PACKET_IMPL(showInfo, Player *getInfo, bool isSelf) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_INFO)
+		.add<int32_t>(getInfo->getId())
+		.add<int8_t>(getInfo->getStats()->getLevel())
+		.add<int16_t>(getInfo->getStats()->getJob())
+		.add<int16_t>(getInfo->getStats()->getFame())
+		.add<bool>(false) // Married
+		.addString("-") // Guild
+		.addString("") // Guild Alliance
+		.add<bool>(isSelf);
 
-	getInfo->getPets()->petInfoPacket(packet);
-	getInfo->getMounts()->mountInfoPacket(packet);
-	getInfo->getInventory()->wishListPacket(packet);
-	getInfo->getMonsterBook()->infoData(packet);
-
-	player->getSession()->send(packet);
+	getInfo->getPets()->petInfoPacket(builder);
+	getInfo->getMounts()->mountInfoPacket(builder);
+	getInfo->getInventory()->wishListPacket(builder);
+	getInfo->getMonsterBook()->infoData(builder);
+	return builder;
 }
 
-auto PlayersPacket::whisperPlayer(Player *target, const string_t &whispererName, channel_id_t channel, const string_t &message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_COMMAND);
-	packet.add<int8_t>(0x12);
-	packet.addString(whispererName);
-	packet.add<int16_t>(channel);
-	packet.addString(message);
-	target->getSession()->send(packet);
+PACKET_IMPL(whisperPlayer, const string_t &whispererName, channel_id_t channel, const string_t &message) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_COMMAND)
+		.add<int8_t>(0x12)
+		.addString(whispererName)
+		.add<int16_t>(channel)
+		.addString(message);
+	return builder;
 }
 
-auto PlayersPacket::whisperPlayer(int32_t playerId, const string_t &whispererName, channel_id_t sourceChannel, channel_id_t destinationChannel, const string_t &message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_CHANNEL);
-	packet.add<channel_id_t>(destinationChannel);
-	packet.add<header_t>(IMSG_TO_PLAYER);
-	packet.add<int32_t>(playerId);
-	packet.add<header_t>(SMSG_COMMAND);
-	packet.add<int8_t>(0x12);
-	packet.addString(whispererName);
-	packet.add<int16_t>(sourceChannel);
-	packet.addString(message);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto PlayersPacket::findPlayer(Player *player, const string_t &name, int32_t map, uint8_t is, bool isChannel) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_COMMAND);
+PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isChannel) {
+	PacketBuilder builder;
+	builder.add<header_t>(SMSG_COMMAND);
 	if (map != -1) {
-		packet.add<int8_t>(0x09);
-		packet.addString(name);
-		packet.add<int8_t>(isChannel ? 0x03 : 0x01);
-		packet.add<int32_t>(map);
-		packet.add<int32_t>(0);
-		packet.add<int32_t>(0);
+		builder
+			.add<int8_t>(0x09)
+			.addString(name)
+			.add<int8_t>(isChannel ? 0x03 : 0x01)
+			.add<int32_t>(map)
+			.add<int32_t>(0)
+			.add<int32_t>(0);
 	}
 	else {
-		packet.add<int8_t>(0x0A);
-		packet.addString(name);
-		packet.add<int8_t>(is);
+		builder
+			.add<int8_t>(0x0A)
+			.addString(name)
+			.add<int8_t>(is);
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto PlayersPacket::sendToAllPlayers(unsigned char *data, int32_t len) -> void {
-	PacketCreator packet;
-	packet.addBuffer(data, len);
-	PlayerDataProvider::getInstance().sendPacket(packet);
-}
-
-auto PlayersPacket::sendToPlayerList(const vector_t<int32_t> &playerIds, unsigned char *data, int32_t len) -> void {
-	PacketCreator packet;
-	packet.addBuffer(data, len);
-	PlayerDataProvider::getInstance().sendPacketToList(playerIds, packet);
-}
-
-auto PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) -> void {
+SPLIT_PACKET_IMPL(useMeleeAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+	SplitPacketBuilder builder;
 	int8_t hitByte = (attack.targets * 0x10) + attack.hits;
 	int32_t skillId = attack.skillId;
 	bool isMesoExplosion = attack.isMesoExplosion;
@@ -182,62 +163,66 @@ auto PlayersPacket::useMeleeAttack(Player *player, const Attack &attack) -> void
 		hitByte = (attack.targets * 0x10) + 0x0A;
 	}
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ATTACK_MELEE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(hitByte);
-	packet.add<uint8_t>(attack.skillLevel);
+	builder.map
+		.add<header_t>(SMSG_ATTACK_MELEE)
+		.add<int32_t>(playerId)
+		.add<int8_t>(hitByte)
+		.add<uint8_t>(attack.skillLevel);
+
 	if (skillId != Skills::All::RegularAttack) {
-		packet.add<int32_t>(skillId);
+		builder.map.add<int32_t>(skillId);
 	}
 
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-
-	int32_t masteryId = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
-	packet.add<int32_t>(0);
+	builder.map
+		.add<uint8_t>(attack.display)
+		.add<uint8_t>(attack.animation)
+		.add<uint8_t>(attack.weaponSpeed)
+		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		.add<int32_t>(0);
 
 	for (const auto &target : attack.damages) {
-		packet.add<int32_t>(target.first);
-		packet.add<int8_t>(0x06);
+		builder.map
+			.add<int32_t>(target.first)
+			.add<int8_t>(0x06);
+
 		if (isMesoExplosion) {
-			packet.add<uint8_t>(target.second.size());
+			builder.map.add<uint8_t>(target.second.size());
 		}
 		for (const auto &hit : target.second) {
-			packet.add<int32_t>(hit);
+			builder.map.add<int32_t>(hit);
 		}
 	}
-	player->getMap()->sendPacket(packet, player);
+	return builder;
 }
 
-auto PlayersPacket::useRangedAttack(Player *player, const Attack &attack) -> void {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
+SPLIT_PACKET_IMPL(useRangedAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+	SplitPacketBuilder builder;
 	int32_t skillId = attack.skillId;
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ATTACK_RANGED);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<uint8_t>(attack.skillLevel);
+	builder.map
+		.add<header_t>(SMSG_ATTACK_RANGED)
+		.add<int32_t>(playerId)
+		.add<int8_t>((attack.targets * 0x10) + attack.hits)
+		.add<uint8_t>(attack.skillLevel);
+
 	if (skillId != Skills::All::RegularAttack) {
-		packet.add<int32_t>(skillId);
+		builder.map.add<int32_t>(skillId);
 	}
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
 
-	int32_t masteryId = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
-	// Bug in global:
-	// The colored swoosh does not display as it should
-
-	packet.add<int32_t>(attack.starId);
+	builder.map
+		.add<uint8_t>(attack.display)
+		.add<uint8_t>(attack.animation)
+		.add<uint8_t>(attack.weaponSpeed)
+		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		// Bug in global:
+		// The colored swoosh does not display as it should
+		.add<int32_t>(attack.starId);
 
 	for (const auto &target : attack.damages) {
-		packet.add<int32_t>(target.first);
-		packet.add<int8_t>(0x06);
+		builder.map
+			.add<int32_t>(target.first)
+			.add<int8_t>(0x06);
+
 		for (const auto &hit : target.second) {
 			int32_t damage = hit;
 			switch (skillId) {
@@ -247,90 +232,87 @@ auto PlayersPacket::useRangedAttack(Player *player, const Attack &attack) -> voi
 				default:
 					break;
 			}
-			packet.add<int32_t>(damage);
+			builder.map.add<int32_t>(damage);
 		}
 	}
-	packet.addClass<Pos>(attack.projectilePos);
-
-	player->getMap()->sendPacket(packet, player);
+	builder.map.addClass<Pos>(attack.projectilePos);
+	return builder;
 }
 
-auto PlayersPacket::useSpellAttack(Player *player, const Attack &attack) -> void {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ATTACK_MAGIC);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<uint8_t>(attack.skillLevel);
-	packet.add<int32_t>(skillId);
-
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-	packet.add<uint8_t>(0); // Mastery byte is always 0 because spells don't have a swoosh
-
-	packet.add<int32_t>(0); // No clue
+SPLIT_PACKET_IMPL(useSpellAttack, int32_t playerId, const Attack &attack) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_ATTACK_MAGIC)
+		.add<int32_t>(playerId)
+		.add<int8_t>((attack.targets * 0x10) + attack.hits)
+		.add<uint8_t>(attack.skillLevel)
+		.add<int32_t>(attack.skillId)
+		.add<uint8_t>(attack.display)
+		.add<uint8_t>(attack.animation)
+		.add<uint8_t>(attack.weaponSpeed)
+		.add<uint8_t>(0) // Mastery byte is always 0 because spells don't have a swoosh
+		.add<int32_t>(0); // No clue
 
 	for (const auto &target : attack.damages) {
-		packet.add<int32_t>(target.first);
-		packet.add<int8_t>(0x06);
+		builder.map
+			.add<int32_t>(target.first)
+			.add<int8_t>(0x06);
+
 		for (const auto &hit : target.second) {
-			packet.add<int32_t>(hit);
+			builder.map.add<int32_t>(hit);
 		}
 	}
 
 	if (attack.charge > 0) {
-		packet.add<int32_t>(attack.charge);
+		builder.map.add<int32_t>(attack.charge);
 	}
-	player->getMap()->sendPacket(packet, player);
+	return builder;
 }
 
-auto PlayersPacket::useSummonAttack(Player *player, const Attack &attack) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SUMMON_ATTACK);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(attack.summonId);
-	packet.add<int8_t>(attack.animation);
-	packet.add<int8_t>(attack.targets);
+SPLIT_PACKET_IMPL(useSummonAttack, int32_t playerId, const Attack &attack) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_SUMMON_ATTACK)
+		.add<int32_t>(playerId)
+		.add<int32_t>(attack.summonId)
+		.add<int8_t>(attack.animation)
+		.add<int8_t>(attack.targets);
 	for (const auto &target : attack.damages) {
-		packet.add<int32_t>(target.first);
-		packet.add<int8_t>(0x06);
+		builder.map
+			.add<int32_t>(target.first)
+			.add<int8_t>(0x06);
+
 		for (const auto &hit : target.second) {
-			packet.add<int32_t>(hit);
+			builder.map.add<int32_t>(hit);
 		}
 	}
-	player->getMap()->sendPacket(packet, player);
+	return builder;
 }
 
-auto PlayersPacket::useEnergyChargeAttack(Player *player, const Attack &attack) -> void {
-	int8_t tbyte = (attack.targets * 0x10) + attack.hits;
-	int32_t skillId = attack.skillId;
-
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ATTACK_ENERGYCHARGE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(tbyte);
-	packet.add<int8_t>(attack.skillLevel);
-	packet.add<int32_t>(skillId);
-
-	packet.add<uint8_t>(attack.display);
-	packet.add<uint8_t>(attack.animation);
-	packet.add<uint8_t>(attack.weaponSpeed);
-
-	int32_t masteryId = player->getSkills()->getMastery();
-	packet.add<uint8_t>(masteryId > 0 ? GameLogicUtilities::getMasteryDisplay(player->getSkills()->getSkillLevel(masteryId)) : 0);
-
-	packet.add<int32_t>(0);
+SPLIT_PACKET_IMPL(useEnergyChargeAttack, int32_t playerId, int32_t masterySkillId, uint8_t masteryLevel, const Attack &attack) {
+	SplitPacketBuilder builder;
+	builder.map
+		.add<header_t>(SMSG_ATTACK_ENERGYCHARGE)
+		.add<int32_t>(playerId)
+		.add<int8_t>((attack.targets * 0x10) + attack.hits)
+		.add<int8_t>(attack.skillLevel)
+		.add<int32_t>(attack.skillId)
+		.add<uint8_t>(attack.display)
+		.add<uint8_t>(attack.animation)
+		.add<uint8_t>(attack.weaponSpeed)
+		.add<uint8_t>(masterySkillId > 0 ? GameLogicUtilities::getMasteryDisplay(masteryLevel) : 0)
+		.add<int32_t>(0);
 
 	for (const auto &target : attack.damages) {
-		packet.add<int32_t>(target.first);
-		packet.add<int8_t>(0x06);
+		builder.map
+			.add<int32_t>(target.first)
+			.add<int8_t>(0x06);
+
 		for (const auto &hit : target.second) {
-			packet.add<int32_t>(hit);
+			builder.map.add<int32_t>(hit);
 		}
 	}
+	return builder;
+}
 
-	player->getMap()->sendPacket(packet, player);
 }

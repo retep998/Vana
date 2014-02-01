@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerStatus.hpp"
 #include "Types.hpp"
 
+class PacketBuilder;
 class PacketReader;
 
 class Player : public AbstractConnection {
@@ -56,7 +57,7 @@ public:
 	auto addInvalidLogin() -> int32_t { return ++m_invalidLogins; }
 	auto setOnline(bool online) -> void;
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 private:
 	bool m_admin = false;
 	bool m_checkedPin = false;

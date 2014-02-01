@@ -18,44 +18,48 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginPacketHelper.hpp"
 #include "Characters.hpp"
 #include "ItemConstants.hpp"
-#include "PacketCreator.hpp"
 
-auto LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &charc) -> void {
-	packet.add<int32_t>(charc.id);
-	packet.addString(charc.name, 13);
-	packet.add<int8_t>(charc.gender);
-	packet.add<int8_t>(charc.skin);
-	packet.add<int32_t>(charc.eyes);
-	packet.add<int32_t>(charc.hair);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<uint8_t>(charc.level);
-	packet.add<int16_t>(charc.job);
-	packet.add<int16_t>(charc.str);
-	packet.add<int16_t>(charc.dex);
-	packet.add<int16_t>(charc.intt);
-	packet.add<int16_t>(charc.luk);
-	packet.add<int16_t>(charc.hp);
-	packet.add<int16_t>(charc.mhp);
-	packet.add<int16_t>(charc.mp);
-	packet.add<int16_t>(charc.mmp);
-	packet.add<int16_t>(charc.ap);
-	packet.add<int16_t>(charc.sp);
-	packet.add<int32_t>(charc.exp);
-	packet.add<int16_t>(charc.fame);
-	packet.add<int32_t>(0); // Unknown int32 added in .62
-	packet.add<int32_t>(charc.map);
-	packet.add<int8_t>(charc.pos);
-	packet.add<int32_t>(0); // Unknown int32 added in .62
-	packet.add<int8_t>(charc.gender);
-	packet.add<int8_t>(charc.skin);
-	packet.add<int32_t>(charc.eyes);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(charc.hair);
+namespace LoginPacketHelper {
+
+PACKET_IMPL(addCharacter, const Character &charc) {
+	PacketBuilder builder;
+	builder
+		.add<int32_t>(charc.id)
+		.addString(charc.name, 13)
+		.add<int8_t>(charc.gender)
+		.add<int8_t>(charc.skin)
+		.add<int32_t>(charc.eyes)
+		.add<int32_t>(charc.hair)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<uint8_t>(charc.level)
+		.add<int16_t>(charc.job)
+		.add<int16_t>(charc.str)
+		.add<int16_t>(charc.dex)
+		.add<int16_t>(charc.intt)
+		.add<int16_t>(charc.luk)
+		.add<int16_t>(charc.hp)
+		.add<int16_t>(charc.mhp)
+		.add<int16_t>(charc.mp)
+		.add<int16_t>(charc.mmp)
+		.add<int16_t>(charc.ap)
+		.add<int16_t>(charc.sp)
+		.add<int32_t>(charc.exp)
+		.add<int16_t>(charc.fame)
+		.add<int32_t>(0) // Unknown int32 added in .62
+		.add<int32_t>(charc.map)
+		.add<int8_t>(charc.pos)
+		.add<int32_t>(0) // Unknown int32 added in .62
+		.add<int8_t>(charc.gender)
+		.add<int8_t>(charc.skin)
+		.add<int32_t>(charc.eyes)
+		.add<int8_t>(1)
+		.add<int32_t>(charc.hair);
+
 	int32_t equips[Inventories::EquippedSlots][2] = {0};
 	for (const auto &equip : charc.equips) {
 		int16_t slot = -equip.slot;
@@ -78,33 +82,38 @@ auto LoginPacketHelper::addCharacter(PacketCreator &packet, const Character &cha
 	for (uint8_t i = 0; i < Inventories::EquippedSlots; i++) {
 		// Shown items
 		if (equips[i][0] > 0) {
-			packet.add<uint8_t>(i);
+			builder.add<uint8_t>(i);
 			if (i == EquipSlots::Weapon && equips[i][1] > 0) {
 				// Normal weapons always here
-				packet.add<int32_t>(equips[i][1]);
+				builder.add<int32_t>(equips[i][1]);
 			}
 			else {
-				packet.add<int32_t>(equips[i][0]);
+				builder.add<int32_t>(equips[i][0]);
 			}
 		}
 	}
-	packet.add<int8_t>(-1);
+	builder.add<int8_t>(-1);
 	for (uint8_t i = 0; i < Inventories::EquippedSlots; i++) {
 		// Covered items
 		if (equips[i][1] > 0 && i != EquipSlots::Weapon) {
-			packet.add<uint8_t>(i);
-			packet.add<int32_t>(equips[i][1]);
+			builder.add<uint8_t>(i);
+			builder.add<int32_t>(equips[i][1]);
 		}
 	}
-	packet.add<int8_t>(-1);
-	packet.add<int32_t>(equips[EquipSlots::Weapon][0]); // Cash weapon
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	// Rankings
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(charc.worldRank);
-	packet.add<int32_t>(charc.worldRankChange);
-	packet.add<int32_t>(charc.jobRank);
-	packet.add<int32_t>(charc.jobRankChange);
+
+	builder
+		.add<int8_t>(-1)
+		.add<int32_t>(equips[EquipSlots::Weapon][0]) // Cash weapon
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		// Rankings
+		.add<int8_t>(1)
+		.add<int32_t>(charc.worldRank)
+		.add<int32_t>(charc.worldRankChange)
+		.add<int32_t>(charc.jobRank)
+		.add<int32_t>(charc.jobRankChange);
+	return builder;
+}
+
 }

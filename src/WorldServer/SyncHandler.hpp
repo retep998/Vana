@@ -21,15 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class AbstractConnection;
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Player;
 
 namespace SyncHandler {
 	// Dispatch
-	auto handle(AbstractConnection *connection, PacketReader &packet) -> void;
+	auto handle(AbstractConnection *connection, PacketReader &reader) -> void;
 	// Config
-	auto handleConfigSync(PacketReader &packet) -> void;
-	auto handleSetRates(PacketReader &packet) -> void;
-	auto handleScrollingHeader(PacketReader &packet) -> void;
+	auto handleConfigSync(PacketReader &reader) -> void;
 }

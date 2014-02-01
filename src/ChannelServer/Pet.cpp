@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "ItemDataProvider.hpp"
+#include "Map.hpp"
 #include "PetsPacket.hpp"
 #include "Player.hpp"
 #include "TimeUtilities.hpp"
@@ -58,12 +59,12 @@ Pet::Pet(Player *player, Item *item, const soci::row &row) :
 
 auto Pet::levelUp() -> void {
 	m_level += 1;
-	PetsPacket::levelUp(m_player, this);
+	m_player->sendMap(PetsPacket::levelUp(m_player->getId(), this));
 }
 
 auto Pet::setName(const string_t &name) -> void {
 	m_name = name;
-	PetsPacket::changeName(m_player, this);
+	m_player->sendMap(PetsPacket::changeName(m_player->getId(), this));
 }
 
 auto Pet::addCloseness(int16_t amount) -> void {
@@ -74,7 +75,8 @@ auto Pet::addCloseness(int16_t amount) -> void {
 	while (m_closeness >= Stats::PetExp[m_level - 1] && m_level < Stats::PetLevels) {
 		levelUp();
 	}
-	PetsPacket::updatePet(m_player, this, m_item);
+
+	m_player->send(PetsPacket::updatePet(this, m_item));
 }
 
 auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
@@ -90,7 +92,7 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 	}
 
 	if (sendPacket) {
-		PetsPacket::updatePet(m_player, this, m_item);
+		m_player->send(PetsPacket::updatePet(this, m_item));
 	}
 }
 

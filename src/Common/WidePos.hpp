@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "Pos.hpp"
 #include "Types.hpp"
@@ -33,14 +33,14 @@ struct WidePos : public IPacketSerializable {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int32_t>(x);
-		packet.add<int32_t>(y);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int32_t>(x);
+		builder.add<int32_t>(y);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		x = packet.get<int32_t>();
-		y = packet.get<int32_t>();
+	auto read(PacketReader &reader) -> void override {
+		x = reader.get<int32_t>();
+		y = reader.get<int32_t>();
 	}
 
 	int32_t x = 0;

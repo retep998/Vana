@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
 
@@ -26,19 +27,19 @@ struct Pos;
 struct StatusInfo;
 
 namespace MobsPacket {
-	auto spawnMob(Player *player, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, bool spawn = false, bool show = false) -> void;
-	auto requestControl(Player *player, ref_ptr_t<Mob> mob, bool spawn = false, Player *display = nullptr) -> void;
-	auto endControlMob(Player *player, int32_t mapId, int32_t mapMobId) -> void;
-	auto moveMobResponse(Player *player, int32_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, uint8_t skill, uint8_t level) -> void;
-	auto moveMob(Player *player, int32_t mapMobId, bool skillPossible, int8_t rawAction, uint8_t skill, uint8_t level, int16_t option, unsigned char *buf, int32_t len) -> void;
-	auto healMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void;
-	auto hurtMob(int32_t mapId, int32_t mapMobId, int32_t amount) -> void;
-	auto damageFriendlyMob(ref_ptr_t<Mob> mob, int32_t damage) -> void;
-	auto applyStatus(int32_t mapId, int32_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection) -> void;
-	auto removeStatus(int32_t mapId, int32_t mapMobId, int32_t status) -> void;
-	auto showHp(Player *player, int32_t mapMobId, int8_t percentage) -> void;
-	auto showHp(int32_t mapId, int32_t mapMobId, int8_t percentage) -> void;
-	auto showBossHp(ref_ptr_t<Mob> mob) -> void; // For major bosses
-	auto dieMob(int32_t mapId, int32_t mapMobId, int8_t death = 1) -> void;
-	auto showSpawnEffect(int32_t mapId, int8_t summonEffect, const Pos &pos) -> void;
+	PACKET(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, bool spawn = false);
+	PACKET(requestControl, ref_ptr_t<Mob> mob, bool spawn);
+	PACKET(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, bool spawn);
+	PACKET(endControlMob, int32_t mapMobId);
+	PACKET(moveMobResponse, int32_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, uint8_t skill, uint8_t level);
+	PACKET(moveMob, int32_t mapMobId, bool skillPossible, int8_t rawAction, uint8_t skill, uint8_t level, int16_t option, unsigned char *buf, int32_t len);
+	PACKET(healMob, int32_t mapMobId, int32_t amount);
+	PACKET(hurtMob, int32_t mapMobId, int32_t amount);
+	PACKET(damageFriendlyMob, ref_ptr_t<Mob> mob, int32_t damage);
+	PACKET(applyStatus, int32_t mapMobId, int32_t statusMask, const vector_t<StatusInfo> &info, int16_t delay, const vector_t<int32_t> &reflection);
+	PACKET(removeStatus, int32_t mapMobId, int32_t status);
+	PACKET(showHp, int32_t mapMobId, int8_t percentage);
+	PACKET(showBossHp, ref_ptr_t<Mob> mob);
+	PACKET(dieMob, int32_t mapMobId, int8_t death = 1);
+	PACKET(showSpawnEffect, int8_t summonEffect, const Pos &pos);
 }

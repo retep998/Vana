@@ -19,43 +19,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "Configuration.hpp"
 #include "InterHeader.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 #include "WorldServerConnection.hpp"
 
-auto WorldServerConnectPacket::rankingCalculation() -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_TO_LOGIN);
-	sendPacket.add<header_t>(IMSG_CALCULATE_RANKING);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
+namespace WorldServerConnectPacket {
+
+PACKET_IMPL(rankingCalculation) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_TO_LOGIN)
+		.add<header_t>(IMSG_CALCULATE_RANKING);
+	return builder;
 }
 
-auto WorldServerConnectPacket::sendToChannels(PacketCreator &packet) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<int16_t>(IMSG_TO_ALL_CHANNELS);
-	sendPacket.addBuffer(packet);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
+PACKET_IMPL(reloadMcdb, const string_t &type) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(IMSG_TO_ALL_CHANNELS)
+		.add<header_t>(IMSG_REFRESH_DATA)
+		.addString(type);
+	return builder;
 }
 
-auto WorldServerConnectPacket::sendToWorlds(PacketCreator &packet) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<int16_t>(IMSG_TO_ALL_WORLDS);
-	sendPacket.addBuffer(packet);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
+PACKET_IMPL(rehashConfig) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_TO_LOGIN)
+		.add<header_t>(IMSG_REHASH_CONFIG);
+	return builder;
 }
 
-auto WorldServerConnectPacket::reloadMcdb(const string_t &type) -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_REFRESH_DATA);
-	sendPacket.addString(type);
-	sendToChannels(sendPacket);
-}
-
-auto WorldServerConnectPacket::rehashConfig() -> void {
-	PacketCreator sendPacket;
-	sendPacket.add<header_t>(IMSG_TO_LOGIN);
-	sendPacket.add<header_t>(IMSG_REHASH_CONFIG);
-	ChannelServer::getInstance().sendPacketToWorld(sendPacket);
 }

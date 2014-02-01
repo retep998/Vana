@@ -39,9 +39,6 @@
     <ClCompile Include="src\WorldServer\WorldServerAcceptConnection.cpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\WorldServerAcceptHandler.cpp">
-      <Filter>Inter-Server\Channel</Filter>
-    </ClCompile>
     <ClCompile Include="src\WorldServer\WorldServerAcceptPacket.cpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClCompile>
@@ -70,9 +67,6 @@
       <Filter>Inter-Server\Channel</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\WorldServerAcceptPacket.hpp">
-      <Filter>Inter-Server\Channel</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\WorldServerAcceptHandler.hpp">
       <Filter>Inter-Server\Channel</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\LoginServerConnectHandler.hpp">

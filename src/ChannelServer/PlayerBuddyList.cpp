@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "MiscUtilities.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
@@ -159,16 +158,16 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 
 		if (!sql.got_data()) {
 			if (invite) {
-				SyncPacket::BuddyPacket::buddyInvite(m_player->getId(), charId);
+				ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyInvite(m_player->getId(), charId));
 			}
 		}
 		else {
 			vector_t<int32_t> idVector;
 			idVector.push_back(charId);
-			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
+			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
 		}
 	}
-	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add);
+	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add));
 	return BuddyListPacket::Errors::None;
 }
 
@@ -188,7 +187,7 @@ auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 	if (m_buddies[charId]->channel != -1) {
 		vector_t<int32_t> idVector;
 		idVector.push_back(charId);
-		SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false);
+		ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false));
 	}
 
 	m_buddies.erase(charId);
@@ -199,7 +198,7 @@ auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 		soci::use(m_player->getId(), "char"),
 		soci::use(charId, "buddy");
 
-	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Remove);
+	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Remove));
 }
 
 auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void {
@@ -272,7 +271,7 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 	m_buddies[charId] = buddy;
 }
 
-auto PlayerBuddyList::addBuddies(PacketCreator &packet) -> void {
+auto PlayerBuddyList::addBuddies(PacketBuilder &packet) -> void {
 	for (const auto &kvp : m_buddies) {
 		const ref_ptr_t<Buddy> &buddy = kvp.second;
 		packet.add<int32_t>(buddy->charId);
@@ -300,7 +299,7 @@ auto PlayerBuddyList::checkForPendingBuddy() -> void {
 		return;
 	}
 
-	BuddyListPacket::invitation(m_player, m_pendingBuddies.front());
+	m_player->send(BuddyListPacket::invitation(m_pendingBuddies.front()));
 	m_sentRequest = true;
 }
 
@@ -324,12 +323,12 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 	if (accepted) {
 		int8_t error = addBuddy(invite.name, "Default Group", false);
 		if (error != BuddyListPacket::Errors::None) {
-			BuddyListPacket::error(m_player, error);
+			m_player->send(BuddyListPacket::error(error));
 		}
 		else {
 			vector_t<int32_t> idVector;
 			idVector.push_back(id);
-			SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true);
+			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
 		}
 
 		Database::getCharDb().once
@@ -339,7 +338,7 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 			soci::use(id, "buddy");
 	}
 
-	BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::First);
+	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::First));
 
 	m_pendingBuddies.pop_front();
 	m_sentRequest = false;

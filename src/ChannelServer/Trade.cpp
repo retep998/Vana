@@ -216,7 +216,7 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t t
 
 		vector_t<InventoryPacketOperation> ops;
 		ops.emplace_back(InventoryPacket::OperationTypes::ModifySlot, item, inventorySlot);
-		InventoryPacket::inventoryOperation(holder, true, ops);
+		holder->send(InventoryPacket::inventoryOperation(true, ops));
 
 		holder->getInventory()->deleteItem(inventory, inventorySlot);
 	}
@@ -226,11 +226,11 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t t
 
 		vector_t<InventoryPacketOperation> ops;
 		ops.emplace_back(InventoryPacket::OperationTypes::ModifyQuantity, item, inventorySlot);
-		InventoryPacket::inventoryOperation(holder, true, ops);
+		holder->send(InventoryPacket::inventoryOperation(true, ops));
 
 		use->setAmount(amount);
 	}
-	InventoryPacket::blankUpdate(holder); // Should prevent locking up in .70, don't know why it locks
+	holder->send(InventoryPacket::blankUpdate()); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;
 	uint8_t index = tradeSlot - 1;
 	unit->items[index] = use;

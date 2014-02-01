@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "QuestsPacket.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Quests.hpp"
 #include "Session.hpp"
@@ -25,119 +24,141 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-auto QuestsPacket::acceptQuest(Player *player, int16_t questId, int32_t npcId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(questId);
-	packet.add<int8_t>(1);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int16_t>(0);
-	player->getSession()->send(packet);
+namespace QuestsPacket {
 
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_QUEST_UPDATE);
-	packet.add<int8_t>(8);
-	packet.add<int16_t>(questId);
-	packet.add<int32_t>(npcId);
-	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+PACKET_IMPL(acceptQuest, int16_t questId, int32_t npcId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<int8_t>(8)
+		.add<int16_t>(questId)
+		.add<int32_t>(npcId)
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto QuestsPacket::updateQuest(Player *player, const ActiveQuest &quest) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(quest.id);
-	packet.add<int8_t>(1);
-	packet.addString(quest.getQuestData());
-	player->getSession()->send(packet);
+PACKET_IMPL(acceptQuestNotice, int16_t questId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(1)
+		.add<int16_t>(questId)
+		.add<int8_t>(1)
+		.add<int32_t>(0)
+		.add<int32_t>(0)
+		.add<int16_t>(0);
+	return builder;
 }
 
-auto QuestsPacket::doneQuest(Player *player, int16_t questId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_QUEST_COMPLETED);
-	packet.add<int16_t>(questId);
-	player->getSession()->send(packet);
+PACKET_IMPL(completeQuestNotice, int16_t questId, int64_t time) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(1)
+		.add<int16_t>(questId)
+		.add<int8_t>(2)
+		.add<int64_t>(time);
+	return builder;
 }
 
-auto QuestsPacket::questError(Player *player, int16_t questId, int8_t errorCode) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_QUEST_UPDATE);
-	packet.add<int8_t>(errorCode);
-	packet.add<int16_t>(questId);
-	player->getSession()->send(packet);
+PACKET_IMPL(completeQuest, int16_t questId, int32_t npcId, int16_t nextQuest) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<int8_t>(8)
+		.add<int16_t>(questId)
+		.add<int32_t>(npcId)
+		.add<int16_t>(nextQuest);
+	return builder;
 }
 
-auto QuestsPacket::questExpire(Player *player, int16_t questId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_QUEST_UPDATE);
-	packet.add<int8_t>(0x0F);
-	packet.add<int16_t>(questId);
-	player->getSession()->send(packet);
+SPLIT_PACKET_IMPL(completeQuestAnimation, int32_t playerId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(9);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.add<int8_t>(9);
+	return builder;
 }
 
-auto QuestsPacket::questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(questId);
-	packet.add<int8_t>(2);
-	packet.add<int64_t>(time);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_QUEST_UPDATE);
-	packet.add<int8_t>(8);
-	packet.add<int16_t>(questId);
-	packet.add<int32_t>(npcId);
-	packet.add<int16_t>(nextQuest);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(9);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_SKILL_SHOW);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(9);
-	player->getMap()->sendPacket(packet, player);
+PACKET_IMPL(updateQuest, const ActiveQuest &quest) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(1)
+		.add<int16_t>(quest.id)
+		.add<int8_t>(1)
+		.addString(quest.getQuestData());
+	return builder;
 }
 
-auto QuestsPacket::forfeitQuest(Player *player, int16_t questId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(questId);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+PACKET_IMPL(doneQuest, int16_t questId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_QUEST_COMPLETED)
+		.add<int16_t>(questId);
+	return builder;
 }
 
-auto QuestsPacket::giveItem(Player *player, int32_t itemId, int32_t amount) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(3);
-	packet.add<int8_t>(1); // Number of different items (itemId and amount gets repeated)
-	packet.add<int32_t>(itemId);
-	packet.add<int32_t>(amount);
-	player->getSession()->send(packet);
+PACKET_IMPL(questError, int16_t questId, int8_t errorCode) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<int8_t>(errorCode)
+		.add<int16_t>(questId);
+	return builder;
 }
 
-auto QuestsPacket::giveMesos(Player *player, int32_t amount) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(5);
-	packet.add<int32_t>(amount);
-	player->getSession()->send(packet);
+PACKET_IMPL(questExpire, int16_t questId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_QUEST_UPDATE)
+		.add<int8_t>(0x0F)
+		.add<int16_t>(questId);
+	return builder;
 }
 
-auto QuestsPacket::giveFame(Player *player, int32_t amount) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(4);
-	packet.add<int32_t>(amount);
-	player->getSession()->send(packet);
+PACKET_IMPL(forfeitQuest, int16_t questId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(1)
+		.add<int16_t>(questId)
+		.add<int8_t>(0);
+	return builder;
+}
+
+PACKET_IMPL(giveItem, int32_t itemId, int32_t amount) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(3)
+		.add<int8_t>(1) // Number of different items (itemId and amount gets repeated)
+		.add<int32_t>(itemId)
+		.add<int32_t>(amount);
+	return builder;
+}
+
+PACKET_IMPL(giveMesos, int32_t amount) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(5)
+		.add<int32_t>(amount);
+	return builder;
+}
+
+PACKET_IMPL(giveFame, int32_t amount) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(4)
+		.add<int32_t>(amount);
+	return builder;
+}
+
 }

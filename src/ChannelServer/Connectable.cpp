@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cstring>
 #include <ctime>
 
-auto Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &packet) -> void {
+auto Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> void {
 	ConnectingPlayer player;
 	player.connectIp = ip;
 	player.connectTime = TimeUtilities::getNow();
 
-	uint16_t pSize = packet.get<uint16_t>();
+	uint16_t pSize = reader.get<uint16_t>();
 	if (pSize > 0) {
 		unsigned char *buf = new unsigned char[pSize]; // Prevent the packet memory from being freed by external sources
-		memcpy(buf, packet.getBuffer(), pSize);
+		memcpy(buf, reader.getBuffer(), pSize);
 
 		player.heldPacket = make_ref_ptr<PacketReader>(buf, pSize);
 	}

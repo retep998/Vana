@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Player;
 struct SkillLevelInfo;
@@ -163,8 +163,8 @@ public:
 	auto endMorph() -> void;
 	auto swapWeapon() -> void;
 
-	auto write(PacketCreator &packet) const -> void override;
-	auto read(PacketReader &packet) -> void override;
+	auto write(PacketBuilder &builder) const -> void override;
+	auto read(PacketReader &reader) -> void override;
 private:
 	auto hasBuff(int32_t skillId) -> bool;
 	auto calculateDebuffMaskBit(uint8_t skill) -> int32_t;

@@ -17,11 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-class Player;
 class Drop;
 class Pet;
+class Player;
 struct Pos;
 
 namespace DropsPacket {
@@ -33,13 +34,14 @@ namespace DropsPacket {
 			DisappearDuringDrop = 3
 		};
 	}
-	auto showDrop(Player *player, Drop *drop, int8_t type, bool newDrop, const Pos &origin) -> void;
-	auto takeDrop(Player *player, Drop *drop, int8_t petIndex = -1) -> void;
-	auto dontTake(Player *player) -> void;
-	auto removeDrop(Drop *drop) -> void;
-	auto explodeDrop(Drop *drop) -> void;
-	auto dropNotAvailableForPickup(Player *player) -> void;
-	auto cantGetAnymoreItems(Player *player) -> void;
-	auto pickupDrop(Player *player, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0) -> void;
-	auto pickupDropSpecial(Player *player, int32_t id) -> void;
+
+	PACKET(showDrop, Drop *drop, int8_t type, const Pos &origin);
+	PACKET(takeDrop, int32_t playerId, int32_t dropId, int8_t petIndex = -1);
+	PACKET(dontTake);
+	PACKET(removeDrop, int32_t dropId);
+	PACKET(explodeDrop, int32_t dropId);
+	PACKET(dropNotAvailableForPickup);
+	PACKET(cantGetAnymoreItems);
+	PACKET(pickupDrop, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
+	PACKET(pickupDropSpecial, int32_t id);
 }

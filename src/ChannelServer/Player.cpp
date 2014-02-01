@@ -42,7 +42,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MonsterBookPacket.hpp"
 #include "Npc.hpp"
 #include "NpcHandler.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Party.hpp"
 #include "PartyHandler.hpp"
 #include "Pet.hpp"
@@ -57,6 +59,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SkillMacros.hpp"
 #include "Skills.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "StringUtilities.hpp"
 #include "Summon.hpp"
 #include "SummonHandler.hpp"
@@ -111,101 +114,101 @@ Player::~Player() {
 
 		if (ChannelServer::getInstance().isConnected()) {
 			if (!isChangingChannel()) {
-				SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false);
+				ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false));
 			}
 			// Do not connect to worldserver if the worldserver has disconnected
-			SyncPacket::PlayerPacket::disconnect(getId());
+			ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::disconnect(getId()));
 		}
 		PlayerDataProvider::getInstance().removePlayer(this);
 	}
 }
 
-auto Player::handleRequest(PacketReader &packet) -> void {
+auto Player::handleRequest(PacketReader &reader) -> void {
 	try {
-		header_t header = packet.getHeader();
+		header_t header = reader.getHeader();
 		if (!m_isConnect) {
 			// We don't want to accept any other packet than the one for loading the character
 			if (header == CMSG_PLAYER_LOAD) {
-				playerConnect(packet);
+				playerConnect(reader);
 			}
 		}
 		else {
 			switch (header) {
-				case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, packet); break;
-				case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, packet); break;
-				case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, packet); break;
-				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, packet); break;
-				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, packet); break;
-				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, packet); break;
-				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, packet); break;
-				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, packet); break;
-				case CMSG_CASH_SHOP: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::NoCashShop); break;
-				case CMSG_CHAIR: InventoryHandler::handleChair(this, packet); break;
-				case CMSG_CHALKBOARD: InventoryPacket::sendChalkboardUpdate(this); setChalkboard(""); break;
-				case CMSG_CHANNEL_CHANGE: changeChannel(packet.get<int8_t>()); break;
-				case CMSG_COMMAND: CommandHandler::handleCommand(this, packet); break;
-				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, packet); break;
-				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, packet); break;
-				case CMSG_FAME: Fame::handleFame(this, packet); break;
-				case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, packet); break;
+				case CMSG_ADMIN_COMMAND: CommandHandler::handleAdminCommand(this, reader); break;
+				case CMSG_ADMIN_MESSENGER: PlayerHandler::handleAdminMessenger(this, reader); break;
+				case CMSG_ATTACK_ENERGY_CHARGE: PlayerHandler::useEnergyChargeAttack(this, reader); break;
+				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, reader); break;
+				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, reader); break;
+				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, reader); break;
+				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, reader); break;
+				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, reader); break;
+				case CMSG_CASH_SHOP: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::NoCashShop)); break;
+				case CMSG_CHAIR: InventoryHandler::handleChair(this, reader); break;
+				case CMSG_CHALKBOARD: sendMap(InventoryPacket::sendChalkboardUpdate(m_id, "")); setChalkboard(""); break;
+				case CMSG_CHANNEL_CHANGE: changeChannel(reader.get<int8_t>()); break;
+				case CMSG_COMMAND: CommandHandler::handleCommand(this, reader); break;
+				case CMSG_DROP_MESOS: DropHandler::dropMesos(this, reader); break;
+				case CMSG_EMOTE: PlayerHandler::handleFacialExpression(this, reader); break;
+				case CMSG_FAME: Fame::handleFame(this, reader); break;
+				case CMSG_FRIENDLY_MOB_DAMAGE: MobHandler::friendlyDamaged(this, reader); break;
 				case CMSG_HAMMER: InventoryHandler::handleHammerTime(this); break;
-				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, packet); break;
-				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-				case CMSG_ITEM_LOOT: DropHandler::lootItem(this, packet); break;
-				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, packet); break;
-				case CMSG_ITEM_USE: InventoryHandler::useItem(this, packet); break;
-				case CMSG_KEYMAP: changeKey(packet); break;
-				case CMSG_MACRO_LIST: changeSkillMacros(packet); break;
-				case CMSG_MAP_CHANGE: Maps::usePortal(this, packet); break;
-				case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(this, packet); break;
-				case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(this, packet); break;
-				case CMSG_MOB_CONTROL: MobHandler::monsterControl(this, packet); break;
-				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, packet); break;
-				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, packet); break;
-				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, packet); break;
-				case CMSG_MTS: PlayerPacket::sendBlockedMessage(this, PlayerPacket::BlockMessages::MtsUnavailable); break;
-				case CMSG_MULTI_STAT_ADDITION: getStats()->addStatMulti(packet); break;
-				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, packet); break;
-				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, packet); break;
-				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, packet); break;
-				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, packet); break;
-				case CMSG_PARTY: PartyHandler::handleRequest(this, packet); break;
-				case CMSG_PET_CHAT: PetHandler::handleChat(this, packet); break;
-				case CMSG_PET_COMMAND: PetHandler::handleCommand(this, packet); break;
-				case CMSG_PET_CONSUME_POTION: PetHandler::handleConsumePotion(this, packet); break;
-				case CMSG_PET_FOOD_USE: PetHandler::handleFeed(this, packet); break;
-				case CMSG_PET_LOOT: DropHandler::petLoot(this, packet); break;
-				case CMSG_PET_MOVEMENT: PetHandler::handleMovement(this, packet); break;
-				case CMSG_PET_SUMMON: PetHandler::handleSummon(this, packet); break;
-				case CMSG_PLAYER_CHAT: ChatHandler::handleChat(this, packet); break;
-				case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(this, packet); break;
-				case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(this, packet); break;
-				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, packet); break;
-				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, packet); break;
-				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, packet); break;
-				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, packet); break;
-				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, packet); break;
-				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, packet); break;
-				case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, packet); break;
-				case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, packet); break;
-				case CMSG_SHOP: NpcHandler::useShop(this, packet); break;
-				case CMSG_SKILL_ADD: Skills::addSkill(this, packet); break;
-				case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, packet); break;
-				case CMSG_SKILL_USE: Skills::useSkill(this, packet); break;
-				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, packet); break;
-				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, packet); break;
-				case CMSG_STAT_ADDITION: getStats()->addStat(packet); break;
-				case CMSG_STORAGE: NpcHandler::useStorage(this, packet); break;
-				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, packet); break;
-				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, packet); break;
-				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(this, packet); break;
-				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(this, packet); break;
-				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, packet); break;
-				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, packet); break;
-				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, packet); break;
-				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, packet); break;
-				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, packet); break;
-				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, packet); break;
+				case CMSG_ITEM_CANCEL: InventoryHandler::cancelItem(this, reader); break;
+				case CMSG_ITEM_EFFECT: InventoryHandler::useItemEffect(this, reader); break;
+				case CMSG_ITEM_LOOT: DropHandler::lootItem(this, reader); break;
+				case CMSG_ITEM_MOVE: InventoryHandler::itemMove(this, reader); break;
+				case CMSG_ITEM_USE: InventoryHandler::useItem(this, reader); break;
+				case CMSG_KEYMAP: changeKey(reader); break;
+				case CMSG_MACRO_LIST: changeSkillMacros(reader); break;
+				case CMSG_MAP_CHANGE: Maps::usePortal(this, reader); break;
+				case CMSG_MAP_CHANGE_SPECIAL: Maps::useScriptedPortal(this, reader); break;
+				case CMSG_MESSAGE_GROUP: ChatHandler::handleGroupChat(this, reader); break;
+				case CMSG_MOB_CONTROL: MobHandler::monsterControl(this, reader); break;
+				case CMSG_MOB_EXPLOSION: MobHandler::handleBomb(this, reader); break;
+				case CMSG_MOB_TURNCOAT_DAMAGE: MobHandler::handleTurncoats(this, reader); break;
+				case CMSG_MONSTER_BOOK: PlayerHandler::handleMonsterBook(this, reader); break;
+				case CMSG_MTS: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::MtsUnavailable)); break;
+				case CMSG_MULTI_STAT_ADDITION: getStats()->addStatMulti(reader); break;
+				case CMSG_MYSTIC_DOOR_ENTRY: PlayerHandler::handleDoorUse(this, reader); break;
+				case CMSG_NPC_ANIMATE: NpcHandler::handleNpcAnimation(this, reader); break;
+				case CMSG_NPC_TALK: NpcHandler::handleNpc(this, reader); break;
+				case CMSG_NPC_TALK_CONT: NpcHandler::handleNpcIn(this, reader); break;
+				case CMSG_PARTY: PartyHandler::handleRequest(this, reader); break;
+				case CMSG_PET_CHAT: PetHandler::handleChat(this, reader); break;
+				case CMSG_PET_COMMAND: PetHandler::handleCommand(this, reader); break;
+				case CMSG_PET_CONSUME_POTION: PetHandler::handleConsumePotion(this, reader); break;
+				case CMSG_PET_FOOD_USE: PetHandler::handleFeed(this, reader); break;
+				case CMSG_PET_LOOT: DropHandler::petLoot(this, reader); break;
+				case CMSG_PET_MOVEMENT: PetHandler::handleMovement(this, reader); break;
+				case CMSG_PET_SUMMON: PetHandler::handleSummon(this, reader); break;
+				case CMSG_PLAYER_CHAT: ChatHandler::handleChat(this, reader); break;
+				case CMSG_PLAYER_DAMAGE: PlayerHandler::handleDamage(this, reader); break;
+				case CMSG_PLAYER_HEAL: PlayerHandler::handleHeal(this, reader); break;
+				case CMSG_PLAYER_INFO: PlayerHandler::handleGetInfo(this, reader); break;
+				case CMSG_PLAYER_MOVE: PlayerHandler::handleMoving(this, reader); break;
+				case CMSG_PLAYER_ROOM: TradeHandler::tradeHandler(this, reader); break;
+				case CMSG_QUEST_OBTAIN: Quests::getQuest(this, reader); break;
+				case CMSG_REACTOR_HIT: ReactorHandler::hitReactor(this, reader); break;
+				case CMSG_REACTOR_TOUCH: ReactorHandler::touchReactor(this, reader); break;
+				case CMSG_REVIVE_EFFECT: InventoryHandler::useItemEffect(this, reader); break;
+				case CMSG_SCROLL_USE: InventoryHandler::useScroll(this, reader); break;
+				case CMSG_SHOP: NpcHandler::useShop(this, reader); break;
+				case CMSG_SKILL_ADD: Skills::addSkill(this, reader); break;
+				case CMSG_SKILL_CANCEL: Skills::cancelSkill(this, reader); break;
+				case CMSG_SKILL_USE: Skills::useSkill(this, reader); break;
+				case CMSG_SKILLBOOK_USE: InventoryHandler::useSkillbook(this, reader); break;
+				case CMSG_SPECIAL_SKILL: PlayerHandler::handleSpecialSkills(this, reader); break;
+				case CMSG_STAT_ADDITION: getStats()->addStat(reader); break;
+				case CMSG_STORAGE: NpcHandler::useStorage(this, reader); break;
+				case CMSG_SUMMON_ATTACK: PlayerHandler::useSummonAttack(this, reader); break;
+				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, reader); break;
+				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(this, reader); break;
+				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(this, reader); break;
+				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, reader); break;
+				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, reader); break;
+				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, reader); break;
+				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, reader); break;
+				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, reader); break;
+				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, reader); break;
 			}
 		}
 	}
@@ -214,21 +217,21 @@ auto Player::handleRequest(PacketReader &packet) -> void {
 		// This isn't always evidence of tampering with packets
 		// We may not process the structure properly
 
-		packet.reset();
+		reader.reset();
 		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
 			log << "Player ID: " << getId()
-				<< "; Packet: " << packet
+				<< "; Packet: " << reader
 				<< "; Error: " << e.what();
 		});
-		getSession()->disconnect();
+		disconnect();
 	}
 }
 
-auto Player::playerConnect(PacketReader &packet) -> void {
-	int32_t id = packet.get<int32_t>();
+auto Player::playerConnect(PacketReader &reader) -> void {
+	int32_t id = reader.get<int32_t>();
 	if (Connectable::getInstance().checkPlayer(id, getIp()) == Result::Failure) {
 		// Hacking
-		getSession()->disconnect();
+		disconnect();
 		return;
 	}
 
@@ -245,7 +248,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 
 	if (!sql.got_data()) {
 		// Hacking
-		getSession()->disconnect();
+		disconnect();
 		return;
 	}
 
@@ -303,10 +306,10 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	m_activeBuffs = make_owned_ptr<PlayerActiveBuffs>(this);
 	m_summons = make_owned_ptr<PlayerSummons>(this);
 
-	bool checked = false;
+	bool firstConnect = true;
 	if (PacketReader *pack = Connectable::getInstance().getPacket(id)) {
 		// Packet transferring on channel switch
-		checked = true;
+		firstConnect = false;
 		setConnectionTime(pack->get<int64_t>());
 		int32_t followId = pack->get<int32_t>();
 		if (followId != 0) {
@@ -331,7 +334,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	else {
 		// No packet, that means that they're connecting for the first time
 		setConnectionTime(time(nullptr));
-		m_gmChat = false;
+		m_gmChat = true;
 	}
 
 	Connectable::getInstance().playerEstablished(id);
@@ -356,7 +359,7 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	getStats()->checkHpMp();
 
 	if (isGm() || isAdmin()) {
-		if (!checked) {
+		if (firstConnect) {
 			m_map = Maps::GmMap;
 			m_mapPos = -1;
 		}
@@ -375,11 +378,11 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	m_stance = 0;
 	m_foothold = 0;
 
-	PlayerPacket::connectData(this);
+	send(PlayerPacket::connectData(this));
 
 	auto &config = ChannelServer::getInstance().getConfig();
 	if (config.scrollingHeader.size() > 0) {
-		ServerPacket::showScrollingHeader(this, config.scrollingHeader);
+		send(ServerPacket::showScrollingHeader(config.scrollingHeader));
 	}
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
@@ -388,12 +391,12 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 		}
 	}
 
-	PlayerPacket::showKeys(this, &keyMaps);
+	send(PlayerPacket::showKeys(&keyMaps));
 
-	BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add);
+	send(BuddyListPacket::update(this, BuddyListPacket::ActionTypes::Add));
 	getBuddyList()->checkForPendingBuddy();
 
-	PlayerPacket::showSkillMacros(this, &skillMacros);
+	send(PlayerPacket::showSkillMacros(&skillMacros));
 
 	PlayerDataProvider::getInstance().addPlayer(this);
 	Maps::addPlayer(this, m_map);
@@ -404,20 +407,24 @@ auto Player::playerConnect(PacketReader &packet) -> void {
 	m_isConnect = true;
 
 	PlayerData data;
-	data.cashShop = false;
-	data.admin = m_admin;
-	data.level = getStats()->getLevel();
-	data.job = getStats()->getJob();
+	const PlayerData * const existingData = PlayerDataProvider::getInstance().getPlayerData(m_id);
+	bool firstConnectionSinceServerStarted = firstConnect && !existingData->initialized;
+
+	if (firstConnectionSinceServerStarted) {
+		data.admin = m_admin;
+		data.level = getStats()->getLevel();
+		data.job = getStats()->getJob();
+		data.gmLevel = m_gmLevel;
+		data.name = m_name;
+	}
+
 	data.channel = ChannelServer::getInstance().getChannelId();
 	data.map = m_map;
-	data.gmLevel = m_gmLevel;
-	data.party = 0;
 	data.id = m_id;
-	data.name = m_name;
 	data.ip = getIp();
 
-	SyncPacket::PlayerPacket::connect(data);
-	SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true);
+	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::connect(data, firstConnectionSinceServerStarted));
+	ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true));
 }
 
 auto Player::getMap() const -> Map * {
@@ -426,7 +433,7 @@ auto Player::getMap() const -> Map * {
 
 auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 	if (!Maps::getMap(mapId)) {
-		MapPacket::portalBlocked(this);
+		send(MapPacket::portalBlocked());
 		return;
 	}
 	Map *oldMap = Maps::getMap(m_map);
@@ -487,7 +494,7 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 		setChalkboard("");
 	}
 
-	MapPacket::changeMap(this);
+	send(MapPacket::changeMap(this));
 	Maps::addPlayer(this, mapId);
 
 	PlayerDataProvider::getInstance().updatePlayerMap(this);
@@ -504,12 +511,12 @@ auto Player::getMedalName() -> string_t {
 }
 
 auto Player::changeChannel(channel_id_t channel) -> void {
-	SyncPacket::PlayerPacket::changeChannel(this, channel);
+	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::changeChannel(this, channel));
 }
 
-auto Player::changeKey(PacketReader &packet) -> void {
-	int32_t mode = packet.get<int32_t>();
-	int32_t howMany = packet.get<int32_t>();
+auto Player::changeKey(PacketReader &reader) -> void {
+	int32_t mode = reader.get<int32_t>();
+	int32_t howMany = reader.get<int32_t>();
 
 	enum KeyModes : int32_t {
 		ChangeKeys = 0x00,
@@ -524,9 +531,9 @@ auto Player::changeKey(PacketReader &packet) -> void {
 
 		KeyMaps keyMaps; // We don't need old values here because it is only used to save the new values
 		for (int32_t i = 0; i < howMany; i++) {
-			int32_t pos = packet.get<int32_t>();
-			int8_t type = packet.get<int8_t>();
-			int32_t action = packet.get<int32_t>();
+			int32_t pos = reader.get<int32_t>();
+			int8_t type = reader.get<int8_t>();
+			int32_t action = reader.get<int32_t>();
 			keyMaps.add(pos, KeyMaps::KeyMap(type, action));
 		}
 
@@ -541,18 +548,18 @@ auto Player::changeKey(PacketReader &packet) -> void {
 	}
 }
 
-auto Player::changeSkillMacros(PacketReader &packet) -> void {
-	uint8_t num = packet.get<int8_t>();
+auto Player::changeSkillMacros(PacketReader &reader) -> void {
+	uint8_t num = reader.get<int8_t>();
 	if (num == 0) {
 		return;
 	}
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
-		const string_t &name = packet.getString();
-		bool shout = packet.get<bool>();
-		int32_t skill1 = packet.get<int32_t>();
-		int32_t skill2 = packet.get<int32_t>();
-		int32_t skill3 = packet.get<int32_t>();
+		string_t name = reader.getString();
+		bool shout = reader.get<bool>();
+		int32_t skill1 = reader.get<int32_t>();
+		int32_t skill2 = reader.get<int32_t>();
+		int32_t skill3 = reader.get<int32_t>();
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
@@ -561,17 +568,17 @@ auto Player::changeSkillMacros(PacketReader &packet) -> void {
 
 auto Player::setHair(int32_t id) -> void {
 	m_hair = id;
-	PlayerPacket::updateStat(this, Stats::Hair, id);
+	send(PlayerPacket::updateStat(Stats::Hair, id));
 }
 
 auto Player::setEyes(int32_t id) -> void {
 	m_eyes = id;
-	PlayerPacket::updateStat(this, Stats::Eyes, id);
+	send(PlayerPacket::updateStat(Stats::Eyes, id));
 }
 
 auto Player::setSkin(int8_t id) -> void {
 	m_skin = id;
-	PlayerPacket::updateStat(this, Stats::Skin, id);
+	send(PlayerPacket::updateStat(Stats::Skin, id));
 }
 
 auto Player::saveStats() -> void {
@@ -744,7 +751,7 @@ auto Player::hasGmBenefits() const -> bool {
 
 auto Player::setBuddyListSize(uint8_t size) -> void {
 	m_buddylistSize = size;
-	BuddyListPacket::showSize(this);
+	send(BuddyListPacket::showSize(this));
 }
 
 auto Player::getPortalCount(bool add) -> uint8_t {
@@ -754,7 +761,7 @@ auto Player::getPortalCount(bool add) -> uint8_t {
 	return m_portalCount;
 }
 
-auto Player::initializeRng(PacketCreator &packet) -> void {
+auto Player::initializeRng(PacketBuilder &packet) -> void {
 	uint32_t seed1 = Randomizer::rand<uint32_t>();
 	uint32_t seed2 = Randomizer::rand<uint32_t>();
 	uint32_t seed3 = Randomizer::rand<uint32_t>();
@@ -764,4 +771,20 @@ auto Player::initializeRng(PacketCreator &packet) -> void {
 	packet.add<uint32_t>(seed1);
 	packet.add<uint32_t>(seed2);
 	packet.add<uint32_t>(seed3);
+}
+
+auto Player::send(const PacketBuilder &builder) -> void {
+	AbstractConnection::send(builder);
+}
+
+auto Player::send(const SplitPacketBuilder &builder) -> void {
+	send(builder.player);
+}
+
+auto Player::sendMap(const PacketBuilder &builder, bool excludeSelf) -> void {
+	getMap()->send(builder, excludeSelf ? this : nullptr);
+}
+
+auto Player::sendMap(const SplitPacketBuilder &builder) -> void {
+	getMap()->send(builder, this);
 }

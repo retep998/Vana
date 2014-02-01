@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 #include <string>
 
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 
 class Ip : public IPacketSerializable {
@@ -36,8 +36,8 @@ public:
 				throw std::invalid_argument("Must pass Ip::Type::Ipv4 or Ip::Type::Ipv6 to the constructor");
 			}
 		}
-		auto write(PacketCreator &packet) const -> void override;
-		auto read(PacketReader &packet) -> void override;
+		auto write(PacketBuilder &builder) const -> void override;
+		auto read(PacketReader &reader) -> void override;
 
 		auto operator==(const Type &right) const -> bool { return right.m_type == this->m_type; }
 		auto operator==(const int8_t &right) const -> bool { return right == this->m_type; }
@@ -56,8 +56,8 @@ public:
 	Ip(const string_t &addr, Ip::Type type);
 	explicit Ip(uint32_t ipv4);
 
-	virtual auto write(PacketCreator &packet) const -> void override;
-	virtual auto read(PacketReader &packet) -> void override;
+	virtual auto write(PacketBuilder &builder) const -> void override;
+	virtual auto read(PacketReader &reader) -> void override;
 
 	auto toString() const -> string_t;
 	auto asIpv4() const -> uint32_t;

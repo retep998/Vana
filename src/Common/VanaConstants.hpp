@@ -23,7 +23,8 @@ namespace VanaConstants {
 	const int32_t SaltSize = 10;
 }
 
-enum class ServerType : int16_t {
+using server_type_t = int16_t;
+enum class ServerType : server_type_t {
 	None,
 	Login = 1, // Started at 1 so it's easy to do logging
 	World,

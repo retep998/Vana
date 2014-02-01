@@ -16,9 +16,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Channel.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "WorldServerAcceptConnection.hpp"
 
-auto Channel::send(const PacketCreator &packet) -> void {
-	m_connection->getSession()->send(packet);
+auto Channel::send(const PacketBuilder &builder) -> void {
+	m_connection->send(builder);
 }

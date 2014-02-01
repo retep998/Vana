@@ -21,6 +21,6 @@ class Player;
 class PacketReader;
 
 namespace CommandHandler {
-	auto handleCommand(Player *player, PacketReader &packet) -> void;
-	auto handleAdminCommand(Player *player, PacketReader &packet) -> void;
+	auto handleCommand(Player *player, PacketReader &reader) -> void;
+	auto handleAdminCommand(Player *player, PacketReader &reader) -> void;
 }
