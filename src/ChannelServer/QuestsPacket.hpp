@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
@@ -30,14 +32,18 @@ namespace QuestsPacket {
 		ErrorEquipWorn = 0x0D,
 		ErrorOnlyOne = 0x0E
 	};
-	auto acceptQuest(Player *player, int16_t questId, int32_t npcId) -> void;
-	auto updateQuest(Player *player, const ActiveQuest &quest) -> void;
-	auto doneQuest(Player *player, int16_t questId) -> void;
-	auto questError(Player *player, int16_t questId, int8_t errorCode) -> void;
-	auto questExpire(Player *player, int16_t questId) -> void;
-	auto questFinish(Player *player, int16_t questId, int32_t npcId, int16_t nextQuest, int64_t time) -> void;
-	auto forfeitQuest(Player *player, int16_t questId) -> void;
-	auto giveItem(Player *player, int32_t itemId, int32_t amount) -> void;
-	auto giveMesos(Player *player, int32_t amount) -> void;
-	auto giveFame(Player *player, int32_t amount) -> void;
+
+	PACKET(acceptQuest, int16_t questId, int32_t npcId);
+	PACKET(acceptQuestNotice, int16_t questId);
+	PACKET(completeQuestNotice, int16_t questId, int64_t time);
+	PACKET(completeQuest, int16_t questId, int32_t npcId, int16_t nextQuest);
+	SPLIT_PACKET(completeQuestAnimation, int32_t playerId);
+	PACKET(updateQuest, const ActiveQuest &quest);
+	PACKET(doneQuest, int16_t questId);
+	PACKET(questError, int16_t questId, int8_t errorCode);
+	PACKET(questExpire, int16_t questId);
+	PACKET(forfeitQuest, int16_t questId);
+	PACKET(giveItem, int32_t itemId, int32_t amount);
+	PACKET(giveMesos, int32_t amount);
+	PACKET(giveFame, int32_t amount);
 }

@@ -32,7 +32,7 @@ public:
 
 	auto getChannel() const -> channel_id_t { return m_channel; }
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 private:
 	channel_id_t m_channel = 0;
 };

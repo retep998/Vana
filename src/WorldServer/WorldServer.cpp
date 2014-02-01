@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServer.hpp"
 #include "ConnectionManager.hpp"
+#include "Channels.hpp"
 #include "InitializeCommon.hpp"
 #include "InitializeWorld.hpp"
-#include "PacketCreator.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
 #include "VanaConstants.hpp"
@@ -53,7 +53,7 @@ auto WorldServer::loadData() -> void {
 auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 	m_config = config;
 	m_defaultRates = config.rates;
-	WorldServerAcceptPacket::rehashConfig(config);
+	Channels::getInstance().send(WorldServerAcceptPacket::rehashConfig(config));
 }
 
 auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
@@ -68,7 +68,7 @@ auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, co
 
 auto WorldServer::setRates(const Rates &rates) -> void {
 	m_config.rates = rates;
-	SyncPacket::ConfigPacket::setRates(rates);
+	Channels::getInstance().send(SyncPacket::ConfigPacket::setRates(rates));
 }
 
 auto WorldServer::resetRates() -> void {
@@ -101,9 +101,9 @@ auto WorldServer::getConfig() -> const WorldConfig & {
 
 auto WorldServer::setScrollingHeader(const string_t &message) -> void {
 	m_config.scrollingHeader = message;
-	SyncPacket::ConfigPacket::scrollingHeader(message);
+	Channels::getInstance().send(SyncPacket::ConfigPacket::scrollingHeader(message));
 }
 
-auto WorldServer::sendPacketToLogin(const PacketCreator &packet) -> void {
-	m_loginConnection->getSession()->send(packet);
+auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {
+	m_loginConnection->send(builder);
 }

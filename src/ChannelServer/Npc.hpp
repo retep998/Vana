@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class PacketCreator;
 class Player;
 
 class Npc {
@@ -39,8 +38,6 @@ public:
 
 	auto run() -> void;
 
-	auto npcPacket(int8_t type, bool addText = true) -> PacketCreator;
-
 	auto sendSimple() -> void;
 	auto sendYesNo() -> void;
 	auto sendDialog(bool back, bool next, bool save = true) -> void;
@@ -48,7 +45,7 @@ public:
 	auto sendAcceptDeclineNoExit() -> void;
 	auto sendGetText(int16_t min, int16_t max, const string_t &def = "") -> void;
 	auto sendGetNumber(int32_t def, int32_t min, int32_t max) -> void;
-	auto sendStyle(int32_t styles[], uint8_t size) -> void;
+	auto sendStyle(vector_t<int32_t> styles) -> void;
 	auto sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t questions, int32_t time) -> void;
 	auto sendQuestion(const string_t &question, const string_t &clue, int32_t minCharacters, int32_t maxCharacters, int32_t time) -> void;
 	auto addText(const string_t &text) -> void { m_text += text; }
@@ -78,7 +75,12 @@ private:
 	struct NpcChatState {
 		NONCOPYABLE(NpcChatState);
 	public:
-		NpcChatState(const string_t &text, bool back, bool next) : text(text), back(back), next(next) { }
+		NpcChatState(const string_t &text, bool back, bool next) :
+			text(text),
+			back(back),
+			next(next)
+		{
+		}
 
 		bool back = false;
 		bool next = false;
@@ -104,18 +106,3 @@ private:
 	owned_ptr_t<LuaNpc> m_luaNpc;
 	vector_t<ref_ptr_t<NpcChatState>> m_previousStates;
 };
-
-namespace NpcDialogs {
-	enum DialogOptions : int8_t {
-		Normal = 0x00,
-		YesNo = 0x01,
-		GetText = 0x02,
-		GetNumber = 0x03,
-		Simple = 0x04,
-		Question = 0x05,
-		Quiz = 0x06,
-		Style = 0x07,
-		AcceptDecline = 0x0C,
-		AcceptDeclineNoExit = 0x0D
-	};
-}

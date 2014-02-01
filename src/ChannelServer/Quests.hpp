@@ -23,7 +23,7 @@ class PacketReader;
 class Player;
 
 namespace Quests {
-	auto getQuest(Player *player, PacketReader &packet) -> void;
+	auto getQuest(Player *player, PacketReader &reader) -> void;
 	auto giveFame(Player *player, int32_t amount) -> void;
 	auto giveItem(Player *player, int32_t itemId, int16_t amount) -> bool;
 	auto giveMesos(Player *player, int32_t amount) -> bool;

@@ -23,8 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Party.hpp"
 #include "PartyPacket.hpp"
 #include "Player.hpp"
@@ -37,18 +38,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 #include <cstring>
 
-auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) -> void {
+auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &reader) -> void {
 	// Players
-	uint32_t quantity = packet.get<uint32_t>();
+	uint32_t quantity = reader.get<uint32_t>();
 	for (uint32_t i = 0; i < quantity; i++) {
-		PlayerData player = packet.getClass<PlayerData>();
+		PlayerData player = reader.getClass<PlayerData>();
 		addPlayerData(player);
 	}
 
 	// Parties
-	quantity = packet.get<uint32_t>();
+	quantity = reader.get<uint32_t>();
 	for (uint32_t i = 0; i < quantity; i++) {
-		PartyData data = packet.getClass<PartyData>();
+		PartyData data = reader.getClass<PartyData>();
 		ref_ptr_t<Party> party = make_ref_ptr<Party>(data.id);
 		party->setLeader(data.leader);
 
@@ -60,6 +61,10 @@ auto PlayerDataProvider::parseChannelConnectPacket(PacketReader &packet) -> void
 
 		m_parties[data.id] = party;
 	}
+}
+
+auto PlayerDataProvider::sendSync(const PacketBuilder &packet) const -> void {
+	ChannelServer::getInstance().sendWorld(packet);
 }
 
 // Players
@@ -99,7 +104,7 @@ auto PlayerDataProvider::removePlayer(Player *player) -> void {
 	auto kvp = m_followers.find(player->getId());
 	if (kvp != std::end(m_followers)) {
 		for (auto follower : kvp->second) {
-			PlayerPacket::showMessage(follower, "Player " + player->getName() + " has disconnected", PlayerPacket::NoticeTypes::Red);
+			follower->send(PlayerPacket::showMessage("Player " + player->getName() + " has disconnected", PlayerPacket::NoticeTypes::Red));
 			follower->setFollow(nullptr);
 		}
 		m_followers.erase(kvp);
@@ -109,7 +114,7 @@ auto PlayerDataProvider::removePlayer(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerLevel(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.level = player->getStats()->getLevel();
-	SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Level);
+	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Level));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -118,7 +123,7 @@ auto PlayerDataProvider::updatePlayerLevel(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerMap(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.map = player->getMapId();
-	SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Map);
+	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Map));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -134,7 +139,7 @@ auto PlayerDataProvider::updatePlayerMap(Player *player) -> void {
 auto PlayerDataProvider::updatePlayerJob(Player *player) -> void {
 	auto &data = m_playerData[player->getId()];
 	data.job = player->getStats()->getJob();
-	SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Job);
+	sendSync(SyncPacket::PlayerPacket::updatePlayer(data, Sync::Player::UpdateBits::Job));
 	if (data.party != 0) {
 		getParty(data.party)->silentUpdate();
 	}
@@ -172,23 +177,31 @@ auto PlayerDataProvider::getPlayerDataByName(const string_t &name) const -> cons
 	return kvp->second;
 }
 
-auto PlayerDataProvider::sendPacket(PacketCreator &packet, int32_t minGmLevel) -> void {
-	for (const auto &kvp : m_players) {
-		Player *player = kvp.second;
-		if (player->getGmLevel() >= minGmLevel) {
-			player->getSession()->send(packet);
+auto PlayerDataProvider::send(int32_t playerId, const PacketBuilder &packet) -> void {
+	auto kvp = m_players.find(playerId);
+	if (kvp == std::end(m_players)) {
+		return;
+	}
+
+	kvp->second->send(packet);
+}
+
+auto PlayerDataProvider::send(const vector_t<int32_t> &playerIds, const PacketBuilder &packet) -> void {
+	for (const auto &playerId : playerIds) {
+		auto kvp = m_players.find(playerId);
+		if (kvp != std::end(m_players)) {
+			kvp->second->send(packet);
 		}
 	}
 }
 
-auto PlayerDataProvider::sendPacketToList(const vector_t<int32_t> &playerIds, PacketCreator &packet) -> void {
-	for (const auto &playerId : playerIds) {
-		auto kvp = m_players.find(playerId);
-		if (kvp != std::end(m_players)) {
-			kvp->second->getSession()->send(packet);
-		}
+auto PlayerDataProvider::send(const PacketBuilder &packet) -> void {
+	for (const auto &kvp : m_players) {
+		Player *player = kvp.second;
+		player->send(packet);
 	}
 }
+
 
 auto PlayerDataProvider::addFollower(Player *follower, Player *target) -> void {
 	auto kvp = m_followers.find(target->getId());
@@ -209,17 +222,12 @@ auto PlayerDataProvider::stopFollowing(Player *follower) -> void {
 }
 
 auto PlayerDataProvider::handleGroupChat(int8_t chatType, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void {
-	// TODO FIXME API
-	PacketCreator groupMessagePacket;
-	groupMessagePacket.add<header_t>(SMSG_MESSAGE_GROUP);
-	groupMessagePacket.add<int8_t>(chatType);
-	groupMessagePacket.addString(m_playerData[playerId].name);
-	groupMessagePacket.addString(chat);
+	auto &packet = PlayerPacket::groupChat(m_playerData[playerId].name, chat, chatType);
 
 	vector_t<int32_t> nonPresentReceivers;
 	for (const auto &playerId : receivers) {
 		if (Player *player = getPlayer(playerId)) {
-			player->getSession()->send(groupMessagePacket);
+			player->send(packet);
 		}
 		else {
 			nonPresentReceivers.push_back(playerId);
@@ -227,27 +235,25 @@ auto PlayerDataProvider::handleGroupChat(int8_t chatType, int32_t playerId, cons
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		PacketCreator wrapped;
-		wrapped.add<header_t>(IMSG_TO_PLAYER_LIST);
-		wrapped.addVector<int32_t>(nonPresentReceivers);
-		wrapped.addBuffer(groupMessagePacket);
-		ChannelServer::getInstance().sendPacketToWorld(wrapped);
+		ChannelServer::getInstance().sendWorld(Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
+			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
+			builder.addVector<int32_t>(nonPresentReceivers);
+		}));
 	}
 }
 
 auto PlayerDataProvider::handleGmChat(Player *player, const string_t &chat) -> void {
-	PacketCreator messagePacket;
 	out_stream_t message;
 	message << player->getName() << " [ch"
 		<< static_cast<int32_t>(ChannelServer::getInstance().getChannelId() + 1)
 		<< "] : " << chat;
 
-	PlayerPacket::showMessagePacket(messagePacket, message.str(), PlayerPacket::NoticeTypes::Blue);
+	auto &packet = PlayerPacket::showMessage(message.str(), PlayerPacket::NoticeTypes::Blue);
 
 	vector_t<int32_t> nonPresentReceivers;
 	for (const auto &playerId : m_gmList) {
 		if (Player *player = getPlayer(playerId)) {
-			player->getSession()->send(messagePacket);
+			player->send(packet);
 		}
 		else {
 			nonPresentReceivers.push_back(playerId);
@@ -255,57 +261,56 @@ auto PlayerDataProvider::handleGmChat(Player *player, const string_t &chat) -> v
 	}
 
 	if (nonPresentReceivers.size() > 0) {
-		PacketCreator wrapped;
-		wrapped.add<header_t>(IMSG_TO_PLAYER_LIST);
-		wrapped.addVector<int32_t>(nonPresentReceivers);
-		wrapped.addBuffer(messagePacket);
-		ChannelServer::getInstance().sendPacketToWorld(wrapped);
+		ChannelServer::getInstance().sendWorld(Packets::prepend(packet, [&nonPresentReceivers](PacketBuilder &builder) {
+			builder.add<header_t>(IMSG_TO_PLAYER_LIST);
+			builder.addVector<int32_t>(nonPresentReceivers);
+		}));
 	}
 }
 
-auto PlayerDataProvider::handlePlayerSync(PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::Player::NewConnectable: handleNewConnectable(packet); break;
-		case Sync::Player::DeleteConnectable: handleDeleteConnectable(packet.get<int32_t>()); break;
-		case Sync::Player::ChangeChannelGo: handleChangeChannel(packet); break;
-		case Sync::Player::UpdatePlayer: handleUpdatePlayer(packet); break;
-		case Sync::Player::CharacterCreated: handleCharacterCreated(packet); break;
-		case Sync::Player::CharacterDeleted: handleCharacterDeleted(packet); break;
+auto PlayerDataProvider::handlePlayerSync(PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::Player::NewConnectable: handleNewConnectable(reader); break;
+		case Sync::Player::DeleteConnectable: handleDeleteConnectable(reader.get<int32_t>()); break;
+		case Sync::Player::ChangeChannelGo: handleChangeChannel(reader); break;
+		case Sync::Player::UpdatePlayer: handleUpdatePlayer(reader); break;
+		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
+		case Sync::Player::CharacterDeleted: handleCharacterDeleted(reader); break;
 	}
 }
 
-auto PlayerDataProvider::handlePartySync(PacketReader &packet) -> void {
-	int8_t type = packet.get<sync_t>();
-	int32_t partyId = packet.get<int32_t>();
+auto PlayerDataProvider::handlePartySync(PacketReader &reader) -> void {
+	int8_t type = reader.get<sync_t>();
+	int32_t partyId = reader.get<int32_t>();
 	switch (type) {
-		case Sync::Party::Create: handleCreateParty(partyId, packet.get<int32_t>()); break;
+		case Sync::Party::Create: handleCreateParty(partyId, reader.get<int32_t>()); break;
 		case Sync::Party::Disband: handleDisbandParty(partyId); break;
-		case Sync::Party::SwitchLeader: handlePartyTransfer(partyId, packet.get<int32_t>()); break;
-		case Sync::Party::AddMember: handlePartyAdd(partyId, packet.get<int32_t>()); break;
+		case Sync::Party::SwitchLeader: handlePartyTransfer(partyId, reader.get<int32_t>()); break;
+		case Sync::Party::AddMember: handlePartyAdd(partyId, reader.get<int32_t>()); break;
 		case Sync::Party::RemoveMember: {
-			int32_t playerId = packet.get<int32_t>();
-			handlePartyRemove(partyId, playerId, packet.get<bool>());
+			int32_t playerId = reader.get<int32_t>();
+			handlePartyRemove(partyId, playerId, reader.get<bool>());
 			break;
 		}
 	}
 }
 
-auto PlayerDataProvider::handleBuddySync(PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::Buddy::Invite: PlayerDataProvider::buddyInvite(packet); break;
-		case Sync::Buddy::OnlineOffline: PlayerDataProvider::buddyOnlineOffline(packet); break;
+auto PlayerDataProvider::handleBuddySync(PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::Buddy::Invite: PlayerDataProvider::buddyInvite(reader); break;
+		case Sync::Buddy::OnlineOffline: PlayerDataProvider::buddyOnlineOffline(reader); break;
 	}
 }
 
-auto PlayerDataProvider::handleChangeChannel(PacketReader &packet) -> void {
-	int32_t playerId = packet.get<int32_t>();
-	channel_id_t channelId = packet.get<channel_id_t>();
-	const Ip &ip = packet.getClass<Ip>();
-	port_t port = packet.get<port_t>();
+auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
+	int32_t playerId = reader.get<int32_t>();
+	channel_id_t channelId = reader.get<channel_id_t>();
+	Ip ip = reader.getClass<Ip>();
+	port_t port = reader.get<port_t>();
 
 	if (Player *player = getPlayer(playerId)) {
 		if (!ip.isInitialized()) {
-			PlayerPacket::sendBlockedMessage(player, PlayerPacket::BlockMessages::CannotGo);
+			player->send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::CannotGo));
 		}
 		else {
 			auto kvp = m_followers.find(playerId);
@@ -319,29 +324,29 @@ auto PlayerDataProvider::handleChangeChannel(PacketReader &packet) -> void {
 			}
 
 			player->setOnline(false); // Set online to false BEFORE CC packet is sent to player
-			PlayerPacket::changeChannel(player, ip, port);
+			player->send(PlayerPacket::changeChannel(ip, port));
 			player->saveAll(true);
 			player->setSaveOnDc(false);
 		}
 	}
 }
 
-auto PlayerDataProvider::handleNewConnectable(PacketReader &packet) -> void {
-	int32_t playerId = packet.get<int32_t>();
-	const Ip &ip = packet.getClass<Ip>();
-	Connectable::getInstance().newPlayer(playerId, ip, packet);
-	SyncPacket::PlayerPacket::connectableEstablished(playerId);
+auto PlayerDataProvider::handleNewConnectable(PacketReader &reader) -> void {
+	int32_t playerId = reader.get<int32_t>();
+	Ip ip = reader.getClass<Ip>();
+	Connectable::getInstance().newPlayer(playerId, ip, reader);
+	sendSync(SyncPacket::PlayerPacket::connectableEstablished(playerId));
 }
 
 auto PlayerDataProvider::handleDeleteConnectable(int32_t id) -> void {
 	Connectable::getInstance().playerEstablished(id);
 }
 
-auto PlayerDataProvider::handleUpdatePlayer(PacketReader &packet) -> void {
-	int32_t playerId = packet.get<int32_t>();
+auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
+	int32_t playerId = reader.get<int32_t>();
 	auto &player = m_playerData[playerId];
 
-	update_bits_t flags = packet.get<update_bits_t>();
+	update_bits_t flags = reader.get<update_bits_t>();
 	bool updateParty = false;
 	bool updateGuild = false;
 	bool updateAlliance = false;
@@ -354,31 +359,40 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &packet) -> void {
 		updateParty = true;
 		updateGuild = true;
 		updateAlliance = true;
-		PlayerData data = packet.getClass<PlayerData>();
+		PlayerData data = reader.getClass<PlayerData>();
 		player.copyFrom(data);
 		if (data.gmLevel > 0 || data.admin) {
 			m_gmList.insert(data.id);
 		}
+
+		player.initialized = true;
 	}
 	else {
 		if (flags & Sync::Player::UpdateBits::Job) {
-			player.job = packet.get<int16_t>();
+			player.job = reader.get<int16_t>();
 			updateParty = true;
 			updateGuild = true;
 			updateAlliance = true;
 		}
 		if (flags & Sync::Player::UpdateBits::Level) {
-			player.level = packet.get<int16_t>();
+			player.level = reader.get<int16_t>();
 			updateParty = true;
 			updateGuild = true;
 			updateAlliance = true;
 		}
 		if (flags & Sync::Player::UpdateBits::Map) {
-			player.map = packet.get<int32_t>();
+			player.map = reader.get<int32_t>();
 			updateParty = true;
 		}
 		if (flags & Sync::Player::UpdateBits::Channel) {
-			player.channel = packet.get<channel_id_t>();
+			player.channel = reader.get<channel_id_t>();
+			updateParty = true;
+		}
+		if (flags & Sync::Player::UpdateBits::Ip) {
+			player.ip = reader.get<Ip>();
+		}
+		if (flags & Sync::Player::UpdateBits::Cash) {
+			player.cashShop = reader.get<bool>();
 			updateParty = true;
 		}
 	}
@@ -393,13 +407,13 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &packet) -> void {
 	}
 }
 
-auto PlayerDataProvider::handleCharacterCreated(PacketReader &packet) -> void {
-	PlayerData data = packet.getClass<PlayerData>();
+auto PlayerDataProvider::handleCharacterCreated(PacketReader &reader) -> void {
+	PlayerData data = reader.getClass<PlayerData>();
 	addPlayerData(data);
 }
 
-auto PlayerDataProvider::handleCharacterDeleted(PacketReader &packet) -> void {
-	int32_t id = packet.get<int32_t>();
+auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
+	int32_t id = reader.get<int32_t>();
 	// Intentionally blank for now
 }
 
@@ -415,7 +429,7 @@ auto PlayerDataProvider::handleCreateParty(int32_t id, int32_t leaderId) -> void
 	}
 	else {
 		p->addMember(leader, true);
-		PartyPacket::createParty(leader, p.get());
+		leader->send(PartyPacket::createParty(p.get()));
 	}
 	
 	p->setLeader(leaderId);
@@ -468,28 +482,28 @@ auto PlayerDataProvider::handlePartyAdd(int32_t id, int32_t playerId) -> void {
 }
 
 // Buddies
-auto PlayerDataProvider::buddyInvite(PacketReader &packet) -> void {
-	int32_t inviterId = packet.get<int32_t>();
-	int32_t inviteeId = packet.get<int32_t>();
+auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
+	int32_t inviterId = reader.get<int32_t>();
+	int32_t inviteeId = reader.get<int32_t>();
 	if (Player *invitee = getPlayer(inviteeId)) {
 		BuddyInvite invite;
 		invite.id = inviterId;
-		invite.name = packet.getString();
+		invite.name = reader.getString();
 		invitee->getBuddyList()->addBuddyInvite(invite);
 		invitee->getBuddyList()->checkForPendingBuddy();
 	}
 }
 
-auto PlayerDataProvider::buddyOnlineOffline(PacketReader &packet) -> void {
-	int32_t playerId = packet.get<int32_t>(); // The id of the player coming online
-	channel_id_t channel = packet.get<channel_id_t>();
-	vector_t<int32_t> players = packet.getVector<int32_t>(); // Holds the buddy IDs
+auto PlayerDataProvider::buddyOnlineOffline(PacketReader &reader) -> void {
+	int32_t playerId = reader.get<int32_t>(); // The id of the player coming online
+	channel_id_t channel = reader.get<channel_id_t>();
+	vector_t<int32_t> players = reader.getVector<int32_t>(); // Holds the buddy IDs
 
 	for (size_t i = 0; i < players.size(); i++) {
 		if (Player *player = getPlayer(players[i])) {
 			if (ref_ptr_t<Buddy> ptr = player->getBuddyList()->getBuddy(playerId)) {
 				ptr->channel = channel;
-				BuddyListPacket::online(player, playerId, channel);
+				player->send(BuddyListPacket::online(playerId, channel));
 			}
 		}
 	}

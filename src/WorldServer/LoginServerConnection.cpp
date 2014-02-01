@@ -16,13 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnection.hpp"
+#include "Channels.hpp"
 #include "LoginServerConnectHandler.hpp"
 #include "InterHeader.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "SyncHandler.hpp"
 #include "VanaConstants.hpp"
 #include "WorldServer.hpp"
-#include "WorldServerAcceptHandler.hpp"
 #include <iostream>
 
 LoginServerConnection::LoginServerConnection() :
@@ -37,13 +38,21 @@ LoginServerConnection::~LoginServerConnection() {
 	}
 }
 
-auto LoginServerConnection::handleRequest(PacketReader &packet) -> void {
-	switch (packet.getHeader()) {
-		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, packet); break;
-		case IMSG_REHASH_CONFIG: LoginServerConnectHandler::rehashConfig(packet); break;
-		case IMSG_TO_CHANNEL: WorldServerAcceptHandler::sendPacketToChannel(packet); break;
-		case IMSG_TO_CHANNEL_LIST: WorldServerAcceptHandler::sendPacketToChannelList(packet); break;
-		case IMSG_TO_ALL_CHANNELS: WorldServerAcceptHandler::sendPacketToAllChannels(packet); break;
-		case IMSG_SYNC: SyncHandler::handle(this, packet); break;
+auto LoginServerConnection::handleRequest(PacketReader &reader) -> void {
+	switch (reader.getHeader()) {
+		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, reader); break;
+		case IMSG_REHASH_CONFIG: WorldServer::getInstance().rehashConfig(reader.getClass<WorldConfig>()); break;
+		case IMSG_TO_CHANNEL: {
+			channel_id_t channelId = reader.get<channel_id_t>();
+			Channels::getInstance().send(channelId, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_CHANNEL_LIST: {
+			vector_t<channel_id_t> channels = reader.getVector<channel_id_t>();
+			Channels::getInstance().send(channels, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_ALL_CHANNELS: Channels::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
 	}
 }

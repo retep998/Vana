@@ -28,5 +28,5 @@ public:
 	WorldServerConnection();
 	~WorldServerConnection();
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 };

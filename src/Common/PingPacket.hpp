@@ -17,9 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+
 class AbstractConnection;
 
 namespace PingPacket {
-	auto ping(AbstractConnection *connection) -> void;
-	auto pong(AbstractConnection *connection) -> void;
+	PACKET(ping, AbstractConnection *connection);
+	PACKET(pong, AbstractConnection *connection);
 }

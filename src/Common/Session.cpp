@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "AbstractConnection.hpp"
 #include "Decoder.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
 #include "SessionManager.hpp"
 #include <functional>
@@ -63,7 +63,7 @@ auto Session::handleStart() -> void {
 		m_decoder.setRecvIv(Randomizer::rand<uint32_t>());
 		m_decoder.setSendIv(Randomizer::rand<uint32_t>());
 
-		const PacketCreator &connectPacket = getConnectPacket(m_patchLocation);
+		const PacketBuilder &connectPacket = getConnectPacket(m_patchLocation);
 		send(connectPacket, false);
 	}
 
@@ -86,8 +86,8 @@ auto Session::handleStop() -> void {
 	}
 }
 
-auto Session::send(const PacketCreator &packet, bool encrypt) -> void {
-	send(packet.getBuffer(), packet.getSize(), encrypt);
+auto Session::send(const PacketBuilder &builder, bool encrypt) -> void {
+	send(builder.getBuffer(), builder.getSize(), encrypt);
 }
 
 auto Session::send(const unsigned char *buf, int32_t len, bool encrypt) -> void {
@@ -182,8 +182,8 @@ auto Session::getIp() const -> const Ip & {
 	return m_connection->getIp();
 }
 
-auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketCreator {
-	PacketCreator packet;
+auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketBuilder {
+	PacketBuilder packet;
 	// IV_PATCH_LOCATION
 	packet.add<header_t>(0);
 	packet.add<uint16_t>(MapleVersion::Version);

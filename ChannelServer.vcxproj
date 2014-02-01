@@ -106,6 +106,7 @@
     <ClCompile Include="src\ChannelServer\main_channel.cpp" />
     <ClCompile Include="src\ChannelServer\ManagementFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\MapFunctions.cpp" />
+    <ClCompile Include="src\ChannelServer\MapleTvPacket.cpp" />
     <ClCompile Include="src\ChannelServer\MessageFunctions.cpp" />
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp" />
     <ClCompile Include="src\ChannelServer\PartyPacket.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\ChannelServer\ManagementFunctions.hpp" />
     <ClInclude Include="src\ChannelServer\Map.hpp" />
     <ClInclude Include="src\ChannelServer\MapFunctions.hpp" />
+    <ClInclude Include="src\ChannelServer\MapleTvPacket.hpp" />
     <ClInclude Include="src\ChannelServer\MapleTvs.hpp" />
     <ClInclude Include="src\ChannelServer\Maps.hpp" />
     <ClInclude Include="src\ChannelServer\MessageFunctions.hpp" />

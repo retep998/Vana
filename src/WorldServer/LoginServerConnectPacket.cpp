@@ -18,33 +18,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectPacket.hpp"
 #include "InterHeader.hpp"
 #include "LoginServerConnection.hpp"
-#include "PacketCreator.hpp"
 #include "Session.hpp"
 #include "WorldServer.hpp"
 
-auto LoginServerConnectPacket::registerChannel(channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_REGISTER_CHANNEL);
-	packet.add<channel_id_t>(channel);
-	packet.addClass<Ip>(channelIp);
-	packet.addClassVector<ExternalIp>(extIp);
-	packet.add<port_t>(port);
-	WorldServer::getInstance().sendPacketToLogin(packet);
+namespace LoginServerConnectPacket {
+
+PACKET_IMPL(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_REGISTER_CHANNEL)
+		.add<channel_id_t>(channel)
+		.addClass<Ip>(channelIp)
+		.addClassVector<ExternalIp>(extIp)
+		.add<port_t>(port);
+	return builder;
 }
 
-auto LoginServerConnectPacket::updateChannelPop(channel_id_t channel, int32_t population) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_UPDATE_CHANNEL_POP);
-	packet.add<channel_id_t>(channel);
-	packet.add<int32_t>(population);
-
-	WorldServer::getInstance().sendPacketToLogin(packet);
+PACKET_IMPL(updateChannelPop, channel_id_t channel, int32_t population) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_UPDATE_CHANNEL_POP)
+		.add<channel_id_t>(channel)
+		.add<int32_t>(population);
+	return builder;
 }
 
-auto LoginServerConnectPacket::removeChannel(channel_id_t channel) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_REMOVE_CHANNEL);
-	packet.add<channel_id_t>(channel);
+PACKET_IMPL(removeChannel, channel_id_t channel) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_REMOVE_CHANNEL)
+		.add<channel_id_t>(channel);
+	return builder;
+}
 
-	WorldServer::getInstance().sendPacketToLogin(packet);
 }

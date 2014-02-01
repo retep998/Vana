@@ -60,7 +60,7 @@ public:
 	auto toString() const -> string_t;
 private:
 	auto getSize() const -> size_t { return m_length; }
-	friend auto operator <<(std::ostream &out, const PacketReader &packet) -> std::ostream &;
+	friend auto operator <<(std::ostream &out, const PacketReader &reader) -> std::ostream &;
 
 	unsigned char *m_buffer = nullptr;
 	size_t m_length = 0;
@@ -133,7 +133,7 @@ auto PacketReader::getClassVector(size_t size) -> vector_t<TValue> {
 }
 
 inline
-auto operator <<(std::ostream &out, const PacketReader &packet) -> std::ostream & {
-	out << packet.toString();
+auto operator <<(std::ostream &out, const PacketReader &reader) -> std::ostream & {
+	out << reader.toString();
 	return out;
 }

@@ -29,14 +29,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class AbstractConnection;
-class PacketCreator;
+class PacketBuilder;
+class PacketBuilder;
 
 class Session : public AbstractSession, public enable_shared<Session> {
 public:
 	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation = "");
 
 	auto disconnect() -> void override;
-	auto send(const PacketCreator &packet, bool encrypt = true) -> void;
+	auto send(const PacketBuilder &builder, bool encrypt = true) -> void;
 	auto getIp() const -> const Ip &;
 protected:
 	auto getSocket() -> boost::asio::ip::tcp::socket &;
@@ -51,7 +52,7 @@ protected:
 	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
-	auto getConnectPacket(const string_t &patchLocation) const -> PacketCreator;
+	auto getConnectPacket(const string_t &patchLocation) const -> PacketBuilder;
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;

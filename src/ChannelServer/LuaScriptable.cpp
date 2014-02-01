@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
 #include "Instances.hpp"
+#include "InterHeader.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
 #include "MapPacket.hpp"
@@ -32,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mob.hpp"
 #include "Npc.hpp"
 #include "NpcHandler.hpp"
+#include "PacketWrapper.hpp"
 #include "Party.hpp"
 #include "PartyHandler.hpp"
 #include "Player.hpp"
@@ -365,10 +367,10 @@ auto LuaScriptable::printError(const string_t &error) -> void {
 	}
 
 	if (player->isGm()) {
-		PlayerPacket::showMessage(player, error, PlayerPacket::NoticeTypes::Red);
+		player->send(PlayerPacket::showMessage(error, PlayerPacket::NoticeTypes::Red));
 	}
 	else {
-		PlayerPacket::showMessage(player, "There is a script error; please contact an administrator", PlayerPacket::NoticeTypes::Red);
+		player->send(PlayerPacket::showMessage("There is a script error; please contact an administrator", PlayerPacket::NoticeTypes::Red));
 	}
 }
 
@@ -476,14 +478,24 @@ auto LuaExports::log(lua_State *luaVm) -> int {
 auto LuaExports::showGlobalMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
-	PlayerPacket::showMessageGlobal(msg, type);
+	ChannelServer::getInstance().sendWorld(
+		Packets::prepend(PlayerPacket::showMessage(msg, type), [](PacketBuilder &builder) {
+			builder.add<header_t>(IMSG_TO_LOGIN);
+			builder.add<header_t>(IMSG_TO_ALL_WORLDS);
+			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
+			builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+		}));
 	return 0;
 }
 
 auto LuaExports::showWorldMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
-	PlayerPacket::showMessageWorld(msg, type);
+	ChannelServer::getInstance().sendWorld(
+		Packets::prepend(PlayerPacket::showMessage(msg, type), [](PacketBuilder &builder) {
+			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
+			builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+		}));
 	return 0;
 }
 
@@ -538,7 +550,7 @@ auto LuaExports::setChannelVariable(lua_State *luaVm) -> int {
 auto LuaExports::showChannelMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
-	PlayerPacket::showMessageChannel(msg, type);
+	PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(msg, type));
 	return 0;
 }
 
@@ -1180,16 +1192,17 @@ auto LuaExports::setStr(lua_State *luaVm) -> int {
 auto LuaExports::setStyle(lua_State *luaVm) -> int {
 	int32_t id = lua_tointeger(luaVm, -1);
 	int32_t type = GameLogicUtilities::getItemType(id);
+	Player *player = getPlayer(luaVm);
 	if (type == 0) {
-		getPlayer(luaVm)->setSkin(static_cast<int8_t>(id));
+		player->setSkin(static_cast<int8_t>(id));
 	}
 	else if (type == 2) {
-		getPlayer(luaVm)->setEyes(id);
+		player->setEyes(id);
 	}
 	else if (type == 3) {
-		getPlayer(luaVm)->setHair(id);
+		player->setHair(id);
 	}
-	InventoryPacket::updatePlayer(getPlayer(luaVm));
+	player->sendMap(InventoryPacket::updatePlayer(player));
 	return 0;
 }
 
@@ -1205,36 +1218,38 @@ auto LuaExports::showInstructionBubble(lua_State *luaVm) -> int {
 		height = 5;
 	}
 
-	PlayerPacket::instructionBubble(getPlayer(luaVm), msg, width, height);
+	getPlayer(luaVm)->send(PlayerPacket::instructionBubble(msg, width, height));
 	return 0;
 }
 
 auto LuaExports::showMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
-	PlayerPacket::showMessage(getPlayer(luaVm), msg, type);
+	getPlayer(luaVm)->send(PlayerPacket::showMessage(msg, type));
 	return 0;
 }
 
 // Effects
 auto LuaExports::playFieldSound(lua_State *luaVm) -> int {
 	string_t val = lua_tostring(luaVm, 1);
+	auto &packet = EffectPacket::sendFieldSound(val);
 	if (lua_isnumber(luaVm, 2)) {
-		EffectPacket::sendFieldSound(lua_tointeger(luaVm, 2), val);
+		Maps::getMap(lua_tointeger(luaVm, 2))->send(packet);
 	}
 	else {
-		EffectPacket::sendFieldSound(getPlayer(luaVm), val);
+		getPlayer(luaVm)->send(packet);
 	}
 	return 0;
 }
 
 auto LuaExports::playMinigameSound(lua_State *luaVm) -> int {
 	string_t val = lua_tostring(luaVm, 1);
+	auto &packet = EffectPacket::sendMinigameSound(val);
 	if (lua_isnumber(luaVm, 2)) {
-		EffectPacket::sendMinigameSound(lua_tointeger(luaVm, 2), val);
+		Maps::getMap(lua_tointeger(luaVm, 2))->send(packet);
 	}
 	else {
-		EffectPacket::sendMinigameSound(getPlayer(luaVm), val);
+		getPlayer(luaVm)->send(packet);
 	}
 	return 0;
 }
@@ -1258,13 +1273,13 @@ auto LuaExports::setMusic(lua_State *luaVm) -> int {
 
 auto LuaExports::showMapEffect(lua_State *luaVm) -> int {
 	string_t val = lua_tostring(luaVm, -1);
-	EffectPacket::sendEffect(getPlayer(luaVm)->getMapId(), val);
+	getPlayer(luaVm)->sendMap(EffectPacket::sendEffect(val));
 	return 0;
 }
 
 auto LuaExports::showMapEvent(lua_State *luaVm) -> int {
 	string_t val = lua_tostring(luaVm, -1);
-	EffectPacket::sendEvent(getPlayer(luaVm)->getMapId(), val);
+	getPlayer(luaVm)->sendMap(EffectPacket::sendEvent(val));
 	return 0;
 }
 
@@ -1350,7 +1365,7 @@ auto LuaExports::setReactorState(lua_State *luaVm) -> int {
 auto LuaExports::showMapMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	uint8_t type = lua_tointeger(luaVm, -1);
-	getPlayer(luaVm)->getMap()->showMessage(msg, type);
+	getPlayer(luaVm)->sendMap(PlayerPacket::showMessage(msg, type));
 	return 0;
 }
 

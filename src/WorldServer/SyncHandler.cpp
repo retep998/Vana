@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameObjects.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
@@ -33,29 +32,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.hpp"
 #include "WorldServerAcceptPacket.hpp"
 
-auto SyncHandler::handle(AbstractConnection *connection, PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::SyncTypes::Config: handleConfigSync(packet); break;
-		case Sync::SyncTypes::Player: PlayerDataProvider::getInstance().handlePlayerSync(connection, packet); break;
-		case Sync::SyncTypes::Party: PlayerDataProvider::getInstance().handlePartySync(connection, packet); break;
-		case Sync::SyncTypes::Buddy: PlayerDataProvider::getInstance().handleBuddySync(connection, packet); break;
+auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
+		case Sync::SyncTypes::Player: PlayerDataProvider::getInstance().handlePlayerSync(connection, reader); break;
+		case Sync::SyncTypes::Party: PlayerDataProvider::getInstance().handlePartySync(connection, reader); break;
+		case Sync::SyncTypes::Buddy: PlayerDataProvider::getInstance().handleBuddySync(connection, reader); break;
 	}
 }
 
-auto SyncHandler::handleConfigSync(PacketReader &packet) -> void {
-	switch (packet.get<sync_t>()) {
-		case Sync::Config::RateSet: handleSetRates(packet); break;
+auto SyncHandler::handleConfigSync(PacketReader &reader) -> void {
+	switch (reader.get<sync_t>()) {
+		case Sync::Config::RateSet: WorldServer::getInstance().setRates(reader.getClass<Rates>()); break;
 		case Sync::Config::RateReset: WorldServer::getInstance().resetRates(); break;
-		case Sync::Config::ScrollingHeader: handleScrollingHeader(packet); break;
+		case Sync::Config::ScrollingHeader: WorldServer::getInstance().setScrollingHeader(reader.getString()); break;
 	}
-}
-
-auto SyncHandler::handleSetRates(PacketReader &packet) -> void {
-	Rates rates = packet.getClass<Rates>();
-	WorldServer::getInstance().setRates(rates);
-}
-
-auto SyncHandler::handleScrollingHeader(PacketReader &packet) -> void {
-	string_t message = packet.getString();
-	WorldServer::getInstance().setScrollingHeader(message);
 }

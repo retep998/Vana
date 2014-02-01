@@ -25,7 +25,7 @@ struct Pos;
 
 namespace DropHandler {
 	auto doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt = 100, bool isSteal = false) -> void;
-	auto dropMesos(Player *player, PacketReader &packet) -> void;
-	auto petLoot(Player *player, PacketReader &packet) -> void;
-	auto lootItem(Player *player, PacketReader &packet, int64_t petId = 0) -> void;
+	auto dropMesos(Player *player, PacketReader &reader) -> void;
+	auto petLoot(Player *player, PacketReader &reader) -> void;
+	auto lootItem(Player *player, PacketReader &reader, int64_t petId = 0) -> void;
 }

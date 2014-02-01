@@ -17,94 +17,83 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "EffectPacket.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "SmsgHeader.hpp"
 
-auto EffectPacket::playMusic(int32_t mapId, const string_t &music) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x06);
-	packet.addString(music);
-	Maps::getMap(mapId)->sendPacket(packet);
+namespace EffectPacket {
+
+PACKET_IMPL(playMusic, const string_t &music) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<int8_t>(0x06)
+		.addString(music);
+	return builder;
 }
 
-auto EffectPacket::playMusic(Player *player, const string_t &music) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x06);
-	packet.addString(music);
-	player->getSession()->send(packet);
-}
-
-auto EffectPacket::sendEvent(int32_t mapId, const string_t &id) -> void {
+PACKET_IMPL(sendEvent, const string_t &id) {
+	PacketBuilder builder;
 	// Look in Map.wz/Effect.img to find valid strings
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x03);
-	packet.addString(id);
-	Maps::getMap(mapId)->sendPacket(packet);
+	builder
+		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<int8_t>(0x03)
+		.addString(id);
+	return builder;
 }
 
-auto EffectPacket::sendEffect(int32_t mapId, const string_t &effect) -> void {
+PACKET_IMPL(sendEffect, const string_t &effect) {
+	PacketBuilder builder;
 	// Look in Map.wz/Obj/Effect.img/quest/ for valid strings
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x02);
-	packet.addString(effect);
-	Maps::getMap(mapId)->sendPacket(packet);
+	builder
+		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<int8_t>(0x02)
+		.addString(effect);
+	return builder;
 }
 
-auto EffectPacket::playPortalSoundEffect(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x07);
-	player->getSession()->send(packet);
+PACKET_IMPL(playPortalSoundEffect) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(0x07);
+	return builder;
 }
 
-auto EffectPacket::sendFieldSound(int32_t mapId, const string_t &sound) -> void {
+PACKET_IMPL(sendFieldSound, const string_t &sound) {
+	PacketBuilder builder;
 	// Look in Sound.wz/Field.img to find valid strings
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x04);
-	packet.addString(sound);
-	Maps::getMap(mapId)->sendPacket(packet);
+	builder
+		.add<header_t>(SMSG_MAP_EFFECT)
+		.add<int8_t>(0x04)
+		.addString(sound);
+	return builder;
 }
 
-auto EffectPacket::sendFieldSound(Player *player, const string_t &sound) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MAP_EFFECT);
-	packet.add<int8_t>(0x04);
-	packet.addString(sound);
-	player->getSession()->send(packet);
-}
-
-auto EffectPacket::sendMinigameSound(int32_t mapId, const string_t &sound) -> void {
+PACKET_IMPL(sendMinigameSound, const string_t &sound) {
+	PacketBuilder builder;
 	// Look in Sound.wz/MiniGame.img to find valid strings
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SOUND);
-	packet.addString(sound);
-	Maps::getMap(mapId)->sendPacket(packet);
+	builder
+		.add<header_t>(SMSG_SOUND)
+		.addString(sound);
+	return builder;
 }
 
-auto EffectPacket::sendMinigameSound(Player *player, const string_t &sound) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SOUND);
-	packet.addString(sound);
-	player->getSession()->send(packet);
+SPLIT_PACKET_IMPL(sendMobItemBuffEffect, int32_t playerId, int32_t itemId) {
+	SplitPacketBuilder builder;
+	PacketBuilder packet;
+	packet
+		.add<int8_t>(0x0B)
+		.add<int32_t>(itemId);
+
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.addBuffer(packet);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.addBuffer(packet);
+	return builder;
 }
 
-auto EffectPacket::sendMobItemBuffEffect(Player *player, int32_t itemId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x0B);
-	packet.add<int32_t>(itemId);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_SKILL_SHOW);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(0x0B);
-	packet.add<int32_t>(itemId);
-	player->getMap()->sendPacket(packet, player);
 }

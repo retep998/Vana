@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ClientIp.hpp"
 #include "InterHeader.hpp"
 #include "KeyMaps.hpp"
-#include "PacketCreator.hpp"
 #include "Pet.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -32,113 +31,117 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <unordered_map>
 
-auto PlayerPacket::connectData(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANGE_MAP);
-	packet.add<int32_t>(ChannelServer::getInstance().getChannelId());
-	packet.add<uint8_t>(player->getPortalCount(true));
-	packet.add<bool>(true); // Is a connect packet
-	packet.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+namespace PlayerPacket {
+
+PACKET_IMPL(connectData, Player *player) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHANGE_MAP)
+		.add<int32_t>(ChannelServer::getInstance().getChannelId())
+		.add<uint8_t>(player->getPortalCount(true))
+		.add<bool>(true) // Is a connect packet
+		.add<int16_t>(0); // Some amount for a funny message at the top of the screen
+
 	if (false) {
 		size_t lineAmount = 0;
-		packet.addString("Message title");
+		builder.addString("Message title");
 		for (size_t i = 0; i < lineAmount; i++) {
-			packet.addString("Line");
+			builder.addString("Line");
 		}
 	}
 
-	player->initializeRng(packet);
+	player->initializeRng(builder);
 
-	packet.add<int64_t>(-1);
-	packet.add<int32_t>(player->getId());
-	packet.addString(player->getName(), 13);
-	packet.add<int8_t>(player->getGender());
-	packet.add<int8_t>(player->getSkin());
-	packet.add<int32_t>(player->getEyes());
-	packet.add<int32_t>(player->getHair());
+	builder
+		.add<int64_t>(-1)
+		.add<int32_t>(player->getId())
+		.addString(player->getName(), 13)
+		.add<int8_t>(player->getGender())
+		.add<int8_t>(player->getSkin())
+		.add<int32_t>(player->getEyes())
+		.add<int32_t>(player->getHair());
 
-	player->getPets()->connectData(packet);
-	player->getStats()->connectData(packet); // Stats
+	player->getPets()->connectData(builder);
+	player->getStats()->connectData(builder); // Stats
 
-	packet.add<int32_t>(0); // Gachapon EXP
+	builder
+		.add<int32_t>(0) // Gachapon EXP
+		.add<int32_t>(player->getMapId())
+		.add<int8_t>(player->getMapPos())
+		.add<int32_t>(0) // Unknown int32 added in .62
+		.add<uint8_t>(player->getBuddyListSize());
 
-	packet.add<int32_t>(player->getMapId());
-	packet.add<int8_t>(player->getMapPos());
+	player->getInventory()->connectData(builder); // Inventory data
+	player->getSkills()->connectData(builder); // Skills - levels and cooldowns
+	player->getQuests()->connectData(builder); // Quests
 
-	packet.add<int32_t>(0); // Unknown int32 added in .62
+	builder
+		.add<int32_t>(0)
+		.add<int32_t>(0);
 
-	packet.add<uint8_t>(player->getBuddyListSize());
+	player->getInventory()->rockPacket(builder); // Teleport Rock/VIP Rock maps
+	player->getMonsterBook()->connectData(builder);
 
-	player->getInventory()->connectData(packet); // Inventory data
-	player->getSkills()->connectData(packet); // Skills - levels and cooldowns
-	player->getQuests()->connectData(packet); // Quests
-
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(0);
-
-	player->getInventory()->rockPacket(packet); // Teleport Rock/VIP Rock maps
-	player->getMonsterBook()->connectData(packet);
-
-	packet.add<int16_t>(0);
-
-	// Party Quest data (quest needs to be added in the quests list)
-	packet.add<int16_t>(0); // Amount of pquests
-	// for every pquest: int16_t questId, string questdata
-
-	packet.add<int16_t>(0);
-
-	packet.add<int64_t>(TimeUtilities::getServerTime());
-	player->getSession()->send(packet);
+	builder
+		.add<int16_t>(0)
+		// Party Quest data (quest needs to be added in the quests list)
+		.add<int16_t>(0) // Amount of pquests
+		// for every pquest: int16_t questId, string questdata
+		.add<int16_t>(0)
+		.add<int64_t>(TimeUtilities::getServerTime());
+	return builder;
 }
 
-auto PlayerPacket::showKeys(Player *player, KeyMaps *keyMaps) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_KEYMAP);
-	packet.add<int8_t>(0);
+PACKET_IMPL(showKeys, KeyMaps *keyMaps) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_KEYMAP)
+		.add<int8_t>(0);
+
 	for (size_t i = 0; i < KeyMaps::size; i++) {
 		KeyMaps::KeyMap *keyMap = keyMaps->getKeyMap(i);
-		if (keyMap != nullptr) {
-			packet.add<int8_t>(keyMap->type);
-			packet.add<int32_t>(keyMap->action);
-		}
-		else {
-			packet.add<int8_t>(0);
-			packet.add<int32_t>(0);
-		}
+		builder
+			.add<int8_t>(keyMap == nullptr ? 0 : keyMap->type)
+			.add<int32_t>(keyMap == nullptr ? 0 : keyMap->action);
 	}
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto PlayerPacket::showSkillMacros(Player *player, SkillMacros *macros) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MACRO_LIST);
-	packet.add<int8_t>(macros->getMax() + 1);
+PACKET_IMPL(showSkillMacros, SkillMacros *macros) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MACRO_LIST)
+		.add<int8_t>(macros->getMax() + 1);
+
 	for (int8_t i = 0; i <= macros->getMax(); i++) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != nullptr) {
-			packet.addString(macro->name);
-			packet.add<bool>(macro->shout);
-			packet.add<int32_t>(macro->skill1);
-			packet.add<int32_t>(macro->skill2);
-			packet.add<int32_t>(macro->skill3);
+			builder
+				.addString(macro->name)
+				.add<bool>(macro->shout)
+				.add<int32_t>(macro->skill1)
+				.add<int32_t>(macro->skill2)
+				.add<int32_t>(macro->skill3);
 		}
 		else {
-			packet.addString("");
-			packet.add<bool>(false);
-			packet.add<int32_t>(0);
-			packet.add<int32_t>(0);
-			packet.add<int32_t>(0);
+			builder
+				.addString("")
+				.add<bool>(false)
+				.add<int32_t>(0)
+				.add<int32_t>(0)
+				.add<int32_t>(0);
 		}
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value, bool itemResponse) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<bool>(itemResponse);
-	packet.add<int32_t>(updateBits);
+PACKET_IMPL(updateStat, int32_t updateBits, int32_t value, bool itemResponse) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<bool>(itemResponse)
+		.add<int32_t>(updateBits);
+
 	switch (updateBits) {
 		// For now it only accepts updateBits as a single unit, might be a collection later
 		case Stats::Pet:
@@ -154,7 +157,7 @@ auto PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value,
 		case Stats::MaxMp:
 		case Stats::Ap:
 		case Stats::Sp:
-			packet.add<int16_t>(static_cast<int16_t>(value));
+			builder.add<int16_t>(static_cast<int16_t>(value));
 			break;
 		case Stats::Skin:
 		case Stats::Eyes:
@@ -162,62 +165,49 @@ auto PlayerPacket::updateStat(Player *player, int32_t updateBits, int32_t value,
 		case Stats::Exp:
 		case Stats::Fame:
 		case Stats::Mesos:
-			packet.add<int32_t>(value);
+			builder.add<int32_t>(value);
 			break;
 	}
-	packet.add<int32_t>(value);
-	player->getSession()->send(packet);
+	builder.add<int32_t>(value);
+	return builder;
 }
 
-auto PlayerPacket::changeChannel(Player *player, const Ip &ip, port_t port) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANNEL_CHANGE);
-	packet.add<bool>(true);
-	packet.addClass<ClientIp>(ClientIp(ip)); // MapleStory accepts IP addresses in big-endian
-	packet.add<port_t>(port);
-	player->getSession()->send(packet);
+PACKET_IMPL(changeChannel, const Ip &ip, port_t port) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHANNEL_CHANGE)
+		.add<bool>(true)
+		.addClass<ClientIp>(ClientIp(ip))
+		.add<port_t>(port);
+	return builder;
 }
 
-auto PlayerPacket::showMessage(Player *player, const string_t &msg, int8_t type) -> void {
-	PacketCreator packet;
-	showMessagePacket(packet, msg, type);
-	player->getSession()->send(packet);
-}
+PACKET_IMPL(showMessage, const string_t &msg, int8_t type) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(type)
+		.addString(msg);
 
-auto PlayerPacket::showMessageChannel(const string_t &msg, int8_t type) -> void {
-	PacketCreator packet;
-	showMessagePacket(packet, msg, type);
-	PlayerDataProvider::getInstance().sendPacket(packet);
-}
-
-auto PlayerPacket::showMessageWorld(const string_t &msg, int8_t type) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_ALL_CHANNELS);
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	showMessagePacket(packet, msg, type);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto PlayerPacket::showMessageGlobal(const string_t &msg, int8_t type) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_LOGIN);
-	packet.add<header_t>(IMSG_TO_ALL_WORLDS);
-	packet.add<header_t>(IMSG_TO_ALL_CHANNELS);
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	showMessagePacket(packet, msg, type);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto PlayerPacket::showMessagePacket(PacketCreator &packet, const string_t &msg, int8_t type) -> void {
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(type);
-	packet.addString(msg);
 	if (type == NoticeTypes::Blue) {
-		packet.add<int32_t>(0);
+		builder.add<int32_t>(0);
 	}
+	return builder;
 }
 
-auto PlayerPacket::instructionBubble(Player *player, const string_t &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) -> void {
+PACKET_IMPL(groupChat, const string_t &name, const string_t &msg, int8_t type) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE_GROUP)
+		.add<int8_t>(type)
+		.addString(name)
+		.addString(msg);
+	return builder;
+}
+
+PACKET_IMPL(instructionBubble, const string_t &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
+	PacketBuilder builder;
+
 	if (width == -1) {
 		width = msg.size() * 10;
 		if (width < 40) {
@@ -225,41 +215,46 @@ auto PlayerPacket::instructionBubble(Player *player, const string_t &msg, int16_
 		}
 	}
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_BUBBLE);
-	packet.addString(msg);
-	packet.add<int16_t>(width);
-	packet.add<int16_t>(time);
-	packet.add<bool>(!isStatic);
+	builder
+		.add<header_t>(SMSG_BUBBLE)
+		.addString(msg)
+		.add<int16_t>(width)
+		.add<int16_t>(time)
+		.add<bool>(!isStatic);
 
 	if (isStatic) {
-		packet.add<int32_t>(x);
-		packet.add<int32_t>(y);
+		builder
+			.add<int32_t>(x)
+			.add<int32_t>(y);
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto PlayerPacket::showHpBar(Player *player, Player *target) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PARTY_HP_DISPLAY);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(player->getStats()->getHp());
-	packet.add<int32_t>(player->getStats()->getMaxHp());
-	target->getSession()->send(packet);
+PACKET_IMPL(showHpBar, int32_t playerId, int32_t hp, int32_t maxHp) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PARTY_HP_DISPLAY)
+		.add<int32_t>(playerId)
+		.add<int32_t>(hp)
+		.add<int32_t>(maxHp);
+	return builder;
 }
 
-auto PlayerPacket::sendBlockedMessage(Player *player, int8_t type) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHANNEL_BLOCKED);
-	packet.add<int8_t>(type);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendBlockedMessage, int8_t type) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHANNEL_BLOCKED)
+		.add<int8_t>(type);
+	return builder;
 }
 
-auto PlayerPacket::sendYellowMessage(Player *player, const string_t &msg) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_YELLOW_MESSAGE);
-	packet.add<bool>(true);
-	packet.addString(msg);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendYellowMessage, const string_t &msg) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_YELLOW_MESSAGE)
+		.add<bool>(true)
+		.addString(msg);
+	return builder;
+}
+
 }

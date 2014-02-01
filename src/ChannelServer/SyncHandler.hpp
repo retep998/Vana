@@ -22,6 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 
 namespace SyncHandler {
-	auto handle(PacketReader &packet) -> void;
-	auto handleConfigSync(PacketReader &packet) -> void;
+	auto handle(PacketReader &reader) -> void;
+	auto handleConfigSync(PacketReader &reader) -> void;
 }

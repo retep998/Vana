@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 
 class PlayerInventory {
@@ -38,10 +38,10 @@ public:
 	auto load() -> void;
 	auto save() -> void;
 
-	auto connectData(PacketCreator &packet) -> void;
-	auto addEquippedPacket(PacketCreator &packet) -> void;
-	auto rockPacket(PacketCreator &packet) -> void;
-	auto wishListPacket(PacketCreator &packet) -> void;
+	auto connectData(PacketBuilder &packet) -> void;
+	auto addEquippedPacket(PacketBuilder &packet) -> void;
+	auto rockPacket(PacketBuilder &packet) -> void;
+	auto wishListPacket(PacketBuilder &packet) -> void;
 
 	auto setMesos(int32_t mesos, bool sendPacket = false) -> void;
 	auto modifyMesos(int32_t mod, bool sendPacket = false) -> bool;

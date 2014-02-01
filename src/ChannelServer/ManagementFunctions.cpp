@@ -332,7 +332,7 @@ auto ManagementFunctions::lag(Player *player, const string_t &args) -> bool {
 }
 
 auto ManagementFunctions::header(Player *player, const string_t &args) -> bool {
-	SyncPacket::ConfigPacket::scrollingHeader(args);
+	ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::scrollingHeader(args));
 	return true;
 }
 
@@ -347,7 +347,7 @@ auto ManagementFunctions::kick(Player *player, const string_t &args) -> bool {
 	if (args.length() != 0) {
 		if (Player *target = PlayerDataProvider::getInstance().getPlayer(args)) {
 			if (player->getGmLevel() > target->getGmLevel()) {
-				target->getSession()->disconnect();
+				target->disconnect();
 				ChatHandlerFunctions::showInfo(player, "Kicked " + args + " from the server");
 			}
 			else {
@@ -368,7 +368,7 @@ auto ManagementFunctions::relog(Player *player, const string_t &args) -> bool {
 }
 
 auto ManagementFunctions::calculateRanks(Player *player, const string_t &args) -> bool {
-	WorldServerConnectPacket::rankingCalculation();
+	ChannelServer::getInstance().sendWorld(WorldServerConnectPacket::rankingCalculation());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force the calculation of rankings");
 	return true;
 }
@@ -422,7 +422,7 @@ auto ManagementFunctions::reload(Player *player, const string_t &args) -> bool {
 			args == "mobs" || args == "beauty" || args == "scripts" ||
 			args == "skills" || args == "reactors" || args == "pets" ||
 			args == "quests" || args == "all") {
-			WorldServerConnectPacket::reloadMcdb(args);
+			ChannelServer::getInstance().sendWorld(WorldServerConnectPacket::reloadMcdb(args));
 			ChatHandlerFunctions::showInfo(player, "Reloading message for " + args + " sent to all channels");
 		}
 		else {
@@ -523,7 +523,7 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> bool {
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches)) {
 		string_t targetName = matches[1];
 		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
-			target->getSession()->disconnect();
+			target->disconnect();
 		}
 		string_t reasonString = matches[2];
 		int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
@@ -547,8 +547,8 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> bool {
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 				log << "GM " << player->getName()
 					<< " banned a player with reason " << reason
@@ -569,7 +569,7 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> bool 
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches)) {
 		string_t targetName = matches[1];
 		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
-			target->getSession()->disconnect();
+			target->disconnect();
 		}
 		string_t reasonString = matches[2];
 		string_t length = matches[3];
@@ -592,8 +592,9 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> bool 
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
+			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
+
 			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 				log << "GM " << player->getName()
 					<< " temporary banned a player with reason " << reason
@@ -615,8 +616,8 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> bool {
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches)) {
 		string_t targetName = matches[1];
 		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
-			const string_t &targetIp = target->getIp().toString();
-			target->getSession()->disconnect();
+			string_t targetIp = target->getIp().toString();
+			target->disconnect();
 
 			string_t reasonString = matches[2];
 			int8_t reason = reasonString.length() > 0 ? atoi(reasonString.c_str()) : 1;
@@ -628,9 +629,9 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> bool {
 			st.execute();
 
 			if (st.get_affected_rows() > 0) {
-				const string_t &banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+				string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 
+				PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 				ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 					log << "GM " << player->getName()
 						<< " IP banned a player with reason " << reason
@@ -667,7 +668,7 @@ auto ManagementFunctions::unban(Player *player, const string_t &args) -> bool {
 		st.execute();
 
 		if (st.get_affected_rows() > 0) {
-			const string_t &banMessage = args + " has been unbanned";
+			string_t banMessage = args + " has been unbanned";
 			ChatHandlerFunctions::showInfo(player, banMessage);
 			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 				log << "GM " << player->getName()
@@ -683,7 +684,7 @@ auto ManagementFunctions::unban(Player *player, const string_t &args) -> bool {
 }
 
 auto ManagementFunctions::rehash(Player *player, const string_t &args) -> bool {
-	WorldServerConnectPacket::rehashConfig();
+	ChannelServer::getInstance().sendWorld(WorldServerConnectPacket::rehashConfig());
 	ChatHandlerFunctions::showInfo(player, "Sent a signal to force rehashing world configurations");
 	return true;
 }
@@ -724,7 +725,7 @@ auto ManagementFunctions::rates(Player *player, const string_t &args) -> bool {
 	}
 	else {
 		ChatHandlerFunctions::showInfo(player, "Sent request to reset rates");
-		SyncPacket::ConfigPacket::resetRates();
+		ChannelServer::getInstance().sendWorld(SyncPacket::ConfigPacket::resetRates());
 	}
 	return true;
 }

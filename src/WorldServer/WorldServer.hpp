@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptConnection.hpp"
 #include <string>
 
-class PacketCreator;
+class PacketBuilder;
 
 class WorldServer final : public AbstractServer {
 	SINGLETON_CUSTOM_CONSTRUCTOR(WorldServer);
@@ -39,9 +39,9 @@ public:
 	auto resetRates() -> void;
 	auto isConnected() const -> bool;
 	auto getWorldId() const -> world_id_t;
-	auto makeChannelPort(channel_id_t channelId) const -> port_t; 
+	auto makeChannelPort(channel_id_t channelId) const -> port_t;
 	auto getConfig() -> const WorldConfig &;
-	auto sendPacketToLogin(const PacketCreator &packet) -> void;
+	auto sendLogin(const PacketBuilder &builder) -> void;
 protected:
 	auto listen() -> void override;
 	auto loadData() -> void override;

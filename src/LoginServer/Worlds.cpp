@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServer.hpp"
 #include "LoginServerAcceptConnection.hpp"
 #include "LoginServerAcceptPacket.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
 #include "PlayerStatus.hpp"
@@ -39,23 +38,23 @@ auto Worlds::showWorld(Player *player) -> void {
 
 	for (const auto &kvp : m_worlds) {
 		if (kvp.second->isConnected()) {
-			LoginPacket::showWorld(player, kvp.second);
+			player->send(LoginPacket::showWorld(kvp.second));
 		}
 	}
-	LoginPacket::worldEnd(player);
+	player->send(LoginPacket::worldEnd());
 }
 
 auto Worlds::addWorld(World *world) -> void {
 	m_worlds[world->getId()] = world;
 }
 
-auto Worlds::selectWorld(Player *player, PacketReader &packet) -> void {
+auto Worlds::selectWorld(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 
-	world_id_t worldId = packet.get<world_id_t>();
+	world_id_t worldId = reader.get<world_id_t>();
 	if (World *world = getWorld(worldId)) {
 		player->setWorldId(worldId);
 		int32_t load = world->getPlayerLoad();
@@ -69,7 +68,7 @@ auto Worlds::selectWorld(Player *player, PacketReader &packet) -> void {
 		else if (load == maxLoad) {
 			message = LoginPacket::WorldMessages::MaxLoad;
 		}
-		LoginPacket::showChannels(player, message);
+		player->send(LoginPacket::showChannels(message));
 	}
 	else {
 		// Hacking
@@ -77,15 +76,15 @@ auto Worlds::selectWorld(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto Worlds::channelSelect(Player *player, PacketReader &packet) -> void {
+auto Worlds::channelSelect(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
-	packet.skipBytes(1);
-	channel_id_t channelId = packet.get<int8_t>();
+	reader.skipBytes(1);
+	channel_id_t channelId = reader.get<int8_t>();
 
-	LoginPacket::channelSelect(player);
+	player->send(LoginPacket::channelSelect());
 	World *world = m_worlds[player->getWorldId()];
 
 	if (world == nullptr) {
@@ -98,7 +97,7 @@ auto Worlds::channelSelect(Player *player, PacketReader &packet) -> void {
 		Characters::showCharacters(player);
 	}
 	else {
-		LoginPacket::channelOffline(player);
+		player->send(LoginPacket::channelOffline());
 	}
 }
 
@@ -118,14 +117,14 @@ auto Worlds::addWorldServer(LoginServerAcceptConnection *connection) -> world_id
 		world->setConnected(true);
 		world->setConnection(connection);
 
-		LoginServerAcceptPacket::connect(world);
+		connection->send(LoginServerAcceptPacket::connect(world));
 
 		LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(worldId); });
 	}
 	else {
-		LoginServerAcceptPacket::noMoreWorld(connection);
+		connection->send(LoginServerAcceptPacket::noMoreWorld());
 		std::cerr << "ERROR: No more worlds to assign." << std::endl;
-		connection->getSession()->disconnect();
+		connection->disconnect();
 	}
 	return worldId;
 }
@@ -144,29 +143,37 @@ auto Worlds::addChannelServer(LoginServerAcceptConnection *connection) -> world_
 	if (validWorld != nullptr) {
 		worldId = validWorld->getId();
 		Ip worldIp = validWorld->matchSubnet(connection->getIp());
-		LoginServerAcceptPacket::connectChannel(connection, worldId, worldIp, validWorld->getPort());
+		connection->send(LoginServerAcceptPacket::connectChannel(worldId, worldIp, validWorld->getPort()));
 	}
 	else {
-		LoginServerAcceptPacket::connectChannel(connection, worldId, Ip(0), 0);
+		connection->send(LoginServerAcceptPacket::connectChannel(worldId, Ip(0), 0));
 		std::cerr << "ERROR: No more channels to assign." << std::endl;
 	}
-	connection->getSession()->disconnect();
+	connection->disconnect();
 	return worldId;
 }
 
-auto Worlds::sendPacketToAll(const PacketCreator &packet) const -> void {
-	for (const auto &kvp : m_worlds) {
-		if (kvp.second->isConnected()) {
-			kvp.second->send(packet);
+auto Worlds::send(world_id_t id, const PacketBuilder &builder) -> void {
+	if (World *world = getWorld(id)) {
+		if (world->isConnected()) {
+			world->send(builder);
 		}
 	}
 }
 
-auto Worlds::sendPacketToList(const vector_t<world_id_t> &worlds, const PacketCreator &packet) const -> void {
+auto Worlds::send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void {
 	for (const auto &worldId : worlds) {
 		auto kvp = m_worlds.find(worldId);
 		if (kvp != std::end(m_worlds) && kvp->second->isConnected()) {
-			kvp->second->send(packet);
+			kvp->second->send(builder);
+		}
+	}
+}
+
+auto Worlds::send(const PacketBuilder &builder) -> void {
+	for (const auto &kvp : m_worlds) {
+		if (kvp.second->isConnected()) {
+			kvp.second->send(builder);
 		}
 	}
 }

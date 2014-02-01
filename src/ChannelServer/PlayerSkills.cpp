@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Randomizer.hpp"
 #include "SkillDataProvider.hpp"
@@ -122,7 +121,7 @@ auto PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacke
 	m_skills[skillId].level = newLevel;
 	m_skills[skillId].maxSkillLevel = maxSkillLevel;
 	if (sendPacket) {
-		SkillsPacket::addSkill(m_player, skillId, m_skills[skillId]);
+		m_player->send(SkillsPacket::addSkill(skillId, m_skills[skillId]));
 	}
 	return true;
 }
@@ -379,7 +378,7 @@ auto PlayerSkills::removeAllCooldowns() -> void {
 	}
 }
 
-auto PlayerSkills::connectData(PacketCreator &packet) const -> void {
+auto PlayerSkills::connectData(PacketBuilder &packet) const -> void {
 	// Skill levels
 	packet.add<uint16_t>(m_skills.size());
 	for (const auto &kvp : m_skills) {

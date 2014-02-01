@@ -23,11 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "GameLogicUtilities.hpp"
 #include "GmPacket.hpp"
+#include "InterHeader.hpp"
 #include "Inventory.hpp"
 #include "Map.hpp"
 #include "MapPacket.hpp"
 #include "Maps.hpp"
 #include "MobDataProvider.hpp"
+#include "PacketWrapper.hpp"
 #include "Player.hpp"
 #include "PlayerInventory.hpp"
 #include "PlayerPacket.hpp"
@@ -79,9 +81,9 @@ namespace AdminOpcodes {
 	*/
 }
 
-auto CommandHandler::handleCommand(Player *player, PacketReader &packet) -> void {
-	int8_t type = packet.get<int8_t>();
-	string_t name = packet.getString();
+auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void {
+	int8_t type = reader.get<int8_t>();
+	string_t name = reader.getString();
 	Player *receiver = PlayerDataProvider::getInstance().getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
@@ -89,59 +91,66 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &packet) -> void
 			bool found = false;
 			if (receiver != nullptr) {
 				if (!receiver->isUsingGmHide() || player->isGm() || player->isAdmin()) {
-					PlayersPacket::findPlayer(player, receiver->getName(), receiver->getMapId());
+					player->send(PlayersPacket::findPlayer(receiver->getName(), receiver->getMapId()));
 					found = true;
 				}
 			}
 			else {
 				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
 				if (targetData != nullptr) {
-					PlayersPacket::findPlayer(player, targetData->name, targetData->channel, 1, true);
+					player->send(PlayersPacket::findPlayer(targetData->name, targetData->channel, 1, true));
 					found = true;
 				}
 			}
 			if (!found) {
-				PlayersPacket::findPlayer(player, name, -1, 0);
+				player->send(PlayersPacket::findPlayer(name, -1, 0));
+
 			}
 			break;
 		}
 		case CommandOpcodes::Whisper: {
-			string_t chat = packet.getString();
+			string_t chat = reader.getString();
 			bool found = false;
 			if (receiver != nullptr) {
-				PlayersPacket::whisperPlayer(receiver, player->getName(), ChannelServer::getInstance().getChannelId(), chat);
-				PlayersPacket::findPlayer(player, receiver->getName(), -1, 1);
+				receiver->send(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
+				player->send(PlayersPacket::findPlayer(receiver->getName(), -1, 1));
 				found = true;
 			}
 			else {
 				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
 				if (targetData != nullptr && targetData->channel != -1) {
-					PlayersPacket::findPlayer(player, targetData->name, -1, 1);
-					PlayersPacket::whisperPlayer(targetData->id, player->getName(), ChannelServer::getInstance().getChannelId(), targetData->channel, chat);
+					player->send(PlayersPacket::findPlayer(targetData->name, -1, 1));
+					ChannelServer::getInstance().sendWorld(
+						Packets::prepend(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
+							builder.add<header_t>(IMSG_TO_CHANNEL);
+							builder.add<channel_id_t>(targetData->channel);
+							builder.add<header_t>(IMSG_TO_PLAYER);
+							builder.add<int32_t>(targetData->id);
+						}));
 					found = true;
 				}
 			}
 			if (!found) {
-				PlayersPacket::findPlayer(player, name, -1, 0);
+				player->send(PlayersPacket::findPlayer(name, -1, 0));
 			}
 			break;
 		}
 	}
 }
 
-auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) -> void {
+auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) -> void {
 	if (!player->isAdmin()) {
 		// Hacking
 		return;
 	}
-	int8_t type = packet.get<int8_t>();
+	int8_t type = reader.get<int8_t>();
 
 	switch (type) {
 		case AdminOpcodes::Hide: {
-			bool hide = packet.get<bool>();
+			bool hide = reader.get<bool>();
 			if (hide) {
 				if (Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0)) {
-					GmPacket::beginHide(player);
+					player->send(GmPacket::beginHide());
 					player->getMap()->gmHideChange(player);
 				}
 			}
@@ -151,21 +160,21 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::Send: {
-			string_t name = packet.getString();
-			int32_t mapId = packet.get<int32_t>();
+			string_t name = reader.getString();
+			int32_t mapId = reader.get<int32_t>();
 
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(name)) {
 				receiver->setMap(mapId);
 			}
 			else {
-				GmPacket::invalidCharacterName(player);
+				player->send(GmPacket::invalidCharacterName());
 			}
 
 			break;
 		}
 		case AdminOpcodes::Summon: {
-			int32_t mobId = packet.get<int32_t>();
-			int32_t count = packet.get<int32_t>();
+			int32_t mobId = reader.get<int32_t>();
+			int32_t count = reader.get<int32_t>();
 			if (MobDataProvider::getInstance().mobExists(mobId)) {
 				count = ext::constrain_range(count, 1, 100);
 				for (int32_t i = 0; i < count; ++i) {
@@ -178,12 +187,12 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::CreateItem: {
-			int32_t itemId = packet.get<int32_t>();
+			int32_t itemId = reader.get<int32_t>();
 			Inventory::addNewItem(player, itemId, 1);
 			break;
 		}
 		case AdminOpcodes::DestroyFirstItem: {
-			int8_t inv = packet.get<int8_t>();
+			int8_t inv = reader.get<int8_t>();
 			if (!GameLogicUtilities::isValidInventory(inv)) {
 				return;
 			}
@@ -197,25 +206,25 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 			break;
 		}
 		case AdminOpcodes::GiveExp: {
-			int32_t amount = packet.get<int32_t>();
+			int32_t amount = reader.get<int32_t>();
 			player->getStats()->giveExp(amount);
 			break;
 		}
 		case AdminOpcodes::Ban: {
-			string_t victim = packet.getString();
+			string_t victim = reader.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
-				receiver->getSession()->disconnect();
+				receiver->disconnect();
 			}
 			else {
-				GmPacket::invalidCharacterName(player);
+				player->send(GmPacket::invalidCharacterName());
 			}
 			break;
 		}
 		case AdminOpcodes::Block: {
-			string_t victim = packet.getString();
-			int8_t reason = packet.get<int8_t>();
-			int32_t length = packet.get<int32_t>();
-			string_t reasonMessage = packet.getString();
+			string_t victim = reader.getString();
+			int8_t reason = reader.get<int8_t>();
+			int32_t length = reader.get<int32_t>();
+			string_t reasonMessage = reader.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				Database::getCharDb().once
 					<< "UPDATE user_accounts u "
@@ -230,48 +239,48 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &packet) ->
 					soci::use(reason, "reason"),
 					soci::use(reasonMessage, "reasonMessage");
 
-				GmPacket::block(player);
+				player->send(GmPacket::block());
 				string_t banMessage = victim + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-				PlayerPacket::showMessageChannel(banMessage, PlayerPacket::NoticeTypes::Notice);
+				PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 			}
 			else {
-				GmPacket::invalidCharacterName(player);
+				player->send(GmPacket::invalidCharacterName());
 			}
 			break;
 		}
 		case AdminOpcodes::ShowMessageMap:
-			PlayerPacket::showMessage(player, player->getMap()->getPlayerNames(), PlayerPacket::NoticeTypes::Notice);
+			player->send(PlayerPacket::showMessage(player->getMap()->getPlayerNames(), PlayerPacket::NoticeTypes::Notice));
 			break;
 		case AdminOpcodes::Snow:
-			player->getMap()->createWeather(player, true, packet.get<int32_t>(), Items::SnowySnow, "");
+			player->getMap()->createWeather(player, true, reader.get<int32_t>(), Items::SnowySnow, "");
 			break;
 		case AdminOpcodes::VarSetGet: {
-			int8_t type = packet.get<int8_t>();
-			string_t playerName = packet.getString();
+			int8_t type = reader.get<int8_t>();
+			string_t playerName = reader.getString();
 			if (Player *victim = PlayerDataProvider::getInstance().getPlayer(playerName)) {
-				string_t variableName = packet.getString();
+				string_t variableName = reader.getString();
 				if (type == 0x0a) {
-					string_t variableValue = packet.getString();
+					string_t variableValue = reader.getString();
 					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
-					GmPacket::setGetVarResult(player, playerName, variableName, victim->getVariables()->getVariable(variableName));
+					player->send(GmPacket::setGetVarResult(playerName, variableName, victim->getVariables()->getVariable(variableName)));
 				}
 			}
 			else {
-				GmPacket::invalidCharacterName(player);
+				player->send(GmPacket::invalidCharacterName());
 			}
 			break;
 		}
 		case AdminOpcodes::Warn: {
-			string_t victim = packet.getString();
-			string_t message = packet.getString();
+			string_t victim = reader.getString();
+			string_t message = reader.getString();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
-				PlayerPacket::showMessage(receiver, message, PlayerPacket::NoticeTypes::Box);
-				GmPacket::warning(player, true);
+				receiver->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Box));
+				player->send(GmPacket::warning(true));
 			}
 			else {
-				GmPacket::warning(player, false);
+				player->send(GmPacket::warning(false));
 			}
 			break;
 		}

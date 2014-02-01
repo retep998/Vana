@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemDataProvider.hpp"
 #include "MapDataProvider.hpp"
 #include "MobDataProvider.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
 #include "PlayerDataProvider.hpp"
@@ -39,11 +39,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <limits>
 
-auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &packet) -> void {
-	world_id_t worldId = packet.get<world_id_t>();
+auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &reader) -> void {
+	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
-		Ip ip = packet.getClass<Ip>();
-		port_t port = packet.get<port_t>();
+		Ip ip = reader.getClass<Ip>();
+		port_t port = reader.get<port_t>();
 		std::cout << "Connecting to world " << static_cast<int32_t>(worldId) << std::endl;
 		ChannelServer::getInstance().connectToWorld(worldId, port, ip);
 	}
@@ -53,11 +53,11 @@ auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 	}
 }
 
-auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &packet) -> void {
-	channel_id_t channel = packet.get<channel_id_t>();
+auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketReader &reader) -> void {
+	channel_id_t channel = reader.get<channel_id_t>();
 	if (channel != -1) {
-		port_t port = packet.get<port_t>();
-		WorldConfig conf = packet.getClass<WorldConfig>();
+		port_t port = reader.get<port_t>();
+		WorldConfig conf = reader.getClass<WorldConfig>();
 		std::cout << "Handling channel " <<static_cast<int32_t>(channel) << " on port " << port << std::endl;
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
@@ -67,24 +67,8 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	}
 }
 
-auto WorldServerConnectHandler::forwardPacket(PacketReader &packet) -> void {
-	PacketCreator sendPacket;
-	int32_t playerId = packet.get<int32_t>();
-	sendPacket.addBuffer(packet);
-	PlayerDataProvider::getInstance().getPlayer(playerId)->getSession()->send(sendPacket);
-}
-
-auto WorldServerConnectHandler::sendToAllPlayers(PacketReader &packet) -> void {
-	PlayersPacket::sendToAllPlayers(packet.getBuffer(), packet.getBufferLength());
-}
-
-auto WorldServerConnectHandler::sendToPlayerList(PacketReader &packet) -> void {
-	vector_t<int32_t> playerIds = packet.getVector<int32_t>();
-	PlayersPacket::sendToPlayerList(playerIds, packet.getBuffer(), packet.getBufferLength());
-}
-
-auto WorldServerConnectHandler::reloadMcdb(PacketReader &packet) -> void {
-	const string_t &args = packet.getString();
+auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
+	const string_t &args = reader.getString();
 	if (args == "all") {
 		ItemDataProvider::getInstance().loadData();
 		DropDataProvider::getInstance().loadData();
@@ -105,9 +89,4 @@ auto WorldServerConnectHandler::reloadMcdb(PacketReader &packet) -> void {
 	else if (args == "skills") SkillDataProvider::getInstance().loadData();
 	else if (args == "reactors") ReactorDataProvider::getInstance().loadData();
 	else if (args == "quest") QuestDataProvider::getInstance().loadData();
-}
-
-auto WorldServerConnectHandler::rehashConfig(PacketReader &packet) -> void {
-	const WorldConfig &config = packet.getClass<WorldConfig>();
-	ChannelServer::getInstance().setConfig(config);
 }

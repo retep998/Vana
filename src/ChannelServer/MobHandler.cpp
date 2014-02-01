@@ -38,8 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
-auto MobHandler::handleBomb(Player *player, PacketReader &packet) -> void {
-	int32_t mobId = packet.get<int32_t>();
+auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
+	int32_t mobId = reader.get<int32_t>();
 	auto mob = player->getMap()->getMob(mobId);
 	if (player->getStats()->isDead() || mob == nullptr) {
 		return;
@@ -51,10 +51,10 @@ auto MobHandler::handleBomb(Player *player, PacketReader &packet) -> void {
 	mob->explode();
 }
 
-auto MobHandler::friendlyDamaged(Player *player, PacketReader &packet) -> void {
-	int32_t mobFrom = packet.get<int32_t>();
-	int32_t playerId = packet.get<int32_t>();
-	int32_t mobTo = packet.get<int32_t>();
+auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
+	int32_t mobFrom = reader.get<int32_t>();
+	int32_t playerId = reader.get<int32_t>();
+	int32_t mobTo = reader.get<int32_t>();
 
 	Map *map = player->getMap();
 	auto dealer = map->getMob(mobFrom);
@@ -64,7 +64,7 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &packet) -> void {
 		// Temp for now until I figure out something more effective
 		// TODO FIXME: Formula
 		int32_t mobId = taker->getMobId();
-		int32_t mapMobId =  taker->getMapMobId();
+		int32_t mapMobId = taker->getMapMobId();
 		int32_t mobHp = std::max(0, taker->getHp() - damage);
 		int32_t maxHp = taker->getMaxHp();
 
@@ -75,14 +75,14 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto MobHandler::handleTurncoats(Player *player, PacketReader &packet) -> void {
-	int32_t mobFrom = packet.get<int32_t>();
-	int32_t playerId = packet.get<int32_t>();
-	int32_t mobTo = packet.get<int32_t>();
-	packet.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
-	int32_t damage = packet.get<int32_t>();
-	packet.skipBytes(1); // Facing direction
-	packet.skipBytes(4); // Some type of pos, damage display, I think
+auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
+	int32_t mobFrom = reader.get<int32_t>();
+	int32_t playerId = reader.get<int32_t>();
+	int32_t mobTo = reader.get<int32_t>();
+	reader.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
+	int32_t damage = reader.get<int32_t>();
+	reader.skipBytes(1); // Facing direction
+	reader.skipBytes(4); // Some type of pos, damage display, I think
 
 	Map *map = player->getMap();
 	auto damager = map->getMob(mobFrom);
@@ -92,8 +92,8 @@ auto MobHandler::handleTurncoats(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
-	int32_t mobId = packet.get<int32_t>();
+auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
+	int32_t mobId = reader.get<int32_t>();
 
 	Map *map = player->getMap();
 	auto mob = map->getMob(mobId);
@@ -101,22 +101,22 @@ auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 		return;
 	}
 
-	int16_t moveId = packet.get<int16_t>();
+	int16_t moveId = reader.get<int16_t>();
 	if (mob->getController() != player && !mob->getSkillFeasibility()) {
 		map->switchController(mob, player);
 	}
 
-	int8_t nibbles1 = packet.get<int8_t>();
-	int8_t rawActivity = packet.get<int8_t>();
-	uint8_t useSkillId = packet.get<uint8_t>();
-	uint8_t useSkillLevel = packet.get<uint8_t>();
-	int16_t option = packet.get<int16_t>();
-	packet.skipBytes(1); // unk
-	packet.skipBytes(4); // 4 bytes of always 1 or always 0?
-	packet.skipBytes(4); // Pos?
+	int8_t nibbles1 = reader.get<int8_t>();
+	int8_t rawActivity = reader.get<int8_t>();
+	uint8_t useSkillId = reader.get<uint8_t>();
+	uint8_t useSkillLevel = reader.get<uint8_t>();
+	int16_t option = reader.get<int16_t>();
+	reader.skipBytes(1); // unk
+	reader.skipBytes(4); // 4 bytes of always 1 or always 0?
+	reader.skipBytes(4); // Pos?
 
 	// TODO FIXME mob.get() - perhaps movement parsing should be on the MovableLife class itself?
-	MovementHandler::parseMovement(mob.get(), packet);
+	MovementHandler::parseMovement(mob.get(), reader);
 
 	int8_t parsedActivity = rawActivity;
 	if (parsedActivity >= 0) {
@@ -157,9 +157,9 @@ auto MobHandler::monsterControl(Player *player, PacketReader &packet) -> void {
 		mob->chooseRandomSkill(nextCastSkill, nextCastSkillLevel);
 	}
 
-	MobsPacket::moveMobResponse(player, mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel);
-	packet.reset(19);
-	MobsPacket::moveMob(player, mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, packet.getBuffer(), packet.getBufferLength());
+	player->send(MobsPacket::moveMobResponse(mobId, moveId, nextMovementCouldBeSkill, mob->getMp(), nextCastSkill, nextCastSkillLevel));
+	reader.reset(19);
+	player->sendMap(MobsPacket::moveMob(mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, reader.getBuffer(), reader.getBufferLength()), true);
 }
 
 auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) -> int32_t {

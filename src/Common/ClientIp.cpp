@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 #include "ClientIp.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include <boost/asio.hpp>
 #include <stdexcept>
 
@@ -26,9 +26,9 @@ ClientIp::ClientIp(const Ip &ip) :
 {
 }
 
-auto ClientIp::write(PacketCreator &packet) const -> void {
+auto ClientIp::write(PacketBuilder &builder) const -> void {
 	if (m_ip.getType() == Ip::Type::Ipv4) {
-		packet.add<uint32_t>(htonl(m_ip.asIpv4()));
+		builder.add<uint32_t>(htonl(m_ip.asIpv4()));
 	}
 	else {
 		throw std::invalid_argument("IPv6 unsupported");

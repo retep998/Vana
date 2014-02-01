@@ -24,7 +24,7 @@ class Player;
 struct TradeInfo;
 
 namespace TradeHandler {
-	auto tradeHandler(Player *player, PacketReader &packet) -> void;
+	auto tradeHandler(Player *player, PacketReader &reader) -> void;
 	auto removeTrade(int32_t id) -> void;
 	auto cancelTrade(Player *player) -> void;
 

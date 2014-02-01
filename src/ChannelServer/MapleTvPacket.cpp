@@ -15,40 +15,39 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "FamePacket.hpp"
+#include "MapleTvPacket.hpp"
+#include "MapleTvs.hpp"
+#include "Maps.hpp"
 #include "Player.hpp"
-#include "PlayerDataProvider.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-namespace FamePacket {
+namespace MapleTvPacket {
 
-PACKET_IMPL(sendError, int32_t reason) {
+PACKET_IMPL(showMessage, const MapleTvMessage &message, seconds_t timeLeft) {
 	PacketBuilder builder;
 	builder
-		.add<header_t>(SMSG_FAME)
-		.add<int32_t>(reason);
+		.add<header_t>(SMSG_MAPLETV_ON)
+		.add<int8_t>(message.hasReceiver ? 3 : 1)
+		.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000))
+		.addBuffer(message.sendDisplay)
+		.addString(message.sendName)
+		.addString(message.hasReceiver ? message.recvName : "")
+		.addString(message.msg1)
+		.addString(message.msg2)
+		.addString(message.msg3)
+		.addString(message.msg4)
+		.addString(message.msg5)
+		.add<int32_t>(timeLeft.count() == 0 ? message.time : static_cast<int32_t>(timeLeft.count()));
+	if (message.hasReceiver) {
+		builder.addBuffer(message.recvDisplay);
+	}
 	return builder;
 }
 
-PACKET_IMPL(sendFame, const string_t &name, uint8_t type, int32_t newFame) {
+PACKET_IMPL(endDisplay) {
 	PacketBuilder builder;
-	builder
-		.add<header_t>(SMSG_FAME)
-		.add<int8_t>(0x00)
-		.addString(name)
-		.add<int8_t>(type)
-		.add<int32_t>(newFame);
-	return builder;
-}
-
-PACKET_IMPL(receiveFame, const string_t &name, uint8_t type) {
-	PacketBuilder builder;
-	builder
-		.add<header_t>(SMSG_FAME)
-		.add<int8_t>(0x05)
-		.addString(name)
-		.add<int8_t>(type);
+	builder.add<header_t>(SMSG_MAPLETV_OFF);
 	return builder;
 }
 

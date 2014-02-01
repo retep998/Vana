@@ -21,10 +21,10 @@ class PacketReader;
 class Player;
 
 namespace Login {
-	auto loginUser(Player *player, PacketReader &packet) -> void;
-	auto setGender(Player *player, PacketReader &packet) -> void;
-	auto handleLogin(Player *player, PacketReader &packet) -> void;
-	auto registerPin(Player *player, PacketReader &packet) -> void;
+	auto loginUser(Player *player, PacketReader &reader) -> void;
+	auto setGender(Player *player, PacketReader &reader) -> void;
+	auto handleLogin(Player *player, PacketReader &reader) -> void;
+	auto registerPin(Player *player, PacketReader &reader) -> void;
 	auto loginBack(Player *player) -> void;
-	auto checkPin(Player *player, PacketReader &packet) -> void;
+	auto checkPin(Player *player, PacketReader &reader) -> void;
 }

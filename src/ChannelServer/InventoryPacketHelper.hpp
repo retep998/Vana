@@ -17,11 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
 
-class PacketCreator;
-
 namespace InventoryPacketHelper {
-	auto fillRockPacket(PacketCreator &packet, const vector_t<int32_t> &vec, size_t maxSize) -> void;
+	PACKET(fillRockPacket, const vector_t<int32_t> &vec, size_t maxSize);
 }

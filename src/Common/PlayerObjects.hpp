@@ -39,36 +39,37 @@ struct PlayerData : IPacketSerializable {
 		ip = rhs.ip;
 	}
 
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<bool>(cashShop);
-		packet.add<bool>(admin);
-		packet.add<int16_t>(level);
-		packet.add<int16_t>(job);
-		packet.add<channel_id_t>(channel);
-		packet.add<int32_t>(map);
-		packet.add<int32_t>(party);
-		packet.add<int32_t>(gmLevel);
-		packet.add<int32_t>(id);
-		packet.addString(name);
-		packet.addClass<Ip>(ip);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<bool>(cashShop);
+		builder.add<bool>(admin);
+		builder.add<int16_t>(level);
+		builder.add<int16_t>(job);
+		builder.add<channel_id_t>(channel);
+		builder.add<int32_t>(map);
+		builder.add<int32_t>(party);
+		builder.add<int32_t>(gmLevel);
+		builder.add<int32_t>(id);
+		builder.addString(name);
+		builder.addClass<Ip>(ip);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		cashShop = packet.get<bool>();
-		admin = packet.get<bool>();
-		level = packet.get<int16_t>();
-		job = packet.get<int16_t>();
-		channel = packet.get<channel_id_t>();
-		map = packet.get<int32_t>();
-		party = packet.get<int32_t>();
-		gmLevel = packet.get<int32_t>();
-		id = packet.get<int32_t>();
-		name = packet.getString();
-		ip = packet.getClass<Ip>();
+	auto read(PacketReader &reader) -> void override {
+		cashShop = reader.get<bool>();
+		admin = reader.get<bool>();
+		level = reader.get<int16_t>();
+		job = reader.get<int16_t>();
+		channel = reader.get<channel_id_t>();
+		map = reader.get<int32_t>();
+		party = reader.get<int32_t>();
+		gmLevel = reader.get<int32_t>();
+		id = reader.get<int32_t>();
+		name = reader.getString();
+		ip = reader.getClass<Ip>();
 	}
 
 	bool cashShop = false;
 	bool admin = false;
+	bool initialized = false;
 	int16_t level = -1;
 	int16_t job = -1;
 	channel_id_t channel = -1;
@@ -85,15 +86,15 @@ struct PartyData : IPacketSerializable {
 	int32_t leader = -1;
 	vector_t<int32_t> members;
 
-	auto write(PacketCreator &packet) const -> void override {
-		packet.add<int32_t>(id);
-		packet.add<int32_t>(leader);
-		packet.addVector<int32_t>(members);
+	auto write(PacketBuilder &builder) const -> void override {
+		builder.add<int32_t>(id);
+		builder.add<int32_t>(leader);
+		builder.addVector<int32_t>(members);
 	}
 
-	auto read(PacketReader &packet) -> void override {
-		id = packet.get<int32_t>();
-		leader = packet.get<int32_t>();
-		members = packet.getVector<int32_t>();
+	auto read(PacketReader &reader) -> void override {
+		id = reader.get<int32_t>();
+		leader = reader.get<int32_t>();
+		members = reader.getVector<int32_t>();
 	}
 };

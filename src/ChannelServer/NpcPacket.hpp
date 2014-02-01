@@ -17,12 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
-class PacketCreator;
 class PacketReader;
 struct NpcSpawnInfo;
+struct BuiltShopInfo;
 
 namespace NpcPacket {
 	namespace BoughtMessages {
@@ -33,12 +34,26 @@ namespace NpcPacket {
 			NoSlots = 3
 		};
 	}
-	auto showNpc(Player *player, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
-	auto showNpc(int32_t mapId, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
-	auto showNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
-	auto controlNpc(PacketCreator &packet, const NpcSpawnInfo &npc, int32_t id, bool show = true) -> void;
-	auto animateNpc(Player *player, PacketReader &pack) -> void;
-	auto showNpcEffect(Player *player, int32_t index, bool show = false) -> void;
-	auto showNpcEffect(int32_t mapId, int32_t index, bool show = false) -> void;
-	auto bought(Player *player, uint8_t msg) -> void;
+	namespace Dialogs {
+		enum DialogOptions : int8_t {
+			Normal = 0x00,
+			YesNo = 0x01,
+			GetText = 0x02,
+			GetNumber = 0x03,
+			Simple = 0x04,
+			Question = 0x05,
+			Quiz = 0x06,
+			Style = 0x07,
+			AcceptDecline = 0x0C,
+			AcceptDeclineNoExit = 0x0D
+		};
+	}
+
+	PACKET(showNpc, const NpcSpawnInfo &npc, int32_t id, bool show = true);
+	PACKET(controlNpc, const NpcSpawnInfo &npc, int32_t id, bool show = true);
+	PACKET(animateNpc, PacketReader &reader);
+	PACKET(showNpcEffect, int32_t index, bool show = false);
+	PACKET(bought, uint8_t msg);
+	PACKET(showShop, const BuiltShopInfo &shop, int16_t rechargeableBonus);
+	PACKET(npcChat, int8_t type, int32_t npcId, const string_t &text, bool excludeText = false);
 }

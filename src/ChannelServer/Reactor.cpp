@@ -33,16 +33,20 @@ Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLef
 auto Reactor::setState(int8_t state, bool sendPacket) -> void {
 	m_state = state;
 	if (sendPacket) {
-		ReactorPacket::triggerReactor(this);
+		getMap()->send(ReactorPacket::triggerReactor(this));
 	}
 }
 
 auto Reactor::restore() -> void {
 	revive();
 	setState(0, false);
-	ReactorPacket::spawnReactor(this);
+	getMap()->send(ReactorPacket::spawnReactor(this));
 }
 
 auto Reactor::drop(Player *player) -> void {
 	DropHandler::doDrops(player->getId(), m_mapId, 0, m_reactorId, m_pos, false, false);
+}
+
+auto Reactor::getMap() const -> Map * {
+	return Maps::getMap(m_mapId);
 }

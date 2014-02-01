@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.hpp"
 #include "GameLogicUtilities.hpp"
 #include "LoopingId.hpp"
+#include "Map.hpp"
 #include "Maps.hpp"
 #include "MovementHandler.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "SkillConstants.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
@@ -49,7 +51,7 @@ auto SummonHandler::useSummon(Player *player, int32_t skillId, uint8_t level) ->
 	}
 	summon->setPos(summonPosition);
 	player->getSummons()->addSummon(summon, SkillDataProvider::getInstance().getSkill(skillId, level)->time);
-	SummonsPacket::showSummon(player, summon, true);
+	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, true));
 }
 
 auto SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer) -> void {
@@ -57,7 +59,7 @@ auto SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, i
 
 	Summon *summon = puppet ? player->getSummons()->getPuppet() : player->getSummons()->getSummon();
 	if (summon != nullptr) {
-		SummonsPacket::removeSummon(player, summon, showMessage);
+		player->sendMap(SummonsPacket::removeSummon(player->getId(), summon, showMessage));
 		if (!packetOnly) {
 			player->getSummons()->removeSummon(puppet, fromTimer);
 		}
@@ -67,24 +69,24 @@ auto SummonHandler::removeSummon(Player *player, bool puppet, bool packetOnly, i
 auto SummonHandler::showSummon(Player *player) -> void {
 	if (Summon *summon = player->getSummons()->getSummon()) {
 		summon->setPos(player->getPos());
-		SummonsPacket::showSummon(player, summon, false);
+		player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
 	}
 }
 
 auto SummonHandler::showSummons(Player *fromPlayer, Player *toPlayer) -> void {
 	if (Summon *summon = fromPlayer->getSummons()->getSummon()) {
-		SummonsPacket::showSummon(fromPlayer, summon, false, toPlayer);
+		toPlayer->send(SummonsPacket::showSummon(fromPlayer->getId(), summon, false));
 	}
 	if (Summon *puppet = fromPlayer->getSummons()->getPuppet()) {
-		SummonsPacket::showSummon(fromPlayer, puppet, false, toPlayer);
+		toPlayer->send(SummonsPacket::showSummon(fromPlayer->getId(), puppet, false));
 	}
 }
 
-auto SummonHandler::moveSummon(Player *player, PacketReader &packet) -> void {
-	int32_t summonId = packet.get<int32_t>();
+auto SummonHandler::moveSummon(Player *player, PacketReader &reader) -> void {
+	int32_t summonId = reader.get<int32_t>();
 
 	// I am not certain what this is, but in the Odin source they seemed to think it was original position. However, it caused AIDS.
-	packet.skipBytes(4);
+	reader.skipBytes(4);
 
 	Summon *summon = player->getSummons()->getSummon(summonId);
 	if (summon == nullptr || summon->getType() == Summon::Static) {
@@ -92,17 +94,17 @@ auto SummonHandler::moveSummon(Player *player, PacketReader &packet) -> void {
 		return;
 	}
 
-	const Pos &startPos = summon->getPos(); // Original gangsta
-	MovementHandler::parseMovement(summon, packet);
-	packet.reset(10);
-	SummonsPacket::moveSummon(player, summon, startPos, packet.getBuffer(), (packet.getBufferLength() - 9));
+	Pos startPos = summon->getPos(); // Original gangsta
+	MovementHandler::parseMovement(summon, reader);
+	reader.reset(10);
+	player->sendMap(SummonsPacket::moveSummon(player->getId(), summon, startPos, reader.getBuffer(), (reader.getBufferLength() - 9)));
 }
 
-auto SummonHandler::damageSummon(Player *player, PacketReader &packet) -> void {
-	int32_t summonId = packet.get<int32_t>();
-	int8_t unk = packet.get<int8_t>();
-	int32_t damage = packet.get<int32_t>();
-	int32_t mobId = packet.get<int32_t>();
+auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
+	int32_t summonId = reader.get<int32_t>();
+	int8_t unk = reader.get<int8_t>();
+	int32_t damage = reader.get<int32_t>();
+	int32_t mobId = reader.get<int32_t>();
 
 	if (Summon *summon = player->getSummons()->getPuppet()) {
 		summon->doDamage(damage);

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.hpp"
 
 auto PlayerModFunctions::disconnect(Player *player, const string_t &args) -> bool {
-	player->getSession()->disconnect();
+	player->disconnect();
 	return true;
 }
 

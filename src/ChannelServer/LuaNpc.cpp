@@ -109,7 +109,8 @@ auto LuaExports::getNpc(lua_State *luaVm) -> Npc * {
 
 // Miscellaneous
 auto LuaExports::showStorage(lua_State *luaVm) -> int {
-	StoragePacket::showStorage(getPlayer(luaVm), getNpc(luaVm)->getNpcId());
+	Player *player = getPlayer(luaVm);
+	player->send(StoragePacket::showStorage(player, getNpc(luaVm)->getNpcId()));
 	return 0;
 }
 
@@ -197,7 +198,7 @@ auto LuaExports::askStyle(lua_State *luaVm) -> int {
 	}
 
 	if (styles.size() > 0) {
-		getNpc(luaVm)->sendStyle(&styles[0], styles.size());
+		getNpc(luaVm)->sendStyle(styles);
 	}
 
 	return lua_yield(luaVm, 1);

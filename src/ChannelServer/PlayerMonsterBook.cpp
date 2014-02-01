@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "ItemDataProvider.hpp"
 #include "MonsterBookPacket.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 
 PlayerMonsterBook::PlayerMonsterBook(Player *player) :
@@ -107,7 +106,7 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 	return false;
 }
 
-auto PlayerMonsterBook::connectData(PacketCreator &packet) -> void {
+auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::getInstance().getCardId(getCover()) : 0);
 	packet.add<int8_t>(0);
 
@@ -130,7 +129,7 @@ auto PlayerMonsterBook::calculateLevel() -> void {
 	}
 }
 
-auto PlayerMonsterBook::infoData(PacketCreator &packet) -> void {
+auto PlayerMonsterBook::infoData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(getLevel());
 	packet.add<int32_t>(getNormals());
 	packet.add<int32_t>(getSpecials());

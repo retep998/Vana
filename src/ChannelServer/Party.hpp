@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 class Instance;
-class PacketCreator;
+class PacketBuilder;
 class Player;
 
 class Party {
@@ -65,7 +65,6 @@ public:
 	auto getAllPlayerIds() -> vector_t<int32_t>;
 	auto getPartyMembers(int32_t mapId = -1) -> vector_t<Player *>;
 
-	auto updatePacket(int32_t mapId, PacketCreator &packet) -> void;
 	auto getMembers() const -> const ord_map_t<int32_t, Player *, std::greater<int32_t>> & { return m_members; }
 private:
 	int32_t m_leaderId = 0;

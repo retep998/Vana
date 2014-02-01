@@ -19,60 +19,70 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "SmsgHeader.hpp"
 #include "Summon.hpp"
 
-auto SummonsPacket::showSummon(Player *player, Summon *summon, bool animated, Player *toPlayer) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SUMMON_SPAWN);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getId());
-	packet.add<int32_t>(summon->getSummonId());
-	packet.add<int8_t>(summon->getLevel());
-	packet.addClass<Pos>(summon->getPos());
-	packet.add<int8_t>(4); // ?
-	packet.add<int8_t>(0x53); // ?
-	packet.add<int8_t>(1); // ?
-	packet.add<int8_t>(summon->getType()); // Movement type
-	packet.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())); // Attack or not
-	packet.add<bool>(!animated);
-	if (toPlayer != nullptr) {
-		toPlayer->getSession()->send(packet);
-	}
-	else {
-		player->getMap()->sendPacket(packet);
-	}
+namespace SummonsPacket {
+
+SPLIT_PACKET_IMPL(showSummon, int32_t playerId, Summon *summon, bool animated) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SUMMON_SPAWN)
+		.add<int32_t>(playerId)
+		.add<int32_t>(summon->getId())
+		.add<int32_t>(summon->getSummonId())
+		.add<int8_t>(summon->getLevel())
+		.addClass<Pos>(summon->getPos())
+		.add<int8_t>(4) // ?
+		.add<int8_t>(0x53) // ?
+		.add<int8_t>(1) // ?
+		.add<int8_t>(summon->getType()) // Movement type
+		.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())) // Attack or not .add<bool> candidate?
+		.add<bool>(!animated);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
 }
 
-auto SummonsPacket::moveSummon(Player *player, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SUMMON_MOVEMENT);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getId());
-	packet.addClass<Pos>(startPos);
-	packet.addBuffer(buf, bufLen);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(moveSummon, int32_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SUMMON_MOVEMENT)
+		.add<int32_t>(playerId)
+		.add<int32_t>(summon->getId())
+		.addClass<Pos>(startPos)
+		.addBuffer(buf, bufLen);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
 }
 
-auto SummonsPacket::removeSummon(Player *player, Summon *summon, int8_t message) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SUMMON_DESPAWN);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summon->getId());
-	packet.add<int8_t>(message);
-	player->getMap()->sendPacket(packet);
+SPLIT_PACKET_IMPL(removeSummon, int32_t playerId, Summon *summon, int8_t message) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SUMMON_DESPAWN)
+		.add<int32_t>(playerId)
+		.add<int32_t>(summon->getId())
+		.add<int8_t>(message);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
 }
 
-auto SummonsPacket::damageSummon(Player *player, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SUMMON_DAMAGE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(summonId);
-	packet.add<int8_t>(unk);
-	packet.add<int32_t>(damage);
-	packet.add<int32_t>(mobId);
-	packet.add<int8_t>(0);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(damageSummon, int32_t playerId, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SUMMON_DAMAGE)
+		.add<int32_t>(playerId)
+		.add<int32_t>(summonId)
+		.add<int8_t>(unk)
+		.add<int32_t>(damage)
+		.add<int32_t>(mobId)
+		.add<int8_t>(0);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
 }

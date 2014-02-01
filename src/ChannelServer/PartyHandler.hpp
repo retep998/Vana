@@ -23,5 +23,5 @@ class PacketReader;
 class Player;
 
 namespace PartyHandler {
-	auto handleRequest(Player *player, PacketReader &packet) -> void;
+	auto handleRequest(Player *player, PacketReader &reader) -> void;
 }

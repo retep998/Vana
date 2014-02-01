@@ -17,20 +17,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 
 class Player;
-struct PlayerSkillInfo;
 struct ChargeOrStationarySkillInfo;
+struct PlayerSkillInfo;
 
 namespace SkillsPacket {
-	auto addSkill(Player *player, int32_t skillId, const PlayerSkillInfo &skillInfo) -> void;
-	auto showSkill(Player *player, int32_t skillId, uint8_t level, uint8_t direction, bool party = false, bool self = false) -> void;
-	auto healHp(Player *player, int16_t hp) -> void;
-	auto showSkillEffect(Player *player, int32_t skillId, uint8_t level = 0) -> void;
-	auto showChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void;
-	auto endChargeOrStationarySkill(Player *player, const ChargeOrStationarySkillInfo &info) -> void;
-	auto showMagnetSuccess(Player *player, int32_t mapMobId, uint8_t success) -> void;
-	auto sendCooldown(Player *player, int32_t skillId, int16_t time) -> void;
-	auto showBerserk(Player *player, uint8_t level, bool on) -> void;
+	PACKET(addSkill, int32_t skillId, const PlayerSkillInfo &skillInfo);
+	SPLIT_PACKET(showSkill, int32_t playerId, int32_t skillId, uint8_t level, uint8_t direction, bool party = false, bool self = false);
+	PACKET(healHp, int16_t hp);
+	SPLIT_PACKET(showSkillEffect, int32_t playerId, int32_t skillId);
+	SPLIT_PACKET(showChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info);
+	SPLIT_PACKET(endChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info);
+	SPLIT_PACKET(showMagnetSuccess, int32_t mapMobId, uint8_t success);
+	PACKET(sendCooldown, int32_t skillId, int16_t time);
+	SPLIT_PACKET(showBerserk, int32_t playerId, uint8_t level, bool on);
 }

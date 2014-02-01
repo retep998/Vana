@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
 #include "ItemDataProvider.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 #include <iomanip>
@@ -111,55 +111,20 @@ auto ShopDataProvider::isShop(int32_t id) const -> bool {
 	return ext::is_element(m_shops, id);
 }
 
-auto ShopDataProvider::showShop(int32_t id, int16_t rechargeableBonus, PacketCreator &packet) const -> void {
+auto ShopDataProvider::getShop(int32_t id) const -> BuiltShopInfo {
 	const auto &info = m_shops.find(id)->second;
-	int8_t rechargeTier = info.rechargeTier;
-	const auto &rechargables = m_rechargeCosts.find(rechargeTier)->second;
-	int16_t shopCount = static_cast<int16_t>(info.items.size() + rechargables.size());
-	hash_map_t<int32_t, bool> idsDone;
 
-	packet.add<header_t>(SMSG_SHOP);
-	packet.add<int32_t>(info.npc);
-	packet.add<int16_t>(0); // To be set later
-
-	// Items
+	BuiltShopInfo ret;
+	ret.npc = info.npc;
 	for (const auto &item : info.items) {
-		packet.add<int32_t>(item.itemId);
-		packet.add<int32_t>(item.price);
-		if (GameLogicUtilities::isRechargeable(item.itemId)) {
-			idsDone[item.itemId] = true;
-			double cost = 0.0;
-			if (rechargeTier != 0) {
-				shopCount--;
-				auto kvp = rechargables.find(item.itemId);
-				if (kvp != std::end(rechargables)) {
-					cost = kvp->second;
-				}
-			}
-			packet.add<double>(cost);
-		}
-		else {
-			packet.add<int16_t>(item.quantity); // Item amount
-		}
-		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item.itemId);
-		uint16_t maxSlot = itemInfo->maxSlot;
-		if (GameLogicUtilities::isRechargeable(item.itemId)) {
-			maxSlot += rechargeableBonus;
-		}
-		packet.add<int16_t>(maxSlot);
+		ret.items.push_back(&item);
 	}
 
-	// Rechargables
-	for (const auto &kvp : rechargables) {
-		if (idsDone.find(kvp.first) == std::end(idsDone)) {
-			packet.add<int32_t>(kvp.first);
-			packet.add<int32_t>(0);
-			packet.add<double>(kvp.second);
-			packet.add<int16_t>(ItemDataProvider::getInstance().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
-		}
+	if (info.rechargeTier > 0) {
+		ret.rechargeables = m_rechargeCosts.find(info.rechargeTier)->second;
 	}
 
-	packet.set<int16_t>(shopCount, 6);
+	return ret;
 }
 
 auto ShopDataProvider::getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const {

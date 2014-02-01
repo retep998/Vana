@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Decoder.hpp"
 #include "BitUtilities.hpp"
 #include "MapleVersion.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "Randomizer.hpp"
 #include "SmsgHeader.hpp"
 

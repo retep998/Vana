@@ -84,15 +84,15 @@ auto ServerClient::readConnectPacket() -> void {
 	}
 
 	// Now process it
-	PacketReader packet(buffer.get(), packetSize);
+	PacketReader reader(buffer.get(), packetSize);
 
-	packet.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
-	int16_t version = packet.get<int16_t>();
-	uint16_t stringSize = packet.get<uint16_t>();
-	packet.skipBytes(stringSize); // Patch location, unimportant for the same reason as header
-	uint32_t sendIv = packet.get<uint32_t>();
-	uint32_t recvIv = packet.get<uint32_t>();
-	int8_t locale = packet.get<int8_t>();
+	reader.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
+	int16_t version = reader.get<int16_t>();
+	uint16_t stringSize = reader.get<uint16_t>();
+	reader.skipBytes(stringSize); // Patch location, unimportant for the same reason as header
+	uint32_t sendIv = reader.get<uint32_t>();
+	uint32_t recvIv = reader.get<uint32_t>();
+	int8_t locale = reader.get<int8_t>();
 
 	if (version != MapleVersion::Version || locale != MapleVersion::Locale) {
 		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;

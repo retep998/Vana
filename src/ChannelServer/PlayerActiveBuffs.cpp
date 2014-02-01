@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
 #include "Randomizer.hpp"
@@ -306,7 +305,7 @@ auto PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) -> void {
 		uint8_t level = getActiveSkillLevel(skillId);
 		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
 		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
-		BuffsPacket::useSkill(m_player, skillId, timeLeft, playerSkill, mapSkill, 0);
+		m_player->sendMap(BuffsPacket::useSkill(m_player->getId(), skillId, timeLeft, playerSkill, mapSkill, 0));
 	}
 }
 
@@ -353,7 +352,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 				change = true;
 			}
 			if (change || display) {
-				SkillsPacket::showBerserk(m_player, level, m_berserk);
+				m_player->sendMap(SkillsPacket::showBerserk(m_player->getId(), level, m_berserk));
 			}
 		}
 	}
@@ -609,96 +608,96 @@ auto PlayerActiveBuffs::swapWeapon() -> void {
 	stopBulletSkills();
 }
 
-auto PlayerActiveBuffs::write(PacketCreator &packet) const -> void {
+auto PlayerActiveBuffs::write(PacketBuilder &builder) const -> void {
 	// Map entry buff info
-	packet.add<int8_t>(getCombo());
-	packet.add<int16_t>(getEnergyChargeLevel());
-	packet.add<int32_t>(getCharge());
-	packet.add<int32_t>(getBooster());
-	packet.add<int32_t>(getBattleshipHp());
-	packet.add<int32_t>(getDebuffMask());
-	packet.add<int32_t>(m_mapBuffs.mountId);
-	packet.add<int32_t>(m_mapBuffs.mountSkill);
+	builder.add<int8_t>(getCombo());
+	builder.add<int16_t>(getEnergyChargeLevel());
+	builder.add<int32_t>(getCharge());
+	builder.add<int32_t>(getBooster());
+	builder.add<int32_t>(getBattleshipHp());
+	builder.add<int32_t>(getDebuffMask());
+	builder.add<int32_t>(m_mapBuffs.mountId);
+	builder.add<int32_t>(m_mapBuffs.mountSkill);
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		packet.add<uint8_t>(m_mapBuffs.types[i]);
+		builder.add<uint8_t>(m_mapBuffs.types[i]);
 		auto foundValue = m_mapBuffs.values.find(i);
 		if (foundValue == std::end(m_mapBuffs.values)) {
-			packet.add<uint8_t>(0);
+			builder.add<uint8_t>(0);
 			continue;
 		}
 		auto &values = foundValue->second;
-		packet.add<uint8_t>(values.size());
+		builder.add<uint8_t>(values.size());
 		for (const auto &kvp : values) {
 			const MapEntryVals &info = kvp.second;
-			packet.add<uint8_t>(kvp.first);
-			packet.add<bool>(info.debuff);
+			builder.add<uint8_t>(kvp.first);
+			builder.add<bool>(info.debuff);
 			if (kvp.second.debuff) {
-				packet.add<int16_t>(info.skill);
-				packet.add<int16_t>(info.val);
+				builder.add<int16_t>(info.skill);
+				builder.add<int16_t>(info.val);
 			}
 			else {
-				packet.add<bool>(info.use);
-				packet.add<int16_t>(info.val);
+				builder.add<bool>(info.use);
+				builder.add<int16_t>(info.val);
 			}
 		}
 	}
 	// Current buff info (IDs, times, levels)
-	packet.add<uint8_t>(m_buffs.size());
+	builder.add<uint8_t>(m_buffs.size());
 	for (const auto &buffId : m_buffs) {
-		packet.add<int32_t>(buffId);
-		packet.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
-		packet.add<uint8_t>(getActiveSkillLevel(buffId));
+		builder.add<int32_t>(buffId);
+		builder.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
+		builder.add<uint8_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 		auto foundByte = m_activeBuffsByType.find(i);
 		if (foundByte == std::end(m_activeBuffsByType)) {
-			packet.add<uint8_t>(0);
+			builder.add<uint8_t>(0);
 			continue;
 		}
 		auto &currentByte = foundByte->second;
-		packet.add<uint8_t>(currentByte.size());
+		builder.add<uint8_t>(currentByte.size());
 		for (const auto &kvp : currentByte) {
-			packet.add<uint8_t>(kvp.first);
-			packet.add<int32_t>(kvp.second);
+			builder.add<uint8_t>(kvp.first);
+			builder.add<int32_t>(kvp.second);
 		}
 	}
 }
 
-auto PlayerActiveBuffs::read(PacketReader &packet) -> void {
+auto PlayerActiveBuffs::read(PacketReader &reader) -> void {
 	// Map entry buff info
-	setCombo(packet.get<uint8_t>(), false);
-	setEnergyChargeLevel(packet.get<int16_t>());
-	setCharge(packet.get<int32_t>());
-	setBooster(packet.get<int32_t>());
-	setBattleshipHp(packet.get<int32_t>());
-	setDebuffMask(packet.get<int32_t>());
-	m_mapBuffs.mountId = packet.get<int32_t>();
-	m_mapBuffs.mountSkill = packet.get<int32_t>();
+	setCombo(reader.get<uint8_t>(), false);
+	setEnergyChargeLevel(reader.get<int16_t>());
+	setCharge(reader.get<int32_t>());
+	setBooster(reader.get<int32_t>());
+	setBattleshipHp(reader.get<int32_t>());
+	setDebuffMask(reader.get<int32_t>());
+	m_mapBuffs.mountId = reader.get<int32_t>();
+	m_mapBuffs.mountSkill = reader.get<int32_t>();
 	MapEntryVals values;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		m_mapBuffs.types[i] = packet.get<uint8_t>();
-		uint8_t size = packet.get<uint8_t>();
+		m_mapBuffs.types[i] = reader.get<uint8_t>();
+		uint8_t size = reader.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
-			uint8_t type = packet.get<uint8_t>();
-			values.debuff = packet.get<bool>();
+			uint8_t type = reader.get<uint8_t>();
+			values.debuff = reader.get<bool>();
 			if (values.debuff) {
-				values.skill = packet.get<int16_t>();
-				values.val = packet.get<int16_t>();
+				values.skill = reader.get<int16_t>();
+				values.val = reader.get<int16_t>();
 			}
 			else {
-				values.use = packet.get<bool>();
-				values.val = packet.get<int16_t>();
+				values.use = reader.get<bool>();
+				values.val = reader.get<int16_t>();
 			}
 			m_mapBuffs.values[i][type] = values;
 		}
 	}
 	// Current buff info
-	uint8_t nBuffs = packet.get<uint8_t>();
+	uint8_t nBuffs = reader.get<uint8_t>();
 	for (uint8_t i = 0; i < nBuffs; ++i) {
-		int32_t skillId = packet.get<int32_t>();
-		seconds_t timeLeft(packet.get<int32_t>());
-		uint8_t level = packet.get<uint8_t>();
+		int32_t skillId = reader.get<int32_t>();
+		seconds_t timeLeft(reader.get<int32_t>());
+		uint8_t level = reader.get<uint8_t>();
 		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);
 		Buffs::doAction(m_player, skillId, level);
@@ -706,10 +705,10 @@ auto PlayerActiveBuffs::read(PacketReader &packet) -> void {
 	// Current buffs by type
 	hash_map_t<uint8_t, int32_t> currentByte;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
-		uint8_t size = packet.get<uint8_t>();
+		uint8_t size = reader.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
-			uint8_t key = packet.get<uint8_t>();
-			int32_t value = packet.get<int32_t>();
+			uint8_t key = reader.get<uint8_t>();
+			int32_t value = reader.get<int32_t>();
 			currentByte[key] = value;
 		}
 		m_activeBuffsByType[i] = currentByte;

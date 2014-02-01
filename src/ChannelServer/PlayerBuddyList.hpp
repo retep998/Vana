@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class Player;
 namespace soci {
 	class row;
@@ -59,7 +59,7 @@ public:
 	auto getBuddyIds() -> vector_t<int32_t>;
 	auto addBuddyInvite(const BuddyInvite &invite) -> void { m_pendingBuddies.push_back(invite); }
 
-	auto addBuddies(PacketCreator &packet) -> void;
+	auto addBuddies(PacketBuilder &packet) -> void;
 	auto checkForPendingBuddy() -> void;
 	auto removePendingBuddy(int32_t id, bool accepted) -> void;
 private:

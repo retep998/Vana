@@ -38,9 +38,10 @@ class Drop;
 class Instance;
 class Mist;
 class Mob;
-class PacketCreator;
+class PacketBuilder;
 class Player;
 class Reactor;
+struct SplitPacketBuilder;
 
 namespace SpawnTypes {
 	enum {
@@ -149,8 +150,8 @@ public:
 	auto showObjects(Player *player) -> void;
 
 	// Packet stuff
-	auto sendPacket(PacketCreator &packet, Player *sender = nullptr) -> void;
-	auto showMessage(const string_t &message, int8_t type) -> void;
+	auto send(const PacketBuilder &builder, Player *sender = nullptr) -> void;
+	auto send(const SplitPacketBuilder &builder, Player *sender) -> void;
 
 	// Instance
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }

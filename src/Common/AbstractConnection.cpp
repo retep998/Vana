@@ -30,25 +30,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 const milliseconds_t InitialPing = milliseconds_t(60000);
 const milliseconds_t PingTime = milliseconds_t(15000);
 
-AbstractConnection::AbstractConnection() :
+AbstractConnection::AbstractConnection(bool isServer) :
 	m_latency(InitialPing),
 	m_lastPing(),
-	m_ip(0)
+	m_ip(0),
+	m_isServer(isServer)
 {
 }
 
-auto AbstractConnection::baseHandleRequest(PacketReader &packet) -> void {
+auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 	try {
-		switch (packet.getHeader(false)) {
+		switch (reader.getHeader(false)) {
 			case SMSG_PING:
 				if (m_isServer) {
-					PingPacket::pong(this);
+					send(PingPacket::pong(this));
 				}
 				break;
 			case CMSG_PONG:
 				if (!m_isPinged) {
 					// Trying to spoof pongs without pings
-					getSession()->disconnect();
+					disconnect();
 					return;
 				}
 				m_isPinged = false;
@@ -56,15 +57,19 @@ auto AbstractConnection::baseHandleRequest(PacketReader &packet) -> void {
 				m_latency = duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
 				break;
 		}
-		handleRequest(packet);
+		handleRequest(reader);
 	}
 	catch (std::exception &e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 	}
 }
 
-auto AbstractConnection::getSession() const -> Session * {
-	return m_session;
+auto AbstractConnection::send(const PacketBuilder &builder) -> void {
+	m_session->send(builder);
+}
+
+auto AbstractConnection::disconnect() -> void {
+	m_session->disconnect();
 }
 
 auto AbstractConnection::getIp() const -> const Ip & {
@@ -85,13 +90,13 @@ auto AbstractConnection::ping() -> void {
 	if (m_doesPing) {
 		if (m_isPinged) {
 			// We have a timeout now
-			getSession()->disconnect();
+			disconnect();
 			return;
 		}
 
 		m_isPinged = true;
 		m_lastPing = TimeUtilities::getNow();
-		PingPacket::ping(this);
+		send(PingPacket::ping(this));
 	}
 }
 

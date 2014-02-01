@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerMounts.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 
 PlayerMounts::PlayerMounts(Player *p) :
@@ -130,7 +129,7 @@ auto PlayerMounts::setCurrentTiredness(int8_t tiredness) -> void {
 	}
 }
 
-auto PlayerMounts::mountInfoPacket(PacketCreator &packet) -> void {
+auto PlayerMounts::mountInfoPacket(PacketBuilder &packet) -> void {
 	if (getCurrentMount() > 0 && m_player->getInventory()->getEquippedId(EquipSlots::Saddle) != 0) {
 		packet.add<bool>(true);
 		packet.add<int32_t>(getCurrentLevel());

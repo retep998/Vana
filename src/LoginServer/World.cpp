@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "World.hpp"
 #include "LoginServerAcceptConnection.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "Randomizer.hpp"
 
 auto World::runChannelFunction(function_t<void (Channel *)> func) -> void {
@@ -30,8 +30,8 @@ auto World::getRandomChannel() const -> channel_id_t {
 	return Randomizer::rand<channel_id_t>(getMaxChannels() - 1);
 }
 
-auto World::send(const PacketCreator &packet) -> void {
-	m_connection->getSession()->send(packet);
+auto World::send(const PacketBuilder &builder) -> void {
+	m_connection->send(builder);
 }
 
 auto World::matchSubnet(const Ip &test) -> Ip {

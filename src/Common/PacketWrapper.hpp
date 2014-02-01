@@ -17,11 +17,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class LoginServerAcceptConnection;
-class PacketReader;
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
+#include "Types.hpp"
 
-namespace LoginServerAcceptHandler {
-	auto registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-	auto updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-	auto removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
+namespace Packets {
+	inline
+	auto prepend(const PacketBuilder &builder, function_t<void(PacketBuilder &)> wrapFunction) -> PacketBuilder {
+		PacketBuilder packet;
+		wrapFunction(packet);
+		packet.addBuffer(builder);
+		return packet;
+	}
+
+	// Converts the type of packet to PacketBuilder
+	inline
+	auto identity(const PacketReader &reader) -> PacketBuilder {
+		PacketBuilder builder;
+		builder.addBuffer(reader);
+		return builder;
+	}
 }

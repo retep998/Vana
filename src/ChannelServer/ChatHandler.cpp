@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.hpp"
 #include "ChatHandlerFunctions.hpp"
+#include "Map.hpp"
 #include "PacketReader.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -31,9 +32,9 @@ auto ChatHandler::initializeCommands() -> void {
 	ChatHandlerFunctions::initialize();
 }
 
-auto ChatHandler::handleChat(Player *player, PacketReader &packet) -> void {
-	string_t message = packet.getString();
-	bool bubbleOnly = packet.get<bool>(); // Skill macros only display chat bubbles
+auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
+	string_t message = reader.getString();
+	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
 		if (player->isGmChat()) {
@@ -41,7 +42,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &packet) -> void {
 			return;
 		}
 
-		PlayersPacket::showChat(player, message, bubbleOnly);
+		player->sendMap(PlayersPacket::showChat(player->getId(), player->isGm(), message, bubbleOnly));
 	}
 }
 
@@ -76,11 +77,11 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 	return false;
 }
 
-auto ChatHandler::handleGroupChat(Player *player, PacketReader &packet) -> void {
-	int8_t type = packet.get<int8_t>();
-	uint8_t amount = packet.get<uint8_t>();
-	vector_t<int32_t> receivers = packet.getVector<int32_t>(amount);
-	string_t chat = packet.getString();
+auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void {
+	int8_t type = reader.get<int8_t>();
+	uint8_t amount = reader.get<uint8_t>();
+	vector_t<int32_t> receivers = reader.getVector<int32_t>(amount);
+	string_t chat = reader.getString();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
 		PlayerDataProvider::getInstance().handleGroupChat(type, player->getId(), receivers, chat);

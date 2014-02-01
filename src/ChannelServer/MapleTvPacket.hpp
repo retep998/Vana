@@ -17,11 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-class LoginServerAcceptConnection;
-class PacketReader;
+#include "PacketBuilder.hpp"
+#include "Types.hpp"
 
-namespace LoginServerAcceptHandler {
-	auto registerChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-	auto updateChannelPop(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
-	auto removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void;
+class Player;
+struct MapleTvMessage;
+
+namespace MapleTvPacket {
+	PACKET(showMessage, const MapleTvMessage &message, seconds_t timeLeft);
+	PACKET(endDisplay);
 }

@@ -21,17 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class SessionManager;
 
+// TODO FIXME api
+// Remove this class entirely since only Session derives from it and there's no meaningful benefit to this existing
 class AbstractSession {
 public:
 	virtual ~AbstractSession() = default;
-
+	virtual auto disconnect() -> void = 0;
+protected:
 	AbstractSession(ref_ptr_t<SessionManager> sessionManager, bool encrypted = true) :
 		m_sessionManager(sessionManager),
 		m_encrypt(encrypted)
 	{
 	}
-	virtual auto disconnect() -> void = 0;
-protected:
+
 	virtual auto start() -> void = 0;
 	virtual auto stop() -> void = 0;
 	virtual auto handleStart() -> void = 0;

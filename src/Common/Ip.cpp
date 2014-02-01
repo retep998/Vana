@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 #include "Ip.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include <boost/asio.hpp>
 #include <stdexcept>
 
@@ -68,24 +68,24 @@ auto Ip::isInitialized() const -> bool {
 	return m_ipv4 != 0;
 }
 
-auto Ip::write(PacketCreator &packet) const -> void {
-	packet.addClass<Ip::Type>(m_type);
+auto Ip::write(PacketBuilder &builder) const -> void {
+	builder.addClass<Ip::Type>(m_type);
 	if (m_type == Ip::Type::Ipv4) {
-		packet.add<uint32_t>(m_ipv4);
+		builder.add<uint32_t>(m_ipv4);
 	}
 }
 
-auto Ip::read(PacketReader &packet) -> void {
-	m_type = packet.getClass<Ip::Type>();
+auto Ip::read(PacketReader &reader) -> void {
+	m_type = reader.getClass<Ip::Type>();
 	if (m_type == Ip::Type::Ipv4) {
-		m_ipv4 = packet.get<uint32_t>();
+		m_ipv4 = reader.get<uint32_t>();
 	}
 }
 
-auto Ip::Type::write(PacketCreator &packet) const -> void {
-	packet.add<int8_t>(m_type);
+auto Ip::Type::write(PacketBuilder &builder) const -> void {
+	builder.add<int8_t>(m_type);
 }
 
-auto Ip::Type::read(PacketReader &packet) -> void {
-	m_type = packet.get<int8_t>();
+auto Ip::Type::read(PacketReader &reader) -> void {
+	m_type = reader.get<int8_t>();
 }

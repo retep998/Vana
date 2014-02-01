@@ -101,6 +101,8 @@
     <ClCompile Include="src\Common\Line.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
+    <ClCompile Include="src\Common\PacketBuilder.cpp" />
+    <ClCompile Include="src\Common\PingPacket.cpp" />
     <ClCompile Include="src\Common\PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -129,9 +131,7 @@
     <ClCompile Include="src\Common\ValidCharDataProvider.cpp" />
     <ClCompile Include="src\Common\ConfigFile.cpp" />
     <ClCompile Include="src\Common\Database.cpp" />
-    <ClCompile Include="src\Common\PacketCreator.cpp" />
     <ClCompile Include="src\Common\PacketReader.cpp" />
-    <ClCompile Include="src\Common\PingPacket.cpp" />
     <ClCompile Include="src\Common\AuthenticationPacket.cpp" />
     <ClCompile Include="src\Common\FileUtilities.cpp" />
     <ClCompile Include="src\Common\MiscUtilities.cpp" />
@@ -185,6 +185,8 @@
     <ClInclude Include="src\Common\MobDataObjects.hpp" />
     <ClInclude Include="src\Common\NpcDataProvider.hpp" />
     <ClInclude Include="src\Common\optional.hpp" />
+    <ClInclude Include="src\Common\PacketBuilder.hpp" />
+    <ClInclude Include="src\Common\PacketWrapper.hpp" />
     <ClInclude Include="src\Common\PlayerObjects.hpp" />
     <ClInclude Include="src\Common\PrecompiledHeader.hpp" />
     <ClInclude Include="src\Common\MySqlQueryParser.hpp" />
@@ -194,6 +196,7 @@
     <ClInclude Include="src\Common\SkillConstants.hpp" />
     <ClInclude Include="src\Common\SkillDataObjects.hpp" />
     <ClInclude Include="src\Common\SociExtensions.hpp" />
+    <ClInclude Include="src\Common\SplitPacketBuilder.hpp" />
     <ClInclude Include="src\Common\SqlLogger.hpp" />
     <ClInclude Include="src\Common\StopWatch.hpp" />
     <ClInclude Include="src\Common\TauswortheGenerator.hpp" />
@@ -220,7 +223,6 @@
     <ClInclude Include="src\Common\ValidCharDataProvider.hpp" />
     <ClInclude Include="src\Common\ConfigFile.hpp" />
     <ClInclude Include="src\Common\Database.hpp" />
-    <ClInclude Include="src\Common\PacketCreator.hpp" />
     <ClInclude Include="src\Common\PacketReader.hpp" />
     <ClInclude Include="src\Common\PingPacket.hpp" />
     <ClInclude Include="src\Common\InterHeader.hpp" />

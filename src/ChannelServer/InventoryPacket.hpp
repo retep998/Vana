@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
@@ -75,31 +77,31 @@ namespace InventoryPacket {
 		};
 	}
 
-	auto updatePlayer(Player *player) -> void;
-	auto inventoryOperation(Player *player, bool unk, const vector_t<InventoryPacketOperation> &operations) -> void;
-	auto sitChair(Player *player, int32_t chairId) -> void;
-	auto sitMapChair(Player *player, int16_t chairId) -> void;
-	auto stopChair(Player *player, bool showMap = true) -> void;
-	auto useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) -> void;
-	auto useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) -> void;
-	auto showMegaphone(Player *player, const string_t &msg) -> void;
-	auto showSuperMegaphone(Player *player, const string_t &msg, bool whisper = false) -> void;
-	auto showMessenger(Player *player, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) -> void;
-	auto showItemMegaphone(Player *player, const string_t &msg, bool whisper = false, Item *item = nullptr) -> void;
-	auto showTripleMegaphone(Player *player, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) -> void;
-	auto useItemEffect(Player *player, int32_t itemId) -> void;
-	auto updateSlots(Player *player, int8_t inventory, int8_t slots) -> void;
-	auto sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector_t<int32_t> &maps) -> void;
-	auto sendRockError(Player *player, int8_t code, int8_t type) -> void;
-	auto useCharm(Player *player, uint8_t charmsLeft, uint8_t daysLeft = 99) -> void;
-	auto sendMesobagSucceed(Player *player, int32_t mesos) -> void;
-	auto sendMesobagFailed(Player *player) -> void;
-	auto sendHammerSlots(Player *player, int32_t slots) -> void;
-	auto sendHulkSmash(Player *player, int16_t slot, Item *hammered) -> void;
-	auto sendHammerUpdate(Player *player) -> void;
-	auto sendChalkboardUpdate(Player *player, const string_t &msg = "") -> void;
-	auto playCashSong(int32_t map, int32_t itemId, const string_t &playerName) -> void;
-	auto sendRewardItemAnimation(Player *player, int32_t itemId, const string_t &effect) -> void;
-	auto blankUpdate(Player *player) -> void;
-	auto sendItemExpired(Player *player, const vector_t<int32_t> &items) -> void;
+	SPLIT_PACKET(updatePlayer, Player *player);
+	SPLIT_PACKET(sitChair, int32_t playerId, int32_t chairId);
+	SPLIT_PACKET(stopChair, int32_t playerId, bool seatTaken);
+	SPLIT_PACKET(useScroll, int32_t playerId, int8_t succeed, bool destroy, bool legendarySpirit);
+	SPLIT_PACKET(sendChalkboardUpdate, int32_t playerId, const string_t &msg);
+	SPLIT_PACKET(useSkillbook, int32_t playerId, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed);
+	SPLIT_PACKET(useItemEffect, int32_t playerId, int32_t itemId);
+	SPLIT_PACKET(sendRewardItemAnimation, int32_t playerId, int32_t itemId, const string_t &effect);
+	PACKET(inventoryOperation, bool unk, const vector_t<InventoryPacketOperation> &operations);
+	PACKET(sitMapChair, int16_t chairId);
+	PACKET(showMegaphone, const string_t &msg);
+	PACKET(showSuperMegaphone, const string_t &msg, bool whisper = false);
+	PACKET(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId);
+	PACKET(showItemMegaphone, const string_t &msg, bool whisper = false, Item *item = nullptr);
+	PACKET(showTripleMegaphone, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper);
+	PACKET(updateSlots, int8_t inventory, int8_t slots);
+	PACKET(sendRockUpdate, int8_t mode, int8_t type, const vector_t<int32_t> &maps);
+	PACKET(sendRockError, int8_t code, int8_t type);
+	PACKET(useCharm, uint8_t charmsLeft, uint8_t daysLeft = 99);
+	PACKET(sendMesobagSucceed, int32_t mesos);
+	PACKET(sendMesobagFailed);
+	PACKET(sendHammerSlots, int32_t slots);
+	PACKET(sendHulkSmash, int16_t slot, Item *hammered);
+	PACKET(sendHammerUpdate);
+	PACKET(playCashSong, int32_t itemId, const string_t &playerName);
+	PACKET(blankUpdate);
+	PACKET(sendItemExpired, const vector_t<int32_t> &items);
 }

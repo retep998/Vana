@@ -17,20 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
 class Player;
 
 namespace EffectPacket {
-	auto playMusic(int32_t mapId, const string_t &music) -> void;
-	auto playMusic(Player *player, const string_t &music) -> void;
-	auto sendEvent(int32_t mapId, const string_t &id) -> void;
-	auto sendEffect(int32_t mapId, const string_t &effect) -> void;
-	auto playPortalSoundEffect(Player *player) -> void;
-	auto sendFieldSound(int32_t mapId, const string_t &sound) -> void;
-	auto sendFieldSound(Player *player, const string_t &sound) -> void;
-	auto sendMinigameSound(int32_t mapId, const string_t &sound) -> void;
-	auto sendMinigameSound(Player *player, const string_t &sound) -> void;
-	auto sendMobItemBuffEffect(Player *player, int32_t itemId) -> void;
+	PACKET(playMusic, const string_t &music);
+	PACKET(sendEvent, const string_t &id);
+	PACKET(sendEffect, const string_t &effect);
+	PACKET(playPortalSoundEffect);
+	PACKET(sendFieldSound, const string_t &sound);
+	PACKET(sendMinigameSound, const string_t &sound);
+	SPLIT_PACKET(sendMobItemBuffEffect, int32_t playerId, int32_t itemId);
 }

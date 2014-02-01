@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuffDataProvider.hpp"
 #include "BuffsPacket.hpp"
 #include "GameLogicUtilities.hpp"
+#include "Map.hpp"
 #include "Player.hpp"
 #include "SkillConstants.hpp"
 #include "SkillDataProvider.hpp"
@@ -378,33 +379,33 @@ auto Buffs::addBuff(Player *player, int32_t skillId, uint8_t level, int16_t adde
 	ActiveMapBuff enterSkill = parseBuffMapEntryInfo(player, skillId, level);
 
 	if (mountId > 0) {
-		BuffsPacket::useMount(player, skillId, time, playerSkill, mapSkill, addedInfo, mountId);
+		player->sendMap(BuffsPacket::useMount(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo, mountId));
 	}
 	else {
 		switch (skillId) {
 			case Skills::Pirate::Dash:
 			case Skills::ThunderBreaker::Dash:
-				BuffsPacket::usePirateBuff(player, skillId, time, playerSkill, mapSkill);
+				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), skillId, time, playerSkill, mapSkill));
 				break;
 			case Skills::Marauder::EnergyCharge:
 			case Skills::ThunderBreaker::EnergyCharge:
-				BuffsPacket::usePirateBuff(player, 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t(0)), playerSkill, mapSkill);
+				player->sendMap(BuffsPacket::usePirateBuff(player->getId(), 0, (player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel ? time : seconds_t(0)), playerSkill, mapSkill));
 				break;
 			case Skills::Buccaneer::SpeedInfusion:
 			case Skills::ThunderBreaker::SpeedInfusion:
-				BuffsPacket::useSpeedInfusion(player, skillId, time, playerSkill, mapSkill, addedInfo);
+				player->sendMap(BuffsPacket::useSpeedInfusion(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo));
 				break;
 			case Skills::Outlaw::HomingBeacon:
 			case Skills::Corsair::Bullseye:
 				if (player->getActiveBuffs()->hasMarkedMonster()) {
 					// Otherwise the animation appears above numerous
-					BuffsPacket::endSkill(player, playerSkill);
+					player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
 				}
 				player->getActiveBuffs()->setMarkedMonster(mapMobId);
-				BuffsPacket::useHomingBeacon(player, skillId, playerSkill, mapMobId);
+				player->send(BuffsPacket::useHomingBeacon(skillId, playerSkill, mapMobId));
 				break;
 			default:
-				BuffsPacket::useSkill(player, skillId, time, playerSkill, mapSkill, addedInfo);
+				player->sendMap(BuffsPacket::useSkill(player->getId(), skillId, time, playerSkill, mapSkill, addedInfo));
 		}
 	}
 	if (skillId != player->getSkills()->getEnergyCharge() || player->getActiveBuffs()->getEnergyChargeLevel() == Stats::MaxEnergyChargeLevel) {
@@ -426,7 +427,7 @@ auto Buffs::addBuff(Player *player, int32_t itemId, const seconds_t &time) -> vo
 	auto mapSkill = parseBuffMapInfo(player, itemId, 0);
 	auto enterSkill = parseBuffMapEntryInfo(player, itemId, 0);
 
-	BuffsPacket::useSkill(player, itemId, time, playerSkill, mapSkill, 0);
+	player->sendMap(BuffsPacket::useSkill(player->getId(), itemId, time, playerSkill, mapSkill, 0));
 
 	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
 	playerBuffs->removeBuff(itemId);
@@ -515,7 +516,7 @@ auto Buffs::endBuff(Player *player, int32_t skill) -> void {
 	auto enterSkill = parseBuffMapEntryInfo(player, skill, level);
 	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
 
-	BuffsPacket::endSkill(player, playerSkill);
+	player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
 
 	playerBuffs->deleteMapEntryBuffInfo(enterSkill);
 	playerBuffs->setActiveSkillLevel(skill, 0);
@@ -543,7 +544,7 @@ auto Buffs::addDebuff(Player *player, uint8_t skillId, uint8_t level) -> void {
 	auto mapSkill = parseMobBuffMapInfo(player, skillId, level);
 	auto enterSkill = parseMobBuffMapEntryInfo(player, skillId, level);
 
-	BuffsPacket::giveDebuff(player, skillId, level, time, mobSkillsInfo.delay, playerSkill, mapSkill);
+	player->sendMap(BuffsPacket::giveDebuff(player->getId(), skillId, level, time, mobSkillsInfo.delay, playerSkill, mapSkill));
 
 	PlayerActiveBuffs *playerBuffs = player->getActiveBuffs();
 	playerBuffs->setActiveSkillLevel(skillId, level);
@@ -558,7 +559,7 @@ auto Buffs::endDebuff(Player *player, uint8_t skill) -> void {
 	auto enterSkill = parseMobBuffMapEntryInfo(player, skill, 1);
 	auto playerSkill = playerBuffs->removeBuffInfo(skill, buffs);
 
-	BuffsPacket::endDebuff(player, playerSkill);
+	player->sendMap(BuffsPacket::endSkill(player->getId(), playerSkill));
 
 	playerBuffs->deleteMapEntryBuffInfo(enterSkill);
 	playerBuffs->setActiveSkillLevel(skill, 0);

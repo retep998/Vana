@@ -26,20 +26,20 @@ struct Attack;
 struct MpEaterInfo;
 
 namespace PlayerHandler {
-	auto handleDoorUse(Player *player, PacketReader &packet) -> void;
-	auto handleDamage(Player *player, PacketReader &packet) -> void;
-	auto handleFacialExpression(Player *player, PacketReader &packet) -> void;
-	auto handleGetInfo(Player *player, PacketReader &packet) -> void;
-	auto handleHeal(Player *player, PacketReader &packet) -> void;
-	auto handleMoving(Player *player, PacketReader &packet) -> void;
-	auto handleSpecialSkills(Player *player, PacketReader &packet) -> void;
-	auto handleMonsterBook(Player *player, PacketReader &packet) -> void;
-	auto handleAdminMessenger(Player *player, PacketReader &packet) -> void;
+	auto handleDoorUse(Player *player, PacketReader &reader) -> void;
+	auto handleDamage(Player *player, PacketReader &reader) -> void;
+	auto handleFacialExpression(Player *player, PacketReader &reader) -> void;
+	auto handleGetInfo(Player *player, PacketReader &reader) -> void;
+	auto handleHeal(Player *player, PacketReader &reader) -> void;
+	auto handleMoving(Player *player, PacketReader &reader) -> void;
+	auto handleSpecialSkills(Player *player, PacketReader &reader) -> void;
+	auto handleMonsterBook(Player *player, PacketReader &reader) -> void;
+	auto handleAdminMessenger(Player *player, PacketReader &reader) -> void;
 
-	auto useMeleeAttack(Player *player, PacketReader &packet) -> void;
-	auto useRangedAttack(Player *player, PacketReader &packet) -> void;
-	auto useSpellAttack(Player *player, PacketReader &packet) -> void;
-	auto useEnergyChargeAttack(Player *player, PacketReader &packet) -> void;
-	auto useSummonAttack(Player *player, PacketReader &packet) -> void;
-	auto compileAttack(Player *player, PacketReader &packet, SkillType skillType) -> Attack;
+	auto useMeleeAttack(Player *player, PacketReader &reader) -> void;
+	auto useRangedAttack(Player *player, PacketReader &reader) -> void;
+	auto useSpellAttack(Player *player, PacketReader &reader) -> void;
+	auto useEnergyChargeAttack(Player *player, PacketReader &reader) -> void;
+	auto useSummonAttack(Player *player, PacketReader &reader) -> void;
+	auto compileAttack(Player *player, PacketReader &reader, SkillType skillType) -> Attack;
 }

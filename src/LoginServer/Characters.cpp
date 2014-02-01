@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.hpp"
 #include "Algorithm.hpp"
 #include "CurseDataProvider.hpp"
+#include "ClientIp.hpp"
 #include "Database.hpp"
 #include "EquipDataProvider.hpp"
 #include "GameConstants.hpp"
@@ -122,9 +123,9 @@ auto Characters::showAllCharacters(Player *player) -> void {
 	}
 
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
-	LoginPacket::showAllCharactersInfo(player, chars.size(), unk);
+	player->send(LoginPacket::showAllCharactersInfo(chars.size(), unk));
 	for (const auto &kvp : chars) {
-		LoginPacket::showViewAllCharacters(player, kvp.first, kvp.second);
+		player->send(LoginPacket::showViewAllCharacters(kvp.first, kvp.second));
 	}
 }
 
@@ -161,23 +162,23 @@ auto Characters::showCharacters(Player *player) -> void {
 		max = world.defaultChars;
 	}
 
-	LoginPacket::showCharacters(player, chars, max.get());
+	player->send(LoginPacket::showCharacters(chars, max.get()));
 }
 
-auto Characters::checkCharacterName(Player *player, PacketReader &packet) -> void {
-	const string_t &name = packet.getString();
+auto Characters::checkCharacterName(Player *player, PacketReader &reader) -> void {
+	const string_t &name = reader.getString();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
 
 	if (nameInvalid(name)) {
-		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Invalid);
+		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
 	}
 	else if (nameTaken(name)) {
-		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Taken);
+		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
 	}
 	else {
-		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::None);
+		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::None));
 	}
 }
 
@@ -196,40 +197,40 @@ auto Characters::createItem(int32_t itemId, Player *player, int32_t charId, int3
 	}
 }
 
-auto Characters::createCharacter(Player *player, PacketReader &packet) -> void {
+auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 
-	string_t name = packet.getString();
+	string_t name = reader.getString();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
 
 	// Let's check our char name again just to be sure
 	if (nameInvalid(name)) {
-		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Invalid);
+		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
 		return;
 	}
 	if (nameTaken(name)) {
-		LoginPacket::checkName(player, name, LoginPacket::CheckNameErrors::Taken);
+		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
 		return;
 	}
 
-	int32_t eyes = packet.get<int32_t>();
-	int32_t hair = packet.get<int32_t>();
-	int32_t hairColor = packet.get<int32_t>();
-	int32_t skin = packet.get<int32_t>();
-	int32_t top = packet.get<int32_t>();
-	int32_t bottom = packet.get<int32_t>();
-	int32_t shoes = packet.get<int32_t>();
-	int32_t weapon = packet.get<int32_t>();
-	int8_t gender = packet.get<int8_t>();
+	int32_t eyes = reader.get<int32_t>();
+	int32_t hair = reader.get<int32_t>();
+	int32_t hairColor = reader.get<int32_t>();
+	int32_t skin = reader.get<int32_t>();
+	int32_t top = reader.get<int32_t>();
+	int32_t bottom = reader.get<int32_t>();
+	int32_t shoes = reader.get<int32_t>();
+	int32_t weapon = reader.get<int32_t>();
+	int8_t gender = reader.get<int8_t>();
 
 	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
-		player->getSession()->disconnect();
+		player->disconnect();
 		return;
 	}
 
@@ -273,17 +274,17 @@ auto Characters::createCharacter(Player *player, PacketReader &packet) -> void {
 
 	Character charc;
 	loadCharacter(charc, row);
-	LoginPacket::showCharacter(player, charc);
-	SyncPacket::PlayerPacket::characterCreated(Worlds::getInstance().getWorld(player->getWorldId()), id);
+	player->send(LoginPacket::showCharacter(charc));
+	Worlds::getInstance().send(player->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
 }
 
-auto Characters::deleteCharacter(Player *player, PacketReader &packet) -> void {
+auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
-	int32_t data = packet.get<int32_t>();
-	int32_t id = packet.get<int32_t>();
+	int32_t data = reader.get<int32_t>();
+	int32_t id = reader.get<int32_t>();
 
 	if (!ownerCheck(player, id)) {
 		// Hacking
@@ -332,8 +333,8 @@ auto Characters::deleteCharacter(Player *player, PacketReader &packet) -> void {
 		result = IncorrectBirthday;
 	}
 
-	LoginPacket::deleteCharacter(player, id, result);
-	SyncPacket::PlayerPacket::characterDeleted(Worlds::getInstance().getWorld(player->getWorldId()), id);
+	player->send(LoginPacket::deleteCharacter(id, result));
+	Worlds::getInstance().send(player->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
 }
 
 auto Characters::connectGame(Player *player, int32_t charId) -> void {
@@ -346,23 +347,32 @@ auto Characters::connectGame(Player *player, int32_t charId) -> void {
 		return;
 	}
 
-	LoginServerAcceptPacket::playerConnectingToChannel(Worlds::getInstance().getWorld(player->getWorldId()), player->getChannel(), charId, player->getIp());
-	LoginPacket::connectIp(player, charId);
+	auto world = Worlds::getInstance().getWorld(player->getWorldId());
+	world->send(LoginServerAcceptPacket::playerConnectingToChannel(player->getChannel(), charId, player->getIp()));
+
+	Ip chanIp(0);
+	port_t port = -1;
+	if (Channel *channel = world->getChannel(player->getChannel())) {
+		chanIp = channel->matchIpToSubnet(player->getIp());
+		port = channel->getPort();
+	}
+	ClientIp ip(chanIp);
+	player->send(LoginPacket::connectIp(ip, port, charId));
 }
 
-auto Characters::connectGame(Player *player, PacketReader &packet) -> void {
-	int32_t id = packet.get<int32_t>();
+auto Characters::connectGame(Player *player, PacketReader &reader) -> void {
+	int32_t id = reader.get<int32_t>();
 
 	connectGame(player, id);
 }
 
-auto Characters::connectGameWorldFromViewAllCharacters(Player *player, PacketReader &packet) -> void {
+auto Characters::connectGameWorldFromViewAllCharacters(Player *player, PacketReader &reader) -> void {
 	if (player->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
-	int32_t id = packet.get<int32_t>();
-	world_id_t worldId = static_cast<world_id_t>(packet.get<int32_t>());
+	int32_t id = reader.get<int32_t>();
+	world_id_t worldId = static_cast<world_id_t>(reader.get<int32_t>());
 	player->setWorldId(worldId);
 
 	// Take the player to a random channel

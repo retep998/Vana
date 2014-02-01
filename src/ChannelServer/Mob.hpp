@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 class Map;
-class PacketCreator;
+class PacketBuilder;
 class Party;
 class Player;
 struct MobSkillInfo;
@@ -46,7 +46,6 @@ public:
 	auto applyDamage(int32_t playerId, int32_t damage, bool poison = false) -> void;
 	auto applyWebDamage() -> void;
 	auto addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void;
-	auto statusPacket(PacketCreator &packet) -> void;
 	auto skillHeal(int32_t healHp, int32_t healRange) -> void;
 	auto dispelBuffs() -> void;
 	auto doCrashSkill(int32_t skillId) -> void;
@@ -57,6 +56,8 @@ public:
 	auto setSkillFeasibility(bool skillFeasible) -> void { m_skillFeasible = skillFeasible; }
 	auto useAnticipatedSkill() -> Result;
 	auto resetAnticipatedSkill() -> void;
+	auto getStatusBits() const -> int32_t;
+	auto getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> &;
 
 	auto chooseRandomSkill(uint8_t &skillId, uint8_t &skillLevel) -> void;
 	auto getSkillFeasibility() const -> bool { return m_skillFeasible; }
@@ -90,6 +91,7 @@ public:
 	auto getControlStatus() const -> MobControlStatus { return m_controlStatus; }
 
 	auto getController() const -> Player * { return m_controller; }
+	auto getMap() const -> Map *;
 private:
 	static auto isSponge(int32_t mobId) -> bool;
 	static auto spawnsSponge(int32_t mobId) -> bool;

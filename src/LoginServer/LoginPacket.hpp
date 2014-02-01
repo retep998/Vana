@@ -17,10 +17,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
 #include <string>
 
+class ClientIp;
 class Player;
 class World;
 struct Character;
@@ -49,23 +51,24 @@ namespace LoginPacket {
 			MaxLoad = 0x02
 		};
 	}
-	auto loginError(Player *player, int16_t errorId) -> void;
-	auto loginBan(Player *player, int8_t reason, int32_t expire) -> void;
-	auto loginProcess(Player *player, int8_t id) -> void;
-	auto loginConnect(Player *player, const string_t &username) -> void;
-	auto pinAssigned(Player *player) -> void;
-	auto genderDone(Player *player, int8_t gender) -> void;
-	auto showWorld(Player *player, World *world) -> void;
-	auto worldEnd(Player *player) -> void;
-	auto showChannels(Player *player, int8_t status) -> void;
-	auto channelSelect(Player *player) -> void;
-	auto channelOffline(Player *player) -> void;
-	auto showAllCharactersInfo(Player *player, world_id_t worldCount, uint32_t unk) -> void;
-	auto showViewAllCharacters(Player *player, world_id_t worldId, const vector_t<Character> &chars) -> void;
-	auto showCharacters(Player *player, const vector_t<Character> &chars, int32_t maxChars) -> void;
-	auto showCharacter(Player *player, const Character &charc) -> void;
-	auto checkName(Player *player, const string_t &name, uint8_t message) -> void;
-	auto deleteCharacter(Player *player, int32_t id, uint8_t result) -> void;
-	auto connectIp(Player *player, int32_t charId) -> void;
-	auto relogResponse(Player *player) -> void;
+
+	PACKET(loginError, int16_t errorId);
+	PACKET(loginBan, int8_t reason, int32_t expire);
+	PACKET(loginProcess, int8_t id);
+	PACKET(loginConnect, Player *player, const string_t &username);
+	PACKET(pinAssigned);
+	PACKET(genderDone, int8_t gender);
+	PACKET(showWorld, World *world);
+	PACKET(worldEnd);
+	PACKET(showChannels, int8_t status);
+	PACKET(channelSelect);
+	PACKET(channelOffline);
+	PACKET(showAllCharactersInfo, world_id_t worldCount, uint32_t unk);
+	PACKET(showViewAllCharacters, world_id_t worldId, const vector_t<Character> &chars);
+	PACKET(showCharacters, const vector_t<Character> &chars, int32_t maxChars);
+	PACKET(showCharacter, const Character &charc);
+	PACKET(checkName, const string_t &name, uint8_t message);
+	PACKET(deleteCharacter, int32_t id, uint8_t result);
+	PACKET(connectIp, const ClientIp &ip, port_t port, int32_t charId);
+	PACKET(relogResponse);
 }

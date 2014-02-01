@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <vector>
 
-class PacketCreator;
+class PacketBuilder;
 class WorldServerAcceptConnection;
 
 class Channel : public ExternalIpResolver {
@@ -39,8 +39,7 @@ public:
 	auto decreasePlayers() -> int32_t { return --m_players; }
 	auto getId() const -> channel_id_t { return m_id; }
 	auto getPort() const -> port_t { return m_port; }
-	auto getConnection() const -> WorldServerAcceptConnection * { return m_connection; }
-	auto send(const PacketCreator &packet) -> void;
+	auto send(const PacketBuilder &builder) -> void;
 private:
 	channel_id_t m_id = 0;
 	port_t m_port = 0;

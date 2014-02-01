@@ -19,13 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ExternalIp.hpp"
 #include "Ip.hpp"
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
 
 class LoginServerConnection;
 
 namespace LoginServerConnectPacket {
-	auto registerChannel(channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
-	auto updateChannelPop(channel_id_t channel, int32_t population) -> void;
-	auto removeChannel(channel_id_t channel) -> void;
+	PACKET(registerChannel, channel_id_t channel, const Ip &channelIp, const IpMatrix &extIp, port_t port);
+	PACKET(updateChannelPop, channel_id_t channel, int32_t population);
+	PACKET(removeChannel, channel_id_t channel);
 }

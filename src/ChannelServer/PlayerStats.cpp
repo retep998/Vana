@@ -22,13 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
+#include "InterHeader.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
 #include "LevelsPacket.hpp"
 #include "Maps.hpp"
 #include "MiscUtilities.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -121,7 +122,7 @@ auto PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) -> void {
 }
 
 // Data acquisition
-auto PlayerStats::connectData(PacketCreator &packet) -> void {
+auto PlayerStats::connectData(PacketBuilder &packet) -> void {
 	packet.add<int8_t>(getLevel());
 	packet.add<int16_t>(getJob());
 	packet.add<int16_t>(getStr());
@@ -196,15 +197,15 @@ auto PlayerStats::checkHpMp() -> void {
 
 auto PlayerStats::setLevel(uint8_t level) -> void {
 	m_level = level;
-	PlayerPacket::updateStat(m_player, Stats::Level, level);
-	LevelsPacket::levelUp(m_player);
+	m_player->send(PlayerPacket::updateStat(Stats::Level, level));
+	m_player->sendMap(LevelsPacket::levelUp(m_player->getId()));
 	PlayerDataProvider::getInstance().updatePlayerLevel(m_player);
 }
 
 auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
 	m_hp = ext::constrain_range<int16_t>(hp, Stats::MinHp, getMaxHp());
 	if (sendPacket) {
-		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
+		m_player->send(PlayerPacket::updateStat(Stats::Hp, m_hp));
 	}
 	modifiedHp();
 }
@@ -215,14 +216,14 @@ auto PlayerStats::modifyHp(int32_t hpMod, bool sendPacket) -> void {
 	m_hp = static_cast<int16_t>(tempHp);
 
 	if (sendPacket) {
-		PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
+		m_player->send(PlayerPacket::updateStat(Stats::Hp, m_hp));
 	}
 	modifiedHp();
 }
 
 auto PlayerStats::damageHp(int32_t damageHp) -> void {
 	m_hp = std::max<int32_t>(Stats::MinHp, static_cast<int32_t>(m_hp) - damageHp);
-	PlayerPacket::updateStat(m_player, Stats::Hp, m_hp);
+	m_player->send(PlayerPacket::updateStat(Stats::Hp, m_hp));
 	modifiedHp();
 }
 
@@ -244,7 +245,7 @@ auto PlayerStats::setMp(int16_t mp, bool sendPacket) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		m_mp = ext::constrain_range<int16_t>(mp, Stats::MinMp, getMaxMp());
 	}
-	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
+	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, sendPacket));
 }
 
 auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
@@ -253,51 +254,51 @@ auto PlayerStats::modifyMp(int32_t mpMod, bool sendPacket) -> void {
 		tempMp = ext::constrain_range<int32_t>(tempMp, Stats::MinMp, getMaxMp());
 		m_mp = static_cast<int16_t>(tempMp);
 	}
-	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, sendPacket);
+	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, sendPacket));
 }
 
 auto PlayerStats::damageMp(int32_t damageMp) -> void {
 	if (!m_player->getActiveBuffs()->hasInfinity()) {
 		m_mp = std::max<int32_t>(Stats::MinMp, static_cast<int32_t>(m_mp) - damageMp);
 	}
-	PlayerPacket::updateStat(m_player, Stats::Mp, m_mp, false);
+	m_player->send(PlayerPacket::updateStat(Stats::Mp, m_mp, false));
 }
 
 auto PlayerStats::setSp(int16_t sp) -> void {
 	m_sp = sp;
-	PlayerPacket::updateStat(m_player, Stats::Sp, sp);
+	m_player->send(PlayerPacket::updateStat(Stats::Sp, sp));
 }
 
 auto PlayerStats::setAp(int16_t ap) -> void {
 	m_ap = ap;
-	PlayerPacket::updateStat(m_player, Stats::Ap, ap);
+	m_player->send(PlayerPacket::updateStat(Stats::Ap, ap));
 }
 
 auto PlayerStats::setJob(int16_t job) -> void {
 	m_job = job;
-	PlayerPacket::updateStat(m_player, Stats::Job, job);
-	LevelsPacket::jobChange(m_player);
+	m_player->send(PlayerPacket::updateStat(Stats::Job, job));
+	m_player->sendMap(LevelsPacket::jobChange(m_player->getId()));
 	PlayerDataProvider::getInstance().updatePlayerJob(m_player);
 }
 
 auto PlayerStats::setStr(int16_t str) -> void {
 	m_str = str;
-	PlayerPacket::updateStat(m_player, Stats::Str, str);
+	m_player->send(PlayerPacket::updateStat(Stats::Str, str));
 }
 
 auto PlayerStats::setDex(int16_t dex) -> void {
 	m_dex = dex;
-	PlayerPacket::updateStat(m_player, Stats::Dex, dex);
+	m_player->send(PlayerPacket::updateStat(Stats::Dex, dex));
 }
 
 auto PlayerStats::setInt(int16_t intt) -> void {
 	m_int = intt;
-	PlayerPacket::updateStat(m_player, Stats::Int, intt);
+	m_player->send(PlayerPacket::updateStat(Stats::Int, intt));
 }
 
 auto PlayerStats::setLuk(int16_t luk) -> void {
 	m_luk = luk;
-	PlayerPacket::updateStat(m_player, Stats::Luk, luk);
+	m_player->send(PlayerPacket::updateStat(Stats::Luk, luk));
 }
 
 auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
@@ -313,13 +314,13 @@ auto PlayerStats::setMapleWarrior(int16_t xMod) -> void {
 
 auto PlayerStats::setMaxHp(int16_t maxHp) -> void {
 	m_maxHp = ext::constrain_range(maxHp, Stats::MinMaxHp, Stats::MaxMaxHp);
-	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
 	modifiedHp();
 }
 
 auto PlayerStats::setMaxMp(int16_t maxMp) -> void {
 	m_maxMp = ext::constrain_range(maxMp, Stats::MinMaxMp, Stats::MaxMaxMp);
-	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
 
 auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
@@ -327,8 +328,8 @@ auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
 	m_hyperBodyY = yMod;
 	m_buffBonuses.hp = std::min<uint16_t>((m_maxHp + m_equipBonuses.hp) * xMod / 100, Stats::MaxMaxHp);
 	m_buffBonuses.mp = std::min<uint16_t>((m_maxMp + m_equipBonuses.mp) * yMod / 100, Stats::MaxMaxMp);
-	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
-	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
+	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 	if (Party *p = m_player->getParty()) {
 		p->showHpBar(m_player);
 	}
@@ -337,22 +338,22 @@ auto PlayerStats::setHyperBody(int16_t xMod, int16_t yMod) -> void {
 
 auto PlayerStats::modifyMaxHp(int16_t mod) -> void {
 	m_maxHp = std::min<int16_t>(m_maxHp + mod, Stats::MaxMaxHp);
-	PlayerPacket::updateStat(m_player, Stats::MaxHp, m_maxHp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxHp, m_maxHp));
 }
 
 auto PlayerStats::modifyMaxMp(int16_t mod) -> void {
 	m_maxMp = std::min<int16_t>(m_maxMp + mod, Stats::MaxMaxMp);
-	PlayerPacket::updateStat(m_player, Stats::MaxMp, m_maxMp);
+	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
 
 auto PlayerStats::setExp(int32_t exp) -> void {
 	m_exp = std::max(exp, 0);
-	PlayerPacket::updateStat(m_player, Stats::Exp, m_exp);
+	m_player->send(PlayerPacket::updateStat(Stats::Exp, m_exp));
 }
 
 auto PlayerStats::setFame(int16_t fame) -> void {
 	m_fame = ext::constrain_range(fame, Stats::MinFame, Stats::MaxFame);
-	PlayerPacket::updateStat(m_player, Stats::Fame, fame);
+	m_player->send(PlayerPacket::updateStat(Stats::Fame, fame));
 }
 
 auto PlayerStats::loseExp() -> void {
@@ -361,7 +362,7 @@ auto PlayerStats::loseExp() -> void {
 		if (charms > 0) {
 			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
 			charms = std::min<uint16_t>(--charms, 0xFF);
-			InventoryPacket::useCharm(m_player, static_cast<uint8_t>(charms));
+			m_player->send(InventoryPacket::useCharm(static_cast<uint8_t>(charms)));
 			return;
 		}
 		Map *loc = m_player->getMap();
@@ -402,7 +403,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 		while (expCounter > 0) {
 
 			int32_t allocate = static_cast<int32_t>(std::min(expCounter, batchSize));
-			LevelsPacket::showExp(m_player, allocate, white, inChat);
+			m_player->send(LevelsPacket::showExp(allocate, white, inChat));
 			expCounter -= allocate;
 		}
 	}
@@ -505,7 +506,11 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 						<< static_cast<int16_t>(jobMax) << "! Congratulate "
 						<< m_player->getName() << " on such an amazing achievement!";
 
-				PlayerPacket::showMessageWorld(message.str(), PlayerPacket::NoticeTypes::Blue);
+				ChannelServer::getInstance().sendWorld(
+					Packets::prepend(PlayerPacket::showMessage(message.str(), PlayerPacket::NoticeTypes::Blue), [](PacketBuilder &builder) {
+						builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
+						builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
+					}));
 			}
 		}
 	}
@@ -514,26 +519,26 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 	setExp(static_cast<int32_t>(curExp));
 }
 
-auto PlayerStats::addStat(PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int32_t type = packet.get<int32_t>();
+auto PlayerStats::addStat(PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int32_t type = reader.get<int32_t>();
 	if (getAp() == 0) {
 		// Hacking
 		return;
 	}
-	LevelsPacket::statOk(m_player);
+	m_player->send(LevelsPacket::statOk());
 	addStat(type);
 }
 
-auto PlayerStats::addStatMulti(PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	uint32_t amount = packet.get<uint32_t>();
+auto PlayerStats::addStatMulti(PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	uint32_t amount = reader.get<uint32_t>();
 
-	LevelsPacket::statOk(m_player);
+	m_player->send(LevelsPacket::statOk());
 
 	for (uint32_t i = 0; i < amount; i++) {
-		int32_t type = packet.get<int32_t>();
-		int32_t value = packet.get<int32_t>();
+		int32_t type = reader.get<int32_t>();
+		int32_t value = reader.get<int32_t>();
 
 		if (value < 0 || getAp() < value) {
 			// Hacking

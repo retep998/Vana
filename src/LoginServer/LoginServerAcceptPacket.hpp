@@ -18,15 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.hpp"
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 
-class LoginServerAcceptConnection;
 class World;
 
 namespace LoginServerAcceptPacket {
-	auto connect(World *world) -> void;
-	auto noMoreWorld(LoginServerAcceptConnection *connection) -> void;
-	auto connectChannel(LoginServerAcceptConnection *connection, world_id_t worldId, const Ip &ip, port_t port) -> void;
-	auto playerConnectingToChannel(World *world, channel_id_t channel, int32_t charId, const Ip &ip) -> void;
-	auto rehashConfig(World *world) -> void;
+	PACKET(connect, World *world);
+	PACKET(noMoreWorld);
+	PACKET(connectChannel, world_id_t worldId, const Ip &ip, port_t port);
+	PACKET(playerConnectingToChannel, channel_id_t channel, int32_t charId, const Ip &ip);
+	PACKET(rehashConfig, World *world);
 }

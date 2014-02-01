@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 
-auto Fame::handleFame(Player *player, PacketReader &packet) -> void {
-	int32_t playerId = packet.get<int32_t>();
-	uint8_t type = packet.get<uint8_t>();
+auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
+	int32_t playerId = reader.get<int32_t>();
+	uint8_t type = reader.get<uint8_t>();
 	if (player->getId() > 0) {
 		if (player->getId() == playerId) {
 			// Hacking
@@ -33,18 +33,19 @@ auto Fame::handleFame(Player *player, PacketReader &packet) -> void {
 		}
 		int32_t checkResult = canFame(player, playerId);
 		if (checkResult != 0) {
-			FamePacket::sendError(player, checkResult);
+			player->send(FamePacket::sendError(checkResult));
 		}
 		else {
 			Player *famee = PlayerDataProvider::getInstance().getPlayer(playerId);
 			int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
 			famee->getStats()->setFame(newFame);
 			addFameLog(player->getId(), playerId);
-			FamePacket::sendFame(player, famee, type, newFame);
+			player->send(FamePacket::sendFame(famee->getName(), type, newFame));
+			famee->send(FamePacket::receiveFame(player->getName(), type));
 		}
 	}
 	else {
-		FamePacket::sendError(player, FamePacket::Errors::IncorrectUser);
+		player->send(FamePacket::sendError(FamePacket::Errors::IncorrectUser));
 	}
 }
 

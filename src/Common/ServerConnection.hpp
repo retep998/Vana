@@ -30,35 +30,34 @@ class PacketReader;
 
 class AbstractServerConnection : public AbstractConnection {
 public:
-	auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
 	auto getType() const -> ServerType { return m_type; }
 protected:
 	AbstractServerConnection(ServerType type) :
+		AbstractConnection(true),
 		m_type(type)
 	{
-		m_isServer = true;
 	}
 private:
+	friend class AbstractServer;
+	auto sendAuth(const string_t &pass, const IpMatrix &extIp) -> void;
 	ServerType m_type = ServerType::None;
 };
 
 class AbstractServerAcceptConnection : public AbstractConnection {
 public:
-	auto processAuth(AbstractServer &server, PacketReader &packet) -> Result;
-	virtual auto authenticated(ServerType type) -> void = 0;
-
 	auto getType() const -> ServerType { return m_type; }
-
 	auto matchSubnet(const Ip &test) const -> Ip { return m_resolver.matchIpToSubnet(test); }
 	auto setExternalIpInformation(const Ip &defaultIp, const IpMatrix &matrix) -> void { m_resolver.setExternalIpInformation(defaultIp, matrix); }
-	auto getExternalIps() const -> const IpMatrix & { return m_resolver.getExternalIps(); }
 protected:
-	AbstractServerAcceptConnection()
+	AbstractServerAcceptConnection() :
+		AbstractConnection(true)
 	{
-		m_isServer = true;
 	}
 
+	auto processAuth(AbstractServer &server, PacketReader &reader) -> Result;
+	virtual auto authenticated(ServerType type) -> void = 0;
 	auto isAuthenticated() const -> bool { return m_isAuthenticated; }
+	auto getExternalIps() const -> const IpMatrix & { return m_resolver.getExternalIps(); }
 private:
 	bool m_isAuthenticated = false;
 	ServerType m_type = ServerType::None;

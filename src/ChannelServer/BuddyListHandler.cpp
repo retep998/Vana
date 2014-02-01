@@ -29,27 +29,27 @@ namespace BuddyOpcodes {
 	};
 }
 
-auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &packet) -> void {
-	int8_t type = packet.get<int8_t>();
+auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> void {
+	int8_t type = reader.get<int8_t>();
 	switch (type) {
 		case BuddyOpcodes::Add: {
-			const string_t &name = packet.getString();
-			const string_t &group = packet.getString();
+			string_t name = reader.getString();
+			string_t group = reader.getString();
 
 			uint8_t error = player->getBuddyList()->addBuddy(name, group);
 
 			if (error) {
-				BuddyListPacket::error(player, error);
+				player->send(BuddyListPacket::error(error));
 			}
 			break;
 		}
 		case BuddyOpcodes::AcceptInvite: {
-			int32_t charId = packet.get<int32_t>();
+			int32_t charId = reader.get<int32_t>();
 			player->getBuddyList()->removePendingBuddy(charId, true);
 			break;
 		}
 		case BuddyOpcodes::Remove: {
-			int32_t charId = packet.get<int32_t>();
+			int32_t charId = reader.get<int32_t>();
 			player->getBuddyList()->removeBuddy(charId);
 			break;
 		}

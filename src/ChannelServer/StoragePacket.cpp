@@ -19,89 +19,103 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Inventory.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerPacketHelper.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto StoragePacket::showStorage(Player *player, int32_t npcId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x16); // Type of storage action
-	packet.add<int32_t>(npcId);
-	packet.add<int8_t>(player->getStorage()->getSlots());
-	packet.add<int32_t>(0x7e);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(player->getStorage()->getMesos());
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(player->getStorage()->getNumItems());
+namespace StoragePacket {
+
+PACKET_IMPL(showStorage, Player *player, int32_t npcId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x16) // Type of storage action
+		.add<int32_t>(npcId)
+		.add<int8_t>(player->getStorage()->getSlots())
+		.add<int32_t>(0x7e)
+		.add<int32_t>(0)
+		.add<int32_t>(player->getStorage()->getMesos())
+		.add<int16_t>(0)
+		.add<int8_t>(player->getStorage()->getNumItems());
+
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
-		PlayerPacketHelper::addItemInfo(packet, 0, player->getStorage()->getItem(i));
+		builder.addBuffer(PlayerPacketHelper::addItemInfo(0, player->getStorage()->getItem(i)));
 	}
-	packet.add<int16_t>(0);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
+
+	builder
+		.add<int16_t>(0)
+		.add<int8_t>(0);
+	return builder;
 }
 
-auto StoragePacket::addItem(Player *player, int8_t inv) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x0d);
-	packet.add<int8_t>(player->getStorage()->getSlots());
+PACKET_IMPL(addItem, Player *player, int8_t inv) {
+	PacketBuilder builder;
 	int8_t type = static_cast<int8_t>(pow(2.f, static_cast<int32_t>(inv))) * 2; // Gotta work some magic on type, which starts as inventory
-	packet.add<int32_t>(type);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x0d)
+		.add<int8_t>(player->getStorage()->getSlots())
+		.add<int32_t>(type)
+		.add<int32_t>(0)
+		.add<int8_t>(player->getStorage()->getNumItems(inv));
+
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
-			PlayerPacketHelper::addItemInfo(packet, 0, item);
+			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
 		}
 	}
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto StoragePacket::takeItem(Player *player, int8_t inv) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x09);
-	packet.add<int8_t>(player->getStorage()->getSlots());
+PACKET_IMPL(takeItem, Player *player, int8_t inv) {
+	PacketBuilder builder;
 	int8_t type = static_cast<int8_t>(pow(2.f, static_cast<int32_t>(inv))) * 2;
-	packet.add<int32_t>(type);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(player->getStorage()->getNumItems(inv));
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x09)
+		.add<int8_t>(player->getStorage()->getSlots())
+		.add<int32_t>(type)
+		.add<int32_t>(0)
+		.add<int8_t>(player->getStorage()->getNumItems(inv));
+
 	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
-			PlayerPacketHelper::addItemInfo(packet, 0, item);
+			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
 		}
 	}
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto StoragePacket::changeMesos(Player *player, int32_t mesos) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x13);
-	packet.add<int8_t>(player->getStorage()->getSlots());
-	packet.add<int16_t>(2);
-	packet.add<int16_t>(0);
-	packet.add<int32_t>(0);
-	packet.add<int32_t>(mesos);
-	player->getSession()->send(packet);
+PACKET_IMPL(changeMesos, int8_t slotCount, int32_t mesos) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x13)
+		.add<int8_t>(slotCount)
+		.add<int16_t>(2)
+		.add<int16_t>(0)
+		.add<int32_t>(0)
+		.add<int32_t>(mesos);
+	return builder;
 }
 
-auto StoragePacket::storageFull(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x11);
-	player->getSession()->send(packet);
+PACKET_IMPL(storageFull) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x11);
+	return builder;
 }
 
-auto StoragePacket::noMesos(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_STORAGE);
-	packet.add<int8_t>(0x10);
-	player->getSession()->send(packet);
+PACKET_IMPL(noMesos) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_STORAGE)
+		.add<int8_t>(0x10);
+	return builder;
+}
+
 }

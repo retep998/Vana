@@ -265,7 +265,7 @@ namespace Jobs {
 		};
 	}
 	namespace JobProgressions {
-		enum Progressions  : int8_t {
+		enum Progressions : int8_t {
 			Beginner = 0,
 			FirstJob = 1,
 			SecondJob = 2,

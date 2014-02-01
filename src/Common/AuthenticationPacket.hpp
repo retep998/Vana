@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "ExternalIp.hpp"
 #include "Types.hpp"
 #include <string>
@@ -24,5 +25,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class AbstractServerConnection;
 
 namespace AuthenticationPacket {
-	auto sendPassword(AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) -> void;
+	PACKET(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp);
 }

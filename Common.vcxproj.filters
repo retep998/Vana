@@ -57,13 +57,7 @@
     <ClCompile Include="src\Common\Database.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\PacketCreator.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\PacketReader.cpp">
-      <Filter>Packets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\PingPacket.cpp">
       <Filter>Packets</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\FileUtilities.cpp">
@@ -217,6 +211,12 @@
     <ClCompile Include="src\Common\Line.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\PacketBuilder.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\PingPacket.cpp">
+      <Filter>Packets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -254,9 +254,6 @@
     </ClInclude>
     <ClInclude Include="src\Common\StringUtilities.hpp">
       <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\PacketCreator.hpp">
-      <Filter>Packets</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\PingPacket.hpp">
       <Filter>Packets</Filter>
@@ -509,6 +506,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\Algorithm.hpp">
       <Filter>Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketBuilder.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\PacketWrapper.hpp">
+      <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\SplitPacketBuilder.hpp">
+      <Filter>Packets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

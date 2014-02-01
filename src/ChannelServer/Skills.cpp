@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Mist.hpp"
 #include "MobHandler.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -37,9 +38,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Timer.hpp"
 #include <functional>
 
-auto Skills::addSkill(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int32_t skillId = packet.get<int32_t>();
+auto Skills::addSkill(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int32_t skillId = reader.get<int32_t>();
 	if (!GameLogicUtilities::isBeginnerSkill(skillId)) {
 		if (player->getStats()->getSp() == 0) {
 			// Hacking
@@ -55,8 +56,8 @@ auto Skills::addSkill(Player *player, PacketReader &packet) -> void {
 	}
 }
 
-auto Skills::cancelSkill(Player *player, PacketReader &packet) -> void {
-	stopSkill(player, packet.get<int32_t>());
+auto Skills::cancelSkill(Player *player, PacketReader &reader) -> void {
+	stopSkill(player, reader.get<int32_t>());
 }
 
 auto Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) -> void {
@@ -68,7 +69,7 @@ auto Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) -> void 
 		case Skills::IlArchMage::BigBang:
 		case Skills::Bishop::BigBang:
 		case Skills::Corsair::RapidFire:
-			SkillsPacket::endChargeOrStationarySkill(player, player->getChargeOrStationarySkillInfo());
+			player->sendMap(SkillsPacket::endChargeOrStationarySkill(player->getId(), player->getChargeOrStationarySkillInfo()));
 			player->setChargeOrStationarySkill(ChargeOrStationarySkillInfo());
 			break;
 		default:
@@ -85,7 +86,7 @@ auto Skills::stopSkill(Player *player, int32_t skillId, bool fromTimer) -> void 
 			}
 
 			if (skillId == Skills::SuperGm::Hide) {
-				GmPacket::endHide(player);
+				player->send(GmPacket::endHide());
 				player->getMap()->gmHideChange(player);
 			}
 
@@ -116,11 +117,11 @@ auto Skills::getAffectedPartyMembers(Party *party, int8_t affected, int8_t membe
 	return ret;
 }
 
-auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
-	uint32_t ticks = packet.get<uint32_t>();
-	int32_t skillId = packet.get<int32_t>();
+auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
+	uint32_t ticks = reader.get<uint32_t>();
+	int32_t skillId = reader.get<int32_t>();
 	int16_t addedInfo = 0;
-	uint8_t level = packet.get<uint8_t>();
+	uint8_t level = reader.get<uint8_t>();
 	uint8_t type = 0;
 	uint8_t direction = 0;
 	if (level == 0 || player->getSkills()->getSkillLevel(skillId) != level) {
@@ -138,7 +139,7 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 			break;
 		}
 		case Skills::Shadower::Smokescreen: {
-			Pos origin = packet.getClass<Pos>();
+			Pos origin = reader.getClass<Pos>();
 			Mist *m = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level);
 			break;
 		}
@@ -151,10 +152,10 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		case Skills::WhiteKnight::MagicCrash:
 		case Skills::DragonKnight::PowerCrash: {
 			// Might be CRC
-			packet.skipBytes(4);
-			uint8_t mobs = packet.get<uint8_t>();
+			reader.skipBytes(4);
+			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
-				int32_t mapMobId = packet.get<int32_t>();
+				int32_t mapMobId = reader.get<int32_t>();
 				if (auto mob = player->getMap()->getMob(mapMobId)) {
 					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 						mob->doCrashSkill(skillId);
@@ -166,13 +167,13 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		case Skills::Hero::MonsterMagnet:
 		case Skills::Paladin::MonsterMagnet:
 		case Skills::DarkKnight::MonsterMagnet: {
-			int32_t mobs = packet.get<int32_t>();
+			int32_t mobs = reader.get<int32_t>();
 			for (int8_t k = 0; k < mobs; k++) {
-				int32_t mapMobId = packet.get<int32_t>();
-				uint8_t success = packet.get<int8_t>();
-				SkillsPacket::showMagnetSuccess(player, mapMobId, success);
+				int32_t mapMobId = reader.get<int32_t>();
+				uint8_t success = reader.get<int8_t>();
+				player->sendMap(SkillsPacket::showMagnetSuccess(mapMobId, success));
 			}
-			direction = packet.get<uint8_t>();
+			direction = reader.get<uint8_t>();
 			break;
 		}
 		case Skills::FpWizard::Slow:
@@ -180,7 +181,7 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		case Skills::BlazeWizard::Slow:
 		case Skills::Page::Threaten:
 			// Might be CRC
-			packet.skipBytes(4);
+			reader.skipBytes(4);
 			// Intentional fallthrough
 		case Skills::FpMage::Seal:
 		case Skills::IlMage::Seal:
@@ -190,9 +191,9 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		case Skills::NightWalker::ShadowWeb:
 		case Skills::Shadower::NinjaAmbush:
 		case Skills::NightLord::NinjaAmbush: {
-			uint8_t mobs = packet.get<uint8_t>();
+			uint8_t mobs = reader.get<uint8_t>();
 			for (uint8_t k = 0; k < mobs; k++) {
-				if (auto mob = player->getMap()->getMob(packet.get<int32_t>())) {
+				if (auto mob = player->getMap()->getMob(reader.get<int32_t>())) {
 					MobHandler::handleMobStatus(player->getId(), mob, skillId, level, 0, 0);
 				}
 			}
@@ -213,24 +214,24 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 			player->getActiveBuffs()->removeDebuff(MobSkills::Seduce);
 			break;
 		case Skills::Priest::Dispel: {
-			int8_t affected = packet.get<int8_t>();
+			int8_t affected = reader.get<int8_t>();
 			player->getActiveBuffs()->useDispel();
 			if (Party *party = player->getParty()) {
 				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
 				for (const auto &partyMember : members) {
 					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
 						if (Randomizer::rand<uint16_t>(99) < skill->prop) {
-							SkillsPacket::showSkill(partyMember, skillId, level, direction, true, true);
-							SkillsPacket::showSkill(partyMember, skillId, level, direction, true);
+							partyMember->send(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true, true));
+							partyMember->sendMap(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true));
 							partyMember->getActiveBuffs()->useDispel();
 						}
 					}
 				}
 			}
-			packet.skipBytes(2);
-			affected = packet.get<int8_t>();
+			reader.skipBytes(2);
+			affected = reader.get<int8_t>();
 			for (int8_t k = 0; k < affected; k++) {
-				int32_t mapMobId = packet.get<int32_t>();
+				int32_t mapMobId = reader.get<int32_t>();
 				if (auto mob = player->getMap()->getMob(mapMobId)) {
 					if (Randomizer::rand<uint16_t>(99) < skill->prop) {
 						mob->dispelBuffs();
@@ -306,12 +307,12 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 				player->getSkills()->removeAllCooldowns();
 			}
 			if (Party *party = player->getParty()) {
-				int8_t affected = packet.get<int8_t>();
+				int8_t affected = reader.get<int8_t>();
 				const auto members = getAffectedPartyMembers(party, affected, party->getMembersCount());
 				for (const auto &partyMember : members) {
 					if (partyMember != nullptr && partyMember != player && partyMember->getMap() == player->getMap()) {
-						SkillsPacket::showSkill(partyMember, skillId, level, direction, true, true);
-						SkillsPacket::showSkill(partyMember, skillId, level, direction, true);
+						partyMember->send(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true, true));
+						partyMember->sendMap(SkillsPacket::showSkill(partyMember->getId(), skillId, level, direction, true));
 						Buffs::addBuff(partyMember, skillId, level, 0);
 						if (skillId == Skills::Buccaneer::TimeLeap) {
 							partyMember->getSkills()->removeAllCooldowns();
@@ -329,7 +330,7 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 		case Skills::SuperGm::HyperBody:
 		case Skills::SuperGm::HealPlusDispel:
 		case Skills::SuperGm::Resurrection: {
-			uint8_t players = packet.get<int8_t>();
+			uint8_t players = reader.get<int8_t>();
 			function_t<bool(Player *)> doAction;
 			function_t<void(Player *)> action;
 			switch (skillId) {
@@ -350,31 +351,33 @@ auto Skills::useSkill(Player *player, PacketReader &packet) -> void {
 					action = [skillId, level](Player *target) { Buffs::addBuff(target, skillId, level, 0); };
 			}
 			for (uint8_t i = 0; i < players; i++) {
-				int32_t playerId = packet.get<int32_t>();
+				int32_t playerId = reader.get<int32_t>();
 				Player *target = PlayerDataProvider::getInstance().getPlayer(playerId);
 				if (target != nullptr && target != player && doAction(target)) {
-					SkillsPacket::showSkill(target, skillId, level, direction, true, true);
-					SkillsPacket::showSkill(target, skillId, level, direction, true);
+					player->send(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true, true));
+
+					player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true));
+
 					action(target);
 				}
 			}
 			break;
 		}
 		default:
-			type = packet.get<int8_t>();
+			type = reader.get<int8_t>();
 			switch (type) {
 				case 0x80:
-					addedInfo = packet.get<int16_t>();
+					addedInfo = reader.get<int16_t>();
 					break;
 			}
 			break;
 	}
 	applySkillCosts(player, skillId, level);
-	SkillsPacket::showSkill(player, skillId, level, direction);
+	player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction));
 
 	if (Buffs::addBuff(player, skillId, level, addedInfo)) {
 		if (skillId == Skills::SuperGm::Hide) {
-			GmPacket::beginHide(player);
+			player->send(GmPacket::beginHide());
 			player->getMap()->gmHideChange(player);
 		}
 
@@ -476,14 +479,14 @@ auto Skills::useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) 
 auto Skills::heal(Player *player, int16_t value, int32_t skillId) -> void {
 	if (player->getStats()->getHp() < player->getStats()->getMaxHp() && player->getStats()->getHp() > 0) {
 		player->getStats()->modifyHp(value);
-		SkillsPacket::healHp(player, value);
+		player->send(SkillsPacket::healHp(value));
 	}
 }
 
 auto Skills::hurt(Player *player, int16_t value, int32_t skillId) -> void {
 	if (player->getStats()->getHp() - value > 1) {
 		player->getStats()->modifyHp(-value);
-		SkillsPacket::showSkillEffect(player, skillId);
+		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), skillId));
 	}
 	else {
 		Buffs::endBuff(player, skillId);
@@ -496,7 +499,7 @@ auto Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 		return;
 	}
 	if (!initialLoad) {
-		SkillsPacket::sendCooldown(player, skillId, coolTime);
+		player->send(SkillsPacket::sendCooldown(skillId, coolTime));
 		player->getSkills()->addCooldown(skillId, coolTime);
 	}
 	Timer::Timer::create([player, skillId](const time_point_t &now) { Skills::stopCooldown(player, skillId); },
@@ -506,7 +509,7 @@ auto Skills::startCooldown(Player *player, int32_t skillId, int16_t coolTime, bo
 
 auto Skills::stopCooldown(Player *player, int32_t skillId) -> void {
 	player->getSkills()->removeCooldown(skillId);
-	SkillsPacket::sendCooldown(player, skillId, 0);
+	player->send(SkillsPacket::sendCooldown(skillId, 0));
 	if (skillId == Skills::Corsair::Battleship) {
 		player->getActiveBuffs()->resetBattleshipHp();
 	}

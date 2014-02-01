@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.hpp"
 #include "Mist.hpp"
 #include "MobsPacket.hpp"
-#include "PacketCreator.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -111,22 +110,23 @@ auto Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) -> void {
 	if (!poison) {
 		// HP bar packet does nothing for showing damage when poison is damaging for whatever reason
 		Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
+		Map *map = getMap();
 
 		uint8_t percent = static_cast<uint8_t>(m_hp * 100 / m_info->hp);
 
 		if (m_info->hasHpBar()) {
 			// Boss HP bars - Horntail's damage sponge isn't a boss in the data
-			MobsPacket::showBossHp(shared_from_this());
+			map->send(MobsPacket::showBossHp(shared_from_this()));
 		}
 		else if (m_info->boss) {
 			// Minibosses
-			MobsPacket::showHp(m_mapId, m_mapMobId, percent);
+			map->send(MobsPacket::showHp(m_mapMobId, percent));
 		}
 		else if (m_info->friendly) {
-			MobsPacket::damageFriendlyMob(shared_from_this(), damage);
+			map->send(MobsPacket::damageFriendlyMob(shared_from_this(), damage));
 		}
 		else if (player != nullptr) {
-			MobsPacket::showHp(player, m_mapMobId, percent);
+			player->send(MobsPacket::showHp(m_mapMobId, percent));
 		}
 
 		// Need to preserve the pointer through mob deletion in die()
@@ -153,13 +153,15 @@ auto Mob::applyWebDamage() -> void {
 	if (webDamage != 0) {
 		m_damages[m_webPlayerId] += webDamage;
 		m_hp -= webDamage;
-		MobsPacket::hurtMob(m_mapId, m_mapMobId, webDamage);
+		getMap()->send(MobsPacket::hurtMob(m_mapMobId, webDamage));
 	}
 }
 
 auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void {
 	int32_t addedStatus = 0;
 	vector_t<int32_t> reflection;
+	Map *map = getMap();
+
 	for (auto &info : statusInfo) {
 		int32_t cStatus = info.status;
 		bool alreadyHasStatus = m_statuses.find(cStatus) != std::end(m_statuses);
@@ -173,7 +175,7 @@ auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void 
 			case StatusEffects::Mob::ShadowWeb:
 				m_webPlayerId = playerId;
 				m_webLevel = static_cast<uint8_t>(info.val);
-				Maps::getMap(m_mapId)->addWebbedMob(getMapMobId());
+				map->addWebbedMob(getMapMobId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (info.skillId) {
@@ -222,40 +224,19 @@ auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void 
 	for (const auto &kvp : m_statuses) {
 		m_status |= kvp.first;
 	}
-	MobsPacket::applyStatus(m_mapId, m_mapMobId, addedStatus, statusInfo, 300, reflection);
-}
-
-auto Mob::statusPacket(PacketCreator &packet) -> void {
-	packet.add<int32_t>(m_status);
-	for (const auto &kvp : m_statuses) {
-		// Val/skillId pairs must be ordered in the packet by status value ascending, this is done for us by ord_map_t
-		if (kvp.first != StatusEffects::Mob::Empty) {
-			const StatusInfo &info = kvp.second;
-			packet.add<int16_t>(static_cast<int16_t>(info.val));
-			if (info.skillId >= 0) {
-				packet.add<int32_t>(info.skillId);
-			}
-			else {
-				packet.add<int16_t>(info.mobSkill);
-				packet.add<int16_t>(info.level);
-			}
-			packet.add<int16_t>(1);
-		}
-		else {
-			packet.add<int32_t>(0);
-		}
-	}
+	map->send(MobsPacket::applyStatus(m_mapMobId, addedStatus, statusInfo, 300, reflection));
 }
 
 auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 	auto kvp = m_statuses.find(status);
 	if (kvp != std::end(m_statuses) && getHp() > 0) {
 		const StatusInfo &stat = kvp->second;
+		Map *map = getMap();
 		switch (status) {
 			case StatusEffects::Mob::ShadowWeb:
 				m_webLevel = 0;
 				m_webPlayerId = 0;
-				Maps::getMap(m_mapId)->removeWebbedMob(getMapMobId());
+				map->removeWebbedMob(getMapMobId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
 				switch (stat.skillId) {
@@ -278,7 +259,7 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);
-		MobsPacket::removeStatus(m_mapId, m_mapMobId, status);
+		map->send(MobsPacket::removeStatus(m_mapMobId, status));
 	}
 }
 
@@ -296,6 +277,14 @@ auto Mob::getStatusValue(int32_t status) -> int32_t {
 	return kvp != std::end(m_statuses) ? kvp->second.val : 0;
 }
 
+auto Mob::getStatusBits() const -> int32_t {
+	return m_status;
+}
+
+auto Mob::getStatusInfo() const -> const ord_map_t<int32_t, StatusInfo> & {
+	return m_statuses;
+}
+
 auto Mob::getMagicReflection() -> int32_t {
 	return getStatusValue(StatusEffects::Mob::MagicDamageReflect);
 }
@@ -309,10 +298,15 @@ auto Mob::setController(Player *control, bool spawn, Player *display) -> void {
 
 	m_controller = control;
 	if (control != nullptr) {
-		MobsPacket::requestControl(control, shared_from_this(), spawn);
+		control->send(MobsPacket::requestControl(shared_from_this(), spawn));
 	}
 	else if (getControlStatus() == MobControlStatus::None) {
-		MobsPacket::requestControl(control, shared_from_this(), spawn, display);
+		if (display != nullptr) {
+			display->send(MobsPacket::requestControl(shared_from_this(), spawn));
+		}
+		else {
+			getMap()->send(MobsPacket::requestControl(shared_from_this(), spawn));
+		}
 	}
 
 	m_anticipatedSkill = 0;
@@ -322,12 +316,12 @@ auto Mob::setController(Player *control, bool spawn, Player *display) -> void {
 
 auto Mob::endControl() -> void {
 	if (m_controller != nullptr && m_controller->getMapId() == getMapId()) {
-		MobsPacket::endControlMob(m_controller, m_mapId, m_mapMobId);
+		m_controller->send(MobsPacket::endControlMob(m_mapMobId));
 	}
 }
 
 auto Mob::die(Player *player, bool fromExplosion) -> void {
-	Map *map = Maps::getMap(m_mapId);
+	Map *map = getMap();
 
 	endControl();
 
@@ -488,7 +482,7 @@ auto Mob::skillHeal(int32_t healHp, int32_t healRange) -> void {
 		sponge->m_hp = healHp;
 	}
 
-	MobsPacket::healMob(m_mapId, m_mapMobId, original);
+	getMap()->send(MobsPacket::healMob(m_mapMobId, original));
 }
 
 auto Mob::dispelBuffs() -> void {
@@ -523,7 +517,7 @@ auto Mob::mpEat(Player *player, MpEaterInfo *mp) -> void {
 		eatenMp = std::min<int32_t>(eatenMp, Stats::MaxMaxMp);
 		player->getStats()->modifyMp(eatenMp);
 
-		SkillsPacket::showSkillEffect(player, mp->skillId);
+		player->sendMap(SkillsPacket::showSkillEffect(player->getId(), mp->skillId));
 		m_mpEaterCount++;
 	}
 }
@@ -629,7 +623,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 	consumeMp(skillLevelInfo->mp);
 
 	Rect skillArea = skillLevelInfo->dimensions.move(getPos());
-	Map *map = Maps::getMap(getMapId());
+	Map *map = getMap();
 	vector_t<StatusInfo> statuses;
 	bool aoe = false;
 
@@ -692,7 +686,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 			}
 			auto func = [&message, &field, &portal](Player *player) {
 				if (message != "") {
-					PlayerPacket::showMessage(player, message, PlayerPacket::NoticeTypes::Blue);
+					player->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Blue));
 				}
 				player->setMap(field, portal);
 			};
@@ -758,4 +752,8 @@ auto Mob::spawnsSponge(int32_t mobId) -> bool {
 		case Mobs::SummonHorntail: return true; break;
 	}
 	return false;
+}
+
+auto Mob::getMap() const -> Map * {
+	return Maps::getMap(m_mapId);
 }

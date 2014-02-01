@@ -66,9 +66,10 @@ auto LuaExports::getState(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::reset(lua_State *luaVm) -> int {
-	getReactor(luaVm)->revive();
-	getReactor(luaVm)->setState(0, true);
-	ReactorPacket::triggerReactor(getReactor(luaVm));
+	Reactor *reactor = getReactor(luaVm);
+	reactor->revive();
+	reactor->setState(0, true);
+	reactor->getMap()->send(ReactorPacket::triggerReactor(reactor));
 	return 0;
 }
 

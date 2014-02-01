@@ -17,19 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
-class PacketCreator;
 class Player;
 
 namespace GmPacket {
-	auto beginHide(Player *player) -> void;
-	auto endHide(Player *player) -> void;
-	auto warning(Player *player, bool succeed) -> void;
-	auto block(Player *player) -> void;
-	auto invalidCharacterName(Player *player) -> void;
-	auto hiredMerchantPlace(Player *player, int8_t channel) -> void;
-	auto hiredMerchantPlace(Player *player, int32_t mapId) -> void;
-	auto setGetVarResult(Player *player, const string_t &name, const string_t &variable, const string_t &value) -> void;
+	namespace HiredMerchantModes {
+		enum {
+			Map = 0x00,
+			Channel = 0x01,
+		};
+	}
+
+	PACKET(beginHide);
+	PACKET(endHide);
+	PACKET(warning, bool succeed);
+	PACKET(block);
+	PACKET(invalidCharacterName);
+	PACKET(hiredMerchantPlace, int8_t mode, int32_t id);
+	PACKET(setGetVarResult, const string_t &name, const string_t &variable, const string_t &value);
 }

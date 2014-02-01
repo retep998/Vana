@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Channel;
 class LoginServerAcceptConnection;
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Player;
 class World;
@@ -32,11 +32,12 @@ class World;
 class Worlds {
 	SINGLETON(Worlds);
 public:
-	auto channelSelect(Player *player, PacketReader &packet) -> void;
-	auto selectWorld(Player *player, PacketReader &packet) -> void;
+	auto channelSelect(Player *player, PacketReader &reader) -> void;
+	auto selectWorld(Player *player, PacketReader &reader) -> void;
 	auto showWorld(Player *player) -> void;
-	auto sendPacketToAll(const PacketCreator &packet) const -> void;
-	auto sendPacketToList(const vector_t<world_id_t> &worlds, const PacketCreator &packet) const -> void;
+	auto send(world_id_t id, const PacketBuilder &builder) -> void;
+	auto send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void;
+	auto send(const PacketBuilder &builder) -> void;
 
 	auto addWorld(World *world) -> void;
 	auto calculatePlayerLoad(World *world) -> void;

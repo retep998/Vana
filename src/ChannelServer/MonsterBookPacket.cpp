@@ -18,39 +18,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MonsterBookPacket.hpp"
 #include "ItemDataProvider.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "SmsgHeader.hpp"
 
-auto MonsterBookPacket::addCard(Player *player, int32_t cardId, uint8_t level, bool full) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MONSTER_BOOK_ADD);
-	packet.add<bool>(!full);
-	packet.add<int32_t>(cardId);
-	packet.add<int32_t>(level);
-	player->getSession()->send(packet);
+namespace MonsterBookPacket {
 
-	if (!full) {
-		packet = PacketCreator();
-		packet.add<header_t>(SMSG_THEATRICS);
-		packet.add<int8_t>(0x0D);
-		player->getSession()->send(packet);
-
-		// GMS doesnt send the animation for others.
-		// If you want to enable displaying it, just uncomment this VV
-		/*
-		packet = PacketCreator();
-		packet.add<header_t>(SMSG_SKILL_SHOW);
-		packet.add<int32_t>(player->getId());
-		packet.add<int8_t>(0x0D);
-		player->getMap()->sendPacket(packet, player);
-		*/
-	}
+PACKET_IMPL(addCard, int32_t cardId, uint8_t level, bool full) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MONSTER_BOOK_ADD)
+		.add<bool>(!full)
+		.add<int32_t>(cardId)
+		.add<int32_t>(level);
+	return builder;
 }
 
-auto MonsterBookPacket::changeCover(Player *player, int32_t cardId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MONSTER_BOOK_COVER);
-	packet.add<int32_t>(cardId);
-	player->getSession()->send(packet);
+SPLIT_PACKET_IMPL(addCardEffect, int32_t playerId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(0x0D);
+
+	// GMS doesnt send the animation for others.
+	// If you want to enable displaying it, just uncomment
+	/*
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.add<int8_t>(0x0D);
+	*/
+	return builder;
+}
+
+PACKET_IMPL(changeCover, int32_t cardId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MONSTER_BOOK_COVER)
+		.add<int32_t>(cardId);
+	return builder;
+}
+
 }

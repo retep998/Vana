@@ -23,12 +23,12 @@ class PacketReader;
 class Player;
 
 namespace NpcHandler {
-	auto handleNpc(Player *player, PacketReader &packet) -> void;
-	auto handleNpcIn(Player *player, PacketReader &packet) -> void;
-	auto handleNpcAnimation(Player *player, PacketReader &packet) -> void;
+	auto handleNpc(Player *player, PacketReader &reader) -> void;
+	auto handleNpcIn(Player *player, PacketReader &reader) -> void;
+	auto handleNpcAnimation(Player *player, PacketReader &reader) -> void;
 	auto handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId = 0) -> void;
-	auto useShop(Player *player, PacketReader &packet) -> void;
-	auto useStorage(Player *player, PacketReader &packet) -> void;
+	auto useShop(Player *player, PacketReader &reader) -> void;
+	auto useStorage(Player *player, PacketReader &reader) -> void;
 	auto showShop(Player *player, int32_t shopId) -> bool;
 	auto showStorage(Player *player, int32_t npcId) -> bool;
 	auto showGuildRank(Player *player, int32_t npcId) -> bool;

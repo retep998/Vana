@@ -360,12 +360,12 @@ auto Instance::respawnReactors(int32_t mapId) -> void {
 auto Instance::showTimer(bool show, bool doIt) -> void {
 	if (!show && (doIt || m_showTimer)) {
 		for (const auto &map : m_maps) {
-			MapPacket::showTimer(map->getId(), seconds_t(0));
+			map->send(MapPacket::showTimer(seconds_t(0)));
 		}
 	}
 	else if (show && (doIt || !m_showTimer)) {
 		for (const auto &map : m_maps) {
-			MapPacket::showTimer(map->getId(), checkInstanceTimer());
+			map->send(MapPacket::showTimer(checkInstanceTimer()));
 		}
 	}
 }

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
@@ -32,12 +33,13 @@ namespace PartyPacket {
 		};
 	}
 
-	auto error(Player *player, int8_t error) -> void;
-	auto createParty(Player *packetTarget, Party *party) -> void;
-	auto joinParty(Player *packetTarget, Party *party, const string_t &player) -> void;
-	auto leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string_t &name, bool kicked) -> void;
-	auto invitePlayer(Player *packetTarget, Party *party, const string_t &inviter) -> void;
-	auto disbandParty(Player *packetTarget, Party *party) -> void;
-	auto setLeader(Player *packetTarget, Party *party, int32_t newLeader) -> void;
-	auto silentUpdate(Player *packetTarget, Party *party) -> void;
+	PACKET(error, int8_t error);
+	PACKET(createParty, Party *party);
+	PACKET(joinParty, int32_t targetMapId, Party *party, const string_t &player);
+	PACKET(leaveParty, int32_t targetMapId, Party *party, int32_t playerId, const string_t &name, bool kicked);
+	PACKET(invitePlayer, Party *party, const string_t &inviter);
+	PACKET(disbandParty, Party *party);
+	PACKET(setLeader, Party *party, int32_t newLeader);
+	PACKET(silentUpdate, int32_t targetMapId, Party *party);
+	PACKET(updateParty, int32_t targetMapId, Party *party);
 }

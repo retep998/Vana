@@ -17,16 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "AuthenticationPacket.hpp"
 #include "InterHeader.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "ServerConnection.hpp"
 #include "Session.hpp"
 #include <algorithm>
 
-auto AuthenticationPacket::sendPassword(AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_PASSWORD);
-	packet.addString(pass);
-	packet.addClassVector<ExternalIp>(extIp);
-	packet.add<int8_t>(static_cast<int8_t>(connection->getType()));
-	connection->getSession()->send(packet);
+namespace AuthenticationPacket {
+
+PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) {
+	PacketBuilder builder;
+	builder.add<header_t>(IMSG_PASSWORD);
+	builder.addString(pass);
+	builder.addClassVector<ExternalIp>(extIp);
+	builder.add<server_type_t>(static_cast<server_type_t>(connection->getType()));
+	return builder;
+}
+
 }

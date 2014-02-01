@@ -17,16 +17,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InventoryPacketHelper.hpp"
 #include "MapConstants.hpp"
-#include "PacketCreator.hpp"
 
-auto InventoryPacketHelper::fillRockPacket(PacketCreator &packet, const vector_t<int32_t> &vec, size_t maxSize) -> void {
+namespace InventoryPacketHelper {
+
+PACKET_IMPL(fillRockPacket, const vector_t<int32_t> &vec, size_t maxSize) {
+	PacketBuilder builder;
 	size_t remaining = 1;
 	while (remaining <= vec.size()) {
-		packet.add<int32_t>(vec[remaining - 1]);
+		builder.add<int32_t>(vec[remaining - 1]);
 		remaining++;
 	}
 	while (remaining <= maxSize) {
-		packet.add<int32_t>(Maps::NoMap);
+		builder.add<int32_t>(Maps::NoMap);
 		remaining++;
 	}
+	return builder;
+}
+
 }

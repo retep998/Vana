@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ItemConstants.hpp"
 #include "Map.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "PlayerInventory.hpp"
@@ -32,323 +31,353 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto InventoryPacket::updatePlayer(Player *player) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
+namespace InventoryPacket {
 
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_CHANGE_LOOK);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(1);
-	PlayerPacketHelper::addPlayerDisplay(packet, player);
-	packet.add<int8_t>(0);
-	packet.add<int16_t>(0);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_PLAYER_CHANGE_LOOK)
+		.add<int32_t>(player->getId())
+		.add<int8_t>(1)
+		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
+		.add<int8_t>(0)
+		.add<int16_t>(0);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
 }
 
-auto InventoryPacket::inventoryOperation(Player *player, bool unk, const vector_t<InventoryPacketOperation> &operations) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_OPERATION);
-	packet.add<bool>(unk);
-	packet.add<uint8_t>(operations.size());
+SPLIT_PACKET_IMPL(sitChair, int32_t playerId, int32_t chairId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<int16_t>(1)
+		.add<int32_t>(0);
+
+	builder.map
+		.add<header_t>(SMSG_CHAIR_SIT)
+		.add<int32_t>(playerId)
+		.add<int32_t>(chairId);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(stopChair, int32_t playerId, bool seatTaken) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_CHAIR)
+		.add<int8_t>(0);
+	if (seatTaken) {
+		return builder;
+	}
+
+	builder.map
+		.add<header_t>(SMSG_CHAIR_SIT)
+		.add<int32_t>(playerId)
+		.add<int32_t>(0);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(useScroll, int32_t playerId, int8_t succeed, bool destroy, bool legendarySpirit) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SCROLL_USE)
+		.add<int32_t>(playerId)
+		.add<int8_t>(succeed)
+		.add<bool>(destroy)
+		.add<int16_t>(legendarySpirit);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(sendChalkboardUpdate, int32_t playerId, const string_t &msg) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_CHALKBOARD)
+		.add<int32_t>(playerId)
+		.add<bool>(!msg.empty())
+		.addString(msg);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(useSkillbook, int32_t playerId, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SKILLBOOK)
+		.add<int32_t>(playerId)
+		.add<int8_t>(1) // Number of skills? Maybe just padding or random boolean
+		.add<int32_t>(skillId)
+		.add<int32_t>(newMaxLevel)
+		.add<bool>(use)
+		.add<bool>(succeed);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(useItemEffect, int32_t playerId, int32_t itemId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_ITEM_EFFECT)
+		.add<int32_t>(playerId)
+		.add<int32_t>(itemId);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
+PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperation> &operations) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_INVENTORY_OPERATION)
+		.add<bool>(unk)
+		.add<uint8_t>(operations.size());
+
 	for (const auto &operation : operations) {
-		packet.add<int8_t>(operation.operationType);
-		packet.add<int8_t>(GameLogicUtilities::getInventory(operation.item->getId()));
+		builder
+			.add<int8_t>(operation.operationType)
+			.add<int8_t>(GameLogicUtilities::getInventory(operation.item->getId()));
+
 		switch (operation.operationType) {
 			case InventoryPacket::OperationTypes::AddItem:
-				PlayerPacketHelper::addItemInfo(packet, operation.currentSlot, operation.item, true);
+				builder.addBuffer(PlayerPacketHelper::addItemInfo(operation.currentSlot, operation.item, true));
 				break;
 			case InventoryPacket::OperationTypes::ModifyQuantity:
-				packet.add<int16_t>(operation.currentSlot);
-				packet.add<int16_t>(operation.item->getAmount());
+				builder
+					.add<int16_t>(operation.currentSlot)
+					.add<int16_t>(operation.item->getAmount());
 				break;
 			case InventoryPacket::OperationTypes::ModifySlot:
-				packet.add<int16_t>(operation.oldSlot);
-				packet.add<int16_t>(operation.currentSlot);
+				builder
+					.add<int16_t>(operation.oldSlot)
+					.add<int16_t>(operation.currentSlot);
 				if (operation.oldSlot < 0) {
-					packet.add<int8_t>(1);
+					builder.add<int8_t>(1);
 				}
 				else if (operation.currentSlot < 0) {
-					packet.add<int8_t>(2);
+					builder.add<int8_t>(2);
 				}
 				break;
 			case InventoryPacket::OperationTypes::RemoveItem:
-				packet.add<int16_t>(operation.currentSlot);
+				builder.add<int16_t>(operation.currentSlot);
 				break;
 		}
 	}
-
-	player->getSession()->send(packet);
+	return builder;
 }
 
-auto InventoryPacket::sitChair(Player *player, int32_t chairId) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<int16_t>(1);
-	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_CHAIR_SIT);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(chairId);
-	player->getMap()->sendPacket(packet, player);
+PACKET_IMPL(sitMapChair, int16_t chairId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CHAIR)
+		.add<int8_t>(1)
+		.add<int16_t>(chairId);
+	return builder;
 }
 
-auto InventoryPacket::sitMapChair(Player *player, int16_t chairId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHAIR);
-	packet.add<int8_t>(1);
-	packet.add<int16_t>(chairId);
-	player->getSession()->send(packet);
+PACKET_IMPL(showMegaphone, const string_t &msg) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(2)
+		.addString(msg);
+	return builder;
 }
 
-auto InventoryPacket::stopChair(Player *player, bool showMap) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHAIR);
-	packet.add<int8_t>(0);
-	player->getSession()->send(packet);
-	if (player->isUsingGmHide() || !showMap) {
-		return;
-	}
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_CHAIR_SIT);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(0);
-	player->getMap()->sendPacket(packet, player);
+PACKET_IMPL(showSuperMegaphone, const string_t &msg, bool whisper) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(3)
+		.addString(msg)
+		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<bool>(whisper);
+	return builder;
 }
 
-auto InventoryPacket::useScroll(Player *player, int8_t succeed, bool destroy, bool legendarySpirit) -> void {
-	if (player->isUsingGmHide()) {
-		return;
-	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SCROLL_USE);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(succeed);
-	packet.add<bool>(destroy);
-	packet.add<int16_t>(legendarySpirit);
-	player->getMap()->sendPacket(packet);
+PACKET_IMPL(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_AVATAR_MEGAPHONE)
+		.add<int32_t>(itemId)
+		.addString(playerName)
+		.addString(msg1)
+		.addString(msg2)
+		.addString(msg3)
+		.addString(msg4)
+		.add<int32_t>(ChannelServer::getInstance().getChannelId())
+		.addBuffer(displayInfo, displayInfoSize);
+	return builder;
 }
 
-auto InventoryPacket::showMegaphone(Player *player, const string_t &msg) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(2);
-	packet.addString(msg);
-	PlayerDataProvider::getInstance().sendPacket(packet); // In global, this sends to everyone on the current channel, not the map
-}
+PACKET_IMPL(showItemMegaphone, const string_t &msg, bool whisper, Item *item) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(8)
+		.addString(msg)
+		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<bool>(whisper);
 
-auto InventoryPacket::showSuperMegaphone(Player *player, const string_t &msg, bool whisper) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(3);
-	packet.addString(msg);
-	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
-	packet.add<bool>(whisper);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto InventoryPacket::showMessenger(Player *player, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	packet.add<header_t>(SMSG_AVATAR_MEGAPHONE);
-	packet.add<int32_t>(itemId);
-	packet.addString(player->getName());
-	packet.addString(msg);
-	packet.addString(msg2);
-	packet.addString(msg3);
-	packet.addString(msg4);
-	packet.add<int32_t>(ChannelServer::getInstance().getChannelId());
-	packet.addBuffer(displayInfo, displayInfoSize);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
-}
-
-auto InventoryPacket::showItemMegaphone(Player *player, const string_t &msg, bool whisper, Item *item) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(8);
-	packet.addString(msg);
-	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
-	packet.add<bool>(whisper);
 	if (item == nullptr) {
-		packet.add<int8_t>(0);
+		builder.add<int8_t>(0);
 	}
 	else {
-		PlayerPacketHelper::addItemInfo(packet, 1, item);
+		builder.addBuffer(PlayerPacketHelper::addItemInfo(1, item));
 	}
-	ChannelServer::getInstance().sendPacketToWorld(packet);
+	return builder;
 }
 
-auto InventoryPacket::showTripleMegaphone(Player *player, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_TO_ALL_PLAYERS);
-	packet.add<header_t>(SMSG_MESSAGE);
-	packet.add<int8_t>(0x0a);
-	packet.addString(line1);
-	packet.add<int8_t>(lines);
+PACKET_IMPL(showTripleMegaphone, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESSAGE)
+		.add<int8_t>(0x0a)
+		.addString(line1)
+		.add<int8_t>(lines);
 	if (lines > 1) {
-		packet.addString(line2);
+		builder.addString(line2);
 	}
 	if (lines > 2) {
-		packet.addString(line3);
+		builder.addString(line3);
 	}
-	packet.add<int8_t>(static_cast<int8_t>(ChannelServer::getInstance().getChannelId()));
-	packet.add<bool>(whisper);
-	ChannelServer::getInstance().sendPacketToWorld(packet);
+	builder
+		.add<int8_t>(ChannelServer::getInstance().getChannelId())
+		.add<bool>(whisper);
+	return builder;
 }
 
-auto InventoryPacket::useSkillbook(Player *player, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SKILLBOOK);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(1); // Number of skills? Maybe just padding or random boolean
-	packet.add<int32_t>(skillId);
-	packet.add<int32_t>(newMaxLevel);
-	packet.add<bool>(use);
-	packet.add<bool>(succeed);
-	player->getMap()->sendPacket(packet);
+
+PACKET_IMPL(updateSlots, int8_t inventory, int8_t slots) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_INVENTORY_SLOT_UPDATE)
+		.add<int8_t>(inventory)
+		.add<int8_t>(slots);
+	return builder;
 }
 
-auto InventoryPacket::useItemEffect(Player *player, int32_t itemId) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_ITEM_EFFECT);
-	packet.add<int32_t>(player->getId());
-	packet.add<int32_t>(itemId);
-	player->getMap()->sendPacket(packet, player);
-}
-
-auto InventoryPacket::updateSlots(Player *player, int8_t inventory, int8_t slots) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_INVENTORY_SLOT_UPDATE);
-	packet.add<int8_t>(inventory);
-	packet.add<int8_t>(slots);
-	player->getSession()->send(packet);
-}
-
-auto InventoryPacket::blankUpdate(Player *player) -> void {
+PACKET_IMPL(blankUpdate) {
+	PacketBuilder builder;
 	vector_t<InventoryPacketOperation> ops;
-	inventoryOperation(player, true, ops);
+	builder.addBuffer(inventoryOperation(true, ops));
+	return builder;
 }
 
-auto InventoryPacket::sendRockUpdate(Player *player, int8_t mode, int8_t type, const vector_t<int32_t> &maps) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_TELEPORT_ROCK);
-	packet.add<int8_t>(mode);
-	packet.add<int8_t>(type);
-
-	InventoryPacketHelper::fillRockPacket(packet, maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax));
-
-	player->getSession()->send(packet);
+PACKET_IMPL(sendRockUpdate, int8_t mode, int8_t type, const vector_t<int32_t> &maps) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_TELEPORT_ROCK)
+		.add<int8_t>(mode)
+		.add<int8_t>(type)
+		.addBuffer(InventoryPacketHelper::fillRockPacket(maps, (type == RockTypes::Regular ? Inventories::TeleportRockMax : Inventories::VipRockMax)));
+	return builder;
 }
 
-auto InventoryPacket::sendRockError(Player *player, int8_t code, int8_t type) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_TELEPORT_ROCK);
-	packet.add<int8_t>(code);
-	packet.add<int8_t>(type);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendRockError, int8_t code, int8_t type) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_TELEPORT_ROCK)
+		.add<int8_t>(code)
+		.add<int8_t>(type);
+	return builder;
 }
 
-auto InventoryPacket::sendMesobagSucceed(Player *player, int32_t mesos) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESOBAG_SUCCESS);
-	packet.add<int32_t>(mesos);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendMesobagSucceed, int32_t mesos) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_MESOBAG_SUCCESS)
+		.add<int32_t>(mesos);
+	return builder;
 }
 
-auto InventoryPacket::sendMesobagFailed(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_MESOBAG_FAILURE);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendMesobagFailed) {
+	PacketBuilder builder;
+	builder.add<header_t>(SMSG_MESOBAG_FAILURE);
+	return builder;
 }
 
-auto InventoryPacket::useCharm(Player *player, uint8_t charmsLeft, uint8_t daysLeft) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x06);
-	packet.add<int8_t>(0x01);
-	packet.add<uint8_t>(charmsLeft);
-	packet.add<uint8_t>(daysLeft);
-	player->getSession()->send(packet);
+PACKET_IMPL(useCharm, uint8_t charmsLeft, uint8_t daysLeft) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(0x06)
+		.add<int8_t>(0x01)
+		.add<uint8_t>(charmsLeft)
+		.add<uint8_t>(daysLeft);
+	return builder;
 }
 
-auto InventoryPacket::sendHammerSlots(Player *player, int32_t slots) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_HAMMER);
-	packet.add<int8_t>(0x34); // No idea... mode of some sort, I think
-	packet.add<int32_t>(0x00);
-	packet.add<int32_t>(slots);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendHammerSlots, int32_t slots) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_HAMMER)
+		.add<int8_t>(0x34) // No idea... mode of some sort, I think
+		.add<int32_t>(0x00)
+		.add<int32_t>(slots);
+	return builder;
 }
 
-auto InventoryPacket::sendHulkSmash(Player *player, int16_t slot, Item *hammered) -> void {
+PACKET_IMPL(sendHulkSmash, int16_t slot, Item *hammered) {
+	PacketBuilder builder;
 	vector_t<InventoryPacketOperation> ops;
 	ops.emplace_back(OperationTypes::RemoveItem, hammered, slot);
 	ops.emplace_back(OperationTypes::AddItem, hammered, slot);
-	inventoryOperation(player, false, ops);
+	builder.addBuffer(inventoryOperation(false, ops));
+	return builder;
 }
 
-auto InventoryPacket::sendHammerUpdate(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_HAMMER);
-	packet.add<int8_t>(0x38); // No idea... mode of some sort, I think
-	packet.add<int32_t>(0x00);
-	player->getSession()->send(packet);
+PACKET_IMPL(sendHammerUpdate) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_HAMMER)
+		.add<int8_t>(0x38) // No idea... mode of some sort, I think
+		.add<int32_t>(0x00);
+	return builder;
 }
 
-auto InventoryPacket::sendChalkboardUpdate(Player *player, const string_t &msg) -> void {
-	if (player->isUsingGmHide()) {
-		return;
+PACKET_IMPL(playCashSong, int32_t itemId, const string_t &playerName) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_CASH_SONG)
+		.add<int32_t>(itemId)
+		.addString(playerName);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(sendRewardItemAnimation, int32_t playerId, int32_t itemId, const string_t &effect) {
+	SplitPacketBuilder builder;
+	PacketBuilder packet;
+	packet
+		.add<int8_t>(0x0E)
+		.add<int32_t>(itemId)
+		.add<int8_t>(1) // Unk...?
+		.addString(effect);
+
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.addBuffer(packet);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.addBuffer(packet);
+	return builder;
+}
+
+PACKET_IMPL(sendItemExpired, const vector_t<int32_t> &items) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_NOTICE)
+		.add<int8_t>(0x08)
+		.add<uint8_t>(items.size());
+
+	for (const auto &itemId : items) {
+		builder.add<int32_t>(itemId);
 	}
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CHALKBOARD);
-	packet.add<int32_t>(player->getId());
-	packet.add<bool>(!msg.empty());
-	packet.addString(msg);
-	player->getMap()->sendPacket(packet);
+	return builder;
 }
 
-auto InventoryPacket::playCashSong(int32_t map, int32_t itemId, const string_t &playerName) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_CASH_SONG);
-	packet.add<int32_t>(itemId);
-	packet.addString(playerName);
-	Maps::getMap(map)->sendPacket(packet);
-}
-
-auto InventoryPacket::sendRewardItemAnimation(Player *player, int32_t itemId, const string_t &effect) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_THEATRICS);
-	packet.add<int8_t>(0x0E);
-	packet.add<int32_t>(itemId);
-	packet.add<int8_t>(1); // Unk...?
-	packet.addString(effect);
-	player->getSession()->send(packet);
-
-	packet = PacketCreator();
-	packet.add<header_t>(SMSG_SKILL_SHOW);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(0x0E);
-	packet.add<int32_t>(itemId);
-	packet.add<int8_t>(1); // Unk...?
-	packet.addString(effect);
-	player->getMap()->sendPacket(packet, player);
-}
-
-auto InventoryPacket::sendItemExpired(Player *player, const vector_t<int32_t> &items) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_NOTICE);
-	packet.add<int8_t>(0x08);
-	packet.add<uint8_t>(items.size());
-	for (size_t i = 0; i < items.size(); ++i) {
-		packet.add<int32_t>(items[i]);
-	}
-	player->getSession()->send(packet);
 }

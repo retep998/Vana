@@ -17,24 +17,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "PacketBuilder.hpp"
+#include "SplitPacketBuilder.hpp"
 #include "Types.hpp"
 #include <string>
 
 class Item;
-class PacketCreator;
+class PacketBuilder;
 class Pet;
 class Player;
 
 namespace PetsPacket {
-	auto petSummoned(Player *player, Pet *pet, bool kick = false, bool onlyPlayer = false, int8_t index = -1) -> void;
-	auto showChat(Player *player, Pet *pet, const string_t &message, int8_t act) -> void;
-	auto showMovement(Player *player, Pet *pet, unsigned char *buf, int32_t bufLen) -> void;
-	auto showAnimation(Player *player, Pet *pet, int8_t animation) -> void;
-	auto updatePet(Player *player, Pet *pet, Item *petItem) -> void;
-	auto levelUp(Player *player, Pet *pet) -> void;
-	auto changeName(Player *player, Pet *pet) -> void;
-	auto showPet(Player *player, Pet *pet) -> void;
-	auto updateSummonedPets(Player *player) -> void;
-	auto blankUpdate(Player *player) -> void;
-	auto addInfo(PacketCreator &packet, Pet *pet, Item *petItem) -> void;
+	SPLIT_PACKET(petSummoned, int32_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
+	SPLIT_PACKET(showChat, int32_t playerId, Pet *pet, const string_t &message, int8_t act);
+	SPLIT_PACKET(showMovement, int32_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
+	PACKET(showAnimation, int32_t playerId, Pet *pet, int8_t animation);
+	PACKET(updatePet, Pet *pet, Item *petItem);
+	SPLIT_PACKET(levelUp, int32_t playerId, Pet *pet);
+	SPLIT_PACKET(changeName, int32_t playerId, Pet *pet);
+	// TODO FIXME packet
+	// This doesn't appear to be used anywhere, not sure if that's by mistake or not
+	//auto showPet(Player *player, Pet *pet) -> void;
+	PACKET(updateSummonedPets, Player *player);
+	PACKET(blankUpdate);
+	PACKET(addInfo, Pet *pet, Item *petItem);
 }

@@ -27,5 +27,5 @@ public:
 	LoginServerConnection();
 	~LoginServerConnection();
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 };

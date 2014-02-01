@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <unordered_map>
 
-class PacketCreator;
+class PacketBuilder;
 class Pet;
 class Player;
 
@@ -31,8 +31,8 @@ public:
 	PlayerPets(Player *player) : m_player(player) { }
 
 	auto save() -> void;
-	auto petInfoPacket(PacketCreator &packet) -> void;
-	auto connectData(PacketCreator &packet) -> void;
+	auto petInfoPacket(PacketBuilder &packet) -> void;
+	auto connectData(PacketBuilder &packet) -> void;
 
 	auto getPet(int64_t petId) -> Pet *;
 	auto getSummoned(int8_t index) -> Pet *;

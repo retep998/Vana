@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InitializeChannel.hpp"
 #include "InitializeCommon.hpp"
 #include "MiscUtilities.hpp"
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
 #include "ServerPacket.hpp"
@@ -105,14 +105,14 @@ auto ChannelServer::getOnlineId() const -> int32_t {
 	return 20000 + static_cast<int32_t>(m_worldId) * 100 + m_channelId;
 }
 
-auto ChannelServer::sendPacketToWorld(PacketCreator &packet) -> void {
-	m_worldConnection->getSession()->send(packet);
+auto ChannelServer::sendWorld(const PacketBuilder &builder) -> void {
+	m_worldConnection->send(builder);
 }
 
 auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 	if (m_config.scrollingHeader != message) {
 		m_config.scrollingHeader = message;
-		ServerPacket::changeScrollingHeader(message);
+		PlayerDataProvider::getInstance().send(ServerPacket::changeScrollingHeader(message));
 	}
 }
 
@@ -122,7 +122,7 @@ auto ChannelServer::modifyRate(int32_t rateType, int32_t newValue) -> void {
 	if (rateType & Rates::Types::MobMesoRate) currentRates.mobMesoRate = newValue;
 	if (rateType & Rates::Types::QuestExpRate) currentRates.questExpRate = newValue;
 	if (rateType & Rates::Types::DropRate) currentRates.dropRate = newValue;
-	SyncPacket::ConfigPacket::modifyRates(currentRates);
+	sendWorld(SyncPacket::ConfigPacket::modifyRates(currentRates));
 }
 
 auto ChannelServer::setRates(const Rates &rates) -> void {

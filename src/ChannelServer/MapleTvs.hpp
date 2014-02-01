@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "PacketCreator.hpp"
+#include "PacketBuilder.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
 #include <memory>
@@ -42,8 +42,8 @@ struct MapleTvMessage {
 	string_t msg5;
 	string_t sendName;
 	string_t recvName;
-	PacketCreator recvDisplay;
-	PacketCreator sendDisplay;
+	PacketBuilder recvDisplay;
+	PacketBuilder sendDisplay;
 };
 
 class MapleTvs : public TimerContainerHolder {
@@ -52,16 +52,14 @@ public:
 	auto addMap(Map *map) -> void;
 
 	auto addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, int32_t megaphoneId, int32_t time) -> void;
-	auto getMapleTvEntryPacket(PacketCreator &packet) -> void;
-	auto isMapleTvMap(int32_t id) const -> bool { return m_maps.find(id) != std::end(m_maps); }
-	auto hasMessage() const -> bool { return m_hasMessage; }
-	auto getCounter() -> uint32_t { return ++m_counter; }
+	auto isMapleTvMap(int32_t id) const -> bool;
+	auto hasMessage() const -> bool;
+	auto getCounter() -> uint32_t;
+	auto getCurrentMessage() const -> const MapleTvMessage &;
+	auto getMessageTime() const -> seconds_t;
 private:
 	auto parseBuffer() -> void;
-	auto getMapleTvPacket(MapleTvMessage &message, PacketCreator &packet, const seconds_t &timeLeft = seconds_t(0)) -> void;
-	auto endMapleTvPacket(PacketCreator &packet) -> void;
-	auto sendPacket(PacketCreator &packet) -> void;
-	auto checkMessageTimer() const -> seconds_t;
+	auto send(const PacketBuilder &builder) -> void;
 
 	bool m_hasMessage = false;
 	uint32_t m_counter = 0;

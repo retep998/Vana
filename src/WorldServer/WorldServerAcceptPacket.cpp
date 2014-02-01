@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
 #include "Session.hpp"
@@ -31,21 +30,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 #include <map>
 
-auto WorldServerAcceptPacket::connect(WorldServerAcceptConnection *connection, channel_id_t channel, port_t port) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_CHANNEL_CONNECT);
-	packet.add<channel_id_t>(channel);
-	packet.add<port_t>(port);
+namespace WorldServerAcceptPacket {
 
-	packet.addClass<WorldConfig>(WorldServer::getInstance().getConfig());
-
-	connection->getSession()->send(packet);
+PACKET_IMPL(connect, channel_id_t channel, port_t port) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_CHANNEL_CONNECT)
+		.add<channel_id_t>(channel)
+		.add<port_t>(port)
+		.addClass<WorldConfig>(WorldServer::getInstance().getConfig());
+	return builder;
 }
 
-auto WorldServerAcceptPacket::rehashConfig(const WorldConfig &config) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(IMSG_REHASH_CONFIG);
-	packet.addClass<WorldConfig>(config);
+PACKET_IMPL(rehashConfig, const WorldConfig &config) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_REHASH_CONFIG)
+		.addClass<WorldConfig>(config);
+	return builder;
+}
 
-	Channels::getInstance().sendToAll(packet);
 }

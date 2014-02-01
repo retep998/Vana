@@ -19,7 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "InterHeader.hpp"
 #include "PacketReader.hpp"
+#include "PacketWrapper.hpp"
 #include "PartyHandler.hpp"
+#include "PlayerDataProvider.hpp"
 #include "SyncHandler.hpp"
 #include "VanaConstants.hpp"
 #include "WorldServerConnectHandler.hpp"
@@ -38,16 +40,23 @@ WorldServerConnection::~WorldServerConnection() {
 	}
 }
 
-auto WorldServerConnection::handleRequest(PacketReader &packet) -> void {
-	switch (packet.getHeader()) {
-		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, packet); break;
-		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, packet); break;
-		case IMSG_TO_PLAYER: WorldServerConnectHandler::forwardPacket(packet); break;
-		case IMSG_TO_PLAYER_LIST: WorldServerConnectHandler::sendToPlayerList(packet); break;
-		case IMSG_TO_ALL_PLAYERS: WorldServerConnectHandler::sendToAllPlayers(packet); break;
-		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(packet); break;
-		case IMSG_REHASH_CONFIG: WorldServerConnectHandler::rehashConfig(packet); break;
-
-		case IMSG_SYNC: SyncHandler::handle(packet); break;
+auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
+	switch (reader.getHeader()) {
+		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, reader); break;
+		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, reader); break;
+		case IMSG_TO_PLAYER: {
+			int32_t playerId = reader.get<int32_t>();
+			PlayerDataProvider::getInstance().send(playerId, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_PLAYER_LIST: {
+			vector_t<int32_t> playerIds = reader.getVector<int32_t>();
+			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
+			break;
+		}
+		case IMSG_TO_ALL_PLAYERS: PlayerDataProvider::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(reader); break;
+		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.getClass<WorldConfig>()); break;
+		case IMSG_SYNC: SyncHandler::handle(reader); break;
 	}
 }

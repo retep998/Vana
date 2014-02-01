@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 
 class Item;
-class PacketCreator;
+class PacketBuilder;
 class PacketReader;
 class Player;
 
@@ -91,8 +91,8 @@ public:
 
 	// Level related functions
 	auto giveExp(uint64_t exp, bool inChat = false, bool white = true) -> void;
-	auto addStat(PacketReader &packet) -> void;
-	auto addStatMulti(PacketReader &packet) -> void;
+	auto addStat(PacketReader &reader) -> void;
+	auto addStatMulti(PacketReader &reader) -> void;
 	auto addStat(int32_t type, int16_t mod = 1, bool isReset = false) -> void;
 	auto randHp() -> int16_t;
 	auto randMp() -> int16_t;
@@ -105,7 +105,7 @@ public:
 	auto getExp(uint8_t level) -> uint32_t;
 
 	// Data acquisition
-	auto connectData(PacketCreator &packet) -> void;
+	auto connectData(PacketBuilder &packet) -> void;
 	auto getLevel() const -> uint8_t { return m_level; }
 	auto getJob() const -> int16_t { return m_job; }
 	auto getExp() const -> int32_t { return m_exp; }

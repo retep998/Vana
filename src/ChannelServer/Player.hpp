@@ -42,9 +42,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Instance;
 class Map;
+class PacketBuilder;
 class PacketReader;
 class Party;
 struct PortalInfo;
+struct SplitPacketBuilder;
 
 class Player : public AbstractConnection, public MovableLife {
 	NONCOPYABLE(Player);
@@ -138,13 +140,18 @@ public:
 	auto setOnline(bool online) -> void;
 	auto setLevelDate() -> void;
 	auto acceptDeath(bool wheel) -> void;
-	auto initializeRng(PacketCreator &packet) -> void;
+	auto initializeRng(PacketBuilder &packet) -> void;
+
+	auto send(const PacketBuilder &builder) -> void;
+	auto send(const SplitPacketBuilder &builder) -> void;
+	auto sendMap(const PacketBuilder &builder, bool excludeSelf = false) -> void;
+	auto sendMap(const SplitPacketBuilder &builder) -> void;
 protected:
-	auto handleRequest(PacketReader &packet) -> void override;
+	auto handleRequest(PacketReader &reader) -> void override;
 private:
-	auto playerConnect(PacketReader &packet) -> void;
-	auto changeKey(PacketReader &packet) -> void;
-	auto changeSkillMacros(PacketReader &packet) -> void;
+	auto playerConnect(PacketReader &reader) -> void;
+	auto changeKey(PacketReader &reader) -> void;
+	auto changeSkillMacros(PacketReader &reader) -> void;
 	auto saveStats() -> void;
 
 	bool m_tradeState = false;

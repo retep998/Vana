@@ -16,90 +16,190 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PartyPacket.hpp"
+#include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "InterHelper.hpp"
-#include "PacketCreator.hpp"
 #include "Party.hpp"
 #include "Player.hpp"
+#include "PlayerDataProvider.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto PartyPacket::error(Player *player, int8_t error) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(error);
-	player->getSession()->send(packet);
+namespace PartyPacket {
+
+PACKET_IMPL(error, int8_t error) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(error);
+	return builder;
 }
 
-auto PartyPacket::createParty(Player *packetTarget, Party *party) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x08);
-	packet.add<int32_t>(party->getId());
-	packet.add<int32_t>(Maps::NoMap);
-	packet.add<int32_t>(Maps::NoMap);
-	packet.add<int32_t>(0);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(createParty, Party *party) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x08)
+		.add<int32_t>(party->getId())
+		.add<int32_t>(Maps::NoMap)
+		.add<int32_t>(Maps::NoMap)
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto PartyPacket::joinParty(Player *packetTarget, Party *party, const string_t &player) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x0F);
-	packet.add<int32_t>(party->getId());
-	packet.addString(player);
-	party->updatePacket(packetTarget->getMapId(), packet);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(joinParty, int32_t targetMapId, Party *party, const string_t &player) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x0F)
+		.add<int32_t>(party->getId())
+		.addString(player)
+		.addBuffer(updateParty(targetMapId, party));
+	return builder;
 }
 
-auto PartyPacket::leaveParty(Player *packetTarget, Party *party, int32_t playerId, const string_t &name, bool kicked) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x0C);
-	packet.add<int32_t>(party->getId());
-	packet.add<int32_t>(playerId);
-	packet.add<bool>(true); // Not disbanding
-	packet.add<bool>(kicked);
-	packet.addString(name);
-	party->updatePacket(packetTarget->getMapId(), packet);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(leaveParty, int32_t targetMapId, Party *party, int32_t playerId, const string_t &name, bool kicked) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x0C)
+		.add<int32_t>(party->getId())
+		.add<int32_t>(playerId)
+		.add<bool>(true) // Not disbanding
+		.add<bool>(kicked)
+		.addString(name)
+		.addBuffer(updateParty(targetMapId, party));
+	return builder;
 }
 
-auto PartyPacket::invitePlayer(Player *packetTarget, Party *party, const string_t &inviter) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x04);
-	packet.add<int32_t>(party->getId());
-	packet.addString(inviter);
-	packet.add<int8_t>(0);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(invitePlayer, Party *party, const string_t &inviter) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x04)
+		.add<int32_t>(party->getId())
+		.addString(inviter)
+		.add<int8_t>(0);
+	return builder;
 }
 
-auto PartyPacket::disbandParty(Player *packetTarget, Party *party) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x0C);
-	packet.add<int32_t>(party->getId());
-	packet.add<int32_t>(party->getLeaderId());
-	packet.add<bool>(false); // Disbanding
-	packet.add<int32_t>(party->getId());
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(disbandParty, Party *party) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x0C)
+		.add<int32_t>(party->getId())
+		.add<int32_t>(party->getLeaderId())
+		.add<bool>(false) // Disbanding
+		.add<int32_t>(party->getId());
+	return builder;
 }
 
-auto PartyPacket::setLeader(Player *packetTarget, Party *party, int32_t newLeader) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x1B);
-	packet.add<int32_t>(newLeader);
-	packet.add<bool>(false);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(setLeader, Party *party, int32_t newLeader) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x1B)
+		.add<int32_t>(newLeader)
+		.add<bool>(false);
+	return builder;
 }
 
-auto PartyPacket::silentUpdate(Player *packetTarget, Party *party) -> void {
-	PacketCreator packet;
-	packet.add<int16_t>(SMSG_PARTY);
-	packet.add<int8_t>(0x07);
-	packet.add<int32_t>(party->getId());
-	party->updatePacket(packetTarget->getMapId(), packet);
-	packetTarget->getSession()->send(packet);
+PACKET_IMPL(silentUpdate, int32_t targetMapId, Party *party) {
+	PacketBuilder builder;
+	builder
+		.add<int16_t>(SMSG_PARTY)
+		.add<int8_t>(0x07)
+		.add<int32_t>(party->getId())
+		.addBuffer(updateParty(targetMapId, party));
+	return builder;
+}
+
+PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
+	PacketBuilder builder;
+	auto &members = party->getMembers();
+	size_t offset = Parties::MaxMembers - members.size();
+	size_t i = 0;
+	channel_id_t channelId = ChannelServer::getInstance().getChannelId();
+
+	// Add party member IDs to packet
+	for (const auto &kvp : members) {
+		builder.add<int32_t>(kvp.first);
+	}
+	for (i = 0; i < offset; i++) {
+		builder.add<int32_t>(0);
+	}
+
+	// Add party member names to packet
+	for (const auto &kvp : members) {
+		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		builder.addString(player->name, 13);
+	}
+	for (i = 0; i < offset; i++) {
+		builder.addString("", 13);
+	}
+
+	// Add party member jobs to packet
+	for (const auto &kvp : members) {
+		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		builder.add<int32_t>(player->job);
+	}
+	for (i = 0; i < offset; i++) {
+		builder.add<int32_t>(0);
+	}
+
+	// Add party member levels to packet
+	for (const auto &kvp : members) {
+		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		builder.add<int32_t>(player->level);
+	}
+	for (i = 0; i < offset; i++) {
+		builder.add<int32_t>(0);
+	}
+
+	// Add party member channels to packet
+	for (const auto &kvp : members) {
+		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		builder.add<int32_t>(player->channel != -1 ?
+			player->channel :
+			(player->cashShop ? -1 : -2));
+	}
+	for (i = 0; i < offset; i++) {
+		builder.add<int32_t>(-2);
+	}
+
+	builder.add<int32_t>(party->getLeaderId());
+
+	// Add party member maps to packet
+	for (const auto &kvp : members) {
+		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		if (player->channel == channelId && player->map == targetMapId) {
+			builder.add<int32_t>(targetMapId);
+		}
+		else {
+			builder.add<int32_t>(0);
+		}
+	}
+	for (i = 0; i < offset; i++) {
+		builder.add<int32_t>(-2);
+	}
+
+	// Add some portal information (Door?)
+	for (const auto &kvp : members) {
+		builder
+			.add<int32_t>(Maps::NoMap)
+			.add<int32_t>(Maps::NoMap)
+			.add<int32_t>(-1)
+			.add<int32_t>(-1);
+	}
+	for (i = 0; i < offset; i++) {
+		builder
+			.add<int32_t>(Maps::NoMap)
+			.add<int32_t>(Maps::NoMap)
+			.add<int32_t>(-1)
+			.add<int32_t>(-1);
+	}
+	return builder;
+}
+
 }

@@ -17,51 +17,62 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LevelsPacket.hpp"
 #include "Maps.hpp"
-#include "PacketCreator.hpp"
 #include "Player.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
-auto LevelsPacket::showExp(Player *player, int32_t exp, bool white, bool inChat) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_NOTICE);
-	packet.add<int8_t>(3);
-	packet.add<bool>(white);
-	packet.add<int32_t>(exp);
-	packet.add<bool>(inChat);
-	packet.add<int32_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
+namespace LevelsPacket {
+
+PACKET_IMPL(showExp, int32_t exp, bool white, bool inChat) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_NOTICE)
+		.add<int8_t>(3)
+		.add<bool>(white)
+		.add<int32_t>(exp)
+		.add<bool>(inChat)
+		.add<int32_t>(0)
+		.add<int8_t>(0)
+		.add<int8_t>(0)
+		.add<int32_t>(0);
 	if (inChat) {
-		packet.add<int8_t>(0);
+		builder.add<int8_t>(0);
 	}
-	packet.add<int8_t>(0);
-	packet.add<int32_t>(0);
-
-	player->getSession()->send(packet);
+	builder
+		.add<int8_t>(0)
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto LevelsPacket::levelUp(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SKILL_SHOW);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(0);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(levelUp, int32_t playerId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.add<int8_t>(0);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
 }
 
-auto LevelsPacket::statOk(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_PLAYER_UPDATE);
-	packet.add<int16_t>(1);
-	packet.add<int32_t>(0);
-	player->getSession()->send(packet);
+PACKET_IMPL(statOk) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_PLAYER_UPDATE)
+		.add<int16_t>(1)
+		.add<int32_t>(0);
+	return builder;
 }
 
-auto LevelsPacket::jobChange(Player *player) -> void {
-	PacketCreator packet;
-	packet.add<header_t>(SMSG_SKILL_SHOW);
-	packet.add<int32_t>(player->getId());
-	packet.add<int8_t>(8);
-	player->getMap()->sendPacket(packet, player);
+SPLIT_PACKET_IMPL(jobChange, int32_t playerId) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<int32_t>(playerId)
+		.add<int8_t>(8);
+
+	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
 }
