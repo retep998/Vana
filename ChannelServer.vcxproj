@@ -297,7 +297,6 @@
     <ClInclude Include="src\ChannelServer\Instance.hpp" />
     <ClInclude Include="src\ChannelServer\Instances.hpp" />
     <ClInclude Include="src\ChannelServer\ChatHandlerFunctions.hpp" />
-    <ClInclude Include="src\ChannelServer\InstanceMessageConstants.hpp" />
     <ClInclude Include="src\ChannelServer\BuddyListHandler.hpp" />
     <ClInclude Include="src\ChannelServer\ChatHandler.hpp" />
     <ClInclude Include="src\ChannelServer\CommandHandler.hpp" />

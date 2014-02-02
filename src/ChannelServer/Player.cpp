@@ -90,13 +90,13 @@ Player::~Player() {
 			TradeHandler::cancelTrade(this);
 		}
 
-		int32_t isLeader = 0;
+		bool isLeader = 0;
 		if (Party *party = getParty()) {
-			isLeader = party->isLeader(getId()) ? 1 : 0;
+			isLeader = party->isLeader(getId());
 		}
 		if (Instance *instance = getInstance()) {
 			instance->removePlayer(getId());
-			instance->sendMessage(InstanceMessage::PlayerDisconnect, getId(), isLeader);
+			instance->playerDisconnect(getId(), isLeader);
 		}
 		//if (this->getStats()->isDead()) {
 		//	this->acceptDeath();
@@ -126,7 +126,7 @@ Player::~Player() {
 
 auto Player::handleRequest(PacketReader &reader) -> void {
 	try {
-		header_t header = reader.getHeader();
+		header_t header = reader.get<header_t>();
 		if (!m_isConnect) {
 			// We don't want to accept any other packet than the one for loading the character
 			if (header == CMSG_PLAYER_LOAD) {
@@ -230,7 +230,8 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 
 auto Player::playerConnect(PacketReader &reader) -> void {
 	int32_t id = reader.get<int32_t>();
-	if (Connectable::getInstance().checkPlayer(id, getIp()) == Result::Failure) {
+	bool hasTransferPacket = false;
+	if (Connectable::getInstance().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
 		// Hacking
 		disconnect();
 		return;
@@ -307,30 +308,9 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_activeBuffs = make_owned_ptr<PlayerActiveBuffs>(this);
 	m_summons = make_owned_ptr<PlayerSummons>(this);
 
-	bool firstConnect = true;
-	if (PacketReader *pack = Connectable::getInstance().getPacket(id)) {
-		// Packet transferring on channel switch
-		firstConnect = false;
-		setConnectionTime(pack->get<int64_t>());
-		int32_t followId = pack->get<int32_t>();
-		if (followId != 0) {
-			if (Player *follow = PlayerDataProvider::getInstance().getPlayer(followId)) {
-				PlayerDataProvider::getInstance().addFollower(this, follow);
-			}
-		}
-
-		m_gmChat = pack->get<bool>();
-
-		PlayerActiveBuffs *buffs = getActiveBuffs();
-		buffs->read(*pack);
-		if (buffs->hasHyperBody()) {
-			int32_t skillId = buffs->getHyperBody();
-			uint8_t hbLevel = buffs->getActiveSkillLevel(skillId);
-			auto hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
-			getStats()->setHyperBody(hb->x, hb->y);
-		}
-
-		getSummons()->read(*pack);
+	bool firstConnect = !hasTransferPacket;
+	if (hasTransferPacket) {
+		parseTransferPacket(Connectable::getInstance().getPacket(m_id));
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
@@ -446,12 +426,12 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 
 	if (!instance) {
 		// Only trigger the message for natural map changes not caused by moveAllPlayers, etc.
-		int32_t isPartyLeader = (getParty() != nullptr && getParty()->isLeader(getId()) ? 1 : 0);
+		bool isPartyLeader = getParty() != nullptr && getParty()->isLeader(getId());
 		if (Instance *i = oldMap->getInstance()) {
-			i->sendMessage(InstanceMessage::PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
+			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
 		}
 		if (Instance *i = newMap->getInstance()) {
-			i->sendMessage(InstanceMessage::PlayerChangeMap, getId(), mapId, m_map, isPartyLeader);
+			i->playerChangeMap(getId(), mapId, m_map, isPartyLeader);
 		}
 	}
 
@@ -515,6 +495,33 @@ auto Player::changeChannel(channel_id_t channel) -> void {
 	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::changeChannel(this, channel));
 }
 
+auto Player::getTransferPacket() const -> PacketBuilder {
+	PacketBuilder builder;
+	builder
+		.add<int64_t>(getConnectionTime())
+		.add<int32_t>(m_follow != nullptr ? m_follow->getId() : 0)
+		.add<bool>(m_gmChat)
+		.addBuffer(getActiveBuffs()->getTransferPacket())
+		.addBuffer(getSummons()->getTransferPacket());
+
+	return builder;
+}
+
+auto Player::parseTransferPacket(PacketReader &reader) -> void {
+	setConnectionTime(reader.get<int64_t>());
+	int32_t followId = reader.get<int32_t>();
+	if (followId != 0) {
+		if (Player *follow = PlayerDataProvider::getInstance().getPlayer(followId)) {
+			PlayerDataProvider::getInstance().addFollower(this, follow);
+		}
+	}
+
+	m_gmChat = reader.get<bool>();
+
+	getActiveBuffs()->parseTransferPacket(reader);
+	getSummons()->parseTransferPacket(reader);
+}
+
 auto Player::changeKey(PacketReader &reader) -> void {
 	int32_t mode = reader.get<int32_t>();
 	int32_t howMany = reader.get<int32_t>();
@@ -556,7 +563,7 @@ auto Player::changeSkillMacros(PacketReader &reader) -> void {
 	}
 	SkillMacros skillMacros;
 	for (uint8_t i = 0; i < num; i++) {
-		string_t name = reader.getString();
+		string_t name = reader.get<string_t>();
 		bool shout = reader.get<bool>();
 		int32_t skill1 = reader.get<int32_t>();
 		int32_t skill2 = reader.get<int32_t>();

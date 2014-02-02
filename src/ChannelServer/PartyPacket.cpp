@@ -53,7 +53,7 @@ PACKET_IMPL(joinParty, int32_t targetMapId, Party *party, const string_t &player
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0F)
 		.add<int32_t>(party->getId())
-		.addString(player)
+		.add<string_t>(player)
 		.addBuffer(updateParty(targetMapId, party));
 	return builder;
 }
@@ -67,7 +67,7 @@ PACKET_IMPL(leaveParty, int32_t targetMapId, Party *party, int32_t playerId, con
 		.add<int32_t>(playerId)
 		.add<bool>(true) // Not disbanding
 		.add<bool>(kicked)
-		.addString(name)
+		.add<string_t>(name)
 		.addBuffer(updateParty(targetMapId, party));
 	return builder;
 }
@@ -78,7 +78,7 @@ PACKET_IMPL(invitePlayer, Party *party, const string_t &inviter) {
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x04)
 		.add<int32_t>(party->getId())
-		.addString(inviter)
+		.add<string_t>(inviter)
 		.add<int8_t>(0);
 	return builder;
 }
@@ -133,10 +133,10 @@ PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
 	// Add party member names to packet
 	for (const auto &kvp : members) {
 		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		builder.addString(player->name, 13);
+		builder.add<string_t>(player->name, 13);
 	}
 	for (i = 0; i < offset; i++) {
-		builder.addString("", 13);
+		builder.add<string_t>("", 13);
 	}
 
 	// Add party member jobs to packet

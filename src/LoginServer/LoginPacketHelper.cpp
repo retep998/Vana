@@ -25,7 +25,7 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 	PacketBuilder builder;
 	builder
 		.add<int32_t>(charc.id)
-		.addString(charc.name, 13)
+		.add<string_t>(charc.name, 13)
 		.add<int8_t>(charc.gender)
 		.add<int8_t>(charc.skin)
 		.add<int32_t>(charc.eyes)

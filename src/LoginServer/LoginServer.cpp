@@ -52,6 +52,7 @@ auto LoginServer::loadData() -> void {
 
 auto LoginServer::loadConfig() -> void {
 	ConfigFile config("conf/loginserver.lua");
+	config.run();
 	m_pinEnabled = config.get<bool>("pin");
 	m_port = config.get<port_t>("port");
 	m_interPort = config.get<port_t>("inter_port");
@@ -95,6 +96,7 @@ auto LoginServer::getInvalidLoginThreshold() const -> int32_t {
 
 auto LoginServer::loadWorlds() -> void {
 	ConfigFile config("conf/worlds.lua");
+	config.run();
 	WorldConfig conf;
 	out_stream_t stream;
 	size_t i = 0;
@@ -113,12 +115,21 @@ auto LoginServer::loadWorlds() -> void {
 	};
 	auto getBossConfig = [&getKey, &config](MajorBoss &dest, const string_t &src, channel_id_t maxChannels) {
 		dest.attempts = config.get<int16_t>(getKey(src + "_attempts"));
-		dest.channels = config.getBossChannels(getKey(src + "_channels"), maxChannels);
+
+		vector_t<channel_id_t> channels = config.get<vector_t<channel_id_t>>(getKey(src + "_channels"));
+		if (channels.size() == 1 && channels[0] == -1) {
+			channels.clear();
+			for (channel_id_t i = 1; i <= maxChannels; i++) {
+				channels.push_back(static_cast<channel_id_t>(i));
+			}
+		}
+
+		dest.channels = channels;
 	};
 
 	while (true) {
-		const string_t &key = getKey("name");
-		if (!config.keyExists(key)) {
+		string_t key = getKey("name");
+		if (!config.exists(key)) {
 			// No more worlds
 			break;
 		}

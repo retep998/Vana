@@ -25,35 +25,36 @@ auto Connectable::newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> v
 	ConnectingPlayer player;
 	player.connectIp = ip;
 	player.connectTime = TimeUtilities::getNow();
-
-	uint16_t pSize = reader.get<uint16_t>();
-	if (pSize > 0) {
-		unsigned char *buf = new unsigned char[pSize]; // Prevent the packet memory from being freed by external sources
-		memcpy(buf, reader.getBuffer(), pSize);
-
-		player.heldPacket = make_ref_ptr<PacketReader>(buf, pSize);
-	}
-	else {
-		player.heldPacket.reset<PacketReader>(nullptr);
+	uint16_t packetSize = reader.get<uint16_t>();
+	player.packetSize = packetSize;
+	if (packetSize > 0) {
+		player.heldPacket.reset(new unsigned char[packetSize]);
+		memcpy(player.heldPacket.get(), reader.getBuffer(), packetSize);
 	}
 
 	m_map[id] = player;
 }
 
-auto Connectable::checkPlayer(int32_t id, const Ip &ip) -> Result {
+auto Connectable::checkPlayer(int32_t id, const Ip &ip, bool &hasPacket) const -> Result {
 	Result result = Result::Failure;
+	hasPacket = false;
 	auto kvp = m_map.find(id);
 	if (kvp != std::end(m_map)) {
 		auto &test = kvp->second;
 		if (test.connectIp == ip && duration_cast<milliseconds_t>(TimeUtilities::getNow() - test.connectTime).count() < MaxMilliseconds) {
 			result = Result::Successful;
+			if (test.packetSize > 0) {
+				hasPacket = true;
+			}
 		}
 	}
 	return result;
 }
 
-auto Connectable::getPacket(int32_t id) -> PacketReader * {
-	return m_map[id].heldPacket.get();
+auto Connectable::getPacket(int32_t id) const -> PacketReader {
+	auto kvp = m_map.find(id);
+	auto &player = kvp->second;
+	return PacketReader(player.heldPacket.get(), player.packetSize);
 }
 
 auto Connectable::playerEstablished(int32_t id) -> void {

@@ -50,7 +50,7 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case PartyActions::Invite: {
-			string_t invName = reader.getString();
+			string_t invName = reader.get<string_t>();
 			if (player->getParty() == nullptr) {
 				// ??
 				return;

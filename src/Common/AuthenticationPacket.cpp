@@ -27,8 +27,8 @@ namespace AuthenticationPacket {
 PACKET_IMPL(sendPassword, AbstractServerConnection *connection, const string_t &pass, const IpMatrix &extIp) {
 	PacketBuilder builder;
 	builder.add<header_t>(IMSG_PASSWORD);
-	builder.addString(pass);
-	builder.addClassVector<ExternalIp>(extIp);
+	builder.add<string_t>(pass);
+	builder.add<vector_t<ExternalIp>>(extIp);
 	builder.add<server_type_t>(static_cast<server_type_t>(connection->getType()));
 	return builder;
 }

@@ -30,14 +30,6 @@ PacketBuilder::PacketBuilder() :
 {
 }
 
-auto PacketBuilder::addBuffer(const PacketBuilder &builder) -> PacketBuilder & {
-	return addBuffer(builder.getBuffer(), builder.getSize());
-}
-
-auto PacketBuilder::addBuffer(const PacketReader &reader) -> PacketBuilder & {
-	return addBuffer(reader.getBuffer(), reader.getBufferLength());
-}
-
 auto PacketBuilder::addBytes(const char *hex) -> PacketBuilder & {
 	size_t x = 0;
 	for (size_t i = 0; i < strlen(hex) / 2; ++i) {
@@ -64,23 +56,12 @@ auto PacketBuilder::getHexByte(unsigned char input) -> unsigned char {
 	return input;
 }
 
-auto PacketBuilder::addString(const string_t &str, size_t len) -> PacketBuilder & {
-	size_t slen = str.size();
-	if (len < slen) {
-		throw std::invalid_argument("addString used with a length shorter than string size");
-	}
-	strncpy((char *) getBuffer(m_pos, len), str.c_str(), slen);
-	for (size_t i = slen; i < len; i++) {
-		m_packet[m_pos + i] = 0;
-	}
-	m_pos += len;
-	return *this;
+auto PacketBuilder::addBuffer(const PacketBuilder &builder) -> PacketBuilder & {
+	return addBuffer(builder.getBuffer(), builder.getSize());
 }
 
-auto PacketBuilder::addString(const string_t &str) -> PacketBuilder & {
-	uint16_t len = static_cast<uint16_t>(str.size());
-	add<uint16_t>(len);
-	return addString(str, len);
+auto PacketBuilder::addBuffer(const PacketReader &reader) -> PacketBuilder & {
+	return addBuffer(reader.getBuffer(), reader.getBufferLength());
 }
 
 auto PacketBuilder::getBuffer(size_t pos, size_t len) -> unsigned char * {

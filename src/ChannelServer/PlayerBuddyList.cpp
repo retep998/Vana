@@ -275,7 +275,7 @@ auto PlayerBuddyList::addBuddies(PacketBuilder &packet) -> void {
 	for (const auto &kvp : m_buddies) {
 		const ref_ptr_t<Buddy> &buddy = kvp.second;
 		packet.add<int32_t>(buddy->charId);
-		packet.addString(buddy->name, 13);
+		packet.add<string_t>(buddy->name, 13);
 		packet.add<uint8_t>(buddy->oppositeStatus);
 		if (buddy->oppositeStatus == BuddyListPacket::OppositeStatus::Unregistered) {
 			packet.add<uint16_t>(0x00);
@@ -285,7 +285,7 @@ auto PlayerBuddyList::addBuddies(PacketBuilder &packet) -> void {
 		else {
 			packet.add<int32_t>(buddy->channel);
 		}
-		packet.addString(buddy->groupName, 13);
+		packet.add<string_t>(buddy->groupName, 13);
 		packet.add<int8_t>(0x00);
 		packet.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
 		packet.add<uint8_t>(0xFD);

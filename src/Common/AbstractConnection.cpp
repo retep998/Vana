@@ -40,7 +40,7 @@ AbstractConnection::AbstractConnection(bool isServer) :
 
 auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 	try {
-		switch (reader.getHeader(false)) {
+		switch (reader.peek<header_t>()) {
 			case SMSG_PING:
 				if (m_isServer) {
 					send(PingPacket::pong(this));

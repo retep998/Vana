@@ -32,7 +32,7 @@ PACKET_IMPL(showNpc, const NpcSpawnInfo &npc, int32_t id, bool show) {
 		.add<header_t>(SMSG_NPC_SHOW)
 		.add<int32_t>(id)
 		.add<int32_t>(npc.id)
-		.addClass<Pos>(npc.pos)
+		.add<Pos>(npc.pos)
 		.add<bool>(!npc.facesLeft)
 		.add<int16_t>(npc.foothold)
 		.add<int16_t>(npc.rx0)
@@ -48,7 +48,7 @@ PACKET_IMPL(controlNpc, const NpcSpawnInfo &npc, int32_t id, bool show) {
 		.add<int8_t>(1)
 		.add<int32_t>(id)
 		.add<int32_t>(npc.id)
-		.addClass<Pos>(npc.pos)
+		.add<Pos>(npc.pos)
 		.add<bool>(!npc.facesLeft)
 		.add<int16_t>(npc.foothold)
 		.add<int16_t>(npc.rx0)
@@ -155,7 +155,7 @@ PACKET_IMPL(npcChat, int8_t type, int32_t npcId, const string_t &text, bool excl
 		.add<int8_t>(type);
 
 	if (!excludeText) {
-		builder.addString(text);
+		builder.add<string_t>(text);
 	}
 	return builder;
 }

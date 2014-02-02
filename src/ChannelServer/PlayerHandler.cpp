@@ -109,7 +109,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			}
 			reader.skipBytes(1); // 0x06 for Power Guard, 0x00 for Mana Reflection?
 			reader.skipBytes(4); // Mob position garbage
-			pgmr.pos = reader.getClass<Pos>();
+			pgmr.pos = reader.get<Pos>();
 			pgmr.damage = damage;
 			if (pgmr.isPhysical) {
 				// Only Power Guard decreases damage
@@ -377,13 +377,13 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 		return;
 	}
 
-	string_t line1 = reader.getString();
-	string_t line2 = reader.getString();
-	string_t line3 = reader.getString();
-	string_t line4 = reader.getString();
-	string_t line5 = reader.getString();
+	string_t line1 = reader.get<string_t>();
+	string_t line2 = reader.get<string_t>();
+	string_t line3 = reader.get<string_t>();
+	string_t line4 = reader.get<string_t>();
+	string_t line5 = reader.get<string_t>();
 	if (hasTarget) {
-		receiver = PlayerDataProvider::getInstance().getPlayer(reader.getString());
+		receiver = PlayerDataProvider::getInstance().getPlayer(reader.get<string_t>());
 	}
 
 	int32_t time = 15;
@@ -956,9 +956,9 @@ auto PlayerHandler::compileAttack(Player *player, PacketReader &reader, SkillTyp
 	}
 
 	if (skillType == SkillType::Ranged) {
-		attack.projectilePos = reader.getClass<Pos>();
+		attack.projectilePos = reader.get<Pos>();
 	}
-	attack.playerPos = reader.getClass<Pos>();
+	attack.playerPos = reader.get<Pos>();
 
 	return attack;
 }

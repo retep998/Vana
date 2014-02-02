@@ -28,8 +28,8 @@ PACKET_IMPL(registerChannel, channel_id_t channel, const Ip &channelIp, const Ip
 	builder
 		.add<header_t>(IMSG_REGISTER_CHANNEL)
 		.add<channel_id_t>(channel)
-		.addClass<Ip>(channelIp)
-		.addClassVector<ExternalIp>(extIp)
+		.add<Ip>(channelIp)
+		.add<vector_t<ExternalIp>>(extIp)
 		.add<port_t>(port);
 	return builder;
 }

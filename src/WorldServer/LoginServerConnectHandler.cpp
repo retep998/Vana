@@ -29,7 +29,7 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
 		port_t port = reader.get<port_t>();
-		WorldConfig conf = reader.getClass<WorldConfig>();
+		WorldConfig conf = reader.get<WorldConfig>();
 		std::cout << "Handling world " << static_cast<int32_t>(worldId) << std::endl;
 		WorldServer::getInstance().establishedLoginConnection(worldId, port, conf);
 	}

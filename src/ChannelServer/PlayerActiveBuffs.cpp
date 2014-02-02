@@ -608,7 +608,8 @@ auto PlayerActiveBuffs::swapWeapon() -> void {
 	stopBulletSkills();
 }
 
-auto PlayerActiveBuffs::write(PacketBuilder &builder) const -> void {
+auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
+	PacketBuilder builder;
 	// Map entry buff info
 	builder.add<int8_t>(getCombo());
 	builder.add<int16_t>(getEnergyChargeLevel());
@@ -662,9 +663,10 @@ auto PlayerActiveBuffs::write(PacketBuilder &builder) const -> void {
 			builder.add<int32_t>(kvp.second);
 		}
 	}
+	return builder;
 }
 
-auto PlayerActiveBuffs::read(PacketReader &reader) -> void {
+auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	// Map entry buff info
 	setCombo(reader.get<uint8_t>(), false);
 	setEnergyChargeLevel(reader.get<int16_t>());
@@ -712,5 +714,12 @@ auto PlayerActiveBuffs::read(PacketReader &reader) -> void {
 			currentByte[key] = value;
 		}
 		m_activeBuffsByType[i] = currentByte;
+	}
+
+	if (hasHyperBody()) {
+		int32_t skillId = getHyperBody();
+		uint8_t hbLevel = getActiveSkillLevel(skillId);
+		auto hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
+		m_player->getStats()->setHyperBody(hb->x, hb->y);
 	}
 }

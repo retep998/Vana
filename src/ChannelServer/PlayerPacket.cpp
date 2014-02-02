@@ -44,9 +44,9 @@ PACKET_IMPL(connectData, Player *player) {
 
 	if (false) {
 		size_t lineAmount = 0;
-		builder.addString("Message title");
+		builder.add<string_t>("Message title");
 		for (size_t i = 0; i < lineAmount; i++) {
-			builder.addString("Line");
+			builder.add<string_t>("Line");
 		}
 	}
 
@@ -55,7 +55,7 @@ PACKET_IMPL(connectData, Player *player) {
 	builder
 		.add<int64_t>(-1)
 		.add<int32_t>(player->getId())
-		.addString(player->getName(), 13)
+		.add<string_t>(player->getName(), 13)
 		.add<int8_t>(player->getGender())
 		.add<int8_t>(player->getSkin())
 		.add<int32_t>(player->getEyes())
@@ -117,7 +117,7 @@ PACKET_IMPL(showSkillMacros, SkillMacros *macros) {
 		SkillMacros::SkillMacro *macro = macros->getSkillMacro(i);
 		if (macro != nullptr) {
 			builder
-				.addString(macro->name)
+				.add<string_t>(macro->name)
 				.add<bool>(macro->shout)
 				.add<int32_t>(macro->skill1)
 				.add<int32_t>(macro->skill2)
@@ -125,7 +125,7 @@ PACKET_IMPL(showSkillMacros, SkillMacros *macros) {
 		}
 		else {
 			builder
-				.addString("")
+				.add<string_t>("")
 				.add<bool>(false)
 				.add<int32_t>(0)
 				.add<int32_t>(0)
@@ -177,7 +177,7 @@ PACKET_IMPL(changeChannel, const Ip &ip, port_t port) {
 	builder
 		.add<header_t>(SMSG_CHANNEL_CHANGE)
 		.add<bool>(true)
-		.addClass<ClientIp>(ClientIp(ip))
+		.add<ClientIp>(ClientIp(ip))
 		.add<port_t>(port);
 	return builder;
 }
@@ -187,7 +187,7 @@ PACKET_IMPL(showMessage, const string_t &msg, int8_t type) {
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(type)
-		.addString(msg);
+		.add<string_t>(msg);
 
 	if (type == NoticeTypes::Blue) {
 		builder.add<int32_t>(0);
@@ -200,8 +200,8 @@ PACKET_IMPL(groupChat, const string_t &name, const string_t &msg, int8_t type) {
 	builder
 		.add<header_t>(SMSG_MESSAGE_GROUP)
 		.add<int8_t>(type)
-		.addString(name)
-		.addString(msg);
+		.add<string_t>(name)
+		.add<string_t>(msg);
 	return builder;
 }
 
@@ -217,7 +217,7 @@ PACKET_IMPL(instructionBubble, const string_t &msg, int16_t width, int16_t time,
 
 	builder
 		.add<header_t>(SMSG_BUBBLE)
-		.addString(msg)
+		.add<string_t>(msg)
 		.add<int16_t>(width)
 		.add<int16_t>(time)
 		.add<bool>(!isStatic);
@@ -253,7 +253,7 @@ PACKET_IMPL(sendYellowMessage, const string_t &msg) {
 	builder
 		.add<header_t>(SMSG_YELLOW_MESSAGE)
 		.add<bool>(true)
-		.addString(msg);
+		.add<string_t>(msg);
 	return builder;
 }
 

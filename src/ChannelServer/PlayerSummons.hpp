@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "IPacket.hpp"
+#include "Summon.hpp"
 #include "Types.hpp"
 
 class PacketBuilder;
 class PacketReader;
 class Player;
-class Summon;
 
-class PlayerSummons : public IPacketSerializable {
+class PlayerSummons {
 	NONCOPYABLE(PlayerSummons);
 	NO_DEFAULT_CONSTRUCTOR(PlayerSummons);
 public:
@@ -38,8 +38,8 @@ public:
 	auto addSummon(Summon *summon, int32_t time) -> void;
 	auto removeSummon(bool puppet, bool fromTimer) -> void;
 
-	auto write(PacketBuilder &builder) const -> void override;
-	auto read(PacketReader &reader) -> void override;
+	auto getTransferPacket() const -> PacketBuilder;
+	auto parseTransferPacket(PacketReader &reader) -> void;
 private:
 	auto getSummonTimeRemaining() const -> seconds_t;
 

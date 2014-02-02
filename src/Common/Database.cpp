@@ -25,14 +25,16 @@ thread_local soci::session * Database::m_datadb = nullptr;
 
 auto Database::connectCharDb() -> void {
 	ConfigFile config("conf/database.lua");
-	DbConfig conf = config.getClass<DbConfig>("chardb");
+	config.run();
+	DbConfig conf = config.get<DbConfig>("chardb");
 	m_chardb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_chardb->reconnect();
 }
 
 auto Database::connectDataDb() -> void {
 	ConfigFile config("conf/database.lua");
-	DbConfig conf = config.getClass<DbConfig>("datadb");
+	config.run();
+	DbConfig conf = config.get<DbConfig>("datadb");
 	m_datadb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_datadb->reconnect();
 }

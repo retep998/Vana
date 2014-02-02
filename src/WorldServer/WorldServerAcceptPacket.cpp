@@ -38,7 +38,7 @@ PACKET_IMPL(connect, channel_id_t channel, port_t port) {
 		.add<header_t>(IMSG_CHANNEL_CONNECT)
 		.add<channel_id_t>(channel)
 		.add<port_t>(port)
-		.addClass<WorldConfig>(WorldServer::getInstance().getConfig());
+		.add<WorldConfig>(WorldServer::getInstance().getConfig());
 	return builder;
 }
 
@@ -46,7 +46,7 @@ PACKET_IMPL(rehashConfig, const WorldConfig &config) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_REHASH_CONFIG)
-		.addClass<WorldConfig>(config);
+		.add<WorldConfig>(config);
 	return builder;
 }
 

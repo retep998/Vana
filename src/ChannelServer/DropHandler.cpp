@@ -173,7 +173,7 @@ auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
 
 auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) -> void {
 	reader.skipBytes(5);
-	Pos playerPos = reader.getClass<Pos>();
+	Pos playerPos = reader.get<Pos>();
 	int32_t dropId = reader.get<int32_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);
 

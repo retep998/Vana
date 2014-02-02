@@ -75,7 +75,8 @@ auto PlayerSummons::getSummonTimeRemaining() const -> seconds_t {
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
-auto PlayerSummons::write(PacketBuilder &builder) const -> void {
+auto PlayerSummons::getTransferPacket() const -> PacketBuilder {
+	PacketBuilder builder;
 	int32_t summonId = 0;
 	int32_t timeLeft = 0;
 	uint8_t level = 0;
@@ -87,9 +88,10 @@ auto PlayerSummons::write(PacketBuilder &builder) const -> void {
 	builder.add<int32_t>(summonId);
 	builder.add<int32_t>(timeLeft);
 	builder.add<uint8_t>(level);
+	return builder;
 }
 
-auto PlayerSummons::read(PacketReader &reader) -> void {
+auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
 	int32_t skillId = reader.get<int32_t>();
 	int32_t timeLeft = reader.get<int32_t>();
 	uint8_t level = reader.get<uint8_t>();

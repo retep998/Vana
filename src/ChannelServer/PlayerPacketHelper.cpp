@@ -71,7 +71,7 @@ PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
 			.add<int16_t>(item->getHands())
 			.add<int16_t>(item->getSpeed())
 			.add<int16_t>(item->getJump())
-			.addString(item->getName()) // Owner string
+			.add<string_t>(item->getName()) // Owner string
 			.add<int16_t>(item->getFlags()); // Lock, shoe spikes, cape cold protection, etc.
 
 		if (false) { //item->getCashId() != 0) {
@@ -95,7 +95,7 @@ PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
 	else {
 		builder
 			.add<int16_t>(item->getAmount())
-			.addString(item->getName()) // Specially made by <IGN>
+			.add<string_t>(item->getName()) // Specially made by <IGN>
 			.add<int16_t>(item->getFlags());
 
 		if (GameLogicUtilities::isRechargeable(item->getId())) {

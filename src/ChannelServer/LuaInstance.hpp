@@ -27,15 +27,6 @@ class LuaInstance : public LuaScriptable {
 	NO_DEFAULT_CONSTRUCTOR(LuaInstance);
 public:
 	LuaInstance(const string_t &name, int32_t playerId);
-
-	auto run(InstanceMessage message) -> Result;
-	auto run(InstanceMessage message, int32_t) -> Result;
-	auto run(InstanceMessage message, const string_t &) -> Result;
-	auto run(InstanceMessage message, int32_t, int32_t) -> Result;
-	auto run(InstanceMessage message, const string_t &, int32_t) -> Result;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t) -> Result;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t) -> Result;
-	auto run(InstanceMessage message, int32_t, int32_t, int32_t, int32_t, int32_t) -> Result;
 };
 
 namespace LuaExports {

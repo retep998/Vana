@@ -50,12 +50,12 @@ auto PlayerDataProvider::loadData() -> void {
 auto PlayerDataProvider::getChannelConnectPacket(PacketBuilder &packet) -> void {
 	packet.add<uint32_t>(m_players.size());
 	for (const auto &kvp : m_players) {
-		packet.addClass<PlayerData>(kvp.second);
+		packet.add<PlayerData>(kvp.second);
 	}
 
 	packet.add<uint32_t>(m_parties.size());
 	for (const auto &kvp : m_parties) {
-		packet.addClass<PartyData>(kvp.second);
+		packet.add<PartyData>(kvp.second);
 	}
 }
 
@@ -152,7 +152,7 @@ auto PlayerDataProvider::send(const vector_t<int32_t> &playerIds, const PacketBu
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
-					.addVector<int32_t>(kvp.second);
+					.add<vector_t<int32_t>>(kvp.second);
 			}));
 	}
 }
@@ -178,7 +178,7 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
-					.addVector<int32_t>(kvp.second);
+					.add<vector_t<int32_t>>(kvp.second);
 			}));
 	}
 }
@@ -232,7 +232,7 @@ auto PlayerDataProvider::handlePlayerUpdate(PacketReader &reader) -> void {
 	auto &player = m_players[playerId];
 
 	if (flags & Sync::Player::UpdateBits::Full) {
-		PlayerData data = reader.getClass<PlayerData>();
+		PlayerData data = reader.get<PlayerData>();
 		player.copyFrom(data);
 	}
 	else{
@@ -265,7 +265,7 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 	auto &player = m_players[playerId];
 
 	if (firstConnect) {
-		PlayerData data = reader.getClass<PlayerData>();
+		PlayerData data = reader.get<PlayerData>();
 		player.copyFrom(data);
 		player.initialized = true;
 		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Full));
@@ -324,7 +324,7 @@ auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connecti
 	if (channel != nullptr) {
 		m_channelSwitches[playerId] = channel->getId();
 
-		ip = reader.getClass<Ip>();
+		ip = reader.get<Ip>();
 		channel->send(SyncPacket::PlayerPacket::newConnectable(playerId, ip, reader));
 	}
 	else {
@@ -507,7 +507,7 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 auto PlayerDataProvider::buddyOnline(PacketReader &reader) -> void {
 	int32_t playerId = reader.get<int32_t>();
 	bool online = reader.get<bool>();
-	vector_t<int32_t> tempIds = reader.getVector<int32_t>();
+	vector_t<int32_t> tempIds = reader.get<vector_t<int32_t>>();
 
 	auto &player = m_players[playerId];
 	hash_map_t<channel_id_t, vector_t<int32_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people

@@ -17,50 +17,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-extern "C" {
-	#include "lua.h"
-	#include "lualib.h"
-	#include "lauxlib.h"
-}
-
+#include "LuaEnvironment.hpp"
 #include "Types.hpp"
 #include <string>
 
 class Instance;
 class Player;
 
-class LuaScriptable {
+class LuaScriptable : public LuaEnvironment {
 	NONCOPYABLE(LuaScriptable);
 	NO_DEFAULT_CONSTRUCTOR(LuaScriptable);
-public:
-	LuaScriptable(const string_t &filename, int32_t playerId);
-	virtual ~LuaScriptable();
-
-	auto initialize() -> void;
-	virtual auto run() -> Result;
-
-	auto setVariable(const string_t &name, int32_t val) -> void;
-	auto setVariable(const string_t &name, const string_t &val) -> void;
 protected:
-	virtual auto handleError() -> void;
-	auto expose(const string_t &luaName, int (*func)(lua_State *)) -> void;
-	auto printError(const string_t &error) -> void;
+	LuaScriptable(const string_t &filename, int32_t playerId);
+	LuaScriptable(const string_t &filename, int32_t playerId, bool useThread);
 
-	string_t m_filename;
+	auto handleError(const string_t &filename, const string_t &error) -> void override;
 	int32_t m_playerId = -1;
-	lua_State *m_luaVm = nullptr;
 private:
+	auto initialize() -> void;
 	auto setEnvironmentVariables() -> void;
 };
 
 namespace LuaExports {
+	auto getEnvironment(lua_State *luaVm) -> LuaEnvironment &;
 	auto getPlayer(lua_State *luaVm) -> Player *;
 	auto getPlayerDeduced(int parameter, lua_State *luaVm) -> Player *;
 	auto getInstance(lua_State *luaVm) -> Instance *;
-	auto obtainSetVariablePair(lua_State *luaVm) -> pair_t<string_t, string_t>;
+	auto obtainSetVariablePair(LuaEnvironment &env) -> pair_t<string_t, string_t>;
 	auto pushGetVariableData(lua_State *luaVm, const string_t &value, bool integralReturn) -> void;
-	auto createTable(lua_State *luaVm, const vector_t<int32_t> &elements) -> int;
-	auto createTable(lua_State *luaVm, const vector_t<int8_t> &elements) -> int;
 	auto isBossChannel(lua_State *luaVm, const vector_t<channel_id_t> &channels) -> int;
 
 	// Global exports

@@ -36,7 +36,7 @@ PACKET_IMPL(sendFame, const string_t &name, uint8_t type, int32_t newFame) {
 	builder
 		.add<header_t>(SMSG_FAME)
 		.add<int8_t>(0x00)
-		.addString(name)
+		.add<string_t>(name)
 		.add<int8_t>(type)
 		.add<int32_t>(newFame);
 	return builder;
@@ -47,7 +47,7 @@ PACKET_IMPL(receiveFame, const string_t &name, uint8_t type) {
 	builder
 		.add<header_t>(SMSG_FAME)
 		.add<int8_t>(0x05)
-		.addString(name)
+		.add<string_t>(name)
 		.add<int8_t>(type);
 	return builder;
 }

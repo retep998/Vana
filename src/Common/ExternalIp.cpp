@@ -46,19 +46,3 @@ auto ExternalIp::tryMatchIpToSubnet(const Ip &test, Ip &result) const -> bool {
 
 	return false;
 }
-
-auto ExternalIp::write(PacketBuilder &builder) const -> void {
-	builder.addClass<Ip::Type>(m_type);
-	if (m_type == Ip::Type::Ipv4) {
-		builder.add<uint32_t>(m_ipv4);
-		builder.add<uint32_t>(m_ipv4SubnetMask);
-	}
-}
-
-auto ExternalIp::read(PacketReader &reader) -> void {
-	m_type = reader.getClass<Ip::Type>();
-	if (m_type == Ip::Type::Ipv4) {
-		m_ipv4 = reader.get<uint32_t>();
-		m_ipv4SubnetMask = reader.get<uint32_t>();
-	}
-}

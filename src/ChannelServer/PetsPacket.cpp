@@ -40,9 +40,9 @@ SPLIT_PACKET_IMPL(petSummoned, int32_t playerId, Pet *pet, bool kick, int8_t ind
 	if (pet->isSummoned()) {
 		builder.player
 			.add<int32_t>(pet->getItemId())
-			.addString(pet->getName())
+			.add<string_t>(pet->getName())
 			.add<int64_t>(pet->getId())
-			.addClass<Pos>(pet->getPos())
+			.add<Pos>(pet->getPos())
 			.add<int8_t>(pet->getStance())
 			.add<int16_t>(pet->getFoothold())
 			.add<bool>(pet->hasNameTag())
@@ -61,7 +61,7 @@ SPLIT_PACKET_IMPL(showChat, int32_t playerId, Pet *pet, const string_t &message,
 		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
 		.add<int8_t>(0)
 		.add<int8_t>(act)
-		.addString(message)
+		.add<string_t>(message)
 		.add<bool>(pet->hasQuoteItem());
 	return builder;
 }
@@ -129,7 +129,7 @@ SPLIT_PACKET_IMPL(changeName, int32_t playerId, Pet *pet) {
 		.add<header_t>(SMSG_PET_NAME_CHANGE)
 		.add<int32_t>(playerId)
 		.add<int8_t>(pet->isSummoned() ? pet->getIndex().get() : -1)
-		.addString(pet->getName())
+		.add<string_t>(pet->getName())
 		.add<bool>(pet->hasNameTag());
 
 	builder.map.addBuffer(builder.player);
@@ -183,7 +183,7 @@ PACKET_IMPL(addInfo, Pet *pet, Item *petItem) {
 		.add<int8_t>(1)
 		.add<int64_t>(pet->getId())
 		.add<int64_t>(0LL)
-		.addString(pet->getName(), 13)
+		.add<string_t>(pet->getName(), 13)
 		.add<int8_t>(pet->getLevel())
 		.add<int16_t>(pet->getCloseness())
 		.add<int8_t>(pet->getFullness())

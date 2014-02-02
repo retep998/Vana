@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketBuilder;
 class PacketReader;
 
-class IPacketWritable {
-public:
-	virtual auto write(PacketBuilder &builder) const -> void = 0;
+template <typename T>
+struct PacketSerialize {
+	auto read(PacketReader &reader) -> T {
+		static_assert(false, "T is not appropriately specialized for that type");
+		throw std::logic_error("T is not appropriately specialized for that type");
+	};
+	auto write(PacketBuilder &builder, const T &obj) -> void {
+		static_assert(false, "T is not appropriately specialized for that type");
+		throw std::logic_error("T is not appropriately specialized for that type");
+	};
 };
-
-class IPacketReadable {
-public:
-	virtual auto read(PacketReader &reader) -> void = 0;
-};
-
-class IPacketSerializable : public IPacketWritable, public IPacketReadable { };

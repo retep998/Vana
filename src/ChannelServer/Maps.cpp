@@ -94,7 +94,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 	switch (opcode) {
 		case 0: // Dead
 			if (player->getStats()->isDead()) {
-				string_t unk = reader.getString(); // Useless
+				string_t unk = reader.get<string_t>(); // Useless
 				reader.skipBytes(1); // Useless
 				bool wheel = reader.get<bool>();
 				if (wheel && player->getInventory()->getItemAmount(Items::WheelOfDestiny) <= 0) {
@@ -106,7 +106,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		case -1: {
-			string_t portalName = reader.getString();
+			string_t portalName = reader.get<string_t>();
 
 			Map *toMap = player->getMap();
 			if (toMap == nullptr) {
@@ -130,7 +130,7 @@ auto Maps::usePortal(Player *player, PacketReader &reader) -> void {
 
 auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
 	reader.skipBytes(1);
-	string_t portalName = reader.getString();
+	string_t portalName = reader.get<string_t>();
 
 	PortalInfo *portal = player->getMap()->getPortal(portalName);
 	if (portal == nullptr) {

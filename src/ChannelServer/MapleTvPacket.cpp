@@ -31,13 +31,13 @@ PACKET_IMPL(showMessage, const MapleTvMessage &message, seconds_t timeLeft) {
 		.add<int8_t>(message.hasReceiver ? 3 : 1)
 		.add<int8_t>(static_cast<int8_t>(message.megaphoneId - 5075000))
 		.addBuffer(message.sendDisplay)
-		.addString(message.sendName)
-		.addString(message.hasReceiver ? message.recvName : "")
-		.addString(message.msg1)
-		.addString(message.msg2)
-		.addString(message.msg3)
-		.addString(message.msg4)
-		.addString(message.msg5)
+		.add<string_t>(message.sendName)
+		.add<string_t>(message.hasReceiver ? message.recvName : "")
+		.add<string_t>(message.msg1)
+		.add<string_t>(message.msg2)
+		.add<string_t>(message.msg3)
+		.add<string_t>(message.msg4)
+		.add<string_t>(message.msg5)
 		.add<int32_t>(timeLeft.count() == 0 ? message.time : static_cast<int32_t>(timeLeft.count()));
 	if (message.hasReceiver) {
 		builder.addBuffer(message.recvDisplay);

@@ -96,7 +96,7 @@ SPLIT_PACKET_IMPL(sendChalkboardUpdate, int32_t playerId, const string_t &msg) {
 		.add<header_t>(SMSG_CHALKBOARD)
 		.add<int32_t>(playerId)
 		.add<bool>(!msg.empty())
-		.addString(msg);
+		.add<string_t>(msg);
 
 	builder.map.addBuffer(builder.player);
 	return builder;
@@ -182,7 +182,7 @@ PACKET_IMPL(showMegaphone, const string_t &msg) {
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(2)
-		.addString(msg);
+		.add<string_t>(msg);
 	return builder;
 }
 
@@ -191,7 +191,7 @@ PACKET_IMPL(showSuperMegaphone, const string_t &msg, bool whisper) {
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(3)
-		.addString(msg)
+		.add<string_t>(msg)
 		.add<int8_t>(ChannelServer::getInstance().getChannelId())
 		.add<bool>(whisper);
 	return builder;
@@ -202,11 +202,11 @@ PACKET_IMPL(showMessenger, const string_t &playerName, const string_t &msg1, con
 	builder
 		.add<header_t>(SMSG_AVATAR_MEGAPHONE)
 		.add<int32_t>(itemId)
-		.addString(playerName)
-		.addString(msg1)
-		.addString(msg2)
-		.addString(msg3)
-		.addString(msg4)
+		.add<string_t>(playerName)
+		.add<string_t>(msg1)
+		.add<string_t>(msg2)
+		.add<string_t>(msg3)
+		.add<string_t>(msg4)
 		.add<int32_t>(ChannelServer::getInstance().getChannelId())
 		.addBuffer(displayInfo, displayInfoSize);
 	return builder;
@@ -217,7 +217,7 @@ PACKET_IMPL(showItemMegaphone, const string_t &msg, bool whisper, Item *item) {
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(8)
-		.addString(msg)
+		.add<string_t>(msg)
 		.add<int8_t>(ChannelServer::getInstance().getChannelId())
 		.add<bool>(whisper);
 
@@ -235,13 +235,13 @@ PACKET_IMPL(showTripleMegaphone, int8_t lines, const string_t &line1, const stri
 	builder
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(0x0a)
-		.addString(line1)
+		.add<string_t>(line1)
 		.add<int8_t>(lines);
 	if (lines > 1) {
-		builder.addString(line2);
+		builder.add<string_t>(line2);
 	}
 	if (lines > 2) {
-		builder.addString(line3);
+		builder.add<string_t>(line3);
 	}
 	builder
 		.add<int8_t>(ChannelServer::getInstance().getChannelId())
@@ -343,7 +343,7 @@ PACKET_IMPL(playCashSong, int32_t itemId, const string_t &playerName) {
 	builder
 		.add<header_t>(SMSG_CASH_SONG)
 		.add<int32_t>(itemId)
-		.addString(playerName);
+		.add<string_t>(playerName);
 	return builder;
 }
 
@@ -354,7 +354,7 @@ SPLIT_PACKET_IMPL(sendRewardItemAnimation, int32_t playerId, int32_t itemId, con
 		.add<int8_t>(0x0E)
 		.add<int32_t>(itemId)
 		.add<int8_t>(1) // Unk...?
-		.addString(effect);
+		.add<string_t>(effect);
 
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)

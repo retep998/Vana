@@ -32,8 +32,8 @@ LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t react
 	LuaScriptable(filename, playerId),
 	m_reactorId(reactorId)
 {
-	setVariable("system_reactorId", reactorId);
-	setVariable("system_mapId", mapId);
+	set<int32_t>("system_reactorId", reactorId);
+	set<int32_t>("system_mapId", mapId);
 
 	// Reactor
 	expose("getState", &LuaExports::getState);

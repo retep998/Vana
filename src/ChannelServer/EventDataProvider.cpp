@@ -58,10 +58,10 @@ auto EventDataProvider::loadInstances() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Instances... ";
 
 	// Most common intervals with boats
-	const time_point_t &now = TimeUtilities::getNow();
-	const seconds_t &nearestFive = TimeUtilities::getDistanceToNextMinuteMark(5, now);
-	const seconds_t &nearestTen = TimeUtilities::getDistanceToNextMinuteMark(10, now);
-	const seconds_t &nearestFifteen = TimeUtilities::getDistanceToNextMinuteMark(15, now);
+	time_point_t now = TimeUtilities::getNow();
+	seconds_t nearestFive = TimeUtilities::getDistanceToNextMinuteMark(5, now);
+	seconds_t nearestTen = TimeUtilities::getDistanceToNextMinuteMark(10, now);
+	seconds_t nearestFifteen = TimeUtilities::getDistanceToNextMinuteMark(15, now);
 
 	startInstance("kerningToNlcBoarding", nearestFive, minutes_t(5));
 	startInstance("nlcToKerningBoarding", nearestFive, minutes_t(5));
@@ -72,5 +72,5 @@ auto EventDataProvider::loadInstances() -> void {
 auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
 	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
 	Instances::getInstance().addInstance(instance);
-	instance->sendMessage(InstanceMessage::BeginInstance);
+	instance->beginInstance();
 }

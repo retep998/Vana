@@ -111,7 +111,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			Player *one = trade->getSender();
 			Player *two = trade->getReceiver();
 			bool blue = (player == two);
-			string_t chat = player->getName() + " : " + reader.getString();
+			string_t chat = player->getName() + " : " + reader.get<string_t>();
 			one->send(TradesPacket::sendTradeChat(blue, chat));
 			if (two != nullptr) {
 				two->send(TradesPacket::sendTradeChat(blue, chat));

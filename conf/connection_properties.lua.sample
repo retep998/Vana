@@ -22,12 +22,11 @@ login_inter_port = 8485;
 -- If the client is, the IP is sent to the client
 -- Otherwise, the next subnet is parsed from top-to-bottom
 
--- The format of a subnet configuration is {"IP", "Subnet"}
--- An example:
+-- An example configuration:
 --	external_ip = {
---		{"127.0.0.1", "255.0.0.0"},
---		{"192.168.1.2", "255.255.255.0"},
---		{"your.wan.ip", "0.0.0.0"}
+--		{["ip"] = "127.0.0.1", ["mask"] = "255.0.0.0"},
+--		{["ip"] = "192.168.1.2", ["mask"] = "255.255.255.0"},
+--		{["ip"] = "your.wan.ip", ["mask"] = "0.0.0.0"}
 --	};
 -- This rule reads:
 -- If the client is in the 127.x.x.x block, send 127.0.0.1 to the client
@@ -36,7 +35,8 @@ login_inter_port = 8485;
 
 -- The 127.0.0.1 rule is needed so that the ChannelServer knows how to connect to the WorldServer
 -- Domain names are supported in the IP field
+-- By default, only the local machine can access your server
 
 external_ip = {
-	{"127.0.0.1", "255.0.0.0"}
+	{["ip"] = "127.0.0.1", ["mask"] = "255.0.0.0"}
 };

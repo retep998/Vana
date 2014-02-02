@@ -25,13 +25,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class PacketBuilder;
 
-class ClientIp : public IPacketWritable {
+class ClientIp {
 public:
 	explicit ClientIp(const Ip &ip);
+private:
+	friend struct PacketSerialize<ClientIp>;
 
-	auto write(PacketBuilder &builder) const -> void override;
-protected:
 	ClientIp() : m_ip(0) { }
 
 	Ip m_ip;
+};
+
+template <>
+struct PacketSerialize<ClientIp> {
+	auto write(PacketBuilder &builder, const ClientIp &obj) -> void {
+		if (obj.m_ip.getType() == Ip::Type::Ipv4) {
+			builder.add<uint32_t>(htonl(obj.m_ip.asIpv4()));
+		}
+		else {
+			throw std::invalid_argument("IPv6 unsupported");
+		}
+	}
 };

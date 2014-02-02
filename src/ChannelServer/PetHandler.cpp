@@ -52,7 +52,7 @@ auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	}
 	reader.skipBytes(1);
 	int8_t act = reader.get<int8_t>();
-	const string_t &message = reader.getString();
+	const string_t &message = reader.get<string_t>();
 	player->sendMap(PetsPacket::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 

@@ -33,7 +33,7 @@ SPLIT_PACKET_IMPL(showSummon, int32_t playerId, Summon *summon, bool animated) {
 		.add<int32_t>(summon->getId())
 		.add<int32_t>(summon->getSummonId())
 		.add<int8_t>(summon->getLevel())
-		.addClass<Pos>(summon->getPos())
+		.add<Pos>(summon->getPos())
 		.add<int8_t>(4) // ?
 		.add<int8_t>(0x53) // ?
 		.add<int8_t>(1) // ?
@@ -51,7 +51,7 @@ SPLIT_PACKET_IMPL(moveSummon, int32_t playerId, Summon *summon, const Pos &start
 		.add<header_t>(SMSG_SUMMON_MOVEMENT)
 		.add<int32_t>(playerId)
 		.add<int32_t>(summon->getId())
-		.addClass<Pos>(startPos)
+		.add<Pos>(startPos)
 		.addBuffer(buf, bufLen);
 
 	builder.map.addBuffer(builder.player);

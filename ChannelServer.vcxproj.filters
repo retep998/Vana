@@ -635,9 +635,6 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
     <ClInclude Include="src\ChannelServer\InitializeChannel.hpp" />
-    <ClInclude Include="src\ChannelServer\InstanceMessageConstants.hpp">
-      <Filter>Instance</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChannelServer\StatusInfo.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>

@@ -50,7 +50,7 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 	if (processAuth(WorldServer::getInstance(), reader) == Result::Failure) {
 		return;
 	}
-	switch (reader.getHeader()) {
+	switch (reader.get<header_t>()) {
 		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
 		case IMSG_TO_LOGIN: WorldServer::getInstance().sendLogin(Packets::identity(reader)); break;
 		case IMSG_TO_PLAYER: {
@@ -59,7 +59,7 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
-			vector_t<int32_t> playerIds = reader.getVector<int32_t>();
+			vector_t<int32_t> playerIds = reader.get<vector_t<int32_t>>();
 			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
 			break;
 		}
@@ -70,7 +70,7 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
-			vector_t<channel_id_t> channels = reader.getVector<channel_id_t>();
+			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
 			Channels::getInstance().send(channels, Packets::identity(reader));
 			break;
 		}

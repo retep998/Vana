@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <ostream>
 
-struct Pos : public IPacketSerializable {
+struct Pos {
 	Pos(int16_t x, int16_t y) : x(x), y(y) { }
 	Pos() = default;
 
@@ -32,19 +32,23 @@ struct Pos : public IPacketSerializable {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	auto write(PacketBuilder &builder) const -> void override {
-		builder.add<int16_t>(x);
-		builder.add<int16_t>(y);
-	}
-
-	auto read(PacketReader &reader) -> void override {
-		x = reader.get<int16_t>();
-		y = reader.get<int16_t>();
-	}
-
 	int16_t x = 0;
 	int16_t y = 0;
 	friend auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream &;
+};
+
+template <>
+struct PacketSerialize<Pos> {
+	auto read(PacketReader &reader) -> Pos {
+		Pos ret;
+		ret.x = reader.get<int16_t>();
+		ret.y = reader.get<int16_t>();
+		return ret;
+	}
+	auto write(PacketBuilder &builder, const Pos &obj) -> void {
+		builder.add<int16_t>(obj.x);
+		builder.add<int16_t>(obj.y);
+	}
 };
 
 inline

@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "Instance.hpp"
-#include "InstanceMessageConstants.hpp"
 #include "Maps.hpp"
 #include "PartyPacket.hpp"
 #include "Player.hpp"
@@ -92,7 +91,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 	m_members.erase(player->getId());
 	player->setParty(nullptr);
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::PartyRemoveMember, getId(), player->getId());
+		instance->removePartyMember(getId(), player->getId());
 	}
 
 	Functors::LeavePartyUpdate func = {this, player->getId(), player->getName(), kicked};
@@ -102,7 +101,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 
 auto Party::deleteMember(int32_t id, const string_t &name, bool kicked) -> void {
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::PartyRemoveMember, getId(), id);
+		instance->removePartyMember(getId(), id);
 	}
 	m_members.erase(id);
 
@@ -112,7 +111,7 @@ auto Party::deleteMember(int32_t id, const string_t &name, bool kicked) -> void 
 
 auto Party::disband() -> void {
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::PartyDisband, getId());
+		instance->partyDisband(getId());
 		setInstance(nullptr);
 	}
 	auto temp = m_members;
