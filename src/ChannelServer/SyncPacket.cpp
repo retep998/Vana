@@ -32,7 +32,7 @@ PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::ScrollingHeader)
-		.addString(message);
+		.add<string_t>(message);
 	return builder;
 }
 
@@ -51,7 +51,7 @@ PACKET_IMPL(ConfigPacket::modifyRates, const Rates &rates) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::RateSet)
-		.addClass<Rates>(rates);
+		.add<Rates>(rates);
 	return builder;
 }
 
@@ -65,7 +65,7 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &player, update_bits_t 
 		.add<int32_t>(player.id);
 
 	if (flags & Sync::Player::UpdateBits::Full) {
-		builder.addClass<PlayerData>(player);
+		builder.add<PlayerData>(player);
 	}
 	else {
 		if (flags & Sync::Player::UpdateBits::Level) {
@@ -98,15 +98,9 @@ PACKET_IMPL(PlayerPacket::changeChannel, Player *info, channel_id_t channel) {
 		.add<sync_t>(Sync::Player::ChangeChannelRequest)
 		.add<int32_t>(info->getId())
 		.add<channel_id_t>(channel)
-		.addClass<Ip>(info->getIp())
-		.add<int64_t>(info->getConnectionTime());
+		.add<Ip>(info->getIp())
+		.addBuffer(info->getTransferPacket());
 
-	Player *followed = info->getFollow();
-	builder
-		.add<int32_t>(followed != nullptr ? followed->getId() : 0)
-		.add<bool>(info->isGmChat())
-		.addClass<PlayerActiveBuffs>(*info->getActiveBuffs())
-		.addClass<PlayerSummons>(*info->getSummons());
 	return builder;
 }
 
@@ -120,7 +114,7 @@ PACKET_IMPL(PlayerPacket::connect, const PlayerData &player, bool firstConnect) 
 		.add<int32_t>(player.id);
 
 	if (firstConnect) {
-		builder.addClass<PlayerData>(player);
+		builder.add<PlayerData>(player);
 	}
 	else {
 		builder
@@ -185,7 +179,7 @@ PACKET_IMPL(BuddyPacket::buddyOnline, int32_t playerId, const vector_t<int32_t> 
 		.add<sync_t>(Sync::Buddy::OnlineOffline)
 		.add<int32_t>(playerId)
 		.add<bool>(online)
-		.addVector(players);
+		.add<vector_t<int32_t>>(players);
 	return builder;
 }
 

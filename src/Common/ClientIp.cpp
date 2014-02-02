@@ -25,12 +25,3 @@ ClientIp::ClientIp(const Ip &ip) :
 	m_ip(ip)
 {
 }
-
-auto ClientIp::write(PacketBuilder &builder) const -> void {
-	if (m_ip.getType() == Ip::Type::Ipv4) {
-		builder.add<uint32_t>(htonl(m_ip.asIpv4()));
-	}
-	else {
-		throw std::invalid_argument("IPv6 unsupported");
-	}
-}

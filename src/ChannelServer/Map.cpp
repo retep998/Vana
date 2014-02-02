@@ -519,7 +519,7 @@ auto Map::spawnMob(int32_t mobId, const Pos &pos, int16_t foothold, ref_ptr_t<Mo
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::MobSpawn, mobId, id, getId());
+		instance->mobSpawn(mobId, id, getId());
 	}
 
 	return mob;
@@ -535,7 +535,7 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::MobSpawn, info.id, id, getId());
+		instance->mobSpawn(info.id, id, getId());
 	}
 
 	return mob;
@@ -550,7 +550,7 @@ auto Map::spawnShell(int32_t mobId, const Pos &pos, int16_t foothold) -> ref_ptr
 	updateMobControl(mob, true);
 
 	if (Instance *instance = getInstance()) {
-		instance->sendMessage(InstanceMessage::MobSpawn, mobId, id, getId());
+		instance->mobSpawn(mobId, id, getId());
 	}
 
 	return mob;
@@ -610,7 +610,7 @@ auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 		int32_t mapMobId = kvp->first;
 		int32_t mobId = mob->getMobId();
 		if (Instance *instance = getInstance()) {
-			instance->sendMessage(InstanceMessage::MobDeath, mobId, mapMobId, m_id);
+			instance->mobDeath(mobId, mapMobId, m_id);
 		}
 
 		if (mob->hasStatus(StatusEffects::Mob::ShadowWeb)) {

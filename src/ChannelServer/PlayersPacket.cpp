@@ -55,7 +55,7 @@ PACKET_IMPL(showChat, int32_t playerId, bool isGm, const string_t &msg, bool bub
 		.add<header_t>(SMSG_PLAYER_CHAT)
 		.add<int32_t>(playerId)
 		.add<bool>(isGm)
-		.addString(msg)
+		.add<string_t>(msg)
 		.add<bool>(bubbleOnly);
 	return builder;
 }
@@ -87,7 +87,7 @@ SPLIT_PACKET_IMPL(damagePlayer, int32_t playerId, int32_t dmg, int32_t mob, uint
 					.add<bool>(pgmr.isPhysical) // Maybe? No Mana Reflection on global to test with
 					.add<int32_t>(pgmr.mapMobId)
 					.add<int8_t>(6)
-					.addClass<Pos>(pgmr.pos);
+					.add<Pos>(pgmr.pos);
 			}
 
 			builder.map
@@ -111,8 +111,8 @@ PACKET_IMPL(showInfo, Player *getInfo, bool isSelf) {
 		.add<int16_t>(getInfo->getStats()->getJob())
 		.add<int16_t>(getInfo->getStats()->getFame())
 		.add<bool>(false) // Married
-		.addString("-") // Guild
-		.addString("") // Guild Alliance
+		.add<string_t>("-") // Guild
+		.add<string_t>("") // Guild Alliance
 		.add<bool>(isSelf);
 
 	getInfo->getPets()->petInfoPacket(builder);
@@ -127,9 +127,9 @@ PACKET_IMPL(whisperPlayer, const string_t &whispererName, channel_id_t channel, 
 	builder
 		.add<header_t>(SMSG_COMMAND)
 		.add<int8_t>(0x12)
-		.addString(whispererName)
+		.add<string_t>(whispererName)
 		.add<int16_t>(channel)
-		.addString(message);
+		.add<string_t>(message);
 	return builder;
 }
 
@@ -139,7 +139,7 @@ PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isCh
 	if (map != -1) {
 		builder
 			.add<int8_t>(0x09)
-			.addString(name)
+			.add<string_t>(name)
 			.add<int8_t>(isChannel ? 0x03 : 0x01)
 			.add<int32_t>(map)
 			.add<int32_t>(0)
@@ -148,7 +148,7 @@ PACKET_IMPL(findPlayer, const string_t &name, int32_t map, uint8_t is, bool isCh
 	else {
 		builder
 			.add<int8_t>(0x0A)
-			.addString(name)
+			.add<string_t>(name)
 			.add<int8_t>(is);
 	}
 	return builder;
@@ -235,7 +235,7 @@ SPLIT_PACKET_IMPL(useRangedAttack, int32_t playerId, int32_t masterySkillId, uin
 			builder.map.add<int32_t>(damage);
 		}
 	}
-	builder.map.addClass<Pos>(attack.projectilePos);
+	builder.map.add<Pos>(attack.projectilePos);
 	return builder;
 }
 

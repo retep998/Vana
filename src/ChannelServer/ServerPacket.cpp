@@ -29,7 +29,7 @@ PACKET_IMPL(showScrollingHeader, const string_t &msg) {
 		.add<header_t>(SMSG_MESSAGE)
 		.add<int8_t>(4)
 		.add<int8_t>(1)
-		.addString(msg);
+		.add<string_t>(msg);
 	return builder;
 }
 
@@ -41,7 +41,7 @@ PACKET_IMPL(changeScrollingHeader, const string_t &msg) {
 		.add<bool>(msg.size() > 0);
 
 	if (msg.size() > 0) {
-		builder.addString(msg);
+		builder.add<string_t>(msg);
 	}
 	return builder;
 }

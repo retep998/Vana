@@ -166,7 +166,7 @@ auto Characters::showCharacters(Player *player) -> void {
 }
 
 auto Characters::checkCharacterName(Player *player, PacketReader &reader) -> void {
-	const string_t &name = reader.getString();
+	const string_t &name = reader.get<string_t>();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
@@ -203,7 +203,7 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	string_t name = reader.getString();
+	string_t name = reader.get<string_t>();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}

@@ -48,7 +48,7 @@ struct MapEntryBuffs {
 	hash_map_t<int8_t, hash_map_t<uint8_t, MapEntryVals>> values;
 };
 
-class PlayerActiveBuffs : public IPacketSerializable {
+class PlayerActiveBuffs {
 	NONCOPYABLE(PlayerActiveBuffs);
 	NO_DEFAULT_CONSTRUCTOR(PlayerActiveBuffs);
 public:
@@ -163,8 +163,8 @@ public:
 	auto endMorph() -> void;
 	auto swapWeapon() -> void;
 
-	auto write(PacketBuilder &builder) const -> void override;
-	auto read(PacketReader &reader) -> void override;
+	auto getTransferPacket() const -> PacketBuilder;
+	auto parseTransferPacket(PacketReader &reader) -> void;
 private:
 	auto hasBuff(int32_t skillId) -> bool;
 	auto calculateDebuffMaskBit(uint8_t skill) -> int32_t;

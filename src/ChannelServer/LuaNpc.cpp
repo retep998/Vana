@@ -25,10 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
-	LuaScriptable(filename, playerId)
+	LuaScriptable(filename, playerId, true)
 {
-	m_luaThread = lua_newthread(m_luaVm);
-
 	// Miscellaneous
 	expose("showStorage", &LuaExports::showStorage);
 	expose("getDistanceToPlayer", &LuaExports::getDistanceNpc);
@@ -56,27 +54,8 @@ LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
 	expose("endQuest", &LuaExports::endQuest);
 }
 
-auto LuaNpc::run() -> Result {
-	if (luaL_loadfile(m_luaThread, m_filename.c_str())) {
-		// Error in lua script
-		handleError();
-		return Result::Failure;
-	}
-	return resume(0); // Start running the script
-}
-
-auto LuaNpc::resume(int32_t nArgs) -> Result {
-	int32_t ret = lua_resume(m_luaThread, m_luaVm, nArgs);
-	if (ret == 0) {
-		// NPC finished
-		PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
-	}
-	else if (ret != LUA_YIELD) {
-		// Error, a working NPC returns either 0 or LUA_YIELD
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
+auto LuaNpc::handleThreadCompletion() -> void {
+	PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
 }
 
 auto LuaNpc::proceedNext() -> Result {
@@ -84,22 +63,22 @@ auto LuaNpc::proceedNext() -> Result {
 }
 
 auto LuaNpc::proceedSelection(uint8_t selected) -> Result {
-	lua_pushinteger(m_luaThread, selected);
+	pushThread<uint8_t>(selected);
 	return resume(1);
 }
 
 auto LuaNpc::proceedNumber(int32_t number) -> Result {
-	lua_pushinteger(m_luaThread, number);
+	pushThread<int32_t>(number);
 	return resume(1);
 }
 
 auto LuaNpc::proceedText(const string_t &text) -> Result {
-	lua_pushstring(m_luaThread, text.c_str());
+	pushThread<string_t>(text);
 	return resume(1);
 }
 
-auto LuaNpc::handleError() -> void {
-	printError(lua_tostring(m_luaThread, -1));
+auto LuaNpc::handleError(const string_t &filename, const string_t &error) -> void {
+	printError(error);
 	PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
 }
 

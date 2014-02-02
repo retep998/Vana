@@ -405,7 +405,7 @@ auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
 	packet.add<uint16_t>(m_quests.size());
 	for (const auto &kvp : m_quests) {
 		packet.add<uint16_t>(kvp.first);
-		packet.addString(kvp.second.getQuestData());
+		packet.add<string_t>(kvp.second.getQuestData());
 	}
 
 	packet.add<uint16_t>(m_completed.size());

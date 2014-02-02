@@ -36,13 +36,13 @@ PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
 	if (player2 != nullptr) {
 		builder
 			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player2))
-			.addString(player2->getName())
+			.add<string_t>(player2->getName())
 			.add<int8_t>(1); // Location in the window
 	}
 	if (player1 != nullptr) {
 		builder
 			.addBuffer(PlayerPacketHelper::addPlayerDisplay(player1))
-			.addString(player1->getName())
+			.add<string_t>(player1->getName())
 			.add<int8_t>(-1); // Location in the window
 	}
 	return builder;
@@ -54,7 +54,7 @@ PACKET_IMPL(sendTradeRequest, const string_t &name, int32_t tradeId) {
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(0x02)
 		.add<int8_t>(0x03)
-		.addString(name)
+		.add<string_t>(name)
 		.add<int32_t>(tradeId);
 	return builder;
 }
@@ -65,7 +65,7 @@ PACKET_IMPL(sendTradeMessage, const string_t &name, int8_t type, int8_t message)
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(type)
 		.add<int8_t>(message)
-		.addString(name);
+		.add<string_t>(name);
 	return builder;
 }
 
@@ -96,7 +96,7 @@ PACKET_IMPL(sendTradeChat, bool blue, const string_t &chat) {
 		.add<int8_t>(0x06)
 		.add<int8_t>(0x08)
 		.add<bool>(blue)
-		.addString(chat);
+		.add<string_t>(chat);
 	return builder;
 }
 
@@ -107,7 +107,7 @@ PACKET_IMPL(sendAddUser, Player *newPlayer, int8_t slot) {
 		.add<int8_t>(0x04)
 		.add<int8_t>(slot)
 		.addBuffer(PlayerPacketHelper::addPlayerDisplay(newPlayer))
-		.addString(newPlayer->getName());
+		.add<string_t>(newPlayer->getName());
 	return builder;
 }
 

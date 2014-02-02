@@ -27,7 +27,7 @@ PACKET_IMPL(playMusic, const string_t &music) {
 	builder
 		.add<header_t>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x06)
-		.addString(music);
+		.add<string_t>(music);
 	return builder;
 }
 
@@ -37,7 +37,7 @@ PACKET_IMPL(sendEvent, const string_t &id) {
 	builder
 		.add<header_t>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x03)
-		.addString(id);
+		.add<string_t>(id);
 	return builder;
 }
 
@@ -47,7 +47,7 @@ PACKET_IMPL(sendEffect, const string_t &effect) {
 	builder
 		.add<header_t>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x02)
-		.addString(effect);
+		.add<string_t>(effect);
 	return builder;
 }
 
@@ -65,7 +65,7 @@ PACKET_IMPL(sendFieldSound, const string_t &sound) {
 	builder
 		.add<header_t>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x04)
-		.addString(sound);
+		.add<string_t>(sound);
 	return builder;
 }
 
@@ -74,7 +74,7 @@ PACKET_IMPL(sendMinigameSound, const string_t &sound) {
 	// Look in Sound.wz/MiniGame.img to find valid strings
 	builder
 		.add<header_t>(SMSG_SOUND)
-		.addString(sound);
+		.add<string_t>(sound);
 	return builder;
 }
 

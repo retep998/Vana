@@ -66,7 +66,7 @@ PACKET_IMPL(loginConnect, Player *player, const string_t &username) {
 		.add<bool>(player->isAdmin()) // Enables commands like /c, /ch, /m, /h... but disables trading
 		.add<int8_t>(0)
 		.add<int8_t>(0)
-		.addString(username)
+		.add<string_t>(username)
 		.add<int8_t>(0)
 		.add<int8_t>(player->getQuietBanReason())
 		.add<int64_t>(player->getQuietBanTime())
@@ -105,9 +105,9 @@ PACKET_IMPL(showWorld, World *world) {
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
 		.add<int8_t>(world->getId())
-		.addString(world->getName())
+		.add<string_t>(world->getName())
 		.add<int8_t>(world->getRibbon())
-		.addString(world->getEventMessage())
+		.add<string_t>(world->getEventMessage())
 		.add<int16_t>(100) // EXP rate. x/100. Changing this will show event message.
 		.add<int16_t>(100)
 		.add<int8_t>(0);
@@ -117,7 +117,7 @@ PACKET_IMPL(showWorld, World *world) {
 		out_stream_t cnStream;
 		cnStream << world->getName() << "-" << static_cast<int32_t>(i + 1);
 		const string_t &channelName = cnStream.str();
-		builder.addString(channelName);
+		builder.add<string_t>(channelName);
 
 		if (Channel *channel = world->getChannel(i)) {
 			builder.add<int32_t>(channel->getPopulation());
@@ -137,8 +137,8 @@ PACKET_IMPL(showWorld, World *world) {
 	builder.add<int16_t>(messageCount);
 	for (int16_t i = 0; i < messageCount; ++i) {
 		// When you set a pos of (0, 0), the message will be on the first world tab
-		builder.addClass<Pos>(Pos(i * 10, 0));
-		builder.addString("message");
+		builder.add<Pos>(Pos(i * 10, 0));
+		builder.add<string_t>("message");
 	}
 	return builder;
 }
@@ -195,7 +195,7 @@ PACKET_IMPL(checkName, const string_t &name, uint8_t message) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_NAME_CHECK)
-		.addString(name)
+		.add<string_t>(name)
 		.add<uint8_t>(message);
 	return builder;
 }
@@ -247,7 +247,7 @@ PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, int32_t charId) {
 	builder
 		.add<header_t>(SMSG_CHANNEL_CONNECT)
 		.add<int16_t>(0)
-		.addClass<ClientIp>(ip)
+		.add<ClientIp>(ip)
 		.add<port_t>(port)
 		.add<int32_t>(charId)
 		.add<int32_t>(0)

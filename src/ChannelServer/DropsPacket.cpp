@@ -36,13 +36,13 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
 		.add<int32_t>(drop->getObjectId())
 		.add<int32_t>(drop->getOwner()) // Owner of drop
 		.add<int8_t>(drop->getType())
-		.addClass<Pos>(drop->getPos())
+		.add<Pos>(drop->getPos())
 		.add<int32_t>(drop->getTime());
 
 	if (type != DropTypes::ShowExisting) {
 		// Give the point of origin for things that are just being dropped
 		builder
-			.addClass<Pos>(origin)
+			.add<Pos>(origin)
 			.add<int16_t>(0);
 	}
 	if (!drop->isMesos()) {

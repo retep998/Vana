@@ -33,7 +33,7 @@ auto ChatHandler::initializeCommands() -> void {
 }
 
 auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
-	string_t message = reader.getString();
+	string_t message = reader.get<string_t>();
 	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
 
 	if (!ChatHandler::handleCommand(player, message)) {
@@ -80,8 +80,8 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	uint8_t amount = reader.get<uint8_t>();
-	vector_t<int32_t> receivers = reader.getVector<int32_t>(amount);
-	string_t chat = reader.getString();
+	vector_t<int32_t> receivers = reader.get<vector_t<int32_t>>(amount);
+	string_t chat = reader.get<string_t>();
 
 	if (!ChatHandler::handleCommand(player, chat)) {
 		PlayerDataProvider::getInstance().handleGroupChat(type, player->getId(), receivers, chat);

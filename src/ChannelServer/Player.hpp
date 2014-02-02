@@ -76,6 +76,7 @@ public:
 	auto setParty(Party *party) -> void { m_party = party; }
 	auto setFollow(Player *target) -> void { m_follow = target; }
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }
+	auto parseTransferPacket(PacketReader &reader) -> void;
 
 	auto isGm() const -> bool { return m_gmLevel > 0; }
 	auto isGmChat() const -> bool { return m_gmChat; }
@@ -112,6 +113,7 @@ public:
 	auto getMedalName() -> string_t;
 	auto getName() const -> string_t { return m_name; }
 	auto getChargeOrStationarySkillInfo() const -> ChargeOrStationarySkillInfo { return m_info; }
+	auto getTransferPacket() const -> PacketBuilder;
 
 	auto getMap() const -> Map *;
 	auto getFollow() const -> Player * { return m_follow; }

@@ -28,16 +28,13 @@ class LuaNpc : public LuaScriptable {
 public:
 	LuaNpc(const string_t &filename, int32_t playerId);
 
-	auto run() -> Result override;
 	auto proceedNext() -> Result;
 	auto proceedSelection(uint8_t selected) -> Result;
 	auto proceedNumber(int32_t number) -> Result;
 	auto proceedText(const string_t &text) -> Result;
 protected:
-	auto resume(int32_t nArgs) -> Result;
-	auto handleError() -> void override;
-
-	lua_State *m_luaThread = nullptr; // For pausing script execution e.g. while a player makes a selection
+	auto handleError(const string_t &filename, const string_t &error) -> void override;
+	auto handleThreadCompletion() -> void override;
 };
 
 namespace LuaExports {

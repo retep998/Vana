@@ -62,12 +62,12 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 		.add<header_t>(SMSG_BUDDY)
 		.add<int8_t>(0x09)
 		.add<int32_t>(invite.id)
-		.addString(invite.name)
+		.add<string_t>(invite.name)
 		.add<int32_t>(invite.id)
-		.addString(invite.name, 13)
+		.add<string_t>(invite.name, 13)
 		.add<uint8_t>(OppositeStatus::Requested) // Buddy status
 		.add<uint32_t>(-1) // Doesn't appear to matter
-		.addString("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
+		.add<string_t>("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
 		.add<int8_t>(0x00)
 		.add<int8_t>(20) // Seems to be the amount of buddy slots for the character...
 		.add<uint8_t>(0xFD)

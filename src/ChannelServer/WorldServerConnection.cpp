@@ -41,7 +41,7 @@ WorldServerConnection::~WorldServerConnection() {
 }
 
 auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
-	switch (reader.getHeader()) {
+	switch (reader.get<header_t>()) {
 		case IMSG_LOGIN_CHANNEL_CONNECT: WorldServerConnectHandler::connectLogin(this, reader); break;
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, reader); break;
 		case IMSG_TO_PLAYER: {
@@ -50,13 +50,13 @@ auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
-			vector_t<int32_t> playerIds = reader.getVector<int32_t>();
+			vector_t<int32_t> playerIds = reader.get<vector_t<int32_t>>();
 			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_ALL_PLAYERS: PlayerDataProvider::getInstance().send(Packets::identity(reader)); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(reader); break;
-		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.getClass<WorldConfig>()); break;
+		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.get<WorldConfig>()); break;
 		case IMSG_SYNC: SyncHandler::handle(reader); break;
 	}
 }

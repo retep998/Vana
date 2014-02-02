@@ -211,7 +211,7 @@ PACKET_IMPL(useHomingBeacon, int32_t skillId, const ActiveBuff &playerSkill, int
 		.add<header_t>(SMSG_SKILL_USE)
 		.addBuffer(BuffsPacketHelper::addBytes(playerSkill.types))
 		.add<int16_t>(0)
-		.addVector<int16_t>(playerSkill.vals, playerSkill.vals.size())
+		.add<vector_t<int16_t>>(playerSkill.vals, playerSkill.vals.size())
 		.add<int16_t>(0)
 		.add<int32_t>(skillId)
 		.add<int32_t>(0) // Time

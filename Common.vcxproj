@@ -102,6 +102,7 @@
     <ClCompile Include="src\Common\BlockCipherIv.cpp" />
     <ClCompile Include="src\Common\Line.cpp" />
     <ClCompile Include="src\Common\Logger.cpp" />
+    <ClCompile Include="src\Common\LuaEnvironment.cpp" />
     <ClCompile Include="src\Common\NpcDataProvider.cpp" />
     <ClCompile Include="src\Common\PacketBuilder.cpp" />
     <ClCompile Include="src\Common\PingPacket.cpp" />
@@ -168,7 +169,6 @@
     <ClInclude Include="src\Common\FileLogger.hpp" />
     <ClInclude Include="src\Common\GameConstants.hpp" />
     <ClInclude Include="src\Common\hash_combine.hpp" />
-    <ClInclude Include="src\Common\IConfig.hpp" />
     <ClInclude Include="src\Common\InterHelper.hpp" />
     <ClInclude Include="src\Common\Ip.hpp" />
     <ClInclude Include="src\Common\IPacket.hpp" />
@@ -179,6 +179,7 @@
     <ClInclude Include="src\Common\JobConstants.hpp" />
     <ClInclude Include="src\Common\Line.hpp" />
     <ClInclude Include="src\Common\Logger.hpp" />
+    <ClInclude Include="src\Common\LuaEnvironment.hpp" />
     <ClInclude Include="src\Common\make_unique.hpp" />
     <ClInclude Include="src\Common\MapConstants.hpp" />
     <ClInclude Include="src\Common\MapleVersion.hpp" />

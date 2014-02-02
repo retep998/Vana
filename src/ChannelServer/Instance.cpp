@@ -209,12 +209,12 @@ auto Instance::addTimer(const string_t &timerName, const TimerAction &timer) -> 
 		Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 		if (timer.time > 0) {
 			// Positive, occurs in the future
-			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
+			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
 				id, getTimers(), seconds_t(timer.time), seconds_t(timer.persistent));
 		}
 		else {
 			// Negative, occurs nth second of hour
-			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerEnd(timerName, true); },
+			Timer::Timer::create([this, timerName](const time_point_t &now) { this->timerComplete(timerName, true); },
 				id, getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(static_cast<uint16_t>(-(timer.time + 1))), seconds_t(timer.persistent));
 		}
 		return true;
@@ -240,7 +240,7 @@ auto Instance::removeTimer(const string_t &timerName) -> void {
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
-			sendMessage(InstanceMessage::TimerEnd, timerName, false);
+			timerComplete(timerName, false);
 		}
 		m_timerActions.erase(kvp);
 	}
@@ -280,43 +280,59 @@ auto Instance::setInstanceTimer(const duration_t &time, bool firstRun) -> void {
 	}
 }
 
-auto Instance::sendMessage(InstanceMessage message) -> void {
-	getLuaInstance()->run(message);
+auto Instance::beginInstance() -> Result {
+	return getLuaInstance()->call("beginInstance");
 }
 
-auto Instance::sendMessage(InstanceMessage message, int32_t parameter) -> void {
-	getLuaInstance()->run(message, parameter);
+auto Instance::playerDeath(int32_t playerId) -> Result {
+	return getLuaInstance()->call("playerDeath", playerId);
 }
 
-auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> void {
-	getLuaInstance()->run(message, parameter1, parameter2);
+auto Instance::instanceTimerEnd(bool fromTimer) -> Result {
+	return getLuaInstance()->call("instanceTimerEnd", fromTimer);
 }
 
-auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> void {
-	getLuaInstance()->run(message, parameter1, parameter2, parameter3);
+auto Instance::partyDisband(int32_t partyId) -> Result {
+	return getLuaInstance()->call("partyDisband", partyId);
 }
 
-auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> void {
-	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4);
+auto Instance::timerEnd(const string_t &name, bool fromTimer) -> Result {
+	return getLuaInstance()->call("timerEnd", name, fromTimer);
 }
 
-auto Instance::sendMessage(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> void {
-	getLuaInstance()->run(message, parameter1, parameter2, parameter3, parameter4, parameter5);
+auto Instance::playerDisconnect(int32_t playerId, bool isPartyLeader) -> Result {
+	return getLuaInstance()->call("playerDisconnect", playerId, isPartyLeader);
 }
 
-auto Instance::sendMessage(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> void {
-	getLuaInstance()->run(message, parameter1, parameter2);
+auto Instance::removePartyMember(int32_t partyId, int32_t playerId) -> Result {
+	return getLuaInstance()->call("partyRemoveMember", partyId, playerId);
 }
 
-auto Instance::timerEnd(const string_t &name, bool fromTimer) -> void {
-	sendMessage(InstanceMessage::TimerNaturalEnd, name, fromTimer ? 1 : 0);
+auto Instance::mobDeath(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result {
+	return getLuaInstance()->call("mobDeath", mobId, mapMobId, mapId);
+}
+
+auto Instance::mobSpawn(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result {
+	return getLuaInstance()->call("mobSpawn", mobId, mapMobId, mapId);
+}
+
+auto Instance::playerChangeMap(int32_t playerId, int32_t newMapId, int32_t oldMapId, bool isPartyLeader) -> Result {
+	return getLuaInstance()->call("changeMap", playerId, newMapId, oldMapId, isPartyLeader);
+}
+
+auto Instance::friendlyMobHit(int32_t mobId, int32_t mapMobId, int32_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result {
+	return getLuaInstance()->call("friendlyHit", mobId, mapMobId, mapId, mobHp, mobMaxHp);
+}
+
+auto Instance::timerComplete(const string_t &name, bool fromTimer) -> void {
+	timerEnd(name, fromTimer);
 	if (!fromTimer || (fromTimer && !isTimerPersistent(name))) {
 		removeTimer(name);
 	}
 }
 
 auto Instance::instanceEnd(bool fromTimer) -> void {
-	sendMessage(InstanceMessage::InstanceTimerNaturalEnd, fromTimer ? 1 : 0);
+	instanceTimerEnd(fromTimer);
 	showTimer(false);
 	if (getPersistence().count() == 0) {
 		markForDelete();

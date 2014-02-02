@@ -351,7 +351,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
-		string_t message = reader.getString();
+		string_t message = reader.get<string_t>();
 		uint32_t ticks = reader.get<uint32_t>();
 		if (message.length() <= 35) {
 			Map *map = player->getMap();
@@ -403,14 +403,14 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				break;
 			}
 			case Items::Megaphone: {
-				string_t msg = player->getMedalName() + " : " + reader.getString();
+				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				// In global, this sends to everyone on the current channel, not the map
 				PlayerDataProvider::getInstance().send(InventoryPacket::showMegaphone(msg));
 				used = true;
 				break;
 			}
 			case Items::SuperMegaphone: {
-				string_t msg = player->getMedalName() + " : " + reader.getString();
+				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				bool whisper = reader.get<bool>();
 				auto &basePacket = InventoryPacket::showSuperMegaphone(msg, whisper);
 				ChannelServer::getInstance().sendWorld(
@@ -423,10 +423,10 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::DiabloMessenger:
 			case Items::Cloud9Messenger:
 			case Items::LoveholicMessenger: {
-				string_t msg1 = reader.getString();
-				string_t msg2 = reader.getString();
-				string_t msg3 = reader.getString();
-				string_t msg4 = reader.getString();
+				string_t msg1 = reader.get<string_t>();
+				string_t msg2 = reader.get<string_t>();
+				string_t msg3 = reader.get<string_t>();
+				string_t msg4 = reader.get<string_t>();
 
 				auto &basePacket = InventoryPacket::showMessenger(player->getName(), msg1, msg2, msg3, msg4, reader.getBuffer(), reader.getBufferLength(), itemId);
 				ChannelServer::getInstance().sendWorld(
@@ -437,7 +437,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				break;
 			}
 			case Items::ItemMegaphone: {
-				string_t msg = player->getMedalName() + " : " + reader.getString();
+				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				bool whisper = reader.get<bool>();
 				Item *item = nullptr;
 				if (reader.get<bool>()) {
@@ -466,7 +466,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				}
 				string_t text[3];
 				for (int8_t i = 0; i < lines; i++) {
-					text[i] = player->getMedalName() + " : " + reader.getString();
+					text[i] = player->getMedalName() + " : " + reader.get<string_t>();
 				}
 
 				bool whisper = reader.get<bool>();
@@ -480,7 +480,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				break;
 			}
 			case Items::PetNameTag: {
-				const string_t &name = reader.getString();
+				const string_t &name = reader.get<string_t>();
 				if (ValidCharDataProvider::getInstance().isForbiddenName(name) || CurseDataProvider::getInstance().isCurseWord(name)) {
 					// Don't think it's hacking, but it should be forbidden
 					return;
@@ -550,15 +550,15 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::Megassenger: {
 				bool hasReceiver = (reader.get<int8_t>() == 3);
 				bool showWhisper = (itemId == Items::Megassenger ? reader.get<bool>() : false);
-				Player *receiver = PlayerDataProvider::getInstance().getPlayer(reader.getString());
+				Player *receiver = PlayerDataProvider::getInstance().getPlayer(reader.get<string_t>());
 				int32_t time = 15;
 
 				if ((hasReceiver && receiver != nullptr) || (!hasReceiver && receiver == nullptr)) {
-					string_t msg1 = reader.getString();
-					string_t msg2 = reader.getString();
-					string_t msg3 = reader.getString();
-					string_t msg4 = reader.getString();
-					string_t msg5 = reader.getString();
+					string_t msg1 = reader.get<string_t>();
+					string_t msg2 = reader.get<string_t>();
+					string_t msg3 = reader.get<string_t>();
+					string_t msg4 = reader.get<string_t>();
+					string_t msg5 = reader.get<string_t>();
 					uint32_t ticks = reader.get<uint32_t>();
 
 					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
@@ -579,11 +579,11 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::StarMegassenger: {
 				int32_t time = 30;
 				bool showWhisper = (itemId == Items::StarMegassenger ? reader.get<bool>() : false);
-				string_t msg1 = reader.getString();
-				string_t msg2 = reader.getString();
-				string_t msg3 = reader.getString();
-				string_t msg4 = reader.getString();
-				string_t msg5 = reader.getString();
+				string_t msg1 = reader.get<string_t>();
+				string_t msg2 = reader.get<string_t>();
+				string_t msg3 = reader.get<string_t>();
+				string_t msg4 = reader.get<string_t>();
+				string_t msg5 = reader.get<string_t>();
 				uint32_t ticks = reader.get<uint32_t>();
 
 				MapleTvs::getInstance().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
@@ -601,16 +601,16 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::MapleTvHeartMessenger:
 			case Items::HeartMegassenger: {
 				bool showWhisper = (itemId == Items::HeartMegassenger ? reader.get<bool>() : false);
-				string_t name = reader.getString();
+				string_t name = reader.get<string_t>();
 				Player *receiver = PlayerDataProvider::getInstance().getPlayer(name);
 				int32_t time = 60;
 
 				if (receiver != nullptr) {
-					string_t msg1 = reader.getString();
-					string_t msg2 = reader.getString();
-					string_t msg3 = reader.getString();
-					string_t msg4 = reader.getString();
-					string_t msg5 = reader.getString();
+					string_t msg1 = reader.get<string_t>();
+					string_t msg2 = reader.get<string_t>();
+					string_t msg3 = reader.get<string_t>();
+					string_t msg4 = reader.get<string_t>();
+					string_t msg5 = reader.get<string_t>();
 					uint32_t ticks = reader.get<uint32_t>();
 
 					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
@@ -641,7 +641,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			}
 			case Items::Chalkboard:
 			case Items::Chalkboard2: {
-				string_t msg = reader.getString();
+				string_t msg = reader.get<string_t>();
 				player->setChalkboard(msg);
 				player->sendMap(InventoryPacket::sendChalkboardUpdate(player->getId(), msg));
 				break;
@@ -742,7 +742,7 @@ auto InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 		}
 	}
 	else if (mode == Ign) {
-		const string_t &targetName = reader.getString();
+		const string_t &targetName = reader.get<string_t>();
 		Player *target = PlayerDataProvider::getInstance().getPlayer(targetName);
 		if (target != nullptr && target != player) {
 			targetMapId = target->getMapId();

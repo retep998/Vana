@@ -39,16 +39,16 @@ LoginServerConnection::~LoginServerConnection() {
 }
 
 auto LoginServerConnection::handleRequest(PacketReader &reader) -> void {
-	switch (reader.getHeader()) {
+	switch (reader.get<header_t>()) {
 		case IMSG_WORLD_CONNECT: LoginServerConnectHandler::connect(this, reader); break;
-		case IMSG_REHASH_CONFIG: WorldServer::getInstance().rehashConfig(reader.getClass<WorldConfig>()); break;
+		case IMSG_REHASH_CONFIG: WorldServer::getInstance().rehashConfig(reader.get<WorldConfig>()); break;
 		case IMSG_TO_CHANNEL: {
 			channel_id_t channelId = reader.get<channel_id_t>();
 			Channels::getInstance().send(channelId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
-			vector_t<channel_id_t> channels = reader.getVector<channel_id_t>();
+			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
 			Channels::getInstance().send(channels, Packets::identity(reader));
 			break;
 		}

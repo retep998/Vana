@@ -67,25 +67,3 @@ auto Ip::getType() const -> const Ip::Type & {
 auto Ip::isInitialized() const -> bool {
 	return m_ipv4 != 0;
 }
-
-auto Ip::write(PacketBuilder &builder) const -> void {
-	builder.addClass<Ip::Type>(m_type);
-	if (m_type == Ip::Type::Ipv4) {
-		builder.add<uint32_t>(m_ipv4);
-	}
-}
-
-auto Ip::read(PacketReader &reader) -> void {
-	m_type = reader.getClass<Ip::Type>();
-	if (m_type == Ip::Type::Ipv4) {
-		m_ipv4 = reader.get<uint32_t>();
-	}
-}
-
-auto Ip::Type::write(PacketBuilder &builder) const -> void {
-	builder.add<int8_t>(m_type);
-}
-
-auto Ip::Type::read(PacketReader &reader) -> void {
-	m_type = reader.get<int8_t>();
-}

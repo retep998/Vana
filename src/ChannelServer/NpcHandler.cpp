@@ -96,7 +96,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 	}
 
 	if (type == NpcPacket::Dialogs::Quiz || type == NpcPacket::Dialogs::Question) {
-		npc->proceedText(reader.getString());
+		npc->proceedText(reader.get<string_t>());
 		npc->checkEnd();
 		return;
 	}
@@ -122,7 +122,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 			break;
 		case NpcPacket::Dialogs::GetText:
 			if (what != 0) {
-				npc->proceedText(reader.getString());
+				npc->proceedText(reader.get<string_t>());
 			}
 			else {
 				npc->end();

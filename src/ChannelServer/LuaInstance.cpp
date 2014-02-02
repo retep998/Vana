@@ -24,139 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaInstance::LuaInstance(const string_t &name, int32_t playerId) :
 	LuaScriptable("scripts/instances/" + name + ".lua", playerId)
 {
-	initialize();
-	setVariable("system_instanceName", name);
+	set<string_t>("system_instanceName", name);
 
 	expose("createInstance", &LuaExports::createInstanceInstance);
 
-	LuaScriptable::run(); // Running is loading the functions
-}
-
-auto LuaInstance::run(InstanceMessage message) -> Result {
-	switch (message) {
-		case InstanceMessage::BeginInstance:
-			lua_getglobal(m_luaVm, "beginInstance");
-			break;
-	}
-	if (lua_pcall(m_luaVm, 0, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, int32_t parameter) -> Result {
-	switch (message) {
-		case InstanceMessage::PlayerDeath:
-			lua_getglobal(m_luaVm, "playerDeath");
-			lua_pushinteger(m_luaVm, parameter);
-			break;
-		case InstanceMessage::InstanceTimerEnd:
-		case InstanceMessage::InstanceTimerNaturalEnd:
-			lua_getglobal(m_luaVm, "instanceTimerEnd");
-			lua_pushboolean(m_luaVm, parameter != 0);
-			break;
-		case InstanceMessage::PartyDisband:
-			lua_getglobal(m_luaVm, "partyDisband");
-			lua_pushinteger(m_luaVm, parameter);
-			break;
-	}
-	if (lua_pcall(m_luaVm, 1, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, const string_t &parameter1, int32_t parameter2) -> Result {
-	switch (message) {
-		case InstanceMessage::TimerEnd:
-		case InstanceMessage::TimerNaturalEnd:
-			lua_getglobal(m_luaVm, "timerEnd");
-			lua_pushstring(m_luaVm, parameter1.c_str());
-			lua_pushboolean(m_luaVm, parameter2 != 0);
-			break;
-	}
-	if (lua_pcall(m_luaVm, 2, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2) -> Result {
-	switch (message) {
-		case InstanceMessage::PlayerDisconnect:
-			lua_getglobal(m_luaVm, "playerDisconnect");
-			lua_pushinteger(m_luaVm, parameter1);
-			lua_pushboolean(m_luaVm, parameter2 != 0);
-			break;
-		case InstanceMessage::PartyRemoveMember:
-			lua_getglobal(m_luaVm, "partyRemoveMember");
-			lua_pushinteger(m_luaVm, parameter1);
-			lua_pushinteger(m_luaVm, parameter2);
-			break;
-	}
-
-	if (lua_pcall(m_luaVm, 2, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3) -> Result {
-	switch (message) {
-		case InstanceMessage::MobDeath:
-			lua_getglobal(m_luaVm, "mobDeath");
-			break;
-		case InstanceMessage::MobSpawn:
-			lua_getglobal(m_luaVm, "mobSpawn");
-			break;
-	}
-	lua_pushinteger(m_luaVm, parameter1);
-	lua_pushinteger(m_luaVm, parameter2);
-	lua_pushinteger(m_luaVm, parameter3);
-	if (lua_pcall(m_luaVm, 3, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4) -> Result {
-	switch (message) {
-		case InstanceMessage::PlayerChangeMap:
-			lua_getglobal(m_luaVm, "changeMap");
-			lua_pushinteger(m_luaVm, parameter1);
-			lua_pushinteger(m_luaVm, parameter2);
-			lua_pushinteger(m_luaVm, parameter3);
-			lua_pushboolean(m_luaVm, parameter4 != 0);
-			break;
-	}
-	if (lua_pcall(m_luaVm, 4, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
-}
-
-auto LuaInstance::run(InstanceMessage message, int32_t parameter1, int32_t parameter2, int32_t parameter3, int32_t parameter4, int32_t parameter5) -> Result {
-	switch (message) {
-		case InstanceMessage::FriendlyMobHit:
-			lua_getglobal(m_luaVm, "friendlyHit");
-			lua_pushinteger(m_luaVm, parameter1);
-			lua_pushinteger(m_luaVm, parameter2);
-			lua_pushinteger(m_luaVm, parameter3);
-			lua_pushboolean(m_luaVm, parameter4);
-			lua_pushboolean(m_luaVm, parameter5);
-			break;
-	}
-	if (lua_pcall(m_luaVm, 5, 0, 0)) {
-		handleError();
-		return Result::Failure;
-	}
-	return Result::Successful;
+	run(); // Running is loading the functions
 }
 
 auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
@@ -170,7 +42,7 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
 
 	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
 	Instances::getInstance().addInstance(instance);
-	instance->sendMessage(InstanceMessage::BeginInstance);
+	instance->beginInstance();
 
 	if (instance->showTimer()) {
 		instance->showTimer(true, true);

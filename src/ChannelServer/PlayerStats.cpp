@@ -234,7 +234,7 @@ auto PlayerStats::modifiedHp() -> void {
 	m_player->getActiveBuffs()->checkBerserk();
 	if (m_hp == Stats::MinHp) {
 		if (Instance *instance = m_player->getInstance()) {
-			instance->sendMessage(InstanceMessage::PlayerDeath, m_player->getId());
+			instance->playerDeath(m_player->getId());
 		}
 		loseExp();
 		SummonHandler::removeSummon(m_player, false, false, SummonMessages::Disappearing);

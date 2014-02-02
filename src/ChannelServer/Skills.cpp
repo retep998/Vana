@@ -139,7 +139,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case Skills::Shadower::Smokescreen: {
-			Pos origin = reader.getClass<Pos>();
+			Pos origin = reader.get<Pos>();
 			Mist *m = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level);
 			break;
 		}

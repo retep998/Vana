@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto AbstractServerAcceptConnection::processAuth(AbstractServer &server, PacketReader &reader) -> Result {
-	if (reader.getHeader() == IMSG_PASSWORD) {
-		if (reader.getString() == server.getInterPassword()) {
+	if (reader.get<header_t>() == IMSG_PASSWORD) {
+		if (reader.get<string_t>() == server.getInterPassword()) {
 			m_isAuthenticated = true;
 
-			setExternalIpInformation(getIp(), reader.getClassVector<ExternalIp>());
+			setExternalIpInformation(getIp(), reader.get<vector_t<ExternalIp>>());
 
 			ServerType type = static_cast<ServerType>(reader.get<server_type_t>());
 			m_type = type;

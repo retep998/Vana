@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Algorithm.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
-#include "InstanceMessageConstants.hpp"
 #include "Maps.hpp"
 #include "MiscUtilities.hpp"
 #include "Mob.hpp"
@@ -70,7 +69,7 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
 
 		taker->applyDamage(playerId, damage);
 		if (Instance *instance = map->getInstance()) {
-			instance->sendMessage(InstanceMessage::FriendlyMobHit, mobId, mapMobId, map->getId(), mobHp, maxHp);
+			instance->friendlyMobHit(mobId, mapMobId, map->getId(), mobHp, maxHp);
 		}
 	}
 }

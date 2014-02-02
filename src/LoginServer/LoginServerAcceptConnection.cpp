@@ -42,7 +42,7 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 	if (processAuth(LoginServer::getInstance(), reader) == Result::Failure) {
 		return;
 	}
-	switch (reader.getHeader()) {
+	switch (reader.get<header_t>()) {
 		case IMSG_REGISTER_CHANNEL: LoginServerAcceptHandler::registerChannel(this, reader); break;
 		case IMSG_UPDATE_CHANNEL_POP: LoginServerAcceptHandler::updateChannelPop(this, reader); break;
 		case IMSG_REMOVE_CHANNEL: LoginServerAcceptHandler::removeChannel(this, reader); break;
@@ -53,7 +53,7 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 			break;
 		}
 		case IMSG_TO_WORLD_LIST: {
-			vector_t<world_id_t> worlds = reader.getVector<world_id_t>();
+			vector_t<world_id_t> worlds = reader.get<vector_t<world_id_t>>();
 			Worlds::getInstance().send(worlds, Packets::identity(reader));
 			break;
 		}

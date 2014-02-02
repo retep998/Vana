@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, PacketReader &reader) -> void {
 	world_id_t worldId = reader.get<world_id_t>();
 	if (worldId != -1) {
-		Ip ip = reader.getClass<Ip>();
+		Ip ip = reader.get<Ip>();
 		port_t port = reader.get<port_t>();
 		std::cout << "Connecting to world " << static_cast<int32_t>(worldId) << std::endl;
 		ChannelServer::getInstance().connectToWorld(worldId, port, ip);
@@ -57,7 +57,7 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 	channel_id_t channel = reader.get<channel_id_t>();
 	if (channel != -1) {
 		port_t port = reader.get<port_t>();
-		WorldConfig conf = reader.getClass<WorldConfig>();
+		WorldConfig conf = reader.get<WorldConfig>();
 		std::cout << "Handling channel " <<static_cast<int32_t>(channel) << " on port " << port << std::endl;
 		ChannelServer::getInstance().establishedWorldConnection(channel, port, conf);
 	}
@@ -68,7 +68,7 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 }
 
 auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
-	const string_t &args = reader.getString();
+	const string_t &args = reader.get<string_t>();
 	if (args == "all") {
 		ItemDataProvider::getInstance().loadData();
 		DropDataProvider::getInstance().loadData();

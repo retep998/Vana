@@ -29,7 +29,7 @@ PACKET_IMPL(connect, World *world) {
 		.add<header_t>(IMSG_WORLD_CONNECT)
 		.add<world_id_t>(world->getId())
 		.add<port_t>(world->getPort())
-		.addClass<WorldConfig>(world->getConfig());
+		.add<WorldConfig>(world->getConfig());
 	return builder;
 }
 
@@ -46,7 +46,7 @@ PACKET_IMPL(connectChannel, world_id_t worldId, const Ip &ip, port_t port) {
 	builder
 		.add<header_t>(IMSG_LOGIN_CHANNEL_CONNECT)
 		.add<world_id_t>(worldId)
-		.addClass<Ip>(ip)
+		.add<Ip>(ip)
 		.add<port_t>(port);
 	return builder;
 }
@@ -60,7 +60,7 @@ PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, int32_t charId, con
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::NewConnectable)
 		.add<int32_t>(charId)
-		.addClass<Ip>(ip)
+		.add<Ip>(ip)
 		// The size of the held packet that should be there - there isn't one
 		.add<uint16_t>(0);
 	return builder;
@@ -70,7 +70,7 @@ PACKET_IMPL(rehashConfig, World *world) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_REHASH_CONFIG)
-		.addClass<WorldConfig>(world->getConfig());
+		.add<WorldConfig>(world->getConfig());
 	return builder;
 }
 

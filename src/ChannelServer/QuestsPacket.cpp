@@ -92,7 +92,7 @@ PACKET_IMPL(updateQuest, const ActiveQuest &quest) {
 		.add<int8_t>(1)
 		.add<int16_t>(quest.id)
 		.add<int8_t>(1)
-		.addString(quest.getQuestData());
+		.add<string_t>(quest.getQuestData());
 	return builder;
 }
 

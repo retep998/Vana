@@ -47,7 +47,7 @@ PACKET_IMPL(ConfigPacket::scrollingHeader, const string_t &message) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::ScrollingHeader)
-		.addString(message);
+		.add<string_t>(message);
 	return builder;
 }
 
@@ -57,7 +57,7 @@ PACKET_IMPL(ConfigPacket::setRates, const Rates &rates) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Config)
 		.add<sync_t>(Sync::Config::RateSet)
-		.addClass<Rates>(rates);
+		.add<Rates>(rates);
 	return builder;
 }
 
@@ -68,7 +68,7 @@ PACKET_IMPL(PlayerPacket::newConnectable, int32_t playerId, const Ip &ip, Packet
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::NewConnectable)
 		.add<int32_t>(playerId)
-		.addClass<Ip>(ip)
+		.add<Ip>(ip)
 		.add<uint16_t>(buffer.getBufferLength())
 		.addBuffer(buffer);
 	return builder;
@@ -92,7 +92,7 @@ PACKET_IMPL(PlayerPacket::playerChangeChannel, int32_t playerId, channel_id_t ch
 		.add<sync_t>(Sync::Player::ChangeChannelGo)
 		.add<int32_t>(playerId)
 		.add<channel_id_t>(channelId)
-		.addClass<Ip>(ip)
+		.add<Ip>(ip)
 		.add<port_t>(port);
 	return builder;
 }
@@ -107,7 +107,7 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t fl
 		.add<update_bits_t>(flags);
 
 	if (flags & Sync::Player::UpdateBits::Full) {
-		builder.addClass<PlayerData>(data);
+		builder.add<PlayerData>(data);
 	}
 	else {
 		if (flags & Sync::Player::UpdateBits::Level) {
@@ -138,7 +138,7 @@ PACKET_IMPL(PlayerPacket::characterCreated, const PlayerData &data) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::CharacterCreated)
-		.addClass<PlayerData>(data);
+		.add<PlayerData>(data);
 	return builder;
 }
 
@@ -215,7 +215,7 @@ PACKET_IMPL(BuddyPacket::sendBuddyInvite, int32_t inviteeId, int32_t inviterId, 
 		.add<sync_t>(Sync::Buddy::Invite)
 		.add<int32_t>(inviterId)
 		.add<int32_t>(inviteeId)
-		.addString(name);
+		.add<string_t>(name);
 	return builder;
 }
 
@@ -227,7 +227,7 @@ PACKET_IMPL(BuddyPacket::sendBuddyOnlineOffline, const vector_t<int32_t> &player
 		.add<sync_t>(Sync::Buddy::OnlineOffline)
 		.add<int32_t>(playerId)
 		.add<channel_id_t>(channelId)
-		.addVector(players);
+		.add<vector_t<int32_t>>(players);
 	return builder;
 }
 

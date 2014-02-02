@@ -70,7 +70,7 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 		}
 	}
 
-	builder.addClass<Pos>(mob->getPos());
+	builder.add<Pos>(mob->getPos());
 
 	int8_t bitfield = (owner != nullptr ? 0x08 : 0x02) | (mob->isFacingLeft() ? 0x01 : 0);
 	if (mob->canFly()) {
@@ -252,7 +252,7 @@ PACKET_IMPL(showSpawnEffect, int8_t summonEffect, const Pos &pos) {
 		.add<header_t>(SMSG_MAP_EFFECT)
 		.add<int8_t>(0x00)
 		.add<int8_t>(summonEffect)
-		.addClass<WidePos>(WidePos(pos));
+		.add<WidePos>(WidePos(pos));
 	return builder;
 }
 

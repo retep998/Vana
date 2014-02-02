@@ -158,9 +158,9 @@ auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t m
 	m_sentDialog = NpcPacket::Dialogs::Question;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, "", false)
 		.add<int8_t>(0x00) // If it's 0x01, it does something else
-		.addString(m_text)
-		.addString(question) // Another question thing
-		.addString(clue)
+		.add<string_t>(m_text)
+		.add<string_t>(question) // Another question thing
+		.add<string_t>(clue)
 		.add<int32_t>(minCharacters)
 		.add<int32_t>(maxCharacters)
 		.add<int32_t>(time));
@@ -169,7 +169,7 @@ auto Npc::sendQuestion(const string_t &question, const string_t &clue, int32_t m
 auto Npc::sendGetText(int16_t min, int16_t max, const string_t &def) -> void {
 	m_sentDialog = NpcPacket::Dialogs::GetText;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
-		.addString(def)
+		.add<string_t>(def)
 		.add<int16_t>(min)
 		.add<int16_t>(max));
 	m_text = "";
@@ -188,7 +188,7 @@ auto Npc::sendStyle(vector_t<int32_t> styles) -> void {
 	m_sentDialog = NpcPacket::Dialogs::Style;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, m_text)
 		.add<uint8_t>(styles.size())
-		.addVector<int32_t>(styles, styles.size()));
+		.add<vector_t<int32_t>>(styles, styles.size()));
 	m_text = "";
 }
 

@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <cmath>
 
-struct WidePos : public IPacketSerializable {
+struct WidePos {
 	WidePos(const Pos &pos) : x(pos.x), y(pos.y) { }
 	WidePos(int32_t x, int32_t y) : x(x), y(y) { }
 	WidePos() = default;
@@ -33,19 +33,23 @@ struct WidePos : public IPacketSerializable {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	auto write(PacketBuilder &builder) const -> void override {
-		builder.add<int32_t>(x);
-		builder.add<int32_t>(y);
-	}
-
-	auto read(PacketReader &reader) -> void override {
-		x = reader.get<int32_t>();
-		y = reader.get<int32_t>();
-	}
-
 	int32_t x = 0;
 	int32_t y = 0;
 	friend auto operator <<(std::ostream &out, const WidePos &pos) -> std::ostream &;
+};
+
+template <>
+struct PacketSerialize<WidePos> {
+	auto read(PacketReader &reader) -> WidePos {
+		WidePos ret;
+		ret.x = reader.get<int32_t>();
+		ret.y = reader.get<int32_t>();
+		return ret;
+	}
+	auto write(PacketBuilder &builder, const WidePos &obj) -> void {
+		builder.add<int32_t>(obj.x);
+		builder.add<int32_t>(obj.y);
+	}
 };
 
 inline

@@ -40,8 +40,8 @@ PACKET_IMPL(playerPacket, Player *player) {
 	builder
 		.add<header_t>(SMSG_MAP_PLAYER_SPAWN)
 		.add<int32_t>(player->getId())
-		.addString(player->getName())
-		.addString("") // Guild
+		.add<string_t>(player->getName())
+		.add<string_t>("") // Guild
 		.add<int16_t>(0) // Guild icon garbage
 		.add<int8_t>(0) // Guild icon garbage
 		.add<int16_t>(0) // Guild icon garbage
@@ -140,7 +140,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int32_t>(0)
 		.add<int32_t>(player->getItemEffect())
 		.add<int32_t>(player->getChair())
-		.addClass<Pos>(player->getPos())
+		.add<Pos>(player->getPos())
 		.add<int8_t>(player->getStance())
 		.add<int16_t>(player->getFoothold())
 		.add<int8_t>(0);
@@ -150,9 +150,9 @@ PACKET_IMPL(playerPacket, Player *player) {
 			builder
 				.add<int8_t>(1)
 				.add<int32_t>(pet->getItemId())
-				.addString(pet->getName())
+				.add<string_t>(pet->getName())
 				.add<int64_t>(pet->getId())
-				.addClass<Pos>(pet->getPos())
+				.add<Pos>(pet->getPos())
 				.add<int8_t>(pet->getStance())
 				.add<int16_t>(pet->getFoothold())
 				.add<bool>(pet->hasNameTag())
@@ -167,7 +167,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 		.add<int8_t>(0)
 		.add<int8_t>(0)
 		.add<bool>(!player->getChalkboard().empty())
-		.addString(player->getChalkboard())
+		.add<string_t>(player->getChalkboard())
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
@@ -198,9 +198,9 @@ PACKET_IMPL(changeMap, Player *player) {
 
 	if (false) {
 		size_t lineAmount = 0;
-		builder.addString("Message title");
+		builder.add<string_t>("Message title");
 		for (size_t i = 0; i < lineAmount; i++) {
-			builder.addString("Line");
+			builder.add<string_t>("Line");
 		}
 	}
 
@@ -271,8 +271,8 @@ PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
 		.add<int32_t>(mist->getSkillId())
 		.add<uint8_t>(mist->getSkillLevel())
 		.add<int16_t>(mapEntry ? 0 : mist->getDelay())
-		.addClass<WidePos>(WidePos(mist->getArea().leftTop()))
-		.addClass<WidePos>(WidePos(mist->getArea().rightBottom()))
+		.add<WidePos>(WidePos(mist->getArea().leftTop()))
+		.add<WidePos>(WidePos(mist->getArea().rightBottom()))
 		.add<int32_t>(0);
 	return builder;
 }
@@ -303,7 +303,7 @@ PACKET_IMPL(changeWeather, bool adminWeather, int32_t itemId, const string_t &me
 
 	if (itemId != 0 && !adminWeather) {
 		// Admin weathers doesn't have a message
-		builder.addString(message);
+		builder.add<string_t>(message);
 	}
 	return builder;
 }

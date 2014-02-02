@@ -46,6 +46,9 @@
     <Filter Include="Packets\Headers">
       <UniqueIdentifier>{3fb5cdff-e02c-4539-a3e4-a39004b525ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{85f3d2b9-0abc-48fd-859b-b64510037e12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\BuffDataProvider.cpp">
@@ -219,6 +222,9 @@
     </ClCompile>
     <ClCompile Include="src\Common\AbstractServerAcceptConnection.cpp">
       <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Common\LuaEnvironment.cpp">
+      <Filter>Scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -438,9 +444,6 @@
     <ClInclude Include="src\Common\DatabaseUpdater.hpp">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\IConfig.hpp">
-      <Filter>Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\AbstractServer.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -518,6 +521,9 @@
     </ClInclude>
     <ClInclude Include="src\Common\AbstractServerAcceptConnection.hpp">
       <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\LuaEnvironment.hpp">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

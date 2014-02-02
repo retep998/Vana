@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto Login::loginUser(Player *player, PacketReader &reader) -> void {
-	string_t username = reader.getString();
-	string_t password = reader.getString();
+	string_t username = reader.get<string_t>();
+	string_t password = reader.get<string_t>();
 	string_t ip = player->getIp().toString();
 
 	if (!ext::in_range_inclusive<size_t>(username.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
@@ -245,7 +245,7 @@ auto Login::checkPin(Player *player, PacketReader &reader) -> void {
 		player->setStatus(PlayerStatus::AskPin);
 	}
 	else if (act == 0x01) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
 		int32_t current = player->getPin();
 		if (pin == current) {
 			player->setStatus(PlayerStatus::LoggedIn);
@@ -256,7 +256,7 @@ auto Login::checkPin(Player *player, PacketReader &reader) -> void {
 		}
 	}
 	else if (act == 0x02) {
-		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
+		int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
 		if (pin == player->getPin()) {
 			player->setStatus(PlayerStatus::SetPin);
 			handleLogin(player, reader);
@@ -278,7 +278,7 @@ auto Login::registerPin(Player *player, PacketReader &reader) -> void {
 		}
 		return;
 	}
-	int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.getString());
+	int32_t pin = StringUtilities::lexical_cast<int32_t>(reader.get<string_t>());
 	player->setStatus(PlayerStatus::NotLoggedIn);
 	Database::getCharDb().once
 		<< "UPDATE user_accounts u "

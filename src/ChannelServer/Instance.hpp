@@ -17,7 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "InstanceMessageConstants.hpp"
 #include "TimerContainerHolder.hpp"
 #include "Types.hpp"
 #include "Variables.hpp"
@@ -102,19 +101,23 @@ public:
 	// Timers
 	auto removeAllTimers() -> void;
 	auto removeTimer(const string_t &name) -> void;
-	auto timerEnd(const string_t &name, bool fromTimer = false) -> void;
+	auto timerComplete(const string_t &name, bool fromTimer = false) -> void;
 	auto addTimer(const string_t &name, const TimerAction &timer) -> bool;
 	auto isTimerPersistent(const string_t &name) -> bool;
 	auto getTimerSecondsRemaining(const string_t &name) -> seconds_t;
 
 	// Lua interaction
-	auto sendMessage(InstanceMessage message) -> void;
-	auto sendMessage(InstanceMessage message, int32_t) -> void;
-	auto sendMessage(InstanceMessage message, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessage message, int32_t, int32_t, int32_t, int32_t, int32_t) -> void;
-	auto sendMessage(InstanceMessage message, const string_t &, int32_t) -> void;
+	auto beginInstance() -> Result;
+	auto playerDeath(int32_t playerId) -> Result;
+	auto instanceTimerEnd(bool fromTimer) -> Result;
+	auto partyDisband(int32_t partyId) -> Result;
+	auto timerEnd(const string_t &name, bool fromTimer) -> Result;
+	auto playerDisconnect(int32_t playerId, bool isPartyLeader) -> Result;
+	auto removePartyMember(int32_t partyId, int32_t playerId) -> Result;
+	auto mobDeath(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result;
+	auto mobSpawn(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result;
+	auto playerChangeMap(int32_t playerId, int32_t newMapId, int32_t oldMapId, bool isPartyLeader) -> Result;
+	auto friendlyMobHit(int32_t mobId, int32_t mapMobId, int32_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result;
 private:
 	auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
 	auto getTimerId() const -> Timer::Id;

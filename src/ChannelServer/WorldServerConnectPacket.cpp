@@ -39,7 +39,7 @@ PACKET_IMPL(reloadMcdb, const string_t &type) {
 	builder
 		.add<int16_t>(IMSG_TO_ALL_CHANNELS)
 		.add<header_t>(IMSG_REFRESH_DATA)
-		.addString(type);
+		.add<string_t>(type);
 	return builder;
 }
 

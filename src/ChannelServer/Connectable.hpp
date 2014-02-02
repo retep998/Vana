@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Ip.hpp"
+#include "shared_array.hpp"
 #include "Types.hpp"
 #include <memory>
 #include <unordered_map>
@@ -29,15 +30,16 @@ struct ConnectingPlayer {
 
 	Ip connectIp;
 	time_point_t connectTime;
-	ref_ptr_t<PacketReader> heldPacket;
+	uint16_t packetSize;
+	MiscUtilities::shared_array<unsigned char> heldPacket;
 };
 
 class Connectable {
 	SINGLETON(Connectable);
 public:
 	auto newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> void;
-	auto checkPlayer(int32_t id, const Ip &ip) -> Result;
-	auto getPacket(int32_t id) -> PacketReader *;
+	auto checkPlayer(int32_t id, const Ip &ip, bool &hasPacket) const -> Result;
+	auto getPacket(int32_t id) const -> PacketReader;
 	auto playerEstablished(int32_t id) -> void;
 private:
 	const static uint32_t MaxMilliseconds = 5000;

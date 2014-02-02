@@ -173,16 +173,16 @@ using opt_string_t = MiscUtilities::optional<string_t>;
 
 // Macros that expand common patterns to avoid inheriting classes and reduce boilerplate
 #define NO_DEFAULT_CONSTRUCTOR(TypeName) \
-	private: \
+	public: \
 		TypeName() = delete;
 
 #define NONCOPYABLE(TypeName) \
-	private: \
+	public: \
 		TypeName(const TypeName &) = delete; \
 		auto operator=(const TypeName &) -> TypeName & = delete;
 
 #define NONMOVABLE(TypeName) \
-	private: \
+	public: \
 		TypeName(TypeName &&) = delete; \
 		auto operator=(TypeName &&) -> TypeName & = delete;
 

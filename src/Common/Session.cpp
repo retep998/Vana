@@ -186,7 +186,7 @@ auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketBui
 	builder
 		.add<header_t>(0)
 		.add<uint16_t>(MapleVersion::Version)
-		.addString(patchLocation)
+		.add<string_t>(patchLocation)
 		.add<uint32_t>(m_decoder.getRecvIv())
 		.add<uint32_t>(m_decoder.getSendIv())
 		.add<int8_t>(MapleVersion::Locale);

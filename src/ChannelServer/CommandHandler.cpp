@@ -83,7 +83,7 @@ namespace AdminOpcodes {
 
 auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
-	string_t name = reader.getString();
+	string_t name = reader.get<string_t>();
 	Player *receiver = PlayerDataProvider::getInstance().getPlayer(name);
 	// If this player doesn't exist, connect to the world server to see if they're on any other channel
 	switch (type) {
@@ -109,7 +109,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			break;
 		}
 		case CommandOpcodes::Whisper: {
-			string_t chat = reader.getString();
+			string_t chat = reader.get<string_t>();
 			bool found = false;
 			if (receiver != nullptr) {
 				receiver->send(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat));
@@ -160,7 +160,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Send: {
-			string_t name = reader.getString();
+			string_t name = reader.get<string_t>();
 			int32_t mapId = reader.get<int32_t>();
 
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(name)) {
@@ -211,7 +211,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Ban: {
-			string_t victim = reader.getString();
+			string_t victim = reader.get<string_t>();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				receiver->disconnect();
 			}
@@ -221,10 +221,10 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Block: {
-			string_t victim = reader.getString();
+			string_t victim = reader.get<string_t>();
 			int8_t reason = reader.get<int8_t>();
 			int32_t length = reader.get<int32_t>();
-			string_t reasonMessage = reader.getString();
+			string_t reasonMessage = reader.get<string_t>();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				Database::getCharDb().once
 					<< "UPDATE user_accounts u "
@@ -256,11 +256,11 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		case AdminOpcodes::VarSetGet: {
 			int8_t type = reader.get<int8_t>();
-			string_t playerName = reader.getString();
+			string_t playerName = reader.get<string_t>();
 			if (Player *victim = PlayerDataProvider::getInstance().getPlayer(playerName)) {
-				string_t variableName = reader.getString();
+				string_t variableName = reader.get<string_t>();
 				if (type == 0x0a) {
-					string_t variableValue = reader.getString();
+					string_t variableValue = reader.get<string_t>();
 					victim->getVariables()->setVariable(variableName, variableValue);
 				}
 				else {
@@ -273,8 +273,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Warn: {
-			string_t victim = reader.getString();
-			string_t message = reader.getString();
+			string_t victim = reader.get<string_t>();
+			string_t message = reader.get<string_t>();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				receiver->send(PlayerPacket::showMessage(message, PlayerPacket::NoticeTypes::Box));
 				player->send(GmPacket::warning(true));

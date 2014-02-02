@@ -88,9 +88,9 @@ PACKET_IMPL(setGetVarResult, const string_t &name, const string_t &variable, con
 	builder
 		.add<header_t>(SMSG_GM)
 		.add<int8_t>(0x09)
-		.addString(name)
-		.addString(variable)
-		.addString(value);
+		.add<string_t>(name)
+		.add<string_t>(variable)
+		.add<string_t>(value);
 	return builder;
 }
 

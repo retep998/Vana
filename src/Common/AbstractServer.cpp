@@ -43,6 +43,7 @@ auto AbstractServer::initialize() -> AbstractServer & {
 	m_startTime = TimeUtilities::getNow();
 
 	ConfigFile config("conf/connection_properties.lua");
+	config.run();
 
 	m_interPassword = config.get<string_t>("inter_password");
 	m_salt = config.get<string_t>("inter_salt");
@@ -56,8 +57,21 @@ auto AbstractServer::initialize() -> AbstractServer & {
 		ExitCodes::exit(ExitCodes::ConfigError);
 	}
 
-	m_externalIps = config.getIpMatrix("external_ip");
-	m_interServerConfig = config.getClass<InterServerConfig>();
+	auto rawIpMap = config.get<vector_t<hash_map_t<string_t, string_t>>>("external_ip");
+	for (const auto &pair : rawIpMap) {
+		auto ipValue = pair.find("ip");
+		auto maskValue = pair.find("mask");
+		if (ipValue == std::end(pair) || maskValue == std::end(pair)) {
+			std::cerr << "ERROR: External IP configuration is malformed!" << std::endl;
+			ExitCodes::exit(ExitCodes::ConfigError);
+		}
+
+		auto ip = Ip::stringToIpv4(ipValue->second);
+		auto mask = Ip::stringToIpv4(maskValue->second);
+		m_externalIps.push_back(ExternalIp(ip, mask));
+	}
+
+	m_interServerConfig = config.get<InterServerConfig>("");
 
 	loadConfig();
 	loadLogConfig();
@@ -68,15 +82,15 @@ auto AbstractServer::initialize() -> AbstractServer & {
 }
 
 auto AbstractServer::loadLogConfig() -> void {
-	ConfigFile conf("conf/logger.lua", false);
+	ConfigFile conf("conf/logger.lua");
 	initializeLoggingConstants(conf);
-	conf.execute();
+	conf.run();
 
 	string_t prefix = getLogPrefix();
 	bool enabled = conf.get<bool>("log_" + prefix);
 	if (enabled) {
 		LogConfig log;
-		log = conf.getClass<LogConfig>(prefix);
+		log = conf.get<LogConfig>(prefix);
 		createLogger(log);
 	}
 }
@@ -128,8 +142,8 @@ auto AbstractServer::createLogger(const LogConfig &conf) -> void {
 }
 
 auto AbstractServer::initializeLoggingConstants(ConfigFile &conf) const -> void {
-	conf.setVariable("LOG_NONE", LogDestinations::None);
-	conf.setVariable("LOG_ALL", LogDestinations::All);
+	conf.set<int32_t>("LOG_NONE", LogDestinations::None);
+	conf.set<int32_t>("LOG_ALL", LogDestinations::All);
 
 	hash_map_t<string_t, int32_t> constants;
 	constants["CONSOLE"] = LogDestinations::Console;
@@ -145,9 +159,9 @@ auto AbstractServer::loggerOptions(const hash_map_t<string_t, int32_t> &constant
 	for (const auto &kvp : constants) {
 		if (base.find(kvp.first) != string_t::npos) continue;
 
-		const string_t &newBase = base + "_" + kvp.first;
+		string_t newBase = base + "_" + kvp.first;
 		val |= kvp.second;
-		conf.setVariable(newBase, val);
+		conf.set<int32_t>(newBase, val);
 
 		if (depth < constants.size()) {
 			loggerOptions(constants, conf, newBase, val, depth + 1);

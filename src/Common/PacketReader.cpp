@@ -31,29 +31,6 @@ auto PacketReader::skipBytes(int32_t len) -> void {
 	m_pos += len;
 }
 
-auto PacketReader::getHeader(bool advanceBuffer) -> header_t {
-	if (getSize() < sizeof(header_t)) {
-		throw PacketContentException("Packet data longer than buffer allows");
-	}
-	if (advanceBuffer) {
-		m_pos += sizeof(header_t);
-	}
-	return (*(header_t *)(m_buffer));
-}
-
-auto PacketReader::getString() -> string_t {
-	return getString(get<uint16_t>());
-}
-
-auto PacketReader::getString(size_t len) -> string_t {
-	if (len > getBufferLength()) {
-		throw PacketContentException("Packet string longer than buffer allows");
-	}
-	string_t s((char *) m_buffer + m_pos, len);
-	m_pos += len;
-	return s;
-}
-
 auto PacketReader::getBuffer() const -> unsigned char * {
 	return m_buffer + m_pos;
 }
