@@ -315,7 +315,9 @@ auto Mob::setController(Player *control, bool spawn, Player *display) -> void {
 }
 
 auto Mob::endControl() -> void {
-	if (m_controller != nullptr && m_controller->getMapId() == getMapId()) {
+	// TODO FIXME resource
+	// isDisconnecting should not be necessary here, but it requires a great deal of structural fixing to properly fix
+	if (m_controller != nullptr && m_controller->getMapId() == getMapId() && !m_controller->isDisconnecting()) {
 		m_controller->send(MobsPacket::endControlMob(m_mapMobId));
 	}
 }

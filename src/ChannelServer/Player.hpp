@@ -82,6 +82,7 @@ public:
 	auto isAdmin() const -> bool { return m_admin; }
 	auto isChangingChannel() const -> bool { return m_changingChannel; }
 	auto isTrading() const -> bool { return m_tradeState; }
+	auto isDisconnecting() const -> bool { return m_disconnecting; }
 	auto hasGmEquip() const -> bool;
 	auto isUsingGmHide() const -> bool;
 	auto hasGmBenefits() const -> bool;
@@ -160,6 +161,7 @@ private:
 	bool m_changingChannel = false;
 	bool m_admin = false;
 	bool m_gmChat = false;
+	bool m_disconnecting = false;
 	world_id_t m_worldId = -1;
 	int8_t m_mapPos = -1;
 	int8_t m_gender = -1;
