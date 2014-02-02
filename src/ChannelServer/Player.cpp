@@ -77,6 +77,7 @@ Player::Player() :
 
 Player::~Player() {
 	if (m_isConnect) {
+		m_disconnecting = true;
 		Map *curMap = Maps::getMap(m_map);
 		if (getMapChair() != 0) {
 			curMap->playerSeated(getMapChair(), nullptr);
