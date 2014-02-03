@@ -66,8 +66,8 @@ Map::Map(ref_ptr_t<MapInfo> info, int32_t id) :
 		getTimers(), seconds_t(0), seconds_t(1));
 
 	Pos rightBottom = info->dimensions.rightBottom();
-	double mapHeight = std::max<double>(rightBottom.y, 800);
-	double mapWidth = std::max<double>(rightBottom.x - 450, 600);
+	double mapHeight = std::max<double>(rightBottom.y - 450, 600);
+	double mapWidth = std::max<double>(rightBottom.x, 800);
 	m_minSpawnCount = ext::constrain_range(static_cast<int32_t>((mapHeight * mapWidth * info->spawnRate) / 128000.), 1, 40);
 	m_maxSpawnCount = m_minSpawnCount * 2;
 }

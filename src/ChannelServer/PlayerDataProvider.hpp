@@ -89,7 +89,7 @@ private:
 	auto handleCharacterDeleted(PacketReader &reader) -> void;
 	auto handleChangeChannel(PacketReader &reader) -> void;
 	auto handleNewConnectable(PacketReader &reader) -> void;
-	auto handleDeleteConnectable(int32_t id) -> void;
+	auto handleDeleteConnectable(PacketReader &reader) -> void;
 	auto handleUpdatePlayer(PacketReader &reader) -> void;
 
 	auto handleCreateParty(int32_t id, int32_t leaderId) -> void;
