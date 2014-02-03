@@ -45,9 +45,6 @@
     <ClCompile Include="src\ChannelServer\Buffs.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\Connectable.cpp">
-      <Filter>ChannelServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\Drop.cpp">
       <Filter>ChannelServer</Filter>
     </ClCompile>
@@ -346,9 +343,6 @@
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Trades.hpp">
-      <Filter>ChannelServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChannelServer\Connectable.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\Drop.hpp">
