@@ -28,7 +28,11 @@ auto Variables::setVariable(const string_t &name, const string_t &val) -> void {
 	m_variables[name] = val;
 }
 
-auto Variables::getVariable(const string_t &name) -> string_t {
+auto Variables::getVariable(const string_t &name) const -> string_t {
 	auto kvp = m_variables.find(name);
 	return kvp != std::end(m_variables) ? kvp->second : "";
+}
+
+auto Variables::operator[](const string_t &key) const -> string_t {
+	return getVariable(key);
 }

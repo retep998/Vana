@@ -311,7 +311,7 @@ auto PlayerDataProvider::playerEstablished(int32_t id) -> void {
 auto PlayerDataProvider::handlePlayerSync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Player::NewConnectable: handleNewConnectable(reader); break;
-		case Sync::Player::DeleteConnectable: handleDeleteConnectable(reader.get<int32_t>()); break;
+		case Sync::Player::DeleteConnectable: handleDeleteConnectable(reader); break;
 		case Sync::Player::ChangeChannelGo: handleChangeChannel(reader); break;
 		case Sync::Player::UpdatePlayer: handleUpdatePlayer(reader); break;
 		case Sync::Player::CharacterCreated: handleCharacterCreated(reader); break;
@@ -378,7 +378,8 @@ auto PlayerDataProvider::handleNewConnectable(PacketReader &reader) -> void {
 	sendSync(SyncPacket::PlayerPacket::connectableEstablished(playerId));
 }
 
-auto PlayerDataProvider::handleDeleteConnectable(int32_t id) -> void {
+auto PlayerDataProvider::handleDeleteConnectable(PacketReader &reader) -> void {
+	int32_t id = reader.get<int32_t>();
 	playerEstablished(id);
 }
 

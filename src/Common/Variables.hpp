@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Variables {
 public:
 	auto setVariable(const string_t &name, const string_t &value) -> void;
-	auto getVariable(const string_t &name) -> string_t;
+	auto getVariable(const string_t &name) const -> string_t;
 	auto deleteVariable(const string_t &name) -> void;
 
-	auto operator[](const string_t &key) -> string_t & { return m_variables[key]; }
+	auto operator[](const string_t &key) const -> string_t;
 protected:
 	hash_map_t<string_t, string_t> m_variables;
 };
