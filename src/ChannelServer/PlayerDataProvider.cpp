@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Algorithm.hpp"
 #include "BuddyListPacket.hpp"
 #include "ChannelServer.hpp"
-#include "Connectable.hpp"
 #include "Database.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"
@@ -35,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
+#include "TimeUtilities.hpp"
 #include <algorithm>
 #include <cstring>
 
@@ -268,6 +268,46 @@ auto PlayerDataProvider::handleGmChat(Player *player, const string_t &chat) -> v
 	}
 }
 
+auto PlayerDataProvider::newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> void {
+	ConnectingPlayer player;
+	player.connectIp = ip;
+	player.connectTime = TimeUtilities::getNow();
+	uint16_t packetSize = reader.get<uint16_t>();
+	player.packetSize = packetSize;
+	if (packetSize > 0) {
+		player.heldPacket.reset(new unsigned char[packetSize]);
+		memcpy(player.heldPacket.get(), reader.getBuffer(), packetSize);
+	}
+
+	m_connections[id] = player;
+}
+
+auto PlayerDataProvider::checkPlayer(int32_t id, const Ip &ip, bool &hasPacket) const -> Result {
+	Result result = Result::Failure;
+	hasPacket = false;
+	auto kvp = m_connections.find(id);
+	if (kvp != std::end(m_connections)) {
+		auto &test = kvp->second;
+		if (test.connectIp == ip && TimeUtilities::getDistance<milliseconds_t>(TimeUtilities::getNow(), test.connectTime) < MaxConnectionMilliseconds) {
+			result = Result::Successful;
+			if (test.packetSize > 0) {
+				hasPacket = true;
+			}
+		}
+	}
+	return result;
+}
+
+auto PlayerDataProvider::getPacket(int32_t id) const -> PacketReader {
+	auto kvp = m_connections.find(id);
+	auto &player = kvp->second;
+	return PacketReader(player.heldPacket.get(), player.packetSize);
+}
+
+auto PlayerDataProvider::playerEstablished(int32_t id) -> void {
+	m_connections.erase(id);
+}
+
 auto PlayerDataProvider::handlePlayerSync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Player::NewConnectable: handleNewConnectable(reader); break;
@@ -334,12 +374,12 @@ auto PlayerDataProvider::handleChangeChannel(PacketReader &reader) -> void {
 auto PlayerDataProvider::handleNewConnectable(PacketReader &reader) -> void {
 	int32_t playerId = reader.get<int32_t>();
 	Ip ip = reader.get<Ip>();
-	Connectable::getInstance().newPlayer(playerId, ip, reader);
+	newPlayer(playerId, ip, reader);
 	sendSync(SyncPacket::PlayerPacket::connectableEstablished(playerId));
 }
 
 auto PlayerDataProvider::handleDeleteConnectable(int32_t id) -> void {
-	Connectable::getInstance().playerEstablished(id);
+	playerEstablished(id);
 }
 
 auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {

@@ -120,7 +120,6 @@
     </ClCompile>
     <ClCompile Include="src\ChannelServer\Buffs.cpp" />
     <ClCompile Include="src\ChannelServer\ChannelServer.cpp" />
-    <ClCompile Include="src\ChannelServer\Connectable.cpp" />
     <ClCompile Include="src\ChannelServer\Drop.cpp" />
     <ClCompile Include="src\ChannelServer\Fame.cpp" />
     <ClCompile Include="src\ChannelServer\Inventory.cpp" />
@@ -208,7 +207,6 @@
   <ItemGroup>
     <ClInclude Include="src\ChannelServer\Buffs.hpp" />
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
-    <ClInclude Include="src\ChannelServer\Connectable.hpp" />
     <ClInclude Include="src\ChannelServer\CustomFunctions.hpp" />
     <ClInclude Include="src\ChannelServer\Drop.hpp" />
     <ClInclude Include="src\ChannelServer\EffectPacket.hpp" />

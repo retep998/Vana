@@ -18,7 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.hpp"
+#include "Ip.hpp"
 #include "PlayerObjects.hpp"
+#include "shared_array.hpp"
 #include "Types.hpp"
 #include <functional>
 #include <memory>
@@ -29,6 +31,17 @@ class PacketBuilder;
 class PacketReader;
 class Party;
 class Player;
+
+struct ConnectingPlayer {
+	ConnectingPlayer() : connectIp(0) { }
+
+	Ip connectIp;
+	time_point_t connectTime;
+	int32_t mapId = -1;
+	string_t portal;
+	uint16_t packetSize;
+	MiscUtilities::shared_array<unsigned char> heldPacket;
+};
 
 class PlayerDataProvider {
 	SINGLETON(PlayerDataProvider);
@@ -64,6 +77,11 @@ public:
 	// Chat
 	auto handleGroupChat(int8_t chatType, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
 	auto handleGmChat(Player *player, const string_t &chat) -> void;
+
+	// Connections
+	auto checkPlayer(int32_t id, const Ip &ip, bool &hasPacket) const -> Result;
+	auto getPacket(int32_t id) const -> PacketReader;
+	auto playerEstablished(int32_t id) -> void;
 private:
 	auto sendSync(const PacketBuilder &packet) const -> void;
 	auto addPlayerData(const PlayerData &data) -> void;
@@ -83,6 +101,10 @@ private:
 	auto buddyInvite(PacketReader &reader) -> void;
 	auto buddyOnlineOffline(PacketReader &reader) -> void;
 
+	auto newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> void;
+
+	const static uint32_t MaxConnectionMilliseconds = 5000;
+
 	hash_set_t<int32_t> m_gmList;
 	hash_map_t<int32_t, PlayerData> m_playerData;
 	hash_map_t<int32_t, vector_t<Player *>> m_followers;
@@ -90,4 +112,5 @@ private:
 	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
 	hash_map_t<int32_t, Player *> m_players;
 	case_insensitive_hash_map_t<Player *> m_playersByName;
+	hash_map_t<int32_t, ConnectingPlayer> m_connections;
 };

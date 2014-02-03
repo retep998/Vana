@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BuddyListPacket.hpp"
 #include "ChannelServer.hpp"
 #include "Configuration.hpp"
-#include "Connectable.hpp"
 #include "GameObjects.hpp"
 #include "InterHeader.hpp"
 #include "InterHelper.hpp"

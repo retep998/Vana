@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChatHandler.hpp"
 #include "CmsgHeader.hpp"
 #include "CommandHandler.hpp"
-#include "Connectable.hpp"
 #include "Database.hpp"
 #include "DropHandler.hpp"
 #include "Fame.hpp"
@@ -231,7 +230,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 auto Player::playerConnect(PacketReader &reader) -> void {
 	int32_t id = reader.get<int32_t>();
 	bool hasTransferPacket = false;
-	if (Connectable::getInstance().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
+	if (PlayerDataProvider::getInstance().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
 		// Hacking
 		disconnect();
 		return;
@@ -310,7 +309,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	bool firstConnect = !hasTransferPacket;
 	if (hasTransferPacket) {
-		parseTransferPacket(Connectable::getInstance().getPacket(m_id));
+		parseTransferPacket(PlayerDataProvider::getInstance().getPacket(m_id));
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
@@ -318,7 +317,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		m_gmChat = true;
 	}
 
-	Connectable::getInstance().playerEstablished(id);
+	PlayerDataProvider::getInstance().playerEstablished(id);
 
 	// The rest
 	m_variables = make_owned_ptr<PlayerVariables>(this);
