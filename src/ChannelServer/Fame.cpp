@@ -65,7 +65,7 @@ auto Fame::canFame(Player *player, int32_t to) -> int32_t {
 
 auto Fame::addFameLog(int32_t from, int32_t to) -> void {
 	Database::getCharDb().once
-		<< "INSERT INTO fame_log (from_character_id, to_character_id, fame_time) "
+		<< "INSERT INTO " << Database::makeCharTable("fame_log") << " (from_character_id, to_character_id, fame_time) "
 		<< "VALUES (:from, :to, NOW())",
 		soci::use(from, "from"),
 		soci::use(to, "to");
@@ -85,7 +85,7 @@ auto Fame::getLastFameLog(int32_t from) -> SearchResult {
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM fame_log "
+		<< "FROM " << Database::makeCharTable("fame_log") << " "
 		<< "WHERE from_character_id = :from AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameTime "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),
@@ -109,7 +109,7 @@ auto Fame::getLastFameSpLog(int32_t from, int32_t to) -> SearchResult {
 
 	sql.once
 		<< "SELECT fame_time "
-		<< "FROM fame_log "
+		<< "FROM " << Database::makeCharTable("fame_log") << " "
 		<< "WHERE from_character_id = :from AND to_character_id = :to AND UNIX_TIMESTAMP(fame_time) > UNIX_TIMESTAMP() - :fameResetTime "
 		<< "ORDER BY fame_time DESC",
 		soci::use(from, "from"),

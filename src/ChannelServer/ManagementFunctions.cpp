@@ -533,8 +533,8 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> bool {
 
 		soci::session &sql = Database::getCharDb();
 		soci::statement st = (sql.prepare
-			<< "UPDATE user_accounts u "
-			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = :expire, "
@@ -578,8 +578,8 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> bool 
 		// Ban account
 		soci::session &sql = Database::getCharDb();
 		soci::statement st = (sql.prepare
-			<< "UPDATE user_accounts u "
-			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 1, "
 			<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY), "
@@ -624,7 +624,7 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> bool {
 
 			// IP ban
 			soci::session &sql = Database::getCharDb();
-			soci::statement st = (sql.prepare << "INSERT INTO ip_bans (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
+			soci::statement st = (sql.prepare << "INSERT INTO " << Database::makeCharTable("ip_bans") << " (ip) VALUES (:ip)", soci::use(targetIp, "ip"));
 
 			st.execute();
 
@@ -656,8 +656,8 @@ auto ManagementFunctions::unban(Player *player, const string_t &args) -> bool {
 		// Unban account
 		soci::session &sql = Database::getCharDb();
 		soci::statement st = (sql.prepare
-			<< "UPDATE user_accounts u "
-			<< "INNER JOIN characters c ON u.user_id = c.user_id "
+			<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+			<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 			<< "SET "
 			<< "	u.banned = 0, "
 			<< "	u.ban_reason = NULL, "

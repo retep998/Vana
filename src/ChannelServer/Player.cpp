@@ -241,8 +241,8 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	soci::row row;
 	sql.once
 		<< "SELECT c.*, u.gm_level, u.admin "
-		<< "FROM characters c "
-		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "INNER JOIN " << Database::makeCharTable("user_accounts") << " u ON c.user_id = u.user_id "
 		<< "WHERE c.character_id = :char",
 		soci::use(id, "char"),
 		soci::into(row);
@@ -623,7 +623,7 @@ auto Player::saveStats() -> void {
 	}
 
 	Database::getCharDb().once
-		<< "UPDATE characters "
+		<< "UPDATE " << Database::makeCharTable("characters") << " "
 		<< "SET "
 		<< "	level = :level, "
 		<< "	job = :job, "
@@ -702,8 +702,8 @@ auto Player::saveAll(bool saveCooldowns) -> void {
 auto Player::setOnline(bool online) -> void {
 	int32_t onlineId = online ? ChannelServer::getInstance().getOnlineId() : 0;
 	Database::getCharDb().once
-		<< "UPDATE user_accounts u "
-		<< "INNER JOIN characters c ON u.user_id = c.user_id "
+		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+		<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 		<< "SET "
 		<< "	u.online = :onlineId, "
 		<< "	c.online = :online "
@@ -714,7 +714,7 @@ auto Player::setOnline(bool online) -> void {
 }
 
 auto Player::setLevelDate() -> void {
-	Database::getCharDb().once << "UPDATE characters c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
+	Database::getCharDb().once << "UPDATE " << Database::makeCharTable("characters") << " c SET c.time_level = NOW() WHERE c.character_id = :char", soci::use(m_id, "char");
 }
 
 auto Player::acceptDeath(bool wheel) -> void {

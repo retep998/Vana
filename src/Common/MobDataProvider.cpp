@@ -40,7 +40,7 @@ auto MobDataProvider::loadData() -> void {
 auto MobDataProvider::loadAttacks() -> void {
 	m_attacks.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_attacks");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("mob_attacks"));
 
 	for (const auto &row : rs) {
 		MobAttackInfo mobAttack;
@@ -70,7 +70,7 @@ auto MobDataProvider::loadAttacks() -> void {
 auto MobDataProvider::loadSkills() -> void {
 	m_skills.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_skills");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("mob_skills"));
 
 	for (const auto &row : rs) {
 		MobSkillInfo mobSkill;
@@ -86,7 +86,7 @@ auto MobDataProvider::loadSkills() -> void {
 auto MobDataProvider::loadMobs() -> void {
 	m_mobInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("mob_data"));
 
 	for (const auto &row : rs) {
 		auto mob = make_ref_ptr<MobInfo>();
@@ -164,7 +164,7 @@ auto MobDataProvider::loadMobs() -> void {
 }
 
 auto MobDataProvider::loadSummons() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM mob_summons");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("mob_summons"));
 
 	for (const auto &row : rs) {
 		int32_t mobId = row.get<int32_t>("mobid");

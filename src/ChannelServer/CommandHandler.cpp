@@ -227,8 +227,8 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			string_t reasonMessage = reader.get<string_t>();
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(victim)) {
 				Database::getCharDb().once
-					<< "UPDATE user_accounts u "
-					<< "INNER JOIN characters c ON u.user_id = c.user_id "
+					<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+					<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 					<< "SET "
 					<< "	u.ban_expire = DATE_ADD(NOW(), INTERVAL :expire DAY),"
 					<< "	u.ban_reason = :reason,"

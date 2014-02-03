@@ -36,7 +36,7 @@ auto ScriptDataProvider::loadData() -> void {
 	m_firstMapEntryScripts.clear();
 	m_itemScripts.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM scripts");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("scripts"));
 
 	for (const auto &row : rs) {
 		int32_t objectId = row.get<int32_t>("objectid");

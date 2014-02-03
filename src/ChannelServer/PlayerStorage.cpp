@@ -82,7 +82,7 @@ auto PlayerStorage::load() -> void {
 
 	sql.once
 		<< "SELECT s.slots, s.mesos, s.char_slots "
-		<< "FROM storage s "
+		<< "FROM " << Database::makeCharTable("storage") << " s "
 		<< "WHERE s.user_id = :user AND s.world_id = :world "
 		<< "LIMIT 1",
 		soci::use(userId, "user"),
@@ -100,7 +100,7 @@ auto PlayerStorage::load() -> void {
 		m_mesos = 0;
 		m_charSlots = config.defaultChars;
 		sql.once
-			<< "INSERT INTO storage (user_id, world_id, slots, mesos, char_slots) "
+			<< "INSERT INTO " << Database::makeCharTable("storage") << " (user_id, world_id, slots, mesos, char_slots) "
 			<< "VALUES (:user, :world, :slots, :mesos, :chars)",
 			soci::use(userId, "user"),
 			soci::use(worldId, "world"),
@@ -115,7 +115,7 @@ auto PlayerStorage::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.* "
-		<< "FROM items i "
+		<< "FROM " << Database::makeCharTable("items") << " i "
 		<< "WHERE i.location = :location AND i.user_id = :user AND i.world_id = :world "
 		<< "ORDER BY i.slot ASC",
 		soci::use(location, "location"),
@@ -136,7 +136,7 @@ auto PlayerStorage::save() -> void {
 
 	session &sql = Database::getCharDb();
 	sql.once
-		<< "UPDATE storage "
+		<< "UPDATE " << Database::makeCharTable("storage") << " "
 		<< "SET slots = :slots, mesos = :mesos, char_slots = :chars "
 		<< "WHERE user_id = :user AND world_id = :world",
 		use(userId, "user"),
@@ -146,7 +146,7 @@ auto PlayerStorage::save() -> void {
 		use(m_charSlots, "chars");
 
 	sql.once
-		<< "DELETE FROM items "
+		<< "DELETE FROM " << Database::makeCharTable("items") << " "
 		<< "WHERE location = :location AND user_id = :user AND world_id = :world",
 		use(Item::Storage, "location"),
 		use(userId, "user"),

@@ -35,6 +35,8 @@ public:
 	static auto getDataDb() -> soci::session &;
 	template <typename TIdentifier>
 	static auto getLastId(soci::session &sql) -> TIdentifier;
+	static auto makeCharTable(const string_t &table) -> string_t;
+	static auto makeDataTable(const string_t &table) -> string_t;
 private:
 	static auto connectCharDb() -> void;
 	static auto connectDataDb() -> void;
@@ -42,6 +44,8 @@ private:
 
 	static thread_local soci::session *m_chardb;
 	static thread_local soci::session *m_datadb;
+	static string_t m_charTablePrefix;
+	static string_t m_dataTablePrefix;
 };
 
 inline

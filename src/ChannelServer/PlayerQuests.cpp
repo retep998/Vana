@@ -39,8 +39,8 @@ auto PlayerQuests::save() -> void {
 	int32_t charId = m_player->getId();
 	uint16_t questId = 0;
 
-	sql.once << "DELETE FROM active_quests WHERE character_id = :char", soci::use(charId, "char");
-	sql.once << "DELETE FROM completed_quests WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << Database::makeCharTable("active_quests") << " WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << Database::makeCharTable("completed_quests") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_quests.size() > 0) {
 		int32_t mobId = 0;
@@ -51,14 +51,14 @@ auto PlayerQuests::save() -> void {
 		data = "";
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO active_quests (character_id, quest_id, data) "
+			<< "INSERT INTO " << Database::makeCharTable("active_quests") << " (character_id, quest_id, data) "
 			<< "VALUES (:char, :quest, :data)",
 			soci::use(charId, "char"),
 			soci::use(questId, "quest"),
 			soci::use(data, "data"));
 
 		soci::statement stMobs = (sql.prepare
-			<< "INSERT INTO active_quests_mobs (active_quest_id, mob_id, quantity_killed) "
+			<< "INSERT INTO " << Database::makeCharTable("active_quests_mobs") << " (active_quest_id, mob_id, quantity_killed) "
 			<< "VALUES (:id, :mob, :killed)",
 			soci::use(id, "id"),
 			soci::use(mobId, "mob"),
@@ -90,7 +90,7 @@ auto PlayerQuests::save() -> void {
 		int64_t time = 0;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO completed_quests "
+			<< "INSERT INTO " << Database::makeCharTable("completed_quests") << " "
 			<< "VALUES (:char, :quest, :time)",
 			soci::use(charId, "char"),
 			soci::use(questId, "quest"),
@@ -114,8 +114,8 @@ auto PlayerQuests::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT a.quest_id, am.mob_id, am.quantity_killed, a.data "
-		<< "FROM active_quests a "
-		<< "LEFT OUTER JOIN active_quests_mobs am ON am.active_quest_id = a.id "
+		<< "FROM " << Database::makeCharTable("active_quests") << " a "
+		<< "LEFT OUTER JOIN " << Database::makeCharTable("active_quests_mobs") << " am ON am.active_quest_id = a.id "
 		<< "WHERE a.character_id = :char ORDER BY a.quest_id ASC",
 		soci::use(charId, "char"));
 
@@ -146,7 +146,7 @@ auto PlayerQuests::load() -> void {
 		m_quests[previous] = curQuest;
 	}
 
-	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM completed_quests c WHERE c.character_id = :char", soci::use(charId, "char"));
+	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << Database::makeCharTable("completed_quests") << " c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		m_completed[row.get<uint16_t>("quest_id")] = row.get<int64_t>("end_time");

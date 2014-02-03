@@ -175,6 +175,7 @@ struct LuaSerialize<LogConfig> {
 struct DbConfig {
 	port_t port = 0;
 	string_t database;
+	string_t tablePrefix;
 	string_t host;
 	string_t username;
 	string_t password;
@@ -184,12 +185,31 @@ template <>
 struct LuaSerialize<DbConfig> {
 	auto read(LuaEnvironment &config, const string_t &prefix) -> DbConfig {
 		DbConfig ret;
-		string_t fullPrefix = prefix + "_";
-		ret.database = config.get<string_t>(fullPrefix + "database");
-		ret.host = config.get<string_t>(fullPrefix + "host");
-		ret.username = config.get<string_t>(fullPrefix + "username");
-		ret.password = config.get<string_t>(fullPrefix + "password");
-		ret.port = config.get<port_t>(fullPrefix + "port");
+		case_insensitive_hash_map_t<string_t> obj = config.get<case_insensitive_hash_map_t<string_t>>(prefix);
+		auto end = std::end(obj);
+
+		auto kvp = obj.find("database");
+		if (kvp == end) config.error("Missing required key 'database' on DB object " + prefix);
+		ret.database = kvp->second;
+
+		kvp = obj.find("host");
+		if (kvp == end) config.error("Missing required key 'host' on DB object " + prefix);
+		ret.host = kvp->second;
+
+		kvp = obj.find("username");
+		if (kvp == end) config.error("Missing required key 'username' on DB object " + prefix);
+		ret.username = kvp->second;
+
+		kvp = obj.find("port");
+		if (kvp == end) config.error("Missing required key 'port' on DB object " + prefix);
+		ret.port = StringUtilities::lexical_cast<port_t>(kvp->second);
+
+		kvp = obj.find("password");
+		if (kvp != end) ret.password = kvp->second;
+
+		kvp = obj.find("table_prefix");
+		if (kvp != end) ret.tablePrefix = kvp->second;
+
 		return ret;
 	}
 };

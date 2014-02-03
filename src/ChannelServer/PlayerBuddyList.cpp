@@ -38,9 +38,9 @@ auto PlayerBuddyList::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-		<< "FROM buddylist bl "
-		<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
-		<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "FROM " << Database::makeCharTable("buddylist") << " bl "
+		<< "LEFT JOIN " << Database::makeCharTable("characters") << " c ON bl.buddy_character_id = c.character_id "
+		<< "LEFT JOIN " << Database::makeCharTable("user_accounts") << " u ON c.user_id = u.user_id "
 		<< "WHERE bl.character_id = :char",
 		soci::use(m_player->getId(), "char"));
 
@@ -50,8 +50,8 @@ auto PlayerBuddyList::load() -> void {
 
 	rs = (sql.prepare
 		<< "SELECT p.* "
-		<< "FROM buddylist_pending p "
-		<< "LEFT JOIN characters c ON c.character_id = p.inviter_character_id "
+		<< "FROM " << Database::makeCharTable("buddylist_pending") << " p "
+		<< "LEFT JOIN " << Database::makeCharTable("characters") << " c ON c.character_id = p.inviter_character_id "
 		<< "WHERE c.world_id = :world AND p.character_id = :char ",
 		soci::use(m_player->getId(), "char"),
 		soci::use(ChannelServer::getInstance().getWorldId(), "world"));
@@ -82,11 +82,11 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 	sql.once
 		<< "SELECT c.character_id, c.name, u.gm_level, c.buddylist_size AS buddylist_limit, ("
 		<< "	SELECT COUNT(b.id) "
-		<< "	FROM buddylist b "
+		<< "	FROM " << Database::makeCharTable("buddylist") << " b "
 		<< "	WHERE b.character_id = c.character_id"
 		<< ") AS buddylist_size "
-		<< "FROM characters c "
-		<< "INNER JOIN user_accounts u ON c.user_id = u.user_id "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "INNER JOIN " << Database::makeCharTable("user_accounts") << " u ON c.user_id = u.user_id "
 		<< "WHERE c.name = :name AND c.world_id = :world ",
 		soci::use(name, "name"),
 		soci::use(ChannelServer::getInstance().getWorldId(), "world"),
@@ -116,7 +116,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 		}
 		else {
 			sql.once
-				<< "UPDATE buddylist "
+				<< "UPDATE " << Database::makeCharTable("buddylist") << " "
 				<< "SET group_name = :name "
 				<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
 				soci::use(group, "name"),
@@ -128,7 +128,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 	}
 	else {
 		sql.once
-			<< "INSERT INTO buddylist (character_id, buddy_character_id, name, group_name) "
+			<< "INSERT INTO " << Database::makeCharTable("buddylist") << " (character_id, buddy_character_id, name, group_name) "
 			<< "VALUES (:owner, :buddy, :name, :group)",
 			soci::use(name, "name"),
 			soci::use(group, "group"),
@@ -139,9 +139,9 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 
 		sql.once
 			<< "SELECT bl.id, bl.buddy_character_id, bl.name AS name_cache, c.name, bl.group_name, CASE WHEN c.online = 1 THEN u.online ELSE 0 END AS `online` "
-			<< "FROM buddylist bl "
-			<< "LEFT JOIN characters c ON bl.buddy_character_id = c.character_id "
-			<< "LEFT JOIN user_accounts u ON c.user_id = u.user_id "
+			<< "FROM " << Database::makeCharTable("buddylist") << " bl "
+			<< "LEFT JOIN " << Database::makeCharTable("characters") << " c ON bl.buddy_character_id = c.character_id "
+			<< "LEFT JOIN " << Database::makeCharTable("user_accounts") << " u ON c.user_id = u.user_id "
 			<< "WHERE bl.id = :row",
 			soci::use(rowId, "row"),
 			soci::into(row);
@@ -150,7 +150,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 
 		sql.once
 			<< "SELECT id "
-			<< "FROM buddylist "
+			<< "FROM " << Database::makeCharTable("buddylist") << " "
 			<< "WHERE character_id = :char AND buddy_character_id = :buddy",
 			soci::use(charId, "char"),
 			soci::use(m_player->getId(), "buddy"),
@@ -193,7 +193,7 @@ auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 	m_buddies.erase(charId);
 
 	Database::getCharDb().once
-		<< "DELETE FROM buddylist "
+		<< "DELETE FROM " << Database::makeCharTable("buddylist") << " "
 		<< "WHERE character_id = :char AND buddy_character_id = :buddy",
 		soci::use(m_player->getId(), "char"),
 		soci::use(charId, "buddy");
@@ -211,7 +211,7 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 	if (name.is_initialized() && name.get() != cache) {
 		// Outdated name cache, i.e. character renamed
 		sql.once
-			<< "UPDATE buddylist "
+			<< "UPDATE " << Database::makeCharTable("buddylist") << " "
 			<< "SET name = :name "
 			<< "WHERE id = :id ",
 			soci::use(name.get(), "name"),
@@ -242,7 +242,7 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 	if (!group.is_initialized()) {
 		buddy->groupName = "Default Group";
 		sql.once
-			<< "UPDATE buddylist "
+			<< "UPDATE " << Database::makeCharTable("buddylist") << " "
 			<< "SET group_name = :name "
 			<< "WHERE buddy_character_id = :buddy AND character_id = :owner ",
 			soci::use(buddy->groupName, "name"),
@@ -255,7 +255,7 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 
 	sql.once
 		<< "SELECT id "
-		<< "FROM buddylist "
+		<< "FROM " << Database::makeCharTable("buddylist") << " "
 		<< "WHERE character_id = :char AND buddy_character_id = :buddy ",
 		soci::use(charId, "char"),
 		soci::use(m_player->getId(), "buddy"),
@@ -332,7 +332,7 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 		}
 
 		Database::getCharDb().once
-			<< "DELETE FROM buddylist_pending "
+			<< "DELETE FROM " << Database::makeCharTable("buddylist_pending") << " "
 			<< "WHERE character_id = :char AND inviter_character_id = :buddy",
 			soci::use(m_player->getId(), "char"),
 			soci::use(id, "buddy");

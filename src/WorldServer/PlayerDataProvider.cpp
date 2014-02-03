@@ -64,7 +64,7 @@ auto PlayerDataProvider::loadPlayers(world_id_t worldId) -> void {
 
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.world_id = :world",
 		soci::use(worldId, "world"));
 
@@ -85,7 +85,7 @@ auto PlayerDataProvider::loadPlayer(int32_t playerId) -> void {
 
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT c.character_id, c.name "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -493,7 +493,7 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 	if (invitee.channel == -1) {
 		// Make new pending buddy in the database
 		Database::getCharDb().once
-			<< "INSERT INTO buddylist_pending "
+			<< "INSERT INTO " << Database::makeCharTable("buddylist_pending") << " "
 			<< "VALUES (:invitee, :name, :inviter)",
 			soci::use(inviteeId, "invitee"),
 			soci::use(inviter.name, "name"),

@@ -146,6 +146,10 @@ auto LuaEnvironment::keyMustExist(const string_t &key) -> void {
 	}
 }
 
+auto LuaEnvironment::error(const string_t &text) -> void {
+	handleError(m_file, text);
+}
+
 auto LuaEnvironment::is(const string_t &value, LuaType type) -> bool {
 	lua_getglobal(m_luaVm, value.c_str());
 	bool ret = is(-1, type);

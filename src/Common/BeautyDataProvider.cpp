@@ -40,7 +40,7 @@ auto BeautyDataProvider::loadSkins() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Skins... ";
 	m_skins.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_skin_data ORDER BY skinid ASC");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_skin_data") << " ORDER BY skinid ASC");
 
 	for (const auto &row : rs) {
 		m_skins.push_back(row.get<int8_t>("skinid"));
@@ -52,7 +52,7 @@ auto BeautyDataProvider::loadSkins() -> void {
 auto BeautyDataProvider::loadHair() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Hair... ";
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_hair_data ORDER BY hairid ASC");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_hair_data") << " ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
 		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
@@ -67,7 +67,7 @@ auto BeautyDataProvider::loadHair() -> void {
 auto BeautyDataProvider::loadFaces() -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Faces... ";
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_face_data ORDER BY faceid ASC");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_face_data") << " ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
 		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));

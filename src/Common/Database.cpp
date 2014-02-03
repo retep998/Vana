@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 thread_local soci::session * Database::m_chardb = nullptr;
 thread_local soci::session * Database::m_datadb = nullptr;
+string_t Database::m_charTablePrefix;
+string_t Database::m_dataTablePrefix;
 
 auto Database::connectCharDb() -> void {
 	ConfigFile config("conf/database.lua");
@@ -29,6 +31,7 @@ auto Database::connectCharDb() -> void {
 	DbConfig conf = config.get<DbConfig>("chardb");
 	m_chardb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_chardb->reconnect();
+	m_charTablePrefix = conf.tablePrefix;
 }
 
 auto Database::connectDataDb() -> void {
@@ -37,6 +40,7 @@ auto Database::connectDataDb() -> void {
 	DbConfig conf = config.get<DbConfig>("datadb");
 	m_datadb = new soci::session(soci::mysql, buildConnectionString(conf));
 	m_datadb->reconnect();
+	m_dataTablePrefix = conf.tablePrefix;
 }
 
 auto Database::buildConnectionString(const DbConfig &conf) -> string_t {
@@ -49,4 +53,12 @@ auto Database::buildConnectionString(const DbConfig &conf) -> string_t {
 		<< " port=" << conf.port;
 
 	return str.str();
+}
+
+auto Database::makeCharTable(const string_t &table) -> string_t {
+	return m_charTablePrefix + table;
+}
+
+auto Database::makeDataTable(const string_t &table) -> string_t {
+	return m_dataTablePrefix + table;
 }

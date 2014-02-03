@@ -71,7 +71,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 
 auto Player::setOnline(bool online) -> void {
 	Database::getCharDb()
-		<< "UPDATE user_accounts u "
+		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
 		<< "SET "
 		<< "	u.online = :online,"
 		<< "	u.last_login = NOW() "

@@ -34,11 +34,11 @@ auto PlayerMounts::save() -> void {
 	uint8_t tiredness = 0;
 	uint8_t level = 0;
 
-	sql.once << "DELETE FROM mounts WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << Database::makeCharTable("mounts") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_mounts.size() > 0) {
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO mounts "
+			<< "INSERT INTO " << Database::makeCharTable("mounts") << " "
 			<< "VALUES (:char, :item, :exp, :level, :tiredness) ",
 			soci::use(charId, "char"),
 			soci::use(itemId, "item"),
@@ -62,7 +62,7 @@ auto PlayerMounts::load() -> void {
 	int32_t charId = m_player->getId();
 	MountData c;
 
-	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM mounts m WHERE m.character_id = :char ", soci::use(charId, "char"));
+	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << Database::makeCharTable("mounts") << " m WHERE m.character_id = :char ", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		c = MountData();

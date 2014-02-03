@@ -63,8 +63,8 @@ auto PlayerInventory::load() -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT i.*, p.index, p.name AS pet_name, p.level, p.closeness, p.fullness "
-		<< "FROM items i "
-		<< "LEFT OUTER JOIN pets p ON i.pet_id = p.pet_id "
+		<< "FROM " << Database::makeCharTable("items") << " i "
+		<< "LEFT OUTER JOIN " << Database::makeCharTable("pets") << " p ON i.pet_id = p.pet_id "
 		<< "WHERE i.location = :location AND i.character_id = :char",
 		soci::use(m_player->getId(), "char"),
 		soci::use(location, "location"));
@@ -79,7 +79,7 @@ auto PlayerInventory::load() -> void {
 		}
 	}
 
-	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM teleport_rock_locations t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
+	rs = (sql.prepare << "SELECT t.map_index, t.map_id FROM " << Database::makeCharTable("teleport_rock_locations") << " t WHERE t.character_id = :char", soci::use(m_player->getId(), "char"));
 
 	for (const auto &row : rs) {
 		int8_t index = row.get<int8_t>("map_index");
@@ -100,13 +100,13 @@ auto PlayerInventory::save() -> void {
 	session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
-	sql.once << "DELETE FROM teleport_rock_locations WHERE character_id = :char", use(charId, "char");
+	sql.once << "DELETE FROM " << Database::makeCharTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
 	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
 		int32_t mapId = 0;
 		size_t i = 0;
 
 		statement st = (sql.prepare
-			<< "INSERT INTO teleport_rock_locations "
+			<< "INSERT INTO " << Database::makeCharTable("teleport_rock_locations") << " "
 			<< "VALUES (:char, :i, :map)",
 			use(charId, "char"),
 			use(mapId, "map"),
@@ -126,7 +126,7 @@ auto PlayerInventory::save() -> void {
 	}
 
 	sql.once
-		<< "DELETE FROM items "
+		<< "DELETE FROM " << Database::makeCharTable("items") << " "
 		<< "WHERE location = :inv AND character_id = :char",
 		use(charId, "char"),
 		use(Item::Inventory, "inv");

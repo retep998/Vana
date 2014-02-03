@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto Characters::loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT i.item_id, i.slot "
-		<< "FROM items i "
+		<< "FROM " << Database::makeCharTable("items") << " i "
 		<< "WHERE "
 		<< "	i.character_id = :id "
 		<< "	AND i.inv = :inv "
@@ -100,7 +100,7 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 auto Characters::showAllCharacters(Player *player) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT * "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.user_id = :user ",
 		soci::use(player->getUserId(), "user"));
 
@@ -136,7 +136,7 @@ auto Characters::showCharacters(Player *player) -> void {
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.user_id = :user AND c.world_id = :world ",
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"));
@@ -151,7 +151,7 @@ auto Characters::showCharacters(Player *player) -> void {
 	opt_int32_t max;
 	sql.once
 		<< "SELECT s.char_slots "
-		<< "FROM storage s "
+		<< "FROM " << Database::makeCharTable("storage") << " s "
 		<< "WHERE s.user_id = :user AND s.world_id = :world ",
 		soci::use(userId, "user"),
 		soci::use(worldId, "world"),
@@ -188,7 +188,7 @@ auto Characters::createItem(int32_t itemId, Player *player, int32_t charId, int3
 	ItemDbInformation info(slot, charId, player->getUserId(), player->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
-		Item equip(itemId, false);
+		Item equip(itemId, false, false);
 		equip.databaseInsert(sql, info);
 	}
 	else {
@@ -242,7 +242,7 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 	soci::session &sql = Database::getCharDb();
 
 	sql.once
-		<< "INSERT INTO characters (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) "
+		<< "INSERT INTO " << Database::makeCharTable("characters") << " (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
 		soci::use(player->getUserId(), "user"),
@@ -267,7 +267,7 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 	soci::row row;
 	sql.once
 		<< "SELECT * "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.character_id = :id",
 		soci::use(id, "id"),
 		soci::into(row);
@@ -304,7 +304,7 @@ auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
 
 	sql.once
 		<< "SELECT world_id "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.character_id = :char ",
 		soci::use(id, "char"),
 		soci::into(worldId);
@@ -326,8 +326,8 @@ auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
 			return false;
 		});
 
-		sql.once << "DELETE p FROM pets p INNER JOIN items i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
-		sql.once << "DELETE FROM characters WHERE character_id = :char ", soci::use(id, "char");
+		sql.once << "DELETE p FROM " << Database::makeCharTable("pets") << " p INNER JOIN " << Database::makeCharTable("items") << " i ON p.pet_id = i.pet_id WHERE i.character_id = :char ", soci::use(id, "char");
+		sql.once << "DELETE FROM " << Database::makeCharTable("characters") << " WHERE character_id = :char ", soci::use(id, "char");
 	}
 	else {
 		result = IncorrectBirthday;
@@ -388,7 +388,7 @@ auto Characters::ownerCheck(Player *player, int32_t id) -> bool {
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.character_id = :char AND c.user_id = :user "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
@@ -404,7 +404,7 @@ auto Characters::nameTaken(const string_t &name) -> bool {
 
 	sql.once
 		<< "SELECT 1 "
-		<< "FROM characters c "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.name = :name "
 		<< "LIMIT 1",
 		soci::use(name, "name"),

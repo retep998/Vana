@@ -38,3 +38,9 @@ auto ConfigFile::handleKeyNotFound(const string_t &filename, const string_t &key
 	std::cerr << "Value: " << key << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigError);
 }
+
+auto ConfigFile::handleError(const string_t &filename, const string_t &error) -> void {
+	std::cerr << "ERROR: " << error << std::endl;
+	std::cerr << "File: " << filename << std::endl;
+	ExitCodes::exit(ExitCodes::ConfigError);
+}

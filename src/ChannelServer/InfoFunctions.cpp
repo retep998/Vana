@@ -110,15 +110,15 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 				};
 
 				if (type == 100) {
-					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM strings WHERE objectid = :q", soci::use(q, "q"));
+					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM " << Database::makeDataTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 				else if (type == 1 && subType != 0) {
 					q = "%" + q + "%";
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT s.objectid, s.`label` "
-						<< "FROM strings s "
-						<< "INNER JOIN item_data i ON s.objectid = i.itemid "
+						<< "FROM " << Database::makeDataTable("strings") << " s "
+						<< "INNER JOIN " << Database::makeDataTable("item_data") << " i ON s.objectid = i.itemid "
 						<< "WHERE s.object_type = :type AND s.label LIKE :q AND i.inventory = :subtype",
 						soci::use(q, "q"),
 						soci::use(type, "type"),
@@ -130,7 +130,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 					q = "%" + q + "%";
 					soci::rowset<> rs = (sql.prepare
 						<< "SELECT objectid, `label` "
-						<< "FROM strings "
+						<< "FROM " << Database::makeDataTable("strings") << " "
 						<< "WHERE object_type = :type AND label LIKE :q",
 						soci::use(q, "q"),
 						soci::use(type, "type"));
@@ -157,11 +157,11 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 
 				if (type == 300) {
 					q = "%" + q + "%";
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE script LIKE :q", soci::use(q, "q"));
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE script LIKE :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 				else if (type == 400) {
-					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM scripts WHERE objectid = :q", soci::use(q, "q"));
+					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
 			}
@@ -172,13 +172,13 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT d.dropperid, s.label "
-					<< "FROM drop_data d "
-					<< "INNER JOIN strings s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
-					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM user_drop_data) AND d.itemid = :q "
+					<< "FROM " << Database::makeDataTable("drop_data") << " d "
+					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.itemid = :q "
 					<< "UNION ALL "
 					<< "SELECT d.dropperid, s.label "
-					<< "FROM user_drop_data d "
-					<< "INNER JOIN strings s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
+					<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
+					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.dropperid AND s.object_type = 'mob' "
 					<< "WHERE d.itemid = :q ",
 					soci::use(q, "q"));
 
@@ -191,9 +191,9 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT m.mapid, s.label "
-					<< "FROM map_data m "
-					<< "INNER JOIN strings s ON s.objectid = m.mapid AND s.object_type = 'map' "
-					<< "WHERE m.mapid IN (SELECT ml.mapid FROM map_life ml WHERE ml.lifeid = :q AND ml.life_type = 'mob') ",
+					<< "FROM " << Database::makeDataTable("map_data") << " m "
+					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+					<< "WHERE m.mapid IN (SELECT ml.mapid FROM " << Database::makeDataTable("map_life") << " ml WHERE ml.lifeid = :q AND ml.life_type = 'mob') ",
 					soci::use(q, "q"));
 
 				displayFunc(rs, format);
@@ -206,7 +206,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 				q = "%" + q + "%";
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT DISTINCT m.default_bgm "
-					<< "FROM map_data m "
+					<< "FROM " << Database::makeDataTable("map_data") << " m "
 					<< "WHERE m.default_bgm LIKE :q",
 					soci::use(q, "q"));
 
@@ -219,13 +219,13 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT d.itemid, s.label, d.chance "
-					<< "FROM drop_data d "
-					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
-					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM user_drop_data) AND d.dropperid = :q "
+					<< "FROM " << Database::makeDataTable("drop_data") << " d "
+					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
+					<< "WHERE d.dropperid NOT IN (SELECT DISTINCT dropperid FROM " << Database::makeDataTable("user_drop_data") << ") AND d.dropperid = :q "
 					<< "UNION ALL "
 					<< "SELECT d.itemid, s.label, d.chance "
-					<< "FROM user_drop_data d "
-					<< "INNER JOIN strings s ON s.objectid = d.itemid AND s.object_type = 'item' "
+					<< "FROM " << Database::makeDataTable("user_drop_data") << " d "
+					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = d.itemid AND s.object_type = 'item' "
 					<< "WHERE d.dropperid = :q "
 					<< "ORDER BY itemid",
 					soci::use(q, "q"));
