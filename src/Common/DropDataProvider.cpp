@@ -44,7 +44,7 @@ auto DropDataProvider::loadDrops() -> void {
 	};
 
 	soci::session &sql = Database::getDataDb();
-	soci::rowset<> rs = (sql.prepare << "SELECT * FROM drop_data");
+	soci::rowset<> rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("drop_data"));
 
 	for (const auto &row : rs) {
 		drop = DropInfo();
@@ -60,7 +60,7 @@ auto DropDataProvider::loadDrops() -> void {
 		m_dropInfo[dropper].push_back(drop);
 	}
 
-	rs = (sql.prepare << "SELECT * FROM user_drop_data ORDER BY dropperid");
+	rs = (sql.prepare << "SELECT * FROM " << Database::makeDataTable("user_drop_data") << " ORDER BY dropperid");
 	int32_t lastDropperId = -1;
 	bool dropped = false;
 
@@ -90,7 +90,7 @@ auto DropDataProvider::loadDrops() -> void {
 auto DropDataProvider::loadGlobalDrops() -> void {
 	m_globalDrops.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM drop_global_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("drop_global_data"));
 
 	for (const auto &row : rs) {
 		GlobalDrop drop;

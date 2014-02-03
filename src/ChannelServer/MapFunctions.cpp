@@ -186,7 +186,7 @@ auto MapFunctions::music(Player *player, const string_t &args) -> bool {
 	else {
 		sql
 			<< "SELECT m.default_bgm "
-			<< "FROM map_data m "
+			<< "FROM " << Database::makeDataTable("map_data") << " m "
 			<< "WHERE m.default_bgm = :q "
 			<< "LIMIT 1",
 			soci::use(args, "q"),

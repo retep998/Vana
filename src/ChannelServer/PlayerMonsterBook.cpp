@@ -34,7 +34,8 @@ auto PlayerMonsterBook::load() -> void {
 	int32_t charId = m_player->getId();
 
 	soci::rowset<> rs = (sql.prepare
-		<< "SELECT b.card_id, b.level FROM monster_book b "
+		<< "SELECT b.card_id, b.level "
+		<< "FROM " << Database::makeCharTable("monster_book") << " b "
 		<< "WHERE b.character_id = :char "
 		<< "ORDER BY b.card_id ASC",
 		soci::use(charId, "char"));
@@ -50,14 +51,14 @@ auto PlayerMonsterBook::save() -> void {
 	soci::session &sql = Database::getCharDb();
 	int32_t charId = m_player->getId();
 
-	sql.once << "DELETE FROM monster_book WHERE character_id = :char", soci::use(charId, "char");
+	sql.once << "DELETE FROM " << Database::makeCharTable("monster_book") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_cards.size() > 0) {
 		int32_t cardId = 0;
 		uint8_t level = 0;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO monster_book "
+			<< "INSERT INTO " << Database::makeCharTable("monster_book") << " "
 			<< "VALUES (:char, :card, :level) ",
 			soci::use(charId, "char"),
 			soci::use(cardId, "card"),

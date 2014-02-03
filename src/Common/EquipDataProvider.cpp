@@ -43,7 +43,7 @@ auto EquipDataProvider::loadEquips() -> void {
 	// Note: This is MySQL's crappy behavior
 	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
 	// We just use the string and send it to a translation function
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM item_equip_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM " << Database::makeDataTable("item_equip_data"));
 
 	for (const auto &row : rs) {
 		equip = EquipInfo();

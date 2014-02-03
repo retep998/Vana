@@ -69,7 +69,11 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 
 	try {
 		soci::session &sql = Database::getCharDb();
-		sql.once << "SELECT version FROM vana_info", soci::into(version);
+		sql.once
+			<< "SELECT version "
+			<< "FROM " << Database::makeCharTable("vana_info"),
+			soci::into(version);
+
 		retrievedData = sql.got_data();
 	}
 	catch (soci::soci_error) { }
@@ -100,10 +104,10 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 	for (fs::directory_iterator dir(fullPath); dir != end; ++dir) {
 #ifdef WIN32
 		string_t filename = dir->path().filename();
-		string_t fileString = (fullPath / dir->path()).file_string();
+		string_t fullFile = dir->path().directory_string();
 #else
 		string_t filename = dir->path().filename().generic_string();
-		string_t fileString = dir->path().generic_string();
+		string_t fullFile = dir->path().generic_string();
 #endif
 		if (filename.find(".sql") == string_t::npos) {
 			// Not an SQL file
@@ -120,7 +124,7 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 
 		if (m_update) {
 			// Only record the SQL files if we're going to update the database
-			m_sqlFiles[v] = fileString;
+			m_sqlFiles[v] = fullFile;
 		}
 	}
 }
@@ -128,13 +132,13 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 // Create the info table
 auto DatabaseUpdater::createInfoTable() -> void {
 	soci::session &sql = Database::getCharDb();
-	sql.once << "CREATE TABLE IF NOT EXISTS vana_info (version INT UNSIGNED)";
-	sql.once << "INSERT INTO vana_info VALUES (NULL)";
+	sql.once << "CREATE TABLE IF NOT EXISTS " << Database::makeCharTable("vana_info") << " (version INT UNSIGNED)";
+	sql.once << "INSERT INTO " << Database::makeCharTable("vana_info") << " VALUES (NULL)";
 }
 
 // Set version number in the info table
 auto DatabaseUpdater::updateInfoTable(size_t version) -> void {
-	Database::getCharDb().once << "UPDATE vana_info SET version = :version", soci::use(version, "version");
+	Database::getCharDb().once << "UPDATE " << Database::makeCharTable("vana_info") << " SET version = :version", soci::use(version, "version");
 }
 
 auto DatabaseUpdater::runQueries(const string_t &filename) -> void {

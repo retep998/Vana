@@ -28,7 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto Initializing::checkMcdbVersion() -> void {
 	soci::session &sql = Database::getDataDb();
 	soci::row row;
-	sql.once << "SELECT * FROM mcdb_info", soci::into(row);
+	sql.once
+		<< "SELECT * "
+		<< "FROM " << Database::makeDataTable("mcdb_info"),
+		soci::into(row);
 
 	if (!sql.got_data()) {
 		std::cerr << "ERROR: mcdb_info is empty." << std::endl;
@@ -97,8 +100,8 @@ auto Initializing::setUsersOffline(int32_t onlineId) -> void {
 	time_point_t startTime = TimeUtilities::getNow();
 
 	Database::getCharDb().once
-		<< "UPDATE user_accounts u "
-		<< "INNER JOIN characters c ON u.user_id = c.user_id "
+		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
+		<< "INNER JOIN " << Database::makeCharTable("characters") << " c ON u.user_id = c.user_id "
 		<< "SET "
 		<< "	u.online = 0,"
 		<< "	c.online = 0 "

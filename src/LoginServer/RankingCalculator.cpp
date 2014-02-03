@@ -65,8 +65,8 @@ auto RankingCalculator::all() -> void {
 	RankPlayer out;
 	soci::statement statement = (sql.prepare
 		<< "SELECT c.character_id, c.exp, c.fame, c.job, c.level, c.world_id, c.time_level, c.fame_cpos, c.world_cpos, c.job_cpos, c.overall_cpos "
-		<< "FROM characters c "
-		<< "INNER JOIN user_accounts u ON u.user_id = c.user_id "
+		<< "FROM " << Database::makeCharTable("characters") << " c "
+		<< "INNER JOIN " << Database::makeCharTable("user_accounts") << " u ON u.user_id = c.user_id "
 		<< "WHERE "
 		<< "	(u.banned = 0 OR u.ban_expire >= NOW()) "
 		<< "	AND u.gm_level IS NULL "
@@ -116,7 +116,7 @@ auto RankingCalculator::all() -> void {
 		int32_t cOverall = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE characters "
+			<< "UPDATE " << Database::makeCharTable("characters") << " "
 			<< "SET "
 			<< "	fame_opos = :ofame,"
 			<< "	fame_cpos = :cfame,"

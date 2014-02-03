@@ -28,6 +28,7 @@ class ConfigFile : public LuaEnvironment {
 public:
 	ConfigFile(const string_t &filename);
 protected:
+	auto handleError(const string_t &filename, const string_t &error) -> void override;
 	auto handleKeyNotFound(const string_t &filename, const string_t &key) -> void override;
 	auto handleFileNotFound(const string_t &filename) -> void override;
 };

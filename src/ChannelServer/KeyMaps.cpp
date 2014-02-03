@@ -61,7 +61,7 @@ auto KeyMaps::defaultMap() -> void {
 }
 
 auto KeyMaps::load(int32_t charId) -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT k.* FROM keymap k WHERE k.character_id = :char", soci::use(charId, "char"));
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT k.* FROM " << Database::makeCharTable("keymap") << " k WHERE k.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		add(row.get<int32_t>("pos"), KeyMap(row.get<int8_t>("type"), row.get<int32_t>("action")));
@@ -79,7 +79,7 @@ auto KeyMaps::save(int32_t charId) -> void {
 	int32_t action = 0;
 
 	soci::statement st = (Database::getCharDb().prepare
-		<< "REPLACE INTO keymap "
+		<< "REPLACE INTO " << Database::makeCharTable("keymap") << " "
 		<< "VALUES (:char, :key, :type, :action)",
 		soci::use(charId, "char"),
 		soci::use(i, "key"),

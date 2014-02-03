@@ -53,7 +53,7 @@ auto SqlLogger::flush() -> void {
 		unix_time_t logTime;
 
 		soci::statement st = (sql.prepare
-			<< "INSERT INTO logs (log_time, origin, info_type, identifier, message) "
+			<< "INSERT INTO " << Database::makeCharTable("logs") << " (log_time, origin, info_type, identifier, message) "
 			<< "VALUES (:time, :origin, :infoType, :identifier, :message)",
 			soci::use(logTime, "time"),
 			soci::use(serverType, "origin"),

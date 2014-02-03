@@ -1,4 +1,4 @@
-CREATE TABLE `user_accounts` (
+CREATE TABLE `%%PREFIX%%user_accounts` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
   `password` char(130) NOT NULL,
@@ -21,13 +21,13 @@ CREATE TABLE `user_accounts` (
   KEY `username` (`username`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `buddylist_pending` (
+CREATE TABLE `%%PREFIX%%buddylist_pending` (
   `character_id` int(11) NOT NULL,
   `inviter_name` varchar(13) NOT NULL,
   `inviter_character_id` int(11) NOT NULL
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `fame_log` (
+CREATE TABLE `%%PREFIX%%fame_log` (
   `fame_id` int(11) NOT NULL AUTO_INCREMENT,
   `from_character_id` int(11) NOT NULL,
   `to_character_id` int(11) NOT NULL,
@@ -36,13 +36,13 @@ CREATE TABLE `fame_log` (
   KEY `from` (`from_character_id`,`to_character_id`,`fame_time`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `ip_bans` (
+CREATE TABLE `%%PREFIX%%ip_bans` (
   `ip_ban_id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(15) NOT NULL,
   PRIMARY KEY (`ip_ban_id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `logs` (
+CREATE TABLE `%%PREFIX%%logs` (
   `log_id` bigint(23) unsigned NOT NULL AUTO_INCREMENT,
   `log_time` datetime NOT NULL,
   `origin` enum('login','world','channel','cash','mts') NOT NULL,
@@ -52,17 +52,17 @@ CREATE TABLE `logs` (
   PRIMARY KEY (`log_id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `storage` (
+CREATE TABLE `%%PREFIX%%storage` (
   `user_id` int(11) NOT NULL,
   `world_id` int(11) NOT NULL,
   `slots` smallint(6) NOT NULL,
   `mesos` int(11) NOT NULL,
   `char_slots` int(11) NOT NULL,
   PRIMARY KEY (`user_id`,`world_id`),
-  FOREIGN KEY (`user_id`) REFERENCES `user_accounts`(`user_id`)
+  FOREIGN KEY (`user_id`) REFERENCES `%%PREFIX%%user_accounts`(`user_id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `characters` (
+CREATE TABLE `%%PREFIX%%characters` (
   `character_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(12) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -110,28 +110,28 @@ CREATE TABLE `characters` (
   KEY `userid` (`user_id`),
   KEY `world_id` (`world_id`),
   KEY `name` (`name`),
-  FOREIGN KEY (`user_id`) REFERENCES `user_accounts`(`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`user_id`) REFERENCES `%%PREFIX%%user_accounts`(`user_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `active_quests` (
+CREATE TABLE `%%PREFIX%%active_quests` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `character_id` int(11) NOT NULL,
   `quest_id` smallint(16) NOT NULL,
   `data` varchar(40) NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `active_quests_mobs` (
+CREATE TABLE `%%PREFIX%%active_quests_mobs` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`active_quest_id` bigint(20) NOT NULL,
 	`mob_id` int(11) NOT NULL,
 	`quantity_killed` int(11) NOT NULL,
 	PRIMARY KEY (`id`),
-	FOREIGN KEY (`active_quest_id`) REFERENCES `active_quests`(`id`) ON DELETE CASCADE
+	FOREIGN KEY (`active_quest_id`) REFERENCES `%%PREFIX%%active_quests`(`id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `buddylist` (
+CREATE TABLE `%%PREFIX%%buddylist` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `character_id` int(11) NOT NULL,
   `buddy_character_id` int(11) NOT NULL,
@@ -139,37 +139,37 @@ CREATE TABLE `buddylist` (
   `group_name` varchar(13) NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `charid` (`character_id`,`buddy_character_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `character_variables` (
+CREATE TABLE `%%PREFIX%%character_variables` (
   `character_id` int(11) NOT NULL,
   `key` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL,
   UNIQUE KEY `charid_2` (`character_id`,`key`),
   KEY `charid` (`character_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `completed_quests` (
+CREATE TABLE `%%PREFIX%%completed_quests` (
   `character_id` int(11) NOT NULL,
   `quest_id` smallint(6) NOT NULL,
   `end_time` bigint(20) NOT NULL,
   PRIMARY KEY (`character_id`,`quest_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `cooldowns` (
+CREATE TABLE `%%PREFIX%%cooldowns` (
   `cooldown_id` int(11) NOT NULL AUTO_INCREMENT,
   `character_id` int(11) NOT NULL,
   `skill_id` int(11) NOT NULL,
   `remaining_time` smallint(6) NOT NULL,
   PRIMARY KEY (`cooldown_id`),
   KEY `charid` (`character_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `pets` (
+CREATE TABLE `%%PREFIX%%pets` (
   `pet_id` bigint(23) unsigned NOT NULL AUTO_INCREMENT,
   `index` tinyint(3) NULL,
   `name` varchar(12) NOT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE `pets` (
   PRIMARY KEY (`pet_id`)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `items` (
+CREATE TABLE `%%PREFIX%%items` (
   `character_id` int(11) NOT NULL,
   `inv` smallint(6) NOT NULL,
   `slot` smallint(6) NOT NULL,
@@ -211,28 +211,28 @@ CREATE TABLE `items` (
   `name` varchar(12) NULL,
   `expiration` bigint(23) NULL,
   PRIMARY KEY (`character_id`,`inv`,`slot`,`location`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`pet_id`) REFERENCES `pets`(`pet_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`pet_id`) REFERENCES `%%PREFIX%%pets`(`pet_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `keymap` (
+CREATE TABLE `%%PREFIX%%keymap` (
   `character_id` int(11) NOT NULL,
   `pos` int(11) NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
   `action` int(11) NOT NULL,
   UNIQUE KEY `charid` (`character_id`,`pos`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `monster_book` (
+CREATE TABLE `%%PREFIX%%monster_book` (
   `character_id` int(11) NOT NULL,
   `card_id` int(11) NOT NULL,
   `level` int(1) DEFAULT '1',
   PRIMARY KEY (`character_id`,`card_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `mounts` (
+CREATE TABLE `%%PREFIX%%mounts` (
   `character_id` int(11) NOT NULL,
   `mount_id` int(11) NOT NULL,
   `exp` smallint(6) DEFAULT '0',
@@ -240,10 +240,10 @@ CREATE TABLE `mounts` (
   `tiredness` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`character_id`,`mount_id`),
   KEY `mountid` (`mount_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `skill_macros` (
+CREATE TABLE `%%PREFIX%%skill_macros` (
   `character_id` int(11) NOT NULL AUTO_INCREMENT,
   `pos` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -252,23 +252,23 @@ CREATE TABLE `skill_macros` (
   `skill_2` int(11) NULL,
   `skill_3` int(11) NULL,
   PRIMARY KEY (`character_id`,`pos`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `skills` (
+CREATE TABLE `%%PREFIX%%skills` (
   `character_id` int(11) NOT NULL,
   `skill_id` int(11) NOT NULL,
   `points` smallint(6) NOT NULL DEFAULT '1',
   `max_level` smallint(6) NOT NULL,
   UNIQUE KEY `charid_2` (`character_id`,`skill_id`),
   KEY `charid` (`character_id`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE `teleport_rock_locations` (
+CREATE TABLE `%%PREFIX%%teleport_rock_locations` (
   `character_id` int(11) NOT NULL,
   `map_index` tinyint(3) NOT NULL,
   `map_id` int(11) NOT NULL,
   PRIMARY KEY (`character_id`,`map_index`),
-  FOREIGN KEY (`character_id`) REFERENCES `characters`(`character_id`) ON DELETE CASCADE
+  FOREIGN KEY (`character_id`) REFERENCES `%%PREFIX%%characters`(`character_id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;

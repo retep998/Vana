@@ -35,7 +35,7 @@ Pet::Pet(Player *player, Item *item) :
 {
 	soci::session &sql = Database::getCharDb();
 
-	sql.once << "INSERT INTO pets (name) VALUES (:name)", soci::use(m_name, "name");
+	sql.once << "INSERT INTO " << Database::makeCharTable("pets") << " (name) VALUES (:name)", soci::use(m_name, "name");
 
 	m_id = Database::getLastId<int64_t>(sql);
 	item->setPetId(m_id);

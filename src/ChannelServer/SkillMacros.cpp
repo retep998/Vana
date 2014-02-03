@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MiscUtilities.hpp"
 
 auto SkillMacros::load(int32_t charId) -> void {
-	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM skill_macros s WHERE s.character_id = :char", soci::use(charId, "char"));
+	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM " << Database::makeCharTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
 		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<int32_t>("skill1"), row.get<int32_t>("skill2"), row.get<int32_t>("skill3")));
@@ -39,7 +39,7 @@ auto SkillMacros::save(int32_t charId) -> void {
 	opt_int32_t skill3 = 0;
 
 	soci::statement st = (Database::getCharDb().prepare
-		<< "REPLACE INTO skill_macros "
+		<< "REPLACE INTO " << Database::makeCharTable("skill_macros") << " "
 		<< "VALUES (:char, :key, :name, :shout, :skill1, :skill2, :skill3)",
 		soci::use(charId, "char"),
 		soci::use(i, "key"),

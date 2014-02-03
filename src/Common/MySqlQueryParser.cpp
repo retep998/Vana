@@ -16,11 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MySqlQueryParser.hpp"
+#include "FileUtilities.hpp"
 #include "StringUtilities.hpp"
 #include "tokenizer.hpp"
 #include <fstream>
 
 auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string_t> {
+	if (!FileUtilities::fileExists(filename)) {
+		throw std::runtime_error("Query file doesn't exist: " + filename);
+	}
+
 	vector_t<string_t> queries;
 	std::ifstream filestream;
 
@@ -36,7 +41,7 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 			contentStream << line << std::endl;
 		}
 
-		content = contentStream.str();
+		content = StringUtilities::replace(contentStream.str(), "%%PREFIX%%", Database::makeCharTable(""));
 	}
 
 	// Parse each SQL statement

@@ -51,7 +51,7 @@ auto PlayerPets::save() -> void {
 		int64_t petId = 0;
 
 		soci::statement st = (sql.prepare
-			<< "UPDATE pets "
+			<< "UPDATE " << Database::makeCharTable("pets") << " "
 			<< "SET "
 			<< "	`index` = :index, "
 			<< "	name = :name, "

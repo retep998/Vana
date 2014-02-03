@@ -51,7 +51,7 @@ auto MapDataProvider::loadData() -> void {
 	int8_t mapCluster;
 	int8_t continent;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_continent_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_continent_data"));
 
 	for (const auto &row : rs) {
 		mapCluster = row.get<int8_t>("map_cluster");
@@ -79,7 +79,7 @@ auto MapDataProvider::loadMap(int32_t mapId, Map *&map) -> void {
 auto MapDataProvider::loadMapData(int32_t mapId, Map *&map) -> int32_t {
 	int32_t link = 0;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_data WHERE mapid = :map", soci::use(mapId, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_data") << " WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (const auto &row : rs) {
 		ref_ptr_t<MapInfo> mapInfo = make_ref_ptr<MapInfo>();
@@ -150,7 +150,7 @@ auto MapDataProvider::loadSeats(Map *map, int32_t link) -> void {
 	SeatInfo chair;
 	int16_t id;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_seats WHERE mapid = :map", soci::use(link, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_seats") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		id = row.get<int16_t>("seatid");
@@ -165,7 +165,7 @@ auto MapDataProvider::loadSeats(Map *map, int32_t link) -> void {
 auto MapDataProvider::loadPortals(Map *map, int32_t link) -> void {
 	PortalInfo portal;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_portals WHERE mapid = :map", soci::use(link, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_portals") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		portal = PortalInfo();
@@ -191,7 +191,7 @@ auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
 	SpawnInfo life;
 	string_t type;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_life WHERE mapid = :map", soci::use(link, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_life") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		life = SpawnInfo();
@@ -229,7 +229,7 @@ auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
 auto MapDataProvider::loadFootholds(Map *map, int32_t link) -> void {
 	FootholdInfo foot;
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_footholds WHERE mapid = :map", soci::use(link, "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_footholds") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
 		foot = FootholdInfo();
@@ -248,7 +248,7 @@ auto MapDataProvider::loadFootholds(Map *map, int32_t link) -> void {
 }
 
 auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM map_time_mob WHERE mapid = :map", soci::use(map->getId(), "map"));
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_time_mob") << " WHERE mapid = :map", soci::use(map->getId(), "map"));
 
 	for (const auto &row : rs) {
 		ref_ptr_t<TimeMob> info = make_ref_ptr<TimeMob>();

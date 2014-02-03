@@ -34,7 +34,7 @@ auto PlayerSkills::load() -> void {
 
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT s.skill_id, s.points, s.max_level "
-		<< "FROM skills s "
+		<< "FROM " << Database::makeCharTable("skills") << " s "
 		<< "WHERE s.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -49,7 +49,7 @@ auto PlayerSkills::load() -> void {
 
 	rs = (Database::getCharDb().prepare
 		<< "SELECT c.* "
-		<< "FROM cooldowns c "
+		<< "FROM " << Database::makeCharTable("cooldowns") << " c "
 		<< "WHERE c.character_id = :char",
 		soci::use(playerId, "char"));
 
@@ -70,7 +70,7 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 	uint8_t level = 0;
 	uint8_t maxLevel = 0;
 	statement st = (sql.prepare
-		<< "REPLACE INTO skills VALUES (:player, :skill, :level, :maxLevel)",
+		<< "REPLACE INTO " << Database::makeCharTable("skills") << " VALUES (:player, :skill, :level, :maxLevel)",
 		use(playerId, "player"),
 		use(skillId, "skill"),
 		use(level, "level"),
@@ -84,12 +84,12 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 	}
 
 	if (saveCooldowns) {
-		sql.once << "DELETE FROM cooldowns WHERE character_id = :char", soci::use(playerId, "char");
+		sql.once << "DELETE FROM " << Database::makeCharTable("cooldowns") << " WHERE character_id = :char", soci::use(playerId, "char");
 
 		if (m_cooldowns.size() > 0) {
 			int16_t remainingTime = 0;
 			st = (sql.prepare
-				<< "INSERT INTO cooldowns (character_id, skill_id, remaining_time) "
+				<< "INSERT INTO " << Database::makeCharTable("cooldowns") << " (character_id, skill_id, remaining_time) "
 				<< "VALUES (:char, :skill, :time)",
 				use(playerId, "char"),
 				use(skillId, "skill"),

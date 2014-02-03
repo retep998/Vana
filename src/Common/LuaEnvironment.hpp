@@ -71,7 +71,7 @@ public:
 	auto is(const string_t &value, LuaType type) -> bool;
 	auto is(int index, LuaType type) -> bool;
 	auto typeOf(int index) -> LuaType;
-
+	auto error(const string_t &text) -> void;
 	auto pop(int count = 1) -> void;
 	auto count() -> int;
 
@@ -139,8 +139,8 @@ private:
 	auto pushImpl<uint32_t>(lua_State *luaVm, const uint32_t &value) -> void;
 	template <typename TElement>
 	auto pushImpl(lua_State *luaVm, const vector_t<TElement> &value) -> void;
-	template <typename TKey, typename TElement>
-	auto pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement> &value) -> void;
+	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
+	auto pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void;
 	// End pushImpl
 
 	// Begin getImpl key
@@ -168,8 +168,8 @@ private:
 	auto getImpl<uint32_t>(const string_t &key, uint32_t *) -> uint32_t;
 	template <typename TElement>
 	auto getImpl(const string_t &key, vector_t<TElement> *) -> vector_t<TElement>;
-	template <typename TKey, typename TElement>
-	auto getImpl(const string_t &key, hash_map_t<TKey, TElement> *) -> hash_map_t<TKey, TElement>;
+	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
+	auto getImpl(const string_t &key, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
 	// End getImpl key
 
 	// Begin getImpl index
@@ -197,8 +197,8 @@ private:
 	auto getImpl<uint32_t>(int index, uint32_t *) -> uint32_t;
 	template <typename TElement>
 	auto getImpl(int index, vector_t<TElement> *) -> vector_t<TElement>;
-	template <typename TKey, typename TElement>
-	auto getImpl(int index, hash_map_t<TKey, TElement> *) -> hash_map_t<TKey, TElement>;
+	template <typename TKey, typename TElement, typename THash = std::hash<TKey>, typename TOperation = std::equal_to<TKey>>
+	auto getImpl(int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation>;
 	// End getImpl index
 
 	static LoopingId<int32_t> s_identifiers;
@@ -338,8 +338,8 @@ auto LuaEnvironment::pushImpl(lua_State *luaVm, const vector_t<TElement> &value)
 	}
 }
 
-template <typename TKey, typename TElement>
-auto LuaEnvironment::pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement> &value) -> void {
+template <typename TKey, typename TElement, typename THash, typename TOperation>
+auto LuaEnvironment::pushImpl(lua_State *luaVm, const hash_map_t<TKey, TElement, THash, TOperation> &value) -> void {
 	lua_newtable(luaVm);
 	int top = lua_gettop(luaVm);
 	for (const auto &kvp : value) {
@@ -420,11 +420,11 @@ auto LuaEnvironment::getImpl(const string_t &key, vector_t<TElement> *) -> vecto
 	return val;
 }
 
-template <typename TKey, typename TElement>
-auto LuaEnvironment::getImpl(const string_t &key, hash_map_t<TKey, TElement> *) -> hash_map_t<TKey, TElement> {
+template <typename TKey, typename TElement, typename THash, typename TOperation>
+auto LuaEnvironment::getImpl(const string_t &key, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation> {
 	keyMustExist(key);
 	lua_getglobal(m_luaVm, key.c_str());
-	hash_map_t<TKey, TElement> val = get<hash_map_t<TKey, TElement>>(-1);
+	hash_map_t<TKey, TElement, THash, TOperation> val = get<hash_map_t<TKey, TElement, THash, TOperation>>(-1);
 	lua_pop(m_luaVm, 1);
 	return val;
 }
@@ -511,9 +511,9 @@ auto LuaEnvironment::getImpl(int index, vector_t<TElement> *) -> vector_t<TEleme
 	return val;
 }
 
-template <typename TKey, typename TElement>
-auto LuaEnvironment::getImpl(int index, hash_map_t<TKey, TElement> *) -> hash_map_t<TKey, TElement> {
-	hash_map_t<TKey, TElement> val;
+template <typename TKey, typename TElement, typename THash, typename TOperation>
+auto LuaEnvironment::getImpl(int index, hash_map_t<TKey, TElement, THash, TOperation> *) -> hash_map_t<TKey, TElement, THash, TOperation> {
+	hash_map_t<TKey, TElement, THash, TOperation> val;
 	// Adjust index for the name
 	lua_pushvalue(m_luaVm, index);
 

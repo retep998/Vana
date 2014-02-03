@@ -57,8 +57,8 @@ auto ItemDataProvider::loadItems() -> void {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare
 		<< "SELECT id.*, s.label "
-		<< "FROM item_data id "
-		<< "LEFT JOIN strings s ON id.itemId = s.objectid AND s.object_type = :item",
+		<< "FROM " << Database::makeDataTable("item_data") << " id "
+		<< "LEFT JOIN " << Database::makeDataTable("strings") << " s ON id.itemId = s.objectid AND s.object_type = :item",
 		soci::use(string_t("item"), "item"));
 
 	for (const auto &row : rs) {
@@ -93,7 +93,7 @@ auto ItemDataProvider::loadItems() -> void {
 auto ItemDataProvider::loadScrolls() -> void {
 	m_scrollInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_scroll_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_scroll_data"));
 
 	for (const auto &row : rs) {
 		ScrollInfo item;
@@ -129,7 +129,7 @@ auto ItemDataProvider::loadScrolls() -> void {
 auto ItemDataProvider::loadConsumes() -> void {
 	m_consumeInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_consume_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_consume_data"));
 
 	for (const auto &row : rs) {
 		ConsumeInfo item;
@@ -210,7 +210,7 @@ auto ItemDataProvider::loadConsumes() -> void {
 }
 
 auto ItemDataProvider::loadMapRanges() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_monster_card_map_ranges");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_monster_card_map_ranges"));
 
 	for (const auto &row : rs) {
 		CardMapRange range;
@@ -223,7 +223,7 @@ auto ItemDataProvider::loadMapRanges() -> void {
 }
 
 auto ItemDataProvider::loadMultiMorphs() -> void {
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_random_morphs");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_random_morphs"));
 
 	for (const auto &row : rs) {
 		Morph morph;
@@ -239,7 +239,7 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 	m_cardsToMobs.clear();
 	m_mobsToCards.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM monster_card_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("monster_card_data"));
 
 	for (const auto &row : rs) {
 		int32_t cardId = row.get<int32_t>("cardid");
@@ -253,7 +253,7 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 auto ItemDataProvider::loadItemSkills() -> void {
 	m_skillbooks.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_skills");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_skills"));
 
 	for (const auto &row : rs) {
 		Skillbook skill;
@@ -270,7 +270,7 @@ auto ItemDataProvider::loadItemSkills() -> void {
 auto ItemDataProvider::loadSummonBags() -> void {
 	m_summonBags.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_summons");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_summons"));
 
 	for (const auto &row : rs) {
 		SummonBag summon;
@@ -285,7 +285,7 @@ auto ItemDataProvider::loadSummonBags() -> void {
 auto ItemDataProvider::loadItemRewards() -> void {
 	m_itemRewards.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_reward_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_reward_data"));
 
 	for (const auto &row : rs) {
 		ItemRewardInfo reward;
@@ -302,7 +302,7 @@ auto ItemDataProvider::loadItemRewards() -> void {
 auto ItemDataProvider::loadPets() -> void {
 	m_petInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_pet_data"));
 
 	for (const auto &row : rs) {
 		PetInfo pet;
@@ -326,7 +326,7 @@ auto ItemDataProvider::loadPets() -> void {
 auto ItemDataProvider::loadPetInteractions() -> void {
 	m_petInteractInfo.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM item_pet_interactions");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_pet_interactions"));
 
 	for (const auto &row : rs) {
 		PetInteractInfo interaction;

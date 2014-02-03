@@ -38,7 +38,7 @@ auto ValidCharDataProvider::loadData() -> void {
 auto ValidCharDataProvider::loadForbiddenNames() -> void {
 	m_forbiddenNames.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_forbidden_names");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_forbidden_names"));
 
 	for (const auto &row : rs) {
 		m_forbiddenNames.push_back(row.get<string_t>("forbidden_name"));
@@ -49,7 +49,7 @@ auto ValidCharDataProvider::loadCreationItems() -> void {
 	m_adventurer.clear();
 	m_cygnus.clear();
 
-	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM character_creation_data");
+	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_creation_data"));
 
 	for (const auto &row : rs) {
 		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
