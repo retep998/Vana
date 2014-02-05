@@ -43,7 +43,7 @@ namespace LuaExports {
 	auto getPlayer(lua_State *luaVm) -> Player *;
 	auto getPlayerDeduced(int parameter, lua_State *luaVm) -> Player *;
 	auto getInstance(lua_State *luaVm) -> Instance *;
-	auto obtainSetVariablePair(LuaEnvironment &env) -> pair_t<string_t, string_t>;
+	auto obtainSetVariablePair(lua_State *luaVm, LuaEnvironment &env) -> pair_t<string_t, string_t>;
 	auto pushGetVariableData(lua_State *luaVm, const string_t &value, bool integralReturn) -> void;
 	auto isBossChannel(lua_State *luaVm, const vector_t<channel_id_t> &channels) -> int;
 

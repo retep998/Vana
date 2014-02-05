@@ -382,14 +382,14 @@ auto LuaExports::getInstance(lua_State *luaVm) -> Instance * {
 	return i;
 }
 
-auto LuaExports::obtainSetVariablePair(LuaEnvironment &env) -> pair_t<string_t, string_t> {
+auto LuaExports::obtainSetVariablePair(lua_State *luaVm, LuaEnvironment &env) -> pair_t<string_t, string_t> {
 	pair_t<string_t, string_t> ret;
-	ret.first = env.get<string_t>(1);
-	switch (env.typeOf(2)) {
+	ret.first = env.get<string_t>(luaVm, 1);
+	switch (env.typeOf(luaVm, 2)) {
 		case LuaType::Nil: ret.second = "nil"; break;
-		case LuaType::Bool: ret.second = env.get<bool>(2) ? "true" : "false"; break;
-		case LuaType::Number: ret.second = StringUtilities::lexical_cast<string_t>(env.get<int32_t>(2)); break;
-		case LuaType::String: ret.second = env.get<string_t>(2); break;
+		case LuaType::Bool: ret.second = env.get<bool>(luaVm, 2) ? "true" : "false"; break;
+		case LuaType::Number: ret.second = StringUtilities::lexical_cast<string_t>(env.get<int32_t>(luaVm, 2)); break;
+		case LuaType::String: ret.second = env.get<string_t>(luaVm, 2); break;
 		default: throw std::exception("Invalid Lua datatype");
 	}
 	return ret;
@@ -502,7 +502,7 @@ auto LuaExports::isZakumChannel(lua_State *luaVm) -> int {
 
 auto LuaExports::setChannelVariable(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	auto kvp = obtainSetVariablePair(env);
+	auto kvp = obtainSetVariablePair(luaVm, env);
 	EventDataProvider::getInstance().getVariables()->setVariable(kvp.first, kvp.second);
 	return 0;
 }
@@ -1149,7 +1149,7 @@ auto LuaExports::setPlayer(lua_State *luaVm) -> int {
 
 auto LuaExports::setPlayerVariable(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	auto kvp = obtainSetVariablePair(env);
+	auto kvp = obtainSetVariablePair(luaVm, env);
 	getPlayer(luaVm)->getVariables()->setVariable(kvp.first, kvp.second);
 	return 0;
 }
@@ -1956,7 +1956,7 @@ auto LuaExports::setInstanceTime(lua_State *luaVm) -> int {
 
 auto LuaExports::setInstanceVariable(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	auto kvp = obtainSetVariablePair(env);
+	auto kvp = obtainSetVariablePair(luaVm, env);
 	getInstance(luaVm)->getVariables()->setVariable(kvp.first, kvp.second);
 	return 0;
 }
