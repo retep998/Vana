@@ -44,10 +44,10 @@ LuaEnvironment::LuaEnvironment(const string_t &filename, bool useThread)
 {
 	loadFile(filename);
 
+	m_environmentIdentifier = s_identifiers.next();
 	if (useThread) {
 		m_luaThread = lua_newthread(m_luaVm);
 	}
-	m_environmentIdentifier = s_identifiers.next();
 	set<int32_t>("system_environmentId", m_environmentIdentifier);
 	s_environments.emplace(m_environmentIdentifier, this);
 }
@@ -134,9 +134,13 @@ auto LuaEnvironment::yield(int numberOfReturnResultsPassedToResume) -> int {
 }
 
 auto LuaEnvironment::exists(const string_t &key) -> bool {
-	lua_getglobal(m_luaVm, key.c_str());
-	bool ret = !lua_isnil(m_luaVm, -1);
-	lua_pop(m_luaVm, 1);
+	return exists(m_luaVm, key);
+}
+
+auto LuaEnvironment::exists(lua_State *luaVm, const string_t &key) -> bool {
+	lua_getglobal(luaVm, key.c_str());
+	bool ret = !lua_isnil(luaVm, -1);
+	lua_pop(luaVm, 1);
 	return ret;
 }
 
@@ -151,37 +155,45 @@ auto LuaEnvironment::error(const string_t &text) -> void {
 }
 
 auto LuaEnvironment::is(const string_t &value, LuaType type) -> bool {
-	lua_getglobal(m_luaVm, value.c_str());
-	bool ret = is(-1, type);
-	lua_pop(m_luaVm, 1);
+	return is(m_luaVm, value, type);
+}
+
+auto LuaEnvironment::is(lua_State *luaVm, const string_t &value, LuaType type) -> bool {
+	lua_getglobal(luaVm, value.c_str());
+	bool ret = is(luaVm, -1, type);
+	lua_pop(luaVm, 1);
 	return ret;
 }
 
 auto LuaEnvironment::pop(int count) -> void {
-	lua_pop(m_luaVm, count);
+	pop(m_luaVm, count);
+}
+
+auto LuaEnvironment::pop(lua_State *luaVm, int count) -> void {
+	lua_pop(luaVm, count);
 }
 
 auto LuaEnvironment::count() -> int {
-	return lua_gettop(m_luaVm);
+	return count(m_luaVm);
+}
+
+auto LuaEnvironment::count(lua_State *luaVm) -> int {
+	return lua_gettop(luaVm);
 }
 
 auto LuaEnvironment::is(int index, LuaType type) -> bool {
-	bool ret = false;
-	switch (type) {
-		case LuaType::None: ret = lua_isnone(m_luaVm, index); break;
-		case LuaType::Nil: ret = lua_isnil(m_luaVm, index); break;
-		case LuaType::Bool: ret = lua_isboolean(m_luaVm, index); break;
-		case LuaType::LightUserData: ret = lua_islightuserdata(m_luaVm, index); break;
-		case LuaType::Number: ret = lua_isnumber(m_luaVm, index) != 0; break;
-		case LuaType::String: ret = lua_isstring(m_luaVm, index) != 0; break;
-		case LuaType::Table: ret = lua_istable(m_luaVm, index); break;
-		case LuaType::Function: ret = lua_isfunction(m_luaVm, index); break;
-		case LuaType::UserData: ret = lua_isuserdata(m_luaVm, index) != 0; break;
-		case LuaType::Thread: ret = lua_isthread(m_luaVm, index); break;
-	}
-	return ret;
+	return is(m_luaVm, index, type);
+}
+
+auto LuaEnvironment::is(lua_State *luaVm, int index, LuaType type) -> bool {
+	return lua_type(luaVm, index) == static_cast<int>(type);
 }
 
 auto LuaEnvironment::typeOf(int index) -> LuaType {
-	return static_cast<LuaType>(lua_type(m_luaVm, index));
+	lua_State *query = m_luaThread != nullptr ? m_luaThread : m_luaVm;
+	return static_cast<LuaType>(lua_type(query, index));
+}
+
+auto LuaEnvironment::typeOf(lua_State *luaVm, int index) -> LuaType {
+	return static_cast<LuaType>(lua_type(luaVm, index));
 }
