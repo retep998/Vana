@@ -62,7 +62,7 @@ if questions == nil then
 			["answer"] = 4
 		},
 		[11] = {
-			["question"] = "Which of the pairings of the monster/leftover is correctly matched?#b\r\n#L0# Fire Boar - Fire Boar's Nose#l\r\n#L1# Cold Eye - Cold Eye's Eye#l\r\n#L2# Pig - Pig's Ear#l\r\n#L3# Stirge - Stirge Wing#l\r\n#L4# Zombie Mushroom - Zombie Mushroom's Top#l",
+			["question"] = "Which of the pairings of the monster/leftover is correctly matched...?#b\r\n#L0# Fire Boar - Fire Boar's nose#l\r\n#L1# Cold Eye - Cold Eye's Eye#l\r\n#L2# Pig - Pig's ear#l\r\n#L3# Stirge - Stirge Wing#l\r\n#L4# Zombie Mushroom - Zombie Mushroom's top#l",
 			["answer"] = 3
 		},
 		[12] = {
@@ -80,7 +80,59 @@ if questions == nil then
 		[15] = {
 			["question"] = "Which of these pairings of job/required stat matches for the 1st job advancement?#b\r\n#L0# Warrior - STR 30+ #l\r\n#L1# Magician - INT 25+ #l\r\n#L2# Bowman - DEX 25+ #l\r\n#L3# Thief - DEX 20+ #l\r\n#L4# Thief - LUK 20+ #l",
 			["answer"] = 2
-		}
+		},
+		[16] = {
+			["question"] = "Which of these NPC's will you NOT see at Ellinia of Victoria Island...?#b\r\n#L0# Shane#l\r\n#L1# Francois#l\r\n#L2# Grendel the Really Old#l\r\n#L3# Arwen the Fairy#l\r\n#L4# Roel#l",
+			["answer"] = 4
+		},
+		[17] = {
+			["question"] = "Which of these monsters will you NOT be facing Ossyria...?#b\r\n#L0# White Fang#l\r\n#L1# Croco#l\r\n#L2# Yeti#l\r\n#L3# Lycanthrope#l\r\n#L4# Luster Pixie#l",
+			["answer"] = 1
+		},
+		[18] = {
+			["question"] = "Which of these monsters have the highest level...?#b\r\n#L0# Octopus#l\r\n#L1# Ribbon Pig#l\r\n#L2# Green Mushroom#l\r\n#L3# Axe Stump#l\r\n#L4# Bubbling#l",
+			["answer"] = 3
+		},
+		[19] = {
+			["question"] = "In MapleStory, Which of these pairings of potions/results does not match...?#b\r\n#L0# Holy Water - Recover from the state of being cursed or sealed up#l\r\n#L1# Sunrise Dew - Recover MP 3000#l\r\n#L2# Hamburger - Recover HP 400#l\r\n#L3# Salad - Recover MP 200#l\r\n#L4# Blue Potion - Recover MP 100#l",
+			["answer"] = 1
+		},
+		[20] = {
+			["question"] = "Which of these NPC's have NOTHING to do with pets...?#b\r\n#L0# Cloy#l\r\n#L1# Mar the Fairy#l\r\n#L2# Trainer Frod#l\r\n#L3# Vicious#l\r\n#L4# Doofus#l",
+			["answer"] = 3
+		},
+		[21] = {
+			["question"] = "Which NPC is not a member of the Alpha Platoon scattered over the continent of Ossyria?#b\r\n#L0# Staff Sergeant Peter#l\r\n#L1# Staff Sergeant Charlie#l\r\n#L2# Master Sergeant Fox#l\r\n#L3# Corporal Easy#l\r\n#L4# Sergeant Bravo#l",
+			["answer"] = 0
+		},
+		[22] = {
+			["question"] = "Which of the following items is not needed to awaken the Old Gladius from Manji in Perion?#b\r\n#L0# Piece of Ice#l\r\n#L1# Star Rock#l\r\n#L2# Flaming Feather#l\r\n#L3# Fairy Wing#l\r\n#L4# Ancient Scroll#l",
+			["answer"] = 3
+		},
+		[23] = {
+			["question"] = "Which of the following monsters can fly?#b\r\n#L0# Hector#l\r\n#L1# Nependeath#l\r\n#L2# Iron Hog#l\r\n#L3# Tortie#l\r\n#L4# Malady#l",
+			["answer"] = 4
+		},
+		[24] = {
+			["question"] = "Which of these NPC's will you NOT see at Henesys of Victoria Island...?#b\r\n#L0# Maya#l\r\n#L1# Teo#l\r\n#L2# Rina#l\r\n#L3# Athena Pierce#l\r\n#L4# Pia#l",
+			["answer"] = 1
+		},
+		[25] = {
+			["question"] = "Which of these monsters will you NOT see at Maple Island...?#b\r\n#L0# Blue Snail#l\r\n#L1# Orange Mushroom#l\r\n#L2# Red Snail#l\r\n#L3# Pig#l\r\n#L4# Shroom#l",
+			["answer"] = 3
+		},
+		[26] = {
+			["question"] = "Which of these items did Maya ask for the cure of her sickness...?#b\r\n#L0# Incredible medicine#l\r\n#L1# Nasty medicine#l\r\n#L2# The all-curing medicine#l\r\n#L3# Chinese medicine#l\r\n#L4# Weird Medicine#l",
+			["answer"] = 4
+		},
+		[27] = {
+			["question"] = "Which of these towns is NOT part of Victoria Island...?#b\r\n#L0# Sleepywood#l\r\n#L1# Amherst#l\r\n#L2# Perion#l\r\n#L3# Kerning City#l\r\n#L4# Ellinia#l",
+			["answer"] = 1
+		},
+		[28] = {
+			["question"] = "Which of these monsters will you NOT see at the ant tunnel and the center dungeon of Victoria Island...?#b\r\n#L0# Horny Mushroom#l\r\n#L1# Evil Eye#l\r\n#L2# Drake#l\r\n#L3# Zombie Mushroom#l\r\n#L4# Sentinel#l",
+			["answer"] = 4
+		},
 	};
 end
 
