@@ -105,7 +105,7 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 		map->switchController(mob, player);
 	}
 
-	int8_t nibbles1 = reader.get<int8_t>();
+	int8_t nibbles = reader.get<int8_t>();
 	int8_t rawActivity = reader.get<int8_t>();
 	uint8_t useSkillId = reader.get<uint8_t>();
 	uint8_t useSkillLevel = reader.get<uint8_t>();
@@ -124,8 +124,8 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 	bool isAttack = ext::in_range_inclusive<int8_t>(parsedActivity, 12, 20);
 	bool isSkill = ext::in_range_inclusive<int8_t>(parsedActivity, 21, 25);
 	int32_t attackId = isAttack ? parsedActivity - 12 : -1;
-	bool nextMovementCouldBeSkill = (nibbles1 & 0x0F) != 0;
-	bool unk = (nibbles1 & 0xF0) != 0;
+	bool nextMovementCouldBeSkill = (nibbles & 0x0F) != 0;
+	bool unk = (nibbles & 0xF0) != 0;
 
 	uint8_t nextCastSkill = 0;
 	uint8_t nextCastSkillLevel = 0;

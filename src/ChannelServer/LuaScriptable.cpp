@@ -517,7 +517,7 @@ auto LuaExports::showChannelMessage(lua_State *luaVm) -> int {
 // Bosses
 auto LuaExports::getHorntailChannels(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(ChannelServer::getInstance().getConfig().horntail.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().horntail.channels);
 	return 1;
 }
 
@@ -548,25 +548,25 @@ auto LuaExports::getMaxZakumBattles(lua_State *luaVm) -> int {
 
 auto LuaExports::getPapChannels(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(ChannelServer::getInstance().getConfig().pap.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().pap.channels);
 	return 1;
 }
 
 auto LuaExports::getPianusChannels(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(ChannelServer::getInstance().getConfig().pianus.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().pianus.channels);
 	return 1;
 }
 
 auto LuaExports::getPinkBeanChannels(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(ChannelServer::getInstance().getConfig().pinkbean.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().pinkbean.channels);
 	return 1;
 }
 
 auto LuaExports::getZakumChannels(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<channel_id_t>>(ChannelServer::getInstance().getConfig().zakum.channels);
+	env.push<vector_t<channel_id_t>>(luaVm, ChannelServer::getInstance().getConfig().zakum.channels);
 	return 1;
 }
 
@@ -625,19 +625,19 @@ auto LuaExports::spawnNpc(lua_State *luaVm) -> int {
 // Beauty
 auto LuaExports::getAllFaces(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<int32_t>>(BeautyDataProvider::getInstance().getFaces(getPlayer(luaVm)->getGender()));
+	env.push<vector_t<int32_t>>(luaVm, BeautyDataProvider::getInstance().getFaces(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getAllHair(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<int32_t>>(BeautyDataProvider::getInstance().getHair(getPlayer(luaVm)->getGender()));
+	env.push<vector_t<int32_t>>(luaVm, BeautyDataProvider::getInstance().getHair(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getAllSkins(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<int8_t>>(BeautyDataProvider::getInstance().getSkins());
+	env.push<vector_t<int8_t>>(luaVm, BeautyDataProvider::getInstance().getSkins());
 	return 1;
 }
 
@@ -1285,9 +1285,9 @@ auto LuaExports::countMobs(lua_State *luaVm) -> int {
 
 auto LuaExports::getAllMapPlayerIds(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	int32_t mapId = env.get<int32_t>(1);
+	int32_t mapId = env.get<int32_t>(luaVm, 1);
 	if (Map *map = Maps::getMap(mapId)) {
-		env.push<vector_t<int32_t>>(map->getAllPlayerIds());
+		env.push<vector_t<int32_t>>(luaVm, map->getAllPlayerIds());
 		return 1;
 	}
 	return 0;
@@ -1587,7 +1587,7 @@ auto LuaExports::checkPartyFootholds(lua_State *luaVm) -> int {
 auto LuaExports::getAllPartyPlayerIds(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
 	if (Party *party = getPlayer(luaVm)->getParty()) {
-		env.push<vector_t<int32_t>>(party->getAllPlayerIds());
+		env.push<vector_t<int32_t>>(luaVm, party->getAllPlayerIds());
 		return 1;
 	}
 	return 0;
@@ -1762,7 +1762,7 @@ auto LuaExports::deleteInstanceVariable(lua_State *luaVm) -> int {
 
 auto LuaExports::getAllInstancePlayerIds(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<int32_t>>(getInstance(luaVm)->getAllPlayerIds());
+	env.push<vector_t<int32_t>>(luaVm, getInstance(luaVm)->getAllPlayerIds());
 	return 1;
 }
 
