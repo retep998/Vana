@@ -86,6 +86,11 @@ SPLIT_PACKET_IMPL(giveDebuff, int32_t playerId, uint8_t skillId, uint8_t level, 
 			.add<int32_t>(static_cast<int32_t>(time.count() * 1000));
 	}
 
+	builder.player
+		.add<int16_t>(0)
+		.add<int16_t>(delay)
+		.add<int8_t>(0);
+
 	builder.map
 		.add<header_t>(SMSG_3RD_PARTY_SKILL)
 		.add<int32_t>(playerId)
