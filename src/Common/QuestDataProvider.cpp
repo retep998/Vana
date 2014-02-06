@@ -70,6 +70,7 @@ auto QuestDataProvider::loadRequests() -> void {
 			if (cmp == "item") {
 				questRequest.isItem = true;
 				questRequest.id = request;
+				questRequest.count = count;
 			}
 			else if (cmp == "mob") {
 				questRequest.isMob = true;
