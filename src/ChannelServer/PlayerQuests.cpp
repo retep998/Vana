@@ -122,7 +122,7 @@ auto PlayerQuests::load() -> void {
 	for (const auto &row : rs) {
 		current = row.get<uint16_t>("quest_id");
 		int32_t mob = row.get<int32_t>("mob_id");
-		const string_t &data = row.get<string_t>("data");
+		string_t data = row.get<string_t>("data");
 
 		if (init) {
 			curQuest.id = current;
@@ -188,9 +188,11 @@ auto PlayerQuests::updateQuestMob(int32_t mobId) -> void {
 
 		auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
 		bool possiblyCompleted = false;
+		bool anyUpdate = false;
 		questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
-			if (info.isMob && quest.kills[info.id] < info.count) {
+			if (info.isMob && info.id == mobId && quest.kills[info.id] < info.count) {
 				quest.kills[info.id]++;
+				anyUpdate = true;
 				if (info.count == quest.kills[info.id]) {
 					possiblyCompleted = true;
 				}
@@ -198,6 +200,9 @@ auto PlayerQuests::updateQuestMob(int32_t mobId) -> void {
 			return IterationResult::ContinueIterating;
 		});
 
+		if (anyUpdate) {
+			m_player->send(QuestsPacket::updateQuest(quest));
+		}
 		if (possiblyCompleted) {
 			checkDone(quest);
 		}
