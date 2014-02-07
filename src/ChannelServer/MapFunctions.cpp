@@ -158,6 +158,48 @@ auto MapFunctions::listPortals(Player *player, const string_t &args) -> bool {
 	return true;
 }
 
+auto MapFunctions::listNpcs(Player *player, const string_t &args) -> bool {
+	int32_t mapId = args.length() == 0 ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	Map *map = Maps::getMap(mapId);
+	if (map == nullptr) {
+		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
+		return true;
+	}
+
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT ml.lifeid, st.label, sc.script "
+		<< "FROM " << Database::makeDataTable("map_life") << " ml "
+		<< "INNER JOIN " << Database::makeDataTable("strings") << " st ON st.objectid = ml.lifeid AND st.object_type = 'npc' "
+		<< "LEFT OUTER JOIN " << Database::makeDataTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'npc' "
+		<< "WHERE ml.life_type = 'npc' AND ml.mapid = :mapId",
+		soci::use(mapId, "mapId"));
+
+	auto format = [](const soci::row &row, out_stream_t &str) {
+		str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
+		opt_string_t script = row.get<opt_string_t>(2);
+		if (script.is_initialized()) {
+			str << " (script '" << script.get() << "')";
+		}
+	};
+	out_stream_t str("");
+	bool found = false;
+	for (const auto &row : rs) {
+		found = true;
+
+		str.str("");
+		str.clear();
+		format(row, str);
+		ChatHandlerFunctions::showInfo(player, str.str());
+	}
+
+	if (!found) {
+		ChatHandlerFunctions::showError(player, "No results");
+	}
+
+	return true;
+}
+
 auto MapFunctions::zakum(Player *player, const string_t &args) -> bool {
 	player->getMap()->spawnZakum(player->getPos());
 	ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {

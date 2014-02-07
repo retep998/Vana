@@ -29,6 +29,7 @@ namespace MapFunctions {
 	auto getMobHp(Player *player, const string_t &args) -> bool;
 	auto listMobs(Player *player, const string_t &args) -> bool;
 	auto listPortals(Player *player, const string_t &args) -> bool;
+	auto listNpcs(Player *player, const string_t &args) -> bool;
 	auto zakum(Player *player, const string_t &args) -> bool;
 	auto horntail(Player *player, const string_t &args) -> bool;
 	auto music(Player *player, const string_t &args) -> bool;
