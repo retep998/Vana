@@ -1228,6 +1228,9 @@ auto Map::endInstance(bool reset) -> void {
 	setInstance(nullptr);
 	setMusic("default");
 	m_mobs.clear();
+	for (auto &spawn : m_mobSpawns) {
+		spawn.spawned = false;
+	}
 	clearDrops(false);
 	killReactors(false);
 	if (reset) {
