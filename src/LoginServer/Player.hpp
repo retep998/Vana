@@ -41,12 +41,14 @@ public:
 	auto setQuietBanReason(int8_t reason) -> void { m_quietBanReason = reason; }
 	auto setQuietBanTime(int64_t banTime) -> void { m_quietBanTime = banTime; }
 	auto setCreationTime(int64_t creationTime) -> void { m_userCreation = creationTime; }
+	auto setGmLevel(int32_t gmLevel) -> void { m_gmLevel = gmLevel; }
 
 	auto getGender() const -> int8_t { return m_gender; }
 	auto getWorldId() const -> world_id_t { return m_worldId; }
 	auto isAdmin() const -> bool { return m_admin; }
 	auto getChannel() const -> channel_id_t { return m_channel; }
 	auto getUserId() const -> int32_t { return m_userId; }
+	auto getGmLevel() const -> int32_t { return m_gmLevel; }
 	auto getStatus() const -> PlayerStatus::PlayerStatus { return m_status; }
 	auto getPin() const -> int32_t { return m_pin; }
 	auto getCharDeletePassword() const -> opt_int32_t { return m_charDeletePassword; }
@@ -68,6 +70,7 @@ private:
 	int32_t m_userId = 0;
 	int32_t m_pin = 0;
 	int32_t m_invalidLogins = 0;
+	int32_t m_gmLevel = 0;
 	opt_int32_t m_charDeletePassword;
 	int64_t m_quietBanTime = 0;
 	int64_t m_userCreation = 0;
