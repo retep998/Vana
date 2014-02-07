@@ -84,6 +84,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("deleteChannelVariable", &LuaExports::deleteChannelVariable);
 	expose("getChannel", &LuaExports::getChannel);
 	expose("getChannelVariable", &LuaExports::getChannelVariable);
+	expose("getWorld", &LuaExports::getWorld);
 	expose("isHorntailChannel", &LuaExports::isHorntailChannel);
 	expose("isPapChannel", &LuaExports::isPapChannel);
 	expose("isPianusChannel", &LuaExports::isPianusChannel);
@@ -477,6 +478,11 @@ auto LuaExports::getChannelVariable(lua_State *luaVm) -> int {
 	}
 	string_t val = EventDataProvider::getInstance().getVariables()->getVariable(lua_tostring(luaVm, 1));
 	pushGetVariableData(luaVm, val, integral);
+	return 1;
+}
+
+auto LuaExports::getWorld(lua_State *luaVm) -> int {
+	lua_pushnumber(luaVm, ChannelServer::getInstance().getWorldId() + 1);
 	return 1;
 }
 

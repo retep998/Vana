@@ -60,6 +60,7 @@ namespace LuaExports {
 	auto deleteChannelVariable(lua_State *luaVm) -> int;
 	auto getChannel(lua_State *luaVm) -> int;
 	auto getChannelVariable(lua_State *luaVm) -> int;
+	auto getWorld(lua_State *luaVm) -> int;
 	auto isHorntailChannel(lua_State *luaVm) -> int;
 	auto isPapChannel(lua_State *luaVm) -> int;
 	auto isPianusChannel(lua_State *luaVm) -> int;
@@ -80,7 +81,7 @@ namespace LuaExports {
 	auto getPinkBeanChannels(lua_State *luaVm) -> int;
 	auto getZakumChannels(lua_State *luaVm) -> int;
 
-	// Npc
+	// NPC
 	auto isBusy(lua_State *luaVm) -> int;
 	auto removeNpc(lua_State *luaVm) -> int;
 	auto runNpc(lua_State *luaVm) -> int;
