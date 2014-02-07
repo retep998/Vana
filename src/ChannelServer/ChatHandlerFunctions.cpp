@@ -73,7 +73,7 @@ const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociation
 	{"anttunnel", {105070001, "Misc Victoria"}},
 	{"dungeon", {105090200, "Misc Victoria"}},
 	{"subway", {103000100, "Misc Victoria"}},
-	{"pigbeach", {10401000, "Misc Victoria"}},
+	{"pigbeach", {104010001, "Misc Victoria"}},
 	{"hotsand", {110040000, "Misc Victoria"}},
 	{"slimetree", {101010100, "Misc Victoria"}},
 	{"lorangx3", {110020001, "Misc Victoria"}},
@@ -555,6 +555,11 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.syntax = "[$map string | #map ID]";
 	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map");
 	sCommandList["listportals"] = command.addToMap();
+
+	command.command = &MapFunctions::listNpcs;
+	command.syntax = "[$map string | #map ID]";
+	command.notes.push_back("Lists all the NPCs and potentially their scripts on the map");
+	sCommandList["listnpcs"] = command.addToMap();
 
 	command.command = &MapFunctions::getMobHp;
 	command.syntax = "<#map mob ID>";
