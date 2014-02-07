@@ -199,7 +199,7 @@ elseif getJob() == 200 and getLevel() >= 30 then
 			sendBackNext();
 		end
 	elseif getItemAmount(4031009) > 0 and getItemAmount(4031012) == 0 then
-		addText("Still haven't met the person yet? Find #b#p1072001##k who's around #b#m101020000#k ");
+		addText("Still haven't met the person yet? Find #b#p1072001##k who's around #b#m101020000##k ");
 		addText("near Ellinia. Give the letter to him and he may let you know what to do.");
 		sendNext();
 	elseif getItemAmount(4031009) == 0 and getItemAmount(4031012) > 0 then
