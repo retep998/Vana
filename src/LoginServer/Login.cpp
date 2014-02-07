@@ -175,6 +175,7 @@ auto Login::loginUser(Player *player, PacketReader &reader) -> void {
 		player->setCreationTime(TimeUtilities::timeToTick(row.get<unix_time_t>("creation_date")));
 		player->setCharDeletePassword(row.get<opt_int32_t>("char_delete_password"));
 		player->setAdmin(row.get<bool>("admin"));
+		player->setGmLevel(row.get<int32_t>("gm_level"));
 
 		player->send(LoginPacket::loginConnect(player, username));
 	}
