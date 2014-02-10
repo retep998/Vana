@@ -285,7 +285,7 @@ auto LuaEnvironment::call(int numberOfReturnResults, const string_t &func, TArgs
 
 template <typename ... TArgs>
 auto LuaEnvironment::call(lua_State *luaVm, const string_t &func, TArgs ... args) -> Result {
-	return call(0, func, args...);
+	return call(luaVm, 0, func, args...);
 }
 
 template <typename ... TArgs>
