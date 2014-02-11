@@ -27,4 +27,6 @@ namespace InfoFunctions {
 	auto pos(Player *player, const string_t &args) -> bool;
 	auto online(Player *player, const string_t &args) -> bool;
 	auto variable(Player *player, const string_t &args) -> bool;
+	auto questData(Player *player, const string_t &args) -> bool;
+	auto questKills(Player *player, const string_t &args) -> bool;
 }
