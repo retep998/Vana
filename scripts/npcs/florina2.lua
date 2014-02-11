@@ -40,7 +40,7 @@ if what == 0 then
 		sendNext();
 	end
 elseif what == 1 then
-	addText("So you have #b#b#t4031134##k? You can always head over to #m110000000# with that Alright, then, but just be aware that you may be running into some monsters there, too. Okay, would you like to head over to  #m110000000# right now?");
+	addText("So you have #b#t4031134##k? You can always head over to #m110000000# with that Alright, then, but just be aware that you may be running into some monsters there, too. Okay, would you like to head over to  #m110000000# right now?");
 	yes = askYesNo();
 
 	if yes == 1 then
