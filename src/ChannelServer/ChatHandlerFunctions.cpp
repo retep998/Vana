@@ -349,6 +349,16 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.notes.push_back("Displays the value for a given player variable (or an error if the value is blank/doesn't exist)");
 	sCommandList["variable"] = command.addToMap();
 
+	command.command = &InfoFunctions::questData;
+	command.syntax = "<#quest ID> <$data>";
+	command.notes.push_back("Sets the quest data for the specified quest to the specified data.");
+	sCommandList["questdata"] = command.addToMap();
+
+	command.command = &InfoFunctions::questKills;
+	command.syntax = "<#mob ID> <#count>";
+	command.notes.push_back("Mocks killing a specified number of the specified mob.");
+	sCommandList["questkills"] = command.addToMap();
+
 	command.command = &ManagementFunctions::map;
 	command.syntax = "<$map string | #map ID>";
 	command.notes.push_back("Warps you to a desired map");
@@ -555,6 +565,11 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.syntax = "[$map string | #map ID]";
 	command.notes.push_back("Lists all the non-spawn/non-Mystic Door portals on the map");
 	sCommandList["listportals"] = command.addToMap();
+
+	command.command = &MapFunctions::listReactors;
+	command.syntax = "[$map string | #map ID]";
+	command.notes.push_back("Lists all the reactors on the map");
+	sCommandList["listreactors"] = command.addToMap();
 
 	command.command = &MapFunctions::listNpcs;
 	command.syntax = "[$map string | #map ID]";

@@ -146,14 +146,106 @@ auto MapFunctions::listPortals(Player *player, const string_t &args) -> bool {
 		return true;
 	}
 
-	auto portals = map->getPortalNames();
-	string_t rawMapId = StringUtilities::lexical_cast<string_t>(mapId);
-	if (portals.size() == 0) {
-		ChatHandlerFunctions::showError(player, "Map " + rawMapId + " has no portals");
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT mp.id, mp.label, mp.destination, mp.destination_label, mp.script "
+		<< "FROM " << Database::makeDataTable("map_portals") << " mp "
+		<< "WHERE mp.mapid = :mapId",
+		soci::use(mapId, "mapId"));
+
+	auto format = [](const soci::row &row, out_stream_t &str) {
+		int32_t destination = row.get<int32_t>(2);
+		opt_string_t destinationLabel = row.get<opt_string_t>(3);
+		opt_string_t portalScript = row.get<opt_string_t>(4);
+
+		str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
+		if (destination != Maps::NoMap) {
+			str << " (destination " << destination;
+			if (destinationLabel.is_initialized()) {
+				string_t label = destinationLabel.get();
+				if (!label.empty()) {
+					str << " -> " << destinationLabel.get();
+				}
+			}
+			str << ")";
+		}
+
+		if (portalScript.is_initialized()) {
+			string_t script = portalScript.get();
+			if (!script.empty()) {
+				str << " (script '" << script << "')";
+			}
+		}
+	};
+
+	ChatHandlerFunctions::showInfo(player, "Portals for Map " + std::to_string(mapId));
+
+	out_stream_t str("");
+	bool found = false;
+	for (const auto &row : rs) {
+		string_t portalLabel = row.get<string_t>(1);
+		if (portalLabel == "sp" || portalLabel == "tp") {
+			continue;
+		}
+		found = true;
+
+		str.str("");
+		str.clear();
+		format(row, str);
+		ChatHandlerFunctions::showInfo(player, str.str());
+	}
+
+	if (!found) {
+		ChatHandlerFunctions::showError(player, "No results");
+	}
+
+	return true;
+}
+
+auto MapFunctions::listReactors(Player *player, const string_t &args) -> bool {
+	int32_t mapId = args.length() == 0 ? player->getMapId() : ChatHandlerFunctions::getMap(args, player);
+	Map *map = Maps::getMap(mapId);
+	if (map == nullptr) {
+		ChatHandlerFunctions::showError(player, "Invalid map: " + args);
 		return true;
 	}
 
-	ChatHandlerFunctions::showInfo(player, "Portals on map " + std::to_string(mapId) + ": " + StringUtilities::delimit(", ", portals));
+	soci::session &sql = Database::getDataDb();
+	soci::rowset<> rs = (sql.prepare
+		<< "SELECT ml.lifeid, sc.script "
+		<< "FROM " << Database::makeDataTable("map_life") << " ml "
+		<< "LEFT OUTER JOIN " << Database::makeDataTable("scripts") << " sc ON sc.objectid = ml.lifeid AND sc.script_type = 'reactor' "
+		<< "WHERE ml.life_type = 'reactor' AND ml.mapid = :mapId",
+		soci::use(mapId, "mapId"));
+
+	auto format = [](const soci::row &row, out_stream_t &str) {
+		opt_string_t reactorScript = row.get<opt_string_t>(1);
+
+		str << row.get<int32_t>(0);
+		if (reactorScript.is_initialized()) {
+			string_t script = reactorScript.get();
+			if (!script.empty()) {
+				str << " (script '" << script << "')";
+			}
+		}
+	};
+
+	ChatHandlerFunctions::showInfo(player, "Reactors for Map " + std::to_string(mapId));
+
+	out_stream_t str("");
+	bool found = false;
+	for (const auto &row : rs) {
+		found = true;
+
+		str.str("");
+		str.clear();
+		format(row, str);
+		ChatHandlerFunctions::showInfo(player, str.str());
+	}
+
+	if (!found) {
+		ChatHandlerFunctions::showError(player, "No results");
+	}
 
 	return true;
 }
@@ -182,6 +274,9 @@ auto MapFunctions::listNpcs(Player *player, const string_t &args) -> bool {
 			str << " (script '" << script.get() << "')";
 		}
 	};
+
+	ChatHandlerFunctions::showInfo(player, "NPCs for Map " + std::to_string(mapId));
+
 	out_stream_t str("");
 	bool found = false;
 	for (const auto &row : rs) {

@@ -283,3 +283,35 @@ auto InfoFunctions::variable(Player *player, const string_t &args) -> bool {
 	}
 	return true;
 }
+
+auto InfoFunctions::questData(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\w+))", matches)) {
+		return false;
+	}
+
+	string_t quest = matches[1];
+	string_t data = matches[2];
+	uint16_t id = atoi(quest.c_str());
+	player->getQuests()->setQuestData(id, data);
+	return true;
+}
+
+auto InfoFunctions::questKills(Player *player, const string_t &args) -> bool {
+	match_t matches;
+	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\d+))", matches)) {
+		return false;
+	}
+
+	string_t mob = matches[1];
+	string_t kills = matches[2];
+
+	int32_t mobId = atoi(mob.c_str());
+	int32_t count = atoi(kills.c_str());
+
+	for (int32_t i = 0; i < count; i++) {
+		player->getQuests()->updateQuestMob(mobId);
+	}
+
+	return true;
+}
