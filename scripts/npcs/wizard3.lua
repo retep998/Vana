@@ -77,7 +77,7 @@ if getLevel() >= 50 then
 				addText("This test will determine whether you are smart enough to take the next step towards greatness. ");
 				addText("There is a dark, snow-covered area called the Holy Ground at the snowfield in Ossyria, where even the monsters can't reach. ");
 				addText("In the center of the area lies a huge stone called the Holy Stone. ");
-				addText("You''ll need to offer a special item as a sacrifice. ");
+				addText("You'll need to offer a special item as a sacrifice. ");
 				addText("Then the Holy Stone will test your wisdom right there on the spot.");
 				sendBackNext();
 

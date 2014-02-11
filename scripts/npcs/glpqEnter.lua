@@ -18,6 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Crimsonwood Keep PQ area door
 
 -- Crimsonwood Keystone
-if getItemAmount(3992041) > 0 then
+if getItemAmount(3992041) > 0 or isGm() then
 	setMap(610030020, "in00");
 end

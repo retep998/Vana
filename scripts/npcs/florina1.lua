@@ -18,6 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Pison (Tour Guide, teleports from Florina Beach)
 
 origin = getPlayerVariable("florina_origin", true);
+if origin == nil then
+	origin = 104000000;
+end
+
 addText("So you want to leave #b#m110000000##k? If you want, I can take you back to #b#m" .. origin .. "##k.\r\n");
 addText("#b#L0# #b I would like to go back now.");
 askChoice(); -- We don't care about the result O_o
