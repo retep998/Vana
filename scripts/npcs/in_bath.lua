@@ -29,6 +29,8 @@ else
 		else setMap(801000200);
 		end
 	else
-		-- TODO: Find the text
+		addText("Please check your wallet or purse and see if you have 300 mesos to enter this place. ");
+		addText("We have to keep the water hot you know...");
+		sendNext();
 	end
 end
