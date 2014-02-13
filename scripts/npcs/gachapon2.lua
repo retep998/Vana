@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Victoria Road : Ellinia
 
+dofile("scripts/lua_functions/gachaponHelper.lua");
+
 items = {
 	2043302, 2040002, 2043102, 2043002, 2044402, 2044302, 2043802, 2044002, 2041017, 2000004,
 	2000005, 2022025, 2022026, 1402010, 1442013, 1432009, 1002060, 1002063, 1322023, 1002042,
@@ -44,18 +46,4 @@ items = {
 	1332013, 1332002
 };
 
-if getItemAmount(5220000) >= 1 then
-	addText("You have a #bGachapon Ticket#k. Would you like to use it?");
-	yes = askYesNo();
-
-	if yes == 1 then
-		giveItem(5220000, -1);
-		random = getRandomNumber(#items); -- generate random number between 1 and the amount of items in the items array
-		giveItem(items[random], 1);
-		addText("You have obtained #b#t" .. items[random] .. "##k.");
-		sendNext();
-	end
-else
-	addText("Here's Gachapon.");
-	sendOk();
-end
+gachapon(items);
