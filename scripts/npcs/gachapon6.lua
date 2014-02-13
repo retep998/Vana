@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Zipangu : Mushroom Shrine
 
+dofile("scripts/lua_functions/gachaponHelper.lua");
+
 items = {
 	1102082, 1102043, 1102041, 1102042, 1102040, 1002587, 1002394, 1002393, 1082147, 1082149,
 	1082148, 1082145, 1022047, 1050018, 1322021, 1442017, 1312012, 1432018, 2043104, 2043105,
@@ -36,18 +38,4 @@ items = {
 	1402017, 1402036, 1051017
 };
 
-if getItemAmount(5220000) >= 1 then
-	addText("You have a #bGachapon Ticket#k. Would you like to use it?");
-	yes = askYesNo();
-
-	if yes == 1 then
-		giveItem(5220000, -1);
-		random = getRandomNumber(#items); -- generate random number between 1 and the amount of items in the items array
-		giveItem(items[random], 1);
-		addText("You have obtained #b#t" .. items[random] .. "##k.");
-		sendNext();
-	end
-else
-	addText("Here's Gachapon.");
-	sendOk();
-end
+gachapon(items);

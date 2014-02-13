@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon - Victoria Road : Henesys Market
 
+dofile("scripts/lua_functions/gachaponHelper.lua");
+
 items = {
 	2040001, 2041002, 2040805, 2040702, 2043802, 2040402, 2044505, 2044504, 2044605, 2044604,
 	2060004, 2061004, 2044502, 2044501, 2044500, 2044602, 2044601, 2044600, 2030007, 2020012,
@@ -52,18 +54,4 @@ items = {
 	1051017
 };
 
-if getItemAmount(5220000) >= 1 then
-	addText("You have a #bGachapon Ticket#k. Would you like to use it?");
-	yes = askYesNo();
-
-	if yes == 1 then
-		giveItem(5220000, -1);
-		random = getRandomNumber(#items); -- generate random number between 1 and the amount of items in the items array
-		giveItem(items[random], 1);
-		addText("You have obtained #b#t" .. items[random] .. "##k.");
-		sendNext();
-	end
-else
-	addText("Here's Gachapon.");
-	sendOk();
-end
+gachapon(items);

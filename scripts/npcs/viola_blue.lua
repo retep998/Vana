@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- A Pile of Pink Flowers
 
 -- TODO FIXME implement distance properly
+--You can't see the inside of the pile of flowers very well because you're too far. Go a little closer.
 
 if isQuestActive(2053) then
 	item = 4031026;
