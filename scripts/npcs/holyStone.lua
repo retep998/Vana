@@ -201,7 +201,9 @@ else
 				addText("Take this necklace and go back...");
 				sendNext();
 
-				giveItem(4031058, 1);
+				if not giveItem(4031058, 1)  then
+					-- TODO FIXME text?
+				end
 			end
 		end
 	end
