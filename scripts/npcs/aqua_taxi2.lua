@@ -17,10 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dolphin (Herb Town Pier)
 
-addText("Will you move to #b#m230000000##k now? The price is #b10000 mesos#k.");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 1 then
+addText("Will you move to " .. blue(mapRef(230000000)) .. " now? ");
+addText("The price is " .. blue("10000 mesos") .. ".");
+answer = askYesNo();
+
+if answer == answer_yes then
 	if giveMesos(-10000) then
 		setMap(230000000);
 	else
@@ -28,6 +31,7 @@ if yes == 1 then
 		sendNext();
 	end
 else
-	addText("Hmmm ...too busy to do it right now? If you feel like doing it, though, come back and find me.");
+	addText("Hmmm ...too busy to do it right now? ");
+	addText("If you feel like doing it, though, come back and find me.");
 	sendOk();
 end

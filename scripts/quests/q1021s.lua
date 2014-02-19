@@ -17,35 +17,55 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Roger: Apple Quest start
 
-if getGender() == 0 then
-	addText("Hey, Man~  What's up? Haha!  I am #p2000# who can teach you adorable new Maplers lots of information.");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+if getGender() == gender_male then
+	addText("Hey, Man~  ");
+	addText("What's up? ");
+	addText("Haha!  ");
+	addText("I am " .. npcRef(2000) .. " who can teach you adorable new Maplers lots of information.");
 	sendNext();
 
-	addText("You are asking who made me do this?  Ahahahaha!  Myself!  I wanted to do this and just be kind to you new travellers.");
+	addText("You are asking who made me do this?  ");
+	addText("Ahahahaha!  ");
+	addText("Myself!  ");
+	addText("I wanted to do this and just be kind to you new travellers.");
 	sendBackNext();
 else
-	addText("Hey there, Pretty~ I am #p2000# who teaches you adorable new Maplers lots of information.");
+	addText("Hey there, Pretty~ ");
+	addText("I am " .. npcRef(2000) .. " who teaches you adorable new Maplers lots of information.");
 	sendNext();
 
-	addText("I know you are busy! Please spare me some time~ I can teach you some useful information! Ahahaha!");
+	addText("I know you are busy! ");
+	addText("Please spare me some time~ I can teach you some useful information! ");
+	addText("Ahahaha!");
 	sendBackNext();
 end
 
+addText("So.....  Let me just do this for fun! ");
+addText("Abaracadabra~!");
+answer = askAcceptDecline();
 
-addText("So.....  Let me just do this for fun! Abaracadabra~!");
-accept = askAcceptDecline();
-
-if accept == 1 then
+if answer == answer_accept then
 	setHp(getHp() / 2);
 	giveItem(2010007, 1);
 	addQuest(1021);
-	addText("Surprised?  If HP becomes 0, then you are in trouble.  Now, I will give you #r#t2010007##k.  Please take it.  You will feel stronger.  Open the Item window and double click to consume.  Hey, It's very simple to open the Item window.  Just press #bI#k on your keyboard.#I");
+	addText("Surprised?  ");
+	addText("If HP becomes 0, then you are in trouble.  ");
+	addText("Now, I will give you " .. red(itemRef(2010007)) .. ".  ");
+	addText("Please take it.  ");
+	addText("You will feel stronger.  ");
+	addText("Open the Item window and double click to consume.  ");
+	addText("Hey, It's very simple to open the Item window.  ");
+	addText("Just press " .. blue("I") .. " on your keyboard.#I");
 	sendNext();
 
-	addText("Please take all #t2010007#s that I gave you.  You will be able to see the HP bar increasing.  Please talk to me again when you recover your HP 100%#I ");
+	addText("Please take all " .. itemRef(2010007) .. "s that I gave you.  ");
+	addText("You will be able to see the HP bar increasing.  ");
+	addText("Please talk to me again when you recover your HP 100%#I ");
 	sendBackOk();
 else
-	if getGender() == 0 then
+	if getGender() == gender_male then
 		addText("I can't believe an attractive guy like myself, got turned down!");
 		sendNext();
 	else

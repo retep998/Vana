@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Dolphin (Aquarium)
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 prices = nil;
 if getJob() == 0 then
 	prices = {100, 1000};
@@ -27,18 +29,19 @@ maps = {230030200, 251000100};
 
 addText("Oceans are all connected to each other. ");
 addText("Places you can't reach by foot can be easily reached oversea. ");
-addText("How about taking #bDolphin Taxi#k with us today? ");
+addText("How about taking " .. blue("Dolphin Taxi") .. " with us today? ");
 if getJob() == 0 then
 	addText("We have special tickets with a 90% discount for Beginners! ");
 end
 addText("\r\n");
+
 if getItemAmount(4031242) > 0 then
-	addText("#L0# Go to #bThe Sharp Unknown#k using #b#t4031242##k.#l\r\n");
+	addText(choiceRef("Go to " .. blue(mapRef(230030200)) .. " using " .. blue(itemRef(4031242)), 0));
 else
-	addText("#L0# Go to #bThe Sharp Unknown#k after paying " .. prices[1] .. "mesos.#l\r\n");
+	addText(choiceRef("Go to " .. blue(mapRef(230030200)) .. " after paying " .. prices[1] .. "mesos.", 0));
 end
 
-addText("#L1# Go to #bHerb Town#k after paying " .. prices[2] .. "mesos.#l");
+addText("\r\n" .. choiceRef("Go to " .. blue(mapRef(251000000)) .. " after paying " .. prices[2] .. "mesos.", 1) .. "\r\n");
 where = askChoice() + 1;
 
 if (where == 1 and getItemAmount(4031242) > 0 and giveItem(4031242, -1)) or giveMesos(-prices[where]) then -- Go to Sharp Unknown/Herb Town
