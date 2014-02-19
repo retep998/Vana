@@ -17,33 +17,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rene (3rd Job - Bowman Instructor)
 
+dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
+dofile("scripts/lua_functions/miscFunctions.lua");
 
 zakum = getPlayerVariable("zakum_quest_status", true);
 
 if getLevel() >= 50 then
-	addText("Can I help you?\r\n");
-	if getLevel() >= 70 then
-		-- Third job
-	end
-	addText("#b#L1# Please allow me to do the Zakum Dungeon Quest.#l");
-	choice = askChoice();
+	job = getJobLine();
+	jobLevel = getJobProgression();
+	jobType = getJobTrack();
+	choices = {};
 
-	if choice == 1 then
-		if zakum ~= 1 then
-			local job = getJobLine();
-			if job == 0 or job == 3 then
+	if getLevel() >= 70 and jobLevel == 0 and job == 3 then
+		-- TODO FIXME: Implement
+	end
+
+	append(choices, makeChoiceHandler(" Please allow me to do the Zakum Dungeon Quest", function()
+		if zakum == nil then
+			if job == 0 or job == 1 then
 				setPlayerVariable("zakum_quest_status", "1");
-				addText("You want to be permitted to do the Zakum Dungeon Quest, right? Must be #b#p2030008##k ... ok, alright! I'm sure you'll be fine roaming around the dungeon. Here's hoping you'll be careful there ...");
+				addText("You want to be permitted to do the Zakum Dungeon Quest, right? ");
+				addText("Must be " .. blue(npcRef(2030008)) .. " ... ok, alright! ");
+				addText("I'm sure you'll be fine roaming around the dungeon. ");
+				addText("Here's hoping you'll be careful there ...");
 			else
-				addText("So you want me to give you my permission to go on the Zakum Dungeon Quest? But you don't seem to be a bowman under my jurisdiction, so please look for the Trainer that oversees your job.");
+				addText("So you want me to give you my permission to go on the Zakum Dungeon Quest? ");
+				addText("But you don't seem to be a warrior under my jurisdiction, so please look for the Trainer that oversees your job.");
 			end
 		else
-			addText("How are you along with the Zakum Dungeon Quest? From what I've heard, there's this incredible monster at the innermost part of that place ... anyway, good luck. I'm sure you can do it.");
+			addText("How are you along with the Zakum Dungeon Quest? ");
+			addText("From what I've heard, there's this incredible monster at the innermost part of that place ... anyway, good luck. ");
+			addText("I'm sure you can do it.");
 		end
 		sendNext();
-	end
+	end));
+	
+	addText("Can I help you?\r\n");
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
+
+	selectChoice(choices, choice);
 else
-	addText("Hmm... It seems like there is nothing I can help you with. Come to me again when you get stronger. Zakum Dungeon quest is available from #bLevel 50#k and 3rd Job Advancement at #bLevel 70#k");
+	addText("Hmm... It seems like there is nothing I can help you with. ");
+	addText("Come to me again when you get stronger. ");
+	addText("Zakum Dungeon quest is available from " .. blue("Level 50") .. " and 3rd Job Advancement at " .. blue("Level 70"));
 	sendOk();
 end
