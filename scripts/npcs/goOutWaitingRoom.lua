@@ -17,27 +17,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Various waiting room attendants
 
-addText("Do you want to leave the waiting room? You can, but the ticket is NOT refundable. Are you sure you still want to leave this room?");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 1 then
+addText("Do you want to leave the waiting room? ");
+addText("You can, but the ticket is NOT refundable. ");
+addText("Are you sure you still want to leave this room?");
+answer = askYesNo();
+
+if answer == answer_yes then
 	m = getMap();
-	toMap = nil;
-	if m == 101000301 then toMap = 101000300;
-	elseif m == 200000112 then toMap = 200000100;
-	elseif m == 200000122 then toMap = 200000100;
-	elseif m == 200000132 then toMap = 200000100;
-	elseif m == 200000152 then toMap = 200000100;
-	elseif m == 220000110 then toMap = 220000100;
-	elseif m == 240000111 then toMap = 240000100;
-	elseif m == 260000110 then toMap = 260000100;
+	destinationMap = nil;
+	if m == 101000301 then destinationMap = 101000300;
+	elseif m == 200000112 then destinationMap = 200000100;
+	elseif m == 200000122 then destinationMap = 200000100;
+	elseif m == 200000132 then destinationMap = 200000100;
+	elseif m == 200000152 then destinationMap = 200000100;
+	elseif m == 220000110 then destinationMap = 220000100;
+	elseif m == 240000111 then destinationMap = 240000100;
+	elseif m == 260000110 then destinationMap = 260000100;
 	else
 		consoleOutput("Unsupported goOutWaitingRoom map: " .. m);
 		return;
 	end
 
-	setMap(toMap, "sp");
+	setMap(destinationMap);
 else
-	addText("You'll get to your destination in a few. Go ahead and talk to other people, and before you know it, you'll be there already.");
+	addText("You'll get to your destination in a few. ");
+	addText("Go ahead and talk to other people, and before you know it, you'll be there already.");
 	sendNext();
 end

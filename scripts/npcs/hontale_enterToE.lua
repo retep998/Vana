@@ -17,18 +17,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Encrypted Slate of the Squad
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement Horntail PQ
+
 if isPartyLeader() then
 	if getItemAmount(4001086) > 0 then
-		addText("The letters on the slate glitter and the backdoor opens. Do you want to go to the secret path?");
-		yes = askYesNo();
-		if yes == 1 then
+		addText("The letters on the slate glitter and the backdoor opens. ");
+		addText("Do you want to go to the secret path?");
+		answer = askYesNo();
+
+		if answer == answer_yes then
 			warpParty(240050400);
 		else
 			addText("If you want to move, talk to me again.");
 			sendOk();
 		end
 	else
-		addText("You can't read the words on the slate. You have no idea where to use it.");
+		addText("You can't read the words on the slate. ");
+		addText("You have no idea where to use it.");
 		sendOk();
 	end
 else

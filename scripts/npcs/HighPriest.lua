@@ -17,5 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- High Priest John
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement weddings
+
 addText("I oversee all Cathedral Weddings...if you'd like to get married in the Cathedral, please speak with me as well!");
 sendNext();

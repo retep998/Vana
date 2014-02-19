@@ -18,41 +18,56 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Crystal of Roots
 
 dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 mapId = getMap();
 
 if mapId == 240050100 or mapId == 240050101 or mapId == 240050102 or mapId == 240050103 or mapId == 240050104 or mapId == 240050105 or mapId == 240050200 or mapId == 240050300 or mapId == 240050310 then
-	addText("Words are revealed on the surface of crystal tangled roots.\r\n#b#L0# read the words carefully.#l\r\n#L1# Would you like to give up and get out?#l");
+	addText("Words are revealed on the surface of crystal tangled roots.\r\n");
+	addText(blue(choiceList({
+		" read the words carefully.",
+		" Would you like to give up and get out?",
+	})));
 	choice = askChoice();
+
 	if choice == 0 then
 		if mapId == 240050100 then
-			addText("Only those who have the crystal key can enter the maze room.\r\nOnly those left can open the door of maze room.\r\ncan get what you want from glittering tree hole.\r\nThe key made on the flame shines in the cave.");
+			addText("Only those who have the crystal key can enter the maze room.\r\n");
+			addText("Only those left can open the door of maze room.\r\n");
+			addText("can get what you want from glittering tree hole.\r\n");
+			addText("The key made on the flame shines in the cave.");
 		elseif mapId == 240050105 then
 			addText("When you find the key made on the flame, you'll see the end of the maze.");
 		elseif mapId == 240050200 then
-			addText("Darkness is connected to darkness, and light to light.\r\nYour choice always makes results.");
+			addText("Darkness is connected to darkness, and light to light.\r\n");
+			addText("Your choice always makes results.");
 		elseif mapId == 240050300 or mapId == 240050310 then
 			addText("The key made in the ice shines the cave.");
 		else
-			addText("You have to discard to earn something.\r\nYou can drop what you wish to drop in the glittering tree hole.");
+			addText("You have to discard to earn something.\r\n");
+			addText("You can drop what you wish to drop in the glittering tree hole.");
 		end
 		sendNext();
 	else
 		setMap(240050500, "st00");
 	end
 elseif mapId == 240050400 then
-	addText("Do you want to go back to #m240050000#"); -- Typo in GMS :P
-	yes = askYesNo();
-	if yes == 1 then
+	addText("Do you want to go back to " .. mapRef(240050000)); -- Typo in GMS
+	answer = askYesNo();
+
+	if answer == answer_yes then
 		setMap(240050000, "st00");
 	else
 		addText("Think again and talk to me.");
 		sendNext();
 	end
 elseif mapId == 240050500 then
-	addText("The entrance of the cave is reflected on the crystal. It seems you can get there when touching it.\r\n#b#L0# touch the crystal#l");
+	addText("The entrance of the cave is reflected on the crystal. ");
+	addText("It seems you can get there when touching it.\r\n");
+	addText(blue(choiceRef(" touch the crystal")));
 	choice = askChoice();
-	if choice == 1 then
+
+	if choice == 0 then
 		giveItem(4001087, getItemAmount(4001087));
 		giveItem(4001088, getItemAmount(4001088));
 		giveItem(4001089, getItemAmount(4001089));
@@ -76,8 +91,9 @@ elseif mapId == 240060000 or mapId == 240060100 or mapId == 240060200 then
 		end
 		addText(" today.");
 	end
-	yes = askYesNo();
-	if yes == 1 then
+
+	answer = askYesNo();
+	if answer == answer_yes then
 		setMap(240050400, "st00");
 	else
 		addText("Think again and talk to me.");

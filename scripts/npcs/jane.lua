@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Jane in Lith (1002100)
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if isQuestCompleted(2013) then
 	addText("It's you...! ");
 	addText("Thanks to you, I was able to get much done. ");
@@ -24,46 +26,38 @@ if isQuestCompleted(2013) then
 	addText("If you need anything, just let me know.");
 	sendNext();
 	
-	addText("What would you like to buy? \r\n");
-	addText("#b#L0##t2000002# (price : 310 mesos) #l#k\r\n");
-	addText("#b#L1##t2022003# (price : 1060 mesos) #l#k\r\n");
-	addText("#b#L2##t2022000# (price : 1600 mesos) #l#k\r\n");
-	addText("#b#L3##t2001000# (price : 3120 mesos) #l#k\r\n");
-	choice = askChoice();
-
-	item = nil;
-	effect = nil;
-	price = nil;
-	if choice == 0 then
-		item = 2000002;
-		effect = "allows you to recover 300 HP";
-		price = 310;
-	elseif choice == 1 then
-		item = 2022003;
-		effect = "allows you to recover 1000 HP";
-		price = 1060;
-	elseif choice == 2 then
-		item = 2022000;
-		effect = "allows you to recover 800 MP";
-		price = 1600;
-	elseif choice == 3 then
-		item = 2001000;
-		effect = "allows you to recover 1000 HP and MP";
-		price = 3120;
+	function generateChoice(itemId, price, effect)
+		return makeChoiceData(itemRef(itemId) .. " (price : " .. price .. " mesos) ", {itemId, price, effect});
 	end
 
-	addText("You want #b#t" .. item .. "##k? ");
-	addText("#t" .. item .. "# " .. effect .. ". ");
+	choices = {
+		generateChoice(2000002, 310, "allows you to recover 300 HP"),
+		generateChoice(2022003, 1060, "allows you to recover 1000 HP"),
+		generateChoice(2022000, 1600, "allows you to recover 800 MP"),
+		generateChoice(2001000, 3120, "allows you to recover 1000 HP and MP"),
+	};
+
+	addText("What would you like to buy? \r\n");
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
+
+	arr = selectChoice(choices, choice);
+	item = arr[1];
+	effect = arr[2];
+	price = arr[3];
+
+	addText("You want " .. blue(itemRef(item)) .. "? ");
+	addText(itemRef(item) .. " " .. effect .. ". ");
 	addText("How many would you like to purchase?");
 	qty = askNumber(0, 0, 100);
 
 	finalCost = qty * price;
 
-	addText("Will you purchase #r" .. qty .. "#k #b#t" .. item .. "#(s)#k? ");
-	addText("#b#t" .. item .. "##k costs " .. price .. " per piece, so the total comes out to be " .. finalCost .. " mesos.");
+	addText("Will you purchase " .. red(qty) .. " " .. blue(itemRef(item) .. "(s)") .. "? ");
+	addText(blue(itemRef(item)) " costs " .. price .. " per piece, so the total comes out to be " .. finalCost .. " mesos.");
 	answer = askYesNo();	
 
-	if answer == 1 then
+	if answer == answer_yes then
 		if hasOpenSlotsFor(item, qty) and getMesos() >= finalCost then
 			giveItem(item, qty);
 			giveMesos(-finalCost);
@@ -72,7 +66,7 @@ if isQuestCompleted(2013) then
 			sendNext();
 		else
 			addText("Are you lacking mesos by any chance? ");
-			addText("Please check to see if you have an empty slot available in the Etc window of your Item Inventory, and if you have at least #r" .. finalCost .. "#k mesos with you.");
+			addText("Please check to see if you have an empty slot available in the Etc window of your Item Inventory, and if you have at least " .. red(finalCost) .. " mesos with you.");
 			sendNext();
 		end
 	else

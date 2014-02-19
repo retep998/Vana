@@ -17,28 +17,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Hotel Receptionist, Sleepywood sauna entry NPC
 
-addText("Welcome. We're the Sleepywood Hotel. Our hotel works hard to serve you the best at all times. If you are tired and worn out from hunting, how about a relaxing stay at our hotel?");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("Welcome. ");
+addText("We're the Sleepywood Hotel. ");
+addText("Our hotel works hard to serve you the best at all times. ");
+addText("If you are tired and worn out from hunting, how about a relaxing stay at our hotel?");
 sendNext();
 
-addText("We offer two kinds of rooms for service. Please choose the one of your liking.\r\n#b#L0#Regular sauna(499 mesos per use)#l\r\n#L1#VIP sauna(999 mesos per use)#l");
-what = askChoice();
+addText("We offer two kinds of rooms for service. ");
+addText("Please choose the one of your liking.\r\n");
+addText(blue(choiceList({
+	"Regular sauna(499 mesos per use)",
+	"VIP sauna(999 mesos per use)",
+})));
+choice = askChoice();
 
-if what == 0 then
+if choice == 0 then
 	price = 499;
 	map = 105040401;
-	addText("You've chosen the regular sauna. Your HP and MP will recover fast and you can even purchase some items there. Are you sure you want to go in?");
-elseif what == 1 then
+	addText("You've chosen the regular sauna. ");
+	addText("Your HP and MP will recover fast and you can even purchase some items there. ");
+elseif choice == 1 then
 	price = 999;
 	map = 105040402;
-	addText("You've chosen the VIP sauna. Your HP and MP will recover even faster than that of the regular sauna and you can even find a special item in there. Are you sure you want to go in?");
+	addText("You've chosen the VIP sauna. ");
+	addText("Your HP and MP will recover even faster than that of the regular sauna and you can even find a special item in there. ");
 end
-yes = askYesNo();
 
-if yes == 1 then
+addText("Are you sure you want to go in?");
+answer = askYesNo();
+
+if answer == answer_yes then
 	if giveMesos(-price) then
 		setMap(map);
 	else
-		addText("I'm sorry. It looks like you don't have enough mesos. It will cost you " .. price .. " mesos to stay at our hotel.");
+		addText("I'm sorry. ");
+		addText("It looks like you don't have enough mesos. ");
+		addText("It will cost you " .. price .. " mesos to stay at our hotel.");
 		sendOk();
 	end
 else

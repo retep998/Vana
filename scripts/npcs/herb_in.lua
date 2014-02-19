@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Shane in Ellinia
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 function validQuest(questId)
 	return isQuestActive(questId) or isQuestCompleted(questId);
 end
@@ -28,15 +30,14 @@ if validQuest(2051) then
 		price = getLevel() * 200;
 		
 		addText("It's you from the other day. ");
-		addText("Did #p1061005# make another request to you? ");
+		addText("Did " .. npcRef(1061005) .. " make another request to you? ");
 		addText("What? ");
 		addText("You need to go in further this time? ");
-		addText("Hmm ... it's pretty dangerous in there, but ... alright, for #r" .. price .. "#k mesos I'll let you in that deep. ");
+		addText("Hmm ... it's pretty dangerous in there, but ... alright, for " .. red(price) .. " mesos I'll let you in that deep. ");
 		addText("So, do you want to pay your way in?");
-		
 		answer = askYesNo();
 
-		if answer == 0 then
+		if answer == answer_no then
 			addText("I see ... but understand that you can't get in here for free.");
 			sendNext();
 		else
@@ -44,26 +45,26 @@ if validQuest(2051) then
 				setMap(mapId);
 			else
 				addText("Do you not have enough Mesos? ");
-				addText("Will you check whether you have more than #r" .. price .. "#k Mesos? ");
+				addText("Will you check whether you have more than " .. red(price) .. " Mesos? ");
 				addText("Don't even try to ask me for a discount.");
 				sendNext();
 			end
 		end
 	else
 		addText("It's you again. ");
-		addText("Is #p1061005# busy making ant-aging serum? ");
+		addText("Is " .. npcRef(1061005) .. " busy making ant-aging serum? ");
 		addText("Anyway, honestly, I was a little shocked that you were able to get through this place. ");
 		addText("For that, I'll let you enter free of charge. ");
 		addText("You might be able to get some precious items deep inside...");
 		sendNext();
 
-		addText("Oh, by the way... once, #p1032100# of this town had secretly gone inside, and when I caught her, she was so taken aback that she lost her #b#t1032013##k in there. ");
+		addText("Oh, by the way... once, " .. npcRef(1032100) .. " of this town had secretly gone inside, and when I caught her, she was so taken aback that she lost her " .. blue(itemRef(1032013)) .. " in there. ");
 		addText("I tried to look for it but couldn't figure out where it was... ");
 		addText("Do you think you can go in and find it? ");
 		addText("Would you like to enter now?");
 		answer = askYesNo();
 
-		if answer == 0 then
+		if answer == answer_no then
 			addText("Suit yourself. ");
 			addText("I was trying to be considerate for once.");
 			sendNext();
@@ -77,13 +78,13 @@ elseif validQuest(2050) then
 	if isQuestActive(2050) then
 		price = getLevel() * 100;
 
-		addText("So you came here at the request of #p1061005# to take the medicinal herb? ");
+		addText("So you came here at the request of " .. npcRef(1061005) .. " to take the medicinal herb? ");
 		addText("Well...I inherited this land from my father and I can't let some stranger in just like that ... ");
-		addText("But, with #r" .. price .. "#k mesos, it's a whole different story...");
+		addText("But, with " .. red(price) .. " mesos, it's a whole different story...");
 		addText("So, do you want to pay your way in?");
 		answer = askYesNo();
 
-		if answer == 0 then
+		if answer == answer_no then
 			addText("I see ... but understand that you can't get in here for free.");
 			sendNext();
 		else
@@ -91,21 +92,21 @@ elseif validQuest(2050) then
 				setMap(mapId);
 			else
 				addText("Lacking mesos by any chance? ");
-				addText("Make sure you have more than #r" .. price .. "#k mesos on hand. ");
+				addText("Make sure you have more than " .. red(price) .. " mesos on hand. ");
 				addText("Don't expect me to give you any discounts.");
 				sendNext();
 			end
 		end
 	else
 		addText("It's you again. ");
-		addText("Is #p1061005# busy making diet pills? ");
+		addText("Is " .. npcRef(1061005) .. " busy making diet pills? ");
 		addText("Anyway, honestly, I was a little shocked that you were able to get through this place. ");
 		addText("For that, I'll let you enter free of charge. ");
 		addText("You might be able to get some precious items deep inside...");
 		addText("Would you like to enter now?");
 		answer = askYesNo();
 
-		if answer == 0 then
+		if answer == answer_no then
 			addText("Suit yourself. ");
 			addText("I was trying to be considerate for once.");
 			sendNext();

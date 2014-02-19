@@ -17,8 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Keroben, bouncer to Horntail's Cave
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if isGm() or isActiveItem(2210003) then
-	addText("Oh, my Brother! Don't worry about human's invasion. I'll protect you all. Come in.");
+	addText("Oh, my Brother! ");
+	addText("Don't worry about human's invasion. ");
+	addtext("I'll protect you all. ");
+	addText("Come in.");
 	sendNext();
 
 	if isActiveItem(2210003) then
@@ -32,7 +37,9 @@ else
 		setHp(1);
 	end
 
-	addText("That's far enough, human! No one is allowed beyond this point. Get away from here!");
+	addText("That's far enough, human! ");
+	addText("No one is allowed beyond this point. ");
+	addText("Get away from here!");
 	sendNext();
 
 	setMap(240040600, "st00");
