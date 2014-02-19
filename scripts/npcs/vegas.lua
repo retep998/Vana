@@ -17,23 +17,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Assistant Bonnie
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+choices = {
+	makeChoiceHandler("I am now ready to get Married in Chapel.", function()
+		-- TODO FIXME implement weddings
+		addText("You need to be in " .. blue("a 2-person party with your fiancee or fiance") .. " to get married.");
+		sendNext();
+	end),
+	makeChoiceHandler("I am invited to the wedding!", function()
+		-- TODO FIXME implement weddings
+		addText("Greetings! ");
+		addText("I can tell that you're a guest of the Bride and Groom, would you like to enter the Chapel?");
+		answer = askYesNo();
+
+		if answer == answer_yes then
+			addText("I apologize, but the Wedding hasn't started yet. ");
+			addText("When it does, I'll be sure to let you in. ");
+			sendNext();
+		else
+			addText("Well, it looks like this isn't your cup of tea, please stand aside and let others enter. ");
+			sendNext();
+		end
+	end),
+};
+
 addText("I can guide you to the Wedding. Which one suits you?\r\n");
-addText("#b#L0#I am now ready to get Married in Chapel.#l\r\n");
-addText("#L1#I am invited to the wedding!#l#k");
-value = askChoice();
+addText(blue(choiceList(choices)));
+choice = askChoice();
 
-if value == 0 then
-	addText("You need to be in #ba 2-person party with your fiancee or fiance#kto get married.");
-	sendNext();
-elseif value == 1 then
-	addText("Welcome! I can tell that you're a guest of the Bride and Groom, would you like to enter the Chapel?");
-	yes = askYesNo();
-
-	if yes == 1 then
-		addText("I apologize, but the Wedding hasn't started yet. When it does, I'll be sure to let you in. ");
-		sendNext();
-	else
-		addText("Step aside then, there are others ready to go in.");
-		sendNext();
-	end
-end
+selectChoice(choices, choice);

@@ -17,10 +17,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Konpei (warps to Showa)
 
-addText("Here you are, right in front of the hideout! What? You want to return to Showa Town? ");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 0 then
+addText("Here you are, right in front of the hideout! ");
+addText("What? ");
+addText("You want to return to Showa Town? ");
+answer = askYesNo();
+
+if answer == answer_no then
 	addText("If you want to return to Showa Town, then talk to me.");
 	sendOk();
 else
