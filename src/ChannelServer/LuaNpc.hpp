@@ -35,6 +35,7 @@ public:
 protected:
 	auto handleError(const string_t &filename, const string_t &error) -> void override;
 	auto handleThreadCompletion() -> void override;
+	auto setNpcEnvironmentVariables() -> void;
 };
 
 namespace LuaExports {

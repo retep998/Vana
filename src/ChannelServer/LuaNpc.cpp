@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
 	LuaScriptable(filename, playerId, true)
 {
+	setNpcEnvironmentVariables();
+
 	// Miscellaneous
 	expose("showStorage", &LuaExports::showStorage);
 	expose("getDistanceToPlayer", &LuaExports::getDistanceNpc);
@@ -52,6 +54,14 @@ LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
 	// Quest
 	expose("addQuest", &LuaExports::addQuest);
 	expose("endQuest", &LuaExports::endQuest);
+}
+
+auto LuaNpc::setNpcEnvironmentVariables() -> void {
+	set<int32_t>("answer_yes", 1);
+	set<int32_t>("answer_no", 0);
+
+	set<int32_t>("answer_accept", 1);
+	set<int32_t>("answer_decline", 0);
 }
 
 auto LuaNpc::handleThreadCompletion() -> void {

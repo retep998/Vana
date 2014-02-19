@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Drop.hpp"
 #include "EffectPacket.hpp"
 #include "EventDataProvider.hpp"
+#include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
 #include "Instances.hpp"
@@ -331,8 +332,23 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 	set<int32_t>("env_redMessage", PlayerPacket::NoticeTypes::Red);
 	set<int32_t>("env_noticeMessage", PlayerPacket::NoticeTypes::Notice);
 	set<int32_t>("env_boxMessage", PlayerPacket::NoticeTypes::Box);
-	set<int32_t>("env_mapleVersion", MapleVersion::Version);
-	set<int32_t>("env_mapleLocale", MapleVersion::Locale);
+
+	set<int32_t>("gender_male", Gender::Male);
+	set<int32_t>("gender_female", Gender::Female);
+
+	set<string_t>("locale_global", MAPLE_LOCALE_STRING_GLOBAL);
+	set<string_t>("locale_korea", MAPLE_LOCALE_STRING_KOREA);
+	set<string_t>("locale_japan", MAPLE_LOCALE_STRING_JAPAN);
+	set<string_t>("locale_china", MAPLE_LOCALE_STRING_CHINA);
+	set<string_t>("locale_europe", MAPLE_LOCALE_STRING_EUROPE);
+	set<string_t>("locale_thailand", MAPLE_LOCALE_STRING_THAILAND);
+	set<string_t>("locale_tawian", MAPLE_LOCALE_STRING_TAIWAN);
+	set<string_t>("locale_sea", MAPLE_LOCALE_STRING_SEA);
+	set<string_t>("locale_brazil", MAPLE_LOCALE_STRING_BRAZIL);
+
+	set<int32_t>("env_version", MapleVersion::Version);
+	set<bool>("env_isTestServer", MapleVersion::TestServer);
+	set<string_t>("env_locale", MapleVersion::LocaleString);
 }
 
 auto LuaScriptable::handleError(const string_t &filename, const string_t &error) -> void {
