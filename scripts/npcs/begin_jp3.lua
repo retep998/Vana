@@ -17,12 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 --
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 addText("Are you done with your training? ");
 addText("If you wish, I will send you out from this training camp.");
-yes = askYesNo();
+answer = askYesNo();
 
-if yes == 1 then
-	addText("Then, I will send you out from here. Good job.");
+if answer == answer_yes then
+	addText("Then, I will send you out from here. ");
+	addText("Good job.");
 	sendNext();
 
 	setMap(3);

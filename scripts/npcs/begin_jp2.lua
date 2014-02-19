@@ -17,11 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Exit of Training Camp
 
-addText("You have finished all your trainings. Good job. ");
-addText("You seem to be ready to start with the journey right away! Good , I will let you on to the next place.");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("You have finished all your trainings. ");
+addText("Good job. ");
+addText("You seem to be ready to start with the journey right away! ");
+addText("Good, I will let you on to the next place.");
 sendNext();
 
-addText("But remember, once you get out of here, you will enter a village full with monsters. Well them, good bye!");
+addText("But remember, once you get out of here, you will enter a village full with monsters. ");
+addText("Well then, good bye!");
 sendBackNext();
 
 setMap(40000);
