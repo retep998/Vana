@@ -17,5 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mad Bunny - Easter Event
 
-addText("Sup. Easter is over, but I still don't like it one bit, and now the people are aware of my plans. That's alright, though; my gang will do our best to bring it down next year, too. I'll be counting on you to help us take away more Easter Eggs from others. Peace..");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("Sup. ");
+addText("Easter is over, but I still don't like it one bit, and now the people are aware of my plans. ");
+addText("That's alright, though; my gang will do our best to bring it down next year, too. ");
+addText("I'll be counting on you to help us take away more Easter Eggs from others. ");
+addText("Peace..");
 sendNext();

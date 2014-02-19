@@ -17,22 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Pison (Tour Guide, teleports from Florina Beach)
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 origin = getPlayerVariable("florina_origin", true);
 if origin == nil then
 	origin = 104000000;
 end
 
-addText("So you want to leave #b#m110000000##k? If you want, I can take you back to #b#m" .. origin .. "##k.\r\n");
-addText("#b#L0# #b I would like to go back now.");
-askChoice(); -- We don't care about the result O_o
+addText("So you want to leave " .. blue(mapRef(110000000)) .. "? ");
+addText("If you want, I can take you back to " .. blue(mapRef(origin)) .. ".\r\n");
+addText(blue(choiceRef("I would like to go back now.")));
+askChoice();
 
-addText("Are you sure you want to return to #b#m" .. origin .. "##k? Alright, we'll have to get going fast. Do you want to head back to #m" .. origin .. "# now?");
-yes = askYesNo();
+addText("Are you sure you want to return to " .. blue(mapRef(origin)) .. "? ");
+addText("Alright, we'll have to get going fast. ");
+addText("Do you want to head back to " .. mapRef(origin) .. " now?");
+answer = askYesNo();
 
-if yes == 1 then
+if answer == answer_yes then
 	deletePlayerVariable("florina_origin");
 	setMap(origin);
 else
-	addText("You must have some business to take care of here. It's not a bad idea to take some rest at #m" .. origin .. "#. Look at me; I love it here so much that I wound up living here. Hahaha ¡¦ anyway, talk to me when you feel like going back.");
+	addText("You must have some business to take care of here. ");
+	addText("It's not a bad idea to take some rest at " .. mapRef(origin) .. ". ");
+	addText("Look at me; I love it here so much that I wound up living here. ");
+	addText("Hahaha ¡¦ anyway, talk to me when you feel like going back.");
 	sendNext();
 end

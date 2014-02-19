@@ -17,5 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Meteorite 6
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement quest(s)?
+
 addText("It appears to be a meteorite that have been dropped from the space, but it's so heavily damaged that nothing useful can be found from it.");
 sendNext();
