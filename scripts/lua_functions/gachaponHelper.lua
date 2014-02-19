@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Gachapon machines
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 function gachapon(items, gachItem)
 	if gachItem == nil then
 		gachItem = 5220000;
@@ -26,7 +28,8 @@ function gachapon(items, gachItem)
 		addText("You need to be at least Level 15 in order to use Gachapon.");
 		sendNext();
 	elseif getItemAmount(gachItem) >= 1 then
-		addText("You have a #b#t" .. gachItem .. "##k. Would you like to use it?");
+		addText("You have a " .. blue(itemRef(gachItem)) .. ". ");
+		addText("Would you like to use it?");
 		yes = askYesNo();
 
 		if yes == 1 then
@@ -53,7 +56,7 @@ function gachapon(items, gachItem)
 			-- TODO FIXME add item stat randomization
 			giveItem(item[1], item["qty"]);
 
-			addText("You have obtained #b#t" .. item[1] .. "##k.");
+			addText("You have obtained " .. blue(itemRef(item[1])) .. ".");
 			sendNext();
 		else
 			addText("Please come again!");

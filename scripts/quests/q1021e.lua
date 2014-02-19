@@ -39,7 +39,7 @@ addText("Well take care of yourself and Good luck my friend!\r\n");
 addText(questCompleteIcon() .. "\r\n");
 addText(questItemIcon(2010000, 3) .. "\r\n");
 addText(questItemIcon(2010009, 3) .. "\r\n");
-addText(questExpIcon() .. " 10 exp");
+addText(questExpIcon(10) .. "\r\n");
 sendBackNext();
 
 endQuest(1021);

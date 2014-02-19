@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Functions to aid in the implementation of synthesizer NPCs
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 MESOS = -1
 
 -- displayResources takes an array of items in the form of {itemid, amount, itemid, amount} and a multiplier
@@ -30,13 +32,9 @@ function displayResources(items, multiplier)
 		local item = reqs[index];
 		local amt = reqs[index + 1];
 		if item == MESOS then -- Mesos are shown as item 4031138 (Sack of Money)
-			addText("#v4031138# " .. amt .. " mesos");
+			addText(questMesosIcon(amt) .. "\r\n");
 		else
-			if amt == 1 then
-				addText("#v" .. item .. "# #t" .. item .. "#\r\n");
-			else
-				addText("#v" .. item .. "# " .. amt .. " #t" .. item .. "#s\r\n");
-			end
+			addText(questItemIcon(item, qty) .. "\r\n");
 		end
 	end
 end
