@@ -89,6 +89,10 @@ function choiceList(choices)
 	return text;
 end
 
+function makeChoiceData(choice, data)
+	return {choice, data};
+end
+
 function makeChoiceHandler(choice, handler)
 	return {choice, handler};
 end
@@ -97,6 +101,10 @@ function selectChoice(choices, choiceId)
 	choiceId = choiceId + 1;
 	choice = choices[choiceId];
 	if type(choice) == "table" then
-		return choice[2]();
+		if type(choice[2]) == "function" then
+			return choice[2](choiceId);
+		else
+			return choice[2], choiceId;
+		end
 	end
 end
