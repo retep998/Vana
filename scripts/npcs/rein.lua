@@ -17,11 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Rain (Amherst)
 
-addText("This is the town called #b#m1010000##k, located at the northeast part of the Maple Island. You know that Maple Island is for beginners, right? I'm glad there are only weak monsters around this place.");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("This is the town called " .. blue(mapRef(1010000)) .. ", located at the northeast part of the Maple Island. ");
+addText("You know that Maple Island is for beginners, right? ");
+addText("I'm glad there are only weak monsters around this place.");
 sendNext();
 
-addText("If you want to get stronger, then go to #b#m60000##k where there's an harbor, ride on the gigantic ship and head to the place called #bVictoria Island#k. It's incomparable in size compared to this tiny island.");
+addText("If you want to get stronger, then go to " .. blue(mapRef(60000)) .. " where there's an harbor, ride on the gigantic ship and head to the place called " .. blue("Victoria Island") .. ". ");
+addText("It's incomparable in size compared to this tiny island.");
 sendBackNext();
 
-addText("At the Victoria Island you can choose your job. Is it called #b#m102000000##k...? I heard there's a bare, desolate town where warriors live. A highland...what kind of a place would that be?");
+addText("At the Victoria Island you can choose your job. ");
+addText("Is it called " .. blue(mapRef(102000000)) .. "...? ");
+addText("I heard there's a bare, desolate town where warriors live. ");
+addText("A highland...what kind of a place would that be?");
 sendBackOk();

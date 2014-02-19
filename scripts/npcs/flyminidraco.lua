@@ -17,8 +17,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Corba, turns you into a dragon so you can fly to the Time Temple
 
-addText("If you had wings, I'm sure you could go there.  But, that alone won't be enough.  If you want to fly though the wind that's sharper than a blade, you'll need tough scales as well.  I'm the only Halfling left that knows the way back... If you want to go there, I can transform you.  No matter what you are, for this moment, you will become a #bDragon#k...\r\n");
-addText("#L0##bI want to become a dragon.#k#l");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("If you had wings, I'm sure you could go there.  ");
+addText("But, that alone won't be enough.  ");
+addText("If you want to fly though the wind that's sharper than a blade, you'll need tough scales as well.  ");
+addText("I'm the only Halfling left that knows the way back... ");
+addText("If you want to go there, I can transform you.  ");
+addText("No matter what you are, for this moment, you will become a " .. blue("Dragon") .. "...\r\n");
+addText(blue(choiceRef("I want to become a dragon.")));
 askChoice();
 
 useItem(2210016);
