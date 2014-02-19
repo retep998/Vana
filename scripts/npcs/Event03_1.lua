@@ -17,5 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Vikin
 
-addText("Hey hey!!! Find the #t4031018#! I lost the map somewhere and I can't leave without it.");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("Hey hey!!! ");
+addText("Find the " .. itemRef(4031018) .. "! ");
+addText("I lost the map somewhere and I can't leave without it.");
 sendOk();
