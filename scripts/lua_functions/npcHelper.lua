@@ -25,6 +25,10 @@ function blue(text)
 	return "#b" .. text .. "#k";
 end
 
+function bold(text)
+	return "#e" .. text .. "#n";
+end
+
 function fileRef(text)
 	return "#f" .. text .. "#";
 end
@@ -49,12 +53,19 @@ function questCompleteIcon()
 	return fileRef("UI/UIWindow.img/QuestIcon/4/0");
 end
 
-function questExpIcon()
-	return fileRef("UI/UIWindow.img/QuestIcon/8/0");
+function questExpIcon(experience)
+	return fileRef("UI/UIWindow.img/QuestIcon/8/0") .. " " .. experience .. " exp";
+end
+
+function questMesosIcon(mesos)
+	return iconRef(4031138) .. " " .. mesos .. " mesos";
 end
 
 function questItemIcon(itemId, qty)
-	return iconRef(itemId) .. " " .. qty .. " " .. itemRef(itemId);
+	if qty == nil or qty == 1 then
+		return iconRef(itemId) .. " " .. itemRef(itemId);
+	end
+	return iconRef(itemId) .. " " .. qty .. " " .. itemRef(itemId) .. "s";
 end
 
 function choiceRef(choice, choiceId)
