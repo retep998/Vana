@@ -17,29 +17,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Warrior Job Instructor (Inside)
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if getItemAmount(4031013) >= 30 then
-	addText("Ohhhhh...you collected all 30 Dark Marbles!! It should have been difficult...just incredible! ");
-	addText("You've passed the test and for that, I'll reward you #b#t4031012##k. Take that and go back ");
-	addText("to Perion.");
+	addText("Ohhhhh...you collected all 30 Dark Marbles!! ");
+	addText("It should have been difficult...just incredible! ");
+	addText("You've passed the test and for that, I'll reward you " .. blue(itemRef(4031012)) .. ". ");
+	addText("Take that item and go back to Perion.");
 	sendNext();
+
 	giveItem(4031013, -getItemAmount(4031013));
 	giveItem(4031008, -getItemAmount(4031008));
 	giveItem(4031012, 1);
 	setMap(102000000);
 elseif getItemAmount(4031013) < 30 then
-	addText("What's going on? Doesn't look like you have collected 30 #b#t4031013##k, yet...If you're having ");
-	addText("problems with it, then you can leave, come back and try it again. So...do you want to give up ");
-	addText("and get out of here?");
-	yes = askYesNo();
+	addText("What's going on? ");
+	addText("Doesn't look like you have collected 30 " .. blue(itemRef(4031013)) .. ", yet...");
+	addText("If you're having problems with it, then you can leave, come back and try it again. ");
+	addText("So...do you want to give up and get out of here?");
+	answer = askYesNo();
 
-	if yes == 0 then
-		addText("That's right! Stop acting weak and start collecting the marbles. Talk to me when you have ");
-		addText("collected 30 #b#t4031013##k.");
+	if answer == answer_no then
+		addText("That's right! ");
+		addText("Stop acting weak and start collecting the marbles. ");
+		addText("Talk to me when you have collected 30 " .. blue(itemRef(4031013)) .. ".");
 		sendNext();
 	else
-		addText("Really... alright, I'll let you out. Please don't give up, though. You can always try again, ");
-		addText("so do not give up. Until then, bye...");
+		addText("Really... alright, I'll let you out. ");
+		addText("Please don't give up, though. ");
+		addText("You can always try again, so do not give up. ");
+		addText("Until then, bye...");
 		sendNext();
+
 		setMap(102020300);
 	end
 end

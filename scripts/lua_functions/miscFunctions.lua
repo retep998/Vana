@@ -30,6 +30,14 @@ function getOrdinal(n)
 	return ending;
 end
 
+function append(tbl, elem)
+	tbl[#tbl + 1] = elem;
+end
+
+function prepend(tbl, elem)
+	table.insert(tbl, 1, elem);
+end
+
 function getInstanceMinutes()
 	local g = getInstanceTime();
 	g = (g - (g % 60)) / 60 + 1;
