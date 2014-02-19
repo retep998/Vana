@@ -17,11 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crumbling Statue
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 addText("Once I lay my hand on the statue, a strange light covers me and it feels like I am being sucked into somewhere else. ");
 addText("Will it be okay to go back to Sleepywood?");
 answer = askYesNo();
 
-if answer == 0 then
+if answer == answer_no then
 	addText("Once I took my hand off the statue it got quiet, as if nothing happened. ");
 	sendNext();
 else

@@ -17,5 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crimsonwood Keep statue
 
-addText("Once known as the ¡°Prince of Shadows¡±, Grandmaster Ryo possessed supreme speed and power with short-range daggers, and a longer, chain-like Claw.  A part-time member of the Bosshunters, he was renowned for an unparalleled ability to blend into the very night itself.  His legend grew during a battle with a Crimson Balrog, where he moved so swiftly, that its' attacks hit nothing but the air behind him. Ryo also performed occasional ¡°retrievals¡± for those less fortunate than himself.");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("Once known as the ¡°Prince of Shadows¡±, Grandmaster Ryo possessed supreme speed and power with short-range daggers, and a longer, chain-like Claw.  ");
+addText("A part-time member of the Bosshunters, he was renowned for an unparalleled ability to blend into the very night itself.  ");
+addText("His legend grew during a battle with a Crimson Balrog, where he moved so swiftly, that its' attacks hit nothing but the air behind him. ");
+addText("Ryo also performed occasional ¡°retrievals¡± for those less fortunate than himself.");
 sendOk();

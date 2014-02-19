@@ -17,5 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Crimsonwood Keep statue
 
-addText("A name forever remembered, Rafael was an exceptionally skilled sorcerer, and the foremost master of mental magic power: telekinesis and telepathy.  In addition to that, he was one of the ¡°Elite Mages¡±, who mastered all elements.  He was last seen looking for the ¡°Temple of the Elementals¡± to turn the tide against the invading Krakian Army...");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+addText("A name forever remembered, Rafael was an exceptionally skilled sorcerer, and the foremost master of mental magic power: telekinesis and telepathy.  ");
+addText("In addition to that, he was one of the ¡°Elite Mages¡±, who mastered all elements.  ");
+addText("He was last seen looking for the ¡°Temple of the Elementals¡± to turn the tide against the invading Krakian Army...");
 sendOk();

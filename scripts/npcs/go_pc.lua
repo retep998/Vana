@@ -17,12 +17,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mong from Kong (Kerning City)
 
-addText("Aren't you connected through the Internet Cafe? If so, then go in here ... you'll probably head to a familiar place. What do you think? Do you want to go in?");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 1 then
-	addText("Hey, hey ... I don't think you're logging on from the internet cafe. You can't enter this place if you are logging on from home ...");
+addText("Aren't you connected through the Internet Cafe? ");
+addText("If so, then go in here ... you'll probably head to a familiar place. ");
+addText("What do you think? Do you want to go in?");
+answer = askYesNo();
+
+if answer == answer_yes then
+	addText("Hey, hey ... I don't think you're logging on from the internet cafe. ");
+	addText("You can't enter this place if you are logging on from home ...");
 else
-	addText("You must be busy, huh? But if you're loggin on from the internet cafe, then you should try going in. You may end up in a strange place once inside.");
+	addText("You must be busy, huh? ");
+	addText("But if you're loggin on from the internet cafe, then you should try going in. ");
+	addText("You may end up in a strange place once inside.");
 end
 sendNext();
