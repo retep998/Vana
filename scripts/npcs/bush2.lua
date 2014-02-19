@@ -17,15 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A Pile of Herbs
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 -- TODO FIXME implement distance properly
 -- You can't see the inside of the bush very well because you're too far. Go a little closer.
 
 if isQuestActive(2051) then
 	item = 4031032;
-	addText("Are you sure you want to take #b#t" .. item .. "##k with you?");
+	addText("Are you sure you want to take " .. blue(itemRef(item)) .. " with you?");
 	answer = askYesNo();
 	
-	if answer == 1 then
+	if answer == answer_yes then
 		if giveItem(item, 1) then
 			setMap(101000000);
 		else

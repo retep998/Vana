@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Door of Dimension
 
+dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
 
 function failText()
@@ -24,9 +25,9 @@ function failText()
 	sendNext();
 end
 
-toMap = 0;
-cloneId = 0;
-instance = "";
+destinationMap = nil;
+cloneId = nil;
+instance = nil;
 questState = getPlayerVariable("third_job_advancement", true);
 
 if getJobTrack() == 0 or getJobProgression() ~= 0 or questState == nil or questState ~= 2 then
@@ -41,36 +42,37 @@ else
 
 	if m == 105070001 and g == 1 then
 		instance = "warrior3rd";
-		toMap = 108010300;
+		destinationMap = 108010300;
 		cloneId = 1022000;
 	elseif m == 100040106 and g == 2 then
 		instance = "magician3rd";
-		toMap = 108010200;
+		destinationMap = 108010200;
 		cloneId = 1032001;
 	elseif m == 105040305 and g == 3 then
 		instance = "bowman3rd";
-		toMap = 108010100;
+		destinationMap = 108010100;
 		cloneId = 1012100;
 	elseif m == 107000402 and g == 4 then
 		instance = "thief3rd";
-		toMap = 108010400;
+		destinationMap = 108010400;
 		cloneId = 1052001;
 	elseif m == 105070200 and g == 5 then
 		instance = "pirate3rd";
-		toMap = 108010500;
+		destinationMap = 108010500;
 		cloneId = 1090000;
 	else
 		failText();
 	end
 end
 
-if toMap ~= 0 then
+if destinationMap ~= nil then
 	if not isInstance(instance) then
 		createInstance(instance, 20 * 60, true);
 		addInstancePlayer(getId());
-		setMap(toMap);
+		setMap(destinationMap);
 	else
-		addText("Someone is already fighting with #b#p" .. cloneId .. "##k's clone. Try again later.");
+		addText("Someone is already fighting with " .. blue(npcRef(cloneId)) .. "'s clone. ");
+		addText("Try again later.");
 		sendNext();
 	end
 end
