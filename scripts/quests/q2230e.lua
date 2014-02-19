@@ -17,15 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A Mysterious Small Egg
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 addText("Hello, traveler. You have finally come to see me. Have you fulfilled your duties?\r\n\r\n");
-addText("#b#L0#What duties? Who are you?#l");
+addText(blue(choiceRef("What duties? Who are you?")));
 askChoice();
 
 addText("You found a small egg in your pocket? ");
 addText("That egg is your duty, your responsibility. ");
 addText("Life is hard when you're all by yourself. ");
 addText("In times like this, there's nothing quite like having a friend that will be there for you at all times. ");
-addText("Have you heard of a #bpet#k? \r\n");
+addText("Have you heard of a " .. blue("pet") .. "? \r\n");
 addText("People raise pets to ease the burden, sorrow, and loneliness, because knowing that you have someone, or something in this matter, on your side will really bring a peace of mind. ");
 addText("But everything has consequences, and with it comes responsibility...");
 sendNext();
@@ -36,7 +38,7 @@ addText("That's how the owners get attached to these pets.");
 sendBackNext();
 
 addText("I wanted to instill this in you, and that's why I sent you a baby that I cherish. ");
-addText("The egg you have brought is #bRune Snail#k, a creature that is born through the power of Mana. ");
+addText("The egg you have brought is " .. blue("Rune Snail") .. ", a creature that is born through the power of Mana. ");
 addText("Since you took great care of it as you brought the egg here, the egg will hatch soon.");
 sendBackNext();
 
@@ -51,8 +53,8 @@ addText("Every action comes with consequences, and pets are no exception. ");
 addText("The egg of the snail shall hatch soon.");
 answer = askYesNo();
 
-if answer == 1 then
-	addText("This snail will only be alive for #b5 hours#k. ");
+if answer == answer_yes then
+	addText("This snail will only be alive for " .. blue("5 hours") .. ". ");
 	addText("Shower it with love. ");
 	addText("Your love will be reciprocated in the end.");
 	sendNext();
