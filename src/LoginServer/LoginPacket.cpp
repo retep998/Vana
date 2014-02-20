@@ -62,10 +62,17 @@ PACKET_IMPL(loginConnect, Player *player, const string_t &username) {
 		default: builder.add<int8_t>(player->getGender()); break;
 	}
 
+	builder.add<bool>(player->isAdmin()); // Enables commands like /c, /ch, /m, /h... but disables trading
+
+	// Seems like 0x80 is a "MWLB" account - I doubt it... it disables attacking and allows GM fly
+	// 0x40, 0x20 (and probably 0x10, 0x8, 0x4, 0x2, and 0x1) don't appear to confer any particular benefits, restrictions, or functionality
+	// (Although I didn't test client GM commands or anything of the sort)
+
 	builder
-		.add<bool>(player->isAdmin()) // Enables commands like /c, /ch, /m, /h... but disables trading
-		.add<int8_t>(0)
-		.add<int8_t>(0)
+		.add<uint8_t>(player->isAdmin() ? 0x80 : 0x00)
+		.add<bool>(player->getGmLevel() > 0);
+
+	builder
 		.add<string_t>(username)
 		.add<int8_t>(0)
 		.add<int8_t>(player->getQuietBanReason())

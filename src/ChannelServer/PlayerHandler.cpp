@@ -86,6 +86,11 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 			return;
 		}
 		if (type != BumpDamage) {
+			if (mob == nullptr) {
+				// TODO FIXME: Restructure so the attack works fine even if the mob dies?
+				return;
+			}
+
 			auto attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), type);
 			if (attack == nullptr) {
 				// Hacking
@@ -290,10 +295,12 @@ auto PlayerHandler::handleMoving(Player *player, PacketReader &reader) -> void {
 	reader.reset(11);
 	player->sendMap(PlayersPacket::showMoving(player->getId(), reader.getBuffer(), reader.getBufferLength()));
 
-	if (player->getFoothold() == 0) {
+	if (player->getFoothold() == 0 && !player->isUsingGmHide()) {
 		// Player is floating in the air
+		// GMs might be legitimately in this state (due to GM fly)
+		// We shouldn't mess with them because they have the tools to get out of falling off the map anyway
 		int32_t mapId = player->getMapId();
-		const Pos &playerPos = player->getPos();
+		Pos playerPos = player->getPos();
 		Map *map = Maps::getMap(mapId);
 
 		Pos floor;
