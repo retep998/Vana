@@ -112,9 +112,9 @@
     <ClCompile Include="src\LoginServer\Characters.cpp" />
     <ClCompile Include="src\LoginServer\Login.cpp" />
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
-    <ClCompile Include="src\LoginServer\Player.cpp" />
     <ClCompile Include="src\LoginServer\RankingCalculator.cpp" />
     <ClCompile Include="src\LoginServer\SyncPacket.cpp" />
+    <ClCompile Include="src\LoginServer\UserConnection.cpp" />
     <ClCompile Include="src\LoginServer\World.cpp" />
     <ClCompile Include="src\LoginServer\Worlds.cpp" />
     <ClCompile Include="src\LoginServer\LoginPacket.cpp" />
@@ -132,10 +132,10 @@
     <ClInclude Include="src\LoginServer\Characters.hpp" />
     <ClInclude Include="src\LoginServer\Login.hpp" />
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
-    <ClInclude Include="src\LoginServer\Player.hpp" />
     <ClInclude Include="src\LoginServer\PlayerStatus.hpp" />
     <ClInclude Include="src\LoginServer\RankingCalculator.hpp" />
     <ClInclude Include="src\LoginServer\SyncPacket.hpp" />
+    <ClInclude Include="src\LoginServer\UserConnection.hpp" />
     <ClInclude Include="src\LoginServer\World.hpp" />
     <ClInclude Include="src\LoginServer\Worlds.hpp" />
     <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />

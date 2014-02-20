@@ -39,9 +39,6 @@
     <ClCompile Include="src\LoginServer\LoginPacketHelper.cpp">
       <Filter>Packets\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoginServer\Player.cpp">
-      <Filter>LoginServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\LoginServer\World.cpp">
       <Filter>LoginServer</Filter>
     </ClCompile>
@@ -61,6 +58,9 @@
     <ClCompile Include="src\LoginServer\InitializeLogin.cpp" />
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
     <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp" />
+    <ClCompile Include="src\LoginServer\UserConnection.cpp">
+      <Filter>LoginServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LoginServer\Channel.hpp">
@@ -73,9 +73,6 @@
       <Filter>LoginServer</Filter>
     </ClInclude>
     <ClInclude Include="src\LoginServer\Login.hpp">
-      <Filter>LoginServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LoginServer\Player.hpp">
       <Filter>LoginServer</Filter>
     </ClInclude>
     <ClInclude Include="src\LoginServer\PlayerStatus.hpp">
@@ -108,5 +105,8 @@
     <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
+    <ClInclude Include="src\LoginServer\UserConnection.hpp">
+      <Filter>LoginServer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -193,7 +193,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 					<< "SELECT m.mapid, s.label "
 					<< "FROM " << Database::makeDataTable("map_data") << " m "
 					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
-					<< "WHERE m.mapid IN (SELECT ml.mapid FROM " << Database::makeDataTable("map_life") << " ml WHERE ml.lifeid = :q AND ml.life_type = 'mob') ",
+					<< "WHERE m.mapid IN (SELECT ml.mapid FROM " << Database::makeDataTable("map_life") << " ml WHERE ml.lifeid = :q) ",
 					soci::use(q, "q"));
 
 				displayFunc(rs, format);
