@@ -34,6 +34,10 @@ function getJobProgression()
 	return g;
 end
 
+function getJobMeta()
+	return getJobLine(), getJobTrack(), getJobProgression();
+end
+
 function isCygnus()
 	return getJob() >= 1000;
 end
