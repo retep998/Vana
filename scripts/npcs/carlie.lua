@@ -77,8 +77,7 @@ else
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);
-	itemId = data[1];
-	rewards = data[2];
+	itemId, rewards = data[1], data[2];
 	qty = 100;
 	requirements = {itemId, qty};
 

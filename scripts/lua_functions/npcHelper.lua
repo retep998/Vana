@@ -125,7 +125,7 @@ function questCompleteIcon()
 end
 
 function questExpIcon(experience)
-	return fileRef("UI/UIWindow.img/QuestIcon/8/0") .. " " .. experience .. " exp";
+	return fileRef("UI/UIWindow.img/QuestIcon/8/0") .. " " .. experience .. " EXP";
 end
 
 function questMesosIcon(mesos)
