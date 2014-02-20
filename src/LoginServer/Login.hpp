@@ -18,13 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 class PacketReader;
-class Player;
+class UserConnection;
 
 namespace Login {
-	auto loginUser(Player *player, PacketReader &reader) -> void;
-	auto setGender(Player *player, PacketReader &reader) -> void;
-	auto handleLogin(Player *player, PacketReader &reader) -> void;
-	auto registerPin(Player *player, PacketReader &reader) -> void;
-	auto loginBack(Player *player) -> void;
-	auto checkPin(Player *player, PacketReader &reader) -> void;
+	auto loginUser(UserConnection *user, PacketReader &reader) -> void;
+	auto setGender(UserConnection *user, PacketReader &reader) -> void;
+	auto handleLogin(UserConnection *user, PacketReader &reader) -> void;
+	auto registerPin(UserConnection *user, PacketReader &reader) -> void;
+	auto loginBack(UserConnection *user) -> void;
+	auto checkPin(UserConnection *user, PacketReader &reader) -> void;
 }

@@ -29,9 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.hpp"
 #include "MiscUtilities.hpp"
 #include "PacketReader.hpp"
-#include "Player.hpp"
 #include "Session.hpp"
 #include "SyncPacket.hpp"
+#include "UserConnection.hpp"
 #include "World.hpp"
 #include "Worlds.hpp"
 #include "ValidCharDataProvider.hpp"
@@ -97,12 +97,12 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	loadEquips(charc.id, charc.equips);
 }
 
-auto Characters::showAllCharacters(Player *player) -> void {
+auto Characters::showAllCharacters(UserConnection *user) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT * "
 		<< "FROM " << Database::makeCharTable("characters") << " c "
 		<< "WHERE c.user_id = :user ",
-		soci::use(player->getUserId(), "user"));
+		soci::use(user->getUserId(), "user"));
 
 	hash_map_t<world_id_t, vector_t<Character>> chars;
 	uint32_t charsNum = 0;
@@ -123,16 +123,16 @@ auto Characters::showAllCharacters(Player *player) -> void {
 	}
 
 	uint32_t unk = charsNum + (3 - charsNum % 3); // What I've observed
-	player->send(LoginPacket::showAllCharactersInfo(chars.size(), unk));
+	user->send(LoginPacket::showAllCharactersInfo(chars.size(), unk));
 	for (const auto &kvp : chars) {
-		player->send(LoginPacket::showViewAllCharacters(kvp.first, kvp.second));
+		user->send(LoginPacket::showViewAllCharacters(kvp.first, kvp.second));
 	}
 }
 
-auto Characters::showCharacters(Player *player) -> void {
+auto Characters::showCharacters(UserConnection *user) -> void {
 	soci::session &sql = Database::getCharDb();
-	world_id_t worldId = player->getWorldId();
-	int32_t userId = player->getUserId();
+	world_id_t worldId = user->getWorldId();
+	int32_t userId = user->getUserId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
@@ -162,30 +162,30 @@ auto Characters::showCharacters(Player *player) -> void {
 		max = world.defaultChars;
 	}
 
-	player->send(LoginPacket::showCharacters(chars, max.get()));
+	user->send(LoginPacket::showCharacters(chars, max.get()));
 }
 
-auto Characters::checkCharacterName(Player *player, PacketReader &reader) -> void {
+auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) -> void {
 	const string_t &name = reader.get<string_t>();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
 
 	if (nameInvalid(name)) {
-		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
+		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
 	}
 	else if (nameTaken(name)) {
-		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
+		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
 	}
 	else {
-		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::None));
+		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::None));
 	}
 }
 
-auto Characters::createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount) -> void {
+auto Characters::createItem(int32_t itemId, UserConnection *user, int32_t charId, int32_t slot, int16_t amount) -> void {
 	soci::session &sql = Database::getCharDb();
 	uint8_t inventory = GameLogicUtilities::getInventory(itemId);
-	ItemDbInformation info(slot, charId, player->getUserId(), player->getWorldId(), Item::Inventory);
+	ItemDbInformation info(slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
 		Item equip(itemId, false, false);
@@ -197,8 +197,8 @@ auto Characters::createItem(int32_t itemId, Player *player, int32_t charId, int3
 	}
 }
 
-auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
@@ -210,11 +210,11 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 
 	// Let's check our char name again just to be sure
 	if (nameInvalid(name)) {
-		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
+		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Invalid));
 		return;
 	}
 	if (nameTaken(name)) {
-		player->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
+		user->send(LoginPacket::checkName(name, LoginPacket::CheckNameErrors::Taken));
 		return;
 	}
 
@@ -230,7 +230,7 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 
 	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
-		player->disconnect();
+		user->disconnect();
 		return;
 	}
 
@@ -245,8 +245,8 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 		<< "INSERT INTO " << Database::makeCharTable("characters") << " (name, user_id, world_id, eyes, hair, skin, gender, str, dex, `int`, luk) "
 		<< "VALUES (:name, :user, :world, :eyes, :hair, :skin, :gender, :str, :dex, :int, :luk)",
 		soci::use(name, "name"),
-		soci::use(player->getUserId(), "user"),
-		soci::use(player->getWorldId(), "world"),
+		soci::use(user->getUserId(), "user"),
+		soci::use(user->getWorldId(), "world"),
 		soci::use(eyes, "eyes"),
 		soci::use(hair + hairColor, "hair"),
 		soci::use(skin, "skin"),
@@ -258,11 +258,11 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 
 	int32_t id = Database::getLastId<int32_t>(sql);
 
-	createItem(top, player, id, -EquipSlots::Top);
-	createItem(bottom, player, id, -EquipSlots::Bottom);
-	createItem(shoes, player, id, -EquipSlots::Shoe);
-	createItem(weapon, player, id, -EquipSlots::Weapon);
-	createItem(Items::BeginnersGuidebook, player, id, 1);
+	createItem(top, user, id, -EquipSlots::Top);
+	createItem(bottom, user, id, -EquipSlots::Bottom);
+	createItem(shoes, user, id, -EquipSlots::Shoe);
+	createItem(weapon, user, id, -EquipSlots::Weapon);
+	createItem(Items::BeginnersGuidebook, user, id, 1);
 
 	soci::row row;
 	sql.once
@@ -274,19 +274,19 @@ auto Characters::createCharacter(Player *player, PacketReader &reader) -> void {
 
 	Character charc;
 	loadCharacter(charc, row);
-	player->send(LoginPacket::showCharacter(charc));
-	Worlds::getInstance().send(player->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
+	user->send(LoginPacket::showCharacter(charc));
+	Worlds::getInstance().send(user->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
 }
 
-auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 	int32_t data = reader.get<int32_t>();
 	int32_t id = reader.get<int32_t>();
 
-	if (!ownerCheck(player, id)) {
+	if (!ownerCheck(user, id)) {
 		// Hacking
 		return;
 	}
@@ -315,7 +315,7 @@ auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
 	}
 
 	bool success = false;
-	const opt_int32_t &delPassword = player->getCharDeletePassword();
+	const opt_int32_t &delPassword = user->getCharDeletePassword();
 	if (!delPassword.is_initialized() || delPassword.get() == data) {
 		Worlds::getInstance().runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
@@ -333,56 +333,56 @@ auto Characters::deleteCharacter(Player *player, PacketReader &reader) -> void {
 		result = IncorrectBirthday;
 	}
 
-	player->send(LoginPacket::deleteCharacter(id, result));
-	Worlds::getInstance().send(player->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
+	user->send(LoginPacket::deleteCharacter(id, result));
+	Worlds::getInstance().send(user->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
 }
 
-auto Characters::connectGame(Player *player, int32_t charId) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Characters::connectGame(UserConnection *user, int32_t charId) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
-	if (!ownerCheck(player, charId)) {
+	if (!ownerCheck(user, charId)) {
 		// Hacking
 		return;
 	}
 
-	auto world = Worlds::getInstance().getWorld(player->getWorldId());
-	world->send(LoginServerAcceptPacket::playerConnectingToChannel(player->getChannel(), charId, player->getIp()));
+	auto world = Worlds::getInstance().getWorld(user->getWorldId());
+	world->send(LoginServerAcceptPacket::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
 
 	Ip chanIp(0);
 	port_t port = -1;
-	if (Channel *channel = world->getChannel(player->getChannel())) {
-		chanIp = channel->matchIpToSubnet(player->getIp());
+	if (Channel *channel = world->getChannel(user->getChannel())) {
+		chanIp = channel->matchIpToSubnet(user->getIp());
 		port = channel->getPort();
 	}
 	ClientIp ip(chanIp);
-	player->send(LoginPacket::connectIp(ip, port, charId));
+	user->send(LoginPacket::connectIp(ip, port, charId));
 }
 
-auto Characters::connectGame(Player *player, PacketReader &reader) -> void {
+auto Characters::connectGame(UserConnection *user, PacketReader &reader) -> void {
 	int32_t id = reader.get<int32_t>();
 
-	connectGame(player, id);
+	connectGame(user, id);
 }
 
-auto Characters::connectGameWorldFromViewAllCharacters(Player *player, PacketReader &reader) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, PacketReader &reader) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 	int32_t id = reader.get<int32_t>();
 	world_id_t worldId = static_cast<world_id_t>(reader.get<int32_t>());
-	player->setWorldId(worldId);
+	user->setWorldId(worldId);
 
 	// Take the player to a random channel
 	channel_id_t channel = Worlds::getInstance().getWorld(worldId)->getRandomChannel();
-	player->setChannel(channel);
+	user->setChannel(channel);
 
-	connectGame(player, id);
+	connectGame(user, id);
 }
 
-auto Characters::ownerCheck(Player *player, int32_t id) -> bool {
+auto Characters::ownerCheck(UserConnection *user, int32_t id) -> bool {
 	soci::session &sql = Database::getCharDb();
 	opt_int32_t exists;
 
@@ -392,7 +392,7 @@ auto Characters::ownerCheck(Player *player, int32_t id) -> bool {
 		<< "WHERE c.character_id = :char AND c.user_id = :user "
 		<< "LIMIT 1 ",
 		soci::use(id, "char"),
-		soci::use(player->getUserId(), "user"),
+		soci::use(user->getUserId(), "user"),
 		soci::into(exists);
 
 	return sql.got_data() && exists.is_initialized();
