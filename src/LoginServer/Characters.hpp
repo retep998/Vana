@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace soci { class row; }
 class PacketReader;
-class Player;
+class UserConnection;
 
 struct CharEquip {
 	int32_t id = 0;
@@ -61,18 +61,18 @@ struct Character {
 };
 
 namespace Characters {
-	auto connectGame(Player *player, int32_t charId) -> void;
-	auto connectGame(Player *player, PacketReader &reader) -> void;
-	auto connectGameWorldFromViewAllCharacters(Player *player, PacketReader &reader) -> void;
-	auto checkCharacterName(Player *player, PacketReader &reader) -> void;
-	auto createCharacter(Player *player, PacketReader &reader) -> void;
-	auto deleteCharacter(Player *player, PacketReader &reader) -> void;
-	auto showAllCharacters(Player *player) -> void;
-	auto showCharacters(Player *player) -> void;
+	auto connectGame(UserConnection *user, int32_t charId) -> void;
+	auto connectGame(UserConnection *user, PacketReader &reader) -> void;
+	auto connectGameWorldFromViewAllCharacters(UserConnection *user, PacketReader &reader) -> void;
+	auto checkCharacterName(UserConnection *user, PacketReader &reader) -> void;
+	auto createCharacter(UserConnection *user, PacketReader &reader) -> void;
+	auto deleteCharacter(UserConnection *user, PacketReader &reader) -> void;
+	auto showAllCharacters(UserConnection *user) -> void;
+	auto showCharacters(UserConnection *user) -> void;
 	auto loadCharacter(Character &charc, const soci::row &row) -> void;
 	auto loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void;
-	auto createItem(int32_t itemId, Player *player, int32_t charId, int32_t slot, int16_t amount = 1) -> void;
-	auto ownerCheck(Player *player, int32_t id) -> bool;
+	auto createItem(int32_t itemId, UserConnection *user, int32_t charId, int32_t slot, int16_t amount = 1) -> void;
+	auto ownerCheck(UserConnection *user, int32_t id) -> bool;
 	auto nameTaken(const string_t &name) -> bool;
 	auto nameInvalid(const string_t &name) -> bool;
 }

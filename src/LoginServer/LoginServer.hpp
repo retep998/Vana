@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "InitializeLogin.hpp"
 #include "LoginServerAcceptConnection.hpp"
-#include "Player.hpp"
 #include "Types.hpp"
 
 class LoginServer final : public AbstractServer {

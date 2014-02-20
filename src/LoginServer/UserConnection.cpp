@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "Player.hpp"
+#include "UserConnection.hpp"
 #include "Characters.hpp"
 #include "CmsgHeader.hpp"
 #include "Database.hpp"
@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-Player::~Player() {
+UserConnection::~UserConnection() {
 	setOnline(false);
 }
 
-auto Player::handleRequest(PacketReader &reader) -> void {
+auto UserConnection::handleRequest(PacketReader &reader) -> void {
 	try {
 		switch (reader.get<header_t>()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, reader); break;
@@ -69,7 +69,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 	}
 }
 
-auto Player::setOnline(bool online) -> void {
+auto UserConnection::setOnline(bool online) -> void {
 	Database::getCharDb()
 		<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
 		<< "SET "

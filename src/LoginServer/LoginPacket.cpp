@@ -20,9 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Characters.hpp"
 #include "ClientIp.hpp"
 #include "LoginPacketHelper.hpp"
-#include "Player.hpp"
 #include "PlayerStatus.hpp"
 #include "SmsgHeader.hpp"
+#include "UserConnection.hpp"
 #include "World.hpp"
 
 namespace LoginPacket {
@@ -48,36 +48,36 @@ PACKET_IMPL(loginBan, int8_t reason, int32_t expire) {
 	return builder;
 }
 
-PACKET_IMPL(loginConnect, Player *player, const string_t &username) {
+PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int32_t>(0)
 		.add<int16_t>(0)
-		.add<int32_t>(player->getUserId());
+		.add<int32_t>(user->getUserId());
 
-	switch (player->getStatus()) {
+	switch (user->getStatus()) {
 		case PlayerStatus::SetGender: builder.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
 		case PlayerStatus::SetPin: builder.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
-		default: builder.add<int8_t>(player->getGender()); break;
+		default: builder.add<int8_t>(user->getGender()); break;
 	}
 
-	builder.add<bool>(player->isAdmin()); // Enables commands like /c, /ch, /m, /h... but disables trading
+	builder.add<bool>(user->isAdmin()); // Enables commands like /c, /ch, /m, /h... but disables trading
 
 	// Seems like 0x80 is a "MWLB" account - I doubt it... it disables attacking and allows GM fly
 	// 0x40, 0x20 (and probably 0x10, 0x8, 0x4, 0x2, and 0x1) don't appear to confer any particular benefits, restrictions, or functionality
 	// (Although I didn't test client GM commands or anything of the sort)
 
 	builder
-		.add<uint8_t>(player->isAdmin() ? 0x80 : 0x00)
-		.add<bool>(player->getGmLevel() > 0);
+		.add<uint8_t>(user->isAdmin() ? 0x80 : 0x00)
+		.add<bool>(user->getGmLevel() > 0);
 
 	builder
 		.add<string_t>(username)
 		.add<int8_t>(0)
-		.add<int8_t>(player->getQuietBanReason())
-		.add<int64_t>(player->getQuietBanTime())
-		.add<int64_t>(player->getCreationTime())
+		.add<int8_t>(user->getQuietBanReason())
+		.add<int64_t>(user->getQuietBanTime())
+		.add<int64_t>(user->getCreationTime())
 		.add<int32_t>(0);
 	return builder;
 }
@@ -90,7 +90,7 @@ PACKET_IMPL(loginProcess, int8_t id) {
 	return builder;
 }
 
-PACKET_IMPL(pinAssigned, ) {
+PACKET_IMPL(pinAssigned) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PIN_ASSIGNED)
@@ -150,7 +150,7 @@ PACKET_IMPL(showWorld, World *world) {
 	return builder;
 }
 
-PACKET_IMPL(worldEnd, ) {
+PACKET_IMPL(worldEnd) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
@@ -166,7 +166,7 @@ PACKET_IMPL(showChannels, int8_t status) {
 	return builder;
 }
 
-PACKET_IMPL(channelSelect, ) {
+PACKET_IMPL(channelSelect) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANNEL_SELECT)
@@ -190,7 +190,7 @@ PACKET_IMPL(showCharacters, const vector_t<Character> &chars, int32_t maxChars) 
 	return builder;
 }
 
-PACKET_IMPL(channelOffline, ) {
+PACKET_IMPL(channelOffline) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_LIST)
@@ -262,7 +262,7 @@ PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, int32_t charId) {
 	return builder;
 }
 
-PACKET_IMPL(relogResponse, ) {
+PACKET_IMPL(relogResponse) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_LOGIN_RETURN)

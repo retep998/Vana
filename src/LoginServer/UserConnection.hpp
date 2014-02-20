@@ -21,14 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerStatus.hpp"
 #include "Types.hpp"
 
-class PacketBuilder;
 class PacketReader;
 
-class Player : public AbstractConnection {
-	NONCOPYABLE(Player);
+class UserConnection : public AbstractConnection {
+	NONCOPYABLE(UserConnection);
 public:
-	Player() = default;
-	~Player();
+	UserConnection() = default;
+	~UserConnection();
 
 	auto setGender(int8_t gender) -> void { m_gender = gender; }
 	auto setWorldId(world_id_t worldId) -> void { m_worldId = worldId; }

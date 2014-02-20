@@ -23,40 +23,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptConnection.hpp"
 #include "LoginServerAcceptPacket.hpp"
 #include "PacketReader.hpp"
-#include "Player.hpp"
 #include "PlayerStatus.hpp"
 #include "Session.hpp"
 #include "StringUtilities.hpp"
+#include "UserConnection.hpp"
 #include "World.hpp"
 #include <iostream>
 
-auto Worlds::showWorld(Player *player) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Worlds::showWorld(UserConnection *user) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 
 	for (const auto &kvp : m_worlds) {
 		if (kvp.second->isConnected()) {
-			player->send(LoginPacket::showWorld(kvp.second));
+			user->send(LoginPacket::showWorld(kvp.second));
 		}
 	}
-	player->send(LoginPacket::worldEnd());
+	user->send(LoginPacket::worldEnd());
 }
 
 auto Worlds::addWorld(World *world) -> void {
 	m_worlds[world->getId()] = world;
 }
 
-auto Worlds::selectWorld(Player *player, PacketReader &reader) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Worlds::selectWorld(UserConnection *user, PacketReader &reader) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 
 	world_id_t worldId = reader.get<world_id_t>();
 	if (World *world = getWorld(worldId)) {
-		player->setWorldId(worldId);
+		user->setWorldId(worldId);
 		int32_t load = world->getPlayerLoad();
 		int32_t maxLoad = world->getMaxPlayerLoad();
 		int32_t minMaxLoad = (maxLoad / 100) * 90;
@@ -68,7 +68,7 @@ auto Worlds::selectWorld(Player *player, PacketReader &reader) -> void {
 		else if (load == maxLoad) {
 			message = LoginPacket::WorldMessages::MaxLoad;
 		}
-		player->send(LoginPacket::showChannels(message));
+		user->send(LoginPacket::showChannels(message));
 	}
 	else {
 		// Hacking
@@ -76,16 +76,16 @@ auto Worlds::selectWorld(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Worlds::channelSelect(Player *player, PacketReader &reader) -> void {
-	if (player->getStatus() != PlayerStatus::LoggedIn) {
+auto Worlds::channelSelect(UserConnection *user, PacketReader &reader) -> void {
+	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
 	}
 	reader.skipBytes(1);
 	channel_id_t channelId = reader.get<int8_t>();
 
-	player->send(LoginPacket::channelSelect());
-	World *world = m_worlds[player->getWorldId()];
+	user->send(LoginPacket::channelSelect());
+	World *world = m_worlds[user->getWorldId()];
 
 	if (world == nullptr) {
 		// Hacking, lag, or client that hasn't been updated (e.g. in the middle of logging in)
@@ -93,11 +93,11 @@ auto Worlds::channelSelect(Player *player, PacketReader &reader) -> void {
 	}
 
 	if (Channel *channel = world->getChannel(channelId)) {
-		player->setChannel(channelId);
-		Characters::showCharacters(player);
+		user->setChannel(channelId);
+		Characters::showCharacters(user);
 	}
 	else {
-		player->send(LoginPacket::channelOffline());
+		user->send(LoginPacket::channelOffline());
 	}
 }
 

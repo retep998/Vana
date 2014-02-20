@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class ClientIp;
-class Player;
+class UserConnection;
 class World;
 struct Character;
 
@@ -55,7 +55,7 @@ namespace LoginPacket {
 	PACKET(loginError, int16_t errorId);
 	PACKET(loginBan, int8_t reason, int32_t expire);
 	PACKET(loginProcess, int8_t id);
-	PACKET(loginConnect, Player *player, const string_t &username);
+	PACKET(loginConnect, UserConnection *user, const string_t &username);
 	PACKET(pinAssigned);
 	PACKET(genderDone, int8_t gender);
 	PACKET(showWorld, World *world);

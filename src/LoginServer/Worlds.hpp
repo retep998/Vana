@@ -26,15 +26,15 @@ class Channel;
 class LoginServerAcceptConnection;
 class PacketBuilder;
 class PacketReader;
-class Player;
+class UserConnection;
 class World;
 
 class Worlds {
 	SINGLETON(Worlds);
 public:
-	auto channelSelect(Player *player, PacketReader &reader) -> void;
-	auto selectWorld(Player *player, PacketReader &reader) -> void;
-	auto showWorld(Player *player) -> void;
+	auto channelSelect(UserConnection *user, PacketReader &reader) -> void;
+	auto selectWorld(UserConnection *user, PacketReader &reader) -> void;
+	auto showWorld(UserConnection *user) -> void;
 	auto send(world_id_t id, const PacketBuilder &builder) -> void;
 	auto send(const vector_t<world_id_t> &worlds, const PacketBuilder &builder) -> void;
 	auto send(const PacketBuilder &builder) -> void;

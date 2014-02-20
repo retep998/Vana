@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerAcceptPacket.hpp"
 #include "MapleVersion.hpp"
 #include "RankingCalculator.hpp"
+#include "UserConnection.hpp"
 #include "VanaConstants.hpp"
 #include "World.hpp"
 #include "Worlds.hpp"
@@ -36,7 +37,7 @@ LoginServer::LoginServer() :
 
 auto LoginServer::listen() -> void {
 	auto &config = getInterServerConfig();
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, config, false, MapleVersion::PatchLocation);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::PatchLocation);
 	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true);
 }
 
