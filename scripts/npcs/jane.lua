@@ -41,10 +41,8 @@ if isQuestCompleted(2013) then
 	addText(blue(choiceList(choices)));
 	choice = askChoice();
 
-	arr = selectChoice(choices, choice);
-	item = arr[1];
-	effect = arr[2];
-	price = arr[3];
+	data = selectChoice(choices, choice);
+	item, effect, price = data[1], data[2], data[3];
 
 	addText("You want " .. blue(itemRef(item)) .. "? ");
 	addText(itemRef(item) .. " " .. effect .. ". ");

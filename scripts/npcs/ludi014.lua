@@ -17,15 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- First Eos Rock
 
-if getItemAmount(4001020) >= 1 then
-	addText("You can use #b#t4001020##k to activate #b#p2040024##k. Will you teleport to #b#p2040025##k at the 71st floor?");
-	yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-	if yes == 1 then
+if isGm() or getItemAmount(4001020) > 0 then
+	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040024)) .. ". ");
+	addText("Will you head over to " .. blue(npcRef(2040025)) .. " at the 71st floor??");
+	answer = askYesNo();
+
+	if answer == answer_yes then
 		giveItem(4001020, -1);
 		setMap(221022900, "go00");
 	end
-elseif getItemAmount(4001020) == 0 then
-	addText("There's a rock that will enable you to teleport to #b#p2040025##k, but it cannot be activated without the scroll.");
+else
+	addText("There's a rock that will enable you to teleport to " .. blue(npcRef(2040025)) .. ", but it cannot be activated without the scroll.");
 	sendOk();
 end

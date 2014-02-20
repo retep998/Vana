@@ -17,6 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Time Temple quest to retrieve memories
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement actual text
+
 addQuest(3526);
 endQuest(3526);
 endQuest(3507);

@@ -18,30 +18,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- KIN
 
 if not isGm() then
+	addText("You shouldn't be here, " .. playerRef() .. "~");
+	sendNext();
 	return;
 end
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 addText("Hello, what can I do for you today?\r\n");
-addText("#L0##bSkin#k#l\r\n");
-addText("#L1##bHair#k#l\r\n");
-addText("#L2##bHair Color#k#l\r\n");
-addText("#L3##bEyes#k#l\r\n");
-addText("#L4##bEyes Color#k#l\r\n");
-addText("#L5##bRandom New Look#k#l\r\n");
-what = askChoice();
+addText(blue(choiceList({
+	"Skin",
+	"Hair",
+	"Hair Color",
+	"Eyes",
+	"Eyes Color",
+	"Random New Look",
+})));
+choice = askChoice();
 
-if what == 5 then
+if choice == 5 then
 	setStyle(getRandomFace());
 	setStyle(getRandomHair());
 else
 	styles = {};
-	if what == 0 then getSkins(styles);
-	elseif what == 1 then getHairs(styles);
-	elseif what == 2 then getHairColours(styles);
-	elseif what == 3 then getEyeStyles(styles);
-	elseif what == 4 then getEyeColour(styles);
+	if choice == 0 then getSkins(styles);
+	elseif choice == 1 then getHairs(styles);
+	elseif choice == 2 then getHairColours(styles);
+	elseif choice == 3 then getEyeStyles(styles);
+	elseif choice == 4 then getEyeColour(styles);
 	end
 	style = askStyle(styles) + 1;
 

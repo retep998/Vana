@@ -17,26 +17,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Third Eos Rock
 
-if getItemAmount(4001020) >= 1 then
-	addText("You can use #b#t4001020##k to activate #b#p2040026##k. Which of these rocks would you like to teleport to?\r\n");
-	addText("#b#L0# #p2040025#(71st floor)#l\r\n");
-	addText("#b#L1# #p2040027#(1st floor)#l");
-	what = askChoice();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-	if what == 0 then
-		map = 221022900;
-		addText("You can use #b#t4001020##k to activate #b#p2040026##k. Will you teleport to #b#p2040025##k at the 71st floor?");
-	elseif what == 1 then
-		map = 221020000;
-		addText("You can use #b#t4001020##k to activate #b#p2040026##k. Will you teleport to #b#p2040027##k at the 1st floor?");
+if isGm() or getItemAmount(4001020) > 0 then
+	function makeChoice(npcId, mapId, floorName, floorConfirmName)
+		if floorConfirmName == nil then
+			floorConfirmName = floorName;
+		end
+		return makeChoiceData(" " .. npcRef(npcId) .. "(" .. floorName .. " floor)", {mapId, npcId, floorConfirmName});
 	end
-	yes = askYesNo();
 
-	if yes == 1 then
+	choices = {
+		makeChoice(2040025, 221022900, "71st"),
+		makeChoice(2040027, 221020000, "1st"),
+	};
+
+	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040026)) .. ". ");
+	addText("Which of these rocks would you like to teleport to?\r\n");
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
+
+	data = selectChoice(choices, choice);
+	map, npcId, floorName = data[1], data[2], data[3];
+	
+	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040026)) .. ". ");
+	addText("Will you teleport to " .. blue(npcRef(npcId)) .. " at the " .. floorName .. " floor?");
+	answer = askYesNo();
+
+	if answer == answer_yes then
 		giveItem(4001020, -1);
 		setMap(map, "go00");
 	end
 else
-	addText("There's a rock that will enable you to teleport to #b#p2040025# or #p2040027##k, but it cannot be activated without the scroll.");
+	addText("There's a rock that will enable you to teleport to " .. blue(npcRef(2040025) .. " or " .. npcRef(2040027)) .. ", but it cannot be activated without the scroll.");
 	sendOk();
 end

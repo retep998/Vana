@@ -17,6 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Time Temple quest to unfreeze memories
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement actual text
+
 endQuest(3514);
 addText("Hah... I found that very amusing. Very well, I'll unfreeze your memories.");
 sendOk();
