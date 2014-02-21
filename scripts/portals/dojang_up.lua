@@ -15,10 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Sunstone Grave
+-- Mu Lung Dojo
 
-dofile("scripts/lua_functions/npcHelper.lua");
-
-addText("Tempt Fate. ");
-addText("Discover the path.");
-sendOk();
+if countMobs(getMap()) > 0 then
+	showMessage("There are still some monsters remaining.", env_redMessage);
+else
+	playPortalSe();
+	instantWarp("out01");
+end
