@@ -15,10 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Sunstone Grave
+-- Mu Lung Dojo
 
-dofile("scripts/lua_functions/npcHelper.lua");
+map = getPlayerVariable("dojo_origin", true);
+if map == nil then
+	map = 250000100;
+end
 
-addText("Tempt Fate. ");
-addText("Discover the path.");
-sendOk();
+playPortalSe();
+setMap(map);
+deletePlayerVariable("dojo_origin");

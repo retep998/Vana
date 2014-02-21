@@ -27,7 +27,7 @@ choices = {
 
 		if answer == answer_yes then
 			setPlayerVariable("dojo_origin", getMap());
-			setMap(925020000, 4);
+			setMap(925020000, "out00");
 		else
 			addText(blue("(As I took my hand off the bulletin board, the mysterious energy that was covering me disappeared as well.)"));
 			sendNext();
