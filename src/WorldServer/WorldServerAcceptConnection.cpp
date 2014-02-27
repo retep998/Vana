@@ -54,12 +54,12 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
 		case IMSG_TO_LOGIN: WorldServer::getInstance().sendLogin(Packets::identity(reader)); break;
 		case IMSG_TO_PLAYER: {
-			int32_t playerId = reader.get<int32_t>();
+			player_id_t playerId = reader.get<player_id_t>();
 			PlayerDataProvider::getInstance().send(playerId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
-			vector_t<int32_t> playerIds = reader.get<vector_t<int32_t>>();
+			vector_t<player_id_t> playerIds = reader.get<vector_t<player_id_t>>();
 			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
 			break;
 		}

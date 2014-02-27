@@ -38,19 +38,19 @@ PlayerStorage::~PlayerStorage() {
 	std::for_each(std::begin(m_items), std::end(m_items), [](Item *item) { delete item; });
 }
 
-auto PlayerStorage::takeItem(uint8_t slot) -> void {
+auto PlayerStorage::takeItem(storage_slot_t slot) -> void {
 	auto iter = std::begin(m_items) + slot;
 	delete *iter;
 	m_items.erase(iter);
 }
 
-auto PlayerStorage::setSlots(uint8_t slots) -> void {
+auto PlayerStorage::setSlots(storage_slot_t slots) -> void {
 	m_slots = ext::constrain_range(slots, Inventories::MinSlotsStorage, Inventories::MaxSlotsStorage);
 }
 
 auto PlayerStorage::addItem(Item *item) -> void {
-	uint8_t inv = GameLogicUtilities::getInventory(item->getId());
-	uint8_t i;
+	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
+	storage_slot_t i;
 	for (i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) > inv) {
 			break;
@@ -59,9 +59,9 @@ auto PlayerStorage::addItem(Item *item) -> void {
 	m_items.insert(std::begin(m_items) + i, item);
 }
 
-auto PlayerStorage::getNumItems(uint8_t inv) -> uint8_t {
-	int8_t itemNum = 0;
-	for (uint8_t i = 0; i < m_items.size(); ++i) {
+auto PlayerStorage::getNumItems(inventory_t inv) -> storage_slot_t {
+	storage_slot_t itemNum = 0;
+	for (storage_slot_t i = 0; i < m_items.size(); ++i) {
 		if (GameLogicUtilities::getInventory(m_items[i]->getId()) == inv) {
 			itemNum++;
 		}
@@ -69,7 +69,7 @@ auto PlayerStorage::getNumItems(uint8_t inv) -> uint8_t {
 	return itemNum;
 }
 
-auto PlayerStorage::changeMesos(int32_t mesos) -> void {
+auto PlayerStorage::changeMesos(mesos_t mesos) -> void {
 	m_mesos -= mesos;
 	m_player->send(StoragePacket::changeMesos(getSlots(), m_mesos));
 }
@@ -77,7 +77,7 @@ auto PlayerStorage::changeMesos(int32_t mesos) -> void {
 auto PlayerStorage::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	soci::row row;
-	int32_t userId = m_player->getUserId();
+	account_id_t userId = m_player->getUserId();
 	world_id_t worldId = m_player->getWorldId();
 
 	sql.once
@@ -90,8 +90,8 @@ auto PlayerStorage::load() -> void {
 		soci::into(row);
 
 	if (sql.got_data()) {
-		m_slots = row.get<uint8_t>("slots");
-		m_mesos = row.get<int32_t>("mesos");
+		m_slots = row.get<storage_slot_t>("slots");
+		m_mesos = row.get<mesos_t>("mesos");
 		m_charSlots = row.get<int32_t>("char_slots");
 	}
 	else {
@@ -131,8 +131,8 @@ auto PlayerStorage::load() -> void {
 auto PlayerStorage::save() -> void {
 	using namespace soci;
 	world_id_t worldId = m_player->getWorldId();
-	int32_t userId = m_player->getUserId();
-	int32_t playerId = m_player->getId();
+	account_id_t userId = m_player->getUserId();
+	player_id_t playerId = m_player->getId();
 
 	session &sql = Database::getCharDb();
 	sql.once
@@ -152,11 +152,11 @@ auto PlayerStorage::save() -> void {
 		use(userId, "user"),
 		use(worldId, "world");
 
-	uint8_t max = getNumItems();
+	storage_slot_t max = getNumItems();
 
 	if (max > 0) {
 		vector_t<ItemDbRecord> v;
-		for (uint8_t i = 0; i < max; ++i) {
+		for (storage_slot_t i = 0; i < max; ++i) {
 			ItemDbRecord rec(i, playerId, userId, worldId, Item::Storage, getItem(i));
 			v.push_back(rec);
 		}

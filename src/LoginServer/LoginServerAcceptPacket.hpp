@@ -27,6 +27,6 @@ namespace LoginServerAcceptPacket {
 	PACKET(connect, World *world);
 	PACKET(noMoreWorld);
 	PACKET(connectChannel, world_id_t worldId, const Ip &ip, port_t port);
-	PACKET(playerConnectingToChannel, channel_id_t channel, int32_t charId, const Ip &ip);
+	PACKET(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip);
 	PACKET(rehashConfig, World *world);
 }

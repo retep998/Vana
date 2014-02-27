@@ -61,23 +61,23 @@ struct MapEntryVals {
 };
 
 namespace Buffs {
-	auto addBuff(Player *player, int32_t itemId, const seconds_t &time) -> void;
-	auto addBuff(Player *player, int32_t skillId, uint8_t level, int16_t addedInfo, int32_t mapMobId = 0) -> bool;
-	auto endBuff(Player *player, int32_t skill) -> void;
-	auto doAction(Player *player, int32_t skillId, uint8_t level) -> void;
-	auto addDebuff(Player *player, uint8_t skillId, uint8_t level) -> void;
-	auto endDebuff(Player *player, uint8_t skillId) -> void;
-	auto buffMayApply(int32_t skillId, uint8_t level, int8_t buffValue) -> bool;
+	auto addBuff(Player *player, item_id_t itemId, const seconds_t &time) -> void;
+	auto addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId = 0) -> Result;
+	auto endBuff(Player *player, skill_id_t skill) -> void;
+	auto doAction(Player *player, skill_id_t skillId, skill_level_t level) -> void;
+	auto addDebuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> void;
+	auto endDebuff(Player *player, mob_skill_id_t skillId) -> void;
+	auto buffMayApply(skill_id_t skillId, skill_level_t level, int8_t buffValue) -> bool;
 
-	auto parseBuffInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveBuff;
-	auto parseBuffMapInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveMapBuff;
-	auto parseBuffs(int32_t skillId, uint8_t level) -> vector_t<Buff>;
-	auto parseMobBuffInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveBuff;
-	auto parseMobBuffMapInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveMapBuff;
+	auto parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveBuff;
+	auto parseBuffMapInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff;
+	auto parseBuffs(int32_t skillId, mob_skill_id_t level) -> vector_t<Buff>;
+	auto parseMobBuffInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveBuff;
+	auto parseMobBuffMapInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff;
 	auto parseMobBuffs(uint8_t skillId) -> vector_t<Buff>;
-	auto parseBuffMapEntryInfo(Player *player, int32_t skillId, uint8_t level) -> ActiveMapBuff;
-	auto parseMobBuffMapEntryInfo(Player *player, uint8_t skillId, uint8_t level) -> ActiveMapBuff;
-	auto getValue(int8_t value, int32_t skillId, uint8_t level) -> int16_t;
-	auto getMobSkillValue(int8_t value, uint8_t skillId, uint8_t level) -> int16_t;
-	auto parseMountInfo(Player *player, int32_t skillId, uint8_t level) -> int32_t;
+	auto parseBuffMapEntryInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff;
+	auto parseMobBuffMapEntryInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff;
+	auto getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> int16_t;
+	auto getMobSkillValue(int8_t value, mob_skill_id_t skillId, mob_skill_level_t level) -> int16_t;
+	auto parseMountInfo(Player *player, skill_id_t skillId, skill_level_t level) -> skill_id_t;
 }

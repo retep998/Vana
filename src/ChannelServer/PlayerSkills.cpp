@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto PlayerSkills::load() -> void {
 	soci::session &sql = Database::getCharDb();
 	PlayerSkillInfo skill;
-	int32_t playerId = m_player->getId();
-	int32_t skillId = 0;
+	player_id_t playerId = m_player->getId();
+	skill_id_t skillId = 0;
 
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT s.skill_id, s.points, s.max_level "
@@ -40,10 +40,10 @@ auto PlayerSkills::load() -> void {
 
 	for (const auto &row : rs) {
 		skill = PlayerSkillInfo();
-		skillId = row.get<int32_t>("skill_id");
-		skill.level = row.get<uint8_t>("points");
+		skillId = row.get<skill_id_t>("skill_id");
+		skill.level = row.get<skill_level_t>("points");
 		skill.maxSkillLevel = SkillDataProvider::getInstance().getMaxLevel(skillId);
-		skill.playerMaxSkillLevel = row.get<uint8_t>("max_level");
+		skill.playerMaxSkillLevel = row.get<skill_level_t>("max_level");
 		m_skills[skillId] = skill;
 	}
 
@@ -54,7 +54,7 @@ auto PlayerSkills::load() -> void {
 		soci::use(playerId, "char"));
 
 	for (const auto &row : rs) {
-		int32_t skillId = row.get<int32_t>("skill_id");
+		skill_id_t skillId = row.get<skill_id_t>("skill_id");
 		int16_t timeLeft = row.get<int16_t>("remaining_time");
 		Skills::startCooldown(m_player, skillId, timeLeft, true);
 		m_cooldowns[skillId] = timeLeft;
@@ -63,12 +63,12 @@ auto PlayerSkills::load() -> void {
 
 auto PlayerSkills::save(bool saveCooldowns) -> void {
 	using namespace soci;
-	int32_t playerId = m_player->getId();
+	player_id_t playerId = m_player->getId();
 	session &sql = Database::getCharDb();
 
-	int32_t skillId = 0;
-	uint8_t level = 0;
-	uint8_t maxLevel = 0;
+	skill_id_t skillId = 0;
+	skill_level_t level = 0;
+	skill_level_t maxLevel = 0;
 	statement st = (sql.prepare
 		<< "REPLACE INTO " << Database::makeCharTable("skills") << " VALUES (:player, :skill, :level, :maxLevel)",
 		use(playerId, "player"),
@@ -104,7 +104,7 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 	}
 }
 
-auto PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket) -> bool {
+auto PlayerSkills::addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket) -> bool {
 	if (!SkillDataProvider::getInstance().isValidSkill(skillId)) {
 		return false;
 	}
@@ -112,8 +112,8 @@ auto PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacke
 	// Keep people from adding too much SP and prevent it from going negative
 
 	auto kvp = m_skills.find(skillId);
-	uint8_t newLevel = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
-	uint8_t maxSkillLevel = SkillDataProvider::getInstance().getMaxLevel(skillId);
+	skill_level_t newLevel = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
+	skill_level_t maxSkillLevel = SkillDataProvider::getInstance().getMaxLevel(skillId);
 	if (newLevel > maxSkillLevel || (GameLogicUtilities::isFourthJobSkill(skillId) && newLevel > getMaxSkillLevel(skillId))) {
 		return false;
 	}
@@ -126,12 +126,12 @@ auto PlayerSkills::addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacke
 	return true;
 }
 
-auto PlayerSkills::getSkillLevel(int32_t skillId) const -> uint8_t {
+auto PlayerSkills::getSkillLevel(skill_id_t skillId) const -> skill_level_t {
 	auto skill = ext::find_value_ptr(m_skills, skillId);
 	return skill == nullptr ? 0 : skill->level;
 }
 
-auto PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket) -> void {
+auto PlayerSkills::setMaxSkillLevel(skill_id_t skillId, skill_level_t maxLevel, bool sendPacket) -> void {
 	// Set max level for 4th job skills
 	m_skills[skillId].playerMaxSkillLevel = maxLevel;
 
@@ -140,7 +140,7 @@ auto PlayerSkills::setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool send
 	}
 }
 
-auto PlayerSkills::getMaxSkillLevel(int32_t skillId) const -> uint8_t {
+auto PlayerSkills::getMaxSkillLevel(skill_id_t skillId) const -> skill_level_t {
 	// Get max level for 4th job skills
 	if (m_skills.find(skillId) != std::end(m_skills)) {
 		const PlayerSkillInfo &info = m_skills.find(skillId)->second;
@@ -152,12 +152,12 @@ auto PlayerSkills::getMaxSkillLevel(int32_t skillId) const -> uint8_t {
 	return 0;
 }
 
-auto PlayerSkills::getSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const {
+auto PlayerSkills::getSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
 	auto skill = ext::find_value_ptr(m_skills, skillId);
 	return skill == nullptr ? nullptr : SkillDataProvider::getInstance().getSkill(skillId, skill->level);
 }
 
-auto PlayerSkills::hasSkill(int32_t skillId) const -> bool {
+auto PlayerSkills::hasSkill(skill_id_t skillId) const -> bool {
 	return skillId != 0 && getSkillLevel(skillId) > 0;
 }
 
@@ -189,20 +189,21 @@ auto PlayerSkills::hasNoDamageSkill() const -> bool {
 	return hasSkill(getNoDamageSkill());
 }
 
-auto PlayerSkills::getElementalAmp() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getElementalAmp() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FpMage:
 		case Jobs::JobIds::FpArchMage: skillId = Skills::FpMage::ElementAmplification; break;
 		case Jobs::JobIds::IlMage:
 		case Jobs::JobIds::IlArchMage: skillId = Skills::IlMage::ElementAmplification; break;
-		case Jobs::JobIds::BlazeWizard3: skillId = Skills::BlazeWizard::ElementAmplification; break;
+		case Jobs::JobIds::BlazeWizard3:
+		case Jobs::JobIds::BlazeWizard4: skillId = Skills::BlazeWizard::ElementAmplification; break;
 	}
 	return skillId;
 }
 
-auto PlayerSkills::getAchilles() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getAchilles() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero: skillId = Skills::Hero::Achilles; break;
 		case Jobs::JobIds::Paladin: skillId = Skills::Paladin::Achilles; break;
@@ -211,19 +212,20 @@ auto PlayerSkills::getAchilles() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getEnergyCharge() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getEnergyCharge() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Marauder:
 		case Jobs::JobIds::Buccaneer: skillId = Skills::Marauder::EnergyCharge; break;
 		case Jobs::JobIds::ThunderBreaker2:
-		case Jobs::JobIds::ThunderBreaker3: skillId = Skills::ThunderBreaker::EnergyCharge; break;
+		case Jobs::JobIds::ThunderBreaker3:
+		case Jobs::JobIds::ThunderBreaker4: skillId = Skills::ThunderBreaker::EnergyCharge; break;
 	}
 	return skillId;
 }
 
-auto PlayerSkills::getComboAttack() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getComboAttack() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Crusader:
 		case Jobs::JobIds::Hero: skillId = Skills::Crusader::ComboAttack; break;
@@ -233,8 +235,8 @@ auto PlayerSkills::getComboAttack() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getAdvancedCombo() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getAdvancedCombo() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hero: skillId = Skills::Hero::AdvancedComboAttack; break;
 		case Jobs::JobIds::DawnWarrior3:
@@ -243,18 +245,19 @@ auto PlayerSkills::getAdvancedCombo() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getAlchemist() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getAlchemist() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Hermit:
 		case Jobs::JobIds::NightLord: skillId = Skills::Hermit::Alchemist; break;
-		case Jobs::JobIds::NightWalker3: skillId = Skills::NightWalker::Alchemist; break;
+		case Jobs::JobIds::NightWalker3:
+		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Alchemist; break;
 	}
 	return skillId;
 }
 
-auto PlayerSkills::getHpIncrease() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getHpIncrease() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
 		case Jobs::JobTracks::Warrior: skillId = Skills::Swordsman::ImprovedMaxHpIncrease; break;
 		case Jobs::JobTracks::DawnWarrior: skillId = Skills::DawnWarrior::MaxHpEnhancement; break;
@@ -268,8 +271,8 @@ auto PlayerSkills::getHpIncrease() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getMpIncrease() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getMpIncrease() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (GameLogicUtilities::getJobTrack(m_player->getStats()->getJob())) {
 		case Jobs::JobTracks::Magician: skillId = Skills::Magician::ImprovedMaxMpIncrease; break;
 		case Jobs::JobTracks::BlazeWizard: skillId = Skills::BlazeWizard::IncreasingMaxMp; break;
@@ -277,8 +280,8 @@ auto PlayerSkills::getMpIncrease() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getMastery() const -> int32_t {
-	int32_t masteryId = 0;
+auto PlayerSkills::getMastery() const -> skill_id_t {
+	skill_id_t masteryId = 0;
 	switch (GameLogicUtilities::getItemType(m_player->getInventory()->getEquippedId(EquipSlots::Weapon))) {
 		case Items::Types::Weapon1hSword:
 		case Items::Types::Weapon2hSword:
@@ -307,8 +310,8 @@ auto PlayerSkills::getMastery() const -> int32_t {
 	return masteryId;
 }
 
-auto PlayerSkills::getMpEater() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getMpEater() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::FpWizard:
 		case Jobs::JobIds::FpMage:
@@ -323,17 +326,19 @@ auto PlayerSkills::getMpEater() const -> int32_t {
 	return skillId;
 }
 
-auto PlayerSkills::getVenomousWeapon() const -> int32_t {
-	int32_t skillId = 0;
+auto PlayerSkills::getVenomousWeapon() const -> skill_id_t {
+	skill_id_t skillId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::NightLord: skillId = Skills::NightLord::VenomousStar; break;
 		case Jobs::JobIds::Shadower: skillId = Skills::Shadower::VenomousStab; break;
+		case Jobs::JobIds::NightWalker3: 
+		case Jobs::JobIds::NightWalker4: skillId = Skills::NightWalker::Venom; break;
 	}
 	return skillId;
 }
 
-auto PlayerSkills::getNoDamageSkill() const -> int32_t {
-	int32_t noDamageId = 0;
+auto PlayerSkills::getNoDamageSkill() const -> skill_id_t {
+	skill_id_t noDamageId = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::NightLord: noDamageId = Skills::NightLord::ShadowShifter; break;
 		case Jobs::JobIds::Shadower: noDamageId = Skills::Shadower::ShadowShifter; break;
@@ -343,8 +348,8 @@ auto PlayerSkills::getNoDamageSkill() const -> int32_t {
 	return noDamageId;
 }
 
-auto PlayerSkills::getRechargeableBonus() const -> int16_t {
-	int16_t bonus = 0;
+auto PlayerSkills::getRechargeableBonus() const -> slot_qty_t {
+	slot_qty_t bonus = 0;
 	switch (m_player->getStats()->getJob()) {
 		case Jobs::JobIds::Assassin:
 		case Jobs::JobIds::Hermit:
@@ -353,16 +358,17 @@ auto PlayerSkills::getRechargeableBonus() const -> int16_t {
 		case Jobs::JobIds::Outlaw:
 		case Jobs::JobIds::Corsair: bonus = getSkillLevel(Skills::Gunslinger::GunMastery) * 10; break;
 		case Jobs::JobIds::NightWalker2:
-		case Jobs::JobIds::NightWalker3: bonus = getSkillLevel(Skills::NightWalker::ClawMastery) * 10; break;
+		case Jobs::JobIds::NightWalker3:
+		case Jobs::JobIds::NightWalker4: bonus = getSkillLevel(Skills::NightWalker::ClawMastery) * 10; break;
 	}
 	return bonus;
 }
 
-auto PlayerSkills::addCooldown(int32_t skillId, int16_t time) -> void {
+auto PlayerSkills::addCooldown(skill_id_t skillId, int16_t time) -> void {
 	m_cooldowns[skillId] = time;
 }
 
-auto PlayerSkills::removeCooldown(int32_t skillId) -> void {
+auto PlayerSkills::removeCooldown(skill_id_t skillId) -> void {
 	auto kvp = m_cooldowns.find(skillId);
 	if (kvp != std::end(m_cooldowns)) {
 		m_cooldowns.erase(kvp);
@@ -370,7 +376,7 @@ auto PlayerSkills::removeCooldown(int32_t skillId) -> void {
 }
 
 auto PlayerSkills::removeAllCooldowns() -> void {
-	hash_map_t<int32_t, int16_t> dupe = m_cooldowns;
+	auto dupe = m_cooldowns;
 	for (const auto &kvp : dupe) {
 		if (kvp.first != Skills::Buccaneer::TimeLeap) {
 			Skills::stopCooldown(m_player, kvp.first);

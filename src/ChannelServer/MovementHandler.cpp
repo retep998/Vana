@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 auto MovementHandler::parseMovement(MovableLife *life, PacketReader &reader) -> Pos {
-	int16_t foothold = 0;
+	foothold_id_t foothold = 0;
 	int8_t stance = 0;
 	int16_t x = 0;
 	int16_t y = 0;

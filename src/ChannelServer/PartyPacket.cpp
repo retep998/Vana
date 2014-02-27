@@ -40,31 +40,31 @@ PACKET_IMPL(createParty, Party *party) {
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x08)
-		.add<int32_t>(party->getId())
-		.add<int32_t>(Maps::NoMap)
-		.add<int32_t>(Maps::NoMap)
+		.add<party_id_t>(party->getId())
+		.add<map_id_t>(Maps::NoMap)
+		.add<map_id_t>(Maps::NoMap)
 		.add<int32_t>(0);
 	return builder;
 }
 
-PACKET_IMPL(joinParty, int32_t targetMapId, Party *party, const string_t &player) {
+PACKET_IMPL(joinParty, map_id_t targetMapId, Party *party, const string_t &player) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0F)
-		.add<int32_t>(party->getId())
+		.add<party_id_t>(party->getId())
 		.add<string_t>(player)
 		.addBuffer(updateParty(targetMapId, party));
 	return builder;
 }
 
-PACKET_IMPL(leaveParty, int32_t targetMapId, Party *party, int32_t playerId, const string_t &name, bool kicked) {
+PACKET_IMPL(leaveParty, map_id_t targetMapId, Party *party, player_id_t playerId, const string_t &name, bool kicked) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0C)
-		.add<int32_t>(party->getId())
-		.add<int32_t>(playerId)
+		.add<party_id_t>(party->getId())
+		.add<player_id_t>(playerId)
 		.add<bool>(true) // Not disbanding
 		.add<bool>(kicked)
 		.add<string_t>(name)
@@ -77,7 +77,7 @@ PACKET_IMPL(invitePlayer, Party *party, const string_t &inviter) {
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x04)
-		.add<int32_t>(party->getId())
+		.add<party_id_t>(party->getId())
 		.add<string_t>(inviter)
 		.add<int8_t>(0);
 	return builder;
@@ -88,34 +88,34 @@ PACKET_IMPL(disbandParty, Party *party) {
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x0C)
-		.add<int32_t>(party->getId())
-		.add<int32_t>(party->getLeaderId())
+		.add<party_id_t>(party->getId())
+		.add<player_id_t>(party->getLeaderId())
 		.add<bool>(false) // Disbanding
-		.add<int32_t>(party->getId());
+		.add<party_id_t>(party->getId());
 	return builder;
 }
 
-PACKET_IMPL(setLeader, Party *party, int32_t newLeader) {
+PACKET_IMPL(setLeader, Party *party, player_id_t newLeader) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x1B)
-		.add<int32_t>(newLeader)
+		.add<player_id_t>(newLeader)
 		.add<bool>(false);
 	return builder;
 }
 
-PACKET_IMPL(silentUpdate, int32_t targetMapId, Party *party) {
+PACKET_IMPL(silentUpdate, map_id_t targetMapId, Party *party) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_PARTY)
 		.add<int8_t>(0x07)
-		.add<int32_t>(party->getId())
+		.add<party_id_t>(party->getId())
 		.addBuffer(updateParty(targetMapId, party));
 	return builder;
 }
 
-PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
+PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 	PacketBuilder builder;
 	auto &members = party->getMembers();
 	size_t offset = Parties::MaxMembers - members.size();
@@ -124,10 +124,10 @@ PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
 
 	// Add party member IDs to packet
 	for (const auto &kvp : members) {
-		builder.add<int32_t>(kvp.first);
+		builder.add<player_id_t>(kvp.first);
 	}
 	for (i = 0; i < offset; i++) {
-		builder.add<int32_t>(0);
+		builder.add<player_id_t>(0);
 	}
 
 	// Add party member names to packet
@@ -142,7 +142,9 @@ PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
 	// Add party member jobs to packet
 	for (const auto &kvp : members) {
 		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		builder.add<int32_t>(player->job);
+		builder.add<int32_t>(player->job.is_initialized() ?
+			player->job.get() :
+			-1);
 	}
 	for (i = 0; i < offset; i++) {
 		builder.add<int32_t>(0);
@@ -151,7 +153,9 @@ PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
 	// Add party member levels to packet
 	for (const auto &kvp : members) {
 		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		builder.add<int32_t>(player->level);
+		builder.add<int32_t>(player->level.is_initialized() ?
+			player->level.get() :
+			-1);
 	}
 	for (i = 0; i < offset; i++) {
 		builder.add<int32_t>(0);
@@ -160,42 +164,43 @@ PACKET_IMPL(updateParty, int32_t targetMapId, Party *party) {
 	// Add party member channels to packet
 	for (const auto &kvp : members) {
 		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
-		builder.add<int32_t>(player->channel != -1 ?
-			player->channel :
-			(player->cashShop ? -1 : -2));
+		builder.add<int32_t>(player->cashShop ? -1 :
+			(player->channel.is_initialized() ?
+				player->channel.get() :
+				-2));
 	}
 	for (i = 0; i < offset; i++) {
 		builder.add<int32_t>(-2);
 	}
 
-	builder.add<int32_t>(party->getLeaderId());
+	builder.add<player_id_t>(party->getLeaderId());
 
 	// Add party member maps to packet
 	for (const auto &kvp : members) {
 		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
 		if (player->channel == channelId && player->map == targetMapId) {
-			builder.add<int32_t>(targetMapId);
+			builder.add<map_id_t>(targetMapId);
 		}
 		else {
-			builder.add<int32_t>(0);
+			builder.add<map_id_t>(0);
 		}
 	}
 	for (i = 0; i < offset; i++) {
-		builder.add<int32_t>(-2);
+		builder.add<map_id_t>(-2);
 	}
 
 	// Add some portal information (Door?)
 	for (const auto &kvp : members) {
 		builder
-			.add<int32_t>(Maps::NoMap)
-			.add<int32_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
 			.add<int32_t>(-1)
 			.add<int32_t>(-1);
 	}
 	for (i = 0; i < offset; i++) {
 		builder
-			.add<int32_t>(Maps::NoMap)
-			.add<int32_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
+			.add<map_id_t>(Maps::NoMap)
 			.add<int32_t>(-1)
 			.add<int32_t>(-1);
 	}

@@ -51,7 +51,7 @@ PACKET_IMPL(connectChannel, world_id_t worldId, const Ip &ip, port_t port) {
 	return builder;
 }
 
-PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, int32_t charId, const Ip &ip) {
+PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, player_id_t charId, const Ip &ip) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_TO_CHANNEL)
@@ -59,7 +59,7 @@ PACKET_IMPL(playerConnectingToChannel, channel_id_t channel, int32_t charId, con
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::NewConnectable)
-		.add<int32_t>(charId)
+		.add<player_id_t>(charId)
 		.add<Ip>(ip)
 		// The size of the held packet that should be there - there isn't one
 		.add<uint16_t>(0);

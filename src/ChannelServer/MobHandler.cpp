@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
-	int32_t mobId = reader.get<int32_t>();
+	map_object_t mobId = reader.get<map_object_t>();
 	auto mob = player->getMap()->getMob(mobId);
 	if (player->getStats()->isDead() || mob == nullptr) {
 		return;
@@ -51,19 +51,19 @@ auto MobHandler::handleBomb(Player *player, PacketReader &reader) -> void {
 }
 
 auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
-	int32_t mobFrom = reader.get<int32_t>();
-	int32_t playerId = reader.get<int32_t>();
-	int32_t mobTo = reader.get<int32_t>();
+	map_object_t mobFrom = reader.get<map_object_t>();
+	player_id_t playerId = reader.get<player_id_t>();
+	map_object_t mobTo = reader.get<map_object_t>();
 
 	Map *map = player->getMap();
 	auto dealer = map->getMob(mobFrom);
 	auto taker = map->getMob(mobTo);
 	if (dealer != nullptr && taker != nullptr && taker->isFriendly()) {
-		int32_t damage = dealer->getLevel() * Randomizer::rand<int32_t>(100) / 10;
+		damage_t damage = dealer->getLevel() * Randomizer::rand<int32_t>(100) / 10;
 		// Temp for now until I figure out something more effective
 		// TODO FIXME: Formula
-		int32_t mobId = taker->getMobId();
-		int32_t mapMobId = taker->getMapMobId();
+		mob_id_t mobId = taker->getMobId();
+		map_object_t mapMobId = taker->getMapMobId();
 		int32_t mobHp = std::max(0, taker->getHp() - damage);
 		int32_t maxHp = taker->getMaxHp();
 
@@ -75,11 +75,11 @@ auto MobHandler::friendlyDamaged(Player *player, PacketReader &reader) -> void {
 }
 
 auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
-	int32_t mobFrom = reader.get<int32_t>();
-	int32_t playerId = reader.get<int32_t>();
-	int32_t mobTo = reader.get<int32_t>();
+	map_object_t mobFrom = reader.get<map_object_t>();
+	player_id_t playerId = reader.get<player_id_t>();
+	map_object_t mobTo = reader.get<map_object_t>();
 	reader.skipBytes(1); // Same as player damage, -1 = bump, integer = skill ID
-	int32_t damage = reader.get<int32_t>();
+	damage_t damage = reader.get<damage_t>();
 	reader.skipBytes(1); // Facing direction
 	reader.skipBytes(4); // Some type of pos, damage display, I think
 
@@ -92,7 +92,7 @@ auto MobHandler::handleTurncoats(Player *player, PacketReader &reader) -> void {
 }
 
 auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
-	int32_t mobId = reader.get<int32_t>();
+	map_object_t mobId = reader.get<map_object_t>();
 
 	Map *map = player->getMap();
 	auto mob = map->getMob(mobId);
@@ -107,8 +107,8 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 
 	int8_t nibbles = reader.get<int8_t>();
 	int8_t rawActivity = reader.get<int8_t>();
-	uint8_t useSkillId = reader.get<uint8_t>();
-	uint8_t useSkillLevel = reader.get<uint8_t>();
+	mob_skill_id_t useSkillId = reader.get<mob_skill_id_t>();
+	mob_skill_level_t useSkillLevel = reader.get<mob_skill_level_t>();
 	int16_t option = reader.get<int16_t>();
 	reader.skipBytes(1); // unk
 	reader.skipBytes(4); // 4 bytes of always 1 or always 0?
@@ -123,12 +123,12 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 	}
 	bool isAttack = ext::in_range_inclusive<int8_t>(parsedActivity, 12, 20);
 	bool isSkill = ext::in_range_inclusive<int8_t>(parsedActivity, 21, 25);
-	int32_t attackId = isAttack ? parsedActivity - 12 : -1;
+	mob_skill_id_t attackId = isAttack ? parsedActivity - 12 : -1;
 	bool nextMovementCouldBeSkill = (nibbles & 0x0F) != 0;
 	bool unk = (nibbles & 0xF0) != 0;
 
-	uint8_t nextCastSkill = 0;
-	uint8_t nextCastSkillLevel = 0;
+	mob_skill_id_t nextCastSkill = 0;
+	mob_skill_level_t nextCastSkillLevel = 0;
 
 	if (isAttack || isSkill) {
 		if (isAttack) {
@@ -161,7 +161,7 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 	player->sendMap(MobsPacket::moveMob(mobId, nextMovementCouldBeSkill, rawActivity, useSkillId, useSkillLevel, option, reader.getBuffer(), reader.getBufferLength()), true);
 }
 
-auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t skillId, uint8_t level, int32_t weapon, int8_t hits, int32_t damage) -> int32_t {
+auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage) -> int32_t {
 	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
 	vector_t<StatusInfo> statuses;
 	int16_t y = 0;
@@ -190,7 +190,7 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 		}
 		if ((GameLogicUtilities::isSword(weapon) || GameLogicUtilities::isMace(weapon)) && player->getActiveBuffs()->hasIceCharge()) {
 			// Ice charges
-			int32_t charge = player->getActiveBuffs()->getCharge();
+			skill_id_t charge = player->getActiveBuffs()->getCharge();
 			statuses.emplace_back(StatusEffects::Mob::Freeze, StatusEffects::Mob::Freeze, charge, player->getActiveBuffs()->getActiveSkillInfo(charge)->y);
 		}
 	}
@@ -207,19 +207,20 @@ auto MobHandler::handleMobStatus(int32_t playerId, ref_ptr_t<Mob> mob, int32_t s
 			case Skills::ChiefBandit::Assaulter:
 			case Skills::Shadower::Assassinate:
 			case Skills::Shadower::BoomerangStep:
+			case Skills::NightWalker::Disorder:
 				if (player->getSkills()->hasVenomousWeapon() && mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount) {
 					// MAX = (18.5 * [STR + LUK] + DEX * 2) / 100 * Venom matk
 					// MIN = (8.0 * [STR + LUK] + DEX * 2) / 100 * Venom matk
-					int32_t vSkill = player->getSkills()->getVenomousWeapon();
+					skill_id_t vSkill = player->getSkills()->getVenomousWeapon();
 					auto venom = player->getSkills()->getSkillInfo(vSkill);
 
 					int32_t part1 = player->getStats()->getStr(true) + player->getStats()->getLuk(true);
 					int32_t part2 = player->getStats()->getDex(true) * 2;
 					int16_t vAtk = venom->mAtk;
-					int32_t minDamage = ((80 * part1 / 10 + part2) / 100) * vAtk;
-					int32_t maxDamage = ((185 * part1 / 10 + part2) / 100) * vAtk;
+					damage_t minDamage = ((80 * part1 / 10 + part2) / 100) * vAtk;
+					damage_t maxDamage = ((185 * part1 / 10 + part2) / 100) * vAtk;
 
-					damage = Randomizer::rand<int32_t>(maxDamage, minDamage);
+					damage = Randomizer::rand<damage_t>(maxDamage, minDamage);
 
 					for (int8_t counter = 0; ((counter < hits) && (mob->getVenomCount() < StatusEffects::Mob::MaxVenomCount)); ++counter) {
 						success = (Randomizer::rand<uint16_t>(99) < venom->prop);

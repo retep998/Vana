@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.hpp"
 #include <unordered_map>
 
-auto Characters::loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void {
+auto Characters::loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare
 		<< "SELECT i.item_id, i.slot "
 		<< "FROM " << Database::makeCharTable("items") << " i "
@@ -51,21 +51,21 @@ auto Characters::loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void {
 
 	for (const auto &row : rs) {
 		CharEquip equip;
-		equip.id = row.get<int32_t>("item_id");
-		equip.slot = row.get<int16_t>("slot");
+		equip.id = row.get<item_id_t>("item_id");
+		equip.slot = row.get<inventory_slot_t>("slot");
 		vec.push_back(equip);
 	}
 }
 
 auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
-	charc.id = row.get<int32_t>("character_id");
+	charc.id = row.get<player_id_t>("character_id");
 	charc.name = row.get<string_t>("name");
-	charc.gender = row.get<int8_t>("gender");
-	charc.skin = row.get<int8_t>("skin");
-	charc.eyes = row.get<int32_t>("eyes");
-	charc.hair = row.get<int32_t>("hair");
-	charc.level = row.get<uint8_t>("level");
-	charc.job = row.get<int16_t>("job");
+	charc.gender = row.get<gender_id_t>("gender");
+	charc.skin = row.get<skin_id_t>("skin");
+	charc.eyes = row.get<face_id_t>("eyes");
+	charc.hair = row.get<hair_id_t>("hair");
+	charc.level = row.get<player_level_t>("level");
+	charc.job = row.get<job_id_t>("job");
 	charc.str = row.get<int16_t>("str");
 	charc.dex = row.get<int16_t>("dex");
 	charc.intt = row.get<int16_t>("int");
@@ -76,9 +76,9 @@ auto Characters::loadCharacter(Character &charc, const soci::row &row) -> void {
 	charc.mmp = row.get<int16_t>("mmp");
 	charc.ap = row.get<int16_t>("ap");
 	charc.sp = row.get<int16_t>("sp");
-	charc.exp = row.get<int32_t>("exp");
-	charc.fame = row.get<int16_t>("fame");
-	charc.map = row.get<int32_t>("map");
+	charc.exp = row.get<experience_t>("exp");
+	charc.fame = row.get<fame_t>("fame");
+	charc.map = row.get<map_id_t>("map");
 	charc.pos = row.get<int8_t>("pos");
 
 	if (GameLogicUtilities::getJobTrack(charc.job) == Jobs::JobTracks::Gm) {
@@ -132,7 +132,7 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 auto Characters::showCharacters(UserConnection *user) -> void {
 	soci::session &sql = Database::getCharDb();
 	world_id_t worldId = user->getWorldId();
-	int32_t userId = user->getUserId();
+	account_id_t userId = user->getUserId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT * "
@@ -166,7 +166,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 }
 
 auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) -> void {
-	const string_t &name = reader.get<string_t>();
+	string_t name = reader.get<string_t>();
 	if (!ext::in_range_inclusive<size_t>(name.size(), Characters::MinNameSize, Characters::MaxNameSize)) {
 		return;
 	}
@@ -182,9 +182,9 @@ auto Characters::checkCharacterName(UserConnection *user, PacketReader &reader) 
 	}
 }
 
-auto Characters::createItem(int32_t itemId, UserConnection *user, int32_t charId, int32_t slot, int16_t amount) -> void {
+auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount) -> void {
 	soci::session &sql = Database::getCharDb();
-	uint8_t inventory = GameLogicUtilities::getInventory(itemId);
+	inventory_t inventory = GameLogicUtilities::getInventory(itemId);
 	ItemDbInformation info(slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
@@ -218,17 +218,17 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 		return;
 	}
 
-	int32_t eyes = reader.get<int32_t>();
-	int32_t hair = reader.get<int32_t>();
-	int32_t hairColor = reader.get<int32_t>();
-	int32_t skin = reader.get<int32_t>();
-	int32_t top = reader.get<int32_t>();
-	int32_t bottom = reader.get<int32_t>();
-	int32_t shoes = reader.get<int32_t>();
-	int32_t weapon = reader.get<int32_t>();
-	int8_t gender = reader.get<int8_t>();
+	face_id_t face = reader.get<face_id_t>();
+	hair_id_t hair = reader.get<hair_id_t>();
+	hair_id_t hairColor = reader.get<hair_id_t>();
+	skin_id_t skin = static_cast<skin_id_t>(reader.get<int32_t>());
+	item_id_t top = reader.get<item_id_t>();
+	item_id_t bottom = reader.get<item_id_t>();
+	item_id_t shoes = reader.get<item_id_t>();
+	item_id_t weapon = reader.get<item_id_t>();
+	gender_id_t gender = reader.get<gender_id_t>();
 
-	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, eyes, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
+	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, face, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
 		user->disconnect();
 		return;
@@ -247,7 +247,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 		soci::use(name, "name"),
 		soci::use(user->getUserId(), "user"),
 		soci::use(user->getWorldId(), "world"),
-		soci::use(eyes, "eyes"),
+		soci::use(face, "eyes"),
 		soci::use(hair + hairColor, "hair"),
 		soci::use(skin, "skin"),
 		soci::use(gender, "gender"),
@@ -256,7 +256,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 		soci::use(intt, "int"),
 		soci::use(luk, "luk");
 
-	int32_t id = Database::getLastId<int32_t>(sql);
+	player_id_t id = Database::getLastId<player_id_t>(sql);
 
 	createItem(top, user, id, -EquipSlots::Top);
 	createItem(bottom, user, id, -EquipSlots::Bottom);
@@ -283,8 +283,8 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 		// Hacking
 		return;
 	}
-	int32_t data = reader.get<int32_t>();
-	int32_t id = reader.get<int32_t>();
+	int32_t password = reader.get<int32_t>();
+	player_id_t id = reader.get<player_id_t>();
 
 	if (!ownerCheck(user, id)) {
 		// Hacking
@@ -300,7 +300,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 
 	uint8_t result = Success;
 	soci::session &sql = Database::getCharDb();
-	MiscUtilities::optional<world_id_t> worldId;
+	optional_t<world_id_t> worldId;
 
 	sql.once
 		<< "SELECT world_id "
@@ -315,8 +315,8 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	}
 
 	bool success = false;
-	const opt_int32_t &delPassword = user->getCharDeletePassword();
-	if (!delPassword.is_initialized() || delPassword.get() == data) {
+	opt_int32_t delPassword = user->getCharDeletePassword();
+	if (!delPassword.is_initialized() || delPassword.get() == password) {
 		Worlds::getInstance().runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
 				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
@@ -337,7 +337,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	Worlds::getInstance().send(user->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
 }
 
-auto Characters::connectGame(UserConnection *user, int32_t charId) -> void {
+auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 	if (user->getStatus() != PlayerStatus::LoggedIn) {
 		// Hacking
 		return;
@@ -361,7 +361,7 @@ auto Characters::connectGame(UserConnection *user, int32_t charId) -> void {
 }
 
 auto Characters::connectGame(UserConnection *user, PacketReader &reader) -> void {
-	int32_t id = reader.get<int32_t>();
+	player_id_t id = reader.get<player_id_t>();
 
 	connectGame(user, id);
 }
@@ -371,7 +371,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 		// Hacking
 		return;
 	}
-	int32_t id = reader.get<int32_t>();
+	player_id_t id = reader.get<player_id_t>();
 	world_id_t worldId = static_cast<world_id_t>(reader.get<int32_t>());
 	user->setWorldId(worldId);
 

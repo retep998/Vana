@@ -19,9 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PacketBuilder.hpp"
 
-class AbstractConnection;
-
 namespace PingPacket {
-	PACKET(ping, AbstractConnection *connection);
-	PACKET(pong, AbstractConnection *connection);
+	PACKET(ping);
+	PACKET(pong);
 }

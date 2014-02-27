@@ -28,15 +28,15 @@ struct FootholdInfo {
 	bool forbidJumpDown = false;
 	bool leftEdge = false;
 	bool rightEdge = false;
-	int16_t id = 0;
+	foothold_id_t id = 0;
 	int16_t dragForce = 0;
 	Line line;
 };
 
 struct PortalInfo {
 	bool onlyOnce = false;
-	int8_t id = 0;
-	int32_t toMap = 0;
+	portal_id_t id = 0;
+	map_id_t toMap = 0;
 	string_t toName;
 	string_t script;
 	string_t name;
@@ -57,17 +57,17 @@ struct SpawnInfo {
 	bool spawned = false;
 	int32_t id = 0;
 	int32_t time = 0;
-	int16_t foothold = 0;
+	foothold_id_t foothold = 0;
 	Pos pos;
 };
 
 struct NpcSpawnInfo : public SpawnInfo {
-	int16_t rx0 = 0;
-	int16_t rx1 = 0;
+	coord_t rx0 = 0;
+	coord_t rx1 = 0;
 };
 
 struct MobSpawnInfo : public SpawnInfo {
-	int32_t link = 0;
+	mob_id_t link = 0;
 };
 
 struct ReactorSpawnInfo : public SpawnInfo {
@@ -84,7 +84,7 @@ struct Respawnable {
 };
 
 struct SeatInfo {
-	int16_t id = 0;
+	seat_id_t id = 0;
 	Player *occupant = nullptr;
 	Pos pos;
 };

@@ -42,8 +42,8 @@ struct MapEntryBuffs {
 		}
 	}
 	
-	int32_t mountId = 0;
-	int32_t mountSkill = 0;
+	item_id_t mountId = 0;
+	skill_id_t mountSkill = 0;
 	array_t<uint8_t, BuffBytes::ByteQuantity> types;
 	hash_map_t<int8_t, hash_map_t<uint8_t, MapEntryVals>> values;
 };
@@ -58,35 +58,35 @@ public:
 	}
 
 	// Buff handling
-	auto addBuff(int32_t skill, const seconds_t &time) -> void;
-	auto removeBuff(int32_t skill, bool fromTimer = false) -> void;
+	auto addBuff(skill_id_t skill, const seconds_t &time) -> void;
+	auto removeBuff(skill_id_t skill, bool fromTimer = false) -> void;
 	auto removeBuffs() -> void;
-	auto getBuffSecondsRemaining(int32_t skill) const -> seconds_t;
+	auto getBuffSecondsRemaining(skill_id_t skill) const -> seconds_t;
 	auto dispelBuffs() -> void;
 
 	// Buff info
-	auto addBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> void;
-	auto setActiveSkillLevel(int32_t skillId, uint8_t level) -> void;
-	auto getActiveSkillLevel(int32_t skillId) const -> uint8_t;
-	auto removeBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff;
-	auto getActiveSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const;
+	auto addBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> void;
+	auto setActiveSkillLevel(skill_id_t skillId, skill_level_t level) -> void;
+	auto getActiveSkillLevel(skill_id_t skillId) const -> skill_level_t;
+	auto removeBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff;
+	auto getActiveSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const;
 
 	// Buff map info
 	auto addMapEntryBuffInfo(const ActiveMapBuff &buff) -> void;
 	auto deleteMapEntryBuffInfo(const ActiveMapBuff &buff) -> void;
-	auto setMountInfo(int32_t skillId, int32_t mountId) -> void;
+	auto setMountInfo(skill_id_t skillId, item_id_t mountId) -> void;
 	auto getMapEntryBuffs() -> MapEntryBuffs;
 
 	// Skill actions
-	auto addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time) -> void;
-	auto getActTimer(int32_t skill) -> ref_ptr_t<Timer::Container>;
-	auto removeAction(int32_t skill) -> void;
+	auto addAction(skill_id_t skill, Action act, int16_t value, const milliseconds_t &time) -> void;
+	auto getActTimer(skill_id_t skill) -> ref_ptr_t<Timer::Container>;
+	auto removeAction(skill_id_t skill) -> void;
 
 	// Debuffs
-	auto addDebuff(uint8_t skill, uint8_t level) -> void;
+	auto addDebuff(mob_skill_id_t skill, mob_skill_level_t level) -> void;
 	auto useDispel() -> void;
 	auto useDebuffHealingItem(int32_t mask) -> void;
-	auto removeDebuff(uint8_t skill, bool fromTimer = false) -> void;
+	auto removeDebuff(mob_skill_id_t skill, bool fromTimer = false) -> void;
 	auto getDebuffMask() const -> int32_t { return m_debuffMask; }
 	auto setDebuffMask(int32_t newMask) -> void { m_debuffMask = newMask; }
 
@@ -109,15 +109,15 @@ public:
 	auto stopEnergyChargeTimer() -> void;
 
 	// Boosters
-	auto setBooster(int32_t skillId) -> void { m_activeBooster = skillId; }
+	auto setBooster(skill_id_t skillId) -> void { m_activeBooster = skillId; }
 	auto stopBooster() -> void;
-	auto getBooster() const -> int32_t { return m_activeBooster; }
+	auto getBooster() const -> skill_id_t { return m_activeBooster; }
 
 	// White Knight/Paladin charges
-	auto setCharge(int32_t skillId) -> void { m_activeCharge = skillId; }
+	auto setCharge(skill_id_t skillId) -> void { m_activeCharge = skillId; }
 	auto stopCharge() -> void;
 	auto hasIceCharge() const -> bool;
-	auto getCharge() const -> int32_t { return m_activeCharge; }
+	auto getCharge() const -> skill_id_t { return m_activeCharge; }
 
 	// Soul Arrow/Shadow Stars
 	auto stopBulletSkills() -> void;
@@ -132,9 +132,9 @@ public:
 	auto resetBattleshipHp() -> void;
 
 	// Homing Beacon
-	auto getMarkedMonster() const -> int32_t { return m_markedMob; }
+	auto getMarkedMonster() const -> map_object_t { return m_markedMob; }
 	auto hasMarkedMonster() const -> bool { return m_markedMob != 0; }
-	auto setMarkedMonster(int32_t mapMobId) -> void { m_markedMob = mapMobId; }
+	auto setMarkedMonster(map_object_t mapMobId) -> void { m_markedMob = mapMobId; }
 
 	// Commonly referred to (de)buffs on the server end
 	auto hasInfinity() -> bool;
@@ -152,13 +152,13 @@ public:
 	auto isCursed() -> bool;
 	auto isZombified() -> bool;
 	auto getHolySymbolRate() -> int16_t;
-	auto getHolySymbol() -> int32_t;
-	auto getPowerStance() -> int32_t;
-	auto getHyperBody() -> int32_t;
-	auto getCurrentMorph() -> int32_t;
-	auto getMagicGuard() -> int32_t;
-	auto getMesoGuard() -> int32_t;
-	auto getHomingBeacon() -> int32_t;
+	auto getHolySymbol() -> skill_id_t;
+	auto getPowerStance() -> skill_id_t;
+	auto getHyperBody() -> skill_id_t;
+	auto getCurrentMorph() -> skill_id_t;
+	auto getMagicGuard() -> skill_id_t;
+	auto getMesoGuard() -> skill_id_t;
+	auto getHomingBeacon() -> skill_id_t;
 
 	auto endMorph() -> void;
 	auto swapWeapon() -> void;
@@ -166,23 +166,23 @@ public:
 	auto getTransferPacket() const -> PacketBuilder;
 	auto parseTransferPacket(PacketReader &reader) -> void;
 private:
-	auto hasBuff(int32_t skillId) -> bool;
-	auto calculateDebuffMaskBit(uint8_t skill) -> int32_t;
+	auto hasBuff(skill_id_t skillId) -> bool;
+	auto calculateDebuffMaskBit(mob_skill_id_t skill) -> int32_t;
 
 	bool m_berserk = false;
 	uint8_t m_combo = 0;
 	int16_t m_energyCharge = 0;
-	int32_t m_activeCharge = 0;
-	int32_t m_activeBooster = 0;
+	skill_id_t m_activeCharge = 0;
+	skill_id_t m_activeBooster = 0;
 	int32_t m_pickpocketCounter = 0;
 	int32_t m_battleshipHp = 0;
-	int32_t m_markedMob = 0;
+	map_object_t m_markedMob = 0;
 	uint32_t m_timeSeed = 0;
 	uint32_t m_debuffMask = 0;
 	Player *m_player = nullptr;
 	MapEntryBuffs m_mapBuffs;
-	queue_t<int32_t> m_buffs;
-	hash_map_t<int8_t, hash_map_t<uint8_t, int32_t>> m_activeBuffsByType;
-	hash_map_t<int32_t, uint8_t> m_activeLevels;
-	hash_map_t<int32_t, ref_ptr_t<Timer::Container>> m_skillActs;
+	queue_t<skill_id_t> m_buffs;
+	hash_map_t<int8_t, hash_map_t<uint8_t, skill_id_t>> m_activeBuffsByType;
+	hash_map_t<skill_id_t, skill_level_t> m_activeLevels;
+	hash_map_t<skill_id_t, ref_ptr_t<Timer::Container>> m_skillActs;
 };

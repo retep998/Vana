@@ -26,23 +26,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace QuestsPacket {
 
-PACKET_IMPL(acceptQuest, int16_t questId, int32_t npcId) {
+PACKET_IMPL(acceptQuest, quest_id_t questId, npc_id_t npcId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(8)
-		.add<int16_t>(questId)
-		.add<int32_t>(npcId)
+		.add<quest_id_t>(questId)
+		.add<npc_id_t>(npcId)
 		.add<int32_t>(0);
 	return builder;
 }
 
-PACKET_IMPL(acceptQuestNotice, int16_t questId) {
+PACKET_IMPL(acceptQuestNotice, quest_id_t questId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<int16_t>(questId)
+		.add<quest_id_t>(questId)
 		.add<int8_t>(1)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
@@ -50,29 +50,29 @@ PACKET_IMPL(acceptQuestNotice, int16_t questId) {
 	return builder;
 }
 
-PACKET_IMPL(completeQuestNotice, int16_t questId, int64_t time) {
+PACKET_IMPL(completeQuestNotice, quest_id_t questId, int64_t time) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<int16_t>(questId)
+		.add<quest_id_t>(questId)
 		.add<int8_t>(2)
 		.add<int64_t>(time);
 	return builder;
 }
 
-PACKET_IMPL(completeQuest, int16_t questId, int32_t npcId, int16_t nextQuest) {
+PACKET_IMPL(completeQuest, quest_id_t questId, npc_id_t npcId, quest_id_t nextQuest) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(8)
-		.add<int16_t>(questId)
-		.add<int32_t>(npcId)
-		.add<int16_t>(nextQuest);
+		.add<quest_id_t>(questId)
+		.add<npc_id_t>(npcId)
+		.add<quest_id_t>(nextQuest);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(completeQuestAnimation, int32_t playerId) {
+SPLIT_PACKET_IMPL(completeQuestAnimation, player_id_t playerId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
@@ -80,7 +80,7 @@ SPLIT_PACKET_IMPL(completeQuestAnimation, int32_t playerId) {
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(9);
 	return builder;
 }
@@ -90,69 +90,69 @@ PACKET_IMPL(updateQuest, const ActiveQuest &quest) {
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<int16_t>(quest.id)
+		.add<quest_id_t>(quest.id)
 		.add<int8_t>(1)
 		.add<string_t>(quest.getQuestData());
 	return builder;
 }
 
-PACKET_IMPL(doneQuest, int16_t questId) {
+PACKET_IMPL(doneQuest, quest_id_t questId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_QUEST_COMPLETED)
-		.add<int16_t>(questId);
+		.add<quest_id_t>(questId);
 	return builder;
 }
 
-PACKET_IMPL(questError, int16_t questId, int8_t errorCode) {
+PACKET_IMPL(questError, quest_id_t questId, int8_t errorCode) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(errorCode)
-		.add<int16_t>(questId);
+		.add<quest_id_t>(questId);
 	return builder;
 }
 
-PACKET_IMPL(questExpire, int16_t questId) {
+PACKET_IMPL(questExpire, quest_id_t questId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_QUEST_UPDATE)
 		.add<int8_t>(0x0F)
-		.add<int16_t>(questId);
+		.add<quest_id_t>(questId);
 	return builder;
 }
 
-PACKET_IMPL(forfeitQuest, int16_t questId) {
+PACKET_IMPL(forfeitQuest, quest_id_t questId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(1)
-		.add<int16_t>(questId)
+		.add<quest_id_t>(questId)
 		.add<int8_t>(0);
 	return builder;
 }
 
-PACKET_IMPL(giveItem, int32_t itemId, int32_t amount) {
+PACKET_IMPL(giveItem, item_id_t itemId, slot_qty_t amount) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_THEATRICS)
 		.add<int8_t>(3)
 		.add<int8_t>(1) // Number of different items (itemId and amount gets repeated)
-		.add<int32_t>(itemId)
+		.add<item_id_t>(itemId)
 		.add<int32_t>(amount);
 	return builder;
 }
 
-PACKET_IMPL(giveMesos, int32_t amount) {
+PACKET_IMPL(giveMesos, mesos_t amount) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(5)
-		.add<int32_t>(amount);
+		.add<mesos_t>(amount);
 	return builder;
 }
 
-PACKET_IMPL(giveFame, int32_t amount) {
+PACKET_IMPL(giveFame, fame_t amount) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Jobs {
 	namespace JobIds {
-		enum Jobs : int16_t {
+		enum Jobs : job_id_t {
 			Beginner = 0,
 			CannoneerBeginner = 1,
 
@@ -281,7 +281,7 @@ namespace Jobs {
 		};
 	}
 	namespace Beginners {
-		const init_list_t<int16_t> Jobs = {
+		const init_list_t<job_id_t> Jobs = {
 			Jobs::JobIds::Beginner, Jobs::JobIds::CannoneerBeginner,
 			Jobs::JobIds::Noblesse,
 			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes, Jobs::JobIds::Phantom, Jobs::JobIds::Luminous,

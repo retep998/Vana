@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Session.hpp"
 #include <functional>
 
-ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation) :
+ConnectionAcceptor::ConnectionAcceptor(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) :
 	m_acceptor(ioService, endpoint),
 	m_connectionCreator(createConnection),
 	m_config(config),
-	m_patchLocation(patchLocation),
+	m_subversion(subversion),
 	m_isServer(isServer)
 {
 	m_sessionManager = make_ref_ptr<SessionManager>();
@@ -39,7 +39,7 @@ auto ConnectionAcceptor::stop() -> void {
 auto ConnectionAcceptor::startAccepting() -> void {
 	bool ping = m_isServer ? m_config.serverPing : m_config.clientPing;
 	bool encrypt = m_config.clientEncryption || m_isServer;
-	auto newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_connectionCreator(), true, encrypt, ping, m_patchLocation);
+	auto newSession = make_ref_ptr<Session>(m_acceptor.get_io_service(), m_sessionManager, m_connectionCreator(), true, encrypt, ping, m_subversion);
 
 	m_acceptor.async_accept(newSession->getSocket(), [this, newSession](const boost::system::error_code &error) {
 		if (!error) {

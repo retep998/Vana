@@ -26,7 +26,7 @@ class LuaInstance : public LuaScriptable {
 	NONCOPYABLE(LuaInstance);
 	NO_DEFAULT_CONSTRUCTOR(LuaInstance);
 public:
-	LuaInstance(const string_t &name, int32_t playerId);
+	LuaInstance(const string_t &name, player_id_t playerId);
 };
 
 namespace LuaExports {

@@ -37,7 +37,7 @@ SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_PLAYER_CHANGE_LOOK)
-		.add<int32_t>(player->getId())
+		.add<player_id_t>(player->getId())
 		.add<int8_t>(1)
 		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
 		.add<int8_t>(0)
@@ -47,7 +47,7 @@ SPLIT_PACKET_IMPL(updatePlayer, Player *player) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sitChair, int32_t playerId, int32_t chairId) {
+SPLIT_PACKET_IMPL(sitChair, player_id_t playerId, item_id_t chairId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_PLAYER_UPDATE)
@@ -56,32 +56,33 @@ SPLIT_PACKET_IMPL(sitChair, int32_t playerId, int32_t chairId) {
 
 	builder.map
 		.add<header_t>(SMSG_CHAIR_SIT)
-		.add<int32_t>(playerId)
-		.add<int32_t>(chairId);
+		.add<player_id_t>(playerId)
+		.add<item_id_t>(chairId);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(stopChair, int32_t playerId, bool seatTaken) {
+SPLIT_PACKET_IMPL(stopChair, player_id_t playerId, bool seatTaken) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_CHAIR)
 		.add<int8_t>(0);
+
 	if (seatTaken) {
 		return builder;
 	}
 
 	builder.map
 		.add<header_t>(SMSG_CHAIR_SIT)
-		.add<int32_t>(playerId)
-		.add<int32_t>(0);
+		.add<player_id_t>(playerId)
+		.add<item_id_t>(0);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useScroll, int32_t playerId, int8_t succeed, bool destroy, bool legendarySpirit) {
+SPLIT_PACKET_IMPL(useScroll, player_id_t playerId, int8_t succeed, bool destroy, bool legendarySpirit) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SCROLL_USE)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(succeed)
 		.add<bool>(destroy)
 		.add<int16_t>(legendarySpirit);
@@ -90,11 +91,11 @@ SPLIT_PACKET_IMPL(useScroll, int32_t playerId, int8_t succeed, bool destroy, boo
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sendChalkboardUpdate, int32_t playerId, const string_t &msg) {
+SPLIT_PACKET_IMPL(sendChalkboardUpdate, player_id_t playerId, const string_t &msg) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_CHALKBOARD)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<bool>(!msg.empty())
 		.add<string_t>(msg);
 
@@ -102,13 +103,13 @@ SPLIT_PACKET_IMPL(sendChalkboardUpdate, int32_t playerId, const string_t &msg) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useSkillbook, int32_t playerId, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
+SPLIT_PACKET_IMPL(useSkillbook, player_id_t playerId, skill_id_t skillId, int32_t newMaxLevel, bool use, bool succeed) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SKILLBOOK)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(1) // Number of skills? Maybe just padding or random boolean
-		.add<int32_t>(skillId)
+		.add<skill_id_t>(skillId)
 		.add<int32_t>(newMaxLevel)
 		.add<bool>(use)
 		.add<bool>(succeed);
@@ -117,12 +118,12 @@ SPLIT_PACKET_IMPL(useSkillbook, int32_t playerId, int32_t skillId, int32_t newMa
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(useItemEffect, int32_t playerId, int32_t itemId) {
+SPLIT_PACKET_IMPL(useItemEffect, player_id_t playerId, item_id_t itemId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_ITEM_EFFECT)
-		.add<int32_t>(playerId)
-		.add<int32_t>(itemId);
+		.add<player_id_t>(playerId)
+		.add<item_id_t>(itemId);
 
 	builder.map.addBuffer(builder.player);
 	return builder;
@@ -138,7 +139,7 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 	for (const auto &operation : operations) {
 		builder
 			.add<int8_t>(operation.operationType)
-			.add<int8_t>(GameLogicUtilities::getInventory(operation.item->getId()));
+			.add<inventory_t>(GameLogicUtilities::getInventory(operation.item->getId()));
 
 		switch (operation.operationType) {
 			case InventoryPacket::OperationTypes::AddItem:
@@ -146,13 +147,13 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 				break;
 			case InventoryPacket::OperationTypes::ModifyQuantity:
 				builder
-					.add<int16_t>(operation.currentSlot)
-					.add<int16_t>(operation.item->getAmount());
+					.add<inventory_slot_t>(operation.currentSlot)
+					.add<slot_qty_t>(operation.item->getAmount());
 				break;
 			case InventoryPacket::OperationTypes::ModifySlot:
 				builder
-					.add<int16_t>(operation.oldSlot)
-					.add<int16_t>(operation.currentSlot);
+					.add<inventory_slot_t>(operation.oldSlot)
+					.add<inventory_slot_t>(operation.currentSlot);
 				if (operation.oldSlot < 0) {
 					builder.add<int8_t>(1);
 				}
@@ -161,19 +162,19 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 				}
 				break;
 			case InventoryPacket::OperationTypes::RemoveItem:
-				builder.add<int16_t>(operation.currentSlot);
+				builder.add<inventory_slot_t>(operation.currentSlot);
 				break;
 		}
 	}
 	return builder;
 }
 
-PACKET_IMPL(sitMapChair, int16_t chairId) {
+PACKET_IMPL(sitMapChair, seat_id_t chairId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHAIR)
 		.add<int8_t>(1)
-		.add<int16_t>(chairId);
+		.add<seat_id_t>(chairId);
 	return builder;
 }
 
@@ -197,11 +198,11 @@ PACKET_IMPL(showSuperMegaphone, const string_t &msg, bool whisper) {
 	return builder;
 }
 
-PACKET_IMPL(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId) {
+PACKET_IMPL(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, item_id_t itemId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_AVATAR_MEGAPHONE)
-		.add<int32_t>(itemId)
+		.add<item_id_t>(itemId)
 		.add<string_t>(playerName)
 		.add<string_t>(msg1)
 		.add<string_t>(msg2)
@@ -250,12 +251,12 @@ PACKET_IMPL(showTripleMegaphone, int8_t lines, const string_t &line1, const stri
 }
 
 
-PACKET_IMPL(updateSlots, int8_t inventory, int8_t slots) {
+PACKET_IMPL(updateSlots, inventory_t inventory, inventory_slot_count_t slots) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_INVENTORY_SLOT_UPDATE)
-		.add<int8_t>(inventory)
-		.add<int8_t>(slots);
+		.add<inventory_t>(inventory)
+		.add<inventory_slot_count_t>(slots);
 	return builder;
 }
 
@@ -266,7 +267,7 @@ PACKET_IMPL(blankUpdate) {
 	return builder;
 }
 
-PACKET_IMPL(sendRockUpdate, int8_t mode, int8_t type, const vector_t<int32_t> &maps) {
+PACKET_IMPL(sendRockUpdate, int8_t mode, int8_t type, const vector_t<map_id_t> &maps) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_TELEPORT_ROCK)
@@ -285,11 +286,11 @@ PACKET_IMPL(sendRockError, int8_t code, int8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(sendMesobagSucceed, int32_t mesos) {
+PACKET_IMPL(sendMesobagSucceed, mesos_t mesos) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MESOBAG_SUCCESS)
-		.add<int32_t>(mesos);
+		.add<mesos_t>(mesos);
 	return builder;
 }
 
@@ -320,7 +321,7 @@ PACKET_IMPL(sendHammerSlots, int32_t slots) {
 	return builder;
 }
 
-PACKET_IMPL(sendHulkSmash, int16_t slot, Item *hammered) {
+PACKET_IMPL(sendHulkSmash, inventory_slot_t slot, Item *hammered) {
 	PacketBuilder builder;
 	vector_t<InventoryPacketOperation> ops;
 	ops.emplace_back(OperationTypes::RemoveItem, hammered, slot);
@@ -338,21 +339,21 @@ PACKET_IMPL(sendHammerUpdate) {
 	return builder;
 }
 
-PACKET_IMPL(playCashSong, int32_t itemId, const string_t &playerName) {
+PACKET_IMPL(playCashSong, item_id_t itemId, const string_t &playerName) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CASH_SONG)
-		.add<int32_t>(itemId)
+		.add<item_id_t>(itemId)
 		.add<string_t>(playerName);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(sendRewardItemAnimation, int32_t playerId, int32_t itemId, const string_t &effect) {
+SPLIT_PACKET_IMPL(sendRewardItemAnimation, player_id_t playerId, item_id_t itemId, const string_t &effect) {
 	SplitPacketBuilder builder;
 	PacketBuilder packet;
 	packet
 		.add<int8_t>(0x0E)
-		.add<int32_t>(itemId)
+		.add<item_id_t>(itemId)
 		.add<int8_t>(1) // Unk...?
 		.add<string_t>(effect);
 
@@ -362,12 +363,12 @@ SPLIT_PACKET_IMPL(sendRewardItemAnimation, int32_t playerId, int32_t itemId, con
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.addBuffer(packet);
 	return builder;
 }
 
-PACKET_IMPL(sendItemExpired, const vector_t<int32_t> &items) {
+PACKET_IMPL(sendItemExpired, const vector_t<item_id_t> &items) {
 	PacketBuilder builder;
 	builder
 		.add<int16_t>(SMSG_NOTICE)
@@ -375,7 +376,7 @@ PACKET_IMPL(sendItemExpired, const vector_t<int32_t> &items) {
 		.add<uint8_t>(items.size());
 
 	for (const auto &itemId : items) {
-		builder.add<int32_t>(itemId);
+		builder.add<item_id_t>(itemId);
 	}
 	return builder;
 }

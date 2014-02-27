@@ -23,13 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace LevelsPacket {
 
-PACKET_IMPL(showExp, int32_t exp, bool white, bool inChat) {
+PACKET_IMPL(showExp, experience_t exp, bool white, bool inChat) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(3)
 		.add<bool>(white)
-		.add<int32_t>(exp)
+		.add<experience_t>(exp)
 		.add<bool>(inChat)
 		.add<int32_t>(0)
 		.add<int8_t>(0)
@@ -44,11 +44,11 @@ PACKET_IMPL(showExp, int32_t exp, bool white, bool inChat) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(levelUp, int32_t playerId) {
+SPLIT_PACKET_IMPL(levelUp, player_id_t playerId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(0);
 
 	builder.map.addBuffer(builder.player);
@@ -64,11 +64,11 @@ PACKET_IMPL(statOk) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(jobChange, int32_t playerId) {
+SPLIT_PACKET_IMPL(jobChange, player_id_t playerId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(8);
 
 	builder.map.addBuffer(builder.player);

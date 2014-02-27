@@ -30,7 +30,7 @@ class Item;
 struct ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbInformation);
 public:
-	ItemDbInformation(int16_t slot, int32_t charId, int32_t userId, world_id_t worldId, const string_t &location) :
+	ItemDbInformation(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location) :
 		slot(slot),
 		charId(charId),
 		userId(userId),
@@ -39,9 +39,9 @@ public:
 	{
 	}
 
-	int16_t slot;
-	int32_t charId;
-	int32_t userId;
+	inventory_slot_t slot;
+	player_id_t charId;
+	account_id_t userId;
 	world_id_t worldId;
 	string_t location;
 };
@@ -49,7 +49,7 @@ public:
 struct ItemDbRecord : ItemDbInformation {
 	NO_DEFAULT_CONSTRUCTOR(ItemDbRecord);
 public:
-	ItemDbRecord(int16_t slot, int32_t charId, int32_t userId, world_id_t worldId, const string_t &location, Item *item) :
+	ItemDbRecord(inventory_slot_t slot, player_id_t charId, account_id_t userId, world_id_t worldId, const string_t &location, Item *item) :
 		ItemDbInformation(slot, charId, userId, worldId, location),
 		item(item)
 	{
@@ -67,8 +67,8 @@ class Item {
 public:
 	Item() = default;
 	Item(const soci::row &row);
-	Item(int32_t itemId, int16_t amount);
-	Item(int32_t equipId, bool random, bool isGm);
+	Item(item_id_t itemId, slot_qty_t amount);
+	Item(item_id_t equipId, bool random, bool isGm);
 	Item(Item *item);
 
 	auto hasWarmSupport() const -> bool;
@@ -94,11 +94,11 @@ public:
 	auto getHands() const -> int16_t { return m_hands; }
 	auto getSpeed() const -> int16_t { return m_speed; }
 	auto getJump() const -> int16_t { return m_jump; }
-	auto getAmount() const -> int16_t { return m_amount; }
+	auto getAmount() const -> slot_qty_t { return m_amount; }
 	auto getFlags() const -> int16_t { return m_flags; }
-	auto getId() const -> int32_t { return m_id; }
+	auto getId() const -> item_id_t { return m_id; }
 	auto getHammers() const -> int32_t { return m_hammers; }
-	auto getPetId() const -> int64_t { return m_petId; }
+	auto getPetId() const -> pet_id_t { return m_petId; }
 	auto getExpirationTime() const -> int64_t { return m_expiration; }
 	auto getName() const -> const string_t & { return m_name; }
 
@@ -126,11 +126,11 @@ public:
 	auto setHands(int16_t hands) -> void;
 	auto setJump(int16_t jump) -> void;
 	auto setSpeed(int16_t speed) -> void;
-	auto setAmount(int16_t amount) -> void;
+	auto setAmount(slot_qty_t amount) -> void;
 	auto setName(const string_t &name) -> void;
 	auto setFlags(int16_t flags) -> void;
 	auto setHammers(int32_t hammers) -> void;
-	auto setPetId(int64_t petId) -> void;
+	auto setPetId(pet_id_t petId) -> void;
 	auto setExpirationTime(int64_t exp) -> void;
 	auto addStr(int16_t strength, bool onlyIfExists = false) -> void;
 	auto addDex(int16_t dexterity, bool onlyIfExists = false) -> void;
@@ -147,8 +147,8 @@ public:
 	auto addHands(int16_t hands, bool onlyIfExists = false) -> void;
 	auto addJump(int16_t jump, bool onlyIfExists = false) -> void;
 	auto addSpeed(int16_t speed, bool onlyIfExists = false) -> void;
-	auto incAmount(int16_t mod) -> void { m_amount += mod; }
-	auto decAmount(int16_t mod) -> void { m_amount -= mod; }
+	auto incAmount(slot_qty_t mod) -> void { m_amount += mod; }
+	auto decAmount(slot_qty_t mod) -> void { m_amount -= mod; }
 	auto incHammers() -> void { m_hammers++; }
 	auto incSlots(int8_t inc = 1) -> void { m_slots += inc; }
 	auto decSlots(int8_t dec = 1) -> void { m_slots -= dec; }
@@ -183,10 +183,10 @@ private:
 	int16_t m_jump = 0;
 	int16_t m_speed = 0;
 	int16_t m_flags = 0;
-	int16_t m_amount = 0;
-	int32_t m_id = 0;
+	slot_qty_t m_amount = 0;
+	item_id_t m_id = 0;
 	int32_t m_hammers = 0;
-	int64_t m_petId = 0;
+	pet_id_t m_petId = 0;
 	int64_t m_expiration = Items::NoExpiration;
 	string_t m_name;
 };

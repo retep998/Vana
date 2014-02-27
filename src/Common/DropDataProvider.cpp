@@ -50,10 +50,10 @@ auto DropDataProvider::loadDrops() -> void {
 		drop = DropInfo();
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.itemId = row.get<int32_t>("itemid");
+		drop.itemId = row.get<item_id_t>("itemid");
 		drop.minAmount = row.get<int32_t>("minimum_quantity");
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
-		drop.questId = row.get<int16_t>("questid");
+		drop.questId = row.get<quest_id_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
 		dropFlags(row.get<opt_string_t>("flags"));
 
@@ -68,10 +68,10 @@ auto DropDataProvider::loadDrops() -> void {
 		drop = DropInfo();
 
 		int32_t dropper = row.get<int32_t>("dropperid");
-		drop.itemId = row.get<int32_t>("itemid");
+		drop.itemId = row.get<item_id_t>("itemid");
 		drop.minAmount = row.get<int32_t>("minimum_quantity");
 		drop.maxAmount = row.get<int32_t>("maximum_quantity");
-		drop.questId = row.get<int16_t>("questid");
+		drop.questId = row.get<quest_id_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
 		dropFlags(row.get<opt_string_t>("flags"));
 
@@ -96,12 +96,12 @@ auto DropDataProvider::loadGlobalDrops() -> void {
 		GlobalDrop drop;
 
 		drop.continent = row.get<int8_t>("continent");
-		drop.itemId = row.get<int32_t>("itemid");
+		drop.itemId = row.get<item_id_t>("itemid");
 		drop.minAmount = row.get<int16_t>("minimum_quantity");
 		drop.maxAmount = row.get<int16_t>("maximum_quantity");
-		drop.minLevel = row.get<uint8_t>("minimum_level");
-		drop.maxLevel = row.get<uint8_t>("maximum_level");
-		drop.questId = row.get<int16_t>("questid");
+		drop.minLevel = row.get<player_level_t>("minimum_level");
+		drop.maxLevel = row.get<player_level_t>("maximum_level");
+		drop.questId = row.get<quest_id_t>("questid");
 		drop.chance = row.get<uint32_t>("chance");
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&drop](const string_t &cmp) {
 			if (cmp == "is_mesos") drop.isMesos = true;

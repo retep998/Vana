@@ -17,9 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "IPacket.hpp"
 #include "Summon.hpp"
 #include "Types.hpp"
+#include <vector>
 
 class PacketBuilder;
 class PacketReader;
@@ -31,19 +31,17 @@ class PlayerSummons {
 public:
 	PlayerSummons(Player *player) : m_player(player) { }
 
-	auto getSummon() -> Summon * { return m_summon; }
-	auto getPuppet() -> Summon * { return m_puppet; }
-	auto getSummon(int32_t summonId) -> Summon *;
-
+	auto getSummon(summon_id_t summonId) -> Summon *;
 	auto addSummon(Summon *summon, int32_t time) -> void;
-	auto removeSummon(bool puppet, bool fromTimer) -> void;
+	auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
+	auto changedMap() -> void;
+	auto forEach(function_t<void(Summon *)> func) -> void;
 
 	auto getTransferPacket() const -> PacketBuilder;
 	auto parseTransferPacket(PacketReader &reader) -> void;
 private:
-	auto getSummonTimeRemaining() const -> seconds_t;
+	auto getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t;
 
 	Player *m_player = nullptr;
-	Summon *m_summon = nullptr;
-	Summon *m_puppet = nullptr;
+	vector_t<Summon *> m_summons;
 };

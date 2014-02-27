@@ -25,9 +25,9 @@ class Player;
 struct SkillLevelInfo;
 
 struct PlayerSkillInfo {
-	uint8_t level = 0;
-	uint8_t maxSkillLevel = 0;
-	uint8_t playerMaxSkillLevel = 0;
+	skill_level_t level = 0;
+	skill_level_t maxSkillLevel = 0;
+	skill_level_t playerMaxSkillLevel = 0;
 };
 
 class PlayerSkills {
@@ -40,11 +40,11 @@ public:
 	auto save(bool saveCooldowns = false) -> void;
 	auto connectData(PacketBuilder &packet) const -> void;
 
-	auto addSkillLevel(int32_t skillId, uint8_t amount, bool sendPacket = true) -> bool;
-	auto getSkillLevel(int32_t skillId) const -> uint8_t;
-	auto getMaxSkillLevel(int32_t skillId) const -> uint8_t;
-	auto setMaxSkillLevel(int32_t skillId, uint8_t maxLevel, bool sendPacket = true) -> void;
-	auto getSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const;
+	auto addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket = true) -> bool;
+	auto getSkillLevel(skill_id_t skillId) const -> skill_level_t;
+	auto getMaxSkillLevel(skill_id_t skillId) const -> skill_level_t;
+	auto setMaxSkillLevel(skill_id_t skillId, skill_level_t maxLevel, bool sendPacket = true) -> void;
+	auto getSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const;
 
 	auto hasElementalAmp() const -> bool;
 	auto hasEnergyCharge() const -> bool;
@@ -53,27 +53,27 @@ public:
 	auto hasVenomousWeapon() const -> bool;
 	auto hasAchilles() const -> bool;
 	auto hasNoDamageSkill() const -> bool;
-	auto getElementalAmp() const -> int32_t;
-	auto getEnergyCharge() const -> int32_t;
-	auto getComboAttack() const -> int32_t;
-	auto getAdvancedCombo() const -> int32_t;
-	auto getAlchemist() const -> int32_t;
-	auto getHpIncrease() const -> int32_t;
-	auto getMpIncrease() const -> int32_t;
-	auto getMastery() const -> int32_t;
-	auto getMpEater() const -> int32_t;
-	auto getVenomousWeapon() const -> int32_t;
-	auto getAchilles() const -> int32_t;
-	auto getNoDamageSkill() const -> int32_t;
-	auto getRechargeableBonus() const -> int16_t;
+	auto getElementalAmp() const -> skill_id_t;
+	auto getEnergyCharge() const -> skill_id_t;
+	auto getComboAttack() const -> skill_id_t;
+	auto getAdvancedCombo() const -> skill_id_t;
+	auto getAlchemist() const -> skill_id_t;
+	auto getHpIncrease() const -> skill_id_t;
+	auto getMpIncrease() const -> skill_id_t;
+	auto getMastery() const -> skill_id_t;
+	auto getMpEater() const -> skill_id_t;
+	auto getVenomousWeapon() const -> skill_id_t;
+	auto getAchilles() const -> skill_id_t;
+	auto getNoDamageSkill() const -> skill_id_t;
+	auto getRechargeableBonus() const -> slot_qty_t;
 
-	auto addCooldown(int32_t skillId, int16_t time) -> void;
-	auto removeCooldown(int32_t skillId) -> void;
+	auto addCooldown(skill_id_t skillId, int16_t time) -> void;
+	auto removeCooldown(skill_id_t skillId) -> void;
 	auto removeAllCooldowns() -> void;
 private:
-	auto hasSkill(int32_t skillId) const -> bool;
+	auto hasSkill(skill_id_t skillId) const -> bool;
 
 	Player *m_player = nullptr;
-	hash_map_t<int32_t, PlayerSkillInfo> m_skills;
-	hash_map_t<int32_t, int16_t> m_cooldowns;
+	hash_map_t<skill_id_t, PlayerSkillInfo> m_skills;
+	hash_map_t<skill_id_t, int16_t> m_cooldowns;
 };

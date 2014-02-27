@@ -46,7 +46,7 @@ class Instance : public TimerContainerHolder {
 	NONCOPYABLE(Instance);
 	NO_DEFAULT_CONSTRUCTOR(Instance);
 public:
-	Instance(const string_t &name, int32_t map, int32_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
+	Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
 	~Instance();
 
 	auto getName() const -> string_t { return m_name; }
@@ -58,18 +58,18 @@ public:
 	auto getVariables() const -> Variables * { return m_variables.get(); }
 
 	// Players
-	auto getAllPlayerIds() -> vector_t<int32_t>;
+	auto getAllPlayerIds() -> vector_t<player_id_t>;
 	auto getPlayerByIndex(uint32_t index) const -> const string_t;
 	auto getBannedPlayerByIndex(uint32_t index) const -> const string_t;
 	auto setMaxPlayers(int32_t maxPlayers) -> void { m_maxPlayers = maxPlayers; }
 	auto addPlayer(Player *player) -> void;
 	auto removePlayer(Player *player) -> void;
-	auto removePlayer(int32_t id) -> void;
+	auto removePlayer(player_id_t id) -> void;
 	auto removeAllPlayers() -> void;
 	auto setBanned(const string_t &name, bool isBanned) -> void;
 	auto addPlayerSignUp(Player *player) -> void;
 	auto removePlayerSignUp(const string_t &name) -> void;
-	auto moveAllPlayers(int32_t mapId, bool respectInstances, PortalInfo *portal = nullptr) -> void;
+	auto moveAllPlayers(map_id_t mapId, bool respectInstances, PortalInfo *portal = nullptr) -> void;
 	auto isPlayerSignedUp(const string_t &name) -> bool;
 	auto isBanned(const string_t &name) -> bool;
 	auto instanceHasPlayers() const -> bool;
@@ -80,11 +80,11 @@ public:
 
 	// Maps
 	auto addMap(Map *map) -> void;
-	auto addMap(int32_t mapId) -> void;
-	auto isInstanceMap(int32_t mapId) const -> bool;
+	auto addMap(map_id_t mapId) -> void;
+	auto isInstanceMap(map_id_t mapId) const -> bool;
 	auto setResetAtEnd(bool reset) -> void { m_resetOnDestroy = reset; }
-	auto respawnMobs(int32_t mapId) -> void;
-	auto respawnReactors(int32_t mapId) -> void;
+	auto respawnMobs(map_id_t mapId) -> void;
+	auto respawnReactors(map_id_t mapId) -> void;
 
 	// Parties
 	auto addParty(Party *party) -> void;
@@ -108,16 +108,16 @@ public:
 
 	// Lua interaction
 	auto beginInstance() -> Result;
-	auto playerDeath(int32_t playerId) -> Result;
+	auto playerDeath(player_id_t playerId) -> Result;
 	auto instanceTimerEnd(bool fromTimer) -> Result;
-	auto partyDisband(int32_t partyId) -> Result;
+	auto partyDisband(party_id_t partyId) -> Result;
 	auto timerEnd(const string_t &name, bool fromTimer) -> Result;
-	auto playerDisconnect(int32_t playerId, bool isPartyLeader) -> Result;
-	auto removePartyMember(int32_t partyId, int32_t playerId) -> Result;
-	auto mobDeath(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result;
-	auto mobSpawn(int32_t mobId, int32_t mapMobId, int32_t mapId) -> Result;
-	auto playerChangeMap(int32_t playerId, int32_t newMapId, int32_t oldMapId, bool isPartyLeader) -> Result;
-	auto friendlyMobHit(int32_t mobId, int32_t mapMobId, int32_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result;
+	auto playerDisconnect(player_id_t playerId, bool isPartyLeader) -> Result;
+	auto removePartyMember(party_id_t partyId, player_id_t playerId) -> Result;
+	auto mobDeath(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result;
+	auto mobSpawn(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId) -> Result;
+	auto playerChangeMap(player_id_t playerId, map_id_t newMapId, map_id_t oldMapId, bool isPartyLeader) -> Result;
+	auto friendlyMobHit(mob_id_t mobId, map_object_t mapMobId, map_id_t mapId, int32_t mobHp, int32_t mobMaxHp) -> Result;
 private:
 	auto getLuaInstance() -> LuaInstance * { return m_luaInstance.get(); }
 	auto getTimerId() const -> Timer::Id;
@@ -138,5 +138,5 @@ private:
 	vector_t<Map *> m_maps;
 	vector_t<Party *> m_parties;
 	hash_map_t<string_t, TimerAction> m_timerActions; // Timers indexed by name
-	hash_map_t<int32_t, Player *> m_players;
+	hash_map_t<player_id_t, Player *> m_players;
 };

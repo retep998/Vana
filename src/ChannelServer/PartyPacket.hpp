@@ -35,11 +35,11 @@ namespace PartyPacket {
 
 	PACKET(error, int8_t error);
 	PACKET(createParty, Party *party);
-	PACKET(joinParty, int32_t targetMapId, Party *party, const string_t &player);
-	PACKET(leaveParty, int32_t targetMapId, Party *party, int32_t playerId, const string_t &name, bool kicked);
+	PACKET(joinParty, map_id_t targetMapId, Party *party, const string_t &player);
+	PACKET(leaveParty, map_id_t targetMapId, Party *party, player_id_t playerId, const string_t &name, bool kicked);
 	PACKET(invitePlayer, Party *party, const string_t &inviter);
 	PACKET(disbandParty, Party *party);
-	PACKET(setLeader, Party *party, int32_t newLeader);
-	PACKET(silentUpdate, int32_t targetMapId, Party *party);
-	PACKET(updateParty, int32_t targetMapId, Party *party);
+	PACKET(setLeader, Party *party, player_id_t newLeader);
+	PACKET(silentUpdate, map_id_t targetMapId, Party *party);
+	PACKET(updateParty, map_id_t targetMapId, Party *party);
 }

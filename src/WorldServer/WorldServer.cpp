@@ -37,7 +37,7 @@ auto WorldServer::shutdown() -> void {
 }
 
 auto WorldServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
 }
 
 auto WorldServer::loadData() -> void {

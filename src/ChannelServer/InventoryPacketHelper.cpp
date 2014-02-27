@@ -20,15 +20,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace InventoryPacketHelper {
 
-PACKET_IMPL(fillRockPacket, const vector_t<int32_t> &vec, size_t maxSize) {
+PACKET_IMPL(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize) {
 	PacketBuilder builder;
 	size_t remaining = 1;
 	while (remaining <= vec.size()) {
-		builder.add<int32_t>(vec[remaining - 1]);
+		builder.add<map_id_t>(vec[remaining - 1]);
 		remaining++;
 	}
 	while (remaining <= maxSize) {
-		builder.add<int32_t>(Maps::NoMap);
+		builder.add<map_id_t>(Maps::NoMap);
 		remaining++;
 	}
 	return builder;

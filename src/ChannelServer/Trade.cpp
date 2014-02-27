@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TradeHandler.hpp"
 #include "Trades.hpp"
 
-ActiveTrade::ActiveTrade(Player *sender, Player *receiver, int32_t id) :
+ActiveTrade::ActiveTrade(Player *sender, Player *receiver, trade_id_t id) :
 	m_id(id)
 {
 	m_sender = make_owned_ptr<TradeInfo>();
@@ -51,20 +51,20 @@ auto ActiveTrade::bothCanTrade() -> bool {
 
 auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 	bool canTrade = true;
-	int32_t currentMesos = unit->mesos + target->getInventory()->getMesos();
+	mesos_t currentMesos = unit->mesos + target->getInventory()->getMesos();
 	if (currentMesos < 0) {
 		canTrade = false;
 	}
 	if (canTrade && unit->count > 0) {
-		array_t<int8_t, Inventories::InventoryCount> totals = {0};
-		hash_map_t<int32_t, int16_t> added;
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
+		array_t<trade_slot_t, Inventories::InventoryCount> totals = {0};
+		hash_map_t<item_id_t, slot_qty_t> added;
+		for (trade_slot_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			// Create item structure to determine needed slots among stackable items
 			// Also, determine needed slots for nonstackables
-			if (unit->slot[i]) {
+			if (unit->items[i] != nullptr) {
 				Item *check = unit->items[i];
-				int32_t itemId = check->getId();
-				int8_t inv = GameLogicUtilities::getInventory(itemId);
+				item_id_t itemId = check->getId();
+				inventory_t inv = GameLogicUtilities::getInventory(itemId);
 				if (!GameLogicUtilities::isStackable(itemId)) {
 					// No need to clutter unordered map
 					totals[inv - 1]++;
@@ -80,12 +80,12 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 				}
 			}
 		}
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
+		for (trade_slot_t i = 0; i < TradeInfo::TradeSize; ++i) {
 			// Determine precisely how many slots are needed for stackables
-			if (unit->slot[i]) {
+			if (unit->items[i] != nullptr) {
 				Item *check = unit->items[i];
-				int32_t itemId = check->getId();
-				int8_t inv = GameLogicUtilities::getInventory(itemId);
+				item_id_t itemId = check->getId();
+				inventory_t inv = GameLogicUtilities::getInventory(itemId);
 				if (GameLogicUtilities::isStackable(itemId)) {
 					// Already did these
 					if (added.find(itemId) == std::end(added)) {
@@ -93,7 +93,7 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 						continue;
 					}
 					auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
-					uint16_t maxSlot = itemInfo->maxSlot;
+					slot_qty_t maxSlot = itemInfo->maxSlot;
 					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
 					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
 					int32_t itemSum = lastSlot + added[itemId];
@@ -109,8 +109,8 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 						needSlots = true;
 					}
 					if (needSlots) {
-						uint8_t numSlots = static_cast<uint8_t>(itemSum / maxSlot);
-						uint8_t remainder = static_cast<uint8_t>(itemSum % maxSlot);
+						trade_slot_t numSlots = static_cast<trade_slot_t>(itemSum / maxSlot);
+						trade_slot_t remainder = static_cast<trade_slot_t>(itemSum % maxSlot);
 						if (remainder > 0) {
 							totals[inv - 1]++;
 						}
@@ -120,11 +120,11 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 				}
 			}
 		}
-		for (uint8_t i = 0; i < Inventories::InventoryCount; ++i) {
+		for (inventory_t i = 0; i < Inventories::InventoryCount; ++i) {
 			// Determine if needed slots are available
 			if (totals[i] > 0) {
-				int8_t incrementor = 0;
-				for (int8_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); ++g) {
+				trade_slot_t incrementor = 0;
+				for (inventory_slot_count_t g = 1; g <= target->getInventory()->getMaxSlots(i + 1); ++g) {
 					if (target->getInventory()->getItem(i + 1, g) == nullptr) {
 						incrementor++;
 					}
@@ -144,8 +144,8 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 
 auto ActiveTrade::giveItems(Player *player, TradeInfo *info) -> void {
 	if (info->count > 0) {
-		for (uint8_t i = 0; i < TradeInfo::TradeSize; ++i) {
-			if (info->slot[i]) {
+		for (trade_slot_t i = 0; i < TradeInfo::TradeSize; ++i) {
+			if (info->items[i] != nullptr) {
 				Item *item = info->items[i];
 				if (item->hasKarma()) {
 					item->setKarma(false);
@@ -163,7 +163,7 @@ auto ActiveTrade::giveMesos(Player *player, TradeInfo *info, bool traded) -> voi
 		int32_t taxLevel = TradeHandler::getTaxLevel(info->mesos);
 		if (traded && taxLevel != 0) {
 			int64_t mesos = info->mesos * taxLevel / 10000;
-			info->mesos -= static_cast<int32_t>(mesos);
+			info->mesos -= static_cast<mesos_t>(mesos);
 		}
 		player->getInventory()->modifyMesos(info->mesos);
 	}
@@ -203,13 +203,13 @@ auto ActiveTrade::accept(TradeInfo *unit) -> void {
 	unit->accepted = true;
 }
 
-auto ActiveTrade::addMesos(Player *holder, TradeInfo *unit, int32_t amount) -> int32_t {
+auto ActiveTrade::addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t {
 	unit->mesos += amount;
 	holder->getInventory()->modifyMesos(-amount, true);
 	return unit->mesos;
 }
 
-auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) -> Item * {
+auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item * {
 	Item *use = new Item(item);
 	if (amount == item->getAmount() || GameLogicUtilities::isEquip(item->getId())) {
 		holder->getInventory()->setItem(inventory, inventorySlot, nullptr);
@@ -232,9 +232,8 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t t
 	}
 	holder->send(InventoryPacket::blankUpdate()); // Should prevent locking up in .70, don't know why it locks
 	unit->count++;
-	uint8_t index = tradeSlot - 1;
+	trade_slot_t index = tradeSlot - 1;
 	unit->items[index] = use;
-	unit->slot[index] = true;
 	return use;
 }
 

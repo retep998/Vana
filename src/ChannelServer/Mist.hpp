@@ -31,15 +31,15 @@ class Mist {
 	NONCOPYABLE(Mist);
 	NO_DEFAULT_CONSTRUCTOR(Mist);
 public:
-	Mist(int32_t mapId, Player *owner, int32_t time, const Rect &area, int32_t skillId, uint8_t level, bool isPoison = false);
-	Mist(int32_t mapId, Mob *owner, int16_t time, const Rect &area, uint8_t skillId, uint8_t level);
+	Mist(map_id_t mapId, Player *owner, int32_t time, const Rect &area, skill_id_t skillId, skill_level_t level, bool isPoison = false);
+	Mist(map_id_t mapId, Mob *owner, int16_t time, const Rect &area, mob_skill_id_t skillId, mob_skill_level_t level);
 
-	auto setId(int32_t id) -> void { m_id = id; }
-	auto getSkillLevel() const -> uint8_t { return m_level; }
+	auto setId(mist_id_t id) -> void { m_id = id; }
+	auto getSkillLevel() const -> skill_level_t { return m_level; }
 	auto getTime() const -> int16_t { return m_time; }
 	auto getDelay() const -> int16_t { return m_delay; }
-	auto getSkillId() const -> int32_t { return m_skill; }
-	auto getId() const -> int32_t { return m_id; }
+	auto getSkillId() const -> skill_id_t { return m_skill; }
+	auto getId() const -> mist_id_t { return m_id; }
 	auto getOwnerId() const -> int32_t { return m_ownerId; }
 	auto isMobMist() const -> bool { return m_isMobMist; }
 	auto isPoison() const -> bool { return m_poison; }
@@ -48,12 +48,12 @@ public:
 private:
 	bool m_isMobMist = true;
 	bool m_poison = true;
-	uint8_t m_level = 0;
+	skill_level_t m_level = 0;
 	int16_t m_time = 0;
 	int16_t m_delay = 0;
-	int32_t m_id = 0;
-	int32_t m_skill = 0;
-	int32_t m_ownerMap = 0;
+	mist_id_t m_id = 0;
+	skill_id_t m_skill = 0;
+	map_id_t m_ownerMap = 0;
 	int32_t m_ownerId = 0;
 	Rect m_area;
 };

@@ -42,13 +42,13 @@ struct PlayerData {
 	bool cashShop = false;
 	bool admin = false;
 	bool initialized = false;
-	int16_t level = -1;
-	int16_t job = -1;
-	channel_id_t channel = -1;
-	int32_t map = -1;
-	int32_t party = 0;
+	optional_t<player_level_t> level;
+	optional_t<job_id_t> job;
+	optional_t<channel_id_t> channel;
+	optional_t<map_id_t> map;
+	party_id_t party = 0;
 	int32_t gmLevel = 0;
-	int32_t id = -1;
+	player_id_t id = -1;
 	string_t name;
 	Ip ip;
 };
@@ -59,13 +59,13 @@ struct PacketSerialize<PlayerData> {
 		PlayerData ret;
 		ret.cashShop = reader.get<bool>();
 		ret.admin = reader.get<bool>();
-		ret.level = reader.get<int16_t>();
-		ret.job = reader.get<int16_t>();
-		ret.channel = reader.get<channel_id_t>();
-		ret.map = reader.get<int32_t>();
-		ret.party = reader.get<int32_t>();
+		ret.level = reader.get<optional_t<player_level_t>>();
+		ret.job = reader.get<optional_t<job_id_t>>();
+		ret.channel = reader.get<optional_t<channel_id_t>>();
+		ret.map = reader.get<optional_t<map_id_t>>();
+		ret.party = reader.get<party_id_t>();
 		ret.gmLevel = reader.get<int32_t>();
-		ret.id = reader.get<int32_t>();
+		ret.id = reader.get<player_id_t>();
 		ret.name = reader.get<string_t>();
 		ret.ip = reader.get<Ip>();
 		return ret;
@@ -73,36 +73,36 @@ struct PacketSerialize<PlayerData> {
 	auto write(PacketBuilder &builder, const PlayerData &obj) -> void {
 		builder.add<bool>(obj.cashShop);
 		builder.add<bool>(obj.admin);
-		builder.add<int16_t>(obj.level);
-		builder.add<int16_t>(obj.job);
-		builder.add<channel_id_t>(obj.channel);
-		builder.add<int32_t>(obj.map);
-		builder.add<int32_t>(obj.party);
+		builder.add<optional_t<player_level_t>>(obj.level);
+		builder.add<optional_t<job_id_t>>(obj.job);
+		builder.add<optional_t<channel_id_t>>(obj.channel);
+		builder.add<optional_t<map_id_t>>(obj.map);
+		builder.add<party_id_t>(obj.party);
 		builder.add<int32_t>(obj.gmLevel);
-		builder.add<int32_t>(obj.id);
+		builder.add<player_id_t>(obj.id);
 		builder.add<string_t>(obj.name);
 		builder.add<Ip>(obj.ip);
 	}
 };
 
 struct PartyData {
-	int32_t id = -1;
-	int32_t leader = -1;
-	vector_t<int32_t> members;
+	party_id_t id = -1;
+	player_id_t leader = -1;
+	vector_t<player_id_t> members;
 };
 
 template <>
 struct PacketSerialize<PartyData> {
 	auto read(PacketReader &reader) -> PartyData {
 		PartyData ret;
-		ret.id = reader.get<int32_t>();
-		ret.leader = reader.get<int32_t>();
-		ret.members = reader.get<vector_t<int32_t>>();
+		ret.id = reader.get<party_id_t>();
+		ret.leader = reader.get<player_id_t>();
+		ret.members = reader.get<vector_t<player_id_t>>();
 		return ret;
 	}
 	auto write(PacketBuilder &builder, const PartyData &obj) -> void {
-		builder.add<int32_t>(obj.id);
-		builder.add<int32_t>(obj.leader);
-		builder.add<vector_t<int32_t>>(obj.members);
+		builder.add<party_id_t>(obj.id);
+		builder.add<player_id_t>(obj.leader);
+		builder.add<vector_t<player_id_t>>(obj.members);
 	}
 };

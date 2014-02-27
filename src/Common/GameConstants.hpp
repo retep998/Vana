@@ -20,19 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 
 namespace Parties {
-	const uint8_t MaxMembers = 6;
+	const size_t MaxMembers = 6;
 }
 
 namespace Characters {
-	const uint8_t MinNameSize = 4;
-	const uint8_t MaxNameSize = 12;
-	const uint8_t MinPasswordSize = 5;
-	const uint8_t MaxPasswordSize = 15;
+	const size_t MinNameSize = 4;
+	const size_t MaxNameSize = 12;
+	const size_t MinPasswordSize = 5;
+	const size_t MaxPasswordSize = 15;
 	const int32_t DefaultCharacterSlots = 3;
 }
 
 namespace Gender {
-	enum : int8_t {
+	enum : gender_id_t {
 		Male = 0,
 		Female = 1,
 		Both = 2
@@ -40,12 +40,12 @@ namespace Gender {
 }
 
 namespace Buddies {
-	const uint8_t MaxGroupNameSize = 13;
+	const size_t MaxGroupNameSize = 13;
 }
 
 namespace GuildsAndAlliances {
-	const int8_t MinNameSize = 4;
-	const int8_t MaxNameSize = 12;
+	const size_t MinNameSize = 4;
+	const size_t MaxNameSize = 12;
 	const int32_t RankQuantity = 5;
 	const int32_t MaxGuildCapacity = 100;
 	const int32_t MaxAllianceCapacity = 3;
@@ -53,16 +53,16 @@ namespace GuildsAndAlliances {
 }
 
 namespace Stats {
-	const uint8_t PlayerLevels = 200;
-	const uint8_t CygnusLevels = 120;
+	const player_level_t PlayerLevels = 200;
+	const player_level_t CygnusLevels = 120;
 	const uint8_t PetLevels = 30;
 	const uint8_t MountLevels = 30;
 	const int16_t MaxMaxHp = 30000;
 	const int16_t MinMaxHp = 1;
 	const int16_t MaxMaxMp = 30000;
 	const int16_t MinMaxMp = 1;
-	const int16_t MaxFame = 30000;
-	const int16_t MinFame = -30000;
+	const fame_t MaxFame = 30000;
+	const fame_t MinFame = -30000;
 	const int16_t MinHp = 0;
 	const int16_t MinMp = 0;
 	const int16_t DefaultHp = 50;
@@ -74,7 +74,7 @@ namespace Stats {
 	const int8_t MaxFullness = 100;
 	const int8_t MinFullness = 0;
 	const int8_t PetFeedFullness = 30;
-	const int32_t MaxDamage = 199999;
+	const damage_t MaxDamage = 199999;
 	const int16_t EnergyChargeDecay = 200;
 	const int16_t MaxEnergyChargeLevel = 10000;
 
@@ -90,7 +90,7 @@ namespace Stats {
 		2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550
 	};
 
-	const uint32_t PlayerExp[PlayerLevels - 1] = {
+	const experience_t PlayerExp[PlayerLevels - 1] = {
 		// 20 rows of 10 levels each (with 9 in the last row)
 
 #if MAPLE_LOCALE == MAPLE_LOCALE_GLOBAL
@@ -159,7 +159,7 @@ namespace Stats {
 		693404374, 735008637, 779109155, 825855704, 875407047, 927931469, 983607358, 1042623799, 1105181227
 #	endif
 #else
-#	error Please fill in appropriate EXP levels for your locale
+#	error Please fill in appropriate EXP levels for your locale/version
 #endif
 	};
 

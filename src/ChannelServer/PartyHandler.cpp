@@ -33,7 +33,7 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 			ChannelServer::getInstance().sendWorld(SyncPacket::PartyPacket::sync(type, player->getId()));
 			break;
 		case PartyActions::Join: {
-			int32_t partyId = reader.get<int32_t>();
+			party_id_t partyId = reader.get<party_id_t>();
 			if (Party *party = PlayerDataProvider::getInstance().getParty(partyId)) {
 				if (party->getMembersCount() == Parties::MaxMembers) {
 					player->send(PartyPacket::error(PartyPacket::Errors::PartyFull));

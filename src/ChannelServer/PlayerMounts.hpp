@@ -39,22 +39,22 @@ public:
 	auto load() -> void;
 
 	auto mountInfoPacket(PacketBuilder &packet) -> void;
-	auto getCurrentMount() const -> int32_t { return m_currentMount; }
+	auto getCurrentMount() const -> item_id_t { return m_currentMount; }
 	auto getCurrentExp() -> int16_t;
 	auto getCurrentLevel() -> int8_t;
 	auto getCurrentTiredness() -> int8_t;
-	auto setCurrentMount(int32_t id) -> void { m_currentMount = id; }
+	auto setCurrentMount(item_id_t id) -> void { m_currentMount = id; }
 	auto setCurrentExp(int16_t exp) -> void;
 	auto setCurrentLevel(int8_t level) -> void;
 	auto setCurrentTiredness(int8_t tiredness) -> void;
 
-	auto addMount(int32_t id) -> void;
+	auto addMount(item_id_t id) -> void;
 
-	auto getMountExp(int32_t id) -> int16_t;
-	auto getMountLevel(int32_t id) -> int8_t;
-	auto getMountTiredness(int32_t id) -> int8_t;
+	auto getMountExp(item_id_t id) -> int16_t;
+	auto getMountLevel(item_id_t id) -> int8_t;
+	auto getMountTiredness(item_id_t id) -> int8_t;
 private:
-	int32_t m_currentMount = 0;
+	item_id_t m_currentMount = 0;
 	Player *m_player = nullptr;
-	hash_map_t<int32_t, MountData> m_mounts;
+	hash_map_t<item_id_t, MountData> m_mounts;
 };

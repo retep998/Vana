@@ -36,14 +36,14 @@ PlayerQuests::PlayerQuests(Player *player) :
 
 auto PlayerQuests::save() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
-	uint16_t questId = 0;
+	player_id_t charId = m_player->getId();
+	quest_id_t questId = 0;
 
 	sql.once << "DELETE FROM " << Database::makeCharTable("active_quests") << " WHERE character_id = :char", soci::use(charId, "char");
 	sql.once << "DELETE FROM " << Database::makeCharTable("completed_quests") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_quests.size() > 0) {
-		int32_t mobId = 0;
+		mob_id_t mobId = 0;
 		uint16_t killed = 0;
 		int64_t id = 0;
 		opt_string_t data;
@@ -106,9 +106,9 @@ auto PlayerQuests::save() -> void {
 
 auto PlayerQuests::load() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
-	uint16_t previous = 0;
-	uint16_t current = 0;
+	player_id_t charId = m_player->getId();
+	quest_id_t previous = 0;
+	quest_id_t current = 0;
 	bool init = true;
 	ActiveQuest curQuest;
 
@@ -120,8 +120,8 @@ auto PlayerQuests::load() -> void {
 		soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		current = row.get<uint16_t>("quest_id");
-		int32_t mob = row.get<int32_t>("mob_id");
+		current = row.get<quest_id_t>("quest_id");
+		mob_id_t mob = row.get<mob_id_t>("mob_id");
 		string_t data = row.get<string_t>("data");
 
 		if (init) {
@@ -149,11 +149,11 @@ auto PlayerQuests::load() -> void {
 	rs = (sql.prepare << "SELECT c.quest_id, c.end_time FROM " << Database::makeCharTable("completed_quests") << " c WHERE c.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		m_completed[row.get<uint16_t>("quest_id")] = row.get<int64_t>("end_time");
+		m_completed[row.get<quest_id_t>("quest_id")] = row.get<int64_t>("end_time");
 	}
 }
 
-auto PlayerQuests::addQuest(uint16_t questId, int32_t npcId) -> void {
+auto PlayerQuests::addQuest(quest_id_t questId, npc_id_t npcId) -> void {
 	m_player->send(QuestsPacket::acceptQuestNotice(questId));
 	m_player->send(QuestsPacket::acceptQuest(questId, npcId));
 
@@ -174,7 +174,7 @@ auto PlayerQuests::addQuest(uint16_t questId, int32_t npcId) -> void {
 	checkDone(m_quests[questId]);
 }
 
-auto PlayerQuests::updateQuestMob(int32_t mobId) -> void {
+auto PlayerQuests::updateQuestMob(mob_id_t mobId) -> void {
 	auto kvp = m_mobToQuestMapping.find(mobId);
 	if (kvp == std::end(m_mobToQuestMapping)) {
 		return;
@@ -231,7 +231,7 @@ auto PlayerQuests::checkDone(ActiveQuest &quest) -> void {
 	}
 }
 
-auto PlayerQuests::finishQuest(uint16_t questId, int32_t npcId) -> void {
+auto PlayerQuests::finishQuest(quest_id_t questId, npc_id_t npcId) -> void {
 	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
 
 	if (giveRewards(questId, false) == Result::Failure) {
@@ -260,12 +260,12 @@ auto PlayerQuests::finishQuest(uint16_t questId, int32_t npcId) -> void {
 	m_player->sendMap(QuestsPacket::completeQuestAnimation(m_player->getId()));
 }
 
-auto PlayerQuests::itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQuestItemResult {
+auto PlayerQuests::itemDropAllowed(item_id_t itemId, quest_id_t questId) -> AllowQuestItemResult {
 	if (!isQuestActive(questId)) {
 		return AllowQuestItemResult::Disallow;
 	}
 	auto &info = QuestDataProvider::getInstance().getInfo(questId);
-	int16_t questAmount = 0;
+	slot_qty_t questAmount = 0;
 	info.forEachRequest(false, [&questAmount, itemId](const QuestRequestInfo &info) -> IterationResult {
 		if (info.isItem && info.id == itemId) {
 			questAmount += info.count;
@@ -280,16 +280,16 @@ auto PlayerQuests::itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQue
 	return AllowQuestItemResult::Allow;
 }
 
-auto PlayerQuests::giveRewards(uint16_t questId, bool start) -> Result {
+auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
 	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
 
-	int16_t job = m_player->getStats()->getJob();
-	array_t<uint8_t, Inventories::InventoryCount> neededSlots = {0};
+	job_id_t job = m_player->getStats()->getJob();
+	array_t<inventory_t, Inventories::InventoryCount> neededSlots = {0};
 	array_t<bool, Inventories::InventoryCount> chanceItem = {false};
 
 	auto checkRewards = [this, &questId, &neededSlots, &chanceItem](const QuestRewardInfo &info) -> IterationResult {
 		if (info.isItem) {
-			uint8_t inv = GameLogicUtilities::getInventory(info.id) - 1;
+			inventory_t inv = GameLogicUtilities::getInventory(info.id) - 1;
 			if (info.count > 0) {
 				if (info.prop > 0 && !chanceItem[inv]) {
 					chanceItem[inv] = true;
@@ -301,7 +301,7 @@ auto PlayerQuests::giveRewards(uint16_t questId, bool start) -> Result {
 			}
 		}
 		else if (info.isMesos) {
-			int32_t mesos = info.id + m_player->getInventory()->getMesos();
+			mesos_t mesos = info.id + m_player->getInventory()->getMesos();
 			if (mesos < 0) {
 				// Will trigger for both too low and too high
 				m_player->send(QuestsPacket::questError(questId, QuestsPacket::ErrorNotEnoughMesos));
@@ -352,16 +352,16 @@ auto PlayerQuests::giveRewards(uint16_t questId, bool start) -> Result {
 			m_player->send(QuestsPacket::giveMesos(info.id));
 		}
 		else if (info.isFame) {
-			m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<int16_t>(info.id));
+			m_player->getStats()->setFame(m_player->getStats()->getFame() + static_cast<fame_t>(info.id));
 			m_player->send(QuestsPacket::giveFame(info.id));
 		}
 		else if (info.isBuff) {
 			Inventory::useItem(m_player, info.id);
 		}
 		else if (info.isSkill) {
-			m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<uint8_t>(info.masterLevel), true);
+			m_player->getSkills()->setMaxSkillLevel(info.id, static_cast<skill_level_t>(info.masterLevel), true);
 			if (!info.masterLevelOnly && info.count) {
-				m_player->getSkills()->addSkillLevel(info.id, static_cast<uint8_t>(info.count), true);
+				m_player->getSkills()->addSkillLevel(info.id, static_cast<skill_level_t>(info.count), true);
 			}
 		}
 
@@ -391,18 +391,18 @@ auto PlayerQuests::giveRewards(uint16_t questId, bool start) -> Result {
 	return Result::Successful;
 }
 
-auto PlayerQuests::removeQuest(uint16_t questId) -> void {
+auto PlayerQuests::removeQuest(quest_id_t questId) -> void {
 	if (isQuestActive(questId)) {
 		m_quests.erase(questId);
 		m_player->send(QuestsPacket::forfeitQuest(questId));
 	}
 }
 
-auto PlayerQuests::isQuestActive(uint16_t questId) -> bool {
+auto PlayerQuests::isQuestActive(quest_id_t questId) -> bool {
 	return m_quests.find(questId) != std::end(m_quests);
 }
 
-auto PlayerQuests::isQuestComplete(uint16_t questId) -> bool {
+auto PlayerQuests::isQuestComplete(quest_id_t questId) -> bool {
 	return m_completed.find(questId) != std::end(m_completed);
 }
 
@@ -420,14 +420,21 @@ auto PlayerQuests::connectData(PacketBuilder &packet) -> void {
 	}
 }
 
-auto PlayerQuests::setQuestData(uint16_t id, const string_t &data) -> void {
-	if (isQuestActive(id)) {
-		auto &quest = m_quests[id];
-		quest.data = data;
-		m_player->send(QuestsPacket::updateQuest(quest));
+auto PlayerQuests::setQuestData(quest_id_t id, const string_t &data) -> void {
+	// TODO FIXME figure out how this works
+	// e.g. Battleship quest
+	/*
+	if (!isQuestActive(id)) {
+		m_quests[id] = ActiveQuest();
+		m_player->send(QuestsPacket::acceptQuest(id, 0));
+		m_player->send(QuestsPacket::acceptQuestNotice(id));
 	}
+	*/
+	auto &quest = m_quests[id];
+	quest.data = data;
+	m_player->send(QuestsPacket::updateQuest(quest));
 }
 
-auto PlayerQuests::getQuestData(uint16_t id) -> string_t {
+auto PlayerQuests::getQuestData(quest_id_t id) -> string_t {
 	return isQuestActive(id) ? m_quests[id].data : "";
 }

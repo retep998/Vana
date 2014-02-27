@@ -45,8 +45,8 @@ public:
 	auto getInventorySlot() const -> int8_t { return m_inventorySlot; }
 	auto getFullness() const -> int8_t { return m_fullness; }
 	auto getCloseness() const -> int16_t { return m_closeness; }
-	auto getItemId() const -> int32_t { return m_itemId; }
-	auto getId() const -> int64_t { return m_id; }
+	auto getItemId() const -> item_id_t { return m_itemId; }
+	auto getId() const -> pet_id_t { return m_id; }
 	auto isSummoned() const -> bool { return m_index.is_initialized(); }
 	auto getName() -> string_t { return m_name; }
 	auto getPos() const -> Pos override { return Pos(m_pos.x, m_pos.y - 1); }
@@ -63,8 +63,8 @@ private:
 	int8_t m_fullness = Stats::MaxFullness;
 	int8_t m_inventorySlot = 0;
 	int16_t m_closeness = 0;
-	int32_t m_itemId = 0;
-	int64_t m_id = 0;
+	item_id_t m_itemId = 0;
+	pet_id_t m_id = 0;
 	Item *m_item = nullptr;
 	Player *m_player = nullptr;
 	string_t m_name;

@@ -26,26 +26,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace SkillsPacket {
 
-PACKET_IMPL(addSkill, int32_t skillId, const PlayerSkillInfo &skillInfo) {
+PACKET_IMPL(addSkill, skill_id_t skillId, const PlayerSkillInfo &skillInfo) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_SKILL_ADD)
 		.add<int8_t>(1)
 		.add<int16_t>(1)
-		.add<int32_t>(skillId)
+		.add<skill_id_t>(skillId)
 		.add<int32_t>(skillInfo.level)
 		.add<int32_t>(skillInfo.playerMaxSkillLevel)
 		.add<int8_t>(1);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showSkill, int32_t playerId, int32_t skillId, uint8_t level, uint8_t direction, bool party, bool self) {
+SPLIT_PACKET_IMPL(showSkill, player_id_t playerId, skill_id_t skillId, skill_level_t level, uint8_t direction, bool party, bool self) {
 	SplitPacketBuilder builder;
 	PacketBuilder packet;
 	packet
 		.add<int8_t>(party ? 2 : 1)
-		.add<int32_t>(skillId)
-		.add<int8_t>(level);
+		.add<skill_id_t>(skillId)
+		.add<skill_level_t>(level);
 
 	switch (skillId) {
 		case Skills::Hero::MonsterMagnet:
@@ -62,14 +62,14 @@ SPLIT_PACKET_IMPL(showSkill, int32_t playerId, int32_t skillId, uint8_t level, u
 		else {
 			builder.player
 				.add<header_t>(SMSG_SKILL_SHOW)
-				.add<int32_t>(playerId);
+				.add<player_id_t>(playerId);
 		}
 		builder.player.addBuffer(packet);
 	}
 	else {
 		builder.map
 			.add<header_t>(SMSG_SKILL_SHOW)
-			.add<int32_t>(playerId)
+			.add<player_id_t>(playerId)
 			.addBuffer(packet);
 	}
 	return builder;
@@ -84,7 +84,7 @@ PACKET_IMPL(healHp, int16_t hp) {
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showSkillEffect, int32_t playerId, int32_t skillId) {
+SPLIT_PACKET_IMPL(showSkillEffect, player_id_t playerId, skill_id_t skillId) {
 	SplitPacketBuilder builder;
 	PacketBuilder packet;
 	switch (skillId) {
@@ -93,14 +93,14 @@ SPLIT_PACKET_IMPL(showSkillEffect, int32_t playerId, int32_t skillId) {
 		case Skills::Cleric::MpEater:
 			packet
 				.add<int8_t>(1)
-				.add<int32_t>(skillId)
+				.add<skill_id_t>(skillId)
 				.add<int8_t>(1);
 			break;
 		case Skills::ChiefBandit::MesoGuard:
 		case Skills::DragonKnight::DragonBlood:
 			packet
 				.add<int8_t>(5)
-				.add<int32_t>(skillId);
+				.add<skill_id_t>(skillId);
 			break;
 		default:
 			return builder;
@@ -112,57 +112,57 @@ SPLIT_PACKET_IMPL(showSkillEffect, int32_t playerId, int32_t skillId) {
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.addBuffer(packet);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info) {
+SPLIT_PACKET_IMPL(showChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL)
-		.add<int32_t>(playerId)
-		.add<int32_t>(info.skillId)
-		.add<int8_t>(info.level)
+		.add<player_id_t>(playerId)
+		.add<skill_id_t>(info.skillId)
+		.add<skill_level_t>(info.level)
 		.add<int8_t>(info.direction)
 		.add<int8_t>(info.weaponSpeed);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(endChargeOrStationarySkill, int32_t playerId, const ChargeOrStationarySkillInfo &info) {
+SPLIT_PACKET_IMPL(endChargeOrStationarySkill, player_id_t playerId, const ChargeOrStationarySkillInfo &info) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_CHARGE_OR_STATIONARY_SKILL_END)
-		.add<int32_t>(playerId)
-		.add<int32_t>(info.skillId);
+		.add<player_id_t>(playerId)
+		.add<skill_id_t>(info.skillId);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showMagnetSuccess, int32_t mapMobId, uint8_t success) {
+SPLIT_PACKET_IMPL(showMagnetSuccess, map_object_t mapMobId, uint8_t success) {
 	SplitPacketBuilder builder;
 	builder.map
 		.add<header_t>(SMSG_MOB_DRAGGED)
-		.add<int32_t>(mapMobId)
+		.add<map_object_t>(mapMobId)
 		.add<uint8_t>(success);
 	return builder;
 }
 
-PACKET_IMPL(sendCooldown, int32_t skillId, int16_t time) {
+PACKET_IMPL(sendCooldown, skill_id_t skillId, int16_t time) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_SKILL_COOLDOWN)
-		.add<int32_t>(skillId)
+		.add<skill_id_t>(skillId)
 		.add<int16_t>(time);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(showBerserk, int32_t playerId, uint8_t level, bool on) {
+SPLIT_PACKET_IMPL(showBerserk, player_id_t playerId, skill_level_t level, bool on) {
 	SplitPacketBuilder builder;
 	PacketBuilder packet;
 	packet
 		.add<int8_t>(1)
-		.add<int32_t>(Skills::DarkKnight::Berserk)
-		.add<int8_t>(level)
+		.add<skill_id_t>(Skills::DarkKnight::Berserk)
+		.add<skill_level_t>(level)
 		.add<bool>(on);
 
 	builder.player
@@ -171,7 +171,7 @@ SPLIT_PACKET_IMPL(showBerserk, int32_t playerId, uint8_t level, bool on) {
 
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.addBuffer(packet);
 	return builder;
 }

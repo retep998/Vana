@@ -36,12 +36,12 @@ namespace DropsPacket {
 	}
 
 	PACKET(showDrop, Drop *drop, int8_t type, const Pos &origin);
-	PACKET(takeDrop, int32_t playerId, int32_t dropId, int8_t petIndex = -1);
+	PACKET(takeDrop, player_id_t playerId, map_object_t dropId, int8_t petIndex = -1);
 	PACKET(dontTake);
-	PACKET(removeDrop, int32_t dropId);
-	PACKET(explodeDrop, int32_t dropId);
+	PACKET(removeDrop, map_object_t dropId);
+	PACKET(explodeDrop, map_object_t dropId);
 	PACKET(dropNotAvailableForPickup);
 	PACKET(cantGetAnymoreItems);
-	PACKET(pickupDrop, int32_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
-	PACKET(pickupDropSpecial, int32_t id);
+	PACKET(pickupDrop, map_object_t id, int32_t amount, bool isMesos = false, int16_t cafeBonus = 0);
+	PACKET(pickupDropSpecial, map_object_t id);
 }

@@ -43,9 +43,9 @@ class PlayerStats {
 	NO_DEFAULT_CONSTRUCTOR(PlayerStats);
 public:
 	PlayerStats(Player *player,
-		uint8_t level,
-		int16_t job,
-		int16_t fame,
+		player_level_t level,
+		job_id_t job,
+		fame_t fame,
 		int16_t str,
 		int16_t dex,
 		int16_t intt,
@@ -57,11 +57,11 @@ public:
 		int16_t maxHp,
 		int16_t mp,
 		int16_t maxMp,
-		int32_t exp);
+		experience_t exp);
 
 	// Data modification
 	auto checkHpMp() -> void;
-	auto setLevel(uint8_t level) -> void;
+	auto setLevel(player_level_t level) -> void;
 	auto modifyHp(int32_t hpMod, bool sendPacket = true) -> void;
 	auto modifyMp(int32_t mpMod, bool sendPacket = false) -> void;
 	auto damageHp(int32_t damageHp) -> void;
@@ -74,12 +74,12 @@ public:
 	auto modifyMaxMp(int16_t mod) -> void;
 	auto setHyperBody(int16_t xMod, int16_t yMod) -> void;
 	auto setHpMpAp(uint16_t ap) -> void { m_hpMpAp = ap; }
-	auto setExp(int32_t exp) -> void;
+	auto setExp(experience_t exp) -> void;
 	auto setAp(int16_t ap) -> void;
 	auto setSp(int16_t sp) -> void;
 
-	auto setFame(int16_t fame) -> void;
-	auto setJob(int16_t job) -> void;
+	auto setFame(fame_t fame) -> void;
+	auto setJob(job_id_t job) -> void;
 	auto setStr(int16_t str) -> void;
 	auto setDex(int16_t dex) -> void;
 	auto setInt(int16_t intt) -> void;
@@ -87,7 +87,7 @@ public:
 	auto setMapleWarrior(int16_t xMod) -> void;
 	auto loseExp() -> void;
 
-	auto setEquip(int16_t slot, Item *equip, bool isLoading = false) -> void;
+	auto setEquip(inventory_slot_t slot, Item *equip, bool isLoading = false) -> void;
 
 	// Level related functions
 	auto giveExp(uint64_t exp, bool inChat = false, bool white = true) -> void;
@@ -100,19 +100,19 @@ public:
 	auto levelMp(int16_t val, int16_t bonus = 0) -> int16_t;
 	auto apResetHp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0) -> int16_t;
 	auto apResetMp(bool isReset, bool isSubtract, int16_t val, int16_t sVal = 0) -> int16_t;
-	auto getX(int32_t skillId) -> int16_t;
-	auto getY(int32_t skillId) -> int16_t;
-	auto getExp(uint8_t level) -> uint32_t;
+	auto getX(skill_id_t skillId) -> int16_t;
+	auto getY(skill_id_t skillId) -> int16_t;
+	auto getExp(player_level_t level) -> experience_t;
 
 	// Data acquisition
 	auto connectData(PacketBuilder &packet) -> void;
-	auto getLevel() const -> uint8_t { return m_level; }
-	auto getJob() const -> int16_t { return m_job; }
-	auto getExp() const -> int32_t { return m_exp; }
+	auto getLevel() const -> player_level_t { return m_level; }
+	auto getJob() const -> job_id_t { return m_job; }
+	auto getExp() const -> experience_t { return m_exp; }
 	auto getAp() const -> int16_t { return m_ap; }
 	auto getHpMpAp() const -> uint16_t { return m_hpMpAp; }
 	auto getSp() const -> int16_t { return m_sp; }
-	auto getFame() const -> int16_t { return m_fame; }
+	auto getFame() const -> fame_t { return m_fame; }
 
 	auto getStr(bool withBonus = false) -> int16_t;
 	auto getDex(bool withBonus = false) -> int16_t;
@@ -128,11 +128,11 @@ private:
 	auto modifiedHp() -> void;
 	auto statUtility(int32_t test) -> int16_t;
 
-	uint8_t m_level = 0;
-	int16_t m_job = 0;
+	player_level_t m_level = 0;
+	job_id_t m_job = 0;
 	int16_t m_ap = 0;
 	int16_t m_sp = 0;
-	int16_t m_fame = 0;
+	fame_t m_fame = 0;
 	int16_t m_hp = 0;
 	int16_t m_maxHp = 0;
 	int16_t m_mp = 0;
@@ -145,7 +145,7 @@ private:
 	int16_t m_hyperBodyY = 0;
 	int16_t m_mapleWarrior = 0;
 	uint16_t m_hpMpAp = 0;
-	int32_t m_exp = 0;
+	experience_t m_exp = 0;
 
 	BonusSet m_equipBonuses;
 	BonusSet m_buffBonuses;

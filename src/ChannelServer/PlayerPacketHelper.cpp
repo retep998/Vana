@@ -26,22 +26,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PlayerPacketHelper {
 
-PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
+PACKET_IMPL(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot) {
 	PacketBuilder builder;
 	if (slot != 0) {
 		if (shortSlot) {
-			builder.add<int16_t>(slot);
+			builder.add<inventory_slot_t>(slot);
 		}
 		else {
 			slot = abs(slot);
-			if (slot > 100) slot -= 100;
+			if (slot > 100) {
+				slot -= 100;
+			}
 			builder.add<int8_t>(static_cast<int8_t>(slot));
 		}
 	}
 	bool equip = GameLogicUtilities::isEquip(item->getId());
 	builder
 		.add<int8_t>(equip ? 1 : 2)
-		.add<int32_t>(item->getId());
+		.add<item_id_t>(item->getId());
 
 	if (false) { //item->getCashId() != 0) {
 		builder
@@ -94,7 +96,7 @@ PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
 	}
 	else {
 		builder
-			.add<int16_t>(item->getAmount())
+			.add<slot_qty_t>(item->getAmount())
 			.add<string_t>(item->getName()) // Specially made by <IGN>
 			.add<int16_t>(item->getFlags());
 
@@ -108,19 +110,19 @@ PACKET_IMPL(addItemInfo, int16_t slot, Item *item, bool shortSlot) {
 PACKET_IMPL(addPlayerDisplay, Player *player) {
 	PacketBuilder builder;
 	builder
-		.add<int8_t>(player->getGender())
-		.add<int8_t>(player->getSkin())
-		.add<int32_t>(player->getEyes())
+		.add<gender_id_t>(player->getGender())
+		.add<skin_id_t>(player->getSkin())
+		.add<face_id_t>(player->getEyes())
 		.add<int8_t>(1)
-		.add<int32_t>(player->getHair());
+		.add<hair_id_t>(player->getHair());
 
 	player->getInventory()->addEquippedPacket(builder);
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
-			builder.add<int32_t>(pet->getItemId());
+			builder.add<item_id_t>(pet->getItemId());
 		}
 		else {
-			builder.add<int32_t>(0);
+			builder.add<item_id_t>(0);
 		}
 	}
 	return builder;

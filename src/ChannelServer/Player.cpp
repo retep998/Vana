@@ -89,7 +89,7 @@ Player::~Player() {
 			TradeHandler::cancelTrade(this);
 		}
 
-		bool isLeader = 0;
+		bool isLeader = false;
 		if (Party *party = getParty()) {
 			isLeader = party->isLeader(getId());
 		}
@@ -140,6 +140,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_ATTACK_MAGIC: PlayerHandler::useSpellAttack(this, reader); break;
 				case CMSG_ATTACK_MELEE: PlayerHandler::useMeleeAttack(this, reader); break;
 				case CMSG_ATTACK_RANGED: PlayerHandler::useRangedAttack(this, reader); break;
+				case CMSG_BOMB_SKILL_USE: PlayerHandler::useBombSkill(this, reader); break;
 				case CMSG_BUDDY: BuddyListHandler::handleBuddyList(this, reader); break;
 				case CMSG_CASH_ITEM_USE: InventoryHandler::useCashItem(this, reader); break;
 				case CMSG_CASH_SHOP: send(PlayerPacket::sendBlockedMessage(PlayerPacket::BlockMessages::NoCashShop)); break;
@@ -203,12 +204,25 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_SUMMON_BAG_USE: InventoryHandler::useSummonBag(this, reader); break;
 				case CMSG_SUMMON_DAMAGE: SummonHandler::damageSummon(this, reader); break;
 				case CMSG_SUMMON_MOVEMENT: SummonHandler::moveSummon(this, reader); break;
+				case CMSG_SUMMON_SKILL: SummonHandler::summonSkill(this, reader); break;
 				case CMSG_TELEPORT_ROCK: InventoryHandler::handleRockFunctions(this, reader); break;
 				case CMSG_TELEPORT_ROCK_USE: InventoryHandler::handleRockTeleport(this, Items::SpecialTeleportRock, reader); break;
 				case CMSG_TOWN_SCROLL_USE: InventoryHandler::useReturnScroll(this, reader); break;
 				case CMSG_USE_CHAIR: InventoryHandler::useChair(this, reader); break;
 				case CMSG_USE_REWARD_ITEM: InventoryHandler::handleRewardItem(this, reader); break;
 				case CMSG_USE_SCRIPT_ITEM: InventoryHandler::handleScriptItem(this, reader); break;
+#ifdef DEBUG
+				case CMSG_PONG:
+				case CMSG_PLAYER_MOB_DISTANCE:
+				case CMSG_PLAYER_UNK_MAP:
+				case CMSG_PLAYER_UNK_MAP2:
+				case CMSG_ADMIN_COMMAND_LOG:
+				case CMSG_BUFF_ACKNOWLEDGE:
+				case CMSG_MAP_TELEPORT:
+					// Do nothing
+					break;
+				default: std::cout << "Unhandled 0x" << std::hex << std::setw(4) << header << ": " << reader << std::endl;
+#endif
 			}
 		}
 	}
@@ -228,7 +242,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 }
 
 auto Player::playerConnect(PacketReader &reader) -> void {
-	int32_t id = reader.get<int32_t>();
+	player_id_t id = reader.get<player_id_t>();
 	bool hasTransferPacket = false;
 	if (PlayerDataProvider::getInstance().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
 		// Hacking
@@ -254,25 +268,25 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	}
 
 	m_name = row.get<string_t>("name");
-	m_userId = row.get<int32_t>("user_id");
-	m_map = row.get<int32_t>("map");
+	m_userId = row.get<account_id_t>("user_id");
+	m_map = row.get<map_id_t>("map");
 	m_gmLevel = row.get<int32_t>("gm_level");
 	m_admin = row.get<bool>("admin");
-	m_eyes = row.get<int32_t>("eyes");
-	m_hair = row.get<int32_t>("hair");
+	m_eyes = row.get<face_id_t>("eyes");
+	m_hair = row.get<hair_id_t>("hair");
 	m_worldId = row.get<world_id_t>("world_id");
-	m_gender = row.get<int8_t>("gender");
-	m_skin = row.get<int8_t>("skin");
-	m_mapPos = row.get<int8_t>("pos");
+	m_gender = row.get<gender_id_t>("gender");
+	m_skin = row.get<skin_id_t>("skin");
+	m_mapPos = row.get<portal_id_t>("pos");
 	m_buddylistSize = row.get<uint8_t>("buddylist_size");
 
 	// Stats
 	m_stats.reset(
 		new PlayerStats(
 			this,
-			row.get<uint8_t>("level"),
-			row.get<int16_t>("job"),
-			row.get<int16_t>("fame"),
+			row.get<player_level_t>("level"),
+			row.get<job_id_t>("job"),
+			row.get<fame_t>("fame"),
 			row.get<int16_t>("str"),
 			row.get<int16_t>("dex"),
 			row.get<int16_t>("int"),
@@ -284,20 +298,20 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 			row.get<int16_t>("mhp"),
 			row.get<int16_t>("cmp"),
 			row.get<int16_t>("mmp"),
-			row.get<int32_t>("exp")
+			row.get<experience_t>("exp")
 		)
 	);
 
 	// Inventory
 	m_mounts = make_owned_ptr<PlayerMounts>(this);
 	m_pets = make_owned_ptr<PlayerPets>(this);
-	array_t<uint8_t, Inventories::InventoryCount> maxSlots;
-	maxSlots[0] = row.get<uint8_t>("equip_slots");
-	maxSlots[1] = row.get<uint8_t>("use_slots");
-	maxSlots[2] = row.get<uint8_t>("setup_slots");
-	maxSlots[3] = row.get<uint8_t>("etc_slots");
-	maxSlots[4] = row.get<uint8_t>("cash_slots");
-	m_inventory = make_owned_ptr<PlayerInventory>(this, maxSlots, row.get<int32_t>("mesos"));
+	array_t<inventory_slot_count_t, Inventories::InventoryCount> maxSlots;
+	maxSlots[0] = row.get<inventory_slot_count_t>("equip_slots");
+	maxSlots[1] = row.get<inventory_slot_count_t>("use_slots");
+	maxSlots[2] = row.get<inventory_slot_count_t>("setup_slots");
+	maxSlots[3] = row.get<inventory_slot_count_t>("etc_slots");
+	maxSlots[4] = row.get<inventory_slot_count_t>("cash_slots");
+	m_inventory = make_owned_ptr<PlayerInventory>(this, maxSlots, row.get<mesos_t>("mesos"));
 	m_storage = make_owned_ptr<PlayerStorage>(this);
 
 	// Skills
@@ -326,7 +340,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_monsterBook = make_owned_ptr<PlayerMonsterBook>(this);
 
 	opt_int32_t bookCover = row.get<opt_int32_t>("book_cover");
-	getMonsterBook()->setCover(bookCover.getOrDefault(0));
+	getMonsterBook()->setCover(bookCover.get(0));
 
 	// Key Maps and Macros
 	KeyMaps keyMaps;
@@ -361,7 +375,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	send(PlayerPacket::connectData(this));
 
 	auto &config = ChannelServer::getInstance().getConfig();
-	if (config.scrollingHeader.size() > 0) {
+	if (!config.scrollingHeader.empty()) {
 		send(ServerPacket::showScrollingHeader(config.scrollingHeader));
 	}
 
@@ -411,7 +425,7 @@ auto Player::getMap() const -> Map * {
 	return Maps::getMap(getMapId());
 }
 
-auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
+auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 	if (!Maps::getMap(mapId)) {
 		send(MapPacket::portalBlocked());
 		return;
@@ -459,13 +473,7 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 		}
 	}
 
-	// Puppets and non-moving summons don't go with you
-	if (getSummons()->getPuppet() != nullptr) {
-		SummonHandler::removeSummon(this, true, false, SummonMessages::None);
-	}
-	if (getSummons()->getSummon() != nullptr && getSummons()->getSummon()->getType() == Summon::Static) {
-		SummonHandler::removeSummon(this, false, false, SummonMessages::None);
-	}
+	getSummons()->changedMap();
 
 	if (getActiveBuffs()->hasMarkedMonster()) {
 		Buffs::endBuff(this, getActiveBuffs()->getHomingBeacon());
@@ -482,7 +490,7 @@ auto Player::setMap(int32_t mapId, PortalInfo *portal, bool instance) -> void {
 
 auto Player::getMedalName() -> string_t {
 	out_stream_t ret;
-	if (int32_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
+	if (item_id_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
 		ret << "<" << ItemDataProvider::getInstance().getItemInfo(itemId)->name << "> ";
 	}
@@ -498,7 +506,7 @@ auto Player::getTransferPacket() const -> PacketBuilder {
 	PacketBuilder builder;
 	builder
 		.add<int64_t>(getConnectionTime())
-		.add<int32_t>(m_follow != nullptr ? m_follow->getId() : 0)
+		.add<player_id_t>(m_follow != nullptr ? m_follow->getId() : 0)
 		.add<bool>(m_gmChat)
 		.addBuffer(getActiveBuffs()->getTransferPacket())
 		.addBuffer(getSummons()->getTransferPacket());
@@ -508,7 +516,7 @@ auto Player::getTransferPacket() const -> PacketBuilder {
 
 auto Player::parseTransferPacket(PacketReader &reader) -> void {
 	setConnectionTime(reader.get<int64_t>());
-	int32_t followId = reader.get<int32_t>();
+	player_id_t followId = reader.get<player_id_t>();
 	if (followId != 0) {
 		if (Player *follow = PlayerDataProvider::getInstance().getPlayer(followId)) {
 			PlayerDataProvider::getInstance().addFollower(this, follow);
@@ -556,7 +564,7 @@ auto Player::changeKey(PacketReader &reader) -> void {
 }
 
 auto Player::changeSkillMacros(PacketReader &reader) -> void {
-	uint8_t num = reader.get<int8_t>();
+	uint8_t num = reader.get<uint8_t>();
 	if (num == 0) {
 		return;
 	}
@@ -564,26 +572,26 @@ auto Player::changeSkillMacros(PacketReader &reader) -> void {
 	for (uint8_t i = 0; i < num; i++) {
 		string_t name = reader.get<string_t>();
 		bool shout = reader.get<bool>();
-		int32_t skill1 = reader.get<int32_t>();
-		int32_t skill2 = reader.get<int32_t>();
-		int32_t skill3 = reader.get<int32_t>();
+		skill_id_t skill1 = reader.get<skill_id_t>();
+		skill_id_t skill2 = reader.get<skill_id_t>();
+		skill_id_t skill3 = reader.get<skill_id_t>();
 
 		skillMacros.add(i, new SkillMacros::SkillMacro(name, shout, skill1, skill2, skill3));
 	}
 	skillMacros.save(getId());
 }
 
-auto Player::setHair(int32_t id) -> void {
+auto Player::setHair(hair_id_t id) -> void {
 	m_hair = id;
 	send(PlayerPacket::updateStat(Stats::Hair, id));
 }
 
-auto Player::setEyes(int32_t id) -> void {
+auto Player::setEyes(face_id_t id) -> void {
 	m_eyes = id;
 	send(PlayerPacket::updateStat(Stats::Eyes, id));
 }
 
-auto Player::setSkin(int8_t id) -> void {
+auto Player::setSkin(skin_id_t id) -> void {
 	m_skin = id;
 	send(PlayerPacket::updateStat(Stats::Skin, id));
 }
@@ -593,8 +601,8 @@ auto Player::saveStats() -> void {
 	PlayerInventory *i = getInventory();
 	// Need local bindings
 	// Stats
-	uint8_t level = s->getLevel();
-	int16_t job = s->getJob();
+	player_level_t level = s->getLevel();
+	job_id_t job = s->getJob();
 	int16_t str = s->getStr();
 	int16_t dex = s->getDex();
 	int16_t intt = s->getInt();
@@ -606,15 +614,15 @@ auto Player::saveStats() -> void {
 	uint16_t hpMpAp = s->getHpMpAp();
 	int16_t ap = s->getAp();
 	int16_t sp = s->getSp();
-	int16_t fame = s->getFame();
-	int32_t exp = s->getExp();
+	fame_t fame = s->getFame();
+	experience_t exp = s->getExp();
 	// Inventory
-	uint8_t equip = i->getMaxSlots(Inventories::EquipInventory);
-	uint8_t use = i->getMaxSlots(Inventories::UseInventory);
-	uint8_t setup = i->getMaxSlots(Inventories::SetupInventory);
-	uint8_t etc = i->getMaxSlots(Inventories::EtcInventory);
-	uint8_t cash = i->getMaxSlots(Inventories::CashInventory);
-	int32_t money = i->getMesos();
+	inventory_slot_count_t equip = i->getMaxSlots(Inventories::EquipInventory);
+	inventory_slot_count_t use = i->getMaxSlots(Inventories::UseInventory);
+	inventory_slot_count_t setup = i->getMaxSlots(Inventories::SetupInventory);
+	inventory_slot_count_t etc = i->getMaxSlots(Inventories::EtcInventory);
+	inventory_slot_count_t cash = i->getMaxSlots(Inventories::CashInventory);
+	mesos_t money = i->getMesos();
 	// Other
 	int32_t rawCover = getMonsterBook()->getCover();
 	opt_int32_t cover;
@@ -718,7 +726,7 @@ auto Player::setLevelDate() -> void {
 }
 
 auto Player::acceptDeath(bool wheel) -> void {
-	int32_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
+	map_id_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
 	if (wheel) {
 		toMap = getMapId();
 	}
@@ -729,7 +737,7 @@ auto Player::acceptDeath(bool wheel) -> void {
 }
 
 auto Player::hasGmEquip() const -> bool {
-	auto equippedUtility = [this](int16_t slot, int32_t itemId) -> bool {
+	auto equippedUtility = [this](inventory_slot_t slot, item_id_t itemId) -> bool {
 		return this->getInventory()->getEquippedId(slot) == itemId;
 	};
 
@@ -781,10 +789,14 @@ auto Player::initializeRng(PacketBuilder &packet) -> void {
 }
 
 auto Player::send(const PacketBuilder &builder) -> void {
+	// TODO FIXME resource
+	if (isDisconnecting()) return;
 	AbstractConnection::send(builder);
 }
 
 auto Player::send(const SplitPacketBuilder &builder) -> void {
+	// TODO FIXME resource
+	if (isDisconnecting()) return;
 	send(builder.player);
 }
 

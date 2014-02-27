@@ -65,13 +65,13 @@ class BuffDataProvider {
 	SINGLETON(BuffDataProvider);
 public:
 	auto loadData() -> void;
-	auto addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> void;
+	auto addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void;
 
-	auto isBuff(int32_t skillId) const -> bool;
-	auto isDebuff(uint8_t skillId) const -> bool;
-	auto getSkillInfo(int32_t skillId) const -> const SkillInfo &;
-	auto getMobSkillInfo(uint8_t skillId) const -> const MobAilmentInfo &;
+	auto isBuff(skill_id_t skillId) const -> bool;
+	auto isDebuff(mob_skill_id_t skillId) const -> bool;
+	auto getSkillInfo(skill_id_t skillId) const -> const SkillInfo &;
+	auto getMobSkillInfo(mob_skill_id_t skillId) const -> const MobAilmentInfo &;
 private:
-	hash_map_t<int32_t, SkillInfo> m_skillInfo;
-	hash_map_t<uint8_t, MobAilmentInfo> m_mobSkillInfo;
+	hash_map_t<skill_id_t, SkillInfo> m_skillInfo;
+	hash_map_t<mob_skill_id_t, MobAilmentInfo> m_mobSkillInfo;
 };

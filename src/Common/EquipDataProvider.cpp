@@ -36,9 +36,6 @@ auto EquipDataProvider::loadData() -> void {
 
 auto EquipDataProvider::loadEquips() -> void {
 	m_equipInfo.clear();
-	int32_t itemId;
-	EquipInfo equip;
-	string_t flags;
 	// Ugly hack to get the integers instead of scientific notation
 	// Note: This is MySQL's crappy behavior
 	// It displays scientific notation for only very large values, meaning it's wildly inconsistent and hard to parse
@@ -46,9 +43,9 @@ auto EquipDataProvider::loadEquips() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT *, REPLACE(FORMAT(equip_slots + 0, 0), \",\", \"\") AS equip_slot_flags FROM " << Database::makeDataTable("item_equip_data"));
 
 	for (const auto &row : rs) {
-		equip = EquipInfo();
+		EquipInfo equip;
 
-		itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		equip.attackSpeed = row.get<int8_t>("attack_speed");
 		equip.healing = row.get<int8_t>("heal_hp");
 		equip.slots = row.get<int8_t>("scroll_slots");
@@ -58,7 +55,7 @@ auto EquipDataProvider::loadEquips() -> void {
 		equip.reqDex = row.get<int16_t>("req_dex");
 		equip.reqInt = row.get<int16_t>("req_int");
 		equip.reqLuk = row.get<int16_t>("req_luk");
-		equip.reqFame = row.get<int16_t>("req_fame");
+		equip.reqFame = row.get<fame_t>("req_fame");
 		equip.istr = row.get<int16_t>("strength");
 		equip.idex = row.get<int16_t>("dexterity");
 		equip.iint = row.get<int16_t>("intelligence");
@@ -80,6 +77,7 @@ auto EquipDataProvider::loadEquips() -> void {
 		equip.elementalDefault = row.get<uint8_t>("elemental_default");
 		equip.traction = row.get<double>("traction");
 		equip.validSlots = StringUtilities::atoli(row.get<string_t>("equip_slot_flags").c_str());
+
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&equip](const string_t &cmp) {
 			if (cmp == "wear_trade_block") equip.tradeBlockOnEquip = true;
 		});
@@ -126,20 +124,20 @@ auto EquipDataProvider::setEquipStats(Item *equip, bool random, bool isGm) const
 	equip->setSpeed(getStat(ei.ispeed, Items::StatVariance::Speed));
 }
 
-auto EquipDataProvider::canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) const -> bool {
+auto EquipDataProvider::canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, fame_t fame) const -> bool {
 	const EquipInfo &ei = getEquipInfo(itemId);
 	return str >= ei.reqStr && dex >= ei.reqDex && intt >= ei.reqInt && luk >= ei.reqLuk && fame >= ei.reqFame;
 }
 
-auto EquipDataProvider::isValidSlot(int32_t equipId, int16_t target) const -> bool {
+auto EquipDataProvider::isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool {
 	const EquipInfo &ei = getEquipInfo(equipId);
 	return (ei.validSlots & (1ULL << (target - 1))) != 0;
 }
 
-auto EquipDataProvider::getSlots(int32_t equipId) const -> int8_t {
+auto EquipDataProvider::getSlots(item_id_t equipId) const -> int8_t {
 	return getEquipInfo(equipId).slots;
 }
 
-auto EquipDataProvider::getEquipInfo(int32_t equipId) const -> const EquipInfo & {
+auto EquipDataProvider::getEquipInfo(item_id_t equipId) const -> const EquipInfo & {
 	return m_equipInfo.find(equipId)->second;
 }

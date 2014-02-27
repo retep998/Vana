@@ -27,21 +27,29 @@ public:
 	enum MovementPatterns : int8_t {
 		Static = 0,
 		Follow = 1,
-		Flying = 3
+		FlyClose = 3,
+		FlyFar = 4,
+	};
+	enum ActionPatterns : int8_t {
+		DoNothing = 0,
+		Attack = 1,
+		Beholder = 2,
 	};
 
-	Summon(int32_t id, int32_t summonId, uint8_t level);
+	Summon(map_object_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Pos &position, foothold_id_t foothold = 0);
 
-	auto getId() -> int32_t { return m_id; }
-	auto getSummonId() -> int32_t { return m_summonId; }
-	auto getLevel() -> uint8_t { return m_level; }
-	auto getType() -> uint8_t { return m_type; }
-	auto getHP() -> int32_t { return m_hp; }
-	auto doDamage(int32_t damage) -> void { m_hp -= damage; }
+	auto getId() -> summon_id_t { return m_id; }
+	auto getSkillId() -> skill_id_t { return m_summonId; }
+	auto getSkillLevel() -> skill_level_t { return m_level; }
+	auto getMovementType() -> uint8_t { return m_movementType; }
+	auto getActionType() -> uint8_t { return m_actionType; }
+	auto getHp() -> int32_t { return m_hp; }
+	auto doDamage(damage_t damage) -> void { m_hp -= damage; }
 private:
-	uint8_t m_level = 0;
-	uint8_t m_type = 0;
-	int32_t m_id = 0;
-	int32_t m_summonId = 0;
+	skill_level_t m_level = 0;
+	uint8_t m_movementType = 0;
+	uint8_t m_actionType = 0;
+	summon_id_t m_id = 0;
+	skill_id_t m_summonId = 0;
 	int32_t m_hp = 0;
 };

@@ -32,13 +32,13 @@ Item::Item(const soci::row &row)
 	initializeItem(row);
 }
 
-Item::Item(int32_t itemId, int16_t amount) :
+Item::Item(item_id_t itemId, slot_qty_t amount) :
 	m_id(itemId),
 	m_amount(amount)
 {
 }
 
-Item::Item(int32_t equipId, bool random, bool isGm) :
+Item::Item(item_id_t equipId, bool random, bool isGm) :
 	m_id(equipId),
 	m_amount(1)
 {
@@ -292,7 +292,7 @@ auto Item::setSlots(int8_t slots) -> void {
 	m_slots = slots;
 }
 
-auto Item::setPetId(int64_t petId) -> void {
+auto Item::setPetId(pet_id_t petId) -> void {
 	m_petId = petId;
 }
 
@@ -301,7 +301,7 @@ auto Item::setName(const string_t &name) -> void {
 }
 
 auto Item::initializeItem(const soci::row &row) -> void {
-	m_id = row.get<int32_t>("item_id");
+	m_id = row.get<item_id_t>("item_id");
 	m_amount = row.get<int16_t>("amount");
 
 	opt_int8_t slots = row.get<opt_int8_t>("slots");
@@ -323,32 +323,32 @@ auto Item::initializeItem(const soci::row &row) -> void {
 	opt_int16_t jump = row.get<opt_int16_t>("ijump");
 	opt_int16_t flags = row.get<opt_int16_t>("flags");
 	opt_int32_t hammers = row.get<opt_int32_t>("hammers");
-	opt_int64_t petId = row.get<opt_int64_t>("pet_id");
+	optional_t<pet_id_t> petId = row.get<optional_t<pet_id_t>>("pet_id");
 	opt_int64_t expiration = row.get<opt_int64_t>("expiration");
 	opt_string_t name = row.get<opt_string_t>("name");
 
-	m_slots = slots.getOrDefault(0);
-	m_scrolls = scrolls.getOrDefault(0);
-	m_str = str.getOrDefault(0);
-	m_dex = dex.getOrDefault(0);
-	m_int = intt.getOrDefault(0);
-	m_luk = luk.getOrDefault(0);
-	m_hp = hp.getOrDefault(0);
-	m_mp = mp.getOrDefault(0);
-	m_wAtk = watk.getOrDefault(0);
-	m_mAtk = matk.getOrDefault(0);
-	m_wDef = wdef.getOrDefault(0);
-	m_mDef = mdef.getOrDefault(0);
-	m_accuracy = accuracy.getOrDefault(0);
-	m_avoid = avoid.getOrDefault(0);
-	m_hands = hands.getOrDefault(0);
-	m_speed = speed.getOrDefault(0);
-	m_jump = jump.getOrDefault(0);
-	m_hammers = hammers.getOrDefault(0);
-	m_flags = flags.getOrDefault(0);
-	m_expiration = expiration.getOrDefault(Items::NoExpiration);
-	m_petId = petId.getOrDefault(0);
-	m_name = name.getOrDefault("");
+	m_slots = slots.get(0);
+	m_scrolls = scrolls.get(0);
+	m_str = str.get(0);
+	m_dex = dex.get(0);
+	m_int = intt.get(0);
+	m_luk = luk.get(0);
+	m_hp = hp.get(0);
+	m_mp = mp.get(0);
+	m_wAtk = watk.get(0);
+	m_mAtk = matk.get(0);
+	m_wDef = wdef.get(0);
+	m_mDef = mdef.get(0);
+	m_accuracy = accuracy.get(0);
+	m_avoid = avoid.get(0);
+	m_hands = hands.get(0);
+	m_speed = speed.get(0);
+	m_jump = jump.get(0);
+	m_hammers = hammers.get(0);
+	m_flags = flags.get(0);
+	m_expiration = expiration.get(Items::NoExpiration);
+	m_petId = petId.get(0);
+	m_name = name.get("");
 }
 
 auto Item::databaseInsert(soci::session &sql, const ItemDbInformation &info) -> void {
@@ -371,11 +371,11 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 
 	uint8_t inventory = 0;
 	int16_t amount = 0;
-	int32_t itemId = 0;
-	int16_t slot = 0;
+	item_id_t itemId = 0;
+	inventory_slot_t slot = 0;
 	world_id_t worldId = 0;
-	int32_t userId = 0;
-	int32_t playerId = 0;
+	account_id_t userId = 0;
+	player_id_t playerId = 0;
 	string_t location = "";
 
 	opt_int8_t slots;
@@ -397,7 +397,7 @@ auto Item::databaseInsert(soci::session &sql, const vector_t<ItemDbRecord> &item
 	opt_int16_t iJump;
 	opt_int16_t flags;
 	opt_int32_t hammers;
-	opt_int64_t petId;
+	optional_t<pet_id_t> petId;
 	opt_int64_t expiration;
 	opt_string_t name;
 

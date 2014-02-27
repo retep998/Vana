@@ -800,7 +800,7 @@ auto BuffDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> void {
+auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void {
 	using namespace BuffBytes;
 	vector_t<uint8_t> types;
 	vector_t<int8_t> bytes;
@@ -935,18 +935,18 @@ auto BuffDataProvider::addItemInfo(int32_t itemId, const ConsumeInfo &cons) -> v
 	}
 }
 
-auto BuffDataProvider::isBuff(int32_t skillId) const -> bool {
+auto BuffDataProvider::isBuff(skill_id_t skillId) const -> bool {
 	return m_skillInfo.find(skillId) != std::end(m_skillInfo);
 }
 
-auto BuffDataProvider::isDebuff(uint8_t skillId) const -> bool {
+auto BuffDataProvider::isDebuff(mob_skill_id_t skillId) const -> bool {
 	return m_mobSkillInfo.find(skillId) != std::end(m_mobSkillInfo);
 }
 
-auto BuffDataProvider::getSkillInfo(int32_t skillId) const -> const SkillInfo & {
+auto BuffDataProvider::getSkillInfo(skill_id_t skillId) const -> const SkillInfo & {
 	return m_skillInfo.find(skillId)->second;
 }
 
-auto BuffDataProvider::getMobSkillInfo(uint8_t skillId) const -> const MobAilmentInfo & {
+auto BuffDataProvider::getMobSkillInfo(mob_skill_id_t skillId) const -> const MobAilmentInfo & {
 	return m_mobSkillInfo.find(skillId)->second;
 }

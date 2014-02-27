@@ -121,6 +121,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define SMSG_SUMMON_MOVEMENT 0xa2
 #define SMSG_SUMMON_ATTACK 0xa3
 #define SMSG_SUMMON_DAMAGE 0xa4
+#define SMSG_SUMMON_SKILL 0xa5
 #define SMSG_PLAYER_MOVEMENT 0xa7
 #define SMSG_ATTACK_MELEE 0xa8
 #define SMSG_ATTACK_RANGED 0xa9

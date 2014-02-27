@@ -61,36 +61,36 @@ PACKET_IMPL(ConfigPacket::setRates, const Rates &rates) {
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::newConnectable, int32_t playerId, const Ip &ip, PacketReader &buffer) {
+PACKET_IMPL(PlayerPacket::newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::NewConnectable)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<Ip>(ip)
 		.add<uint16_t>(buffer.getBufferLength())
 		.addBuffer(buffer);
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::deleteConnectable, int32_t playerId) {
+PACKET_IMPL(PlayerPacket::deleteConnectable, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::DeleteConnectable)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::playerChangeChannel, int32_t playerId, channel_id_t channelId, const Ip &ip, port_t port) {
+PACKET_IMPL(PlayerPacket::playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::ChangeChannelGo)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<channel_id_t>(channelId)
 		.add<Ip>(ip)
 		.add<port_t>(port);
@@ -103,7 +103,7 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t fl
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::UpdatePlayer)
-		.add<int32_t>(data.id)
+		.add<player_id_t>(data.id)
 		.add<update_bits_t>(flags);
 
 	if (flags & Sync::Player::UpdateBits::Full) {
@@ -111,16 +111,16 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t fl
 	}
 	else {
 		if (flags & Sync::Player::UpdateBits::Level) {
-			builder.add<int16_t>(data.level);
+			builder.add<player_level_t>(data.level.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Job) {
-			builder.add<int16_t>(data.job);
+			builder.add<job_id_t>(data.job.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Map) {
-			builder.add<int32_t>(data.map);
+			builder.add<map_id_t>(data.map.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Channel) {
-			builder.add<channel_id_t>(data.channel);
+			builder.add<channel_id_t>(data.channel.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Ip) {
 			builder.add<Ip>(data.ip);
@@ -142,92 +142,92 @@ PACKET_IMPL(PlayerPacket::characterCreated, const PlayerData &data) {
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::characterDeleted, int32_t id) {
+PACKET_IMPL(PlayerPacket::characterDeleted, player_id_t id) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::CharacterDeleted)
-		.add<int32_t>(id);
+		.add<player_id_t>(id);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::removePartyMember, int32_t partyId, int32_t playerId, bool kicked) {
+PACKET_IMPL(PartyPacket::removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<sync_t>(Sync::Party::RemoveMember)
-		.add<int32_t>(partyId)
-		.add<int32_t>(playerId)
+		.add<party_id_t>(partyId)
+		.add<player_id_t>(playerId)
 		.add<bool>(kicked);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::addPartyMember, int32_t partyId, int32_t playerId) {
+PACKET_IMPL(PartyPacket::addPartyMember, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<sync_t>(Sync::Party::AddMember)
-		.add<int32_t>(partyId)
-		.add<int32_t>(playerId);
+		.add<party_id_t>(partyId)
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::newPartyLeader, int32_t partyId, int32_t playerId) {
+PACKET_IMPL(PartyPacket::newPartyLeader, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<sync_t>(Sync::Party::SwitchLeader)
-		.add<int32_t>(partyId)
-		.add<int32_t>(playerId);
+		.add<party_id_t>(partyId)
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::createParty, int32_t partyId, int32_t playerId) {
+PACKET_IMPL(PartyPacket::createParty, party_id_t partyId, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<sync_t>(Sync::Party::Create)
-		.add<int32_t>(partyId)
-		.add<int32_t>(playerId);
+		.add<party_id_t>(partyId)
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::disbandParty, int32_t partyId) {
+PACKET_IMPL(PartyPacket::disbandParty, party_id_t partyId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<sync_t>(Sync::Party::Disband)
-		.add<int32_t>(partyId);
+		.add<party_id_t>(partyId);
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendBuddyInvite, int32_t inviteeId, int32_t inviterId, const string_t &name) {
+PACKET_IMPL(BuddyPacket::sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
 		.add<sync_t>(Sync::Buddy::Invite)
-		.add<int32_t>(inviterId)
-		.add<int32_t>(inviteeId)
+		.add<player_id_t>(inviterId)
+		.add<player_id_t>(inviteeId)
 		.add<string_t>(name);
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendBuddyOnlineOffline, const vector_t<int32_t> &players, int32_t playerId, channel_id_t channelId) {
+PACKET_IMPL(BuddyPacket::sendBuddyOnlineOffline, const vector_t<player_id_t> &players, player_id_t playerId, channel_id_t channelId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
 		.add<sync_t>(Sync::Buddy::OnlineOffline)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<channel_id_t>(channelId)
-		.add<vector_t<int32_t>>(players);
+		.add<vector_t<player_id_t>>(players);
 	return builder;
 }
 

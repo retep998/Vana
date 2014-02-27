@@ -62,23 +62,23 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &player, update_bits_t 
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::UpdatePlayer)
 		.add<update_bits_t>(flags)
-		.add<int32_t>(player.id);
+		.add<player_id_t>(player.id);
 
 	if (flags & Sync::Player::UpdateBits::Full) {
 		builder.add<PlayerData>(player);
 	}
 	else {
 		if (flags & Sync::Player::UpdateBits::Level) {
-			builder.add<int16_t>(player.level);
+			builder.add<int16_t>(player.level.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Job) {
-			builder.add<int16_t>(player.job);
+			builder.add<int16_t>(player.job.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Map) {
-			builder.add<int32_t>(player.map);
+			builder.add<int32_t>(player.map.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Channel) {
-			builder.add<channel_id_t>(player.channel);
+			builder.add<channel_id_t>(player.channel.get());
 		}
 		if (flags & Sync::Player::UpdateBits::Ip) {
 			builder.add<Ip>(player.ip);
@@ -96,7 +96,7 @@ PACKET_IMPL(PlayerPacket::changeChannel, Player *info, channel_id_t channel) {
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::ChangeChannelRequest)
-		.add<int32_t>(info->getId())
+		.add<player_id_t>(info->getId())
 		.add<channel_id_t>(channel)
 		.add<Ip>(info->getIp())
 		.addBuffer(info->getTransferPacket());
@@ -111,48 +111,48 @@ PACKET_IMPL(PlayerPacket::connect, const PlayerData &player, bool firstConnect) 
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::Connect)
 		.add<bool>(firstConnect)
-		.add<int32_t>(player.id);
+		.add<player_id_t>(player.id);
 
 	if (firstConnect) {
 		builder.add<PlayerData>(player);
 	}
 	else {
 		builder
-			.add<int32_t>(player.map)
-			.add<channel_id_t>(player.channel)
+			.add<map_id_t>(player.map.get())
+			.add<channel_id_t>(player.channel.get())
 			.add<Ip>(player.ip);
 	}
 
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::disconnect, int32_t playerId) {
+PACKET_IMPL(PlayerPacket::disconnect, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::Disconnect)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PlayerPacket::connectableEstablished, int32_t playerId) {
+PACKET_IMPL(PlayerPacket::connectableEstablished, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::ChangeChannelGo)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(PartyPacket::sync, int8_t type, int32_t playerId, int32_t target) {
+PACKET_IMPL(PartyPacket::sync, int8_t type, player_id_t playerId, int32_t target) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Party)
 		.add<int8_t>(type)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 
 	if (target != 0) {
 		builder.add<int32_t>(target);
@@ -160,26 +160,26 @@ PACKET_IMPL(PartyPacket::sync, int8_t type, int32_t playerId, int32_t target) {
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::buddyInvite, int32_t inviterId, int32_t inviteeId) {
+PACKET_IMPL(BuddyPacket::buddyInvite, player_id_t inviterId, player_id_t inviteeId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
 		.add<sync_t>(Sync::Buddy::Invite)
-		.add<int32_t>(inviterId)
-		.add<int32_t>(inviteeId);
+		.add<player_id_t>(inviterId)
+		.add<player_id_t>(inviteeId);
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::buddyOnline, int32_t playerId, const vector_t<int32_t> &players, bool online) {
+PACKET_IMPL(BuddyPacket::buddyOnline, player_id_t playerId, const vector_t<player_id_t> &players, bool online) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
 		.add<sync_t>(Sync::Buddy::OnlineOffline)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<bool>(online)
-		.add<vector_t<int32_t>>(players);
+		.add<vector_t<player_id_t>>(players);
 	return builder;
 }
 

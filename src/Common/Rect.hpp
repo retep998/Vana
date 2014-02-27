@@ -51,10 +51,10 @@ public:
 	auto containsAnyPartOfLine(const Line &line) const -> bool;
 	auto containsFullLine(const Line &line) const -> bool;
 	auto intersects(const Line &line) const -> bool;
-	auto move(int16_t xMod, int16_t yMod) const -> Rect;
+	auto move(coord_t xMod, coord_t yMod) const -> Rect;
 	auto move(const Pos &pos) const -> Rect;
-	auto resize(int16_t mod) const -> Rect;
-	auto deform(int16_t leftTopMod, int16_t rightBottomMod) const -> Rect;
+	auto resize(coord_t mod) const -> Rect;
+	auto deform(coord_t leftTopMod, coord_t rightBottomMod) const -> Rect;
 	auto swap(bool swapHorizontal, bool swapVertical) const -> Rect;
 	auto normalize() const -> Rect;
 	auto intersection(const Rect &other) const -> Rect;

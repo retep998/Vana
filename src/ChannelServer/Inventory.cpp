@@ -29,17 +29,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Randomizer.hpp"
 #include "SkillDataProvider.hpp"
 
-auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
-	int8_t inv = GameLogicUtilities::getInventory(item->getId());
-	int16_t freeSlot = 0;
-	for (int16_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
+auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t {
+	inventory_t inv = GameLogicUtilities::getInventory(item->getId());
+	inventory_slot_t freeSlot = 0;
+	for (inventory_slot_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *oldItem = player->getInventory()->getItem(inv, s);
 		if (oldItem != nullptr) {
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
-			uint16_t maxSlot = itemInfo->maxSlot;
+			slot_qty_t maxSlot = itemInfo->maxSlot;
 			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < maxSlot) {
 				if (item->getAmount() + oldItem->getAmount() > maxSlot) {
-					int16_t amount = maxSlot - oldItem->getAmount();
+					slot_qty_t amount = maxSlot - oldItem->getAmount();
 					item->decAmount(amount);
 					oldItem->setAmount(maxSlot);
 
@@ -84,14 +84,14 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> int16_t {
 	return item->getAmount();
 }
 
-auto Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount, bool random) -> void {
+auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, bool random) -> void {
 	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 	if (itemInfo == nullptr) {
 		return;
 	}
 
-	uint16_t max = itemInfo->maxSlot;
-	int16_t thisAmount = 0;
+	slot_qty_t max = itemInfo->maxSlot;
+	slot_qty_t thisAmount = 0;
 	if (GameLogicUtilities::isRechargeable(itemId)) {
 		thisAmount = max + player->getSkills()->getRechargeableBonus();
 		amount -= 1;
@@ -124,15 +124,15 @@ auto Inventory::addNewItem(Player *player, int32_t itemId, int16_t amount, bool 
 	}
 }
 
-auto Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) -> void {
+auto Inventory::takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void {
 	if (player->hasGmBenefits()) {
 		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
 	player->getInventory()->changeItemAmount(itemId, -howMany);
-	int8_t inv = GameLogicUtilities::getInventory(itemId);
-	for (int16_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
+	inventory_t inv = GameLogicUtilities::getInventory(itemId);
+	for (inventory_slot_t i = 1; i <= player->getInventory()->getMaxSlots(inv); i++) {
 		Item *item = player->getInventory()->getItem(inv, i);
 		if (item == nullptr) {
 			continue;
@@ -168,7 +168,7 @@ auto Inventory::takeItem(Player *player, int32_t itemId, uint16_t howMany) -> vo
 	}
 }
 
-auto Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar) -> void {
+auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar) -> void {
 	if (player->hasGmBenefits()) {
 		return;
 	}
@@ -194,7 +194,7 @@ auto Inventory::takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t a
 	}
 }
 
-auto Inventory::useItem(Player *player, int32_t itemId) -> void {
+auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
 	auto item = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr) {
 		// Not a consume
@@ -202,10 +202,10 @@ auto Inventory::useItem(Player *player, int32_t itemId) -> void {
 	}
 
 	int16_t potency = 100;
-	int32_t skillId = player->getSkills()->getAlchemist();
+	skill_id_t alchemist = player->getSkills()->getAlchemist();
 
-	if (player->getSkills()->getSkillLevel(skillId) > 0) {
-		potency = player->getSkills()->getSkillInfo(skillId)->x;
+	if (player->getSkills()->getSkillLevel(alchemist) > 0) {
+		potency = player->getSkills()->getSkillInfo(alchemist)->x;
 	}
 
 	bool zombie = player->getActiveBuffs()->isZombified();

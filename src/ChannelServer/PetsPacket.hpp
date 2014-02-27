@@ -28,13 +28,13 @@ class Pet;
 class Player;
 
 namespace PetsPacket {
-	SPLIT_PACKET(petSummoned, int32_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
-	SPLIT_PACKET(showChat, int32_t playerId, Pet *pet, const string_t &message, int8_t act);
-	SPLIT_PACKET(showMovement, int32_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
-	PACKET(showAnimation, int32_t playerId, Pet *pet, int8_t animation);
+	SPLIT_PACKET(petSummoned, player_id_t playerId, Pet *pet, bool kick = false, int8_t index = -1);
+	SPLIT_PACKET(showChat, player_id_t playerId, Pet *pet, const string_t &message, int8_t act);
+	SPLIT_PACKET(showMovement, player_id_t playerId, Pet *pet, unsigned char *buf, int32_t bufLen);
+	PACKET(showAnimation, player_id_t playerId, Pet *pet, int8_t animation);
 	PACKET(updatePet, Pet *pet, Item *petItem);
-	SPLIT_PACKET(levelUp, int32_t playerId, Pet *pet);
-	SPLIT_PACKET(changeName, int32_t playerId, Pet *pet);
+	SPLIT_PACKET(levelUp, player_id_t playerId, Pet *pet);
+	SPLIT_PACKET(changeName, player_id_t playerId, Pet *pet);
 	// TODO FIXME packet
 	// This doesn't appear to be used anywhere, not sure if that's by mistake or not
 	//auto showPet(Player *player, Pet *pet) -> void;

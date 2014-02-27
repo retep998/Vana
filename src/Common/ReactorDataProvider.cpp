@@ -40,9 +40,9 @@ auto ReactorDataProvider::loadReactors() -> void {
 
 	for (const auto &row : rs) {
 		ReactorData reactor;
-		int32_t id = row.get<int32_t>("reactorid");
+		reactor_id_t id = row.get<reactor_id_t>("reactorid");
 		reactor.maxStates = row.get<int8_t>("max_states");
-		reactor.link = row.get<int32_t>("link");
+		reactor.link = row.get<reactor_id_t>("link");
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&reactor](const string_t &cmp) {
 			if (cmp == "remove_in_field_set") reactor.removeInFieldSet = true;
@@ -58,12 +58,12 @@ auto ReactorDataProvider::loadStates() -> void {
 
 	for (const auto &row : rs) {
 		ReactorStateInfo state;
-		int32_t id = row.get<int32_t>("reactorid");
+		reactor_id_t id = row.get<reactor_id_t>("reactorid");
 		int8_t stateId = row.get<int8_t>("state");
-		state.itemId = row.get<int32_t>("itemid");
-		state.itemQuantity = row.get<int16_t>("quantity");
-		state.dimensions = Rect(Pos(row.get<int16_t>("ltx"), row.get<int16_t>("lty")),
-								Pos(row.get<int16_t>("rbx"), row.get<int16_t>("rby")));
+		state.itemId = row.get<item_id_t>("itemid");
+		state.itemQuantity = row.get<slot_qty_t>("quantity");
+		state.dimensions = Rect(Pos(row.get<coord_t>("ltx"), row.get<coord_t>("lty")),
+								Pos(row.get<coord_t>("rbx"), row.get<coord_t>("rby")));
 		state.nextState = row.get<int8_t>("next_state");
 		state.timeout = row.get<int32_t>("timeout");
 
@@ -85,9 +85,9 @@ auto ReactorDataProvider::loadTriggerSkills() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("reactor_event_trigger_skills"));
 
 	for (const auto &row : rs) {
-		int32_t id = row.get<int32_t>("reactorid");
+		reactor_id_t id = row.get<reactor_id_t>("reactorid");
 		int8_t state = row.get<int8_t>("state");
-		int32_t skillId = row.get<int32_t>("skillid");
+		skill_id_t skillId = row.get<skill_id_t>("skillid");
 
 		for (size_t j = 0; j < m_reactorInfo[id].states[state].size(); ++j) {
 			m_reactorInfo[id].states[state][j].triggerSkills.push_back(skillId);
@@ -95,7 +95,7 @@ auto ReactorDataProvider::loadTriggerSkills() -> void {
 	}
 }
 
-auto ReactorDataProvider::getReactorData(int32_t reactorId, bool respectLink) const -> const ReactorData & {
+auto ReactorDataProvider::getReactorData(reactor_id_t reactorId, bool respectLink) const -> const ReactorData & {
 	auto kvp = m_reactorInfo.find(reactorId);
 	if (respectLink && kvp->second.link != 0) {
 		kvp = m_reactorInfo.find(kvp->second.link);

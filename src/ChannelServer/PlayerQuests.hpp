@@ -44,10 +44,10 @@ struct ActiveQuest {
 		return info.str();
 	}
 
-	int16_t id = 0;
+	quest_id_t id = 0;
 	bool done = false;
 	string_t data;
-	ord_map_t<int32_t, uint16_t> kills;
+	ord_map_t<mob_id_t, uint16_t> kills;
 };
 
 // TODO FIXME accuracy
@@ -67,21 +67,21 @@ public:
 	auto save() -> void;
 	auto connectData(PacketBuilder &packet) -> void;
 
-	auto itemDropAllowed(int32_t itemId, uint16_t questId) -> AllowQuestItemResult;
-	auto addQuest(uint16_t questId, int32_t npcId) -> void;
-	auto updateQuestMob(int32_t mobId) -> void;
+	auto itemDropAllowed(item_id_t itemId, quest_id_t questId) -> AllowQuestItemResult;
+	auto addQuest(quest_id_t questId, npc_id_t npcId) -> void;
+	auto updateQuestMob(mob_id_t mobId) -> void;
 	auto checkDone(ActiveQuest &quest) -> void;
-	auto finishQuest(uint16_t questId, int32_t npcId) -> void;
-	auto removeQuest(uint16_t questId) -> void;
-	auto isQuestActive(uint16_t questId) -> bool;
-	auto isQuestComplete(uint16_t questId) -> bool;
-	auto setQuestData(uint16_t id, const string_t &data) -> void;
-	auto getQuestData(uint16_t id) -> string_t;
+	auto finishQuest(quest_id_t questId, npc_id_t npcId) -> void;
+	auto removeQuest(quest_id_t questId) -> void;
+	auto isQuestActive(quest_id_t questId) -> bool;
+	auto isQuestComplete(quest_id_t questId) -> bool;
+	auto setQuestData(quest_id_t id, const string_t &data) -> void;
+	auto getQuestData(quest_id_t id) -> string_t;
 private:
-	auto giveRewards(uint16_t questId, bool start) -> Result;
+	auto giveRewards(quest_id_t questId, bool start) -> Result;
 
 	Player *m_player = nullptr;
-	hash_map_t<int32_t, vector_t<uint16_t>> m_mobToQuestMapping;
-	ord_map_t<uint16_t, ActiveQuest> m_quests;
-	ord_map_t<uint16_t, int64_t> m_completed;
+	hash_map_t<mob_id_t, vector_t<quest_id_t>> m_mobToQuestMapping;
+	ord_map_t<quest_id_t, ActiveQuest> m_quests;
+	ord_map_t<quest_id_t, int64_t> m_completed;
 };

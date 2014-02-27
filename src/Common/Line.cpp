@@ -33,20 +33,20 @@ auto Line::slopeContains(const Pos &pos) const -> bool {
 	return static_cast<int32_t>(pt2.x - pt1.x) * static_cast<int32_t>(pos.y - pt1.y) == static_cast<int32_t>(pos.x - pt1.x) * static_cast<int32_t>(pt2.y - pt1.y);
 }
 
-auto Line::withinRangeX(int16_t xValue) const -> bool {
+auto Line::withinRangeX(coord_t xValue) const -> bool {
 	return (pt1.x < xValue && xValue <= pt2.x) || (pt2.x < xValue && xValue <= pt1.x);
 }
 
-auto Line::withinRangeY(int16_t yValue) const -> bool {
+auto Line::withinRangeY(coord_t yValue) const -> bool {
 	return (pt1.y < yValue && yValue <= pt2.y) || (pt2.y < yValue && yValue <= pt1.y);
 }
 
-auto Line::interpolateForX(int16_t yValue) const -> int16_t {
-	return static_cast<int16_t>(slope() * (yValue - pt1.y) + pt1.x);
+auto Line::interpolateForX(coord_t yValue) const -> coord_t {
+	return static_cast<coord_t>(slope() * (yValue - pt1.y) + pt1.x);
 }
 
-auto Line::interpolateForY(int16_t xValue) const -> int16_t {
-	return static_cast<int16_t>(slope() * (xValue - pt1.x) + pt1.y);
+auto Line::interpolateForY(coord_t xValue) const -> coord_t {
+	return static_cast<coord_t>(slope() * (xValue - pt1.x) + pt1.y);
 }
 
 auto Line::length() const -> int32_t {

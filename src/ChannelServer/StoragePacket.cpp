@@ -26,20 +26,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace StoragePacket {
 
-PACKET_IMPL(showStorage, Player *player, int32_t npcId) {
+PACKET_IMPL(showStorage, Player *player, npc_id_t npcId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x16) // Type of storage action
-		.add<int32_t>(npcId)
-		.add<int8_t>(player->getStorage()->getSlots())
+		.add<npc_id_t>(npcId)
+		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(0x7e)
 		.add<int32_t>(0)
-		.add<int32_t>(player->getStorage()->getMesos())
+		.add<mesos_t>(player->getStorage()->getMesos())
 		.add<int16_t>(0)
-		.add<int8_t>(player->getStorage()->getNumItems());
+		.add<storage_slot_t>(player->getStorage()->getNumItems());
 
-	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		builder.addBuffer(PlayerPacketHelper::addItemInfo(0, player->getStorage()->getItem(i)));
 	}
 
@@ -49,18 +49,18 @@ PACKET_IMPL(showStorage, Player *player, int32_t npcId) {
 	return builder;
 }
 
-PACKET_IMPL(addItem, Player *player, int8_t inv) {
+PACKET_IMPL(addItem, Player *player, inventory_t inv) {
 	PacketBuilder builder;
 	int8_t type = static_cast<int8_t>(pow(2.f, static_cast<int32_t>(inv))) * 2; // Gotta work some magic on type, which starts as inventory
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x0d)
-		.add<int8_t>(player->getStorage()->getSlots())
+		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(type)
 		.add<int32_t>(0)
-		.add<int8_t>(player->getStorage()->getNumItems(inv));
+		.add<storage_slot_t>(player->getStorage()->getNumItems(inv));
 
-	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
 			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
@@ -75,12 +75,12 @@ PACKET_IMPL(takeItem, Player *player, int8_t inv) {
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x09)
-		.add<int8_t>(player->getStorage()->getSlots())
+		.add<storage_slot_t>(player->getStorage()->getSlots())
 		.add<int32_t>(type)
 		.add<int32_t>(0)
-		.add<int8_t>(player->getStorage()->getNumItems(inv));
+		.add<storage_slot_t>(player->getStorage()->getNumItems(inv));
 
-	for (int8_t i = 0; i < player->getStorage()->getNumItems(); i++) {
+	for (storage_slot_t i = 0; i < player->getStorage()->getNumItems(); i++) {
 		Item *item = player->getStorage()->getItem(i);
 		if (GameLogicUtilities::getInventory(item->getId()) == inv) {
 			builder.addBuffer(PlayerPacketHelper::addItemInfo(0, item));
@@ -89,16 +89,16 @@ PACKET_IMPL(takeItem, Player *player, int8_t inv) {
 	return builder;
 }
 
-PACKET_IMPL(changeMesos, int8_t slotCount, int32_t mesos) {
+PACKET_IMPL(changeMesos, storage_slot_t slotCount, mesos_t mesos) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_STORAGE)
 		.add<int8_t>(0x13)
-		.add<int8_t>(slotCount)
+		.add<storage_slot_t>(slotCount)
 		.add<int16_t>(2)
 		.add<int16_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(mesos);
+		.add<mesos_t>(mesos);
 	return builder;
 }
 

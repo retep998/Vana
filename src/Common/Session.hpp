@@ -33,7 +33,7 @@ class SessionManager;
 
 class Session : public enable_shared<Session> {
 public:
-	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation = "");
+	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion);
 
 	auto disconnect() -> void;
 	auto send(const PacketBuilder &builder) -> void;
@@ -51,7 +51,7 @@ protected:
 	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadBody(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto send(const unsigned char *buf, int32_t len, bool encrypt = true) -> void;
-	auto getConnectPacket(const string_t &patchLocation) const -> PacketBuilder;
+	auto getConnectPacket(const string_t &subversion) const -> PacketBuilder;
 
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
@@ -61,7 +61,7 @@ private:
 
 	bool m_isForClient = true;
 	bool m_usePing = false;
-	string_t m_patchLocation;
+	string_t m_subversion;
 	ref_ptr_t<AbstractConnection> m_connection;
 	ref_ptr_t<SessionManager> m_sessionManager;
 	Decoder m_decoder;

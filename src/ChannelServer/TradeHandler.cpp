@@ -63,7 +63,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 				// Most likely hacking
 				return;
 			}
-			int32_t recvId = reader.get<int32_t>();
+			player_id_t recvId = reader.get<player_id_t>();
 			Player *receiver = PlayerDataProvider::getInstance().getPlayer(recvId);
 			if (receiver != nullptr) {
 				if (!receiver->isTrading()) {
@@ -76,7 +76,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case TradeOpcodes::DenyRequest: {
-			int32_t tradeId = reader.get<int32_t>();
+			trade_id_t tradeId = reader.get<trade_id_t>();
 			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
@@ -87,7 +87,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case TradeOpcodes::AcceptRequest: {
-			int32_t tradeId = reader.get<int32_t>();
+			trade_id_t tradeId = reader.get<trade_id_t>();
 			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
@@ -124,7 +124,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 		case TradeOpcodes::AddItem:
 		case TradeOpcodes::AddMesos:
 		case TradeOpcodes::AcceptTrade: {
-			int32_t tradeId = player->getTradeId();
+			trade_id_t tradeId = player->getTradeId();
 			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
 			if (trade == nullptr) {
 				// Most likely hacking
@@ -138,10 +138,10 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			TradeInfo *mod = (isReceiver ? trade->getReceiverTrade() : trade->getSenderTrade());
 			switch (subOpcode) {
 				case TradeOpcodes::AddItem: {
-					int8_t inventory = reader.get<int8_t>();
-					int16_t slot = reader.get<int16_t>();
-					int16_t amount = reader.get<int16_t>();
-					uint8_t addSlot = reader.get<uint8_t>();
+					inventory_t inventory = reader.get<inventory_t>();
+					inventory_slot_t slot = reader.get<inventory_slot_t>();
+					slot_qty_t amount = reader.get<slot_qty_t>();
+					trade_slot_t addSlot = reader.get<trade_slot_t>();
 					Item *item = player->getInventory()->getItem(inventory, slot);
 					if (item == nullptr || trade->isItemInSlot(mod, addSlot) || item->hasTradeBlock() || item->hasLock()) {
 						// Hacking
@@ -171,12 +171,12 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 					break;
 				}
 				case TradeOpcodes::AddMesos: {
-					int32_t amount = reader.get<int32_t>();
+					mesos_t amount = reader.get<mesos_t>();
 					if (player->getInventory()->getMesos() < amount || amount < 0) {
 						// Hacking
 						return;
 					}
-					int32_t mesos = trade->addMesos(player, mod, amount);
+					mesos_t mesos = trade->addMesos(player, mod, amount);
 					one->send(TradesPacket::sendAddMesos(isReceiver ? TradeSlots::Two : TradeSlots::One, mesos));
 					two->send(TradesPacket::sendAddMesos(isReceiver ? TradeSlots::One : TradeSlots::Two, mesos));
 					break;
@@ -208,7 +208,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 }
 
 auto TradeHandler::cancelTrade(Player *player) -> void {
-	int32_t tradeId = player->getTradeId();
+	trade_id_t tradeId = player->getTradeId();
 	ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
 	if (trade != nullptr) {
 		Player *one = trade->getSender();
@@ -223,11 +223,11 @@ auto TradeHandler::cancelTrade(Player *player) -> void {
 	}
 }
 
-auto TradeHandler::removeTrade(int32_t id) -> void {
+auto TradeHandler::removeTrade(trade_id_t id) -> void {
 	Trades::getInstance().removeTrade(id);
 }
 
-auto TradeHandler::getTaxLevel(int32_t mesos) -> int32_t {
+auto TradeHandler::getTaxLevel(mesos_t mesos) -> int32_t {
 #if MAPLE_LOCALE == MAPLE_LOCALE_GLOBAL
 #	if MAPLE_VERSION >= 67
 	if (mesos < 100000) {

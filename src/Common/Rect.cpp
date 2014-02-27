@@ -127,7 +127,7 @@ auto Rect::intersects(const Line &line) const -> bool {
 	return false;
 }
 
-auto Rect::move(int16_t xMod, int16_t yMod) const -> Rect {
+auto Rect::move(coord_t xMod, coord_t yMod) const -> Rect {
 	Rect ret = {m_leftTop, m_rightBottom};
 	ret.m_leftTop.x += xMod;
 	ret.m_leftTop.y += yMod;
@@ -140,7 +140,7 @@ auto Rect::move(const Pos &pos) const -> Rect {
 	return move(pos.x, pos.y);
 }
 
-auto Rect::resize(int16_t mod) const -> Rect {
+auto Rect::resize(coord_t mod) const -> Rect {
 	Rect ret = {m_leftTop, m_rightBottom};
 	ret.m_leftTop.x -= mod;
 	ret.m_leftTop.y -= mod;
@@ -149,7 +149,7 @@ auto Rect::resize(int16_t mod) const -> Rect {
 	return ret;
 }
 
-auto Rect::deform(int16_t leftTopMod, int16_t rightBottomMod) const -> Rect {
+auto Rect::deform(coord_t leftTopMod, coord_t rightBottomMod) const -> Rect {
 	Rect ret = {m_leftTop, m_rightBottom};
 	ret.m_leftTop.x += leftTopMod;
 	ret.m_leftTop.y -= leftTopMod;

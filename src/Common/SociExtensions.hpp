@@ -290,10 +290,10 @@ namespace soci {
 	};
 
 	template <typename T>
-	struct type_conversion<MiscUtilities::optional<T>> {
+	struct type_conversion<optional_t<T>> {
 		using base_type = typename type_conversion<T>::base_type;
 
-		static void from_base(const base_type &in, indicator ind, MiscUtilities::optional<T> &out) {
+		static void from_base(const base_type &in, indicator ind, optional_t<T> &out) {
 			if (ind == i_null) {
 				out.reset();
 			}
@@ -304,7 +304,7 @@ namespace soci {
 			}
 		}
 
-		static void to_base(const MiscUtilities::optional<T> &in, base_type &out, indicator &ind) {
+		static void to_base(const optional_t<T> &in, base_type &out, indicator &ind) {
 			if (in.is_initialized()) {
 				type_conversion<T>::to_base(in.get(), out, ind);
 			}

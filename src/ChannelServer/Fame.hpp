@@ -24,8 +24,8 @@ class Player;
 
 namespace Fame {
 	auto handleFame(Player *player, PacketReader &reader) -> void;
-	auto canFame(Player *player, int32_t to) -> int32_t;
-	auto addFameLog(int32_t from, int32_t to) -> void;
-	auto getLastFameLog(int32_t from) -> SearchResult;
-	auto getLastFameSpLog(int32_t from, int32_t to) -> SearchResult;
+	auto canFame(Player *player, player_id_t to) -> int32_t;
+	auto addFameLog(player_id_t from, player_id_t to) -> void;
+	auto getLastFameLog(player_id_t from) -> SearchResult;
+	auto getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult;
 }

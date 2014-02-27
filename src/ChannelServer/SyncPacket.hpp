@@ -35,16 +35,16 @@ namespace SyncPacket {
 	}
 	namespace PlayerPacket {
 		PACKET(changeChannel, Player *info, channel_id_t channel);
-		PACKET(connectableEstablished, int32_t playerId);
+		PACKET(connectableEstablished, player_id_t playerId);
 		PACKET(connect, const PlayerData &player, bool firstConnect);
-		PACKET(disconnect, int32_t playerId);
+		PACKET(disconnect, player_id_t playerId);
 		PACKET(updatePlayer, const PlayerData &player, update_bits_t flags);
 	}
 	namespace PartyPacket {
-		PACKET(sync, int8_t type, int32_t playerId, int32_t target = 0);
+		PACKET(sync, int8_t type, player_id_t playerId, int32_t target = 0);
 	}
 	namespace BuddyPacket {
-		PACKET(buddyInvite, int32_t inviterId, int32_t inviteeId);
-		PACKET(buddyOnline, int32_t playerId, const vector_t<int32_t> &players, bool online);
+		PACKET(buddyInvite, player_id_t inviterId, player_id_t inviteeId);
+		PACKET(buddyOnline, player_id_t playerId, const vector_t<player_id_t> &players, bool online);
 	}
 }

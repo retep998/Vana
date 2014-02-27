@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdexcept>
 
 ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool ping) :
-	Session(ioService, sessionManager, connection, false, true, ping),
+	Session(ioService, sessionManager, connection, false, true, ping, MapleVersion::LoginSubversion),
 	m_server(serverIp),
 	m_port(serverPort),
 	m_resolver(ioService)
@@ -84,18 +84,17 @@ auto ServerClient::readConnectPacket() -> void {
 
 	PacketReader reader(buffer.get(), packetSize);
 
-	reader.skipBytes(2); // Header, unimportant because this isn't a client that might need to be patched
-	int16_t version = reader.get<int16_t>();
-	uint16_t stringSize = reader.get<uint16_t>();
-	reader.skipBytes(stringSize); // Patch location, unimportant for the same reason as header
+	header_t header = reader.get<header_t>(); // Gives us the packet length
+	version_t version = reader.get<version_t>();
+	string_t subversion = reader.get<string_t>();
 	uint32_t sendIv = reader.get<uint32_t>();
 	uint32_t recvIv = reader.get<uint32_t>();
-	int8_t locale = reader.get<int8_t>();
+	locale_t locale = reader.get<locale_t>();
 
-	if (version != MapleVersion::Version || locale != MapleVersion::Locale) {
+	if (version != MapleVersion::Version || locale != MapleVersion::Locale || subversion != MapleVersion::LoginSubversion) {
 		std::cerr << "ERROR: The server you are connecting to lacks the same MapleStory version." << std::endl;
-		std::cerr << "Expected locale/version: " << static_cast<int16_t>(locale) << "/" << version << std::endl;
-		std::cerr << "Local locale/version: " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << std::endl;
+		std::cerr << "Expected locale/version (subversion): " << static_cast<int16_t>(locale) << "/" << version << " (" << subversion << ")" << std::endl;
+		std::cerr << "Local locale/version (subversion): " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << " (" << MapleVersion::LoginSubversion << ")" << std::endl;
 		disconnect();
 		ExitCodes::exit(ExitCodes::ServerVersionMismatch);
 	}

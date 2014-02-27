@@ -26,16 +26,16 @@ class PacketReader;
 class UserConnection;
 
 struct CharEquip {
-	int32_t id = 0;
-	int16_t slot = 0;
+	item_id_t id = 0;
+	inventory_slot_t slot = 0;
 };
 
 struct Character {
 	int8_t pos = 0;
-	int8_t gender = 0;
-	int8_t skin = 0;
-	uint8_t level = 0;
-	int16_t job = 0;
+	gender_id_t gender = 0;
+	skin_id_t skin = 0;
+	player_level_t level = 0;
+	job_id_t job = 0;
 	int16_t str = 0;
 	int16_t dex = 0;
 	int16_t intt = 0;
@@ -46,14 +46,14 @@ struct Character {
 	int16_t mmp = 0;
 	int16_t ap = 0;
 	int16_t sp = 0;
-	int16_t fame = 0;
-	int32_t map = 0;
-	int32_t eyes = 0;
-	int32_t hair = 0;
-	int32_t exp = 0;
+	fame_t fame = 0;
+	map_id_t map = 0;
+	face_id_t eyes = 0;
+	hair_id_t hair = 0;
+	experience_t exp = 0;
 	int32_t worldRankChange = 0;
 	int32_t jobRankChange = 0;
-	int32_t id = 0;
+	player_id_t id = 0;
 	uint32_t worldRank = 0;
 	uint32_t jobRank = 0;
 	string_t name;
@@ -61,7 +61,7 @@ struct Character {
 };
 
 namespace Characters {
-	auto connectGame(UserConnection *user, int32_t charId) -> void;
+	auto connectGame(UserConnection *user, player_id_t charId) -> void;
 	auto connectGame(UserConnection *user, PacketReader &reader) -> void;
 	auto connectGameWorldFromViewAllCharacters(UserConnection *user, PacketReader &reader) -> void;
 	auto checkCharacterName(UserConnection *user, PacketReader &reader) -> void;
@@ -70,9 +70,9 @@ namespace Characters {
 	auto showAllCharacters(UserConnection *user) -> void;
 	auto showCharacters(UserConnection *user) -> void;
 	auto loadCharacter(Character &charc, const soci::row &row) -> void;
-	auto loadEquips(int32_t id, vector_t<CharEquip> &vec) -> void;
-	auto createItem(int32_t itemId, UserConnection *user, int32_t charId, int32_t slot, int16_t amount = 1) -> void;
-	auto ownerCheck(UserConnection *user, int32_t id) -> bool;
+	auto loadEquips(player_id_t id, vector_t<CharEquip> &vec) -> void;
+	auto createItem(item_id_t itemId, UserConnection *user, player_id_t charId, inventory_slot_t slot, slot_qty_t amount = 1) -> void;
+	auto ownerCheck(UserConnection *user, player_id_t id) -> bool;
 	auto nameTaken(const string_t &name) -> bool;
 	auto nameInvalid(const string_t &name) -> bool;
 }

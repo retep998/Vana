@@ -31,5 +31,5 @@ namespace EffectPacket {
 	PACKET(playPortalSoundEffect);
 	PACKET(sendFieldSound, const string_t &sound);
 	PACKET(sendMinigameSound, const string_t &sound);
-	SPLIT_PACKET(sendMobItemBuffEffect, int32_t playerId, int32_t itemId);
+	SPLIT_PACKET(sendMobItemBuffEffect, player_id_t playerId, item_id_t itemId);
 }

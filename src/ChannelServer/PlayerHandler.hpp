@@ -36,6 +36,7 @@ namespace PlayerHandler {
 	auto handleMonsterBook(Player *player, PacketReader &reader) -> void;
 	auto handleAdminMessenger(Player *player, PacketReader &reader) -> void;
 
+	auto useBombSkill(Player *player, PacketReader &reader) -> void;
 	auto useMeleeAttack(Player *player, PacketReader &reader) -> void;
 	auto useRangedAttack(Player *player, PacketReader &reader) -> void;
 	auto useSpellAttack(Player *player, PacketReader &reader) -> void;

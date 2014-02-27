@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSummons.hpp"
+#include "Algorithm.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Map.hpp"
@@ -29,76 +30,84 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 auto PlayerSummons::addSummon(Summon *summon, int32_t time) -> void {
-	bool puppet = GameLogicUtilities::isPuppet(summon->getSummonId());
-	if (!puppet) {
-		m_summon = summon;
-	}
-	else {
-		m_puppet = summon;
-	}
-	Timer::Id id(Timer::Types::BuffTimer, summon->getSummonId(), 0);
-	Timer::Timer::create([this, puppet](const time_point_t &now) { SummonHandler::removeSummon(m_player, puppet, false, SummonMessages::OutOfTime, true); },
+	summon_id_t summonId = summon->getId();
+	Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
+	Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
 		id, m_player->getTimerContainer(), seconds_t(time));
+
+	m_summons.push_back(summon);
 }
 
-auto PlayerSummons::removeSummon(bool puppet, bool fromTimer) -> void {
-	if (!puppet && m_summon != nullptr) {
+auto PlayerSummons::removeSummon(summon_id_t summonId, bool fromTimer) -> void {
+	Summon *summon = getSummon(summonId);
+	if (summon != nullptr) {
 		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
+			Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
 			m_player->getTimerContainer()->removeTimer(id);
 		}
-		delete m_summon;
-		m_summon = nullptr;
-	}
-	else if (m_puppet != nullptr) {
-		if (!fromTimer) {
-			Timer::Id id(Timer::Types::BuffTimer, m_puppet->getSummonId(), 0);
-			m_player->getTimerContainer()->removeTimer(id);
-		}
-		delete m_puppet;
-		m_puppet = nullptr;
+		ext::remove_element(m_summons, summon);
+		delete summon;
 	}
 }
 
-auto PlayerSummons::getSummon(int32_t summonId) -> Summon * {
-	if (m_summon != nullptr && m_summon->getId() == summonId) {
-		return m_summon;
-	}
-	if (m_puppet != nullptr && m_puppet->getId() == summonId) {
-		return m_puppet;
+auto PlayerSummons::getSummon(summon_id_t summonId) -> Summon * {
+	for (auto &summon : m_summons) {
+		if (summon->getId() == summonId) {
+			return summon;
+		}
 	}
 	return nullptr;
 }
 
-auto PlayerSummons::getSummonTimeRemaining() const -> seconds_t {
-	Timer::Id id(Timer::Types::BuffTimer, m_summon->getSummonId(), 0);
+auto PlayerSummons::forEach(function_t<void(Summon *)> func) -> void {
+	auto copy = m_summons;
+	for (auto &summon : copy) {
+		func(summon);
+	}
+}
+
+auto PlayerSummons::changedMap() -> void {
+	auto copy = m_summons;
+	for (auto &summon : copy) {
+		if (summon->getMovementType() == Summon::Static) {
+			SummonHandler::removeSummon(m_player, summon->getId(), false, SummonMessages::None);
+		}
+	}
+}
+
+auto PlayerSummons::getSummonTimeRemaining(summon_id_t summonId) const -> seconds_t {
+	Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
 auto PlayerSummons::getTransferPacket() const -> PacketBuilder {
 	PacketBuilder builder;
-	int32_t summonId = 0;
-	int32_t timeLeft = 0;
-	uint8_t level = 0;
-	if (m_summon != nullptr) {
-		summonId = m_summon->getSummonId();
-		timeLeft = static_cast<int32_t>(getSummonTimeRemaining().count());
-		level = m_summon->getLevel();
+	builder.add<uint8_t>(m_summons.size());
+	if (m_summons.size() > 0) {
+		for (const auto &summon : m_summons) {
+			if (summon->getMovementType() == Summon::Static) {
+				continue;
+			}
+			builder.add<skill_id_t>(summon->getSkillId());
+			builder.add<int32_t>(static_cast<int32_t>(getSummonTimeRemaining(summon->getId()).count()));
+			builder.add<skill_level_t>(summon->getSkillLevel());
+		}
 	}
-	builder.add<int32_t>(summonId);
-	builder.add<int32_t>(timeLeft);
-	builder.add<uint8_t>(level);
 	return builder;
 }
 
 auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
-	int32_t skillId = reader.get<int32_t>();
-	int32_t timeLeft = reader.get<int32_t>();
-	uint8_t level = reader.get<uint8_t>();
-	if (skillId != 0) {
-		Summon *summon = new Summon(SummonHandler::loopId(), skillId, level);
-		summon->setPos(m_player->getPos());
-		addSummon(summon, timeLeft);
-		m_player->sendMap(SummonsPacket::showSummon(m_player->getId(), summon, true));
+	uint8_t size = reader.get<uint8_t>();
+	if (size > 0) {
+		for (uint8_t i = 0; i < size; ++i) {
+			skill_id_t skillId = reader.get<skill_id_t>();
+			int32_t timeLeft = reader.get<int32_t>();
+			skill_level_t level = reader.get<skill_level_t>();
+
+			Summon *summon = new Summon(SummonHandler::loopId(), skillId, level, m_player->isFacingLeft(), m_player->getPos());
+			summon->setPos(m_player->getPos());
+			addSummon(summon, timeLeft);
+			m_player->sendMap(SummonsPacket::showSummon(m_player->getId(), summon, false));
+		}
 	}
 }

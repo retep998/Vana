@@ -26,10 +26,10 @@ class LuaReactor : LuaScriptable {
 	NONCOPYABLE(LuaReactor);
 	NO_DEFAULT_CONSTRUCTOR(LuaReactor);
 public:
-	LuaReactor(const string_t &filename, int32_t playerId, int32_t reactorId, int32_t mapId);
+	LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId);
 private:
-	int32_t m_reactorId = -1;
-	int32_t m_mapId = -1;
+	reactor_id_t m_reactorId = -1;
+	map_id_t m_mapId = -1;
 };
 
 namespace LuaExports {

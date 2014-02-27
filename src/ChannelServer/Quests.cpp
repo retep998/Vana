@@ -37,7 +37,7 @@ namespace QuestOpcodes {
 	};
 }
 
-auto Quests::giveItem(Player *player, int32_t itemId, int16_t amount) -> bool {
+auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount) -> Result {
 	// TODO: Clean it up
 	player->send(QuestsPacket::giveItem(itemId, amount));
 	if (amount > 0) {
@@ -46,31 +46,32 @@ auto Quests::giveItem(Player *player, int32_t itemId, int16_t amount) -> bool {
 	else {
 		if (player->getInventory()->getItemAmount(itemId) < amount) {
 			// Player does not have (enough of) what is being taken
-			return false;
+			return Result::Failure;
 		}
 		Inventory::takeItem(player, itemId, -amount);
 	}
-	return true;
+	return Result::Successful;
 }
 
-auto Quests::giveMesos(Player *player, int32_t amount) -> bool {
+auto Quests::giveMesos(Player *player, mesos_t amount) -> Result {
 	if (amount < 0 && player->getInventory()->getMesos() + amount < 0) {
 		// Do a bit of checking if meso is being taken to see if it's enough
-		return false;
+		return Result::Failure;
 	}
 	player->getInventory()->modifyMesos(amount);
 	player->send(QuestsPacket::giveMesos(amount));
-	return true;
+	return Result::Successful;
 }
 
-auto Quests::giveFame(Player *player, int32_t amount) -> void {
-	player->getStats()->setFame(player->getStats()->getFame() + static_cast<int16_t>(amount));
+auto Quests::giveFame(Player *player, fame_t amount) -> Result {
+	player->getStats()->setFame(player->getStats()->getFame() + amount);
 	player->send(QuestsPacket::giveFame(amount));
+	return Result::Successful;
 }
 
 auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 	int8_t act = reader.get<int8_t>();
-	int16_t questId = reader.get<int16_t>();
+	quest_id_t questId = reader.get<quest_id_t>();
 
 	if (!QuestDataProvider::getInstance().isQuest(questId)) {
 		// Hacking
@@ -91,7 +92,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	int32_t npcId = reader.get<int32_t>();
+	npc_id_t npcId = reader.get<npc_id_t>();
 	if (act != QuestOpcodes::StartQuest && act != QuestOpcodes::StartNpcQuestChat) {
 		if (!player->getQuests()->isQuestActive(questId)) {
 			// Hacking
@@ -105,6 +106,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 		}
 	}
 	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
+	
 	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::getInstance().isValidNpcId(npcId)) {
 		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
 			log << "Player (ID: " << player->getId()
@@ -115,9 +117,10 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 		});
 		return;
 	}
+
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
-			int32_t itemId = reader.get<int32_t>();
+			item_id_t itemId = reader.get<item_id_t>();
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 			if (itemInfo == nullptr) {
 				// Hacking

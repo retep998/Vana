@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.hpp"
 #include <utility>
 
-auto MapDataProvider::getMap(int32_t mapId) -> Map * {
+auto MapDataProvider::getMap(map_id_t mapId) -> Map * {
 	if (m_maps.find(mapId) != std::end(m_maps)) {
 		return m_maps[mapId];
 	}
@@ -36,7 +36,7 @@ auto MapDataProvider::getMap(int32_t mapId) -> Map * {
 	}
 }
 
-auto MapDataProvider::unloadMap(int32_t mapId) -> void {
+auto MapDataProvider::unloadMap(map_id_t mapId) -> void {
 	auto iter = m_maps.find(mapId);
 	if (iter != std::end(m_maps)) {
 		delete iter->second;
@@ -63,10 +63,10 @@ auto MapDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto MapDataProvider::loadMap(int32_t mapId, Map *&map) -> void {
+auto MapDataProvider::loadMap(map_id_t mapId, Map *&map) -> void {
 	owned_lock_t<mutex_t> l(m_loadMutex);
 
-	int32_t checkMap = loadMapData(mapId, map);
+	map_id_t checkMap = loadMapData(mapId, map);
 	if (checkMap != -1) {
 		loadSeats(map, checkMap);
 		loadPortals(map, checkMap);
@@ -76,14 +76,14 @@ auto MapDataProvider::loadMap(int32_t mapId, Map *&map) -> void {
 	}
 }
 
-auto MapDataProvider::loadMapData(int32_t mapId, Map *&map) -> int32_t {
-	int32_t link = 0;
+auto MapDataProvider::loadMapData(map_id_t mapId, Map *&map) -> map_id_t {
+	map_id_t link = 0;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_data") << " WHERE mapid = :map", soci::use(mapId, "map"));
 
 	for (const auto &row : rs) {
 		ref_ptr_t<MapInfo> mapInfo = make_ref_ptr<MapInfo>();
-		link = row.get<int32_t>("link");
+		link = row.get<map_id_t>("link");
 		mapInfo->link = link;
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mapInfo](const string_t &cmp) {
@@ -119,21 +119,21 @@ auto MapDataProvider::loadMapData(int32_t mapId, Map *&map) -> int32_t {
 		});
 
 		mapInfo->continent = getContinent(mapId);
-		mapInfo->rm = row.get<int32_t>("return_map");
-		mapInfo->forcedReturn = row.get<int32_t>("forced_return_map");
+		mapInfo->rm = row.get<map_id_t>("return_map");
+		mapInfo->forcedReturn = row.get<map_id_t>("forced_return_map");
 		mapInfo->spawnRate = row.get<double>("mob_rate");
 		mapInfo->defaultMusic = row.get<string_t>("default_bgm");
-		mapInfo->dimensions = Rect(Pos(row.get<int16_t>("map_ltx"), row.get<int16_t>("map_lty")),
-									Pos(row.get<int16_t>("map_rbx"), row.get<int16_t>("map_rby")));
+		mapInfo->dimensions = Rect(Pos(row.get<coord_t>("map_ltx"), row.get<coord_t>("map_lty")),
+									Pos(row.get<coord_t>("map_rbx"), row.get<coord_t>("map_rby")));
 		mapInfo->shuffleName = row.get<string_t>("shuffle_name");
 		mapInfo->decHp = row.get<uint8_t>("decrease_hp");
 		mapInfo->dps = row.get<uint16_t>("damage_per_second");
 		mapInfo->traction = row.get<double>("default_traction");
 		mapInfo->regenRate = row.get<int8_t>("regen_rate");
-		mapInfo->minLevel = row.get<uint8_t>("min_level_limit");
+		mapInfo->minLevel = row.get<player_level_t>("min_level_limit");
 		mapInfo->timeLimit = row.get<int32_t>("time_limit");
-		mapInfo->protectItem = row.get<int32_t>("protect_item");
-		mapInfo->damagePerSecond = row.get<int32_t>("damage_per_second");
+		mapInfo->protectItem = row.get<item_id_t>("protect_item");
+		mapInfo->damagePerSecond = row.get<damage_t>("damage_per_second");
 		mapInfo->shipKind = row.get<int8_t>("ship_kind");
 
 		map = new Map(mapInfo, mapId);
@@ -146,37 +146,34 @@ auto MapDataProvider::loadMapData(int32_t mapId, Map *&map) -> int32_t {
 	return (link == 0 ? mapId : link);
 }
 
-auto MapDataProvider::loadSeats(Map *map, int32_t link) -> void {
-	SeatInfo chair;
-	int16_t id;
+auto MapDataProvider::loadSeats(Map *map, map_id_t link) -> void {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_seats") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		id = row.get<int16_t>("seatid");
-		chair = SeatInfo();
-		chair.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
+		SeatInfo chair;
+		seat_id_t id = row.get<seat_id_t>("seatid");
+		chair.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
 		chair.id = id;
 
 		map->addSeat(chair);
 	}
 }
 
-auto MapDataProvider::loadPortals(Map *map, int32_t link) -> void {
-	PortalInfo portal;
+auto MapDataProvider::loadPortals(Map *map, map_id_t link) -> void {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_portals") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		portal = PortalInfo();
+		PortalInfo portal;
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&portal](const string_t &cmp) {
 			if (cmp == "only_once") portal.onlyOnce = true;
 		});
 
-		portal.id = row.get<int32_t>("id");
+		portal.id = row.get<portal_id_t>("id");
 		portal.name = row.get<string_t>("label");
-		portal.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
-		portal.toMap = row.get<int32_t>("destination");
+		portal.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
+		portal.toMap = row.get<map_id_t>("destination");
 		portal.toName = row.get<string_t>("destination_label");
 		portal.script = row.get<string_t>("script");
 
@@ -184,7 +181,7 @@ auto MapDataProvider::loadPortals(Map *map, int32_t link) -> void {
 	}
 }
 
-auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
+auto MapDataProvider::loadMapLife(Map *map, map_id_t link) -> void {
 	NpcSpawnInfo npc;
 	MobSpawnInfo spawn;
 	ReactorSpawnInfo reactor;
@@ -201,15 +198,15 @@ auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
 
 		type = row.get<string_t>("life_type");
 		life.id = row.get<int32_t>("lifeid");
-		life.pos = Pos(row.get<int16_t>("x_pos"), row.get<int16_t>("y_pos"));
-		life.foothold = row.get<int16_t>("foothold");
+		life.pos = Pos(row.get<coord_t>("x_pos"), row.get<coord_t>("y_pos"));
+		life.foothold = row.get<foothold_id_t>("foothold");
 		life.time = row.get<int32_t>("respawn_time");
 
 		if (type == "npc") {
 			npc = NpcSpawnInfo();
 			npc.setSpawnInfo(life);
-			npc.rx0 = row.get<int16_t>("min_click_pos");
-			npc.rx1 = row.get<int16_t>("max_click_pos");
+			npc.rx0 = row.get<coord_t>("min_click_pos");
+			npc.rx1 = row.get<coord_t>("max_click_pos");
 			map->addNpc(npc);
 		}
 		else if (type == "mob") {
@@ -226,23 +223,22 @@ auto MapDataProvider::loadMapLife(Map *map, int32_t link) -> void {
 	}
 }
 
-auto MapDataProvider::loadFootholds(Map *map, int32_t link) -> void {
-	FootholdInfo foot;
+auto MapDataProvider::loadFootholds(Map *map, map_id_t link) -> void {
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("map_footholds") << " WHERE mapid = :map", soci::use(link, "map"));
 
 	for (const auto &row : rs) {
-		foot = FootholdInfo();
+		FootholdInfo foot;
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&foot](const string_t &cmp) {
 			if (cmp == "forbid_downward_jump") foot.forbidJumpDown = true;
 		});
 
-		foot.id = row.get<int32_t>("id");
-		foot.line = Line(Pos(row.get<int16_t>("x1"), row.get<int16_t>("y1")),
-							Pos(row.get<int16_t>("x2"), row.get<int16_t>("y2")));
+		foot.id = row.get<foothold_id_t>("id");
+		foot.line = Line(Pos(row.get<coord_t>("x1"), row.get<coord_t>("y1")),
+							Pos(row.get<coord_t>("x2"), row.get<coord_t>("y2")));
 		foot.dragForce = row.get<int16_t>("drag_force");
-		foot.leftEdge = row.get<int16_t>("previousid") == 0;
-		foot.rightEdge = row.get<int16_t>("nextid") == 0;
+		foot.leftEdge = row.get<foothold_id_t>("previousid") == 0;
+		foot.rightEdge = row.get<foothold_id_t>("nextid") == 0;
 		map->addFoothold(foot);
 	}
 }
@@ -253,14 +249,14 @@ auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
 	for (const auto &row : rs) {
 		ref_ptr_t<TimeMob> info = make_ref_ptr<TimeMob>();
 
-		info->id = row.get<int32_t>("mobid");
+		info->id = row.get<mob_id_t>("mobid");
 		info->startHour = row.get<int8_t>("start_hour");
 		info->endHour = row.get<int8_t>("end_hour");
 		info->message = row.get<string_t>("message");
 	}
 }
 
-auto MapDataProvider::getContinent(int32_t mapId) -> int8_t {
+auto MapDataProvider::getContinent(map_id_t mapId) -> int8_t {
 	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
 	if (m_continents.find(cluster) == std::end(m_continents)) {
 		std::cerr << "Attempted to get a continent ID that does not exist for map ID " << mapId << std::endl;

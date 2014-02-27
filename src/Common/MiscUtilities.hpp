@@ -33,8 +33,8 @@ namespace MiscUtilities {
 	auto generateSalt(size_t length) -> string_t;
 
 	template <class TElement>
-	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> MiscUtilities::optional<TElement> {
-		MiscUtilities::optional<TElement> ret;
+	auto getOptional(const TElement &testVal, NullableMode mode, init_list_t<TElement> nullableVals) -> optional_t<TElement> {
+		optional_t<TElement> ret;
 		if (mode == NullableMode::NullIfFound) {
 			bool found = false;
 			for (const auto &nullableVal : nullableVals) {

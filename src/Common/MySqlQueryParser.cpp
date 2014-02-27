@@ -51,7 +51,7 @@ auto MySqlQueryParser::parseQueries(const string_t &filename) -> vector_t<string
 		for (const auto &token : tokens) {
 			string_t q = token;
 			q = StringUtilities::trim(q);
-			if (q.size() > 0) {
+			if (!q.empty()) {
 				queries.push_back(q);
 			}
 		}

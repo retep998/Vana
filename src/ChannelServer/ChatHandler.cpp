@@ -36,7 +36,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	string_t message = reader.get<string_t>();
 	bool bubbleOnly = reader.get<bool>(); // Skill macros only display chat bubbles
 
-	if (!ChatHandler::handleCommand(player, message)) {
+	if (ChatHandler::handleCommand(player, message) == HandleResult::Unhandled) {
 		if (player->isGmChat()) {
 			PlayerDataProvider::getInstance().handleGmChat(player, message);
 			return;
@@ -46,12 +46,12 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool {
+auto ChatHandler::handleCommand(Player *player, const string_t &message) -> HandleResult {
 	using ChatHandlerFunctions::sCommandList;
 
 	if (player->isAdmin() && message[0] == '/') {
 		// Prevent command printing for Admins
-		return true;
+		return HandleResult::Handled;
 	}
 
 	if (player->isGm() && message[0] == '!' && message.size() > 2) {
@@ -67,23 +67,23 @@ auto ChatHandler::handleCommand(Player *player, const string_t &message) -> bool
 			if (player->getGmLevel() < cmd.level) {
 				ChatHandlerFunctions::showError(player, "You are not at a high enough GM level to use the command");
 			}
-			else if (!cmd.command(player, args)) {
+			else if (cmd.command(player, args) == ChatResult::ShowSyntax) {
 				ChatHandlerFunctions::showSyntax(player, command);
 			}
 		}
-		return true;
+		return HandleResult::Handled;
 	}
 
-	return false;
+	return HandleResult::Unhandled;
 }
 
 auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void {
 	int8_t type = reader.get<int8_t>();
 	uint8_t amount = reader.get<uint8_t>();
-	vector_t<int32_t> receivers = reader.get<vector_t<int32_t>>(amount);
+	vector_t<player_id_t> receivers = reader.get<vector_t<player_id_t>>(amount);
 	string_t chat = reader.get<string_t>();
 
-	if (!ChatHandler::handleCommand(player, chat)) {
+	if (ChatHandler::handleCommand(player, chat) == HandleResult::Unhandled) {
 		PlayerDataProvider::getInstance().handleGroupChat(type, player->getId(), receivers, chat);
 	}
 }

@@ -27,12 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include "WorldServerConnectPacket.hpp"
 
-Party::Party(int32_t partyId) :
+Party::Party(party_id_t partyId) :
 	m_partyId(partyId)
 {
 }
 
-auto Party::setLeader(int32_t playerId, bool showPacket) -> void {
+auto Party::setLeader(player_id_t playerId, bool showPacket) -> void {
 	m_leaderId = playerId;
 	if (showPacket) {
 		runFunction([this, playerId](Player *player) {
@@ -63,7 +63,7 @@ auto Party::addMember(Player *player, bool first) -> void {
 	}
 }
 
-auto Party::addMember(int32_t id, const string_t &name, bool first) -> void {
+auto Party::addMember(player_id_t id, const string_t &name, bool first) -> void {
 	m_members[id] = nullptr;
 	if (!first) {
 		Functors::JoinPartyUpdate func = {this, name};
@@ -71,7 +71,7 @@ auto Party::addMember(int32_t id, const string_t &name, bool first) -> void {
 	}
 }
 
-auto Party::setMember(int32_t playerId, Player *player) -> void {
+auto Party::setMember(player_id_t playerId, Player *player) -> void {
 	m_members[playerId] = player;
 }
 
@@ -81,7 +81,7 @@ namespace Functors {
 			target->send(PartyPacket::leaveParty(target->getMapId(), party, playerId, player, kicked));
 		}
 		Party *party;
-		int32_t playerId;
+		player_id_t playerId;
 		string_t player;
 		bool kicked;
 	};
@@ -99,7 +99,7 @@ auto Party::deleteMember(Player *player, bool kicked) -> void {
 	runFunction(func);
 }
 
-auto Party::deleteMember(int32_t id, const string_t &name, bool kicked) -> void {
+auto Party::deleteMember(player_id_t id, const string_t &name, bool kicked) -> void {
 	if (Instance *instance = getInstance()) {
 		instance->removePartyMember(getId(), id);
 	}
@@ -153,15 +153,15 @@ auto Party::runFunction(function_t<void(Player *)> func) -> void {
 	}
 }
 
-auto Party::getAllPlayerIds() -> vector_t<int32_t> {
-	vector_t<int32_t> playerIds;
+auto Party::getAllPlayerIds() -> vector_t<player_id_t> {
+	vector_t<player_id_t> playerIds;
 	for (const auto &kvp : m_members) {
 		playerIds.push_back(kvp.first);
 	}
 	return playerIds;
 }
 
-auto Party::getPartyMembers(int32_t mapId) -> vector_t<Player *> {
+auto Party::getPartyMembers(map_id_t mapId) -> vector_t<Player *> {
 	vector_t<Player *> players;
 	runFunction([&players, &mapId](Player *player) {
 		if (mapId == -1 || player->getMapId() == mapId) {
@@ -187,7 +187,7 @@ auto Party::receiveHpBar(Player *player) -> void {
 	});
 }
 
-auto Party::getMemberCountOnMap(int32_t mapId) -> int8_t {
+auto Party::getMemberCountOnMap(map_id_t mapId) -> int8_t {
 	int8_t count = 0;
 	for (const auto &kvp : m_members) {
 		if (Player *test = kvp.second) {
@@ -199,7 +199,7 @@ auto Party::getMemberCountOnMap(int32_t mapId) -> int8_t {
 	return count;
 }
 
-auto Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) -> bool {
+auto Party::isWithinLevelRange(player_level_t lowBound, player_level_t highBound) -> bool {
 	bool ret = true;
 	for (const auto &kvp : m_members) {
 		if (Player *test = kvp.second) {
@@ -212,7 +212,7 @@ auto Party::isWithinLevelRange(uint8_t lowBound, uint8_t highBound) -> bool {
 	return ret;
 }
 
-auto Party::warpAllMembers(int32_t mapId, const string_t &portalName) -> void {
+auto Party::warpAllMembers(map_id_t mapId, const string_t &portalName) -> void {
 	if (Maps::getMap(mapId)) {
 		PortalInfo *portal = nullptr;
 		if (portalName != "") {
@@ -226,9 +226,9 @@ auto Party::warpAllMembers(int32_t mapId, const string_t &portalName) -> void {
 	}
 }
 
-auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<int16_t>> &footholds) -> bool {
+auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_id_t>> &footholds) -> Result {
 	// Determines if the players are properly arranged (i.e. 5 people on 5 barrels in Kerning PQ)
-	bool winner = true;
+	Result winner = Result::Successful;
 	int8_t membersOnFootholds = 0;
 	hash_set_t<size_t> footholdGroupsUsed;
 
@@ -239,7 +239,7 @@ auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<int16_t>>
 				for (const auto &foothold : groupFootholds) {
 					if (test->getFoothold() == foothold) {
 						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
-							winner = false;
+							winner = Result::Failure;
 						}
 						else {
 							footholdGroupsUsed.insert(group);
@@ -249,34 +249,34 @@ auto Party::checkFootholds(int8_t memberCount, const vector_t<vector_t<int16_t>>
 					}
 				}
 			}
-			if (!winner) {
+			if (winner == Result::Failure) {
 				break;
 			}
 		}
-		if (!winner) {
+		if (winner == Result::Failure) {
 			break;
 		}
 	}
-	if (winner && membersOnFootholds != memberCount) {
+	if (winner == Result::Successful && membersOnFootholds != memberCount) {
 		// Not all the foothold groups were indexed
-		winner = false;
+		winner = Result::Failure;
 	}
 	return winner;
 }
 
-auto Party::verifyFootholds(const vector_t<vector_t<int16_t>> &footholds) -> bool {
+auto Party::verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) -> Result {
 	// Determines if the players match your selected footholds
-	bool winner = true;
+	Result winner = Result::Successful;
 	hash_set_t<size_t> footholdGroupsUsed;
 
 	for (size_t group = 0; group < footholds.size(); group++) {
-		const vector_t<int16_t> &groupFootholds = footholds[group];
+		const auto &groupFootholds = footholds[group];
 		for (const auto &kvp : m_members) {
 			if (Player *test = kvp.second) {
 				for (const auto &foothold : groupFootholds) {
 					if (test->getFoothold() == foothold) {
 						if (footholdGroupsUsed.find(group) != std::end(footholdGroupsUsed)) {
-							winner = false;
+							winner = Result::Failure;
 						}
 						else {
 							footholdGroupsUsed.insert(group);
@@ -284,17 +284,17 @@ auto Party::verifyFootholds(const vector_t<vector_t<int16_t>> &footholds) -> boo
 						break;
 					}
 				}
-				if (!winner) {
+				if (winner == Result::Failure) {
 					break;
 				}
 			}
 		}
-		if (!winner) {
+		if (winner == Result::Failure) {
 			break;
 		}
 	}
-	if (winner) {
-		winner = footholdGroupsUsed.size() == footholds.size();
+	if (winner == Result::Successful) {
+		winner = footholdGroupsUsed.size() == footholds.size() ? Result::Successful : Result::Failure;
 	}
 	return winner;
 }

@@ -39,7 +39,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 
 	builder
 		.add<header_t>(SMSG_MAP_PLAYER_SPAWN)
-		.add<int32_t>(player->getId())
+		.add<player_id_t>(player->getId())
 		.add<string_t>(player->getName())
 		.add<string_t>("") // Guild
 		.add<int16_t>(0) // Guild icon garbage
@@ -84,7 +84,7 @@ PACKET_IMPL(playerPacket, Player *player) {
 								builder.add<int8_t>(player->getActiveBuffs()->getCombo() + 1);
 							}
 							if (kvp.first == 0x40) {
-								builder.add<int32_t>(player->getActiveBuffs()->getCharge());
+								builder.add<skill_id_t>(player->getActiveBuffs()->getCharge());
 							}
 						}
 						else if (cbyte == Byte5) {
@@ -99,62 +99,63 @@ PACKET_IMPL(playerPacket, Player *player) {
 		}
 	}
 
+	int32_t unk = 1065638850;
 	builder
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int16_t>(0)
-		.add<int32_t>(1065638850) // Unknown
+		.add<int32_t>(unk)
 		.add<int16_t>(0)
 		.add<int8_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(1065638850)
+		.add<int32_t>(unk)
 		.add<int16_t>(0)
 		.add<int8_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(1065638850)
+		.add<int32_t>(unk)
 		.add<int16_t>(0)
 		.add<int8_t>(0)
-		.add<int32_t>(enter.mountId) // No point to having an if, these are 0 when not in use
-		.add<int32_t>(enter.mountSkill)
-		.add<int32_t>(1065638850)
+		.add<item_id_t>(enter.mountId) // No point to having an if, these are 0 when not in use
+		.add<skill_id_t>(enter.mountSkill)
+		.add<int32_t>(unk)
 		.add<int8_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(1065638850)
+		.add<int32_t>(unk)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(1065638850)
+		.add<int32_t>(unk)
 		.add<int8_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<int32_t>(1065638850)
+		.add<int32_t>(unk)
 		.add<int16_t>(0)
 		.add<int8_t>(0)
-		.add<int16_t>(player->getStats()->getJob())
+		.add<job_id_t>(player->getStats()->getJob())
 		.addBuffer(PlayerPacketHelper::addPlayerDisplay(player))
 		.add<int32_t>(0)
-		.add<int32_t>(player->getItemEffect())
-		.add<int32_t>(player->getChair())
+		.add<item_id_t>(player->getItemEffect())
+		.add<item_id_t>(player->getChair())
 		.add<Pos>(player->getPos())
 		.add<int8_t>(player->getStance())
-		.add<int16_t>(player->getFoothold())
+		.add<foothold_id_t>(player->getFoothold())
 		.add<int8_t>(0);
 
 	for (int8_t i = 0; i < Inventories::MaxPetCount; i++) {
 		if (Pet *pet = player->getPets()->getSummoned(i)) {
 			builder
 				.add<int8_t>(1)
-				.add<int32_t>(pet->getItemId())
+				.add<item_id_t>(pet->getItemId())
 				.add<string_t>(pet->getName())
-				.add<int64_t>(pet->getId())
+				.add<pet_id_t>(pet->getId())
 				.add<Pos>(pet->getPos())
 				.add<int8_t>(pet->getStance())
-				.add<int16_t>(pet->getFoothold())
+				.add<foothold_id_t>(pet->getFoothold())
 				.add<bool>(pet->hasNameTag())
 				.add<bool>(pet->hasQuoteItem());
 		}
@@ -179,11 +180,11 @@ PACKET_IMPL(playerPacket, Player *player) {
 	return builder;
 }
 
-PACKET_IMPL(removePlayer, int32_t playerId) {
+PACKET_IMPL(removePlayer, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MAP_PLAYER_DESPAWN)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
@@ -205,10 +206,10 @@ PACKET_IMPL(changeMap, Player *player) {
 	}
 
 	builder
-		.add<int32_t>(player->getMapId())
+		.add<map_id_t>(player->getMapId())
 		.add<int8_t>(player->getMapPos())
 		.add<int16_t>(player->getStats()->getHp())
-		.add<int8_t>(0x00)
+		.add<int8_t>(0)
 		.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;
 }
@@ -265,11 +266,11 @@ PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MIST_SPAWN)
-		.add<int32_t>(mist->getId())
+		.add<mist_id_t>(mist->getId())
 		.add<int32_t>(mist->isMobMist() ? 0 : mist->isPoison() ? 1 : 2)
 		.add<int32_t>(mist->getOwnerId())
-		.add<int32_t>(mist->getSkillId())
-		.add<uint8_t>(mist->getSkillLevel())
+		.add<skill_id_t>(mist->getSkillId())
+		.add<skill_level_t>(mist->getSkillLevel())
 		.add<int16_t>(mapEntry ? 0 : mist->getDelay())
 		.add<WidePos>(WidePos(mist->getArea().leftTop()))
 		.add<WidePos>(WidePos(mist->getArea().rightBottom()))
@@ -277,29 +278,29 @@ PACKET_IMPL(spawnMist, Mist *mist, bool mapEntry) {
 	return builder;
 }
 
-PACKET_IMPL(removeMist, int32_t id) {
+PACKET_IMPL(removeMist, map_object_t id) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MIST_DESPAWN)
-		.add<int32_t>(id);
+		.add<map_object_t>(id);
 	return builder;
 }
 
-PACKET_IMPL(instantWarp, int8_t portalId) {
+PACKET_IMPL(instantWarp, portal_id_t portalId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MAP_TELEPORT)
 		.add<int8_t>(0x01)
-		.add<int8_t>(portalId);
+		.add<portal_id_t>(portalId);
 	return builder;
 }
 
-PACKET_IMPL(changeWeather, bool adminWeather, int32_t itemId, const string_t &message) {
+PACKET_IMPL(changeWeather, bool adminWeather, item_id_t itemId, const string_t &message) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MAP_WEATHER_EFFECT)
 		.add<bool>(adminWeather)
-		.add<int32_t>(itemId);
+		.add<item_id_t>(itemId);
 
 	if (itemId != 0 && !adminWeather) {
 		// Admin weathers doesn't have a message

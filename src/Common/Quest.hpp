@@ -33,7 +33,7 @@ struct QuestRewardInfo {
 	bool isSkill = false;
 	bool isBuff = false;
 	bool masterLevelOnly = false;
-	int8_t gender = 0;
+	gender_id_t gender = 0;
 	int16_t count = 0;
 	int16_t masterLevel = 0;
 	int32_t prop = 0;
@@ -42,7 +42,7 @@ struct QuestRewardInfo {
 
 struct QuestRewardsInfo {
 	vector_t<QuestRewardInfo> universal;
-	hash_map_t<int16_t, vector_t<QuestRewardInfo>> job;
+	hash_map_t<job_id_t, vector_t<QuestRewardInfo>> job;
 };
 
 struct QuestRequestInfo {
@@ -66,20 +66,20 @@ struct QuestState {
 
 class Quest {
 public:
-	auto getNextQuest() const -> uint16_t;
-	auto getQuestId() const -> uint16_t;
+	auto getNextQuest() const -> quest_id_t;
+	auto getQuestId() const -> quest_id_t;
 	auto forEachRequest(bool start, function_t<IterationResult (const QuestRequestInfo &)> func) const -> CompletionResult;
-	auto forEachReward(bool start, int16_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult;
+	auto forEachReward(bool start, job_id_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult;
 private:
 	friend class QuestDataProvider;
 
-	auto setNextQuest(uint16_t questId) -> void;
-	auto setQuestId(uint16_t questId) -> void;
-	auto addReward(bool start, const QuestRewardInfo &info, int16_t job = -1) -> void;
+	auto setNextQuest(quest_id_t questId) -> void;
+	auto setQuestId(quest_id_t questId) -> void;
+	auto addReward(bool start, const QuestRewardInfo &info, job_id_t job = -1) -> void;
 	auto addRequest(bool start, const QuestRequestInfo &info) -> void;
 
 	QuestState m_beginState;
 	QuestState m_endState;
-	uint16_t m_nextQuest = 0;
-	uint16_t m_id = 0;
+	quest_id_t m_nextQuest = 0;
+	quest_id_t m_id = 0;
 };

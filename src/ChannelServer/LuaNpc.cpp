@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StoragePacket.hpp"
 #include <vector>
 
-LuaNpc::LuaNpc(const string_t &filename, int32_t playerId) :
+LuaNpc::LuaNpc(const string_t &filename, player_id_t playerId) :
 	LuaScriptable(filename, playerId, true)
 {
 	setNpcEnvironmentVariables();
@@ -62,6 +62,10 @@ auto LuaNpc::setNpcEnvironmentVariables() -> void {
 
 	set<int32_t>("answer_accept", 1);
 	set<int32_t>("answer_decline", 0);
+
+	set<int32_t>("quiz_npc", 0);
+	set<int32_t>("quiz_mob", 1);
+	set<int32_t>("quiz_item", 2);
 }
 
 auto LuaNpc::handleThreadCompletion() -> void {
@@ -114,7 +118,7 @@ auto LuaExports::getNpcId(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::npcRunNpc(lua_State *luaVm) -> int {
-	int32_t npcId = lua_tointeger(luaVm, 1);
+	npc_id_t npcId = lua_tointeger(luaVm, 1);
 	string_t script;
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
@@ -240,13 +244,13 @@ auto LuaExports::askQuestion(lua_State *luaVm) -> int {
 
 // Quest
 auto LuaExports::addQuest(lua_State *luaVm) -> int {
-	int16_t questId = lua_tointeger(luaVm, -1);
+	quest_id_t questId = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->addQuest(questId, getNpc(luaVm)->getNpcId());
 	return 0;
 }
 
 auto LuaExports::endQuest(lua_State *luaVm) -> int {
-	int16_t questId = lua_tointeger(luaVm, -1);
+	quest_id_t questId = lua_tointeger(luaVm, -1);
 	getPlayer(luaVm)->getQuests()->finishQuest(questId, getNpc(luaVm)->getNpcId());
 	return 0;
 }

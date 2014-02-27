@@ -54,7 +54,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-Map::Map(ref_ptr_t<MapInfo> info, int32_t id) :
+Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 	m_info(info),
 	m_id(id),
 	m_objectIds(1000),
@@ -78,23 +78,23 @@ auto Map::setMusic(const string_t &musicName) -> void {
 	send(EffectPacket::playMusic(m_music));
 }
 
-auto Map::setMobSpawning(int32_t spawn) -> void {
+auto Map::setMobSpawning(mob_id_t spawn) -> void {
 	m_spawnMobs = spawn;
 }
 
-auto Map::makeNpcId(uint32_t receivedId) -> uint32_t {
+auto Map::makeNpcId(map_object_t receivedId) -> size_t {
 	return receivedId - NpcStart;
 }
 
-auto Map::makeNpcId() -> uint32_t {
+auto Map::makeNpcId() -> map_object_t {
 	return m_npcSpawns.size() - 1 + NpcStart;
 }
 
-auto Map::makeReactorId(uint32_t receivedId) -> uint32_t {
+auto Map::makeReactorId(map_object_t receivedId) -> size_t {
 	return receivedId - ReactorStart;
 }
 
-auto Map::makeReactorId() -> uint32_t {
+auto Map::makeReactorId() -> map_object_t {
 	return m_reactorSpawns.size() - 1 + ReactorStart;
 }
 
@@ -173,10 +173,10 @@ auto Map::addPlayer(Player *player) -> void {
 
 auto Map::checkPlayerEquip(Player *player) -> void {
 	if (!player->hasGmBenefits()) {
-		int32_t dps = m_info->damagePerSecond;
+		damage_t dps = m_info->damagePerSecond;
 		if (dps > 0) {
-			int32_t protectItem = m_info->protectItem;
-			int32_t playerId = player->getId();
+			item_id_t protectItem = m_info->protectItem;
+			player_id_t playerId = player->getId();
 			if (protectItem > 0) {
 				if (!player->getInventory()->isEquippedItem(protectItem)) {
 					m_playersWithoutProtectItem[playerId] = player;
@@ -204,7 +204,7 @@ auto Map::getNumPlayers() const -> size_t {
 	return m_players.size();
 }
 
-auto Map::getPlayer(uint32_t index) const -> Player * {
+auto Map::getPlayer(size_t index) const -> Player * {
 	return m_players[index];
 }
 
@@ -219,15 +219,18 @@ auto Map::getPlayerNames() -> string_t {
 }
 
 auto Map::removePlayer(Player *player) -> void {
-	int32_t playerId = player->getId();
+	player_id_t playerId = player->getId();
 	for (size_t i = 0; i < m_players.size(); i++) {
 		if (m_players[i] == player) {
 			m_players.erase(std::begin(m_players) + i);
 			break;
 		}
 	}
-	SummonHandler::removeSummon(player, true, false, SummonMessages::None);
-	SummonHandler::removeSummon(player, false, true, SummonMessages::None);
+
+	player->getSummons()->forEach([player](Summon *summon) {
+		SummonHandler::removeSummon(player, summon->getId(), true, SummonMessages::None);
+	});
+
 	send(MapPacket::removePlayer(player->getId()), player);
 	updateMobControl(player);
 
@@ -264,7 +267,7 @@ auto Map::runFunctionPlayers(function_t<void(Player *)> successFunc) -> void {
 	}
 }
 
-auto Map::buffPlayers(int32_t buffId) -> void {
+auto Map::buffPlayers(item_id_t buffId) -> void {
 	for (const auto &player : m_players) {
 		if (player->getStats()->getHp() > 0) {
 			Inventory::useItem(player, buffId);
@@ -292,7 +295,7 @@ auto Map::gmHideChange(Player *player) -> void {
 
 auto Map::getAllPlayerIds() const -> vector_t<int32_t> {
 	auto copy = m_players;
-	vector_t<int32_t> ret;
+	vector_t<player_id_t> ret;
 	for (const auto &player : copy) {
 		ret.push_back(player->getId());
 	}
@@ -305,7 +308,7 @@ auto Map::addReactor(Reactor *reactor) -> void {
 	reactor->setId(m_reactors.size() - 1 + Map::ReactorStart);
 }
 
-auto Map::getReactor(uint32_t id) const -> Reactor * {
+auto Map::getReactor(size_t id) const -> Reactor * {
 	return id < m_reactors.size() ? m_reactors[id] : nullptr;
 }
 
@@ -313,7 +316,7 @@ auto Map::getNumReactors() const -> size_t {
 	return m_reactors.size();
 }
 
-auto Map::removeReactor(uint32_t id) -> void {
+auto Map::removeReactor(size_t id) -> void {
 	ReactorSpawnInfo &info = m_reactorSpawns[id];
 	if (info.time >= 0) {
 		// We don't want to respawn -1s, leave that to some script
@@ -334,19 +337,19 @@ auto Map::killReactors(bool showPacket) -> void {
 }
 
 // Footholds
-auto Map::findFloor(const Pos &pos, Pos &floorPos, int16_t yMod) -> SearchResult {
+auto Map::findFloor(const Pos &pos, Pos &floorPos, coord_t yMod) -> SearchResult {
 	// Determines where a drop falls using the footholds data
 	// to check the platforms and find the correct one.
-	int16_t x = pos.x;
-	int16_t y = pos.y + yMod;
-	int16_t closestValue = std::numeric_limits<int16_t>::max();
+	coord_t x = pos.x;
+	coord_t y = pos.y + yMod;
+	coord_t closestValue = std::numeric_limits<coord_t>::max();
 	bool anyFound = false;
 
 	for (const auto &foothold : m_footholds) {
 		const Line &line = foothold.line;
 
 		if (line.withinRangeX(x)) {
-			int16_t yInterpolation = line.interpolateForY(x);
+			coord_t yInterpolation = line.interpolateForY(x);
 			if (yInterpolation <= closestValue && yInterpolation >= y) {
 				closestValue = yInterpolation;
 				anyFound = true;
@@ -366,16 +369,16 @@ auto Map::findRandomFloorPos() -> Pos {
 	Pos rightBottom = m_info->dimensions.rightBottom();
 	Pos leftTop = m_info->dimensions.leftTop();
 	if (leftTop.x == 0) {
-		leftTop.x = std::numeric_limits<int16_t>::min();
+		leftTop.x = std::numeric_limits<coord_t>::min();
 	}
 	if (leftTop.y == 0) {
-		leftTop.y = std::numeric_limits<int16_t>::max();
+		leftTop.y = std::numeric_limits<coord_t>::max();
 	}
 	if (rightBottom.x == 0) {
-		rightBottom.x = std::numeric_limits<int16_t>::max();
+		rightBottom.x = std::numeric_limits<coord_t>::max();
 	}
 	if (rightBottom.y == 0) {
-		rightBottom.y = std::numeric_limits<int16_t>::min();
+		rightBottom.y = std::numeric_limits<coord_t>::min();
 	}
 	return findRandomFloorPos(Rect(leftTop, rightBottom));
 }
@@ -390,8 +393,8 @@ auto Map::findRandomFloorPos(const Rect &area) -> Pos {
 
 	Pos leftTop = area.leftTop();
 	Pos rightBottom = area.rightBottom();
-	auto xGenerate = [&rightBottom, &leftTop]() -> int16_t { return Randomizer::rand<int16_t>(rightBottom.x, leftTop.x); };
-	auto yGenerate = [&rightBottom, &leftTop]() -> int16_t { return Randomizer::rand<int16_t>(rightBottom.y, leftTop.y); };
+	auto xGenerate = [&rightBottom, &leftTop]() -> coord_t { return Randomizer::rand<coord_t>(rightBottom.x, leftTop.x); };
+	auto yGenerate = [&rightBottom, &leftTop]() -> coord_t { return Randomizer::rand<coord_t>(rightBottom.y, leftTop.y); };
 
 	Pos ret;
 	if (validFootholds.size() == 0) {
@@ -402,14 +405,14 @@ auto Map::findRandomFloorPos(const Rect &area) -> Pos {
 	}
 
 	do {
-		int16_t x = xGenerate();
-		int16_t y = yGenerate();
+		coord_t x = xGenerate();
+		coord_t y = yGenerate();
 		bool anyFound = false;
-		int16_t closestValue = std::numeric_limits<int16_t>::max();
+		coord_t closestValue = std::numeric_limits<coord_t>::max();
 
 		for (const auto &foothold : validFootholds) {
 			if (foothold->line.withinRangeX(x)) {
-				int16_t yInterpolation = foothold->line.interpolateForY(x);
+				coord_t yInterpolation = foothold->line.interpolateForY(x);
 				if (yInterpolation <= closestValue && yInterpolation >= y) {
 					closestValue = yInterpolation;
 					anyFound = true;
@@ -427,10 +430,10 @@ auto Map::findRandomFloorPos(const Rect &area) -> Pos {
 	return ret;
 }
 
-auto Map::getFhAtPosition(const Pos &pos) -> int16_t {
+auto Map::getFhAtPosition(const Pos &pos) -> foothold_id_t {
 	// TODO FIXME
 	// Consider refactoring
-	int16_t foothold = 0;
+	foothold_id_t foothold = 0;
 	for (const auto &cur : m_footholds) {
 		if (cur.line.contains(pos)) {
 			foothold = cur.id;
@@ -446,13 +449,13 @@ auto Map::getPortal(const string_t &name) -> PortalInfo * {
 	return portal != std::end(m_portals) ? &portal->second : nullptr;
 }
 
-auto Map::getSpawnPoint(int8_t portalId) -> PortalInfo * {
-	int8_t id = portalId != -1 ? portalId : Randomizer::rand<int8_t>(m_spawnPoints.size() - 1);
+auto Map::getSpawnPoint(portal_id_t portalId) -> PortalInfo * {
+	portal_id_t id = portalId != -1 ? portalId : Randomizer::rand<portal_id_t>(m_spawnPoints.size() - 1);
 	return &m_spawnPoints[id];
 }
 
 auto Map::getNearestSpawnPoint(const Pos &pos) -> PortalInfo * {
-	int8_t id = -1;
+	portal_id_t id = -1;
 	int32_t distance = 200000;
 	for (const auto &kvp : m_spawnPoints) {
 		const PortalInfo &info = kvp.second;
@@ -474,19 +477,19 @@ auto Map::getPortalNames() const -> vector_t<string_t> {
 }
 
 // NPCs
-auto Map::removeNpc(uint32_t index) -> void {
+auto Map::removeNpc(size_t index) -> void {
 	if (isValidNpcIndex(index)) {
 		NpcSpawnInfo npc = m_npcSpawns[index];
-		uint32_t id = makeNpcId();
+		map_object_t id = makeNpcId();
 		send(NpcPacket::showNpc(npc, id, false));
 		send(NpcPacket::controlNpc(npc, id, false));
 		m_npcSpawns.erase(std::begin(m_npcSpawns) + index);
 	}
 }
 
-auto Map::addNpc(const NpcSpawnInfo &npc) -> int32_t {
+auto Map::addNpc(const NpcSpawnInfo &npc) -> map_object_t {
 	m_npcSpawns.push_back(npc);
-	uint32_t id = makeNpcId();
+	map_object_t id = makeNpcId();
 	send(NpcPacket::showNpc(npc, id));
 	send(NpcPacket::controlNpc(npc, id));
 
@@ -497,17 +500,17 @@ auto Map::addNpc(const NpcSpawnInfo &npc) -> int32_t {
 	return m_npcSpawns.size() - 1;
 }
 
-auto Map::isValidNpcIndex(uint32_t id) const -> bool {
+auto Map::isValidNpcIndex(size_t id) const -> bool {
 	return id < m_npcSpawns.size();
 }
 
-auto Map::getNpc(uint32_t id) const -> NpcSpawnInfo {
+auto Map::getNpc(size_t id) const -> NpcSpawnInfo {
 	return m_npcSpawns[id];
 }
 
 // Mobs
-auto Map::spawnMob(int32_t mobId, const Pos &pos, int16_t foothold, ref_ptr_t<Mob> owner, int8_t summonEffect) -> ref_ptr_t<Mob> {
-	int32_t id = getObjectId();
+auto Map::spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold, ref_ptr_t<Mob> owner, int8_t summonEffect) -> ref_ptr_t<Mob> {
+	map_object_t id = getObjectId();
 
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, summonEffect != 0 ? owner : nullptr, pos, -1, false, foothold, MobControlStatus::Normal);
 	if (summonEffect != 0) {
@@ -526,7 +529,7 @@ auto Map::spawnMob(int32_t mobId, const Pos &pos, int16_t foothold, ref_ptr_t<Mo
 }
 
 auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> {
-	int32_t id = getObjectId();
+	map_object_t id = getObjectId();
 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), info.id, noOwner, info.pos, spawnId, info.facesLeft, info.foothold, MobControlStatus::Normal);
@@ -541,8 +544,8 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	return mob;
 }
 
-auto Map::spawnShell(int32_t mobId, const Pos &pos, int16_t foothold) -> ref_ptr_t<Mob> {
-	int32_t id = getObjectId();
+auto Map::spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> ref_ptr_t<Mob> {
+	map_object_t id = getObjectId();
 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, noOwner, pos, -1, false, foothold, MobControlStatus::None);
@@ -556,7 +559,7 @@ auto Map::spawnShell(int32_t mobId, const Pos &pos, int16_t foothold) -> ref_ptr
 	return mob;
 }
 
-auto Map::getMob(int32_t mapMobId) -> ref_ptr_t<Mob> {
+auto Map::getMob(map_object_t mapMobId) -> ref_ptr_t<Mob> {
 	auto kvp = m_mobs.find(mapMobId);
 	return kvp != std::end(m_mobs) ? kvp->second : nullptr;
 }
@@ -607,8 +610,8 @@ auto Map::findController(ref_ptr_t<Mob> mob) -> Player * {
 auto Map::mobDeath(ref_ptr_t<Mob> mob, bool fromExplosion) -> void {
 	auto kvp = m_mobs.find(mob->getMapMobId());
 	if (kvp != std::end(m_mobs)) {
-		int32_t mapMobId = kvp->first;
-		int32_t mobId = mob->getMobId();
+		map_object_t mapMobId = kvp->first;
+		mob_id_t mobId = mob->getMobId();
 		if (Instance *instance = getInstance()) {
 			instance->mobDeath(mobId, mapMobId, m_id);
 		}
@@ -730,7 +733,7 @@ auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const
 	}
 }
 
-auto Map::killMobs(Player *player, int32_t mobId) -> int32_t {
+auto Map::killMobs(Player *player, mob_id_t mobId) -> int32_t {
 	// Iterator invalidation
 	auto mobMap = m_mobs;
 	int32_t mobsKilled = 0;
@@ -748,7 +751,7 @@ auto Map::killMobs(Player *player, int32_t mobId) -> int32_t {
 	return mobsKilled;
 }
 
-auto Map::countMobs(int32_t mobId) -> int32_t {
+auto Map::countMobs(mob_id_t mobId) -> int32_t {
 	// Iterator invalidation
 	auto mobMap = m_mobs;
 	int32_t mobCount = 0;
@@ -786,10 +789,10 @@ auto Map::statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> 
 	}
 }
 
-auto Map::spawnZakum(const Pos &pos, int16_t foothold) -> void {
+auto Map::spawnZakum(const Pos &pos, foothold_id_t foothold) -> void {
 	auto body = spawnShell(Mobs::ZakumBody1, pos, foothold);
 
-	init_list_t<int32_t> parts = {
+	init_list_t<mob_id_t> parts = {
 		Mobs::ZakumArm1, Mobs::ZakumArm2, Mobs::ZakumArm3,
 		Mobs::ZakumArm4, Mobs::ZakumArm5, Mobs::ZakumArm6,
 		Mobs::ZakumArm7, Mobs::ZakumArm8
@@ -808,11 +811,11 @@ auto Map::convertShellToNormal(ref_ptr_t<Mob> mob) -> void {
 	updateMobControl(mob);
 }
 
-auto Map::addWebbedMob(int32_t mapMobId) -> void {
+auto Map::addWebbedMob(map_object_t mapMobId) -> void {
 	m_webbed[mapMobId] = view_ptr_t<Mob>(m_mobs[mapMobId]);
 }
 
-auto Map::removeWebbedMob(int32_t mapMobId) -> void {
+auto Map::removeWebbedMob(map_object_t mapMobId) -> void {
 	m_webbed.erase(mapMobId);
 }
 
@@ -825,7 +828,7 @@ auto Map::runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void {
 // Drops
 auto Map::addDrop(Drop *drop) -> void {
 	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
-	int32_t id = getObjectId();
+	map_object_t id = getObjectId();
 	drop->setId(id);
 	Pos foundPosition = drop->getPos();
 	findFloor(foundPosition, foundPosition, -100);
@@ -833,7 +836,7 @@ auto Map::addDrop(Drop *drop) -> void {
 	m_drops[id] = drop;
 }
 
-auto Map::removeDrop(int32_t id) -> void {
+auto Map::removeDrop(map_object_t id) -> void {
 	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
 	auto drop = m_drops.find(id);
 	if (drop != std::end(m_drops)) {
@@ -841,7 +844,7 @@ auto Map::removeDrop(int32_t id) -> void {
 	}
 }
 
-auto Map::getDrop(int32_t id) -> Drop * {
+auto Map::getDrop(map_object_t id) -> Drop * {
 	owned_lock_t<recursive_mutex_t> l(m_dropsMutex);
 	auto drop = m_drops.find(id);
 	return drop != std::end(m_drops) ? drop->second : nullptr;
@@ -856,7 +859,7 @@ auto Map::clearDrops(bool showPacket) -> void {
 }
 
 // Seats
-auto Map::seatOccupied(int16_t id) -> bool {
+auto Map::seatOccupied(seat_id_t id) -> bool {
 	auto seat = m_seats.find(id);
 	if (seat == std::end(m_seats)) {
 		// Hacking
@@ -865,7 +868,7 @@ auto Map::seatOccupied(int16_t id) -> bool {
 	return seat->second.occupant != nullptr;
 }
 
-auto Map::playerSeated(int16_t id, Player *player) -> void {
+auto Map::playerSeated(seat_id_t id, Player *player) -> void {
 	auto seat = m_seats.find(id);
 	if (seat == std::end(m_seats)) {
 		// Hacking
@@ -892,7 +895,7 @@ auto Map::addMist(Mist *mist) -> void {
 	send(MapPacket::spawnMist(mist, false));
 }
 
-auto Map::getMist(int32_t id) -> Mist * {
+auto Map::getMist(mist_id_t id) -> Mist * {
 	auto mist = m_mists.find(id);
 	if (mist != std::end(m_mists)) {
 		return mist->second;
@@ -914,7 +917,7 @@ auto Map::removeMist(Mist *mist) -> void {
 }
 
 auto Map::clearMists(bool showPacket) -> void {
-	hash_map_t<int32_t, Mist *> mistlist = m_mists;
+	auto mistlist = m_mists;
 	for (const auto &mist : mistlist) {
 		removeMist(mist.second);
 	}
@@ -1021,7 +1024,7 @@ auto Map::clearDrops(time_point_t time) -> void {
 
 	time -= minutes_t(3); // Drops disappear after 3 minutes
 
-	hash_map_t<int32_t, Drop *> drops = m_drops;
+	hash_map_t<map_object_t, Drop *> drops = m_drops;
 	for (const auto &kvp : drops) {
 		if (Drop *drop = kvp.second) {
 			if (drop->getDroppedAtTime() < time) {
@@ -1054,7 +1057,7 @@ auto Map::mapTick(const time_point_t &now) -> void {
 	if (TimeUtilities::getSecond() % 3 == 0) {
 		checkShadowWeb();
 	}
-	int32_t dps = m_info->damagePerSecond;
+	damage_t dps = m_info->damagePerSecond;
 	if (dps > 0 && m_playersWithoutProtectItem.size() > 0) {
 		for (const auto &kvp : m_playersWithoutProtectItem) {
 			if (Player *player = kvp.second) {
@@ -1131,7 +1134,7 @@ auto Map::showObjects(Player *player) -> void {
 	// NPCs
 	int32_t i = 0;
 	for (const auto &npc : m_npcSpawns) {
-		int32_t id = static_cast<int32_t>(i + Map::NpcStart);
+		map_object_t id = i + Map::NpcStart;
 		player->send(NpcPacket::showNpc(npc, id));
 		player->send(NpcPacket::controlNpc(npc, id));
 		i++;

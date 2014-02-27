@@ -34,12 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacketHelper.hpp"
 #include "TimeUtilities.hpp"
 
-PlayerInventory::PlayerInventory(Player *player, const array_t<uint8_t, Inventories::InventoryCount> &maxSlots, int32_t mesos) :
+PlayerInventory::PlayerInventory(Player *player, const array_t<inventory_slot_count_t, Inventories::InventoryCount> &maxSlots, mesos_t mesos) :
 	m_maxSlots(maxSlots),
 	m_mesos(mesos),
 	m_player(player)
 {
-	array_t<int32_t, 2> init = {0};
+	array_t<item_id_t, 2> init = {0};
 
 	for (size_t i = 0; i < Inventories::EquippedSlots; ++i) {
 		m_equipped[i] = init;
@@ -51,14 +51,14 @@ PlayerInventory::PlayerInventory(Player *player, const array_t<uint8_t, Inventor
 PlayerInventory::~PlayerInventory() {
 	/* TODO FIXME just convert the damn Item * to ref_ptr_t or owned_ptr_t */
 	for (const auto &inv : m_items) {
-		std::for_each(std::begin(inv), std::end(inv), [](pair_t<const int16_t, Item *> p) { delete p.second; });
+		std::for_each(std::begin(inv), std::end(inv), [](pair_t<const inventory_slot_t, Item *> p) { delete p.second; });
 	}
 }
 
 auto PlayerInventory::load() -> void {
 	using namespace soci;
 	session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
+	player_id_t charId = m_player->getId();
 	string_t location = "inventory";
 
 	soci::rowset<> rs = (sql.prepare
@@ -71,7 +71,7 @@ auto PlayerInventory::load() -> void {
 
 	for (const auto &row : rs) {
 		Item *item = new Item(row);
-		addItem(row.get<int8_t>("inv"), row.get<int16_t>("slot"), item, true);
+		addItem(row.get<inventory_t>("inv"), row.get<inventory_slot_t>("slot"), item, true);
 
 		if (item->getPetId() != 0) {
 			Pet *pet = new Pet(m_player, item, row);
@@ -83,7 +83,7 @@ auto PlayerInventory::load() -> void {
 
 	for (const auto &row : rs) {
 		int8_t index = row.get<int8_t>("map_index");
-		int32_t mapId = row.get<int32_t>("map_id");
+		map_id_t mapId = row.get<map_id_t>("map_id");
 
 		if (index >= Inventories::TeleportRockMax) {
 			m_vipLocations.push_back(mapId);
@@ -98,11 +98,11 @@ auto PlayerInventory::load() -> void {
 auto PlayerInventory::save() -> void {
 	using namespace soci;
 	session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
+	player_id_t charId = m_player->getId();
 
 	sql.once << "DELETE FROM " << Database::makeCharTable("teleport_rock_locations") << " WHERE character_id = :char", use(charId, "char");
 	if (m_rockLocations.size() > 0 || m_vipLocations.size() > 0) {
-		int32_t mapId = 0;
+		map_id_t mapId = 0;
 		size_t i = 0;
 
 		statement st = (sql.prepare
@@ -132,7 +132,7 @@ auto PlayerInventory::save() -> void {
 		use(Item::Inventory, "inv");
 
 	vector_t<ItemDbRecord> v;
-	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
+	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		const auto &itemsInv = m_items[i - 1];
 		for (const auto &kvp : itemsInv) {
 			ItemDbRecord rec(kvp.first, charId, m_player->getUserId(), m_player->getWorldId(), Item::Inventory, kvp.second);
@@ -143,17 +143,17 @@ auto PlayerInventory::save() -> void {
 	Item::databaseInsert(sql, v);
 }
 
-auto PlayerInventory::addMaxSlots(int8_t inventory, int8_t rows) -> void {
+auto PlayerInventory::addMaxSlots(inventory_t inventory, inventory_slot_count_t rows) -> void {
 	inventory -= 1;
 
-	uint8_t &inv = m_maxSlots[inventory];
+	inventory_slot_count_t &inv = m_maxSlots[inventory];
 	inv += (rows * 4);
 
 	inv = ext::constrain_range(inv, Inventories::MinSlotsPerInventory, Inventories::MaxSlotsPerInventory);
 	m_player->send(InventoryPacket::updateSlots(inventory + 1, inv));
 }
 
-auto PlayerInventory::setMesos(int32_t mesos, bool sendPacket) -> void {
+auto PlayerInventory::setMesos(mesos_t mesos, bool sendPacket) -> void {
 	if (mesos < 0) {
 		mesos = 0;
 	}
@@ -161,7 +161,7 @@ auto PlayerInventory::setMesos(int32_t mesos, bool sendPacket) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::Mesos, m_mesos, sendPacket));
 }
 
-auto PlayerInventory::modifyMesos(int32_t mod, bool sendPacket) -> bool {
+auto PlayerInventory::modifyMesos(mesos_t mod, bool sendPacket) -> bool {
 	if (mod < 0) {
 		if (-mod > m_mesos) {
 			return false;
@@ -169,7 +169,7 @@ auto PlayerInventory::modifyMesos(int32_t mod, bool sendPacket) -> bool {
 		m_mesos += mod;
 	}
 	else {
-		int32_t mesoTest = m_mesos + mod;
+		mesos_t mesoTest = m_mesos + mod;
 		if (mesoTest < 0) {
 			return false;
 		}
@@ -179,9 +179,9 @@ auto PlayerInventory::modifyMesos(int32_t mod, bool sendPacket) -> bool {
 	return true;
 }
 
-auto PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoading) -> void {
+auto PlayerInventory::addItem(inventory_t inv, inventory_slot_t slot, Item *item, bool isLoading) -> void {
 	m_items[inv - 1][slot] = item;
-	int32_t itemId = item->getId();
+	item_id_t itemId = item->getId();
 	if (m_itemAmounts.find(itemId) != std::end(m_itemAmounts)) {
 		m_itemAmounts[itemId] += item->getAmount();
 	}
@@ -194,7 +194,7 @@ auto PlayerInventory::addItem(int8_t inv, int16_t slot, Item *item, bool isLoadi
 	}
 }
 
-auto PlayerInventory::getItem(int8_t inv, int16_t slot) -> Item * {
+auto PlayerInventory::getItem(inventory_t inv, inventory_slot_t slot) -> Item * {
 	if (!GameLogicUtilities::isValidInventory(inv)) {
 		return nullptr;
 	}
@@ -205,7 +205,7 @@ auto PlayerInventory::getItem(int8_t inv, int16_t slot) -> Item * {
 	return nullptr;
 }
 
-auto PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) -> void {
+auto PlayerInventory::deleteItem(inventory_t inv, inventory_slot_t slot, bool updateAmount) -> void {
 	inv -= 1;
 	if (m_items[inv].find(slot) != std::end(m_items[inv])) {
 		if (updateAmount) {
@@ -221,7 +221,7 @@ auto PlayerInventory::deleteItem(int8_t inv, int16_t slot, bool updateAmount) ->
 	}
 }
 
-auto PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) -> void {
+auto PlayerInventory::setItem(inventory_t inv, inventory_slot_t slot, Item *item) -> void {
 	inv -= 1;
 	if (item == nullptr) {
 		m_items[inv].erase(slot);
@@ -241,8 +241,8 @@ auto PlayerInventory::setItem(int8_t inv, int16_t slot, Item *item) -> void {
 	}
 }
 
-auto PlayerInventory::destroyEquippedItem(int32_t itemId) -> void {
-	int8_t inv = Inventories::EquipInventory;
+auto PlayerInventory::destroyEquippedItem(item_id_t itemId) -> void {
+	inventory_t inv = Inventories::EquipInventory;
 	const auto &equips = m_items[inv - 1];
 	for (const auto &kvp : equips) {
 		if (kvp.first < 0 && kvp.second->getId() == itemId) {
@@ -256,12 +256,12 @@ auto PlayerInventory::destroyEquippedItem(int32_t itemId) -> void {
 	}
 }
 
-auto PlayerInventory::getItemAmountBySlot(int8_t inv, int16_t slot) -> int16_t {
+auto PlayerInventory::getItemAmountBySlot(inventory_t inv, inventory_slot_t slot) -> slot_qty_t {
 	inv -= 1;
 	return (m_items[inv].find(slot) != std::end(m_items[inv]) ? m_items[inv][slot]->getAmount() : 0);
 }
 
-auto PlayerInventory::addEquipped(int16_t slot, int32_t itemId) -> void {
+auto PlayerInventory::addEquipped(inventory_slot_t slot, item_id_t itemId) -> void {
 	if (abs(slot) == EquipSlots::Mount) {
 		m_player->getMounts()->setCurrentMount(itemId);
 	}
@@ -270,7 +270,7 @@ auto PlayerInventory::addEquipped(int16_t slot, int32_t itemId) -> void {
 	m_equipped[GameLogicUtilities::stripCashSlot(slot)][cash] = itemId;
 }
 
-auto PlayerInventory::getEquippedId(int16_t slot, bool cash) -> int32_t {
+auto PlayerInventory::getEquippedId(inventory_slot_t slot, bool cash) -> item_id_t {
 	return m_equipped[slot][(cash ? 1 : 0)];
 }
 
@@ -300,11 +300,11 @@ auto PlayerInventory::addEquippedPacket(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(m_equipped[EquipSlots::Weapon][1]); // Cash weapon
 }
 
-auto PlayerInventory::getItemAmount(int32_t itemId) -> uint16_t {
+auto PlayerInventory::getItemAmount(item_id_t itemId) -> slot_qty_t {
 	return m_itemAmounts.find(itemId) != std::end(m_itemAmounts) ? m_itemAmounts[itemId] : 0;
 }
 
-auto PlayerInventory::isEquippedItem(int32_t itemId) -> bool {
+auto PlayerInventory::isEquippedItem(item_id_t itemId) -> bool {
 	const auto &equips = m_items[Inventories::EquipInventory - 1];
 	bool has = false;
 	for (const auto &kvp : equips) {
@@ -316,16 +316,16 @@ auto PlayerInventory::isEquippedItem(int32_t itemId) -> bool {
 	return has;
 }
 
-auto PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canStack) -> bool {
-	int16_t required = 0;
-	int8_t inv = GameLogicUtilities::getInventory(itemId);
+auto PlayerInventory::hasOpenSlotsFor(item_id_t itemId, slot_qty_t amount, bool canStack) -> bool {
+	slot_qty_t required = 0;
+	inventory_t inv = GameLogicUtilities::getInventory(itemId);
 	if (!GameLogicUtilities::isStackable(itemId)) {
 		required = amount; // These aren't stackable
 	}
 	else {
 		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
-		uint16_t maxSlot = itemInfo->maxSlot;
-		uint16_t existing = getItemAmount(itemId) % maxSlot;
+		slot_qty_t maxSlot = itemInfo->maxSlot;
+		slot_qty_t existing = getItemAmount(itemId) % maxSlot;
 		// Bug in global:
 		// It doesn't matter if you already have a slot with a partial stack or not, non-shops require at least 1 empty slot
 		if (canStack && existing > 0) {
@@ -333,7 +333,7 @@ auto PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 			existing += amount;
 			if (existing > maxSlot) {
 				// Only have to bother with required slots if it would put us over the limit of a slot
-				required = static_cast<int16_t>(existing / maxSlot);
+				required = static_cast<slot_qty_t>(existing / maxSlot);
 				if ((existing % maxSlot) > 0) {
 					++required;
 				}
@@ -341,7 +341,7 @@ auto PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 		}
 		else {
 			// If it is, treat it as though no items exist at all
-			required = static_cast<int16_t>(amount / maxSlot);
+			required = static_cast<slot_qty_t>(amount / maxSlot);
 			if ((amount % maxSlot) > 0) {
 				++required;
 			}
@@ -350,9 +350,9 @@ auto PlayerInventory::hasOpenSlotsFor(int32_t itemId, int16_t amount, bool canSt
 	return getOpenSlotsNum(inv) >= required;
 }
 
-auto PlayerInventory::getOpenSlotsNum(int8_t inv) -> int16_t {
-	int16_t openSlots = 0;
-	for (int16_t i = 1; i <= getMaxSlots(inv); ++i) {
+auto PlayerInventory::getOpenSlotsNum(inventory_t inv) -> inventory_slot_count_t {
+	inventory_slot_count_t openSlots = 0;
+	for (inventory_slot_count_t i = 1; i <= getMaxSlots(inv); ++i) {
 		if (getItem(inv, i) == nullptr) {
 			++openSlots;
 		}
@@ -360,8 +360,8 @@ auto PlayerInventory::getOpenSlotsNum(int8_t inv) -> int16_t {
 	return openSlots;
 }
 
-auto PlayerInventory::doShadowStars() -> int32_t {
-	for (int16_t s = 1; s <= getMaxSlots(Inventories::UseInventory); ++s) {
+auto PlayerInventory::doShadowStars() -> item_id_t {
+	for (inventory_slot_t s = 1; s <= getMaxSlots(Inventories::UseInventory); ++s) {
 		Item *item = getItem(Inventories::UseInventory, s);
 		if (item == nullptr) {
 			continue;
@@ -374,7 +374,7 @@ auto PlayerInventory::doShadowStars() -> int32_t {
 	return 0;
 }
 
-auto PlayerInventory::addRockMap(int32_t mapId, int8_t type) -> void {
+auto PlayerInventory::addRockMap(map_id_t mapId, int8_t type) -> void {
 	const int8_t mode = InventoryPacket::RockModes::Add;
 	if (type == InventoryPacket::RockTypes::Regular) {
 		if (m_rockLocations.size() < Inventories::TeleportRockMax) {
@@ -391,7 +391,7 @@ auto PlayerInventory::addRockMap(int32_t mapId, int8_t type) -> void {
 	}
 }
 
-auto PlayerInventory::delRockMap(int32_t mapId, int8_t type) -> void {
+auto PlayerInventory::delRockMap(map_id_t mapId, int8_t type) -> void {
 	const int8_t mode = InventoryPacket::RockModes::Delete;
 	if (type == InventoryPacket::RockTypes::Regular) {
 		for (size_t k = 0; k < m_rockLocations.size(); ++k) {
@@ -423,9 +423,9 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 			return;
 		}
 
-		int32_t itemId1 = item1->getId();
-		int16_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
-		int16_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
+		item_id_t itemId1 = item1->getId();
+		inventory_slot_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
+		inventory_slot_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
 		if (!EquipDataProvider::getInstance().isValidSlot(itemId1, strippedSlot2)) {
 			// Hacking
 			return;
@@ -446,7 +446,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		};
 
 		Item *remove = nullptr;
-		int16_t oldSlot = 0;
+		inventory_slot_t oldSlot = 0;
 		bool weapon = (strippedSlot2 == EquipSlots::Weapon);
 		bool shield = (strippedSlot2 == EquipSlots::Shield);
 		bool top = (strippedSlot2 == EquipSlots::Top);
@@ -507,8 +507,8 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 					m_player->send(InventoryPacket::blankUpdate());
 					return;
 				}
-				int16_t freeSlot = 0;
-				for (int16_t s = 1; s <= getMaxSlots(inventory); s++) {
+				inventory_slot_t freeSlot = 0;
+				for (inventory_slot_t s = 1; s <= getMaxSlots(inventory); s++) {
 					Item *oldItem = getItem(inventory, s);
 					if (oldItem == nullptr) {
 						freeSlot = s;
@@ -546,11 +546,11 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 			return;
 		}
 
-		int32_t itemId1 = item1->getId();
-		int32_t itemId2 = item2 == nullptr ? 0 : item2->getId();
+		item_id_t itemId1 = item1->getId();
+		item_id_t itemId2 = item2 == nullptr ? 0 : item2->getId();
 		if (item2 != nullptr && itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId1);
-			uint16_t maxSlot = itemInfo->maxSlot;
+			slot_qty_t maxSlot = itemInfo->maxSlot;
 
 			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
 				item2->incAmount(item1->getAmount());
@@ -589,7 +589,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 	}
 }
 
-auto PlayerInventory::ensureRockDestination(int32_t mapId) -> bool {
+auto PlayerInventory::ensureRockDestination(map_id_t mapId) -> bool {
 	for (const auto &location : m_rockLocations) {
 		if (location == mapId) {
 			return true;
@@ -603,14 +603,14 @@ auto PlayerInventory::ensureRockDestination(int32_t mapId) -> bool {
 	return false;
 }
 
-auto PlayerInventory::addWishListItem(int32_t itemId) -> void {
+auto PlayerInventory::addWishListItem(item_id_t itemId) -> void {
 	m_wishlist.push_back(itemId);
 }
 
 auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(m_mesos);
 
-	for (uint8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
+	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
 		packet.add<int8_t>(getMaxSlots(i));
 	}
 
@@ -636,8 +636,8 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 	packet.add<int8_t>(0);
 
 	// Equips done, do rest of user's items starting with Use
-	for (int8_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
-		for (int16_t s = 1; s <= getMaxSlots(i); ++s) {
+	for (inventory_t i = Inventories::UseInventory; i <= Inventories::InventoryCount; ++i) {
+		for (inventory_slot_count_t s = 1; s <= getMaxSlots(i); ++s) {
 			Item *item = getItem(i, s);
 			if (item == nullptr) {
 				continue;
@@ -668,11 +668,11 @@ auto PlayerInventory::wishListPacket(PacketBuilder &packet) -> void {
 }
 
 auto PlayerInventory::checkExpiredItems() -> void {
-	vector_t<int32_t> expiredItemIds;
+	vector_t<item_id_t> expiredItemIds;
 	int64_t serverTime = TimeUtilities::getServerTime();
 
-	for (int8_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		for (int16_t s = 1; s <= getMaxSlots(i); ++s) {
+	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
+		for (inventory_slot_count_t s = 1; s <= getMaxSlots(i); ++s) {
 			if (Item *item = getItem(i, s)) {
 				if (item->getExpirationTime() != Items::NoExpiration && item->getExpirationTime() <= serverTime) {
 					expiredItemIds.push_back(item->getId());

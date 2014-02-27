@@ -28,12 +28,12 @@ public:
 	auto loadData() -> void;
 
 	auto setEquipStats(Item *equip, bool random, bool isGm) const -> void;
-	auto canEquip(int32_t itemId, int16_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t fame) const -> bool;
-	auto isValidSlot(int32_t equipId, int16_t target) const -> bool;
-	auto getSlots(int32_t equipId) const -> int8_t;
-	auto getEquipInfo(int32_t equipId) const -> const EquipInfo &;
+	auto canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, fame_t fame) const -> bool;
+	auto isValidSlot(item_id_t equipId, inventory_slot_t target) const -> bool;
+	auto getSlots(item_id_t equipId) const -> int8_t;
+	auto getEquipInfo(item_id_t equipId) const -> const EquipInfo &;
 private:
 	auto loadEquips() -> void;
 
-	hash_map_t<int32_t, EquipInfo> m_equipInfo;
+	hash_map_t<item_id_t, EquipInfo> m_equipInfo;
 };

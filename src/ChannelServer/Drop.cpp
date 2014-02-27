@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 #include "TimeUtilities.hpp"
 
-Drop::Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop) :
+Drop::Drop(map_id_t mapId, mesos_t mesos, const Pos &pos, player_id_t owner, bool playerDrop) :
 	m_owner(owner),
 	m_mapId(mapId),
 	m_mesos(mesos),
@@ -32,7 +32,7 @@ Drop::Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool pla
 {
 }
 
-Drop::Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop) :
+Drop::Drop(map_id_t mapId, const Item &item, const Pos &pos, player_id_t owner, bool playerDrop) :
 	m_owner(owner),
 	m_mapId(mapId),
 	m_playerDrop(playerDrop),
@@ -45,7 +45,7 @@ auto Drop::getObjectId() -> int32_t {
 	return m_mesos > 0 ? m_mesos : m_item.getId();
 }
 
-auto Drop::getAmount() -> int16_t {
+auto Drop::getAmount() -> slot_qty_t {
 	return m_item.getAmount();
 }
 
@@ -64,22 +64,24 @@ auto Drop::doDrop(const Pos &origin) -> void {
 			map->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));
 		}
 	}
-	else if (Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId)) {
-		if (player->getMapId() == m_mapId) {
-			player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DropAnimation, origin));
-			player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));
+	else if (m_owner != 0) {
+		if (Player *player = PlayerDataProvider::getInstance().getPlayer(m_owner)) {
+			if (player->getMapId() == m_mapId) {
+				player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DropAnimation, origin));
+				player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));
+			}
 		}
 	}
 }
 
 auto Drop::showDrop(Player *player) -> void {
-	if (isQuest() && player->getId() != m_playerId) {
+	if (isQuest() && player->getId() != m_owner) {
 		return;
 	}
 	player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowExisting, Pos()));
 }
 
-auto Drop::takeDrop(Player *player, int64_t petId) -> void {
+auto Drop::takeDrop(Player *player, pet_id_t petId) -> void {
 	Map *map = getMap();
 	map->removeDrop(m_id);
 

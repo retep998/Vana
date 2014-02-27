@@ -32,13 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 
 // Buff skills
-auto PlayerActiveBuffs::addBuff(int32_t skill, const seconds_t &time) -> void {
+auto PlayerActiveBuffs::addBuff(skill_id_t skill, const seconds_t &time) -> void {
 	if (time.count() > 0) {
 		// Only bother with timers when there is a time
 		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
-			uint8_t mobSkill = static_cast<uint8_t>(skill);
+			mob_skill_id_t mobSkill = static_cast<mob_skill_id_t>(skill);
 			Timer::Timer::create([this, mobSkill](const time_point_t &now) { this->removeDebuff(mobSkill, true); },
 				id, m_player->getTimerContainer(), time);
 		}
@@ -50,7 +50,7 @@ auto PlayerActiveBuffs::addBuff(int32_t skill, const seconds_t &time) -> void {
 	m_buffs.push_back(skill);
 }
 
-auto PlayerActiveBuffs::removeBuff(int32_t skill, bool fromTimer) -> void {
+auto PlayerActiveBuffs::removeBuff(skill_id_t skill, bool fromTimer) -> void {
 	if (!fromTimer) {
 		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 		m_player->getTimerContainer()->removeTimer(id);
@@ -71,12 +71,12 @@ auto PlayerActiveBuffs::removeBuffs() -> void {
 	}
 
 	while (m_buffs.size() > 0) {
-		int32_t skillId = *std::begin(m_buffs);
+		skill_id_t skillId = *std::begin(m_buffs);
 		removeBuff(skillId);
 	}
 }
 
-auto PlayerActiveBuffs::getBuffSecondsRemaining(int32_t skill) const -> seconds_t {
+auto PlayerActiveBuffs::getBuffSecondsRemaining(skill_id_t skill) const -> seconds_t {
 	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
@@ -91,12 +91,12 @@ struct RunAction {
 	}
 
 	int16_t value = 0;
-	int32_t skill = 0;
+	skill_id_t skill = 0;
 	Player *player = nullptr;
 	Action act;
 };
 
-auto PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, const milliseconds_t &time) -> void {
+auto PlayerActiveBuffs::addAction(skill_id_t skill, Action act, int16_t value, const milliseconds_t &time) -> void {
 	RunAction runAct;
 	runAct.player = m_player;
 	runAct.skill = skill;
@@ -107,19 +107,19 @@ auto PlayerActiveBuffs::addAction(int32_t skill, Action act, int16_t value, cons
 	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
 }
 
-auto PlayerActiveBuffs::getActTimer(int32_t skill) -> ref_ptr_t<Timer::Container> {
+auto PlayerActiveBuffs::getActTimer(skill_id_t skill) -> ref_ptr_t<Timer::Container> {
 	if (m_skillActs.find(skill) == std::end(m_skillActs)) {
 		m_skillActs[skill] = make_ref_ptr<Timer::Container>();
 	}
 	return m_skillActs[skill];
 }
 
-auto PlayerActiveBuffs::removeAction(int32_t skill) -> void {
+auto PlayerActiveBuffs::removeAction(skill_id_t skill) -> void {
 	m_skillActs.erase(skill);
 }
 
 // Debuffs
-auto PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) -> void {
+auto PlayerActiveBuffs::addDebuff(mob_skill_id_t skill, mob_skill_level_t level) -> void {
 	if (!m_player->getStats()->isDead() && !hasHolyShield() && !m_player->hasGmBenefits()) {
 		int32_t maskBit = calculateDebuffMaskBit(skill);
 		if (maskBit != 0 && (m_debuffMask & maskBit) == 0) {
@@ -130,7 +130,7 @@ auto PlayerActiveBuffs::addDebuff(uint8_t skill, uint8_t level) -> void {
 	}
 }
 
-auto PlayerActiveBuffs::removeDebuff(uint8_t skill, bool fromTimer) -> void {
+auto PlayerActiveBuffs::removeDebuff(mob_skill_id_t skill, bool fromTimer) -> void {
 	int32_t maskBit = calculateDebuffMaskBit(skill);
 	if ((m_debuffMask & maskBit) != 0) {
 		m_debuffMask -= maskBit;
@@ -165,7 +165,7 @@ auto PlayerActiveBuffs::useDispel() -> void {
 	removeDebuff(MobSkills::Poison);
 }
 
-auto PlayerActiveBuffs::calculateDebuffMaskBit(uint8_t skill) -> int32_t {
+auto PlayerActiveBuffs::calculateDebuffMaskBit(mob_skill_id_t skill) -> int32_t {
 	int32_t bitField = 0;
 	switch (skill) {
 		case MobSkills::Seal: bitField = StatusEffects::Player::Seal; break;
@@ -221,34 +221,34 @@ auto PlayerActiveBuffs::getMapEntryBuffs() -> MapEntryBuffs {
 	return m_mapBuffs;
 }
 
-auto PlayerActiveBuffs::setMountInfo(int32_t skillId, int32_t mountId) -> void {
+auto PlayerActiveBuffs::setMountInfo(skill_id_t skillId, item_id_t mountId) -> void {
 	m_mapBuffs.mountSkill = skillId;
 	m_mapBuffs.mountId = mountId;
 }
 
 // Active skill levels
-auto PlayerActiveBuffs::getActiveSkillLevel(int32_t skillId) const -> uint8_t {
+auto PlayerActiveBuffs::getActiveSkillLevel(skill_id_t skillId) const -> skill_level_t {
 	return m_activeLevels.find(skillId) != std::end(m_activeLevels) ? m_activeLevels.find(skillId)->second : 0;
 }
 
-auto PlayerActiveBuffs::setActiveSkillLevel(int32_t skillId, uint8_t level) -> void {
+auto PlayerActiveBuffs::setActiveSkillLevel(skill_id_t skillId, skill_level_t level) -> void {
 	m_activeLevels[skillId] = level;
 }
 
-auto PlayerActiveBuffs::getActiveSkillInfo(int32_t skillId) const -> const SkillLevelInfo * const {
-	uint8_t level = getActiveSkillLevel(skillId);
+auto PlayerActiveBuffs::getActiveSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
+	skill_level_t level = getActiveSkillLevel(skillId);
 	return level != 0 ? SkillDataProvider::getInstance().getSkill(skillId, level) : nullptr;
 }
 
 // Buff addition/removal
-auto PlayerActiveBuffs::addBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> void {
+auto PlayerActiveBuffs::addBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> void {
 	for (size_t i = 0; i < buffs.size(); ++i) {
 		Buff cur = buffs[i];
 		m_activeBuffsByType[cur.byte][cur.type] = skillId;
 	}
 }
 
-auto PlayerActiveBuffs::removeBuffInfo(int32_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff {
+auto PlayerActiveBuffs::removeBuffInfo(skill_id_t skillId, const vector_t<Buff> &buffs) -> ActiveBuff {
 	ActiveBuff ret;
 	for (size_t i = 0; i < buffs.size(); ++i) {
 		Buff cur = buffs[i];
@@ -266,7 +266,7 @@ auto PlayerActiveBuffs::dispelBuffs() -> void {
 		return;
 	}
 	
-	vector_t<int32_t> stopSkills;
+	vector_t<skill_id_t> stopSkills;
 	for (const auto &kvp : m_activeLevels) {
 		if (kvp.first > 0 && !GameLogicUtilities::isMobSkill(kvp.first)) {
 			// Only want active skills and skill buffs - no item buffs or debuffs
@@ -284,7 +284,7 @@ auto PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) -> void {
 	m_battleshipHp -= amount;
 	if (m_battleshipHp <= 0) {
 		m_battleshipHp = 0;
-		int32_t skillId = Skills::Corsair::Battleship;
+		skill_id_t skillId = Skills::Corsair::Battleship;
 		int16_t coolTime = getActiveSkillInfo(skillId)->coolTime;
 		Skills::startCooldown(m_player, skillId, coolTime);
 		Skills::stopSkill(m_player, skillId);
@@ -292,17 +292,17 @@ auto PlayerActiveBuffs::reduceBattleshipHp(uint16_t amount) -> void {
 }
 
 auto PlayerActiveBuffs::resetBattleshipHp() -> void {
-	uint8_t shipLevel = m_player->getSkills()->getSkillLevel(Skills::Corsair::Battleship);
-	uint8_t playerLevel = m_player->getStats()->getLevel();
+	skill_level_t shipLevel = m_player->getSkills()->getSkillLevel(Skills::Corsair::Battleship);
+	player_level_t playerLevel = m_player->getStats()->getLevel();
 	m_battleshipHp = GameLogicUtilities::getBattleshipHp(shipLevel, playerLevel);
 }
 
 auto PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) -> void {
 	m_combo = combo;
 	if (sendPacket) {
-		int32_t skillId = m_player->getSkills()->getComboAttack();
+		skill_id_t skillId = m_player->getSkills()->getComboAttack();
 		seconds_t timeLeft = getBuffSecondsRemaining(skillId);
-		uint8_t level = getActiveSkillLevel(skillId);
+		skill_level_t level = getActiveSkillLevel(skillId);
 		ActiveBuff playerSkill = Buffs::parseBuffInfo(m_player, skillId, level);
 		ActiveMapBuff mapSkill = Buffs::parseBuffMapInfo(m_player, skillId, level);
 		m_player->sendMap(BuffsPacket::useSkill(m_player->getId(), skillId, timeLeft, playerSkill, mapSkill, 0));
@@ -310,11 +310,11 @@ auto PlayerActiveBuffs::setCombo(uint8_t combo, bool sendPacket) -> void {
 }
 
 auto PlayerActiveBuffs::addCombo() -> void {
-	int32_t skillId = m_player->getSkills()->getComboAttack();
-	uint8_t comboLevel = getActiveSkillLevel(skillId);
+	skill_id_t skillId = m_player->getSkills()->getComboAttack();
+	skill_level_t comboLevel = getActiveSkillLevel(skillId);
 	if (comboLevel > 0) {
-		int32_t advSkill = m_player->getSkills()->getAdvancedCombo();
-		uint8_t advCombo = m_player->getSkills()->getSkillLevel(advSkill);
+		skill_id_t advSkill = m_player->getSkills()->getAdvancedCombo();
+		skill_level_t advCombo = m_player->getSkills()->getSkillLevel(advSkill);
 		auto skill = SkillDataProvider::getInstance().getSkill(advCombo > 0 ? advSkill : skillId, advCombo > 0 ? advCombo : comboLevel);
 
 		int8_t maxCombo = static_cast<int8_t>(skill->x);
@@ -337,8 +337,8 @@ auto PlayerActiveBuffs::addCombo() -> void {
 auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 	if (m_player->getStats()->getJob() == Jobs::JobIds::DarkKnight) {
 		// Berserk calculations
-		int32_t skillId = Skills::DarkKnight::Berserk;
-		int8_t level = m_player->getSkills()->getSkillLevel(skillId);
+		skill_id_t skillId = Skills::DarkKnight::Berserk;
+		skill_level_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
 			int16_t hpPercentage = m_player->getStats()->getMaxHp() * SkillDataProvider::getInstance().getSkill(skillId, level)->x / 100;
 			int16_t hp = m_player->getStats()->getHp();
@@ -360,7 +360,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 
 auto PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) -> void {
 	if (m_energyCharge != Stats::MaxEnergyChargeLevel && targets > 0) {
-		int32_t skillId = m_player->getSkills()->getEnergyCharge();
+		skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
 		if (m_player->getTimerContainer()->isTimerRunning(id)) {
 			stopEnergyChargeTimer();
@@ -377,7 +377,7 @@ auto PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) -> void {
 
 auto PlayerActiveBuffs::decreaseEnergyChargeLevel() -> void {
 	m_energyCharge -= Stats::EnergyChargeDecay;
-	int32_t skillId = m_player->getSkills()->getEnergyCharge();
+	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 	if (m_energyCharge < 0) {
 		m_energyCharge = 0;
 	}
@@ -393,7 +393,7 @@ auto PlayerActiveBuffs::resetEnergyChargeLevel() -> void {
 
 auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 	m_timeSeed = static_cast<uint32_t>(clock());
-	int32_t skillId = m_player->getSkills()->getEnergyCharge();
+	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
 	Timer::Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
 		id, m_player->getTimerContainer(), seconds_t(10));
@@ -407,7 +407,7 @@ auto PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargeLevel, bool startTime
 }
 
 auto PlayerActiveBuffs::stopEnergyChargeTimer() -> void {
-	int32_t skillId = m_player->getSkills()->getEnergyCharge();
+	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
 	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
 	m_player->getTimerContainer()->removeTimer(id);
 }
@@ -439,7 +439,7 @@ auto PlayerActiveBuffs::stopBulletSkills() -> void {
 	}
 }
 
-auto PlayerActiveBuffs::hasBuff(int32_t skillId) -> bool {
+auto PlayerActiveBuffs::hasBuff(skill_id_t skillId) -> bool {
 	return getActiveSkillLevel(skillId) > 0;
 }
 
@@ -506,14 +506,14 @@ auto PlayerActiveBuffs::isZombified() -> bool {
 auto PlayerActiveBuffs::getHolySymbolRate() -> int16_t {
 	int16_t val = 0;
 	if (hasHolySymbol()) {
-		int32_t hsSkill = getHolySymbol();
+		skill_id_t hsSkill = getHolySymbol();
 		val = getActiveSkillInfo(hsSkill)->x;
 	}
 	return val;
 }
 
-auto PlayerActiveBuffs::getMagicGuard() -> int32_t {
-	int32_t id = 0;
+auto PlayerActiveBuffs::getMagicGuard() -> skill_id_t {
+	skill_id_t id = 0;
 	if (hasBuff(Skills::Magician::MagicGuard)) {
 		id = Skills::Magician::MagicGuard;
 	}
@@ -523,16 +523,16 @@ auto PlayerActiveBuffs::getMagicGuard() -> int32_t {
 	return id;
 }
 
-auto PlayerActiveBuffs::getMesoGuard() -> int32_t {
-	int32_t id = 0;
+auto PlayerActiveBuffs::getMesoGuard() -> skill_id_t {
+	skill_id_t id = 0;
 	if (hasBuff(Skills::ChiefBandit::MesoGuard)) {
 		id = Skills::ChiefBandit::MesoGuard;
 	}
 	return id;
 }
 
-auto PlayerActiveBuffs::getHolySymbol() -> int32_t {
-	int32_t id = 0;
+auto PlayerActiveBuffs::getHolySymbol() -> skill_id_t {
+	skill_id_t id = 0;
 	if (hasBuff(Skills::Priest::HolySymbol)) {
 		id = Skills::Priest::HolySymbol;
 	}
@@ -542,8 +542,8 @@ auto PlayerActiveBuffs::getHolySymbol() -> int32_t {
 	return id;
 }
 
-auto PlayerActiveBuffs::getPowerStance() -> int32_t {
-	int32_t skillId = 0;
+auto PlayerActiveBuffs::getPowerStance() -> skill_id_t {
+	skill_id_t skillId = 0;
 	if (hasBuff(Skills::Hero::PowerStance)) {
 		skillId = Skills::Hero::PowerStance;
 	}
@@ -562,8 +562,8 @@ auto PlayerActiveBuffs::getPowerStance() -> int32_t {
 	return skillId;
 }
 
-auto PlayerActiveBuffs::getHyperBody() -> int32_t {
-	int32_t id = 0;
+auto PlayerActiveBuffs::getHyperBody() -> skill_id_t {
+	skill_id_t id = 0;
 	if (hasBuff(Skills::Spearman::HyperBody)) {
 		id = Skills::Spearman::HyperBody;
 	}
@@ -573,8 +573,8 @@ auto PlayerActiveBuffs::getHyperBody() -> int32_t {
 	return id;
 }
 
-auto PlayerActiveBuffs::getHomingBeacon() -> int32_t {
-	int32_t id = 0;
+auto PlayerActiveBuffs::getHomingBeacon() -> skill_id_t {
+	skill_id_t id = 0;
 	if (hasBuff(Skills::Outlaw::HomingBeacon)) {
 		id = Skills::Outlaw::HomingBeacon;
 	}
@@ -584,10 +584,10 @@ auto PlayerActiveBuffs::getHomingBeacon() -> int32_t {
 	return id;
 }
 
-auto PlayerActiveBuffs::getCurrentMorph() -> int32_t {
-	int32_t morphId = 0;
+auto PlayerActiveBuffs::getCurrentMorph() -> skill_id_t {
+	skill_id_t morphId = 0;
 	if (m_activeBuffsByType.find(BuffBytes::Byte5) != std::end(m_activeBuffsByType)) {
-		hash_map_t<uint8_t, int32_t> byte = m_activeBuffsByType[BuffBytes::Byte5];
+		hash_map_t<uint8_t, skill_id_t> byte = m_activeBuffsByType[BuffBytes::Byte5];
 		if (byte.find(0x02) != std::end(byte)) {
 			morphId = byte[0x02];
 		}
@@ -596,7 +596,7 @@ auto PlayerActiveBuffs::getCurrentMorph() -> int32_t {
 }
 
 auto PlayerActiveBuffs::endMorph() -> void {
-	int32_t morphId = getCurrentMorph();
+	skill_id_t morphId = getCurrentMorph();
 	if (morphId != 0) {
 		Skills::stopSkill(m_player, morphId);
 	}
@@ -613,12 +613,12 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 	// Map entry buff info
 	builder.add<int8_t>(getCombo());
 	builder.add<int16_t>(getEnergyChargeLevel());
-	builder.add<int32_t>(getCharge());
-	builder.add<int32_t>(getBooster());
+	builder.add<skill_id_t>(getCharge());
+	builder.add<skill_id_t>(getBooster());
 	builder.add<int32_t>(getBattleshipHp());
 	builder.add<int32_t>(getDebuffMask());
-	builder.add<int32_t>(m_mapBuffs.mountId);
-	builder.add<int32_t>(m_mapBuffs.mountSkill);
+	builder.add<item_id_t>(m_mapBuffs.mountId);
+	builder.add<skill_id_t>(m_mapBuffs.mountSkill);
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 		builder.add<uint8_t>(m_mapBuffs.types[i]);
 		auto foundValue = m_mapBuffs.values.find(i);
@@ -645,9 +645,9 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 	// Current buff info (IDs, times, levels)
 	builder.add<uint8_t>(m_buffs.size());
 	for (const auto &buffId : m_buffs) {
-		builder.add<int32_t>(buffId);
+		builder.add<skill_id_t>(buffId);
 		builder.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
-		builder.add<uint8_t>(getActiveSkillLevel(buffId));
+		builder.add<skill_level_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
@@ -660,7 +660,7 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 		builder.add<uint8_t>(currentByte.size());
 		for (const auto &kvp : currentByte) {
 			builder.add<uint8_t>(kvp.first);
-			builder.add<int32_t>(kvp.second);
+			builder.add<skill_id_t>(kvp.second);
 		}
 	}
 	return builder;
@@ -670,12 +670,12 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	// Map entry buff info
 	setCombo(reader.get<uint8_t>(), false);
 	setEnergyChargeLevel(reader.get<int16_t>());
-	setCharge(reader.get<int32_t>());
-	setBooster(reader.get<int32_t>());
+	setCharge(reader.get<skill_id_t>());
+	setBooster(reader.get<skill_id_t>());
 	setBattleshipHp(reader.get<int32_t>());
 	setDebuffMask(reader.get<int32_t>());
-	m_mapBuffs.mountId = reader.get<int32_t>();
-	m_mapBuffs.mountSkill = reader.get<int32_t>();
+	m_mapBuffs.mountId = reader.get<item_id_t>();
+	m_mapBuffs.mountSkill = reader.get<skill_id_t>();
 	MapEntryVals values;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 		m_mapBuffs.types[i] = reader.get<uint8_t>();
@@ -697,28 +697,28 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	// Current buff info
 	uint8_t nBuffs = reader.get<uint8_t>();
 	for (uint8_t i = 0; i < nBuffs; ++i) {
-		int32_t skillId = reader.get<int32_t>();
+		skill_id_t skillId = reader.get<skill_id_t>();
 		seconds_t timeLeft(reader.get<int32_t>());
-		uint8_t level = reader.get<uint8_t>();
+		skill_level_t level = reader.get<skill_level_t>();
 		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);
 		Buffs::doAction(m_player, skillId, level);
 	}
 	// Current buffs by type
-	hash_map_t<uint8_t, int32_t> currentByte;
+	hash_map_t<uint8_t, skill_id_t> currentByte;
 	for (int8_t i = 0; i < BuffBytes::ByteQuantity; ++i) {
 		uint8_t size = reader.get<uint8_t>();
 		for (uint8_t f = 0; f < size; f++) {
 			uint8_t key = reader.get<uint8_t>();
-			int32_t value = reader.get<int32_t>();
+			skill_id_t value = reader.get<skill_id_t>();
 			currentByte[key] = value;
 		}
 		m_activeBuffsByType[i] = currentByte;
 	}
 
 	if (hasHyperBody()) {
-		int32_t skillId = getHyperBody();
-		uint8_t hbLevel = getActiveSkillLevel(skillId);
+		skill_id_t skillId = getHyperBody();
+		skill_level_t hbLevel = getActiveSkillLevel(skillId);
 		auto hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
 		m_player->getStats()->setHyperBody(hb->x, hb->y);
 	}

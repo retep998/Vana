@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.hpp"
 
 auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
-	int64_t petId = reader.get<int64_t>();
+	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
@@ -45,20 +45,20 @@ auto PetHandler::handleMovement(Player *player, PacketReader &reader) -> void {
 }
 
 auto PetHandler::handleChat(Player *player, PacketReader &reader) -> void {
-	int64_t petId = reader.get<int64_t>();
+	pet_id_t petId = reader.get<pet_id_t>();
 	if (player->getPets()->getPet(petId) == nullptr) {
 		// Hacking
 		return;
 	}
 	reader.skipBytes(1);
 	int8_t act = reader.get<int8_t>();
-	const string_t &message = reader.get<string_t>();
+	string_t message = reader.get<string_t>();
 	player->sendMap(PetsPacket::showChat(player->getId(), player->getPets()->getPet(petId), message, act));
 }
 
 auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	bool master = reader.get<int8_t>() == 1; // Might possibly fit under getBool criteria
 	bool multipet = player->getSkills()->getSkillLevel(Skills::Beginner::FollowTheLead) > 0;
 	Pet *pet = player->getPets()->getPet(player->getInventory()->getItem(Inventories::CashInventory, slot)->getPetId());
@@ -138,9 +138,9 @@ auto PetHandler::handleSummon(Player *player, PacketReader &reader) -> void {
 }
 
 auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	Pet *pet = player->getPets()->getSummoned(0);
 	if (pet != nullptr && item != nullptr && item->getId() == itemId) {
@@ -163,7 +163,7 @@ auto PetHandler::handleFeed(Player *player, PacketReader &reader) -> void {
 }
 
 auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
-	int64_t petId = reader.get<int64_t>();
+	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr) {
 		// Hacking
@@ -185,16 +185,16 @@ auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 }
 
 auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> void {
-	int64_t petId = reader.get<int64_t>();
+	pet_id_t petId = reader.get<pet_id_t>();
 	Pet *pet = player->getPets()->getPet(petId);
 	if (pet == nullptr || !pet->isSummoned() || player->getStats()->isDead()) {
 		// Hacking
 		return;
 	}
 	reader.skipBytes(1); // It MIGHT be some flag for Meso/Power/Magic Guard...?
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
 	if (item == nullptr || item->getId() != itemId) {

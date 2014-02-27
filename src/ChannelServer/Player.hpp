@@ -58,18 +58,18 @@ public:
 	auto setSaveOnDc(bool save) -> void { m_saveOnDc = save; }
 	auto setTrading(bool state) -> void { m_tradeState = state; }
 	auto setChangingChannel(bool v) -> void { m_changingChannel = v; }
-	auto setSkin(int8_t id) -> void;
+	auto setSkin(skin_id_t id) -> void;
 	auto setFallCounter(int8_t falls) -> void { m_fallCounter = falls; }
-	auto setMapChair(int16_t s) -> void { m_mapChair = s; }
-	auto setEyes(int32_t id) -> void;
-	auto setHair(int32_t id) -> void;
-	auto setMap(int32_t mapId, PortalInfo *portal = nullptr, bool instance = false) -> void;
+	auto setMapChair(seat_id_t s) -> void { m_mapChair = s; }
+	auto setEyes(face_id_t id) -> void;
+	auto setHair(hair_id_t id) -> void;
+	auto setMap(map_id_t mapId, PortalInfo *portal = nullptr, bool instance = false) -> void;
 	auto setBuddyListSize(uint8_t size) -> void;
 	auto setConnectionTime(int64_t newtime) -> void { m_onlineTime = newtime; }
-	auto setTradeId(int32_t id) -> void { m_tradeId = id; }
-	auto setShop(int32_t shopId) -> void { m_shop = shopId; }
-	auto setChair(int32_t chair) -> void { m_chair = chair; }
-	auto setItemEffect(int32_t effect) -> void { m_itemEffect = effect; }
+	auto setTradeId(trade_id_t id) -> void { m_tradeId = id; }
+	auto setShop(shop_id_t shopId) -> void { m_shop = shopId; }
+	auto setChair(item_id_t chair) -> void { m_chair = chair; }
+	auto setItemEffect(item_id_t effect) -> void { m_itemEffect = effect; }
 	auto setChalkboard(const string_t &msg) -> void { m_chalkboard = msg; }
 	auto setChargeOrStationarySkill(const ChargeOrStationarySkillInfo &info) -> void { m_info = info; }
 	auto setNpc(Npc *npc) -> void { m_npc.reset(npc); }
@@ -89,24 +89,24 @@ public:
 	auto hasGmBenefits() const -> bool;
 	auto hasChargeOrStationarySkill() const -> bool { return m_info.skillId != 0; }
 	auto getWorldId() const -> world_id_t { return m_worldId; }
-	auto getGender() const -> int8_t { return m_gender; }
-	auto getSkin() const -> int8_t { return m_skin; }
-	auto getMapPos() const -> int8_t { return m_mapPos; }
+	auto getGender() const -> gender_id_t { return m_gender; }
+	auto getSkin() const -> skin_id_t { return m_skin; }
+	auto getMapPos() const -> portal_id_t { return m_mapPos; }
 	auto getFallCounter() const -> int8_t { return m_fallCounter; }
 	auto getBuddyListSize() const -> uint8_t { return m_buddylistSize; }
 	auto getPortalCount(bool add = false) -> uint8_t;
-	auto getMapChair() const -> int16_t { return m_mapChair; }
-	auto getId() const -> int32_t { return m_id; }
-	auto getUserId() const -> int32_t { return m_userId; }
-	auto getEyes() const -> int32_t { return m_eyes; }
-	auto getHair() const -> int32_t { return m_hair; }
-	auto getMapId() const -> int32_t { return m_map; }
-	auto getLastMapId() const -> int32_t { return m_lastMap; }
-	auto getShop() const -> int32_t { return m_shop; }
-	auto getChair() const -> int32_t { return m_chair; }
-	auto getItemEffect() const -> int32_t { return m_itemEffect; }
+	auto getMapChair() const -> seat_id_t { return m_mapChair; }
+	auto getId() const -> player_id_t { return m_id; }
+	auto getUserId() const -> account_id_t { return m_userId; }
+	auto getEyes() const -> face_id_t { return m_eyes; }
+	auto getHair() const -> hair_id_t { return m_hair; }
+	auto getMapId() const -> map_id_t { return m_map; }
+	auto getLastMapId() const -> map_id_t { return m_lastMap; }
+	auto getShop() const -> shop_id_t { return m_shop; }
+	auto getChair() const -> item_id_t { return m_chair; }
+	auto getItemEffect() const -> item_id_t { return m_itemEffect; }
 	auto getGmLevel() const -> int32_t { return m_gmLevel; }
-	auto getTradeId() const -> int32_t { return m_tradeId; }
+	auto getTradeId() const -> trade_id_t { return m_tradeId; }
 	auto getConnectionTime() const -> int64_t { return m_onlineTime; }
 	auto getConnectedTime() const -> int64_t { return time(nullptr) - m_onlineTime; }
 	auto getChalkboard() const -> string_t { return m_chalkboard; }
@@ -135,8 +135,8 @@ public:
 	auto getRandStream() const -> TauswortheGenerator * { return m_randStream.get(); }
 	auto getTimerContainer() const -> ref_ptr_t<Timer::Container> { return getTimers(); }
 
-	auto addUsedPortal(int8_t portalId) -> void { m_usedPortals.insert(portalId); }
-	auto usedPortal(int8_t portalId) const -> bool { return m_usedPortals.find(portalId) != std::end(m_usedPortals); }
+	auto addUsedPortal(portal_id_t portalId) -> void { m_usedPortals.insert(portalId); }
+	auto usedPortal(portal_id_t portalId) const -> bool { return m_usedPortals.find(portalId) != std::end(m_usedPortals); }
 
 	auto changeChannel(channel_id_t channel) -> void;
 	auto saveAll(bool saveCooldowns = false) -> void;
@@ -165,24 +165,24 @@ private:
 	bool m_gmChat = false;
 	bool m_disconnecting = false;
 	world_id_t m_worldId = -1;
-	int8_t m_mapPos = -1;
-	int8_t m_gender = -1;
-	int8_t m_skin = 0;
+	portal_id_t m_mapPos = -1;
+	gender_id_t m_gender = -1;
+	skin_id_t m_skin = 0;
 	int8_t m_fallCounter = 0;
 	uint8_t m_buddylistSize = 0;
 	uint8_t m_portalCount = 0;
-	int16_t m_mapChair = 0;
-	int32_t m_id = 0;
-	int32_t m_userId = 0;
-	int32_t m_eyes = 0;
-	int32_t m_hair = 0;
-	int32_t m_map = 0;
-	int32_t m_lastMap = 0;
-	int32_t m_shop = 0;
-	int32_t m_itemEffect = 0;
-	int32_t m_chair = 0;
+	seat_id_t m_mapChair = 0;
+	player_id_t m_id = 0;
+	account_id_t m_userId = 0;
+	face_id_t m_eyes = 0;
+	hair_id_t m_hair = 0;
+	map_id_t m_map = 0;
+	map_id_t m_lastMap = 0;
+	shop_id_t m_shop = 0;
+	item_id_t m_itemEffect = 0;
+	item_id_t m_chair = 0;
 	int32_t m_gmLevel = 0;
-	int32_t m_tradeId = 0;
+	trade_id_t m_tradeId = 0;
 	int64_t m_onlineTime = 0;
 	Instance *m_instance = nullptr;
 	Party *m_party = nullptr;
@@ -204,5 +204,5 @@ private:
 	owned_ptr_t<PlayerSummons> m_summons;
 	owned_ptr_t<PlayerVariables> m_variables;
 	owned_ptr_t<TauswortheGenerator> m_randStream;
-	hash_set_t<int8_t> m_usedPortals;
+	hash_set_t<portal_id_t> m_usedPortals;
 };

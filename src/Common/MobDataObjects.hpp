@@ -32,8 +32,8 @@ enum class MobAttackType {
 
 struct MobAttackInfo {
 	int8_t id = 0;
-	uint8_t level = 0;
-	uint8_t disease = 0;
+	mob_skill_level_t level = 0;
+	mob_skill_id_t disease = 0;
 	uint8_t mpConsume = 0;
 	uint16_t mpBurn = 0;
 	bool deadlyAttack = false;
@@ -41,8 +41,8 @@ struct MobAttackInfo {
 };
 
 struct MobSkillInfo {
-	uint8_t skillId = 0;
-	uint8_t level = 0;
+	mob_skill_id_t skillId = 0;
+	mob_skill_level_t level = 0;
 	int16_t effectAfter = 0;
 };
 
@@ -76,16 +76,16 @@ struct MobInfo {
 	int16_t summonType = 0;
 	uint16_t level = 0;
 	int32_t selfDestruction = 0;
-	int32_t buff = 0;
-	int32_t link = 0;
+	item_id_t buff = 0;
+	mob_id_t link = 0;
 	int32_t removeAfter = 0;
 	int32_t knockback = 0;
-	int32_t fixedDamage = 0;
-	int32_t damagedBySkill = 0;
-	int32_t damagedByMob = 0;
+	damage_t fixedDamage = 0;
+	skill_id_t damagedBySkill = 0;
+	mob_id_t damagedByMob = 0;
 	uint32_t hp = 0;
 	uint32_t mp = 0;
-	uint32_t exp = 0;
+	experience_t exp = 0;
 	uint32_t hpRecovery = 0;
 	uint32_t mpRecovery = 0;
 	double traction = 0.;
@@ -95,7 +95,7 @@ struct MobInfo {
 	MobElementalAttribute lightningAttr = MobElementalAttribute::Normal;
 	MobElementalAttribute holyAttr = MobElementalAttribute::Normal;
 	MobElementalAttribute nonElemAttr = MobElementalAttribute::Normal;
-	vector_t<int32_t> summon;
+	vector_t<mob_id_t> summon;
 
 	auto hasHpBar() const -> bool { return hpColor > 0; }
 };

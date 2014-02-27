@@ -25,32 +25,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace SummonsPacket {
 
-SPLIT_PACKET_IMPL(showSummon, int32_t playerId, Summon *summon, bool animated) {
+SPLIT_PACKET_IMPL(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SUMMON_SPAWN)
-		.add<int32_t>(playerId)
-		.add<int32_t>(summon->getId())
-		.add<int32_t>(summon->getSummonId())
-		.add<int8_t>(summon->getLevel())
+		.add<player_id_t>(playerId)
+		.add<summon_id_t>(summon->getId())
+		.add<skill_id_t>(summon->getSkillId())
+		.add<skill_level_t>(summon->getSkillLevel())
 		.add<Pos>(summon->getPos())
-		.add<int8_t>(4) // ?
-		.add<int8_t>(0x53) // ?
-		.add<int8_t>(1) // ?
-		.add<int8_t>(summon->getType()) // Movement type
-		.add<int8_t>(!GameLogicUtilities::isPuppet(summon->getSummonId())) // Attack or not .add<bool> candidate?
-		.add<bool>(!animated);
+		.add<int8_t>(summon->getStance())
+		.add<foothold_id_t>(summon->getFoothold())
+		.add<int8_t>(summon->getMovementType())
+		.add<int8_t>(summon->getActionType())
+		.add<bool>(isMapEntry);
 
 	builder.map.addBuffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(moveSummon, int32_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) {
+SPLIT_PACKET_IMPL(moveSummon, player_id_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SUMMON_MOVEMENT)
-		.add<int32_t>(playerId)
-		.add<int32_t>(summon->getId())
+		.add<player_id_t>(playerId)
+		.add<summon_id_t>(summon->getId())
 		.add<Pos>(startPos)
 		.addBuffer(buf, bufLen);
 
@@ -58,30 +57,59 @@ SPLIT_PACKET_IMPL(moveSummon, int32_t playerId, Summon *summon, const Pos &start
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(removeSummon, int32_t playerId, Summon *summon, int8_t message) {
+SPLIT_PACKET_IMPL(removeSummon, player_id_t playerId, Summon *summon, int8_t message) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SUMMON_DESPAWN)
-		.add<int32_t>(playerId)
-		.add<int32_t>(summon->getId())
+		.add<player_id_t>(playerId)
+		.add<summon_id_t>(summon->getId())
 		.add<int8_t>(message);
 
 	builder.map.addBuffer(builder.player);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(damageSummon, int32_t playerId, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId) {
+SPLIT_PACKET_IMPL(damageSummon, player_id_t playerId, summon_id_t summonId, int8_t unk, damage_t damage, map_object_t mobId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_SUMMON_DAMAGE)
-		.add<int32_t>(playerId)
-		.add<int32_t>(summonId)
+		.add<player_id_t>(playerId)
+		.add<summon_id_t>(summonId)
 		.add<int8_t>(unk)
-		.add<int32_t>(damage)
-		.add<int32_t>(mobId)
+		.add<damage_t>(damage)
+		.add<map_object_t>(mobId)
 		.add<int8_t>(0);
 
 	builder.map.addBuffer(builder.player);
+	return builder;
+}
+
+PACKET_IMPL(summonSkill, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_SUMMON_SKILL)
+		.add<player_id_t>(playerId)
+		.add<skill_id_t>(skillId)
+		.add<uint8_t>(display);
+	return builder;
+}
+
+SPLIT_PACKET_IMPL(summonSkillEffect, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level) {
+	SplitPacketBuilder builder;
+	builder.player
+		.add<header_t>(SMSG_THEATRICS)
+		.add<int8_t>(2)
+		.add<skill_id_t>(skillId)
+		.add<skill_level_t>(level)
+		.add<int8_t>(1);
+
+	builder.map
+		.add<header_t>(SMSG_SKILL_SHOW)
+		.add<player_id_t>(playerId)
+		.add<int8_t>(2)
+		.add<skill_id_t>(skillId)
+		.add<uint8_t>(display)
+		.add<int8_t>(1);
 	return builder;
 }
 

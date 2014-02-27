@@ -26,33 +26,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace NpcPacket {
 
-PACKET_IMPL(showNpc, const NpcSpawnInfo &npc, int32_t id, bool show) {
+PACKET_IMPL(showNpc, const NpcSpawnInfo &npc, map_object_t id, bool show) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NPC_SHOW)
-		.add<int32_t>(id)
-		.add<int32_t>(npc.id)
+		.add<map_object_t>(id)
+		.add<npc_id_t>(npc.id)
 		.add<Pos>(npc.pos)
 		.add<bool>(!npc.facesLeft)
-		.add<int16_t>(npc.foothold)
-		.add<int16_t>(npc.rx0)
-		.add<int16_t>(npc.rx1)
+		.add<foothold_id_t>(npc.foothold)
+		.add<coord_t>(npc.rx0)
+		.add<coord_t>(npc.rx1)
 		.add<bool>(show);
 	return builder;
 }
 
-PACKET_IMPL(controlNpc, const NpcSpawnInfo &npc, int32_t id, bool show) {
+PACKET_IMPL(controlNpc, const NpcSpawnInfo &npc, map_object_t id, bool show) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NPC_CONTROL)
 		.add<int8_t>(1)
-		.add<int32_t>(id)
-		.add<int32_t>(npc.id)
+		.add<map_object_t>(id)
+		.add<npc_id_t>(npc.id)
 		.add<Pos>(npc.pos)
 		.add<bool>(!npc.facesLeft)
-		.add<int16_t>(npc.foothold)
-		.add<int16_t>(npc.rx0)
-		.add<int16_t>(npc.rx1)
+		.add<foothold_id_t>(npc.foothold)
+		.add<coord_t>(npc.rx0)
+		.add<coord_t>(npc.rx1)
 		.add<bool>(show);
 	return builder;
 }
@@ -92,21 +92,21 @@ PACKET_IMPL(bought, uint8_t msg) {
 	return builder;
 }
 
-PACKET_IMPL(showShop, const BuiltShopInfo &shop, int16_t rechargeableBonus) {
+PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
 	PacketBuilder builder;
-	int16_t shopCount = static_cast<int16_t>(shop.items.size() + shop.rechargeables.size());
-	hash_set_t<int32_t> itemsAdded;
+	slot_qty_t shopCount = static_cast<slot_qty_t>(shop.items.size() + shop.rechargeables.size());
+	hash_set_t<item_id_t> itemsAdded;
 
 	builder
 		.add<header_t>(SMSG_SHOP)
-		.add<int32_t>(shop.npc)
-		.add<int16_t>(0); // To be set later
+		.add<npc_id_t>(shop.npc)
+		.add<slot_qty_t>(0); // To be set later
 
 	// Items
 	for (const auto &item : shop.items) {
 		builder
-			.add<int32_t>(item->itemId)
-			.add<int32_t>(item->price);
+			.add<item_id_t>(item->itemId)
+			.add<mesos_t>(item->price);
 
 		if (GameLogicUtilities::isRechargeable(item->itemId)) {
 			itemsAdded.emplace(item->itemId);
@@ -121,10 +121,10 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, int16_t rechargeableBonus) {
 			builder.add<double>(cost);
 		}
 		else {
-			builder.add<int16_t>(item->quantity);
+			builder.add<slot_qty_t>(item->quantity);
 		}
 		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->itemId);
-		uint16_t maxSlot = itemInfo->maxSlot;
+		slot_qty_t maxSlot = itemInfo->maxSlot;
 		if (GameLogicUtilities::isRechargeable(item->itemId)) {
 			maxSlot += rechargeableBonus;
 		}
@@ -135,23 +135,23 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, int16_t rechargeableBonus) {
 	for (const auto &kvp : shop.rechargeables) {
 		if (itemsAdded.find(kvp.first) == std::end(itemsAdded)) {
 			builder
-				.add<int32_t>(kvp.first)
+				.add<item_id_t>(kvp.first)
 				.add<int32_t>(0)
 				.add<double>(kvp.second)
-				.add<int16_t>(ItemDataProvider::getInstance().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
+				.add<slot_qty_t>(ItemDataProvider::getInstance().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
 		}
 	}
 
-	builder.set<int16_t>(shopCount, 6);
+	builder.set<slot_qty_t>(shopCount, 6);
 	return builder;
 }
 
-PACKET_IMPL(npcChat, int8_t type, int32_t npcId, const string_t &text, bool excludeText) {
+PACKET_IMPL(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool excludeText) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NPC_TALK)
 		.add<int8_t>(4)
-		.add<int32_t>(npcId)
+		.add<map_object_t>(npcId)
 		.add<int8_t>(type);
 
 	if (!excludeText) {

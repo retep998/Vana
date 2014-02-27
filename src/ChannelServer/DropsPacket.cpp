@@ -31,7 +31,7 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
 	builder
 		.add<header_t>(SMSG_DROP_ITEM)
 		.add<int8_t>(type)
-		.add<int32_t>(drop->getId())
+		.add<map_object_t>(drop->getId())
 		.add<bool>(drop->isMesos())
 		.add<int32_t>(drop->getObjectId())
 		.add<int32_t>(drop->getOwner()) // Owner of drop
@@ -52,13 +52,13 @@ PACKET_IMPL(showDrop, Drop *drop, int8_t type, const Pos &origin) {
 	return builder;
 }
 
-PACKET_IMPL(takeDrop, int32_t playerId, int32_t dropId, int8_t petIndex) {
+PACKET_IMPL(takeDrop, player_id_t playerId, map_object_t dropId, int8_t petIndex) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_DROP_PICKUP)
 		.add<int8_t>(petIndex != -1 ? 5 : 2)
-		.add<int32_t>(dropId)
-		.add<int32_t>(playerId);
+		.add<map_object_t>(dropId)
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
@@ -70,21 +70,21 @@ PACKET_IMPL(dontTake) {
 	return builder;
 }
 
-PACKET_IMPL(removeDrop, int32_t dropId) {
+PACKET_IMPL(removeDrop, map_object_t dropId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_DROP_PICKUP)
 		.add<int8_t>(0)
-		.add<int32_t>(dropId);
+		.add<map_object_t>(dropId);
 	return builder;
 }
 
-PACKET_IMPL(explodeDrop, int32_t dropId) {
+PACKET_IMPL(explodeDrop, map_object_t dropId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_DROP_PICKUP)
 		.add<int8_t>(4)
-		.add<int32_t>(dropId)
+		.add<map_object_t>(dropId)
 		.add<int16_t>(655);
 	return builder;
 }
@@ -107,19 +107,19 @@ PACKET_IMPL(cantGetAnymoreItems) {
 	return builder;
 }
 
-PACKET_IMPL(pickupDrop, int32_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
+PACKET_IMPL(pickupDrop, map_object_t id, int32_t amount, bool isMesos, int16_t cafeBonus) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(0)
 		.add<bool>(isMesos)
-		.add<int32_t>(id);
+		.add<map_object_t>(id);
 
 	if (isMesos) {
 		builder.add<int16_t>(cafeBonus);
 	}
 	else if (GameLogicUtilities::getInventory(id) != Inventories::EquipInventory) {
-		builder.add<int16_t>(static_cast<int16_t>(amount));
+		builder.add<slot_qty_t>(static_cast<slot_qty_t>(amount));
 	}
 	if (!isMesos) {
 		builder
@@ -129,14 +129,14 @@ PACKET_IMPL(pickupDrop, int32_t id, int32_t amount, bool isMesos, int16_t cafeBo
 	return builder;
 }
 
-PACKET_IMPL(pickupDropSpecial, int32_t id) {
+PACKET_IMPL(pickupDropSpecial, map_object_t id) {
 	PacketBuilder builder;
 	// This builder is used for PQ drops (maybe, got it from the Wing of the Wind item) and monster cards
 	builder
 		.add<header_t>(SMSG_NOTICE)
 		.add<int8_t>(0)
 		.add<int8_t>(2)
-		.add<int32_t>(id);
+		.add<map_object_t>(id);
 	return builder;
 }
 

@@ -25,8 +25,8 @@ struct TradeInfo;
 
 namespace TradeHandler {
 	auto tradeHandler(Player *player, PacketReader &reader) -> void;
-	auto removeTrade(int32_t id) -> void;
+	auto removeTrade(trade_id_t id) -> void;
 	auto cancelTrade(Player *player) -> void;
 
-	auto getTaxLevel(int32_t mesos) -> int32_t;
+	auto getTaxLevel(mesos_t mesos) -> int32_t;
 }

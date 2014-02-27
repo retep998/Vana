@@ -25,7 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Player;
 
-using ChatHandlerFunction = bool(*)(Player *, const string_t &args);
+enum class ChatResult {
+	HandledDisplay,
+	ShowSyntax,
+};
+
+using ChatHandlerFunction = ChatResult(*)(Player *, const string_t &args);
 struct ChatCommand {
 	auto addToMap() -> ChatCommand {
 		// Duplicates the command and then clears the data to ease addition syntax, intentionally leaving out level
@@ -42,13 +47,13 @@ struct ChatCommand {
 };
 
 struct MapPair {
-	MapPair(int32_t mapId, string_t category) :
+	MapPair(map_id_t mapId, string_t category) :
 		mapId(mapId),
 		category(category)
 	{
 	}
 
-	int32_t mapId;
+	map_id_t mapId;
 	string_t category;
 };
 
@@ -58,10 +63,10 @@ namespace ChatHandlerFunctions {
 
 	auto initialize() -> void;
 	auto getMessageType(const string_t &query) -> int8_t;
-	auto getMap(const string_t &query, Player *player) -> int32_t;
-	auto getJob(const string_t &query) -> int16_t;
+	auto getMap(const string_t &query, Player *player) -> map_id_t;
+	auto getJob(const string_t &query) -> job_id_t;
 	auto getBanString(int8_t reason) -> string_t;
-	auto runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> bool;
+	auto runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> MatchResult;
 	auto showSyntax(Player *player, const string_t &command, bool fromHelp = false) -> void;
 	auto showError(Player *player, const string_t &message) -> void;
 	auto showInfo(Player *player, const string_t &message) -> void;

@@ -61,12 +61,12 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 	builder
 		.add<header_t>(SMSG_BUDDY)
 		.add<int8_t>(0x09)
-		.add<int32_t>(invite.id)
+		.add<player_id_t>(invite.id)
 		.add<string_t>(invite.name)
-		.add<int32_t>(invite.id)
+		.add<player_id_t>(invite.id)
 		.add<string_t>(invite.name, 13)
 		.add<uint8_t>(OppositeStatus::Requested) // Buddy status
-		.add<uint32_t>(-1) // Doesn't appear to matter
+		.add<int32_t>(-1) // Doesn't appear to matter
 		.add<string_t>("Default Group", 13) // Needs to be set to "Default Group", because it's automatically added.
 		.add<int8_t>(0x00)
 		.add<int8_t>(20) // Seems to be the amount of buddy slots for the character...
@@ -76,12 +76,12 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 	return builder;
 }
 
-PACKET_IMPL(online, int32_t charId, int32_t channel) {
+PACKET_IMPL(online, player_id_t charId, channel_id_t channel) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_BUDDY)
 		.add<int8_t>(0x14)
-		.add<int32_t>(charId)
+		.add<player_id_t>(charId)
 		.add<int8_t>(0)
 		.add<int32_t>(channel);
 	return builder;

@@ -16,20 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PingPacket.hpp"
-#include "AbstractConnection.hpp"
 #include "CmsgHeader.hpp"
 #include "Session.hpp"
 #include "SmsgHeader.hpp"
 
 namespace PingPacket {
 
-PACKET_IMPL(ping, AbstractConnection *connection) {
+PACKET_IMPL(ping) {
 	PacketBuilder builder;
 	builder.add<header_t>(SMSG_PING);
 	return builder;
 }
 
-PACKET_IMPL(pong, AbstractConnection *connection) {
+PACKET_IMPL(pong) {
 	PacketBuilder builder;
 	builder.add<header_t>(CMSG_PONG);
 	return builder;

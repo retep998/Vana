@@ -32,8 +32,8 @@ class Player;
 struct MapleTvMessage {
 	bool hasReceiver = false;
 	int32_t time = 0;
-	int32_t megaphoneId = 0;
-	int32_t senderId = 0;
+	item_id_t megaphoneId = 0;
+	player_id_t senderId = 0;
 	uint32_t counter = 0;
 	string_t msg1;
 	string_t msg2;
@@ -51,8 +51,8 @@ class MapleTvs : public TimerContainerHolder {
 public:
 	auto addMap(Map *map) -> void;
 
-	auto addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, int32_t megaphoneId, int32_t time) -> void;
-	auto isMapleTvMap(int32_t id) const -> bool;
+	auto addMessage(Player *sender, Player *receiver, const string_t &msg, const string_t &msg2, const string_t &msg3, const string_t &msg4, const string_t &msg5, item_id_t megaphoneId, int32_t time) -> void;
+	auto isMapleTvMap(map_id_t id) const -> bool;
 	auto hasMessage() const -> bool;
 	auto getCounter() -> uint32_t;
 	auto getCurrentMessage() const -> const MapleTvMessage &;
@@ -65,5 +65,5 @@ private:
 	uint32_t m_counter = 0;
 	MapleTvMessage m_currentMessage;
 	queue_t<MapleTvMessage> m_buffer;
-	hash_map_t<int32_t, Map *> m_maps;
+	hash_map_t<map_id_t, Map *> m_maps;
 };

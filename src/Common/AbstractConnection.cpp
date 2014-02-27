@@ -43,7 +43,7 @@ auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 		switch (reader.peek<header_t>()) {
 			case SMSG_PING:
 				if (m_isServer) {
-					send(PingPacket::pong(this));
+					send(PingPacket::pong());
 				}
 				break;
 			case CMSG_PONG:
@@ -90,7 +90,7 @@ auto AbstractConnection::ping() -> void {
 
 		m_isPinged = true;
 		m_lastPing = TimeUtilities::getNow();
-		send(PingPacket::ping(this));
+		send(PingPacket::ping());
 	}
 }
 

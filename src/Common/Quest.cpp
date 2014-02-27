@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Quest.hpp"
 
-auto Quest::addReward(bool start, const QuestRewardInfo &info, int16_t job) -> void {
+auto Quest::addReward(bool start, const QuestRewardInfo &info, job_id_t job) -> void {
 	auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
 	auto &rewardList = job == -1 ? rewards.universal : rewards.job[job];
 	rewardList.push_back(info);
@@ -40,7 +40,7 @@ auto Quest::forEachRequest(bool start, function_t<IterationResult (const QuestRe
 	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
 }
 
-auto Quest::forEachReward(bool start, int16_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult {
+auto Quest::forEachReward(bool start, job_id_t job, function_t<IterationResult (const QuestRewardInfo &)> func) const -> CompletionResult {
 	bool broken = false;
 	const auto &rewards = start ? m_beginState.rewards : m_endState.rewards;
 	for (const auto &reward : rewards.universal) {
@@ -63,18 +63,18 @@ auto Quest::forEachReward(bool start, int16_t job, function_t<IterationResult (c
 	return broken ? CompletionResult::Incomplete : CompletionResult::Complete;
 }
 
-auto Quest::getNextQuest() const -> uint16_t {
+auto Quest::getNextQuest() const -> quest_id_t {
 	return m_nextQuest;
 }
 
-auto Quest::getQuestId() const -> uint16_t {
+auto Quest::getQuestId() const -> quest_id_t {
 	return m_id;
 }
 
-auto Quest::setNextQuest(uint16_t questId) -> void {
+auto Quest::setNextQuest(quest_id_t questId) -> void {
 	m_nextQuest = questId;
 }
 
-auto Quest::setQuestId(uint16_t questId) -> void {
+auto Quest::setQuestId(quest_id_t questId) -> void {
 	m_id = questId;
 }

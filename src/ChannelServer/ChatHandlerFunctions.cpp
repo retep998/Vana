@@ -634,7 +634,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 }
 
 auto ChatHandlerFunctions::getMap(const string_t &query, Player *player) -> int32_t {
-	int32_t mapId = -1;
+	map_id_t mapId = -1;
 	// Special
 	if (query == "here") mapId = player->getMapId();
 	else if (query == "back") mapId = player->getLastMapId();
@@ -655,8 +655,8 @@ auto ChatHandlerFunctions::getMap(const string_t &query, Player *player) -> int3
 	return mapId;
 }
 
-auto ChatHandlerFunctions::getJob(const string_t &query) -> int16_t {
-	int16_t job = -1;
+auto ChatHandlerFunctions::getJob(const string_t &query) -> job_id_t {
+	job_id_t job = -1;
 	if (query == "beginner") job = Jobs::JobIds::Beginner;
 	else if (query == "warrior") job = Jobs::JobIds::Swordsman;
 	else if (query == "fighter") job = Jobs::JobIds::Fighter;
@@ -724,7 +724,7 @@ auto ChatHandlerFunctions::getJob(const string_t &query) -> int16_t {
 	else if (query == "thunder4") job = Jobs::JobIds::ThunderBreaker4;
 	else {
 		char *endptr;
-		job = static_cast<int16_t>(strtol(query.c_str(), &endptr, 0));
+		job = static_cast<job_id_t>(strtol(query.c_str(), &endptr, 0));
 		if (strlen(endptr) != 0) job = -1;
 	}
 	return job;
@@ -759,12 +759,10 @@ auto ChatHandlerFunctions::getMessageType(const string_t &query) -> int8_t {
 	return ret;
 }
 
-auto ChatHandlerFunctions::runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> bool {
+auto ChatHandlerFunctions::runRegexPattern(const string_t &args, const string_t &pattern, match_t &matches) -> MatchResult {
 	std::regex re;
 	re = pattern; // Why, C++, why?
-	// Compiles matches if successful and will return true
-	// Otherwise returns false
-	return std::regex_match(args, matches, re);
+	return std::regex_match(args, matches, re) ? MatchResult::AnyMatches : MatchResult::NoMatches;
 }
 
 auto ChatHandlerFunctions::showSyntax(Player *player, const string_t &command, bool fromHelp) -> void {

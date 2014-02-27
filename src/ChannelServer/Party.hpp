@@ -32,43 +32,43 @@ class Party {
 	NONCOPYABLE(Party);
 	NO_DEFAULT_CONSTRUCTOR(Party);
 public:
-	Party(int32_t partyId);
+	Party(party_id_t partyId);
 
-	auto setLeader(int32_t playerId, bool showPacket = false) -> void;
-	auto setMember(int32_t playerId, Player *player) -> void;
+	auto setLeader(player_id_t playerId, bool showPacket = false) -> void;
+	auto setMember(player_id_t playerId, Player *player) -> void;
 	auto setInstance(Instance *instance) -> void { m_instance = instance; }
-	auto isLeader(int32_t playerId) const -> bool { return playerId == m_leaderId; }
+	auto isLeader(player_id_t playerId) const -> bool { return playerId == m_leaderId; }
 	auto getMembersCount() const -> int8_t { return m_members.size(); }
-	auto getId() const -> int32_t { return m_partyId; }
-	auto getLeaderId() const -> int32_t { return m_leaderId; }
-	auto getMember(int32_t id) -> Player * { return m_members.find(id) != std::end(m_members) ? m_members[id] : nullptr; }
+	auto getId() const -> party_id_t { return m_partyId; }
+	auto getLeaderId() const -> player_id_t { return m_leaderId; }
+	auto getMember(player_id_t id) -> Player * { return m_members.find(id) != std::end(m_members) ? m_members[id] : nullptr; }
 	auto getLeader() -> Player * { return m_members[m_leaderId]; }
 	auto getInstance() const -> Instance * { return m_instance; }
 
 	// More complicated specific functions
 	auto addMember(Player *player, bool first = false) -> void;
-	auto addMember(int32_t id, const string_t &name, bool first = false) -> void;
+	auto addMember(player_id_t id, const string_t &name, bool first = false) -> void;
 	auto deleteMember(Player *player, bool kicked) -> void;
-	auto deleteMember(int32_t id, const string_t &name, bool kicked) -> void;
+	auto deleteMember(player_id_t id, const string_t &name, bool kicked) -> void;
 	auto disband() -> void;
 	auto showHpBar(Player *player) -> void;
 	auto receiveHpBar(Player *player) -> void;
 	auto silentUpdate() -> void;
 	auto runFunction(function_t<void(Player *)> func) -> void;
 
-	auto warpAllMembers(int32_t mapId, const string_t &portalName = "") -> void;
-	auto isWithinLevelRange(uint8_t lowBound, uint8_t highBound) -> bool;
-	auto checkFootholds(int8_t membercount, const vector_t<vector_t<int16_t>> &footholds) -> bool;
-	auto verifyFootholds(const vector_t<vector_t<int16_t>> &footholds) -> bool;
-	auto getMemberCountOnMap(int32_t mapId) -> int8_t;
+	auto warpAllMembers(map_id_t mapId, const string_t &portalName = "") -> void;
+	auto isWithinLevelRange(player_level_t lowBound, player_level_t highBound) -> bool;
+	auto checkFootholds(int8_t memberCount, const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
+	auto verifyFootholds(const vector_t<vector_t<foothold_id_t>> &footholds) -> Result;
+	auto getMemberCountOnMap(map_id_t mapId) -> int8_t;
 	auto getMemberByIndex(uint8_t index) -> Player *;
-	auto getAllPlayerIds() -> vector_t<int32_t>;
-	auto getPartyMembers(int32_t mapId = -1) -> vector_t<Player *>;
+	auto getAllPlayerIds() -> vector_t<player_id_t>;
+	auto getPartyMembers(map_id_t mapId = -1) -> vector_t<Player *>;
 
-	auto getMembers() const -> const ord_map_t<int32_t, Player *, std::greater<int32_t>> & { return m_members; }
+	auto getMembers() const -> const ord_map_t<player_id_t, Player *, std::greater<player_id_t>> & { return m_members; }
 private:
-	int32_t m_leaderId = 0;
-	int32_t m_partyId = 0;
+	player_id_t m_leaderId = 0;
+	party_id_t m_partyId = 0;
 	Instance *m_instance = nullptr;
-	ord_map_t<int32_t, Player *, std::greater<int32_t>> m_members;
+	ord_map_t<player_id_t, Player *, std::greater<player_id_t>> m_members;
 };

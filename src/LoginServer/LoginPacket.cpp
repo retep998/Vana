@@ -54,12 +54,18 @@ PACKET_IMPL(loginConnect, UserConnection *user, const string_t &username) {
 		.add<header_t>(SMSG_AUTHENTICATION)
 		.add<int32_t>(0)
 		.add<int16_t>(0)
-		.add<int32_t>(user->getUserId());
+		.add<account_id_t>(user->getUserId());
 
 	switch (user->getStatus()) {
-		case PlayerStatus::SetGender: builder.add<int8_t>(PlayerStatus::SetGender); break; // Gender Select
-		case PlayerStatus::SetPin: builder.add<int8_t>(PlayerStatus::PinSelect); break; // Pin Select
-		default: builder.add<int8_t>(user->getGender()); break;
+		case PlayerStatus::SetGender:
+			builder.add<int8_t>(PlayerStatus::SetGender);
+			break;
+		case PlayerStatus::SetPin:
+			builder.add<int8_t>(PlayerStatus::PinSelect);
+			break;
+		default:
+			builder.add<gender_id_t>(user->getGender());
+			break;
 	}
 
 	builder.add<bool>(user->isAdmin()); // Enables commands like /c, /ch, /m, /h... but disables trading
@@ -98,11 +104,11 @@ PACKET_IMPL(pinAssigned) {
 	return builder;
 }
 
-PACKET_IMPL(genderDone, int8_t gender) {
+PACKET_IMPL(genderDone, gender_id_t gender) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_ACCOUNT_GENDER_DONE)
-		.add<int8_t>(gender)
+		.add<gender_id_t>(gender)
 		.add<int8_t>(1);
 	return builder;
 }
@@ -111,7 +117,7 @@ PACKET_IMPL(showWorld, World *world) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
-		.add<int8_t>(world->getId())
+		.add<world_id_t>(world->getId())
 		.add<string_t>(world->getName())
 		.add<int8_t>(world->getRibbon())
 		.add<string_t>(world->getEventMessage())
@@ -119,12 +125,11 @@ PACKET_IMPL(showWorld, World *world) {
 		.add<int16_t>(100)
 		.add<int8_t>(0);
 
-	builder.add<uint8_t>(world->getMaxChannels());
+	builder.add<channel_id_t>(world->getMaxChannels());
 	for (channel_id_t i = 0; i < world->getMaxChannels(); i++) {
 		out_stream_t cnStream;
 		cnStream << world->getName() << "-" << static_cast<int32_t>(i + 1);
-		const string_t &channelName = cnStream.str();
-		builder.add<string_t>(channelName);
+		builder.add<string_t>(cnStream.str());
 
 		if (Channel *channel = world->getChannel(i)) {
 			builder.add<int32_t>(channel->getPopulation());
@@ -135,7 +140,7 @@ PACKET_IMPL(showWorld, World *world) {
 		}
 
 		builder
-			.add<int8_t>(world->getId())
+			.add<world_id_t>(world->getId())
 			.add<uint8_t>(i)
 			.add<uint8_t>(0); // Some sort of state
 	}
@@ -154,7 +159,7 @@ PACKET_IMPL(worldEnd) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_WORLD_LIST)
-		.add<int8_t>(-1);
+		.add<world_id_t>(-1);
 	return builder;
 }
 
@@ -222,7 +227,7 @@ PACKET_IMPL(showViewAllCharacters, world_id_t worldId, const vector_t<Character>
 	builder
 		.add<header_t>(SMSG_PLAYER_GLOBAL_LIST)
 		.add<int8_t>(0)
-		.add<int8_t>(worldId);
+		.add<world_id_t>(worldId);
 
 	builder.add<uint8_t>(chars.size());
 	for (const auto &elem : chars) {
@@ -240,23 +245,23 @@ PACKET_IMPL(showCharacter, const Character &charc) {
 	return builder;
 }
 
-PACKET_IMPL(deleteCharacter, int32_t id, uint8_t result) {
+PACKET_IMPL(deleteCharacter, player_id_t id, uint8_t result) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_DELETE)
-		.add<int32_t>(id)
+		.add<player_id_t>(id)
 		.add<uint8_t>(result);
 	return builder;
 }
 
-PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, int32_t charId) {
+PACKET_IMPL(connectIp, const ClientIp &ip, port_t port, player_id_t charId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_CHANNEL_CONNECT)
 		.add<int16_t>(0)
 		.add<ClientIp>(ip)
 		.add<port_t>(port)
-		.add<int32_t>(charId)
+		.add<player_id_t>(charId)
 		.add<int32_t>(0)
 		.add<int8_t>(0);
 	return builder;

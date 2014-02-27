@@ -26,17 +26,17 @@ struct ReactorStateInfo {
 	int8_t nextState = 0;
 	int16_t type = 0;
 	int16_t itemQuantity = 0;
-	int32_t itemId = 0;
+	item_id_t itemId = 0;
 	int32_t timeout = 0;
 	Rect dimensions;
-	vector_t<int32_t> triggerSkills;
+	vector_t<skill_id_t> triggerSkills;
 };
 
 struct ReactorData {
 	bool removeInFieldSet = false;
 	bool activateByTouch = false;
 	int8_t maxStates = 0;
-	int32_t link = 0;
+	reactor_id_t link = 0;
 	hash_map_t<int8_t, vector_t<ReactorStateInfo>> states;
 };
 
@@ -45,11 +45,11 @@ class ReactorDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getReactorData(int32_t reactorId, bool respectLink = false) const -> const ReactorData &;
+	auto getReactorData(reactor_id_t reactorId, bool respectLink = false) const -> const ReactorData &;
 private:
 	auto loadReactors() -> void;
 	auto loadStates() -> void;
 	auto loadTriggerSkills() -> void;
 
-	hash_map_t<int32_t, ReactorData> m_reactorInfo;
+	hash_map_t<reactor_id_t, ReactorData> m_reactorInfo;
 };

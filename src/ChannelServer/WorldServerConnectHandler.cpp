@@ -68,7 +68,7 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 }
 
 auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
-	const string_t &args = reader.get<string_t>();
+	string_t args = reader.get<string_t>();
 	if (args == "all") {
 		ItemDataProvider::getInstance().loadData();
 		DropDataProvider::getInstance().loadData();

@@ -19,24 +19,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 #include "MiscUtilities.hpp"
 
-auto SkillMacros::load(int32_t charId) -> void {
+auto SkillMacros::load(player_id_t charId) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM " << Database::makeCharTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<int32_t>("skill1"), row.get<int32_t>("skill2"), row.get<int32_t>("skill3")));
+		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<skill_id_t>("skill1"), row.get<skill_id_t>("skill2"), row.get<skill_id_t>("skill3")));
 	}
 }
 
-auto SkillMacros::save(int32_t charId) -> void {
-	static init_list_t<int32_t> nullsInt32 = {0};
-	MiscUtilities::NullableMode nulls = MiscUtilities::NullableMode::NullIfFound;
+auto SkillMacros::save(player_id_t charId) -> void {
+	static init_list_t<skill_id_t> nulls = {0};
+	MiscUtilities::NullableMode nullMode = MiscUtilities::NullableMode::NullIfFound;
 
 	int8_t i = 0;
 	string_t name = "";
 	bool shout = false;
-	opt_int32_t skill1 = 0;
-	opt_int32_t skill2 = 0;
-	opt_int32_t skill3 = 0;
+	optional_t<skill_id_t> skill1 = 0;
+	optional_t<skill_id_t> skill2 = 0;
+	optional_t<skill_id_t> skill3 = 0;
 
 	soci::statement st = (Database::getCharDb().prepare
 		<< "REPLACE INTO " << Database::makeCharTable("skill_macros") << " "
@@ -54,9 +54,9 @@ auto SkillMacros::save(int32_t charId) -> void {
 		if (macro != nullptr) {
 			name = macro->name;
 			shout = macro->shout;
-			skill1 = MiscUtilities::getOptional(macro->skill1, nulls, nullsInt32);
-			skill2 = MiscUtilities::getOptional(macro->skill2, nulls, nullsInt32);
-			skill3 = MiscUtilities::getOptional(macro->skill3, nulls, nullsInt32);
+			skill1 = MiscUtilities::getOptional(macro->skill1, nullMode, nulls);
+			skill2 = MiscUtilities::getOptional(macro->skill2, nullMode, nulls);
+			skill3 = MiscUtilities::getOptional(macro->skill3, nullMode, nulls);
 			st.execute(true);
 		}
 	}

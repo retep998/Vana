@@ -31,14 +31,14 @@ Trades::Trades() :
 {
 }
 
-auto Trades::newTrade(Player *start, Player *recv) -> int32_t {
-	int32_t id = getNewId();
+auto Trades::newTrade(Player *start, Player *recv) -> trade_id_t {
+	trade_id_t id = getNewId();
 	m_trades[id] = make_ref_ptr<ActiveTrade>(start, recv, id);
 	startTimeout(id, start);
 	return id;
 }
 
-auto Trades::removeTrade(int32_t id) -> void {
+auto Trades::removeTrade(trade_id_t id) -> void {
 	if (getTimerSecondsRemaining(id).count() > 0) {
 		stopTimeout(id);
 	}
@@ -55,26 +55,26 @@ auto Trades::removeTrade(int32_t id) -> void {
 	m_trades.erase(id);
 }
 
-auto Trades::getTrade(int32_t id) -> ActiveTrade * {
+auto Trades::getTrade(trade_id_t id) -> ActiveTrade * {
 	return m_trades.find(id) != std::end(m_trades) ? m_trades[id].get() : nullptr;
 }
 
-auto Trades::getTimerSecondsRemaining(int32_t id) -> seconds_t {
-	Timer::Id check(Timer::Types::TradeTimer, id, 0);
-	return getTimers()->getRemainingTime<seconds_t>(check);
+auto Trades::getTimerSecondsRemaining(trade_id_t id) -> seconds_t {
+	Timer::Id timerId(Timer::Types::TradeTimer, id, 0);
+	return getTimers()->getRemainingTime<seconds_t>(timerId);
 }
 
 auto Trades::timeout(Player *sender) -> void {
 	TradeHandler::cancelTrade(sender);
 }
 
-auto Trades::stopTimeout(int32_t id) -> void {
-	Timer::Id rid(Timer::Types::TradeTimer, id, 0);
-	getTimers()->removeTimer(rid);
+auto Trades::stopTimeout(trade_id_t id) -> void {
+	Timer::Id timerId(Timer::Types::TradeTimer, id, 0);
+	getTimers()->removeTimer(timerId);
 }
 
-auto Trades::startTimeout(int32_t id, Player *sender) -> void {
-	Timer::Id tid(Timer::Types::TradeTimer, id, 0);
+auto Trades::startTimeout(trade_id_t id, Player *sender) -> void {
+	Timer::Id timerId(Timer::Types::TradeTimer, id, 0);
 	Timer::Timer::create([this, sender](const time_point_t &now) { this->timeout(sender); },
-		tid, nullptr, TradeTimeout);
+		timerId, nullptr, TradeTimeout);
 }

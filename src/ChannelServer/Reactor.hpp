@@ -27,17 +27,17 @@ class Reactor {
 	NONCOPYABLE(Reactor);
 	NO_DEFAULT_CONSTRUCTOR(Reactor);
 public:
-	Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLeft);
+	Reactor(map_id_t mapId, reactor_id_t reactorId, const Pos &pos, bool facesLeft);
 
 	auto kill() -> void { m_alive = false; }
 	auto revive() -> void { m_alive = true; }
 	auto setState(int8_t state, bool sendPacket) -> void;
-	auto setId(int32_t id) -> void { m_id = id; }
+	auto setId(map_object_t id) -> void { m_id = id; }
 
 	auto getState() const -> int8_t { return m_state; }
-	auto getId() const -> int32_t { return m_id; }
-	auto getReactorId() const -> int32_t { return m_reactorId; }
-	auto getMapId() const -> int32_t { return m_mapId; }
+	auto getId() const -> map_object_t { return m_id; }
+	auto getReactorId() const -> reactor_id_t { return m_reactorId; }
+	auto getMapId() const -> map_id_t { return m_mapId; }
 	auto isAlive() const -> bool { return m_alive; }
 	auto getPos() const -> Pos { return m_pos; }
 	auto facesLeft() const -> bool { return m_facesLeft; }
@@ -49,8 +49,8 @@ private:
 	bool m_alive = true;
 	bool m_facesLeft = false;
 	int8_t m_state = 0;
-	int32_t m_id = 0;
-	int32_t m_reactorId = 0;
-	int32_t m_mapId = 0;
+	map_object_t m_id = 0;
+	reactor_id_t m_reactorId = 0;
+	map_id_t m_mapId = 0;
 	Pos m_pos;
 };

@@ -27,20 +27,18 @@ struct MobSkillLevelInfo;
 struct SkillLevelInfo;
 
 namespace Skills {
-	auto addSkillLevelInfo(int32_t skillId, uint8_t level, const SkillLevelInfo &levelInfo) -> void;
-	auto addMobSkillLevelInfo(uint8_t skillId, uint8_t level, const MobSkillLevelInfo &levelInfo) -> void;
 	auto addSkill(Player *player, PacketReader &reader) -> void;
 	auto cancelSkill(Player *player, PacketReader &reader) -> void;
 	auto useSkill(Player *player, PacketReader &reader) -> void;
 	auto getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<Player *>;
-	auto applySkillCosts(Player *player, int32_t skillId, uint8_t level, bool elementalAmp = false) -> void;
-	auto useAttackSkill(Player *player, int32_t skillId) -> void;
-	auto useAttackSkillRanged(Player *player, int32_t skillId, int16_t pos) -> void;
-	auto heal(Player *player, int16_t value, int32_t skillId) -> void;
-	auto hurt(Player *player, int16_t value, int32_t skillId) -> void;
-	auto stopSkill(Player *player, int32_t skillId, bool fromTimer = false) -> void;
-	auto startCooldown(Player *player, int32_t skillId, int16_t coolTime, bool initialLoad = false) -> void;
-	auto stopCooldown(Player *player, int32_t skillId) -> void;
-	auto isCooling(Player *player, int32_t skillId) -> bool;
-	auto getCooldownTimeLeft(Player *player, int32_t skillId) -> int16_t;
+	auto applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp = false) -> void;
+	auto useAttackSkill(Player *player, skill_id_t skillId) -> void;
+	auto useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos) -> void;
+	auto heal(Player *player, int16_t value, skill_id_t skillId) -> void;
+	auto hurt(Player *player, int16_t value, skill_id_t skillId) -> void;
+	auto stopSkill(Player *player, skill_id_t skillId, bool fromTimer = false) -> void;
+	auto startCooldown(Player *player, skill_id_t skillId, int16_t coolTime, bool initialLoad = false) -> void;
+	auto stopCooldown(Player *player, skill_id_t skillId) -> void;
+	auto isCooling(Player *player, skill_id_t skillId) -> bool;
+	auto getCooldownTimeLeft(Player *player, skill_id_t skillId) -> int16_t;
 }

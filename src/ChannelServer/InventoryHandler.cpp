@@ -45,16 +45,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ValidCharDataProvider.hpp"
 
 auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int8_t inv = reader.get<int8_t>();
-	int16_t slot1 = reader.get<int16_t>();
-	int16_t slot2 = reader.get<int16_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_t inv = reader.get<inventory_t>();
+	inventory_slot_t slot1 = reader.get<inventory_slot_t>();
+	inventory_slot_t slot2 = reader.get<inventory_slot_t>();
 	bool dropped = (slot2 == 0);
 	bool equippedSlot1 = (slot1 < 0);
 	bool equippedSlot2 = (slot2 < 0);
-	int16_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
-	int16_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
-	auto testSlot = [&slot1, &slot2, &strippedSlot1, &strippedSlot2](int16_t testSlot) -> bool {
+	inventory_slot_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
+	inventory_slot_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
+	auto testSlot = [&slot1, &slot2, &strippedSlot1, &strippedSlot2](inventory_slot_t testSlot) -> bool {
 		return (slot1 < 0 && strippedSlot1 == testSlot) || (slot2 < 0 && strippedSlot2 == testSlot);
 	};
 
@@ -86,8 +86,8 @@ auto InventoryHandler::itemMove(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item, int16_t slot, int8_t inv) -> void {
-	int16_t amount = reader.get<int16_t>();
+auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item, inventory_slot_t slot, inventory_t inv) -> void {
+	slot_qty_t amount = reader.get<slot_qty_t>();
 	if (!GameLogicUtilities::isStackable(item->getId())) {
 		amount = item->getAmount();
 	}
@@ -132,9 +132,9 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 }
 
 auto InventoryHandler::useItem(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	const int16_t amountUsed = 1;
 	if (player->getStats()->isDead() || player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, slot) < amountUsed) {
 		// Hacking
@@ -155,14 +155,14 @@ auto InventoryHandler::useItem(Player *player, PacketReader &reader) -> void {
 }
 
 auto InventoryHandler::cancelItem(Player *player, PacketReader &reader) -> void {
-	int32_t itemId = reader.get<int32_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	Buffs::endBuff(player, itemId);
 }
 
 auto InventoryHandler::useSkillbook(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
@@ -176,8 +176,8 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &reader) -> voi
 		return;
 	}
 
-	int32_t skillId = 0;
-	uint8_t newMaxLevel = 0;
+	skill_id_t skillId = 0;
+	skill_level_t newMaxLevel = 0;
 	bool use = false;
 	bool succeed = false;
 
@@ -205,13 +205,13 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &reader) -> voi
 }
 
 auto InventoryHandler::useChair(Player *player, PacketReader &reader) -> void {
-	int32_t chairId = reader.get<int32_t>();
+	item_id_t chairId = reader.get<item_id_t>();
 	player->setChair(chairId);
 	player->sendMap(InventoryPacket::sitChair(player->getId(), chairId));
 }
 
 auto InventoryHandler::handleChair(Player *player, PacketReader &reader) -> void {
-	int16_t chair = reader.get<int16_t>();
+	seat_id_t chair = reader.get<seat_id_t>();
 	Map *map = player->getMap();
 	if (chair == -1) {
 		if (player->getChair() != 0) {
@@ -237,9 +237,9 @@ auto InventoryHandler::handleChair(Player *player, PacketReader &reader) -> void
 }
 
 auto InventoryHandler::useSummonBag(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 
 	auto itemInfo = ItemDataProvider::getInstance().getItemSummons(itemId);
 	if (itemInfo == nullptr) {
@@ -265,9 +265,9 @@ auto InventoryHandler::useSummonBag(Player *player, PacketReader &reader) -> voi
 }
 
 auto InventoryHandler::useReturnScroll(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
@@ -282,14 +282,14 @@ auto InventoryHandler::useReturnScroll(Player *player, PacketReader &reader) -> 
 
 	Inventory::takeItemSlot(player, Inventories::UseInventory, slot, 1);
 
-	int32_t map = info->moveTo;
+	map_id_t map = info->moveTo;
 	player->setMap(map == Maps::NoMap ? player->getMap()->getReturnMap() : map);
 }
 
 auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int16_t equipSlot = reader.get<int16_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	inventory_slot_t equipSlot = reader.get<inventory_slot_t>();
 	bool whiteScroll = (reader.get<int16_t>() == 2);
 	bool legendarySpirit = reader.get<bool>();
 
@@ -300,7 +300,7 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	int32_t itemId = item->getId();
+	item_id_t itemId = item->getId();
 	int8_t succeed = -1;
 	bool cursed = false;
 	ItemDataProvider::getInstance().scrollItem(itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed);
@@ -339,9 +339,8 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 }
 
 auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void {
-	reader.get<int8_t>(); // Type
-	reader.skipBytes(1);
-	int32_t itemId = reader.get<int32_t>();
+	reader.skipBytes(2); // Type?
+	item_id_t itemId = reader.get<item_id_t>();
 
 	if (player->getInventory()->getItemAmount(itemId) == 0) {
 		// Hacking
@@ -352,7 +351,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
 		string_t message = reader.get<string_t>();
-		uint32_t ticks = reader.get<uint32_t>();
+		tick_count_t ticks = reader.get<tick_count_t>();
 		if (message.length() <= 35) {
 			Map *map = player->getMap();
 			message = player->getName() + " 's message : " + message;
@@ -381,8 +380,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::SecondJobSpReset:
 			case Items::ThirdJobSpReset:
 			case Items::FourthJobSpReset: {
-				int32_t toSkill = reader.get<int32_t>();
-				int32_t fromSkill = reader.get<int32_t>();
+				skill_id_t toSkill = reader.get<int32_t>();
+				skill_id_t fromSkill = reader.get<int32_t>();
 				if (!player->getSkills()->addSkillLevel(fromSkill, -1, true)) {
 					// Hacking
 					return;
@@ -441,8 +440,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				bool whisper = reader.get<bool>();
 				Item *item = nullptr;
 				if (reader.get<bool>()) {
-					int8_t inv = static_cast<int8_t>(reader.get<int32_t>());
-					int16_t slot = static_cast<int16_t>(reader.get<int32_t>());
+					inventory_t inv = static_cast<inventory_t>(reader.get<int32_t>());
+					inventory_slot_t slot = static_cast<inventory_slot_t>(reader.get<int32_t>());
 					item = player->getInventory()->getItem(inv, slot);
 					if (item == nullptr) {
 						// Hacking
@@ -480,7 +479,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				break;
 			}
 			case Items::PetNameTag: {
-				const string_t &name = reader.get<string_t>();
+				string_t name = reader.get<string_t>();
 				if (ValidCharDataProvider::getInstance().isForbiddenName(name) || CurseDataProvider::getInstance().isCurseWord(name)) {
 					// Don't think it's hacking, but it should be forbidden
 					return;
@@ -492,7 +491,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				break;
 			}
 			case Items::ItemNameTag: {
-				int16_t slot = reader.get<int16_t>();
+				inventory_slot_t slot = reader.get<inventory_slot_t>();
 				if (slot != 0) {
 					Item *item = player->getInventory()->getItem(Inventories::EquipInventory, slot);
 					if (item == nullptr) {
@@ -510,8 +509,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			}
 			case Items::ScissorsOfKarma:
 			case Items::ItemLock: {
-				int8_t inv = static_cast<int8_t>(reader.get<int32_t>());
-				int16_t slot = static_cast<int16_t>(reader.get<int32_t>());
+				inventory_t inv = static_cast<inventory_t>(reader.get<int32_t>());
+				inventory_slot_t slot = static_cast<inventory_slot_t>(reader.get<int32_t>());
 				if (slot != 0) {
 					Item *item = player->getInventory()->getItem(inv, slot);
 					if (item == nullptr) {
@@ -559,7 +558,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					string_t msg3 = reader.get<string_t>();
 					string_t msg4 = reader.get<string_t>();
 					string_t msg5 = reader.get<string_t>();
-					uint32_t ticks = reader.get<uint32_t>();
+					tick_count_t ticks = reader.get<tick_count_t>();
 
 					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
@@ -584,7 +583,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				string_t msg3 = reader.get<string_t>();
 				string_t msg4 = reader.get<string_t>();
 				string_t msg5 = reader.get<string_t>();
-				uint32_t ticks = reader.get<uint32_t>();
+				tick_count_t ticks = reader.get<tick_count_t>();
 
 				MapleTvs::getInstance().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
@@ -611,7 +610,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					string_t msg3 = reader.get<string_t>();
 					string_t msg4 = reader.get<string_t>();
 					string_t msg5 = reader.get<string_t>();
-					uint32_t ticks = reader.get<uint32_t>();
+					tick_count_t ticks = reader.get<tick_count_t>();
 
 					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 
@@ -629,7 +628,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::BronzeSackOfMesos:
 			case Items::SilverSackOfMesos:
 			case Items::GoldSackOfMesos: {
-				int32_t mesos = itemInfo->mesos;
+				mesos_t mesos = itemInfo->mesos;
 				if (!player->getInventory()->modifyMesos(mesos)) {
 					player->send(InventoryPacket::sendMesobagFailed());
 				}
@@ -653,8 +652,8 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				used = true;
 				break;
 			case Items::ViciousHammer: {
-				int8_t inv = static_cast<int8_t>(reader.get<int32_t>());
-				int16_t slot = static_cast<int16_t>(reader.get<int32_t>());
+				inventory_t inv = static_cast<inventory_t>(reader.get<int32_t>());
+				inventory_slot_t slot = static_cast<inventory_slot_t>(reader.get<int32_t>());
 				Item *item = player->getInventory()->getItem(inv, slot);
 				if (item == nullptr || item->getHammers() == Items::MaxHammers || EquipDataProvider::getInstance().getSlots(item->getId()) == 0) {
 					// Hacking, probably
@@ -682,7 +681,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 }
 
 auto InventoryHandler::useItemEffect(Player *player, PacketReader &reader) -> void {
-	int32_t itemId = reader.get<int32_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	if (player->getInventory()->getItemAmount(itemId) == 0) {
 		// Hacking
 		return;
@@ -701,11 +700,11 @@ auto InventoryHandler::handleRockFunctions(Player *player, PacketReader &reader)
 	};
 
 	if (mode == Remove) {
-		int32_t map = reader.get<int32_t>();
+		map_id_t map = reader.get<map_id_t>();
 		player->getInventory()->delRockMap(map, type);
 	}
 	else if (mode == Add) {
-		int32_t map = player->getMapId();
+		map_id_t map = player->getMapId();
 		Map *m = Maps::getMap(map);
 		if (m->canVip() && m->getContinent() != 0) {
 			player->getInventory()->addRockMap(map, type);
@@ -728,21 +727,21 @@ auto InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 	}
 	bool used = false;
 	int8_t mode = reader.get<int8_t>();
-	int32_t targetMapId = -1;
+	map_id_t targetMapId = -1;
 
 	enum Modes : int8_t {
 		PresetMap = 0x00,
 		Ign = 0x01
 	};
 	if (mode == PresetMap) {
-		targetMapId = reader.get<int32_t>();
+		targetMapId = reader.get<map_id_t>();
 		if (!player->getInventory()->ensureRockDestination(targetMapId)) {
 			// Hacking
 			return false;
 		}
 	}
 	else if (mode == Ign) {
-		const string_t &targetName = reader.get<string_t>();
+		string_t targetName = reader.get<string_t>();
 		Player *target = PlayerDataProvider::getInstance().getPlayer(targetName);
 		if (target != nullptr && target != player) {
 			targetMapId = target->getMapId();
@@ -794,7 +793,7 @@ auto InventoryHandler::handleHammerTime(Player *player) -> void {
 		// Hacking
 		return;
 	}
-	int16_t hammerSlot = player->getInventory()->getHammerSlot();
+	inventory_slot_t hammerSlot = player->getInventory()->getHammerSlot();
 	Item *item = player->getInventory()->getItem(Inventories::EquipInventory, hammerSlot);
 	player->send(InventoryPacket::sendHammerUpdate());
 	player->send(InventoryPacket::sendHulkSmash(hammerSlot, item));
@@ -802,19 +801,19 @@ auto InventoryHandler::handleHammerTime(Player *player) -> void {
 }
 
 auto InventoryHandler::handleRewardItem(Player *player, PacketReader &reader) -> void {
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking or hacking failure
-		player->send(InventoryPacket::blankUpdate()); // We don't want stuck players, do we?
+		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
 	auto rewards = ItemDataProvider::getInstance().getItemRewards(itemId);
 	if (rewards == nullptr) {
 		// Hacking or no information in the database
-		player->send(InventoryPacket::blankUpdate()); // We don't want stuck players, do we?
+		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
@@ -832,9 +831,9 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 		return;
 	}
 
-	uint32_t ticks = reader.get<uint32_t>();
-	int16_t slot = reader.get<int16_t>();
-	int32_t itemId = reader.get<int32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
+	inventory_slot_t slot = reader.get<inventory_slot_t>();
+	item_id_t itemId = reader.get<item_id_t>();
 
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 	if (item == nullptr || item->getId() != itemId) {
@@ -843,14 +842,14 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 		return;
 	}
 
-	const string_t &scriptName = ScriptDataProvider::getInstance().getScript(itemId, ScriptTypes::Item);
-	if (scriptName == "") {
+	string_t scriptName = ScriptDataProvider::getInstance().getScript(itemId, ScriptTypes::Item);
+	if (scriptName.empty()) {
 		// Hacking or no script for item found
 		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
-	int32_t npcId = ItemDataProvider::getInstance().getItemInfo(itemId)->npc;
+	npc_id_t npcId = ItemDataProvider::getInstance().getItemInfo(itemId)->npc;
 
 	// Let's run the NPC
 	Npc *npc = new Npc(npcId, player, scriptName);

@@ -26,9 +26,9 @@ class Player;
 
 struct MonsterCard {
 	MonsterCard() = default;
-	MonsterCard(int32_t id, uint8_t level) : id(id), level(level) { }
+	MonsterCard(item_id_t id, uint8_t level) : id(id), level(level) { }
 
-	int32_t id = 0;
+	item_id_t id = 0;
 	uint8_t level = 0;
 };
 
@@ -42,24 +42,24 @@ public:
 	auto save() -> void;
 	auto connectData(PacketBuilder &packet) -> void;
 
-	auto addCard(int32_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
+	auto addCard(item_id_t itemId, uint8_t level = 1, bool initialLoad = false) -> bool;
 	auto calculateLevel() -> void;
 	auto infoData(PacketBuilder &packet) -> void;
 	auto setCover(int32_t newCover) -> void { m_cover = newCover; }
 
-	auto getCard(int32_t cardId) -> MonsterCard *;
-	auto getCardLevel(int32_t cardId) -> uint8_t;
+	auto getCard(item_id_t cardId) -> MonsterCard *;
+	auto getCardLevel(item_id_t cardId) -> uint8_t;
 	auto getSpecials() const -> int32_t { return m_specialCount; }
 	auto getNormals() const -> int32_t { return m_normalCount; }
 	auto getSize() const -> int32_t { return static_cast<int32_t>(m_cards.size()); }
 	auto getLevel() const -> int32_t { return m_level; }
 	auto getCover() const -> int32_t { return m_cover; }
-	auto isFull(int32_t cardId) -> bool;
+	auto isFull(item_id_t cardId) -> bool;
 private:
 	int32_t m_specialCount = 0;
 	int32_t m_normalCount = 0;
 	int32_t m_level = 1;
 	int32_t m_cover = 0;
 	Player *m_player = nullptr;
-	hash_map_t<int32_t, MonsterCard> m_cards;
+	hash_map_t<item_id_t, MonsterCard> m_cards;
 };

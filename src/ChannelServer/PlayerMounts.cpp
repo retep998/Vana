@@ -28,8 +28,8 @@ PlayerMounts::PlayerMounts(Player *p) :
 
 auto PlayerMounts::save() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
-	int32_t itemId = 0;
+	player_id_t charId = m_player->getId();
+	item_id_t itemId = 0;
 	int16_t exp = 0;
 	uint8_t tiredness = 0;
 	uint8_t level = 0;
@@ -59,17 +59,16 @@ auto PlayerMounts::save() -> void {
 
 auto PlayerMounts::load() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
-	MountData c;
+	player_id_t charId = m_player->getId();
 
 	soci::rowset<> rs = (sql.prepare << "SELECT m.* FROM " << Database::makeCharTable("mounts") << " m WHERE m.character_id = :char ", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		c = MountData();
+		MountData c;
 		c.exp = row.get<int16_t>("exp");
 		c.level = row.get<int8_t>("level");
 		c.tiredness = row.get<int8_t>("tiredness");
-		m_mounts[row.get<int32_t>("mount_id")] = c;
+		m_mounts[row.get<item_id_t>("mount_id")] = c;
 	}
 }
 
@@ -85,19 +84,19 @@ auto PlayerMounts::getCurrentTiredness() -> int8_t {
 	return m_currentMount != 0 ? m_mounts[m_currentMount].tiredness : 0;
 }
 
-auto PlayerMounts::getMountExp(int32_t id) -> int16_t {
+auto PlayerMounts::getMountExp(item_id_t id) -> int16_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].exp : 0;
 }
 
-auto PlayerMounts::getMountLevel(int32_t id) -> int8_t {
+auto PlayerMounts::getMountLevel(item_id_t id) -> int8_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].level : 0;
 }
 
-auto PlayerMounts::getMountTiredness(int32_t id) -> int8_t {
+auto PlayerMounts::getMountTiredness(item_id_t id) -> int8_t {
 	return m_mounts.find(id) != std::end(m_mounts) ? m_mounts[id].tiredness : 0;
 }
 
-auto PlayerMounts::addMount(int32_t id) -> void {
+auto PlayerMounts::addMount(item_id_t id) -> void {
 	MountData c;
 	c.exp = 0;
 	c.level = 1;

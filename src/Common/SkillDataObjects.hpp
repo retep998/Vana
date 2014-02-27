@@ -32,7 +32,7 @@ struct SkillLevelInfo {
 	uint8_t criticalDamage = 0;
 	int16_t mp = 0;
 	int16_t hp = 0;
-	int16_t itemCount = 0;
+	slot_qty_t itemCount = 0;
 	int16_t bulletConsume = 0;
 	int16_t moneyConsume = 0;
 	int16_t x = 0;
@@ -53,34 +53,34 @@ struct SkillLevelInfo {
 	uint16_t hpProp = 0;
 	uint16_t mpProp = 0;
 	uint16_t prop = 0;
-	int32_t fixedDamage = 0;
-	int32_t item = 0;
+	damage_t fixedDamage = 0;
+	item_id_t item = 0;
 	int32_t time = 0;
-	int32_t optionalItem = 0;
+	item_id_t optionalItem = 0;
 	Rect dimensions;
 };
 
 struct ChargeOrStationarySkillInfo {
-	uint8_t level = 0;
+	skill_level_t level = 0;
 	uint8_t weaponSpeed = 0;
 	uint8_t direction = 0;
-	int32_t skillId = 0;
+	skill_id_t skillId = 0;
 };
 
 struct ReturnDamageInfo {
 	bool isPhysical = true;
 	uint8_t reduction = 0;
-	int32_t damage = 0;
-	int32_t mapMobId = 0;
+	damage_t damage = 0;
+	map_object_t mapMobId = 0;
 	Pos pos;
 };
 
 struct MpEaterInfo {
 	bool used = false;
-	uint8_t level = 0;
+	skill_level_t level = 0;
 	int16_t x = 0;
 	uint16_t prop = 0;
-	int32_t skillId = 0;
+	skill_id_t skillId = 0;
 };
 
 struct MobSkillLevelInfo {
@@ -95,11 +95,11 @@ struct MobSkillLevelInfo {
 	int32_t x = 0;
 	int32_t y = 0;
 	Rect dimensions;
-	vector_t<int32_t> summons;
+	vector_t<mob_id_t> summons;
 };
 
 struct BanishField {
-	int32_t field = Maps::NoMap;
+	map_id_t field = Maps::NoMap;
 	string_t message;
 	string_t portal;
 };
@@ -132,17 +132,17 @@ struct Attack {
 	uint8_t weaponSpeed = 0;
 	uint8_t animation = 0;
 	uint8_t weaponClass = 0;
-	uint8_t skillLevel = 0;
+	skill_level_t skillLevel = 0;
 	uint8_t portals = 0;
-	int16_t starPos = -1;
-	int16_t cashStarPos = -1;
-	int32_t skillId = 0;
-	int32_t summonId = 0;
-	int32_t charge = 0;
-	int32_t starId = 0;
-	uint32_t ticks = 0;
+	inventory_slot_t starPos = -1;
+	inventory_slot_t cashStarPos = -1;
+	skill_id_t skillId = 0;
+	summon_id_t summonId = 0;
+	charge_time_t charge = 0;
+	item_id_t starId = 0;
+	tick_count_t ticks = 0;
 	int64_t totalDamage = 0;
 	Pos projectilePos;
 	Pos playerPos;
-	hash_map_t<int32_t, vector_t<int32_t>> damages;
+	hash_map_t<map_object_t, vector_t<damage_t>> damages;
 };

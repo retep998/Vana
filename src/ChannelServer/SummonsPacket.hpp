@@ -26,8 +26,10 @@ class Summon;
 struct Pos;
 
 namespace SummonsPacket {
-	SPLIT_PACKET(showSummon, int32_t playerId, Summon *summon, bool animated);
-	SPLIT_PACKET(moveSummon, int32_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen);
-	SPLIT_PACKET(removeSummon, int32_t playerId, Summon *summon, int8_t message);
-	SPLIT_PACKET(damageSummon, int32_t playerId, int32_t summonId, int8_t unk, int32_t damage, int32_t mobId);
+	SPLIT_PACKET(showSummon, player_id_t playerId, Summon *summon, bool isMapEntry = true);
+	SPLIT_PACKET(moveSummon, player_id_t playerId, Summon *summon, const Pos &startPos, unsigned char *buf, int32_t bufLen);
+	SPLIT_PACKET(removeSummon, player_id_t playerId, Summon *summon, int8_t message);
+	SPLIT_PACKET(damageSummon, player_id_t playerId, summon_id_t summonId, int8_t unk, damage_t damage, map_object_t mobId);
+	PACKET(summonSkill, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level);
+	SPLIT_PACKET(summonSkillEffect, player_id_t playerId, skill_id_t skillId, uint8_t display, skill_level_t level);
 }

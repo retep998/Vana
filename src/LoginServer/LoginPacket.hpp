@@ -57,7 +57,7 @@ namespace LoginPacket {
 	PACKET(loginProcess, int8_t id);
 	PACKET(loginConnect, UserConnection *user, const string_t &username);
 	PACKET(pinAssigned);
-	PACKET(genderDone, int8_t gender);
+	PACKET(genderDone, gender_id_t gender);
 	PACKET(showWorld, World *world);
 	PACKET(worldEnd);
 	PACKET(showChannels, int8_t status);
@@ -68,7 +68,7 @@ namespace LoginPacket {
 	PACKET(showCharacters, const vector_t<Character> &chars, int32_t maxChars);
 	PACKET(showCharacter, const Character &charc);
 	PACKET(checkName, const string_t &name, uint8_t message);
-	PACKET(deleteCharacter, int32_t id, uint8_t result);
-	PACKET(connectIp, const ClientIp &ip, port_t port, int32_t charId);
+	PACKET(deleteCharacter, player_id_t id, uint8_t result);
+	PACKET(connectIp, const ClientIp &ip, port_t port, player_id_t charId);
 	PACKET(relogResponse);
 }

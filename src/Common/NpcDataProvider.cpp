@@ -32,8 +32,8 @@ auto NpcDataProvider::loadData() -> void {
 
 	for (const auto &row : rs) {
 		NpcData npc;
-		int32_t id = row.get<int32_t>("npcid");
-		npc.storageCost = row.get<int32_t>("storage_cost");
+		npc_id_t id = row.get<npc_id_t>("npcid");
+		npc.storageCost = row.get<mesos_t>("storage_cost");
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&npc](const string_t &cmp) {
 			if (cmp == "maple_tv") npc.isMapleTv = true;
@@ -46,18 +46,18 @@ auto NpcDataProvider::loadData() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto NpcDataProvider::getStorageCost(int32_t npc) const -> int32_t {
+auto NpcDataProvider::getStorageCost(npc_id_t npc) const -> mesos_t {
 	return m_data.find(npc)->second.storageCost;
 }
 
-auto NpcDataProvider::isMapleTv(int32_t npc) const -> bool {
+auto NpcDataProvider::isMapleTv(npc_id_t npc) const -> bool {
 	return m_data.find(npc)->second.isMapleTv;
 }
 
-auto NpcDataProvider::isGuildRank(int32_t npc) const -> bool {
+auto NpcDataProvider::isGuildRank(npc_id_t npc) const -> bool {
 	return m_data.find(npc)->second.isGuildRank;
 }
 
-auto NpcDataProvider::isValidNpcId(int32_t npc) const -> bool {
+auto NpcDataProvider::isValidNpcId(npc_id_t npc) const -> bool {
 	return ext::is_element(m_data, npc);
 }

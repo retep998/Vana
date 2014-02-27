@@ -28,12 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Reactor.hpp"
 #include <string>
 
-LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t reactorId, int32_t mapId) :
+LuaReactor::LuaReactor(const string_t &filename, player_id_t playerId, reactor_id_t reactorId, map_id_t mapId) :
 	LuaScriptable(filename, playerId),
 	m_reactorId(reactorId)
 {
-	set<int32_t>("system_reactorId", reactorId);
-	set<int32_t>("system_mapId", mapId);
+	set<reactor_id_t>("system_reactorId", reactorId);
+	set<map_id_t>("system_mapId", mapId);
 
 	// Reactor
 	expose("getState", &LuaExports::getState);
@@ -54,8 +54,9 @@ LuaReactor::LuaReactor(const string_t &filename, int32_t playerId, int32_t react
 auto LuaExports::getReactor(lua_State *luaVm) -> Reactor * {
 	lua_getglobal(luaVm, "system_reactorId");
 	lua_getglobal(luaVm, "system_mapId");
-	int32_t reactorId = lua_tointeger(luaVm, -2);
-	int32_t mapId = lua_tointeger(luaVm, -1);
+	reactor_id_t reactorId = lua_tointeger(luaVm, -2);
+	map_id_t mapId = lua_tointeger(luaVm, -1);
+	lua_pop(luaVm, 2);
 	return Maps::getMap(mapId)->getReactor(reactorId);
 }
 
@@ -80,7 +81,7 @@ auto LuaExports::setStateReactor(lua_State *luaVm) -> int {
 
 // Miscellaneous
 auto LuaExports::dropItemReactor(lua_State *luaVm) -> int {
-	int32_t itemId = lua_tointeger(luaVm, 1);
+	item_id_t itemId = lua_tointeger(luaVm, 1);
 	int16_t amount = 1;
 	if (lua_isnumber(luaVm, 2)) {
 		amount = lua_tointeger(luaVm, 2);
@@ -108,7 +109,7 @@ auto LuaExports::getDistanceReactor(lua_State *luaVm) -> int {
 
 // Mob
 auto LuaExports::spawnMobReactor(lua_State *luaVm) -> int {
-	int32_t mobId = lua_tointeger(luaVm, -1);
+	mob_id_t mobId = lua_tointeger(luaVm, -1);
 	Reactor *reactor = getReactor(luaVm);
 	lua_pushinteger(luaVm, Maps::getMap(reactor->getMapId())->spawnMob(mobId, reactor->getPos())->getMapMobId());
 	return 1;
@@ -117,7 +118,7 @@ auto LuaExports::spawnMobReactor(lua_State *luaVm) -> int {
 auto LuaExports::spawnZakum(lua_State *luaVm) -> int {
 	int16_t x = lua_tointeger(luaVm, 1);
 	int16_t y = lua_tointeger(luaVm, 2);
-	int16_t foothold = 0;
+	foothold_id_t foothold = 0;
 	if (lua_isnumber(luaVm, 3)) {
 		foothold = lua_tointeger(luaVm, 3);
 	}

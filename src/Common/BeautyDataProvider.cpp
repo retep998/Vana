@@ -43,7 +43,7 @@ auto BeautyDataProvider::loadSkins() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_skin_data") << " ORDER BY skinid ASC");
 
 	for (const auto &row : rs) {
-		m_skins.push_back(row.get<int8_t>("skinid"));
+		m_skins.push_back(row.get<skin_id_t>("skinid"));
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -55,8 +55,8 @@ auto BeautyDataProvider::loadHair() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_hair_data") << " ORDER BY hairid ASC");
 
 	for (const auto &row : rs) {
-		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		int32_t hair = row.get<int32_t>("hairid");
+		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		hair_id_t hair = row.get<hair_id_t>("hairid");
 		auto &gender = genderId == Gender::Female ? m_female : m_male;
 		gender.hair.push_back(hair);
 	}
@@ -70,8 +70,8 @@ auto BeautyDataProvider::loadFaces() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_face_data") << " ORDER BY faceid ASC");
 
 	for (const auto &row : rs) {
-		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
-		int32_t face = row.get<int32_t>("faceid");
+		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		face_id_t face = row.get<face_id_t>("faceid");
 		auto &gender = genderId == Gender::Female ? m_female : m_male;
 		gender.faces.push_back(face);
 	}
@@ -79,44 +79,44 @@ auto BeautyDataProvider::loadFaces() -> void {
 	std::cout << "DONE" << std::endl;
 }
 
-auto BeautyDataProvider::getRandomSkin() const -> int8_t {
+auto BeautyDataProvider::getRandomSkin() const -> skin_id_t {
 	return *Randomizer::select(m_skins);
 }
 
-auto BeautyDataProvider::getRandomHair(int8_t genderId) const -> int32_t {
+auto BeautyDataProvider::getRandomHair(gender_id_t genderId) const -> hair_id_t {
 	return *Randomizer::select(getGender(genderId).hair);
 }
 
-auto BeautyDataProvider::getRandomFace(int8_t genderId) const -> int32_t {
+auto BeautyDataProvider::getRandomFace(gender_id_t genderId) const -> face_id_t {
 	return *Randomizer::select(getGender(genderId).faces);
 }
 
-auto BeautyDataProvider::getSkins() const -> const vector_t<int8_t> & {
+auto BeautyDataProvider::getSkins() const -> const vector_t<skin_id_t> & {
 	return m_skins;
 }
 
-auto BeautyDataProvider::getHair(int8_t genderId) const -> const vector_t<int32_t> & {
+auto BeautyDataProvider::getHair(gender_id_t genderId) const -> const vector_t<hair_id_t> & {
 	return getGender(genderId).hair;
 }
 
-auto BeautyDataProvider::getFaces(int8_t genderId) const -> const vector_t<int32_t> & {
+auto BeautyDataProvider::getFaces(gender_id_t genderId) const -> const vector_t<face_id_t> & {
 	return getGender(genderId).faces;
 }
 
-auto BeautyDataProvider::isValidHair(int8_t genderId, int32_t hair) const -> bool {
+auto BeautyDataProvider::isValidHair(gender_id_t genderId, hair_id_t hair) const -> bool {
 	const auto &gender = getGender(genderId);
 	return ext::any_of(gender.hair, [hair](int32_t testHair) { return testHair == hair; });
 }
 
-auto BeautyDataProvider::isValidFace(int8_t genderId, int32_t face) const -> bool {
+auto BeautyDataProvider::isValidFace(gender_id_t genderId, face_id_t face) const -> bool {
 	const auto &gender = getGender(genderId);
 	return ext::any_of(gender.faces, [face](int32_t testFace) { return testFace == face; });
 }
 
-auto BeautyDataProvider::isValidSkin(int8_t skin) const -> bool {
-	return ext::any_of(m_skins, [skin](int8_t testSkin) { return testSkin == skin; });
+auto BeautyDataProvider::isValidSkin(skin_id_t skin) const -> bool {
+	return ext::any_of(m_skins, [skin](skin_id_t testSkin) { return testSkin == skin; });
 }
 
-auto BeautyDataProvider::getGender(int8_t genderId) const -> const ValidLook & {
+auto BeautyDataProvider::getGender(gender_id_t genderId) const -> const ValidLook & {
 	return genderId == Gender::Female ? m_female : m_male;
 }
