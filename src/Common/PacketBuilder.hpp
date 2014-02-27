@@ -44,6 +44,7 @@ public:
 	template <typename TValue>
 	auto set(const TValue &value, size_t pos) -> PacketBuilder &;
 
+	auto addBytes(const string_t &hex) -> PacketBuilder &;
 	auto addBytes(const char *hex) -> PacketBuilder &;
 	auto addBuffer(const unsigned char *bytes, size_t len) -> PacketBuilder &;
 	auto addBuffer(const PacketBuilder &builder) -> PacketBuilder &;

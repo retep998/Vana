@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerPacket.hpp"
 #include <iostream>
 
-auto InfoFunctions::help(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::help(Player *player, const string_t &args) -> ChatResult {
 	using ChatHandlerFunctions::sCommandList;
-	if (args.length() != 0) {
+	if (!args.empty()) {
 		if (sCommandList.find(args) != std::end(sCommandList)) {
 			ChatHandlerFunctions::showSyntax(player, args, true);
 		}
@@ -50,12 +50,12 @@ auto InfoFunctions::help(Player *player, const string_t &args) -> bool {
 		}
 		ChatHandlerFunctions::showInfo(player, strm.str());
 	}
-	return true;
+	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 	match_t matches;
-	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches)) {
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		uint16_t type = 0;
 		uint16_t subType = 0;
 
@@ -140,7 +140,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 			}
 			else if (type == 200) {
 				string_t rawMap = matches[2];
-				int32_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
+				map_id_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
 				if (Maps::getMap(mapId) != nullptr) {
 					out_stream_t message;
 					message << mapId << " : " << static_cast<int32_t>(MapDataProvider::getInstance().getContinent(mapId));
@@ -236,20 +236,17 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> bool {
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid search type: " + rawType);
 		}
-		return true;
+		return ChatResult::HandledDisplay;
 	}
-	return false;
+	return ChatResult::ShowSyntax;
 }
 
-auto InfoFunctions::pos(Player *player, const string_t &args) -> bool {
-	Pos p = player->getPos();
-	out_stream_t msg;
-	msg << "(Foothold, {X, Y}): (" << player->getFoothold() << ", " << p << ")";
-	ChatHandlerFunctions::showInfo(player, msg.str());
-	return true;
+auto InfoFunctions::pos(Player *player, const string_t &args) -> ChatResult {
+	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "(Foothold, {X, Y}): (" << player->getFoothold() << ", " << player->getPos() << ")"; });
+	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::online(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::online(Player *player, const string_t &args) -> ChatResult {
 	out_stream_t igns;
 	igns << "IGNs: ";
 	int32_t i = 0;
@@ -264,13 +261,13 @@ auto InfoFunctions::online(Player *player, const string_t &args) -> bool {
 		}
 	});
 	ChatHandlerFunctions::showInfo(player, igns.str());
-	return true;
+	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::variable(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::variable(Player *player, const string_t &args) -> ChatResult {
 	match_t matches;
-	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches)) {
-		return false;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::NoMatches) {
+		return ChatResult::ShowSyntax;
 	}
 
 	string_t key = matches[1];
@@ -281,37 +278,37 @@ auto InfoFunctions::variable(Player *player, const string_t &args) -> bool {
 	else {
 		ChatHandlerFunctions::showError(player, "Invalid variable: " + key);
 	}
-	return true;
+	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questData(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::questData(Player *player, const string_t &args) -> ChatResult {
 	match_t matches;
-	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\w+))", matches)) {
-		return false;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\w+))", matches) == MatchResult::NoMatches) {
+		return ChatResult::ShowSyntax;
 	}
 
 	string_t quest = matches[1];
 	string_t data = matches[2];
-	uint16_t id = atoi(quest.c_str());
+	quest_id_t id = atoi(quest.c_str());
 	player->getQuests()->setQuestData(id, data);
-	return true;
+	return ChatResult::HandledDisplay;
 }
 
-auto InfoFunctions::questKills(Player *player, const string_t &args) -> bool {
+auto InfoFunctions::questKills(Player *player, const string_t &args) -> ChatResult {
 	match_t matches;
-	if (!ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\d+))", matches)) {
-		return false;
+	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) (\d+))", matches) == MatchResult::NoMatches) {
+		return ChatResult::ShowSyntax;
 	}
 
 	string_t mob = matches[1];
 	string_t kills = matches[2];
 
-	int32_t mobId = atoi(mob.c_str());
+	mob_id_t mobId = atoi(mob.c_str());
 	int32_t count = atoi(kills.c_str());
 
 	for (int32_t i = 0; i < count; i++) {
 		player->getQuests()->updateQuestMob(mobId);
 	}
 
-	return true;
+	return ChatResult::HandledDisplay;
 }

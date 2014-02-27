@@ -85,6 +85,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_MAP_TELEPORT 0x64
 #define CMSG_TELEPORT_ROCK 0x65
 #define CMSG_QUEST_OBTAIN 0x6a
+#define CMSG_BUFF_ACKNOWLEDGE 0x6b
+#define CMSG_BOMB_SKILL_USE 0x6c
 #define CMSG_MACRO_LIST 0x6d
 #define CMSG_USE_REWARD_ITEM 0x6f
 #define CMSG_MESSAGE_GROUP 0x75 // Party, buddy and guild chat
@@ -106,6 +108,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_SUMMON_MOVEMENT 0xa9
 #define CMSG_SUMMON_ATTACK 0xaa
 #define CMSG_SUMMON_DAMAGE 0xab
+#define CMSG_SUMMON_SKILL 0xac
 #define CMSG_MOB_CONTROL 0xb2
 #define CMSG_PLAYER_MOB_DISTANCE 0xb3
 #define CMSG_FRIENDLY_MOB_DAMAGE 0xb6
@@ -115,6 +118,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CMSG_ITEM_LOOT 0xc0
 #define CMSG_REACTOR_HIT 0xc3
 #define CMSG_REACTOR_TOUCH 0xc4
+#define CMSG_PLAYER_UNK_MAP 0xc5 // It seems like the client sends 0xc5 and 0xd5 (as of .75) when it spawns on a map, but 0xc5 isn't sent if the change map packet error 38s the client while 0xd5 is sent
+#define CMSG_PLAYER_UNK_MAP2 0xd5 // These almost seem like acknowledgement packets given the lack of any data
 #define CMSG_CASHSHOP_CHECK_CASH 0xda
 #define CMSG_CASHSHOP_REDEEM_COUPON 0xdc
 #define CMSG_CASHSHOP_OPERATION 0xdb

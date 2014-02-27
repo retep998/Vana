@@ -48,14 +48,14 @@ PACKET_IMPL(sendOpenTrade, Player *player1, Player *player2) {
 	return builder;
 }
 
-PACKET_IMPL(sendTradeRequest, const string_t &name, int32_t tradeId) {
+PACKET_IMPL(sendTradeRequest, const string_t &name, trade_id_t tradeId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(0x02)
 		.add<int8_t>(0x03)
 		.add<string_t>(name)
-		.add<int32_t>(tradeId);
+		.add<trade_id_t>(tradeId);
 	return builder;
 }
 
@@ -121,13 +121,13 @@ PACKET_IMPL(sendLeaveTrade) {
 	return builder;
 }
 
-PACKET_IMPL(sendAddMesos, uint8_t slot, int32_t amount) {
+PACKET_IMPL(sendAddMesos, uint8_t slot, mesos_t amount) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PLAYER_ROOM)
 		.add<int8_t>(0x0F)
 		.add<int8_t>(slot)
-		.add<int32_t>(amount);
+		.add<mesos_t>(amount);
 	return builder;
 }
 

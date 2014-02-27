@@ -48,7 +48,7 @@ auto NpcHandler::handleNpc(Player *player, PacketReader &reader) -> void {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
-	uint32_t npcId = Map::makeNpcId(reader.get<uint32_t>());
+	size_t npcId = Map::makeNpcId(reader.get<map_object_t>());
 
 	if (!player->getMap()->isValidNpcIndex(npcId)) {
 		// Shouldn't ever happen except in edited packets
@@ -62,19 +62,19 @@ auto NpcHandler::handleNpc(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 	if (player->getShop() == 0) {
-		if (NpcHandler::showShop(player, npcs.id)) {
+		if (NpcHandler::showShop(player, npcs.id) == Result::Successful) {
 			return;
 		}
-		if (NpcHandler::showStorage(player, npcs.id)) {
+		if (NpcHandler::showStorage(player, npcs.id) == Result::Successful) {
 			return;
 		}
-		if (NpcHandler::showGuildRank(player, npcs.id)) {
+		if (NpcHandler::showGuildRank(player, npcs.id) == Result::Successful) {
 			return;
 		}
 	}
 }
 
-auto NpcHandler::handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId) -> void {
+auto NpcHandler::handleQuestNpc(Player *player, npc_id_t npcId, bool start, quest_id_t questId) -> void {
 	if (player->getNpc() != nullptr) {
 		return;
 	}
@@ -101,11 +101,11 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	int8_t what = reader.get<int8_t>();
+	int8_t choice = reader.get<int8_t>();
 
 	switch (type) {
 		case NpcPacket::Dialogs::Normal:
-			switch (what) {
+			switch (choice) {
 				case 0: npc->proceedBack(); break;
 				case 1:	npc->proceedNext(); break;
 				default: npc->end(); break;
@@ -114,14 +114,14 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 		case NpcPacket::Dialogs::YesNo:
 		case NpcPacket::Dialogs::AcceptDecline:
 		case NpcPacket::Dialogs::AcceptDeclineNoExit:
-			switch (what) {
+			switch (choice) {
 				case 0: npc->proceedSelection(0); break;
 				case 1:	npc->proceedSelection(1); break;
 				default: npc->end(); break;
 			}
 			break;
 		case NpcPacket::Dialogs::GetText:
-			if (what != 0) {
+			if (choice != 0) {
 				npc->proceedText(reader.get<string_t>());
 			}
 			else {
@@ -129,7 +129,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		case NpcPacket::Dialogs::GetNumber:
-			if (what == 1) {
+			if (choice == 1) {
 				npc->proceedNumber(reader.get<int32_t>());
 			}
 			else {
@@ -137,7 +137,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		case NpcPacket::Dialogs::Simple:
-			if (what == 0) {
+			if (choice == 0) {
 				npc->end();
 			}
 			else {
@@ -145,7 +145,7 @@ auto NpcHandler::handleNpcIn(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 		case NpcPacket::Dialogs::Style:
-			if (what == 1) {
+			if (choice == 1) {
 				npc->proceedSelection(reader.get<uint8_t>());
 			}
 			else {
@@ -172,7 +172,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 		case ShopOpcodes::Buy: {
 			uint16_t itemIndex = reader.get<uint16_t>();
 			reader.skipBytes(4); // Item ID, no reason to trust this
-			uint16_t quantity = reader.get<uint16_t>();
+			slot_qty_t quantity = reader.get<slot_qty_t>();
 			reader.skipBytes(4); // Price, don't want to trust this
 			auto shopItem = ShopDataProvider::getInstance().getShopItem(player->getShop(), itemIndex);
 			if (shopItem == nullptr) {
@@ -180,19 +180,19 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 
-			int16_t amount = shopItem->quantity;
-			int32_t itemId = shopItem->itemId;
-			int32_t price = shopItem->price;
-			uint32_t totalAmount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
-			int32_t totalPrice = quantity * price;
+			slot_qty_t amount = shopItem->quantity;
+			item_id_t itemId = shopItem->itemId;
+			mesos_t price = shopItem->price;
+			slot_qty_t totalAmount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
+			mesos_t totalPrice = quantity * price;
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 
-			if (price == 0 || totalAmount > itemInfo->maxSlot || player->getInventory()->getMesos() < totalPrice) {
+			if (price == 0 || totalAmount > itemInfo->maxSlot || totalAmount < 0 || player->getInventory()->getMesos() < totalPrice) {
 				// Hacking
 				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NotEnoughMesos));
 				return;
 			}
-			bool haveSlot = player->getInventory()->hasOpenSlotsFor(itemId, static_cast<int16_t>(totalAmount), true);
+			bool haveSlot = player->getInventory()->hasOpenSlotsFor(itemId, totalAmount, true);
 			if (!haveSlot) {
 				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NoSlots));
 				return;
@@ -203,17 +203,17 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case ShopOpcodes::Sell: {
-			int16_t slot = reader.get<int16_t>();
-			int32_t itemId = reader.get<int32_t>();
-			int16_t amount = reader.get<int16_t>();
-			int8_t inv = GameLogicUtilities::getInventory(itemId);
+			inventory_slot_t slot = reader.get<inventory_slot_t>();
+			item_id_t itemId = reader.get<item_id_t>();
+			slot_qty_t amount = reader.get<slot_qty_t>();
+			inventory_t inv = GameLogicUtilities::getInventory(itemId);
 			Item *item = player->getInventory()->getItem(inv, slot);
 			if (item == nullptr || item->getId() != itemId || (!GameLogicUtilities::isRechargeable(itemId) && amount > item->getAmount())) {
 				// Hacking
 				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NotEnoughInStock));
 				return;
 			}
-			int32_t price = ItemDataProvider::getInstance().getItemInfo(itemId)->price;
+			mesos_t price = ItemDataProvider::getInstance().getItemInfo(itemId)->price;
 
 			player->getInventory()->modifyMesos(price * amount);
 			if (GameLogicUtilities::isRechargeable(itemId)) {
@@ -226,7 +226,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case ShopOpcodes::Recharge: {
-			int16_t slot = reader.get<int16_t>();
+			inventory_slot_t slot = reader.get<inventory_slot_t>();
 			Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
 			if (item == nullptr || !GameLogicUtilities::isRechargeable(item->getId())) {
 				// Hacking
@@ -234,11 +234,11 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			}
 
 			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
-			uint16_t maxSlot = itemInfo->maxSlot;
+			slot_qty_t maxSlot = itemInfo->maxSlot;
 			if (GameLogicUtilities::isRechargeable(item->getId())) {
 				maxSlot += player->getSkills()->getRechargeableBonus();
 			}
-			int32_t modifiedMesos = ShopDataProvider::getInstance().getRechargeCost(player->getShop(), item->getId(), maxSlot - item->getAmount());
+			mesos_t modifiedMesos = ShopDataProvider::getInstance().getRechargeCost(player->getShop(), item->getId(), maxSlot - item->getAmount());
 			if (modifiedMesos < 0 && player->getInventory()->getMesos() > -modifiedMesos) {
 				player->getInventory()->modifyMesos(modifiedMesos);
 				item->setAmount(maxSlot);
@@ -263,15 +263,15 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 	int8_t type = reader.get<int8_t>();
-	int32_t cost = NpcDataProvider::getInstance().getStorageCost(player->getShop());
+	mesos_t cost = NpcDataProvider::getInstance().getStorageCost(player->getShop());
 	if (cost == 0) {
 		// Hacking
 		return;
 	}
 	switch (type) {
 		case ShopOpcodes::TakeItem: {
-			int8_t inv = reader.get<int8_t>();
-			int8_t slot = reader.get<int8_t>();
+			inventory_t inv = reader.get<inventory_t>();
+			storage_slot_t slot = reader.get<storage_slot_t>();
 			Item *item = player->getStorage()->getItem(slot);
 			if (item == nullptr) {
 				// Hacking
@@ -283,9 +283,9 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case ShopOpcodes::StoreItem: {
-			int16_t slot = reader.get<int16_t>();
-			int32_t itemId = reader.get<int32_t>();
-			int16_t amount = reader.get<int16_t>();
+			inventory_slot_t slot = reader.get<inventory_slot_t>();
+			item_id_t itemId = reader.get<item_id_t>();
+			slot_qty_t amount = reader.get<slot_qty_t>();
 			if (player->getInventory()->getMesos() < cost) {
 				// Player doesn't have enough mesos to store this item
 				player->send(StoragePacket::noMesos());
@@ -296,7 +296,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 				player->send(StoragePacket::storageFull());
 				return;
 			}
-			int8_t inv = GameLogicUtilities::getInventory(itemId);
+			inventory_t inv = GameLogicUtilities::getInventory(itemId);
 			Item *item = player->getInventory()->getItem(inv, slot);
 			if (item == nullptr) {
 				// Hacking
@@ -320,7 +320,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case ShopOpcodes::MesoTransaction: {
-			int32_t mesos = reader.get<int32_t>();
+			mesos_t mesos = reader.get<mesos_t>();
 			// Amount of mesos to remove. Deposits are negative, and withdrawals are positive
 			if (player->getInventory()->modifyMesos(mesos)) {
 				player->getStorage()->changeMesos(mesos);
@@ -333,27 +333,27 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto NpcHandler::showShop(Player *player, int32_t shopId) -> bool {
+auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
 	if (ShopDataProvider::getInstance().isShop(shopId)) {
 		player->setShop(shopId);
 		player->send(NpcPacket::showShop(ShopDataProvider::getInstance().getShop(shopId), player->getSkills()->getRechargeableBonus()));
-		return true;
+		return Result::Successful;
 	}
-	return false;
+	return Result::Failure;
 }
 
-auto NpcHandler::showStorage(Player *player, int32_t npcId) -> bool {
+auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
 	if (NpcDataProvider::getInstance().getStorageCost(npcId)) {
 		player->setShop(npcId);
 		player->send(StoragePacket::showStorage(player, npcId));
-		return true;
+		return Result::Successful;
 	}
-	return false;
+	return Result::Failure;
 }
 
-auto NpcHandler::showGuildRank(Player *player, int32_t npcId) -> bool {
+auto NpcHandler::showGuildRank(Player *player, npc_id_t npcId) -> Result {
 	if (NpcDataProvider::getInstance().isGuildRank(npcId)) {
 		// To be implemented later
 	}
-	return false;
+	return Result::Failure;
 }

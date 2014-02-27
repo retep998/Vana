@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketReader;
 class Player;
 template <typename T> class LoopingId;
+struct ActiveBuff;
+struct Buff;
+struct SkillLevelInfo;
 
 namespace SummonMessages {
 	enum Messages : int8_t {
@@ -33,12 +36,15 @@ namespace SummonMessages {
 }
 
 namespace SummonHandler {
-	extern LoopingId<int32_t> summonIds;
-	auto useSummon(Player *player, int32_t skillId, uint8_t level) -> void;
-	auto removeSummon(Player *player, bool puppet, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
+	extern LoopingId<summon_id_t> summonIds;
+	auto useSummon(Player *player, skill_id_t skillId, skill_level_t level) -> void;
+	auto removeSummon(Player *player, summon_id_t summonId, bool packetOnly, int8_t showMessage, bool fromTimer = false) -> void;
 	auto showSummon(Player *player) -> void;
 	auto showSummons(Player *fromPlayer, Player *toPlayer) -> void;
 	auto moveSummon(Player *player, PacketReader &reader) -> void;
 	auto damageSummon(Player *player, PacketReader &reader) -> void;
-	auto loopId() -> int32_t;
+	auto makeBuff(Player *player, item_id_t itemId) -> Buff;
+	auto makeActiveBuff(Player *player, const Buff &data, item_id_t itemId, const SkillLevelInfo *skillInfo) -> ActiveBuff;
+	auto summonSkill(Player *player, PacketReader &reader) -> void;
+	auto loopId() -> summon_id_t;
 }

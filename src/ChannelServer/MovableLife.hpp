@@ -24,26 +24,26 @@ class MovableLife {
 	NONCOPYABLE(MovableLife);
 	NO_DEFAULT_CONSTRUCTOR(MovableLife);
 public:
-	MovableLife(int16_t foothold, const Pos &pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
+	MovableLife(foothold_id_t foothold, const Pos &pos, int8_t stance) : m_stance(stance), m_foothold(foothold), m_pos(pos) { }
 	virtual ~MovableLife() = default;
 
 	auto isFacingRight() const -> bool { return m_stance % 2 == 0; }
 	auto isFacingLeft() const -> bool { return m_stance % 2 == 1; }
 	auto getStance() const -> int8_t { return m_stance; }
-	auto getFoothold() const -> int16_t { return m_foothold; }
+	auto getFoothold() const -> foothold_id_t { return m_foothold; }
 	virtual auto getPos() const -> Pos { return m_pos; }
 
 	auto setPos(const Pos &val) -> void { m_pos = val; }
-	auto resetMovement(int16_t foothold, const Pos &pos, int8_t stance) -> void {
+	auto resetMovement(foothold_id_t foothold, const Pos &pos, int8_t stance) -> void {
 		m_stance = stance;
 		m_foothold = foothold;
 		m_pos = pos;
 	}
 protected:
 	auto setStance(int8_t val) -> void { m_stance = val; }
-	auto setFoothold(int16_t val) -> void { m_foothold = val; }
+	auto setFoothold(foothold_id_t val) -> void { m_foothold = val; }
 
 	int8_t m_stance = 0;
-	int16_t m_foothold = 0;
+	foothold_id_t m_foothold = 0;
 	Pos m_pos;
 };

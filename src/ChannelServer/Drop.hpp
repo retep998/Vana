@@ -28,26 +28,25 @@ class Drop {
 	NO_DEFAULT_CONSTRUCTOR(Drop);
 	NONCOPYABLE(Drop);
 public:
-	Drop(int32_t mapId, int32_t mesos, const Pos &pos, int32_t owner, bool playerDrop = false);
-	Drop(int32_t mapId, const Item &item, const Pos &pos, int32_t owner, bool playerDrop = false);
+	Drop(map_id_t mapId, mesos_t mesos, const Pos &pos, player_id_t owner, bool playerDrop = false);
+	Drop(map_id_t mapId, const Item &item, const Pos &pos, player_id_t owner, bool playerDrop = false);
 
-	auto setQuest(int16_t questId) -> void { m_questId = questId; }
+	auto setQuest(quest_id_t questId) -> void { m_questId = questId; }
 	auto setTradeable(bool isTrade) -> void { m_tradeable = isTrade; }
-	auto setItemAmount(int16_t amount) -> void { m_item.setAmount(amount); }
-	auto setId(int32_t id) -> void { m_id = id; }
+	auto setItemAmount(slot_qty_t amount) -> void { m_item.setAmount(amount); }
+	auto setId(map_object_t id) -> void { m_id = id; }
 	auto setTime(int32_t time) -> void { m_time = time; }
-	auto setPlayerId(int32_t playerId) -> void { m_playerId = playerId; }
 	auto setOwner(int32_t owner) -> void { m_owner = owner; }
 	auto setPos(Pos pos) -> void { m_pos = pos; }
 	auto setType(int8_t t) -> void { m_type = t; }
 	auto setDroppedAtTime(time_point_t time) -> void { m_droppedAtTime = time; }
 
 	auto getType() const -> int8_t { return m_type; }
-	auto getQuest() const -> int16_t { return m_questId; }
-	auto getId() const -> int32_t { return m_id; }
+	auto getQuest() const -> quest_id_t { return m_questId; }
+	auto getId() const -> map_object_t { return m_id; }
 	auto getTime() const -> int32_t { return m_time; }
 	auto getOwner() const -> int32_t { return m_owner; }
-	auto getMapId() const -> int32_t { return m_mapId; }
+	auto getMapId() const -> map_id_t { return m_mapId; }
 	auto isPlayerDrop() const -> bool { return m_playerDrop; }
 	auto isMesos() const -> bool { return m_mesos > 0; }
 	auto isQuest() const -> bool { return m_questId > 0; }
@@ -56,12 +55,12 @@ public:
 	auto getItem() const -> Item { return m_item; }
 	auto getDroppedAtTime() const -> time_point_t { return m_droppedAtTime; }
 
-	auto getAmount() -> int16_t;
+	auto getAmount() -> slot_qty_t;
 	auto getObjectId() -> int32_t;
 
 	auto doDrop(const Pos &origin) -> void;
 	auto showDrop(Player *player) -> void;
-	auto takeDrop(Player *player, int64_t petId) -> void;
+	auto takeDrop(Player *player, pet_id_t petId) -> void;
 	auto removeDrop(bool showPacket = true) -> void;
 
 	auto getMap() const -> Map *;
@@ -74,13 +73,12 @@ private:
 	bool m_playerDrop = false;
 	bool m_tradeable = true;
 	int8_t m_type = Drop::Normal;
-	int16_t m_questId = 0;
+	quest_id_t m_questId = 0;
 	int32_t m_owner = 0;
-	int32_t m_mapId = 0;
-	int32_t m_id = 0;
-	int32_t m_mesos = 0;
+	map_id_t m_mapId = 0;
+	map_object_t m_id = 0;
+	mesos_t m_mesos = 0;
 	int32_t m_time = 0;
-	int32_t m_playerId = 0;
 	time_point_t m_droppedAtTime;
 	Pos m_pos;
 	Item m_item;

@@ -26,8 +26,8 @@ struct ValidLook {
 		faces.clear();
 	}
 
-	vector_t<int32_t> hair;
-	vector_t<int32_t> faces;
+	vector_t<hair_id_t> hair;
+	vector_t<face_id_t> faces;
 };
 
 class BeautyDataProvider {
@@ -35,24 +35,24 @@ class BeautyDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto getRandomSkin() const -> int8_t;
-	auto getRandomHair(int8_t genderId) const -> int32_t;
-	auto getRandomFace(int8_t genderId) const -> int32_t;
+	auto getRandomSkin() const -> skin_id_t;
+	auto getRandomHair(gender_id_t genderId) const -> hair_id_t;
+	auto getRandomFace(gender_id_t genderId) const -> face_id_t;
 
-	auto getSkins() const -> const vector_t<int8_t> &;
-	auto getHair(int8_t genderId) const -> const vector_t<int32_t> &;
-	auto getFaces(int8_t genderId) const -> const vector_t<int32_t> &;
+	auto getSkins() const -> const vector_t<skin_id_t> &;
+	auto getHair(gender_id_t genderId) const -> const vector_t<hair_id_t> &;
+	auto getFaces(gender_id_t genderId) const -> const vector_t<face_id_t> &;
 
-	auto isValidSkin(int8_t skin) const -> bool;
-	auto isValidHair(int8_t genderId, int32_t hair) const -> bool;
-	auto isValidFace(int8_t genderId, int32_t face) const -> bool;
+	auto isValidSkin(skin_id_t skin) const -> bool;
+	auto isValidHair(gender_id_t genderId, hair_id_t hair) const -> bool;
+	auto isValidFace(gender_id_t genderId, face_id_t face) const -> bool;
 private:
 	auto loadSkins() -> void;
 	auto loadHair() -> void;
 	auto loadFaces() -> void;
-	auto getGender(int8_t genderId) const -> const ValidLook &;
+	auto getGender(gender_id_t genderId) const -> const ValidLook &;
 
 	ValidLook m_male;
 	ValidLook m_female;
-	vector_t<int8_t> m_skins;
+	vector_t<skin_id_t> m_skins;
 };

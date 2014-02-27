@@ -26,10 +26,10 @@ namespace NpcHandler {
 	auto handleNpc(Player *player, PacketReader &reader) -> void;
 	auto handleNpcIn(Player *player, PacketReader &reader) -> void;
 	auto handleNpcAnimation(Player *player, PacketReader &reader) -> void;
-	auto handleQuestNpc(Player *player, int32_t npcId, bool start, int16_t questId = 0) -> void;
+	auto handleQuestNpc(Player *player, npc_id_t npcId, bool start, quest_id_t questId = 0) -> void;
 	auto useShop(Player *player, PacketReader &reader) -> void;
 	auto useStorage(Player *player, PacketReader &reader) -> void;
-	auto showShop(Player *player, int32_t shopId) -> bool;
-	auto showStorage(Player *player, int32_t npcId) -> bool;
-	auto showGuildRank(Player *player, int32_t npcId) -> bool;
+	auto showShop(Player *player, shop_id_t shopId) -> Result;
+	auto showStorage(Player *player, npc_id_t npcId) -> Result;
+	auto showGuildRank(Player *player, npc_id_t npcId) -> Result;
 }

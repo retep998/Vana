@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SmsgHeader.hpp"
 #include <string>
 
-Npc::Npc(int32_t npcId, Player *player, int16_t questId, bool isStart) :
+Npc::Npc(npc_id_t npcId, Player *player, quest_id_t questId, bool isStart) :
 	m_player(player),
 	m_npcId(npcId)
 {
 	initScript(getScript(questId, isStart));
 }
 
-Npc::Npc(int32_t npcId, Player *player, const Pos &pos, int16_t questId, bool isStart) :
+Npc::Npc(npc_id_t npcId, Player *player, const Pos &pos, quest_id_t questId, bool isStart) :
 	m_pos(pos),
 	m_player(player),
 	m_npcId(npcId)
@@ -40,14 +40,14 @@ Npc::Npc(int32_t npcId, Player *player, const Pos &pos, int16_t questId, bool is
 	initScript(getScript(questId, isStart));
 }
 
-Npc::Npc(int32_t npcId, Player *player, const string_t &script) :
+Npc::Npc(npc_id_t npcId, Player *player, const string_t &script) :
 	m_player(player),
 	m_npcId(npcId)
 {
 	initScript(script);
 }
 
-auto Npc::hasScript(int32_t npcId, int16_t questId, bool start) -> bool {
+auto Npc::hasScript(int32_t npcId, quest_id_t questId, bool start) -> bool {
 	string_t script = "";
 	if (questId == 0) {
 		script = ScriptDataProvider::getInstance().getScript(npcId, ScriptTypes::Npc);
@@ -58,7 +58,7 @@ auto Npc::hasScript(int32_t npcId, int16_t questId, bool start) -> bool {
 	return FileUtilities::fileExists(script);
 }
 
-auto Npc::getScript(int16_t questId, bool start) -> string_t {
+auto Npc::getScript(quest_id_t questId, bool start) -> string_t {
 	if (questId == 0) {
 		return ScriptDataProvider::getInstance().getScript(m_npcId, ScriptTypes::Npc);
 	}
@@ -75,7 +75,7 @@ auto Npc::initScript(const string_t &filename) -> void {
 	}
 }
 
-auto Npc::setEndScript(int32_t npcId, const string_t &fullscript) -> void {
+auto Npc::setEndScript(npc_id_t npcId, const string_t &fullscript) -> void {
 	m_nextNpc = npcId;
 	m_script = fullscript;
 }
@@ -147,7 +147,7 @@ auto Npc::sendQuiz(int8_t type, int32_t objectId, int32_t correct, int32_t quest
 	m_sentDialog = NpcPacket::Dialogs::Quiz;
 	m_player->send(NpcPacket::npcChat(m_sentDialog, m_npcId, "", false)
 		.add<int8_t>(0)
-		.add<int32_t>(type) // 0 = NPC, 1 = Mob, 2 = Item
+		.add<int32_t>(type)
 		.add<int32_t>(objectId)
 		.add<int32_t>(correct)
 		.add<int32_t>(questions)

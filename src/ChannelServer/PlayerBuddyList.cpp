@@ -59,7 +59,7 @@ auto PlayerBuddyList::load() -> void {
 	BuddyInvite invite;
 	for (const auto &row : rs) {
 		invite = BuddyInvite();
-		invite.id = row.get<int32_t>("inviter_character_id");
+		invite.id = row.get<player_id_t>("inviter_character_id");
 		invite.name = row.get<string_t>("inviter_name");
 		m_pendingBuddies.push_back(invite);
 	}
@@ -107,7 +107,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 		return BuddyListPacket::Errors::TargetListFull;
 	}
 
-	int32_t charId = row.get<int32_t>("character_id");
+	player_id_t charId = row.get<player_id_t>("character_id");
 
 	if (m_buddies.find(charId) != std::end(m_buddies)) {
 		if (m_buddies[charId]->groupName == group) {
@@ -162,7 +162,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 			}
 		}
 		else {
-			vector_t<int32_t> idVector;
+			vector_t<player_id_t> idVector;
 			idVector.push_back(charId);
 			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
 		}
@@ -171,7 +171,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 	return BuddyListPacket::Errors::None;
 }
 
-auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
+auto PlayerBuddyList::removeBuddy(player_id_t charId) -> void {
 	if (m_pendingBuddies.size() != 0 && m_sentRequest) {
 		BuddyInvite invite = m_pendingBuddies.front();
 		if (invite.id == charId) {
@@ -185,7 +185,7 @@ auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 		return;
 	}
 	if (m_buddies[charId]->channel != -1) {
-		vector_t<int32_t> idVector;
+		vector_t<player_id_t> idVector;
 		idVector.push_back(charId);
 		ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false));
 	}
@@ -202,7 +202,7 @@ auto PlayerBuddyList::removeBuddy(int32_t charId) -> void {
 }
 
 auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void {
-	int32_t charId = row.get<int32_t>("buddy_character_id");
+	player_id_t charId = row.get<player_id_t>("buddy_character_id");
 	int32_t rowId = row.get<int32_t>("id");
 	opt_string_t name = row.get<opt_string_t>("name");
 	opt_string_t group = row.get<opt_string_t>("group_name");
@@ -303,7 +303,7 @@ auto PlayerBuddyList::checkForPendingBuddy() -> void {
 	m_sentRequest = true;
 }
 
-auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
+auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void {
 	if (m_pendingBuddies.size() == 0 || !m_sentRequest) {
 		// Hacking
 		return;
@@ -326,7 +326,7 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 			m_player->send(BuddyListPacket::error(error));
 		}
 		else {
-			vector_t<int32_t> idVector;
+			vector_t<player_id_t> idVector;
 			idVector.push_back(id);
 			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
 		}
@@ -345,8 +345,8 @@ auto PlayerBuddyList::removePendingBuddy(int32_t id, bool accepted) -> void {
 	checkForPendingBuddy();
 }
 
-auto PlayerBuddyList::getBuddyIds() -> vector_t<int32_t> {
-	vector_t<int32_t> ids;
+auto PlayerBuddyList::getBuddyIds() -> vector_t<player_id_t> {
+	vector_t<player_id_t> ids;
 	for (const auto &kvp : m_buddies) {
 		ids.push_back(kvp.second->charId);
 	}

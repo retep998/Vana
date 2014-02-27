@@ -44,9 +44,9 @@ auto QuestDataProvider::loadQuestData() -> void {
 
 	for (const auto &row : rs) {
 		Quest quest;
-		uint16_t questId = row.get<uint16_t>("questid");
+		quest_id_t questId = row.get<quest_id_t>("questid");
 
-		quest.setNextQuest(row.get<int16_t>("next_quest"));
+		quest.setNextQuest(row.get<quest_id_t>("next_quest"));
 		quest.setQuestId(questId);
 
 		m_quests.emplace(questId, quest);
@@ -59,7 +59,7 @@ auto QuestDataProvider::loadRequests() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_requests"));
 
 	for (const auto &row : rs) {
-		uint16_t questId = row.get<uint16_t>("questid");
+		quest_id_t questId = row.get<quest_id_t>("questid");
 		auto &quest = m_quests[questId];
 		QuestRequestInfo questRequest;
 
@@ -92,11 +92,11 @@ auto QuestDataProvider::loadRequiredJobs() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_required_jobs"));
 
 	for (const auto &row : rs) {
-		uint16_t questId = row.get<uint16_t>("questid");
+		quest_id_t questId = row.get<quest_id_t>("questid");
 		auto &quest = m_quests[questId];
 		QuestRequestInfo request;
 		request.isJob = true;
-		request.id = row.get<int16_t>("valid_jobid");
+		request.id = row.get<job_id_t>("valid_jobid");
 		quest.addRequest(true, request);
 	}
 }
@@ -105,10 +105,10 @@ auto QuestDataProvider::loadRewards() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_rewards"));
 
 	for (const auto &row : rs) {
-		uint16_t questId = row.get<uint16_t>("questid");
+		quest_id_t questId = row.get<quest_id_t>("questid");
 		Quest &quest = m_quests[questId];
 		QuestRewardInfo reward;
-		int16_t job = row.get<int16_t>("job");
+		job_id_t job = row.get<job_id_t>("job");
 		string_t jobTracks = row.get<string_t>("job_tracks");
 		bool start = (row.get<string_t>("quest_state") == "start");
 
@@ -130,12 +130,12 @@ auto QuestDataProvider::loadRewards() -> void {
 		reward.gender = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
 		reward.prop = row.get<int32_t>("prop");
 
-		if (job != -1 || jobTracks.length() == 0) {
+		if (job != -1 || jobTracks.empty()) {
 			quest.addReward(start, reward, job);
 		}
 		else {
 			StringUtilities::runFlags(jobTracks, [&quest, &reward, &start](const string_t &cmp) {
-				auto addRewardForJobs = [&quest, &reward, &start](init_list_t<int16_t> jobs) {
+				auto addRewardForJobs = [&quest, &reward, &start](init_list_t<job_id_t> jobs) {
 					for (const auto &job : jobs) {
 						quest.addReward(start, reward, job);
 					}
@@ -217,10 +217,10 @@ auto QuestDataProvider::loadRewards() -> void {
 	}
 }
 
-auto QuestDataProvider::isQuest(uint16_t questId) const -> bool {
+auto QuestDataProvider::isQuest(quest_id_t questId) const -> bool {
 	return ext::is_element(m_quests, questId);
 }
 
-auto QuestDataProvider::getInfo(uint16_t questId) const -> const Quest & {
+auto QuestDataProvider::getInfo(quest_id_t questId) const -> const Quest & {
 	return m_quests.find(questId)->second;
 }

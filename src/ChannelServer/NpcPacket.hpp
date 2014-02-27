@@ -49,11 +49,11 @@ namespace NpcPacket {
 		};
 	}
 
-	PACKET(showNpc, const NpcSpawnInfo &npc, int32_t id, bool show = true);
-	PACKET(controlNpc, const NpcSpawnInfo &npc, int32_t id, bool show = true);
+	PACKET(showNpc, const NpcSpawnInfo &npc, map_object_t id, bool show = true);
+	PACKET(controlNpc, const NpcSpawnInfo &npc, map_object_t id, bool show = true);
 	PACKET(animateNpc, PacketReader &reader);
 	PACKET(showNpcEffect, int32_t index, bool show = false);
 	PACKET(bought, uint8_t msg);
-	PACKET(showShop, const BuiltShopInfo &shop, int16_t rechargeableBonus);
-	PACKET(npcChat, int8_t type, int32_t npcId, const string_t &text, bool excludeText = false);
+	PACKET(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus);
+	PACKET(npcChat, int8_t type, map_object_t npcId, const string_t &text, bool excludeText = false);
 }

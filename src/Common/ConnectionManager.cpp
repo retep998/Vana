@@ -26,9 +26,9 @@ ConnectionManager::ConnectionManager()
 	m_work = make_owned_ptr<boost::asio::io_service::work>(m_ioService);
 }
 
-auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &patchLocation) -> void {
+auto ConnectionManager::accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) -> void {
 	boost::asio::ip::tcp::endpoint endpoint(ipType == Ip::Type::Ipv4 ? boost::asio::ip::tcp::v4() : boost::asio::ip::tcp::v6(), port);
-	m_servers.push_back(make_ref_ptr<ConnectionAcceptor>(m_ioService, endpoint, createConnection, config, isServer, patchLocation));
+	m_servers.push_back(make_ref_ptr<ConnectionAcceptor>(m_ioService, endpoint, createConnection, config, isServer, subversion));
 }
 
 auto ConnectionManager::connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> void {

@@ -62,7 +62,7 @@ auto FileLogger::flush() -> void {
 		if (!fs::exists(fullPath)) {
 			fs::create_directories(fullPath);
 		}
-		std::fstream f(file.c_str(), std::ios_base::out);
+		std::fstream f(file, std::ios_base::out);
 		f << bufferedMessage.message;
 		f.close();
 	}

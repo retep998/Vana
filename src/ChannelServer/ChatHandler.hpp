@@ -26,6 +26,6 @@ class Player;
 namespace ChatHandler {
 	auto initializeCommands() -> void;
 	auto handleChat(Player *player, PacketReader &reader) -> void;
-	auto handleCommand(Player *player, const string_t &message) -> bool;
+	auto handleCommand(Player *player, const string_t &message) -> HandleResult;
 	auto handleGroupChat(Player *player, PacketReader &reader) -> void;
 }

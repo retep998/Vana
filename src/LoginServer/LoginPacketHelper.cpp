@@ -24,20 +24,20 @@ namespace LoginPacketHelper {
 PACKET_IMPL(addCharacter, const Character &charc) {
 	PacketBuilder builder;
 	builder
-		.add<int32_t>(charc.id)
+		.add<player_id_t>(charc.id)
 		.add<string_t>(charc.name, 13)
-		.add<int8_t>(charc.gender)
-		.add<int8_t>(charc.skin)
-		.add<int32_t>(charc.eyes)
-		.add<int32_t>(charc.hair)
+		.add<gender_id_t>(charc.gender)
+		.add<skin_id_t>(charc.skin)
+		.add<face_id_t>(charc.eyes)
+		.add<hair_id_t>(charc.hair)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)
-		.add<uint8_t>(charc.level)
-		.add<int16_t>(charc.job)
+		.add<player_level_t>(charc.level)
+		.add<job_id_t>(charc.job)
 		.add<int16_t>(charc.str)
 		.add<int16_t>(charc.dex)
 		.add<int16_t>(charc.intt)
@@ -48,21 +48,21 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 		.add<int16_t>(charc.mmp)
 		.add<int16_t>(charc.ap)
 		.add<int16_t>(charc.sp)
-		.add<int32_t>(charc.exp)
-		.add<int16_t>(charc.fame)
+		.add<experience_t>(charc.exp)
+		.add<fame_t>(charc.fame)
 		.add<int32_t>(0) // Unknown int32 added in .62
-		.add<int32_t>(charc.map)
+		.add<map_id_t>(charc.map)
 		.add<int8_t>(charc.pos)
 		.add<int32_t>(0) // Unknown int32 added in .62
-		.add<int8_t>(charc.gender)
-		.add<int8_t>(charc.skin)
-		.add<int32_t>(charc.eyes)
+		.add<gender_id_t>(charc.gender)
+		.add<skin_id_t>(charc.skin)
+		.add<face_id_t>(charc.eyes)
 		.add<int8_t>(1)
-		.add<int32_t>(charc.hair);
+		.add<hair_id_t>(charc.hair);
 
-	int32_t equips[Inventories::EquippedSlots][2] = {0};
+	item_id_t equips[Inventories::EquippedSlots][2] = {0};
 	for (const auto &equip : charc.equips) {
-		int16_t slot = -equip.slot;
+		inventory_slot_t slot = -equip.slot;
 		if (slot > 100) {
 			slot -= 100;
 		}
@@ -85,10 +85,10 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 			builder.add<uint8_t>(i);
 			if (i == EquipSlots::Weapon && equips[i][1] > 0) {
 				// Normal weapons always here
-				builder.add<int32_t>(equips[i][1]);
+				builder.add<item_id_t>(equips[i][1]);
 			}
 			else {
-				builder.add<int32_t>(equips[i][0]);
+				builder.add<item_id_t>(equips[i][0]);
 			}
 		}
 	}
@@ -97,13 +97,13 @@ PACKET_IMPL(addCharacter, const Character &charc) {
 		// Covered items
 		if (equips[i][1] > 0 && i != EquipSlots::Weapon) {
 			builder.add<uint8_t>(i);
-			builder.add<int32_t>(equips[i][1]);
+			builder.add<item_id_t>(equips[i][1]);
 		}
 	}
 
 	builder
 		.add<int8_t>(-1)
-		.add<int32_t>(equips[EquipSlots::Weapon][0]) // Cash weapon
+		.add<item_id_t>(equips[EquipSlots::Weapon][0]) // Cash weapon
 		.add<int32_t>(0)
 		.add<int32_t>(0)
 		.add<int32_t>(0)

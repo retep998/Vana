@@ -30,11 +30,11 @@ class Npc {
 	NONCOPYABLE(Npc);
 	NO_DEFAULT_CONSTRUCTOR(Npc);
 public:
-	Npc(int32_t npcId, Player *player, int16_t questId = 0, bool isStart = false);
-	Npc(int32_t npcId, Player *player, const Pos &pos, int16_t questId = 0, bool isStart = false);
-	Npc(int32_t npcId, Player *player, const string_t &script);
+	Npc(npc_id_t npcId, Player *player, quest_id_t questId = 0, bool isStart = false);
+	Npc(npc_id_t npcId, Player *player, const Pos &pos, quest_id_t questId = 0, bool isStart = false);
+	Npc(npc_id_t npcId, Player *player, const string_t &script);
 
-	static auto hasScript(int32_t npcId, int16_t questId, bool start) -> bool;
+	static auto hasScript(npc_id_t npcId, quest_id_t questId, bool start) -> bool;
 
 	auto run() -> void;
 
@@ -59,7 +59,7 @@ public:
 
 	auto getPlayer() const -> Player * { return m_player; }
 	auto getSentDialog() const -> uint8_t { return m_sentDialog; }
-	auto getNpcId() const -> int32_t { return m_npcId; }
+	auto getNpcId() const -> npc_id_t { return m_npcId; }
 	auto getNumber() const -> int32_t { return m_getNum; }
 	auto getSelected() const -> int32_t { return m_selected; }
 	auto getText() -> string_t & { return m_getText; }
@@ -88,14 +88,14 @@ private:
 	};
 
 	auto sendDialog(ref_ptr_t<NpcChatState> npcState) -> void;
-	auto getScript(int16_t questId, bool start) -> string_t;
+	auto getScript(quest_id_t questId, bool start) -> string_t;
 	auto initScript(const string_t &filename) -> void;
 
 	bool m_cend = false;
 	uint8_t m_sentDialog = 0; // Used to check if the user respond with the same type of the dialog sent
 	uint8_t m_selected = 0;
 	int32_t m_nextNpc = 0;
-	int32_t m_npcId = 0;
+	npc_id_t m_npcId = 0;
 	int32_t m_getNum = 0;
 	uint32_t m_state = 0;
 	Player *m_player = nullptr;

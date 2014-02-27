@@ -53,21 +53,21 @@ PACKET_IMPL(connectData, Player *player) {
 	player->initializeRng(builder);
 
 	builder
-		.add<int64_t>(-1)
-		.add<int32_t>(player->getId())
+		.add<int64_t>(-1) // Refers to packet sections that are included in here - all of them
+		.add<player_id_t>(player->getId())
 		.add<string_t>(player->getName(), 13)
-		.add<int8_t>(player->getGender())
-		.add<int8_t>(player->getSkin())
-		.add<int32_t>(player->getEyes())
-		.add<int32_t>(player->getHair());
+		.add<gender_id_t>(player->getGender())
+		.add<skin_id_t>(player->getSkin())
+		.add<face_id_t>(player->getEyes())
+		.add<hair_id_t>(player->getHair());
 
 	player->getPets()->connectData(builder);
 	player->getStats()->connectData(builder); // Stats
 
 	builder
 		.add<int32_t>(0) // Gachapon EXP
-		.add<int32_t>(player->getMapId())
-		.add<int8_t>(player->getMapPos())
+		.add<map_id_t>(player->getMapId())
+		.add<portal_id_t>(player->getMapPos())
 		.add<int32_t>(0) // Unknown int32 added in .62
 		.add<uint8_t>(player->getBuddyListSize());
 
@@ -86,7 +86,7 @@ PACKET_IMPL(connectData, Player *player) {
 		.add<int16_t>(0)
 		// Party Quest data (quest needs to be added in the quests list)
 		.add<int16_t>(0) // Amount of pquests
-		// for every pquest: int16_t questId, string questdata
+		// for every pquest: quest_id_t questId, string_t questdata
 		.add<int16_t>(0)
 		.add<int64_t>(TimeUtilities::getServerTime());
 	return builder;
@@ -205,7 +205,7 @@ PACKET_IMPL(groupChat, const string_t &name, const string_t &msg, int8_t type) {
 	return builder;
 }
 
-PACKET_IMPL(instructionBubble, const string_t &msg, int16_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
+PACKET_IMPL(instructionBubble, const string_t &msg, coord_t width, int16_t time, bool isStatic, int32_t x, int32_t y) {
 	PacketBuilder builder;
 
 	if (width == -1) {
@@ -218,7 +218,7 @@ PACKET_IMPL(instructionBubble, const string_t &msg, int16_t width, int16_t time,
 	builder
 		.add<header_t>(SMSG_BUBBLE)
 		.add<string_t>(msg)
-		.add<int16_t>(width)
+		.add<coord_t>(width)
 		.add<int16_t>(time)
 		.add<bool>(!isStatic);
 
@@ -230,11 +230,11 @@ PACKET_IMPL(instructionBubble, const string_t &msg, int16_t width, int16_t time,
 	return builder;
 }
 
-PACKET_IMPL(showHpBar, int32_t playerId, int32_t hp, int32_t maxHp) {
+PACKET_IMPL(showHpBar, player_id_t playerId, int32_t hp, int32_t maxHp) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_PARTY_HP_DISPLAY)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int32_t>(hp)
 		.add<int32_t>(maxHp);
 	return builder;

@@ -37,7 +37,7 @@ struct ConnectingPlayer {
 
 	Ip connectIp;
 	time_point_t connectTime;
-	int32_t mapId = -1;
+	map_id_t mapId = -1;
 	string_t portal;
 	uint16_t packetSize;
 	MiscUtilities::shared_array<unsigned char> heldPacket;
@@ -58,30 +58,30 @@ public:
 	auto updatePlayerLevel(Player *player) -> void;
 	auto updatePlayerMap(Player *player) -> void;
 	auto updatePlayerJob(Player *player) -> void;
-	auto getPlayer(int32_t id) -> Player *;
+	auto getPlayer(player_id_t id) -> Player *;
 	auto getPlayer(const string_t &name) -> Player *;
 	auto run(function_t<void(Player *)> func) -> void;
-	auto send(int32_t playerId, const PacketBuilder &packet) -> void;
-	auto send(const vector_t<int32_t> &playerIds, const PacketBuilder &packet) -> void;
+	auto send(player_id_t playerId, const PacketBuilder &packet) -> void;
+	auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &packet) -> void;
 	auto send(const PacketBuilder &packet) -> void;
 	auto addFollower(Player *follower, Player *target) -> void;
 	auto stopFollowing(Player *follower) -> void;
 
 	// Player data
-	auto getPlayerData(int32_t id) const -> const PlayerData * const;
+	auto getPlayerData(player_id_t id) const -> const PlayerData * const;
 	auto getPlayerDataByName(const string_t &name) const -> const PlayerData * const;
 
 	// Parties
-	auto getParty(int32_t id) -> Party *;
+	auto getParty(party_id_t id) -> Party *;
 
 	// Chat
-	auto handleGroupChat(int8_t chatType, int32_t playerId, const vector_t<int32_t> &receivers, const string_t &chat) -> void;
+	auto handleGroupChat(int8_t chatType, player_id_t playerId, const vector_t<player_id_t> &receivers, const string_t &chat) -> void;
 	auto handleGmChat(Player *player, const string_t &chat) -> void;
 
 	// Connections
-	auto checkPlayer(int32_t id, const Ip &ip, bool &hasPacket) const -> Result;
-	auto getPacket(int32_t id) const -> PacketReader;
-	auto playerEstablished(int32_t id) -> void;
+	auto checkPlayer(player_id_t id, const Ip &ip, bool &hasPacket) const -> Result;
+	auto getPacket(player_id_t id) const -> PacketReader;
+	auto playerEstablished(player_id_t id) -> void;
 private:
 	auto sendSync(const PacketBuilder &packet) const -> void;
 	auto addPlayerData(const PlayerData &data) -> void;
@@ -92,25 +92,25 @@ private:
 	auto handleDeleteConnectable(PacketReader &reader) -> void;
 	auto handleUpdatePlayer(PacketReader &reader) -> void;
 
-	auto handleCreateParty(int32_t id, int32_t leaderId) -> void;
-	auto handleDisbandParty(int32_t id) -> void;
-	auto handlePartyTransfer(int32_t id, int32_t leaderId) -> void;
-	auto handlePartyRemove(int32_t id, int32_t playerId, bool kicked) -> void;
-	auto handlePartyAdd(int32_t id, int32_t playerId) -> void;
+	auto handleCreateParty(party_id_t id, player_id_t leaderId) -> void;
+	auto handleDisbandParty(party_id_t id) -> void;
+	auto handlePartyTransfer(party_id_t id, player_id_t leaderId) -> void;
+	auto handlePartyRemove(party_id_t id, player_id_t playerId, bool kicked) -> void;
+	auto handlePartyAdd(party_id_t id, player_id_t playerId) -> void;
 
 	auto buddyInvite(PacketReader &reader) -> void;
 	auto buddyOnlineOffline(PacketReader &reader) -> void;
 
-	auto newPlayer(int32_t id, const Ip &ip, PacketReader &reader) -> void;
+	auto newPlayer(player_id_t id, const Ip &ip, PacketReader &reader) -> void;
 
 	const static uint32_t MaxConnectionMilliseconds = 5000;
 
-	hash_set_t<int32_t> m_gmList;
-	hash_map_t<int32_t, PlayerData> m_playerData;
-	hash_map_t<int32_t, vector_t<Player *>> m_followers;
+	hash_set_t<player_id_t> m_gmList;
+	hash_map_t<player_id_t, PlayerData> m_playerData;
+	hash_map_t<player_id_t, vector_t<Player *>> m_followers;
 	case_insensitive_hash_map_t<PlayerData *> m_playerDataByName;
-	hash_map_t<int32_t, ref_ptr_t<Party>> m_parties;
-	hash_map_t<int32_t, Player *> m_players;
+	hash_map_t<party_id_t, ref_ptr_t<Party>> m_parties;
+	hash_map_t<player_id_t, Player *> m_players;
 	case_insensitive_hash_map_t<Player *> m_playersByName;
-	hash_map_t<int32_t, ConnectingPlayer> m_connections;
+	hash_map_t<player_id_t, ConnectingPlayer> m_connections;
 };

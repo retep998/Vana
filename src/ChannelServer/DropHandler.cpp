@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Skills.hpp"
 #include <algorithm>
 
-auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
+auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
 	auto &globalDrops = DropDataProvider::getInstance().getGlobalDrops();
 	if (!DropDataProvider::getInstance().hasDrops(droppingId) && globalDrops.size() == 0) {
 		return;
@@ -48,8 +48,8 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 	auto drops = DropDataProvider::getInstance().getDrops(droppingId);
 
 	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
-	int16_t d = 0;
-	int32_t partyId = 0;
+	coord_t dropPosCounter = 0;
+	party_id_t partyId = 0;
 	Pos pos;
 
 	if (player != nullptr) {
@@ -79,11 +79,11 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 
 	Randomizer::shuffle(drops);
 
-	int16_t mod = explosive ? 35 : 25;
+	coord_t mod = explosive ? 35 : 25;
 	auto &config = ChannelServer::getInstance().getConfig();
 
 	for (const auto &dropInfo : drops) {
-		int16_t amount = static_cast<int16_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
+		slot_qty_t amount = static_cast<slot_qty_t>(Randomizer::rand<int32_t>(dropInfo.maxAmount, dropInfo.minAmount));
 		Drop *drop = nullptr;
 		uint32_t chance = dropInfo.chance;
 
@@ -96,7 +96,7 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 		}
 
 		if (Randomizer::rand<uint32_t>(999999) < chance) {
-			pos.x = origin.x + ((d % 2) ? (mod * (d + 1) / 2) : -(mod * (d / 2)));
+			pos.x = origin.x + ((dropPosCounter % 2) ? (mod * (dropPosCounter + 1) / 2) : -(mod * (dropPosCounter / 2)));
 			pos.y = origin.y;
 
 			if (Maps::getMap(mapId)->getFhAtPosition(pos) == 0) {
@@ -104,8 +104,8 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			}
 
 			if (!dropInfo.isMesos) {
-				int32_t itemId = dropInfo.itemId;
-				int16_t questId = dropInfo.questId;
+				item_id_t itemId = dropInfo.itemId;
+				quest_id_t questId = dropInfo.questId;
 
 				if (questId > 0) {
 					if (player == nullptr || player->getQuests()->itemDropAllowed(itemId, questId) == AllowQuestItemResult::Disallow) {
@@ -117,12 +117,11 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 				drop = new Drop(mapId, f, pos, playerId);
 
 				if (questId > 0) {
-					drop->setPlayerId(playerId);
 					drop->setQuest(questId);
 				}
 			}
 			else {
-				int32_t mesos = amount;
+				mesos_t mesos = amount;
 				if (!isSteal) {
 					mesos *= config.rates.mobMesoRate;
 					if (player != nullptr && player->getActiveBuffs()->hasMesoUp()) {
@@ -147,14 +146,14 @@ auto DropHandler::doDrops(int32_t playerId, int32_t mapId, int32_t droppingLevel
 			}
 			drop->setTime(100);
 			drop->doDrop(origin);
-			d++;
+			dropPosCounter++;
 			ReactorHandler::checkDrop(player, drop);
 		}
 	}
 }
 
 auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
+	tick_count_t ticks = reader.get<tick_count_t>();
 	int32_t amount = reader.get<int32_t>();
 	if (amount < 10 || amount > 50000 || amount > player->getInventory()->getMesos()) {
 		// Hacking
@@ -167,14 +166,14 @@ auto DropHandler::dropMesos(Player *player, PacketReader &reader) -> void {
 }
 
 auto DropHandler::petLoot(Player *player, PacketReader &reader) -> void {
-	int64_t petId = reader.get<int64_t>();
+	pet_id_t petId = reader.get<pet_id_t>();
 	lootItem(player, reader, petId);
 }
 
-auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) -> void {
+auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId) -> void {
 	reader.skipBytes(5);
 	Pos playerPos = reader.get<Pos>();
-	int32_t dropId = reader.get<int32_t>();
+	map_object_t dropId = reader.get<map_object_t>();
 	Drop *drop = player->getMap()->getDrop(dropId);
 
 	if (drop == nullptr) {
@@ -195,16 +194,16 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) 
 	}
 	if (drop->isMesos()) {
 		int32_t playerRate = 100;
-		int32_t rawMesos = drop->getObjectId();
-		auto giveMesos = [](Player *p, int32_t mesos) -> bool {
+		mesos_t rawMesos = drop->getObjectId();
+		auto giveMesos = [](Player *p, mesos_t mesos) -> Result {
 			if (p->getInventory()->modifyMesos(mesos, true)) {
 				p->send(DropsPacket::pickupDrop(mesos, 0, true));
 			}
 			else {
 				p->send(DropsPacket::dontTake());
-				return false;
+				return Result::Failure;
 			}
-			return true;
+			return Result::Successful;
 		};
 
 		if (player->getParty() != nullptr && !drop->isPlayerDrop()) {
@@ -212,9 +211,9 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) 
 			vector_t<Player *> members = player->getParty()->getPartyMembers(player->getMapId());
 			if (members.size() != 1) {
 				playerRate = 60;
-				int32_t mesos = rawMesos * playerRate / 100;
+				mesos_t mesos = rawMesos * playerRate / 100;
 
-				if (!giveMesos(player, mesos)) {
+				if (giveMesos(player, mesos) == Result::Failure) {
 					// Can't pick up the mesos
 					return;
 				}
@@ -232,7 +231,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) 
 			}
 		}
 		if (playerRate == 100) {
-			if (!giveMesos(player, rawMesos)) {
+			if (giveMesos(player, rawMesos) == Result::Failure) {
 				return;
 			}
 		}
@@ -252,8 +251,8 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, int64_t petId) 
 		}
 		else {
 			Item *item = new Item(dropItem);
-			int16_t dropAmount = drop->getAmount();
-			int16_t amount = Inventory::addItem(player, item, true);
+			slot_qty_t dropAmount = drop->getAmount();
+			slot_qty_t amount = Inventory::addItem(player, item, true);
 			if (amount > 0) {
 				if ((dropAmount - amount) > 0) {
 					player->send(DropsPacket::pickupDrop(drop->getObjectId(), dropAmount - amount));

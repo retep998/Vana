@@ -51,7 +51,7 @@ auto StringUtilities::runFlags(const opt_string_t &flags, function_t<void (const
 }
 
 auto StringUtilities::runFlags(const string_t &flags, function_t<void (const string_t &)> func) -> void {
-	if (flags.length() > 0) {
+	if (!flags.empty()) {
 		MiscUtilities::tokenizer tokens(flags, ",");
 		for (const auto &token : tokens) {
 			func(token);
@@ -66,7 +66,7 @@ auto StringUtilities::runEnum(const opt_string_t &enumText, function_t<void (con
 }
 
 auto StringUtilities::runEnum(const string_t &enumText, function_t<void (const string_t &)> func) -> void {
-	if (enumText.length() > 0) {
+	if (!enumText.empty()) {
 		func(enumText);
 	}
 }

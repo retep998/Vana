@@ -21,17 +21,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 
 namespace Inventories {
-	const uint8_t InventoryCount = 5;
-	const uint8_t EquipInventory = 1;
-	const uint8_t UseInventory = 2;
-	const uint8_t SetupInventory = 3;
-	const uint8_t EtcInventory = 4;
-	const uint8_t CashInventory = 5;
+	const inventory_t InventoryCount = 5;
+	const inventory_t EquipInventory = 1;
+	const inventory_t UseInventory = 2;
+	const inventory_t SetupInventory = 3;
+	const inventory_t EtcInventory = 4;
+	const inventory_t CashInventory = 5;
 
-	const uint8_t MinSlotsPerInventory = 24;
-	const uint8_t MaxSlotsPerInventory = 100;
-	const uint8_t MinSlotsStorage = 4;
-	const uint8_t MaxSlotsStorage = 100;
+	const inventory_slot_count_t MinSlotsPerInventory = 24;
+	const inventory_slot_count_t MaxSlotsPerInventory = 100;
+	const storage_slot_t MinSlotsStorage = 4;
+	const storage_slot_t MaxSlotsStorage = 100;
 
 	const uint8_t EquippedSlots = 51;
 	const int8_t MaxPetCount = 3;
@@ -231,7 +231,7 @@ namespace Items {
 		const int16_t Jump = 23;
 	}
 
-	enum : int32_t {
+	enum : item_id_t {
 		// Equip
 		GmHat = 1002140,
 		GmTop = 1042003,
@@ -240,6 +240,11 @@ namespace Items {
 		BattleshipMount = 1932000,
 
 		// Use
+		BeholderHexWdef = 2022125,
+		BeholderHexMdef = 2022126,
+		BeholderHexAcc = 2022127,
+		BeholderHexAvo = 2022128,
+		BeholderHexWatk = 2022129,
 		ShoeSpikes = 2040727,
 		CapeColdProtection = 2041058,
 		SpecialTeleportRock = 2320000,

@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace asio = boost::asio;
 
-Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &patchLocation) :
+Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
 	m_sessionManager(sessionManager),
 	m_socket(ioService),
 	m_connection(connection),
 	m_isForClient(isForClient),
-	m_patchLocation(patchLocation),
+	m_subversion(subversion),
 	m_decoder(!isForClient || isEncrypted),
 	m_usePing(usePing)
 {
@@ -61,7 +61,7 @@ auto Session::handleStart() -> void {
 		m_decoder.setRecvIv(Randomizer::rand<uint32_t>());
 		m_decoder.setSendIv(Randomizer::rand<uint32_t>());
 
-		PacketBuilder connectPacket = getConnectPacket(m_patchLocation);
+		PacketBuilder connectPacket = getConnectPacket(m_subversion);
 		send(connectPacket.getBuffer(), connectPacket.getSize(), false);
 	}
 
@@ -180,16 +180,15 @@ auto Session::getIp() const -> const Ip & {
 	return m_connection->getIp();
 }
 
-auto Session::getConnectPacket(const string_t &patchLocation) const -> PacketBuilder {
+auto Session::getConnectPacket(const string_t &subversion) const -> PacketBuilder {
 	PacketBuilder builder;
-	// IV_PATCH_LOCATION
 	builder
 		.add<header_t>(0)
-		.add<uint16_t>(MapleVersion::Version)
-		.add<string_t>(patchLocation)
+		.add<version_t>(MapleVersion::Version)
+		.add<string_t>(subversion)
 		.add<uint32_t>(m_decoder.getRecvIv())
 		.add<uint32_t>(m_decoder.getSendIv())
-		.add<int8_t>(MapleVersion::Locale);
+		.add<locale_t>(MapleVersion::Locale);
 
 	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);
 	return builder;

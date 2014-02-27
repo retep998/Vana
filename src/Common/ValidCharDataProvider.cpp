@@ -52,7 +52,7 @@ auto ValidCharDataProvider::loadCreationItems() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("character_creation_data"));
 
 	for (const auto &row : rs) {
-		int8_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
+		gender_id_t genderId = GameLogicUtilities::getGenderId(row.get<string_t>("gender"));
 		int32_t objectId = row.get<int32_t>("objectid");
 		int8_t classId = -1;
 
@@ -68,8 +68,8 @@ auto ValidCharDataProvider::loadCreationItems() -> void {
 		StringUtilities::runEnum(row.get<string_t>("object_type"), [&items, &objectId](const string_t &cmp) {
 			if (cmp == "face") items.faces.push_back(objectId);
 			else if (cmp == "hair") items.hair.push_back(objectId);
-			else if (cmp == "haircolor") items.haircolor.push_back(objectId);
-			else if (cmp == "skin") items.skin.push_back(objectId);
+			else if (cmp == "haircolor") items.hairColor.push_back(objectId);
+			else if (cmp == "skin") items.skin.push_back(static_cast<skin_id_t>(objectId));
 			else if (cmp == "top") items.top.push_back(objectId);
 			else if (cmp == "bottom") items.bottom.push_back(objectId);
 			else if (cmp == "shoes") items.shoes.push_back(objectId);
@@ -85,14 +85,14 @@ auto ValidCharDataProvider::isForbiddenName(const string_t &cmp) const -> bool {
 	});
 }
 
-auto ValidCharDataProvider::isValidCharacter(int8_t genderId, int32_t hair, int32_t haircolor, int32_t eyes, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, int8_t classId) const -> bool {
+auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hair, hair_id_t hairColor, face_id_t eyes, skin_id_t skin, item_id_t top, item_id_t bottom, item_id_t shoes, item_id_t weapon, int8_t classId) const -> bool {
 	if (genderId != Gender::Male && genderId != Gender::Female) {
 		return false;
 	}
 
 	auto &items = getItems(genderId, classId);
 	bool valid = isValidItem(hair, items, ValidItemType::Hair);
-	if (valid) valid = isValidItem(haircolor, items, ValidItemType::HairColor);
+	if (valid) valid = isValidItem(hairColor, items, ValidItemType::HairColor);
 	if (valid) valid = isValidItem(eyes, items, ValidItemType::Face);
 	if (valid) valid = isValidItem(skin, items, ValidItemType::Skin);
 	if (valid) valid = isValidItem(top, items, ValidItemType::Top);
@@ -104,12 +104,14 @@ auto ValidCharDataProvider::isValidCharacter(int8_t genderId, int32_t hair, int3
 
 auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, ValidItemType type) const -> bool {
 	auto idTest = [id](int32_t test) -> bool { return id == test; };
+	// TODO FIXME remove when lambda aliases (e.g. [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { ... })
+	skin_id_t casted = static_cast<skin_id_t>(id);
 
 	switch (type) {
 		case ValidItemType::Face: return ext::any_of(items.faces, idTest);
 		case ValidItemType::Hair: return ext::any_of(items.hair, idTest);
-		case ValidItemType::HairColor: return ext::any_of(items.haircolor, idTest);
-		case ValidItemType::Skin: return ext::any_of(items.skin, idTest);
+		case ValidItemType::HairColor: return ext::any_of(items.hairColor, idTest);
+		case ValidItemType::Skin: return ext::any_of(items.skin, [casted](skin_id_t test) -> bool { return casted == test; });
 		case ValidItemType::Top: return ext::any_of(items.top, idTest);
 		case ValidItemType::Bottom: return ext::any_of(items.bottom, idTest);
 		case ValidItemType::Shoes: return ext::any_of(items.shoes, idTest);
@@ -118,7 +120,7 @@ auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, Val
 	throw std::domain_error("Missing ValidItemType");
 }
 
-auto ValidCharDataProvider::getItems(int8_t genderId, int8_t classId) const -> const ValidItems & {
+auto ValidCharDataProvider::getItems(gender_id_t genderId, int8_t classId) const -> const ValidItems & {
 	return genderId == Gender::Male ?
 		(classId == Adventurer ? m_adventurer.male : m_cygnus.male) :
 		(classId == Adventurer ? m_adventurer.female : m_cygnus.female);

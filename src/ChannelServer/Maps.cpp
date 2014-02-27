@@ -31,35 +31,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.hpp"
 #include <string>
 
-auto Maps::getMap(int32_t mapId) -> Map * {
+auto Maps::getMap(map_id_t mapId) -> Map * {
 	return MapDataProvider::getInstance().getMap(mapId);
 }
 
-auto Maps::unloadMap(int32_t mapId) -> void {
+auto Maps::unloadMap(map_id_t mapId) -> void {
 	MapDataProvider::getInstance().unloadMap(mapId);
 }
 
 auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 	if (portal->script.size() != 0) {
 		// Check for "onlyOnce" portal
-		if (portal->onlyOnce) {
-			if (player->usedPortal(portal->id)) {
-				player->send(MapPacket::portalBlocked());
-				return;
-			}
-			else {
-				player->addUsedPortal(portal->id);
-			}
+		if (portal->onlyOnce && player->usedPortal(portal->id)) {
+			player->send(MapPacket::portalBlocked());
+			return;
 		}
 
 		string_t filename = "scripts/portals/" + portal->script + ".lua";
 
 		if (FileUtilities::fileExists(filename)) {
-			int32_t map = player->getMapId();
-			LuaPortal(filename, player->getId(), portal);
+			auto luaEnv = LuaPortal(filename, player->getId(), portal);
 
-			if (map == player->getMapId()) {
+			if (!luaEnv.playerMapChanged()) {
 				player->send(MapPacket::portalBlocked());
+			}
+			if (portal->onlyOnce && !luaEnv.portalFailed()) {
+				player->addUsedPortal(portal->id);
 			}
 		}
 		else {
@@ -139,7 +136,7 @@ auto Maps::useScriptedPortal(Player *player, PacketReader &reader) -> void {
 	usePortal(player, portal);
 }
 
-auto Maps::addPlayer(Player *player, int32_t mapId) -> void {
+auto Maps::addPlayer(Player *player, map_id_t mapId) -> void {
 	getMap(mapId)->addPlayer(player);
 	getMap(mapId)->showObjects(player);
 	PetHandler::showPets(player);

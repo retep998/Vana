@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 
 namespace Maps {
-	enum : int32_t {
+	enum : map_id_t {
 		GmMap = 180000000,
 		OriginOfClockTower = 220080001,
 		SorcerersRoom = 270020211,

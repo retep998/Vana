@@ -30,6 +30,10 @@ PacketBuilder::PacketBuilder() :
 {
 }
 
+auto PacketBuilder::addBytes(const string_t &hex) -> PacketBuilder & {
+	return addBytes(hex.c_str());
+}
+
 auto PacketBuilder::addBytes(const char *hex) -> PacketBuilder & {
 	size_t x = 0;
 	for (size_t i = 0; i < strlen(hex) / 2; ++i) {

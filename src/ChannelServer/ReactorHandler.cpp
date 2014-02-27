@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 
 auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
-	uint32_t id = Map::makeReactorId(reader.get<uint32_t>());
+	size_t id = Map::makeReactorId(reader.get<map_object_t>());
 
 	Map *map = player->getMap();
 	Reactor *reactor = map->getReactor(id);
@@ -74,7 +74,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 }
 
 auto ReactorHandler::touchReactor(Player *player, PacketReader &reader) -> void {
-	uint32_t id = Map::makeReactorId(reader.get<uint32_t>());
+	size_t id = Map::makeReactorId(reader.get<map_object_t>());
 	bool isTouching = reader.get<bool>();
 
 	Map *map = player->getMap();

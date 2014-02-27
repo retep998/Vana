@@ -27,28 +27,26 @@ class Player;
 struct TradeInfo {
 	TradeInfo()
 	{
-		for (uint8_t i = 0; i < TradeSize; i++) {
-			slot[i] = false;
-			items[i] = 0;
+		for (trade_slot_t i = 0; i < TradeSize; i++) {
+			items[i] = nullptr;
 		}
 	}
 
-	const static uint8_t TradeSize = 9;
+	const static trade_slot_t TradeSize = 9;
 
 	bool accepted = false;
-	uint8_t count = 0;
-	int32_t mesos = 0;
+	trade_slot_t count = 0;
+	mesos_t mesos = 0;
 	array_t<Item *, TradeSize> items;
-	array_t<bool, TradeSize> slot;
 };
 
 class ActiveTrade {
 	NONCOPYABLE(ActiveTrade);
 	NO_DEFAULT_CONSTRUCTOR(ActiveTrade);
 public:
-	ActiveTrade(Player *starter, Player *receiver, int32_t id);
+	ActiveTrade(Player *starter, Player *receiver, trade_id_t id);
 
-	auto getId() const -> int32_t { return m_id; }
+	auto getId() const -> trade_id_t { return m_id; }
 	auto getSenderTrade() const -> TradeInfo * { return m_sender.get(); }
 	auto getReceiverTrade() const -> TradeInfo * { return m_receiver.get(); }
 
@@ -60,17 +58,17 @@ public:
 	auto returnTrade() -> void;
 	auto swapTrade() -> void;
 	auto accept(TradeInfo *unit) -> void;
-	auto addMesos(Player *holder, TradeInfo *unit, int32_t amount) -> int32_t;
-	auto addItem(Player *holder, TradeInfo *unit, Item *item, uint8_t tradeSlot, int16_t inventorySlot, int8_t inventory, int16_t amount) -> Item *;
-	auto isItemInSlot(TradeInfo *unit, uint8_t tradeSlot) -> bool { return (tradeSlot > TradeInfo::TradeSize ? true : unit->slot[tradeSlot - 1]); }
+	auto addMesos(Player *holder, TradeInfo *unit, mesos_t amount) -> mesos_t;
+	auto addItem(Player *holder, TradeInfo *unit, Item *item, trade_slot_t tradeSlot, inventory_slot_t inventorySlot, inventory_t inventory, slot_qty_t amount) -> Item *;
+	auto isItemInSlot(TradeInfo *unit, trade_slot_t tradeSlot) -> bool { return tradeSlot > TradeInfo::TradeSize ? true : unit->items[tradeSlot - 1] != nullptr; }
 private:
 	auto canTrade(Player *target, TradeInfo *unit) -> bool;
 	auto giveItems(Player *target, TradeInfo *unit) -> void;
 	auto giveMesos(Player *player, TradeInfo *info, bool traded = false) -> void;
 
-	int32_t m_id = 0;
-	int32_t m_senderId = 0;
-	int32_t m_receiverId = 0;
+	trade_id_t m_id = 0;
+	player_id_t m_senderId = 0;
+	player_id_t m_receiverId = 0;
 	owned_ptr_t<TradeInfo> m_sender;
 	owned_ptr_t<TradeInfo> m_receiver;
 };

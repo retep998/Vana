@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Database.hpp"
 
 auto KeyMaps::defaultMap() -> void {
+	// TODO FIXME move to a config file
 	add(2, KeyMap(4, 10));
 	add(3, KeyMap(4, 12));
 	add(4, KeyMap(4, 13));
@@ -60,7 +61,7 @@ auto KeyMaps::defaultMap() -> void {
 	add(65, KeyMap(6, 106));
 }
 
-auto KeyMaps::load(int32_t charId) -> void {
+auto KeyMaps::load(player_id_t charId) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT k.* FROM " << Database::makeCharTable("keymap") << " k WHERE k.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
@@ -73,7 +74,7 @@ auto KeyMaps::load(int32_t charId) -> void {
 	}
 }
 
-auto KeyMaps::save(int32_t charId) -> void {
+auto KeyMaps::save(player_id_t charId) -> void {
 	size_t i = 0;
 	int8_t type = 0;
 	int32_t action = 0;

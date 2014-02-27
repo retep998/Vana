@@ -38,8 +38,8 @@ struct InventoryPacketOperation {
 
 	int8_t operationType = 0;
 	Item *item = nullptr;
-	int16_t oldSlot = 0;
-	int16_t currentSlot = 0;
+	inventory_slot_t oldSlot = 0;
+	inventory_slot_t currentSlot = 0;
 };
 
 namespace InventoryPacket {
@@ -78,30 +78,30 @@ namespace InventoryPacket {
 	}
 
 	SPLIT_PACKET(updatePlayer, Player *player);
-	SPLIT_PACKET(sitChair, int32_t playerId, int32_t chairId);
-	SPLIT_PACKET(stopChair, int32_t playerId, bool seatTaken);
-	SPLIT_PACKET(useScroll, int32_t playerId, int8_t succeed, bool destroy, bool legendarySpirit);
-	SPLIT_PACKET(sendChalkboardUpdate, int32_t playerId, const string_t &msg);
-	SPLIT_PACKET(useSkillbook, int32_t playerId, int32_t skillId, int32_t newMaxLevel, bool use, bool succeed);
-	SPLIT_PACKET(useItemEffect, int32_t playerId, int32_t itemId);
-	SPLIT_PACKET(sendRewardItemAnimation, int32_t playerId, int32_t itemId, const string_t &effect);
+	SPLIT_PACKET(sitChair, player_id_t playerId, item_id_t chairId);
+	SPLIT_PACKET(stopChair, player_id_t playerId, bool seatTaken);
+	SPLIT_PACKET(useScroll, player_id_t playerId, int8_t succeed, bool destroy, bool legendarySpirit);
+	SPLIT_PACKET(sendChalkboardUpdate, player_id_t playerId, const string_t &msg);
+	SPLIT_PACKET(useSkillbook, player_id_t playerId, skill_id_t skillId, int32_t newMaxLevel, bool use, bool succeed);
+	SPLIT_PACKET(useItemEffect, player_id_t playerId, item_id_t itemId);
+	SPLIT_PACKET(sendRewardItemAnimation, player_id_t playerId, item_id_t itemId, const string_t &effect);
 	PACKET(inventoryOperation, bool unk, const vector_t<InventoryPacketOperation> &operations);
-	PACKET(sitMapChair, int16_t chairId);
+	PACKET(sitMapChair, seat_id_t chairId);
 	PACKET(showMegaphone, const string_t &msg);
 	PACKET(showSuperMegaphone, const string_t &msg, bool whisper = false);
-	PACKET(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, int32_t itemId);
+	PACKET(showMessenger, const string_t &playerName, const string_t &msg1, const string_t &msg2, const string_t &msg3, const string_t &msg4, unsigned char *displayInfo, int32_t displayInfoSize, item_id_t itemId);
 	PACKET(showItemMegaphone, const string_t &msg, bool whisper = false, Item *item = nullptr);
 	PACKET(showTripleMegaphone, int8_t lines, const string_t &line1, const string_t &line2, const string_t &line3, bool whisper);
-	PACKET(updateSlots, int8_t inventory, int8_t slots);
-	PACKET(sendRockUpdate, int8_t mode, int8_t type, const vector_t<int32_t> &maps);
+	PACKET(updateSlots, inventory_t inventory, inventory_slot_count_t slots);
+	PACKET(sendRockUpdate, int8_t mode, int8_t type, const vector_t<map_id_t> &maps);
 	PACKET(sendRockError, int8_t code, int8_t type);
 	PACKET(useCharm, uint8_t charmsLeft, uint8_t daysLeft = 99);
-	PACKET(sendMesobagSucceed, int32_t mesos);
+	PACKET(sendMesobagSucceed, mesos_t mesos);
 	PACKET(sendMesobagFailed);
 	PACKET(sendHammerSlots, int32_t slots);
-	PACKET(sendHulkSmash, int16_t slot, Item *hammered);
+	PACKET(sendHulkSmash, inventory_slot_t slot, Item *hammered);
 	PACKET(sendHammerUpdate);
-	PACKET(playCashSong, int32_t itemId, const string_t &playerName);
+	PACKET(playCashSong, item_id_t itemId, const string_t &playerName);
 	PACKET(blankUpdate);
-	PACKET(sendItemExpired, const vector_t<int32_t> &items);
+	PACKET(sendItemExpired, const vector_t<item_id_t> &items);
 }

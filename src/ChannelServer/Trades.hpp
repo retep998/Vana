@@ -29,18 +29,18 @@ class Player;
 class Trades : public TimerContainerHolder {
 	SINGLETON_CUSTOM_CONSTRUCTOR(Trades);
 public:
-	auto newTrade(Player *start, Player *recv) -> int32_t;
-	auto removeTrade(int32_t id) -> void;
-	auto stopTimeout(int32_t id) -> void;
-	auto getTrade(int32_t id) -> ActiveTrade *;
+	auto newTrade(Player *start, Player *recv) -> trade_id_t;
+	auto removeTrade(trade_id_t id) -> void;
+	auto stopTimeout(trade_id_t id) -> void;
+	auto getTrade(trade_id_t id) -> ActiveTrade *;
 private:
 	static seconds_t TradeTimeout;
 
-	auto getNewId() -> int32_t { return m_tradeIds.next(); }
-	auto getTimerSecondsRemaining(int32_t m_id) -> seconds_t;
+	auto getNewId() -> trade_id_t { return m_tradeIds.next(); }
+	auto getTimerSecondsRemaining(trade_id_t id) -> seconds_t;
 	auto timeout(Player *sender) -> void;
-	auto startTimeout(int32_t id, Player *sender) -> void;
+	auto startTimeout(trade_id_t id, Player *sender) -> void;
 
-	LoopingId<int32_t> m_tradeIds;
-	hash_map_t<int32_t, ref_ptr_t<ActiveTrade>> m_trades;
+	LoopingId<trade_id_t> m_tradeIds;
+	hash_map_t<trade_id_t, ref_ptr_t<ActiveTrade>> m_trades;
 };

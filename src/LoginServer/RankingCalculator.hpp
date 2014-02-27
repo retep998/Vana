@@ -28,13 +28,13 @@ namespace RankingCalculator {
 		opt_int32_t newRank;
 	};
 	struct RankPlayer {
-		uint8_t levelStat;
-		uint8_t jobLevelMax;
+		player_level_t levelStat;
+		player_level_t jobLevelMax;
 		world_id_t worldId;
-		int16_t jobStat;
+		job_id_t jobStat;
 		int16_t fameStat;
-		int32_t expStat;
-		int32_t charId;
+		experience_t expStat;
+		player_id_t charId;
 		unix_time_t levelTime;
 		Rank overall;
 		Rank world;
@@ -49,7 +49,7 @@ namespace RankingCalculator {
 	auto world(vector_t<RankPlayer> &v) -> void;
 	auto job(vector_t<RankPlayer> &v) -> void;
 	auto fame(vector_t<RankPlayer> &v) -> void;
-	auto increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) -> bool;
+	auto increaseRank(player_level_t level, player_level_t maxLevel, player_level_t lastLevel, experience_t exp, experience_t lastExp, job_id_t job) -> bool;
 	auto baseCompare(const RankPlayer &t1, const RankPlayer &t2) -> bool;
 	auto updateRank(Rank &r, int32_t newRank) -> void;
 

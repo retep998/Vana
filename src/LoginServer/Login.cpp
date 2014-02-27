@@ -57,7 +57,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 		soci::into(row);
 
 	bool valid = true;
-	int32_t userId = 0;
+	account_id_t userId = 0;
 	if (!sql.got_data()) {
 		user->send(LoginPacket::loginError(LoginPacket::Errors::InvalidUsername));
 		valid = false;
@@ -82,7 +82,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			valid = false;
 		}
 		else {
-			userId = row.get<int32_t>("user_id");
+			userId = row.get<account_id_t>("user_id");
 			string_t dbPassword = row.get<string_t>("password");
 			opt_string_t salt = row.get<opt_string_t>("salt");
 
@@ -95,7 +95,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 				else {
 					// We have a valid password, so let's hash the password
 					salt = MiscUtilities::generateSalt(VanaConstants::SaltSize);
-					const string_t &hashedPassword = MiscUtilities::hashPassword(password, salt.get());
+					string_t hashedPassword = MiscUtilities::hashPassword(password, salt.get());
 
 					sql.once
 						<< "UPDATE " << Database::makeCharTable("user_accounts") << " u "
@@ -148,7 +148,7 @@ auto Login::loginUser(UserConnection *user, PacketReader &reader) -> void {
 			user->setStatus(PlayerStatus::LoggedIn);
 		}
 
-		opt_int8_t gender = row.get<opt_int8_t>("gender");
+		optional_t<gender_id_t> gender = row.get<optional_t<gender_id_t>>("gender");
 		if (!gender.is_initialized()) {
 			user->setStatus(PlayerStatus::SetGender);
 		}
@@ -188,7 +188,7 @@ auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
 	}
 	if (reader.get<int8_t>() == 1) {
 		// get<bool> candidate?
-		int8_t gender = reader.get<int8_t>();
+		gender_id_t gender = reader.get<gender_id_t>();
 		if (gender != Gender::Male && gender != Gender::Female) {
 			// Hacking
 			return;
@@ -216,7 +216,7 @@ auto Login::setGender(UserConnection *user, PacketReader &reader) -> void {
 }
 
 auto Login::handleLogin(UserConnection *user, PacketReader &reader) -> void {
-	int32_t status = user->getStatus();
+	auto status = user->getStatus();
 	if (status == PlayerStatus::SetPin) {
 		user->send(LoginPacket::loginProcess(PlayerStatus::SetPin));
 	}

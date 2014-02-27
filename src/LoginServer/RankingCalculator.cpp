@@ -105,7 +105,7 @@ auto RankingCalculator::all() -> void {
 		job(v);
 		fame(v);
 
-		int32_t charId = 0;
+		player_id_t charId = 0;
 		opt_int32_t oFame = 0;
 		int32_t cFame = 0;
 		opt_int32_t oWorld = 0;
@@ -156,7 +156,7 @@ auto RankingCalculator::all() -> void {
 	l.unlock();
 }
 
-auto RankingCalculator::increaseRank(uint8_t level, uint8_t maxLevel, uint8_t lastLevel, int32_t exp, int32_t lastExp, int16_t job) -> bool {
+auto RankingCalculator::increaseRank(player_level_t level, player_level_t maxLevel, player_level_t lastLevel, experience_t exp, experience_t lastExp, job_id_t job) -> bool {
 	if (level == maxLevel) {
 		return true;
 	}
@@ -188,9 +188,9 @@ auto RankingCalculator::updateRank(Rank &r, int32_t newRank) -> void {
 auto RankingCalculator::overall(vector_t<RankPlayer> &v) -> void {
 	std::sort(std::begin(v), std::end(v), &baseCompare);
 
-	uint8_t lastLevel = 0;
+	player_level_t lastLevel = 0;
 	time_t lastTime = 0;
-	int32_t lastExp = 0;
+	experience_t lastExp = 0;
 	bool first = true;
 	size_t rank = 1;
 
@@ -220,9 +220,9 @@ auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
 
 	Worlds::getInstance().runFunction([&v](World *world) -> bool {
 		world_id_t worldId = world->getId();
-		uint8_t lastLevel = 0;
+		player_level_t lastLevel = 0;
 		time_t lastTime = 0;
-		int32_t lastExp = 0;
+		experience_t lastExp = 0;
 		bool first = true;
 		size_t rank = 1;
 
@@ -249,8 +249,8 @@ auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
 
 auto RankingCalculator::job(vector_t<RankPlayer> &v) -> void {
 	std::sort(std::begin(v), std::end(v), [](const RankPlayer &t1, const RankPlayer &t2) -> bool {
-		int16_t job1 = GameLogicUtilities::getJobTrack(t1.jobStat);
-		int16_t job2 = GameLogicUtilities::getJobTrack(t2.jobStat);
+		int8_t job1 = GameLogicUtilities::getJobTrack(t1.jobStat);
+		int8_t job2 = GameLogicUtilities::getJobTrack(t2.jobStat);
 
 		if (job1 == job2) {
 			return baseCompare(t1, t2);
@@ -260,9 +260,9 @@ auto RankingCalculator::job(vector_t<RankPlayer> &v) -> void {
 
 	// We will iterate through each job track
 	for (const auto &jobTrack : Jobs::JobTracks::JobTracks) {
-		uint8_t lastLevel = 0;
+		player_level_t lastLevel = 0;
 		time_t lastTime = 0;
-		int32_t lastExp = 0;
+		experience_t lastExp = 0;
 		bool first = true;
 		size_t rank = 1;
 

@@ -63,7 +63,7 @@ auto Decoder::validPacket(unsigned char *header) -> bool {
 	uint16_t version = 0;
 	uint16_t pSize = 0;
 	getVersionAndSize(header, version, pSize);
-	return (version == MapleVersion::Version && pSize >= 2);
+	return version == MapleVersion::Version && pSize >= 2;
 }
 
 inline

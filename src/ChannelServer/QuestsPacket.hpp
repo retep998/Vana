@@ -33,17 +33,17 @@ namespace QuestsPacket {
 		ErrorOnlyOne = 0x0E
 	};
 
-	PACKET(acceptQuest, int16_t questId, int32_t npcId);
-	PACKET(acceptQuestNotice, int16_t questId);
-	PACKET(completeQuestNotice, int16_t questId, int64_t time);
-	PACKET(completeQuest, int16_t questId, int32_t npcId, int16_t nextQuest);
-	SPLIT_PACKET(completeQuestAnimation, int32_t playerId);
+	PACKET(acceptQuest, quest_id_t questId, npc_id_t npcId);
+	PACKET(acceptQuestNotice, quest_id_t questId);
+	PACKET(completeQuestNotice, quest_id_t questId, int64_t time);
+	PACKET(completeQuest, quest_id_t questId, npc_id_t npcId, quest_id_t nextQuest);
+	SPLIT_PACKET(completeQuestAnimation, player_id_t playerId);
 	PACKET(updateQuest, const ActiveQuest &quest);
-	PACKET(doneQuest, int16_t questId);
-	PACKET(questError, int16_t questId, int8_t errorCode);
-	PACKET(questExpire, int16_t questId);
-	PACKET(forfeitQuest, int16_t questId);
-	PACKET(giveItem, int32_t itemId, int32_t amount);
-	PACKET(giveMesos, int32_t amount);
-	PACKET(giveFame, int32_t amount);
+	PACKET(doneQuest, quest_id_t questId);
+	PACKET(questError, quest_id_t questId, int8_t errorCode);
+	PACKET(questExpire, quest_id_t questId);
+	PACKET(forfeitQuest, quest_id_t questId);
+	PACKET(giveItem, item_id_t itemId, slot_qty_t amount);
+	PACKET(giveMesos, mesos_t amount);
+	PACKET(giveFame, fame_t amount);
 }

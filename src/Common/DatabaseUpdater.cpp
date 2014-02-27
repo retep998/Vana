@@ -85,7 +85,7 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 		m_fileVersion = 0;
 	}
 	else {
-		m_fileVersion = version.getOrDefault(0);
+		m_fileVersion = version.get(0);
 	}
 }
 

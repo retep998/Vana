@@ -33,10 +33,10 @@ struct Line {
 	auto slope() const -> float;
 	auto contains(const Pos &pos) const -> bool;
 	auto slopeContains(const Pos &pos) const -> bool;
-	auto withinRangeX(int16_t xValue) const -> bool;
-	auto withinRangeY(int16_t yValue) const -> bool;
-	auto interpolateForX(int16_t yValue) const -> int16_t;
-	auto interpolateForY(int16_t xValue) const -> int16_t;
+	auto withinRangeX(coord_t xValue) const -> bool;
+	auto withinRangeY(coord_t yValue) const -> bool;
+	auto interpolateForX(coord_t yValue) const -> coord_t;
+	auto interpolateForY(coord_t xValue) const -> coord_t;
 	auto length() const -> int32_t;
 	auto makeRect() const -> Rect;
 

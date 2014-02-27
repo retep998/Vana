@@ -45,12 +45,12 @@ auto MobDataProvider::loadAttacks() -> void {
 	for (const auto &row : rs) {
 		MobAttackInfo mobAttack;
 
-		int32_t mobId = row.get<int32_t>("mobid");
+		mob_id_t mobId = row.get<mob_id_t>("mobid");
 		mobAttack.id = row.get<int8_t>("attackid");
 		mobAttack.mpConsume = row.get<uint8_t>("mp_cost");
 		mobAttack.mpBurn = row.get<uint16_t>("mp_burn");
-		mobAttack.disease = row.get<uint8_t>("mob_skillid");
-		mobAttack.level = row.get<uint8_t>("mob_skill_level");
+		mobAttack.disease = row.get<mob_skill_id_t>("mob_skillid");
+		mobAttack.level = row.get<mob_skill_level_t>("mob_skill_level");
 
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&mobAttack](const string_t &cmp) {
 			if (cmp == "deadly") mobAttack.deadlyAttack = true;
@@ -74,9 +74,9 @@ auto MobDataProvider::loadSkills() -> void {
 
 	for (const auto &row : rs) {
 		MobSkillInfo mobSkill;
-		int32_t mobId = row.get<int32_t>("mobid");
-		mobSkill.skillId = row.get<uint8_t>("skillid");
-		mobSkill.level = row.get<uint8_t>("skill_level");
+		mob_id_t mobId = row.get<mob_id_t>("mobid");
+		mobSkill.skillId = row.get<mob_skill_id_t>("skillid");
+		mobSkill.level = row.get<mob_skill_level_t>("skill_level");
 		mobSkill.effectAfter = row.get<int16_t>("effect_delay");
 
 		m_skills[mobId].push_back(mobSkill);
@@ -91,16 +91,16 @@ auto MobDataProvider::loadMobs() -> void {
 	for (const auto &row : rs) {
 		auto mob = make_ref_ptr<MobInfo>();
 
-		int32_t mobId = row.get<int32_t>("mobid");
+		mob_id_t mobId = row.get<mob_id_t>("mobid");
 		mob->level = row.get<uint16_t>("mob_level");
 		mob->hp = row.get<uint32_t>("hp");
 		mob->mp = row.get<uint32_t>("mp");
 		mob->hpRecovery = row.get<uint32_t>("hp_recovery");
 		mob->mpRecovery = row.get<uint32_t>("mp_recovery");
 		mob->selfDestruction = row.get<int32_t>("explode_hp");
-		mob->exp = row.get<uint32_t>("experience");
-		mob->link = row.get<int32_t>("link");
-		mob->buff = row.get<int32_t>("death_buff");
+		mob->exp = row.get<experience_t>("experience");
+		mob->link = row.get<mob_id_t>("link");
+		mob->buff = row.get<item_id_t>("death_buff");
 		mob->removeAfter = row.get<int32_t>("death_after");
 		mob->hpColor = row.get<int8_t>("hp_bar_color");
 		mob->hpBackgroundColor = row.get<int8_t>("hp_bar_bg_color");
@@ -114,11 +114,11 @@ auto MobDataProvider::loadMobs() -> void {
 		mob->mAtk = row.get<int16_t>("magical_attack");
 		mob->mDef = row.get<int16_t>("magical_defense");
 		mob->traction = row.get<double>("traction");
-		mob->damagedBySkill = row.get<int32_t>("damaged_by_skill_only");
-		mob->damagedByMob = row.get<int32_t>("damaged_by_mob_only");
+		mob->damagedBySkill = row.get<skill_id_t>("damaged_by_skill_only");
+		mob->damagedByMob = row.get<mob_id_t>("damaged_by_mob_only");
 		mob->knockback = row.get<int32_t>("knockback");
 		mob->summonType = row.get<int16_t>("summon_type");
-		mob->fixedDamage = row.get<int32_t>("fixed_damage");
+		mob->fixedDamage = row.get<damage_t>("fixed_damage");
 
 		auto getElement = [&row](const string_t &modifier) -> MobElementalAttribute {
 			MobElementalAttribute ret;
@@ -167,31 +167,31 @@ auto MobDataProvider::loadSummons() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("mob_summons"));
 
 	for (const auto &row : rs) {
-		int32_t mobId = row.get<int32_t>("mobid");
-		int32_t summonId = row.get<int32_t>("summonid");
+		mob_id_t mobId = row.get<mob_id_t>("mobid");
+		mob_id_t summonId = row.get<mob_id_t>("summonid");
 
 		m_mobInfo[mobId]->summon.push_back(summonId);
 	}
 }
 
-auto MobDataProvider::mobExists(int32_t mobId) const -> bool {
+auto MobDataProvider::mobExists(mob_id_t mobId) const -> bool {
 	return ext::is_element(m_mobInfo, mobId);
 }
 
-auto MobDataProvider::getMobInfo(int32_t mobId) const -> ref_ptr_t<MobInfo> {
+auto MobDataProvider::getMobInfo(mob_id_t mobId) const -> ref_ptr_t<MobInfo> {
 	return m_mobInfo.find(mobId)->second;
 }
 
-auto MobDataProvider::getMobAttack(int32_t mobId, uint8_t index) const -> const MobAttackInfo * const {
+auto MobDataProvider::getMobAttack(mob_id_t mobId, uint8_t index) const -> const MobAttackInfo * const {
 	return ext::find_value_ptr(
 		ext::find_value_ptr(m_attacks, mobId), index);
 }
 
-auto MobDataProvider::getMobSkill(int32_t mobId, uint8_t index) const -> const MobSkillInfo * const {
+auto MobDataProvider::getMobSkill(mob_id_t mobId, uint8_t index) const -> const MobSkillInfo * const {
 	return ext::find_value_ptr(
 		ext::find_value_ptr(m_skills, mobId), index);
 }
 
-auto MobDataProvider::getSkills(int32_t mobId) const -> const vector_t<MobSkillInfo> & {
+auto MobDataProvider::getSkills(mob_id_t mobId) const -> const vector_t<MobSkillInfo> & {
 	return m_skills.find(mobId)->second;
 }

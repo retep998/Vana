@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PlayerDataProvider.hpp"
 
 auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
-	int32_t playerId = reader.get<int32_t>();
+	player_id_t playerId = reader.get<player_id_t>();
 	uint8_t type = reader.get<uint8_t>();
 	if (player->getId() > 0) {
 		if (player->getId() == playerId) {
@@ -37,7 +37,7 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 		}
 		else {
 			Player *famee = PlayerDataProvider::getInstance().getPlayer(playerId);
-			int16_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1); // Increase if type = 1, else decrease
+			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
 			famee->getStats()->setFame(newFame);
 			addFameLog(player->getId(), playerId);
 			player->send(FamePacket::sendFame(famee->getName(), type, newFame));
@@ -49,8 +49,8 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Fame::canFame(Player *player, int32_t to) -> int32_t {
-	int32_t from = player->getId();
+auto Fame::canFame(Player *player, player_id_t to) -> int32_t {
+	player_id_t from = player->getId();
 	if (player->getStats()->getLevel() < 15) {
 		return FamePacket::Errors::LevelUnder15;
 	}
@@ -63,7 +63,7 @@ auto Fame::canFame(Player *player, int32_t to) -> int32_t {
 	return 0;
 }
 
-auto Fame::addFameLog(int32_t from, int32_t to) -> void {
+auto Fame::addFameLog(player_id_t from, player_id_t to) -> void {
 	Database::getCharDb().once
 		<< "INSERT INTO " << Database::makeCharTable("fame_log") << " (from_character_id, to_character_id, fame_time) "
 		<< "VALUES (:from, :to, NOW())",
@@ -71,7 +71,7 @@ auto Fame::addFameLog(int32_t from, int32_t to) -> void {
 		soci::use(to, "to");
 }
 
-auto Fame::getLastFameLog(int32_t from) -> SearchResult {
+auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
 	int32_t fameTime = ChannelServer::getInstance().getConfig().fameTime;
 	if (fameTime == 0) {
 		return SearchResult::Found;
@@ -95,7 +95,7 @@ auto Fame::getLastFameLog(int32_t from) -> SearchResult {
 	return time.is_initialized() ? SearchResult::Found : SearchResult::NotFound;
 }
 
-auto Fame::getLastFameSpLog(int32_t from, int32_t to) -> SearchResult {
+auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
 	int32_t fameResetTime = ChannelServer::getInstance().getConfig().fameResetTime;
 	if (fameResetTime == 0) {
 		return SearchResult::Found;

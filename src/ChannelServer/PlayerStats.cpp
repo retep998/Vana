@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <limits>
 #include <string>
 
-PlayerStats::PlayerStats(Player *player, uint8_t level, int16_t job, int16_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, int32_t exp) :
+PlayerStats::PlayerStats(Player *player, player_level_t level, job_id_t job, fame_t fame, int16_t str, int16_t dex, int16_t intt, int16_t luk, int16_t ap, uint16_t hpMpAp, int16_t sp, int16_t hp, int16_t maxHp, int16_t mp, int16_t maxMp, experience_t exp) :
 	m_player(player),
 	m_level(level),
 	m_job(job),
@@ -78,7 +78,7 @@ auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 		m_equipBonuses = BonusSet();
 		for (const auto &kvp : m_equipStats) {
 			const EquipBonus &info = kvp.second;
-			if (EquipDataProvider::getInstance().canEquip(info.id, getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
+			if (EquipDataProvider::getInstance().canEquip(info.id, m_player->getGender(), getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
 				m_equipBonuses.hp += info.hp;
 				m_equipBonuses.mp += info.mp;
 				m_equipBonuses.str += info.str;
@@ -103,7 +103,7 @@ auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 	}
 }
 
-auto PlayerStats::setEquip(int16_t slot, Item *equip, bool isLoading) -> void {
+auto PlayerStats::setEquip(inventory_slot_t slot, Item *equip, bool isLoading) -> void {
 	slot = abs(slot);
 	if (equip != nullptr) {
 		m_equipStats[slot].id = equip->getId();
@@ -195,7 +195,7 @@ auto PlayerStats::checkHpMp() -> void {
 	}
 }
 
-auto PlayerStats::setLevel(uint8_t level) -> void {
+auto PlayerStats::setLevel(player_level_t level) -> void {
 	m_level = level;
 	m_player->send(PlayerPacket::updateStat(Stats::Level, level));
 	m_player->sendMap(LevelsPacket::levelUp(m_player->getId()));
@@ -237,7 +237,9 @@ auto PlayerStats::modifiedHp() -> void {
 			instance->playerDeath(m_player->getId());
 		}
 		loseExp();
-		SummonHandler::removeSummon(m_player, false, false, SummonMessages::Disappearing);
+		m_player->getSummons()->forEach([this](Summon *summon) {
+			SummonHandler::removeSummon(m_player, summon->getId(), false, SummonMessages::Disappearing);
+		});
 	}
 }
 
@@ -274,7 +276,7 @@ auto PlayerStats::setAp(int16_t ap) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::Ap, ap));
 }
 
-auto PlayerStats::setJob(int16_t job) -> void {
+auto PlayerStats::setJob(job_id_t job) -> void {
 	m_job = job;
 	m_player->send(PlayerPacket::updateStat(Stats::Job, job));
 	m_player->sendMap(LevelsPacket::jobChange(m_player->getId()));
@@ -346,22 +348,23 @@ auto PlayerStats::modifyMaxMp(int16_t mod) -> void {
 	m_player->send(PlayerPacket::updateStat(Stats::MaxMp, m_maxMp));
 }
 
-auto PlayerStats::setExp(int32_t exp) -> void {
+auto PlayerStats::setExp(experience_t exp) -> void {
 	m_exp = std::max(exp, 0);
 	m_player->send(PlayerPacket::updateStat(Stats::Exp, m_exp));
 }
 
-auto PlayerStats::setFame(int16_t fame) -> void {
+auto PlayerStats::setFame(fame_t fame) -> void {
 	m_fame = ext::constrain_range(fame, Stats::MinFame, Stats::MaxFame);
 	m_player->send(PlayerPacket::updateStat(Stats::Fame, fame));
 }
 
 auto PlayerStats::loseExp() -> void {
 	if (!GameLogicUtilities::isBeginnerJob(getJob()) && getLevel() < GameLogicUtilities::getMaxLevel(getJob()) && m_player->getMapId() != Maps::SorcerersRoom) {
-		uint16_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
+		slot_qty_t charms = m_player->getInventory()->getItemAmount(Items::SafetyCharm);
 		if (charms > 0) {
 			Inventory::takeItem(m_player, Items::SafetyCharm, 1);
-			charms = std::min<uint16_t>(--charms, 0xFF);
+			// TODO FIXME REVIEW
+			charms = --charms;
 			m_player->send(InventoryPacket::useCharm(static_cast<uint8_t>(charms)));
 			return;
 		}
@@ -380,17 +383,17 @@ auto PlayerStats::loseExp() -> void {
 					break;
 			}
 		}
-		int32_t exp = getExp();
-		exp -= static_cast<int32_t>(static_cast<int64_t>(getExp(getLevel())) * expLoss / 100);
+		experience_t exp = getExp();
+		exp -= static_cast<experience_t>(static_cast<int64_t>(getExp(getLevel())) * expLoss / 100);
 		setExp(exp);
 	}
 }
 
 // Level related functions
 auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
-	int16_t fullJob = getJob();
-	uint8_t level = getLevel();
-	uint8_t jobMax = GameLogicUtilities::getMaxLevel(fullJob);
+	job_id_t fullJob = getJob();
+	player_level_t level = getLevel();
+	player_level_t jobMax = GameLogicUtilities::getMaxLevel(fullJob);
 	if (level >= jobMax) {
 		// Do not give EXP to characters of max level or over
 		return;
@@ -399,10 +402,9 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 	uint64_t curExp = getExp() + exp;
 	if (exp > 0) {
 		uint64_t expCounter = exp;
-		uint64_t batchSize = std::numeric_limits<int32_t>::max();
+		uint64_t batchSize = std::numeric_limits<experience_t>::max();
 		while (expCounter > 0) {
-
-			int32_t allocate = static_cast<int32_t>(std::min(expCounter, batchSize));
+			experience_t allocate = static_cast<experience_t>(std::min(expCounter, batchSize));
 			m_player->send(LevelsPacket::showExp(allocate, white, inChat));
 			expCounter -= allocate;
 		}
@@ -410,13 +412,13 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 
 	if (curExp >= getExp(level)) {
 		bool cygnus = GameLogicUtilities::isCygnus(fullJob);
-		uint8_t levelsGained = 0;
-		uint8_t levelsMax = ChannelServer::getInstance().getConfig().maxMultiLevel;
+		player_level_t levelsGained = 0;
+		player_level_t levelsMax = ChannelServer::getInstance().getConfig().maxMultiLevel;
 		int16_t apGain = 0;
 		int16_t spGain = 0;
 		int16_t hpGain = 0;
 		int16_t mpGain = 0;
-		int16_t jobLine = GameLogicUtilities::getJobLine(fullJob);
+		int8_t jobLine = GameLogicUtilities::getJobLine(fullJob);
 		int16_t intt = getInt(true) / 10;
 		int16_t x = 0; // X value for Improving *P Increase skills, cached, only needs to be set once
 
@@ -492,7 +494,7 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 			setSp(getSp() + spGain);
 			// Let Hyper Body remain on if on during a level up, as it should
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
+				skill_id_t skillId = m_player->getActiveBuffs()->getHyperBody();
 				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
 				setHyperBody(hb->x, hb->y);
 			}
@@ -515,12 +517,12 @@ auto PlayerStats::giveExp(uint64_t exp, bool inChat, bool white) -> void {
 		}
 	}
 
-	// By this point, the EXP should be a valid EXP in the range of 0 to int32_t max
-	setExp(static_cast<int32_t>(curExp));
+	// By this point, the EXP should be a valid EXP in the range of 0 to experience_t max
+	setExp(static_cast<experience_t>(curExp));
 }
 
 auto PlayerStats::addStat(PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
+	tick_count_t ticks = reader.get<uint32_t>();
 	int32_t type = reader.get<int32_t>();
 	if (getAp() == 0) {
 		// Hacking
@@ -531,7 +533,7 @@ auto PlayerStats::addStat(PacketReader &reader) -> void {
 }
 
 auto PlayerStats::addStatMulti(PacketReader &reader) -> void {
-	uint32_t ticks = reader.get<uint32_t>();
+	tick_count_t ticks = reader.get<uint32_t>();
 	uint32_t amount = reader.get<uint32_t>();
 
 	m_player->send(LevelsPacket::statOk());
@@ -589,7 +591,7 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 				// Hacking
 				return;
 			}
-			int16_t job = GameLogicUtilities::getJobTrack(getJob());
+			int8_t job = GameLogicUtilities::getJobTrack(getJob());
 			int16_t hpGain = 0;
 			int16_t mpGain = 0;
 			int16_t y = 0;
@@ -638,7 +640,7 @@ auto PlayerStats::addStat(int32_t type, int16_t mod, bool isReset) -> void {
 				case Stats::MaxMp: modifyMaxMp(mpGain); break;
 			}
 			if (m_player->getActiveBuffs()->hasHyperBody()) {
-				int32_t skillId = m_player->getActiveBuffs()->getHyperBody();
+				skill_id_t skillId = m_player->getActiveBuffs()->getHyperBody();
 				auto hb = m_player->getActiveBuffs()->getActiveSkillInfo(skillId);
 				setHyperBody(hb->x, hb->y);
 			}
@@ -665,11 +667,11 @@ auto PlayerStats::randMp() -> int16_t {
 	return Randomizer::rand<int16_t>(Stats::BaseMp::Variation); // Max MP range per class (e.g. Beginner is 6-8)
 }
 
-auto PlayerStats::getX(int32_t skillId) -> int16_t {
+auto PlayerStats::getX(skill_id_t skillId) -> int16_t {
 	return m_player->getSkills()->getSkillInfo(skillId)->x;
 }
 
-auto PlayerStats::getY(int32_t skillId) -> int16_t {
+auto PlayerStats::getY(skill_id_t skillId) -> int16_t {
 	return m_player->getSkills()->getSkillInfo(skillId)->y;
 }
 
@@ -689,6 +691,6 @@ auto PlayerStats::levelMp(int16_t val, int16_t bonus) -> int16_t {
 	return randMp() + val + bonus;
 }
 
-auto PlayerStats::getExp(uint8_t level) -> uint32_t {
+auto PlayerStats::getExp(player_level_t level) -> experience_t {
 	return Stats::PlayerExp[level - 1];
 }

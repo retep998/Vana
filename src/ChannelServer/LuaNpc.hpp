@@ -26,7 +26,7 @@ class LuaNpc : public LuaScriptable {
 	NONCOPYABLE(LuaNpc);
 	NO_DEFAULT_CONSTRUCTOR(LuaNpc);
 public:
-	LuaNpc(const string_t &filename, int32_t playerId);
+	LuaNpc(const string_t &filename, player_id_t playerId);
 
 	auto proceedNext() -> Result;
 	auto proceedSelection(uint8_t selected) -> Result;

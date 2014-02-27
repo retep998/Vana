@@ -26,11 +26,11 @@ struct ActiveBuff;
 struct ActiveMapBuff;
 
 namespace BuffsPacket {
-	SPLIT_PACKET(useSkill, int32_t playerId, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
-	SPLIT_PACKET(endSkill, int32_t playerId, const ActiveBuff &playerSkill);
-	SPLIT_PACKET(giveDebuff, int32_t playerId, uint8_t skillId, uint8_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
-	SPLIT_PACKET(usePirateBuff, int32_t playerId, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
-	SPLIT_PACKET(useSpeedInfusion, int32_t playerId, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
-	SPLIT_PACKET(useMount, int32_t playerId, int32_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, int32_t mountId);
-	PACKET(useHomingBeacon, int32_t skillId, const ActiveBuff &playerSkill, int32_t mapMobId);
+	SPLIT_PACKET(useSkill, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
+	SPLIT_PACKET(endSkill, player_id_t playerId, const ActiveBuff &playerSkill);
+	SPLIT_PACKET(giveDebuff, player_id_t playerId, mob_skill_id_t skillId, mob_skill_level_t level, const seconds_t &time, int16_t delay, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
+	SPLIT_PACKET(usePirateBuff, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill);
+	SPLIT_PACKET(useSpeedInfusion, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo);
+	SPLIT_PACKET(useMount, player_id_t playerId, skill_id_t skillId, const seconds_t &time, const ActiveBuff &playerSkill, const ActiveMapBuff &mapSkill, int16_t addedInfo, item_id_t mountId);
+	PACKET(useHomingBeacon, skill_id_t skillId, const ActiveBuff &playerSkill, map_object_t mapMobId);
 }

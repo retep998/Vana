@@ -52,8 +52,6 @@ auto ItemDataProvider::loadData() -> void {
 
 auto ItemDataProvider::loadItems() -> void {
 	m_itemInfo.clear();
-	int32_t itemId;
-	ItemInfo item;
 
 	soci::rowset<> rs = (Database::getDataDb().prepare
 		<< "SELECT id.*, s.label "
@@ -62,7 +60,7 @@ auto ItemDataProvider::loadItems() -> void {
 		soci::use(string_t("item"), "item"));
 
 	for (const auto &row : rs) {
-		item = ItemInfo();
+		ItemInfo item;
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&item](const string_t &cmp) {
 			if (cmp == "time_limited") item.timeLimited = true;
 			else if (cmp == "cash_item") item.cash = true;
@@ -74,16 +72,16 @@ auto ItemDataProvider::loadItems() -> void {
 			else if (cmp == "quest") item.quest = true;
 		});
 
-		itemId = row.get<int32_t>("itemid");
-		item.price = row.get<int32_t>("price");
-		item.maxSlot = row.get<uint16_t>("max_slot_quantity");
-		item.makerLevel = row.get<uint8_t>("level_for_maker");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		item.price = row.get<mesos_t>("price");
+		item.maxSlot = row.get<slot_qty_t>("max_slot_quantity");
+		item.makerLevel = row.get<skill_level_t>("level_for_maker");
 		item.maxObtainable = row.get<int32_t>("max_possession_count");
-		item.minLevel = row.get<uint8_t>("min_level");
-		item.maxLevel = row.get<uint8_t>("max_level");
-		item.exp = row.get<int32_t>("experience");
-		item.mesos = row.get<int32_t>("money");
-		item.npc = row.get<int32_t>("npc");
+		item.minLevel = row.get<player_level_t>("min_level");
+		item.maxLevel = row.get<player_level_t>("max_level");
+		item.exp = row.get<experience_t>("experience");
+		item.mesos = row.get<mesos_t>("money");
+		item.npc = row.get<npc_id_t>("npc");
 		item.name = row.get<string_t>("label");
 
 		m_itemInfo[itemId] = item;
@@ -97,7 +95,7 @@ auto ItemDataProvider::loadScrolls() -> void {
 
 	for (const auto &row : rs) {
 		ScrollInfo item;
-		int32_t itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		item.success = row.get<uint16_t>("success");
 		item.cursed = row.get<uint16_t>("break_item");
 		item.istr = row.get<int16_t>("istr");
@@ -133,13 +131,13 @@ auto ItemDataProvider::loadConsumes() -> void {
 
 	for (const auto &row : rs) {
 		ConsumeInfo item;
-		int32_t itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		item.effect = row.get<uint8_t>("effect");
 		item.hp = row.get<int16_t>("hp");
 		item.mp = row.get<int16_t>("mp");
 		item.hpr = row.get<int16_t>("hp_percentage");
 		item.mpr = row.get<int16_t>("mp_percentage");
-		item.moveTo = row.get<int32_t>("move_to");
+		item.moveTo = row.get<map_id_t>("move_to");
 		item.decHunger = row.get<uint8_t>("decrease_hunger");
 		item.decFatigue = row.get<uint8_t>("decrease_fatigue");
 		item.cp = row.get<uint8_t>("carnival_points");
@@ -154,7 +152,7 @@ auto ItemDataProvider::loadConsumes() -> void {
 		item.speed = row.get<int16_t>("speed");
 		item.jump = row.get<int16_t>("jump");
 
-		int16_t morphId = row.get<int16_t>("morph");
+		morph_id_t morphId = row.get<morph_id_t>("morph");
 		if (morphId != 0) {
 			Morph morph;
 			morph.morph = morphId;
@@ -192,7 +190,7 @@ auto ItemDataProvider::loadConsumes() -> void {
 			if (cmp == "none") return;
 
 			item.dropUp = true;
-			if (cmp == "specific_item") item.dropUpItem = row.get<int32_t>("drop_up_item");
+			if (cmp == "specific_item") item.dropUpItem = row.get<item_id_t>("drop_up_item");
 			else if (cmp == "item_range") item.dropUpItemRange = row.get<int16_t>("drop_up_item_range");
 		});
 
@@ -214,9 +212,9 @@ auto ItemDataProvider::loadMapRanges() -> void {
 
 	for (const auto &row : rs) {
 		CardMapRange range;
-		int32_t itemId = row.get<int32_t>("itemid");
-		range.startMap = row.get<int32_t>("start_map");
-		range.endMap = row.get<int32_t>("end_map");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		range.startMap = row.get<map_id_t>("start_map");
+		range.endMap = row.get<map_id_t>("end_map");
 
 		m_consumeInfo[itemId].mapRanges.push_back(range);
 	}
@@ -227,8 +225,8 @@ auto ItemDataProvider::loadMultiMorphs() -> void {
 
 	for (const auto &row : rs) {
 		Morph morph;
-		int32_t itemId = row.get<int32_t>("itemid");
-		morph.morph = row.get<int16_t>("morphid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		morph.morph = row.get<morph_id_t>("morphid");
 		morph.chance = row.get<int8_t>("success");
 
 		m_consumeInfo[itemId].morphs.push_back(morph);
@@ -242,8 +240,8 @@ auto ItemDataProvider::loadMonsterCardData() -> void {
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("monster_card_data"));
 
 	for (const auto &row : rs) {
-		int32_t cardId = row.get<int32_t>("cardid");
-		int32_t mobId = row.get<int32_t>("mobid");
+		item_id_t cardId = row.get<item_id_t>("cardid");
+		mob_id_t mobId = row.get<mob_id_t>("mobid");
 
 		m_cardsToMobs.emplace(cardId, mobId);
 		m_mobsToCards.emplace(mobId, cardId);
@@ -257,10 +255,10 @@ auto ItemDataProvider::loadItemSkills() -> void {
 
 	for (const auto &row : rs) {
 		Skillbook skill;
-		int32_t itemId = row.get<int32_t>("itemid");
-		skill.skillId = row.get<int32_t>("skillid");
-		skill.reqLevel = row.get<uint8_t>("req_skill_level");
-		skill.maxLevel = row.get<uint8_t>("master_level");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		skill.skillId = row.get<skill_id_t>("skillid");
+		skill.reqLevel = row.get<skill_level_t>("req_skill_level");
+		skill.maxLevel = row.get<skill_level_t>("master_level");
 		skill.chance = row.get<int8_t>("chance");
 
 		m_skillbooks[itemId].push_back(skill);
@@ -274,8 +272,8 @@ auto ItemDataProvider::loadSummonBags() -> void {
 
 	for (const auto &row : rs) {
 		SummonBag summon;
-		int32_t itemId = row.get<int32_t>("itemid");
-		summon.mobId = row.get<int32_t>("mobid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		summon.mobId = row.get<mob_id_t>("mobid");
 		summon.chance = row.get<uint16_t>("chance");
 
 		m_summonBags[itemId].push_back(summon);
@@ -289,8 +287,8 @@ auto ItemDataProvider::loadItemRewards() -> void {
 
 	for (const auto &row : rs) {
 		ItemRewardInfo reward;
-		int32_t itemId = row.get<int32_t>("itemid");
-		reward.rewardId = row.get<int32_t>("rewardid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
+		reward.rewardId = row.get<item_id_t>("rewardid");
 		reward.prob = row.get<uint16_t>("prob");
 		reward.quantity = row.get<int16_t>("quantity");
 		reward.effect = row.get<string_t>("effect");
@@ -306,12 +304,12 @@ auto ItemDataProvider::loadPets() -> void {
 
 	for (const auto &row : rs) {
 		PetInfo pet;
-		int32_t itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		pet.name = row.get<string_t>("default_name");
 		pet.hunger = row.get<int32_t>("hunger");
 		pet.life = row.get<int32_t>("life");
 		pet.limitedLife = row.get<int32_t>("limited_life");
-		pet.evolveItem = row.get<int32_t>("evolution_item");
+		pet.evolveItem = row.get<item_id_t>("evolution_item");
 		pet.evolveLevel = row.get<int8_t>("req_level_for_evolution");
 		StringUtilities::runFlags(row.get<opt_string_t>("flags"), [&pet](const string_t &cmp) {
 			if (cmp == "no_revive") pet.noRevive = true;
@@ -330,7 +328,7 @@ auto ItemDataProvider::loadPetInteractions() -> void {
 
 	for (const auto &row : rs) {
 		PetInteractInfo interaction;
-		int32_t itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		int32_t commandId = row.get<int32_t>("command");
 		interaction.increase = row.get<int16_t>("closeness");
 		interaction.prob = row.get<uint32_t>("success");
@@ -339,7 +337,7 @@ auto ItemDataProvider::loadPetInteractions() -> void {
 	}
 }
 
-auto ItemDataProvider::getCardId(int32_t mobId) const -> int32_t {
+auto ItemDataProvider::getCardId(mob_id_t mobId) const -> item_id_t {
 	auto kvp = m_mobsToCards.find(mobId);
 	if (kvp == std::end(m_mobsToCards)) {
 		std::cerr << "Mob out of range for mob ID " << mobId << std::endl;
@@ -348,7 +346,7 @@ auto ItemDataProvider::getCardId(int32_t mobId) const -> int32_t {
 	return kvp->second;
 }
 
-auto ItemDataProvider::getMobId(int32_t cardId) const -> int32_t {
+auto ItemDataProvider::getMobId(item_id_t cardId) const -> mob_id_t {
 	auto kvp = m_cardsToMobs.find(cardId);
 	if (kvp == std::end(m_cardsToMobs)) {
 		std::cerr << "Card out of range for card ID " << cardId << std::endl;
@@ -357,7 +355,7 @@ auto ItemDataProvider::getMobId(int32_t cardId) const -> int32_t {
 	return kvp->second;
 }
 
-auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
+auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
 	if (m_scrollInfo.find(scrollId) == std::end(m_scrollInfo)) {
 		return;
 	}
@@ -465,31 +463,31 @@ auto ItemDataProvider::scrollItem(int32_t scrollId, Item *equip, bool whiteScrol
 	}
 }
 
-auto ItemDataProvider::getItemInfo(int32_t itemId) const -> const ItemInfo * const {
+auto ItemDataProvider::getItemInfo(item_id_t itemId) const -> const ItemInfo * const {
 	return ext::find_value_ptr(m_itemInfo, itemId);
 }
 
-auto ItemDataProvider::getConsumeInfo(int32_t itemId) const -> const ConsumeInfo * const {
+auto ItemDataProvider::getConsumeInfo(item_id_t itemId) const -> const ConsumeInfo * const {
 	return ext::find_value_ptr(m_consumeInfo, itemId);
 }
 
-auto ItemDataProvider::getPetInfo(int32_t itemId) const -> const PetInfo * const {
+auto ItemDataProvider::getPetInfo(item_id_t itemId) const -> const PetInfo * const {
 	return ext::find_value_ptr(m_petInfo, itemId);
 }
 
-auto ItemDataProvider::getInteraction(int32_t itemId, int32_t action) const -> const PetInteractInfo * const {
+auto ItemDataProvider::getInteraction(item_id_t itemId, int32_t action) const -> const PetInteractInfo * const {
 	return ext::find_value_ptr(
 		ext::find_value_ptr(m_petInteractInfo, itemId), action);
 }
 
-auto ItemDataProvider::getItemSkills(int32_t itemId) const -> const vector_t<Skillbook> * const {
+auto ItemDataProvider::getItemSkills(item_id_t itemId) const -> const vector_t<Skillbook> * const {
 	return ext::find_value_ptr(m_skillbooks, itemId);
 }
 
-auto ItemDataProvider::getItemRewards(int32_t itemId) const -> const vector_t<ItemRewardInfo> * const {
+auto ItemDataProvider::getItemRewards(item_id_t itemId) const -> const vector_t<ItemRewardInfo> * const {
 	return ext::find_value_ptr(m_itemRewards, itemId);
 }
 
-auto ItemDataProvider::getItemSummons(int32_t itemId) const -> const vector_t<SummonBag> * const {
+auto ItemDataProvider::getItemSummons(item_id_t itemId) const -> const vector_t<SummonBag> * const {
 	return ext::find_value_ptr(m_summonBags, itemId);
 }

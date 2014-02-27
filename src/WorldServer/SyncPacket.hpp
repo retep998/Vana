@@ -38,22 +38,22 @@ namespace SyncPacket {
 		PACKET(scrollingHeader, const string_t &message);
 	}
 	namespace PartyPacket {
-		PACKET(removePartyMember, int32_t partyId, int32_t playerId, bool kicked);
-		PACKET(addPartyMember, int32_t partyId, int32_t playerId);
-		PACKET(newPartyLeader, int32_t partyId, int32_t playerId);
-		PACKET(createParty, int32_t partyId, int32_t playerId);
-		PACKET(disbandParty, int32_t partyId);
+		PACKET(removePartyMember, party_id_t partyId, player_id_t playerId, bool kicked);
+		PACKET(addPartyMember, party_id_t partyId, player_id_t playerId);
+		PACKET(newPartyLeader, party_id_t partyId, player_id_t playerId);
+		PACKET(createParty, party_id_t partyId, player_id_t playerId);
+		PACKET(disbandParty, party_id_t partyId);
 	}
 	namespace PlayerPacket {
-		PACKET(playerChangeChannel, int32_t playerId, channel_id_t channelId, const Ip &ip, port_t port);
-		PACKET(newConnectable, int32_t playerId, const Ip &ip, PacketReader &buffer);
-		PACKET(deleteConnectable, int32_t playerId);
+		PACKET(playerChangeChannel, player_id_t playerId, channel_id_t channelId, const Ip &ip, port_t port);
+		PACKET(newConnectable, player_id_t playerId, const Ip &ip, PacketReader &buffer);
+		PACKET(deleteConnectable, player_id_t playerId);
 		PACKET(updatePlayer, const PlayerData &data, update_bits_t flags);
 		PACKET(characterCreated, const PlayerData &data);
-		PACKET(characterDeleted, int32_t id);
+		PACKET(characterDeleted, player_id_t id);
 	}
 	namespace BuddyPacket {
-		PACKET(sendBuddyInvite, int32_t inviteeId, int32_t inviterId, const string_t &name);
-		PACKET(sendBuddyOnlineOffline, const vector_t<int32_t> &players, int32_t playerId, channel_id_t channelId);
+		PACKET(sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name);
+		PACKET(sendBuddyOnlineOffline, const vector_t<player_id_t> &players, player_id_t playerId, channel_id_t channelId);
 	}
 }

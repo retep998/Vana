@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Player.hpp"
 #include "ReactorPacket.hpp"
 
-Reactor::Reactor(int32_t mapId, int32_t reactorId, const Pos &pos, bool facesLeft) :
+Reactor::Reactor(map_id_t mapId, reactor_id_t reactorId, const Pos &pos, bool facesLeft) :
 	m_reactorId(reactorId),
 	m_mapId(mapId),
 	m_pos(pos),

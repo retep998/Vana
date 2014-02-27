@@ -38,7 +38,7 @@ ChannelServer::ChannelServer() :
 }
 
 auto ChannelServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, getInterServerConfig(), false);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new Player(); }, getInterServerConfig(), false, MapleVersion::ChannelSubversion);
 	Initializing::setUsersOffline(getOnlineId());
 }
 
@@ -112,7 +112,7 @@ auto ChannelServer::sendWorld(const PacketBuilder &builder) -> void {
 auto ChannelServer::setScrollingHeader(const string_t &message) -> void {
 	if (m_config.scrollingHeader != message) {
 		m_config.scrollingHeader = message;
-		PlayerDataProvider::getInstance().send(ServerPacket::changeScrollingHeader(message));
+		PlayerDataProvider::getInstance().send(ServerPacket::showScrollingHeader(message));
 	}
 }
 

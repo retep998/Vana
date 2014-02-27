@@ -22,5 +22,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 namespace InventoryPacketHelper {
-	PACKET(fillRockPacket, const vector_t<int32_t> &vec, size_t maxSize);
+	PACKET(fillRockPacket, const vector_t<map_id_t> &vec, size_t maxSize);
 }

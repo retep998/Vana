@@ -24,6 +24,6 @@ class Item;
 class Player;
 
 namespace PlayerPacketHelper {
-	PACKET(addItemInfo, int16_t slot, Item *item, bool shortSlot = false);
+	PACKET(addItemInfo, inventory_slot_t slot, Item *item, bool shortSlot = false);
 	PACKET(addPlayerDisplay, Player *player);
 }

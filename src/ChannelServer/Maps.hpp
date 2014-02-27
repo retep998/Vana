@@ -24,10 +24,10 @@ class PacketReader;
 class Player;
 
 namespace Maps {
-	auto getMap(int32_t mapId) -> Map *;
-	auto unloadMap(int32_t mapId) -> void;
+	auto getMap(map_id_t mapId) -> Map *;
+	auto unloadMap(map_id_t mapId) -> void;
 	auto usePortal(Player *player, PortalInfo *portal) -> void;
 	auto usePortal(Player *player, PacketReader &reader) -> void;
 	auto useScriptedPortal(Player *player, PacketReader &reader) -> void;
-	auto addPlayer(Player *player, int32_t mapId) -> void;
+	auto addPlayer(Player *player, map_id_t mapId) -> void;
 }

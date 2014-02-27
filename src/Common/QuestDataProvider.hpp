@@ -26,13 +26,13 @@ class QuestDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isQuest(uint16_t questId) const -> bool;
-	auto getInfo(uint16_t questId) const -> const Quest &;
+	auto isQuest(quest_id_t questId) const -> bool;
+	auto getInfo(quest_id_t questId) const -> const Quest &;
 private:
 	auto loadQuestData() -> void;
 	auto loadRequests() -> void;
 	auto loadRequiredJobs() -> void;
 	auto loadRewards() -> void;
 
-	hash_map_t<uint16_t, Quest> m_quests;
+	hash_map_t<quest_id_t, Quest> m_quests;
 };

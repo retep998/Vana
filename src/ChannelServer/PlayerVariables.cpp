@@ -27,7 +27,7 @@ PlayerVariables::PlayerVariables(Player *p) :
 
 auto PlayerVariables::save() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
+	player_id_t charId = m_player->getId();
 
 	sql.once << "DELETE FROM " << Database::makeCharTable("character_variables") << " WHERE character_id = :char", soci::use(charId, "char");
 

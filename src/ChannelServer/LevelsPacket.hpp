@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace LevelsPacket {
-	PACKET(showExp, int32_t exp, bool white, bool inChat);
-	SPLIT_PACKET(levelUp, int32_t playerId);
-	SPLIT_PACKET(jobChange, int32_t playerId);
+	PACKET(showExp, experience_t exp, bool white, bool inChat);
+	SPLIT_PACKET(levelUp, player_id_t playerId);
+	SPLIT_PACKET(jobChange, player_id_t playerId);
 	PACKET(statOk);
 }

@@ -26,7 +26,7 @@ class Player;
 struct MonsterCard;
 
 namespace MonsterBookPacket {
-	PACKET(addCard, int32_t cardId, uint8_t level, bool full);
-	SPLIT_PACKET(addCardEffect, int32_t playerId);
-	PACKET(changeCover, int32_t cardId);
+	PACKET(addCard, item_id_t cardId, uint8_t level, bool full);
+	SPLIT_PACKET(addCardEffect, player_id_t playerId);
+	PACKET(changeCover, item_id_t cardId);
 }

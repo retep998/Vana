@@ -30,8 +30,8 @@ public:
 	auto getSkillMacro(int8_t pos) -> SkillMacro *;
 	auto getMax() -> int8_t;
 
-	auto load(int32_t charId) -> void;
-	auto save(int32_t charId) -> void;
+	auto load(player_id_t charId) -> void;
+	auto save(player_id_t charId) -> void;
 private:
 	int8_t m_maxPos = -1;
 	hash_map_t<int8_t, ref_ptr_t<SkillMacro>> m_skillMacros;
@@ -41,12 +41,12 @@ struct SkillMacros::SkillMacro {
 	NONCOPYABLE(SkillMacro);
 	NO_DEFAULT_CONSTRUCTOR(SkillMacro);
 public:
-	SkillMacro(const string_t &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3);
+	SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3);
 
 	bool shout = false;
-	int32_t skill1 = 0;
-	int32_t skill2 = 0;
-	int32_t skill3 = 0;
+	skill_id_t skill1 = 0;
+	skill_id_t skill2 = 0;
+	skill_id_t skill3 = 0;
 	string_t name;
 };
 
@@ -72,7 +72,7 @@ auto SkillMacros::getMax() -> int8_t {
 }
 
 inline
-SkillMacros::SkillMacro::SkillMacro(const string_t &name, bool shout, int32_t skill1, int32_t skill2, int32_t skill3) :
+SkillMacros::SkillMacro::SkillMacro(const string_t &name, bool shout, skill_id_t skill1, skill_id_t skill2, skill_id_t skill3) :
 	name(name),
 	shout(shout),
 	skill1(skill1),

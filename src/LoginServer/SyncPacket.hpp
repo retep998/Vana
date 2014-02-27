@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace SyncPacket {
 	namespace PlayerPacket {
-		PACKET(characterCreated, int32_t playerId);
-		PACKET(characterDeleted, int32_t playerId);
+		PACKET(characterCreated, player_id_t playerId);
+		PACKET(characterDeleted, player_id_t playerId);
 	}
 }

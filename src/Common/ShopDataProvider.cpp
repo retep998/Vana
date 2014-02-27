@@ -45,8 +45,8 @@ auto ShopDataProvider::loadShops() -> void {
 
 	for (const auto &row : rs) {
 		ShopInfo shop;
-		int32_t shopId = row.get<int32_t>("shopid");
-		shop.npc = row.get<int32_t>("npcid");
+		shop_id_t shopId = row.get<shop_id_t>("shopid");
+		shop.npc = row.get<npc_id_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		m_shops[shopId] = shop;
 	}
@@ -55,10 +55,10 @@ auto ShopDataProvider::loadShops() -> void {
 
 	for (const auto &row : rs) {
 		ShopItemInfo item;
-		int32_t shopId = row.get<int32_t>("shopid");
-		item.itemId = row.get<int32_t>("itemid");
-		item.quantity = row.get<int16_t>("quantity");
-		item.price = row.get<int32_t>("price");
+		shop_id_t shopId = row.get<shop_id_t>("shopid");
+		item.itemId = row.get<item_id_t>("itemid");
+		item.quantity = row.get<slot_qty_t>("quantity");
+		item.price = row.get<mesos_t>("price");
 
 		m_shops[shopId].items.push_back(item);
 	}
@@ -70,8 +70,8 @@ auto ShopDataProvider::loadUserShops() -> void {
 
 	for (const auto &row : rs) {
 		ShopInfo shop;
-		int32_t shopId = row.get<int32_t>("shopid");
-		shop.npc = row.get<int32_t>("npcid");
+		shop_id_t shopId = row.get<shop_id_t>("shopid");
+		shop.npc = row.get<npc_id_t>("npcid");
 		shop.rechargeTier = row.get<int8_t>("recharge_tier");
 		if (m_shops.find(shopId) != std::end(m_shops)) {
 			m_shops.erase(shopId);
@@ -84,10 +84,10 @@ auto ShopDataProvider::loadUserShops() -> void {
 
 	for (const auto &row : rs) {
 		ShopItemInfo item;
-		int32_t shopId = row.get<int32_t>("shopid");
-		item.itemId = row.get<int32_t>("itemid");
-		item.quantity = row.get<int16_t>("quantity");
-		item.price = row.get<int32_t>("price");
+		shop_id_t shopId = row.get<shop_id_t>("shopid");
+		item.itemId = row.get<item_id_t>("itemid");
+		item.quantity = row.get<slot_qty_t>("quantity");
+		item.price = row.get<mesos_t>("price");
 
 		m_shops[shopId].items.push_back(item);
 	}
@@ -100,18 +100,18 @@ auto ShopDataProvider::loadRechargeTiers() -> void {
 
 	for (const auto &row : rs) {
 		int8_t rechargeTier = row.get<int8_t>("tierid");
-		int32_t itemId = row.get<int32_t>("itemid");
+		item_id_t itemId = row.get<item_id_t>("itemid");
 		double price = row.get<double>("price");
 
 		m_rechargeCosts[rechargeTier][itemId] = price;
 	}
 }
 
-auto ShopDataProvider::isShop(int32_t id) const -> bool {
+auto ShopDataProvider::isShop(shop_id_t id) const -> bool {
 	return ext::is_element(m_shops, id);
 }
 
-auto ShopDataProvider::getShop(int32_t id) const -> BuiltShopInfo {
+auto ShopDataProvider::getShop(shop_id_t id) const -> BuiltShopInfo {
 	const auto &info = m_shops.find(id)->second;
 
 	BuiltShopInfo ret;
@@ -127,18 +127,18 @@ auto ShopDataProvider::getShop(int32_t id) const -> BuiltShopInfo {
 	return ret;
 }
 
-auto ShopDataProvider::getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const {
+auto ShopDataProvider::getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const {
 	return ext::find_value_ptr(
 		ext::find_value_ptr(m_shops, shopId)->items, shopIndex);
 }
 
-auto ShopDataProvider::getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) const -> int32_t {
+auto ShopDataProvider::getRechargeCost(shop_id_t shopId, item_id_t itemId, int16_t amount) const -> mesos_t {
 	auto price = ext::find_value_ptr(
 		ext::find_value_ptr(m_rechargeCosts,
 			ext::find_value_ptr(m_shops, shopId)->rechargeTier), itemId);
 
 	if (price != nullptr) {
-		return -1 * static_cast<int32_t>(*price * amount);
+		return -1 * static_cast<mesos_t>(*price * amount);
 	}
 
 	return 1;

@@ -26,7 +26,7 @@ class Player;
 
 namespace MapPacket {
 	PACKET(playerPacket, Player *player);
-	PACKET(removePlayer, int32_t playerId);
+	PACKET(removePlayer, player_id_t playerId);
 	PACKET(changeMap, Player *player);
 	PACKET(portalBlocked);
 	PACKET(showClock, int8_t hour, int8_t min, int8_t sec);
@@ -34,7 +34,7 @@ namespace MapPacket {
 	PACKET(forceMapEquip);
 	PACKET(showEventInstructions);
 	PACKET(spawnMist, Mist *mist, bool mapEntry);
-	PACKET(removeMist, int32_t id);
-	PACKET(instantWarp, int8_t portalId);
-	PACKET(changeWeather, bool adminWeather, int32_t itemId = 0, const string_t &message = "");
+	PACKET(removeMist, map_object_t id);
+	PACKET(instantWarp, portal_id_t portalId);
+	PACKET(changeWeather, bool adminWeather, item_id_t itemId = 0, const string_t &message = "");
 }

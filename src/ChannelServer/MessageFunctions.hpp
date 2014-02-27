@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace MessageFunctions {
-	auto worldMessage(Player *player, const string_t &args) -> bool;
-	auto globalMessage(Player *player, const string_t &args) -> bool;
-	auto channelMessage(Player *player, const string_t &args) -> bool;
-	auto gmChatMode(Player *player, const string_t &args) -> bool;
+	auto worldMessage(Player *player, const string_t &args) -> ChatResult;
+	auto globalMessage(Player *player, const string_t &args) -> ChatResult;
+	auto channelMessage(Player *player, const string_t &args) -> ChatResult;
+	auto gmChatMode(Player *player, const string_t &args) -> ChatResult;
 }

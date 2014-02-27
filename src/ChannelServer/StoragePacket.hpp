@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace StoragePacket {
-	PACKET(showStorage, Player *player, int32_t npcId);
-	PACKET(addItem, Player *player, int8_t inv);
-	PACKET(takeItem, Player *player, int8_t inv);
-	PACKET(changeMesos, int8_t slotCount, int32_t mesos);
+	PACKET(showStorage, Player *player, npc_id_t npcId);
+	PACKET(addItem, Player *player, inventory_t inv);
+	PACKET(takeItem, Player *player, inventory_t inv);
+	PACKET(changeMesos, storage_slot_t slotCount, mesos_t mesos);
 	PACKET(storageFull);
 	PACKET(noMesos);
 }

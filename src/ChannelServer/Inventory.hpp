@@ -24,9 +24,9 @@ class PacketReader;
 class Player;
 
 namespace Inventory {
-	auto addItem(Player *player, Item *item, bool fromDrop = false) -> int16_t;
-	auto addNewItem(Player *player, int32_t itemId, int16_t amount, bool random = false) -> void;
-	auto takeItem(Player *player, int32_t itemId, uint16_t howMany) -> void;
-	auto useItem(Player *player, int32_t itemId) -> void;
-	auto takeItemSlot(Player *player, int8_t inv, int16_t slot, int16_t amount, bool takeStar = false) -> void;
+	auto addItem(Player *player, Item *item, bool fromDrop = false) -> slot_qty_t;
+	auto addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, bool random = false) -> void;
+	auto takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void;
+	auto useItem(Player *player, item_id_t itemId) -> void;
+	auto takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false) -> void;
 }

@@ -42,8 +42,8 @@ public:
 	auto loadData() -> void;
 	auto getChannelConnectPacket(PacketBuilder &packet) -> void;
 	auto channelDisconnect(channel_id_t channel) -> void;
-	auto send(int32_t playerId, const PacketBuilder &builder) -> void;
-	auto send(const vector_t<int32_t> &playerIds, const PacketBuilder &builder) -> void;
+	auto send(player_id_t playerId, const PacketBuilder &builder) -> void;
+	auto send(const vector_t<player_id_t> &playerIds, const PacketBuilder &builder) -> void;
 	auto send(const PacketBuilder &builder) -> void;
 
 	// Handling
@@ -52,12 +52,12 @@ public:
 	auto handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void;
 private:
 	auto loadPlayers(world_id_t worldId) -> void;
-	auto loadPlayer(int32_t playerId) -> void;
+	auto loadPlayer(player_id_t playerId) -> void;
 	auto addPlayer(const PlayerData &data) -> void;
 	auto sendSync(const PacketBuilder &builder) const -> void;
 
 	// Players
-	auto removePendingPlayer(int32_t id) -> channel_id_t;
+	auto removePendingPlayer(player_id_t id) -> channel_id_t;
 	auto handlePlayerConnect(channel_id_t channel, PacketReader &reader) -> void;
 	auto handlePlayerDisconnect(channel_id_t channel, PacketReader &reader) -> void;
 	auto handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void;
@@ -67,19 +67,19 @@ private:
 	auto handleCharacterDeleted(PacketReader &reader) -> void;
 
 	// Parties
-	auto handleCreateParty(int32_t playerId) -> void;
-	auto handlePartyAdd(int32_t playerId, int32_t partyId) -> void;
-	auto handlePartyRemove(int32_t playerId, int32_t targetId) -> void;
-	auto handlePartyLeave(int32_t playerId) -> void;
-	auto handlePartyTransfer(int32_t playerId, int32_t newLeaderId) -> void;
+	auto handleCreateParty(player_id_t playerId) -> void;
+	auto handlePartyAdd(player_id_t playerId, party_id_t partyId) -> void;
+	auto handlePartyRemove(player_id_t playerId, player_id_t targetId) -> void;
+	auto handlePartyLeave(player_id_t playerId) -> void;
+	auto handlePartyTransfer(player_id_t playerId, player_id_t newLeaderId) -> void;
 
 	// Buddies
 	auto buddyInvite(PacketReader &reader) -> void;
 	auto buddyOnline(PacketReader &reader) -> void;
 
-	LoopingId<int32_t> m_partyIds;
-	hash_map_t<int32_t, channel_id_t> m_channelSwitches;
-	hash_map_t<int32_t, PartyData> m_parties;
-	hash_map_t<int32_t, PlayerData> m_players;
+	LoopingId<party_id_t> m_partyIds;
+	hash_map_t<player_id_t, channel_id_t> m_channelSwitches;
+	hash_map_t<party_id_t, PartyData> m_parties;
+	hash_map_t<player_id_t, PlayerData> m_players;
 	case_insensitive_hash_map_t<PlayerData *> m_playersByName;
 };

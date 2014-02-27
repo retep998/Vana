@@ -23,17 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace MonsterBookPacket {
 
-PACKET_IMPL(addCard, int32_t cardId, uint8_t level, bool full) {
+PACKET_IMPL(addCard, item_id_t cardId, uint8_t level, bool full) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MONSTER_BOOK_ADD)
 		.add<bool>(!full)
-		.add<int32_t>(cardId)
+		.add<item_id_t>(cardId)
 		.add<int32_t>(level);
 	return builder;
 }
 
-SPLIT_PACKET_IMPL(addCardEffect, int32_t playerId) {
+SPLIT_PACKET_IMPL(addCardEffect, player_id_t playerId) {
 	SplitPacketBuilder builder;
 	builder.player
 		.add<header_t>(SMSG_THEATRICS)
@@ -44,17 +44,17 @@ SPLIT_PACKET_IMPL(addCardEffect, int32_t playerId) {
 	/*
 	builder.map
 		.add<header_t>(SMSG_SKILL_SHOW)
-		.add<int32_t>(playerId)
+		.add<player_id_t>(playerId)
 		.add<int8_t>(0x0D);
 	*/
 	return builder;
 }
 
-PACKET_IMPL(changeCover, int32_t cardId) {
+PACKET_IMPL(changeCover, item_id_t cardId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MONSTER_BOOK_COVER)
-		.add<int32_t>(cardId);
+		.add<item_id_t>(cardId);
 	return builder;
 }
 

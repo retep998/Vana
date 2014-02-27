@@ -70,14 +70,14 @@ namespace TradesPacket {
 	}
 
 	PACKET(sendOpenTrade, Player *player1, Player *player2);
-	PACKET(sendTradeRequest, const string_t &name, int32_t tradeId);
+	PACKET(sendTradeRequest, const string_t &name, trade_id_t tradeId);
 	PACKET(sendTradeMessage, const string_t &name, int8_t type, int8_t message);
 	PACKET(sendEndTrade, int8_t message);
 	PACKET(sendTradeEntryMessage, int8_t message);
 	PACKET(sendTradeChat, bool blue, const string_t &chat);
 	PACKET(sendLeaveTrade);
 	PACKET(sendAddUser, Player *newPlayer, int8_t slot);
-	PACKET(sendAddMesos, uint8_t slot, int32_t amount);
+	PACKET(sendAddMesos, uint8_t slot, mesos_t amount);
 	PACKET(sendAccepted);
 	PACKET(sendAddItem, uint8_t player, uint8_t slot, Item *item);
 }

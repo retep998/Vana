@@ -49,9 +49,8 @@ auto ScriptDataProvider::loadData() -> void {
 			else if (cmp == "map_enter") m_mapEntryScripts[objectId] = script;
 			else if (cmp == "map_first_enter") m_firstMapEntryScripts[objectId] = script;
 			else if (cmp == "item") m_itemScripts[objectId] = script;
-			else if (cmp == "quest") m_questScripts[static_cast<int16_t>(objectId)][modifier] = script;
+			else if (cmp == "quest") m_questScripts[static_cast<quest_id_t>(objectId)][modifier] = script;
 		});
-		m_scripts[script] = objectId;
 	}
 
 	std::cout << "DONE" << std::endl;
@@ -63,18 +62,24 @@ auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes type) const -> 
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
+#ifdef DEBUG
+		else std::cerr << "Missing script '" << s << "'" << std::endl;
+#endif
 	}
 	out_stream_t filestream;
 	filestream << "scripts/" << resolvePath(type) << "/" << objectId << ".lua";
 	return filestream.str();
 }
 
-auto ScriptDataProvider::getQuestScript(int16_t questId, int8_t state) const -> string_t {
+auto ScriptDataProvider::getQuestScript(quest_id_t questId, int8_t state) const -> string_t {
 	if (hasQuestScript(questId, state)) {
 		string_t s = "scripts/quests/" + m_questScripts.find(questId)->second.find(state)->second + ".lua";
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
+#ifdef DEBUG
+		else std::cerr << "Missing quest script '" << s << "'" << std::endl;
+#endif
 	}
 	out_stream_t filestream;
 	filestream << "scripts/quests/" << questId << (state == 0 ? "s" : "e") << ".lua";
@@ -85,7 +90,7 @@ auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes type) const -> 
 	return ext::is_element(resolve(type), objectId);
 }
 
-auto ScriptDataProvider::hasQuestScript(int16_t questId, int8_t state) const -> bool {
+auto ScriptDataProvider::hasQuestScript(quest_id_t questId, int8_t state) const -> bool {
 	return ext::is_element(m_questScripts, questId);
 }
 

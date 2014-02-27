@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <vector>
 
 struct SummonBag {
-	int32_t mobId = 0;
+	mob_id_t mobId = 0;
 	uint32_t chance = 0;
 };
 
 struct Skillbook {
-	int32_t skillId = 0;
-	uint8_t reqLevel = 0;
-	uint8_t maxLevel = 0;
+	skill_id_t skillId = 0;
+	skill_level_t reqLevel = 0;
+	skill_level_t maxLevel = 0;
 	int8_t chance = 0;
 };
 
@@ -59,12 +59,12 @@ struct ScrollInfo {
 
 struct Morph {
 	int8_t chance = 100;
-	int16_t morph = 0;
+	morph_id_t morph = 0;
 };
 
 struct CardMapRange {
-	int32_t startMap = 0;
-	int32_t endMap = 0;
+	map_id_t startMap = 0;
+	map_id_t endMap = 0;
 };
 
 struct ConsumeInfo {
@@ -109,8 +109,8 @@ struct ConsumeInfo {
 	int16_t sealDef = 0;
 	int16_t dropUpItemRange = 0;
 	uint16_t mcProb = 0;
-	int32_t dropUpItem = 0;
-	int32_t moveTo = 0;
+	item_id_t dropUpItem = 0;
+	map_id_t moveTo = 0;
 	int32_t time = 0;
 	int32_t ailment = 0;
 	vector_t<Morph> morphs;
@@ -126,15 +126,15 @@ struct ItemInfo {
 	bool noTrade = false;
 	bool quest = false;
 	bool cash = false;
-	uint8_t minLevel = 0;
-	uint8_t maxLevel = 0;
-	uint8_t makerLevel = 0;
-	uint16_t maxSlot = 0;
-	int32_t price = 0;
+	player_level_t minLevel = 0;
+	player_level_t maxLevel = 0;
+	skill_level_t makerLevel = 0;
+	slot_qty_t maxSlot = 0;
+	mesos_t price = 0;
 	int32_t maxObtainable = 0;
-	int32_t exp = 0;
-	int32_t npc = 0;
-	int32_t mesos = 0;
+	experience_t exp = 0;
+	npc_id_t npc = 0;
+	mesos_t mesos = 0;
 	string_t name;
 };
 
@@ -146,7 +146,7 @@ struct PetInfo {
 	int32_t hunger = 0;
 	int32_t life = 0;
 	int32_t limitedLife = 0;
-	int32_t evolveItem = 0;
+	item_id_t evolveItem = 0;
 	string_t name;
 };
 
@@ -156,7 +156,7 @@ struct PetInteractInfo {
 };
 
 struct ItemRewardInfo {
-	int32_t rewardId = 0;
+	item_id_t rewardId = 0;
 	uint16_t prob = 0;
 	int16_t quantity = 0;
 	string_t effect;
@@ -192,7 +192,7 @@ struct EquipInfo {
 	int16_t reqDex = 0;
 	int16_t reqInt = 0;
 	int16_t reqLuk = 0;
-	int16_t reqFame = 0;
+	fame_t reqFame = 0;
 	uint64_t validSlots = 0;
 	double traction = 0.;
 	vector_t<int8_t> validJobs;
@@ -200,21 +200,21 @@ struct EquipInfo {
 
 struct DropInfo {
 	bool isMesos = false;
-	int32_t itemId = 0;
+	item_id_t itemId = 0;
 	int32_t minAmount = 0;
 	int32_t maxAmount = 0;
-	int16_t questId = 0;
+	quest_id_t questId = 0;
 	uint32_t chance = 0;
 };
 
 struct GlobalDrop {
 	bool isMesos = false;
-	int32_t itemId = 0;
+	item_id_t itemId = 0;
 	int32_t minAmount = 0;
 	int32_t maxAmount = 0;
-	uint8_t minLevel = 0;
-	uint8_t maxLevel = 0;
+	player_level_t minLevel = 0;
+	player_level_t maxLevel = 0;
 	int8_t continent = -1;
-	int16_t questId = 0;
+	quest_id_t questId = 0;
 	uint32_t chance = 0;
 };

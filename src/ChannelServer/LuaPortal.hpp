@@ -27,12 +27,15 @@ class LuaPortal : public LuaScriptable {
 	NONCOPYABLE(LuaPortal);
 	NO_DEFAULT_CONSTRUCTOR(LuaPortal);
 public:
-	LuaPortal(const string_t &filename, int32_t playerId, PortalInfo *portal);
+	LuaPortal(const string_t &filename, player_id_t playerId, PortalInfo *portal);
+	auto playerWarped() -> bool;
+	auto playerMapChanged() -> bool;
+	auto portalFailed() -> bool;
 };
 
 namespace LuaExports {
 	auto getPortal(lua_State *luaVm) -> PortalInfo *;
-	extern hash_map_t<int32_t, PortalInfo *> portals;
+	extern hash_map_t<player_id_t, PortalInfo *> portals;
 
 	// Portal exports
 
@@ -40,4 +43,5 @@ namespace LuaExports {
 	auto getPortalName(lua_State *luaVm) -> int;
 	auto instantWarp(lua_State *luaVm) -> int;
 	auto playPortalSe(lua_State *luaVm) -> int;
+	auto portalFailed(lua_State *luaVm) -> int;
 }

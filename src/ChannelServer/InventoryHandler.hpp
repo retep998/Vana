@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 
 class Item;
-class Player;
 class PacketReader;
+class Player;
 
 namespace InventoryHandler {
 	auto itemMove(Player *player, PacketReader &reader) -> void;
-	auto dropItem(Player *player, PacketReader &reader, Item *item, int16_t slot, int8_t inv) -> void;
+	auto dropItem(Player *player, PacketReader &reader, Item *item, inventory_slot_t slot, inventory_t inv) -> void;
 	auto moveItem(Player *player, PacketReader &reader) -> void;
 	auto useItem(Player *player, PacketReader &reader) -> void;
 	auto cancelItem(Player *player, PacketReader &reader) -> void;
@@ -38,7 +38,7 @@ namespace InventoryHandler {
 	auto useScroll(Player *player, PacketReader &reader) -> void;
 	auto useCashItem(Player *player, PacketReader &reader) -> void;
 	auto handleRockFunctions(Player *player, PacketReader &reader) -> void;
-	auto handleRockTeleport(Player *player, int32_t itemId, PacketReader &reader) -> bool;
+	auto handleRockTeleport(Player *player, item_id_t itemId, PacketReader &reader) -> bool;
 	auto handleHammerTime(Player *player) -> void;
 	auto handleRewardItem(Player *player, PacketReader &reader) -> void;
 	auto handleScriptItem(Player *player, PacketReader &reader) -> void;

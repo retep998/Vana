@@ -28,11 +28,11 @@ auto PlayerPets::addPet(Pet *pet) -> void {
 	}
 }
 
-auto PlayerPets::getPet(int64_t petId) -> Pet * {
+auto PlayerPets::getPet(pet_id_t petId) -> Pet * {
 	return m_pets.find(petId) != std::end(m_pets) ? m_pets[petId] : nullptr;
 }
 
-auto PlayerPets::setSummoned(int8_t index, int64_t petId) -> void {
+auto PlayerPets::setSummoned(int8_t index, pet_id_t petId) -> void {
 	m_summoned[index] = petId;
 }
 
@@ -48,7 +48,7 @@ auto PlayerPets::save() -> void {
 		int8_t level = 0;
 		int16_t closeness = 0;
 		int8_t fullness = 0;
-		int64_t petId = 0;
+		pet_id_t petId = 0;
 
 		soci::statement st = (sql.prepare
 			<< "UPDATE " << Database::makeCharTable("pets") << " "

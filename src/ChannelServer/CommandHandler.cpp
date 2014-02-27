@@ -98,7 +98,7 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			else {
 				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
 				if (targetData != nullptr) {
-					player->send(PlayersPacket::findPlayer(targetData->name, targetData->channel, 1, true));
+					player->send(PlayersPacket::findPlayer(targetData->name, targetData->channel.get(), 1, true));
 					found = true;
 				}
 			}
@@ -118,14 +118,14 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			}
 			else {
 				auto targetData = PlayerDataProvider::getInstance().getPlayerDataByName(name);
-				if (targetData != nullptr && targetData->channel != -1) {
+				if (targetData != nullptr && targetData->channel.is_initialized()) {
 					player->send(PlayersPacket::findPlayer(targetData->name, -1, 1));
 					ChannelServer::getInstance().sendWorld(
 						Packets::prepend(PlayersPacket::whisperPlayer(player->getName(), ChannelServer::getInstance().getChannelId(), chat), [targetData](PacketBuilder &builder) {
 							builder.add<header_t>(IMSG_TO_CHANNEL);
-							builder.add<channel_id_t>(targetData->channel);
+							builder.add<channel_id_t>(targetData->channel.get());
 							builder.add<header_t>(IMSG_TO_PLAYER);
-							builder.add<int32_t>(targetData->id);
+							builder.add<player_id_t>(targetData->id);
 						}));
 					found = true;
 				}
@@ -149,7 +149,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		case AdminOpcodes::Hide: {
 			bool hide = reader.get<bool>();
 			if (hide) {
-				if (Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0)) {
+				if (Buffs::addBuff(player, Skills::SuperGm::Hide, player->getSkills()->getSkillLevel(Skills::SuperGm::Hide), 0) == Result::Successful) {
 					player->send(GmPacket::beginHide());
 					player->getMap()->gmHideChange(player);
 				}
@@ -161,7 +161,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 		}
 		case AdminOpcodes::Send: {
 			string_t name = reader.get<string_t>();
-			int32_t mapId = reader.get<int32_t>();
+			map_id_t mapId = reader.get<map_id_t>();
 
 			if (Player *receiver = PlayerDataProvider::getInstance().getPlayer(name)) {
 				receiver->setMap(mapId);
@@ -173,7 +173,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::Summon: {
-			int32_t mobId = reader.get<int32_t>();
+			mob_id_t mobId = reader.get<mob_id_t>();
 			int32_t count = reader.get<int32_t>();
 			if (MobDataProvider::getInstance().mobExists(mobId)) {
 				count = ext::constrain_range(count, 1, 100);
@@ -187,17 +187,17 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::CreateItem: {
-			int32_t itemId = reader.get<int32_t>();
+			item_id_t itemId = reader.get<item_id_t>();
 			Inventory::addNewItem(player, itemId, 1);
 			break;
 		}
 		case AdminOpcodes::DestroyFirstItem: {
-			int8_t inv = reader.get<int8_t>();
+			inventory_t inv = reader.get<inventory_t>();
 			if (!GameLogicUtilities::isValidInventory(inv)) {
 				return;
 			}
-			uint8_t slots = player->getInventory()->getMaxSlots(inv);
-			for (int8_t i = 0; i < slots; ++i) {
+			inventory_slot_count_t slots = player->getInventory()->getMaxSlots(inv);
+			for (inventory_slot_count_t i = 0; i < slots; ++i) {
 				if (Item *item = player->getInventory()->getItem(inv, i)) {
 					Inventory::takeItemSlot(player, inv, i, player->getInventory()->getItemAmountBySlot(inv, i));
 					break;
@@ -206,7 +206,7 @@ auto CommandHandler::handleAdminCommand(Player *player, PacketReader &reader) ->
 			break;
 		}
 		case AdminOpcodes::GiveExp: {
-			int32_t amount = reader.get<int32_t>();
+			experience_t amount = reader.get<experience_t>();
 			player->getStats()->giveExp(amount);
 			break;
 		}

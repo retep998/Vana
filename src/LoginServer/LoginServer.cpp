@@ -37,8 +37,8 @@ LoginServer::LoginServer() :
 
 auto LoginServer::listen() -> void {
 	auto &config = getInterServerConfig();
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::PatchLocation);
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::LoginSubversion);
+	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true, MapleVersion::LoginSubversion);
 }
 
 auto LoginServer::loadData() -> void {

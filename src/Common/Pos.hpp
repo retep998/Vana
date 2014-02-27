@@ -25,15 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ostream>
 
 struct Pos {
-	Pos(int16_t x, int16_t y) : x(x), y(y) { }
+	Pos(coord_t x, coord_t y) : x(x), y(y) { }
 	Pos() = default;
 
 	auto operator-(const Pos &p) const -> int32_t {
 		return static_cast<int32_t>(sqrt(pow(static_cast<float>(x - p.x), 2) + pow(static_cast<float>(y - p.y), 2)));
 	}
 
-	int16_t x = 0;
-	int16_t y = 0;
+	coord_t x = 0;
+	coord_t y = 0;
 	friend auto operator <<(std::ostream &out, const Pos &pos) -> std::ostream &;
 };
 
@@ -41,13 +41,13 @@ template <>
 struct PacketSerialize<Pos> {
 	auto read(PacketReader &reader) -> Pos {
 		Pos ret;
-		ret.x = reader.get<int16_t>();
-		ret.y = reader.get<int16_t>();
+		ret.x = reader.get<coord_t>();
+		ret.y = reader.get<coord_t>();
 		return ret;
 	}
 	auto write(PacketBuilder &builder, const Pos &obj) -> void {
-		builder.add<int16_t>(obj.x);
-		builder.add<int16_t>(obj.y);
+		builder.add<coord_t>(obj.x);
+		builder.add<coord_t>(obj.y);
 	}
 };
 

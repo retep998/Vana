@@ -22,23 +22,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace SyncPacket {
 namespace PlayerPacket {
 
-PACKET_IMPL(characterCreated, int32_t playerId) {
+PACKET_IMPL(characterCreated, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::CharacterCreated)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 
-PACKET_IMPL(characterDeleted, int32_t playerId) {
+PACKET_IMPL(characterDeleted, player_id_t playerId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Player)
 		.add<sync_t>(Sync::Player::CharacterDeleted)
-		.add<int32_t>(playerId);
+		.add<player_id_t>(playerId);
 	return builder;
 }
 

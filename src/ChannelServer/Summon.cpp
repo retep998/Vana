@@ -19,31 +19,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SkillConstants.hpp"
 #include "SkillDataProvider.hpp"
 
-Summon::Summon(int32_t id, int32_t summonId, uint8_t level) :
-	MovableLife(0, Pos(), 0),
+Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool isFacingLeft, const Pos &position, foothold_id_t foothold) :
+	MovableLife(foothold, position, 4),
 	m_id(id),
 	m_summonId(summonId),
 	m_level(level)
 {
+	m_actionType = Attack;
 	switch (summonId) {
 		case Skills::Ranger::Puppet:
 		case Skills::Sniper::Puppet:
 		case Skills::WindArcher::Puppet:
+			m_actionType = DoNothing;
 			m_hp = SkillDataProvider::getInstance().getSkill(summonId, level)->x;
+			// Intentional fallthrough
 		case Skills::Outlaw::Octopus:
 		case Skills::Corsair::WrathOfTheOctopi:
-			m_type = Static;
+			m_movementType = Static;
 			break;
 		case Skills::Priest::SummonDragon:
 		case Skills::Ranger::SilverHawk:
 		case Skills::Sniper::GoldenEagle:
 		case Skills::Bowmaster::Phoenix:
 		case Skills::Marksman::Frostprey:
+			m_movementType = FlyClose;
+			break;
 		case Skills::Outlaw::Gaviota:
-			m_type = Flying;
+			m_movementType = FlyFar;
+			break;
+		case Skills::DarkKnight::Beholder:
+			m_actionType = Beholder;
+			// Intentional fallthrough
+		case Skills::Bishop::Bahamut:
+		case Skills::FpArchMage::Elquines:
+		case Skills::IlArchMage::Ifrit:
+		case Skills::DawnWarrior::Soul:
+		case Skills::BlazeWizard::Flame:
+		case Skills::BlazeWizard::Ifrit:
+		case Skills::WindArcher::Storm:
+		case Skills::NightWalker::Darkness:
+		case Skills::ThunderBreaker::Lightning:
+			m_movementType = Follow;
 			break;
 		default:
-			m_type = Follow;
+			std::cerr << "Summon not accounted for in the types: " << summonId << std::endl;
 			break;
 	}
 }

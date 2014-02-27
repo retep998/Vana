@@ -24,7 +24,7 @@ class Player;
 
 namespace Quests {
 	auto getQuest(Player *player, PacketReader &reader) -> void;
-	auto giveFame(Player *player, int32_t amount) -> void;
-	auto giveItem(Player *player, int32_t itemId, int16_t amount) -> bool;
-	auto giveMesos(Player *player, int32_t amount) -> bool;
+	auto giveFame(Player *player, fame_t amount) -> Result;
+	auto giveItem(Player *player, item_id_t itemId, slot_qty_t amount) -> Result;
+	auto giveMesos(Player *player, mesos_t amount) -> Result;
 }

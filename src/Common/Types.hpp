@@ -62,9 +62,25 @@ private:
 	time_t m_time;
 };
 
+enum class HandleResult {
+	Handled,
+	Unhandled,
+};
+
 enum class SearchResult {
 	Found,
 	NotFound,
+};
+
+enum class MultiMatchResult {
+	NoMatches,
+	OneMatch,
+	MultipleMatches,
+};
+
+enum class MatchResult {
+	NoMatches,
+	AnyMatches,
 };
 
 enum class IterationResult {
@@ -84,11 +100,58 @@ enum class Result {
 
 using std::chrono::duration_cast;
 
-// Miscellaneous utility types
-using header_t = uint16_t;
-using port_t = uint16_t;
+// Game protocol/entity types
 using world_id_t = int8_t;
 using channel_id_t = int8_t;
+using item_id_t = int32_t;
+using map_id_t = int32_t;
+using mob_id_t = int32_t;
+using npc_id_t = int32_t;
+using shop_id_t = int32_t;
+using job_id_t = int16_t;
+using reactor_id_t = int32_t;
+using party_id_t = int32_t;
+using skill_id_t = int32_t;
+using summon_id_t = int32_t;
+using mist_id_t = int32_t;
+using mob_skill_id_t = uint8_t;
+using pet_id_t = int64_t;
+using player_id_t = int32_t;
+using foothold_id_t = int16_t;
+using seat_id_t = int16_t;
+using trade_id_t = int32_t;
+using trade_slot_t = uint8_t;
+using morph_id_t = int16_t;
+using quest_id_t = uint16_t;
+using portal_id_t = int8_t;
+using account_id_t = int32_t;
+using skin_id_t = int8_t;
+using hair_id_t = int32_t;
+using face_id_t = int32_t;
+using gender_id_t = int8_t;
+
+using header_t = uint16_t;
+using port_t = uint16_t;
+using version_t = uint16_t;
+using locale_t = uint8_t;
+using player_level_t = uint8_t;
+using skill_level_t = uint8_t;
+using fame_t = int16_t;
+using mob_skill_level_t = uint8_t;
+using inventory_t = int8_t;
+using inventory_slot_t = int16_t;
+using inventory_slot_count_t = uint8_t;
+using slot_qty_t = int16_t;
+using storage_slot_t = uint8_t;
+using damage_t = int32_t;
+using mesos_t = int32_t;
+using experience_t = int32_t;
+using map_object_t = int32_t;
+using coord_t = int16_t;
+using tick_count_t = uint32_t;
+using charge_time_t = int32_t;
+
+// Miscellaneous utility types
 using effective_clock_t = std::chrono::system_clock;
 using duration_t = effective_clock_t::duration;
 using time_point_t = effective_clock_t::time_point;
@@ -151,18 +214,20 @@ auto make_owned_ptr(TArgs && ...args) -> owned_ptr_t<TSrc> {
 }
 
 // Useful DB-related aliases
-using opt_bool = MiscUtilities::optional<bool>;
-using opt_int8_t = MiscUtilities::optional<int8_t>;
-using opt_uint8_t = MiscUtilities::optional<uint8_t>;
-using opt_int16_t = MiscUtilities::optional<int16_t>;
-using opt_uint16_t = MiscUtilities::optional<uint16_t>;
-using opt_int32_t = MiscUtilities::optional<int32_t>;
-using opt_uint32_t = MiscUtilities::optional<uint32_t>;
-using opt_int64_t = MiscUtilities::optional<int64_t>;
-using opt_uint64_t = MiscUtilities::optional<uint64_t>;
-using opt_double = MiscUtilities::optional<double>;
-using opt_unix_time_t = MiscUtilities::optional<unix_time_t>;
-using opt_string_t = MiscUtilities::optional<string_t>;
+template <typename TElement>
+using optional_t = MiscUtilities::optional<TElement>;
+using opt_bool = optional_t<bool>;
+using opt_int8_t = optional_t<int8_t>;
+using opt_uint8_t = optional_t<uint8_t>;
+using opt_int16_t = optional_t<int16_t>;
+using opt_uint16_t = optional_t<uint16_t>;
+using opt_int32_t = optional_t<int32_t>;
+using opt_uint32_t = optional_t<uint32_t>;
+using opt_int64_t = optional_t<int64_t>;
+using opt_uint64_t = optional_t<uint64_t>;
+using opt_double = optional_t<double>;
+using opt_unix_time_t = optional_t<unix_time_t>;
+using opt_string_t = optional_t<string_t>;
 
 // Remove when VS2012 supports thread_local
 #ifdef WIN32

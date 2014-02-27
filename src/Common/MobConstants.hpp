@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 namespace Mobs {
-	enum MobId : int32_t {
+	enum MobId : mob_id_t {
 		HighDarkstar = 8500003,
 		LowDarkstar = 8500004,
 

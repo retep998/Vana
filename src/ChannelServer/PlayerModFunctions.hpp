@@ -22,22 +22,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Player;
 
 namespace PlayerModFunctions {
-	auto disconnect(Player *player, const string_t &args) -> bool;
-	auto save(Player *player, const string_t &args) -> bool;
-	auto modMesos(Player *player, const string_t &args) -> bool;
-	auto heal(Player *player, const string_t &args) -> bool;
-	auto modStr(Player *player, const string_t &args) -> bool;
-	auto modDex(Player *player, const string_t &args) -> bool;
-	auto modInt(Player *player, const string_t &args) -> bool;
-	auto modLuk(Player *player, const string_t &args) -> bool;
-	auto maxStats(Player *player, const string_t &args) -> bool;
-	auto hp(Player *player, const string_t &args) -> bool;
-	auto mp(Player *player, const string_t &args) -> bool;
-	auto sp(Player *player, const string_t &args) -> bool;
-	auto ap(Player *player, const string_t &args) -> bool;
-	auto fame(Player *player, const string_t &args) -> bool;
-	auto level(Player *player, const string_t &args) -> bool;
-	auto job(Player *player, const string_t &args) -> bool;
-	auto addSp(Player *player, const string_t &args) -> bool;
-	auto maxSp(Player *player, const string_t &args) -> bool;
+	auto disconnect(Player *player, const string_t &args) -> ChatResult;
+	auto save(Player *player, const string_t &args) -> ChatResult;
+	auto modMesos(Player *player, const string_t &args) -> ChatResult;
+	auto heal(Player *player, const string_t &args) -> ChatResult;
+	auto modStr(Player *player, const string_t &args) -> ChatResult;
+	auto modDex(Player *player, const string_t &args) -> ChatResult;
+	auto modInt(Player *player, const string_t &args) -> ChatResult;
+	auto modLuk(Player *player, const string_t &args) -> ChatResult;
+	auto maxStats(Player *player, const string_t &args) -> ChatResult;
+	auto hp(Player *player, const string_t &args) -> ChatResult;
+	auto mp(Player *player, const string_t &args) -> ChatResult;
+	auto sp(Player *player, const string_t &args) -> ChatResult;
+	auto ap(Player *player, const string_t &args) -> ChatResult;
+	auto fame(Player *player, const string_t &args) -> ChatResult;
+	auto level(Player *player, const string_t &args) -> ChatResult;
+	auto job(Player *player, const string_t &args) -> ChatResult;
+	auto addSp(Player *player, const string_t &args) -> ChatResult;
+	auto maxSp(Player *player, const string_t &args) -> ChatResult;
 }

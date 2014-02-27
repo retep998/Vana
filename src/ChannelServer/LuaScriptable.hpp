@@ -28,11 +28,11 @@ class LuaScriptable : public LuaEnvironment {
 	NONCOPYABLE(LuaScriptable);
 	NO_DEFAULT_CONSTRUCTOR(LuaScriptable);
 protected:
-	LuaScriptable(const string_t &filename, int32_t playerId);
-	LuaScriptable(const string_t &filename, int32_t playerId, bool useThread);
+	LuaScriptable(const string_t &filename, player_id_t playerId);
+	LuaScriptable(const string_t &filename, player_id_t playerId, bool useThread);
 
 	auto handleError(const string_t &filename, const string_t &error) -> void override;
-	int32_t m_playerId = -1;
+	player_id_t m_playerId = -1;
 private:
 	auto initialize() -> void;
 	auto setEnvironmentVariables() -> void;

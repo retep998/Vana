@@ -27,12 +27,12 @@ class SkillDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isValidSkill(int32_t skillId) const -> bool;
-	auto getMaxLevel(int32_t skillId) const -> uint8_t;
-	auto getSkill(int32_t skill, uint8_t level) const -> const SkillLevelInfo * const;
-	auto getMobSkill(uint8_t skill, uint8_t level) const -> const MobSkillLevelInfo * const;
-	auto getBanishData(int32_t mobId) const -> const BanishField * const;
-	auto getMorphData(int16_t morph) const -> const MorphData * const;
+	auto isValidSkill(skill_id_t skillId) const -> bool;
+	auto getMaxLevel(skill_id_t skillId) const -> uint8_t;
+	auto getSkill(skill_id_t skill, skill_level_t level) const -> const SkillLevelInfo * const;
+	auto getMobSkill(mob_skill_id_t skill, mob_skill_level_t level) const -> const MobSkillLevelInfo * const;
+	auto getBanishData(mob_id_t mobId) const -> const BanishField * const;
+	auto getMorphData(morph_id_t morph) const -> const MorphData * const;
 private:
 	auto loadPlayerSkills() -> void;
 	auto loadPlayerSkillLevels() -> void;
@@ -41,9 +41,9 @@ private:
 	auto loadBanishData() -> void;
 	auto loadMorphs() -> void;
 
-	hash_map_t<uint8_t, hash_map_t<uint8_t, MobSkillLevelInfo>> m_mobSkills;
-	hash_map_t<int32_t, hash_map_t<uint8_t, SkillLevelInfo>> m_skillLevels;
-	hash_map_t<int32_t, uint8_t> m_skillMaxLevels;
-	hash_map_t<int32_t, BanishField> m_banishInfo;
-	hash_map_t<int16_t, MorphData> m_morphInfo;
+	hash_map_t<mob_skill_id_t, hash_map_t<mob_skill_level_t, MobSkillLevelInfo>> m_mobSkills;
+	hash_map_t<skill_id_t, hash_map_t<skill_level_t, SkillLevelInfo>> m_skillLevels;
+	hash_map_t<skill_id_t, skill_level_t> m_skillMaxLevels;
+	hash_map_t<skill_id_t, BanishField> m_banishInfo;
+	hash_map_t<morph_id_t, MorphData> m_morphInfo;
 };

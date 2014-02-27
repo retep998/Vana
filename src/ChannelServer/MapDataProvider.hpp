@@ -32,7 +32,7 @@ class Player;
 struct TimeMob {
 	int8_t startHour = 0;
 	int8_t endHour = 0;
-	int32_t id = 0;
+	mob_id_t id = 0;
 	string_t message;
 };
 
@@ -65,15 +65,15 @@ struct MapInfo {
 	int8_t continent = -1;
 	int8_t regenRate = 0;
 	int8_t shipKind = 0;
-	uint8_t minLevel = 0;
+	player_level_t minLevel = 0;
 	uint8_t decHp = 0;
 	uint16_t dps = 0;
-	int32_t rm = 0;
-	int32_t forcedReturn = 0;
-	int32_t link = 0;
+	map_id_t rm = 0;
+	map_id_t forcedReturn = 0;
+	map_id_t link = 0;
 	int32_t timeLimit = 0;
-	int32_t protectItem = 0;
-	int32_t damagePerSecond = 0;
+	item_id_t protectItem = 0;
+	damage_t damagePerSecond = 0;
 	double spawnRate = 0.;
 	double traction = 0.;
 	string_t defaultMusic;
@@ -87,19 +87,19 @@ class MapDataProvider {
 	SINGLETON(MapDataProvider);
 public:
 	auto loadData() -> void;
-	auto getMap(int32_t mapId) -> Map *;
-	auto unloadMap(int32_t mapId) -> void;
-	auto getContinent(int32_t mapId) -> int8_t;
+	auto getMap(map_id_t mapId) -> Map *;
+	auto unloadMap(map_id_t mapId) -> void;
+	auto getContinent(map_id_t mapId) -> int8_t;
 private:
-	auto loadMapData(int32_t mapId, Map *&map) -> int32_t;
+	auto loadMapData(map_id_t mapId, Map *&map) -> map_id_t;
 	auto loadMapTimeMob(Map *map) -> void;
-	auto loadFootholds(Map *map, int32_t link) -> void;
-	auto loadMapLife(Map *map, int32_t link) -> void;
-	auto loadPortals(Map *map, int32_t link) -> void;
-	auto loadSeats(Map *map, int32_t link) -> void;
-	auto loadMap(int32_t mapId, Map *&map) -> void;
+	auto loadFootholds(Map *map, map_id_t link) -> void;
+	auto loadMapLife(Map *map, map_id_t link) -> void;
+	auto loadPortals(Map *map, map_id_t link) -> void;
+	auto loadSeats(Map *map, map_id_t link) -> void;
+	auto loadMap(map_id_t mapId, Map *&map) -> void;
 
 	mutex_t m_loadMutex;
-	hash_map_t<int32_t, Map *> m_maps;
+	hash_map_t<map_id_t, Map *> m_maps;
 	hash_map_t<int8_t, int8_t> m_continents;
 };

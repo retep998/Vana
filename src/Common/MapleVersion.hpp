@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Types.hpp"
 #include <string>
 
+// Normal servers
 #define MAPLE_LOCALE_GLOBAL 0x08
 #define MAPLE_LOCALE_KOREA 0x01
 #define MAPLE_LOCALE_JAPAN 0x03
@@ -30,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLE_LOCALE_BRAZIL 0x09
 #define MAPLE_LOCALE_TAIWAN 0x3C
 
+// Test servers
 #define MAPLE_LOCALE_KOREA_TEST 0x02
 #define MAPLE_LOCALE_CHINA_TEST 0x04
 #define MAPLE_LOCALE_TAIWAN_TEST 0x06
@@ -51,34 +53,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAPLE_LOCALE_STRING MAPLE_LOCALE_STRING_GLOBAL
 #define MAPLE_VERSION 75
 
-namespace Locales {
-	const int8_t Korea = MAPLE_LOCALE_KOREA;
-	const int8_t Japan = MAPLE_LOCALE_JAPAN;
-	const int8_t China = MAPLE_LOCALE_CHINA;
-	const int8_t Sea = MAPLE_LOCALE_SEA;
-	const int8_t Thailand = MAPLE_LOCALE_THAILAND;
-	const int8_t Global = MAPLE_LOCALE_GLOBAL;
-	const int8_t Europe = MAPLE_LOCALE_EUROPE;
-	const int8_t Brazil = MAPLE_LOCALE_BRAZIL;
-	const int8_t Taiwan = MAPLE_LOCALE_TAIWAN;
-
-	const int8_t KoreaTest = MAPLE_LOCALE_KOREA_TEST;
-	const int8_t ChinaTest = MAPLE_LOCALE_CHINA_TEST;
-	const int8_t GlobalTest = MAPLE_LOCALE_GLOBAL_TEST;
-	const int8_t TaiwanTest = MAPLE_LOCALE_TAIWAN_TEST;
-}
-
-namespace PatchLocations {
-	const string_t None = "";
-	const string_t Global = "0";
-
-	const string_t GlobalTest = "0";
-}
-
 namespace MapleVersion {
-	const uint16_t Version = MAPLE_VERSION;
-	const int8_t Locale = MAPLE_LOCALE;
+	const version_t Version = MAPLE_VERSION;
+	const string_t LoginSubversion = "0";
+	const string_t ChannelSubversion = "";
+	const locale_t Locale = MAPLE_LOCALE;
 	const string_t LocaleString = MAPLE_LOCALE_STRING;
 	const bool TestServer = false;
-	const string_t PatchLocation = PatchLocations::Global;
 }

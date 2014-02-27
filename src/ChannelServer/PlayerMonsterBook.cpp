@@ -31,7 +31,7 @@ PlayerMonsterBook::PlayerMonsterBook(Player *player) :
 
 auto PlayerMonsterBook::load() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
+	player_id_t charId = m_player->getId();
 
 	soci::rowset<> rs = (sql.prepare
 		<< "SELECT b.card_id, b.level "
@@ -41,7 +41,7 @@ auto PlayerMonsterBook::load() -> void {
 		soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		addCard(row.get<int32_t>("card_id"), row.get<uint8_t>("level"), true);
+		addCard(row.get<item_id_t>("card_id"), row.get<uint8_t>("level"), true);
 	}
 
 	calculateLevel();
@@ -49,12 +49,12 @@ auto PlayerMonsterBook::load() -> void {
 
 auto PlayerMonsterBook::save() -> void {
 	soci::session &sql = Database::getCharDb();
-	int32_t charId = m_player->getId();
+	player_id_t charId = m_player->getId();
 
 	sql.once << "DELETE FROM " << Database::makeCharTable("monster_book") << " WHERE character_id = :char", soci::use(charId, "char");
 
 	if (m_cards.size() > 0) {
-		int32_t cardId = 0;
+		item_id_t cardId = 0;
 		uint8_t level = 0;
 
 		soci::statement st = (sql.prepare

@@ -38,7 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <functional>
 #include <initializer_list>
 
-Mob::Mob(int32_t mapMobId, int32_t mapId, int32_t mobId, view_ptr_t<Mob> owner, const Pos &pos, int32_t spawnId, bool facesLeft, int16_t foothold, MobControlStatus controlStatus) :
+Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> owner, const Pos &pos, int32_t spawnId, bool facesLeft, foothold_id_t foothold, MobControlStatus controlStatus) :
 	MovableLife(foothold, pos, facesLeft ? 1 : 2),
 	m_mapMobId(mapMobId),
 	m_mapId(mapId),
@@ -68,8 +68,7 @@ Mob::Mob(int32_t mapMobId, int32_t mapId, int32_t mobId, view_ptr_t<Mob> owner, 
 			getTimers(), seconds_t(1), seconds_t(10));
 	}
 	if (m_info->removeAfter > 0) {
-		int32_t damage = m_info->hp;
-		Timer::Timer::create([this, damage](const time_point_t &now) { this->kill(); },
+		Timer::Timer::create([this](const time_point_t &now) { this->kill(); },
 			Timer::Id(Timer::Types::MobRemoveTimer, m_mapMobId, 0),
 			getTimers(), seconds_t(m_info->removeAfter));
 	}
@@ -98,7 +97,7 @@ auto Mob::naturalHeal(int32_t hpHeal, int32_t mpHeal) -> void {
 	}
 }
 
-auto Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) -> void {
+auto Mob::applyDamage(player_id_t playerId, damage_t damage, bool poison) -> void {
 	damage = std::max(damage, 0);
 	if (damage > m_hp) {
 		damage = m_hp - poison; // Keep HP from hitting 0 for poison and from going below 0
@@ -145,7 +144,7 @@ auto Mob::applyDamage(int32_t playerId, int32_t damage, bool poison) -> void {
 }
 
 auto Mob::applyWebDamage() -> void {
-	int32_t webDamage = getMaxHp() / (50 - m_webLevel);
+	damage_t webDamage = getMaxHp() / (50 - m_webLevel);
 	if (webDamage > m_hp) {
 		// Keep HP from hitting 0
 		webDamage = m_hp - 1;
@@ -157,7 +156,7 @@ auto Mob::applyWebDamage() -> void {
 	}
 }
 
-auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void {
+auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> void {
 	int32_t addedStatus = 0;
 	vector_t<int32_t> reflection;
 	Map *map = getMap();
@@ -174,7 +173,7 @@ auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void 
 				break;
 			case StatusEffects::Mob::ShadowWeb:
 				m_webPlayerId = playerId;
-				m_webLevel = static_cast<uint8_t>(info.val);
+				m_webLevel = static_cast<skill_level_t>(info.val);
 				map->addWebbedMob(getMapMobId());
 				break;
 			case StatusEffects::Mob::MagicAttackUp:
@@ -206,7 +205,7 @@ auto Mob::addStatus(int32_t playerId, vector_t<StatusInfo> &statusInfo) -> void 
 			case StatusEffects::Mob::Poison:
 			case StatusEffects::Mob::VenomousWeapon:
 			case StatusEffects::Mob::NinjaAmbush:
-				int32_t poisonDamage = info.val;
+				damage_t poisonDamage = info.val;
 				Timer::Timer::create([this, playerId, poisonDamage](const time_point_t &now) { this->applyDamage(playerId, poisonDamage, true); },
 					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
 					getTimers(), seconds_t(1), seconds_t(1));
@@ -327,7 +326,7 @@ auto Mob::die(Player *player, bool fromExplosion) -> void {
 
 	endControl();
 
-	int32_t highestDamager = distributeExpAndGetDropRecipient(player);
+	player_id_t highestDamager = distributeExpAndGetDropRecipient(player);
 
 	// Ending of death stuff
 	DropHandler::doDrops(highestDamager, m_mapId, getLevel(), m_mobId, getPos(), hasExplosiveDrop(), hasFfaDrop(), getTauntEffect());
@@ -360,26 +359,26 @@ auto Mob::consumeMp(int32_t mp) -> void {
 	m_mp = std::max(m_mp - mp, 0);
 }
 
-auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
-	int32_t highestDamager = 0;
+auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> player_id_t {
+	player_id_t highestDamager = 0;
 	uint64_t highestDamage = 0;
 
 	if (m_damages.size() > 0) {
 		struct PartyExp {
-			PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) {}
-			uint8_t minHitLevel;
+			PartyExp() : totalExp(0), party(nullptr), highestDamager(nullptr), highestDamage(0), minHitLevel(Stats::PlayerLevels) { }
+			player_level_t minHitLevel;
 			uint64_t totalExp;
 			uint64_t highestDamage;
 			Player *highestDamager;
 			Party *party;
 		};
 
-		hash_map_t<int32_t, PartyExp> parties;
+		hash_map_t<party_id_t, PartyExp> parties;
 
 		int32_t mobExpRate = ChannelServer::getInstance().getConfig().rates.mobExpRate;
 
 		for (const auto &kvp : m_damages) {
-			int32_t damagerId = kvp.first;
+			player_id_t damagerId = kvp.first;
 			uint64_t damage = kvp.second;
 			if (damage > highestDamage) {
 				// Find the highest damager to give drop ownership
@@ -392,12 +391,12 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
 			}
-			uint8_t damagerLevel = damager->getStats()->getLevel();
+			player_level_t damagerLevel = damager->getStats()->getLevel();
 			Party *damagerParty = damager->getParty();
 
 			uint64_t exp = static_cast<uint64_t>(m_info->exp) * ((8 * damage / m_totalHealth) + (damager == killer ? 2 : 0)) / 10;
 			if (damagerParty != nullptr) {
-				int32_t partyId = damagerParty->getId();
+				party_id_t partyId = damagerParty->getId();
 				auto kvp = parties.find(partyId);
 				if (kvp == std::end(parties)) {
 					PartyExp newParty;
@@ -435,7 +434,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 				uint16_t totalLevel = 0;
 				uint16_t leechCount = 0;
 				for (const auto &partyMember : partyMembers) {
-					uint8_t damagerLevel = partyMember->getStats()->getLevel();
+					player_level_t damagerLevel = partyMember->getStats()->getLevel();
 					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
 						continue;
 					}
@@ -443,7 +442,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> int32_t {
 					leechCount++;
 				}
 				for (const auto &partyMember : partyMembers) {
-					uint8_t damagerLevel = partyMember->getStats()->getLevel();
+					player_level_t damagerLevel = partyMember->getStats()->getLevel();
 					if (damagerLevel < (info.minHitLevel - 5) && damagerLevel < (getLevel() - 5)) {
 						continue;
 					}
@@ -500,7 +499,7 @@ auto Mob::dispelBuffs() -> void {
 	}
 }
 
-auto Mob::doCrashSkill(int32_t skillId) -> void {
+auto Mob::doCrashSkill(skill_id_t skillId) -> void {
 	switch (skillId) {
 		case Skills::Crusader::ArmorCrash: removeStatus(StatusEffects::Mob::Wdef); break;
 		case Skills::WhiteKnight::MagicCrash: removeStatus(StatusEffects::Mob::Matk); break;
@@ -524,7 +523,7 @@ auto Mob::mpEat(Player *player, MpEaterInfo *mp) -> void {
 	}
 }
 
-auto Mob::chooseRandomSkill(uint8_t &skillId, uint8_t &skillLevel) -> void {
+auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLevel) -> void {
 	if (m_info->skillCount == 0 || m_anticipatedSkill != 0 || !canCastSkills()) {
 		return;
 	}
@@ -608,8 +607,8 @@ auto Mob::resetAnticipatedSkill() -> void {
 }
 
 auto Mob::useAnticipatedSkill() -> Result {
-	uint8_t skillId = m_anticipatedSkill;
-	uint8_t level = m_anticipatedSkillLevel;
+	mob_skill_id_t skillId = m_anticipatedSkill;
+	mob_skill_level_t level = m_anticipatedSkillLevel;
 
 	resetAnticipatedSkill();
 
@@ -676,7 +675,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 			break;
 		}
 		case MobSkills::SendToTown: {
-			int32_t field = map->getReturnMap();
+			map_id_t field = map->getReturnMap();
 			PortalInfo *portal = nullptr;
 			string_t message;
 			if (auto banishInfo = SkillDataProvider::getInstance().getBanishData(getMobId())) {
@@ -742,16 +741,16 @@ auto Mob::canCastSkills() const -> bool {
 	return !(hasStatus(StatusEffects::Mob::Freeze) || hasStatus(StatusEffects::Mob::Stun) || hasStatus(StatusEffects::Mob::ShadowWeb) || hasStatus(StatusEffects::Mob::Seal));
 }
 
-auto Mob::isSponge(int32_t mobId) -> bool {
+auto Mob::isSponge(mob_id_t mobId) -> bool {
 	switch (mobId) {
-		case Mobs::HorntailSponge: return true; break;
+		case Mobs::HorntailSponge: return true;
 	}
 	return false;
 }
 
-auto Mob::spawnsSponge(int32_t mobId) -> bool {
+auto Mob::spawnsSponge(mob_id_t mobId) -> bool {
 	switch (mobId) {
-		case Mobs::SummonHorntail: return true; break;
+		case Mobs::SummonHorntail: return true;
 	}
 	return false;
 }

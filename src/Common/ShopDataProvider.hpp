@@ -25,21 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketBuilder;
 
 struct ShopItemInfo {
-	int32_t itemId = 0;
-	int32_t price = 0;
-	int16_t quantity = 0;
+	item_id_t itemId = 0;
+	mesos_t price = 0;
+	slot_qty_t quantity = 0;
 };
 
 struct ShopInfo {
 	int8_t rechargeTier = 0;
-	int32_t npc = 0;
+	npc_id_t npc = 0;
 	vector_t<ShopItemInfo> items;
 };
 
 struct BuiltShopInfo {
-	int32_t npc;
+	npc_id_t npc;
 	vector_t<const ShopItemInfo *> items;
-	ord_map_t<int32_t, double> rechargeables;
+	ord_map_t<item_id_t, double> rechargeables;
 };
 
 class ShopDataProvider {
@@ -47,15 +47,15 @@ class ShopDataProvider {
 public:
 	auto loadData() -> void;
 
-	auto isShop(int32_t id) const -> bool;
-	auto getShop(int32_t id) const -> BuiltShopInfo;
-	auto getShopItem(int32_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
-	auto getRechargeCost(int32_t shopId, int32_t itemId, int16_t amount) const -> int32_t;
+	auto isShop(shop_id_t id) const -> bool;
+	auto getShop(shop_id_t id) const -> BuiltShopInfo;
+	auto getShopItem(shop_id_t shopId, uint16_t shopIndex) const -> const ShopItemInfo * const;
+	auto getRechargeCost(shop_id_t shopId, item_id_t itemId, int16_t amount) const -> mesos_t;
 private:
 	auto loadShops() -> void;
 	auto loadUserShops() -> void;
 	auto loadRechargeTiers() -> void;
 
-	hash_map_t<int32_t, ShopInfo> m_shops;
-	hash_map_t<int8_t, ord_map_t<int32_t, double>> m_rechargeCosts;
+	hash_map_t<shop_id_t, ShopInfo> m_shops;
+	hash_map_t<int8_t, ord_map_t<item_id_t, double>> m_rechargeCosts;
 };

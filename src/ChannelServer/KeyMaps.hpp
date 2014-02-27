@@ -32,8 +32,8 @@ public:
 	auto getKeyMap(int32_t pos) -> KeyMap *;
 	auto getMax() -> int32_t;
 
-	auto load(int32_t charId) -> void;
-	auto save(int32_t charId) -> void;
+	auto load(player_id_t charId) -> void;
+	auto save(player_id_t charId) -> void;
 
 	static const size_t size = 90;
 private:

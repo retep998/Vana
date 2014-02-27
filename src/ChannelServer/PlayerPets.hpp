@@ -34,13 +34,13 @@ public:
 	auto petInfoPacket(PacketBuilder &packet) -> void;
 	auto connectData(PacketBuilder &packet) -> void;
 
-	auto getPet(int64_t petId) -> Pet *;
+	auto getPet(pet_id_t petId) -> Pet *;
 	auto getSummoned(int8_t index) -> Pet *;
 
 	auto addPet(Pet *pet) -> void;
-	auto setSummoned(int8_t index, int64_t petId) -> void;
+	auto setSummoned(int8_t index, pet_id_t petId) -> void;
 private:
 	Player *m_player = nullptr;
-	hash_map_t<int64_t, Pet *> m_pets;
-	hash_map_t<int8_t, int64_t> m_summoned;
+	hash_map_t<pet_id_t, Pet *> m_pets;
+	hash_map_t<int8_t, pet_id_t> m_summoned;
 };
