@@ -72,25 +72,27 @@ private:
 		}
 
 		template <typename TNumber>
-		auto rand(TNumber max, TNumber min = 0) -> TNumber {
-			static_assert(std::is_integral<TNumber>::value || std::is_floating_point<TNumber>::value, "TNumber must be integral or floating point");
+		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+			std::uniform_int_distribution<TNumber> distribution(min, max);
+			return distribution(m_engine);
+		}
 
-			TNumber result;
-			if (std::is_integral<TNumber>::value) {
-				if (std::is_unsigned<TNumber>::value) {
-					std::uniform_int_distribution<uint64_t> distribution(static_cast<uint64_t>(min), static_cast<uint64_t>(max));
-					result = static_cast<TNumber>(distribution(m_engine));
-				}
-				else {
-					std::uniform_int_distribution<int64_t> distribution(static_cast<int64_t>(min), static_cast<int64_t>(max));
-					result = static_cast<TNumber>(distribution(m_engine));
-				}
-			}
-			else {
-				std::uniform_real_distribution<long double> distribution(static_cast<long double>(min), static_cast<long double>(max));
-				return static_cast<TNumber>(distribution(m_engine));
-			}
-			return result;
+		// TODO FIXME
+		// If C++ ever gets an actual small integer type, dump these specializations
+		template <>
+		auto rand<int8_t>(int8_t max, int8_t min) -> int8_t {
+			return static_cast<int8_t>(rand<int16_t>(max, min));
+		}
+
+		template <>
+		auto rand<uint8_t>(uint8_t max, uint8_t min) -> uint8_t {
+			return static_cast<uint8_t>(rand<uint16_t>(max, min));
+		}
+
+		template <typename TNumber>
+		auto rand(TNumber max, TNumber min) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
+			std::uniform_real_distribution<TNumber> distribution(min, max);
+			return distribution(m_engine);
 		}
 
 		auto engine() -> std::mt19937 & {
