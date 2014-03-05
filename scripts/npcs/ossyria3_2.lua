@@ -17,15 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- El Nath Magic Spot (Orbis Tower: 1st Floor)
 
-if getItemAmount(4001019) >= 1 then
-	addText("You can use #b#t4001019##k to activate #b#p2012015##k. Will you teleport to where #b#p2012014##k is?");
-	yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-	if yes == 1 then
+if getItemAmount(4001019) >= 1 then
+	addText("You can use " .. blue(itemRef(4001019)) .. " to activate " .. blue(npcRef(2012015)) .. ". ");
+	addText("Will you teleport to where " .. blue(npcRef(2012014)) .. " is?");
+	answer = askYesNo();
+
+	if answer == answer_yes then
 		giveItem(4001019, -1);
 		setMap(200080200);
+	else
+		-- Intentionally left blank
 	end
 else
-	addText("There's a #b#p2012015##k that'll enable you to teleport to where #b#p2012014##k is, but you can't activate it without the scroll.");
+	addText("There's a " .. blue(npcRef(2012015)) .. " that'll enable you to teleport to where " .. blue(npcRef(2012014)) .. " is, but you can't activate it without the scroll.");
 	sendOk();
 end

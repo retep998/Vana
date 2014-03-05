@@ -42,17 +42,17 @@ if isQuestCompleted(2013) then
 	choice = askChoice();
 
 	data = selectChoice(choices, choice);
-	item, effect, price = data[1], data[2], data[3];
+	item, price, effect = data[1], data[2], data[3];
 
 	addText("You want " .. blue(itemRef(item)) .. "? ");
 	addText(itemRef(item) .. " " .. effect .. ". ");
 	addText("How many would you like to purchase?");
-	qty = askNumber(0, 0, 100);
+	qty = askNumber(0, 1, 100);
 
 	finalCost = qty * price;
 
 	addText("Will you purchase " .. red(qty) .. " " .. blue(itemRef(item) .. "(s)") .. "? ");
-	addText(blue(itemRef(item)) " costs " .. price .. " per piece, so the total comes out to be " .. finalCost .. " mesos.");
+	addText(blue(itemRef(item)) .. " costs " .. price .. " per piece, so the total comes out to be " .. finalCost .. " mesos.");
 	answer = askYesNo();	
 
 	if answer == answer_yes then
