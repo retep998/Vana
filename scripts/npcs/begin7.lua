@@ -27,9 +27,9 @@ addText("Take this ship and you'll head off to a bigger continent.");
 addText(bold(" For 150 mesos") .. ", I'll take you to " .. blue("Victoria Island") .. ". ");
 addText("The thing is, once you leave this place, you can't ever come back. ");
 addText("What do you think? Do you want to go to Victoria Island?");
-yes = askYesNo();
+answer = askYesNo();
 
-if yes == 1 then
+if answer == answer_yes then
 	if getLevel() >= 7 then
 		if lucas then
 			addText("Okay, now give me 150 mesos... ");

@@ -17,5 +17,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mr. Moneybags
 
-addText("The event has ended. See you next year~");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+-- TODO FIXME implement
+
+addText("The event has ended. ");
+addText("See you next year~");
 sendNext();

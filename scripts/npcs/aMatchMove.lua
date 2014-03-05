@@ -41,9 +41,9 @@ if getLevel() >= 20 and getLevel() <= 30 then
 
 	addText(text .. " you interested in participating in The Ariant Coliseum Challenge?!\r\n");
 	addText(blue(choiceRef("I'd love to participate in this great competition.")));
-	what = askChoice();
+	choice = askChoice();
 
-	if what == 0 then
+	if choice == 0 then
 		addText("Okay, now I'll send you to the battle arena. ");
 		addText("I'd like to see you emerge victorious!");
 		sendNext();

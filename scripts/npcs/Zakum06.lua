@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Amon; Zakum's Altar bouncer
 
 dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 if getMap() == 280030000 then
 	-- Zakum's Altar
@@ -35,9 +36,9 @@ if getMap() == 280030000 then
 		addText(" for the rest of the day.");
 	end
 
-	yes = askYesNo();
+	answer = askYesNo();
 
-	if yes == 1 then
+	if answer == answer_yes then
 		if setInstance("zakum") then
 			revertInstance();
 		else
@@ -54,10 +55,11 @@ if getMap() == 280030000 then
 	end
 else
 	-- Maps 280020000 and 280020001, Zakum's jump quest
-	addText("Are you sure you want to quit and leave this place? Next time you come back in, you'll have to start all over again.");
-	yes = askYesNo();
+	addText("Are you sure you want to quit and leave this place? ");
+	addText("Next time you come back in, you'll have to start all over again.");
+	answer = askYesNo();
 
-	if yes == 1 then
+	if answer == answer_yes then
 		setMap(211042300); -- Door to Zakum
 	end
 end

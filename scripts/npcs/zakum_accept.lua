@@ -96,7 +96,7 @@ if not verifyInstance() then
 						addPlayerSignUp(getName());
 						setInstanceVariable("master", getName());
 						setInstanceVariable("gm", isGm());
-						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", env_blueMessage);
+						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
 						addText("You have been appointed the leader of the Zakum Expedition Squad. ");
 						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
@@ -159,7 +159,7 @@ else
 
 					banInstancePlayer(name);
 					if setPlayer(name) then
-						showMessage("The leader of the squad has entered you in the squad's Suspended List.", env_redMessage);
+						showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
 						revertPlayer();
 					end
 				end
@@ -227,7 +227,7 @@ else
 				else
 					addPlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has joined the expedition squad.", env_redMessage);
+						showMessage(getName() .. " has joined the expedition squad.", msg_red);
 						revertPlayer();
 					end
 					addText("You have been enrolled in the Zakum Expedition Squad.");
@@ -236,7 +236,7 @@ else
 				if isPlayerSignedUp(getName()) then
 					removePlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has withdrawn from the squad.", env_redMessage);
+						showMessage(getName() .. " has withdrawn from the squad.", msg_red);
 						revertPlayer();
 					end
 					addText("You have formally withdrawn from the squad.");
