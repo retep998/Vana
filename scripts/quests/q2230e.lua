@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
-addText("Hello, traveler. You have finally come to see me. Have you fulfilled your duties?\r\n\r\n");
+addText("Hello, traveler. You have finally come to see me. ");
+addText("Have you fulfilled your duties?\r\n\r\n");
 addText(blue(choiceRef("What duties? Who are you?")));
 askChoice();
 
