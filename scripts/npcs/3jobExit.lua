@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
-addText("You can use the " .. npcRef(1061010) .. " to go back to the real world. Are you sure you want to go back?");
+addText("You can use the " .. npcRef(1061010) .. " to go back to the real world. ");
+addText("Are you sure you want to go back?");
 answer = askYesNo();
 
 if answer == answer_yes then

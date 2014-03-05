@@ -36,7 +36,7 @@ if mapId == 924000000 then
 			sendNext();			
 		else
 			if destroyEquippedItem(item) then
-				showMessage("Shield for learning skill was removed.", env_redMessage);
+				showMessage("Shield for learning skill was removed.", msg_red);
 			end
 
 			if hasOpenSlotsFor(item, result) then
@@ -71,7 +71,7 @@ elseif mapId == 924000002 then
 	sendNext();
 
 	if destroyEquippedItem(item) then
-		showMessage("Shield for learning skill was removed.", env_redMessage);
+		showMessage("Shield for learning skill was removed.", msg_red);
 	end
 
 	setMap(240010400, "st00");

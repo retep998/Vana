@@ -23,7 +23,8 @@ map = getMap();
 if map == 0 then
 	addText("Welcome to the world of MapleStory. ");
 	addText("The purpose of this training camp is to help beginners. ");
-	addText("Would you like to enter this training camp? Some people start their journey without taking the training program. ");
+	addText("Would you like to enter this training camp? ");
+	addText("Some people start their journey without taking the training program. ");
 	addText("But I strongly recommend you take the training program first.");
 	answer = askYesNo();
 
