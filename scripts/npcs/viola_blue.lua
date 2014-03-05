@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- A Pile of Pink Flowers
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 -- TODO FIXME implement distance properly
 --You can't see the inside of the pile of flowers very well because you're too far. Go a little closer.
 
@@ -26,7 +28,8 @@ if isQuestActive(2053) then
 		giveItem(item, 20);
 		setMap(105040300);
 	else
-		addText("Sorry, but your etc. inventory is full. Please make some space and try again.");
+		addText("Sorry, but your etc. inventory is full. ");
+		addText("Please make some space and try again.");
 		sendNext();
 	end
 else
@@ -36,7 +39,8 @@ else
 		giveItem(item, 2);
 		setMap(105040300);
 	else
-		addText("Sorry, but your etc. inventory is full. Please make some space and try again.");
+		addText("Sorry, but your etc. inventory is full. ");
+		addText("Please make some space and try again.");
 		sendNext();
 	end
 end

@@ -17,23 +17,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Camel Cab
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if getMap() == 260020700 then
 	toMap = 260000000;
 elseif getMap() == 260020000 then
 	toMap = 261000000;
 end
 
-addText("Will you move to #b#m260000000##k now? The price is #b1500 mesos#k.");
-yes = askYesNo();
+addText("Will you move to " .. blue(mapRef(260000000)) .. " now? ");
+addText("The price is " .. blue("1500 mesos") .. ".");
+answer = askYesNo();
 
-if yes == 0 then
-	addText("Will you ride the #b#p2110005##k and move to #b#m" .. toMap .. "##k now? The price is #b1500 mesos#k.");
+if answer == answer_no then
+	addText("Will you ride the " .. blue(npcRef(2110005)) .. " and move to " .. blue(mapRef(toMap)) .. " now? ");
+	addText("The price is " .. blue("1500 mesos") .. ".");
 	sendNext();
 else
 	if giveMesos(-1500) then
 		setMap(toMap);
 	else
-		addText("I am sorry, but I think you are short on mesos. I am afraid I can't let you ride this if you do not have enough money to do so. Please come back when you have enough money to use this.");
+		addText("I am sorry, but I think you are short on mesos. ");
+		addText("I am afraid I can't let you ride this if you do not have enough money to do so. ");
+		addText("Please come back when you have enough money to use this.");
 		sendNext();
 	end
 end

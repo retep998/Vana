@@ -17,12 +17,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Scarf Snowman (Hill of Christmas exit)
 
-addText("Have you decorated your tree nicely? It's an interesting experience, to say the least, decorating a Christmas tree with other people. Don¡¯t cha think?  Oh yeah ... are you suuuuure you want to leave this place?");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 1 then
+addText("Have you decorated your tree nicely? ");
+addText("It's an interesting experience, to say the least, decorating a Christmas tree with other people. ");
+addText("Don¡¯t cha think?  ");
+addText("Oh yeah ... are you suuuuure you want to leave this place?");
+answer = askYesNo();
+
+if answer == answer_yes then
 	setMap(209000000);
 else
-	addText("You need more time decorating trees, huh? If you ever feel like leaving this place, feel free to come talk to me~");
+	addText("You need more time decorating trees, huh? ");
+	addText("If you ever feel like leaving this place, feel free to come talk to me~");
 	sendNext();
 end
