@@ -17,5 +17,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- One of the MANY Assassinate reactors
 
-showMessage("Dark Muscle Stone has been summoned.", env_redMessage);
+showMessage("Dark Muscle Stone has been summoned.", msg_red);
 spawnMobPos(9300091, -83, -198);

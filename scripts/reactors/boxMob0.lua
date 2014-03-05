@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Zakum Party Quest Chest
 
-showMessage("The monster is summoned.", env_redMessage);
+showMessage("The monster is summoned.", msg_red);
 spawnMob(9300004);
 spawnMob(9300004);
 spawnMob(9300004);
