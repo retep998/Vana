@@ -17,9 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Exit Signs in Shumi's jump quests
 
-addText("This device is connected to outside. Are you going to give up and leave this place? You'll have to start from scratch the next time you come in...");
-yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if yes == 1 then
+addText("This device is connected to outside. ");
+addText("Are you going to give up and leave this place? ");
+addText("You'll have to start from scratch the next time you come in...");
+answer = askYesNo();
+
+if answer == answer_yes then
 	setMap(103000100);
 end
