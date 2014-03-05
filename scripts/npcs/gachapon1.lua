@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Gachapon - Victoria Road : Henesys Market
 
 dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 items = {
 	2040001, 2041002, 2040805, 2040702, 2043802, 2040402, 2044505, 2044504, 2044605, 2044604,

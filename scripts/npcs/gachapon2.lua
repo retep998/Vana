@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Gachapon - Victoria Road : Ellinia
 
 dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 items = {
 	2043302, 2040002, 2043102, 2043002, 2044402, 2044302, 2043802, 2044002, 2041017, 2000004,

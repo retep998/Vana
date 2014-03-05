@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Gachapon - Victoria Road : Kerning City
 
 dofile("scripts/lua_functions/gachaponHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 items = {
 	1102082, 1102043, 1102041, 1102042, 1102040, 1002587, 1002394, 1002393, 1082147, 1082149,
