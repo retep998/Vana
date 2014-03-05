@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Carta
 
 dofile("scripts/lua_functions/jobFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/partyQuestHelper.lua");
 
 if isQuestActive(6301) then
@@ -26,7 +27,8 @@ if isQuestActive(6301) then
 			if getItemAmount(4000175) > 0 then
 				party = getAllPartyPlayerIds();
 				if getPartyId() == 0 then
-					addText("You don't have a  party. You can challenge with party.");
+					addText("You don't have a  party. ");
+					addText("You can challenge with party.");
 					sendOK();
 				else
 					fail = false;
@@ -51,24 +53,27 @@ if isQuestActive(6301) then
 							addPartyMembersToInstance();
 							moveLocalPartyMembersToMap(923000000);
 						else
-							addText("Other parties are challenging on quest clear now. Try again later.");
+							addText("Other parties are challenging on quest clear now. ");
+							addText("Try again later.");
 							sendOk();
 						end
 					end
 				end
 			else
-				addText("Without #b#t4000175##k, you can't enter Cracked Dimension.");
+				addText("Without " .. blue(itemRef(4000175)) .. ", you can't enter Cracked Dimension.");
 				sendOk();
 			end
 		else
-			addText("If you have 40 #b#t4031472##k, you need no more.");
+			addText("If you have 40 " .. blue(itemRef(4031472)) .. ", you need no more.");
 			sendOk();
 		end
 	else
-		addText("Only party leader can apply to enter. Please get your representative to talk to me.");
+		addText("Only party leader can apply to enter. ");
+		addText("Please get your representative to talk to me.");
 		sendOk();
 	end
 else
-	addText("Cracked Dimension? Where did you hear that?");
+	addText("Cracked Dimension? ");
+	addText("Where did you hear that?");
 	sendOk();
 end

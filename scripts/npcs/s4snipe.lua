@@ -18,19 +18,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Insignificant Being
 
 dofile("scripts/lua_functions/jobFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 if isQuestActive(6108) then
 	if getPartyId() == 0 then
-		addText("You don't have a  party. You can challenge with party.");
+		addText("You don't have a party. ");
+		addText("You can challenge with party.");
 		sendOk();
 	elseif isPartyLeader() then
 		members = getAllPartyPlayerIds();
 		if #members ~= 2 then
-			addText("You can make a quest when you have a party with two. Please make your party with two members.");
+			addText("You can make a quest when you have a party with two. ");
+			addText("Please make your party with two members.");
 			sendOk();
 		else
 			if not isPartyInLevelRange(120, 200) then
-				addText("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.");
+				addText("There is a character among your party whose level is not eligible. ");
+				addText("You should be level 120 above. ");
+				addText("Please adjust level.");
 				sendOk();
 			else
 				memberCount = 0
@@ -45,7 +50,8 @@ if isQuestActive(6108) then
 					end
 				end
 				if memberCount ~= 2 then
-					addText("You can't enter. Your party member's job is not Bow Master or Marksman or Your party doesn't consist of two members.");
+					addText("You can't enter. ");
+					addText("Your party member's job is not Bow Master or Marksman or Your party doesn't consist of two members.");
 					sendOk();
 				else
 					if not isInstance("snipe4th") then
@@ -56,7 +62,8 @@ if isQuestActive(6108) then
 						addInstanceParty(getPartyId());
 						warpParty(910500000);
 					else
-						addText("Other parties are challenging on quest clear now. Try again later.");
+						addText("Other parties are challenging on quest clear now. ");
+						addText("Try again later.");
 						sendOk();
 					end
 				end

@@ -17,12 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Moose entrance
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if isQuestActive(6180) then
-	addText("Good. I'll send you to shield training field. Talk to me again.");
+	addText("Good. ");
+	addText("I'll send you to shield training field. ");
+	addText("Talk to me again.");
 	sendNext();
 
 	setMap(924000000);
 else
-	addText("Shield training field? Where did you hear about it?");
+	addText("Shield training field? ");
+	addText("Where did you hear about it?");
 	sendOk();
 end

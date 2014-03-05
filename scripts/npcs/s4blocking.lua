@@ -17,22 +17,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Moose
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 mapId = getMap();
 item = 1092041;
 
 if mapId == 924000000 then
-	addText("I have to let you know one thing before sending you to the training field. You have to hold #b#t1092041##k that I gave you in shield training field. Otherwise, you're dead.");
+	addText("I have to let you know one thing before sending you to the training field. ");
+	addText("You have to hold " .. blue(itemRef(item)) .. " that I gave you in shield training field. ");
+	addText("Otherwise, you're dead.");
 	sendNext();
 
-	addText("Don't forget #rto hold shield#k before you get there!\r\n");
-	addText("#b#L0# I want to get #t1092041#.#l\r\n");
-	addText("#L1# Let me go in to #m924000001#.#l\r\n");
-	addText("#L2# Let me out.#l");
+	addText("Don't forget " .. red("to hold shield") .. " before you get there!\r\n");
+	addText(blue(choiceList({
+		" I want to get " .. itemRef(item) .. ".",
+		" Let me go in to " .. mapRef(924000001) .. ".",
+		" Let me out.",
+	})));
 	choice = askChoice();
 
 	if choice == 0 then
 		if getItemAmount(item) > 0 then
-			addText("You already have #t" .. item .. "##k. No need more.");
+			addText("You already have " .. blue(itemRef(item)) .. ". ");
+			addText("No need more.");
 			sendNext();			
 		else
 			if destroyEquippedItem(item) then
@@ -41,17 +48,20 @@ if mapId == 924000000 then
 
 			if hasOpenSlotsFor(item, result) then
 				giveItem(item, 1);
-				addText("I gave you #t" .. item .. "#. Check inventory. You have to be equipped with it!");
+				addText("I gave you " .. itemRef(item) .. ". ");
+				addText("Check inventory. ");
+				addText("You have to be equipped with it!");
 				sendNext();
 			else
-				addText("I couldn't give you #t" .. item .. "##k as there's no blank in Equipment box. ");
+				addText("I couldn't give you " .. blue(itemRef(item)) .. " as there's no blank in Equipment box. ");
 				addText("Make a blank and try again.");
 				sendNext();
 			end
 		end
 	elseif choice == 1 then
 		if isInstance("guardian") then
-			addText("Other characters are on request. You can't enter.");
+			addText("Other characters are on request. ");
+			addText("You can't enter.");
 			sendNext();
 		else
 			createInstance("guardian", 20 * 60, true);
@@ -62,12 +72,13 @@ if mapId == 924000000 then
 	end
 elseif mapId == 924000001 then
 	addText("Do you want to get out of here?");
-	verify = askYesNo();
-	if verify == 1 then
+	answer = askYesNo();
+	if answer == answer_yes then
 		setMap(924000002);
 	end
 elseif mapId == 924000002 then
-	addText("I'll let you out. You have to give #t1092041# back.");
+	addText("I'll let you out. ");
+	addText("You have to give " .. itemRef(item) .. " back.");
 	sendNext();
 
 	if destroyEquippedItem(item) then
