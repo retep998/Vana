@@ -337,7 +337,7 @@ auto ChatHandlerFunctions::initialize() -> void {
 	sCommandList["kill"] = command.addToMap();
 
 	command.command = &InfoFunctions::lookup;
-	command.syntax = "<${item | equip | use | etc | cash | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid | whatdrops | whatmaps | music | drops}> <$search | #id>";
+	command.syntax = "<${item | equip | use | setup | etc | cash | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid | whatdrops | whatmaps | music | drops}> <$search | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup");
 	command.notes.push_back("Searches that are based on ID: continent, id, scriptbyid, whatdrops, whatmaps, drops");

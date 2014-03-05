@@ -64,6 +64,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 		if (rawType == "item") type = 1;
 		else if (rawType == "equip") { type = 1; subType = 1; }
 		else if (rawType == "use") { type = 1; subType = 2; }
+		else if (rawType == "setup") { type = 1; subType = 3; }
 		else if (rawType == "etc") { type = 1; subType = 4; }
 		else if (rawType == "cash") { type = 1; subType = 5; }
 		else if (rawType == "skill") type = 2;
