@@ -20,7 +20,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
 
-if getJob() == 0 then
+questState = getPlayerVariable("third_job_advancement", true);
+if questState == 1 then
+	addText("Ah, I was waiting for you. ");
+	addText("I heard about you from " .. blue("Rene") .. " in Ossyria, and I'd actually like to test your strength. ");
+	addText("You will find a Door of Dimension deep inside the Cursed Temple in the heart of Victoria Island. ");
+	addText("Nobody but you can go into that passage. ");
+	addText("If you go into the passage, you'll face a clone of myself. ");
+	addText("Beat her and bring " .. blue(itemRef(4031059)) .. " to me.");
+	sendNext();
+
+	addText("Since she is a clone of myself, you can expect a tough battle ahead. ");
+	addText("She uses a number of special attacking skills unlike any you have ever seen, and it is your task to successfully take her down. ");
+	addText("There is a time limit in the secret passage, so it is crucial that you defeat her fast. ");
+	addText("I wish you the best of luck, and I hope you bring the " .. blue(itemRef(4031059)) .. " with you.");
+	sendBackNext();
+
+	setPlayerVariable("third_job_advancement", 2);
+elseif questState == 2 then
+	if getItemAmount(4031059) > 0 then
+		addText("Great work there. ");
+		addText("You have defeated my clone and brought " .. blue(itemRef(4031059)) .. " back safely. ");
+		addText("I'm impressed. ");
+		addText("This surely proves your strength. ");
+		addText("In terms of strength, you are ready to advance to 3rd job. ");
+		addText("As I promised, I will give " .. blue(itemRef(4031057)) .. " to you. ");
+		addText("Give this necklace to " .. blue("Rene") .. " in Ossyria and you will be able to take second the test of 3rd job advancement. ");
+		addText("Good luck~.");
+		sendNext();
+
+		giveItem(4031059, -1);
+		giveItem(4031057, 1);
+	else
+		addText("You will find a Door of Dimension deep inside the Cursed Temple in the heart of Victoria Island. ");
+		addText("Nobody but you can go into that passage. ");
+		addText("If you go into the passage, you will meet my clone. ");
+		addText("Beat her and bring " .. blue(itemRef(4031059)) .. " to me.");
+		sendNext();
+	end
+elseif getJob() == 0 then
 	addText("So you want to become the Bowman??? ");
 	addText("Well...you need to meet some requirements to do so...at least " .. blue("Level10") .. ". ");
 	addText("Let's see...hmm...");
@@ -214,40 +252,40 @@ elseif getJob() == 300 and getLevel() >= 30 then
 
 		choices = {
 			makeChoiceHandler("Please explain to me what being the Hunter is all about.", function()
-				addText("Ok. This is what being the Hunter is all about. Hunters have skills such as Bow Mastery and Bow Booster ");
-				addText("that enables you to use bows well. There's also a skill called Soul Arrow : Bow for the Hunters that waste ");
-				addText("quite a few arrows. It allows you to fire away arrows for a long period of time without actually wasting ");
-				addText("the arrows, so if you may have spent some mesos before on arrows, this may be just for you...");
+				addText("Ok. This is what being the Hunter is all about. ");
+				addText("Hunters have skills such as Bow Mastery and Bow Booster that enables you to use bows well. ");
+				addText("There's also a skill called Soul Arrow : Bow for the Hunters that waste quite a few arrows. ");
+				addText("It allows you to fire away arrows for a long period of time without actually wasting the arrows, so if you may have spent some mesos before on arrows, this may be just for you...");
 				sendNext();
 
-				addText("I'll explain to you more about one of the skills of the Hunter, #bPower Knock-Back#k. No one beats Hunter ");
-				addText("in terms of long-range attacks, but it's a whole different story when there's a lot of enemies or if you need ");
-				addText("to attack them up close. Therefore, it makes this skill very important to acquire. It allows you not only to strike ");
-				addText("the enemy up close, but also send multiple monsters far back. It's a very important skill to have to acquire ");
-				addText("some much-needed space.");
+				addText("I'll explain to you more about one of the skills of the Hunter, " .. blue("Power Knock-Back") .. ". ");
+				addText("No one beats Hunter in terms of long-range attacks, but it's a whole different story when there's a lot of enemies or if you need to attack them up close. ");
+				addText("Therefore, it makes this skill very important to acquire. It allows you not only to strike the enemy up close, but also send multiple monsters far back. ");
+				addText("It's a very important skill to have to acquire some much-needed space.");
 				sendBackNext();
 
-				addText("I'll explain to you the offensive skill of the Hunter, #bArrow Bomb : Bow#k. It's a skill that allows you to fire ");
-				addText("away arrows with bombs. If struck just right, the bomb will go off on the enemy, damaging those around it and ");
-				addText("temporarily knocking them out. Combine that skill with the Critical Shot, the first level skill, and the damage will be ");
-				addText("incredible. You should try becoming the Hunter for your job advancement.");
+				addText("I'll explain to you the offensive skill of the Hunter, " .. blue("Arrow Bomb : Bow") .. ". ");
+				addText("It's a skill that allows you to fire away arrows with bombs. ");
+				addText("If struck just right, the bomb will go off on the enemy, damaging those around it and temporarily knocking them out. ");
+				addText("Combine that skill with the Critical Shot, the first level skill, and the damage will be incredible. ");
+				addText("You should try becoming the Hunter for your job advancement.");
 				sendBackNext();
 			end),
 			makeChoiceHandler("Please explain to me what being the Crossbowman is all about.", function()
-				addText("Ok. This is what being the Crossbowman is all about. For the Crossbowman, skills like Crossbow Mastery and Crossbow Booster ");
-				addText("are available along with Soul Arrow : Bow for those who wastes the bows by shooting a lot and missing a lot. This skill enables ");
-				addText("the player to shoot the arrows for a long period of time without wasting the bows, so if you have been spending a lot of mesos ");
-				addText("on bows, you may want to check it out...");
+				addText("Ok. This is what being the Crossbowman is all about. ");
+				addText("For the Crossbowman, skills like Crossbow Mastery and Crossbow Booster are available along with Soul Arrow : Bow for those who wastes the bows by shooting a lot and missing a lot. ");
+				addText("This skill enables the player to shoot the arrows for a long period of time without wasting the bows, so if you have been spending a lot of mesos on bows, you may want to check it out...");
 				sendNext();
 
-				addText("Ok. One of the skills that the Crossbowman can have is #bPower Knock-Back#k. No one can approach the long-distance attacks of ");
-				addText("the Crossbowman, but it's a different story altogether when talking about close combats or facing lots of enemies at once. ");
-				addText("For that, this is a very important skill to acquire. It allows you to strike down the enemy with full force, sending ");
-				addText("a number of enemies far back in the process. A very important skill that provides you with some much-needed space.");
+				addText("Ok. One of the skills that the Crossbowman can have is " .. blue("Power Knock-Back") .. ". ");
+				addText("No one can approach the long-distance attacks of the Crossbowman, but it's a different story altogether when talking about close combats or facing lots of enemies at once. ");
+				addText("For that, this is a very important skill to acquire. ");
+				addText("It allows you to strike down the enemy with full force, sending a number of enemies far back in the process. ");
+				addText("A very important skill that provides you with some much-needed space.");
 				sendBackNext();
 
-				addText("Ok, I'll explain to you one of the attacking skills for the Crossbowman, #bIron Arrow : Crossbow#k. This skill enables ");
-				addText("you to attack multiple enemies, as the arrow that hits a monster will go through it and hit another monster behind one. ");
+				addText("Ok, I'll explain to you one of the attacking skills for the Crossbowman, " .. blue("Iron Arrow : Crossbow") .. ". ");
+				addText("This skill enables you to attack multiple enemies, as the arrow that hits a monster will go through it and hit another monster behind one. ");
 				addText("The damage decreases an arrow goes through an enemy, but it can still attack a number of enemies at once, a very Threaten skill to have. ");
 				addText("And...if it's combined with Critical Shot...that will be just incredible.");
 				sendBackNext();
