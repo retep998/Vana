@@ -28,6 +28,7 @@ addText(blue(choiceList({
 	"The platform to Hak that heads to Leafre",
 	"The platform to Hak that heads to Mu Lung",
 	"The platform to Geenie that heads to Ariant",
+	"The platform to Geenie that heads to Ereve",
 })));
 choice = askChoice();
 
@@ -48,6 +49,9 @@ elseif choice == 3 then
 elseif choice == 4 then
 	map = 200000150;
 	addText(" Will you move to the " .. blue("platform to Geenie that heads to Ariant"));
+elseif choice == 5 then
+	map = 200000160;
+	addText(" Will you move to the " .. blue("platform to Geenie that heads to Ereve"));
 end
 answer = askYesNo();
 
