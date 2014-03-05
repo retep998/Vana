@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Yellow Goblin
 
 spawnMob(7130400);
-showMapMessage("Here comes Yellow King Goblin!", env_blueMessage);
+showMapMessage("Here comes Yellow King Goblin!", msg_blue);
 reset();

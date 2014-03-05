@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Blue Goblin
 
 spawnMob(7130401);
-showMapMessage("Here comes Blue King Goblin!", env_blueMessage);
+showMapMessage("Here comes Blue King Goblin!", msg_blue);
 reset();

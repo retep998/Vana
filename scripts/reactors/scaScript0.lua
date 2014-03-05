@@ -18,5 +18,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Rocks at the top of Land of Wild Boar
 
 if (killMobs(3230301) + killMobs(3230300)) > 0 then
-	showMapMessage("Once the rock crumbled, Jr. Boogie was in great pain and disappeared..", env_blueMessage);
+	showMapMessage("Once the rock crumbled, Jr. Boogie was in great pain and disappeared..", msg_blue);
 end
