@@ -17,5 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Tombstone
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 addText("Looking for head, will return if unsuccessful. - Headless Horseman");
 sendOk();
