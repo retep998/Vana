@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Treasure Chest - Shumi's jump quest 2
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 -- TODO FIXME all Shumi quests need the 100-minute personal timer and possibly the distance requirement
 
 if isQuestActive(2056) then
@@ -46,7 +48,8 @@ else
 		giveItem(item, 2);
 		setMap(103000100);
 	else
-		addText("The item wasn't found because your etc. inventory is full. Make space for the item and try again.");
+		addText("The item wasn't found because your etc. inventory is full. ");
+		addText("Make space for the item and try again.");
 		sendNext();
 	end
 end

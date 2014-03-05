@@ -17,54 +17,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Jake - Subway Worker (Kerning City)
 
-site = {"construction site B1", "construction site B2", "construction site B3"};
-cost = {500, 1200, 2000};
+dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+
+function generateChoice(choiceText, mapText, price, item, area)
+	return makeChoiceData(choiceText, {mapText, price, item, area});
+end
+
+choices = {};
+
+if getLevel() >= 20 then
+	append(choices, generateChoice("Construction Site B1", "construction site B1", 500, 4031036, "Area 1"));
+end
+if getLevel() >= 30 then
+	append(choices, generateChoice("Construction Site B2", "construction site B2", 1200, 4031037, "Area 2"));
+end
+if getLevel() >= 40 then
+	append(choices, generateChoice("Construction Site B3", "construction site B3", 2000, 4031038, "Area 3"));
+end
 
 if getLevel() < 20 then
-	addText("You must purchase the ticket to enter. Once you have made the purchase, you can enter through The Ticket Gate on the right. What would you like to buy?");
+	addText("You must purchase the ticket to enter. ");
+	addText("Once you have made the purchase, you can enter through The Ticket Gate on the right. ");
+	addText("What would you like to buy?");
 	sendNext();
 else
-	addText("You must purchase the ticket to enter. Once you have made the purchase, you can enter through The Ticket Gate on the right. What would you like to buy?");
-	if getLevel() >= 20 then
-		addText("\r\n#L1##bConstruction Site B1#k#l");
-	end
-	if getLevel() >= 30 then
-		addText("\r\n#L2##bConstruction Site B2#k#l");
-	end
-	if getLevel() >= 40 then
-		addText("\r\n#L3##bConstruction Site B3#k#l");
-	end
+	addText("You must purchase the ticket to enter. ");
+	addText("Once you have made the purchase, you can enter through The Ticket Gate on the right. ");
+	addText("What would you like to buy?\r\n");
+	addText(blue(choiceList(choices)));
 	choice = askChoice();
 
-	addText("Will you purchase the ticket to #b" .. site[choice] .. "#k? It'll cost you " .. cost[choice] .. " mesos. Before making the purchase, please make sure you have an empty slot on your etc. inventory.");
-	yes = askYesNo();
+	data = selectChoice(choices, choice);
+	mapText, price, item, area = data[1], data[2], data[3], data[4];
 
-	if yes == 0 then
+	addText("Will you purchase the ticket to " .. blue(mapText) .. "? ");
+	addText("It'll cost you " .. price .. " mesos. ");
+	addText("Before making the purchase, please make sure you have an empty slot on your etc. inventory.");
+	answer = askYesNo();
+
+	if answer == answer_no then
 		addText("You can enter the premise once you have bought the ticket. ");
 		addText("I heard there are strange devices in there everywhere but in the end, rare precious items await you. ");
 		addText("So let me know if you ever decide to change your mind.");
 		sendOk();
 	else
-		item = 0;
-		text = "You can insert the ticket in the The Ticket Gate. I heard ";
-
-		if choice == 1 then
-			item = 4031036;
-			text = text .. "Area 1";
-		elseif choice == 2 then
-			item = 4031037;
-			text = text .. "Area 2";
-		elseif choice == 3 then
-			item = 4031038;
-			text = text .. "Area 3";
-		end
-
-		if (item == 0) or (getMesos() < cost[choice]) or not giveItem(item, 1) then
-			addText("Are you lacking mesos? Check and see if you have an empty slot on your etc. inventory or not.");
+		if item == nil or getMesos() < price or not giveItem(item, 1) then
+			addText("Are you lacking mesos? ");
+			addText("Check and see if you have an empty slot on your etc. inventory or not.");
 		else
-			giveMesos(-cost[choice]);
-			text = text .. " has some precious items available but with so many traps all over the place most come back out early. Please be safe.";
-			addText(text);
+			giveMesos(-price);
+
+			addText("You can insert the ticket in the The Ticket Gate. ");
+			addText("I heard " .. area .. " has some precious items available but with so many traps all over the place most come back out early. ");
+			addText("Please be safe.");
 		end
 		sendOk();
 	end
