@@ -17,43 +17,57 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Regular Cab (Perion cab)
 
-if getJob() == 0 then
-	prices = {120, 100, 80, 100};
-else
-	prices = {1200, 1000, 800, 1000};
+dofile("scripts/lua_functions/npcHelper.lua");
+
+function generateChoice(mapId, price)
+	return makeChoiceData(mapRef(mapId) .. "(" .. price .. " mesos) ", {mapId, price});
+end
+function getPrice(basePrice)
+	if getJob() == 0 then
+		return basePrice / 10;
+	end
+
+	return basePrice;
 end
 
-maps = {104000000, 101000000, 103000000, 100000000};
+choices = {
+	generateChoice(104000000, getPrice(1200)),
+	generateChoice(101000000, getPrice(1000)),
+	generateChoice(103000000, getPrice(800)),
+	generateChoice(100000000, getPrice(1000)),
+};
 
-addText("Hi! I drive the #p1022001#. If you want to go from town to town safely and fast, then ride our cab. We'll gladly take you to your destination with an affordable price.");
+addText("Hi! I drive the " .. npcRef(1022001) .. ". ");
+addText("If you want to go from town to town safely and fast, then ride our cab. ");
+addText("We'll gladly take you to your destination with an affordable price.");
 sendNext();
 
 if getJob() == 0 then
 	addText("We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.\r\n");
-	addText("#b#L0##m104000000#(120 mesos)#l\r\n");
-	addText("#L1##m101000000#(100 mesos)#l\r\n");
-	addText("#L2##m103000000#(80 mesos)#l\r\n");
-	addText("#L3##m100000000#(100 mesos)#l");
 else
 	addText("Choose your destination, for fees will change from place to place.\r\n");
-	addText("#b#L0##m104000000#(1,200 mesos)#l\r\n");
-	addText("#L1##m101000000#(1,000 mesos)#l\r\n");
-	addText("#L2##m103000000#(800 mesos)#l\r\n");
-	addText("#L3##m100000000#(1,000 mesos)#l");
 end
-where = askChoice() + 1;
+addText(blue(choiceList(choices)));
+choice = askChoice();
 
-addText("You don't have anything else to do here, huh? Do you really want to go to #b#m" .. maps[where] .. "##k? It'll cost you #b" .. prices[where] .. " mesos#k.");
-yes = askYesNo();
+data = selectChoice(choices, choice);
+mapId, price = data[1], data[2];
 
-if yes == 1 then
-	if giveMesos(-prices[where]) then
-		setMap(maps[where]);
+addText("You don't have anything else to do here, huh? ");
+addText("Do you really want to go to " .. blue(mapRef(mapId)) .. "? ");
+addText("It'll cost you " .. blue(price .. " mesos") .. ".");
+answer = askYesNo();
+
+if answer == answer_yes then
+	if giveMesos(-price) then
+		setMap(mapId);
 	else
-		addText("You don't have enough mesos. Sorry to say this, but without them, you won't be able to ride this cab.");
+		addText("You don't have enough mesos. ");
+		addText("Sorry to say this, but without them, you won't be able to ride this cab.");
 		sendOk();
 	end
 else
-	addText("There’s a lot to see in this town, too. Come back and find me when you need to go to a different town.");
+	addText("There's a lot to see in this town, too. ");
+	addText("Come back and find me when you need to go to a different town.");
 	sendOk();
 end
