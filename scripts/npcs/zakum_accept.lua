@@ -17,8 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Adobis that allows you to enter Zakum
 
-dofile("scripts/lua_functions/signupHelper.lua");
 dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/signupHelper.lua");
 
 function enterBossMap()
 	x = getMaxZakumBattles();
@@ -82,13 +83,13 @@ if not verifyInstance() then
 	if not isInstance("zakum") then
 		if isGm() or isPartyLeader() then
 			addText("Would you like to become the leader of the Zakum Expedition Squad?");
-			ans = askYesNo();
+			answer = askYesNo();
 
 			if verifyInstance() then
 				-- Check again, make sure that no glitches occur... in theory
 				addText("The expedition squad is already active.");
 			else
-				if ans == 1 then
+				if answer == answer_yes then
 					if not isGm() and (not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Zakum Expedition Squad.");
 					else
@@ -122,11 +123,14 @@ else
 				enterBossMap();
 			end
 		else
-			addText("Greetings, leader of the Zakum Expedition Squad. What would you like to do? \r\n");
-			addText("#b#L0# Check out the list of the Squad#l\r\n");
-			addText("#L1# Expel a member from the Squad#l\r\n");
-			addText("#L2# Re-accept a member from the Suspended List#l\r\n");
-			addText("#r#L3# Form the Squad and enter#l#k");
+			addText("Greetings, leader of the Zakum Expedition Squad. ");
+			addText("What would you like to do? \r\n");
+			addText(blue(choiceList({
+				" Check out the list of the Squad",
+				" Expel a member from the Squad",
+				" Re-accept a member from the Suspended List",
+				red(" Form the Squad and enter", previousBlue),
+			})));
 			choice = askChoice();
 
 			if not verifyMaster() then
@@ -142,14 +146,14 @@ else
 					sendOk();
 				else
 					getLinkedList();
-					banmember = askChoice();
+					choice = askChoice();
 
 					if not verifyMaster() then
 						return;
 					end
 
-					name = getInstancePlayerByIndex(banmember + 1);
-					addText("Are you sure you want to enter #b" + name + "#k in the Suspended List? ");
+					name = getInstancePlayerByIndex(choice + 1);
+					addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
 					addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
 					ban = askYesNo();
 
@@ -207,10 +211,13 @@ else
 			addText("The battle has already begun.");
 			sendOk();
 		else
-			addText("What would you like to do?\r\n#b");
-			addText("#L0# Enter the Zakum Expedition Squad#l\r\n");
-			addText("#L1# Leave the Zakum Expedition Squad#l\r\n");
-			addText("#L2# Check out the list of the Squad.#k");
+			addText("What would you like to do?\r\n");
+			addText(blue(choiceList({
+				" Enter the Zakum Expedition Squad",
+				" Leave the Zakum Expedition Squad",
+				" Check out the list of the Squad.",
+			})));
+
 			choice = askChoice();
 
 			if not verifyInstance() then
