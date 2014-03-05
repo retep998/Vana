@@ -17,49 +17,52 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Alcaster
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if isQuestCompleted(3035) then
-	local items = {
-		{2050003, 300, " that cures the state of being sealed and cursed"},
-		{2050004, 400, " that cures all"},
-		{4006000, 5000, ", possessing magical power, that is used for high-quality skills"},
-		{4006001, 5000, ", possessing the power of summoning that is used for high-quality skills"}
+	function generateChoice(itemId, price, effect)
+		return makeChoiceData(" " .. itemRef(itemId) .. "(Price : " .. price .. " mesos)", {itemId, price, effect});
+	end
+
+	choices = {
+		generateChoice(2050003, 300, " that cures the state of being sealed and cursed"),
+		generateChoice(2050004, 400, " that cures all"),
+		generateChoice(4006000, 5000, ", possessing magical power, that is used for high-quality skills"),
+		generateChoice(4006001, 5000, ", possessing the power of summoning that is used for high-quality skills"),
 	};
 
-	addText("Thanks to you #b#t4031056##k is safely sealed. ");
+	addText("Thanks to you " .. blue(itemRef(4031056)) .. " is safely sealed. ");
 	addText("Of course, also as a result, I used up about half of the power I have accumulated over the last 800 years or so...but now I can die in peace. ");
 	addText("Oh, by the way... are you looking for rare items by any chance? ");
 	addText("As a sign of appreciation for your hard work, I'll sell some items I have to you, and ONLY you. ");
 	addText("Pick out the one you want!\r\n");
-	addText("#L0# #b#t2050003#(Price : 300 mesos)#k#l\r\n");
-	addText("#L1# #b#t2050004#(Price : 400 mesos)#k#l\r\n");
-	addText("#L2# #b#t4006000#(Price : 5000 mesos)#k#l\r\n");
-	addText("#L3# #b#t4006001#(Price : 5000 mesos)#k#l\r\n");
-	choice = askChoice() + 1;
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
 
-	local itemId = items[choice][1];
-	local itemPrice = items[choice][2];
-	local itemDesc = items[choice][3];
+	data = selectChoice(choices, choice);
+	itemId, itemPrice, itemDesc = data[1], data[2], data[3];
 
-	addText("Is #b#t" .. itemId .. "##k really the item that you need? ");
+	addText("Is " .. blue(itemRef(itemId)) .. " really the item that you need? ");
 	addText("It's the item" .. itemDesc .. ". ");
 	addText("It may not be the easiest item to acquire, but I'll give you a good deal on it. ");
-	addText("It'll cost you #b" .. itemPrice .. " mesos#k per item. ");
+	addText("It'll cost you " .. blue(itemPrice .. " mesos") .. " per item. ");
 	addText("How many would you like to purchase?");
-	quantity = askNumber(1, 100);
+	quantity = askNumber(0, 1, 100);
 
 	local totalCost = itemPrice * quantity;
-	addText("Are you sure you want to buy #r" .. quantity .. " #t" .. itemId .. "##k? ");
-	addText("It'll cost you " .. itemPrice .. " mesos per #t" .. itemId .. "#, which will cost you #r" .. totalCost .. "#k mesos total.");
-	choice = askYesNo();
+	addText("Are you sure you want to buy " .. red(quantity .. " " .. itemRef(itemId)) .. "? ");
+	addText("It'll cost you " .. itemPrice .. " mesos per " .. itemRef(itemId) .. ", which will cost you " .. red(totalCost) .. " mesos total.");
+	answer = askYesNo();
 
-	if choice == 1 then
+	if answer == answer_yes then
 		if not hasOpenSlotsFor(itemId, quantity) or getMesos() < totalCost then
 			addText("Are you sure you have enough mesos? ");
-			addText("Please check and see if your etc. or use inventory is full, or if you have at least #r" .. totalCost .. "#k mesos.");
+			addText("Please check and see if your etc. or use inventory is full, or if you have at least " .. red(totalCost) .. " mesos.");
 			sendNext();
 		else
 			giveMesos(-totalCost);
 			giveItem(itemId, quantity);
+
 			addText("Thank you. ");
 			addText("If you ever find yourself needing items down the road, make sure to drop by here. ");
 			addText("I may have gotten old over the years, but I can still make magic items with ease.");
