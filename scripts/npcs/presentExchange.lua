@@ -17,35 +17,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Pila Present
 
-addText("How do I help you? \r\n");
-addText("#b#L0#I am about to finish my wedding and want to pick my presents which my friends gave to me.#l\r\n");
-addText("#L1#I have an #rOnyx Chest#k and want to ask for you to open it.#l\r\n");
-addText("#L2#I have an #rOnyx Chest for Bride and Groom#k and want to ask for you to open it.#l#k");
-value = askChoice();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if value == 0 then
+-- TODO FIXME implement marriage
+
+addText("How do I help you? \r\n");
+addText(blue(choiceList({
+	"I am about to finish my wedding and want to pick my presents which my friends gave to me.",
+	"I have an " .. red("Onyx Chest") .. " and want to ask for you to open it.",
+	"I have an " .. red("Onyx Chest for Bride and Groom") .. " and want to ask for you to open it.",
+})));
+choice = askChoice();
+
+if choice == 0 then
 	addText("You are currently not married.");
 	sendNext();
-elseif value == 1 then
-	addText("I've got some fabulous items ready for you. Are you ready to pick them out?");
-	yes = askYesNo();
+elseif choice == 1 then
+	addText("I've got some fabulous items ready for you. ");
+	addText("Are you ready to pick them out?");
+	answer = askYesNo();
 
-	if yes == 1 then
+	if answer == answer_yes then
 		addText("I don't think you have an Onyx Chest that I can open, kid...");
 		sendNext();
 	else
-		addText("Awww, really? I'm the only one who can open your Onyx Chest! I will be here and wait for you~");
+		addText("Awww, really? ");
+		addText("I'm the only one who can open your Onyx Chest! ");
+		addText("I will be here and wait for you~");
 		sendNext();
 	end
-elseif value == 2 then
-	addText("I've got some fabulous items ready for you. Are you ready to pick them out?");
-	yes = askYesNo();
+elseif choice == 2 then
+	addText("I've got some fabulous items ready for you. ");
+	addText("Are you ready to pick them out?");
+	answer = askYesNo();
 
-	if yes == 1 then
-		addText("I don't think you have an #rOnyx Chest for Bride and Groom#k that I can open, kid...");
+	if answer == answer_yes then
+		addText("I don't think you have an " .. red("Onyx Chest for Bride and Groom") .. " that I can open, kid...");
 		sendNext();
 	else
-		addText("Awww, really? I'm the only one who can open your Onyx Chest! I will be here and wait for you~");
+		addText("Awww, really? ");
+		addText("I'm the only one who can open your Onyx Chest! ");
+		addText("I will be here and wait for you~");
 		sendOk();
 	end
 end
