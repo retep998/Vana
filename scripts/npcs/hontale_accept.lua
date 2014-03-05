@@ -17,8 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Horntail Squad
 
-dofile("scripts/lua_functions/signupHelper.lua");
 dofile("scripts/lua_functions/bossHelper.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
+dofile("scripts/lua_functions/signupHelper.lua");
 
 function enterBossMap()
 	x = getMaxHorntailBattles();
@@ -97,8 +98,8 @@ if not isInstance("horntailSignup") then
 		else
 			if isGm() or isPartyLeader() then
 				addText("Would you like to become the leader of the Horntail Expedition Squad?");
-				ans = askYesNo();
-				if ans == 1 then
+				answer = askYesNo();
+				if answer == answer_yes then
 					if not isGm() and (not isPartyInLevelRange(80, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Horntail Expedition Squad.");
 					else
@@ -106,7 +107,7 @@ if not isInstance("horntailSignup") then
 						addPlayerSignUp(getName());
 						setInstanceVariable("master", getName());
 						setInstanceVariable("gm", isGm());
-						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", 6);
+						showMapMessage(getName() .. " has been appointed the leader of the Zakum Expedition Squad. To those willing to participate in the Expedition Squad, APPLY NOW!", msg_blue);
 
 						addText("You have been appointed the leader of the Horntail Expedition Squad. ");
 						addText("You'll now have 5 minutes to form the squad and have every member enter the mission.");
@@ -133,11 +134,14 @@ else
 				enterBossMap();
 			end
 		else
-			addText("Greetings, leader of the Horntail Expedition Squad. What would you like to do? \r\n");
-			addText("#b#L0# Check out the list of the Squad#l\r\n");
-			addText("#L1# Expel a member from the Squad#l\r\n");
-			addText("#L2# Re-accept a member from the Suspended List#l\r\n");
-			addText("#r#L3# Form the Squad and enter#l#k");
+			addText("Greetings, leader of the Horntail Expedition Squad. ");
+			addText("What would you like to do? \r\n");
+			addText(blue(choiceList({
+				" Check out the list of the Squad",
+				" Expel a member from the Squad",
+				" Re-accept a member from the Suspended List",
+				red(" Form the Squad and enter", previousBlue),
+			})));
 			choice = askChoice();
 
 			if not verifyMaster() then
@@ -153,14 +157,14 @@ else
 					sendOk();
 				else
 					getLinkedList();
-					banMember = askChoice();
+					choice = askChoice();
 
 					if not verifyMaster() then
 						return;
 					end
 
-					name = getInstancePlayerByIndex(banMember + 1);
-					addText("Are you sure you want to enter #b" + name + "#k in the Suspended List? ");
+					name = getInstancePlayerByIndex(choice + 1);
+					addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
 					addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
 					ban = askYesNo();
 
@@ -170,7 +174,7 @@ else
 
 					banInstancePlayer(name);
 					if setPlayer(name) then
-						showMessage("The leader of the squad has entered you in the squad's Suspended List.", m_red);
+						showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
 						revertPlayer();
 					end
 				end
@@ -218,10 +222,12 @@ else
 			addText("The battle has already begun.");
 			sendOk();
 		else
-			addText("What would you like to do?\r\n#b");
-			addText("#L0# Enter the Zakum Expedition Squad#l\r\n");
-			addText("#L1# Leave the Zakum Expedition Squad#l\r\n");
-			addText("#L2# Check out the list of the Squad.#k");
+			addText("What would you like to do?\r\n");
+			addText(blue(choiceList({
+				" Enter the Horntail Expedition Squad",
+				" Leave the Horntail Expedition Squad",
+				" Check out the list of the Squad.",
+			})));
 			choice = askChoice();
 
 			if not verifyInstance() then
@@ -238,7 +244,7 @@ else
 				else
 					addPlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has joined the expedition squad.", m_red);
+						showMessage(getName() .. " has joined the expedition squad.", msg_red);
 						revertPlayer();
 					end
 					addText("You have been enrolled in the Horntail Expedition Squad.");
@@ -247,7 +253,7 @@ else
 				if isPlayerSignedUp(getName()) then
 					removePlayerSignUp(getName());
 					if setPlayer(getInstanceVariable("master")) then
-						showMessage(getName() .. " has withdrawn from the squad.", m_red);
+						showMessage(getName() .. " has withdrawn from the squad.", msg_red);
 						revertPlayer();
 					end
 					addText("You have formally withdrawn from the squad.");
