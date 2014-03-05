@@ -22,9 +22,9 @@ dofile("scripts/lua_functions/bossHelper.lua");
 if not isGm() and not isPapChannel() then
 	channels = getPapChannels();
 	if #channels == 0 then
-		showMessage("You may not battle Papulatus at this time.", env_redMessage);
+		showMessage("You may not battle Papulatus at this time.", msg_red);
 	else
-		showMessage("You may only battle Papulatus on " .. getChannelString(channels) .. ".", env_redMessage);
+		showMessage("You may only battle Papulatus on " .. getChannelString(channels) .. ".", msg_red);
 	end
 	return;
 end
@@ -34,19 +34,19 @@ if isGm() or getItemAmount(4031172) > 0 then -- Medal
 		if isGm() or isInstance("papulatus") == false then
 			x = getMaxPapBattles();
 			if not isGm() or x == 0 then
-				showMessage("You may not battle Papulatus at this time.", env_redMessage);
+				showMessage("You may not battle Papulatus at this time.", msg_red);
 			else
 				if isGm() or enterBoss("Papulatus", x) then
 					playPortalSe();
 					setMap(220080001, "st00");
 				else
-					showMessage("You can only enter The Origin of Clocktower " .. x .. " " .. timeString(x) .. " a day.", env_redMessage);
+					showMessage("You can only enter The Origin of Clocktower " .. x .. " " .. timeString(x) .. " a day.", msg_red);
 				end
 			end
 		else
-			showMessage("The battle with Papulatus has already begun, so you cannot enter this place.", env_redMessage);
+			showMessage("The battle with Papulatus has already begun, so you cannot enter this place.", msg_red);
 		end
 	else
-		showMessage("The room is already in full capacity with people battling against Papulatus.", env_redMessage);
+		showMessage("The room is already in full capacity with people battling against Papulatus.", msg_red);
 	end
 end

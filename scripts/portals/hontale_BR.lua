@@ -30,7 +30,7 @@ else
 end
 
 if map == 0 then
-	showMessage("The portal doesn't work now.", env_redMessage);
+	showMessage("The portal doesn't work now.", msg_red);
 else
 	playPortalSe();
 	setMap(map);

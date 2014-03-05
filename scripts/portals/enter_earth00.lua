@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Warp from Nautilus to Omega Sector
 
 if getItemAmount(4031890) == 0 then
-	showMessage("You need a Warp Card to use the warp machine.", env_redMessage);
+	showMessage("You need a Warp Card to use the warp machine.", msg_red);
 else
 	giveItem(4031890, -1);
 	playPortalSe();

@@ -24,8 +24,8 @@ if isQuestActive(2073) then
 		playPortalSe();
 		setMap(900000000);
 	else
-		showMessage("It seems like someone already has visited Yoota's Farm.", env_redMessage);
+		showMessage("It seems like someone already has visited Yoota's Farm.", msg_red);
 	end
 else
-	showMessage("There's a door that'll lead me somewhere, but I can't seem to get in there.", env_redMessage);
+	showMessage("There's a door that'll lead me somewhere, but I can't seem to get in there.", msg_red);
 end

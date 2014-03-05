@@ -27,7 +27,7 @@ if not rightHead then
 	gm = isGm();
 	gmInstance = getInstanceVariable("gm");
 	if gm == gmInstance then
-		showMessage("The enormous creature is approaching from the deep cave.", env_blueMessage);
+		showMessage("The enormous creature is approaching from the deep cave.", msg_blue);
 		setReactorState(getMap(), 2408003, 0);
 		spawnMobPos(8810025, -350, 220);
 		setInstanceVariable("righthead", true);

@@ -25,15 +25,15 @@ if isQuestActive(6241) or isQuestActive(6243) then
 			addInstancePlayer(getId());
 			setMap(924000100);
 		else
-			showMessage("Other characters are on request. You can't enter.", env_redMessage);
+			showMessage("Other characters are on request. You can't enter.", msg_red);
 		end
 	else
 		if isQuestActive(6241) then
-			showMessage("You don't have Phoenix's Egg. You can't enter.", env_redMessage);
+			showMessage("You don't have Phoenix's Egg. You can't enter.", msg_red);
 		else
-			showMessage("You don't have Freezer's Egg. You can't enter.", env_redMessage);
+			showMessage("You don't have Freezer's Egg. You can't enter.", msg_red);
 		end
 	end
 else
-	showMessage("You can't enter sealed place.", env_redMessage);
+	showMessage("You can't enter sealed place.", msg_red);
 end

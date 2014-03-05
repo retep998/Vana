@@ -21,5 +21,5 @@ if getNumPlayers(240020401) < 6 then
 	playPortalSe();
 	setMap(240020401, "out00");
 else
-	showMessage("You may not enter Manon's Forest.", env_redMessage);
+	showMessage("You may not enter Manon's Forest.", msg_red);
 end
