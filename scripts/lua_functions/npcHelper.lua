@@ -28,6 +28,9 @@ previousRed = 2;
 previousGreen = 3;
 previousPurple = 4;
 
+previousNormal = 0;
+previousBold = 1;
+
 function processTextColor(text, previous, directive)
 	returnText = directive;
 	if text ~= nil then
@@ -39,6 +42,19 @@ function processTextColor(text, previous, directive)
 		elseif previous == previousGreen then returnText = returnText .. "#g";
 		elseif previous == previousPurple then returnText = returnText .. "#d";
 		else returnText = returnText .. "#k";
+		end
+	end
+	return returnText;
+end
+
+function processTextQuality(text, previous, directive)
+	returnText = directive;
+	if text ~= nil then
+		returnText = returnText .. text;
+	end
+	if previous ~= nil then
+		if previous == previousBold then returnText = returnText .. "#e";
+		else returnText = returnText .. "#n";
 		end
 	end
 	return returnText;
@@ -76,12 +92,15 @@ function purple(text, previousColor)
 	return processTextColor(text, previousColor, "#d");
 end
 
-function bold(text)
-	return "#e" .. text .. "#n";
+function bold(text, previousQuality)
+	if previousQuality == nil then
+		previousQuality = previousNormal;
+	end
+	return processTextQuality(text, previousQuality, "#e");
 end
 
-function normal(text)
-	return "#n" .. text;
+function normal(text, previousQuality)
+	return processTextQuality(text, previousQuality, "#n");
 end
 
 function fileRef(text)
