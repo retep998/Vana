@@ -18,10 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Bomack (NLC Cosmetic Eyes, Regular)
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
-addText("What's up! I'm Bomack. If you use the regular coupon, you'll be hooked up with a random pair of cosmetic lenses. You wanna use #b#t5152035##k and go forward with the procedure?");
-yes = askYesNo();
-if yes == 1 then
+addText("What's up! ");
+addText("I'm Bomack. ");
+addText("If you use the regular coupon, you'll be hooked up with a random pair of cosmetic lenses. ");
+addText("You wanna use " .. blue(itemRef(5152035)) .. " and go forward with the procedure?");
+answer = askYesNo();
+
+if answer == answer_yes then
 	newEyes = {};
 	getEyeColour(newEyes);
 	if getItemAmount(5152035) > 0 then
@@ -30,11 +35,14 @@ if yes == 1 then
 		addText("Enjoy your new and improved cosmetic lenses!");
 		sendNext();
 	else
-		addText("Ah, it looks like you don't have the right coupon for this place. Sorry, but that means it's a no-go with the procedure. ");
+		addText("Ah, it looks like you don't have the right coupon for this place. ");
+		addText("Sorry, but that means it's a no-go with the procedure. ");
 		sendNext();
 	end
-
 else
-	addText("For real? Nah, that's fine. Some people get the cold feet, I can sympathize. When you decide to make the change, you just let me know.");
+	addText("For real? ");
+	addText("Nah, that's fine. ");
+	addText("Some people get the cold feet, I can sympathize. ");
+	addText("When you decide to make the change, you just let me know.");
 	sendNext();
 end

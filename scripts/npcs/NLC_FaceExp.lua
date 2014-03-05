@@ -17,26 +17,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NLC EXP eyes
 
-if getGender() == 0 then
+dofile("scripts/lua_functions/npcHelper.lua");
+
+if getGender() == gender_male then
 	face = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20008, 20023};
 else
 	face = {21001, 21002, 21003, 21004, 21005, 21006, 21008, 21012, 21022};
 end
 
-addText("If you use the regular coupon, your face may transform into a random new look...do you still want to do it using #b#t5152033##k?");
-yes = askYesNo();
+addText("If you use the regular coupon, your face may transform into a random new look...do you still want to do it using " .. blue(itemRef(5152033)) .. "?");
+answer = askYesNo();
 
-if yes == 1 then
+if answer == answer_yes then
 	if getItemAmount(5152033) > 0 then
 		giveItem(5152033, -1);
 		setStyle(face[getRandomNumber(#face)]);
 		addText("Enjoy!");
 		sendNext();
 	else
-		addText("Hmm ... it looks like you don't have the coupon specifically for this place. Sorry to say this, but without the coupon, there's no plastic surgery for you.");
+		addText("Hmm ... it looks like you don't have the coupon specifically for this place. ");
+		addText("Sorry to say this, but without the coupon, there's no plastic surgery for you.");
 		sendNext();
 	end
 else
-	addText("I see ... take your time, see if you really want it. Let me know when you make up your mind.");
+	addText("I see ... take your time, see if you really want it. ");
+	addText("Let me know when you make up your mind.");
 	sendNext();
 end

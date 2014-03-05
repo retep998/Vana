@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- NLC Ticket Gate, collects tickets for NLC Subway
 
 dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
 basicTicket = getItemAmount(4031712);
 regularTicket = getItemAmount(4031713);
@@ -25,9 +26,11 @@ regularTicket = getItemAmount(4031713);
 addText("Here's the ticket reader. ");
 
 if regularTicket > 0 or basicTicket > 0 then
-	 addText("You will be brought in immediately. Which ticket would you like to use?\r\n");
-	if basicTicket > 0 then addText("#b#L0#New Leaf city (Basic)#l#k\r\n");
-	elseif regularTicket > 0 then addText("#b#L0#New Leaf city (Normal)#l#k\r\n");
+	addText("You will be brought in immediately. ");
+	addText("Which ticket would you like to use?\r\n");
+
+	if basicTicket > 0 then addText(blue(choiceRef("New Leaf city (Basic)"))));
+	elseif regularTicket > 0 then addText(blue(choiceRef("New Leaf city (Normal)")));
 	end
 
 	choice = askChoice();
@@ -36,13 +39,20 @@ if regularTicket > 0 or basicTicket > 0 then
 			minutesRemaining = getInstanceMinutes();
 
 			if minutesRemaining == 0 then
-				addText("We will begin boarding 5 minutes before the takeoff. Please be patient and wait for a few minutes. Be aware that the subway will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
+				addText("We will begin boarding 5 minutes before the takeoff. ");
+				addText("Please be patient and wait for a few minutes. ");
+				addText("Be aware that the subway will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
 				sendNext();
 			elseif minutesRemaining == 1 then
-	      		addText("This subway is getting ready for takeoff. I'm sorry, but you'll have to get on the next ride. The ride schedule is available through the usher at the ticketing booth.");
+	      		addText("This subway is getting ready for takeoff. ");
+				addText("I'm sorry, but you'll have to get on the next ride. ");
+				addText("The ride schedule is available through the usher at the ticketing booth.");
 				sendNext();
 			else
-				addText("It looks like there's plenty of room for this ride. Please have your ticket ready so I can let you in. The ride will be long, but you'll get to your destination just fine. What do you think? Do you want to get on this ride?");
+				addText("It looks like there's plenty of room for this ride. ");
+				addText("Please have your ticket ready so I can let you in. ");
+				addText("The ride will be long, but you'll get to your destination just fine. ");
+				addText("What do you think? Do you want to get on this ride?");
 				yes = askYesNo();
 
 				if yes == 1 then
@@ -60,7 +70,9 @@ if regularTicket > 0 or basicTicket > 0 then
 
 			revertInstance();
 		else
-			addText("We will begin boarding 5 minutes before the takeoff. Please be patient and wait for a few minutes. Be aware that the subway will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
+			addText("We will begin boarding 5 minutes before the takeoff. ");
+			addText("Please be patient and wait for a few minutes. ");
+			addText("Be aware that the subway will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
 			sendNext();
 		end
 	end
