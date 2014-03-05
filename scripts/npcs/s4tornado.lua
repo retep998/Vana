@@ -17,10 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Maple leaf bubble thing on top of guild HQ
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 if isQuestActive(6230) and getItemAmount(4031456) == 0 and getItemAmount(4031476) > 0 then
 	giveItem(4031476, -1);
 	if not giveItem(4031456, 1) then
-		addText("Maple Marble can't be earned as there's no blank on Others window. Make a blank and try again.");
+		addText("Maple Marble can't be earned as there's no blank on Others window. ");
+		addText("Make a blank and try again.");
 	else
 		addText("Maple leaves were absorbed into sparkling glass marble.");
 	end
