@@ -18,35 +18,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Ari (EXP hair and color - NLC)
 
 dofile("scripts/lua_functions/beautyFunctions.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
-if getGender() == 0 then
+if getGender() == gender_male then
 	hairs = {30400, 30360, 30440, 30410, 30200, 30050, 30230, 30160, 30110, 30250};
-elseif getGender() == 1 then
+elseif getGender() == gender_female then
 	hairs = {31560, 31720, 31450, 31150, 31160, 31300, 31260, 31220, 31410, 31270};
 end
 
-addText("I'm Brittany the assistant. If you have #b#t5150030##k or #b#t5151025##k by any chance, then how about letting me change your hairdo?\r\n");
-addText("#b#L0# Haircut(EXP coupon)#l\r\n");
-addText("#L2# Dye your hair(REG coupon)#l");
-what = askChoice();
+addText("I'm Brittany the assistant. ");
+addText("If you have " .. blue(itemRef(5150030)) .. " or " .. blue(itemRef(5151025)) .. " by any chance, then how about letting me change your hairdo?\r\n");
+addText(blue(choiceList({
+	" Haircut(EXP coupon)",
+	" Dye your hair(REG coupon)",
+})));
+choice = askChoice();
 
-if what == 0 then
+if choice == 0 then
 	item = 5150030;
-	addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. Are you going to use #b#t5150030##k and really change your hairstyle?");
-elseif what == 2 then
+	addText("If you use the EXP coupon your hair will change RANDOMLY with a chance to obtain a new experimental style that even you didn't think was possible. ");
+	addText("Are you going to use " .. blue(itemRef(item)) .. " and really change your hairstyle?");
+elseif choice == 1 then
 	item = 5151025;
-	addText("If you use a regular coupon your hair will change RANDOMLY. Do you still want to use #b#t5151025##k and change it up?");
+	addText("If you use a regular coupon your hair will change RANDOMLY. ");
+	addText("Do you still want to use " .. blue(itemRef(item)) .. " and change it up?");
 end
-yes = askYesNo();
+answer = askYesNo();
 
-if yes == 1 then
+if answer == answer_yes then
 	if getItemAmount(item) > 0 then
 		giveItem(item, -1);
 		giveRandomHair(hairs);
 		addText("Enjoy!");
 		sendOk();
 	else
-		addText("Hmmm...it looks like you don't have our designated coupon...I'm afraid I can't give you a haircut without it. I'm sorry.");
+		addText("Hmmm...it looks like you don't have our designated coupon...");
+		addText("I'm afraid I can't give you a haircut without it. ");
+		addText("I'm sorry.");
 		sendNext();
 	end
 else

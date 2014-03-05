@@ -17,7 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- NLC VIP eyes
 
-if getGender() == 0 then
+dofile("scripts/lua_functions/npcHelper.lua");
+
+if getGender() == gender_male then
 	face = {20000, 20001, 20002, 20003, 20004, 20005, 20006, 20008, 20023};
 else
 	face = {21001, 21002, 21003, 21004, 21005, 21006, 21008, 21012, 21022};
@@ -26,7 +28,12 @@ end
 -- Get player's eyes to get the face
 eye = getEyes();
 
-addText("Let's see... I can totally transform your face into something new. Don't you want to try it? For #b#t5152034##k, you can get the face of your liking. Take your time in choosing the face of your preference...");
+addText("Let's see... ");
+addText("I can totally transform your face into something new. ");
+addText("Don't you want to try it? ");
+addText("For " .. blue(itemRef(5152034)) .. ", you can get the face of your liking. ");
+addText("Take your time in choosing the face of your preference...");
+
 current = eye - (eye % 10000);
 newFace = {};
 for i = 0, #face do

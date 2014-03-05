@@ -18,6 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Bell, warps to/from Kerning and NLC
 -- Originally programmed by Biscuit
 
+dofile("scripts/lua_functions/npcHelper.lua");
+
 map = getMap();
 cost = 5000;
 item = nil;
@@ -31,10 +33,11 @@ if isBasicTicket() then
 end
 
 if map == 103000100 then
-	addText("Hi, I can take you to New Leaf City (NLC) for only #b" .. cost .. " mesos#k. Would you like to go?");
-	yes = askYesNo();
+	addText("Hi, I can take you to New Leaf City (NLC) for only " .. blue(cost .. " mesos") .. ". ");
+	addText("Would you like to go?");
+	answer = askYesNo();
 
-	if yes == 1 then
+	if answer == answer_yes then
 		if isBasicTicket() then item = 4031710;
 		else item = 4031711;
 		end
@@ -43,10 +46,11 @@ if map == 103000100 then
 		sendOk();
 	end
 elseif map == 600010001 then
-	addText("Hi, I can take you back to Kerning City for only #b" .. cost .. " mesos#k. Would you like to go?");
-	yes = askYesNo();
+	addText("Hi, I can take you back to Kerning City for only " .. blue(cost .. " mesos") .. ". ");
+	addText("Would you like to go?");
+	answer = askYesNo();
 
-	if yes == 1 then
+	if answer == answer_yes then
 		if isBasicTicket() then item = 4031712;
 		else item = 4031713;
 		end
@@ -56,9 +60,9 @@ elseif map == 600010001 then
 	end
 elseif map == 600010004 then
 	addText("Do you want to go back to Kerning City subway station now?");
-	yes = askYesNo();
+	answer = askYesNo();
 
-	if yes == 0 then
+	if answer == answer_no then
 		addText("Okay, Please wait~!");
 		sendNext();
 	else
@@ -66,9 +70,9 @@ elseif map == 600010004 then
 	end
 elseif map == 600010002 then
 	addText("Do you want to go back to New Leaf City subway station now?");
-	yes = askYesNo();
+	answer = askYesNo();
 
-	if yes == 0 then
+	if answer == answer_no then
 		addText("Okay, Please wait~!");
 		sendNext();
 	else
@@ -80,7 +84,8 @@ if item then
 	if hasOpenSlotsFor(item, 1) and giveMesos(-cost) then
 		giveItem(item, 1);
 	else
-		addText("I'm sorry, but you don't have enough money. It costs #b" .. cost .. " Mesos#k. ");
+		addText("I'm sorry, but you don't have enough money. ");
+		addText("It costs " .. blue(cost .. " Mesos") .. ". ");
 		sendOk();
 	end
 end
