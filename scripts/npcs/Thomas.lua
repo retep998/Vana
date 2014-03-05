@@ -17,12 +17,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Thomas Swift (warps to/from Amoria)
 
-if getMap() == 100000000 then
-	addText("I can take you to Amoria Village. Are you ready to go?");
-	yes = askYesNo();
+dofile("scripts/lua_functions/npcHelper.lua");
 
-	if yes == 1 then
-		addText("I hope you had a great time! See you around!");
+if getMap() == 100000000 then
+	addText("I can take you to Amoria Village. ");
+	addText("Are you ready to go?");
+	answer = askYesNo();
+
+	if answer == answer_yes then
+		addText("I hope you had a great time! ");
+		addText("See you around!");
 		sendNext();
 
 		setMap(680000000);
@@ -31,11 +35,13 @@ if getMap() == 100000000 then
 		sendOk();
 	end
 else
-	addText("I can take you back to your original location. Are you ready to go?");
-	yes = askYesNo();
+	addText("I can take you back to your original location. ");
+	addText("Are you ready to go?");
+	answer = askYesNo();
 
-	if yes == 1 then
-		addText("I hope you had a great time! See you around!");
+	if answer == answer_yes then
+		addText("I hope you had a great time! ");
+		addText("See you around!");
 		sendNext();
 
 		setMap(100000000);
