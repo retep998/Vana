@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 if getItemAmount(4031346) > 0 then
 	giveItem(4031346, -1);
 
-	showMessage("The Magical Seed is spent and you are transferred to somewhere.", env_redMessage);
+	showMessage("The Magical Seed is spent and you are transferred to somewhere.", msg_red);
 	playPortalSe();
 
 	if getMap() == 240010100 then
@@ -29,5 +29,5 @@ if getItemAmount(4031346) > 0 then
 		setMap(240010100, "elli00");
 	end
 else
-	showMessage("Magic Seed is needed to go through the portal.", env_redMessage);
+	showMessage("Magic Seed is needed to go through the portal.", msg_red);
 end

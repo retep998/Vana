@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if isQuestActive(6134) then
 	if getItemAmount(4031448) > 0 then
-		showMessage("You won over the darkness. Darkness doesn't admit you.", env_redMessage);
+		showMessage("You won over the darkness. Darkness doesn't admit you.", msg_red);
 	else
 		if not isInstance("resurrectionDark4th") then
 			createInstance("resurrectionDark4th", 20 * 60, true);
@@ -27,9 +27,9 @@ if isQuestActive(6134) then
 			playPortalSe();
 			setMap(922020000);
 		else
-			showMessage("The door is locked. You can't enter.", env_redMessage);
+			showMessage("The door is locked. You can't enter.", msg_red);
 		end
 	end
 else
-	showMessage("You feel fear over the door. You can't enter. The door is locked.", env_redMessage);
+	showMessage("You feel fear over the door. You can't enter. The door is locked.", msg_red);
 end

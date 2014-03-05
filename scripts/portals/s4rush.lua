@@ -22,14 +22,14 @@ dofile("scripts/lua_functions/jobFunctions.lua");
 if isQuestActive(6110) then
 	gm = isGm()
 	if not (gm or getPartyId() ~= 0) then
-		showMessage("You don't have a  party. You can challenge with party.", env_redMessage);
+		showMessage("You don't have a  party. You can challenge with party.", msg_red);
 	elseif gm or isPartyLeader() then
 		members = getAllPartyPlayerIds();
 		if not (gm or #members == 2) then
-			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", env_redMessage);
+			showMessage("You can make a quest when you have a party with two. Please make your party with two members.", msg_red);
 		else
 			if not (gm or isPartyInLevelRange(120, 200)) then
-				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", env_redMessage);
+				showMessage("There is a character among your party whose level is not eligible. You should be level 120 above. Please adjust level.", msg_red);
 			else
 				memberCount = 0
 				mapId = getMap();
@@ -44,7 +44,7 @@ if isQuestActive(6110) then
 					end
 				end
 				if not (gm or memberCount == 2) then
-					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", env_redMessage);
+					showMessage("You can't enter. Your party member's job is not Warrior or Your party doesn't consist of two members.", msg_red);
 				else
 					if not isInstance("rush4th") then
 						createInstance("rush4th", 20 * 60, true);
@@ -55,14 +55,14 @@ if isQuestActive(6110) then
 						playPortalSe();
 						warpParty(910500100);
 					else
-						showMessage("Other parties are challenging on quest clear now. Try again later.", env_redMessage);
+						showMessage("Other parties are challenging on quest clear now. Try again later.", msg_red);
 					end
 				end
 			end
 		end
 	else
-		showMessage("Party leader consisting of two Warriors can decide to enter.", env_redMessage);
+		showMessage("Party leader consisting of two Warriors can decide to enter.", msg_red);
 	end
 else
-	showMessage("You can't enter sealed place.", env_redMessage);
+	showMessage("You can't enter sealed place.", msg_red);
 end

@@ -18,7 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Mu Lung Dojo
 
 if countMobs(getMap()) > 0 then
-	showMessage("There are still some monsters remaining.", env_redMessage);
+	showMessage("There are still some monsters remaining.", msg_red);
+	portalFailed();
 else
 	playPortalSe();
 	instantWarp("out01");

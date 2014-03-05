@@ -23,32 +23,32 @@ zStatus = getPlayerVariable("zakum_quest_status", true);
 
 if not isGm() then
 	if zStatus == nil or zStatus < 3 or getItemAmount(4001017) < 1 then
-		showMessage("You may only enter this place after clearing level 3. You'll also need to have the Eye of Fire in possession.", env_redMessage);
+		showMessage("You may only enter this place after clearing level 3. You'll also need to have the Eye of Fire in possession.", msg_red);
 		return;
 	end
 	if not isZakumChannel() then
 		channels = getZakumChannels();
 		if #channels == 0 then
-			showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
+			showMessage("You may not enter the altar of Zakum at this time.", msg_red);
 		else
-			showMessage("You can only enter the altar of Zakum on " .. getChannelString(channels) .. ".", env_redMessage);
+			showMessage("You can only enter the altar of Zakum on " .. getChannelString(channels) .. ".", msg_red);
 		end
 		return;
 	end
 	if getReactorState(211042300, 2118002) == 1 then
-		showMessage("The battle against the boss has already begun, so you can't go in.", env_redMessage);
+		showMessage("The battle against the boss has already begun, so you can't go in.", msg_red);
 		return;
 	end
 end
 
 x = getMaxZakumBattles();
 if not isGm() and x == 0 then
-	showMessage("You may not enter the altar of Zakum at this time.", env_redMessage);
+	showMessage("You may not enter the altar of Zakum at this time.", msg_red);
 else
 	if isGm() or getEntryCount("Zakum", x) < x then
 		playPortalSe();
 		setMap(211042400, "west00");
 	else
-		showMessage("You can only enter the altar of Zakum" .. x .. " " .. timeString(x) .. " per day.", env_redMessage);
+		showMessage("You can only enter the altar of Zakum" .. x .. " " .. timeString(x) .. " per day.", msg_red);
 	end
 end

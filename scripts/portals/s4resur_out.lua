@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if isQuestActive(6134) then
 	if not giveItem(4031448, 1) then
-		showMessage("You can't proceed as you don't have an empty slot in your inventory. Please clear your inventory and try again.", env_redMessage);
+		showMessage("You can't proceed as you don't have an empty slot in your inventory. Please clear your inventory and try again.", msg_red);
 	else
 		playPortalSe();
 		setMap(220070400, "pt00");
