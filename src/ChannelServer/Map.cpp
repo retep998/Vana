@@ -164,8 +164,8 @@ auto Map::addPlayer(Player *player) -> void {
 			player->send(MapPacket::showTimer(instance->checkInstanceTimer()));
 		}
 	}
-	if (m_ship) {
-		// Boat packet, need to change this section slightly...
+	if (m_info->shipKind != -1) {
+		player->send(MapPacket::boatDockUpdate(m_ship, m_info->shipKind));
 	}
 
 	checkPlayerEquip(player);
@@ -196,8 +196,10 @@ auto Map::checkPlayerEquip(Player *player) -> void {
 }
 
 auto Map::boatDock(bool isDocked) -> void {
-	m_ship = isDocked;
-	// TODO FIXME packet
+	if (isDocked != m_ship) {
+		m_ship = isDocked;
+		send(MapPacket::boatDockUpdate(isDocked, m_info->shipKind));
+	}
 }
 
 auto Map::getNumPlayers() const -> size_t {
@@ -733,18 +735,30 @@ auto Map::mobSummonSkillUsed(ref_ptr_t<Mob> mob, const MobSkillLevelInfo * const
 	}
 }
 
-auto Map::killMobs(Player *player, mob_id_t mobId) -> int32_t {
+auto Map::killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId) -> int32_t {
 	// Iterator invalidation
 	auto mobMap = m_mobs;
 	int32_t mobsKilled = 0;
-	for (const auto &kvp : mobMap) {
-		if (auto mob = kvp.second) {
-			if (mobId == 0 || mob->getMobId() == mobId) {
-				if (!mob->isSponge()) {
-					// Sponges will be taken care of by their parts
-					mob->kill();
+	if (distributeExpAndDrops) {
+		for (const auto &kvp : mobMap) {
+			if (auto mob = kvp.second) {
+				if (mobId == 0 || mob->getMobId() == mobId) {
+					if (!mob->isSponge()) {
+						// Sponges will be taken care of by their parts
+						mob->kill();
+					}
+					mobsKilled++;
 				}
-				mobsKilled++;
+			}
+		}
+	}
+	else {
+		for (const auto &kvp : mobMap) {
+			if (auto mob = kvp.second) {
+				if (mobId == 0 || mob->getMobId() == mobId) {
+					mobDeath(mob, false);
+					mobsKilled++;
+				}
 			}
 		}
 	}
@@ -1036,7 +1050,7 @@ auto Map::clearDrops(time_point_t time) -> void {
 
 auto Map::mapTick(const time_point_t &now) -> void {
 	auto &config = ChannelServer::getInstance().getConfig();
-	if (config.mapUnloadTime > 0) {
+	if (m_info->shipKind != -1 && config.mapUnloadTime > 0) {
 		// TODO FIXME need more robust handling of instances active when the map goes to unload
 		if (m_players.size() > 0 || getInstance() != nullptr) {
 			m_emptyMapTicks = 0;

@@ -29,7 +29,7 @@ if not leftHead then
 	if gm == gmInstance then
 		showMessage("The enormous creature is approaching from the deep cave.", msg_blue);
 		setReactorState(getMap(), 2408003, 0);
-		spawnMobPos(8810024, 880, 220);
+		spawnMobPos(getMap(), 8810024, 880, 220);
 		setInstanceVariable("lefthead", true);
 	end
 end

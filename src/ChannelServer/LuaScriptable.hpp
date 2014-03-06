@@ -55,6 +55,7 @@ namespace LuaExports {
 	auto log(lua_State *luaVm) -> int;
 	auto showGlobalMessage(lua_State *luaVm) -> int;
 	auto showWorldMessage(lua_State *luaVm) -> int;
+	auto testExport(lua_State *luaVm) -> int;
 
 	// Channel
 	auto deleteChannelVariable(lua_State *luaVm) -> int;
@@ -206,6 +207,7 @@ namespace LuaExports {
 	auto getNumPlayers(lua_State *luaVm) -> int;
 	auto getReactorState(lua_State *luaVm) -> int;
 	auto killMobs(lua_State *luaVm) -> int;
+	auto setBoatDocked(lua_State *luaVm) -> int;
 	auto setMapSpawn(lua_State *luaVm) -> int;
 	auto setReactorState(lua_State *luaVm) -> int;
 	auto showMapMessage(lua_State *luaVm) -> int;

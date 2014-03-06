@@ -27,3 +27,10 @@ namespace Maps {
 		NoMap = 999999999
 	};
 }
+
+namespace ShipKind {
+	enum : int8_t {
+		Regular = 0x00,
+		Balrog = 0x01,
+	};
+}

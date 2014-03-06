@@ -80,6 +80,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("log", &LuaExports::log);
 	expose("showGlobalMessage", &LuaExports::showGlobalMessage);
 	expose("showWorldMessage", &LuaExports::showWorldMessage);
+	expose("testExport", &LuaExports::testExport);
 
 	// Channel
 	expose("deleteChannelVariable", &LuaExports::deleteChannelVariable);
@@ -231,6 +232,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("getNumPlayers", &LuaExports::getNumPlayers);
 	expose("getReactorState", &LuaExports::getReactorState);
 	expose("killMobs", &LuaExports::killMobs);
+	expose("setBoatDocked", &LuaExports::setBoatDocked);
 	expose("setMapSpawn", &LuaExports::setMapSpawn);
 	expose("setReactorState", &LuaExports::setReactorState);
 	expose("showMapMessage", &LuaExports::showMapMessage);
@@ -335,6 +337,9 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 
 	set<int32_t>("gender_male", Gender::Male);
 	set<int32_t>("gender_female", Gender::Female);
+
+	set<bool>("boat_docked", true);
+	set<bool>("boat_undocked", false);
 
 	set<string_t>("locale_global", MAPLE_LOCALE_STRING_GLOBAL);
 	set<string_t>("locale_korea", MAPLE_LOCALE_STRING_KOREA);
@@ -473,6 +478,10 @@ auto LuaExports::showWorldMessage(lua_State *luaVm) -> int {
 			builder.add<header_t>(IMSG_TO_ALL_CHANNELS);
 			builder.add<header_t>(IMSG_TO_ALL_PLAYERS);
 		}));
+	return 0;
+}
+
+auto LuaExports::testExport(lua_State *luaVm) -> int {
 	return 0;
 }
 
@@ -1299,7 +1308,11 @@ auto LuaExports::clearDrops(lua_State *luaVm) -> int {
 
 auto LuaExports::clearMobs(lua_State *luaVm) -> int {
 	map_id_t mapId = lua_tointeger(luaVm, 1);
-	Maps::getMap(mapId)->killMobs(nullptr);
+	bool distributeExpAndDrops = true;
+	if (lua_isboolean(luaVm, 2)) {
+		distributeExpAndDrops = lua_toboolean(luaVm, 2) == 1;
+	}
+	Maps::getMap(mapId)->killMobs(nullptr, distributeExpAndDrops);
 	return 0;
 }
 
@@ -1345,9 +1358,16 @@ auto LuaExports::getReactorState(lua_State *luaVm) -> int {
 
 auto LuaExports::killMobs(lua_State *luaVm) -> int {
 	mob_id_t mobId = lua_tointeger(luaVm, 1);
-	int32_t killed = getPlayer(luaVm)->getMap()->killMobs(nullptr, mobId);
+	int32_t killed = getPlayer(luaVm)->getMap()->killMobs(nullptr, true, mobId);
 	lua_pushinteger(luaVm, killed);
 	return 1;
+}
+
+auto LuaExports::setBoatDocked(lua_State *luaVm) -> int {
+	map_id_t mapId = lua_tointeger(luaVm, 1);
+	bool docked = lua_toboolean(luaVm, 2) == 1;
+	Maps::getMap(mapId)->boatDock(docked);
+	return 0;
 }
 
 auto LuaExports::setMapSpawn(lua_State *luaVm) -> int {
@@ -1393,14 +1413,16 @@ auto LuaExports::spawnMob(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::spawnMobPos(lua_State *luaVm) -> int {
-	mob_id_t mobId = lua_tointeger(luaVm, 1);
-	int16_t x = lua_tointeger(luaVm, 2);
-	int16_t y = lua_tointeger(luaVm, 3);
+	auto &env = getEnvironment(luaVm);
+	map_id_t mapId = lua_tointeger(luaVm, 1);
+	mob_id_t mobId = lua_tointeger(luaVm, 2);
+	int16_t x = lua_tointeger(luaVm, 3);
+	int16_t y = lua_tointeger(luaVm, 4);
 	foothold_id_t foothold = 0;
-	if (lua_isnumber(luaVm, 4)) {
-		foothold = lua_tointeger(luaVm, 4);
+	if (lua_isnumber(luaVm, 5)) {
+		foothold = lua_tointeger(luaVm, 5);
 	}
-	lua_pushinteger(luaVm, getPlayer(luaVm)->getMap()->spawnMob(mobId, Pos(x, y), foothold)->getMapMobId());
+	lua_pushinteger(luaVm, Maps::getMap(mapId)->spawnMob(mobId, Pos(x, y), foothold)->getMapMobId());
 	return 1;
 }
 

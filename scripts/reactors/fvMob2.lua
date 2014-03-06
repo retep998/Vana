@@ -17,6 +17,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Green Goblin
 
-spawnMobPos(7130402, -340, 100);
+spawnMobPos(getMap(), 7130402, -340, 100);
 showMapMessage("Here comes Green King Goblin!", msg_blue);
 reset();

@@ -20,10 +20,6 @@ function beginInstance()
 	addInstanceMap(600010005);
 end
 
-function playerDisconnect(playerId, isPartyLeader)
-	finish();
-end
-
 function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
    		moveAllPlayers(600010001);
@@ -37,11 +33,5 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 		removeInstancePlayer(playerId);
 	else
 		addInstancePlayer(playerId);
-	end
-end
-
-function finish()
-	if getInstancePlayerCount() == 1 then
-		markForDelete();
 	end
 end

@@ -15,11 +15,34 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Ergoth
 
-setMusic("Bgm10/Eregos");
-spawnMobPos(getMap(), 9300028, 344, 101);
-spawnMobPos(getMap(), 9300029, 130, 155);
-spawnMobPos(getMap(), 9300030, 540, 155);
-spawnMobPos(getMap(), 9300031, 130, 101);
-spawnMobPos(getMap(), 9300032, 540, 101);
+dofile("scripts/lua_functions/miscFunctions.lua");
+
+function beginInstance()
+	addInstanceMap(222020210);
+	doElevatorDoorCheck(222020200);
+	startInstanceTimer("door_check", getNearestMinute(1), 60);
+end
+
+function timerEnd(name, fromTimer)
+	if fromTimer then
+		if name == "door_check" then
+			doElevatorDoorCheck(222020200);
+		end
+	end
+end
+
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if isInstanceMap(newMap) then
+		addInstancePlayer(playerId);
+	else
+		removeInstancePlayer(playerId);
+	end
+end
+
+function instanceTimerEnd(fromTimer)
+	if getInstancePlayerCount() > 0 then
+		createInstance("ludiToKftTrip", 60, false);
+		passPlayersBetweenInstances(222020211);
+	end
+end

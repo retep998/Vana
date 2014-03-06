@@ -215,6 +215,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 				case CMSG_PONG:
 				case CMSG_PLAYER_MOB_DISTANCE:
 				case CMSG_PLAYER_UNK_MAP:
+				case CMSG_PLAYER_BOAT_MAP:
 				case CMSG_PLAYER_UNK_MAP2:
 				case CMSG_ADMIN_COMMAND_LOG:
 				case CMSG_BUFF_ACKNOWLEDGE:

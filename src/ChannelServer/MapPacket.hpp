@@ -36,5 +36,6 @@ namespace MapPacket {
 	PACKET(spawnMist, Mist *mist, bool mapEntry);
 	PACKET(removeMist, map_object_t id);
 	PACKET(instantWarp, portal_id_t portalId);
+	PACKET(boatDockUpdate, bool docked, int8_t shipKind);
 	PACKET(changeWeather, bool adminWeather, item_id_t itemId = 0, const string_t &message = "");
 }

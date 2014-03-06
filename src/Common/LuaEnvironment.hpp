@@ -92,7 +92,11 @@ public:
 	auto get(const string_t &key) -> T;
 	template <typename T>
 	auto get(int index) -> T;
-	
+	template <typename T>
+	auto get(const string_t &key, T defaultValue) -> T;
+	template <typename T>
+	auto get(int index, T defaultValue) -> T;
+
 	template <typename T>
 	auto set(lua_State *luaVm, const string_t &key, const T &value) -> LuaEnvironment &;
 	template <typename T>
@@ -101,6 +105,10 @@ public:
 	auto get(lua_State *luaVm, const string_t &key) -> T;
 	template <typename T>
 	auto get(lua_State *luaVm, int index) -> T;
+	template <typename T>
+	auto get(lua_State *luaVm, const string_t &key, T defaultValue) -> T;
+	template <typename T>
+	auto get(lua_State *luaVm, int index, T defaultValue) -> T;
 
 	template <typename ... TArgs>
 	auto call(const string_t &func, TArgs ... args) -> Result;
@@ -257,7 +265,25 @@ auto LuaEnvironment::get(const string_t &key) -> T {
 }
 
 template <typename T>
+auto LuaEnvironment::get(const string_t &key, T defaultValue) -> T {
+	if (!exists(m_luaVm, key)) {
+		return defaultValue;
+	}
+	return get<T>(m_luaVm, key);
+}
+
+template <typename T>
 auto LuaEnvironment::get(lua_State *luaVm, const string_t &key) -> T {
+	auto v = getImpl(luaVm, key, static_cast<T *>(nullptr));
+	return v;
+}
+
+template <typename T>
+auto LuaEnvironment::get(lua_State *luaVm, const string_t &key, T defaultValue) -> T {
+	if (!exists(luaVm, key)) {
+		return defaultValue;
+	}
+
 	auto v = getImpl(luaVm, key, static_cast<T *>(nullptr));
 	return v;
 }
@@ -268,7 +294,24 @@ auto LuaEnvironment::get(int index) -> T {
 }
 
 template <typename T>
+auto LuaEnvironment::get(int index, T defaultValue) -> T {
+	if (is(index, LuaType::Nil) || is(index, LuaType::None)) {
+		return defaultValue;
+	}
+	return get<T>(m_luaVm, index);
+}
+
+template <typename T>
 auto LuaEnvironment::get(lua_State *luaVm, int index) -> T {
+	auto v = getImpl(luaVm, index, static_cast<T *>(nullptr));
+	return v;
+}
+
+template <typename T>
+auto LuaEnvironment::get(lua_State *luaVm, int index, T defaultValue) -> T {
+	if (is(luaVm, index, LuaType::Nil) || is(luaVm, index, LuaType::None)) {
+		return defaultValue;
+	}
 	auto v = getImpl(luaVm, index, static_cast<T *>(nullptr));
 	return v;
 }

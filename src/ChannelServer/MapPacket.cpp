@@ -295,6 +295,19 @@ PACKET_IMPL(instantWarp, portal_id_t portalId) {
 	return builder;
 }
 
+PACKET_IMPL(boatDockUpdate, bool docked, int8_t shipKind) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(SMSG_SHIP)
+		.add<int8_t>(shipKind == ShipKind::Balrog ?
+			0x0A :
+			(docked ? 0x0C : 0x08))
+		.add<int8_t>(shipKind == ShipKind::Balrog ?
+			(docked ? 0x04 : 0x05) :
+			(docked ? 0x06 : 0x02));
+	return builder;
+}
+
 PACKET_IMPL(changeWeather, bool adminWeather, item_id_t itemId, const string_t &message) {
 	PacketBuilder builder;
 	builder

@@ -15,16 +15,35 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Helios Tower elevators
 
-if getReactorState(getMap(), 2208004) == 1 then
-	showMessage("The elevator is not available for the riding at this time. Please try again later.", msg_red);
-else
-	if getMap() == 222020200 then
-		playPortalSe();
-		setMap(222020210);
+dofile("scripts/lua_functions/miscFunctions.lua");
+
+function beginInstance()
+	addInstanceMap(200000122);
+	setInstanceVariable("boat_time", 10);
+	doBoatDockCheck(200000121);
+	startInstanceTimer("dock_check", getNearestMinute(1), 60);
+end
+
+function timerEnd(name, fromTimer)
+	if fromTimer then
+		if name == "dock_check" then
+			doBoatDockCheck(200000121);
+		end
+	end
+end
+
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if isInstanceMap(newMap) then
+		addInstancePlayer(playerId);
 	else
-		playPortalSe();
-		setMap(222020110);
+		removeInstancePlayer(playerId);
+	end
+end
+
+function instanceTimerEnd(fromTimer)
+	if getInstancePlayerCount() > 0 then
+		createInstance("orbisToLudiTrip", 5 * 60, false);
+		passPlayersBetweenInstances(200090100);
 	end
 end

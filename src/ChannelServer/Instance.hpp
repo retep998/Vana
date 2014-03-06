@@ -46,7 +46,7 @@ class Instance : public TimerContainerHolder {
 	NONCOPYABLE(Instance);
 	NO_DEFAULT_CONSTRUCTOR(Instance);
 public:
-	Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch = false);
+	Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer);
 	~Instance();
 
 	auto getName() const -> string_t { return m_name; }

@@ -27,6 +27,7 @@ class EventDataProvider : public TimerContainerHolder {
 	SINGLETON_CUSTOM_CONSTRUCTOR(EventDataProvider);
 public:
 	auto loadData() -> void;
+	auto clearInstances() -> void;
 	auto getVariables() const -> Variables * { return m_variables.get(); }
 private:
 	auto loadEvents() -> void;

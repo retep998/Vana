@@ -15,11 +15,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
--- Ergoth
 
-setMusic("Bgm10/Eregos");
-spawnMobPos(getMap(), 9300028, 344, 101);
-spawnMobPos(getMap(), 9300029, 130, 155);
-spawnMobPos(getMap(), 9300030, 540, 155);
-spawnMobPos(getMap(), 9300031, 130, 101);
-spawnMobPos(getMap(), 9300032, 540, 101);
+function beginInstance()
+	addInstanceMap(200090110);
+end
+
+function instanceTimerEnd(fromTimer)
+	if getInstancePlayerCount() > 0 then
+   		moveAllPlayers(200000100);
+		removeAllInstancePlayers();
+  	end
+end
+
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if not isInstanceMap(newMap) then
+		removeInstancePlayer(playerId);
+	elseif not isInstanceMap(oldMap) then
+		addInstancePlayer(playerId);
+	end
+end
