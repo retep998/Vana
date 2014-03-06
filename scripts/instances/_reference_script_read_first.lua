@@ -52,7 +52,7 @@ end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	-- Happens every time a player switches to or from an instance map
-	-- Players need not be a part of the instance to trigger this
+	-- Players that are not in an instance will trigger this as well
 end
 
 function partyDisband(partyId)

@@ -73,10 +73,3 @@ function instanceTimerEnd(fromTimer)
 	removeAllInstancePlayers();
 	markForDelete();
 end
-
-function playerDeath(playerId) end
-function mobDeath(mobId, mapMobId, mapId) end -- Add a timer to this if holding becomes a problem
-function mobSpawn(mobId, mapMobId, mapId) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end

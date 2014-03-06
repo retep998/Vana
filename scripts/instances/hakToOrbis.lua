@@ -32,12 +32,3 @@ function instanceTimerEnd(fromTimer)
 		end
 	end
 end
-
-function playerDeath(playerId) end
-function timerEnd(name, fromTimer) end
-function changeMap(playerId, newMap, oldMap, isPartyLeader) end
-function mobDeath(mobId, mapMobId, mapId) end
-function mobSpawn(mobId, mapMobId, mapId) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end

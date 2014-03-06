@@ -34,13 +34,3 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 		addInstancePlayer(playerId);
 	end
 end
-
-function instanceTimerEnd(fromtTimer) end
-function playerDeath(playerId) end
-function playerDisconnect(playerId, isPartyLeader) end
-function timerEnd(name, fromtTimer) end
-function mobDeath(mobId, mapMobId, mapId) end
-function mobSpawn(mobId, mapMobId, mapId) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end
