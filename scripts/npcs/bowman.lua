@@ -304,7 +304,7 @@ elseif getJob() == 300 and getLevel() >= 30 then
 							addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 							sendNext();
 						else
-							if getSp() > ((getLevel() - 30) * 3) then
+							if getSp() > (getLevel() - 30) * 3 then
 								addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many SP in store. ");
 								addText("Use more SP on the skills on the 1st level and then come back.");
 								sendNext();
@@ -358,7 +358,7 @@ elseif getJob() == 300 and getLevel() >= 30 then
 							addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
 							sendNext();
 						else
-							if getSp() > ((getLevel() - 30) * 3) then
+							if getSp() > (getLevel() - 30) * 3 then
 								addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many SP in store. ");
 								addText("Use more SP on the skills on the 1st level and then come back.");
 								sendNext();
