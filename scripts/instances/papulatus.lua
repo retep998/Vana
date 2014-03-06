@@ -44,12 +44,3 @@ function cleanUpPap()
 		markForDelete();
 	end
 end
-
-function playerDeath(playerId) end
-function instanceTimerEnd(fromTimer) end
-function timerEnd(name, fromTimer) end
-function mobDeath(mobId, mapMobId, mapId) end
-function mobSpawn(mobId, mapMobId, mapId) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end

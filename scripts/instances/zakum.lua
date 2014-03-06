@@ -78,9 +78,3 @@ function cleanUpZakum()
 		markForDelete();
 	end
 end
-
-function playerDeath(playerId) end
-function instanceTimerEnd(fromTimer) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end

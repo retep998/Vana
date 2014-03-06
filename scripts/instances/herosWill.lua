@@ -54,9 +54,3 @@ function finish2()
 	moveAllPlayers(230040001);
 	removeAllInstancePlayers();
 end
-
-function playerDeath(playerId) end
-function timerEnd(name, fromTimer) end
-function mobDeath(mobId, mapMobId, mapId) end
-function mobSpawn(mobId, mapMobId, mapId) end
-function friendlyHit(mobId, mapMobId, mapId, hp, maxHp) end

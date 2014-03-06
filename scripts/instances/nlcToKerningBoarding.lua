@@ -26,13 +26,3 @@ function instanceTimerEnd(fromTimer)
 		passPlayersBetweenInstances(600010003);
 	end
 end
-
-function playerDisconnect(playerId) end
-function playerDeath(playerId) end
-function timerEnd(name, fromTimer) end
-function mobDeath(mobId, mapMobId) end
-function mobSpawn(mobId, mapMobId) end
-function changeMap(playerId, newMap, oldMap) end
-function partyDisband(partyId) end
-function partyRemoveMember(partyId, playerId) end
-
