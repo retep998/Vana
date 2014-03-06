@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 showMapMessage("The crack of dimension was filled by the <Piece of Cracked Dimension>.", msg_red);
 setMusic("Bgm09/TimeAttack");
-spawnMobPos(8500000, -410, -386);
+spawnMobPos(getMap(), 8500000, -410, -386);
 setReactorState(220080000, 2208001, 1);
 setReactorState(220080000, 2208003, 1);
 createInstance("papulatus", 0, false);

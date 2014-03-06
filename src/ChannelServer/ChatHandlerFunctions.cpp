@@ -134,6 +134,7 @@ const case_insensitive_hash_map_t<MapPair> ChatHandlerFunctions::sMapAssociation
 	{"gobies", {230040100, "Misc Ludus Lake"}},
 	{"duals", {220060201, "Misc Ludus Lake"}},
 	{"vikings", {220060300, "Misc Ludus Lake"}},
+	{"mdt", {220070201, "Misc Ludus Lake"}},
 	{"grims", {220070301, "Misc Ludus Lake"}},
 	{"forestkft", {222010102, "Misc Ludus Lake"}},
 	{"ridgekft", {222010200, "Misc Ludus Lake"}},

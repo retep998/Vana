@@ -55,22 +55,66 @@ auto EventDataProvider::loadEvents() -> void {
 }
 
 auto EventDataProvider::loadInstances() -> void {
+	clearInstances();
+
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Instances... ";
 
 	// Most common intervals with boats
 	time_point_t now = TimeUtilities::getNow();
+	seconds_t nearestFour = TimeUtilities::getDistanceToNextMinuteMark(4, now);
 	seconds_t nearestFive = TimeUtilities::getDistanceToNextMinuteMark(5, now);
 	seconds_t nearestTen = TimeUtilities::getDistanceToNextMinuteMark(10, now);
 	seconds_t nearestFifteen = TimeUtilities::getDistanceToNextMinuteMark(15, now);
 
+	startInstance("ludiToKftBoarding", nearestFour, minutes_t(4));
+	startInstance("kftToLudiBoarding", nearestFour, minutes_t(4));
+
 	startInstance("kerningToNlcBoarding", nearestFive, minutes_t(5));
 	startInstance("nlcToKerningBoarding", nearestFive, minutes_t(5));
+
+	startInstance("elliniaToOrbisBoarding", nearestFifteen, minutes_t(15));
+	startInstance("orbisToElliniaBoarding", nearestFifteen, minutes_t(15));
+
+	startInstance("ludiToOrbisBoarding", nearestTen, minutes_t(10));
+	startInstance("orbisToLudiBoarding", nearestTen, minutes_t(10));
+
+	startInstance("leafreToOrbisBoarding", nearestTen, minutes_t(10));
+	startInstance("orbisToLeafreBoarding", nearestTen, minutes_t(10));
+
+	startInstance("ariantToOrbisBoarding", nearestTen, minutes_t(10));
+	startInstance("orbisToAriantBoarding", nearestTen, minutes_t(10));
+
+	// TODO FIXME boats
+	// Implement Ereve <-> Ellinia and Ereve <-> Orbis
+	// Implement Singapore <-> Kerning
 
 	std::cout << "DONE" << std::endl;
 }
 
+auto EventDataProvider::clearInstances() -> void {
+	auto clearInstance = [](const string_t &name) {
+		if (Instance *instance = Instances::getInstance().getInstance(name)) {
+			instance->markForDelete();
+			Instances::getInstance().removeInstance(instance);
+		}
+	};
+
+	auto instances = {
+		"kerningToNlcBoarding", "nlcToKerningBoarding",
+		"elliniaToOrbisBoarding", "orbisToElliniaBoarding",
+		"ludiToOrbisBoarding", "orbisToLudiBoarding",
+		"leafreToOrbisBoarding", "orbisToLeafreBoarding",
+		"ariantToOrbisBoarding", "orbisToAriantBoarding",
+		"ludiToKftBoarding", "kftToLudiBoarding",
+	};
+
+	for (const auto &instance : instances) {
+		clearInstance(instance);
+	}
+}
+
 auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
-	Instance *instance = new Instance(name, 0, 0, time, repeat, false, true);
+	Instance *instance = new Instance(name, 0, 0, time, repeat, false);
 	Instances::getInstance().addInstance(instance);
 	instance->beginInstance();
 }

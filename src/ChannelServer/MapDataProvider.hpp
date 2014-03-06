@@ -64,7 +64,7 @@ struct MapInfo {
 	bool forceMapEquip = false;
 	int8_t continent = -1;
 	int8_t regenRate = 0;
-	int8_t shipKind = 0;
+	int8_t shipKind = -1;
 	player_level_t minLevel = 0;
 	uint8_t decHp = 0;
 	uint16_t dps = 0;

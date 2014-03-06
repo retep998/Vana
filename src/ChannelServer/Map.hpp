@@ -116,10 +116,9 @@ public:
 	auto statusMobs(vector_t<StatusInfo> &statuses, const Rect &dimensions) -> void;
 	auto spawnZakum(const Pos &pos, foothold_id_t foothold = 0) -> void;
 	auto convertShellToNormal(ref_ptr_t<Mob> mob) -> void;
-	auto mobDeath(ref_ptr_t<Mob> mob) -> void;
 	auto spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold = 0, ref_ptr_t<Mob> owner = nullptr, int8_t summonEffect = 0) -> ref_ptr_t<Mob>;
 	auto spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob>;
-	auto killMobs(Player *player, mob_id_t mobId = 0) -> int32_t;
+	auto killMobs(Player *player, bool distributeExpAndDrops, mob_id_t mobId = 0) -> int32_t;
 	auto countMobs(mob_id_t mobId = 0) -> int32_t;
 	auto getMob(map_object_t mapMobId) -> ref_ptr_t<Mob>;
 	auto runFunctionMobs(function_t<void(ref_ptr_t<const Mob>)> func) -> void;

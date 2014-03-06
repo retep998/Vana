@@ -130,6 +130,11 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	if (player->getStats()->getMp() < skill->mp) {
+		// Most likely hacking, could occur during lag
+		return;
+	}
+
 	switch (skillId) {
 		case Skills::Brawler::MpRecovery: {
 			int16_t modHp = player->getStats()->getMaxHp() * skill->x / 100;

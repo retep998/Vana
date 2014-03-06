@@ -375,7 +375,7 @@ auto MapFunctions::clearDrops(Player *player, const string_t &args) -> ChatResul
 }
 
 auto MapFunctions::killAllMobs(Player *player, const string_t &args) -> ChatResult {
-	int32_t killed = player->getMap()->killMobs(player);
+	int32_t killed = player->getMap()->killMobs(player, true);
 	ChatHandlerFunctions::showInfo(player, [&](out_stream_t &message) { message << "Killed " << killed << " mobs"; });
 	return ChatResult::HandledDisplay;
 }

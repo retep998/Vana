@@ -27,6 +27,7 @@ public:
 		m_timers = make_ref_ptr<Timer::Container>();
 	}
 protected:
+	auto clearTimers() -> void { m_timers.reset<Timer::Container>(nullptr); }
 	auto getTimers() const -> ref_ptr_t<Timer::Container> { return m_timers; }
 private:
 	ref_ptr_t<Timer::Container> m_timers;

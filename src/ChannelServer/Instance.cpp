@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <sstream>
 #include <utility>
 
-Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer, bool appLaunch) :
+Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, const duration_t &time, const duration_t &persistent, bool showTimer) :
 	m_name(name),
 	m_persistent(persistent),
 	m_showTimer(showTimer),
@@ -42,7 +42,7 @@ Instance::Instance(const string_t &name, map_id_t map, player_id_t playerId, con
 	m_variables = make_owned_ptr<Variables>();
 	m_luaInstance = make_owned_ptr<LuaInstance>(name, playerId);
 
-	if (!appLaunch) {
+	if (playerId != 0) {
 		ChannelServer::getInstance().log(LogType::InstanceBegin, [&](out_stream_t &log) { log << name << " started by player ID " << playerId; });
 	}
 	setInstanceTimer(time, true);
@@ -393,6 +393,7 @@ auto Instance::getCounterId() -> int32_t {
 
 auto Instance::markForDelete() -> void {
 	m_markedForDeletion = true;
+	clearTimers();
 }
 
 auto Instance::respawnMobs(map_id_t mapId) -> void {
