@@ -23,7 +23,7 @@ auto SkillMacros::load(player_id_t charId) -> void {
 	soci::rowset<> rs = (Database::getCharDb().prepare << "SELECT s.* FROM " << Database::makeCharTable("skill_macros") << " s WHERE s.character_id = :char", soci::use(charId, "char"));
 
 	for (const auto &row : rs) {
-		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<skill_id_t>("skill1"), row.get<skill_id_t>("skill2"), row.get<skill_id_t>("skill3")));
+		add(row.get<int8_t>("pos"), new SkillMacro(row.get<string_t>("name"), row.get<bool>("shout"), row.get<skill_id_t>("skill_1"), row.get<skill_id_t>("skill_2"), row.get<skill_id_t>("skill_3")));
 	}
 }
 
@@ -49,7 +49,7 @@ auto SkillMacros::save(player_id_t charId) -> void {
 		soci::use(skill2, "skill2"),
 		soci::use(skill3, "skill3"));
 
-	for (i = 0; i < getMax(); i++) {
+	for (i = 0; i <= getMax(); i++) {
 		SkillMacro *macro = getSkillMacro(i);
 		if (macro != nullptr) {
 			name = macro->name;
