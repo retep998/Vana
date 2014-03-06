@@ -27,12 +27,12 @@ if isQuestActive(6108) then
 		sendOk();
 	elseif isPartyLeader() then
 		members = getAllPartyPlayerIds();
-		if #members ~= 2 then
+		if not isGm() and #members ~= 2 then
 			addText("You can make a quest when you have a party with two. ");
 			addText("Please make your party with two members.");
 			sendOk();
 		else
-			if not isPartyInLevelRange(120, 200) then
+			if not isGm() and not isPartyInLevelRange(120, 200) then
 				addText("There is a character among your party whose level is not eligible. ");
 				addText("You should be level 120 above. ");
 				addText("Please adjust level.");
@@ -49,7 +49,7 @@ if isQuestActive(6108) then
 						revertPlayer();
 					end
 				end
-				if memberCount ~= 2 then
+				if not isGm() and memberCount ~= 2 then
 					addText("You can't enter. ");
 					addText("Your party member's job is not Bow Master or Marksman or Your party doesn't consist of two members.");
 					sendOk();
