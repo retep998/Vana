@@ -17,6 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Spiegelmann's Office
 
+map = getPlayerVariable("mc_origin", true);
+if map == nil then
+	map = 103000000;
+end
+
 playPortalSe();
-setMap(getPlayerVariable("mcout", true));
-deletePlayerVariable("mcout");
+setMap(map);
+deletePlayerVariable("mc_origin");

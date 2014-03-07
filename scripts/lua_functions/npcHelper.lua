@@ -127,6 +127,11 @@ function skillRef(skillId)
 	return "#q" .. skillId .. "#";
 end
 
+-- Not sure what this is for, but it appears to be used by some scripts
+function altItemRef(itemId)
+	return "#z" .. itemId .. "#";
+end
+
 function itemRef(itemId)
 	return "#t" .. itemId .. "#";
 end
