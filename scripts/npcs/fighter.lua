@@ -32,7 +32,9 @@ if questState == 1 then
 	addText("My the other self is quite strong. ");
 	addText("He uses many special skills and you should fight with him 1 on 1. ");
 	addText("However, people cannot stay long in the secret passage, so it is important to beat him ASAP. ");
-	addText("Well... Good luck! I will look forward to you bringing " .. blue(itemRef(4031059)) .. " to me.");
+	addText("Well... ");
+	addText("Good luck! ");
+	addText("I will look forward to you bringing " .. blue(itemRef(4031059)) .. " to me.");
 	sendBackNext();
 
 	setPlayerVariable("third_job_advancement", 2);
@@ -65,7 +67,8 @@ elseif getJob() == 0 then
 	if getLevel() >= 10 then
 		addText("You definitely have the look of a Warrior. ");
 		addText("You may not be there just yet, but I can see the Warrior in you. ");
-		addText("What do you think? Do you want to become a Warrior?");
+		addText("What do you think? ");
+		addText("Do you want to become a Warrior?");
 		answer = askYesNo();
 
 		if answer == answer_yes then
@@ -76,7 +79,6 @@ elseif getJob() == 0 then
 			sendNext();
 
 			if getLevel() >= 30 then
-				-- For rare "too high level" instance.
 				addText("I think you've made the job advancement way too late. ");
 				addText("Usually, for beginners under Level 29 that were late in making job advancements, we compensate them with lost Skill Points, that weren't rewarded, but...");
 				addText("I think you're a little too late for that. ");
@@ -85,19 +87,20 @@ elseif getJob() == 0 then
 
 				giveSp(1);
 			else
-				giveSp((getLevel() - 10) * 3 + 1); -- Make up SP for any over-leveling like in GMS
+				-- Make up SP for any over-leveling
+				giveSp((getLevel() - 10) * 3 + 1);
 			end
 
 			setJob(100);
-			giveItem(1302077, 1); -- Give beginner warrior's sword
-			hpInc = 200 + getRandomNumber(50); -- Extra HP given
-			setMaxHp(getRealMaxHp() + hpInc); -- Set HP to current HP plus amount to be added for this job
-			setStr(35); -- Stat reset
+			giveItem(1302077, 1);
+			hpInc = 200 + getRandomNumber(50);
+			setMaxHp(getRealMaxHp() + hpInc);
+			setStr(35);
 			setDex(4);
 			setInt(4);
 			setLuk(4);
 			setAp((getLevel() - 1) * 5 - (22));
-			addSlots(1, 1); -- Add extra inventory rows
+			addSlots(1, 1);
 			addSlots(2, 1);
 			addSlots(3, 1);
 			addSlots(4, 1);
@@ -321,11 +324,11 @@ elseif getJob() == 100 and getLevel() >= 30 then
 							else
 								setJob(110);
 								giveSp(1);
-								giveItem(4031012, -1); -- Take away The Proof of a Hero
-								addSlots(2, 1); -- Add inventory slots
+								giveItem(4031012, -1);
+								addSlots(2, 1);
 								addSlots(4, 1);
-								newHp = 300 + getRandomNumber(50); -- Extra HP given
-								setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
+								newHp = 300 + getRandomNumber(50);
+								setMaxHp(getRealMaxHp() + newHp);
 
 								addText("Alright! ");
 								addText("You have now become the " .. blue("Fighter") .. "! ");
@@ -374,11 +377,11 @@ elseif getJob() == 100 and getLevel() >= 30 then
 							else
 								setJob(120);
 								giveSp(1);
-								giveItem(4031012, -1); -- Take away The Proof of a Hero
-								addSlots(2, 1); -- Add inventory slots
+								giveItem(4031012, -1);
+								addSlots(2, 1);
 								addSlots(4, 1);
-								newMp = 100 + getRandomNumber(50); -- Extra MP given
-								setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
+								newMp = 100 + getRandomNumber(50);
+								setMaxMp(getRealMaxMp() + newMp);
 
 								addText("Alright! ");
 								addText("You have now become the " .. blue("Page") .. "! ");
@@ -426,11 +429,11 @@ elseif getJob() == 100 and getLevel() >= 30 then
 							else
 								setJob(130);
 								giveSp(1);
-								giveItem(4031012, -1); -- Take away The Proof of a Hero
-								addSlots(2, 1); -- Add inventory slots
+								giveItem(4031012, -1);
+								addSlots(2, 1);
 								addSlots(4, 1);
-								newMp = 100 + getRandomNumber(50); -- Extra MP given
-								setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
+								newMp = 100 + getRandomNumber(50);
+								setMaxMp(getRealMaxMp() + newMp);
 
 								addText("Alright! ");
 								addText("You have now become the " .. blue("Spearman") .. "! ");
