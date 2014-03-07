@@ -131,14 +131,14 @@ if getLevel() >= 50 then
 							giveAp(5);
 
 							if jobType == 1 then
-								addText("You're the #bHermit#k from this point forward. ");
+								addText("You're the " .. blue("Hermit") .. " from this point forward. ");
 								addText("The skill book introduces a slew of new offensive skills for Hermits, using shadows as a way of duplication and replacement. ");
-								addText("You'll learn skills like #bShadow Meso#k (replace MP with mesos and attack monsters with the damage based on the amount of mesos thrown) and #bShadow Partner#k (create a shadow that mimics your every move, enabling you to attack twice). ");
+								addText("You'll learn skills like " .. blue("Shadow Meso") .. " (replace MP with mesos and attack monsters with the damage based on the amount of mesos thrown) and " .. blue("Shadow Partner") .. " (create a shadow that mimics your every move, enabling you to attack twice). ");
 								addText("Use those skills to take on monsters that may have been difficult to conquer before. ");
 							elseif jobType == 2 then
-								addText("You're the #bChief Bandit#k from this point forward. ");
-								addText("One of the new additions to the skill book is a skill called #bBand of Thieves#k, which lets you summon fellow Bandits to attack multiple monsters at once. ");
-								addText("Chief Bandits can also utilize mesos in numerous ways, from attacking monsters (#bMeso Explosion#k, which explodes mesos on the ground) to defending yourself (#bMeso Guard#k, which decreases damage done to you). ");
+								addText("You're the " .. blue("Chief Bandit") .. " from this point forward. ");
+								addText("One of the new additions to the skill book is a skill called " .. blue("Band of Thieves") .. ", which lets you summon fellow Bandits to attack multiple monsters at once. ");
+								addText("Chief Bandits can also utilize mesos in numerous ways, from attacking monsters (" .. blue("Meso Explosion") .. ", which explodes mesos on the ground) to defending yourself (" .. blue("Meso Guard") .. ", which decreases damage done to you). ");
 							end
 							sendNext();
 

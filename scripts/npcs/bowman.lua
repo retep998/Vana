@@ -76,7 +76,7 @@ elseif getJob() == 0 then
 			addText("Haahhhh!");
 			sendNext();
 
-			if getLevel() >= 30 then -- For the rare "too high level" instance.
+			if getLevel() >= 30 then
 				addText("I think you've made the job advancement way too late. ");
 				addText("Usually, for beginners under Level 29 that were late in making job advancements, we compensate them with lost Skill Points, that weren't rewarded, but...");
 				addText("I think you're a little too late for that. ");
@@ -85,17 +85,18 @@ elseif getJob() == 0 then
 
 				giveSp(1);
 			else
-				giveSp((getLevel() - 10) * 3 + 1); -- Make up any SP for over-leveling like in GMS
+				-- Make up any SP for over-leveling
+				giveSp((getLevel() - 10) * 3 + 1);
 			end
 
 			setJob(300);
-			giveItem(1452051, 1); -- Beginner Bow
-			giveItem(2060000, 6000); -- Arrow for Bow
-			hpInc = 100 + getRandomNumber(50); -- Extra HP Given
-			mpInc = 25 + getRandomNumber(25); -- Extra MP Given
-			setMaxHp(getRealMaxHp() + hpInc); -- Set HP to current HP plus full amount of hp increase
-			setMaxMp(getRealMaxMp() + mpInc); -- Set MP to current MP plus full amount of hp increase
-			setStr(4); -- Stat reset
+			giveItem(1452051, 1);
+			giveItem(2060000, 6000);
+			hpInc = 100 + getRandomNumber(50);
+			mpInc = 25 + getRandomNumber(25);
+			setMaxHp(getRealMaxHp() + hpInc);
+			setMaxMp(getRealMaxMp() + mpInc);
+			setStr(4);
 			setDex(25);
 			setInt(4);
 			setLuk(4);
@@ -311,12 +312,12 @@ elseif getJob() == 300 and getLevel() >= 30 then
 							else
 								setJob(310);
 								giveSp(1);
-								giveItem(4031012, -1); -- Take The Proof of a Hero
-								addSlots(4, 1); -- Add inventory slots
-								newHp = 300 + getRandomNumber(50); -- Extra HP calculated
-								newMp = 150 + getRandomNumber(50); -- Extra MP calculated
-								setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
-								setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
+								giveItem(4031012, -1);
+								addSlots(4, 1);
+								newHp = 300 + getRandomNumber(50);
+								newMp = 150 + getRandomNumber(50);
+								setMaxHp(getRealMaxHp() + newHp);
+								setMaxMp(getRealMaxMp() + newMp);
 
 								addText("Alright, you're the " .. blue("Hunter") .. " from here on out. ");
 								addText("Hunters are the intelligent bunch with incredible vision, able to pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");
@@ -365,12 +366,12 @@ elseif getJob() == 300 and getLevel() >= 30 then
 							else
 								setJob(320);
 								giveSp(1);
-								giveItem(4031012, -1); -- Take The Proof of a Hero
-								addSlots(4, 1); -- Add inventory slots
-								newHp = 300 + getRandomNumber(50); -- Extra HP calculated
-								newMp = 150 + getRandomNumber(50); -- Extra MP calculated
-								setMaxHp(getRealMaxHp() + newHp); -- Add to current HP
-								setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
+								giveItem(4031012, -1);
+								addSlots(4, 1);
+								newHp = 300 + getRandomNumber(50);
+								newMp = 150 + getRandomNumber(50);
+								setMaxHp(getRealMaxHp() + newHp);
+								setMaxMp(getRealMaxMp() + newMp);
 
 								addText("Alright, you're the " .. blue("Crossbowman") .. " from here on out. ");
 								addText("Crossbowman are the intelligent bunch with incredible vision, able to pierce the arrow through the heart of the monsters with ease...please train yourself each and everyday. ");

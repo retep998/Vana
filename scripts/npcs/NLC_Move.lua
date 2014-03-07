@@ -53,16 +53,16 @@ if regularTicket > 0 or basicTicket > 0 then
 				addText("Please have your ticket ready so I can let you in. ");
 				addText("The ride will be long, but you'll get to your destination just fine. ");
 				addText("What do you think? Do you want to get on this ride?");
-				yes = askYesNo();
+				answer = askYesNo();
 
-				if yes == 1 then
+				if answer == answer_yes then
 					item = nil;
 					if basicTicket > 0 then item = 4031712;
 					else item = 4031713;
 
 					giveItem(item, -1);
 					setMap(600010002);
-				elseif yes == 0 then
+				elseif answer == answer_no then
 					addText("You must have some business to take care of here, right?");
 					sendNext();
 				end

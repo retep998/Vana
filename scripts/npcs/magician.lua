@@ -17,396 +17,460 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Grendel the Really Old - Magician Instructor
 
+dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
 
 questState = getPlayerVariable("third_job_advancement", true);
 if questState == 1 then
 	addText("Ah, I was waiting for you. ");
-	addText("I heard about you from #bRobeira#k in Ossyria, and I'd actually like to test your strength. ");
+	addText("I heard about you from " .. blue("Robeira") .. " in Ossyria, and I'd actually like to test your strength. ");
 	addText("There is a secret passage near the forest of Ellinia, in which only you are allowed to enter. ");
 	addText("There, you will meet my other self. ");
-	addText("Defeat him and bring the #b#t4031059##k to me.");
+	addText("Defeat him and bring the " .. blue(itemRef(4031059)) .. " to me.");
 	sendNext();
 
 	addText("My the other self is quite strong. ");
 	addText("He uses many special skills and you should fight with him 1 on 1. ");
 	addText("However, people cannot stay long in the secret passage, so it is important to beat him ASAP. ");
-	addText("Well... Good luck! I will look forward to you bringing #b#t4031059##k to me.");
+	addText("Well... ");
+	addText("Good luck! ");
+	addText("I will look forward to you bringing " .. blue(itemRef(4031059)) .. " to me.");
 	sendBackNext();
 
 	setPlayerVariable("third_job_advancement", 2);
 elseif questState == 2 then
 	if getItemAmount(4031059) > 0 then
-		addText("Wow! You beat my other self and brought the #b#t4031059##k to me. ");
+		addText("Wow! ");
+		addText("You beat my other self and brought the " .. blue(itemRef(4031059)) .. " to me. ");
 		addText("This surely proves your strength and that you are ready to advance to the 3rd job. ");
-		addText("As I promised, I will give #b#t4031057##k to you. ");
+		addText("As I promised, I will give " .. blue(itemRef(4031057)) .. " to you. ");
 		sendNext();
 
 		giveItem(4031059, -1);
 		giveItem(4031057, 1);
 
-		addText("Give this necklace to #bRobeira#k in Ossyria and you will be able to take second test of the 3rd job advancement. Good luck!");
+		addText("Give this necklace to " .. blue("Robeira") .. " in Ossyria and you will be able to take second test of the 3rd job advancement. ");
+		addText("Good luck!");
 		sendNext();
 	else
 		addText("Hmmm...weird. ");
-		addText("Are you sure that you have the #b#t4031059##k? ");
+		addText("Are you sure that you have the " .. blue(itemRef(4031059)) .. "? ");
 		addText("If you do have it, make sure you have an empty slot in your Item Inventory.");
 		sendNext();
 	end
 elseif getJob() == 0 then
-	addText("Do you want to be a Magician? You need to meet some requirements in ");
-	addText("order to do so. You need to be at least at #bLevel 8#k. ");
+	addText("Do you want to be a Magician? ");
+	addText("You need to meet some requirements in order to do so. ");
+	addText("You need to be at least at " .. blue("Level 8") .. ". ");
 	addText("Let's see if you have what it takes to become a Magician...");
 	sendNext();
 
 	if getLevel() >= 8 then
-		addText("You definitely have the look of a Magician. You may not be there yet, but I can ");
-		addText("see the Magician in you...what do you think? Do you want to become the Magician?");
-		local yes = askYesNo();
+		addText("You definitely have the look of a Magician. ");
+		addText("You may not be there yet, but I can see the Magician in you...what do you think? ");
+		addText("Do you want to become the Magician?");
+		answer = askYesNo();
 
-		if yes == 1 then
-			addText("Alright, you're a Magician from here on out, since I, Grendel the Really old, the ");
-			addText("head Magician, allow you so. It isn't much, but I'll give you a little bit of what I have...");
+		if answer == answer_yes then
+			addText("Alright, you're a Magician from here on out, since I, Grendel the Really old, the head Magician, allow you so. ");
+			addText("It isn't much, but I'll give you a little bit of what I have...");
 			sendNext();
 
-			if getLevel() >= 30 then -- For rare "too high level" instance.
-				addText("I think you've made the job advancement way too late. Usually, for beginners under Level 29 ");
-				addText("that were late in making job advancements, we compensate them with lost Skill Points, ");
-				addText("that weren't rewarded, but...I think you're a little too late for that. I am so sorry, but there's nothing I can do.");
+			if getLevel() >= 30 then
+				addText("I think you've made the job advancement way too late. ");
+				addText("Usually, for beginners under Level 29 that were late in making job advancements, we compensate them with lost Skill Points, that weren't rewarded, but...");
+				addText("I think you're a little too late for that. ");
+				addText("I am so sorry, but there's nothing I can do.");
 				sendBackNext();
 
 				giveSp(1);
 			else
-				giveSp((getLevel() - 8) * 3 + 1); -- Make up SP for any over-leveling like in GMS
+				-- Make up SP for any over-leveling
+				giveSp((getLevel() - 8) * 3 + 1);
 			end
 
 			setJob(200);
 			giveItem(1372043, 1);
 			mpInc = 100 + getRandomNumber(50);
 			setMaxMp(getRealMaxMp() + mpInc);
-			setStr(4); -- Stat reset
+			setStr(4);
 			setDex(4);
 			setInt(20);
 			setLuk(4);
 			setAp((getLevel() - 1) * 5 - 7);
-			addText("You have just equipped yourself with much more magicial power. Please keep training and ");
-			addText("make yourself much better...I'll be watching you from here and there...");
+
+			addText("You have just equipped yourself with much more magicial power. ");
+			addText("Please keep training and make yourself much better...");
+			addText("I'll be watching you from here and there...");
 			sendNext();
 
-			addText("I just gave you a little bit of #bSP#k. When you open up the #bSkill menu#k on the lower left ");
-			addText("corner of the screen, there are skills you can learn by using SP's. One warning, though: You ");
-			addText("can't raise it all together all at once. There are also skills you can acquire only after having ");
+			addText("I just gave you a little bit of " .. blue("SP") .. ". ");
+			addText("When you open up the " .. blue("Skill menu") .. " on the lower left corner of the screen, there are skills you can learn by using SP's. ");
+			addText("One warning, though: You can't raise it all together all at once. ");
+			addText("There are also skills you can acquire only after having ");
 			sendNext();
 
-			addText("One more warning. Once you have chosen your job, try to stay alive as much as you can. Once you ");
-			addText("reach that level, when you die, you will lose your experience level. You wouldn't want to lose ");
-			addText("your hard-earned experience points, do you?");
+			addText("One more warning. ");
+			addText("Once you have chosen your job, try to stay alive as much as you can. ");
+			addText("Once you reach that level, when you die, you will lose your experience level. ");
+			addText("You wouldn't want to lose your hard-earned experience points, do you?");
 			sendBackNext();
 
-			addText("OK! This is all I can teach you. Go to places, train and better yourself. Find me when you feel ");
-			addText("like you've done all you can, and need something interesting. I'll be waiting for you here...");
+			addText("OK! ");
+			addText("This is all I can teach you. ");
+			addText("Go to places, train and better yourself. ");
+			addText("Find me when you feel like you've done all you can, and need something interesting. ");
+			addText("I'll be waiting for you here...");
 			sendBackNext();
 
-			addText("Oh, and... if you have any questions about being the Magician, feel free to ask. I don't know ");
-			addText("EVERYTHING, per se, but I'll help you out with all that I know of. Til then...");
+			addText("Oh, and... if you have any questions about being the Magician, feel free to ask. ");
+			addText("I don't know EVERYTHING, per se, but I'll help you out with all that I know of. ");
+			addText("Til then...");
 			sendBackNext();
 		else
-			addText("Really? Have to give more thought to it, huh? Take your time, take your time. This is not ");
-			addText("something you should take lightly...come talk to me once your have made your decision...");
+			addText("Really? ");
+			addText("Have to give more thought to it, huh? ");
+			addText("Take your time, take your time. ");
+			addText("This is not something you should take lightly...come talk to me once your have made your decision...");
 			sendNext();
 		end
 	else
-		addText("You need more training to be a Magician. In order to be one, you need to train ");
-		addText("yourself to be more powerful than you are right now. Please come back much stronger.");
+		addText("You need more training to be a Magician. ");
+		addText("In order to be one, you need to train yourself to be more powerful than you are right now. ");
+		addText("Please come back much stronger.");
 		sendBackNext();
 	end
 elseif getJobLine() == 2 and getJobTrack() > 0 then
+	choices = {
+		makeChoiceHandler("What are the basic characteristics of being a Magician?", function()
+			addText("I'll tell you more about being a Magician. ");
+			addText("Magicians put high levels of magic and intelligence to good use. ");
+			addText("They can use the power of nature all around us to kill the enemies, but they are very weak in close combats. ");
+			addText("The stamina isn't high, either, so be careful and avoid death at all cost.");
+			sendNext();
+
+			addText("Since you can attack the monsters from afar, that'll help you quite a bit. ");
+			addText("Try boosting up the level of INT if you want to attack the enemies accurately with your magic. ");
+			addText("The higher your intelligence, the better you'll be able to handle your magic...");
+			sendBackNext();
+		end),
+		makeChoiceHandler("What are the weapons that the Magicians use?", function()
+			addText("I'll tell you more about the weapons that Magicians use. ");
+			addText("Actually, it doesn't mean much for Magicians to attack the opponents with weapons. ");
+			addText("Magicians lack power and dexterity, so you will have a hard time even defeating a snail.");
+			sendNext();
+
+			addText("If we're talking about the magicial powers, then THAT's a whole different story. ");
+			addText("The weapons that Magicians use are blunt weapons, staff, and wands. ");
+			addText("Blunt weapons are good for, well, blunt attacks, but...");
+			addText("I would not recommend that on Magicians, period...");
+			sendBackNext();
+
+			addText("Rather, staffs and wands are the main weaponry of choice. ");
+			addText("These weapons have special magicial powers in them, so it enhances the Magicians' effectiveness. ");
+			addText("It'll be wise for you to carry a weapon with a lot of magicial powers in it...");
+			sendBackNext();
+		end),
+		makeChoiceHandler("What are the armors the Magicians can wear?", function()
+			addText("I'll tell you more about the armors that Magicians can wear. ");
+			addText("Honestly, the Magicians don't have much armor to wear since they are weak in physiical strength and low in stamina. ");
+			addText("Its defensive abilities isn't great either, so I don't know if it helps a lot or not...");
+			sendNext();
+
+			addText("Some armors, however, have the ability to eliminate the magicial power, so it can guard you from magic attacks. ");
+			addText("It won't help much, but still better than not warning them at all...so buy them if you have time...");
+			sendBackNext();
+		end),
+		makeChoiceHandler("What are the skills available for Magicians?", function()
+			addText("The skills available for Magicians use the high levels of intelligence and magic that Magicians have. ");
+			addText("Also available are Magic Guard and Magic Armor, which help Magicians with weak stamina prevent from dying.");
+			sendNext();
+
+			addText("The offensive skills are " .. blue("Energy Bolt") .. " and " .. blue("Magic Claw") .. ". ");
+			addText("First, Energy Bolt is a skill that applies a lot of damage to the opponent with minimal use of MP.");
+			sendBackNext();
+
+			addText("Magic Claw, on the other hand, uses up a lot of MP to attack one opponent TWICE. ");
+			addText("But, you can only use Energy Bolt once it's more than 1, so keep that in mind. ");
+			addText("Whatever you choose to do, it's all upto you...");
+			sendBackNext();
+		end),
+	};
+
 	addText("Any questions about being a Magician?\r\n");
-	addText("#L0##bWhat are the basic characteristics of being a Magician?#k#l\r\n");
-	addText("#L1##bWhat are the weapons that the Magicians use?#k#l\r\n");
-	addText("#L2##bWhat are the armors the Magicians can wear?#k#l\r\n");
-	addText("#L3##bWhat are the skills available for Magicians?#k#l");
-	local explain = askChoice();
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
 
-	if explain == 0 then
-		addText("I'll tell you more about being a Magician. Magicians put high levels of magic and intelligence to ");
-		addText("good use. They can use the power of nature all around us to kill the enemies, but they are very ");
-		addText("weak in close combats. The stamina isn't high, either, so be careful and avoid death at all cost.");
-		sendNext();
-
-		addText("Since you can attack the monsters from afar, that'll help you quite a bit. Try boosting up the level ");
-		addText("of INT if you want to attack the enemies accurately with your magic. The higher your intelligence, the ");
-		addText("better you'll be able to handle your magic...");
-		sendBackNext();
-	elseif explain == 1 then
-		addText("I'll tell you more about the weapons that Magicians use. Actually, it doesn't mean much for Magicians ");
-		addText("to attack the opponents with weapons. Magicians lack power and dexterity, so you will have a hard time ");
-		addText("even defeating a snail.");
-		sendNext();
-
-		addText("If we're talking about the magicial powers, then THAT's a whole different story. The weapons that ");
-		addText("Magicians use are blunt weapons, staff, and wands. Blunt weapons are good for, well, blunt attacks, ");
-		addText("but...I would not recommend that on Magicians, period...");
-		sendBackNext();
-
-		addText("Rather, staffs and wands are the main weaponry of choice. These weapons have special magicial powers ");
-		addText("in them, so it enhances the Magicians' effectiveness. It'll be wise for you to carry a weapon with ");
-		addText("a lot of magicial powers in it...");
-		sendBackNext();
-	elseif explain == 2 then
-		addText("I'll tell you more about the armors that Magicians can wear. Honestly, the Magicians don't have much ");
-		addText("armor to wear since they are weak in physiical strength and low in stamina. Its defensive abilities ");
-		addText("isn't great either, so I don't know if it helps a lot or not...");
-		sendNext();
-
-		addText("Some armors, however, have the ability to eliminate the magicial power, so it can guard you from magic ");
-		addText("attacks. It won't help much, but still better than not warning them at all...so buy them if you have time...");
-		sendBackNext();
-	elseif explain == 3 then
-		addText("The skills available for Magicians use the high levels of intelligence and magic that Magicians have. ");
-		addText("Also available are Magic Guard and Magic Armor, which help Magicians with weak stamina prevent from dying.");
-		sendNext();
-
-		addText("The offensive skills are #bEnergy Bolt#k and #bMagic Claw#k. First, Energy Bolt is a skill that applies a ");
-		addText("lot of damage to the opponent with minimal use of MP.");
-		sendBackNext();
-
-		addText("Magic Claw, on the other hand, uses up a lot of MP to attack one opponent TWICE. But, you can only use ");
-		addText("Energy Bolt once it's more than 1, so keep that in mind. Whatever you choose to do, it's all upto you...");
-		sendBackNext();
-	end
+	selectChoice(choices, choice);
 elseif getJob() == 200 and getLevel() >= 30 then
 	if getItemAmount(4031009) == 0 and getItemAmount(4031012) == 0 then
-		addText("Hmmm...you have grown quite a bit since last time. You look much different from before, where you looked weak and ");
-		addText("small...instead now I can definitely feel you presence as the Magician...so...what do you think? Do you want to ");
-		addText("get even stronger than you are right now? Pass a simple test and I can do that for you...do you want to do it?");
-		local yes = askYesNo();
+		addText("Hmmm...you have grown quite a bit since last time. ");
+		addText("You look much different from before, where you looked weak and small...instead now I can definitely feel you presence as the Magician...so...what do you think? ");
+		addText("Do you want to get even stronger than you are right now? ");
+		addText("Pass a simple test and I can do that for you...do you want to do it?");
+		answer = askYesNo();
 
-		if yes == 0 then
-			addText("Really? It will help you out a great deal on your journey if you get stronger fast...if you choose to ");
-			addText("change your mind in the future, please feel free to come back. Know that I'll make you much more ");
-			addText("powerful than you are right now.");
+		if answer == answer_no then
+			addText("Really? ");
+			addText("It will help you out a great deal on your journey if you get stronger fast...if you choose to change your mind in the future, please feel free to come back. ");
+			addText("Know that I'll make you much more powerful than you are right now.");
 			sendNext();
 		else
-			addText("Good...you look strong, alright, but I need to see if it is for real. The test isn't terribly difficult ");
-			addText("and you should be able to pass it. Here, take my letter first. Make sure you don't lose it.");
+			addText("Good...you look strong, alright, but I need to see if it is for real. ");
+			addText("The test isn't terribly difficult and you should be able to pass it. ");
+			addText("Here, take my letter first. ");
+			addText("Make sure you don't lose it.");
 			sendNext();
 
 			giveItem(4031009, 1);
-			addText("Please get this letter to #b#p1072001##k around #b#m101020000##k near Ellinia. ");
-			addText("He's doing the role of an instructor in place of me. He'll give you all the details about it. ");
+			addText("Please get this letter to " .. blue(npcRef(1072001)) .. " around " .. blue(mapRef(101020000)) .. " near Ellinia. ");
+			addText("He's doing the role of an instructor in place of me. ");
+			addText("He'll give you all the details about it. ");
 			addText("Best of luck to you...");
 			sendBackNext();
 		end
 	elseif getItemAmount(4031009) > 0 and getItemAmount(4031012) == 0 then
-		addText("Still haven't met the person yet? Find #b#p1072001##k who's around #b#m101020000##k ");
-		addText("near Ellinia. Give the letter to him and he may let you know what to do.");
+		addText("Still haven't met the person yet? ");
+		addText("Find " .. blue(npcRef(1072001)) .. " who's around " .. blue(mapRef(101020000)) .. " near Ellinia. ");
+		addText("Give the letter to him and he may let you know what to do.");
 		sendNext();
 	elseif getItemAmount(4031009) == 0 and getItemAmount(4031012) > 0 then
-		addText("You got back here safely. Well done. I knew you'd pass the tests very easily...alright, I'll make you much ");
-		addText("stronger now. Before that, though...you need to choose one of the three paths that will be given to you. ");
+		addText("You got back here safely. ");
+		addText("Well done. ");
+		addText("I knew you'd pass the tests very easily...alright, I'll make you much stronger now. ");
+		addText("Before that, though...you need to choose one of the three paths that will be given to you. ");
 		addText("It will be a tough decision for you to make, but...if you have any questions about it, feel free to ask.");
 		sendNext();
 
+		choices = {
+			makeChoiceHandler("Please explain the characteristics of the Wizard of Fire and Poison.", function()
+				addText("Allow me to explain the Wizard of Fire and Poison. ");
+				addText("They specialize in fire and poision magic. ");
+				addText("Skills like " .. blue("Meditation") .. ", that allows you and your whole party's magic ability to increase for a time being, and " .. blue("MP Eater") .. ", which allows you a certain probability of absorbing some of your enemy's MP, are essential to all the attacking Magicians.");
+				sendNext();
+
+				addText("I'll explain to you a magic attack called " .. blue("Fire Arrow") .. ". ");
+				addText("It fires away flamearrows to the enemies, making it the most powerful skill available for the skills in the 2nd level. ");
+				addText("It'll work best on enemies that are weak against fire in general, for the damage will be much bigger. ");
+				addText("On the other hand, if you use them on enemies that are strong against fire, the damage will only be half of what it usually is, so keep that in mind.");
+				sendBackNext();
+
+				addText("I'll explain to you a magic attack called " .. blue("Poison Breath") .. ". ");
+				addText("It fires away venomous bubbles on the enemies, poisoning them in the process. ");
+				addText("Once poisoned, the enemy's HP will decrease little by little over time. ");
+				addText("If the magic doesn't work too well or the monster has high HP, it may be a good idea to fire enough to kill them with the overdose of poison.");
+				sendBackNext();
+			end),
+			makeChoiceHandler("Please explain the characteristics of the Wizard of Ice and Lightning.", function()
+				addText("Allow me to explain the Wizard of Ice and Lightning. ");
+				addText("They specialize in ice and lightning magic. ");
+				addText("Skills like " .. blue("Meditation") .. ", that allows you and your whole party's magic ability to increase for a time being, and " .. blue("MP Eater") .. ", which allows you a certain probability of absorbing some of your enemy's MP, are essential to all the attacking Magicians.");
+				sendNext();
+
+				addText("I'll explain to you a magic attack called " .. blue("Cold Beam") .. ". ");
+				addText("It fires away pieces of ice at the enemies, and although not quite as powerful as Fire Arrow, whoever's struck by it will be frozen for a short period of time. ");
+				addText("The damage increases much more if the enemy happens to be weak against ice. ");
+				addText("The opposite holds true, too, in that if the enemy is used to ice, the damage won't quite be as much, so keep that in mind.");
+				sendBackNext();
+
+				addText("I'll explain to you a magic attack called " .. blue("Thunder Bolt") .. ". ");
+				addText("It's the only 2nd-level skill for Magicians that can be considered the Total Spell, affecting a lot of monsters at once. ");
+				addText("It may not dish out a lot of damage, but the advantage is that it damages all the monsters around you. ");
+				addText("You can only attack upto six monsters at once, though. ");
+				addText("Still, it's a pretty incredible attack.");
+				sendBackNext();
+			end),
+			makeChoiceHandler("Please explain the characteristics of the Cleric.", function()
+				addText("Allow me to explain the Cleric. ");
+				addText("Clerics use religious magic on monsters through prayers and incantation. ");
+				addText("Skills like " .. blue("Bless") .. ", which temporarily improves the weapon def., magic def., accuracy, avoidability, and " .. blue("Invincible") .. ", which decreases the weapon damage for a certain amount, help magicians overcome their shortcomings ...");
+				sendNext();
+
+				addText("Cleric is the only Wizard that can perform recovering magic. ");
+				addText("Clerics are the only one that can do recovery magic. ");
+				addText("It's called " .. blue("Heal") .. ", and the more MP, INT's, and the skill level for this skill you have, the more HP you may recover. ");
+				addText("It also affects your party close by so it's a very useful skill, enabling you to continue to hunt without the help of the potion.");
+				sendBackNext();
+
+				addText("Clerics also have a magic attack called " .. blue("Holy Arrow") .. ". ");
+				addText("It's a spell that allows the Cleric to fire away phantom arrows at the monsters. ");
+				addText("The damage isn't too great, but it can apply tremendous damage to the undead's and other evil-based monsters. ");
+				addText("Those monsters are very weak against holy attack. ");
+				addText("What do you think, isn't it interesting, right?");
+				sendBackNext();
+			end),
+			makeChoiceHandler("I'll choose my occupation!", function()
+				choices = {
+					makeChoiceHandler("The Wizard of Fire and Poison", function()
+						addText("So you want to make the 2nd job advancement as the " .. blue("Wizard of Fire and Poison") .. "? ");
+						addText("Once you have made your decision, you can't go back and change your job anymore. ");
+						addText("Are you sure about the decision?");
+						answer = askYesNo();
+
+						if answer == answer_no then
+							addText("Really? ");
+							addText("Have to give more thought to it, huh? ");
+							addText("Take your time, take your time. ");
+							addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
+							sendNext();
+						else
+							if getSp() > (getLevel() - 30) * 3 then
+								addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many SP in store. ");
+								addText("Use more SP on the skills on the 1st level and then come back.");
+								sendNext();
+							else
+								setJob(210);
+								giveSp(1);
+								giveItem(4031012, -1);
+								addSlots(4, 1);
+								newMp = 450 + getRandomNumber(50);
+								setMaxMp(getRealMaxMp() + newMp);
+
+								addText("From here on out, you have become the " .. blue("Wizard of Fire and Poison") .. "... ");
+								addText("Wizards use high intelligence and the power of nature all around us to take down the enemies...please continue your studies, for one day I may make you much more powerful with my own power...");
+								sendNext();
+
+								addText("I have just given you a book that gives you the list of skills you can acquire as the Wizard of Fire and Poison...");
+								addText("I've also extended your etc. inventory by added a whole row to it, along with your maximum MP...go see it for yourself.");
+								sendBackNext();
+
+								addText("I have also given you a little bit of " .. blue("SP") .. ". ");
+								addText("Open the " .. blue("Skill Menu") .. " located at the bottomleft corner. ");
+								addText("You'll be able to boost up the newly-acquired 2nd level skills. ");
+								addText("A word of warning though: You can't boost them up all at once. ");
+								addText("Some of the skills are only available after you have learned other skills. ");
+								addText("Make sure to remember that.");
+								sendBackNext();
+
+								addText("The Wizards have to be strong. ");
+								addText("But remember that you can't abuse that power and use it on a weakling. ");
+								addText("Please use your enormous power the right way, because...for you to use that the right way, that is much harder than just getting stronger. ");
+								addText("Find me after you have advanced much further ...");
+								sendBackNext();
+							end
+						end
+					end),
+					makeChoiceHandler("The Wizard of Ice and Lightning", function()
+						addText("So you want to make the 2nd job advancement as the " .. blue("Wizard of Ice and Lightning") .. "? ");
+						addText("Once you have made your decision, you can't go back and change your job anymore. ");
+						addText("Are you sure about the decision?");
+						answer = askYesNo();
+
+						if answer == answer_no then
+							addText("Really? ");
+							addText("Have to give more thought to it, huh? ");
+							addText("Take your time, take your time. ");
+							addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
+							sendNext();
+						else
+							if getSp() > (getLevel() - 30) * 3 then
+								addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many SP in store. ");
+								addText("Use more SP on the skills on the 1st level and then come back.");
+								sendNext();
+							else
+								setJob(220);
+								giveSp(1);
+								giveItem(4031012, -1);
+								addSlots(4, 1);
+								newMp = 450 + getRandomNumber(50);
+								setMaxMp(getRealMaxMp() + newMp);
+
+								addText("From here on out, you have become the " .. blue("Wizard of Ice and Lightning") .. "... ");
+								addText("Wizards use high intelligence and the power of nature all around us to take down the enemies...please continue your studies, for one day I may make you much more powerful with my own power...");
+								sendNext();
+
+								addText("I have just given you a book that gives you the list of skills you can acquire as the Wizard of Ice and Lightning...");
+								addText("I've also extended your etc. inventory by added a whole row to it. ");
+								addText("Your maximum MP has gone up, too. ");
+								addText("Go see for it yourself.");
+								sendBackNext();
+
+								addText("I have also given you a little bit of " .. blue("SP") .. ". ");
+								addText("Open the " .. blue("Skill Menu") .. " located at the bottomleft corner. ");
+								addText("You'll be able to boost up the newly-acquired 2nd level skills. ");
+								addText("A word of warning though: You can't boost them up all at once. ");
+								addText("Some of the skills are only available after you have learned other skills. ");
+								addText("Make sure to remember that.");
+								sendBackNext();
+
+								addText("The Wizards have to be strong. ");
+								addText("But remember that you can't abuse that power and use it on a weakling. ");
+								addText("Please use your enormous power the right way, because...for you to use that the right way, that is much harder than just getting stronger. ");
+								addText("Find me after you have advanced much further. ");
+								addText("I'll be waiting ...");
+								sendBackNext();
+							end
+						end
+					end),
+					makeChoiceHandler("Cleric", function()
+						addText("So you want to make the 2nd job advancement as the " .. blue("Cleric") .. "? ");
+						addText("Once you have made your decision, you can't go back and change your job anymore. ");
+						addText("Are you sure about the decision?");
+						answer = askYesNo();
+
+						if answer == answer_no then
+							addText("Really? ");
+							addText("Have to give more thought to it, huh? ");
+							addText("Take your time, take your time. ");
+							addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
+							sendNext();
+						else
+							if getSp() > (getLevel() - 30) * 3 then
+								addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many SP in store. ");
+								addText("Use more SP on the skills on the 1st level and then come back.");
+								sendNext();
+							else
+								setJob(230);
+								giveSp(1);
+								giveItem(4031012, -1);
+								addSlots(4, 1);
+								newMp = 450 + getRandomNumber(50);
+								setMaxMp(getRealMaxMp() + newMp);
+
+								addText("Alright, you're a " .. blue("Cleric") .. " from here on out. ");
+								addText("Clerics blow life into every living organism here with their undying faith in God. ");
+								addText("Never stop working on your faith...then one day, I'll help you become much more powerful...");
+								sendNext();
+
+								addText("I have just given you a book that gives you the list of skills you can acquire as the Cleric...");
+								addText("I've also extended your etc. inventory by added a whole row to it, along with your maximum MP...go see it for yourself.");
+								sendBackNext();
+
+								addText("I have also given you a little bit of " .. blue("SP") .. ". ");
+								addText("Open the " .. blue("Skill Menu") .. " located at the bottomleft corner. ");
+								addText("You'll be able to boost up the newly-acquired 2nd level skills. ");
+								addText("A word of warning though: You can't boost them up all at once. ");
+								addText("Some of the skills are only available after you have learned other skills. ");
+								addText("Make sure to remember that.");
+								sendBackNext();
+
+								addText("The Cleric needs more faith than anything else. ");
+								addText("Keep your strong faith in God and treat everyone with respect and dignity they deserve. ");
+								addText("Keep working hard and you may one day earn more religious magic power...alright...please find me after you have made more strides. ");
+								addText("I'll be waiting for you...");
+								sendBackNext();
+							end
+						end
+					end),
+				};
+
+				addText("Hmmm, have you made up your mind? ");
+				addText("Please select your occupation for the 2nd job advancement.\r\n");
+				addText(blue(choiceList(choices)));
+				choice = askChoice();
+
+				selectChoice(choices, choice);
+			end),
+		};
+
 		addText("Alright, when you have made your decision, click on [I'll choose my occupation!] at the very bottom...\r\n");
-		addText("#L0##bPlease explain the characteristics of the Wizard of Fire and Poison.#l#k\r\n");
-		addText("#L1##bPlease explain the characteristics of the Wizard of Ice and Lightning.#l#k\r\n");
-		addText("#L2##bPlease explain the characteristics of the Cleric.#l#k\r\n");
-		addText("#L3##bI'll choose my occupation!#l#k\r\n");
-		local choice = askChoice();
+		addText(blue(choiceList(choices)));
+		choice = askChoice();
 
-		if choice == 0 then
-			addText("Allow me to explain the Wizard of Fire and Poison. They specialize in fire and poision magic. Skills like ");
-			addText("#bMeditation#k, that allows you and your whole party's magic ability to increase for a time being, and ");
-			addText("#bMP Eater#k, which allows you a certain probability of absorbing some of your enemy's MP, are essential ");
-			addText("to all the attacking Magicians.");
-			sendNext();
-
-			addText("I'll explain to you a magic attack called #bFire Arrow#k. It fires away flamearrows to the enemies, ");
-			addText("making it the most powerful skill available for the skills in the 2nd level. It'll work best on enemies that are ");
-			addText("weak against fire in general, for the damage will be much bigger. On the other hand, if you use them on enemies ");
-			addText("that are strong against fire, the damage will only be half of what it usually is, so keep that in mind.");
-			sendBackNext();
-
-			addText("I'll explain to you a magic attack called #bPoison Breath#k. It fires away venomous bubbles on the enemies, ");
-			addText("poisoning them in the process. Once poisoned, the enemy's HP will decrease little by little over time. ");
-			addText("If the magic doesn't work too well or the monster has high HP, it may be a good idea to fire enough ");
-			addText("to kill them with the overdose of poison.");
-			sendBackNext();
-		elseif choice == 1 then
-			addText("Allow me to explain the Wizard of Ice and Lightning. They specialize in ice and lightning magic. Skills like ");
-			addText("#bMeditation#k, that allows you and your whole party's magic ability to increase for a time being, and ");
-			addText("#bMP Eater#k, which allows you a certain probability of absorbing some of your enemy's MP, are essential ");
-			addText("to all the attacking Magicians.");
-			sendNext();
-
-			addText("I'll explain to you a magic attack called #bCold Beam#k. It fires away pieces of ice at the enemies, and although ");
-			addText("not quite as powerful as Fire Arrow, whoever's struck by it will be frozen for a short period of time. ");
-			addText("The damage increases much more if the enemy happens to be weak against ice. The opposite holds true, too, ");
-			addText("in that if the enemy is used to ice, the damage won't quite be as much, so keep that in mind.");
-			sendBackNext();
-
-			addText("I'll explain to you a magic attack called #bThunder Bolt#k. It's the only 2nd-level skill for Magicians that ");
-			addText("can be considered the Total Spell, affecting a lot of monsters at once. It may not dish out a lot of damage, ");
-			addText("but the advantage is that it damages all the monsters around you. You can only attack upto six monsters at once, though. ");
-			addText("Still, it's a pretty incredible attack.");
-			sendBackNext();
-		elseif choice == 2 then
-			addText("Allow me to explain the Cleric. Clerics use religious magic on monsters through prayers and incantation. ");
-			addText("Skills like #bBless#k, which temporarily improves the weapon def., magic def., accuracy, avoidability, and ");
-			addText("#bInvincible#k, which decreases the weapon damage for a certain amount, help magicians overcome their shortcomings ...");
-			sendNext();
-
-			addText("Cleric is the only Wizard that can perform recovering magic. Clerics are the only one that can do recovery magic. ");
-			addText("It's called #bHeal#k, and the more MP, INT's, and the skill level for this skill you have, the more HP ");
-			addText("you may recover. It also affects your party close by so it's a very useful skill, enabling you to continue to hunt ");
-			addText("without the help of the potion.");
-			sendBackNext();
-
-			addText("Clerics also have a magic attack called #bHoly Arrow#k. It's a spell that allows the Cleric to fire away phantom ");
-			addText("arrows at the monsters. The damage isn't too great, but it can apply tremendous damage to the undead's and other ");
-			addText("evil-based monsters. Those monsters are very weak against holy attack. What do you think, isn't it interesting, right?");
-			sendBackNext();
-		elseif choice == 3 then
-			addText("Now, have you made up your mind? Please select your occupation for the 2nd job advancement.\r\n");
-			addText("#L0##bThe Wizard of Fire and Poison#l#k\r\n");
-			addText("#L1##bThe Wizard of Ice and Lightning#l#k\r\n");
-			addText("#L2##bCleric#l#k\r\n");
-			local job = askChoice();
-
-			if job == 0 then
-				addText("So you want to make the 2nd job advancement as the #bWizard of Fire and Poison#k? Once you have ");
-				addText("made your decision, you can't go back and change your job anymore. Are you sure about the decision?");
-				yes = askYesNo();
-
-				if yes == 0 then
-					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
-					sendNext();
-				else
-					if getSp() > ((getLevel() - 30) * 3) then
-						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
-						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
-						sendNext();
-					else
-						setJob(210);
-						giveSp(1); -- Give necessary SP
-						giveItem(4031012, -1); -- Take The Proof of a Hero
-						addSlots(4, 1); -- Add inventory slot
-						newMp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
-						addText("From here on out, you have become the #bWizard of Fire and Poison#k... Wizards use high intelligence ");
-						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
-						addText("for one day I may make you much more powerful with my own power...");
-						sendNext();
-
-						addText("I have just given you a book that gives you the list of skills you can acquire as the Wizard of Fire and Poison...");
-						addText("I've also extended your etc. inventory by added a whole row to it, along with your maximum MP...go see it for yourself.");
-						sendBackNext();
-
-						addText("I have also given you a little bit of #bSP#k. Open the #bSkill Menu#k located at the bottomleft ");
-						addText("corner. You'll be able to boost up the newly-acquired 2nd level skills. A word of warning ");
-						addText("though: You can't boost them up all at once. Some of the skills are only available after ");
-						addText("you have learned other skills. Make sure to remember that.");
-						sendBackNext();
-
-						addText("The Wizards have to be strong. But remember that you can't abuse that power and use it on a ");
-						addText("weakling. Please use your enormous power the right way, because...for you to use that the right way, ");
-						addText("that is much harder than just getting stronger. Find me after you have advanced much further ...");
-						sendBackNext();
-					end
-				end
-			elseif job == 1 then
-				addText("So you want to make the 2nd job advancement as the #bWizard of Ice and Lightning#k? Once you have ");
-				addText("made your decision, you can't go back and change your job anymore. Are you sure about the decision?");
-				yes = askYesNo();
-
-				if yes == 0 then
-					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
-					sendNext();
-				else
-					if getSp() > ((getLevel() - 30) * 3) then
-						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
-						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
-						sendNext();
-					else
-						setJob(220);
-						giveSp(1); -- Give necessary SP
-						giveItem(4031012, -1); -- Take The Proof of a Hero
-						addSlots(4, 1); -- Add inventory slots
-						newMp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
-						addText("From here on out, you have become the #bWizard of Ice and Lightning#k... Wizards use high intelligence ");
-						addText("and the power of nature all around us to take down the enemies...please continue your studies, ");
-						addText("for one day I may make you much more powerful with my own power...");
-						sendNext();
-
-						addText("I have just given you a book that gives you the list of skills you can acquire as the Wizard of Ice and Lightning...");
-						addText("I've also extended your etc. inventory by added a whole row to it. Your maximum MP has gone up, too. Go see for it yourself.");
-						sendBackNext();
-
-						addText("I have also given you a little bit of #bSP#k. Open the #bSkill Menu#k located at the bottomleft ");
-						addText("corner. You'll be able to boost up the newly-acquired 2nd level skills. A word of warning ");
-						addText("though: You can't boost them up all at once. Some of the skills are only available after ");
-						addText("you have learned other skills. Make sure to remember that.");
-						sendBackNext();
-
-						addText("The Wizards have to be strong. But remember that you can't abuse that power and use it on a ");
-						addText("weakling. Please use your enormous power the right way, because...for you to use that the right way, ");
-						addText("that is much harder than just getting stronger. Find me after you have advanced much further. ");
-						addText("I'll be waiting ...");
-						sendBackNext();
-					end
-				end
-			elseif job == 2 then
-				addText("So you want to make the 2nd job advancement as the #Cleric#k? Once you have ");
-				addText("made your decision, you can't go back and change your job anymore. Are you sure about the decision?");
-				yes = askYesNo();
-
-				if yes == 0 then
-					addText("Really? Have to give more thought to it, huh? Take your time, take your time. ");
-					addText("This is not something you should take lightly ... come talk to me once you have made your decision.");
-					sendNext();
-				else
-					if getSp() > ((getLevel() - 30) * 3) then
-						addText("Hmmm...you have too much SP...you can't make the 2nd job advancement with that many ");
-						addText("SP in store. Use more SP on the skills on the 1st level and then come back.");
-						sendNext();
-					else
-						setJob(230);
-						giveSp(1); -- Necessary SP given
-						giveItem(4031012, -1); -- Take The Proof of a Hero
-						addSlots(4, 1); -- Add inventory slots
-						newMp = 450 + getRandomNumber(50); -- Extra MP given
-						setMaxMp(getRealMaxMp() + newMp); -- Add to current MP
-						addText("Alright, you're a #bCleric#k from here on out. Clerics blow life into every living organism here ");
-						addText("with their undying faith in God. Never stop working on your faith...then one day, I'll help you ");
-						addText("become much more powerful...");
-						sendNext();
-
-						addText("I have just given you a book that gives you the list of skills you can acquire as the Cleric...");
-						addText("I've also extended your etc. inventory by added a whole row to it, along with your maximum MP...go see it for yourself.");
-						sendBackNext();
-
-						addText("I have also given you a little bit of #bSP#k. Open the #bSkill Menu#k located at the bottomleft ");
-						addText("corner. You'll be able to boost up the newly-acquired 2nd level skills. A word of warning ");
-						addText("though: You can't boost them up all at once. Some of the skills are only available after ");
-						addText("you have learned other skills. Make sure to remember that.");
-						sendBackNext();
-
-						addText("The Cleric needs more faith than anything else. Keep your strong faith in God and treat everyone with respect ");
-						addText("and dignity they deserve. Keep working hard and you may one day earn more religious magic power...");
-						addText("alright...please find me after you have made more strides. I'll be waiting for you...");
-						sendBackNext();
-					end
-				end
-			end
-		end
+		selectChoice(choices, choice);
 	end
 else
-	addText("Would you like to have the power of nature in itself in your hands? It may be a long, ");
-	addText("hard road to be on, but you'll surely be rewarded in the end, reaching the very top ");
-	addText("of wizardry...");
+	addText("Would you like to have the power of nature in itself in your hands? ");
+	addText("It may be a long, hard road to be on, but you'll surely be rewarded in the end, reaching the very top of wizardry...");
 	sendNext();
 end
