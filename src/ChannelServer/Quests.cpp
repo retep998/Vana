@@ -37,11 +37,11 @@ namespace QuestOpcodes {
 	};
 }
 
-auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount) -> Result {
-	// TODO: Clean it up
+auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> Result {
 	player->send(QuestsPacket::giveItem(itemId, amount));
+
 	if (amount > 0) {
-		Inventory::addNewItem(player, itemId, amount);
+		Inventory::addNewItem(player, itemId, amount, variancePolicy);
 	}
 	else {
 		if (player->getInventory()->getItemAmount(itemId) < amount) {

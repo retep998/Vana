@@ -171,7 +171,6 @@ auto SummonHandler::damageSummon(Player *player, PacketReader &reader) -> void {
 		}
 
 		summon->doDamage(damage);
-		//SummonsPacket::damageSummon(player, summonId, unk, damage, mobId); // TODO: Find out if this packet even sends anymore
 		if (summon->getHp() <= 0) {
 			removeSummon(player, summonId, false, SummonMessages::None, true);
 		}

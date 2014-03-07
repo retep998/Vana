@@ -31,8 +31,23 @@ public:
 		return rand(std::numeric_limits<TNumber>::max(), std::numeric_limits<TNumber>::min());
 	}
 
+	template <>
+	static auto rand<bool>() -> bool {
+		return (rand<uint8_t>() & 1) == 1;
+	}
+
+	template <typename TDistribution>
+	static auto rand(TDistribution &dist) -> typename TDistribution::result_type {
+		return dist(s_rand.engine());
+	}
+
 	template <typename TNumber>
-	static auto rand(TNumber max, TNumber min = 0) -> TNumber {
+	static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_integral<TNumber>::value, TNumber> {
+		return s_rand.rand(max, min);
+	}
+
+	template <typename TNumber>
+	static auto rand(TNumber max, TNumber min = 0) -> std::enable_if_t<std::is_floating_point<TNumber>::value, TNumber> {
 		return s_rand.rand(max, min);
 	}
 

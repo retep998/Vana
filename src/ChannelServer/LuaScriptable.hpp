@@ -126,6 +126,7 @@ namespace LuaExports {
 	auto getMesos(lua_State *luaVm) -> int;
 	auto getOpenSlots(lua_State *luaVm) -> int;
 	auto giveItem(lua_State *luaVm) -> int;
+	auto giveItemGachapon(lua_State *luaVm) -> int;
 	auto giveMesos(lua_State *luaVm) -> int;
 	auto hasOpenSlotsFor(lua_State *luaVm) -> int;
 	auto isEquippedItem(lua_State *luaVm) -> int;

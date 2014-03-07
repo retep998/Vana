@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "ItemConstants.hpp"
 #include "Types.hpp"
 
 class Item;
@@ -25,7 +26,7 @@ class Player;
 
 namespace Inventory {
 	auto addItem(Player *player, Item *item, bool fromDrop = false) -> slot_qty_t;
-	auto addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, bool random = false) -> void;
+	auto addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy = Items::StatVariance::None) -> void;
 	auto takeItem(Player *player, item_id_t itemId, slot_qty_t howMany) -> void;
 	auto useItem(Player *player, item_id_t itemId) -> void;
 	auto takeItemSlot(Player *player, inventory_t inv, inventory_slot_t slot, slot_qty_t amount, bool takeStar = false) -> void;

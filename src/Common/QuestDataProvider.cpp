@@ -54,7 +54,8 @@ auto QuestDataProvider::loadQuestData() -> void {
 }
 
 auto QuestDataProvider::loadRequests() -> void {
-	// TODO: Process the state when you add quest requests
+	// TODO FIXME quest
+	// Process the state when you add quest requests
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("quest_requests"));
 

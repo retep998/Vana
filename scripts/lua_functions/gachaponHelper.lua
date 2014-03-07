@@ -30,9 +30,9 @@ function gachapon(items, gachItem)
 	elseif getItemAmount(gachItem) >= 1 then
 		addText("You have a " .. blue(itemRef(gachItem)) .. ". ");
 		addText("Would you like to use it?");
-		yes = askYesNo();
+		answer = askYesNo();
 
-		if yes == 1 then
+		if answer == answer_yes then
 			for i = 1, 4 do
 				if getOpenSlots(i) == 0 then
 					addText("Please make room on your item inventory and then try again.");
@@ -53,8 +53,7 @@ function gachapon(items, gachItem)
 			end
 			
 			giveItem(gachItem, -1);
-			-- TODO FIXME add item stat randomization
-			giveItem(item[1], item["qty"]);
+			giveItemGachapon(item[1], item["qty"]);
 
 			addText("You have obtained " .. blue(itemRef(item[1])) .. ".");
 			sendNext();

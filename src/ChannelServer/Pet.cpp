@@ -98,7 +98,7 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 
 auto Pet::startTimer() -> void {
 	Timer::Id id(Timer::Types::PetTimer, getIndex().get(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getPetInfo(getItemId())->hunger) * 60); // TODO: Better formula
+	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getPetInfo(getItemId())->hunger) * 60); // TODO FIXME formula
 	Timer::Timer::create([this](const time_point_t &now) { this->modifyFullness(-1, true); }, id, m_player->getTimerContainer(), seconds_t(0), repeat);
 }
 

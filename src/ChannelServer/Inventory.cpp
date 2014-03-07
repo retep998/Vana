@@ -84,7 +84,7 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 	return item->getAmount();
 }
 
-auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, bool random) -> void {
+auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> void {
 	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
 	if (itemInfo == nullptr) {
 		return;
@@ -111,7 +111,7 @@ auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, 
 
 	Item *item = nullptr;
 	if (GameLogicUtilities::isEquip(itemId)) {
-		item = new Item(itemId, random, player->hasGmBenefits());
+		item = new Item(itemId, variancePolicy, player->hasGmBenefits());
 		if (GameLogicUtilities::isMount(itemId)) {
 			player->getMounts()->addMount(itemId);
 		}

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "Inventory.hpp"
+#include "ItemConstants.hpp"
 #include "ItemDataProvider.hpp"
 #include "Maps.hpp"
 #include "NpcHandler.hpp"
@@ -381,7 +382,7 @@ auto ManagementFunctions::item(Player *player, const string_t &args) -> ChatResu
 		if (ItemDataProvider::getInstance().getItemInfo(itemId) != nullptr) {
 			string_t countString = matches[2];
 			uint16_t count = countString.empty() ? 1 : atoi(countString.c_str());
-			Inventory::addNewItem(player, itemId, count, true);
+			Inventory::addNewItem(player, itemId, count, Items::StatVariance::Gachapon);
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid item: " + rawItem);

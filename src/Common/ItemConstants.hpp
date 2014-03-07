@@ -190,28 +190,15 @@ namespace Items {
 		};
 	}
 
-	namespace StatVariance {
-		const int16_t Str = 3;
-		const int16_t Dex = 3;
-		const int16_t Int = 3;
-		const int16_t Luk = 3;
-		const int16_t Hp = 5;
-		const int16_t Mp = 5;
-		const int16_t Watk = 5;
-		const int16_t Wdef = 5;
-		const int16_t Matk = 5;
-		const int16_t Mdef = 5;
-		const int16_t Acc = 3;
-		const int16_t Avoid = 3;
-		const int16_t Hands = 3;
-		const int16_t Speed = 3;
-		const int16_t Jump = 2;
-
-		namespace Chaos {
-			const int16_t Normal = 5;
-			const int16_t High = 10;
-		}
-	}
+	enum class StatVariance {
+		None,
+		Normal,
+		OnlyIncreaseWithGreatChance,
+		OnlyIncreaseWithAmazingChance,
+		Gachapon,
+		ChaosNormal,
+		ChaosHigh,
+	};
 
 	namespace MaxStats {
 		const int16_t Str = std::numeric_limits<int16_t>::max();

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "ItemConstants.hpp"
 #include "Types.hpp"
 #include <string>
 #include <vector>
@@ -68,7 +69,7 @@ public:
 	Item() = default;
 	Item(const soci::row &row);
 	Item(item_id_t itemId, slot_qty_t amount);
-	Item(item_id_t equipId, bool random, bool isGm);
+	Item(item_id_t equipId, Items::StatVariance variancePolicy, bool isGm);
 	Item(Item *item);
 
 	auto hasWarmSupport() const -> bool;
@@ -132,21 +133,21 @@ public:
 	auto setHammers(int32_t hammers) -> void;
 	auto setPetId(pet_id_t petId) -> void;
 	auto setExpirationTime(int64_t exp) -> void;
-	auto addStr(int16_t strength, bool onlyIfExists = false) -> void;
-	auto addDex(int16_t dexterity, bool onlyIfExists = false) -> void;
-	auto addInt(int16_t intelligence, bool onlyIfExists = false) -> void;
-	auto addLuk(int16_t luck, bool onlyIfExists = false) -> void;
-	auto addHp(int16_t hp, bool onlyIfExists = false) -> void;
-	auto addMp(int16_t mp, bool onlyIfExists = false) -> void;
-	auto addWatk(int16_t wAtk, bool onlyIfExists = false) -> void;
-	auto addWdef(int16_t wDef, bool onlyIfExists = false) -> void;
-	auto addMatk(int16_t mAtk, bool onlyIfExists = false) -> void;
-	auto addMdef(int16_t mDef, bool onlyIfExists = false) -> void;
-	auto addAccuracy(int16_t acc, bool onlyIfExists = false) -> void;
-	auto addAvoid(int16_t avoid, bool onlyIfExists = false) -> void;
-	auto addHands(int16_t hands, bool onlyIfExists = false) -> void;
-	auto addJump(int16_t jump, bool onlyIfExists = false) -> void;
-	auto addSpeed(int16_t speed, bool onlyIfExists = false) -> void;
+	auto addStr(int16_t strength) -> void;
+	auto addDex(int16_t dexterity) -> void;
+	auto addInt(int16_t intelligence) -> void;
+	auto addLuk(int16_t luck) -> void;
+	auto addHp(int16_t hp) -> void;
+	auto addMp(int16_t mp) -> void;
+	auto addWatk(int16_t wAtk) -> void;
+	auto addWdef(int16_t wDef) -> void;
+	auto addMatk(int16_t mAtk) -> void;
+	auto addMdef(int16_t mDef) -> void;
+	auto addAccuracy(int16_t acc) -> void;
+	auto addAvoid(int16_t avoid) -> void;
+	auto addHands(int16_t hands) -> void;
+	auto addJump(int16_t jump) -> void;
+	auto addSpeed(int16_t speed) -> void;
 	auto incAmount(slot_qty_t mod) -> void { m_amount += mod; }
 	auto decAmount(slot_qty_t mod) -> void { m_amount -= mod; }
 	auto incHammers() -> void { m_hammers++; }
@@ -159,7 +160,6 @@ public:
 	const static string_t Inventory;
 	const static string_t Storage;
 private:
-	auto testPerform(int16_t stat, bool onlyIfExists) -> bool;
 	auto testStat(int16_t stat, int16_t max) -> int16_t;
 	auto modifyFlags(bool add, int16_t flags) -> void;
 	auto testFlags(int16_t flags) const -> bool;
