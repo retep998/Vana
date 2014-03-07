@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterHeader.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
+#include "ItemConstants.hpp"
 #include "MapPacket.hpp"
 #include "Maps.hpp"
 #include "Mob.hpp"
@@ -151,6 +152,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("getMesos", &LuaExports::getMesos);
 	expose("getOpenSlots", &LuaExports::getOpenSlots);
 	expose("giveItem", &LuaExports::giveItem);
+	expose("giveItemGachapon", &LuaExports::giveItemGachapon);
 	expose("giveMesos", &LuaExports::giveMesos);
 	expose("hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
 	expose("isEquippedItem", &LuaExports::isEquippedItem);
@@ -838,6 +840,17 @@ auto LuaExports::giveItem(lua_State *luaVm) -> int {
 		amount = lua_tointeger(luaVm, 2);
 	}
 	bool success = Quests::giveItem(getPlayer(luaVm), itemId, amount) == Result::Successful;
+	lua_pushboolean(luaVm, success);
+	return 1;
+}
+
+auto LuaExports::giveItemGachapon(lua_State *luaVm) -> int {
+	item_id_t itemId = lua_tointeger(luaVm, 1);
+	int16_t amount = 1;
+	if (lua_isnumber(luaVm, 2)) {
+		amount = lua_tointeger(luaVm, 2);
+	}
+	bool success = Quests::giveItem(getPlayer(luaVm), itemId, amount, Items::StatVariance::Gachapon) == Result::Successful;
 	lua_pushboolean(luaVm, success);
 	return 1;
 }

@@ -38,11 +38,11 @@ Item::Item(item_id_t itemId, slot_qty_t amount) :
 {
 }
 
-Item::Item(item_id_t equipId, bool random, bool isGm) :
+Item::Item(item_id_t equipId, Items::StatVariance variancePolicy, bool isGm) :
 	m_id(equipId),
 	m_amount(1)
 {
-	EquipDataProvider::getInstance().setEquipStats(this, random, isGm);
+	EquipDataProvider::getInstance().setEquipStats(this, variancePolicy, isGm, true);
 }
 
 Item::Item(Item *item)
@@ -190,98 +190,64 @@ auto Item::testStat(int16_t stat, int16_t max) -> int16_t {
 	return stat < 0 ? 0 : (stat > max ? max : stat);
 }
 
-auto Item::addStr(int16_t strength, bool onlyIfExists) -> void {
-	if (testPerform(getStr(), onlyIfExists)) {
-		setStr(getStr() + strength);
-	}
+auto Item::addStr(int16_t strength) -> void {
+	setStr(getStr() + strength);
 }
 
-auto Item::addDex(int16_t dexterity, bool onlyIfExists) -> void {
-	if (testPerform(getDex(), onlyIfExists)) {
-		setDex(getDex() + dexterity);
-	}
+auto Item::addDex(int16_t dexterity) -> void {
+	setDex(getDex() + dexterity);
 }
 
-auto Item::addInt(int16_t intelligence, bool onlyIfExists) -> void {
-	if (testPerform(getInt(), onlyIfExists)) {
-		setInt(getInt() + intelligence);
-	}
+auto Item::addInt(int16_t intelligence) -> void {
+	setInt(getInt() + intelligence);
 }
 
-auto Item::addLuk(int16_t luck, bool onlyIfExists) -> void {
-	if (testPerform(getLuk(), onlyIfExists)) {
-		setLuk(getLuk() + luck);
-	}
+auto Item::addLuk(int16_t luck) -> void {
+	setLuk(getLuk() + luck);
 }
 
-auto Item::addHp(int16_t hp, bool onlyIfExists) -> void {
-	if (testPerform(getHp(), onlyIfExists)) {
-		setHp(getHp() + hp);
-	}
+auto Item::addHp(int16_t hp) -> void {
+	setHp(getHp() + hp);
 }
 
-auto Item::addMp(int16_t mp, bool onlyIfExists) -> void {
-	if (testPerform(getMp(), onlyIfExists)) {
-		setMp(getMp() + mp);
-	}
+auto Item::addMp(int16_t mp) -> void {
+	setMp(getMp() + mp);
 }
 
-auto Item::addWatk(int16_t wAtk, bool onlyIfExists) -> void {
-	if (testPerform(getWatk(), onlyIfExists)) {
-		setWatk(getWatk() + wAtk);
-	}
+auto Item::addWatk(int16_t wAtk) -> void {
+	setWatk(getWatk() + wAtk);
 }
 
-auto Item::addWdef(int16_t wDef, bool onlyIfExists) -> void {
-	if (testPerform(getWdef(), onlyIfExists)) {
-		setWdef(getWdef() + wDef);
-	}
+auto Item::addWdef(int16_t wDef) -> void {
+	setWdef(getWdef() + wDef);
 }
 
-auto Item::addMatk(int16_t mAtk, bool onlyIfExists) -> void {
-	if (testPerform(getMatk(), onlyIfExists)) {
-		setMatk(getMatk() + mAtk);
-	}
+auto Item::addMatk(int16_t mAtk) -> void {
+	setMatk(getMatk() + mAtk);
 }
 
-auto Item::addMdef(int16_t mDef, bool onlyIfExists) -> void {
-	if (testPerform(getMdef(), onlyIfExists)) {
-		setMdef(getMdef() + mDef);
-	}
+auto Item::addMdef(int16_t mDef) -> void {
+	setMdef(getMdef() + mDef);
 }
 
-auto Item::addAccuracy(int16_t acc, bool onlyIfExists) -> void {
-	if (testPerform(getAccuracy(), onlyIfExists)) {
-		setAccuracy(getAccuracy() + acc);
-	}
+auto Item::addAccuracy(int16_t acc) -> void {
+	setAccuracy(getAccuracy() + acc);
 }
 
-auto Item::addAvoid(int16_t avoid, bool onlyIfExists) -> void {
-	if (testPerform(getAvoid(), onlyIfExists)) {
-		setAvoid(getAvoid() + avoid);
-	}
+auto Item::addAvoid(int16_t avoid) -> void {
+	setAvoid(getAvoid() + avoid);
 }
 
-auto Item::addHands(int16_t hands, bool onlyIfExists) -> void {
-	if (testPerform(getHands(), onlyIfExists)) {
-		setHands(getHands() + hands);
-	}
+auto Item::addHands(int16_t hands) -> void {
+	setHands(getHands() + hands);
 }
 
-auto Item::addJump(int16_t jump, bool onlyIfExists) -> void {
-	if (testPerform(getJump(), onlyIfExists)) {
-		setJump(getJump() + jump);
-	}
+auto Item::addJump(int16_t jump) -> void {
+	setJump(getJump() + jump);
 }
 
-auto Item::addSpeed(int16_t speed, bool onlyIfExists) -> void {
-	if (testPerform(getSpeed(), onlyIfExists)) {
-		setSpeed(getSpeed() + speed);
-	}
-}
-
-auto Item::testPerform(int16_t stat, bool onlyIfExists) -> bool {
-	return !onlyIfExists || stat != 0;
+auto Item::addSpeed(int16_t speed) -> void {
+	setSpeed(getSpeed() + speed);
 }
 
 auto Item::setAmount(int16_t amount) -> void {

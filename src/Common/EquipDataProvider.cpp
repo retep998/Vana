@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StringUtilities.hpp"
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <string>
 
 auto EquipDataProvider::loadData() -> void {
@@ -95,33 +96,83 @@ auto EquipDataProvider::loadEquips() -> void {
 	}
 }
 
-auto EquipDataProvider::setEquipStats(Item *equip, bool random, bool isGm) const -> void {
+auto EquipDataProvider::setEquipStats(Item *equip, Items::StatVariance variancePolicy, bool isGm, bool isItemInitialization) const -> void {
 	const EquipInfo &ei = getEquipInfo(equip->getId());
-	equip->setSlots(ei.slots);
+	if (isItemInitialization) {
+		equip->setSlots(ei.slots);
+	}
 
-	auto getStat = [random, isGm](int16_t equipAmount, int16_t variance) -> int16_t {
-		if (!random) return equipAmount;
-		if (equipAmount == 0) return 0;
+	auto getStat = [variancePolicy, isItemInitialization, isGm](int16_t baseEquipAmount, int16_t equipAmount) -> int16_t {
+		int16_t amount = isItemInitialization ? baseEquipAmount : equipAmount;
 
-		int16_t mod = isGm ? variance : Randomizer::rand<int16_t>(variance, -variance);
-		return equipAmount + mod;
+		if (amount == 0 || variancePolicy == Items::StatVariance::None) {
+			return amount;
+		}
+
+		bool increaseOnly = false;
+		if (variancePolicy == Items::StatVariance::OnlyIncreaseWithGreatChance) {
+			if (!isGm && Randomizer::rand<int8_t>(10, 1) <= 3) {
+				return amount;
+			}
+			increaseOnly = true;
+		}
+		else if (variancePolicy == Items::StatVariance::OnlyIncreaseWithAmazingChance) {
+			if (!isGm && Randomizer::rand<int8_t>(10, 1) == 1) {
+				return amount;
+			}
+			increaseOnly = true;
+		}
+
+		int16_t variance = -1;
+		switch (variancePolicy) {
+			case Items::StatVariance::Gachapon:
+				variance = std::min<int16_t>(amount / 5 + 1, 7);
+				break;
+			case Items::StatVariance::ChaosNormal:
+				variance = 5;
+				break;
+			case Items::StatVariance::ChaosHigh:
+				variance = 7;
+				break;
+			default:
+				variance = std::min<int16_t>(amount / 10 + 1, 5);
+		}
+		
+		if (!isGm) {
+			// This code turns a single event into a series of events to give a normal distribution
+			// e.g. 1 event of [0, 5] is turned into 7 events of [0, 1]
+			// This makes it like flipping 7 coins instead of rolling a single die
+
+			std::binomial_distribution<> dist(variance + 2, .5);
+			variance = Randomizer::rand(dist) - 2;
+		}
+
+		if (variance <= 0) {
+			return amount;
+		}
+
+		if (isGm || increaseOnly || Randomizer::rand<bool>()) {
+			return amount + variance;
+		}
+
+		return amount - variance;
 	};
 
-	equip->setStr(getStat(ei.istr, Items::StatVariance::Str));
-	equip->setDex(getStat(ei.idex, Items::StatVariance::Dex));
-	equip->setInt(getStat(ei.iint, Items::StatVariance::Int));
-	equip->setLuk(getStat(ei.iluk, Items::StatVariance::Luk));
-	equip->setHp(getStat(ei.ihp, Items::StatVariance::Hp));
-	equip->setMp(getStat(ei.imp, Items::StatVariance::Mp));
-	equip->setWatk(getStat(ei.iwAtk, Items::StatVariance::Watk));
-	equip->setMatk(getStat(ei.imAtk, Items::StatVariance::Matk));
-	equip->setWdef(getStat(ei.iwDef, Items::StatVariance::Wdef));
-	equip->setMdef(getStat(ei.imDef, Items::StatVariance::Mdef));
-	equip->setAccuracy(getStat(ei.iacc, Items::StatVariance::Acc));
-	equip->setAvoid(getStat(ei.iavo, Items::StatVariance::Avoid));
-	equip->setHands(getStat(ei.ihand, Items::StatVariance::Hands));
-	equip->setJump(getStat(ei.ijump, Items::StatVariance::Jump));
-	equip->setSpeed(getStat(ei.ispeed, Items::StatVariance::Speed));
+	equip->setStr(getStat(ei.istr, equip->getStr()));
+	equip->setDex(getStat(ei.idex, equip->getDex()));
+	equip->setInt(getStat(ei.iint, equip->getInt()));
+	equip->setLuk(getStat(ei.iluk, equip->getLuk()));
+	equip->setHp(getStat(ei.ihp, equip->getHp()));
+	equip->setMp(getStat(ei.imp, equip->getMp()));
+	equip->setWatk(getStat(ei.iwAtk, equip->getWatk()));
+	equip->setMatk(getStat(ei.imAtk, equip->getMatk()));
+	equip->setWdef(getStat(ei.iwDef, equip->getWdef()));
+	equip->setMdef(getStat(ei.imDef, equip->getMdef()));
+	equip->setAccuracy(getStat(ei.iacc, equip->getAccuracy()));
+	equip->setAvoid(getStat(ei.iavo, equip->getAvoid()));
+	equip->setHands(getStat(ei.ihand, equip->getHands()));
+	equip->setJump(getStat(ei.ijump, equip->getJump()));
+	equip->setSpeed(getStat(ei.ispeed, equip->getSpeed()));
 }
 
 auto EquipDataProvider::canEquip(item_id_t itemId, gender_id_t gender, job_id_t job, int16_t str, int16_t dex, int16_t intt, int16_t luk, fame_t fame) const -> bool {

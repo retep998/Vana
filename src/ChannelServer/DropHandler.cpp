@@ -113,7 +113,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 					}
 				}
 
-				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, true, player != nullptr && player->hasGmBenefits()) : Item(itemId, amount));
+				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, Items::StatVariance::Normal, player != nullptr && player->hasGmBenefits()) : Item(itemId, amount));
 				drop = new Drop(mapId, f, pos, playerId);
 
 				if (questId > 0) {

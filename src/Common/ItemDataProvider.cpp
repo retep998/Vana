@@ -379,31 +379,9 @@ auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScr
 		if (equip->getSlots() > 0) {
 			succeed = 0;
 			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
-				bool increment = gmScroller || Randomizer::rand<uint8_t>(99) < 50U;
-				int16_t variance = Items::StatVariance::Chaos::Normal;
-				auto getVariance = [gmScroller, increment, variance]() -> int16_t {
-					return gmScroller ? variance : Randomizer::rand<int16_t>(increment ? variance : 0, increment ? 0 : -variance);
-				};
-
-				// Gives/takes stats on every stat on the item
-				equip->addStr(getVariance(), true);
-				equip->addDex(getVariance(), true);
-				equip->addInt(getVariance(), true);
-				equip->addLuk(getVariance(), true);
-				equip->addHp(getVariance(), true);
-				equip->addMp(getVariance(), true);
-				equip->addWatk(getVariance(), true);
-				equip->addMatk(getVariance(), true);
-				equip->addWdef(getVariance(), true);
-				equip->addMdef(getVariance(), true);
-				equip->addAvoid(getVariance(), true);
-				equip->addAccuracy(getVariance(), true);
-				equip->addHands(getVariance(), true);
-				equip->addJump(getVariance(), true);
-				equip->addSpeed(getVariance(), true);
+				EquipDataProvider::getInstance().setEquipStats(equip, Items::StatVariance::ChaosNormal, gmScroller, false);
 
 				equip->incScrolls();
-				equip->decSlots();
 				succeed = 1;
 			}
 		}
@@ -448,7 +426,6 @@ auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScr
 				equip->addJump(itemInfo.ijump);
 				equip->addSpeed(itemInfo.ispeed);
 				equip->incScrolls();
-				equip->decSlots();
 			}
 		}
 	}
@@ -457,9 +434,10 @@ auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScr
 		if (itemInfo.cursed > 0 && Randomizer::rand<uint16_t>(99) < itemInfo.cursed) {
 			cursed = true;
 		}
-		else if (!whiteScroll && scrollTakesSlot) {
-			equip->decSlots();
-		}
+	}
+
+	if (!whiteScroll && scrollTakesSlot) {
+		equip->decSlots();
 	}
 }
 

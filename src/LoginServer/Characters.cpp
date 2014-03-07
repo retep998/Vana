@@ -188,7 +188,7 @@ auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t 
 	ItemDbInformation info(slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
-		Item equip(itemId, false, false);
+		Item equip(itemId, Items::StatVariance::None, false);
 		equip.databaseInsert(sql, info);
 	}
 	else {

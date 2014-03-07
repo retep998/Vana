@@ -135,7 +135,8 @@ auto Session::handleWrite(const boost::system::error_code &error, size_t bytesTr
 
 auto Session::handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void {
 	if (!error) {
-		// TODO: Figure out how to distinguish between client versions and server versions, can use this after
+		// TODO FIXME
+		// Figure out how to distinguish between client versions and server versions, can use this after
 		//if (!m_decoder.validPacket(m_buffer.get())) {
 		//	// Hacking or trying to crash server
 		//	disconnect();
