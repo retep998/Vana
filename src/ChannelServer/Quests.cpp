@@ -38,18 +38,21 @@ namespace QuestOpcodes {
 }
 
 auto Quests::giveItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> Result {
-	player->send(QuestsPacket::giveItem(itemId, amount));
-
 	if (amount > 0) {
+		if (!player->getInventory()->hasOpenSlotsFor(itemId, amount)) {
+			return Result::Failure;
+		}
 		Inventory::addNewItem(player, itemId, amount, variancePolicy);
 	}
 	else {
-		if (player->getInventory()->getItemAmount(itemId) < amount) {
+		if (player->getInventory()->getItemAmount(itemId) < -amount) {
 			// Player does not have (enough of) what is being taken
 			return Result::Failure;
 		}
 		Inventory::takeItem(player, itemId, -amount);
 	}
+
+	player->send(QuestsPacket::giveItem(itemId, amount));
 	return Result::Successful;
 }
 
