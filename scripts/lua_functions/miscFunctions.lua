@@ -42,11 +42,6 @@ function selectElement(tbl)
 	return tbl[getRandomNumber(#tbl)];
 end
 
-function separateDigits(num)
-	local left, num, right = string.match(n, "^([^%d]*%d)(%d*)(.-)$")
-	return left .. (num:reverse():gsub("(%d%d%d)", "%1,"):reverse()) .. right
-end
-
 function getInstanceMinutes()
 	local g = getInstanceTime();
 	g = (g - (g % 60)) / 60 + 1;

@@ -33,6 +33,8 @@ m = getMap();
 destinationMap = nil;
 item = nil;
 instanceName = nil;
+-- TODO FIXME implement some kind of configuration or feature testing for this instead of having it be a constant
+freeFlights = true;
 
 if m == 101000300 then
 	destinationMap = 101000301;
@@ -75,14 +77,23 @@ if setInstance(instanceName) then
 	timeLeft = getInstanceMinutes();
 	instanceTime = getInstanceVariable("boat_time");
 	boardTime = instanceTime - 5;
+	
 	if timeLeft <= 1 then
 		addText("This ship is getting ready for takeoff. ");
 		addText("I'm sorry, but you'll have to get on the next ride. ");
 		addText("The ride schedule is available through the usher at the ticketing booth.");
 		sendNext();
 	elseif timeLeft <= boardTime then
-		addText("This will not be a short flight, so if you need to take care of some things, I suggest you do that first before getting on board. ");
-		addText("Do you still wish to board the ship?");
+		if freeFlights then
+			addText("This will not be a short flight, so if you need to take care of some things, I suggest you do that first before getting on board. ");
+			addText("Do you still wish to board the ship?");
+		else
+			addText("It looks like there's plenty of room for the ride. ");
+			addText("Please have your ticket ready so I can let you in. ");
+			addText("The ride will be long, but you'll get to your destination just fine. ");
+			addText("What do you think? ");
+			addText("Do you want to get on the ride?");
+		end
 		answer = askYesNo();
 
 		if answer == answer_yes then
@@ -94,12 +105,23 @@ if setInstance(instanceName) then
 				addText("The ride schedule is available through the usher at the ticketing booth.");
 				sendNext();
 			elseif timeLeft <= boardTime then
-				-- TODO FIXME add player to instance, take item if not free rides (pre-Magatia)
-				setMap(destinationMap);
+				if not freeFlights and not giveItem(item, -1) then
+					addText("Oh no... ");
+					addText("I don't think you have the ticket with you. ");
+					addText("I can't let you in without it. ");
+					addText("Please buy the ticket at the ticketing booth.");
+					sendNext();
+				else
+					setMap(destinationMap);
+				end
 			else
 				addText("We will begin boarding " .. boardTime .. " minutes before the takeoff. ");
 				addText("Please be patient and wait for a few minutes. ");
-				addText("Be aware that the ship will take off right on time, and we stop boarding 1 minute before that, so please make sure to be here on time.");
+				if freeFlights then
+					addText("Be aware that the ship will take off right on time, and we stop boarding 1 minute before that, so please make sure to be here on time.");
+				else
+					addText("Be aware that the ship will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
+				end
 				sendNext();
 			end
 		else
@@ -109,7 +131,11 @@ if setInstance(instanceName) then
 	else
 		addText("We will begin boarding " .. boardTime .. " minutes before the takeoff. ");
 		addText("Please be patient and wait for a few minutes. ");
-		addText("Be aware that the ship will take off right on time, and we stop boarding 1 minute before that, so please make sure to be here on time.");
+		if freeFlights then
+			addText("Be aware that the ship will take off right on time, and we stop boarding 1 minute before that, so please make sure to be here on time.");
+		else
+			addText("Be aware that the ship will take off right on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
+		end
 		sendNext();
 	end
 

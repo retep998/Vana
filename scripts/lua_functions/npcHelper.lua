@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 -- Other commands that may or may not do anything:
 -- #x
--- #z<itemId>#
 -- #i<itemId>#
 
 previousBlack = 0;
