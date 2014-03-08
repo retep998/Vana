@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/boatHelper.lua");
 
 function beginInstance()
 	addInstanceMap(101000301);
@@ -36,7 +36,7 @@ end
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if isInstanceMap(newMap) then
 		addInstancePlayer(playerId);
-	else
+	elseif not isInstanceMap(oldMap) then
 		removeInstancePlayer(playerId);
 	end
 end
