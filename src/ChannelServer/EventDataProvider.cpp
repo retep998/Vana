@@ -72,6 +72,9 @@ auto EventDataProvider::loadInstances() -> void {
 	startInstance("kerningToNlcBoarding", nearestFive, minutes_t(5));
 	startInstance("nlcToKerningBoarding", nearestFive, minutes_t(5));
 
+	startInstance("kerningToCbdBoarding", nearestFive, minutes_t(5));
+	startInstance("cbdToKerningBoarding", nearestFive, minutes_t(5));
+
 	startInstance("elliniaToOrbisBoarding", nearestFifteen, minutes_t(15));
 	startInstance("orbisToElliniaBoarding", nearestFifteen, minutes_t(15));
 
@@ -86,7 +89,6 @@ auto EventDataProvider::loadInstances() -> void {
 
 	// TODO FIXME boats
 	// Implement Ereve <-> Ellinia and Ereve <-> Orbis
-	// Implement Singapore <-> Kerning
 
 	std::cout << "DONE" << std::endl;
 }
@@ -101,6 +103,7 @@ auto EventDataProvider::clearInstances() -> void {
 
 	auto instances = {
 		"kerningToNlcBoarding", "nlcToKerningBoarding",
+		"kerningToCbdBoarding", "cbdToKerningBoarding",
 		"elliniaToOrbisBoarding", "orbisToElliniaBoarding",
 		"ludiToOrbisBoarding", "orbisToLudiBoarding",
 		"leafreToOrbisBoarding", "orbisToLeafreBoarding",
