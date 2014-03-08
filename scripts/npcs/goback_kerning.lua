@@ -15,22 +15,23 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
+-- Xinga, sends player back to Kerning (only in waiting room)
 
-function beginInstance()
-	addInstanceMap(600010002);
-end
+dofile("scripts/lua_functions/npcHelper.lua");
 
-function changeMap(playerId, newMap, oldMap, isPartyLeader)
-	if isInstanceMap(newMap) then
-		addInstancePlayer(playerId);
-	else
-		removeInstancePlayer(playerId);
-	end
-end
+addText("The plane will be taking off soon. ");
+addText("Will you leave now? ");
+addText("You will have buy the plane ticket again to come in here.");
+answer = askYesNo();
 
-function instanceTimerEnd(fromTimer)
-	if getInstancePlayerCount() > 0 then
-		createInstance("nlcToKerningTrip", 60, false);
-		passPlayersBetweenInstances(600010003);
-	end
+if answer == answer_yes then
+	addText("I have already told you the ticket is not refunable~ hope to see you again~");
+	sendOk();
+
+	setMap(103000000);
+else
+	addText("Please hold on for a sec.");
+	addText("The plane will be taking off soon. ");
+	addText("Thanks for your patience.");
+	sendOk();
 end

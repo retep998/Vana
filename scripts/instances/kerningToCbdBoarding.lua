@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
 function beginInstance()
-	addInstanceMap(600010002);
+	addInstanceMap(540010100);
 end
 
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
@@ -30,7 +30,7 @@ end
 
 function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
-		createInstance("nlcToKerningTrip", 60, false);
-		passPlayersBetweenInstances(600010003);
+		createInstance("kerningToCbdTrip", 60, false);
+		passPlayersBetweenInstances(540010101);
 	end
 end

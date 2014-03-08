@@ -15,22 +15,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
-
 function beginInstance()
-	addInstanceMap(600010002);
-end
-
-function changeMap(playerId, newMap, oldMap, isPartyLeader)
-	if isInstanceMap(newMap) then
-		addInstancePlayer(playerId);
-	else
-		removeInstancePlayer(playerId);
-	end
+	addInstanceMap(540010002);
 end
 
 function instanceTimerEnd(fromTimer)
 	if getInstancePlayerCount() > 0 then
-		createInstance("nlcToKerningTrip", 60, false);
-		passPlayersBetweenInstances(600010003);
+   		moveAllPlayers(103000000);
+		removeAllInstancePlayers();
+  	end
+end
+
+function changeMap(playerId, newMap, oldMap, isPartyLeader)
+	if not isInstanceMap(newMap) then
+		removeInstancePlayer(playerId);
+	elseif not isInstanceMap(oldMap) then
+		addInstancePlayer(playerId);
 	end
 end
