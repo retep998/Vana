@@ -23,7 +23,7 @@ end
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if isInstanceMap(newMap) then
 		addInstancePlayer(playerId);
-	else
+	elseif not isInstanceMap(oldMap) then
 		removeInstancePlayer(playerId);
 	end
 end

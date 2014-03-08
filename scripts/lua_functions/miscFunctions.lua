@@ -41,33 +41,3 @@ end
 function selectElement(tbl)
 	return tbl[getRandomNumber(#tbl)];
 end
-
-function getInstanceMinutes()
-	local g = getInstanceTime();
-	g = (g - (g % 60)) / 60 + 1;
-	return g;
-end
-
-function doElevatorDoorCheck(mapId)
-	state = nil;
-	if getInstanceMinutes() <= 1 then
-		state = 0;
-	else
-		state = 1;
-	end
-
-	if getReactorState(mapId, 2208004) ~= state then
-		setReactorState(mapId, 2208004, state);
-	end
-end
-
-function doBoatDockCheck(mapId)
-	docked = nil;
-	if getInstanceMinutes() <= (getInstanceVariable("boat_time", true) - 5) then
-		docked = boat_docked;
-	else
-		docked = boat_undocked;	
-	end
-
-	setBoatDocked(mapId, docked);
-end

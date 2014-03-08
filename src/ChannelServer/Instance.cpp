@@ -240,7 +240,7 @@ auto Instance::removeTimer(const string_t &timerName) -> void {
 		if (getTimerSecondsRemaining(timerName).count() > 0) {
 			Timer::Id id(Timer::Types::InstanceTimer, timer.time, timer.counterId);
 			getTimers()->removeTimer(id);
-			timerComplete(timerName, false);
+			timerEnd(timerName, false);
 		}
 		m_timerActions.erase(kvp);
 	}

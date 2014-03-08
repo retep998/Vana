@@ -443,7 +443,19 @@ auto LuaExports::isBossChannel(lua_State *luaVm, const vector_t<channel_id_t> &e
 
 // Miscellaneous
 auto LuaExports::consoleOutput(lua_State *luaVm) -> int {
-	std::cout << lua_tostring(luaVm, 1) << std::endl;
+	auto &env = getEnvironment(luaVm);
+	switch (env.typeOf(luaVm, 1)) {
+		case LuaType::None: std::cout << "INVALID_ARGUMENT" << std::endl; break;
+		case LuaType::Nil: std::cout << "nil" << std::endl; break;
+		case LuaType::Table: std::cout << "table" << std::endl; break;
+		case LuaType::Bool: std::cout << (env.get<bool>(luaVm, 1) ? "true" : "false") << std::endl; break;
+		case LuaType::LightUserData: std::cout << "lightuserdata" << std::endl; break;
+		case LuaType::UserData: std::cout << "userdata" << std::endl; break;
+		case LuaType::Thread: std::cout << "thread" << std::endl; break;
+		case LuaType::Function: std::cout << "function" << std::endl; break;
+		default: std::cout << env.get<string_t>(luaVm, 1) << std::endl; break;
+	}
+
 	return 0;
 }
 

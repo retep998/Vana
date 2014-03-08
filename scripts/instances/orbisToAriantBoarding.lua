@@ -16,14 +16,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/boatHelper.lua");
 
 function beginInstance()
 	addInstanceMap(200000152);
 	setInstanceVariable("boat_time", 10);
 	doBoatDockCheck(200000151);
 	startInstanceTimer("dock_check", getNearestMinute(1), 60);
-
 end
 
 function timerEnd(name, fromTimer)
@@ -37,7 +36,7 @@ end
 function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	if isInstanceMap(newMap) then
 		addInstancePlayer(playerId);
-	else
+	elseif not isInstanceMap(oldMap) then
 		removeInstancePlayer(playerId);
 	end
 end

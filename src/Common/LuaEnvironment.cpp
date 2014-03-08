@@ -68,22 +68,23 @@ auto LuaEnvironment::loadFile(const string_t &filename) -> void {
 
 	m_file = filename;
 	m_luaVm = luaL_newstate();
-	luaopen_base(m_luaVm);
+
+	luaL_requiref(m_luaVm, "base", luaopen_base, 1);
+	luaL_requiref(m_luaVm, "string", luaopen_string, 1);
 }
 
 auto LuaEnvironment::run() -> Result {
 	if (m_luaThread == nullptr) {
 		if (luaL_dofile(m_luaVm, m_file.c_str())) {
-			string_t error = lua_tostring(m_luaVm, -1);
-			handleError(m_file, error);
+			handleError(m_file, get<string_t>(m_luaVm, -1));
+			pop();
 			return Result::Failure;
 		}
 	}
 	else {
 		if (luaL_loadfile(m_luaThread, m_file.c_str())) {
-			// Error in lua script
-			string_t error = lua_tostring(m_luaThread, -1);
-			handleError(m_file, error);
+			handleError(m_file, get<string_t>(m_luaThread, -1));
+			pop();
 			return Result::Failure;
 		}
 		return resume(0);
@@ -190,8 +191,7 @@ auto LuaEnvironment::is(lua_State *luaVm, int index, LuaType type) -> bool {
 }
 
 auto LuaEnvironment::typeOf(int index) -> LuaType {
-	lua_State *query = m_luaThread != nullptr ? m_luaThread : m_luaVm;
-	return static_cast<LuaType>(lua_type(query, index));
+	return static_cast<LuaType>(lua_type(m_luaVm, index));
 }
 
 auto LuaEnvironment::typeOf(lua_State *luaVm, int index) -> LuaType {

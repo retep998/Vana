@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Irene, tickets to Singapore + flight map
 
-dofile("scripts/lua_functions/miscFunctions.lua");
+dofile("scripts/lua_functions/boatHelper.lua");
 dofile("scripts/lua_functions/npcHelper.lua");
 
 choices = {

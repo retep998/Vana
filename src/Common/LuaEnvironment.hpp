@@ -29,7 +29,7 @@ extern "C" {
 #include <string>
 #include <vector>
 
-enum class LuaType {
+enum class LuaType : int {
 	None = LUA_TNONE,
 	Nil = LUA_TNIL,
 	Bool = LUA_TBOOLEAN,
