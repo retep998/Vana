@@ -93,7 +93,7 @@ if not verifyInstance() then
 					if not isGm() and (not isPartyInLevelRange(50, 200) or getPartyMapCount() < 3) then
 						addText("Only the leader of the party that consists of 3 or more members is eligible to become the leader of the Zakum Expedition Squad.");
 					else
-						createInstance("zakumSignup", 2 * 60, true);
+						createInstance("zakumSignup", 5 * 60, true);
 						addPlayerSignUp(getName());
 						setInstanceVariable("master", getName());
 						setInstanceVariable("gm", isGm());
@@ -155,16 +155,18 @@ else
 					name = getInstancePlayerByIndex(choice + 1);
 					addText("Are you sure you want to enter " .. blue(name) .. " in the Suspended List? ");
 					addText("Once suspended, the user may not re-apply for a spot until the suspension is lifted by the leader of the squad.");
-					ban = askYesNo();
+					answer = askYesNo();
 
 					if not verifyMaster() then
 						return;
 					end
 
-					banInstancePlayer(name);
-					if setPlayer(name) then
-						showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
-						revertPlayer();
+					if answer == answer_yes then
+						banInstancePlayer(name);
+						if setPlayer(name) then
+							showMessage("The leader of the squad has entered you in the squad's Suspended List.", msg_red);
+							revertPlayer();
+						end
 					end
 				end
 			elseif choice == 2 then

@@ -136,9 +136,9 @@ choices = {
 				totalPrice = price * result;
 				addText("Buying " .. blue(result .. " Magic Seed(s)") .. " will cost you " .. blue(totalPrice .. " mesos") .. ". ");
 				addText("Are you sure you want to make the purchase?");
-				verify = askYesNo();
+				answer = askYesNo();
 
-				if verify == 0 then
+				if answer == answer_no then
 					addText("Please think carefully. ");
 					addText("Once you have made your decision, let me know.");
 					sendNext();
