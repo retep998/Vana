@@ -18,226 +18,198 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -- Francois - Item Creator (Ellinia)
 
 dofile("scripts/lua_functions/itemProduction.lua");
+dofile("scripts/lua_functions/npcHelper.lua");
 
-wandIds = {1372005, 1372006, 1372002, 1372004, 1372003, 1372001, 1372000, 1372007};
-wandLimits = {8, 13, 18, 23, 28, 33, 38, 48};
-wandJobs = {"all", "all", "all", "magician", "magician", "magician", "magician", "magician"};
-wandReqs = {
-	{4003001, 5, MESOS, 1000},
-	{4003001, 10, 4000001, 50, MESOS, 3000},
-	{4011001, 1, 4000009, 30, 4003000, 5, MESOS, 5000},
-	{4011002, 2, 4003002, 1, 4003000, 10, MESOS, 12000},
-	{4011002, 3, 4021002, 1, 4003000, 10, MESOS, 30000},
-	{4021006, 5, 4011002, 3, 4011001, 1, 4003000, 15, MESOS, 60000},
-	{4021006, 5, 4021005, 5, 4021007, 1, 4003003, 1, 4003000, 20, MESOS, 12000},
-	{4011006, 4, 4021003, 3, 4021007, 2, 4021002, 1, 4003002, 1, 4003000, 30, MESOS, 200000}
-};
+function makeItemChoice(itemId, levelLimit, reqs, jobType, statText)
+	return makeChoiceData(" " .. itemRef(itemId) .. black("(Level limit : " .. levelLimit .. ", " .. jobType .. ")", previousBlue), {itemId, levelLimit, reqs, statText});
+end
 
-staffIds = {1382000, 1382003, 1382005, 1382004, 1382002, 1382001};
-staffLimits = {10, 15, 15, 20, 25 ,45};
-staffReqs = {
-	{4003001, 5, MESOS, 2000},
-	{4021005, 1, 4011001, 1, 4003000, 5, MESOS, 2000},
-	{4021003, 1, 4011001, 1, 4003000, 5, MESOS, 2000},
-	{4003001, 50, 4011001, 1, 4003000, 10, MESOS, 5000},
-	{4021006, 2, 4021001, 1, 4011001, 1, 4003000, 15, MESOS, 12000},
-	{4011001, 8, 4021006, 5, 4021001, 5, 4021005, 5, 4003000, 30, 4000010, 50, 4003003, 1, MESOS, 180000}
-};
+addText("Do you want to take a look at some items? ");
+addText("Well... any thought of making one? ");
+addText("I'm actually a wizard that was banished from the town because I casted an illegal magic. ");
+addText("Because of that I've been hiding, doing some business here... well, that's not really the point. ");
+addText("Do you want to do some business with me?");
+answer = askYesNo();
 
-gloveIds = {1082019, 1082020, 1082026, 1082051, 1082054, 1082062, 1082081, 1082086};
-gloveLimits = {15, 20, 25, 30, 35, 40, 50, 60};
-gloveStats = {nil, nil, nil, nil, nil, nil, "INT + 1", "INT + 1, LUK + 1"};
-gloveReqs = {
-	{4000021, 15, MESOS, 500},
-	{4000021, 30, 4011001, 1, MESOS, 300},
-	{4000021, 50, 4011006, 2, MESOS, 500},
-	{4000021, 60, 4021006, 1, 4021000, 2, MESOS, 800},
-	{4000021, 70, 4011006, 1, 4011001, 3, 4021000, 2, MESOS, 500},
-	{4000021, 80, 4021000, 3, 4021006, 3, 4003000, 30, MESOS, 800},
-	{4021000, 3, 4011006, 2, 4000030, 55, 4003000, 40, MESOS, 1000},
-	{4011007, 1, 4011001, 8, 4021007, 1, 4000030, 50, 4003000, 50, MESOS, 1500}
-};
-
-upgradeGloveIds = {1082021, 1082022, 1082027, 1082028, 1082052, 1082053, 1082055, 1082056, 1082063, 1082064, 1082082, 1082080, 1082087, 1082088};
-upgradeGloveLimits = {20, 20, 25, 25, 30, 30, 35, 35, 40, 40, 50, 50, 60, 60};
-upgradeGloveStats = {"INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 1", "INT + 2", "INT + 2", "INT + 3", "INT + 2, MP + 15", "INT + 3, MP + 30", "INT + 2, LUK + 1, MP + 15", "INT + 3, LUK + 1, MP + 30"};
-upgradeGloveReqs = {
-	{1082020, 1, 4011001, 1, MESOS, 20000},
-	{1082020, 1, 4021001, 2, MESOS, 25000},
-	{1082026, 1, 4021000, 3, MESOS, 30000},
-	{1082026, 1, 4021008, 1, MESOS, 40000},
-	{1082051, 1, 4021005, 3, MESOS, 35000},
-	{1082051, 1, 4021008, 1, MESOS, 40000},
-	{1082054, 1, 4021005, 3, MESOS, 40000},
-	{1082054, 1, 4021008, 1, MESOS, 45000},
-	{1082062, 1, 4021002, 4, MESOS, 45000},
-	{1082062, 1, 4021008, 2, MESOS, 50000},
-	{1082081, 1, 4021002, 5, MESOS, 55000},
-	{1082081, 1, 4021008, 3, MESOS, 60000},
-	{1082086, 1, 4011004, 3, 4011006, 5, MESOS, 70000},
-	{1082086, 1, 4021008, 2, 4011006, 3, MESOS, 80000}
-};
-
-hatIds = {1002065,1002013};
-hatLimits = {30, 30};
-hatStats = {"INT + 1", "INT + 2"};
-hatReqs = {
-	{1002064, 1, 4011001, 3, MESOS, 40000},
-	{1002064, 1, 4011006, 3, MESOS, 50000}
-};
-
-addText("Do you want to take a look at some items? Well... any ");
-addText("thought of making one? I'm actually a wizard that was ");
-addText("banished from the town because I casted an illegal magic. ");
-addText("Because of that I've been hiding, doing some business ");
-addText("here... well, that's not really the point. Do you want to do ");
-addText("some business with me?");
-yes = askYesNo();
-
-if yes == 0 then
-	addText("You don't trust my skills, I suppose... haha... you should ");
-	addText("know that I used to be a great wizard. You still can't believe ");
-	addText("my skills, huh... but just remember that I used to be the ");
-	addText("great magician of old...");
+if answer == answer_no then
+	addText("You don't trust my skills, I suppose... haha... you should know that I used to be a great wizard. ");
+	addText("You still can't believe my skills, huh... but just remember that I used to be the great magician of old...");
 	sendNext();
 else
-	addText("Alright ... it's for both of our own good, right? Choose what you want to do...\r\n");
-	addText("#L0##b Make a wand#l\r\n");
-	addText("#L1##b Make a staff#l\r\n");
-	addText("#L2##b Make a glove#l\r\n");
-	addText("#L3##b Upgrade a glove#l\r\n");
-	addText("#L4##b Upgrade a hat#l\r\n");
-	what = askChoice();
+	choices = {
+		makeChoiceHandler(" Make a wand", function()
+			choices = {
+				makeItemChoice(1372005, 8, {4003001, 5, MESOS, 1000}, "all"),
+				makeItemChoice(1372006, 13, {4003001, 10, 4000001, 50, MESOS, 3000}, "all"),
+				makeItemChoice(1372002, 18, {4011001, 1, 4000009, 30, 4003000, 5, MESOS, 5000}, "magician"),
+				makeItemChoice(1372004, 23, {4011002, 2, 4003002, 1, 4003000, 10, MESOS, 12000}, "magician"),
+				makeItemChoice(1372003, 28, {4011002, 3, 4021002, 1, 4003000, 10, MESOS, 30000}, "magician"),
+				makeItemChoice(1372001, 33, {4021006, 5, 4011002, 3, 4011001, 1, 4003000, 15, MESOS, 60000}, "magician"),
+				makeItemChoice(1372000, 38, {4021006, 5, 4021005, 5, 4021007, 1, 4003003, 1, 4003000, 20, MESOS, 120000}, "magician"),
+				makeItemChoice(1372007, 48, {4011006, 4, 4021003, 3, 4021007, 2, 4021002, 1, 4003002, 1, 4003000, 30, MESOS, 200000}, "magician"),
+			};
 
-	if what == 0 then
-		addText("If you gather up the materials for me, I'll make a wand for ");
-		addText("you with my magical power. How... what kind of a wand do ");
-		addText("you want to make?");
-		for i = 1, 8 do
-			addText("\r\n#L" .. i .. "##b #t" .. wandIds[i] .. "##k(Level limit : " .. wandLimits[i] .. ", " .. wandJobs[i] .. ")#l");
-		end
-		what = askChoice();
+			addText("If you gather up the materials for me, I'll make a wand for you with my magical power. ");
+			addText("How... what kind of a wand do you want to make?\r\n");
+			addText(blue(choiceList(choices)));
+			choice = askChoice();
 
-		item = wandIds[what];
-		reqs = wandReqs[what];
-		limit = wandLimits[what];
-		addText("To make one #t" .. item .. "#, you'll need these items below. ");
-		addText("The level limit for the item will be " .. limit .. " so please check and ");
-		addText("see if you really need the item, first of all. Are you sure you ");
-		addText("want to make one?\r\n\r\n");
-		displayResources(reqs);
-		yes = askYesNo();
+			data = selectChoice(choices, choice);
+			itemId, levelLimit, reqs = data[1], data[2], data[3];
 
-	elseif what == 1 then
-		addText("If you gather up the materials for me, I'll make a staff for ");
-		addText("you with my magical power. How... what kind of a wand do ");
-		addText("you want to make?");
-		for i = 1, 6 do
-			addText("\r\n#L" .. i .. "##b #t" .. staffIds[i] .. "##k(Level limit : " .. staffLimits[i] .. ", magician)#l");
-		end
-		what = askChoice();
+			addText("To make one " .. itemRef(itemId) .. ", you'll need these items below. ");
+			addText("The level limit for the item will be " .. levelLimit .. " so please check and see if you really need the item, first of all. ");
+			addText("Are you sure you want to make one?\r\n\r\n");
+			return data;
+		end),
+		makeChoiceHandler(" Make a staff", function()
+			choices = {
+				makeItemChoice(1382000, 10, {4003001, 5, MESOS, 2000}, "magician"),
+				makeItemChoice(1382003, 15, {4021005, 1, 4011001, 1, 4003000, 5, MESOS, 2000}, "magician"),
+				makeItemChoice(1382005, 15, {4021003, 1, 4011001, 1, 4003000, 5, MESOS, 2000}, "magician"),
+				makeItemChoice(1382004, 20, {4003001, 50, 4011001, 1, 4003000, 10, MESOS, 5000}, "magician"),
+				makeItemChoice(1382002, 25, {4021006, 2, 4021001, 1, 4011001, 1, 4003000, 15, MESOS, 12000}, "magician"),
+				makeItemChoice(1382001, 45, {4011001, 8, 4021006, 5, 4021001, 5, 4021005, 5, 4003000, 30, 4000010, 50, 4003003, 1, MESOS, 180000}, "magician"),
+			};
 
-		item = staffIds[what];
-		reqs = staffReqs[what];
-		limit = staffLimits[what];
-		addText("To make one #t" .. item .. "#, you'll need these items below. ");
-		addText("The level limit for the item will be " .. limit .. " so please check and ");
-		addText("see if you really need the item, first of all. ");
-		addText("Are you sure you want to make one?\r\n\r\n");
-		displayResources(reqs);
-		yes = askYesNo();
+			addText("If you gather up the materials for me, I'll make a staff for you with my magical power. ");
+			addText("How... what kind of a wand do you want to make?\r\n");
+			addText(blue(choiceList(choices)));
+			choice = askChoice();
 
-	elseif what == 2 then
-		addText("If you gather up the materials for me, I'll make a glove for ");
-		addText("you with my magical power. How... what kind of a wand do ");
-		addText("you want to make?");
-		for i = 1, 8 do
-			addText("\r\n#L" .. i .. "##b #t" .. gloveIds[i] .. "##k#(Level limit : " .. gloveLimits[i] .. ", magician)#l");
-		end
-		what = askChoice();
+			data = selectChoice(choices, choice);
+			itemId, levelLimit, reqs = data[1], data[2], data[3];
 
-		item = gloveIds[what];
-		reqs = gloveReqs[what];
-		limit = gloveLimits[what];
-		addText("To make one #t" .. item .. "#, you'll need these items below. ");
-		addText("The level limit for the item will be " .. limit .. " so please check and ");
-		addText("see if you really need the item, first of all. ");
-		addText("Are you sure you want to make one?\r\n\r\n");
-		displayResources(reqs);
-		yes = askYesNo();
+			addText("To make one " .. itemRef(itemId) .. ", you'll need these items below. ");
+			addText("The level limit for the item will be " .. levelLimit .. " so please check and see if you really need the item, first of all. ");
+			addText("Are you sure you want to make one?\r\n\r\n");
+			return data;
+		end),
+		makeChoiceHandler(" Make a glove", function()
+			choices = {
+				makeItemChoice(1082019, 15, {4000021, 15, MESOS, 500}, "magician"),
+				makeItemChoice(1082020, 20, {4000021, 30, 4011001, 1, MESOS, 300}, "magician"),
+				makeItemChoice(1082026, 25, {4000021, 50, 4011006, 2, MESOS, 500}, "magician"),
+				makeItemChoice(1082051, 30, {4000021, 60, 4021006, 1, 4021000, 2, MESOS, 800}, "magician"),
+				makeItemChoice(1082054, 35, {4000021, 70, 4011006, 1, 4011001, 3, 4021000, 2, MESOS, 500}, "magician"),
+				makeItemChoice(1082062, 40, {4000021, 80, 4021000, 3, 4021006, 3, 4003000, 30, MESOS, 800}, "magician"),
+				makeItemChoice(1082081, 50, {4021000, 3, 4011006, 2, 4000030, 55, 4003000, 40, MESOS, 1000}, "magician", "INT + 1"),
+				makeItemChoice(1082086, 60, {4011007, 1, 4011001, 8, 4021007, 1, 4000030, 50, 4003000, 50, MESOS, 1500}, "magician", "INT + 1, LUK + 1"),
+			};
 
-	elseif what == 3 then
-		addText("So you want to upgrade a glove? Be careful, though; ");
-		addText("All the items that will be used for upgrading will be gone, ");
-		addText("and if you use an item that has been #rupgraded#k with a scroll, ");
-		addText("the effect will disappear when upgraded,");
-		addText("so you may want to think about it before making your decision ...");
-		sendNext();
+			addText("If you gather up the materials for me, I'll make a glove for you with my magical power. ");
+			addText("How... what kind of a wand do you want to make?\r\n");
+			addText(blue(choiceList(choices)));
+			choice = askChoice();
 
-		addText("Now .. which glove do you want to upgrade?");
-		for i = 1, 14 do
-			addText("\r\n#L" .. i .. "##b #t" .. upgradeGloveIds[i] .. "##k(Level limit : " .. upgradeGloveLimits[i] .. ", magician)#l");
-		end
-		what = askChoice();
+			data = selectChoice(choices, choice);
+			itemId, levelLimit, reqs = data[1], data[2], data[3];
 
-		item = upgradeGloveIds[what];
-		reqs = upgradeGloveReqs[what];
-		limit = upgradeGloveLimits[what];
-		stat = upgradeGloveStats[what];
-		addText("To upgrade one #t" .. item .. "#, you'll need these items below.");
-		addText("The level limit for the item is " .. limit .. ", ");
-		if not stat == nil then
-			addText("with the item option of #r" .. stat .. "#k attached to it, ");
-		end
-		addText("so please check and see if you really need it. ");
-		addText("Oh, and one thing. Please make sure NOT to use an upgraded item as a material for the upgrade. ");
-		addText("Now, are you sure you want to make this item?\r\n\r\n");
-		displayResources(reqs);
-		yes = askYesNo();
+			addText("To make one " .. itemRef(itemId) .. ", you'll need these items below. ");
+			addText("The level limit for the item will be " .. levelLimit .. " so please check and see if you really need the item, first of all. ");
+			addText("Are you sure you want to make one?\r\n\r\n");
+			return data;
+		end),
+		makeChoiceHandler(" Upgrade a glove", function()
+			choices = {
+				makeItemChoice(1082021, 20, {1082020, 1, 4011001, 1, MESOS, 20000}, "magician", "INT + 1"),
+				makeItemChoice(1082022, 20, {1082020, 1, 4021001, 2, MESOS, 25000}, "magician", "INT + 2"),
+				makeItemChoice(1082027, 25, {1082026, 1, 4021000, 3, MESOS, 30000}, "magician", "INT + 1"),
+				makeItemChoice(1082028, 25, {1082026, 1, 4021008, 1, MESOS, 40000}, "magician", "INT + 2"),
+				makeItemChoice(1082052, 30, {1082051, 1, 4021005, 3, MESOS, 35000}, "magician", "INT + 1"),
+				makeItemChoice(1082053, 30, {1082051, 1, 4021008, 1, MESOS, 40000}, "magician", "INT + 2"),
+				makeItemChoice(1082055, 35, {1082054, 1, 4021005, 3, MESOS, 40000}, "magician", "INT + 1"),
+				makeItemChoice(1082056, 35, {1082054, 1, 4021008, 1, MESOS, 45000}, "magician", "INT + 2"),
+				makeItemChoice(1082063, 40, {1082062, 1, 4021002, 4, MESOS, 45000}, "magician", "INT + 2"),
+				makeItemChoice(1082064, 40, {1082062, 1, 4021008, 2, MESOS, 50000}, "magician", "INT + 3"),
+				makeItemChoice(1082082, 50, {1082081, 1, 4021002, 5, MESOS, 55000}, "magician", "INT + 2, MP + 15"),
+				makeItemChoice(1082080, 50, {1082081, 1, 4021008, 3, MESOS, 60000}, "magician", "INT + 3, MP + 30"),
+				makeItemChoice(1082087, 60, {1082086, 1, 4011004, 3, 4011006, 5, MESOS, 70000}, "magician", "INT + 2, LUK + 1, MP + 15"),
+				makeItemChoice(1082088, 60, {1082086, 1, 4021008, 2, 4011006, 3, MESOS, 80000}, "magician", "INT + 3, LUK + 1, MP + 30"),
+			};
 
-	elseif what == 4 then
-		addText("So you want to upgrade a hat ... Be careful, though; ");
-		addText("All the items that will be used for upgrading will be gone, ");
-		addText("and if you use an item that has been #rupgraded#k with a scroll, ");
-		addText("the effect will disappear when upgraded,");
-		addText("so you may want to think about it before making your decision ...");
-		sendNext();
+			addText("So you want to upgrade a glove? ");
+			addText("Be careful, though; ");
+			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been #rupgraded#k with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
+			sendNext();
 
-		addText("Alright, so which hat would you like to upgrade?");
-		for i = 1, 2 do
-			addText("\r\n#L" .. i .. "##b #t" .. hatIds[i] .. "##k(Level limit : " .. hatLimits[i] .. ", wizard)#l");
-		end
-		what = askChoice();
+			addText("Now .. which glove do you want to upgrade?\r\n");
+			addText(blue(choiceList(choices)));
+			choice = askChoice();
 
-		item = hatIds[what];
-		reqs = hatReqs[what];
-		limit = hatLimits[what];
-		stat = hatStats[what];
-		addText("To upgrade one #t" .. item .. "#, you'll need these items below.");
-		addText("The level limit for the item is " .. limit .. ", ");
-		if not stat == nil then
-			addText("with the item option of #r" .. stat .. "#k attached to it, ");
-		end
-		addText("so please check and see if you really need it. ");
-		addText("Oh, and one thing. Please make sure NOT to use an upgraded item as a material for the upgrade. ");
-		addText("Now, are you sure you want to make this item?\r\n\r\n");
-		displayResources(reqs);
-		yes = askYesNo();
-	end
-	if yes == 0 then
-		addText("Really? You must be lacking materials. Try harder at ");
-		addText("gathering them up around town. Fortunately it looks like the ");
-		addText("monsters around the forest have various materials on their sleeves.");
+			data = selectChoice(choices, choice);
+			itemId, levelLimit, reqs, statText = data[1], data[2], data[3], data[4];
+
+			addText("To upgrade one " .. itemRef(itemId) .. ", you'll need these items below. ");
+			addText("The level limit for the item is " .. levelLimit .. ", ");
+			if statText ~= nil then
+				addText("with the item option of " .. red(statText) .. " attached to it, ");
+			end
+			addText("so please check and see if you really need it. ");
+			addText("Oh, and one thing. ");
+			addText("Please make sure NOT to use an upgraded item as a material for the upgrade. ");
+			addText("Now, are you sure you want to make this item?\r\n\r\n");
+			return data;
+		end),
+		makeChoiceHandler(" Upgrade a hat", function()
+			choices = {
+				makeItemChoice(1002065, 30, {1002064, 1, 4011001, 3, MESOS, 40000}, "wizard", "INT + 1"),
+				makeItemChoice(1002013, 30, {1002064, 1, 4011006, 3, MESOS, 50000}, "wizard", "INT + 2"),
+			};
+
+			addText("So you want to upgrade a hat ... ");
+			addText("Be careful, though; ");
+			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been #rupgraded#k with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
+			sendNext();
+
+			addText("Alright, so which hat would you like to upgrade?\r\n");
+			addText(blue(choiceList(choices)));
+			choice = askChoice();
+
+			data = selectChoice(choices, choice);
+			itemId, levelLimit, reqs, statText = data[1], data[2], data[3], data[4];
+
+			addText("To upgrade one " .. itemRef(itemId) .. ", you'll need these items below.");
+			addText("The level limit for the item is " .. levelLimit .. ", ");
+			if statText ~= nil then
+				addText("with the item option of " .. red(statText) .. " attached to it, ");
+			end
+			addText("so please check and see if you really need it. ");
+			addText("Oh, and one thing. ");
+			addText("Please make sure NOT to use an upgraded item as a material for the upgrade. ");
+			addText("Now, are you sure you want to make this item?\r\n\r\n");
+			return data;
+		end),
+	};
+
+	addText("Alright ... it's for both of our own good, right? ");
+	addText("Choose what you want to do...\r\n");
+	addText(blue(choiceList(choices)));
+	choice = askChoice();
+
+	data = selectChoice(choices, choice);
+	itemId, levelLimit, reqs = data[1], data[2], data[3];
+
+	displayResources(reqs);
+	answer = askYesNo();
+	if answer == answer_no then
+		addText("Really? ");
+		addText("You must be lacking materials. ");
+		addText("Try harder at gathering them up around town. ");
+		addText("Fortunately it looks like the monsters around the forest have various materials on their sleeves.");
 		sendNext();
 	else
-		if (not hasResources(reqs)) or (not hasOpenSlotsFor(item, 1)) then
+		if not hasResources(reqs) or not hasOpenSlotsFor(itemId, 1) then
 			addText("Please check and see if you have all the items you need, or if your equipment inventory is full or not.");
+			sendNext();
 		else
-			addText("Here, take #t" .. item .. "#. The more I see it, the more it looks perfect.");
+			addText("Here, take " .. itemRef(itemId) .. ". ");
+			addText("The more I see it, the more it looks perfect. ");
 			addText("Hahah, it's not a stretch to think that other magicians fear my skills ...");
+			sendNext();
+
 			takeResources(reqs);
-			giveItem(item, 1);
+			giveItem(itemId, 1);
 		end
-		sendNext();
 	end
 end
