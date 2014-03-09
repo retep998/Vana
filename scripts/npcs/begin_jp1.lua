@@ -36,9 +36,9 @@ if map == 0 then
 		setMap(1);
 	else
 		addText("Do you really wanted to start your journey right away?");
-		skip = askYesNo();
+		answer = askYesNo();
 
-		if skip == answer_yes then
+		if answer == answer_yes then
 			addText("It seems like you want to start your journey without taking the training program. ");
 			addText("Then, I will let you move on the training ground. ");
 			addText("Be careful~");
