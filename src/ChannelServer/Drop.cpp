@@ -88,10 +88,10 @@ auto Drop::takeDrop(Player *player, pet_id_t petId) -> void {
 	if (petId == 0) {
 		auto &packet = DropsPacket::takeDrop(player->getId(), getId());
 		if (isQuest()) {
-			map->send(packet);
+			player->send(packet);
 		}
 		else {
-			player->send(packet);
+			map->send(packet);
 		}
 	}
 	else {
@@ -103,10 +103,10 @@ auto Drop::takeDrop(Player *player, pet_id_t petId) -> void {
 
 		auto &packet = DropsPacket::takeDrop(player->getId(), getId(), pet->getIndex().get());
 		if (isQuest()) {
-			map->send(packet);
+			player->send(packet);
 		}
 		else {
-			player->send(packet);
+			map->send(packet);
 		}
 
 	}

@@ -263,6 +263,8 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 				return;
 			}
 		}
+		// TODO FIXME Bug here? drop->getObjectId is going to be either a meso count or item identifier
+		// pickupDrop packet calls for map_object_t and it's unclear which is correct and which isn't
 		player->send(DropsPacket::pickupDrop(drop->getObjectId(), drop->getAmount()));
 	}
 	ReactorHandler::checkLoot(drop);
