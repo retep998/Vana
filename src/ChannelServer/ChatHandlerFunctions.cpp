@@ -341,8 +341,11 @@ auto ChatHandlerFunctions::initialize() -> void {
 	command.syntax = "<${item | equip | use | setup | etc | cash | skill | map | mob | npc | quest | continent | id | scriptbyname | scriptbyid | whatdrops | whatmaps | music | drops}> <$search | #id>";
 	command.notes.push_back("Uses the database to give you the string values for an ID or the IDs for a given string value");
 	command.notes.push_back("Use !help map to see valid string values for continent lookup");
-	command.notes.push_back("Searches that are based on ID: continent, id, scriptbyid, whatdrops, whatmaps, drops");
+	command.notes.push_back("Searches that are based on ID: continent, id, scriptbyid, whatdrops, drops");
 	command.notes.push_back("Searches that are based on search string: item, equip, use, etc, cash, skill, map, mob, npc, quest, scriptbyname, music");
+	command.notes.push_back("A whatmaps search is special; you must specify a type (portal, mob, reactor, npc) when you do a whatmaps search");
+	command.notes.push_back("A whatmaps portal search requires a script name");
+	command.notes.push_back("The other whatmaps searches require IDs");
 	sCommandList["lookup"] = command.addToMap();
 
 	command.command = &InfoFunctions::variable;

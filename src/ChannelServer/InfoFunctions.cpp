@@ -208,38 +208,55 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 				displayFunc(rs, format);
 			}
 			else if (type == 600) {
-				if (ChatHandlerFunctions::runRegexPattern(q, R"((\d+) ?(\w+)?)", matches) == MatchResult::AnyMatches) {
+				if (ChatHandlerFunctions::runRegexPattern(q, R"((\w+) (\w+))", matches) == MatchResult::AnyMatches) {
 					auto format = [](const soci::row &row, out_stream_t &str) {
 						str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 					};
 
-					string_t objectId = matches[1];
-					string_t opt = matches[2];
+					string_t option = matches[1];
+					string_t test = matches[2];
 
-					if (!opt.empty()) {
-						if (opt != "npc" && opt != "mob" && opt != "reactor") {
-							ChatHandlerFunctions::showError(player, "Invalid life type: " + opt);
-							return ChatResult::HandledDisplay;
+					if (option == "portal") {
+						soci::rowset<> rs = (sql.prepare
+							<< "SELECT m.mapid, s.label "
+							<< "FROM " << Database::makeDataTable("map_data") << " m "
+							<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+							<< "WHERE m.mapid IN ("
+							<< "	SELECT mp.mapid "
+							<< "	FROM " << Database::makeDataTable("map_portals") << " mp "
+							<< "	WHERE mp.script = :query "
+							<< ")",
+							soci::use(test, "query"));
+
+						displayFunc(rs, format);					}
+					else if (option == "npc" || option == "mob" || option == "reactor") {
+						if (!isIntegerString(test)) {
+							return shouldBeIdOnly("whatmaps+" + option, test);
 						}
-						opt = " AND ml.life_type = '" + opt + "'";
+
+						option = " AND ml.life_type = '" + option + "'";
+
+						soci::rowset<> rs = (sql.prepare
+							<< "SELECT m.mapid, s.label "
+							<< "FROM " << Database::makeDataTable("map_data") << " m "
+							<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+							<< "WHERE m.mapid IN ("
+							<< "	SELECT ml.mapid "
+							<< "	FROM " << Database::makeDataTable("map_life") << " ml "
+							<< "	WHERE ml.lifeid = :objectId "
+							<< "	" << option
+							<< ")",
+							soci::use(test, "objectId"));
+
+						displayFunc(rs, format);
 					}
-
-					soci::rowset<> rs = (sql.prepare
-						<< "SELECT m.mapid, s.label "
-						<< "FROM " << Database::makeDataTable("map_data") << " m "
-						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
-						<< "WHERE m.mapid IN ("
-						<< "	SELECT ml.mapid "
-						<< "	FROM " << Database::makeDataTable("map_life") << " ml "
-						<< "	WHERE ml.lifeid = :objectId "
-						<< "	" << opt
-						<< ")",
-						soci::use(objectId, "objectId"));
-
-					displayFunc(rs, format);
+					else {
+						ChatHandlerFunctions::showError(player, "Invalid life type: " + option);
+						return ChatResult::HandledDisplay;
+					}
 				}
 				else {
-					ChatHandlerFunctions::showError(player, "whatmaps should be given an integral identifier and an optional type indicator (valid ones are npc, mob, and reactor). Input was: " + q);
+					ChatHandlerFunctions::showError(player, "whatmaps should be given a type indicator (valid ones are npc, mob, portal, and reactor) and an argument to match against. Input was: " + q);
 					return ChatResult::HandledDisplay;
 				}
 			}
