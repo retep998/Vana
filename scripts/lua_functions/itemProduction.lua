@@ -32,9 +32,9 @@ function displayResources(items, multiplier)
 		local item = reqs[index];
 		local amt = reqs[index + 1];
 		if item == MESOS then -- Mesos are shown as item 4031138 (Sack of Money)
-			addText(questMesosIcon(amt) .. "\r\n");
+			addText(questMesosIcon(amt * multiplier) .. "\r\n");
 		else
-			addText(questItemIcon(item, qty) .. "\r\n");
+			addText(questItemIcon(item, amt * multiplier) .. "\r\n");
 		end
 	end
 end
@@ -46,11 +46,11 @@ function giveResources(items, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end
-	for index = 1 ,#items - 1, 2 do
+	for index = 1, #items - 1, 2 do
 		if items[index] == MESOS then
-			giveMesos((multiplier * items[index + 1]));
+			giveMesos(multiplier * items[index + 1]);
 		else
-			giveItem(items[index], (multiplier * items[index + 1]));
+			giveItem(items[index], multiplier * items[index + 1]);
 		end
 	end
 end
@@ -84,11 +84,11 @@ function takeResources(requisites, multiplier)
 	if multiplier == nil then
 		multiplier = 1;
 	end
-	for index = 1 ,#requisites - 1, 2 do
+	for index = 1, #requisites - 1, 2 do
 		if requisites[index] == MESOS then
-			giveMesos((-1 * multiplier * requisites[index + 1]));
+			giveMesos(-1 * multiplier * requisites[index + 1]);
 		else
-			giveItem(requisites[index], (-1 * multiplier * requisites[index + 1]));
+			giveItem(requisites[index], -1 * multiplier * requisites[index + 1]);
 		end
 	end
 end
