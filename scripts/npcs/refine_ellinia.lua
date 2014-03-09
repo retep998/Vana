@@ -130,7 +130,7 @@ else
 
 			addText("So you want to upgrade a glove? ");
 			addText("Be careful, though; ");
-			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been #rupgraded#k with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
+			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been " .. red("upgraded") .." with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
 			sendNext();
 
 			addText("Now .. which glove do you want to upgrade?\r\n");
@@ -159,7 +159,7 @@ else
 
 			addText("So you want to upgrade a hat ... ");
 			addText("Be careful, though; ");
-			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been #rupgraded#k with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
+			addText("All the items that will be used for upgrading will be gone, and if you use an item that has been " .. red("upgraded") .. " with a scroll, the effect will disappear when upgraded, so you may want to think about it before making your decision ...");
 			sendNext();
 
 			addText("Alright, so which hat would you like to upgrade?\r\n");
