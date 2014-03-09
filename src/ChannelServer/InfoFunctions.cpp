@@ -58,8 +58,8 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (.+))", matches) == MatchResult::AnyMatches) {
 		uint16_t type = 0;
 		uint16_t subType = 0;
-
 		string_t rawType = matches[1];
+
 		// These constants correspond to MCDB enum types
 		if (rawType == "item") type = 1;
 		else if (rawType == "equip") { type = 1; subType = 1; }
@@ -81,6 +81,16 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 		else if (rawType == "whatmaps") type = 600;
 		else if (rawType == "music") type = 700;
 		else if (rawType == "drops") type = 800;
+
+		auto isIntegerString = [](const string_t &input) -> bool {
+			return std::all_of(std::cbegin(input), std::cend(input), [](char c) -> bool {
+				return c >= '0' && c <= '9';
+			});
+		};
+		auto shouldBeIdOnly = [player](const string_t &type, const string_t &input) -> ChatResult {
+			ChatHandlerFunctions::showError(player, type + " should be given an integral identifier. Input was: " + input);
+			return ChatResult::HandledDisplay;
+		};
 
 		if (type != 0) {
 			soci::session &sql = Database::getDataDb();
@@ -105,12 +115,17 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 			};
 
 			string_t q = matches[2];
+
 			if (type < 200) {
 				auto format = [](const soci::row &row, out_stream_t &str) {
 					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 				};
 
 				if (type == 100) {
+					if (!isIntegerString(q)) {
+						return shouldBeIdOnly("id", q);
+					}
+
 					soci::rowset<> rs = (sql.prepare << "SELECT objectid, `label` FROM " << Database::makeDataTable("strings") << " WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
@@ -162,6 +177,9 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 					displayFunc(rs, format);
 				}
 				else if (type == 400) {
+					if (!isIntegerString(q)) {
+						return shouldBeIdOnly("scriptbyid", q);
+					}
 					soci::rowset<> rs = (sql.prepare << "SELECT script_type, objectid, script FROM " << Database::makeDataTable("scripts") << " WHERE objectid = :q", soci::use(q, "q"));
 					displayFunc(rs, format);
 				}
@@ -170,6 +188,10 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 				auto format = [](const soci::row &row, out_stream_t &str) {
 					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
 				};
+
+				if (!isIntegerString(q)) {
+					return shouldBeIdOnly("whatdrops", q);
+				}
 
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT d.dropperid, s.label "
@@ -186,18 +208,40 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 				displayFunc(rs, format);
 			}
 			else if (type == 600) {
-				auto format = [](const soci::row &row, out_stream_t &str) {
-					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
-				};
+				if (ChatHandlerFunctions::runRegexPattern(q, R"((\d+) ?(\w+)?)", matches) == MatchResult::AnyMatches) {
+					auto format = [](const soci::row &row, out_stream_t &str) {
+						str << row.get<int32_t>(0) << " : " << row.get<string_t>(1);
+					};
 
-				soci::rowset<> rs = (sql.prepare
-					<< "SELECT m.mapid, s.label "
-					<< "FROM " << Database::makeDataTable("map_data") << " m "
-					<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
-					<< "WHERE m.mapid IN (SELECT ml.mapid FROM " << Database::makeDataTable("map_life") << " ml WHERE ml.lifeid = :q) ",
-					soci::use(q, "q"));
+					string_t objectId = matches[1];
+					string_t opt = matches[2];
 
-				displayFunc(rs, format);
+					if (!opt.empty()) {
+						if (opt != "npc" && opt != "mob" && opt != "reactor") {
+							ChatHandlerFunctions::showError(player, "Invalid life type: " + opt);
+							return ChatResult::HandledDisplay;
+						}
+						opt = " AND ml.life_type = '" + opt + "'";
+					}
+
+					soci::rowset<> rs = (sql.prepare
+						<< "SELECT m.mapid, s.label "
+						<< "FROM " << Database::makeDataTable("map_data") << " m "
+						<< "INNER JOIN " << Database::makeDataTable("strings") << " s ON s.objectid = m.mapid AND s.object_type = 'map' "
+						<< "WHERE m.mapid IN ("
+						<< "	SELECT ml.mapid "
+						<< "	FROM " << Database::makeDataTable("map_life") << " ml "
+						<< "	WHERE ml.lifeid = :objectId "
+						<< "	" << opt
+						<< ")",
+						soci::use(objectId, "objectId"));
+
+					displayFunc(rs, format);
+				}
+				else {
+					ChatHandlerFunctions::showError(player, "whatmaps should be given an integral identifier and an optional type indicator (valid ones are npc, mob, and reactor). Input was: " + q);
+					return ChatResult::HandledDisplay;
+				}
 			}
 			else if (type == 700) {
 				auto format = [](const soci::row &row, out_stream_t &str) {
@@ -217,6 +261,10 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 				auto format = [](const soci::row &row, out_stream_t &str) {
 					str << row.get<int32_t>(0) << " : " << row.get<string_t>(1) << " (base rate " << (static_cast<double>(row.get<int32_t>(2)) / 1000000. * 100.) << "%)";
 				};
+
+				if (!isIntegerString(q)) {
+					return shouldBeIdOnly("drops", q);
+				}
 
 				soci::rowset<> rs = (sql.prepare
 					<< "SELECT d.itemid, s.label, d.chance "
