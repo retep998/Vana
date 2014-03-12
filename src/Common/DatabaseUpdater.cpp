@@ -109,14 +109,17 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 		string_t filename = dir->path().filename().generic_string();
 		string_t fullFile = dir->path().generic_string();
 #endif
-		if (filename.find(".sql") == string_t::npos) {
-			// Not an SQL file
+
+		// Our Vana version files have a format of 0000_file.sql where 0000 is a number identifier
+		// Scripts are executed in the order of lowest identifier (e.g. 0000) to highest (e.g. 9999)
+		std::regex re(R"((\d\d\d\d)_.*\.sql)");
+		match_t matches;
+		if (!std::regex_match(filename, matches, re)) {
+			// Not a valid version SQL file
 			continue;
 		}
 
-		string_t version = filename;
-		version.erase(version.find_first_of("_"));
-		size_t v = StringUtilities::lexical_cast<size_t>(version);
+		size_t v = StringUtilities::lexical_cast<size_t, string_t>(matches[1]);
 
 		if (m_sqlVersion < v) {
 			m_sqlVersion = v;
@@ -129,7 +132,6 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 	}
 }
 
-// Create the info table
 auto DatabaseUpdater::createInfoTable() -> void {
 	soci::session &sql = Database::getCharDb();
 	sql.once << "CREATE TABLE IF NOT EXISTS " << Database::makeCharTable("vana_info") << " (version INT UNSIGNED)";
