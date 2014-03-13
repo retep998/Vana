@@ -136,6 +136,8 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 		.add<bool>(unk)
 		.add<uint8_t>(operations.size());
 
+	int8_t addedByte = -1;
+
 	for (const auto &operation : operations) {
 		builder
 			.add<int8_t>(operation.operationType)
@@ -154,17 +156,24 @@ PACKET_IMPL(inventoryOperation, bool unk, const vector_t<InventoryPacketOperatio
 				builder
 					.add<inventory_slot_t>(operation.oldSlot)
 					.add<inventory_slot_t>(operation.currentSlot);
-				if (operation.oldSlot < 0) {
-					builder.add<int8_t>(1);
-				}
-				else if (operation.currentSlot < 0) {
-					builder.add<int8_t>(2);
+
+				if (addedByte == -1) {
+					if (operation.oldSlot < 0) {
+						addedByte = 1;
+					}
+					else if (operation.currentSlot < 0) {
+						addedByte = 2;
+					}
 				}
 				break;
 			case InventoryPacket::OperationTypes::RemoveItem:
 				builder.add<inventory_slot_t>(operation.currentSlot);
 				break;
 		}
+	}
+
+	if (addedByte != -1) {
+		builder.add<int8_t>(addedByte);
 	}
 	return builder;
 }
