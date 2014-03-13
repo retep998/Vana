@@ -130,6 +130,7 @@ namespace LuaExports {
 	auto giveMesos(lua_State *luaVm) -> int;
 	auto hasOpenSlotsFor(lua_State *luaVm) -> int;
 	auto isEquippedItem(lua_State *luaVm) -> int;
+	auto isValidItem(lua_State *luaVm) -> int;
 	auto useItem(lua_State *luaVm) -> int;
 
 	// Player
