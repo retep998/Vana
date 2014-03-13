@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
 #include "ItemConstants.hpp"
+#include "ItemDataProvider.hpp"
 #include "MapPacket.hpp"
 #include "Maps.hpp"
 #include "Mob.hpp"
@@ -156,6 +157,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("giveMesos", &LuaExports::giveMesos);
 	expose("hasOpenSlotsFor", &LuaExports::hasOpenSlotsFor);
 	expose("isEquippedItem", &LuaExports::isEquippedItem);
+	expose("isValidItem", &LuaExports::isValidItem);
 	expose("useItem", &LuaExports::useItem);
 
 	// Player
@@ -887,6 +889,12 @@ auto LuaExports::hasOpenSlotsFor(lua_State *luaVm) -> int {
 auto LuaExports::isEquippedItem(lua_State *luaVm) -> int {
 	item_id_t itemId = lua_tointeger(luaVm, 1);
 	lua_pushboolean(luaVm, getPlayer(luaVm)->getInventory()->isEquippedItem(itemId));
+	return 1;
+}
+
+auto LuaExports::isValidItem(lua_State *luaVm) -> int {
+	item_id_t itemId = lua_tointeger(luaVm, 1);
+	lua_pushboolean(luaVm, ItemDataProvider::getInstance().getItemInfo(itemId) != nullptr);
 	return 1;
 }
 
