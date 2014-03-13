@@ -28,8 +28,6 @@ addText("People call it the " .. blue("Pet") .. ". ");
 addText("If you have one with you, feel free to ask me questions.");
 sendNext();
 
-consoleOutput(isValidItem(5000036));
-
 function petCommand(commandList, minLevel, maxLevel)
 	if minLevel == nil then
 		minLevel = 1;
