@@ -429,15 +429,18 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		return;
 	}
 	skill_id_t masteryId = player->getSkills()->getMastery();
-	player->sendMap(PlayersPacket::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
-
 	int8_t damagedTargets = 0;
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
 
 	if (skillId != Skills::All::RegularAttack) {
-		Skills::useAttackSkill(player, skillId);
+		if (Skills::useAttackSkill(player, skillId) == Result::Failure) {
+			// Most likely hacking, could feasibly be lag
+			return;
+		}
 	}
+
+	player->sendMap(PlayersPacket::useMeleeAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	map_id_t map = player->getMapId();
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
@@ -611,10 +614,15 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 		return;
 	}
 	skill_id_t masteryId = player->getSkills()->getMastery();
-	player->sendMap(PlayersPacket::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
-
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
+
+	if (Skills::useAttackSkillRanged(player, skillId, attack.starPos) == Result::Failure) {
+		// Most likely hacking, could feasibly be lag
+		return;
+	}
+
+	player->sendMap(PlayersPacket::useRangedAttack(player->getId(), masteryId, player->getSkills()->getSkillLevel(masteryId), attack));
 
 	switch (skillId) {
 		case Skills::Bowmaster::Hurricane:
@@ -631,8 +639,6 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 			}
 			break;
 	}
-
-	Skills::useAttackSkillRanged(player, skillId, attack.starPos);
 
 	int32_t maxHp = 0;
 	damage_t firstHit = 0;
@@ -718,10 +724,19 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		// Usually evidence of hacking
 		return;
 	}
-	player->sendMap(PlayersPacket::useSpellAttack(player->getId(), attack));
 
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
+
+	if (!attack.isHeal) {
+		// Heal is sent as both an attack and as a used skill - it's only sometimes an attack
+		if (Skills::useAttackSkill(player, skillId) == Result::Failure) {
+			// Most likely hacking, could feasilby be lag
+			return;
+		}
+	}
+
+	player->sendMap(PlayersPacket::useSpellAttack(player->getId(), attack));
 
 	MpEaterInfo eater;
 	eater.skillId = player->getSkills()->getMpEater();
@@ -730,11 +745,6 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 		auto skillInfo = SkillDataProvider::getInstance().getSkill(eater.skillId, eater.level);
 		eater.prop = skillInfo->prop;
 		eater.x = skillInfo->x;
-	}
-
-	if (!attack.isHeal) {
-		// Heal is sent as both an attack and as a used skill - it's only sometimes an attack
-		Skills::useAttackSkill(player, skillId);
 	}
 
 	for (const auto &target : attack.damages) {

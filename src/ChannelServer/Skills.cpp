@@ -130,8 +130,8 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 
 	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
-	if (player->getStats()->getMp() < skill->mp) {
-		// Most likely hacking, could occur during lag
+	if (applySkillCosts(player, skillId, level) == Result::Failure) {
+		// Most likely hacking, could feasibly be lag
 		return;
 	}
 
@@ -377,7 +377,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			break;
 	}
-	applySkillCosts(player, skillId, level);
+
 	player->sendMap(SkillsPacket::showSkill(player->getId(), skillId, level, direction));
 
 	if (Buffs::addBuff(player, skillId, level, addedInfo) == Result::Successful) {
@@ -395,12 +395,12 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 	}
 }
 
-auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp) -> void {
+auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp) -> Result {
 	if (player->hasGmBenefits()) {
 		// Ensure we don't lock, but don't actually use anything
 		player->getStats()->setHp(player->getStats()->getHp(), true);
 		player->getStats()->setMp(player->getStats()->getMp(), true);
-		return;
+		return Result::Successful;
 	}
 
 	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
@@ -411,29 +411,39 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 	item_id_t item = skill->item;
 	if (mpUse > 0) {
 		if (auto concentrate = player->getActiveBuffs()->getActiveSkillInfo(Skills::Bowmaster::Concentrate)) {
-			int16_t mpRate = concentrate->x;
-			int16_t mpLoss = (mpUse * mpRate) / 100;
-			player->getStats()->modifyMp(-mpLoss, true);
+			mpUse = (mpUse * concentrate->x) / 100;
 		}
 		else if (elementalAmp && player->getSkills()->hasElementalAmp()) {
-			player->getStats()->modifyMp(-1 * (mpUse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x / 100), true);
+			mpUse = (mpUse * player->getSkills()->getSkillInfo(player->getSkills()->getElementalAmp())->x) / 100;
 		}
-		else {
-			player->getStats()->modifyMp(-mpUse, true);
+
+		if (player->getStats()->getMp() < mpUse) {
+			return Result::Failure;
 		}
+		player->getStats()->modifyMp(-mpUse, true);
 	}
 	else {
 		player->getStats()->setMp(player->getStats()->getMp(), true);
 	}
 	if (hpUse > 0) {
+		if (player->getStats()->getHp() < hpUse) {
+			return Result::Failure;
+		}
 		player->getStats()->modifyHp(-hpUse);
 	}
 	if (item > 0) {
+		if (player->getInventory()->getItemAmount(item) < skill->itemCount) {
+			return Result::Failure;
+		}
 		Inventory::takeItem(player, item, skill->itemCount);
 	}
 	if (coolTime > 0 && skillId != Skills::Corsair::Battleship) {
+		if (isCooling(player, skillId)) {
+			return Result::Failure;
+		}
 		startCooldown(player, skillId, coolTime);
 	}
+
 	if (moneyConsume > 0) {
 		int16_t minMesos = moneyConsume - (80 + level * 5);
 		int16_t maxMesos = moneyConsume + (80 + level * 5);
@@ -441,30 +451,35 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 		mesos_t mesos = player->getInventory()->getMesos();
 		if (mesos - amount < 0) {
 			// Hacking
-			return;
+			return Result::Failure;
 		}
 		player->getInventory()->modifyMesos(-amount);
 	}
+
+	return Result::Successful;
 }
 
-auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> void {
+auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
 	if (skillId != Skills::All::RegularAttack) {
 		skill_level_t level = player->getSkills()->getSkillLevel(skillId);
 		if (!SkillDataProvider::getInstance().isValidSkill(skillId) || level == 0) {
-			return;
+			return Result::Failure;
 		}
-		applySkillCosts(player, skillId, level, true);
+		return applySkillCosts(player, skillId, level, true);
 	}
+	return Result::Successful;
 }
 
-auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos) -> void {
+auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos) -> Result {
 	skill_level_t level = 0;
 	if (skillId != Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
 		if (!SkillDataProvider::getInstance().isValidSkill(skillId) || level == 0) {
-			return;
+			return Result::Failure;
 		}
-		applySkillCosts(player, skillId, level);
+		if (applySkillCosts(player, skillId, level) == Result::Failure) {
+			return Result::Failure;
+		}
 	}
 	uint16_t hits = 1;
 	if (skillId != Skills::All::RegularAttack) {
@@ -478,8 +493,12 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	}
 	if (projectilePos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()) && !player->hasGmBenefits()) {
 		// If they don't have Shadow Stars or Soul Arrow, take the items
+		if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, projectilePos) < hits) {
+			return Result::Failure;
+		}
 		Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, hits);
 	}
+	return Result::Successful;
 }
 
 auto Skills::heal(Player *player, int16_t value, skill_id_t skillId) -> void {
