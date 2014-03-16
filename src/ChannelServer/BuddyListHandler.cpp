@@ -44,12 +44,12 @@ auto BuddyListHandler::handleBuddyList(Player *player, PacketReader &reader) -> 
 			break;
 		}
 		case BuddyOpcodes::AcceptInvite: {
-			player_id_t charId = reader.get<int32_t>();
+			player_id_t charId = reader.get<player_id_t>();
 			player->getBuddyList()->removePendingBuddy(charId, true);
 			break;
 		}
 		case BuddyOpcodes::Remove: {
-			player_id_t charId = reader.get<int32_t>();
+			player_id_t charId = reader.get<player_id_t>();
 			player->getBuddyList()->removeBuddy(charId);
 			break;
 		}
