@@ -34,6 +34,7 @@ namespace GameLogicUtilities {
 	inline auto isArrow(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemArrow; }
 	inline auto isStar(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemStar; }
 	inline auto isBullet(item_id_t itemId) -> bool { return getItemType(itemId) == Items::Types::ItemBullet; }
+	inline auto isProjectile(item_id_t itemId) -> bool { return isBullet(itemId) || isStar(itemId) || isArrow(itemId); }
 	inline auto isRechargeable(item_id_t itemId) -> bool { return isBullet(itemId) || isStar(itemId); }
 	inline auto isEquip(item_id_t itemId) -> bool { return getInventory(itemId) == Inventories::EquipInventory; }
 	inline auto isPet(item_id_t itemId) -> bool {	return (itemId / 100 * 100) == 5000000; }

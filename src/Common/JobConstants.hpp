@@ -151,6 +151,7 @@ namespace Jobs {
 
 			Citizen = 3000,
 			DemonSlayer = 3001,
+			Xenon = 3002,
 
 			DemonSlayer1 = 3100,
 			DemonSlayer2 = 3110,
@@ -177,6 +178,9 @@ namespace Jobs {
 			Xenon3 = 3611,
 			Xenon4 = 3612,
 
+			Hayato = 4001,
+			Kanna = 4002,
+
 			Mihile = 5000,
 			Mihile1 = 5100,
 			Mihile2 = 5110,
@@ -185,6 +189,7 @@ namespace Jobs {
 
 			Kaiser = 6000,
 			AngelicBuster = 6001,
+
 			Kaiser1 = 6100,
 			Kaiser2 = 6110,
 			Kaiser3 = 6111,
@@ -285,7 +290,7 @@ namespace Jobs {
 			Jobs::JobIds::Beginner, Jobs::JobIds::CannoneerBeginner,
 			Jobs::JobIds::Noblesse,
 			Jobs::JobIds::Legend, Jobs::JobIds::Evan, Jobs::JobIds::Mercedes, Jobs::JobIds::Phantom, Jobs::JobIds::Luminous,
-			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer,
+			Jobs::JobIds::Citizen, Jobs::JobIds::DemonSlayer, Jobs::JobIds::Xenon,
 			Jobs::JobIds::Mihile,
 			Jobs::JobIds::Kaiser, Jobs::JobIds::AngelicBuster,
 		};

@@ -235,6 +235,8 @@ namespace Items {
 		ShoeSpikes = 2040727,
 		CapeColdProtection = 2041058,
 		SpecialTeleportRock = 2320000,
+		BlazeCapsule = 2331000,
+		GlazeCapsule = 2332000,
 		WhiteScroll = 2340000,
 
 		// Etc.

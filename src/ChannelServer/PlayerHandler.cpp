@@ -617,7 +617,7 @@ auto PlayerHandler::useRangedAttack(Player *player, PacketReader &reader) -> voi
 	skill_id_t skillId = attack.skillId;
 	skill_level_t level = attack.skillLevel;
 
-	if (Skills::useAttackSkillRanged(player, skillId, attack.starPos) == Result::Failure) {
+	if (Skills::useAttackSkillRanged(player, skillId, attack.starPos, attack.cashStarPos, attack.starId) == Result::Failure) {
 		// Most likely hacking, could feasibly be lag
 		return;
 	}

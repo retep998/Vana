@@ -33,7 +33,7 @@ namespace Skills {
 	auto getAffectedPartyMembers(Party *party, int8_t affected, int8_t members) -> const vector_t<Player *>;
 	auto applySkillCosts(Player *player, skill_id_t skillId, skill_level_t level, bool elementalAmp = false) -> Result;
 	auto useAttackSkill(Player *player, skill_id_t skillId) -> Result;
-	auto useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos) -> Result;
+	auto useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result;
 	auto heal(Player *player, int16_t value, skill_id_t skillId) -> void;
 	auto hurt(Player *player, int16_t value, skill_id_t skillId) -> void;
 	auto stopSkill(Player *player, skill_id_t skillId, bool fromTimer = false) -> void;
