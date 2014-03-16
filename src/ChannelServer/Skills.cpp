@@ -470,7 +470,7 @@ auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
 	return Result::Successful;
 }
 
-auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos) -> Result {
+auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_slot_t projectilePos, inventory_slot_t cashProjectilePos, item_id_t projectileId) -> Result {
 	skill_level_t level = 0;
 	if (skillId != Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
@@ -481,23 +481,87 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 			return Result::Failure;
 		}
 	}
-	uint16_t hits = 1;
+
+	if (player->hasGmBenefits()) {
+		return Result::Successful;
+	}
+
+	switch (GameLogicUtilities::getJobTrack(player->getStats()->getJob())) {
+		case Jobs::JobTracks::Bowman:
+		case Jobs::JobTracks::WindArcher:
+			if (player->getActiveBuffs()->hasSoulArrow()) {
+				return Result::Successful;
+			}
+			if (!GameLogicUtilities::isArrow(projectileId)) {
+				return Result::Failure;
+			}
+			break;
+		case Jobs::JobTracks::Thief:
+		case Jobs::JobTracks::NightWalker:
+			if (player->getActiveBuffs()->hasShadowStars()) {
+				return Result::Successful;
+			}
+			if (cashProjectilePos > 0) {
+				Item *cashItem = player->getInventory()->getItem(Inventories::CashInventory, cashProjectilePos);
+				if (cashItem == nullptr || cashItem->getId() != projectileId) {
+					return Result::Failure;
+				}
+
+				Item *projectile = player->getInventory()->getItem(Inventories::UseInventory, projectilePos);
+				if (projectile == nullptr) {
+					return Result::Failure;
+				}
+
+				projectileId = projectile->getId();
+			}
+			if (!GameLogicUtilities::isStar(projectileId)) {
+				return Result::Failure;
+			}
+			break;
+		case Jobs::JobTracks::Pirate:
+			if (!GameLogicUtilities::isBullet(projectileId)) {
+				return Result::Failure;
+			}
+			break;
+	}
+
+	if (projectilePos <= 0) {
+		return Result::Failure;
+	}
+
+	Item *projectile = player->getInventory()->getItem(Inventories::UseInventory, projectilePos);
+	if (projectile == nullptr || projectile->getId() != projectileId) {
+		return Result::Failure;
+	}
+
+	slot_qty_t hits = 1;
 	if (skillId != Skills::All::RegularAttack) {
-		uint16_t bullets = SkillDataProvider::getInstance().getSkill(skillId, level)->bulletConsume;
+		auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+		item_id_t optionalItem = skill->optionalItem;
+
+		if (optionalItem != 0 && optionalItem == projectileId) {
+			if (projectile->getAmount() < skill->itemCount) {
+				return Result::Failure;
+			}
+			Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, skill->itemCount);
+			return Result::Successful;
+		}
+
+		slot_qty_t bullets = skill->bulletConsume;
 		if (bullets > 0) {
 			hits = bullets;
 		}
 	}
+
 	if (player->getActiveBuffs()->hasShadowPartner()) {
 		hits *= 2;
 	}
-	if (projectilePos > 0 && !(player->getActiveBuffs()->hasShadowStars() || player->getActiveBuffs()->hasSoulArrow()) && !player->hasGmBenefits()) {
-		// If they don't have Shadow Stars or Soul Arrow, take the items
-		if (player->getInventory()->getItemAmountBySlot(Inventories::UseInventory, projectilePos) < hits) {
-			return Result::Failure;
-		}
-		Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, hits);
+
+	if (projectile->getAmount() < hits) {
+		return Result::Failure;
 	}
+
+	Inventory::takeItemSlot(player, Inventories::UseInventory, projectilePos, hits);
 	return Result::Successful;
 }
 
