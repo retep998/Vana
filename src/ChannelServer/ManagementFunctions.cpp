@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ManagementFunctions.hpp"
 #include "ChannelServer.hpp"
 #include "Database.hpp"
+#include "ExitCodes.hpp"
 #include "Inventory.hpp"
 #include "ItemConstants.hpp"
 #include "ItemDataProvider.hpp"
@@ -89,7 +90,7 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResu
 		bool singleArgumentDestination = false;
 		bool portalSpecified = false;
 
-		auto resolvePlayer = [](const string_t &playerArg) { return PlayerDataProvider::getInstance().getPlayer(playerArg); };
+		auto resolvePlayer = [](const string_t &playerArg) { return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg); };
 		auto resolveMapArg = [player](const string_t &mapArg) { return ChatHandlerFunctions::getMap(mapArg, player); };
 		auto resolveMapPortal = [&portal, player](const string_t &portalArg) {
 			if (!portalArg.empty()) {
@@ -100,7 +101,7 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResu
 		};
 		auto resolveMapCurrent = [player]() { return player->getMapId(); };
 		auto resolveMapPlayer = [player](const string_t &playerArg) {
-			if (Player *target = PlayerDataProvider::getInstance().getPlayer(playerArg)) {
+			if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerArg)) {
 				return target->getMapId();
 			}
 			return -2;
@@ -134,7 +135,7 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResu
 		else if (sourceType == "player") {
 			onlySource = false;
 
-			sourcePlayer = PlayerDataProvider::getInstance().getPlayer(rawMap);
+			sourcePlayer = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(rawMap);
 			if (sourcePlayer == nullptr) {
 				ChatHandlerFunctions::showError(player, "Invalid source player: " + rawMap);
 				return ChatResult::HandledDisplay;
@@ -264,7 +265,7 @@ auto ManagementFunctions::warp(Player *player, const string_t &args) -> ChatResu
 				message << " (portal " << portal << ")";
 			}
 
-			PlayerDataProvider::getInstance().run(warpToMap);
+			ChannelServer::getInstance().getPlayerDataProvider().run(warpToMap);
 			ChatHandlerFunctions::showInfo(player, message.str());
 		}
 
@@ -282,14 +283,14 @@ auto ManagementFunctions::follow(Player *player, const string_t &args) -> ChatRe
 				ChatHandlerFunctions::showError(player, "You're already following player " + follow->getName());
 			}
 			else {
-				PlayerDataProvider::getInstance().stopFollowing(player);
+				ChannelServer::getInstance().getPlayerDataProvider().stopFollowing(player);
 				ChatHandlerFunctions::showInfo(player, "No longer following " + follow->getName());
 			}
 		}
 		else {
 			if (playerName.size() != 0) {
-				if (Player *target = PlayerDataProvider::getInstance().getPlayer(playerName)) {
-					PlayerDataProvider::getInstance().addFollower(player, target);
+				if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerName)) {
+					ChannelServer::getInstance().getPlayerDataProvider().addFollower(player, target);
 					ChatHandlerFunctions::showInfo(player, "Now following player " + target->getName());
 				}
 				else {
@@ -321,7 +322,7 @@ auto ManagementFunctions::lag(Player *player, const string_t &args) -> ChatResul
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+))", matches) == MatchResult::AnyMatches) {
 		string_t target = matches[1];
-		if (Player *p = PlayerDataProvider::getInstance().getPlayer(target)) {
+		if (Player *p = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(target)) {
 			ChatHandlerFunctions::showInfo(player, p->getName() + "'s lag: " + StringUtilities::lexical_cast<string_t>(p->getLatency().count()) + "ms");
 		}
 		else {
@@ -340,13 +341,14 @@ auto ManagementFunctions::header(Player *player, const string_t &args) -> ChatRe
 auto ManagementFunctions::shutdown(Player *player, const string_t &args) -> ChatResult {
 	ChatHandlerFunctions::showInfo(player, "Shutting down the server");
 	ChannelServer::getInstance().log(LogType::GmCommand, "GM shutdown the server. GM: " + player->getName());
-	ChannelServer::getInstance().shutdown();
+	// TODO FIXME remove this or figure out a better way to post a shutdown than just doing the shutdown here
+	ExitCodes::exit(ExitCodes::ForcedByGm);
 	return ChatResult::HandledDisplay;
 }
 
 auto ManagementFunctions::kick(Player *player, const string_t &args) -> ChatResult {
 	if (!args.empty()) {
-		if (Player *target = PlayerDataProvider::getInstance().getPlayer(args)) {
+		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
 			if (player->getGmLevel() > target->getGmLevel()) {
 				target->disconnect();
 				ChatHandlerFunctions::showInfo(player, "Kicked " + args + " from the server");
@@ -379,7 +381,7 @@ auto ManagementFunctions::item(Player *player, const string_t &args) -> ChatResu
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d*)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawItem = matches[1];
 		item_id_t itemId = atoi(rawItem.c_str());
-		if (ItemDataProvider::getInstance().getItemInfo(itemId) != nullptr) {
+		if (ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId) != nullptr) {
 			string_t countString = matches[2];
 			uint16_t count = countString.empty() ? 1 : atoi(countString.c_str());
 			Inventory::addNewItem(player, itemId, count, Items::StatVariance::Gachapon);
@@ -505,7 +507,7 @@ auto ManagementFunctions::kill(Player *player, const string_t &args) -> ChatResu
 				player->getStats()->setHp(0);
 				ChatHandlerFunctions::showInfo(player, "Killed yourself");
 			}
-			else if (Player *kill = PlayerDataProvider::getInstance().getPlayer(args)) {
+			else if (Player *kill = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(args)) {
 				// Kill by name
 				kill->getStats()->setHp(0);
 				ChatHandlerFunctions::showInfo(player, "Killed " + args);
@@ -523,7 +525,7 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> ChatResul
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
+		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
 			target->disconnect();
 		}
 		string_t reasonString = matches[2];
@@ -549,7 +551,7 @@ auto ManagementFunctions::ban(Player *player, const string_t &args) -> ChatResul
 
 		if (st.get_affected_rows() > 0) {
 			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
+			ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 				log << "GM " << player->getName()
 					<< " banned a player with reason " << reason
@@ -569,7 +571,7 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> ChatR
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) (\d+) (\d+))", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
+		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
 			target->disconnect();
 		}
 		string_t reasonString = matches[2];
@@ -594,7 +596,7 @@ auto ManagementFunctions::tempBan(Player *player, const string_t &args) -> ChatR
 
 		if (st.get_affected_rows() > 0) {
 			string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
-			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
+			ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 
 			ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 				log << "GM " << player->getName()
@@ -616,7 +618,7 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> ChatRes
 	match_t matches;
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\w+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t targetName = matches[1];
-		if (Player *target = PlayerDataProvider::getInstance().getPlayer(targetName)) {
+		if (Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName)) {
 			string_t targetIp = target->getIp().toString();
 			target->disconnect();
 
@@ -632,7 +634,7 @@ auto ManagementFunctions::ipBan(Player *player, const string_t &args) -> ChatRes
 			if (st.get_affected_rows() > 0) {
 				string_t banMessage = targetName + " has been banned" + ChatHandlerFunctions::getBanString(reason);
 
-				PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
+				ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(banMessage, PlayerPacket::NoticeTypes::Notice));
 				ChannelServer::getInstance().log(LogType::GmCommand, [&](out_stream_t &log) {
 					log << "GM " << player->getName()
 						<< " IP banned a player with reason " << reason

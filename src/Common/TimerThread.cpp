@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TimerThread.hpp"
+#include "ThreadPool.hpp"
 #include "Timer.hpp"
 #include "TimerContainer.hpp"
 #include "TimeUtilities.hpp"
@@ -26,15 +27,44 @@ namespace Timer {
 
 TimerThread::TimerThread()
 {
-	m_runThread = true;
 	m_container = make_ref_ptr<Container>();
-	m_thread = make_owned_ptr<thread_t>([this]() { this->runThread(); });
+	m_thread = ThreadPool::lease(
+		[this](owned_lock_t<recursive_mutex_t> &lock) {
+			time_point_t waitTime = getWaitTime();
+			time_point_t now = TimeUtilities::getNow();
+
+			while (waitTime <= now && m_timers.size() > 0) {
+				timer_pair_t top = m_timers.top();
+
+				if (ref_ptr_t<Timer> timer = top.second.lock()) {
+					m_timers.pop();
+
+					if (timer->run(now) == RunResult::Reset) {
+						m_timers.emplace(timer->reset(now), timer);
+					}
+					else {
+						timer->removeFromContainer();
+					}
+
+					waitTime = getWaitTime();
+				}
+				else {
+					// Expired timer
+					m_timers.pop();
+					continue;
+				}
+			}
+
+			m_mainLoopCondition.wait_until(lock, waitTime);
+		},
+		[this] {
+			m_mainLoopCondition.notify_one();
+		},
+		m_timersMutex);
 }
 
 TimerThread::~TimerThread() {
-	m_runThread.store(false, std::memory_order_relaxed);
-	m_mainLoopCondition.notify_one();
-	m_thread->join();
+	m_thread.reset();
 }
 
 auto TimerThread::getTimerContainer() const -> ref_ptr_t<Container> {
@@ -53,40 +83,6 @@ auto TimerThread::getWaitTime() const -> time_point_t {
 	}
 
 	return TimeUtilities::getNowWithTimeAdded(milliseconds_t(1000000000));
-}
-
-auto TimerThread::runThread() -> void {
-	owned_lock_t<recursive_mutex_t> l(m_timersMutex);
-	while (m_runThread.load(std::memory_order_relaxed)) {
-		time_point_t waitTime = getWaitTime();
-		time_point_t now = TimeUtilities::getNow();
-
-		while (waitTime <= now && m_timers.size() > 0) {
-			timer_pair_t top = m_timers.top();
-
-			if (ref_ptr_t<Timer> timer = top.second.lock()) {
-				m_timers.pop();
-
-				if (timer->run(now) == RunResult::Reset) {
-					m_timers.emplace(timer->reset(now), timer);
-				}
-				else {
-					timer->removeFromContainer();
-				}
-
-				waitTime = getWaitTime();
-			}
-			else {
-				// Expired timer
-				m_timers.pop();
-				continue;
-			}
-		}
-
-		if (m_mainLoopCondition.wait_until(l, waitTime) == std::cv_status::no_timeout) {
-			continue;
-		}
-	}
 }
 
 }

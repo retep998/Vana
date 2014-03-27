@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GameLogicUtilities.hpp"
 #include "InitializeCommon.hpp"
 #include "JobConstants.hpp"
+#include "LoginServer.hpp"
 #include "StopWatch.hpp"
 #include "StringUtilities.hpp"
 #include "Timer.hpp"
@@ -218,7 +219,7 @@ auto RankingCalculator::world(vector_t<RankPlayer> &v) -> void {
 		return t1.worldId > t2.worldId;
 	});
 
-	Worlds::getInstance().runFunction([&v](World *world) -> bool {
+	LoginServer::getInstance().getWorlds().runFunction([&v](World *world) -> bool {
 		world_id_t worldId = world->getId();
 		player_level_t lastLevel = 0;
 		time_t lastTime = 0;

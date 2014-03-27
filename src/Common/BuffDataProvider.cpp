@@ -849,7 +849,9 @@ auto BuffDataProvider::addItemInfo(item_id_t itemId, const ConsumeInfo &cons) ->
 	if (cons.morphs.size() > 0) {
 		types.push_back(0x02);
 		bytes.push_back(Byte5);
-		values.push_back(cons.morphs[0].morph); // TEMPORARY HACK UNTIL BUFF SYSTEM IS RESTRUCTURED
+		// TODO FIXME buffs
+		// TEMPORARY HACK UNTIL BUFF SYSTEM IS RESTRUCTURED
+		values.push_back(cons.morphs[0].morph);
 	}
 	// Need some buff bytes/types for ALL of the following
 	if (cons.iceResist > 0) {

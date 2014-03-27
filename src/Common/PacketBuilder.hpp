@@ -54,7 +54,7 @@ public:
 	auto getSize() const -> size_t;
 	auto toString() const -> string_t;
 private:
-	static const size_t bufferLen = 1000; // Initial buffer length
+	static const size_t bufferLen = 100; // Initial buffer length
 	friend auto operator <<(std::ostream &out, const PacketBuilder &builder) -> std::ostream &;
 
 	auto getBuffer(size_t pos, size_t len) -> unsigned char *;

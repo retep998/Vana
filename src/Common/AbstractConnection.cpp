@@ -47,12 +47,12 @@ auto AbstractConnection::baseHandleRequest(PacketReader &reader) -> void {
 				}
 				break;
 			case CMSG_PONG:
-				if (!m_isPinged) {
+				if (m_pingCount == 0) {
 					// Trying to spoof pongs without pings
 					disconnect();
 					return;
 				}
-				m_isPinged = false;
+				m_pingCount = 0;
 				// This is for the trip to and from, so latency is averaged between them
 				m_latency = duration_cast<milliseconds_t>(TimeUtilities::getNow() - m_lastPing) / 2;
 				break;
@@ -82,13 +82,13 @@ auto AbstractConnection::getLatency() const -> milliseconds_t {
 
 auto AbstractConnection::ping() -> void {
 	if (m_doesPing) {
-		if (m_isPinged) {
+		if (m_pingCount == 3) {
 			// We have a timeout now
 			disconnect();
 			return;
 		}
 
-		m_isPinged = true;
+		m_pingCount++;
 		m_lastPing = TimeUtilities::getNow();
 		send(PingPacket::ping());
 	}

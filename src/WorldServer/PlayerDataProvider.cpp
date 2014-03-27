@@ -103,7 +103,7 @@ auto PlayerDataProvider::addPlayer(const PlayerData &data) -> void {
 }
 
 auto PlayerDataProvider::sendSync(const PacketBuilder &builder) const -> void {
-	Channels::getInstance().send(builder);
+	WorldServer::getInstance().getChannels().send(builder);
 }
 
 auto PlayerDataProvider::channelDisconnect(channel_id_t channel) -> void {
@@ -122,7 +122,7 @@ auto PlayerDataProvider::send(player_id_t playerId, const PacketBuilder &builder
 		return;
 	}
 
-	Channels::getInstance().send(data.channel.get(), Packets::prepend(
+	WorldServer::getInstance().getChannels().send(data.channel.get(), Packets::prepend(
 		builder, [&](PacketBuilder &packet) {
 			packet
 				.add<header_t>(IMSG_TO_PLAYER)
@@ -148,7 +148,7 @@ auto PlayerDataProvider::send(const vector_t<player_id_t> &playerIds, const Pack
 	}
 
 	for (const auto &kvp : sendTargets) {
-		Channels::getInstance().send(kvp.first, Packets::prepend(
+		WorldServer::getInstance().getChannels().send(kvp.first, Packets::prepend(
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
@@ -174,7 +174,7 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 	}
 
 	for (const auto &kvp : sendTargets) {
-		Channels::getInstance().send(kvp.first, Packets::prepend(
+		WorldServer::getInstance().getChannels().send(kvp.first, Packets::prepend(
 			builder, [&](PacketBuilder &packet) {
 				packet
 					.add<header_t>(IMSG_TO_PLAYER_LIST)
@@ -279,7 +279,7 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Map | Sync::Player::UpdateBits::Channel | Sync::Player::UpdateBits::Ip));
 	}
 
-	Channels::getInstance().increasePopulation(channel);
+	WorldServer::getInstance().getChannels().increasePopulation(channel);
 }
 
 auto PlayerDataProvider::handlePlayerDisconnect(channel_id_t channel, PacketReader &reader) -> void {
@@ -293,11 +293,11 @@ auto PlayerDataProvider::handlePlayerDisconnect(channel_id_t channel, PacketRead
 		}
 	}
 
-	Channels::getInstance().decreasePopulation(channel);
+	WorldServer::getInstance().getChannels().decreasePopulation(channel);
 
 	channel_id_t oldChannel = removePendingPlayer(id);
 	if (oldChannel != -1) {
-		Channels::getInstance().send(oldChannel, SyncPacket::PlayerPacket::deleteConnectable(id));
+		WorldServer::getInstance().getChannels().send(oldChannel, SyncPacket::PlayerPacket::deleteConnectable(id));
 	}
 }
 
@@ -318,7 +318,7 @@ auto PlayerDataProvider::handleCharacterDeleted(PacketReader &reader) -> void {
 
 auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connection, PacketReader &reader) -> void {
 	player_id_t playerId = reader.get<player_id_t>();
-	Channel *channel = Channels::getInstance().getChannel(reader.get<channel_id_t>());
+	Channel *channel = WorldServer::getInstance().getChannels().getChannel(reader.get<channel_id_t>());
 	Ip ip(0);
 	port_t port = -1;
 	if (channel != nullptr) {
@@ -338,13 +338,13 @@ auto PlayerDataProvider::handleChangeChannel(AbstractConnection *connection, Pac
 	player_id_t playerId = reader.get<player_id_t>();
 
 	auto &player = m_players.find(playerId)->second;
-	Channel *currentChannel = Channels::getInstance().getChannel(player.channel.get());
+	Channel *currentChannel = WorldServer::getInstance().getChannels().getChannel(player.channel.get());
 	if (currentChannel == nullptr) {
 		return;
 	}
 
 	channel_id_t channelId = m_channelSwitches[playerId];
-	Channel *destinationChannel = Channels::getInstance().getChannel(channelId);
+	Channel *destinationChannel = WorldServer::getInstance().getChannels().getChannel(channelId);
 	Ip ip(0);
 	port_t port = -1;
 	if (destinationChannel != nullptr) {
@@ -500,7 +500,7 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 			soci::use(inviterId, "inviter");
 	}
 	else {
-		Channels::getInstance().send(invitee.channel.get(), SyncPacket::BuddyPacket::sendBuddyInvite(inviteeId, inviterId, inviter.name));
+		WorldServer::getInstance().getChannels().send(invitee.channel.get(), SyncPacket::BuddyPacket::sendBuddyInvite(inviteeId, inviterId, inviter.name));
 	}
 }
 
@@ -520,7 +520,7 @@ auto PlayerDataProvider::buddyOnline(PacketReader &reader) -> void {
 	}
 
 	for (const auto &kvp : ids) {
-		if (Channel *channel = Channels::getInstance().getChannel(kvp.first)) {
+		if (Channel *channel = WorldServer::getInstance().getChannels().getChannel(kvp.first)) {
 			channel->send(SyncPacket::BuddyPacket::sendBuddyOnlineOffline(kvp.second, playerId, (online ? player.channel.get() : -1)));
 		}
 	}

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Maps.hpp"
+#include "ChannelServer.hpp"
 #include "FileUtilities.hpp"
 #include "Instance.hpp"
 #include "Inventory.hpp"
@@ -32,11 +33,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 auto Maps::getMap(map_id_t mapId) -> Map * {
-	return MapDataProvider::getInstance().getMap(mapId);
+	return ChannelServer::getInstance().getMap(mapId);
 }
 
 auto Maps::unloadMap(map_id_t mapId) -> void {
-	MapDataProvider::getInstance().unloadMap(mapId);
+	ChannelServer::getInstance().unloadMap(mapId);
 }
 
 auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {

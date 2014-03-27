@@ -37,10 +37,10 @@ public:
 	auto createHeader(unsigned char *header, uint16_t size) -> void;
 	auto encrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
 	auto decrypt(unsigned char *buffer, int32_t size, uint16_t headerLen) -> void;
-	auto setRecvIv(uint32_t iv) -> void { m_recv.updateIv(iv); }
-	auto setSendIv(uint32_t iv) -> void { m_send.updateIv(iv); }
-	auto getRecvIv() const -> uint32_t { return m_recv.getIv(); }
-	auto getSendIv() const -> uint32_t { return m_send.getIv(); }
+	auto setRecvIv(iv_t iv) -> void { m_recv.updateIv(iv); }
+	auto setSendIv(iv_t iv) -> void { m_send.updateIv(iv); }
+	auto getRecvIv() const -> iv_t { return m_recv.getIv(); }
+	auto getSendIv() const -> iv_t { return m_send.getIv(); }
 private:
 	auto getVersionAndSize(unsigned char *header, uint16_t &version, uint16_t &size) -> void;
 

@@ -17,11 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <iomanip>
-#include <iostream>
+#include "Types.hpp"
 
+using exit_code_t = int;
 namespace ExitCodes {
-	enum : int32_t {
+	enum : exit_code_t {
 		Ok = 0,
 		ConfigError = 1,
 		ConfigFileMissing = 2,
@@ -33,20 +33,15 @@ namespace ExitCodes {
 		ServerVersionMismatch = 8,
 		ServerMalformedIvPacket = 9,
 		ServerConnectionError = 10,
-		ProgramException = 11,
-		QueryError = 12,
+		ServerDisconnection = 11,
+		ProgramException = 12,
+		QueryError = 13,
+		ForcedByGm = 14,
 	};
 	// Comments for easy searching
 	// exit(0) exit(1) exit(2) exit(3) exit(4)
 	// exit(5) exit(6) exit(7) exit(8) exit(9)
-	// exit(10) exit(11) exit(12)
+	// exit(10) exit(11) exit(12) exit(13) exit(14)
 
-	inline
-	auto exit(int32_t code) -> void {
-#ifndef DAEMON
-		std::cout << "Please press enter to quit..." << std::endl;
-		std::cin.get();
-#endif
-		::exit(code);
-	}
+	auto exit(exit_code_t code) -> void;
 }

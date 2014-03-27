@@ -118,7 +118,7 @@ auto InventoryHandler::dropItem(Player *player, PacketReader &reader, Item *item
 		player->send(InventoryPacket::inventoryOperation(true, ops));
 	}
 
-	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(droppedItem.getId());
+	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(droppedItem.getId());
 	bool isTradeable = !(droppedItem.hasTradeBlock() || itemInfo->quest || itemInfo->noTrade);
 	Drop *drop = new Drop(player->getMapId(), droppedItem, player->getPos(), player->getId(), true);
 	drop->setTime(0);
@@ -170,7 +170,7 @@ auto InventoryHandler::useSkillbook(Player *player, PacketReader &reader) -> voi
 		return;
 	}
 	
-	auto skillbookItems = ItemDataProvider::getInstance().getItemSkills(itemId);
+	auto skillbookItems = ChannelServer::getInstance().getItemDataProvider().getItemSkills(itemId);
 	if (skillbookItems == nullptr) {
 		// Hacking
 		return;
@@ -241,7 +241,7 @@ auto InventoryHandler::useSummonBag(Player *player, PacketReader &reader) -> voi
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
 
-	auto itemInfo = ItemDataProvider::getInstance().getItemSummons(itemId);
+	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemSummons(itemId);
 	if (itemInfo == nullptr) {
 		// Most likely hacking
 		return;
@@ -257,7 +257,7 @@ auto InventoryHandler::useSummonBag(Player *player, PacketReader &reader) -> voi
 
 	for (const auto &bag : *itemInfo) {
 		if (Randomizer::rand<uint32_t>(99) < bag.chance) {
-			if (MobDataProvider::getInstance().mobExists(bag.mobId)) {
+			if (ChannelServer::getInstance().getMobDataProvider().mobExists(bag.mobId)) {
 				player->getMap()->spawnMob(bag.mobId, player->getPos());
 			}
 		}
@@ -274,7 +274,7 @@ auto InventoryHandler::useReturnScroll(Player *player, PacketReader &reader) -> 
 		// Hacking
 		return;
 	}
-	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
+	auto info = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
 	if (info == nullptr) {
 		// Probably hacking
 		return;
@@ -303,7 +303,7 @@ auto InventoryHandler::useScroll(Player *player, PacketReader &reader) -> void {
 	item_id_t itemId = item->getId();
 	int8_t succeed = -1;
 	bool cursed = false;
-	ItemDataProvider::getInstance().scrollItem(itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed);
+	ChannelServer::getInstance().getItemDataProvider().scrollItem(ChannelServer::getInstance().getEquipDataProvider(), itemId, equip, whiteScroll, player->hasGmBenefits(), succeed, cursed);
 
 	if (succeed != -1) {
 		if (whiteScroll) {
@@ -347,7 +347,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 		return;
 	}
 
-	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 	bool used = false;
 	if (GameLogicUtilities::getItemType(itemId) == Items::Types::WeatherCash) {
 		string_t message = reader.get<string_t>();
@@ -404,7 +404,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::Megaphone: {
 				string_t msg = player->getMedalName() + " : " + reader.get<string_t>();
 				// In global, this sends to everyone on the current channel, not the map
-				PlayerDataProvider::getInstance().send(InventoryPacket::showMegaphone(msg));
+				ChannelServer::getInstance().getPlayerDataProvider().send(InventoryPacket::showMegaphone(msg));
 				used = true;
 				break;
 			}
@@ -480,7 +480,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			}
 			case Items::PetNameTag: {
 				string_t name = reader.get<string_t>();
-				if (ValidCharDataProvider::getInstance().isForbiddenName(name) || CurseDataProvider::getInstance().isCurseWord(name)) {
+				if (ChannelServer::getInstance().getValidCharDataProvider().isForbiddenName(name) || ChannelServer::getInstance().getCurseDataProvider().isCurseWord(name)) {
 					// Don't think it's hacking, but it should be forbidden
 					return;
 				}
@@ -549,7 +549,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::Megassenger: {
 				bool hasReceiver = (reader.get<int8_t>() == 3);
 				bool showWhisper = (itemId == Items::Megassenger ? reader.get<bool>() : false);
-				Player *receiver = PlayerDataProvider::getInstance().getPlayer(reader.get<string_t>());
+				Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(reader.get<string_t>());
 				int32_t time = 15;
 
 				if ((hasReceiver && receiver != nullptr) || (!hasReceiver && receiver == nullptr)) {
@@ -560,7 +560,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					string_t msg5 = reader.get<string_t>();
 					tick_count_t ticks = reader.get<tick_count_t>();
 
-					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
+					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::Megassenger ? 3 : 0), time);
 
 					if (itemId == Items::Megassenger) {
 						auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
@@ -585,7 +585,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				string_t msg5 = reader.get<string_t>();
 				tick_count_t ticks = reader.get<tick_count_t>();
 
-				MapleTvs::getInstance().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
+				ChannelServer::getInstance().getMapleTvs().addMessage(player, nullptr, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::StarMegassenger ? 3 : 0), time);
 
 				if (itemId == Items::StarMegassenger) {
 					auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
@@ -601,7 +601,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 			case Items::HeartMegassenger: {
 				bool showWhisper = (itemId == Items::HeartMegassenger ? reader.get<bool>() : false);
 				string_t name = reader.get<string_t>();
-				Player *receiver = PlayerDataProvider::getInstance().getPlayer(name);
+				Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(name);
 				int32_t time = 60;
 
 				if (receiver != nullptr) {
@@ -612,7 +612,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 					string_t msg5 = reader.get<string_t>();
 					tick_count_t ticks = reader.get<tick_count_t>();
 
-					MapleTvs::getInstance().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
+					ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, msg1, msg2, msg3, msg4, msg5, itemId - (itemId == Items::HeartMegassenger ? 3 : 0), time);
 
 					if (itemId == Items::HeartMegassenger) {
 						auto &basePacket = InventoryPacket::showSuperMegaphone(player->getMedalName() + " : " + msg1 + msg2 + msg3 + msg4 + msg5, showWhisper);
@@ -655,7 +655,7 @@ auto InventoryHandler::useCashItem(Player *player, PacketReader &reader) -> void
 				inventory_t inv = static_cast<inventory_t>(reader.get<int32_t>());
 				inventory_slot_t slot = static_cast<inventory_slot_t>(reader.get<int32_t>());
 				Item *item = player->getInventory()->getItem(inv, slot);
-				if (item == nullptr || item->getHammers() == Items::MaxHammers || EquipDataProvider::getInstance().getSlots(item->getId()) == 0) {
+				if (item == nullptr || item->getHammers() == Items::MaxHammers || ChannelServer::getInstance().getEquipDataProvider().getSlots(item->getId()) == 0) {
 					// Hacking, probably
 					return;
 				}
@@ -742,7 +742,7 @@ auto InventoryHandler::handleRockTeleport(Player *player, int32_t itemId, Packet
 	}
 	else if (mode == Ign) {
 		string_t targetName = reader.get<string_t>();
-		Player *target = PlayerDataProvider::getInstance().getPlayer(targetName);
+		Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(targetName);
 		if (target != nullptr && target != player) {
 			targetMapId = target->getMapId();
 		}
@@ -810,7 +810,7 @@ auto InventoryHandler::handleRewardItem(Player *player, PacketReader &reader) ->
 		return;
 	}
 
-	auto rewards = ItemDataProvider::getInstance().getItemRewards(itemId);
+	auto rewards = ChannelServer::getInstance().getItemDataProvider().getItemRewards(itemId);
 	if (rewards == nullptr) {
 		// Hacking or no information in the database
 		player->send(InventoryPacket::blankUpdate());
@@ -842,14 +842,14 @@ auto InventoryHandler::handleScriptItem(Player *player, PacketReader &reader) ->
 		return;
 	}
 
-	string_t scriptName = ScriptDataProvider::getInstance().getScript(itemId, ScriptTypes::Item);
+	string_t scriptName = ChannelServer::getInstance().getScriptDataProvider().getScript(itemId, ScriptTypes::Item);
 	if (scriptName.empty()) {
 		// Hacking or no script for item found
 		player->send(InventoryPacket::blankUpdate());
 		return;
 	}
 
-	npc_id_t npcId = ItemDataProvider::getInstance().getItemInfo(itemId)->npc;
+	npc_id_t npcId = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->npc;
 
 	// Let's run the NPC
 	Npc *npc = new Npc(npcId, player, scriptName);

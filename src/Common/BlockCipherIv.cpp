@@ -41,12 +41,12 @@ BlockCipherIv::BlockCipherIv()
 	updateIv(0);
 }
 
-BlockCipherIv::BlockCipherIv(uint32_t iv)
+BlockCipherIv::BlockCipherIv(iv_t iv)
 {
 	updateIv(iv);
 }
 
-auto BlockCipherIv::updateIv(uint32_t iv) -> void {
+auto BlockCipherIv::updateIv(iv_t iv) -> void {
 	setIv(m_iv, reinterpret_cast<unsigned char*>(&iv));
 }
 
@@ -54,8 +54,8 @@ auto BlockCipherIv::shuffle() -> void {
 	uint8_t newIv[4] = {0xF2, 0x53, 0x50, 0xC6};
 	uint8_t input;
 	uint8_t valueInput;
-	uint32_t fullIv;
-	uint32_t shift;
+	iv_t fullIv;
+	iv_t shift;
 
 	for (uint8_t i = 0; i < 4; i++) {
 		input = m_iv[i];

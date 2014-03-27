@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Inventory.hpp"
 #include "Buffs.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "InventoryPacket.hpp"
 #include "ItemDataProvider.hpp"
@@ -35,7 +36,7 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 	for (inventory_slot_t s = 1; s <= player->getInventory()->getMaxSlots(inv); s++) {
 		Item *oldItem = player->getInventory()->getItem(inv, s);
 		if (oldItem != nullptr) {
-			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
+			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->getId());
 			slot_qty_t maxSlot = itemInfo->maxSlot;
 			if (GameLogicUtilities::isStackable(item->getId()) && oldItem->getId() == item->getId() && oldItem->getAmount() < maxSlot) {
 				if (item->getAmount() + oldItem->getAmount() > maxSlot) {
@@ -85,7 +86,7 @@ auto Inventory::addItem(Player *player, Item *item, bool fromDrop) -> slot_qty_t
 }
 
 auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, Items::StatVariance variancePolicy) -> void {
-	auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+	auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 	if (itemInfo == nullptr) {
 		return;
 	}
@@ -111,7 +112,7 @@ auto Inventory::addNewItem(Player *player, item_id_t itemId, slot_qty_t amount, 
 
 	Item *item = nullptr;
 	if (GameLogicUtilities::isEquip(itemId)) {
-		item = new Item(itemId, variancePolicy, player->hasGmBenefits());
+		item = new Item(ChannelServer::getInstance().getEquipDataProvider(), itemId, variancePolicy, player->hasGmBenefits());
 		if (GameLogicUtilities::isMount(itemId)) {
 			player->getMounts()->addMount(itemId);
 		}
@@ -195,7 +196,7 @@ auto Inventory::takeItemSlot(Player *player, inventory_t inv, inventory_slot_t s
 }
 
 auto Inventory::useItem(Player *player, item_id_t itemId) -> void {
-	auto item = ItemDataProvider::getInstance().getConsumeInfo(itemId);
+	auto item = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
 	if (item == nullptr) {
 		// Not a consume
 		return;

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerActiveBuffs.hpp"
 #include "BuffsPacket.hpp"
+#include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Maps.hpp"
@@ -237,7 +238,7 @@ auto PlayerActiveBuffs::setActiveSkillLevel(skill_id_t skillId, skill_level_t le
 
 auto PlayerActiveBuffs::getActiveSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
 	skill_level_t level = getActiveSkillLevel(skillId);
-	return level != 0 ? SkillDataProvider::getInstance().getSkill(skillId, level) : nullptr;
+	return level != 0 ? ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level) : nullptr;
 }
 
 // Buff addition/removal
@@ -315,7 +316,7 @@ auto PlayerActiveBuffs::addCombo() -> void {
 	if (comboLevel > 0) {
 		skill_id_t advSkill = m_player->getSkills()->getAdvancedCombo();
 		skill_level_t advCombo = m_player->getSkills()->getSkillLevel(advSkill);
-		auto skill = SkillDataProvider::getInstance().getSkill(advCombo > 0 ? advSkill : skillId, advCombo > 0 ? advCombo : comboLevel);
+		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(advCombo > 0 ? advSkill : skillId, advCombo > 0 ? advCombo : comboLevel);
 
 		int8_t maxCombo = static_cast<int8_t>(skill->x);
 		if (m_combo == maxCombo) {
@@ -340,7 +341,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 		skill_id_t skillId = Skills::DarkKnight::Berserk;
 		skill_level_t level = m_player->getSkills()->getSkillLevel(skillId);
 		if (level > 0) {
-			int16_t hpPercentage = m_player->getStats()->getMaxHp() * SkillDataProvider::getInstance().getSkill(skillId, level)->x / 100;
+			int16_t hpPercentage = m_player->getStats()->getMaxHp() * ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x / 100;
 			int16_t hp = m_player->getStats()->getHp();
 			bool change = false;
 			if (m_berserk && hp > hpPercentage) {
@@ -719,7 +720,7 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	if (hasHyperBody()) {
 		skill_id_t skillId = getHyperBody();
 		skill_level_t hbLevel = getActiveSkillLevel(skillId);
-		auto hb = SkillDataProvider::getInstance().getSkill(skillId, hbLevel);
+		auto hb = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, hbLevel);
 		m_player->getStats()->setHyperBody(hb->x, hb->y);
 	}
 }

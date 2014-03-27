@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaInstance.hpp"
+#include "ChannelServer.hpp"
 #include "Instance.hpp"
 #include "Instances.hpp"
 #include "Player.hpp"
@@ -41,7 +42,7 @@ auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
 	}
 
 	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);
-	Instances::getInstance().addInstance(instance);
+	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 
 	if (instance->showTimer()) {

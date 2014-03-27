@@ -81,9 +81,6 @@
     <ClCompile Include="src\Common\ConnectionManager.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\SessionManager.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Variables.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
@@ -162,9 +159,6 @@
     <ClCompile Include="src\Common\ServerClient.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\ConnectionAcceptor.cpp">
-      <Filter>Connection</Filter>
-    </ClCompile>
     <ClCompile Include="src\Common\Quest.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
@@ -226,6 +220,9 @@
     <ClCompile Include="src\Common\LuaEnvironment.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Common\ExitCodes.cpp" />
+    <ClCompile Include="src\Common\VanaMain.cpp" />
+    <ClCompile Include="src\Common\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common\GameConstants.hpp">
@@ -345,9 +342,6 @@
     <ClInclude Include="src\Common\ConnectionManager.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\SessionManager.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
     <ClInclude Include="src\Common\Timer.hpp">
       <Filter>Timer</Filter>
     </ClInclude>
@@ -388,9 +382,6 @@
       <Filter>Source\Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\ServerClient.hpp">
-      <Filter>Connection</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Common\ConnectionAcceptor.hpp">
       <Filter>Connection</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Quest.hpp">
@@ -525,5 +516,6 @@
     <ClInclude Include="src\Common\LuaEnvironment.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Common\ThreadPool.hpp" />
   </ItemGroup>
 </Project>

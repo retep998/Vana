@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class EventDataProvider : public TimerContainerHolder {
-	SINGLETON_CUSTOM_CONSTRUCTOR(EventDataProvider);
 public:
+	EventDataProvider();
 	auto loadData() -> void;
 	auto clearInstances() -> void;
 	auto getVariables() const -> Variables * { return m_variables.get(); }

@@ -71,7 +71,7 @@ auto LuaScriptable::initialize() -> void {
 	set<player_id_t>("system_playerId", m_playerId); // Pushing ID for reference from static functions
 	setEnvironmentVariables();
 
-	Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId);
+	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
 	if (player != nullptr && player->getInstance() != nullptr) {
 		set<string_t>("system_instanceName", player->getInstance()->getName());
 	}
@@ -80,6 +80,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("consoleOutput", &LuaExports::consoleOutput);
 	expose("getRandomNumber", &LuaExports::getRandomNumber);
 	expose("log", &LuaExports::log);
+	expose("selectDiscrete", &LuaExports::selectDiscrete);
 	expose("showGlobalMessage", &LuaExports::showGlobalMessage);
 	expose("showWorldMessage", &LuaExports::showWorldMessage);
 	expose("testExport", &LuaExports::testExport);
@@ -150,6 +151,7 @@ auto LuaScriptable::initialize() -> void {
 	expose("destroyEquippedItem", &LuaExports::destroyEquippedItem);
 	expose("getEquippedItemInSlot", &LuaExports::getEquippedItemInSlot);
 	expose("getItemAmount", &LuaExports::getItemAmount);
+	expose("getMaxStackSize", &LuaExports::getMaxStackSize);
 	expose("getMesos", &LuaExports::getMesos);
 	expose("getOpenSlots", &LuaExports::getOpenSlots);
 	expose("giveItem", &LuaExports::giveItem);
@@ -362,7 +364,7 @@ auto LuaScriptable::setEnvironmentVariables() -> void {
 }
 
 auto LuaScriptable::handleError(const string_t &filename, const string_t &error) -> void {
-	Player *player = PlayerDataProvider::getInstance().getPlayer(m_playerId);
+	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId);
 
 	ChannelServer::getInstance().log(LogType::ScriptLog, error);
 
@@ -386,7 +388,7 @@ auto LuaExports::getEnvironment(lua_State *luaVm) -> LuaEnvironment & {
 
 auto LuaExports::getPlayer(lua_State *luaVm) -> Player * {
 	lua_getglobal(luaVm, "system_playerId");
-	Player *p = PlayerDataProvider::getInstance().getPlayer(lua_tointeger(luaVm, -1));
+	Player *p = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(lua_tointeger(luaVm, -1));
 	lua_pop(luaVm, 1);
 	return p;
 }
@@ -394,17 +396,17 @@ auto LuaExports::getPlayer(lua_State *luaVm) -> Player * {
 auto LuaExports::getPlayerDeduced(int parameter, lua_State *luaVm) -> Player * {
 	Player *player = nullptr;
 	if (lua_type(luaVm, parameter) == LUA_TSTRING) {
-		player = PlayerDataProvider::getInstance().getPlayer(lua_tostring(luaVm, parameter));
+		player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(lua_tostring(luaVm, parameter));
 	}
 	else {
-		player = PlayerDataProvider::getInstance().getPlayer(lua_tointeger(luaVm, parameter));
+		player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(lua_tointeger(luaVm, parameter));
 	}
 	return player;
 }
 
 auto LuaExports::getInstance(lua_State *luaVm) -> Instance * {
 	lua_getglobal(luaVm, "system_instanceName");
-	Instance *i = Instances::getInstance().getInstance(lua_tostring(luaVm, -1));
+	Instance *i = ChannelServer::getInstance().getInstances().getInstance(lua_tostring(luaVm, -1));
 	lua_pop(luaVm, 1);
 	return i;
 }
@@ -473,6 +475,20 @@ auto LuaExports::log(lua_State *luaVm) -> int {
 	return 0;
 }
 
+auto LuaExports::selectDiscrete(lua_State *luaVm) -> int {
+	auto &env = getEnvironment(luaVm);
+	vector_t<double> relativeChances = env.get<vector_t<double>>(luaVm, 1);
+	// TODO FIXME msvc
+	// MSVC did not provide the input iterator constructor for discrete_distribution
+	// Once Connect bug 812538 is fixed, remove this ugly, hideous workaround
+	std::discrete_distribution<> dist(relativeChances.size(), 0., static_cast<double>(relativeChances.size()), [&](double i) -> double {
+		return relativeChances[static_cast<size_t>(i)];
+	});
+	// Account for Lua array start
+	env.push<int32_t>(luaVm, Randomizer::rand(dist) + 1);
+	return 1;
+}
+
 auto LuaExports::showGlobalMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
@@ -504,7 +520,7 @@ auto LuaExports::testExport(lua_State *luaVm) -> int {
 // Channel
 auto LuaExports::deleteChannelVariable(lua_State *luaVm) -> int {
 	string_t key = lua_tostring(luaVm, -1);
-	EventDataProvider::getInstance().getVariables()->deleteVariable(key);
+	ChannelServer::getInstance().getEventDataProvider().getVariables()->deleteVariable(key);
 	return 0;
 }
 
@@ -518,7 +534,7 @@ auto LuaExports::getChannelVariable(lua_State *luaVm) -> int {
 	if (lua_isboolean(luaVm, 2)) {
 		integral = true;
 	}
-	string_t val = EventDataProvider::getInstance().getVariables()->getVariable(lua_tostring(luaVm, 1));
+	string_t val = ChannelServer::getInstance().getEventDataProvider().getVariables()->getVariable(lua_tostring(luaVm, 1));
 	pushGetVariableData(luaVm, val, integral);
 	return 1;
 }
@@ -551,14 +567,14 @@ auto LuaExports::isZakumChannel(lua_State *luaVm) -> int {
 auto LuaExports::setChannelVariable(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
 	auto kvp = obtainSetVariablePair(luaVm, env);
-	EventDataProvider::getInstance().getVariables()->setVariable(kvp.first, kvp.second);
+	ChannelServer::getInstance().getEventDataProvider().getVariables()->setVariable(kvp.first, kvp.second);
 	return 0;
 }
 
 auto LuaExports::showChannelMessage(lua_State *luaVm) -> int {
 	string_t msg = lua_tostring(luaVm, -2);
 	int8_t type = lua_tointeger(luaVm, -1);
-	PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(msg, type));
+	ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(msg, type));
 	return 0;
 }
 
@@ -640,7 +656,7 @@ auto LuaExports::runNpc(lua_State *luaVm) -> int {
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::getInstance().getScript(npcId, ScriptTypes::Npc);
+		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
 	}
 	Npc *npc = new Npc(npcId, getPlayer(luaVm), script);
 	npc->run();
@@ -673,49 +689,49 @@ auto LuaExports::spawnNpc(lua_State *luaVm) -> int {
 // Beauty
 auto LuaExports::getAllFaces(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<face_id_t>>(luaVm, BeautyDataProvider::getInstance().getFaces(getPlayer(luaVm)->getGender()));
+	env.push<vector_t<face_id_t>>(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getFaces(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getAllHair(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<hair_id_t>>(luaVm, BeautyDataProvider::getInstance().getHair(getPlayer(luaVm)->getGender()));
+	env.push<vector_t<hair_id_t>>(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getHair(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getAllSkins(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	env.push<vector_t<skin_id_t>>(luaVm, BeautyDataProvider::getInstance().getSkins());
+	env.push<vector_t<skin_id_t>>(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getSkins());
 	return 1;
 }
 
 auto LuaExports::getRandomFace(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, BeautyDataProvider::getInstance().getRandomFace(getPlayer(luaVm)->getGender()));
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getRandomFace(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getRandomHair(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, BeautyDataProvider::getInstance().getRandomHair(getPlayer(luaVm)->getGender()));
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getRandomHair(getPlayer(luaVm)->getGender()));
 	return 1;
 }
 
 auto LuaExports::getRandomSkin(lua_State *luaVm) -> int {
-	lua_pushinteger(luaVm, BeautyDataProvider::getInstance().getRandomSkin());
+	lua_pushinteger(luaVm, ChannelServer::getInstance().getBeautyDataProvider().getRandomSkin());
 	return 1;
 }
 
 auto LuaExports::isValidFace(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, BeautyDataProvider::getInstance().isValidFace(getPlayer(luaVm)->getGender(), lua_tointeger(luaVm, 1)));
+	lua_pushboolean(luaVm, ChannelServer::getInstance().getBeautyDataProvider().isValidFace(getPlayer(luaVm)->getGender(), lua_tointeger(luaVm, 1)));
 	return 1;
 }
 
 auto LuaExports::isValidHair(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, BeautyDataProvider::getInstance().isValidHair(getPlayer(luaVm)->getGender(), lua_tointeger(luaVm, 1)));
+	lua_pushboolean(luaVm, ChannelServer::getInstance().getBeautyDataProvider().isValidHair(getPlayer(luaVm)->getGender(), lua_tointeger(luaVm, 1)));
 	return 1;
 }
 
 auto LuaExports::isValidSkin(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, BeautyDataProvider::getInstance().isValidSkin(lua_tointeger(luaVm, 1)));
+	lua_pushboolean(luaVm, ChannelServer::getInstance().getBeautyDataProvider().isValidSkin(lua_tointeger(luaVm, 1)));
 	return 1;
 }
 
@@ -836,6 +852,12 @@ auto LuaExports::getItemAmount(lua_State *luaVm) -> int {
 	return 1;
 }
 
+auto LuaExports::getMaxStackSize(lua_State *luaVm) -> int {
+	item_id_t itemId = lua_tointeger(luaVm, 1);
+	lua_pushnumber(luaVm, ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->maxSlot);
+	return 1;
+}
+
 auto LuaExports::getMesos(lua_State *luaVm) -> int {
 	lua_pushnumber(luaVm, getPlayer(luaVm)->getInventory()->getMesos());
 	return 1;
@@ -894,7 +916,7 @@ auto LuaExports::isEquippedItem(lua_State *luaVm) -> int {
 
 auto LuaExports::isValidItem(lua_State *luaVm) -> int {
 	item_id_t itemId = lua_tointeger(luaVm, 1);
-	lua_pushboolean(luaVm, ItemDataProvider::getInstance().getItemInfo(itemId) != nullptr);
+	lua_pushboolean(luaVm, ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId) != nullptr);
 	return 1;
 }
 
@@ -1782,7 +1804,7 @@ auto LuaExports::addInstanceMap(lua_State *luaVm) -> int {
 
 auto LuaExports::addInstanceParty(lua_State *luaVm) -> int {
 	party_id_t id = lua_tointeger(luaVm, -1);
-	if (Party *p = PlayerDataProvider::getInstance().getParty(id)) {
+	if (Party *p = ChannelServer::getInstance().getPlayerDataProvider().getParty(id)) {
 		getInstance(luaVm)->addParty(p);
 	}
 	return 0;
@@ -1829,7 +1851,7 @@ auto LuaExports::createInstance(lua_State *luaVm) -> int {
 		id = player->getId();
 	}
 	Instance *instance = new Instance(name, map, id, seconds_t(time), seconds_t(persistent), showTimer);
-	Instances::getInstance().addInstance(instance);
+	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 
 	if (instance->showTimer()) {
@@ -1909,7 +1931,7 @@ auto LuaExports::isBannedInstancePlayer(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::isInstance(lua_State *luaVm) -> int {
-	lua_pushboolean(luaVm, Instances::getInstance().isInstance(lua_tostring(luaVm, 1)));
+	lua_pushboolean(luaVm, ChannelServer::getInstance().getInstances().isInstance(lua_tostring(luaVm, 1)));
 	return 1;
 }
 
@@ -2005,7 +2027,7 @@ auto LuaExports::revertInstance(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::setInstance(lua_State *luaVm) -> int {
-	Instance *instance = Instances::getInstance().getInstance(lua_tostring(luaVm, -1));
+	Instance *instance = ChannelServer::getInstance().getInstances().getInstance(lua_tostring(luaVm, -1));
 	if (instance != nullptr) {
 		lua_getglobal(luaVm, "system_instanceName");
 		lua_setglobal(luaVm, "system_oldInstanceName");

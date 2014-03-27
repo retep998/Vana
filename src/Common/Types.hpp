@@ -251,25 +251,18 @@ using opt_string_t = optional_t<string_t>;
 		TypeName(TypeName &&) = delete; \
 		auto operator=(TypeName &&) -> TypeName & = delete;
 
-#define SINGLETON_BASE(TypeName) \
+#define SINGLETON(TypeName) \
 	public: \
 		static auto getInstance() -> TypeName & { \
 			static TypeName singleton; \
 			return singleton; \
 		} \
-	NONCOPYABLE(TypeName);
-
-#define SINGLETON(TypeName) \
-	SINGLETON_BASE(TypeName); \
-	private: \
-		TypeName() = default;
-
-#define SINGLETON_CUSTOM_CONSTRUCTOR(TypeName) \
-	SINGLETON_BASE(TypeName); \
+	NONCOPYABLE(TypeName); \
 	private: \
 		TypeName();
 
 #define DEFAULT_EXCEPTION(TypeName, BaseType) \
-	public: \
+	struct TypeName : public BaseType { \
 		explicit TypeName(const std::string &message) : BaseType(message) { } \
-		explicit TypeName(const char *message) : BaseType(message) { }
+		explicit TypeName(const char *message) : BaseType(message) { } \
+	};

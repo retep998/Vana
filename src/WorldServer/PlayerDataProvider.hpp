@@ -37,8 +37,9 @@ namespace soci {
 }
 
 class PlayerDataProvider {
-	SINGLETON_CUSTOM_CONSTRUCTOR(PlayerDataProvider);
 public:
+	PlayerDataProvider();
+
 	auto loadData() -> void;
 	auto getChannelConnectPacket(PacketBuilder &packet) -> void;
 	auto channelDisconnect(channel_id_t channel) -> void;

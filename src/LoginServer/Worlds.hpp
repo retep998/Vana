@@ -30,7 +30,6 @@ class UserConnection;
 class World;
 
 class Worlds {
-	SINGLETON(Worlds);
 public:
 	auto channelSelect(UserConnection *user, PacketReader &reader) -> void;
 	auto selectWorld(UserConnection *user, PacketReader &reader) -> void;

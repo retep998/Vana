@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerInventory.hpp"
 #include "Algorithm.hpp"
+#include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "EquipDataProvider.hpp"
 #include "GameLogicUtilities.hpp"
@@ -323,7 +324,7 @@ auto PlayerInventory::hasOpenSlotsFor(item_id_t itemId, slot_qty_t amount, bool 
 		required = amount; // These aren't stackable
 	}
 	else {
-		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+		auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 		slot_qty_t maxSlot = itemInfo->maxSlot;
 		slot_qty_t existing = getItemAmount(itemId) % maxSlot;
 		// Bug in global:
@@ -426,7 +427,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		item_id_t itemId1 = item1->getId();
 		inventory_slot_t strippedSlot1 = GameLogicUtilities::stripCashSlot(slot1);
 		inventory_slot_t strippedSlot2 = GameLogicUtilities::stripCashSlot(slot2);
-		if (!EquipDataProvider::getInstance().isValidSlot(itemId1, strippedSlot2)) {
+		if (!ChannelServer::getInstance().getEquipDataProvider().isValidSlot(itemId1, strippedSlot2)) {
 			// Hacking
 			return;
 		}
@@ -434,7 +435,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		auto bindTradeBlockOnEquip = [this, slot1, equippedSlot2, item1, itemId1](vector_t<InventoryPacketOperation> &ops) -> bool {
 			// We don't care about any case other than equipping because we're checking for gear binds which only happen on first equip
 			if (slot1 >= 0 && equippedSlot2) {
-				auto &equipInfo = EquipDataProvider::getInstance().getEquipInfo(itemId1);
+				auto &equipInfo = ChannelServer::getInstance().getEquipDataProvider().getEquipInfo(itemId1);
 				if (equipInfo.tradeBlockOnEquip && !item1->hasTradeBlock()) {
 					item1->setTradeBlock(true);
 					ops.emplace_back(InventoryPacket::OperationTypes::RemoveItem, item1, slot1);
@@ -549,7 +550,7 @@ auto PlayerInventory::swapItems(int8_t inventory, int16_t slot1, int16_t slot2) 
 		item_id_t itemId1 = item1->getId();
 		item_id_t itemId2 = item2 == nullptr ? 0 : item2->getId();
 		if (item2 != nullptr && itemId1 == itemId2 && GameLogicUtilities::isStackable(itemId1)) {
-			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId1);
+			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId1);
 			slot_qty_t maxSlot = itemInfo->maxSlot;
 
 			if (item1->getAmount() + item2->getAmount() <= maxSlot) {
@@ -611,7 +612,7 @@ auto PlayerInventory::connectData(PacketBuilder &packet) -> void {
 	packet.add<int32_t>(m_mesos);
 
 	for (inventory_t i = Inventories::EquipInventory; i <= Inventories::InventoryCount; ++i) {
-		packet.add<int8_t>(getMaxSlots(i));
+		packet.add<inventory_slot_count_t>(getMaxSlots(i));
 	}
 
 	// Go through equips

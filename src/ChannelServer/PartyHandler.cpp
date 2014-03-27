@@ -34,7 +34,7 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 			break;
 		case PartyActions::Join: {
 			party_id_t partyId = reader.get<party_id_t>();
-			if (Party *party = PlayerDataProvider::getInstance().getParty(partyId)) {
+			if (Party *party = ChannelServer::getInstance().getPlayerDataProvider().getParty(partyId)) {
 				if (party->getMembersCount() == Parties::MaxMembers) {
 					player->send(PartyPacket::error(PartyPacket::Errors::PartyFull));
 				}
@@ -55,7 +55,7 @@ auto PartyHandler::handleRequest(Player *player, PacketReader &reader) -> void {
 				// ??
 				return;
 			}
-			if (Player *invitee = PlayerDataProvider::getInstance().getPlayer(invName)) {
+			if (Player *invitee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(invName)) {
 				if (invitee->getParty() != nullptr) {
 					player->send(PartyPacket::error(PartyPacket::Errors::PlayerHasParty));
 				}

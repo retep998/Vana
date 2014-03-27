@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Drop.hpp"
+#include "ChannelServer.hpp"
 #include "DropsPacket.hpp"
 #include "Maps.hpp"
 #include "Pet.hpp"
@@ -65,7 +66,7 @@ auto Drop::doDrop(const Pos &origin) -> void {
 		}
 	}
 	else if (m_owner != 0) {
-		if (Player *player = PlayerDataProvider::getInstance().getPlayer(m_owner)) {
+		if (Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_owner)) {
 			if (player->getMapId() == m_mapId) {
 				player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::DropAnimation, origin));
 				player->send(DropsPacket::showDrop(this, DropsPacket::DropTypes::ShowDrop, origin));

@@ -74,7 +74,7 @@ auto MessageFunctions::channelMessage(Player *player, const string_t &args) -> C
 		int8_t type = ChatHandlerFunctions::getMessageType(rawType);
 		if (type != -1) {
 			string_t message = matches[2];
-			PlayerDataProvider::getInstance().send(PlayerPacket::showMessage(message, type));
+			ChannelServer::getInstance().getPlayerDataProvider().send(PlayerPacket::showMessage(message, type));
 		}
 		else {
 			ChatHandlerFunctions::showError(player, "Invalid message type: " + rawType);

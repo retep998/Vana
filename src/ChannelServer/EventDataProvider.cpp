@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "EventDataProvider.hpp"
+#include "ChannelServer.hpp"
 #include "InitializeCommon.hpp"
 #include "Instance.hpp"
 #include "Instances.hpp"
@@ -95,9 +96,9 @@ auto EventDataProvider::loadInstances() -> void {
 
 auto EventDataProvider::clearInstances() -> void {
 	auto clearInstance = [](const string_t &name) {
-		if (Instance *instance = Instances::getInstance().getInstance(name)) {
+		if (Instance *instance = ChannelServer::getInstance().getInstances().getInstance(name)) {
 			instance->markForDelete();
-			Instances::getInstance().removeInstance(instance);
+			ChannelServer::getInstance().getInstances().removeInstance(instance);
 		}
 	};
 
@@ -118,6 +119,6 @@ auto EventDataProvider::clearInstances() -> void {
 
 auto EventDataProvider::startInstance(const string_t &name, const duration_t &time, const duration_t &repeat) -> void {
 	Instance *instance = new Instance(name, 0, 0, time, repeat, false);
-	Instances::getInstance().addInstance(instance);
+	ChannelServer::getInstance().getInstances().addInstance(instance);
 	instance->beginInstance();
 }

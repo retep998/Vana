@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerModFunctions.hpp"
+#include "ChannelServer.hpp"
 #include "Maps.hpp"
 #include "Player.hpp"
 #include "PlayerPacket.hpp"
@@ -173,7 +174,7 @@ auto PlayerModFunctions::addSp(Player *player, const string_t &args) -> ChatResu
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawSkill = matches[1];
 		skill_id_t skillId = atoi(rawSkill.c_str());
-		if (SkillDataProvider::getInstance().isValidSkill(skillId)) {
+		if (ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId)) {
 			// Don't allow skills that do not exist to be added
 			string_t countString = matches[2];
 			skill_level_t count = countString.empty() ? 1 : atoi(countString.c_str());
@@ -193,7 +194,7 @@ auto PlayerModFunctions::maxSp(Player *player, const string_t &args) -> ChatResu
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(-{0,1}\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawSkill = matches[1];
 		skill_id_t skillId = atoi(rawSkill.c_str());
-		if (SkillDataProvider::getInstance().isValidSkill(skillId)) {
+		if (ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId)) {
 			// Don't allow skills that do not exist to be added
 			string_t max = matches[2];
 			skill_level_t maxLevel = max.empty() ? 1 : atoi(max.c_str());

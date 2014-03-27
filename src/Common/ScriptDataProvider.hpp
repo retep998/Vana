@@ -31,7 +31,6 @@ enum class ScriptTypes {
 };
 
 class ScriptDataProvider {
-	SINGLETON(ScriptDataProvider);
 public:
 	auto loadData() -> void;
 

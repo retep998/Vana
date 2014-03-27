@@ -161,7 +161,7 @@ auto PlayerQuests::addQuest(quest_id_t questId, npc_id_t npcId) -> void {
 	quest.id = questId;
 	m_quests[questId] = quest;
 
-	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+	auto &questInfo = ChannelServer::getInstance().getQuestDataProvider().getInfo(questId);
 	questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
 		if (info.isMob) {
 			quest.kills[info.id] = 0;
@@ -186,7 +186,7 @@ auto PlayerQuests::updateQuestMob(mob_id_t mobId) -> void {
 			continue;
 		}
 
-		auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+		auto &questInfo = ChannelServer::getInstance().getQuestDataProvider().getInfo(questId);
 		bool possiblyCompleted = false;
 		bool anyUpdate = false;
 		questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
@@ -210,7 +210,7 @@ auto PlayerQuests::updateQuestMob(mob_id_t mobId) -> void {
 }
 
 auto PlayerQuests::checkDone(ActiveQuest &quest) -> void {
-	auto &questInfo = QuestDataProvider::getInstance().getInfo(quest.id);
+	auto &questInfo = ChannelServer::getInstance().getQuestDataProvider().getInfo(quest.id);
 
 	quest.done = CompletionResult::Complete == questInfo.forEachRequest(false, [&](const QuestRequestInfo &info) -> IterationResult {
 		if (info.isMob) {
@@ -232,7 +232,7 @@ auto PlayerQuests::checkDone(ActiveQuest &quest) -> void {
 }
 
 auto PlayerQuests::finishQuest(quest_id_t questId, npc_id_t npcId) -> void {
-	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+	auto &questInfo = ChannelServer::getInstance().getQuestDataProvider().getInfo(questId);
 
 	if (giveRewards(questId, false) == Result::Failure) {
 		// Don't complete the quest yet
@@ -264,7 +264,7 @@ auto PlayerQuests::itemDropAllowed(item_id_t itemId, quest_id_t questId) -> Allo
 	if (!isQuestActive(questId)) {
 		return AllowQuestItemResult::Disallow;
 	}
-	auto &info = QuestDataProvider::getInstance().getInfo(questId);
+	auto &info = ChannelServer::getInstance().getQuestDataProvider().getInfo(questId);
 	slot_qty_t questAmount = 0;
 	info.forEachRequest(false, [&questAmount, itemId](const QuestRequestInfo &info) -> IterationResult {
 		if (info.isItem && info.id == itemId) {
@@ -281,7 +281,7 @@ auto PlayerQuests::itemDropAllowed(item_id_t itemId, quest_id_t questId) -> Allo
 }
 
 auto PlayerQuests::giveRewards(quest_id_t questId, bool start) -> Result {
-	auto &questInfo = QuestDataProvider::getInstance().getInfo(questId);
+	auto &questInfo = ChannelServer::getInstance().getQuestDataProvider().getInfo(questId);
 
 	job_id_t job = m_player->getStats()->getJob();
 	array_t<inventory_t, Inventories::InventoryCount> neededSlots = {0};

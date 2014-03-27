@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ReactorHandler.hpp"
+#include "ChannelServer.hpp"
 #include "Drop.hpp"
 #include "FileUtilities.hpp"
 #include "GameLogicUtilities.hpp"
@@ -42,7 +43,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 	Reactor *reactor = map->getReactor(id);
 
 	if (reactor != nullptr && reactor->isAlive()) {
-		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
+		auto &data = ChannelServer::getInstance().getReactorDataProvider().getReactorData(reactor->getReactorId(), true);
 		if (reactor->getState() < data.maxStates - 1) {
 			const auto &reactorEvent = data.states.at(reactor->getState())[0]; // There's only one way to hit something
 			if (reactorEvent.nextState < data.maxStates - 1) {
@@ -54,7 +55,7 @@ auto ReactorHandler::hitReactor(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 			else {
-				string_t filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+				string_t filename = ChannelServer::getInstance().getScriptDataProvider().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 
 				if (FileUtilities::fileExists(filename)) {
 					LuaReactor(filename, player->getId(), id, reactor->getMapId());
@@ -91,7 +92,7 @@ struct Reaction {
 	auto operator()(const time_point_t &now) -> void {
 		reactor->setState(state, true);
 		drop->removeDrop();
-		string_t filename = ScriptDataProvider::getInstance().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
+		string_t filename = ChannelServer::getInstance().getScriptDataProvider().getScript(reactor->getReactorId(), ScriptTypes::Reactor);
 		LuaReactor(filename, player->getId(), Map::makeReactorId(reactor->getId()), reactor->getMapId());
 	}
 
@@ -106,7 +107,7 @@ auto ReactorHandler::checkDrop(Player *player, Drop *drop) -> void {
 	Map *map = drop->getMap();
 	for (size_t i = 0; i < map->getNumReactors(); ++i) {
 		reactor = map->getReactor(i);
-		auto &data = ReactorDataProvider::getInstance().getReactorData(reactor->getReactorId(), true);
+		auto &data = ChannelServer::getInstance().getReactorDataProvider().getReactorData(reactor->getReactorId(), true);
 		if (reactor->getState() < data.maxStates - 1) {
 			for (const auto &reactorEvent : data.states.at(reactor->getState())) {
 				if (reactorEvent.type == 100 && drop->getObjectId() == reactorEvent.itemId) {

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PetHandler.hpp"
+#include "ChannelServer.hpp"
 #include "GameConstants.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
@@ -171,7 +172,7 @@ auto PetHandler::handleCommand(Player *player, PacketReader &reader) -> void {
 	}
 	reader.skipBytes(1);
 	int8_t act = reader.get<int8_t>();
-	auto action = ItemDataProvider::getInstance().getInteraction(pet->getItemId(), act);
+	auto action = ChannelServer::getInstance().getItemDataProvider().getInteraction(pet->getItemId(), act);
 	if (action == nullptr) {
 		// Hacking or no action info available
 		return;
@@ -196,7 +197,7 @@ auto PetHandler::handleConsumePotion(Player *player, PacketReader &reader) -> vo
 	inventory_slot_t slot = reader.get<inventory_slot_t>();
 	item_id_t itemId = reader.get<item_id_t>();
 	Item *item = player->getInventory()->getItem(Inventories::UseInventory, slot);
-	auto info = ItemDataProvider::getInstance().getConsumeInfo(itemId);
+	auto info = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(itemId);
 	if (item == nullptr || item->getId() != itemId) {
 		// Hacking
 		return;

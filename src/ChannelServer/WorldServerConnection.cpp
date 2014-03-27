@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "WorldServerConnection.hpp"
 #include "ChannelServer.hpp"
+#include "ExitCodes.hpp"
 #include "InterHeader.hpp"
 #include "PacketReader.hpp"
 #include "PacketWrapper.hpp"
@@ -36,7 +37,7 @@ WorldServerConnection::WorldServerConnection() :
 WorldServerConnection::~WorldServerConnection() {
 	if (ChannelServer::getInstance().isConnected()) {
 		std::cout << "Disconnected from the WorldServer. Shutting down..." << std::endl;
-		ChannelServer::getInstance().shutdown();
+		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }
 
@@ -46,15 +47,15 @@ auto WorldServerConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_CHANNEL_CONNECT: WorldServerConnectHandler::connect(this, reader); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
-			PlayerDataProvider::getInstance().send(playerId, Packets::identity(reader));
+			ChannelServer::getInstance().getPlayerDataProvider().send(playerId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
 			vector_t<player_id_t> playerIds = reader.get<vector_t<player_id_t>>();
-			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
+			ChannelServer::getInstance().getPlayerDataProvider().send(playerIds, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_PLAYERS: PlayerDataProvider::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_PLAYERS: ChannelServer::getInstance().getPlayerDataProvider().send(Packets::identity(reader)); break;
 		case IMSG_REFRESH_DATA: WorldServerConnectHandler::reloadMcdb(reader); break;
 		case IMSG_REHASH_CONFIG: ChannelServer::getInstance().setConfig(reader.get<WorldConfig>()); break;
 		case IMSG_SYNC: SyncHandler::handle(reader); break;

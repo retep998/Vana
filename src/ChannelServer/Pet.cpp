@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Pet.hpp"
+#include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "ItemDataProvider.hpp"
@@ -30,7 +31,7 @@ Pet::Pet(Player *player, Item *item) :
 	MovableLife(0, Pos(), 0),
 	m_player(player),
 	m_itemId(item->getId()),
-	m_name(ItemDataProvider::getInstance().getItemInfo(m_itemId)->name),
+	m_name(ChannelServer::getInstance().getItemDataProvider().getItemInfo(m_itemId)->name),
 	m_item(item)
 {
 	soci::session &sql = Database::getCharDb();
@@ -98,7 +99,7 @@ auto Pet::modifyFullness(int8_t offset, bool sendPacket) -> void {
 
 auto Pet::startTimer() -> void {
 	Timer::Id id(Timer::Types::PetTimer, getIndex().get(), 0); // The timer will automatically stop if another pet gets inserted into this index
-	duration_t repeat = seconds_t((6 - ItemDataProvider::getInstance().getPetInfo(getItemId())->hunger) * 60); // TODO FIXME formula
+	duration_t repeat = seconds_t((6 - ChannelServer::getInstance().getItemDataProvider().getPetInfo(getItemId())->hunger) * 60); // TODO FIXME formula
 	Timer::Timer::create([this](const time_point_t &now) { this->modifyFullness(-1, true); }, id, m_player->getTimerContainer(), seconds_t(0), repeat);
 }
 

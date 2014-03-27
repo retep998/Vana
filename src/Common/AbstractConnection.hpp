@@ -43,7 +43,7 @@ private:
 	auto baseHandleRequest(PacketReader &reader) -> void;
 
 	bool m_isServer = false;
-	bool m_isPinged = false;
+	int8_t m_pingCount = 0;
 	bool m_doesPing = true;
 	Session *m_session = nullptr;
 	Ip m_ip;

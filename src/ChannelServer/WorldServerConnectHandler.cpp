@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ChannelServer.hpp"
 #include "Configuration.hpp"
 #include "DropDataProvider.hpp"
+#include "ExitCodes.hpp"
 #include "ItemDataProvider.hpp"
 #include "MapDataProvider.hpp"
 #include "MobDataProvider.hpp"
@@ -49,7 +50,7 @@ auto WorldServerConnectHandler::connectLogin(WorldServerConnection *player, Pack
 	}
 	else {
 		std::cerr << "ERROR: No world server to connect" << std::endl;
-		ChannelServer::getInstance().shutdown();
+		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }
 
@@ -69,24 +70,5 @@ auto WorldServerConnectHandler::connect(WorldServerConnection *player, PacketRea
 
 auto WorldServerConnectHandler::reloadMcdb(PacketReader &reader) -> void {
 	string_t args = reader.get<string_t>();
-	if (args == "all") {
-		ItemDataProvider::getInstance().loadData();
-		DropDataProvider::getInstance().loadData();
-		ShopDataProvider::getInstance().loadData();
-		MobDataProvider::getInstance().loadData();
-		BeautyDataProvider::getInstance().loadData();
-		ScriptDataProvider::getInstance().loadData();
-		SkillDataProvider::getInstance().loadData();
-		ReactorDataProvider::getInstance().loadData();
-		QuestDataProvider::getInstance().loadData();
-	}
-	else if (args == "items") ItemDataProvider::getInstance().loadData();
-	else if (args == "drops") DropDataProvider::getInstance().loadData();
-	else if (args == "shops") ShopDataProvider::getInstance().loadData();
-	else if (args == "mobs") MobDataProvider::getInstance().loadData();
-	else if (args == "beauty") BeautyDataProvider::getInstance().loadData();
-	else if (args == "scripts") ScriptDataProvider::getInstance().loadData();
-	else if (args == "skills") SkillDataProvider::getInstance().loadData();
-	else if (args == "reactors") ReactorDataProvider::getInstance().loadData();
-	else if (args == "quest") QuestDataProvider::getInstance().loadData();
+	ChannelServer::getInstance().reloadData(args);
 }

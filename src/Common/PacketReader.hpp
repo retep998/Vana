@@ -25,14 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <vector>
 
-class PacketContentException : public std::runtime_error {
-	DEFAULT_EXCEPTION(PacketContentException, std::runtime_error);
-};
+DEFAULT_EXCEPTION(PacketContentException, std::runtime_error);
 
 #ifdef DEBUG
-class PacketDebugException : public std::runtime_error {
-	DEFAULT_EXCEPTION(PacketDebugException, std::runtime_error);
-};
+DEFAULT_EXCEPTION(PacketDebugException, std::runtime_error);
 #endif
 
 class PacketReader {

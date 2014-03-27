@@ -27,7 +27,6 @@ struct NpcData {
 };
 
 class NpcDataProvider {
-	SINGLETON(NpcDataProvider);
 public:
 	auto loadData() -> void;
 

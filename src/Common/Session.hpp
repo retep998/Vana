@@ -28,12 +28,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 class AbstractConnection;
+class ConnectionManager;
 class PacketBuilder;
-class SessionManager;
 
 class Session : public enable_shared<Session> {
 public:
-	Session(boost::asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion);
+	Session(boost::asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion);
 
 	auto disconnect() -> void;
 	auto send(const PacketBuilder &builder) -> void;
@@ -43,9 +43,6 @@ protected:
 	auto getDecoder() -> Decoder &;
 	auto getBuffer() -> MiscUtilities::shared_array<unsigned char> &;
 	auto start() -> void;
-	auto stop() -> void;
-	auto handleStart() -> void;
-	auto handleStop() -> void;
 	auto startReadHeader() -> void;
 	auto handleWrite(const boost::system::error_code &error, size_t bytesTransferred) -> void;
 	auto handleReadHeader(const boost::system::error_code &error, size_t bytesTransferred) -> void;
@@ -56,14 +53,13 @@ protected:
 	static const size_t headerLen = 4;
 	static const size_t maxBufferLen = 65535;
 private:
-	friend class ConnectionAcceptor;
-	friend class SessionManager;
+	friend class ConnectionManager;
 
 	bool m_isForClient = true;
 	bool m_usePing = false;
 	string_t m_subversion;
 	ref_ptr_t<AbstractConnection> m_connection;
-	ref_ptr_t<SessionManager> m_sessionManager;
+	ConnectionManager &m_manager;
 	Decoder m_decoder;
 	boost::asio::ip::tcp::socket m_socket;
 	MiscUtilities::shared_array<unsigned char> m_buffer;

@@ -36,7 +36,7 @@ auto Fame::handleFame(Player *player, PacketReader &reader) -> void {
 			player->send(FamePacket::sendError(checkResult));
 		}
 		else {
-			Player *famee = PlayerDataProvider::getInstance().getPlayer(playerId);
+			Player *famee = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 			fame_t newFame = famee->getStats()->getFame() + (type == 1 ? 1 : -1);
 			famee->getStats()->setFame(newFame);
 			addFameLog(player->getId(), playerId);

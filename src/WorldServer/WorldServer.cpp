@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ConnectionManager.hpp"
 #include "Channels.hpp"
 #include "InitializeCommon.hpp"
-#include "InitializeWorld.hpp"
 #include "StringUtilities.hpp"
 #include "SyncPacket.hpp"
 #include "VanaConstants.hpp"
@@ -37,23 +36,27 @@ auto WorldServer::shutdown() -> void {
 }
 
 auto WorldServer::listen() -> void {
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new WorldServerAcceptConnection(); }, getInterServerConfig(), true, MapleVersion::LoginSubversion);
 }
 
-auto WorldServer::loadData() -> void {
+auto WorldServer::loadData() -> Result {
 	Initializing::checkSchemaVersion();
-	Initializing::loadData();
 
-	m_loginConnection = new LoginServerConnection;
+	m_loginConnection = new LoginServerConnection();
 	auto &config = getInterServerConfig();
-	ConnectionManager::getInstance().connect(config.loginIp, config.loginPort, config, m_loginConnection);
+
+	if (getConnectionManager().connect(config.loginIp, config.loginPort, config, m_loginConnection) == Result::Failure) {
+		return Result::Failure;
+	}
+
 	sendAuth(m_loginConnection);
+	return Result::Successful;
 }
 
 auto WorldServer::rehashConfig(const WorldConfig &config) -> void {
 	m_config = config;
 	m_defaultRates = config.rates;
-	Channels::getInstance().send(WorldServerAcceptPacket::rehashConfig(config));
+	m_channels.send(WorldServerAcceptPacket::rehashConfig(config));
 }
 
 auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void {
@@ -62,17 +65,27 @@ auto WorldServer::establishedLoginConnection(world_id_t worldId, port_t port, co
 	m_config = conf;
 	m_defaultRates = conf.rates;
 	listen();
-	Initializing::worldEstablished();
+	
+	m_playerDataProvider.loadData();
+
 	displayLaunchTime();
 }
 
 auto WorldServer::setRates(const Rates &rates) -> void {
 	m_config.rates = rates;
-	Channels::getInstance().send(SyncPacket::ConfigPacket::setRates(rates));
+	m_channels.send(SyncPacket::ConfigPacket::setRates(rates));
 }
 
 auto WorldServer::resetRates() -> void {
 	setRates(m_defaultRates);
+}
+
+auto WorldServer::getPlayerDataProvider() -> PlayerDataProvider & {
+	return m_playerDataProvider;
+}
+
+auto WorldServer::getChannels() -> Channels & {
+	return m_channels;
 }
 
 auto WorldServer::makeLogIdentifier() const -> opt_string_t {
@@ -101,7 +114,7 @@ auto WorldServer::getConfig() -> const WorldConfig & {
 
 auto WorldServer::setScrollingHeader(const string_t &message) -> void {
 	m_config.scrollingHeader = message;
-	Channels::getInstance().send(SyncPacket::ConfigPacket::scrollingHeader(message));
+	m_channels.send(SyncPacket::ConfigPacket::scrollingHeader(message));
 }
 
 auto WorldServer::sendLogin(const PacketBuilder &builder) -> void {

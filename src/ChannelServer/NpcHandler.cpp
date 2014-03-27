@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcHandler.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
@@ -174,7 +175,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			reader.skipBytes(4); // Item ID, no reason to trust this
 			slot_qty_t quantity = reader.get<slot_qty_t>();
 			reader.skipBytes(4); // Price, don't want to trust this
-			auto shopItem = ShopDataProvider::getInstance().getShopItem(player->getShop(), itemIndex);
+			auto shopItem = ChannelServer::getInstance().getShopDataProvider().getShopItem(player->getShop(), itemIndex);
 			if (shopItem == nullptr) {
 				// Hacking
 				return;
@@ -185,7 +186,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 			mesos_t price = shopItem->price;
 			slot_qty_t totalAmount = quantity * amount; // The game doesn't let you purchase more than 1 slot worth of items; if they're grouped, it buys them in single units, if not, it only allows you to go up to maxSlot
 			mesos_t totalPrice = quantity * price;
-			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 
 			if (price == 0 || totalAmount > itemInfo->maxSlot || totalAmount < 0 || player->getInventory()->getMesos() < totalPrice) {
 				// Hacking
@@ -213,7 +214,7 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 				player->send(NpcPacket::bought(NpcPacket::BoughtMessages::NotEnoughInStock));
 				return;
 			}
-			mesos_t price = ItemDataProvider::getInstance().getItemInfo(itemId)->price;
+			mesos_t price = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->price;
 
 			player->getInventory()->modifyMesos(price * amount);
 			if (GameLogicUtilities::isRechargeable(itemId)) {
@@ -233,12 +234,12 @@ auto NpcHandler::useShop(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 
-			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
+			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->getId());
 			slot_qty_t maxSlot = itemInfo->maxSlot;
 			if (GameLogicUtilities::isRechargeable(item->getId())) {
 				maxSlot += player->getSkills()->getRechargeableBonus();
 			}
-			mesos_t modifiedMesos = ShopDataProvider::getInstance().getRechargeCost(player->getShop(), item->getId(), maxSlot - item->getAmount());
+			mesos_t modifiedMesos = ChannelServer::getInstance().getShopDataProvider().getRechargeCost(player->getShop(), item->getId(), maxSlot - item->getAmount());
 			if (modifiedMesos < 0 && player->getInventory()->getMesos() > -modifiedMesos) {
 				player->getInventory()->modifyMesos(modifiedMesos);
 				item->setAmount(maxSlot);
@@ -263,7 +264,7 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 	int8_t type = reader.get<int8_t>();
-	mesos_t cost = NpcDataProvider::getInstance().getStorageCost(player->getShop());
+	mesos_t cost = ChannelServer::getInstance().getNpcDataProvider().getStorageCost(player->getShop());
 	if (cost == 0) {
 		// Hacking
 		return;
@@ -334,16 +335,16 @@ auto NpcHandler::useStorage(Player *player, PacketReader &reader) -> void {
 }
 
 auto NpcHandler::showShop(Player *player, shop_id_t shopId) -> Result {
-	if (ShopDataProvider::getInstance().isShop(shopId)) {
+	if (ChannelServer::getInstance().getShopDataProvider().isShop(shopId)) {
 		player->setShop(shopId);
-		player->send(NpcPacket::showShop(ShopDataProvider::getInstance().getShop(shopId), player->getSkills()->getRechargeableBonus()));
+		player->send(NpcPacket::showShop(ChannelServer::getInstance().getShopDataProvider().getShop(shopId), player->getSkills()->getRechargeableBonus()));
 		return Result::Successful;
 	}
 	return Result::Failure;
 }
 
 auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
-	if (NpcDataProvider::getInstance().getStorageCost(npcId)) {
+	if (ChannelServer::getInstance().getNpcDataProvider().getStorageCost(npcId)) {
 		player->setShop(npcId);
 		player->send(StoragePacket::showStorage(player, npcId));
 		return Result::Successful;
@@ -352,7 +353,7 @@ auto NpcHandler::showStorage(Player *player, npc_id_t npcId) -> Result {
 }
 
 auto NpcHandler::showGuildRank(Player *player, npc_id_t npcId) -> Result {
-	if (NpcDataProvider::getInstance().isGuildRank(npcId)) {
+	if (ChannelServer::getInstance().getNpcDataProvider().isGuildRank(npcId)) {
 		// To be implemented later
 	}
 	return Result::Failure;

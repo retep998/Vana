@@ -47,7 +47,6 @@ struct MapleTvMessage {
 };
 
 class MapleTvs : public TimerContainerHolder {
-	SINGLETON(MapleTvs);
 public:
 	auto addMap(Map *map) -> void;
 

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LoginServerConnection.hpp"
 #include "Channels.hpp"
+#include "ExitCodes.hpp"
 #include "LoginServerConnectHandler.hpp"
 #include "InterHeader.hpp"
 #include "PacketReader.hpp"
@@ -34,7 +35,7 @@ LoginServerConnection::LoginServerConnection() :
 LoginServerConnection::~LoginServerConnection() {
 	if (WorldServer::getInstance().isConnected()) {
 		std::cout << "Disconnected from the LoginServer. Shutting down..." << std::endl;
-		WorldServer::getInstance().shutdown();
+		ExitCodes::exit(ExitCodes::ServerDisconnection);
 	}
 }
 
@@ -44,15 +45,15 @@ auto LoginServerConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_REHASH_CONFIG: WorldServer::getInstance().rehashConfig(reader.get<WorldConfig>()); break;
 		case IMSG_TO_CHANNEL: {
 			channel_id_t channelId = reader.get<channel_id_t>();
-			Channels::getInstance().send(channelId, Packets::identity(reader));
+			WorldServer::getInstance().getChannels().send(channelId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
 			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
-			Channels::getInstance().send(channels, Packets::identity(reader));
+			WorldServer::getInstance().getChannels().send(channels, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_CHANNELS: Channels::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_CHANNELS: WorldServer::getInstance().getChannels().send(Packets::identity(reader)); break;
 		case IMSG_SYNC: SyncHandler::handle(this, reader); break;
 	}
 }

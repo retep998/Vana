@@ -182,12 +182,12 @@ auto TimeUtilities::getTimeZoneOffset() -> int32_t {
 	time_t ctime = time(nullptr);
 
 	std::tm *ts = localtime(&ctime);
-	int32_t ltime = ts->tm_hour * 100 + ts->tm_min;
+	int32_t localTime = ts->tm_hour * 100 + ts->tm_min;
 
 	ts = gmtime(&ctime);
-	int32_t gtime = ts->tm_hour * 100 + ts->tm_min;
+	int32_t greenwichTime = ts->tm_hour * 100 + ts->tm_min;
 
-	return ((ltime - gtime) * 60 * 60 / 100); // Number of seconds as an offset
+	return ((localTime - greenwichTime) * 60 * 60 / 100); // Number of seconds as an offset
 }
 
 auto TimeUtilities::simpleTimestamp() -> string_t {

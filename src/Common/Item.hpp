@@ -26,6 +26,7 @@ namespace soci {
 	class row;
 	class session;
 }
+class EquipDataProvider;
 class Item;
 
 struct ItemDbInformation {
@@ -69,7 +70,7 @@ public:
 	Item() = default;
 	Item(const soci::row &row);
 	Item(item_id_t itemId, slot_qty_t amount);
-	Item(item_id_t equipId, Items::StatVariance variancePolicy, bool isGm);
+	Item(const EquipDataProvider &provider, item_id_t equipId, Items::StatVariance variancePolicy, bool isGm);
 	Item(Item *item);
 
 	auto hasWarmSupport() const -> bool;

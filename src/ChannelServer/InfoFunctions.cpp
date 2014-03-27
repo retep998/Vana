@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "InfoFunctions.hpp"
+#include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "Maps.hpp"
 #include "Player.hpp"
@@ -159,7 +160,7 @@ auto InfoFunctions::lookup(Player *player, const string_t &args) -> ChatResult {
 				map_id_t mapId = ChatHandlerFunctions::getMap(rawMap, player);
 				if (Maps::getMap(mapId) != nullptr) {
 					out_stream_t message;
-					message << mapId << " : " << static_cast<int32_t>(MapDataProvider::getInstance().getContinent(mapId));
+					message << mapId << " : " << static_cast<int32_t>(ChannelServer::getInstance().getMapDataProvider().getContinent(mapId));
 					ChatHandlerFunctions::showInfo(player, message.str());
 				}
 				else {
@@ -317,7 +318,7 @@ auto InfoFunctions::online(Player *player, const string_t &args) -> ChatResult {
 	igns << "IGNs: ";
 	int32_t i = 0;
 	const int32_t max = 100;
-	PlayerDataProvider::getInstance().run([&i, &max, &igns](Player *player) {
+	ChannelServer::getInstance().getPlayerDataProvider().run([&i, &max, &igns](Player *player) {
 		if (i < max) {
 			if (i != 0) {
 				igns << ", ";

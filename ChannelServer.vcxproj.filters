@@ -329,7 +329,6 @@
       <Filter>ChannelServer</Filter>
     </ClCompile>
     <ClCompile Include="src\ChannelServer\ChannelServer.cpp" />
-    <ClCompile Include="src\ChannelServer\InitializeChannel.cpp" />
     <ClCompile Include="src\ChannelServer\PrecompiledHeader.cpp" />
     <ClCompile Include="src\ChannelServer\StatusInfo.cpp">
       <Filter>ChannelServer</Filter>
@@ -628,7 +627,6 @@
       <Filter>ChannelServer</Filter>
     </ClInclude>
     <ClInclude Include="src\ChannelServer\ChannelServer.hpp" />
-    <ClInclude Include="src\ChannelServer\InitializeChannel.hpp" />
     <ClInclude Include="src\ChannelServer\StatusInfo.hpp">
       <Filter>ChannelServer</Filter>
     </ClInclude>

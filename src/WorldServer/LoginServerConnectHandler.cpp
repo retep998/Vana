@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LoginServerConnectHandler.hpp"
 #include "Channels.hpp"
 #include "Configuration.hpp"
+#include "ExitCodes.hpp"
 #include "LoginServerConnection.hpp"
 #include "PacketReader.hpp"
 #include "PlayerDataProvider.hpp"
@@ -35,6 +36,6 @@ auto LoginServerConnectHandler::connect(LoginServerConnection *connection, Packe
 	}
 	else {
 		std::cerr << "ERROR: No world to handle" << std::endl;
-		WorldServer::getInstance().shutdown();
+		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
 }

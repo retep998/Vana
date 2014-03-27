@@ -34,7 +34,7 @@ auto LoginServerAcceptHandler::registerChannel(LoginServerAcceptConnection *conn
 
 	chan->setExternalIpInformation(ip, reader.get<vector_t<ExternalIp>>());
 	chan->setPort(reader.get<port_t>());
-	Worlds::getInstance().getWorld(connection->getWorldId())->addChannel(channel, chan);
+	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->addChannel(channel, chan);
 	LoginServer::getInstance().log(LogType::ServerConnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
 }
 
@@ -42,14 +42,14 @@ auto LoginServerAcceptHandler::updateChannelPop(LoginServerAcceptConnection *con
 	channel_id_t channel = reader.get<channel_id_t>();
 	int32_t population = reader.get<int32_t>();
 
-	World *world = Worlds::getInstance().getWorld(connection->getWorldId());
+	World *world = LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId());
 	world->getChannel(channel)->setPopulation(population);
-	Worlds::getInstance().calculatePlayerLoad(world);
+	LoginServer::getInstance().getWorlds().calculatePlayerLoad(world);
 }
 
 auto LoginServerAcceptHandler::removeChannel(LoginServerAcceptConnection *connection, PacketReader &reader) -> void {
 	channel_id_t channel = reader.get<channel_id_t>();
 
-	Worlds::getInstance().getWorld(connection->getWorldId())->removeChannel(channel);
+	LoginServer::getInstance().getWorlds().getWorld(connection->getWorldId())->removeChannel(channel);
 	LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(connection->getWorldId()) << "; Channel " << static_cast<int32_t>(channel); });
 }

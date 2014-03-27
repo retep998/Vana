@@ -18,17 +18,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractServer.hpp"
+#include "BeautyDataProvider.hpp"
+#include "BuffDataProvider.hpp"
 #include "Configuration.hpp"
+#include "CurseDataProvider.hpp"
+#include "DropDataProvider.hpp"
+#include "EquipDataProvider.hpp"
+#include "EventDataProvider.hpp"
+#include "Instances.hpp"
 #include "Ip.hpp"
+#include "ItemDataProvider.hpp"
+#include "MapDataProvider.hpp"
+#include "MapleTvs.hpp"
+#include "MobDataProvider.hpp"
+#include "NpcDataProvider.hpp"
+#include "PlayerDataProvider.hpp"
+#include "QuestDataProvider.hpp"
+#include "ReactorDataProvider.hpp"
+#include "ScriptDataProvider.hpp"
+#include "SkillDataProvider.hpp"
+#include "ShopDataProvider.hpp"
+#include "Trades.hpp"
 #include "Types.hpp"
+#include "ValidCharDataProvider.hpp"
+#include "WorldServerConnection.hpp"
 #include <string>
 #include <vector>
 
+class Map;
 class PacketBuilder;
 class WorldServerConnection;
 
 class ChannelServer final : public AbstractServer {
-	SINGLETON_CUSTOM_CONSTRUCTOR(ChannelServer);
+	SINGLETON(ChannelServer);
 public:
 	auto shutdown() -> void override;
 	auto connectToWorld(world_id_t worldId, port_t port, const Ip &ip) -> void;
@@ -41,6 +63,32 @@ public:
 	auto setConfig(const WorldConfig &config) -> void;
 	auto setRates(const Rates &rates) -> void;
 
+	auto reloadData(const string_t &args) -> void;
+
+	auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
+	auto getEquipDataProvider() const -> const EquipDataProvider &;
+	auto getCurseDataProvider() const -> const CurseDataProvider &;
+	auto getNpcDataProvider() const -> const NpcDataProvider &;
+	auto getMobDataProvider() const -> const MobDataProvider &;
+	auto getBeautyDataProvider() const -> const BeautyDataProvider &;
+	auto getDropDataProvider() const -> const DropDataProvider &;
+	auto getSkillDataProvider() const -> const SkillDataProvider &;
+	auto getShopDataProvider() const -> const ShopDataProvider &;
+	auto getScriptDataProvider() const -> const ScriptDataProvider &;
+	auto getReactorDataProvider() const -> const ReactorDataProvider &;
+	auto getItemDataProvider() const -> const ItemDataProvider &;
+	auto getQuestDataProvider() const -> const QuestDataProvider &;
+	auto getBuffDataProvider() const -> const BuffDataProvider &;
+	auto getEventDataProvider() const -> const EventDataProvider &;
+	auto getMapDataProvider() const -> const MapDataProvider &;
+	auto getPlayerDataProvider() -> PlayerDataProvider &;
+	auto getTrades() -> Trades &;
+	auto getMapleTvs() -> MapleTvs &;
+	auto getInstances() -> Instances &;
+
+	auto getMap(int32_t mapId) -> Map *;
+	auto unloadMap(int32_t mapId) -> void;
+
 	auto isConnected() const -> bool;
 	auto getWorldId() const -> world_id_t;
 	auto getChannelId() const -> channel_id_t;
@@ -48,8 +96,8 @@ public:
 	auto getConfig() const -> const WorldConfig &;
 	auto sendWorld(const PacketBuilder &builder) -> void;
 protected:
-	auto loadData() -> void override;
-	auto listen() -> void override;
+	auto loadData() -> Result override;
+	auto listen() -> void;
 	auto makeLogIdentifier() const -> opt_string_t override;
 	auto getLogPrefix() const -> string_t override;
 private:
@@ -59,5 +107,27 @@ private:
 	port_t m_port = 0;
 	Ip m_worldIp;
 	WorldConfig m_config;
-	WorldServerConnection *m_worldConnection = nullptr;
+	WorldServerConnection *m_worldConnection;
+	WorldServerConnection *m_loginConnection;
+
+	ValidCharDataProvider m_validCharDataProvider;
+	EquipDataProvider m_equipDataProvider;
+	CurseDataProvider m_curseDataProvider;
+	NpcDataProvider m_npcDataProvider;
+	MobDataProvider m_mobDataProvider;
+	BeautyDataProvider m_beautyDataProvider;
+	DropDataProvider m_dropDataProvider;
+	SkillDataProvider m_skillDataProvider;
+	ShopDataProvider m_shopDataProvider;
+	ScriptDataProvider m_scriptDataProvider;
+	ReactorDataProvider m_reactorDataProvider;
+	ItemDataProvider m_itemDataProvider;
+	QuestDataProvider m_questDataProvider;
+	BuffDataProvider m_buffDataProvider;
+	EventDataProvider m_eventDataProvider;
+	MapDataProvider m_mapDataProvider;
+	PlayerDataProvider m_playerDataProvider;
+	Trades m_trades;
+	MapleTvs m_mapleTvs;
+	Instances m_instances;
 };
