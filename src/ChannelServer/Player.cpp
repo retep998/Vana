@@ -450,7 +450,9 @@ auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 	}
 
 	oldMap->removePlayer(this);
-	m_lastMap = m_map;
+	if (m_map != mapId) {
+		m_lastMap = m_map;
+	}
 	m_map = mapId;
 	m_mapPos = portal->id;
 	m_usedPortals.clear();
