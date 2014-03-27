@@ -58,7 +58,7 @@ auto ScriptDataProvider::loadData() -> void {
 
 auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes type) const -> string_t {
 	if (hasScript(objectId, type)) {
-		string_t s = "scripts/" + resolvePath(type) + "/" + resolve(type).find(objectId)->second + ".lua";
+		string_t s = buildScriptPath(type, resolve(type).find(objectId)->second);
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
@@ -66,14 +66,12 @@ auto ScriptDataProvider::getScript(int32_t objectId, ScriptTypes type) const -> 
 		else std::cerr << "Missing script '" << s << "'" << std::endl;
 #endif
 	}
-	out_stream_t filestream;
-	filestream << "scripts/" << resolvePath(type) << "/" << objectId << ".lua";
-	return filestream.str();
+	return buildScriptPath(type, std::to_string(objectId));
 }
 
 auto ScriptDataProvider::getQuestScript(quest_id_t questId, int8_t state) const -> string_t {
 	if (hasQuestScript(questId, state)) {
-		string_t s = "scripts/quests/" + m_questScripts.find(questId)->second.find(state)->second + ".lua";
+		string_t s = buildScriptPath(ScriptTypes::Quest, m_questScripts.find(questId)->second.find(state)->second);
 		if (FileUtilities::fileExists(s)) {
 			return s;
 		}
@@ -81,9 +79,12 @@ auto ScriptDataProvider::getQuestScript(quest_id_t questId, int8_t state) const 
 		else std::cerr << "Missing quest script '" << s << "'" << std::endl;
 #endif
 	}
-	out_stream_t filestream;
-	filestream << "scripts/quests/" << questId << (state == 0 ? "s" : "e") << ".lua";
-	return filestream.str();
+	return buildScriptPath(ScriptTypes::Quest, std::to_string(questId) + (state == 0 ? "s" : "e"));
+}
+
+auto ScriptDataProvider::buildScriptPath(ScriptTypes type, const string_t &location) const -> string_t {
+	string_t s = "scripts/" + resolvePath(type) + "/" + location + ".lua";
+	return s;
 }
 
 auto ScriptDataProvider::hasScript(int32_t objectId, ScriptTypes type) const -> bool {
@@ -112,6 +113,9 @@ auto ScriptDataProvider::resolvePath(ScriptTypes type) const -> string_t {
 		case ScriptTypes::FirstMapEntry: return "first_map_entry";
 		case ScriptTypes::Npc: return "npcs";
 		case ScriptTypes::Reactor: return "reactors";
+		case ScriptTypes::Quest: return "quests";
+		case ScriptTypes::Instance: return "instances";
+		case ScriptTypes::Portal: return "portals";
 	}
 	throw std::domain_error("Invalid ScriptTypes");
 }

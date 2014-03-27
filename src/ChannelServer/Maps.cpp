@@ -48,7 +48,7 @@ auto Maps::usePortal(Player *player, PortalInfo *portal) -> void {
 			return;
 		}
 
-		string_t filename = "scripts/portals/" + portal->script + ".lua";
+		string_t filename = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Portal, portal->script);
 
 		if (FileUtilities::fileExists(filename)) {
 			auto luaEnv = LuaPortal(filename, player->getId(), portal);
