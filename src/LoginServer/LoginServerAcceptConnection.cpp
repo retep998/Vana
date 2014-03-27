@@ -30,16 +30,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {
-		World *world = LoginServer::getInstance().getWorlds().getWorld(m_worldId);
+		auto &server = LoginServer::getInstance();
+
+		World *world = server.getWorlds().getWorld(m_worldId);
 		world->setConnected(false);
 		world->clearChannels();
 
-		LoginServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(m_worldId); });
+		server.log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "World " << static_cast<int32_t>(m_worldId); });
 	}
 }
 
 auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
-	if (processAuth(LoginServer::getInstance(), reader) == Result::Failure) {
+	auto &server = LoginServer::getInstance();
+	if (processAuth(server, reader) == Result::Failure) {
 		return;
 	}
 	switch (reader.get<header_t>()) {
@@ -49,16 +52,16 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLD: {
 			world_id_t worldId = reader.get<world_id_t>();
-			LoginServer::getInstance().getWorlds().send(worldId, Packets::identity(reader));
+			server.getWorlds().send(worldId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_WORLD_LIST: {
 			vector_t<world_id_t> worlds = reader.get<vector_t<world_id_t>>();
-			LoginServer::getInstance().getWorlds().send(worlds, Packets::identity(reader));
+			server.getWorlds().send(worlds, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_WORLDS: LoginServer::getInstance().getWorlds().send(Packets::identity(reader)); break;
-		case IMSG_REHASH_CONFIG: LoginServer::getInstance().rehashConfig(); break;
+		case IMSG_TO_ALL_WORLDS: server.getWorlds().send(Packets::identity(reader)); break;
+		case IMSG_REHASH_CONFIG: server.rehashConfig(); break;
 	}
 }
 

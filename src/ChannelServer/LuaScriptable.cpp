@@ -653,7 +653,7 @@ auto LuaExports::runNpc(lua_State *luaVm) -> int {
 	if (lua_type(luaVm, 2) == LUA_TSTRING) {
 		// We already have our script name
 		string_t specified = lua_tostring(luaVm, 2);
-		script = "scripts/npcs/" + specified + ".lua";
+		script = ChannelServer::getInstance().getScriptDataProvider().buildScriptPath(ScriptTypes::Npc, specified);
 	}
 	else {
 		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);

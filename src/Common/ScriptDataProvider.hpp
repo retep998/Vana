@@ -27,7 +27,9 @@ enum class ScriptTypes {
 	Quest,
 	Item,
 	MapEntry,
-	FirstMapEntry
+	FirstMapEntry,
+	Portal,
+	Instance,
 };
 
 class ScriptDataProvider {
@@ -38,6 +40,7 @@ public:
 	auto getScript(int32_t objectId, ScriptTypes type) const -> string_t;
 	auto hasQuestScript(quest_id_t questId, int8_t state) const -> bool;
 	auto hasScript(int32_t objectId, ScriptTypes type) const -> bool;
+	auto buildScriptPath(ScriptTypes type, const string_t &location) const -> string_t;
 private:
 	auto resolve(ScriptTypes type) const -> const hash_map_t<int32_t, string_t> &;
 	auto resolvePath(ScriptTypes type) const -> string_t;
