@@ -329,7 +329,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	else {
 		// No packet, that means that they're connecting for the first time
 		setConnectionTime(time(nullptr));
-		m_gmChat = true;
+		m_gmChat = isGm();
 	}
 
 	ChannelServer::getInstance().getPlayerDataProvider().playerEstablished(id);
