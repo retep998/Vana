@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Skills.hpp"
 #include "Buffs.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "GmPacket.hpp"
 #include "Inventory.hpp"
@@ -129,7 +130,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 		return;
 	}
 
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	if (applySkillCosts(player, skillId, level) == Result::Failure) {
 		// Most likely hacking, could feasibly be lag
 		return;
@@ -357,7 +358,7 @@ auto Skills::useSkill(Player *player, PacketReader &reader) -> void {
 			}
 			for (uint8_t i = 0; i < players; i++) {
 				player_id_t playerId = reader.get<player_id_t>();
-				Player *target = PlayerDataProvider::getInstance().getPlayer(playerId);
+				Player *target = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 				if (target != nullptr && target != player && doAction(target)) {
 					player->send(SkillsPacket::showSkill(player->getId(), skillId, level, direction, true, true));
 
@@ -403,7 +404,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 		return Result::Successful;
 	}
 
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	int16_t coolTime = skill->coolTime;
 	int16_t mpUse = skill->mp;
 	int16_t hpUse = skill->hp;
@@ -462,7 +463,7 @@ auto Skills::applySkillCosts(Player *player, skill_id_t skillId, skill_level_t l
 auto Skills::useAttackSkill(Player *player, skill_id_t skillId) -> Result {
 	if (skillId != Skills::All::RegularAttack) {
 		skill_level_t level = player->getSkills()->getSkillLevel(skillId);
-		if (!SkillDataProvider::getInstance().isValidSkill(skillId) || level == 0) {
+		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
 			return Result::Failure;
 		}
 		return applySkillCosts(player, skillId, level, true);
@@ -474,7 +475,7 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 	skill_level_t level = 0;
 	if (skillId != Skills::All::RegularAttack) {
 		level = player->getSkills()->getSkillLevel(skillId);
-		if (!SkillDataProvider::getInstance().isValidSkill(skillId) || level == 0) {
+		if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId) || level == 0) {
 			return Result::Failure;
 		}
 		if (applySkillCosts(player, skillId, level) == Result::Failure) {
@@ -536,7 +537,7 @@ auto Skills::useAttackSkillRanged(Player *player, skill_id_t skillId, inventory_
 
 	slot_qty_t hits = 1;
 	if (skillId != Skills::All::RegularAttack) {
-		auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+		auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 		item_id_t optionalItem = skill->optionalItem;
 
 		if (optionalItem != 0 && optionalItem == projectileId) {

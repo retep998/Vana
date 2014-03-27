@@ -132,7 +132,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 
 	// Add party member names to packet
 	for (const auto &kvp : members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(kvp.first);
 		builder.add<string_t>(player->name, 13);
 	}
 	for (i = 0; i < offset; i++) {
@@ -141,7 +141,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 
 	// Add party member jobs to packet
 	for (const auto &kvp : members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(kvp.first);
 		builder.add<int32_t>(player->job.is_initialized() ?
 			player->job.get() :
 			-1);
@@ -152,7 +152,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 
 	// Add party member levels to packet
 	for (const auto &kvp : members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(kvp.first);
 		builder.add<int32_t>(player->level.is_initialized() ?
 			player->level.get() :
 			-1);
@@ -163,7 +163,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 
 	// Add party member channels to packet
 	for (const auto &kvp : members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(kvp.first);
 		builder.add<int32_t>(player->cashShop ? -1 :
 			(player->channel.is_initialized() ?
 				player->channel.get() :
@@ -177,7 +177,7 @@ PACKET_IMPL(updateParty, map_id_t targetMapId, Party *party) {
 
 	// Add party member maps to packet
 	for (const auto &kvp : members) {
-		auto player = PlayerDataProvider::getInstance().getPlayerData(kvp.first);
+		auto player = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(kvp.first);
 		if (player->channel == channelId && player->map == targetMapId) {
 			builder.add<map_id_t>(targetMapId);
 		}

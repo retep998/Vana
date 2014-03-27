@@ -45,7 +45,7 @@ Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> 
 	m_spawnId(spawnId),
 	m_mobId(mobId),
 	m_owner(owner),
-	m_info(MobDataProvider::getInstance().getMobInfo(mobId)),
+	m_info(ChannelServer::getInstance().getMobDataProvider().getMobInfo(mobId)),
 	m_controlStatus(controlStatus)
 {
 	m_hp = getMaxHp();
@@ -108,7 +108,7 @@ auto Mob::applyDamage(player_id_t playerId, damage_t damage, bool poison) -> voi
 
 	if (!poison) {
 		// HP bar packet does nothing for showing damage when poison is damaging for whatever reason
-		Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
+		Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 		Map *map = getMap();
 
 		uint8_t percent = static_cast<uint8_t>(m_hp * 100 / m_info->hp);
@@ -386,7 +386,7 @@ auto Mob::distributeExpAndGetDropRecipient(Player *killer) -> player_id_t {
 				highestDamage = damage;
 			}
 
-			Player *damager = PlayerDataProvider::getInstance().getPlayer(damagerId);
+			Player *damager = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(damagerId);
 			if (damager == nullptr || damager->getMapId() != m_mapId || damager->getStats()->isDead()) {
 				// Only give EXP if the damager is in the same channel, on the same map and is alive
 				continue;
@@ -534,10 +534,10 @@ auto Mob::chooseRandomSkill(mob_skill_id_t &skillId, mob_skill_level_t &skillLev
 	}
 
 	vector_t<const MobSkillInfo *> viableSkills;
-	auto &skills = MobDataProvider::getInstance().getSkills(getMobIdOrLink());
+	auto &skills = ChannelServer::getInstance().getMobDataProvider().getSkills(getMobIdOrLink());
 	for (const auto &info : skills) {
 		bool stop = false;
-		auto mobSkill = SkillDataProvider::getInstance().getMobSkill(info.skillId, info.level);
+		auto mobSkill = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(info.skillId, info.level);
 
 		switch (info.skillId) {
 			case MobSkills::WeaponAttackUp:
@@ -620,7 +620,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 	m_skillUse[skillId] = now;
 	m_lastSkillUse = now;
 
-	auto skillLevelInfo = SkillDataProvider::getInstance().getMobSkill(skillId, level);
+	auto skillLevelInfo = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level);
 	consumeMp(skillLevelInfo->mp);
 
 	Rect skillArea = skillLevelInfo->dimensions.move(getPos());
@@ -678,7 +678,7 @@ auto Mob::useAnticipatedSkill() -> Result {
 			map_id_t field = map->getReturnMap();
 			PortalInfo *portal = nullptr;
 			string_t message;
-			if (auto banishInfo = SkillDataProvider::getInstance().getBanishData(getMobId())) {
+			if (auto banishInfo = ChannelServer::getInstance().getSkillDataProvider().getBanishData(getMobId())) {
 				field = banishInfo->field;
 				message = banishInfo->message;
 				if (banishInfo->portal != "" && banishInfo->portal != "sp") {

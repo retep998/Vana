@@ -43,7 +43,6 @@ struct BuiltShopInfo {
 };
 
 class ShopDataProvider {
-	SINGLETON(ShopDataProvider);
 public:
 	auto loadData() -> void;
 

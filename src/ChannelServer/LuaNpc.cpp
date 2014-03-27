@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "LuaNpc.hpp"
+#include "ChannelServer.hpp"
 #include "Npc.hpp"
 #include "Player.hpp"
 #include "PlayerDataProvider.hpp"
@@ -69,7 +70,7 @@ auto LuaNpc::setNpcEnvironmentVariables() -> void {
 }
 
 auto LuaNpc::handleThreadCompletion() -> void {
-	PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
+	ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId)->getNpc()->end();
 }
 
 auto LuaNpc::proceedNext() -> Result {
@@ -93,7 +94,7 @@ auto LuaNpc::proceedText(const string_t &text) -> Result {
 
 auto LuaNpc::handleError(const string_t &filename, const string_t &error) -> void {
 	printError(error);
-	PlayerDataProvider::getInstance().getPlayer(m_playerId)->getNpc()->end();
+	ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_playerId)->getNpc()->end();
 }
 
 auto LuaExports::getNpc(lua_State *luaVm) -> Npc * {
@@ -126,7 +127,7 @@ auto LuaExports::npcRunNpc(lua_State *luaVm) -> int {
 		script = "scripts/npcs/" + specified + ".lua";
 	}
 	else {
-		script = ScriptDataProvider::getInstance().getScript(npcId, ScriptTypes::Npc);
+		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
 	}
 	getNpc(luaVm)->setEndScript(npcId, script);
 	return 0;

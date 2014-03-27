@@ -78,7 +78,7 @@ auto PlayerStats::updateBonuses(bool updateEquips, bool isLoading) -> void {
 		m_equipBonuses = BonusSet();
 		for (const auto &kvp : m_equipStats) {
 			const EquipBonus &info = kvp.second;
-			if (EquipDataProvider::getInstance().canEquip(info.id, m_player->getGender(), getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
+			if (ChannelServer::getInstance().getEquipDataProvider().canEquip(info.id, m_player->getGender(), getJob(), getStr(true), getDex(true), getInt(true), getLuk(true), getFame())) {
 				m_equipBonuses.hp += info.hp;
 				m_equipBonuses.mp += info.mp;
 				m_equipBonuses.str += info.str;
@@ -199,7 +199,7 @@ auto PlayerStats::setLevel(player_level_t level) -> void {
 	m_level = level;
 	m_player->send(PlayerPacket::updateStat(Stats::Level, level));
 	m_player->sendMap(LevelsPacket::levelUp(m_player->getId()));
-	PlayerDataProvider::getInstance().updatePlayerLevel(m_player);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerLevel(m_player);
 }
 
 auto PlayerStats::setHp(int16_t hp, bool sendPacket) -> void {
@@ -280,7 +280,7 @@ auto PlayerStats::setJob(job_id_t job) -> void {
 	m_job = job;
 	m_player->send(PlayerPacket::updateStat(Stats::Job, job));
 	m_player->sendMap(LevelsPacket::jobChange(m_player->getId()));
-	PlayerDataProvider::getInstance().updatePlayerJob(m_player);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerJob(m_player);
 }
 
 auto PlayerStats::setStr(int16_t str) -> void {

@@ -41,7 +41,6 @@ struct ReactorData {
 };
 
 class ReactorDataProvider {
-	SINGLETON(ReactorDataProvider);
 public:
 	auto loadData() -> void;
 

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iomanip>
 #include <iostream>
 
-auto Initializing::checkMcdbVersion() -> void {
+auto Initializing::checkMcdbVersion() -> Result {
 	soci::session &sql = Database::getDataDb();
 	soci::row row;
 	sql.once
@@ -36,6 +36,7 @@ auto Initializing::checkMcdbVersion() -> void {
 	if (!sql.got_data()) {
 		std::cerr << "ERROR: mcdb_info is empty." << std::endl;
 		ExitCodes::exit(ExitCodes::McdbError);
+		return Result::Failure;
 	}
 
 	int32_t version = row.get<int32_t>("version");
@@ -49,13 +50,23 @@ auto Initializing::checkMcdbVersion() -> void {
 		std::cerr << "Vana: " << McdbVersion << "." << McdbSubVersion << std::endl;
 		std::cerr << "MCDB: " << version << "." << subversion << std::endl;
 		ExitCodes::exit(ExitCodes::McdbIncompatible);
+		return Result::Failure;
 	}
+
+	auto makeLocale = [](const string_t &locale, bool testServer) {
+		string_t loc = locale;
+		if (testServer) {
+			loc += " (test server)";
+		}
+		return loc;
+	};
 
 	if (mapleLocale != MapleVersion::LocaleString || testServer != MapleVersion::TestServer) {
 		std::cerr << "ERROR: Your MCDB is designed for different locale." << std::endl;
 		std::cerr << "Vana: " << makeLocale(MapleVersion::LocaleString, MapleVersion::TestServer) << std::endl;
 		std::cerr << "MCDB: " << makeLocale(mapleLocale, testServer) << std::endl;
 		ExitCodes::exit(ExitCodes::McdbLocaleIncompatible);
+		return Result::Failure;
 	}
 
 	if (mapleVersion != MapleVersion::Version) {
@@ -63,26 +74,27 @@ auto Initializing::checkMcdbVersion() -> void {
 		std::cerr << "Vana: " << MapleVersion::Version << std::endl;
 		std::cerr << "MCDB: " << mapleVersion << std::endl;
 	}
+
+	return Result::Successful;
 }
 
-auto Initializing::makeLocale(const string_t &locale, bool testServer) -> string_t {
-	string_t loc = locale;
-	if (testServer) {
-		loc += " (test server)";
-	}
-	return loc;
-}
-
-auto Initializing::checkSchemaVersion(bool update) -> void {
+auto Initializing::checkSchemaVersion(bool update) -> Result {
 	DatabaseUpdater db(update);
 
 	VersionCheckResult check = db.checkVersion();
+
+	if (check == VersionCheckResult::DatabaseUnavailable) {
+		std::cerr << "ERROR: Vana database is currently inaccessible." << std::endl;
+		ExitCodes::exit(ExitCodes::InfoDatabaseError);
+		return Result::Failure;
+	}
 
 	if (check == VersionCheckResult::NeedsUpdate) {
 		if (!update) {
 			// Wrong version and we're not allowed to update, so let's quit
 			std::cerr << "ERROR: Wrong version of database, please run LoginServer to update." << std::endl;
 			ExitCodes::exit(ExitCodes::InfoDatabaseError);
+			return Result::Failure;
 		}
 		else {
 			// Failed, but we can update it
@@ -93,6 +105,8 @@ auto Initializing::checkSchemaVersion(bool update) -> void {
 			std::cout << "DONE" << std::endl;
 		}
 	}
+
+	return Result::Successful;
 }
 
 auto Initializing::setUsersOffline(int32_t onlineId) -> void {

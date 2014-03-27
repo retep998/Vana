@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Configuration.hpp"
+#include "ConnectionManager.hpp"
 #include "ExternalIp.hpp"
 #include "Ip.hpp"
 #include "Logger.hpp"
@@ -34,7 +35,7 @@ class AbstractServer {
 public:
 	virtual ~AbstractServer() = default;
 
-	auto initialize() -> AbstractServer &;
+	auto initialize() -> Result;
 	virtual auto shutdown() -> void;
 
 	auto log(LogType type, const string_t &message) -> void;
@@ -44,10 +45,9 @@ public:
 	auto getInterPassword() const -> string_t;
 protected:
 	AbstractServer(ServerType type);
-	virtual auto loadConfig() -> void;
+	virtual auto loadConfig() -> Result;
 	virtual auto initComplete() -> void;
-	virtual auto listen() -> void = 0;
-	virtual auto loadData() -> void = 0;
+	virtual auto loadData() -> Result = 0;
 	virtual auto makeLogIdentifier() const -> opt_string_t = 0;
 	virtual auto getLogPrefix() const -> string_t = 0;
 
@@ -55,6 +55,7 @@ protected:
 	auto sendAuth(AbstractServerConnection *connection) const -> void;
 	auto displayLaunchTime() const -> void;
 	auto buildLogIdentifier(function_t<void(out_stream_t &)> produceId) const -> opt_string_t;
+	auto getConnectionManager() -> ConnectionManager & { return m_connectionManager; }
 private:
 	auto loadLogConfig() -> void;
 	auto createLogger(const LogConfig &conf) -> void;
@@ -68,4 +69,5 @@ private:
 	owned_ptr_t<Logger> m_logger;
 	InterServerConfig m_interServerConfig;
 	IpMatrix m_externalIps;
+	ConnectionManager m_connectionManager;
 };

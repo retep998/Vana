@@ -38,11 +38,11 @@ Item::Item(item_id_t itemId, slot_qty_t amount) :
 {
 }
 
-Item::Item(item_id_t equipId, Items::StatVariance variancePolicy, bool isGm) :
+Item::Item(const EquipDataProvider &provider, item_id_t equipId, Items::StatVariance variancePolicy, bool isGm) :
 	m_id(equipId),
 	m_amount(1)
 {
-	EquipDataProvider::getInstance().setEquipStats(this, variancePolicy, isGm, true);
+	provider.setEquipStats(this, variancePolicy, isGm, true);
 }
 
 Item::Item(Item *item)

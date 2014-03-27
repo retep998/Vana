@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto PlayerHandler::handleDoorUse(Player *player, PacketReader &reader) -> void {
 	int32_t doorId = reader.get<int32_t>();
 	bool toTown = !reader.get<bool>();
-	//Player *doorHolder = PlayerDataProvider::getInstance().getPlayer(doorId);
+	//Player *doorHolder = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(doorId);
 	//if (doorHolder == nullptr || (doorHolder->getParty() != player->getParty() && doorHolder != player)) {
 	//	// Hacking or lag
 	//	return;
@@ -93,7 +93,7 @@ auto PlayerHandler::handleDamage(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 
-			auto attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), type);
+			auto attack = ChannelServer::getInstance().getMobDataProvider().getMobAttack(mob->getMobIdOrLink(), type);
 			if (attack == nullptr) {
 				// Hacking
 				return;
@@ -271,7 +271,7 @@ auto PlayerHandler::handleFacialExpression(Player *player, PacketReader &reader)
 auto PlayerHandler::handleGetInfo(Player *player, PacketReader &reader) -> void {
 	tick_count_t ticks = reader.get<tick_count_t>();
 	player_id_t playerId = reader.get<player_id_t>();
-	if (Player *info = PlayerDataProvider::getInstance().getPlayer(playerId)) {
+	if (Player *info = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId)) {
 		player->send(PlayersPacket::showInfo(info, reader.get<bool>()));
 	}
 }
@@ -365,7 +365,7 @@ auto PlayerHandler::handleMonsterBook(Player *player, PacketReader &reader) -> v
 	}
 	mob_id_t newCover = 0;
 	if (cardId != 0) {
-		newCover = ItemDataProvider::getInstance().getMobId(cardId);
+		newCover = ChannelServer::getInstance().getItemDataProvider().getMobId(cardId);
 	}
 	player->getMonsterBook()->setCover(newCover);
 	player->send(MonsterBookPacket::changeCover(cardId));
@@ -393,7 +393,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 	string_t line4 = reader.get<string_t>();
 	string_t line5 = reader.get<string_t>();
 	if (hasTarget) {
-		receiver = PlayerDataProvider::getInstance().getPlayer(reader.get<string_t>());
+		receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(reader.get<string_t>());
 	}
 
 	int32_t time = 15;
@@ -402,7 +402,7 @@ auto PlayerHandler::handleAdminMessenger(Player *player, PacketReader &reader) -
 		case 2: time = 60; break;
 	}
 
-	MapleTvs::getInstance().addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
+	ChannelServer::getInstance().getMapleTvs().addMessage(player, receiver, line1, line2, line3, line4, line5, 5075000 + type, time);
 	if (sort == 1) {
 		out_stream_t output;
 		output << player->getMedalName() << " : " << line1 << line2 << line3 << line4 << line5;
@@ -445,7 +445,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 	map_id_t map = player->getMapId();
 	uint8_t ppLevel = player->getActiveBuffs()->getActiveSkillLevel(Skills::ChiefBandit::Pickpocket); // Check for active pickpocket level
 	bool ppok = !attack.isMesoExplosion && ppLevel > 0;
-	auto picking = SkillDataProvider::getInstance().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
+	auto picking = ChannelServer::getInstance().getSkillDataProvider().getSkill(Skills::ChiefBandit::Pickpocket, ppLevel);
 	Pos origin;
 	vector_t<damage_t> ppDamages;
 
@@ -555,7 +555,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			player->getActiveBuffs()->setCombo(0, true);
 			break;
 		case Skills::NightWalker::PoisonBomb: {
-			auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(attack.projectilePos), skillId, level, true);
 			break;
 		}
@@ -564,7 +564,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 		case Skills::SuperGm::SuperDragonRoar:
 			break;
 		case Skills::DragonKnight::DragonRoar: {
-			int16_t xProperty = SkillDataProvider::getInstance().getSkill(skillId, level)->x;
+			int16_t xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->x;
 			uint16_t reduction = (player->getStats()->getMaxHp() / 100) * xProperty;
 			if (reduction < player->getStats()->getHp()) {
 				player->getStats()->damageHp(reduction);
@@ -593,7 +593,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			skill_level_t skillLevel = player->getSkills()->getSkillLevel(Skills::Paladin::AdvancedCharge);
 			int16_t xProperty = 0;
 			if (skillLevel > 0) {
-				xProperty = SkillDataProvider::getInstance().getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
+				xProperty = ChannelServer::getInstance().getSkillDataProvider().getSkill(Skills::Paladin::AdvancedCharge, skillLevel)->x;
 			}
 			if ((xProperty != 100) && (xProperty == 0 || Randomizer::rand<int16_t>(99) > (xProperty - 1))) {
 				player->getActiveBuffs()->stopCharge();
@@ -742,7 +742,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 	eater.skillId = player->getSkills()->getMpEater();
 	eater.level = player->getSkills()->getSkillLevel(eater.skillId);
 	if (eater.level > 0) {
-		auto skillInfo = SkillDataProvider::getInstance().getSkill(eater.skillId, eater.level);
+		auto skillInfo = ChannelServer::getInstance().getSkillDataProvider().getSkill(eater.skillId, eater.level);
 		eater.prop = skillInfo->prop;
 		eater.x = skillInfo->x;
 	}
@@ -789,7 +789,7 @@ auto PlayerHandler::useSpellAttack(Player *player, PacketReader &reader) -> void
 	switch (skillId) {
 		case Skills::FpMage::PoisonMist:
 		case Skills::BlazeWizard::FlameGear: {
-			auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+			auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 			Mist *mist = new Mist(player->getMapId(), player, skill->time, skill->dimensions.move(player->getPos()), skillId, level, true);
 			break;
 		}

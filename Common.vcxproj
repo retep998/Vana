@@ -94,6 +94,7 @@
     <ClCompile Include="src\Common\ClientIp.cpp" />
     <ClCompile Include="src\Common\ConsoleLogger.cpp" />
     <ClCompile Include="src\Common\CurseDataProvider.cpp" />
+    <ClCompile Include="src\Common\ExitCodes.cpp" />
     <ClCompile Include="src\Common\ExternalIp.cpp" />
     <ClCompile Include="src\Common\ExternalIpResolver.cpp" />
     <ClCompile Include="src\Common\FileLogger.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="src\Common\SkillDataProvider.cpp" />
     <ClCompile Include="src\Common\SqlLogger.cpp" />
     <ClCompile Include="src\Common\TauswortheGenerator.cpp" />
+    <ClCompile Include="src\Common\ThreadPool.cpp" />
     <ClCompile Include="src\Common\Timer.cpp" />
     <ClCompile Include="src\Common\TimerContainer.cpp" />
     <ClCompile Include="src\Common\TimerThread.cpp" />
@@ -142,13 +144,12 @@
     <ClCompile Include="src\Common\StringUtilities.cpp" />
     <ClCompile Include="src\Common\TimeUtilities.cpp" />
     <ClCompile Include="src\Common\ConnectionManager.cpp" />
-    <ClCompile Include="src\Common\ConnectionAcceptor.cpp" />
     <ClCompile Include="src\Common\ServerClient.cpp" />
-    <ClCompile Include="src\Common\SessionManager.cpp" />
     <ClCompile Include="src\Common\Decoder.cpp" />
     <ClCompile Include="src\Common\AbstractConnection.cpp" />
     <ClCompile Include="src\Common\AbstractServer.cpp" />
     <ClCompile Include="src\Common\DatabaseUpdater.cpp" />
+    <ClCompile Include="src\Common\VanaMain.cpp" />
     <ClCompile Include="src\Common\Variables.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +204,7 @@
     <ClInclude Include="src\Common\SqlLogger.hpp" />
     <ClInclude Include="src\Common\StopWatch.hpp" />
     <ClInclude Include="src\Common\TauswortheGenerator.hpp" />
+    <ClInclude Include="src\Common\ThreadPool.hpp" />
     <ClInclude Include="src\Common\Timer.hpp" />
     <ClInclude Include="src\Common\TimerContainer.hpp" />
     <ClInclude Include="src\Common\TimerContainerHolder.hpp" />
@@ -240,10 +242,8 @@
     <ClInclude Include="src\Common\StringUtilities.hpp" />
     <ClInclude Include="src\Common\TimeUtilities.hpp" />
     <ClInclude Include="src\Common\ConnectionManager.hpp" />
-    <ClInclude Include="src\Common\ConnectionAcceptor.hpp" />
     <ClInclude Include="src\Common\ServerClient.hpp" />
     <ClInclude Include="src\Common\Session.hpp" />
-    <ClInclude Include="src\Common\SessionManager.hpp" />
     <ClInclude Include="src\Common\Decoder.hpp" />
     <ClInclude Include="src\Common\AbstractConnection.hpp" />
     <ClInclude Include="src\Common\AbstractServer.hpp" />

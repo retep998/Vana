@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Configuration.hpp"
 #include "ConnectionManager.hpp"
 #include "InitializeCommon.hpp"
-#include "InitializeLogin.hpp"
 #include "LoginServerAcceptPacket.hpp"
 #include "MapleVersion.hpp"
 #include "RankingCalculator.hpp"
@@ -37,21 +36,30 @@ LoginServer::LoginServer() :
 
 auto LoginServer::listen() -> void {
 	auto &config = getInterServerConfig();
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::LoginSubversion);
-	ConnectionManager::getInstance().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true, MapleVersion::LoginSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, m_port, [] { return new UserConnection(); }, config, false, MapleVersion::LoginSubversion);
+	getConnectionManager().accept(Ip::Type::Ipv4, m_interPort, [] { return new LoginServerAcceptConnection(); }, config, true, MapleVersion::LoginSubversion);
 }
 
-auto LoginServer::loadData() -> void {
-	Initializing::checkSchemaVersion(true);
-	Initializing::checkMcdbVersion();
+auto LoginServer::loadData() -> Result {
+	if (Initializing::checkSchemaVersion(true) == Result::Failure) {
+		return Result::Failure;
+	}
+	if (Initializing::checkMcdbVersion() == Result::Failure) {
+		return Result::Failure;
+	}
 	Initializing::setUsersOffline(1);
-	Initializing::loadData();
+
+	m_validCharDataProvider.loadData();
+	m_equipDataProvider.loadData();
+	m_curseDataProvider.loadData();
 
 	RankingCalculator::setTimer();
 	displayLaunchTime();
+
+	return Result::Successful;
 }
 
-auto LoginServer::loadConfig() -> void {
+auto LoginServer::loadConfig() -> Result {
 	ConfigFile config("conf/loginserver.lua");
 	config.run();
 	m_pinEnabled = config.get<bool>("pin");
@@ -60,6 +68,8 @@ auto LoginServer::loadConfig() -> void {
 	m_maxInvalidLogins = config.get<int32_t>("invalid_login_threshold");
 
 	loadWorlds();
+
+	return Result::Successful;
 }
 
 auto LoginServer::initComplete() -> void {
@@ -81,7 +91,7 @@ auto LoginServer::getPinEnabled() const -> bool {
 
 auto LoginServer::rehashConfig() -> void {
 	loadWorlds();
-	Worlds::getInstance().runFunction([](World *world) -> bool {
+	m_worlds.runFunction([](World *world) -> bool {
 		if (world != nullptr && world->isConnected()) {
 			// We only need to inform worlds that are actually connected
 			// Otherwise they'll get the modified config when they connect
@@ -93,6 +103,22 @@ auto LoginServer::rehashConfig() -> void {
 
 auto LoginServer::getInvalidLoginThreshold() const -> int32_t {
 	return m_maxInvalidLogins;
+}
+
+auto LoginServer::getValidCharDataProvider() const -> const ValidCharDataProvider & {
+	return m_validCharDataProvider;
+}
+
+auto LoginServer::getEquipDataProvider() const -> const EquipDataProvider & {
+	return m_equipDataProvider;
+}
+
+auto LoginServer::getCurseDataProvider() const -> const CurseDataProvider & {
+	return m_curseDataProvider;
+}
+
+auto LoginServer::getWorlds() -> Worlds & {
+	return m_worlds;
 }
 
 auto LoginServer::loadWorlds() -> void {
@@ -138,7 +164,7 @@ auto LoginServer::loadWorlds() -> void {
 		conf.name = config.get<string_t>(key);
 		world_id_t worldId = config.get<world_id_t>(getKey("id"));
 
-		World *world = Worlds::getInstance().getWorld(worldId);
+		World *world = m_worlds.getWorld(worldId);
 		added = (world == nullptr);
 		if (added) {
 			world = new World();
@@ -170,7 +196,7 @@ auto LoginServer::loadWorlds() -> void {
 			world->setId(worldId);
 			world->setPort(config.get<port_t>(getKey("port")));
 
-			Worlds::getInstance().addWorld(world);
+			m_worlds.addWorld(world);
 		}
 		++i;
 	}

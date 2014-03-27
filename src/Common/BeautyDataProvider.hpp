@@ -31,7 +31,6 @@ struct ValidLook {
 };
 
 class BeautyDataProvider {
-	SINGLETON(BeautyDataProvider);
 public:
 	auto loadData() -> void;
 

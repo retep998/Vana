@@ -17,34 +17,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConnectionAcceptor.hpp"
 #include "Ip.hpp"
-#include "SessionManager.hpp"
 #include "Types.hpp"
+#include <atomic>
+#include <boost/asio.hpp>
 #include <memory>
 #include <string>
 #include <thread>
 #include <vector>
 
-class ConnectionAcceptor;
+class AbstractConnection;
+class Session;
+struct InterServerConfig;
 
 class ConnectionManager {
-	SINGLETON_CUSTOM_CONSTRUCTOR(ConnectionManager);
 public:
+	ConnectionManager();
+	~ConnectionManager();
 	auto accept(const Ip::Type &ipType, port_t port, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion) -> void;
-	auto connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> void;
+	auto connect(const Ip &serverIp, port_t serverPort, const InterServerConfig &config, AbstractConnection *connection) -> Result;
 	auto run() -> void;
 	auto stop() -> void;
-#ifdef WIN32
-	auto join() -> void;
-#endif
+	auto stop(ref_ptr_t<Session> session) -> void;
 private:
-	auto handleRun() -> void;
-	auto handleStop() -> void;
+	struct Listener {
+		bool isServer = true;
+		bool isPinging = true;
+		bool isEncrypted = true;
+		string_t subversion;
+		boost::asio::ip::tcp::acceptor acceptor;
+		function_t<AbstractConnection *()> connectionCreator;
 
-	vector_t<ref_ptr_t<ConnectionAcceptor>> m_servers;
-	ref_ptr_t<SessionManager> m_clients;
-	owned_ptr_t<thread_t> m_thread;
+		Listener() = delete;
+		Listener(boost::asio::io_service &ioService, const boost::asio::ip::tcp::endpoint &endpoint, function_t<AbstractConnection *()> createConnection, const InterServerConfig &config, bool isServer, const string_t &subversion);
+	};
+
+	auto acceptConnection(ref_ptr_t<Listener> listener) -> void;
+
+	vector_t<ref_ptr_t<Listener>> m_servers;
+	hash_set_t<ref_ptr_t<Session>> m_sessions;
+	ref_ptr_t<thread_t> m_thread;
 	owned_ptr_t<boost::asio::io_service::work> m_work;
 	boost::asio::io_service m_ioService;
 };

@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ServerClient.hpp"
 #include "AbstractConnection.hpp"
+#include "ConnectionManager.hpp"
 #include "ExitCodes.hpp"
 #include "MapleVersion.hpp"
 #include "PacketReader.hpp"
@@ -24,15 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 #include <stdexcept>
 
-ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool ping) :
-	Session(ioService, sessionManager, connection, false, true, ping, MapleVersion::LoginSubversion),
+ServerClient::ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping) :
+	Session(ioService, manager, connection, false, true, ping, MapleVersion::LoginSubversion),
 	m_server(serverIp),
 	m_port(serverPort),
 	m_resolver(ioService)
 {
 }
 
-auto ServerClient::startConnect() -> void {
+auto ServerClient::startConnect() -> Result {
 	// Synchronously connect and process the connect packet
 
 	boost::asio::ip::address endAddress;
@@ -53,6 +54,7 @@ auto ServerClient::startConnect() -> void {
 			readConnectPacket();
 			// Start the normal Session routine
 			start();
+			return Result::Successful;
 		}
 		catch (PacketContentException) {
 			std::cerr << "ERROR: Malformed IV packet" << std::endl;
@@ -64,6 +66,8 @@ auto ServerClient::startConnect() -> void {
 		std::cerr << "ERROR: " << error.message() << std::endl;
 		ExitCodes::exit(ExitCodes::ServerConnectionError);
 	}
+
+	return Result::Failure;
 }
 
 auto ServerClient::readConnectPacket() -> void {
@@ -87,8 +91,8 @@ auto ServerClient::readConnectPacket() -> void {
 	header_t header = reader.get<header_t>(); // Gives us the packet length
 	version_t version = reader.get<version_t>();
 	string_t subversion = reader.get<string_t>();
-	uint32_t sendIv = reader.get<uint32_t>();
-	uint32_t recvIv = reader.get<uint32_t>();
+	iv_t sendIv = reader.get<iv_t>();
+	iv_t recvIv = reader.get<iv_t>();
 	locale_t locale = reader.get<locale_t>();
 
 	if (version != MapleVersion::Version || locale != MapleVersion::Locale || subversion != MapleVersion::LoginSubversion) {
@@ -97,6 +101,7 @@ auto ServerClient::readConnectPacket() -> void {
 		std::cerr << "Local locale/version (subversion): " << static_cast<int16_t>(MapleVersion::Locale) << "/" << MapleVersion::Version << " (" << MapleVersion::LoginSubversion << ")" << std::endl;
 		disconnect();
 		ExitCodes::exit(ExitCodes::ServerVersionMismatch);
+		return;
 	}
 
 	auto &decoder = getDecoder();

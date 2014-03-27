@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Buffs.hpp"
 #include "BuffDataProvider.hpp"
 #include "BuffsPacket.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
@@ -27,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 auto Buffs::getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> int16_t {
 	int16_t rValue = 0;
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	switch (value) {
 		case SkillX: rValue = skill->x; break;
 		case SkillY: rValue = skill->y; break;
@@ -48,7 +49,7 @@ auto Buffs::getValue(int8_t value, skill_id_t skillId, skill_level_t level) -> i
 
 auto Buffs::getMobSkillValue(int8_t value, mob_skill_id_t skillId, mob_skill_level_t level) -> int16_t {
 	int16_t rValue = 0;
-	auto skill = SkillDataProvider::getInstance().getMobSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level);
 	switch (value) {
 		case SkillX: rValue = static_cast<int16_t>(skill->x); break;
 		case SkillY: rValue = static_cast<int16_t>(skill->y); break;
@@ -74,8 +75,8 @@ auto Buffs::parseMountInfo(Player *player, skill_id_t skillId, skill_level_t lev
 
 auto Buffs::parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveBuff {
 	ActiveBuff playerSkill;
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
-	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
+	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
 
 	for (const auto &buffInfo : skillsInfo.player) {
 		const auto &buff = buffInfo.buff;
@@ -133,7 +134,7 @@ auto Buffs::parseBuffInfo(Player *player, skill_id_t skillId, skill_level_t leve
 auto Buffs::parseBuffMapInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
 	int32_t maps = 0;
-	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
 
 	for (const auto &buffInfo : skillsInfo.player) {
 		if (!buffInfo.hasMapVal) {
@@ -174,7 +175,7 @@ auto Buffs::parseBuffMapInfo(Player *player, skill_id_t skillId, skill_level_t l
 auto Buffs::parseBuffMapEntryInfo(Player *player, skill_id_t skillId, skill_level_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
 	int8_t mapCounter = 0;
-	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
 
 	for (const auto &buffInfo : skillsInfo.player) {
 		if (!buffInfo.hasMapEntry) {
@@ -215,7 +216,7 @@ auto Buffs::parseBuffMapEntryInfo(Player *player, skill_id_t skillId, skill_leve
 
 auto Buffs::parseBuffs(skill_id_t skillId, skill_level_t level) -> vector_t<Buff> {
 	vector_t<Buff> ret;
-	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
 
 	for (const auto &buffInfo : skillsInfo.player) {
 		if (!Buffs::buffMayApply(skillId, level, buffInfo.buff.value)) {
@@ -228,7 +229,7 @@ auto Buffs::parseBuffs(skill_id_t skillId, skill_level_t level) -> vector_t<Buff
 
 auto Buffs::parseMobBuffInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveBuff {
 	ActiveBuff playerSkill;
-	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
 
 	for (const auto &buffInfo : mobSkillsInfo.mob) {
 		const auto &buff = buffInfo.buff;
@@ -243,7 +244,7 @@ auto Buffs::parseMobBuffInfo(Player *player, mob_skill_id_t skillId, mob_skill_l
 
 auto Buffs::parseMobBuffMapInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
 
 	for (const auto &buffInfo : mobSkillsInfo.mob) {
 		const auto &buff = buffInfo.buff;
@@ -260,7 +261,7 @@ auto Buffs::parseMobBuffMapInfo(Player *player, mob_skill_id_t skillId, mob_skil
 
 auto Buffs::parseMobBuffMapEntryInfo(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> ActiveMapBuff {
 	ActiveMapBuff mapSkill;
-	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
 
 	for (const auto &buffInfo : mobSkillsInfo.mob) {
 		const auto &buff = buffInfo.buff;
@@ -279,7 +280,7 @@ auto Buffs::parseMobBuffMapEntryInfo(Player *player, mob_skill_id_t skillId, mob
 
 auto Buffs::parseMobBuffs(mob_skill_id_t skillId) -> vector_t<Buff> {
 	vector_t<Buff> ret;
-	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
 
 	for (const auto &buffInfo : mobSkillsInfo.mob) {
 		ret.push_back(buffInfo.buff);
@@ -288,12 +289,12 @@ auto Buffs::parseMobBuffs(mob_skill_id_t skillId) -> vector_t<Buff> {
 }
 
 auto Buffs::addBuff(Player *player, skill_id_t skillId, skill_level_t level, int16_t addedInfo, map_object_t mapMobId) -> Result {
-	if (!BuffDataProvider::getInstance().isBuff(skillId)) {
+	if (!ChannelServer::getInstance().getBuffDataProvider().isBuff(skillId)) {
 		return Result::Failure;
 	}
 
 	skill_id_t mountId = parseMountInfo(player, skillId, level);
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	seconds_t time(skill->time);
 
 	switch (skillId) {
@@ -547,7 +548,7 @@ auto Buffs::endBuff(Player *player, skill_id_t skill) -> void {
 }
 
 auto Buffs::doAction(Player *player, skill_id_t skillId, skill_level_t level) -> void {
-	auto &skillsInfo = BuffDataProvider::getInstance().getSkillInfo(skillId);
+	auto &skillsInfo = ChannelServer::getInstance().getBuffDataProvider().getSkillInfo(skillId);
 
 	if (skillsInfo.hasAction) {
 		int16_t value = getValue(skillsInfo.act.value, skillId, level);
@@ -556,12 +557,12 @@ auto Buffs::doAction(Player *player, skill_id_t skillId, skill_level_t level) ->
 }
 
 auto Buffs::addDebuff(Player *player, mob_skill_id_t skillId, mob_skill_level_t level) -> void {
-	if (!BuffDataProvider::getInstance().isDebuff(skillId)) {
+	if (!ChannelServer::getInstance().getBuffDataProvider().isDebuff(skillId)) {
 		return;
 	}
 
-	seconds_t time(SkillDataProvider::getInstance().getMobSkill(skillId, level)->time);
-	auto &mobSkillsInfo = BuffDataProvider::getInstance().getMobSkillInfo(skillId);
+	seconds_t time(ChannelServer::getInstance().getSkillDataProvider().getMobSkill(skillId, level)->time);
+	auto &mobSkillsInfo = ChannelServer::getInstance().getBuffDataProvider().getMobSkillInfo(skillId);
 
 	auto buffs = parseMobBuffs(skillId);
 	auto playerSkill = parseMobBuffInfo(player, skillId, level);
@@ -591,7 +592,7 @@ auto Buffs::endDebuff(Player *player, mob_skill_id_t skill) -> void {
 
 auto Buffs::buffMayApply(skill_id_t skillId, skill_level_t level, int8_t buffValue) -> bool {
 	if (GameLogicUtilities::isDarkSight(skillId)) {
-		return buffValue != SkillSpeed || level != SkillDataProvider::getInstance().getMaxLevel(skillId);
+		return buffValue != SkillSpeed || level != ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
 	}
 	return true;
 }

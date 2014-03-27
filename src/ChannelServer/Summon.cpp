@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Summon.hpp"
+#include "ChannelServer.hpp"
 #include "SkillConstants.hpp"
 #include "SkillDataProvider.hpp"
 
@@ -31,7 +32,7 @@ Summon::Summon(summon_id_t id, skill_id_t summonId, skill_level_t level, bool is
 		case Skills::Sniper::Puppet:
 		case Skills::WindArcher::Puppet:
 			m_actionType = DoNothing;
-			m_hp = SkillDataProvider::getInstance().getSkill(summonId, level)->x;
+			m_hp = ChannelServer::getInstance().getSkillDataProvider().getSkill(summonId, level)->x;
 			// Intentional fallthrough
 		case Skills::Outlaw::Octopus:
 		case Skills::Corsair::WrathOfTheOctopi:

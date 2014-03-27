@@ -129,7 +129,7 @@ namespace StatusEffects {
 }
 
 namespace MobSkills {
-	enum : uint8_t {
+	enum : mob_skill_id_t {
 		WeaponAttackUp = 100,
 		WeaponAttackUpAoe = 110,
 		MagicAttackUp = 101,

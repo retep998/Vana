@@ -53,6 +53,7 @@ namespace LuaExports {
 	auto consoleOutput(lua_State *luaVm) -> int;
 	auto getRandomNumber(lua_State *luaVm) -> int;
 	auto log(lua_State *luaVm) -> int;
+	auto selectDiscrete(lua_State *luaVm) -> int;
 	auto showGlobalMessage(lua_State *luaVm) -> int;
 	auto showWorldMessage(lua_State *luaVm) -> int;
 	auto testExport(lua_State *luaVm) -> int;
@@ -123,6 +124,7 @@ namespace LuaExports {
 	auto destroyEquippedItem(lua_State *luaVm) -> int;
 	auto getEquippedItemInSlot(lua_State *luaVm) -> int;
 	auto getItemAmount(lua_State *luaVm) -> int;
+	auto getMaxStackSize(lua_State *luaVm) -> int;
 	auto getMesos(lua_State *luaVm) -> int;
 	auto getOpenSlots(lua_State *luaVm) -> int;
 	auto giveItem(lua_State *luaVm) -> int;

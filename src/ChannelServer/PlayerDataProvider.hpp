@@ -44,7 +44,6 @@ struct ConnectingPlayer {
 };
 
 class PlayerDataProvider {
-	SINGLETON(PlayerDataProvider);
 public:
 	auto parseChannelConnectPacket(PacketReader &reader) -> void;
 	

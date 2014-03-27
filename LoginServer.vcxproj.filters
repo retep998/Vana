@@ -55,7 +55,6 @@
     <ClCompile Include="src\LoginServer\SyncPacket.cpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoginServer\InitializeLogin.cpp" />
     <ClCompile Include="src\LoginServer\LoginServer.cpp" />
     <ClCompile Include="src\LoginServer\PrecompiledHeader.cpp" />
     <ClCompile Include="src\LoginServer\UserConnection.cpp">
@@ -103,7 +102,6 @@
       <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
     <ClInclude Include="src\LoginServer\PrecompiledHeader.hpp" />
-    <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />
     <ClInclude Include="src\LoginServer\LoginServer.hpp" />
     <ClInclude Include="src\LoginServer\UserConnection.hpp">
       <Filter>LoginServer</Filter>

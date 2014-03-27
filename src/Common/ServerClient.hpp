@@ -19,19 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Ip.hpp"
 #include "Session.hpp"
-#include "SessionManager.hpp"
 #include "Types.hpp"
 #include <string>
 #include <boost/asio.hpp>
 
 class AbstractConnection;
+class ConnectionManager;
 
 class ServerClient : public Session {
 public:
-	ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool ping);
+	ServerClient(boost::asio::io_service &ioService, const Ip &serverIp, port_t serverPort, ConnectionManager &manager, AbstractConnection *connection, bool ping);
 private:
 	friend class ConnectionManager;
-	auto startConnect() -> void;
+	auto startConnect() -> Result;
 	auto readConnectPacket() -> void;
 
 	port_t m_port = 0;

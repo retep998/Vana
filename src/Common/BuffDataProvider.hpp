@@ -62,7 +62,6 @@ struct MobAilmentInfo {
 };
 
 class BuffDataProvider {
-	SINGLETON(BuffDataProvider);
 public:
 	auto loadData() -> void;
 	auto addItemInfo(item_id_t itemId, const ConsumeInfo &cons) -> void;

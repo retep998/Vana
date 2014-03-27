@@ -76,7 +76,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 	int8_t act = reader.get<int8_t>();
 	quest_id_t questId = reader.get<quest_id_t>();
 
-	if (!QuestDataProvider::getInstance().isQuest(questId)) {
+	if (!ChannelServer::getInstance().getQuestDataProvider().isQuest(questId)) {
 		// Hacking
 		return;
 	}
@@ -110,7 +110,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 	}
 	// QuestOpcodes::RestoreLostQuestItem for some reason appears to use "NPC ID" as a different kind of identifier, maybe quantity?
 	
-	if (act != QuestOpcodes::RestoreLostQuestItem && !NpcDataProvider::getInstance().isValidNpcId(npcId)) {
+	if (act != QuestOpcodes::RestoreLostQuestItem && !ChannelServer::getInstance().getNpcDataProvider().isValidNpcId(npcId)) {
 		ChannelServer::getInstance().log(LogType::MalformedPacket, [&](out_stream_t &log) {
 			log << "Player (ID: " << player->getId()
 				<< ", Name: " << player->getName()
@@ -124,7 +124,7 @@ auto Quests::getQuest(Player *player, PacketReader &reader) -> void {
 	switch (act) {
 		case QuestOpcodes::RestoreLostQuestItem: {
 			item_id_t itemId = reader.get<item_id_t>();
-			auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+			auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 			if (itemInfo == nullptr) {
 				// Hacking
 				return;

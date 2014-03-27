@@ -119,7 +119,7 @@ Player::~Player() {
 			// Do not connect to worldserver if the worldserver has disconnected
 			ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::disconnect(getId()));
 		}
-		PlayerDataProvider::getInstance().removePlayer(this);
+		ChannelServer::getInstance().getPlayerDataProvider().removePlayer(this);
 	}
 }
 
@@ -245,7 +245,7 @@ auto Player::handleRequest(PacketReader &reader) -> void {
 auto Player::playerConnect(PacketReader &reader) -> void {
 	player_id_t id = reader.get<player_id_t>();
 	bool hasTransferPacket = false;
-	if (PlayerDataProvider::getInstance().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
+	if (ChannelServer::getInstance().getPlayerDataProvider().checkPlayer(id, getIp(), hasTransferPacket) == Result::Failure) {
 		// Hacking
 		disconnect();
 		return;
@@ -324,7 +324,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	bool firstConnect = !hasTransferPacket;
 	if (hasTransferPacket) {
-		parseTransferPacket(PlayerDataProvider::getInstance().getPacket(m_id));
+		parseTransferPacket(ChannelServer::getInstance().getPlayerDataProvider().getPacket(m_id));
 	}
 	else {
 		// No packet, that means that they're connecting for the first time
@@ -332,7 +332,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		m_gmChat = true;
 	}
 
-	PlayerDataProvider::getInstance().playerEstablished(id);
+	ChannelServer::getInstance().getPlayerDataProvider().playerEstablished(id);
 
 	// The rest
 	m_variables = make_owned_ptr<PlayerVariables>(this);
@@ -393,7 +393,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 
 	send(PlayerPacket::showSkillMacros(&skillMacros));
 
-	PlayerDataProvider::getInstance().addPlayer(this);
+	ChannelServer::getInstance().getPlayerDataProvider().addPlayer(this);
 	Maps::addPlayer(this, m_map);
 
 	ChannelServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << m_name << " (" << m_id << ") connected from " << getIp(); });
@@ -402,7 +402,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_isConnect = true;
 
 	PlayerData data;
-	const PlayerData * const existingData = PlayerDataProvider::getInstance().getPlayerData(m_id);
+	const PlayerData * const existingData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerData(m_id);
 	bool firstConnectionSinceServerStarted = firstConnect && !existingData->initialized;
 
 	if (firstConnectionSinceServerStarted) {
@@ -486,14 +486,14 @@ auto Player::setMap(map_id_t mapId, PortalInfo *portal, bool instance) -> void {
 	send(MapPacket::changeMap(this));
 	Maps::addPlayer(this, mapId);
 
-	PlayerDataProvider::getInstance().updatePlayerMap(this);
+	ChannelServer::getInstance().getPlayerDataProvider().updatePlayerMap(this);
 }
 
 auto Player::getMedalName() -> string_t {
 	out_stream_t ret;
 	if (item_id_t itemId = getInventory()->getEquippedId(EquipSlots::Medal)) {
 		// Check if there's an item at that slot
-		ret << "<" << ItemDataProvider::getInstance().getItemInfo(itemId)->name << "> ";
+		ret << "<" << ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId)->name << "> ";
 	}
 	ret << getName();
 	return ret.str();
@@ -519,8 +519,8 @@ auto Player::parseTransferPacket(PacketReader &reader) -> void {
 	setConnectionTime(reader.get<int64_t>());
 	player_id_t followId = reader.get<player_id_t>();
 	if (followId != 0) {
-		if (Player *follow = PlayerDataProvider::getInstance().getPlayer(followId)) {
-			PlayerDataProvider::getInstance().addFollower(this, follow);
+		if (Player *follow = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(followId)) {
+			ChannelServer::getInstance().getPlayerDataProvider().addFollower(this, follow);
 		}
 	}
 

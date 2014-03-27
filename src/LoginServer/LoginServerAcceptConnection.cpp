@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LoginServerAcceptConnection::~LoginServerAcceptConnection() {
 	if (m_worldId != -1) {
-		World *world = Worlds::getInstance().getWorld(m_worldId);
+		World *world = LoginServer::getInstance().getWorlds().getWorld(m_worldId);
 		world->setConnected(false);
 		world->clearChannels();
 
@@ -49,23 +49,23 @@ auto LoginServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_CALCULATE_RANKING: RankingCalculator::runThread(); break;
 		case IMSG_TO_WORLD: {
 			world_id_t worldId = reader.get<world_id_t>();
-			Worlds::getInstance().send(worldId, Packets::identity(reader));
+			LoginServer::getInstance().getWorlds().send(worldId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_WORLD_LIST: {
 			vector_t<world_id_t> worlds = reader.get<vector_t<world_id_t>>();
-			Worlds::getInstance().send(worlds, Packets::identity(reader));
+			LoginServer::getInstance().getWorlds().send(worlds, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_WORLDS: Worlds::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_WORLDS: LoginServer::getInstance().getWorlds().send(Packets::identity(reader)); break;
 		case IMSG_REHASH_CONFIG: LoginServer::getInstance().rehashConfig(); break;
 	}
 }
 
 auto LoginServerAcceptConnection::authenticated(ServerType type) -> void {
 	switch (type) {
-		case ServerType::World: Worlds::getInstance().addWorldServer(this); break;
-		case ServerType::Channel: Worlds::getInstance().addChannelServer(this); break;
+		case ServerType::World: LoginServer::getInstance().getWorlds().addWorldServer(this); break;
+		case ServerType::Channel: LoginServer::getInstance().getWorlds().addChannelServer(this); break;
 		default: disconnect();
 	}
 }

@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Logger.hpp"
 #include "MiscUtilities.hpp"
 #include "SqlLogger.hpp"
+#include "ThreadPool.hpp"
 #include "TimerThread.hpp"
 #include "TimeUtilities.hpp"
 #include <chrono>
@@ -39,7 +40,7 @@ AbstractServer::AbstractServer(ServerType type) :
 {
 }
 
-auto AbstractServer::initialize() -> AbstractServer & {
+auto AbstractServer::initialize() -> Result {
 	m_startTime = TimeUtilities::getNow();
 
 	ConfigFile config("conf/connection_properties.lua");
@@ -51,10 +52,12 @@ auto AbstractServer::initialize() -> AbstractServer & {
 	if (m_interPassword == "changeme") {
 		std::cerr << "ERROR: inter_password is not changed." << std::endl;
 		ExitCodes::exit(ExitCodes::ConfigError);
+		return Result::Failure;
 	}
 	if (m_salt == "changeme") {
 		std::cerr << "ERROR: inter_salt is not changed." << std::endl;
 		ExitCodes::exit(ExitCodes::ConfigError);
+		return Result::Failure;
 	}
 
 	auto rawIpMap = config.get<vector_t<hash_map_t<string_t, string_t>>>("external_ip");
@@ -64,6 +67,7 @@ auto AbstractServer::initialize() -> AbstractServer & {
 		if (ipValue == std::end(pair) || maskValue == std::end(pair)) {
 			std::cerr << "ERROR: External IP configuration is malformed!" << std::endl;
 			ExitCodes::exit(ExitCodes::ConfigError);
+			return Result::Failure;
 		}
 
 		auto ip = Ip::stringToIpv4(ipValue->second);
@@ -73,12 +77,19 @@ auto AbstractServer::initialize() -> AbstractServer & {
 
 	m_interServerConfig = config.get<InterServerConfig>("");
 
-	loadConfig();
+	if (loadConfig() == Result::Failure) {
+		return Result::Failure;
+	}
 	loadLogConfig();
-	loadData();
+
+	if (loadData() == Result::Failure) {
+		return Result::Failure;
+	}
 	initComplete();
 
-	return *this;
+	m_connectionManager.run();
+
+	return Result::Successful;
 }
 
 auto AbstractServer::loadLogConfig() -> void {
@@ -96,7 +107,8 @@ auto AbstractServer::loadLogConfig() -> void {
 }
 
 auto AbstractServer::shutdown() -> void {
-	ConnectionManager::getInstance().stop();
+	m_connectionManager.stop();
+	ThreadPool::wait();
 }
 
 auto AbstractServer::getServerType() const -> ServerType {
@@ -111,8 +123,9 @@ auto AbstractServer::getInterServerConfig() const -> const InterServerConfig & {
 	return m_interServerConfig;
 }
 
-auto AbstractServer::loadConfig() -> void {
+auto AbstractServer::loadConfig() -> Result {
 	// Intentionally left blank
+	return Result::Successful;
 }
 
 auto AbstractServer::initComplete() -> void {

@@ -36,11 +36,11 @@ auto UserConnection::handleRequest(PacketReader &reader) -> void {
 	try {
 		switch (reader.get<header_t>()) {
 			case CMSG_AUTHENTICATION: Login::loginUser(this, reader); break;
-			case CMSG_PLAYER_LIST: Worlds::getInstance().channelSelect(this, reader); break;
-			case CMSG_WORLD_STATUS: Worlds::getInstance().selectWorld(this, reader); break;
+			case CMSG_PLAYER_LIST: LoginServer::getInstance().getWorlds().channelSelect(this, reader); break;
+			case CMSG_WORLD_STATUS: LoginServer::getInstance().getWorlds().selectWorld(this, reader); break;
 			case CMSG_PIN: Login::handleLogin(this, reader); break;
 			case CMSG_WORLD_LIST:
-			case CMSG_WORLD_LIST_REFRESH: Worlds::getInstance().showWorld(this); break;
+			case CMSG_WORLD_LIST_REFRESH: LoginServer::getInstance().getWorlds().showWorld(this); break;
 			case CMSG_CHANNEL_CONNECT: Characters::connectGame(this, reader); break;
 			case CMSG_CLIENT_ERROR: LoginServer::getInstance().log(LogType::ClientError, reader.get<string_t>()); break;
 			case CMSG_CLIENT_STARTED: LoginServer::getInstance().log(LogType::Info, [&](out_stream_t &log) { log << "Client connected and started from " << getIp(); }); break;

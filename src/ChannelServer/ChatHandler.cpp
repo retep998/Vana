@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "ChatHandler.hpp"
+#include "ChannelServer.hpp"
 #include "ChatHandlerFunctions.hpp"
 #include "Map.hpp"
 #include "PacketReader.hpp"
@@ -38,7 +39,7 @@ auto ChatHandler::handleChat(Player *player, PacketReader &reader) -> void {
 
 	if (ChatHandler::handleCommand(player, message) == HandleResult::Unhandled) {
 		if (player->isGmChat()) {
-			PlayerDataProvider::getInstance().handleGmChat(player, message);
+			ChannelServer::getInstance().getPlayerDataProvider().handleGmChat(player, message);
 			return;
 		}
 
@@ -84,6 +85,6 @@ auto ChatHandler::handleGroupChat(Player *player, PacketReader &reader) -> void 
 	string_t chat = reader.get<string_t>();
 
 	if (ChatHandler::handleCommand(player, chat) == HandleResult::Unhandled) {
-		PlayerDataProvider::getInstance().handleGroupChat(type, player->getId(), receivers, chat);
+		ChannelServer::getInstance().getPlayerDataProvider().handleGroupChat(type, player->getId(), receivers, chat);
 	}
 }

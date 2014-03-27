@@ -110,7 +110,7 @@ auto Characters::showAllCharacters(UserConnection *user) -> void {
 
 	for (const auto &row : rs) {
 		world_id_t worldId = row.get<world_id_t>("world_id");
-		world = Worlds::getInstance().getWorld(worldId);
+		world = LoginServer::getInstance().getWorlds().getWorld(worldId);
 		if (world == nullptr || !world->isConnected()) {
 			// World is not connected
 			continue;
@@ -158,7 +158,7 @@ auto Characters::showCharacters(UserConnection *user) -> void {
 		soci::into(max);
 
 	if (!sql.got_data() || !max.is_initialized()) {
-		const WorldConfig &world = Worlds::getInstance().getWorld(worldId)->getConfig();
+		const WorldConfig &world = LoginServer::getInstance().getWorlds().getWorld(worldId)->getConfig();
 		max = world.defaultChars;
 	}
 
@@ -188,7 +188,7 @@ auto Characters::createItem(item_id_t itemId, UserConnection *user, player_id_t 
 	ItemDbInformation info(slot, charId, user->getUserId(), user->getWorldId(), Item::Inventory);
 
 	if (inventory == Inventories::EquipInventory) {
-		Item equip(itemId, Items::StatVariance::None, false);
+		Item equip(LoginServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::None, false);
 		equip.databaseInsert(sql, info);
 	}
 	else {
@@ -228,7 +228,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	item_id_t weapon = reader.get<item_id_t>();
 	gender_id_t gender = reader.get<gender_id_t>();
 
-	if (!ValidCharDataProvider::getInstance().isValidCharacter(gender, hair, hairColor, face, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
+	if (!LoginServer::getInstance().getValidCharDataProvider().isValidCharacter(gender, hair, hairColor, face, skin, top, bottom, shoes, weapon, ValidCharDataProvider::Adventurer)) {
 		// Hacking
 		user->disconnect();
 		return;
@@ -275,7 +275,7 @@ auto Characters::createCharacter(UserConnection *user, PacketReader &reader) -> 
 	Character charc;
 	loadCharacter(charc, row);
 	user->send(LoginPacket::showCharacter(charc));
-	Worlds::getInstance().send(user->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
+	LoginServer::getInstance().getWorlds().send(user->getWorldId(), SyncPacket::PlayerPacket::characterCreated(id));
 }
 
 auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> void {
@@ -317,7 +317,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	bool success = false;
 	opt_int32_t delPassword = user->getCharDeletePassword();
 	if (!delPassword.is_initialized() || delPassword.get() == password) {
-		Worlds::getInstance().runFunction([&id, &worldId](World *world) -> bool {
+		LoginServer::getInstance().getWorlds().runFunction([&id, &worldId](World *world) -> bool {
 			if (world->isConnected() && world->getId() == worldId.get()) {
 				// LoginServerAcceptPacket::removeCharacter(world->getConnection(), playerId);
 				// For guilds
@@ -334,7 +334,7 @@ auto Characters::deleteCharacter(UserConnection *user, PacketReader &reader) -> 
 	}
 
 	user->send(LoginPacket::deleteCharacter(id, result));
-	Worlds::getInstance().send(user->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
+	LoginServer::getInstance().getWorlds().send(user->getWorldId(), SyncPacket::PlayerPacket::characterDeleted(id));
 }
 
 auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
@@ -347,7 +347,7 @@ auto Characters::connectGame(UserConnection *user, player_id_t charId) -> void {
 		return;
 	}
 
-	auto world = Worlds::getInstance().getWorld(user->getWorldId());
+	auto world = LoginServer::getInstance().getWorlds().getWorld(user->getWorldId());
 	world->send(LoginServerAcceptPacket::playerConnectingToChannel(user->getChannel(), charId, user->getIp()));
 
 	Ip chanIp(0);
@@ -376,7 +376,7 @@ auto Characters::connectGameWorldFromViewAllCharacters(UserConnection *user, Pac
 	user->setWorldId(worldId);
 
 	// Take the player to a random channel
-	channel_id_t channel = Worlds::getInstance().getWorld(worldId)->getRandomChannel();
+	channel_id_t channel = LoginServer::getInstance().getWorlds().getWorld(worldId)->getRandomChannel();
 	user->setChannel(channel);
 
 	connectGame(user, id);
@@ -414,5 +414,6 @@ auto Characters::nameTaken(const string_t &name) -> bool {
 }
 
 auto Characters::nameInvalid(const string_t &name) -> bool {
-	return ValidCharDataProvider::getInstance().isForbiddenName(name) || CurseDataProvider::getInstance().isCurseWord(name);
+	return LoginServer::getInstance().getValidCharDataProvider().isForbiddenName(name) ||
+		LoginServer::getInstance().getCurseDataProvider().isCurseWord(name);
 }

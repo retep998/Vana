@@ -20,21 +20,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AbstractServer.hpp"
 #include "ConfigFile.hpp"
 #include "Configuration.hpp"
-#include "InitializeLogin.hpp"
+#include "CurseDataProvider.hpp"
+#include "EquipDataProvider.hpp"
 #include "LoginServerAcceptConnection.hpp"
 #include "Types.hpp"
+#include "ValidCharDataProvider.hpp"
+#include "Worlds.hpp"
 
 class LoginServer final : public AbstractServer {
-	SINGLETON_CUSTOM_CONSTRUCTOR(LoginServer);
+	SINGLETON(LoginServer);
 public:
 	auto getPinEnabled() const -> bool;
 	auto rehashConfig() -> void;
 	auto getInvalidLoginThreshold() const -> int32_t;
+	auto getValidCharDataProvider() const -> const ValidCharDataProvider &;
+	auto getEquipDataProvider() const -> const EquipDataProvider &;
+	auto getCurseDataProvider() const -> const CurseDataProvider &;
+	auto getWorlds() -> Worlds &;
 protected:
 	auto initComplete() -> void override;
-	auto listen() -> void override;
-	auto loadData() -> void override;
-	auto loadConfig() -> void override;
+	auto loadData() -> Result override;
+	auto loadConfig() -> Result override;
+	auto listen() -> void;
 	auto loadWorlds() -> void;
 	auto makeLogIdentifier() const -> opt_string_t override;
 	auto getLogPrefix() const -> string_t override;
@@ -43,4 +50,8 @@ private:
 	port_t m_port = 0;
 	port_t m_interPort = 0;
 	int32_t m_maxInvalidLogins = 0;
+	ValidCharDataProvider m_validCharDataProvider;
+	EquipDataProvider m_equipDataProvider;
+	CurseDataProvider m_curseDataProvider;
+	Worlds m_worlds;
 };

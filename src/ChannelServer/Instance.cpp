@@ -66,7 +66,7 @@ Instance::~Instance() {
 		kvp.second->setInstance(nullptr);
 	}
 	m_players.clear();
-	Instances::getInstance().removeInstance(this);
+	ChannelServer::getInstance().getInstances().removeInstance(this);
 }
 
 auto Instance::getBannedPlayerByIndex(uint32_t index) const -> const string_t {

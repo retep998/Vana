@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SummonHandler.hpp"
 #include "BuffDataProvider.hpp"
 #include "BuffsPacket.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "LoopingId.hpp"
 #include "Map.hpp"
@@ -114,7 +115,7 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	if (summon->getMovementType() == Summon::Static) {
 		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
 	}
-	player->getSummons()->addSummon(summon, SkillDataProvider::getInstance().getSkill(skillId, level)->time);
+	player->getSummons()->addSummon(summon, ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time);
 	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
 }
 
@@ -214,7 +215,7 @@ auto SummonHandler::summonSkill(Player *player, PacketReader &reader) -> void {
 	skill_id_t skillId = reader.get<skill_id_t>();
 	uint8_t display = reader.get<uint8_t>();
 	skill_level_t level = player->getSkills()->getSkillLevel(skillId);
-	auto skillInfo = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skillInfo = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	if (skillInfo == nullptr) {
 		// Hacking
 		return;

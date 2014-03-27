@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerSkills.hpp"
 #include "Algorithm.hpp"
+#include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
@@ -42,7 +43,7 @@ auto PlayerSkills::load() -> void {
 		skill = PlayerSkillInfo();
 		skillId = row.get<skill_id_t>("skill_id");
 		skill.level = row.get<skill_level_t>("points");
-		skill.maxSkillLevel = SkillDataProvider::getInstance().getMaxLevel(skillId);
+		skill.maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
 		skill.playerMaxSkillLevel = row.get<skill_level_t>("max_level");
 		m_skills[skillId] = skill;
 	}
@@ -105,7 +106,7 @@ auto PlayerSkills::save(bool saveCooldowns) -> void {
 }
 
 auto PlayerSkills::addSkillLevel(skill_id_t skillId, skill_level_t amount, bool sendPacket) -> bool {
-	if (!SkillDataProvider::getInstance().isValidSkill(skillId)) {
+	if (!ChannelServer::getInstance().getSkillDataProvider().isValidSkill(skillId)) {
 		return false;
 	}
 
@@ -113,7 +114,7 @@ auto PlayerSkills::addSkillLevel(skill_id_t skillId, skill_level_t amount, bool 
 
 	auto kvp = m_skills.find(skillId);
 	skill_level_t newLevel = (kvp != std::end(m_skills) ? kvp->second.level : 0) + amount;
-	skill_level_t maxSkillLevel = SkillDataProvider::getInstance().getMaxLevel(skillId);
+	skill_level_t maxSkillLevel = ChannelServer::getInstance().getSkillDataProvider().getMaxLevel(skillId);
 	if (newLevel > maxSkillLevel || (GameLogicUtilities::isFourthJobSkill(skillId) && newLevel > getMaxSkillLevel(skillId))) {
 		return false;
 	}
@@ -154,7 +155,7 @@ auto PlayerSkills::getMaxSkillLevel(skill_id_t skillId) const -> skill_level_t {
 
 auto PlayerSkills::getSkillInfo(skill_id_t skillId) const -> const SkillLevelInfo * const {
 	auto skill = ext::find_value_ptr(m_skills, skillId);
-	return skill == nullptr ? nullptr : SkillDataProvider::getInstance().getSkill(skillId, skill->level);
+	return skill == nullptr ? nullptr : ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, skill->level);
 }
 
 auto PlayerSkills::hasSkill(skill_id_t skillId) const -> bool {

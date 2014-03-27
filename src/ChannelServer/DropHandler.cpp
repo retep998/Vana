@@ -39,15 +39,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <algorithm>
 
 auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t droppingLevel, int32_t droppingId, const Pos &origin, bool explosive, bool ffa, int32_t taunt, bool isSteal) -> void {
-	auto &globalDrops = DropDataProvider::getInstance().getGlobalDrops();
-	if (!DropDataProvider::getInstance().hasDrops(droppingId) && globalDrops.size() == 0) {
+	auto &globalDrops = ChannelServer::getInstance().getDropDataProvider().getGlobalDrops();
+	if (!ChannelServer::getInstance().getDropDataProvider().hasDrops(droppingId) && globalDrops.size() == 0) {
 		return;
 	}
 
 	// Make a copy of the data so we can modify the object with global drops
-	auto drops = DropDataProvider::getInstance().getDrops(droppingId);
+	auto drops = ChannelServer::getInstance().getDropDataProvider().getDrops(droppingId);
 
-	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
+	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 	coord_t dropPosCounter = 0;
 	party_id_t partyId = 0;
 	Pos pos;
@@ -59,7 +59,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 	}
 	if (droppingLevel != 0 && globalDrops.size() != 0) {
 		DropInfo d;
-		int8_t continent = MapDataProvider::getInstance().getContinent(mapId);
+		int8_t continent = ChannelServer::getInstance().getMapDataProvider().getContinent(mapId);
 
 		for (const auto &globalDrop : globalDrops) {
 			if (droppingLevel >= globalDrop.minLevel && droppingLevel <= globalDrop.maxLevel) {
@@ -113,7 +113,7 @@ auto DropHandler::doDrops(player_id_t playerId, map_id_t mapId, int32_t dropping
 					}
 				}
 
-				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(itemId, Items::StatVariance::Normal, player != nullptr && player->hasGmBenefits()) : Item(itemId, amount));
+				Item f = (GameLogicUtilities::isEquip(itemId) ? Item(ChannelServer::getInstance().getEquipDataProvider(), itemId, Items::StatVariance::Normal, player != nullptr && player->hasGmBenefits()) : Item(itemId, amount));
 				drop = new Drop(mapId, f, pos, playerId);
 
 				if (questId > 0) {
@@ -238,7 +238,7 @@ auto DropHandler::lootItem(Player *player, PacketReader &reader, pet_id_t petId)
 	}
 	else {
 		Item dropItem = drop->getItem();
-		auto cons = ItemDataProvider::getInstance().getConsumeInfo(dropItem.getId());
+		auto cons = ChannelServer::getInstance().getItemDataProvider().getConsumeInfo(dropItem.getId());
 		if (cons != nullptr && cons->autoConsume) {
 			if (GameLogicUtilities::isMonsterCard(drop->getObjectId())) {
 				player->send(DropsPacket::pickupDropSpecial(drop->getObjectId()));

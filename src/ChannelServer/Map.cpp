@@ -495,8 +495,8 @@ auto Map::addNpc(const NpcSpawnInfo &npc) -> map_object_t {
 	send(NpcPacket::showNpc(npc, id));
 	send(NpcPacket::controlNpc(npc, id));
 
-	if (NpcDataProvider::getInstance().isMapleTv(npc.id)) {
-		MapleTvs::getInstance().addMap(this);
+	if (ChannelServer::getInstance().getNpcDataProvider().isMapleTv(npc.id)) {
+		ChannelServer::getInstance().getMapleTvs().addMap(this);
 	}
 
 	return m_npcSpawns.size() - 1;
@@ -1130,8 +1130,8 @@ auto Map::showObjects(Player *player) -> void {
 
 	// MapleTV messengers
 	// TODO FIXME api
-	if (MapleTvs::getInstance().isMapleTvMap(getId()) && MapleTvs::getInstance().hasMessage()) {
-		player->send(MapleTvPacket::showMessage(MapleTvs::getInstance().getCurrentMessage(), MapleTvs::getInstance().getMessageTime()));
+	if (ChannelServer::getInstance().getMapleTvs().isMapleTvMap(getId()) && ChannelServer::getInstance().getMapleTvs().hasMessage()) {
+		player->send(MapleTvPacket::showMessage(ChannelServer::getInstance().getMapleTvs().getCurrentMessage(), ChannelServer::getInstance().getMapleTvs().getMessageTime()));
 	}
 
 	// Players

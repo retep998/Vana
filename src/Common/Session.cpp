@@ -17,17 +17,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Session.hpp"
 #include "AbstractConnection.hpp"
+#include "ConnectionManager.hpp"
 #include "Decoder.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketReader.hpp"
-#include "SessionManager.hpp"
 #include <functional>
 #include <iostream>
 
 namespace asio = boost::asio;
 
-Session::Session(asio::io_service &ioService, ref_ptr_t<SessionManager> sessionManager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
-	m_sessionManager(sessionManager),
+Session::Session(asio::io_service &ioService, ConnectionManager &manager, AbstractConnection *connection, bool isForClient, bool isEncrypted, bool usePing, const string_t &subversion) :
+	m_manager(manager),
 	m_socket(ioService),
 	m_connection(connection),
 	m_isForClient(isForClient),
@@ -50,10 +50,6 @@ auto Session::getBuffer() -> MiscUtilities::shared_array<unsigned char> & {
 }
 
 auto Session::start() -> void {
-	m_sessionManager->start(shared_from_this());
-}
-
-auto Session::handleStart() -> void {
 	// TODO FIXME support IPv6
 	m_connection->setSession(this, m_usePing, Ip(m_socket.remote_endpoint().address().to_v4().to_ulong()));
 
@@ -68,15 +64,9 @@ auto Session::handleStart() -> void {
 	startReadHeader();
 }
 
-auto Session::stop() -> void {
-	m_sessionManager->stop(shared_from_this());
-}
-
 auto Session::disconnect() -> void {
-	stop();
-}
+	m_manager.stop(shared_from_this());
 
-auto Session::handleStop() -> void {
 	boost::system::error_code ec;
 	m_socket.close(ec);
 	if (ec) {
@@ -187,8 +177,8 @@ auto Session::getConnectPacket(const string_t &subversion) const -> PacketBuilde
 		.add<header_t>(0)
 		.add<version_t>(MapleVersion::Version)
 		.add<string_t>(subversion)
-		.add<uint32_t>(m_decoder.getRecvIv())
-		.add<uint32_t>(m_decoder.getSendIv())
+		.add<iv_t>(m_decoder.getRecvIv())
+		.add<iv_t>(m_decoder.getSendIv())
 		.add<locale_t>(MapleVersion::Locale);
 
 	builder.set<header_t>(static_cast<header_t>(builder.getSize() - sizeof(header_t)), 0);

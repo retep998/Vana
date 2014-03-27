@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 class SkillDataProvider {
-	SINGLETON(SkillDataProvider);
 public:
 	auto loadData() -> void;
 

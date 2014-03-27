@@ -17,51 +17,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "ConnectionManager.hpp"
+#include "AbstractServer.hpp"
+#include "ConfigFile.hpp"
 #include "ExitCodes.hpp"
+#include "ThreadPool.hpp"
+#include <boost/asio.hpp>
 #include <botan/botan.h>
+#include <csignal>
+#include <cstdlib>
 #include <exception>
 #include <functional>
 #include <iostream>
 
 namespace Vana {
-#ifdef WIN32
-	function_t<void()> consoleHandler;
-
-	auto WINAPI consoleControlHandler(DWORD ctrlType) -> BOOL {
-		switch (ctrlType) {
-			case CTRL_C_EVENT:
-			case CTRL_BREAK_EVENT:
-			case CTRL_CLOSE_EVENT:
-			case CTRL_SHUTDOWN_EVENT:
-				consoleHandler();
-				return TRUE;
-		}
-		return FALSE;
-	}
-
-	auto hookWin32Console(AbstractServer &server) -> void {
-		ConnectionManager &manager = ConnectionManager::getInstance();
-		consoleHandler = [&server] { server.shutdown(); };
-		SetConsoleCtrlHandler(consoleControlHandler, TRUE);
-		manager.run();
-		manager.join();
-	}
-#endif
+	extern exit_code_t exitCode;
 
 	template <typename TAbstractServer>
-	auto main() -> int {
+	auto main() -> exit_code_t {
 		Botan::LibraryInitializer init("thread_safe=true");
+		boost::asio::io_service s;
+		boost::asio::signal_set signals(s, SIGINT);
+
 		try {
-			AbstractServer &server = TAbstractServer::getInstance().initialize();
-#ifdef WIN32
-			hookWin32Console(server);
-#endif
+			AbstractServer &server = TAbstractServer::getInstance();
+
+			signals.async_wait([&server](const boost::system::error_code &ec, int handlerId) {
+				server.shutdown();
+			});
+
+			if (server.initialize() == Result::Successful) {
+				s.run();
+			}
+			else {
+				server.shutdown();
+			}
 		}
+		catch (ConfigException &) { }
 		catch (std::exception &e) {
 			std::cerr << "ERROR: " << e.what() << std::endl;
 			ExitCodes::exit(ExitCodes::ProgramException);
 		}
-		return ExitCodes::Ok;
+
+		return exitCode;
 	}
 }

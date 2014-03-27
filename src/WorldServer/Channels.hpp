@@ -29,7 +29,6 @@ class PacketBuilder;
 class WorldServerAcceptConnection;
 
 class Channels {
-	SINGLETON(Channels);
 public:
 	auto registerChannel(WorldServerAcceptConnection *connection, channel_id_t channelId, const Ip &channelIp, const IpMatrix &extIp, port_t port) -> void;
 	auto removeChannel(channel_id_t channelId) -> void;

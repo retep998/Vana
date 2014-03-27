@@ -17,19 +17,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "Types.hpp"
-#include <memory>
-#include <unordered_set>
+#include "ExitCodes.hpp"
+#include "VanaMain.hpp"
+#include <csignal>
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+#include <thread>
 
-class Session;
+namespace ExitCodes {
 
-class SessionManager {
-	NONCOPYABLE(SessionManager);
-public:
-	SessionManager() = default;
-	auto start(ref_ptr_t<Session> session) -> void;
-	auto stop(ref_ptr_t<Session> session) -> void;
-	auto stopAll() -> void;
-private:
-	hash_set_t<ref_ptr_t<Session>> m_sessions;
-};
+auto exit(exit_code_t code) -> void {
+#ifndef DAEMON
+	std::cout << "Please press enter to quit..." << std::endl;
+	std::cin.get();
+#endif
+	Vana::exitCode = code;
+	raise(SIGINT);
+}
+
+}

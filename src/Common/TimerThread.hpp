@@ -34,13 +34,12 @@ class Container;
 class Timer;
 
 class TimerThread {
-	SINGLETON_CUSTOM_CONSTRUCTOR(TimerThread);
+	SINGLETON(TimerThread);
 public:
 	~TimerThread();
 	auto getTimerContainer() const -> ref_ptr_t<Container>;
 	auto registerTimer(ref_ptr_t<Timer> timer, time_point_t runAt) -> void;
 private:
-	auto runThread() -> void;
 	auto getWaitTime() const -> time_point_t;
 
 	using timer_pair_t = pair_t<time_point_t, view_ptr_t<Timer>>;
@@ -51,11 +50,10 @@ private:
 		}
 	};
 
-	std::atomic_bool m_runThread;
 	std::priority_queue<timer_pair_t, vector_t<timer_pair_t>, FindClosestTimer> m_timers;
 	std::condition_variable_any m_mainLoopCondition;
 	recursive_mutex_t m_timersMutex;
-	owned_ptr_t<thread_t> m_thread;
+	ref_ptr_t<thread_t> m_thread;
 	ref_ptr_t<Container> m_container; // Central container for Timers that don't belong to other containers
 };
 

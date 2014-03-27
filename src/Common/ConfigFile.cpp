@@ -30,6 +30,7 @@ ConfigFile::ConfigFile(const string_t &filename) :
 auto ConfigFile::handleFileNotFound(const string_t &filename) -> void {
 	std::cerr << "ERROR: Configuration file " << filename << " does not exist!" << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigFileMissing);
+	throw ConfigException("");
 }
 
 auto ConfigFile::handleKeyNotFound(const string_t &filename, const string_t &key) -> void {
@@ -37,10 +38,12 @@ auto ConfigFile::handleKeyNotFound(const string_t &filename, const string_t &key
 	std::cerr << "File: " << filename << std::endl;
 	std::cerr << "Value: " << key << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigError);
+	throw ConfigException("");
 }
 
 auto ConfigFile::handleError(const string_t &filename, const string_t &error) -> void {
 	std::cerr << "ERROR: " << error << std::endl;
 	std::cerr << "File: " << filename << std::endl;
 	ExitCodes::exit(ExitCodes::ConfigError);
+	throw ConfigException("");
 }

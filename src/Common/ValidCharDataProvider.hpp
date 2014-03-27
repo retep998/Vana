@@ -65,7 +65,6 @@ enum class ValidItemType {
 };
 
 class ValidCharDataProvider {
-	SINGLETON(ValidCharDataProvider);
 public:
 	auto loadData() -> void;
 

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 enum class VersionCheckResult {
 	FullyUpdated,
 	NeedsUpdate,
+	DatabaseUnavailable,
 };
 
 class DatabaseUpdater {
@@ -42,5 +43,6 @@ private:
 	size_t m_fileVersion = 0;
 	size_t m_sqlVersion = 0;
 	bool m_update = false;
+	bool m_dbAvailable = false;
 	ord_map_t<int32_t, string_t> m_sqlFiles;
 };

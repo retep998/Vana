@@ -32,11 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <utility>
 
-auto ItemDataProvider::loadData() -> void {
+auto ItemDataProvider::loadData(BuffDataProvider &provider) -> void {
 	std::cout << std::setw(Initializing::OutputWidth) << std::left << "Initializing Items... ";
 
 	loadItems();
-	loadConsumes();
+	loadConsumes(provider);
 	loadMultiMorphs();
 	loadMapRanges();
 	loadScrolls();
@@ -124,7 +124,7 @@ auto ItemDataProvider::loadScrolls() -> void {
 	}
 }
 
-auto ItemDataProvider::loadConsumes() -> void {
+auto ItemDataProvider::loadConsumes(BuffDataProvider &provider) -> void {
 	m_consumeInfo.clear();
 
 	soci::rowset<> rs = (Database::getDataDb().prepare << "SELECT * FROM " << Database::makeDataTable("item_consume_data"));
@@ -202,7 +202,7 @@ auto ItemDataProvider::loadConsumes() -> void {
 			else if (cmp == "weakness") item.ailment |= 0x10;
 		});
 
-		BuffDataProvider::getInstance().addItemInfo(itemId, item);
+		provider.addItemInfo(itemId, item);
 		m_consumeInfo[itemId] = item;
 	}
 }
@@ -355,7 +355,7 @@ auto ItemDataProvider::getMobId(item_id_t cardId) const -> mob_id_t {
 	return kvp->second;
 }
 
-auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
+auto ItemDataProvider::scrollItem(const EquipDataProvider &provider, item_id_t scrollId, Item *equip, bool whiteScroll, bool gmScroller, int8_t &succeed, bool &cursed) const -> void {
 	if (m_scrollInfo.find(scrollId) == std::end(m_scrollInfo)) {
 		return;
 	}
@@ -379,7 +379,7 @@ auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScr
 		if (equip->getSlots() > 0) {
 			succeed = 0;
 			if (gmScroller || Randomizer::rand<uint16_t>(99) < itemInfo.success) {
-				EquipDataProvider::getInstance().setEquipStats(equip, Items::StatVariance::ChaosNormal, gmScroller, false);
+				provider.setEquipStats(equip, Items::StatVariance::ChaosNormal, gmScroller, false);
 
 				equip->incScrolls();
 				succeed = 1;
@@ -388,8 +388,8 @@ auto ItemDataProvider::scrollItem(item_id_t scrollId, Item *equip, bool whiteScr
 	}
 	else if (itemInfo.recover > 0) {
 		// Apparently global doesn't let you use these scrolls on hammer slots
-		//int8_t maxSlots = EquipDataProvider::getInstance().getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
-		int8_t maxSlots = EquipDataProvider::getInstance().getSlots(equip->getId());
+		//int8_t maxSlots = provider.getSlots(equip->getId()) + static_cast<int8_t>(equip->getHammers());
+		int8_t maxSlots = provider.getSlots(equip->getId());
 		int8_t maxRecoverableSlots = maxSlots - equip->getScrolls();
 		int8_t recoverSlots = std::min(itemInfo.recover, maxRecoverableSlots);
 		if (recoverSlots > 0) {

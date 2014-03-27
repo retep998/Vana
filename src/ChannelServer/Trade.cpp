@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Trade.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Inventory.hpp"
 #include "InventoryPacket.hpp"
@@ -92,7 +93,7 @@ auto ActiveTrade::canTrade(Player *target, TradeInfo *unit) -> bool {
 						// Already did this item
 						continue;
 					}
-					auto itemInfo = ItemDataProvider::getInstance().getItemInfo(itemId);
+					auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(itemId);
 					slot_qty_t maxSlot = itemInfo->maxSlot;
 					int32_t currentAmount = target->getInventory()->getItemAmount(itemId);
 					int32_t lastSlot = (currentAmount % maxSlot); // Get the number of items in the last slot
@@ -238,9 +239,9 @@ auto ActiveTrade::addItem(Player *holder, TradeInfo *unit, Item *item, trade_slo
 }
 
 auto ActiveTrade::getSender() -> Player * {
-	return PlayerDataProvider::getInstance().getPlayer(m_senderId);
+	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_senderId);
 }
 
 auto ActiveTrade::getReceiver() -> Player * {
-	return PlayerDataProvider::getInstance().getPlayer(m_receiverId);
+	return ChannelServer::getInstance().getPlayerDataProvider().getPlayer(m_receiverId);
 }

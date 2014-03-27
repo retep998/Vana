@@ -122,7 +122,6 @@
     <ClCompile Include="src\LoginServer\LoginServerAcceptConnection.cpp" />
     <ClCompile Include="src\LoginServer\LoginServerAcceptPacket.cpp" />
     <ClCompile Include="src\LoginServer\LoginServerAcceptHandler.cpp" />
-    <ClCompile Include="src\LoginServer\InitializeLogin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LoginServer\Channel.hpp" />
@@ -138,7 +137,6 @@
     <ClInclude Include="src\LoginServer\UserConnection.hpp" />
     <ClInclude Include="src\LoginServer\World.hpp" />
     <ClInclude Include="src\LoginServer\Worlds.hpp" />
-    <ClInclude Include="src\LoginServer\InitializeLogin.hpp" />
     <ClInclude Include="src\LoginServer\LoginServerAcceptConnection.hpp" />
     <ClInclude Include="src\LoginServer\LoginServerAcceptPacket.hpp" />
     <ClInclude Include="src\LoginServer\LoginServerAcceptHandler.hpp" />

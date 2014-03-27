@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "PlayerMonsterBook.hpp"
+#include "ChannelServer.hpp"
 #include "Database.hpp"
 #include "GameConstants.hpp"
 #include "GameLogicUtilities.hpp"
@@ -108,7 +109,7 @@ auto PlayerMonsterBook::addCard(int32_t cardId, uint8_t level, bool initialLoad)
 }
 
 auto PlayerMonsterBook::connectData(PacketBuilder &packet) -> void {
-	packet.add<int32_t>(getCover() != 0 ? ItemDataProvider::getInstance().getCardId(getCover()) : 0);
+	packet.add<int32_t>(getCover() != 0 ? ChannelServer::getInstance().getItemDataProvider().getCardId(getCover()) : 0);
 	packet.add<int8_t>(0);
 
 	packet.add<uint16_t>(m_cards.size());

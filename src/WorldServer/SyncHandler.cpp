@@ -35,9 +35,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		case Sync::SyncTypes::Player: PlayerDataProvider::getInstance().handlePlayerSync(connection, reader); break;
-		case Sync::SyncTypes::Party: PlayerDataProvider::getInstance().handlePartySync(connection, reader); break;
-		case Sync::SyncTypes::Buddy: PlayerDataProvider::getInstance().handleBuddySync(connection, reader); break;
+		case Sync::SyncTypes::Player: WorldServer::getInstance().getPlayerDataProvider().handlePlayerSync(connection, reader); break;
+		case Sync::SyncTypes::Party: WorldServer::getInstance().getPlayerDataProvider().handlePartySync(connection, reader); break;
+		case Sync::SyncTypes::Buddy: WorldServer::getInstance().getPlayerDataProvider().handleBuddySync(connection, reader); break;
 	}
 }
 

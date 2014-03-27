@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <unordered_map>
 
 class EquipDataProvider {
-	SINGLETON(EquipDataProvider);
 public:
 	auto loadData() -> void;
 

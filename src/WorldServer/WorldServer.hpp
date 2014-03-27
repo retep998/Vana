@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "AbstractServer.hpp"
+#include "Channels.hpp"
 #include "ConfigFile.hpp"
 #include "Configuration.hpp"
 #include "Ip.hpp"
 #include "LoginServerConnection.hpp"
+#include "PlayerDataProvider.hpp"
 #include "Types.hpp"
 #include "WorldServerAcceptConnection.hpp"
 #include <string>
@@ -29,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class PacketBuilder;
 
 class WorldServer final : public AbstractServer {
-	SINGLETON_CUSTOM_CONSTRUCTOR(WorldServer);
+	SINGLETON(WorldServer);
 public:
 	auto shutdown() -> void override;
 	auto establishedLoginConnection(world_id_t worldId, port_t port, const WorldConfig &conf) -> void;
@@ -37,14 +39,16 @@ public:
 	auto setScrollingHeader(const string_t &message) -> void;
 	auto setRates(const Rates &rates) -> void;
 	auto resetRates() -> void;
+	auto getPlayerDataProvider() -> PlayerDataProvider &;
+	auto getChannels() -> Channels &;
 	auto isConnected() const -> bool;
 	auto getWorldId() const -> world_id_t;
 	auto makeChannelPort(channel_id_t channelId) const -> port_t;
 	auto getConfig() -> const WorldConfig &;
 	auto sendLogin(const PacketBuilder &builder) -> void;
 protected:
-	auto listen() -> void override;
-	auto loadData() -> void override;
+	auto listen() -> void;
+	auto loadData() -> Result override;
 	auto makeLogIdentifier() const -> opt_string_t override;
 	auto getLogPrefix() const -> string_t override;
 private:
@@ -52,5 +56,7 @@ private:
 	port_t m_port = 0;
 	WorldConfig m_config;
 	Rates m_defaultRates;
-	LoginServerConnection *m_loginConnection = nullptr;
+	LoginServerConnection *m_loginConnection;
+	PlayerDataProvider m_playerDataProvider;
+	Channels m_channels;
 };

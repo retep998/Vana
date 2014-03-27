@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "Npc.hpp"
+#include "ChannelServer.hpp"
 #include "FileUtilities.hpp"
 #include "LuaNpc.hpp"
 #include "NpcPacket.hpp"
@@ -50,19 +51,19 @@ Npc::Npc(npc_id_t npcId, Player *player, const string_t &script) :
 auto Npc::hasScript(int32_t npcId, quest_id_t questId, bool start) -> bool {
 	string_t script = "";
 	if (questId == 0) {
-		script = ScriptDataProvider::getInstance().getScript(npcId, ScriptTypes::Npc);
+		script = ChannelServer::getInstance().getScriptDataProvider().getScript(npcId, ScriptTypes::Npc);
 	}
 	else {
-		script = ScriptDataProvider::getInstance().getQuestScript(questId, (start ? 0 : 1));
+		script = ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, (start ? 0 : 1));
 	}
 	return FileUtilities::fileExists(script);
 }
 
 auto Npc::getScript(quest_id_t questId, bool start) -> string_t {
 	if (questId == 0) {
-		return ScriptDataProvider::getInstance().getScript(m_npcId, ScriptTypes::Npc);
+		return ChannelServer::getInstance().getScriptDataProvider().getScript(m_npcId, ScriptTypes::Npc);
 	}
-	return ScriptDataProvider::getInstance().getQuestScript(questId, (start ? 0 : 1));
+	return ChannelServer::getInstance().getScriptDataProvider().getQuestScript(questId, (start ? 0 : 1));
 }
 
 auto Npc::initScript(const string_t &filename) -> void {

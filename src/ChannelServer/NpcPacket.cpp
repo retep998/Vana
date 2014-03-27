@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "NpcPacket.hpp"
+#include "ChannelServer.hpp"
 #include "ItemDataProvider.hpp"
 #include "Maps.hpp"
 #include "PacketReader.hpp"
@@ -123,7 +124,7 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
 		else {
 			builder.add<slot_qty_t>(item->quantity);
 		}
-		auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->itemId);
+		auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->itemId);
 		slot_qty_t maxSlot = itemInfo->maxSlot;
 		if (GameLogicUtilities::isRechargeable(item->itemId)) {
 			maxSlot += rechargeableBonus;
@@ -138,7 +139,7 @@ PACKET_IMPL(showShop, const BuiltShopInfo &shop, slot_qty_t rechargeableBonus) {
 				.add<item_id_t>(kvp.first)
 				.add<int32_t>(0)
 				.add<double>(kvp.second)
-				.add<slot_qty_t>(ItemDataProvider::getInstance().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
+				.add<slot_qty_t>(ChannelServer::getInstance().getItemDataProvider().getItemInfo(kvp.first)->maxSlot + rechargeableBonus);
 		}
 	}
 

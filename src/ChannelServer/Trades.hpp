@@ -27,8 +27,8 @@ class ActiveTrade;
 class Player;
 
 class Trades : public TimerContainerHolder {
-	SINGLETON_CUSTOM_CONSTRUCTOR(Trades);
 public:
+	Trades();
 	auto newTrade(Player *start, Player *recv) -> trade_id_t;
 	auto removeTrade(trade_id_t id) -> void;
 	auto stopTimeout(trade_id_t id) -> void;

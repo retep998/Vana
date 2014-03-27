@@ -15,13 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "InitializeLogin.hpp"
-#include "EquipDataProvider.hpp"
-#include "CurseDataProvider.hpp"
-#include "ValidCharDataProvider.hpp"
+#pragma once
 
-auto Initializing::loadData() -> void {
-	EquipDataProvider::getInstance().loadData();
-	ValidCharDataProvider::getInstance().loadData();
-	CurseDataProvider::getInstance().loadData();
+#include "VanaMain.hpp"
+
+namespace Vana {
+
+exit_code_t exitCode = ExitCodes::Ok;
+
 }

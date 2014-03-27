@@ -166,7 +166,6 @@
     <ClCompile Include="src\ChannelServer\TradesPacket.cpp" />
     <ClCompile Include="src\ChannelServer\BuffsPacketHelper.cpp" />
     <ClCompile Include="src\ChannelServer\PlayerPacketHelper.cpp" />
-    <ClCompile Include="src\ChannelServer\InitializeChannel.cpp" />
     <ClCompile Include="src\ChannelServer\MapDataProvider.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnection.cpp" />
     <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp" />
@@ -268,7 +267,6 @@
     <ClInclude Include="src\ChannelServer\TradesPacket.hpp" />
     <ClInclude Include="src\ChannelServer\BuffsPacketHelper.hpp" />
     <ClInclude Include="src\ChannelServer\PlayerPacketHelper.hpp" />
-    <ClInclude Include="src\ChannelServer\InitializeChannel.hpp" />
     <ClInclude Include="src\ChannelServer\MapDataProvider.hpp" />
     <ClInclude Include="src\ChannelServer\WorldServerConnection.hpp" />
     <ClInclude Include="src\ChannelServer\WorldServerConnectPacket.hpp" />

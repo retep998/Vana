@@ -49,7 +49,6 @@
       <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
     <ClCompile Include="src\WorldServer\main_world.cpp" />
-    <ClCompile Include="src\WorldServer\InitializeWorld.cpp" />
     <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp" />
     <ClCompile Include="src\WorldServer\WorldServer.cpp" />
   </ItemGroup>
@@ -84,7 +83,6 @@
     <ClInclude Include="src\WorldServer\SyncPacket.hpp">
       <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
-    <ClInclude Include="src\WorldServer\InitializeWorld.hpp" />
     <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\WorldServer\WorldServer.hpp" />
   </ItemGroup>

@@ -38,8 +38,8 @@ WorldServerAcceptConnection::~WorldServerAcceptConnection() {
 			if (WorldServer::getInstance().isConnected()) {
 				WorldServer::getInstance().sendLogin(LoginServerConnectPacket::removeChannel(m_channel));
 			}
-			PlayerDataProvider::getInstance().channelDisconnect(m_channel);
-			Channels::getInstance().removeChannel(m_channel);
+			WorldServer::getInstance().getPlayerDataProvider().channelDisconnect(m_channel);
+			WorldServer::getInstance().getChannels().removeChannel(m_channel);
 
 			WorldServer::getInstance().log(LogType::ServerDisconnect, [&](out_stream_t &log) { log << "Channel " << static_cast<int32_t>(m_channel); });
 		}
@@ -55,42 +55,42 @@ auto WorldServerAcceptConnection::handleRequest(PacketReader &reader) -> void {
 		case IMSG_TO_LOGIN: WorldServer::getInstance().sendLogin(Packets::identity(reader)); break;
 		case IMSG_TO_PLAYER: {
 			player_id_t playerId = reader.get<player_id_t>();
-			PlayerDataProvider::getInstance().send(playerId, Packets::identity(reader));
+			WorldServer::getInstance().getPlayerDataProvider().send(playerId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_PLAYER_LIST: {
 			vector_t<player_id_t> playerIds = reader.get<vector_t<player_id_t>>();
-			PlayerDataProvider::getInstance().send(playerIds, Packets::identity(reader));
+			WorldServer::getInstance().getPlayerDataProvider().send(playerIds, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_PLAYERS: PlayerDataProvider::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_PLAYERS: WorldServer::getInstance().getPlayerDataProvider().send(Packets::identity(reader)); break;
 		case IMSG_TO_CHANNEL: {
 			channel_id_t channelId = reader.get<channel_id_t>();
-			Channels::getInstance().send(channelId, Packets::identity(reader));
+			WorldServer::getInstance().getChannels().send(channelId, Packets::identity(reader));
 			break;
 		}
 		case IMSG_TO_CHANNEL_LIST: {
 			vector_t<channel_id_t> channels = reader.get<vector_t<channel_id_t>>();
-			Channels::getInstance().send(channels, Packets::identity(reader));
+			WorldServer::getInstance().getChannels().send(channels, Packets::identity(reader));
 			break;
 		}
-		case IMSG_TO_ALL_CHANNELS: Channels::getInstance().send(Packets::identity(reader)); break;
+		case IMSG_TO_ALL_CHANNELS: WorldServer::getInstance().getChannels().send(Packets::identity(reader)); break;
 	}
 }
 
 auto WorldServerAcceptConnection::authenticated(ServerType type) -> void {
 	if (type == ServerType::Channel) {
-		m_channel = Channels::getInstance().getFirstAvailableChannelId();
+		m_channel = WorldServer::getInstance().getChannels().getFirstAvailableChannelId();
 		if (m_channel != -1) {
 			port_t port = WorldServer::getInstance().makeChannelPort(m_channel);
 			const IpMatrix &ips = getExternalIps();
-			Channels::getInstance().registerChannel(this, m_channel, getIp(), ips, port);
+			WorldServer::getInstance().getChannels().registerChannel(this, m_channel, getIp(), ips, port);
 
 			send(WorldServerAcceptPacket::connect(m_channel, port));
 
 			// TODO FIXME packet - a more elegant way to do this?
 			send(SyncPacket::sendSyncData([](PacketBuilder &builder) {
-				PlayerDataProvider::getInstance().getChannelConnectPacket(builder);
+				WorldServer::getInstance().getPlayerDataProvider().getChannelConnectPacket(builder);
 			}));
 			
 			WorldServer::getInstance().sendLogin(LoginServerConnectPacket::registerChannel(m_channel, getIp(), ips, port));

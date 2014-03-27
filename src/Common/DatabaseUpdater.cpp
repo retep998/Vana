@@ -43,6 +43,9 @@ DatabaseUpdater::DatabaseUpdater(bool update) :
 }
 
 auto DatabaseUpdater::checkVersion() -> VersionCheckResult {
+	if (!m_dbAvailable) {
+		return VersionCheckResult::DatabaseUnavailable;
+	}
 	return m_sqlVersion <= m_fileVersion ? VersionCheckResult::FullyUpdated : VersionCheckResult::NeedsUpdate;
 }
 
@@ -69,6 +72,14 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 
 	try {
 		soci::session &sql = Database::getCharDb();
+		m_dbAvailable = true;
+	}
+	catch (soci::soci_error &) {
+		return;
+	}
+
+	try {
+		soci::session &sql = Database::getCharDb();
 		sql.once
 			<< "SELECT version "
 			<< "FROM " << Database::makeCharTable("vana_info"),
@@ -76,7 +87,7 @@ auto DatabaseUpdater::loadDatabaseInfo() -> void {
 
 		retrievedData = sql.got_data();
 	}
-	catch (soci::soci_error) { }
+	catch (soci::soci_error &) { }
 
 	if (!retrievedData) {
 		if (m_update) {
@@ -98,6 +109,7 @@ auto DatabaseUpdater::loadSqlFiles() -> void {
 		std::cerr << "SQL files not found: " << fullPath.generic_string() << std::endl;
 #endif
 		ExitCodes::exit(ExitCodes::SqlDirectoryNotFound);
+		return;
 	}
 
 	fs::directory_iterator end;
@@ -156,6 +168,7 @@ auto DatabaseUpdater::runQueries(const string_t &filename) -> void {
 			std::cerr << "\nQUERY ERROR: " << e.what() << std::endl;
 			std::cerr << "File: " << filename << std::endl;
 			ExitCodes::exit(ExitCodes::QueryError);
+			break;
 		}
 	}
 }

@@ -16,6 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "TradeHandler.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "ItemDataProvider.hpp"
 #include "MapleVersion.hpp"
@@ -64,10 +65,10 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 				return;
 			}
 			player_id_t recvId = reader.get<player_id_t>();
-			Player *receiver = PlayerDataProvider::getInstance().getPlayer(recvId);
+			Player *receiver = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(recvId);
 			if (receiver != nullptr) {
 				if (!receiver->isTrading()) {
-					receiver->send(TradesPacket::sendTradeRequest(player->getName(), Trades::getInstance().newTrade(player, receiver)));
+					receiver->send(TradesPacket::sendTradeRequest(player->getName(), ChannelServer::getInstance().getTrades().newTrade(player, receiver)));
 				}
 				else {
 					player->send(TradesPacket::sendTradeMessage(receiver->getName(), TradesPacket::MessageTypes::DenyTrade, TradesPacket::Messages::DoingSomethingElse));
@@ -77,7 +78,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 		}
 		case TradeOpcodes::DenyRequest: {
 			trade_id_t tradeId = reader.get<trade_id_t>();
-			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
+			ActiveTrade *trade = ChannelServer::getInstance().getTrades().getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
@@ -88,14 +89,14 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 		}
 		case TradeOpcodes::AcceptRequest: {
 			trade_id_t tradeId = reader.get<trade_id_t>();
-			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
+			ActiveTrade *trade = ChannelServer::getInstance().getTrades().getTrade(tradeId);
 			if (trade != nullptr) {
 				Player *one = trade->getSender();
 				Player *two = trade->getReceiver();
 				two->setTrading(true);
 				one->send(TradesPacket::sendAddUser(two, TradeSlots::Two));
 				player->send(TradesPacket::sendOpenTrade(two, one));
-				Trades::getInstance().stopTimeout(tradeId);
+				ChannelServer::getInstance().getTrades().stopTimeout(tradeId);
 			}
 			else {
 				player->send(TradesPacket::sendTradeEntryMessage(TradesPacket::Messages::RoomAlreadyClosed));
@@ -103,7 +104,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 			break;
 		}
 		case TradeOpcodes::Chat: {
-			ActiveTrade *trade = Trades::getInstance().getTrade(player->getTradeId());
+			ActiveTrade *trade = ChannelServer::getInstance().getTrades().getTrade(player->getTradeId());
 			if (trade == nullptr) {
 				// Hacking
 				return;
@@ -125,7 +126,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 		case TradeOpcodes::AddMesos:
 		case TradeOpcodes::AcceptTrade: {
 			trade_id_t tradeId = player->getTradeId();
-			ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
+			ActiveTrade *trade = ChannelServer::getInstance().getTrades().getTrade(tradeId);
 			if (trade == nullptr) {
 				// Most likely hacking
 				return;
@@ -148,7 +149,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 						return;
 					}
 
-					auto itemInfo = ItemDataProvider::getInstance().getItemInfo(item->getId());
+					auto itemInfo = ChannelServer::getInstance().getItemDataProvider().getItemInfo(item->getId());
 					if ((itemInfo->quest || itemInfo->noTrade) && !(itemInfo->karmaScissors || item->hasKarma())) {
 						// Hacking
 						return;
@@ -209,7 +210,7 @@ auto TradeHandler::tradeHandler(Player *player, PacketReader &reader) -> void {
 
 auto TradeHandler::cancelTrade(Player *player) -> void {
 	trade_id_t tradeId = player->getTradeId();
-	ActiveTrade *trade = Trades::getInstance().getTrade(tradeId);
+	ActiveTrade *trade = ChannelServer::getInstance().getTrades().getTrade(tradeId);
 	if (trade != nullptr) {
 		Player *one = trade->getSender();
 		Player *two = trade->getReceiver();
@@ -224,7 +225,7 @@ auto TradeHandler::cancelTrade(Player *player) -> void {
 }
 
 auto TradeHandler::removeTrade(trade_id_t id) -> void {
-	Trades::getInstance().removeTrade(id);
+	ChannelServer::getInstance().getTrades().removeTrade(id);
 }
 
 auto TradeHandler::getTaxLevel(mesos_t mesos) -> int32_t {

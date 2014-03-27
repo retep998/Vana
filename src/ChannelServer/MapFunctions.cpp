@@ -345,9 +345,9 @@ auto MapFunctions::summon(Player *player, const string_t &args) -> ChatResult {
 	if (ChatHandlerFunctions::runRegexPattern(args, R"((\d+) ?(\d+)?)", matches) == MatchResult::AnyMatches) {
 		string_t rawMobId = matches[1];
 		mob_id_t mobId = atoi(rawMobId.c_str());
-		if (MobDataProvider::getInstance().mobExists(mobId)) {
+		if (ChannelServer::getInstance().getMobDataProvider().mobExists(mobId)) {
 			string_t countString = matches[2];
-			int32_t count = ext::constrain_range(countString.empty() ? 1 : atoi(countString.c_str()), 1, 100);
+			int32_t count = ext::constrain_range(countString.empty() ? 1 : atoi(countString.c_str()), 1, 1000);
 			for (int32_t i = 0; i < count; ++i) {
 				player->getMap()->spawnMob(mobId, player->getPos());
 			}

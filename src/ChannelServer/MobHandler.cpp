@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "MobHandler.hpp"
 #include "Algorithm.hpp"
+#include "ChannelServer.hpp"
 #include "GameLogicUtilities.hpp"
 #include "Instance.hpp"
 #include "Maps.hpp"
@@ -132,7 +133,7 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 
 	if (isAttack || isSkill) {
 		if (isAttack) {
-			auto attack = MobDataProvider::getInstance().getMobAttack(mob->getMobIdOrLink(), attackId);
+			auto attack = ChannelServer::getInstance().getMobDataProvider().getMobAttack(mob->getMobIdOrLink(), attackId);
 			if (attack == nullptr) {
 				// Hacking
 				return;
@@ -162,10 +163,10 @@ auto MobHandler::monsterControl(Player *player, PacketReader &reader) -> void {
 }
 
 auto MobHandler::handleMobStatus(player_id_t playerId, ref_ptr_t<Mob> mob, skill_id_t skillId, skill_level_t level, item_id_t weapon, int8_t hits, damage_t damage) -> int32_t {
-	Player *player = PlayerDataProvider::getInstance().getPlayer(playerId);
+	Player *player = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(playerId);
 	vector_t<StatusInfo> statuses;
 	int16_t y = 0;
-	auto skill = SkillDataProvider::getInstance().getSkill(skillId, level);
+	auto skill = ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level);
 	bool success = (skillId == 0 ? false : (Randomizer::rand<uint16_t>(99) < skill->prop));
 	if (mob->canFreeze()) {
 		// Freezing stuff

@@ -256,11 +256,12 @@ auto MapDataProvider::loadMapTimeMob(Map *map) -> void {
 	}
 }
 
-auto MapDataProvider::getContinent(map_id_t mapId) -> int8_t {
+auto MapDataProvider::getContinent(map_id_t mapId) const -> int8_t {
 	int8_t cluster = GameLogicUtilities::getMapCluster(mapId);
-	if (m_continents.find(cluster) == std::end(m_continents)) {
+	auto kvp = m_continents.find(cluster);
+	if (kvp == std::end(m_continents)) {
 		std::cerr << "Attempted to get a continent ID that does not exist for map ID " << mapId << std::endl;
 		return 0;
 	}
-	return m_continents[cluster];
+	return kvp->second;
 }

@@ -21,10 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 
 namespace Initializing {
-	auto checkSchemaVersion(bool update = false) -> void;
-	auto checkMcdbVersion() -> void;
+	auto checkSchemaVersion(bool update = false) -> Result;
+	auto checkMcdbVersion() -> Result;
 	auto setUsersOffline(int32_t onlineId) -> void;
-	auto makeLocale(const string_t &locale, bool testServer) -> string_t;
 
 	const int32_t OutputWidth = 27;
 	const int32_t McdbVersion = 4;
