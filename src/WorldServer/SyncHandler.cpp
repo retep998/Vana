@@ -33,11 +33,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WorldServerAcceptPacket.hpp"
 
 auto SyncHandler::handle(AbstractConnection *connection, PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
+	sync_t type = reader.get<sync_t>();
+	switch (type) {
 		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		case Sync::SyncTypes::Player: WorldServer::getInstance().getPlayerDataProvider().handlePlayerSync(connection, reader); break;
-		case Sync::SyncTypes::Party: WorldServer::getInstance().getPlayerDataProvider().handlePartySync(connection, reader); break;
-		case Sync::SyncTypes::Buddy: WorldServer::getInstance().getPlayerDataProvider().handleBuddySync(connection, reader); break;
+		default: WorldServer::getInstance().getPlayerDataProvider().handleSync(connection, type, reader); break;
 	}
 }
 

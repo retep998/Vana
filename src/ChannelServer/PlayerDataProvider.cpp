@@ -67,6 +67,15 @@ auto PlayerDataProvider::sendSync(const PacketBuilder &packet) const -> void {
 	ChannelServer::getInstance().sendWorld(packet);
 }
 
+auto PlayerDataProvider::handleSync(sync_t type, PacketReader &reader) -> void {
+	switch (type) {
+		case Sync::SyncTypes::ChannelStart: parseChannelConnectPacket(reader); break;
+		case Sync::SyncTypes::Player: handlePlayerSync(reader); break;
+		case Sync::SyncTypes::Party: handlePartySync(reader); break;
+		case Sync::SyncTypes::Buddy: handleBuddySync(reader); break;
+	}
+}
+
 // Players
 auto PlayerDataProvider::addPlayerData(const PlayerData &data) -> void {
 	m_playerData[data.id] = data;
@@ -337,8 +346,10 @@ auto PlayerDataProvider::handlePartySync(PacketReader &reader) -> void {
 
 auto PlayerDataProvider::handleBuddySync(PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
-		case Sync::Buddy::Invite: PlayerDataProvider::buddyInvite(reader); break;
-		case Sync::Buddy::OnlineOffline: PlayerDataProvider::buddyOnlineOffline(reader); break;
+		case Sync::Buddy::Invite: buddyInvite(reader); break;
+		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
+		case Sync::Buddy::RemoveBuddy: removeBuddy(reader); break;
+		case Sync::Buddy::ReaddBuddy: readdBuddy(reader); break;
 	}
 }
 
@@ -389,17 +400,22 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
 
 	update_bits_t flags = reader.get<update_bits_t>();
 	bool updateParty = false;
+	bool updateBuddies = false;
 	bool updateGuild = false;
 	bool updateAlliance = false;
 	auto oldJob = player.job;
 	auto oldLevel = player.level;
 	auto oldMap = player.map;
 	auto oldChannel = player.channel;
+	auto oldCash = player.cashShop;
+	auto oldMts = player.mts;
 
 	if (flags & Sync::Player::UpdateBits::Full) {
 		updateParty = true;
 		updateGuild = true;
 		updateAlliance = true;
+		updateBuddies = true;
+
 		PlayerData data = reader.get<PlayerData>();
 		player.copyFrom(data);
 		if (data.gmLevel > 0 || data.admin) {
@@ -425,9 +441,13 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
 			player.map = reader.get<map_id_t>();
 			updateParty = true;
 		}
+		if (flags & Sync::Player::UpdateBits::Transfer) {
+			player.transferring = reader.get<bool>();
+		}
 		if (flags & Sync::Player::UpdateBits::Channel) {
-			player.channel = reader.get<channel_id_t>();
+			player.channel = reader.get<optional_t<channel_id_t>>();
 			updateParty = true;
+			updateBuddies = true;
 		}
 		if (flags & Sync::Player::UpdateBits::Ip) {
 			player.ip = reader.get<Ip>();
@@ -435,16 +455,34 @@ auto PlayerDataProvider::handleUpdatePlayer(PacketReader &reader) -> void {
 		if (flags & Sync::Player::UpdateBits::Cash) {
 			player.cashShop = reader.get<bool>();
 			updateParty = true;
+			updateBuddies = true;
+		}
+		if (flags & Sync::Player::UpdateBits::Mts) {
+			player.mts = reader.get<bool>();
+			updateParty = true;
+			updateBuddies = true;
 		}
 	}
 
-	bool actuallyUpdated = oldJob != player.job ||
+	bool actuallyUpdated =
+		oldJob != player.job ||
 		oldLevel != player.level ||
 		oldMap != player.map ||
-		oldChannel != player.channel;
+		oldChannel != player.channel ||
+		oldCash != player.cashShop ||
+		oldMts != player.mts;
 
-	if (actuallyUpdated && updateParty && player.party != 0) {
-		getParty(player.party)->silentUpdate();
+	if (actuallyUpdated && !player.transferring) {
+		if (updateParty && player.party != 0) {
+			getParty(player.party)->silentUpdate();
+		}
+		if (updateBuddies && player.mutualBuddies.size() > 0) {
+			for (auto playerId : player.mutualBuddies) {
+				if (Player *listPlayer = getPlayer(playerId)) {
+					listPlayer->send(BuddyListPacket::online(player.id, player.channel.get(-1), player.cashShop));
+				}
+			}
+		}
 	}
 }
 
@@ -535,17 +573,48 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 	}
 }
 
-auto PlayerDataProvider::buddyOnlineOffline(PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>(); // The id of the player coming online
-	channel_id_t channel = reader.get<channel_id_t>();
-	vector_t<player_id_t> players = reader.get<vector_t<player_id_t>>(); // Holds the buddy IDs
+auto PlayerDataProvider::acceptBuddyInvite(PacketReader &reader) -> void {
+	player_id_t inviteeId = reader.get<player_id_t>();
+	player_id_t inviterId = reader.get<player_id_t>();
+	auto &invitee = m_playerData[inviteeId];
+	auto &inviter = m_playerData[inviterId];
 
-	for (size_t i = 0; i < players.size(); i++) {
-		if (Player *player = getPlayer(players[i])) {
-			if (ref_ptr_t<Buddy> ptr = player->getBuddyList()->getBuddy(playerId)) {
-				ptr->channel = channel;
-				player->send(BuddyListPacket::online(playerId, channel));
-			}
-		}
+	invitee.mutualBuddies.push_back(inviterId);
+	inviter.mutualBuddies.push_back(inviteeId);
+
+	if (Player *player = getPlayer(inviterId)) {
+		player->send(BuddyListPacket::online(inviteeId, invitee.channel.get(-1), invitee.cashShop));
+		player->getBuddyList()->buddyAccepted(inviteeId);
+	}
+	if (Player *player = getPlayer(inviteeId)) {
+		player->send(BuddyListPacket::online(inviterId, inviter.channel.get(-1), inviter.cashShop));
+	}
+}
+
+auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
+	player_id_t listOwnerId = reader.get<player_id_t>();
+	player_id_t removalId = reader.get<player_id_t>();
+	auto &listOwner = m_playerData[listOwnerId];
+	auto &removal = m_playerData[removalId];
+
+	ext::remove_element(listOwner.mutualBuddies, removalId);
+	ext::remove_element(removal.mutualBuddies, listOwnerId);
+
+	if (Player *player = getPlayer(removal.id)) {
+		player->send(BuddyListPacket::online(listOwner.id, -1, false));
+	}
+}
+
+auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
+	player_id_t listOwnerId = reader.get<player_id_t>();
+	player_id_t buddyId = reader.get<player_id_t>();
+	auto &listOwner = m_playerData[listOwnerId];
+	auto &buddy = m_playerData[buddyId];
+
+	listOwner.mutualBuddies.push_back(buddyId);
+	buddy.mutualBuddies.push_back(listOwnerId);
+
+	if (Player *player = getPlayer(buddyId)) {
+		player->getBuddyList()->buddyAccepted(listOwnerId);
 	}
 }

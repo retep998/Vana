@@ -24,9 +24,6 @@
     <ClCompile Include="src\WorldServer\Channel.cpp">
       <Filter>WorldServer</Filter>
     </ClCompile>
-    <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp">
-      <Filter>WorldServer</Filter>
-    </ClCompile>
     <ClCompile Include="src\WorldServer\LoginServerConnectHandler.cpp">
       <Filter>Inter-Server\Login</Filter>
     </ClCompile>
@@ -51,15 +48,15 @@
     <ClCompile Include="src\WorldServer\main_world.cpp" />
     <ClCompile Include="src\WorldServer\PrecompiledHeader.cpp" />
     <ClCompile Include="src\WorldServer\WorldServer.cpp" />
+    <ClCompile Include="src\WorldServer\PlayerDataProvider.cpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\WorldServer\Channel.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\Channels.hpp">
-      <Filter>WorldServer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp">
       <Filter>WorldServer</Filter>
     </ClInclude>
     <ClInclude Include="src\WorldServer\WorldServerAcceptConnection.hpp">
@@ -85,5 +82,8 @@
     </ClInclude>
     <ClInclude Include="src\WorldServer\PrecompiledHeader.hpp" />
     <ClInclude Include="src\WorldServer\WorldServer.hpp" />
+    <ClInclude Include="src\WorldServer\PlayerDataProvider.hpp">
+      <Filter>Inter-Server\Sync</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

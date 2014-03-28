@@ -76,14 +76,14 @@ PACKET_IMPL(invitation, const BuddyInvite &invite) {
 	return builder;
 }
 
-PACKET_IMPL(online, player_id_t charId, channel_id_t channel) {
+PACKET_IMPL(online, player_id_t charId, channel_id_t channel, bool cashShop) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_BUDDY)
-		.add<int8_t>(0x14)
+		.add<int8_t>(ActionTypes::Logon)
 		.add<player_id_t>(charId)
 		.add<int8_t>(0)
-		.add<int32_t>(channel);
+		.add<int32_t>(cashShop ? 20 : channel);
 	return builder;
 }
 

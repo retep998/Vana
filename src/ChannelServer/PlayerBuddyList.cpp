@@ -80,7 +80,7 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 	soci::row row;
 
 	sql.once
-		<< "SELECT c.character_id, c.name, u.gm_level, c.buddylist_size AS buddylist_limit, ("
+		<< "SELECT c.character_id, c.name, u.gm_level, u.admin, c.buddylist_size AS buddylist_limit, ("
 		<< "	SELECT COUNT(b.id) "
 		<< "	FROM " << Database::makeCharTable("buddylist") << " b "
 		<< "	WHERE b.character_id = c.character_id"
@@ -99,6 +99,10 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 
 	if (row.get<int32_t>("gm_level") > 0 && !m_player->isGm()) {
 		// GM cannot be in buddy list unless the player is a GM
+		return BuddyListPacket::Errors::NoGms;
+	}
+
+	if (row.get<bool>("admin") && !m_player->isAdmin()) {
 		return BuddyListPacket::Errors::NoGms;
 	}
 
@@ -162,11 +166,10 @@ auto PlayerBuddyList::addBuddy(const string_t &name, const string_t &group, bool
 			}
 		}
 		else {
-			vector_t<player_id_t> idVector;
-			idVector.push_back(charId);
-			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
+			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::readdBuddy(m_player->getId(), charId));
 		}
 	}
+
 	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add));
 	return BuddyListPacket::Errors::None;
 }
@@ -184,12 +187,8 @@ auto PlayerBuddyList::removeBuddy(player_id_t charId) -> void {
 		// Hacking
 		return;
 	}
-	if (m_buddies[charId]->channel != -1) {
-		vector_t<player_id_t> idVector;
-		idVector.push_back(charId);
-		ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, false));
-	}
 
+	ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::removeBuddy(m_player->getId(), charId));
 	m_buddies.erase(charId);
 
 	Database::getCharDb().once
@@ -221,24 +220,9 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 	ref_ptr_t<Buddy> buddy = make_ref_ptr<Buddy>();
 	buddy->charId = charId;
 
-	// Note that the cache is for displaying the character name when the
-	// character in question is deleted.
-	if (!name.is_initialized()) {
-		// Buddy's character deleted
-		buddy->name = cache;
-	}
-	else {
-		buddy->name = name.get();
-	}
+	// Note that the cache is for displaying the character name when the character in question is deleted
+	buddy->name = name.get(cache);
 
-	channel_id_t channelId = -1;
-	int64_t online = row.get<int64_t>("online");
-	if (online >= 20000) {
-		online -= 20000;
-		channelId = online % 100;
-	}
-
-	buddy->channel = channelId;
 	if (!group.is_initialized()) {
 		buddy->groupName = "Default Group";
 		sql.once
@@ -272,19 +256,27 @@ auto PlayerBuddyList::addBuddy(soci::session &sql, const soci::row &row) -> void
 }
 
 auto PlayerBuddyList::addBuddies(PacketBuilder &packet) -> void {
+	auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
 	for (const auto &kvp : m_buddies) {
 		const ref_ptr_t<Buddy> &buddy = kvp.second;
+		auto data = provider.getPlayerData(buddy->charId);
+
 		packet.add<int32_t>(buddy->charId);
 		packet.add<string_t>(buddy->name, 13);
 		packet.add<uint8_t>(buddy->oppositeStatus);
+
 		if (buddy->oppositeStatus == BuddyListPacket::OppositeStatus::Unregistered) {
-			packet.add<uint16_t>(0x00);
+			packet.add<int16_t>(0x00);
 			packet.add<uint8_t>(0xF0);
 			packet.add<uint8_t>(0xB2);
 		}
-		else {
-			packet.add<int32_t>(buddy->channel);
+		else if (data == nullptr) {
+			packet.add<int32_t>(-1);
 		}
+		else {
+			packet.add<int32_t>(data->channel.get(-1));
+		}
+
 		packet.add<string_t>(buddy->groupName, 13);
 		packet.add<int8_t>(0x00);
 		packet.add<int8_t>(20); // Seems to be the amount of buddy slots for the character...
@@ -301,6 +293,11 @@ auto PlayerBuddyList::checkForPendingBuddy() -> void {
 
 	m_player->send(BuddyListPacket::invitation(m_pendingBuddies.front()));
 	m_sentRequest = true;
+}
+
+auto PlayerBuddyList::buddyAccepted(player_id_t buddyId) -> void {
+	m_buddies[buddyId]->oppositeStatus = BuddyListPacket::OppositeStatus::Registered;
+	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::Add));
 }
 
 auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void {
@@ -325,17 +322,14 @@ auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void 
 		if (error != BuddyListPacket::Errors::None) {
 			m_player->send(BuddyListPacket::error(error));
 		}
-		else {
-			vector_t<player_id_t> idVector;
-			idVector.push_back(id);
-			ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(m_player->getId(), idVector, true));
-		}
 
 		Database::getCharDb().once
 			<< "DELETE FROM " << Database::makeCharTable("buddylist_pending") << " "
 			<< "WHERE character_id = :char AND inviter_character_id = :buddy",
 			soci::use(m_player->getId(), "char"),
 			soci::use(id, "buddy");
+
+		ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::acceptBuddyInvite(m_player->getId(), id));
 	}
 
 	m_player->send(BuddyListPacket::update(m_player, BuddyListPacket::ActionTypes::First));
@@ -348,7 +342,9 @@ auto PlayerBuddyList::removePendingBuddy(player_id_t id, bool accepted) -> void 
 auto PlayerBuddyList::getBuddyIds() -> vector_t<player_id_t> {
 	vector_t<player_id_t> ids;
 	for (const auto &kvp : m_buddies) {
-		ids.push_back(kvp.second->charId);
+		if (kvp.second->oppositeStatus == BuddyListPacket::OppositeStatus::Registered) {
+			ids.push_back(kvp.second->charId);
+		}
 	}
 
 	return ids;

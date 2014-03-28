@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.hpp"
+#include "InterHelper.hpp"
 #include "Ip.hpp"
 #include "LoopingId.hpp"
 #include "PlayerObjects.hpp"
@@ -48,14 +49,17 @@ public:
 	auto send(const PacketBuilder &builder) -> void;
 
 	// Handling
-	auto handlePlayerSync(AbstractConnection *connection, PacketReader &reader) -> void;
-	auto handlePartySync(AbstractConnection *connection, PacketReader &reader) -> void;
-	auto handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void;
+	auto handleSync(AbstractConnection *connection, sync_t type, PacketReader &reader) -> void;
 private:
 	auto loadPlayers(world_id_t worldId) -> void;
 	auto loadPlayer(player_id_t playerId) -> void;
 	auto addPlayer(const PlayerData &data) -> void;
 	auto sendSync(const PacketBuilder &builder) const -> void;
+
+	// Handling
+	auto handlePlayerSync(AbstractConnection *connection, PacketReader &reader) -> void;
+	auto handlePartySync(AbstractConnection *connection, PacketReader &reader) -> void;
+	auto handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void;
 
 	// Players
 	auto removePendingPlayer(player_id_t id) -> channel_id_t;
@@ -76,7 +80,9 @@ private:
 
 	// Buddies
 	auto buddyInvite(PacketReader &reader) -> void;
-	auto buddyOnline(PacketReader &reader) -> void;
+	auto acceptBuddyInvite(PacketReader &reader) -> void;
+	auto removeBuddy(PacketReader &reader) -> void;
+	auto readdBuddy(PacketReader &reader) -> void;
 
 	LoopingId<party_id_t> m_partyIds;
 	hash_map_t<player_id_t, channel_id_t> m_channelSwitches;

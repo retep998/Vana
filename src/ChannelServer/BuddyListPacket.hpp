@@ -55,5 +55,5 @@ namespace BuddyListPacket {
 	PACKET(update, Player *player, uint8_t type);
 	PACKET(showSize, Player *player);
 	PACKET(invitation, const BuddyInvite &invite);
-	PACKET(online, player_id_t charId, channel_id_t channel);
+	PACKET(online, player_id_t charId, channel_id_t channel, bool cashShop);
 }

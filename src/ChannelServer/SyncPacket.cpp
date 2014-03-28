@@ -86,6 +86,9 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &player, update_bits_t 
 		if (flags & Sync::Player::UpdateBits::Cash) {
 			builder.add<bool>(player.cashShop);
 		}
+		if (flags & Sync::Player::UpdateBits::Mts) {
+			builder.add<bool>(player.mts);
+		}
 	}
 	return builder;
 }
@@ -171,15 +174,36 @@ PACKET_IMPL(BuddyPacket::buddyInvite, player_id_t inviterId, player_id_t invitee
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::buddyOnline, player_id_t playerId, const vector_t<player_id_t> &players, bool online) {
+PACKET_IMPL(BuddyPacket::acceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::OnlineOffline)
-		.add<player_id_t>(playerId)
-		.add<bool>(online)
-		.add<vector_t<player_id_t>>(players);
+		.add<sync_t>(Sync::Buddy::AcceptInvite)
+		.add<player_id_t>(inviteeId)
+		.add<player_id_t>(inviterId);
+	return builder;
+}
+
+PACKET_IMPL(BuddyPacket::removeBuddy, player_id_t listOwnerId, player_id_t removalId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Buddy)
+		.add<sync_t>(Sync::Buddy::RemoveBuddy)
+		.add<player_id_t>(listOwnerId)
+		.add<player_id_t>(removalId);
+	return builder;
+}
+
+PACKET_IMPL(BuddyPacket::readdBuddy, player_id_t listOwnerId, player_id_t buddyId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Buddy)
+		.add<sync_t>(Sync::Buddy::ReaddBuddy)
+		.add<player_id_t>(listOwnerId)
+		.add<player_id_t>(buddyId);
 	return builder;
 }
 
