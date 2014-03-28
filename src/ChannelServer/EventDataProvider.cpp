@@ -88,8 +88,11 @@ auto EventDataProvider::loadInstances() -> void {
 	startInstance("ariantToOrbisBoarding", nearestTen, minutes_t(10));
 	startInstance("orbisToAriantBoarding", nearestTen, minutes_t(10));
 
-	// TODO FIXME boats
-	// Implement Ereve <-> Ellinia and Ereve <-> Orbis
+	startInstance("ereveToElliniaTrip", seconds_t(0));
+	startInstance("elliniaToEreveTrip", seconds_t(0));
+
+	startInstance("ereveToOrbisTrip", seconds_t(0));
+	startInstance("orbisToEreveTrip", seconds_t(0));
 
 	std::cout << "DONE" << std::endl;
 }
@@ -110,6 +113,8 @@ auto EventDataProvider::clearInstances() -> void {
 		"leafreToOrbisBoarding", "orbisToLeafreBoarding",
 		"ariantToOrbisBoarding", "orbisToAriantBoarding",
 		"ludiToKftBoarding", "kftToLudiBoarding",
+		"ereveToElliniaTrip", "elliniaToEreveTrip",
+		"ereveToOrbisTrip", "orbisToEreveTrip",
 	};
 
 	for (const auto &instance : instances) {

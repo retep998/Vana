@@ -39,5 +39,13 @@ function getJobMeta()
 end
 
 function isCygnus()
-	return getJob() >= 1000;
+	return getJob() >= 1000 and getJob() < 2000;
+end
+
+function isLegend()
+	return getJob() >= 2000 and getJob() < 3000;
+end
+
+function isResistance()
+	return getJob() >= 3000 and getJob() < 4000;
 end
