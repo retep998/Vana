@@ -261,9 +261,6 @@
     <ClCompile Include="src\ChannelServer\PartyHandler.cpp">
       <Filter>Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
     <ClCompile Include="src\ChannelServer\WorldServerConnectPacket.cpp">
       <Filter>Inter-Server\World</Filter>
     </ClCompile>
@@ -335,6 +332,9 @@
     </ClCompile>
     <ClCompile Include="src\ChannelServer\MapleTvPacket.cpp">
       <Filter>Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelServer\PlayerDataProvider.cpp">
+      <Filter>Inter-Server\Sync</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -545,9 +545,6 @@
     <ClInclude Include="src\ChannelServer\PlayerBuddyList.hpp">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="src\ChannelServer\PlayerDataProvider.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="src\ChannelServer\PlayerInventory.hpp">
       <Filter>Player</Filter>
     </ClInclude>
@@ -632,6 +629,9 @@
     </ClInclude>
     <ClInclude Include="src\ChannelServer\MapleTvPacket.hpp">
       <Filter>Packets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChannelServer\PlayerDataProvider.hpp">
+      <Filter>Inter-Server\Sync</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -29,12 +29,12 @@ namespace PartyActions {
 		Expel = 0x05,
 		SetLeader = 0x06,
 		SilentUpdate,
-		LogInOrOut
+		LogInOrOut,
 	};
 }
 
 using sync_t = int8_t;
-using update_bits_t = uint8_t;
+using update_bits_t = uint16_t;
 namespace Sync {
 	namespace SyncTypes {
 		enum SyncTypes : sync_t {
@@ -46,14 +46,14 @@ namespace Sync {
 			Buddy,
 			Guild,
 			GuildBbs,
-			Alliance
+			Alliance,
 		};
 	}
 	namespace Config {
 		enum SyncModes : sync_t {
 			RateSet,
 			RateReset,
-			ScrollingHeader
+			ScrollingHeader,
 		};
 	}
 	namespace Player {
@@ -66,7 +66,7 @@ namespace Sync {
 			DeleteConnectable,
 			UpdatePlayer,
 			CharacterCreated,
-			CharacterDeleted
+			CharacterDeleted,
 		};
 		namespace UpdateBits {
 			enum : update_bits_t {
@@ -76,7 +76,9 @@ namespace Sync {
 				Channel = 0x08,
 				Ip = 0x10,
 				Cash = 0x20,
-				Full = 0x80,
+				Mts = 0x40,
+				Transfer = 0x80,
+				Full = 0x8000,
 			};
 		}
 	}
@@ -86,13 +88,15 @@ namespace Sync {
 			Create,
 			SwitchLeader,
 			RemoveMember,
-			AddMember
+			AddMember,
 		};
 	}
 	namespace Buddy {
 		enum SyncModes : sync_t {
 			Invite,
-			OnlineOffline
+			AcceptInvite,
+			RemoveBuddy,
+			ReaddBuddy,
 		};
 	}
 }

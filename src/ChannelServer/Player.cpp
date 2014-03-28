@@ -113,9 +113,6 @@ Player::~Player() {
 		}
 
 		if (ChannelServer::getInstance().isConnected()) {
-			if (!isChangingChannel()) {
-				ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), false));
-			}
 			// Do not connect to worldserver if the worldserver has disconnected
 			ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::disconnect(getId()));
 		}
@@ -282,25 +279,23 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	m_buddylistSize = row.get<uint8_t>("buddylist_size");
 
 	// Stats
-	m_stats.reset(
-		new PlayerStats(
-			this,
-			row.get<player_level_t>("level"),
-			row.get<job_id_t>("job"),
-			row.get<fame_t>("fame"),
-			row.get<int16_t>("str"),
-			row.get<int16_t>("dex"),
-			row.get<int16_t>("int"),
-			row.get<int16_t>("luk"),
-			row.get<int16_t>("ap"),
-			row.get<uint16_t>("hpmp_ap"),
-			row.get<int16_t>("sp"),
-			row.get<int16_t>("chp"),
-			row.get<int16_t>("mhp"),
-			row.get<int16_t>("cmp"),
-			row.get<int16_t>("mmp"),
-			row.get<experience_t>("exp")
-		)
+	m_stats = make_owned_ptr<PlayerStats>(
+		this,
+		row.get<player_level_t>("level"),
+		row.get<job_id_t>("job"),
+		row.get<fame_t>("fame"),
+		row.get<int16_t>("str"),
+		row.get<int16_t>("dex"),
+		row.get<int16_t>("int"),
+		row.get<int16_t>("luk"),
+		row.get<int16_t>("ap"),
+		row.get<uint16_t>("hpmp_ap"),
+		row.get<int16_t>("sp"),
+		row.get<int16_t>("chp"),
+		row.get<int16_t>("mhp"),
+		row.get<int16_t>("cmp"),
+		row.get<int16_t>("mmp"),
+		row.get<experience_t>("exp")
 	);
 
 	// Inventory
@@ -411,6 +406,7 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 		data.job = getStats()->getJob();
 		data.gmLevel = m_gmLevel;
 		data.name = m_name;
+		data.mutualBuddies = m_buddyList->getBuddyIds();
 	}
 
 	data.channel = ChannelServer::getInstance().getChannelId();
@@ -419,7 +415,6 @@ auto Player::playerConnect(PacketReader &reader) -> void {
 	data.ip = getIp();
 
 	ChannelServer::getInstance().sendWorld(SyncPacket::PlayerPacket::connect(data, firstConnectionSinceServerStarted));
-	ChannelServer::getInstance().sendWorld(SyncPacket::BuddyPacket::buddyOnline(getId(), getBuddyList()->getBuddyIds(), true));
 }
 
 auto Player::getMap() const -> Map * {

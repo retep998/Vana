@@ -31,17 +31,21 @@ struct PlayerData {
 	auto copyFrom(const PlayerData &rhs) -> void {
 		admin = rhs.admin;
 		cashShop = rhs.cashShop;
+		mts = rhs.mts;
 		channel = rhs.channel;
 		map = rhs.map;
 		level = rhs.level;
 		job = rhs.job;
 		gmLevel = rhs.gmLevel;
 		ip = rhs.ip;
+		mutualBuddies = rhs.mutualBuddies;
 	}
 
 	bool cashShop = false;
+	bool mts = false;
 	bool admin = false;
 	bool initialized = false;
+	bool transferring = false;
 	optional_t<player_level_t> level;
 	optional_t<job_id_t> job;
 	optional_t<channel_id_t> channel;
@@ -51,13 +55,16 @@ struct PlayerData {
 	player_id_t id = -1;
 	string_t name;
 	Ip ip;
+	vector_t<player_id_t> mutualBuddies;
 };
 
 template <>
 struct PacketSerialize<PlayerData> {
 	auto read(PacketReader &reader) -> PlayerData {
 		PlayerData ret;
+		ret.transferring = reader.get<bool>();
 		ret.cashShop = reader.get<bool>();
+		ret.mts = reader.get<bool>();
 		ret.admin = reader.get<bool>();
 		ret.level = reader.get<optional_t<player_level_t>>();
 		ret.job = reader.get<optional_t<job_id_t>>();
@@ -68,10 +75,13 @@ struct PacketSerialize<PlayerData> {
 		ret.id = reader.get<player_id_t>();
 		ret.name = reader.get<string_t>();
 		ret.ip = reader.get<Ip>();
+		ret.mutualBuddies = reader.get<vector_t<player_id_t>>();
 		return ret;
 	}
 	auto write(PacketBuilder &builder, const PlayerData &obj) -> void {
+		builder.add<bool>(obj.transferring);
 		builder.add<bool>(obj.cashShop);
+		builder.add<bool>(obj.mts);
 		builder.add<bool>(obj.admin);
 		builder.add<optional_t<player_level_t>>(obj.level);
 		builder.add<optional_t<job_id_t>>(obj.job);
@@ -82,6 +92,7 @@ struct PacketSerialize<PlayerData> {
 		builder.add<player_id_t>(obj.id);
 		builder.add<string_t>(obj.name);
 		builder.add<Ip>(obj.ip);
+		builder.add<vector_t<player_id_t>>(obj.mutualBuddies);
 	}
 };
 

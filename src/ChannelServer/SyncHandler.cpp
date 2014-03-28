@@ -32,12 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SyncPacket.hpp"
 
 auto SyncHandler::handle(PacketReader &reader) -> void {
-	switch (reader.get<sync_t>()) {
+	sync_t type = reader.get<sync_t>();
+	switch (type) {
 		case Sync::SyncTypes::Config: handleConfigSync(reader); break;
-		case Sync::SyncTypes::ChannelStart: ChannelServer::getInstance().getPlayerDataProvider().parseChannelConnectPacket(reader); break;
-		case Sync::SyncTypes::Player: ChannelServer::getInstance().getPlayerDataProvider().handlePlayerSync(reader); break;
-		case Sync::SyncTypes::Party: ChannelServer::getInstance().getPlayerDataProvider().handlePartySync(reader); break;
-		case Sync::SyncTypes::Buddy: ChannelServer::getInstance().getPlayerDataProvider().handleBuddySync(reader); break;
+		default: ChannelServer::getInstance().getPlayerDataProvider().handleSync(type, reader); break;
 	}
 }
 

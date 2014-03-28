@@ -34,7 +34,6 @@ namespace soci {
 struct Buddy {
 	uint8_t oppositeStatus = 0;
 	player_id_t charId = 0;
-	channel_id_t channel = 0;
 	string_t name;
 	string_t groupName;
 };
@@ -61,6 +60,7 @@ public:
 
 	auto addBuddies(PacketBuilder &packet) -> void;
 	auto checkForPendingBuddy() -> void;
+	auto buddyAccepted(player_id_t buddyId) -> void;
 	auto removePendingBuddy(player_id_t id, bool accepted) -> void;
 private:
 	auto addBuddy(soci::session &sql, const soci::row &row) -> void;

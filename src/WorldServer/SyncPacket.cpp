@@ -119,14 +119,20 @@ PACKET_IMPL(PlayerPacket::updatePlayer, const PlayerData &data, update_bits_t fl
 		if (flags & Sync::Player::UpdateBits::Map) {
 			builder.add<map_id_t>(data.map.get());
 		}
+		if (flags & Sync::Player::UpdateBits::Transfer) {
+			builder.add<bool>(data.transferring);
+		}
 		if (flags & Sync::Player::UpdateBits::Channel) {
-			builder.add<channel_id_t>(data.channel.get());
+			builder.add<optional_t<channel_id_t>>(data.channel);
 		}
 		if (flags & Sync::Player::UpdateBits::Ip) {
 			builder.add<Ip>(data.ip);
 		}
 		if (flags & Sync::Player::UpdateBits::Cash) {
 			builder.add<bool>(data.cashShop);
+		}
+		if (flags & Sync::Player::UpdateBits::Mts) {
+			builder.add<bool>(data.mts);
 		}
 	}
 	return builder;
@@ -219,15 +225,36 @@ PACKET_IMPL(BuddyPacket::sendBuddyInvite, player_id_t inviteeId, player_id_t inv
 	return builder;
 }
 
-PACKET_IMPL(BuddyPacket::sendBuddyOnlineOffline, const vector_t<player_id_t> &players, player_id_t playerId, channel_id_t channelId) {
+PACKET_IMPL(BuddyPacket::sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(IMSG_SYNC)
 		.add<sync_t>(Sync::SyncTypes::Buddy)
-		.add<sync_t>(Sync::Buddy::OnlineOffline)
-		.add<player_id_t>(playerId)
-		.add<channel_id_t>(channelId)
-		.add<vector_t<player_id_t>>(players);
+		.add<sync_t>(Sync::Buddy::AcceptInvite)
+		.add<player_id_t>(inviterId)
+		.add<player_id_t>(inviteeId);
+	return builder;
+}
+
+PACKET_IMPL(BuddyPacket::sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Buddy)
+		.add<sync_t>(Sync::Buddy::RemoveBuddy)
+		.add<player_id_t>(listOwnerId)
+		.add<player_id_t>(removalId);
+	return builder;
+}
+
+PACKET_IMPL(BuddyPacket::sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId) {
+	PacketBuilder builder;
+	builder
+		.add<header_t>(IMSG_SYNC)
+		.add<sync_t>(Sync::SyncTypes::Buddy)
+		.add<sync_t>(Sync::Buddy::ReaddBuddy)
+		.add<player_id_t>(listOwnerId)
+		.add<player_id_t>(buddyId);
 	return builder;
 }
 

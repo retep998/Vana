@@ -97,14 +97,13 @@ auto CommandHandler::handleCommand(Player *player, PacketReader &reader) -> void
 			}
 			else {
 				auto targetData = ChannelServer::getInstance().getPlayerDataProvider().getPlayerDataByName(name);
-				if (targetData != nullptr) {
+				if (targetData != nullptr && targetData->channel.is_initialized()) {
 					player->send(PlayersPacket::findPlayer(targetData->name, targetData->channel.get(), 1, true));
 					found = true;
 				}
 			}
 			if (!found) {
 				player->send(PlayersPacket::findPlayer(name, -1, 0));
-
 			}
 			break;
 		}

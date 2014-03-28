@@ -110,7 +110,7 @@ auto PlayerDataProvider::channelDisconnect(channel_id_t channel) -> void {
 	for (auto &kvp : m_players) {
 		auto &player = kvp.second;
 		if (player.channel == channel) {
-			player.channel = -1;
+			player.channel.reset();
 			removePendingPlayer(player.id);
 		}
 	}
@@ -184,6 +184,14 @@ auto PlayerDataProvider::send(const PacketBuilder &builder) -> void {
 }
 
 // Handlers
+auto PlayerDataProvider::handleSync(AbstractConnection *connection, sync_t type, PacketReader &reader) -> void {
+	switch (type) {
+		case Sync::SyncTypes::Player: handlePlayerSync(connection, reader); break;
+		case Sync::SyncTypes::Party: handlePartySync(connection, reader); break;
+		case Sync::SyncTypes::Buddy: handleBuddySync(connection, reader); break;
+	}
+}
+
 auto PlayerDataProvider::handlePlayerSync(AbstractConnection *connection, PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Player::ChangeChannelRequest: handleChangeChannelRequest(connection, reader); break;
@@ -211,7 +219,9 @@ auto PlayerDataProvider::handlePartySync(AbstractConnection *connection, PacketR
 auto PlayerDataProvider::handleBuddySync(AbstractConnection *connection, PacketReader &reader) -> void {
 	switch (reader.get<sync_t>()) {
 		case Sync::Buddy::Invite: buddyInvite(reader); break;
-		case Sync::Buddy::OnlineOffline: buddyOnline(reader); break;
+		case Sync::Buddy::AcceptInvite: acceptBuddyInvite(reader); break;
+		case Sync::Buddy::RemoveBuddy: removeBuddy(reader); break;
+		case Sync::Buddy::ReaddBuddy: readdBuddy(reader); break;
 	}
 }
 
@@ -254,6 +264,9 @@ auto PlayerDataProvider::handlePlayerUpdate(PacketReader &reader) -> void {
 		if (flags & Sync::Player::UpdateBits::Cash) {
 			player.cashShop = reader.get<bool>();
 		}
+		if (flags & Sync::Player::UpdateBits::Mts) {
+			player.mts = reader.get<bool>();
+		}
 	}
 
 	sendSync(SyncPacket::PlayerPacket::updatePlayer(player, flags));
@@ -268,6 +281,7 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 		PlayerData data = reader.get<PlayerData>();
 		player.copyFrom(data);
 		player.initialized = true;
+		player.transferring = false;
 		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Full));
 	}
 	else {
@@ -275,8 +289,9 @@ auto PlayerDataProvider::handlePlayerConnect(channel_id_t channel, PacketReader 
 		player.map = reader.get<map_id_t>();
 		player.channel = reader.get<channel_id_t>();
 		player.ip = reader.get<Ip>();
+		player.transferring = false;
 
-		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Map | Sync::Player::UpdateBits::Channel | Sync::Player::UpdateBits::Ip));
+		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Map | Sync::Player::UpdateBits::Channel | Sync::Player::UpdateBits::Transfer | Sync::Player::UpdateBits::Ip));
 	}
 
 	WorldServer::getInstance().getChannels().increasePopulation(channel);
@@ -287,10 +302,8 @@ auto PlayerDataProvider::handlePlayerDisconnect(channel_id_t channel, PacketRead
 
 	auto &player = m_players.find(id)->second;
 	if (channel == -1 || player.channel == channel) {
-		player.channel = -1;
-		if (player.party > 0) {
-			sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Channel));
-		}
+		player.channel.reset();
+		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Channel));
 	}
 
 	WorldServer::getInstance().getChannels().decreasePopulation(channel);
@@ -298,6 +311,8 @@ auto PlayerDataProvider::handlePlayerDisconnect(channel_id_t channel, PacketRead
 	channel_id_t oldChannel = removePendingPlayer(id);
 	if (oldChannel != -1) {
 		WorldServer::getInstance().getChannels().send(oldChannel, SyncPacket::PlayerPacket::deleteConnectable(id));
+		player.transferring = false;
+		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
 	}
 }
 
@@ -323,6 +338,10 @@ auto PlayerDataProvider::handleChangeChannelRequest(AbstractConnection *connecti
 	port_t port = -1;
 	if (channel != nullptr) {
 		m_channelSwitches[playerId] = channel->getId();
+
+		auto &player = m_players[playerId];
+		player.transferring = true;
+		sendSync(SyncPacket::PlayerPacket::updatePlayer(player, Sync::Player::UpdateBits::Transfer));
 
 		ip = reader.get<Ip>();
 		channel->send(SyncPacket::PlayerPacket::newConnectable(playerId, ip, reader));
@@ -490,6 +509,7 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 	player_id_t inviteeId = reader.get<player_id_t>();
 	auto &inviter = m_players[inviterId];
 	auto &invitee = m_players[inviteeId];
+
 	if (!invitee.channel.is_initialized()) {
 		// Make new pending buddy in the database
 		Database::getCharDb().once
@@ -504,24 +524,38 @@ auto PlayerDataProvider::buddyInvite(PacketReader &reader) -> void {
 	}
 }
 
-auto PlayerDataProvider::buddyOnline(PacketReader &reader) -> void {
-	player_id_t playerId = reader.get<player_id_t>();
-	bool online = reader.get<bool>();
-	vector_t<player_id_t> tempIds = reader.get<vector_t<player_id_t>>();
+auto PlayerDataProvider::acceptBuddyInvite(PacketReader &reader) -> void {
+	player_id_t inviteeId = reader.get<player_id_t>();
+	player_id_t inviterId = reader.get<player_id_t>();
+	auto &invitee = m_players[inviteeId];
+	auto &inviter = m_players[inviterId];
 
-	auto &player = m_players[playerId];
-	hash_map_t<channel_id_t, vector_t<player_id_t>> ids; // <channel, <ids>>, for sending less packets for a buddylist of 100 people
+	invitee.mutualBuddies.push_back(inviterId);
+	inviter.mutualBuddies.push_back(inviteeId);
 
-	for (const auto &id : tempIds) {
-		auto &buddy = m_players[id];
-		if (buddy.channel.is_initialized()) {
-			ids[buddy.channel.get()].push_back(id);
-		}
-	}
+	sendSync(SyncPacket::BuddyPacket::sendAcceptBuddyInvite(inviteeId, inviterId));
+}
 
-	for (const auto &kvp : ids) {
-		if (Channel *channel = WorldServer::getInstance().getChannels().getChannel(kvp.first)) {
-			channel->send(SyncPacket::BuddyPacket::sendBuddyOnlineOffline(kvp.second, playerId, (online ? player.channel.get() : -1)));
-		}
-	}
+auto PlayerDataProvider::removeBuddy(PacketReader &reader) -> void {
+	player_id_t listOwnerId = reader.get<player_id_t>();
+	player_id_t removalId = reader.get<player_id_t>();
+	auto &listOwner = m_players[listOwnerId];
+	auto &removal = m_players[removalId];
+
+	ext::remove_element(listOwner.mutualBuddies, removalId);
+	ext::remove_element(removal.mutualBuddies, listOwnerId);
+
+	sendSync(SyncPacket::BuddyPacket::sendBuddyRemoval(listOwnerId, removalId));
+}
+
+auto PlayerDataProvider::readdBuddy(PacketReader &reader) -> void {
+	player_id_t listOwnerId = reader.get<player_id_t>();
+	player_id_t buddyId = reader.get<player_id_t>();
+	auto &listOwner = m_players[listOwnerId];
+	auto &buddy = m_players[buddyId];
+
+	listOwner.mutualBuddies.push_back(buddyId);
+	buddy.mutualBuddies.push_back(listOwnerId);
+
+	sendSync(SyncPacket::BuddyPacket::sendReaddBuddy(listOwnerId, buddyId));
 }

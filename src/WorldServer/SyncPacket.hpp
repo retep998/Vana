@@ -54,6 +54,8 @@ namespace SyncPacket {
 	}
 	namespace BuddyPacket {
 		PACKET(sendBuddyInvite, player_id_t inviteeId, player_id_t inviterId, const string_t &name);
-		PACKET(sendBuddyOnlineOffline, const vector_t<player_id_t> &players, player_id_t playerId, channel_id_t channelId);
+		PACKET(sendAcceptBuddyInvite, player_id_t inviteeId, player_id_t inviterId);
+		PACKET(sendBuddyRemoval, player_id_t listOwnerId, player_id_t removalId);
+		PACKET(sendReaddBuddy, player_id_t listOwnerId, player_id_t buddyId);
 	}
 }

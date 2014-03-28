@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "GameObjects.hpp"
+#include "InterHelper.hpp"
 #include "Ip.hpp"
 #include "PlayerObjects.hpp"
 #include "shared_array.hpp"
@@ -45,11 +46,7 @@ struct ConnectingPlayer {
 
 class PlayerDataProvider {
 public:
-	auto parseChannelConnectPacket(PacketReader &reader) -> void;
-	
-	auto handlePlayerSync(PacketReader &reader) -> void;
-	auto handlePartySync(PacketReader &reader) -> void;
-	auto handleBuddySync(PacketReader &reader) -> void;
+	auto handleSync(sync_t type, PacketReader &reader) -> void;
 
 	// Online players
 	auto addPlayer(Player *player) -> void;
@@ -82,6 +79,12 @@ public:
 	auto getPacket(player_id_t id) const -> PacketReader;
 	auto playerEstablished(player_id_t id) -> void;
 private:
+	auto parseChannelConnectPacket(PacketReader &reader) -> void;
+	
+	auto handlePlayerSync(PacketReader &reader) -> void;
+	auto handlePartySync(PacketReader &reader) -> void;
+	auto handleBuddySync(PacketReader &reader) -> void;
+
 	auto sendSync(const PacketBuilder &packet) const -> void;
 	auto addPlayerData(const PlayerData &data) -> void;
 	auto handleCharacterCreated(PacketReader &reader) -> void;
@@ -98,7 +101,9 @@ private:
 	auto handlePartyAdd(party_id_t id, player_id_t playerId) -> void;
 
 	auto buddyInvite(PacketReader &reader) -> void;
-	auto buddyOnlineOffline(PacketReader &reader) -> void;
+	auto acceptBuddyInvite(PacketReader &reader) -> void;
+	auto removeBuddy(PacketReader &reader) -> void;
+	auto readdBuddy(PacketReader &reader) -> void;
 
 	auto newPlayer(player_id_t id, const Ip &ip, PacketReader &reader) -> void;
 
