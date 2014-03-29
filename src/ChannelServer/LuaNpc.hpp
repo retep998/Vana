@@ -39,31 +39,31 @@ protected:
 };
 
 namespace LuaExports {
-	auto getNpc(lua_State *luaVm) -> Npc *;
+	auto getNpc(lua_State *luaVm, LuaEnvironment &env) -> Npc *;
 
 	// NPC exports
 
 	// Miscellaneous
-	auto showStorage(lua_State *luaVm) -> int;
 	auto getDistanceNpc(lua_State *luaVm) -> int;
 	auto getNpcId(lua_State *luaVm) -> int;
-	auto npcRunNpc(lua_State *luaVm) -> int;
+	auto runNpcNpc(lua_State *luaVm) -> int;
+	auto showStorage(lua_State *luaVm) -> int;
 
 	// NPC interaction
 	auto addText(lua_State *luaVm) -> int;
-	auto sendBackNext(lua_State *luaVm) -> int;
-	auto sendBackOk(lua_State *luaVm) -> int;
-	auto sendNext(lua_State *luaVm) -> int;
-	auto sendOk(lua_State *luaVm) -> int;
 	auto askAcceptDecline(lua_State *luaVm) -> int;
 	auto askAcceptDeclineNoExit(lua_State *luaVm) -> int;
 	auto askChoice(lua_State *luaVm) -> int;
 	auto askNumber(lua_State *luaVm) -> int;
+	auto askQuestion(lua_State *luaVm) -> int;
+	auto askQuiz(lua_State *luaVm) -> int;
 	auto askStyle(lua_State *luaVm) -> int;
 	auto askText(lua_State *luaVm) -> int;
 	auto askYesNo(lua_State *luaVm) -> int;
-	auto askQuiz(lua_State *luaVm) -> int;
-	auto askQuestion(lua_State *luaVm) -> int;
+	auto sendBackNext(lua_State *luaVm) -> int;
+	auto sendBackOk(lua_State *luaVm) -> int;
+	auto sendNext(lua_State *luaVm) -> int;
+	auto sendOk(lua_State *luaVm) -> int;
 
 	// Quest
 	auto addQuest(lua_State *luaVm) -> int;

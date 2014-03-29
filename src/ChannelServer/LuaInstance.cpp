@@ -33,12 +33,13 @@ LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
 }
 
 auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
-	string_t name = lua_tostring(luaVm, 1);
-	int32_t time = lua_tointeger(luaVm, 2);
-	bool showTimer = lua_toboolean(luaVm, 3) != 0;
+	auto &env = getEnvironment(luaVm);
+	string_t name = env.get<string_t>(luaVm, 1);
+	int32_t time = env.get<int32_t>(luaVm, 2);
+	bool showTimer = env.get<bool>(luaVm, 3);
 	int32_t persistent = 0;
-	if (lua_isnumber(luaVm, 4)) {
-		persistent = lua_tointeger(luaVm, 4);
+	if (env.is(luaVm, 4, LuaType::Number)) {
+		persistent = env.get<int32_t>(luaVm, 4);
 	}
 
 	Instance *instance = new Instance(name, 0, 0, seconds_t(time), seconds_t(persistent), showTimer);

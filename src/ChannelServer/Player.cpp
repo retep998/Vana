@@ -516,8 +516,9 @@ auto Player::parseTransferPacket(PacketReader &reader) -> void {
 	setConnectionTime(reader.get<int64_t>());
 	player_id_t followId = reader.get<player_id_t>();
 	if (followId != 0) {
-		if (Player *follow = ChannelServer::getInstance().getPlayerDataProvider().getPlayer(followId)) {
-			ChannelServer::getInstance().getPlayerDataProvider().addFollower(this, follow);
+		auto &provider = ChannelServer::getInstance().getPlayerDataProvider();
+		if (Player *follow = provider.getPlayer(followId)) {
+			provider.addFollower(this, follow);
 		}
 	}
 
@@ -724,7 +725,12 @@ auto Player::setLevelDate() -> void {
 }
 
 auto Player::acceptDeath(bool wheel) -> void {
-	map_id_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
+	// TODO FIXME verify
+	// Is this correct? The old line was:
+	// map_id_t toMap = Maps::getMap(m_map) ? Maps::getMap(m_map)->getReturnMap() : m_map;
+	// That doesn't seem very useful to me since Maps::getMap(m_map) should always be true, otherwise how did the player get to the map?
+
+	map_id_t toMap = Maps::getMap(m_map) != nullptr ? Maps::getMap(m_map)->getReturnMap() : m_map;
 	if (wheel) {
 		toMap = getMapId();
 	}

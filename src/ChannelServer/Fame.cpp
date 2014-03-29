@@ -72,7 +72,7 @@ auto Fame::addFameLog(player_id_t from, player_id_t to) -> void {
 }
 
 auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
-	int32_t fameTime = ChannelServer::getInstance().getConfig().fameTime;
+	int32_t fameTime = static_cast<int32_t>(ChannelServer::getInstance().getConfig().fameTime.count());
 	if (fameTime == 0) {
 		return SearchResult::Found;
 	}
@@ -96,7 +96,7 @@ auto Fame::getLastFameLog(player_id_t from) -> SearchResult {
 }
 
 auto Fame::getLastFameSpLog(player_id_t from, player_id_t to) -> SearchResult {
-	int32_t fameResetTime = ChannelServer::getInstance().getConfig().fameResetTime;
+	int32_t fameResetTime = static_cast<int32_t>(ChannelServer::getInstance().getConfig().fameResetTime.count());
 	if (fameResetTime == 0) {
 		return SearchResult::Found;
 	}

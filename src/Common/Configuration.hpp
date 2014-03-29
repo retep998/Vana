@@ -79,15 +79,15 @@ struct PacketSerialize<Rates> {
 
 struct WorldConfig {
 	int8_t ribbon = 0;
-	uint8_t maxMultiLevel = 1;
-	uint8_t defaultStorageSlots = 4;
+	player_level_t maxMultiLevel = 1;
+	storage_slot_t defaultStorageSlots = 4;
 	int16_t maxStats = 999;
 	int32_t defaultChars = 3;
 	int32_t maxChars = 6;
 	int32_t maxPlayerLoad = 100;
-	int32_t fameTime = 30 * 60 * 60;
-	int32_t fameResetTime = 30 * 60 * 60;
-	int32_t mapUnloadTime = 30 * 60;
+	seconds_t fameTime = 24 * 60 * 60;
+	seconds_t fameResetTime = 24 * 60 * 60 * 30;
+	seconds_t mapUnloadTime = 30 * 60;
 	channel_id_t maxChannels = 20;
 	string_t eventMsg;
 	string_t scrollingHeader;
@@ -105,15 +105,15 @@ struct PacketSerialize<WorldConfig> {
 	auto read(PacketReader &reader) -> WorldConfig {
 		WorldConfig ret;
 		ret.ribbon = reader.get<int8_t>();
-		ret.maxMultiLevel = reader.get<uint8_t>();
-		ret.defaultStorageSlots = reader.get<uint8_t>();
+		ret.maxMultiLevel = reader.get<player_level_t>();
+		ret.defaultStorageSlots = reader.get<storage_slot_t>();
 		ret.maxStats = reader.get<int16_t>();
 		ret.defaultChars = reader.get<int32_t>();
 		ret.maxChars = reader.get<int32_t>();
 		ret.maxPlayerLoad = reader.get<int32_t>();
-		ret.fameTime = reader.get<int32_t>();
-		ret.fameResetTime = reader.get<int32_t>();
-		ret.mapUnloadTime = reader.get<int32_t>();
+		ret.fameTime = reader.get<seconds_t>();
+		ret.fameResetTime = reader.get<seconds_t>();
+		ret.mapUnloadTime = reader.get<seconds_t>();
 		ret.maxChannels = reader.get<channel_id_t>();
 		ret.eventMsg = reader.get<string_t>();
 		ret.scrollingHeader = reader.get<string_t>();
@@ -128,15 +128,15 @@ struct PacketSerialize<WorldConfig> {
 	}
 	auto write(PacketBuilder &builder, const WorldConfig &obj) -> void {
 		builder.add<int8_t>(obj.ribbon);
-		builder.add<uint8_t>(obj.maxMultiLevel);
-		builder.add<uint8_t>(obj.defaultStorageSlots);
+		builder.add<player_level_t>(obj.maxMultiLevel);
+		builder.add<storage_slot_t>(obj.defaultStorageSlots);
 		builder.add<int16_t>(obj.maxStats);
 		builder.add<int32_t>(obj.defaultChars);
 		builder.add<int32_t>(obj.maxChars);
 		builder.add<int32_t>(obj.maxPlayerLoad);
-		builder.add<int32_t>(obj.fameTime);
-		builder.add<int32_t>(obj.fameResetTime);
-		builder.add<int32_t>(obj.mapUnloadTime);
+		builder.add<seconds_t>(obj.fameTime);
+		builder.add<seconds_t>(obj.fameResetTime);
+		builder.add<seconds_t>(obj.mapUnloadTime);
 		builder.add<channel_id_t>(obj.maxChannels);
 		builder.add<string_t>(obj.eventMsg);
 		builder.add<string_t>(obj.scrollingHeader);

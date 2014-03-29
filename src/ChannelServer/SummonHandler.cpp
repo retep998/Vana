@@ -115,7 +115,7 @@ auto SummonHandler::useSummon(Player *player, skill_id_t skillId, skill_level_t 
 	if (summon->getMovementType() == Summon::Static) {
 		summon->resetMovement(foothold, summon->getPos(), summon->getStance());
 	}
-	player->getSummons()->addSummon(summon, ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time);
+	player->getSummons()->addSummon(summon, seconds_t(ChannelServer::getInstance().getSkillDataProvider().getSkill(skillId, level)->time));
 	player->sendMap(SummonsPacket::showSummon(player->getId(), summon, false));
 }
 

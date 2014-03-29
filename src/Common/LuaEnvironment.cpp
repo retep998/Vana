@@ -69,8 +69,9 @@ auto LuaEnvironment::loadFile(const string_t &filename) -> void {
 	m_file = filename;
 	m_luaVm = luaL_newstate();
 
-	luaL_requiref(m_luaVm, "base", luaopen_base, 1);
-	luaL_requiref(m_luaVm, "string", luaopen_string, 1);
+	requireStandardLib("base", luaopen_base);
+	requireStandardLib("string", luaopen_string);
+	requireStandardLib("math", luaopen_math);
 }
 
 auto LuaEnvironment::run() -> Result {
@@ -130,8 +131,21 @@ auto LuaEnvironment::expose(const string_t &name, lua_function_t func) -> void {
 	lua_register(m_luaVm, name.c_str(), func);
 }
 
+auto LuaEnvironment::requireStandardLib(const string_t &localName, lua_function_t func) -> void {
+	luaL_requiref(m_luaVm, localName.c_str(), func, 1);
+}
+
 auto LuaEnvironment::yield(int numberOfReturnResultsPassedToResume) -> int {
 	return lua_yield(m_luaThread, numberOfReturnResultsPassedToResume);
+}
+
+auto LuaEnvironment::pushNil() -> LuaEnvironment & {
+	return pushNil(m_luaVm);
+}
+
+auto LuaEnvironment::pushNil(lua_State *luaVm) -> LuaEnvironment & {
+	lua_pushnil(luaVm);
+	return *this;
 }
 
 auto LuaEnvironment::exists(const string_t &key) -> bool {
