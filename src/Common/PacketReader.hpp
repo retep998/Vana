@@ -82,6 +82,14 @@ private:
 	auto getImpl<uint32_t>(uint32_t *) -> uint32_t;
 	template <>
 	auto getImpl<uint64_t>(uint64_t *) -> uint64_t;
+	template <>
+	auto getImpl<milliseconds_t>(milliseconds_t *) -> milliseconds_t;
+	template <>
+	auto getImpl<seconds_t>(seconds_t *) -> seconds_t;
+	template <>
+	auto getImpl<minutes_t>(minutes_t *) -> minutes_t;
+	template <>
+	auto getImpl<hours_t>(hours_t *) -> hours_t;
 	template <typename TElement>
 	auto getImpl(vector_t<TElement> *) -> vector_t<TElement>;
 
@@ -192,6 +200,26 @@ auto PacketReader::getImpl<uint32_t>(uint32_t *) -> uint32_t {
 template <>
 auto PacketReader::getImpl<uint64_t>(uint64_t *) -> uint64_t {
 	return getImplDefault<uint64_t>();
+}
+
+template <>
+auto PacketReader::getImpl<milliseconds_t>(milliseconds_t *) -> milliseconds_t {
+	return milliseconds_t(getImplDefault<int32_t>());
+}
+
+template <>
+auto PacketReader::getImpl<seconds_t>(seconds_t *) -> seconds_t {
+	return seconds_t(getImplDefault<int32_t>());
+}
+
+template <>
+auto PacketReader::getImpl<minutes_t>(minutes_t *) -> minutes_t {
+	return minutes_t(getImplDefault<int32_t>());
+}
+
+template <>
+auto PacketReader::getImpl<hours_t>(hours_t *) -> hours_t {
+	return hours_t(getImplDefault<int32_t>());
 }
 
 template <>

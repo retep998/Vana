@@ -89,6 +89,14 @@ private:
 	auto addImpl<uint32_t>(const uint32_t &val) -> void;
 	template <>
 	auto addImpl<uint64_t>(const uint64_t &val) -> void;
+	template <>
+	auto addImpl<milliseconds_t>(const milliseconds_t &val) -> void;
+	template <>
+	auto addImpl<seconds_t>(const seconds_t &val) -> void;
+	template <>
+	auto addImpl<minutes_t>(const minutes_t &val) -> void;
+	template <>
+	auto addImpl<hours_t>(const hours_t &val) -> void;
 	template <typename TElement>
 	auto addImpl(const vector_t<TElement> &val) -> void;
 
@@ -186,6 +194,26 @@ auto PacketBuilder::addImpl<uint32_t>(const uint32_t &value) -> void {
 template <>
 auto PacketBuilder::addImpl<uint64_t>(const uint64_t &value) -> void {
 	addImplDefault<uint64_t>(value);
+}
+
+template <>
+auto PacketBuilder::addImpl<milliseconds_t>(const milliseconds_t &value) -> void {
+	addImplDefault<int32_t>(static_cast<int32_t>(value.count()));
+}
+
+template <>
+auto PacketBuilder::addImpl<seconds_t>(const seconds_t &value) -> void {
+	addImplDefault<int32_t>(static_cast<int32_t>(value.count()));
+}
+
+template <>
+auto PacketBuilder::addImpl<minutes_t>(const minutes_t &value) -> void {
+	addImplDefault<int32_t>(static_cast<int32_t>(value.count()));
+}
+
+template <>
+auto PacketBuilder::addImpl<hours_t>(const hours_t &value) -> void {
+	addImplDefault<int32_t>(static_cast<int32_t>(value.count()));
 }
 
 template <>

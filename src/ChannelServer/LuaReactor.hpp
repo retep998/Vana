@@ -33,7 +33,7 @@ private:
 };
 
 namespace LuaExports {
-	auto getReactor(lua_State *luaVm) -> Reactor *;
+	auto getReactor(lua_State *luaVm, LuaEnvironment &env) -> Reactor *;
 
 	// Reactor exports
 

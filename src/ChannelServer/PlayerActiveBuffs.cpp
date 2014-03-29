@@ -647,7 +647,7 @@ auto PlayerActiveBuffs::getTransferPacket() const -> PacketBuilder {
 	builder.add<uint8_t>(m_buffs.size());
 	for (const auto &buffId : m_buffs) {
 		builder.add<skill_id_t>(buffId);
-		builder.add<int32_t>(static_cast<int32_t>(getBuffSecondsRemaining(buffId).count()));
+		builder.add<seconds_t>(getBuffSecondsRemaining(buffId));
 		builder.add<skill_level_t>(getActiveSkillLevel(buffId));
 	}
 	// Current buffs by type info
@@ -699,7 +699,7 @@ auto PlayerActiveBuffs::parseTransferPacket(PacketReader &reader) -> void {
 	uint8_t nBuffs = reader.get<uint8_t>();
 	for (uint8_t i = 0; i < nBuffs; ++i) {
 		skill_id_t skillId = reader.get<skill_id_t>();
-		seconds_t timeLeft(reader.get<int32_t>());
+		seconds_t timeLeft = reader.get<seconds_t>();
 		skill_level_t level = reader.get<skill_level_t>();
 		addBuff(skillId, timeLeft);
 		setActiveSkillLevel(skillId, level);

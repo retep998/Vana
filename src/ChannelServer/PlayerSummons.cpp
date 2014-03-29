@@ -29,11 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TimeUtilities.hpp"
 #include <functional>
 
-auto PlayerSummons::addSummon(Summon *summon, int32_t time) -> void {
+auto PlayerSummons::addSummon(Summon *summon, seconds_t time) -> void {
 	summon_id_t summonId = summon->getId();
 	Timer::Id id(Timer::Types::BuffTimer, summonId, 1);
 	Timer::Timer::create([this, summonId](const time_point_t &now) { SummonHandler::removeSummon(m_player, summonId, false, SummonMessages::OutOfTime, true); },
-		id, m_player->getTimerContainer(), seconds_t(time));
+		id, m_player->getTimerContainer(), time);
 
 	m_summons.push_back(summon);
 }
@@ -89,7 +89,7 @@ auto PlayerSummons::getTransferPacket() const -> PacketBuilder {
 				continue;
 			}
 			builder.add<skill_id_t>(summon->getSkillId());
-			builder.add<int32_t>(static_cast<int32_t>(getSummonTimeRemaining(summon->getId()).count()));
+			builder.add<seconds_t>(getSummonTimeRemaining(summon->getId()));
 			builder.add<skill_level_t>(summon->getSkillLevel());
 		}
 	}
@@ -101,7 +101,7 @@ auto PlayerSummons::parseTransferPacket(PacketReader &reader) -> void {
 	if (size > 0) {
 		for (uint8_t i = 0; i < size; ++i) {
 			skill_id_t skillId = reader.get<skill_id_t>();
-			int32_t timeLeft = reader.get<int32_t>();
+			seconds_t timeLeft = reader.get<seconds_t>();
 			skill_level_t level = reader.get<skill_level_t>();
 
 			Summon *summon = new Summon(SummonHandler::loopId(), skillId, level, m_player->isFacingLeft(), m_player->getPos());

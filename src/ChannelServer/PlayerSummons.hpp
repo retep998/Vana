@@ -32,7 +32,7 @@ public:
 	PlayerSummons(Player *player) : m_player(player) { }
 
 	auto getSummon(summon_id_t summonId) -> Summon *;
-	auto addSummon(Summon *summon, int32_t time) -> void;
+	auto addSummon(Summon *summon, seconds_t time) -> void;
 	auto removeSummon(summon_id_t summonId, bool fromTimer) -> void;
 	auto changedMap() -> void;
 	auto forEach(function_t<void(Summon *)> func) -> void;

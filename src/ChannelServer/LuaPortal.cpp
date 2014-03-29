@@ -50,19 +50,21 @@ auto LuaPortal::portalFailed() -> bool {
 }
 
 auto LuaExports::getPortal(lua_State *luaVm) -> PortalInfo * {
-	return portals[getPlayer(luaVm)->getId()];
+	auto &env = getEnvironment(luaVm);
+	return portals[getPlayer(luaVm, env)->getId()];
 }
 
 // Portal
 auto LuaExports::getPortalName(lua_State *luaVm) -> int {
-	lua_pushstring(luaVm, getPortal(luaVm)->name.c_str());
+	auto &env = getEnvironment(luaVm);
+	env.push<string_t>(luaVm, getPortal(luaVm)->name);
 	return 1;
 }
 
 auto LuaExports::instantWarp(lua_State *luaVm) -> int {
 	auto &env = getEnvironment(luaVm);
-	Player *player = getPlayer(luaVm);
-	string_t portal = lua_tostring(luaVm, 1);
+	Player *player = getPlayer(luaVm, env);
+	string_t portal = env.get<string_t>(luaVm, 1);
 	portal_id_t portalId = player->getMap()->getPortal(portal)->id;
 	player->send(MapPacket::instantWarp(portalId));
 	env.set<bool>(luaVm, "player_warped", true);
@@ -70,7 +72,8 @@ auto LuaExports::instantWarp(lua_State *luaVm) -> int {
 }
 
 auto LuaExports::playPortalSe(lua_State *luaVm) -> int {
-	getPlayer(luaVm)->send(EffectPacket::playPortalSoundEffect());
+	auto &env = getEnvironment(luaVm);
+	getPlayer(luaVm, env)->send(EffectPacket::playPortalSoundEffect());
 	return 0;
 }
 

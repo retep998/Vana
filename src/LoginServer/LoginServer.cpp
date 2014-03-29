@@ -173,16 +173,16 @@ auto LoginServer::loadWorlds() -> void {
 		conf.maxChannels = config.get<channel_id_t>(getKey("channels"));
 		conf.ribbon = config.get<int8_t>(getKey("ribbon"));
 		conf.maxStats = config.get<int16_t>(getKey("max_stats"));
-		conf.maxMultiLevel = config.get<uint8_t>(getKey("max_multi_level"));
+		conf.maxMultiLevel = config.get<player_level_t>(getKey("max_multi_level"));
 		conf.eventMsg = config.get<string_t>(getKey("event_message"));
 		conf.scrollingHeader = config.get<string_t>(getKey("scrolling_header"));
 		conf.maxPlayerLoad = config.get<int32_t>(getKey("max_player_load"));
 		conf.maxChars = config.get<int32_t>(getKey("max_characters"));
 		conf.defaultChars = config.get<int32_t>(getKey("default_characters"));
-		conf.defaultStorageSlots = config.get<uint8_t>(getKey("default_storage"));
-		conf.fameTime = config.get<int32_t>(getKey("fame_time"));
-		conf.fameResetTime = config.get<int32_t>(getKey("fame_reset_time"));
-		conf.mapUnloadTime = config.get<int32_t>(getKey("map_unload_time"));
+		conf.defaultStorageSlots = config.get<storage_slot_t>(getKey("default_storage"));
+		conf.fameTime = config.get<seconds_t>(getKey("fame_time"));
+		conf.fameResetTime = config.get<seconds_t>(getKey("fame_reset_time"));
+		conf.mapUnloadTime = config.get<seconds_t>(getKey("map_unload_time"));
 
 		getRatesConfig(conf.rates);
 		getBossConfig(conf.pianus, "pianus", conf.maxChannels);
