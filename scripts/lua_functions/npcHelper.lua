@@ -155,6 +155,17 @@ function questMesosIcon(mesos)
 	return itemIcon(4031138) .. " " .. mesos .. " mesos";
 end
 
+localeSupportsGenderedText = false;
+function genderedText(female, male)
+	if localeSupportsGenderedText then
+		return "#G" .. male .. ":" .. female .. "#";
+	end
+	if getGender() == gender_male then
+		return male;
+	end
+	return female;
+end
+
 function questItemIcon(itemId, qty)
 	if qty == nil or qty == 1 then
 		return itemIcon(itemId) .. " " .. itemRef(itemId);
