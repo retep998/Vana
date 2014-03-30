@@ -23,7 +23,7 @@ function beginInstance()
 	balrogCount = 0;
 	if getRandomNumber(100) < 50 then balrogCount = balrogCount + 1; end
 	if getRandomNumber(100) < 50 then balrogCount = balrogCount + 1; end
-	
+
 	if balrogCount > 0 then
 		setInstanceVariable("balrog_count", balrogCount);
 		startInstanceTimer("spawn_balrog", 60);

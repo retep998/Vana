@@ -514,7 +514,7 @@ function deserialize(valString)
 		if start > #text then
 			return serialize_err, "String ended prematurely";
 		end
-		
+
 		if text:find("^\"", start) then return stringDeserializer(text, start); end
 		if text:find("^[-0123456789 ]", start) then return numberDeserializer(text, start); end
 		if text:find("^%{", start) then return objectDeserializer(text, start); end

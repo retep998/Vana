@@ -110,7 +110,7 @@ else
 
 			data = selectChoice(choices, choice);
 			itemId, levelLimit, reqs = data[1], data[2], data[3];
-	
+
 			addText("To make one " .. itemRef(itemId) .. ", I need the following items. ");
 			addText("The level limit is " .. levelLimit .. " and please make sure you don't use an item that's been upgraded as a material for it. ");
 			addText("What do you think? ");

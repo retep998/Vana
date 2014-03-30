@@ -180,7 +180,7 @@ if getLevel() >= 50 then
 		end
 		sendNext();
 	end));
-	
+
 	addText("Can I help you?\r\n");
 	addText(blue(choiceList(choices)));
 	choice = askChoice();

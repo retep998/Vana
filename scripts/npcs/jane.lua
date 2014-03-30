@@ -25,7 +25,7 @@ if isQuestCompleted(2013) then
 	addText("Nowadays, I've been making a bunch of items. ");
 	addText("If you need anything, just let me know.");
 	sendNext();
-	
+
 	function generateChoice(itemId, price, effect)
 		return makeChoiceData(itemRef(itemId) .. " (price : " .. price .. " mesos) ", {itemId, price, effect});
 	end

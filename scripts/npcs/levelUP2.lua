@@ -531,7 +531,7 @@ if isGm() then
 				{15111006, 20}, -- Spark
 				{15111007, 30}, -- Shark Wave
 			};
-			
+
 			for i = 1, #skills do
 				skill = skills[i];
 				skillId, skillLevel, skillMasterLevel = skill[1], skill[2], skill[3]

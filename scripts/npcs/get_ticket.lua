@@ -77,7 +77,7 @@ if setInstance(instanceName) then
 	timeLeft = getInstanceMinutes();
 	instanceTime = getInstanceVariable("boat_time", type_int);
 	boardTime = instanceTime - 5;
-	
+
 	if timeLeft <= 1 then
 		addText("This ship is getting ready for takeoff. ");
 		addText("I'm sorry, but you'll have to get on the next ride. ");

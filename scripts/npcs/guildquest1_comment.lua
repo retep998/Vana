@@ -65,7 +65,7 @@ while true do
 	else
 		addText("Do you have any other questions?\r\n");
 	end
-	
+
 	addText(blue(choiceList(choices)));
 	choice = askChoice();
 

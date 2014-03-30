@@ -58,7 +58,7 @@ function initBoatMaps(maps)
 		end
 		temp = temp .. mapId;
 	end
-	
+
 	setInstanceVariable("available_maps", temp);
 end
 

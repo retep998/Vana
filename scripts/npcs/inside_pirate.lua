@@ -36,10 +36,10 @@ else
 		addText("Wasn't it tough? ");
 		addText("That's amazing... alright then, now let's talk about The Nautilus.");
 		sendNext();
-		
+
 		addText("These crystals can only be used here, so I'll just take them back.");
 		sendBackNext();
-		
+
 		setMap(120000101);
 	else
 		addText("Hmmm... ");
@@ -48,7 +48,7 @@ else
 		addText("If it's too hard for you, then you can step out and try again later. ");
 		addText("Do you want to give up and step outside right now?");
 		answer = askYesNo();
-		
+
 		if answer == answer_yes then
 			addText("Really? ");
 			addText("Ok, I'll take you outside right now. ");
