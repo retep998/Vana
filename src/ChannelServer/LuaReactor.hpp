@@ -38,15 +38,15 @@ namespace LuaExports {
 	// Reactor exports
 
 	// Reactor
-	auto getState(lua_State *luaVm) -> int;
-	auto reset(lua_State *luaVm) -> int;
-	auto setStateReactor(lua_State *luaVm) -> int;
+	auto getState(lua_State *luaVm) -> lua_return_t;
+	auto reset(lua_State *luaVm) -> lua_return_t;
+	auto setStateReactor(lua_State *luaVm) -> lua_return_t;
 
 	// Miscellaneous
-	auto dropItemReactor(lua_State *luaVm) -> int;
-	auto getDistanceReactor(lua_State *luaVm) -> int;
+	auto dropItemReactor(lua_State *luaVm) -> lua_return_t;
+	auto getDistanceReactor(lua_State *luaVm) -> lua_return_t;
 
 	// Mob
-	auto spawnMobReactor(lua_State *luaVm) -> int;
-	auto spawnZakum(lua_State *luaVm) -> int;
+	auto spawnMobReactor(lua_State *luaVm) -> lua_return_t;
+	auto spawnZakum(lua_State *luaVm) -> lua_return_t;
 }

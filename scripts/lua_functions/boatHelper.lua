@@ -38,7 +38,7 @@ end
 
 function doBoatDockCheck(mapId)
 	docked = nil;
-	if getInstanceMinutes() <= (getInstanceVariable("boat_time", true) - 5) then
+	if getInstanceMinutes() <= (getInstanceVariable("boat_time", type_int) - 5) then
 		docked = boat_docked;
 	else
 		docked = boat_undocked;	

@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Nine Spirit's Egg portal that summons the dragon
 
-if not getInstanceVariable("egg") and getItemAmount(4001094) > 0 then
+if not getInstanceVariable("egg", type_bool) and getItemAmount(4001094) > 0 then
 	giveItem(4001094, -1);
 	setReactorState(240040611, 2406000, 1);
 	showMessage("The Egg of Nine Spirit, which was comfotably nested, has emitted a mysterious light and has returned to its nest.", msg_red);

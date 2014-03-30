@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/npcHelper.lua");
 
 if getMap() == 800000000 then
-	wtOrigin = getPlayerVariable("wt_origin", true);
+	wtOrigin = getPlayerVariable("wt_origin", type_int);
 	if wtOrigin == nil then
 		wtOrigin = 100000000;
 	end

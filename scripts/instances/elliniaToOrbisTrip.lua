@@ -36,7 +36,7 @@ function timerEnd(name, fromTimer)
 		if name == "spawn_balrog" then
 			setBoatDocked(200090010, boat_docked);
 			setMusic("Bgm04/ArabPirate", 200090010);
-			for i = 1, getInstanceVariable("balrog_count", true) do
+			for i = 1, getInstanceVariable("balrog_count", type_int) do
 				spawnMobPos(200090010, 8150000, 485, -221);
 			end
 		elseif name == "despawn_balrog" then

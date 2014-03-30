@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
 
-questState = getPlayerVariable("third_job_advancement", true);
+questState = getPlayerVariable("third_job_advancement", type_int);
 if questState == 1 then
 	addText("Ah, I was waiting for you. ");
 	addText("I heard about you from " .. blue("Tylus") .. " in Ossyria, and I'd actually like to test your strength. ");

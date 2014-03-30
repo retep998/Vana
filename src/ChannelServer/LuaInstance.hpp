@@ -30,5 +30,5 @@ public:
 };
 
 namespace LuaExports {
-	auto createInstanceInstance(lua_State *luaVm) -> int;
+	auto createInstanceInstance(lua_State *luaVm) -> lua_return_t;
 }

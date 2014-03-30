@@ -17,6 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Exiting the Ariant Coliseum Lobby
 
+map = getPlayerVariable("aMatch_origin", type_int);
+if map == nil then
+	map = 100000000;
+end
+
 playPortalSe();
-setMap(getPlayerVariable("aMatch_origin", true));
+setMap(map);
 deletePlayerVariable("aMatch_origin");

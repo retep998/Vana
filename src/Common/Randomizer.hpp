@@ -92,7 +92,7 @@ private:
 			return distribution(m_engine);
 		}
 
-		// TODO FIXME
+		// TODO FIXME c++
 		// If C++ ever gets an actual small integer type, dump these specializations
 		template <>
 		auto rand<int8_t>(int8_t max, int8_t min) -> int8_t {

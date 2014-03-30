@@ -21,15 +21,14 @@ if not isInstance("horntail") then
 	return;
 end
 
-leftHead = not getInstanceVariable("lefthead");
-
+leftHead = getInstanceVariable("left_head", type_bool);
 if not leftHead then
 	gm = isGm();
-	gmInstance = getInstanceVariable("gm");
+	gmInstance = getInstanceVariable("gm", type_bool);
 	if gm == gmInstance then
 		showMessage("The enormous creature is approaching from the deep cave.", msg_blue);
 		setReactorState(getMap(), 2408003, 0);
 		spawnMobPos(getMap(), 8810024, 880, 220);
-		setInstanceVariable("lefthead", true);
+		setInstanceVariable("left_head", true);
 	end
 end

@@ -47,7 +47,7 @@ end
 function compatibilityCheck()
 	if setInstance("zakumSignup") then
 		gm = isGm();
-		gmInstance = getInstanceVariable("gm");
+		gmInstance = getInstanceVariable("gm", type_bool);
 		revertInstance();
 		return gm == gmInstance;
 	end
@@ -56,7 +56,7 @@ end
 
 function summonedCheck()
 	if setInstance("zakum") then
-		summoned = getInstanceVariable("summoned");
+		summoned = getInstanceVariable("summoned", type_bool);
 		revertInstance();
 		return summoned;
 	end
@@ -115,7 +115,7 @@ if not verifyInstance() then
 	sendOk();
 else
 	if getName() == getInstanceVariable("master") then
-		if getInstanceVariable("enter") then
+		if getInstanceVariable("enter", type_bool) then
 			if summonedCheck() then
 				addText("The battle has already begun.");
 				sendOk();
@@ -202,7 +202,7 @@ else
 			end
 		end
 	else
-		if getInstanceVariable("enter") and not summonedCheck() then
+		if getInstanceVariable("enter", type_bool) and not summonedCheck() then
 			if isPlayerSignedUp(getName()) then
 				enterBossMap();
 			else
@@ -231,7 +231,7 @@ else
 					addText("Unable to apply for a spot due to number of applicants already reaching the maximum.");
 				elseif isPlayerSignedUp(getName()) then
 					addText("You are already part of the expedition squad.");
-				elseif getInstanceVariable("enter") then
+				elseif getInstanceVariable("enter", type_bool) then
 					addText("The application process for the Zakum Expedition Squad had already been concluded.");
 				else
 					addPlayerSignUp(getName());

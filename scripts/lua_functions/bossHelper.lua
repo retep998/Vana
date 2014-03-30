@@ -31,7 +31,7 @@ function enterBoss(boss, maxEntries)
 	entered = false;
 	for i = 1, maxEntries do
 		var = boss .. i;
-		entry = getPlayerVariable(var, true);
+		entry = getPlayerVariable(var, type_int);
 		if entry == nil or time > (entry + SECONDS_PER_DAY) then
 			setPlayerVariable(var, time);
 			entered = true;
@@ -53,7 +53,7 @@ function getEntryCount(boss, maxEntries)
 	count = 0;
 	for i = 1, maxEntries do
 		var = boss .. i;
-		entry = getPlayerVariable(var, true);
+		entry = getPlayerVariable(var, type_int);
 		if entry ~= nil and time < (entry + SECONDS_PER_DAY) then
 			count = count + 1;
 		end

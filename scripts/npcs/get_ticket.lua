@@ -75,7 +75,7 @@ end
 
 if setInstance(instanceName) then
 	timeLeft = getInstanceMinutes();
-	instanceTime = getInstanceVariable("boat_time");
+	instanceTime = getInstanceVariable("boat_time", type_int);
 	boardTime = instanceTime - 5;
 	
 	if timeLeft <= 1 then

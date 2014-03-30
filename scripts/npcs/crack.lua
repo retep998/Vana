@@ -28,7 +28,7 @@ end
 destinationMap = nil;
 cloneId = nil;
 instance = nil;
-questState = getPlayerVariable("third_job_advancement", true);
+questState = getPlayerVariable("third_job_advancement", type_int);
 
 if getJobTrack() == 0 or getJobProgression() ~= 0 or questState == nil or questState ~= 2 then
 	-- Beginners, non-second job, not in the process of advancing, too far in the advancement

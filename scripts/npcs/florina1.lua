@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
-origin = getPlayerVariable("florina_origin", true);
+origin = getPlayerVariable("florina_origin", type_int);
 if origin == nil then
 	origin = 104000000;
 end

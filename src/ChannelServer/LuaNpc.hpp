@@ -44,28 +44,28 @@ namespace LuaExports {
 	// NPC exports
 
 	// Miscellaneous
-	auto getDistanceNpc(lua_State *luaVm) -> int;
-	auto getNpcId(lua_State *luaVm) -> int;
-	auto runNpcNpc(lua_State *luaVm) -> int;
-	auto showStorage(lua_State *luaVm) -> int;
+	auto getDistanceNpc(lua_State *luaVm) -> lua_return_t;
+	auto getNpcId(lua_State *luaVm) -> lua_return_t;
+	auto runNpcNpc(lua_State *luaVm) -> lua_return_t;
+	auto showStorage(lua_State *luaVm) -> lua_return_t;
 
 	// NPC interaction
-	auto addText(lua_State *luaVm) -> int;
-	auto askAcceptDecline(lua_State *luaVm) -> int;
-	auto askAcceptDeclineNoExit(lua_State *luaVm) -> int;
-	auto askChoice(lua_State *luaVm) -> int;
-	auto askNumber(lua_State *luaVm) -> int;
-	auto askQuestion(lua_State *luaVm) -> int;
-	auto askQuiz(lua_State *luaVm) -> int;
-	auto askStyle(lua_State *luaVm) -> int;
-	auto askText(lua_State *luaVm) -> int;
-	auto askYesNo(lua_State *luaVm) -> int;
-	auto sendBackNext(lua_State *luaVm) -> int;
-	auto sendBackOk(lua_State *luaVm) -> int;
-	auto sendNext(lua_State *luaVm) -> int;
-	auto sendOk(lua_State *luaVm) -> int;
+	auto addText(lua_State *luaVm) -> lua_return_t;
+	auto askAcceptDecline(lua_State *luaVm) -> lua_return_t;
+	auto askAcceptDeclineNoExit(lua_State *luaVm) -> lua_return_t;
+	auto askChoice(lua_State *luaVm) -> lua_return_t;
+	auto askNumber(lua_State *luaVm) -> lua_return_t;
+	auto askQuestion(lua_State *luaVm) -> lua_return_t;
+	auto askQuiz(lua_State *luaVm) -> lua_return_t;
+	auto askStyle(lua_State *luaVm) -> lua_return_t;
+	auto askText(lua_State *luaVm) -> lua_return_t;
+	auto askYesNo(lua_State *luaVm) -> lua_return_t;
+	auto sendBackNext(lua_State *luaVm) -> lua_return_t;
+	auto sendBackOk(lua_State *luaVm) -> lua_return_t;
+	auto sendNext(lua_State *luaVm) -> lua_return_t;
+	auto sendOk(lua_State *luaVm) -> lua_return_t;
 
 	// Quest
-	auto addQuest(lua_State *luaVm) -> int;
-	auto endQuest(lua_State *luaVm) -> int;
+	auto addQuest(lua_State *luaVm) -> lua_return_t;
+	auto endQuest(lua_State *luaVm) -> lua_return_t;
 }

@@ -21,7 +21,7 @@ dofile("scripts/lua_functions/npcHelper.lua");
 dofile("scripts/lua_functions/jobFunctions.lua");
 dofile("scripts/lua_functions/miscFunctions.lua");
 
-zakum = getPlayerVariable("zakum_quest_status", true);
+zakum = getPlayerVariable("zakum_quest_status", type_int);
 
 if getLevel() >= 50 then
 	job = getJobLine();
@@ -31,7 +31,7 @@ if getLevel() >= 50 then
 
 	if getLevel() >= 70 and jobLevel == 0 and job == 1 then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
-			questState = getPlayerVariable("third_job_advancement", true);
+			questState = getPlayerVariable("third_job_advancement", type_int);
 
 			if questState == nil then
 				addText("Welcome. ");

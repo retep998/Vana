@@ -104,7 +104,8 @@ auto ValidCharDataProvider::isValidCharacter(gender_id_t genderId, hair_id_t hai
 
 auto ValidCharDataProvider::isValidItem(int32_t id, const ValidItems &items, ValidItemType type) const -> bool {
 	auto idTest = [id](int32_t test) -> bool { return id == test; };
-	// TODO FIXME remove when lambda aliases (e.g. [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { ... })
+	// TODO FIXME c++
+	// remove when lambda aliases (e.g. [id = static_cast<skin_id_t>(id)](skin_id_t test) -> bool { ... })
 	skin_id_t casted = static_cast<skin_id_t>(id);
 
 	switch (type) {
