@@ -32,7 +32,7 @@ LuaInstance::LuaInstance(const string_t &name, player_id_t playerId) :
 	run(); // Running is loading the functions
 }
 
-auto LuaExports::createInstanceInstance(lua_State *luaVm) -> int {
+auto LuaExports::createInstanceInstance(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	string_t name = env.get<string_t>(luaVm, 1);
 	int32_t time = env.get<int32_t>(luaVm, 2);

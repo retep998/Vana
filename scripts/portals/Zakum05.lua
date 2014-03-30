@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/bossHelper.lua");
 
-zStatus = getPlayerVariable("zakum_quest_status", true);
+zStatus = getPlayerVariable("zakum_quest_status", type_int);
 
 if not isGm() then
 	if zStatus == nil or zStatus < 3 or getItemAmount(4001017) < 1 then

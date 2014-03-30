@@ -42,7 +42,8 @@ enum class LuaType : int {
 	Thread = LUA_TTHREAD,
 };
 
-using lua_function_t = int (*)(lua_State *);
+using lua_return_t = int;
+using lua_function_t = lua_return_t (*)(lua_State *);
 
 class LuaEnvironment;
 
@@ -82,7 +83,7 @@ public:
 	auto count() -> int;
 	auto count(lua_State *luaVm) -> int;
 
-	auto yield(int numberOfReturnResultsPassedToResume) -> int;
+	auto yield(lua_return_t numberOfReturnResultsPassedToResume) -> lua_return_t;
 	auto pushNil() -> LuaEnvironment &;
 	auto pushNil(lua_State *luaVm) -> LuaEnvironment &;
 
@@ -129,7 +130,7 @@ protected:
 	virtual auto handleThreadCompletion() -> void;
 	auto printError(const string_t &error) const -> void;
 	auto expose(const string_t &name, lua_function_t func) -> void;
-	auto resume(int pushedArgCount) -> Result;
+	auto resume(lua_return_t pushedArgCount) -> Result;
 	auto requireStandardLib(const string_t &localName, lua_function_t func) -> void;
 
 	template <typename T>

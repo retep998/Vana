@@ -40,7 +40,7 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	elseif b then
 		if setPlayer(playerId) then
 			gm = isGm();
-			gmInstance = getInstanceVariable("gm");
+			gmInstance = getInstanceVariable("gm", type_bool);
 			if gm == gmInstance then
 				addInstancePlayer(playerId);
 				stopInstanceTimer("delayedMarkForDelete");
@@ -72,7 +72,7 @@ function cleanUpZakum()
 			startInstanceTimer("delayedMarkForDelete", instanceDelay + 5);
 			return;
 		end
-		if getInstanceVariable("summoned") then
+		if getInstanceVariable("summoned", type_bool) then
 			setReactorState(211042300, 2118002, 0);
 		end
 		markForDelete();

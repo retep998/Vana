@@ -93,8 +93,8 @@ auto LuaEnvironment::run() -> Result {
 	return Result::Successful;
 }
 
-auto LuaEnvironment::resume(int pushedArgCount) -> Result {
-	int32_t ret = lua_resume(m_luaThread, m_luaVm, pushedArgCount);
+auto LuaEnvironment::resume(lua_return_t pushedArgCount) -> Result {
+	int ret = lua_resume(m_luaThread, m_luaVm, pushedArgCount);
 	if (ret == 0) {
 		handleThreadCompletion();
 	}
@@ -135,7 +135,7 @@ auto LuaEnvironment::requireStandardLib(const string_t &localName, lua_function_
 	luaL_requiref(m_luaVm, localName.c_str(), func, 1);
 }
 
-auto LuaEnvironment::yield(int numberOfReturnResultsPassedToResume) -> int {
+auto LuaEnvironment::yield(lua_return_t numberOfReturnResultsPassedToResume) -> lua_return_t {
 	return lua_yield(m_luaThread, numberOfReturnResultsPassedToResume);
 }
 

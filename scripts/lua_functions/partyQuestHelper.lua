@@ -57,11 +57,11 @@ end
 function getSavedFootholds()
 	footholds = {};
 	group = {};
-	n = getInstanceVariable("FootholdGroups", true);
+	n = getInstanceVariable("FootholdGroups", type_int);
 	for i = 1, n do
-		p = getInstanceVariable("FootholdGroup" .. i .. "Count", true);
+		p = getInstanceVariable("FootholdGroup" .. i .. "Count", type_int);
 		for k = 1, p do
-			group[k] = getInstanceVariable("FootholdGroup" .. i .. "Element" .. k, true);
+			group[k] = getInstanceVariable("FootholdGroup" .. i .. "Element" .. k, type_int);
 		end
 		footholds[i] = group;
 		group = {};

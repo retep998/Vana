@@ -40,8 +40,8 @@ namespace LuaExports {
 	// Portal exports
 
 	// Portal
-	auto getPortalName(lua_State *luaVm) -> int;
-	auto instantWarp(lua_State *luaVm) -> int;
-	auto playPortalSe(lua_State *luaVm) -> int;
-	auto portalFailed(lua_State *luaVm) -> int;
+	auto getPortalName(lua_State *luaVm) -> lua_return_t;
+	auto instantWarp(lua_State *luaVm) -> lua_return_t;
+	auto playPortalSe(lua_State *luaVm) -> lua_return_t;
+	auto portalFailed(lua_State *luaVm) -> lua_return_t;
 }

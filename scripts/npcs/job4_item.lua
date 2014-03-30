@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 dofile("scripts/lua_functions/npcHelper.lua");
 
-affinity = getPlayerVariable("tatamo_affinity", true);
+affinity = getPlayerVariable("tatamo_affinity", type_int);
 if affinity == nil then
 	affinity = 0;
 end

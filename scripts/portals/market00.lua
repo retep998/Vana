@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Exiting the Free Market
 
-map = getPlayerVariable("fm_origin");
+map = getPlayerVariable("fm_origin", type_int);
 portal = getPlayerVariable("fm_origin_portal");
 if map == nil then
 	map = 100000100;

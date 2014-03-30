@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 --]]
 -- Mu Lung Dojo
 
-map = getPlayerVariable("dojo_origin", true);
+map = getPlayerVariable("dojo_origin", type_int);
 if map == nil then
 	map = 250000100;
 end

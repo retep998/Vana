@@ -124,7 +124,7 @@ choices = {
 						giveItem(4080100, 1);
 
 						addText("Here you are, " .. blue(itemRef(4080100)) .. "! ");
-						addText("The \"Match Cards\" room may be played almost everywhere in the game. ");
+						addText("The \"Match Cards\" room may be opened almost everywhere in the game. ");
 						addText("Open a room here and play with many other users. ");
 						addText("If you finish with a great record, something good can happen. ");
 						addText("I'll be rooting for you, go play!");

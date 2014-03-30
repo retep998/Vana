@@ -52,7 +52,7 @@ questions = {
 	makeQuizQuestion("Which of these monsters will you NOT see at the ant tunnel and the center dungeon of Victoria Island...?", 5, {" Horny Mushroom", " Evil Eye", " Drake", " Zombie Mushroom", " Sentinel"}),
 };
 
-questState = getPlayerVariable("third_job_advancement", true);
+questState = getPlayerVariable("third_job_advancement", type_int);
 if questState == nil or questState ~= 3 then
 	-- TODO FIXME: Text?
 else

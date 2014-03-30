@@ -45,8 +45,8 @@ function finish(playerId)
 end
 
 function despawnNpc()
-	g = getInstanceVariable("npc", true);
-	if g then
+	g = getInstanceVariable("npc", type_int);
+	if g ~= nil then
 		removeNpc(240040611, g);
 	end
 end

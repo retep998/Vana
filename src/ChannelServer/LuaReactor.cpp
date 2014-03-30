@@ -58,13 +58,13 @@ auto LuaExports::getReactor(lua_State *luaVm, LuaEnvironment &env) -> Reactor * 
 }
 
 // Reactor
-auto LuaExports::getState(lua_State *luaVm) -> int {
+auto LuaExports::getState(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<int8_t>(luaVm, getReactor(luaVm, env)->getState());
 	return 1;
 }
 
-auto LuaExports::reset(lua_State *luaVm) -> int {
+auto LuaExports::reset(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	Reactor *reactor = getReactor(luaVm, env);
 	reactor->revive();
@@ -73,14 +73,14 @@ auto LuaExports::reset(lua_State *luaVm) -> int {
 	return 0;
 }
 
-auto LuaExports::setStateReactor(lua_State *luaVm) -> int {
+auto LuaExports::setStateReactor(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	getReactor(luaVm, env)->setState(env.get<int8_t>(luaVm, 1), true);
 	return 0;
 }
 
 // Miscellaneous
-auto LuaExports::dropItemReactor(lua_State *luaVm) -> int {
+auto LuaExports::dropItemReactor(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	item_id_t itemId = env.get<item_id_t>(luaVm, 1);
 	slot_qty_t amount = 1;
@@ -103,14 +103,14 @@ auto LuaExports::dropItemReactor(lua_State *luaVm) -> int {
 	return 0;
 }
 
-auto LuaExports::getDistanceReactor(lua_State *luaVm) -> int {
+auto LuaExports::getDistanceReactor(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	env.push<int32_t>(luaVm, getPlayer(luaVm, env)->getPos() - getReactor(luaVm, env)->getPos());
 	return 1;
 }
 
 // Mob
-auto LuaExports::spawnMobReactor(lua_State *luaVm) -> int {
+auto LuaExports::spawnMobReactor(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	mob_id_t mobId = env.get<mob_id_t>(luaVm, 1);
 	Reactor *reactor = getReactor(luaVm, env);
@@ -118,7 +118,7 @@ auto LuaExports::spawnMobReactor(lua_State *luaVm) -> int {
 	return 1;
 }
 
-auto LuaExports::spawnZakum(lua_State *luaVm) -> int {
+auto LuaExports::spawnZakum(lua_State *luaVm) -> lua_return_t {
 	auto &env = getEnvironment(luaVm);
 	coord_t x = env.get<coord_t>(luaVm, 1);
 	coord_t y = env.get<coord_t>(luaVm, 2);

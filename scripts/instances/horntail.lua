@@ -42,7 +42,7 @@ function changeMap(playerId, newMap, oldMap, isPartyLeader)
 	elseif b then
 		if setPlayer(playerId) then
 			gm = isGm();
-			gmInstance = getInstanceVariable("gm");
+			gmInstance = getInstanceVariable("gm", type_bool);
 			if gm == gmInstance then
 				addInstancePlayer(playerId);
 				stopInstanceTimer("delayedMarkForDelete");

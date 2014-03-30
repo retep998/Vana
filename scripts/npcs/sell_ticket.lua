@@ -30,7 +30,7 @@ end
 
 function getBoatTime(instanceName)
 	if setInstance(instanceName) then
-		local temp = getInstanceVariable("boat_time", true);
+		local temp = getInstanceVariable("boat_time", type_int);
 		revertInstance();
 		return temp;
 	end
