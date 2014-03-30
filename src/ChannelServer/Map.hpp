@@ -192,6 +192,7 @@ private:
 
 	// Longer-lived data
 	bool m_ship = false;
+	bool m_hasBoss = false;
 	map_id_t m_id = 0;
 	map_object_t m_timeMob = 0;
 	mob_id_t m_spawnMobs = -1;

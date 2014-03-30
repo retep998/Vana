@@ -117,6 +117,10 @@ auto Map::addReactorSpawn(const ReactorSpawnInfo &spawn) -> void {
 auto Map::addMobSpawn(const MobSpawnInfo &spawn) -> void {
 	m_mobSpawns.push_back(spawn);
 	m_mobSpawns[m_mobSpawns.size() - 1].spawned = true;
+	auto info = ChannelServer::getInstance().getMobDataProvider().getMobInfo(spawn.id);
+	if (info->boss) {
+		m_hasBoss = true;
+	}
 	spawnMob(m_mobSpawns.size() - 1, spawn);
 }
 
@@ -1050,9 +1054,9 @@ auto Map::clearDrops(time_point_t time) -> void {
 
 auto Map::mapTick(const time_point_t &now) -> void {
 	auto &config = ChannelServer::getInstance().getConfig();
-	if (m_info->shipKind != -1 && config.mapUnloadTime.count() > 0) {
+	if (m_info->shipKind == -1 && config.mapUnloadTime.count() > 0) {
 		// TODO FIXME need more robust handling of instances active when the map goes to unload
-		if (m_players.size() > 0 || getInstance() != nullptr) {
+		if (m_players.size() > 0 || getInstance() != nullptr || m_hasBoss) {
 			m_emptyMapTicks = 0;
 		}
 		else {
