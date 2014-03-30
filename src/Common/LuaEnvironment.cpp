@@ -72,6 +72,7 @@ auto LuaEnvironment::loadFile(const string_t &filename) -> void {
 	requireStandardLib("base", luaopen_base);
 	requireStandardLib("string", luaopen_string);
 	requireStandardLib("math", luaopen_math);
+	requireStandardLib("table", luaopen_table);
 }
 
 auto LuaEnvironment::run() -> Result {
