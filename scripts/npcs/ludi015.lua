@@ -39,7 +39,7 @@ if isGm() or getItemAmount(4001020) > 0 then
 
 	data = selectChoice(choices, choice);
 	map, npcId, floorName = data[1], data[2], data[3];
-	
+
 	addText("You can use " .. blue(itemRef(4001020)) .. " to activate " .. blue(npcRef(2040025)) .. ". ");
 	addText("Will you teleport to " .. blue(npcRef(npcId)) .. " at the " .. floorName .. " floor?");
 	answer = askYesNo();

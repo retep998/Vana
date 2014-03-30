@@ -769,7 +769,7 @@ append(choices, makeChoiceHandler("Please teach me about transferring pet abilit
 		addText("250,000 mesos will be deducted. ");
 		addText("Do you really want to buy?");
 		answer = askYesNo();
-		
+
 		if answer == answer_yes then
 			if getMesos() > 250000 and giveItem(4160011, 1) then
 				giveMesos(-250000);

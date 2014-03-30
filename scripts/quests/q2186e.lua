@@ -34,7 +34,7 @@ if hasOpenSlotsFor(2030019, 5) then
 	giveItem(2030019, 5);
 	giveExp(1000);
 	endQuest(2186);
-	
+
 	addText("Yes...time for some fishing!");
 	sendBackNext();
 else

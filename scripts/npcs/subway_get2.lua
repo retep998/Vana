@@ -34,7 +34,7 @@ if isQuestActive(2056) then
 			addText(". Reached out my hand and viola, a huge stack of money.");
 			giveItem(4031040, 1);
 			sendNext();
-			
+
 			setMap(103000100);
 		else
 			addText("but since your etc. inventory is full, that item is unattainable.");

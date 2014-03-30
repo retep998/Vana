@@ -22,16 +22,16 @@ dofile("scripts/lua_functions/miscFunctions.lua");
 
 choices = {
 	makeChoiceHandler(" Explore the Dead Mine. (Level 1)", function()
-	
+
 	end),
 	makeChoiceHandler(" Observe the Zakum Dungeon. (Level 2)", function()
-	
+
 	end),
 	makeChoiceHandler(" Request for a refinery. (Level 3)", function()
-	
+
 	end),
 	makeChoiceHandler(" Get briefed for the quest.", function()
-	
+
 	end),
 };
 

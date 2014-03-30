@@ -25,7 +25,7 @@ choices = {
 		addText("The ticket will cost you 20,000 mesos. ");
 		addText("Will you purchase the ticket?");
 		answer = askYesNo();
-		
+
 		if answer == answer_yes then
 			if not hasOpenSlotsFor(4031732) or not giveMesos(-20000) then
 				addText("I don't think you have enough meso or empty slot in your ETC inventory. ");

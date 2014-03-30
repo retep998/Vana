@@ -26,7 +26,7 @@ if isQuestActive(2050) then
 	item = 4031020;
 	addText("Are you sure you want to take " .. blue(itemRef(item)) .. " with you?");
 	answer = askYesNo();
-	
+
 	if answer == answer_yes then
 		if giveItem(item, 1) then
 			setMap(101000000);

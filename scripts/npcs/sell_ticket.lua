@@ -80,7 +80,7 @@ function buyTicketToOrbis(itemId, boatTime, price)
 	addText("The ride to Orbis takes off every " .. boatTime .. " minutes, beginning on the hour, and it'll cost you " .. blue(price .. " mesos") .. ". ");
 	addText("Are you sure you want to purchase " .. blue(itemRef(item)) .. "?");
 	answer = askYesNo();
-	
+
 	if answer == answer_no then
 		addText("You must have some business to take care of here, right?");
 		sendNext();
@@ -196,7 +196,7 @@ elseif m == 200000100 then
 		addText("Where woulud you like to go?\r\n");
 		addText(blue(choiceList(choices)));
 		choice = askChoice();
-		
+
 		text = selectChoice(choices, choice);
 		addText("If you wish to hop on board the ship that'll fly to " .. text .. ", talk to " .. blue("Isa the Station Guide") .. " on the right. ");
 		addText("She'll take you to the station where the trip to " .. text .. " awaits.");

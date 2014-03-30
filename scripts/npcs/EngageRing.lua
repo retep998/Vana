@@ -26,7 +26,7 @@ choices = {
 		addText("If you want that ring, you'd better hurry and get me the following all materials to make an engagement ring. ");
 		addText("I need you to bring me " .. blue("4 Proof of Love") .. " from Nana.");
 		sendNext();
-	
+
 	end),
 	makeChoiceHandler("I want an annulment.", function()
 		-- TODO FIXME implement marriage

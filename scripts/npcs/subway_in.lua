@@ -61,7 +61,7 @@ if jumpTicketB1 > 0 or jumpTicketB2 > 0 or jumpTicketB3 > 0 or nlcTicketBasic > 
 		append(choices, makeChoiceHandler(nlcChoice, function()
 			if setInstance("kerningToNlcBoarding") then
 				minutesRemaining = getInstanceMinutes();
-				
+
 				if minutesRemaining == 0 then
 					addText("We will begin boarding 5 minutes before the takeoff. ");
 					addText("Please be patient and wait for a few minutes. ");

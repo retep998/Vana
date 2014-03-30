@@ -30,11 +30,11 @@ else
 	addText("Look for the pigs around the area where I'll be sending you. ");
 	addText("You'll be able to find it by tracking them.");
 	sendNext();
-	
+
 	addText("When they are weakened, they'll change back to their original state. ");
 	addText("If you find something suspicious, you must fight them until they are weak. ");
 	addText("I'll be here awaiting your findings.");
 	sendBackNext();
-	
+
 	setMap(912000000);
 end

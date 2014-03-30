@@ -28,7 +28,7 @@ if getLevel() >= 50 then
 	jobLevel = getJobProgression();
 	jobType = getJobTrack();
 	choices = {};
-	
+
 	if getLevel() >= 70 and jobLevel == 0 and job == 3 then
 		append(choices, makeChoiceHandler(" I want to make the 3rd job advancement", function()
 			questState = getPlayerVariable("third_job_advancement", type_int);
@@ -180,7 +180,7 @@ if getLevel() >= 50 then
 		end
 		sendNext();
 	end));
-	
+
 	addText("Can I help you?\r\n");
 	addText(blue(choiceList(choices)));
 	choice = askChoice();

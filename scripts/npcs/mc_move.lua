@@ -187,10 +187,10 @@ choices = {
 							end),
 						};
 					end
-					
+
 					addText(blue(choiceList(choices)));
 					choice = askChoice();
-					
+
 					data = selectChoice(choices, choice);
 					if data ~= nil then
 						exchangeCoins(data);
@@ -207,7 +207,7 @@ choices = {
 					generateExchangeChoice(1382001, 20),
 					generateExchangeChoice(1372007, 20),
 				};
-				
+
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are extremely appealing. ");
 				addText("See for yourself! \r\n");
@@ -225,7 +225,7 @@ choices = {
 					generateExchangeChoice(1462006, 10),
 					generateExchangeChoice(1462007, 20),
 				};
-				
+
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are highly appealing. ");
 				addText("See for yourself! \r\n");
@@ -245,7 +245,7 @@ choices = {
 					generateExchangeChoice(1332016, 20),
 					generateExchangeChoice(1332003, 20),
 				};
-				
+
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are of the highest quality. ");
 				addText("Select what appeals to you! \r\n");
@@ -263,7 +263,7 @@ choices = {
 					generateExchangeChoice(1492006, 10),
 					generateExchangeChoice(1492007, 20),
 				};
-				
+
 				addText("Select the weapon you'd like to trade for. ");
 				addText("The weapons I have here are of the highest quality. ");
 				addText("Select what appeals to you! \r\n");

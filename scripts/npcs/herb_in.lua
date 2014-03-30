@@ -28,7 +28,7 @@ if validQuest(2051) then
 
 	if isQuestActive(2051) then
 		price = getLevel() * 200;
-		
+
 		addText("It's you from the other day. ");
 		addText("Did " .. npcRef(1061005) .. " make another request to you? ");
 		addText("What? ");
