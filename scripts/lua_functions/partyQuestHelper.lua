@@ -43,32 +43,6 @@ function getRandomFootholds(desiredAmount, tableFootholds)
 	return returnFootholds;
 end
 
-function saveFootholds(tableFootholds)
-	setInstanceVariable("FootholdGroups", #tableFootholds);
-	for i = 1, #tableFootholds do
-		group = tableFootholds[i];
-		setInstanceVariable("FootholdGroup" .. i .. "Count", #group);
-		for k = 1, #group do
-			setInstanceVariable("FootholdGroup" .. i .. "Element" .. k, group[k]);
-		end
-	end
-end
-
-function getSavedFootholds()
-	footholds = {};
-	group = {};
-	n = getInstanceVariable("FootholdGroups", type_int);
-	for i = 1, n do
-		p = getInstanceVariable("FootholdGroup" .. i .. "Count", type_int);
-		for k = 1, p do
-			group[k] = getInstanceVariable("FootholdGroup" .. i .. "Element" .. k, type_int);
-		end
-		footholds[i] = group;
-		group = {};
-	end
-	return footholds;
-end
-
 function partyQuestClear()
 	showMapEvent("quest/party/clear");
 	playFieldSound("Party1/Clear", getMap());
