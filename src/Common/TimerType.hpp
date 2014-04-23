@@ -19,29 +19,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Types.hpp"
 
-namespace Timer {
-
-struct Types {
-	enum : uint32_t {
-		BuffTimer,
-		CoolTimer,
-		InstanceTimer,
-		MapleTvTimer,
-		MapTimer,
-		MistTimer,
-		MobHealTimer,
-		MobRemoveTimer,
-		MobStatusTimer,
-		PetTimer,
-		PickpocketTimer,
-		PingTimer,
-		RankTimer,
-		ReactionTimer,
-		SkillActTimer,
-		SpongeCleanupTimer,
-		TradeTimer,
-		WeatherTimer
-	};
+enum class TimerType : uint32_t {
+	BuffTimer,
+	CoolTimer,
+	InstanceTimer,
+	MapleTvTimer,
+	MapTimer,
+	MistTimer,
+	MobHealTimer,
+	MobRemoveTimer,
+	MobStatusTimer,
+	PetTimer,
+	PickpocketTimer,
+	PingTimer,
+	RankTimer,
+	ReactionTimer,
+	SkillActTimer,
+	SpongeCleanupTimer,
+	TradeTimer,
+	WeatherTimer
 };
-
-}

@@ -506,7 +506,7 @@ auto PlayerHandler::useMeleeAttack(Player *player, PacketReader &reader) -> void
 			Drop *ppDrop = new Drop(player->getMapId(), ppMesos, ppPos, player->getId(), true);
 			ppDrop->setTime(100);
 			Timer::Timer::create([ppDrop, origin](const time_point_t &now) { ppDrop->doDrop(origin); },
-				Timer::Id(Timer::Types::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
+				Timer::Id(TimerType::PickpocketTimer, player->getId(), player->getActiveBuffs()->getPickpocketCounter()),
 				nullptr, milliseconds_t(175 * pickpocket));
 		}
 		ppDamages.clear();

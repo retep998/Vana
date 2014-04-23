@@ -64,12 +64,12 @@ Mob::Mob(map_object_t mapMobId, map_id_t mapId, mob_id_t mobId, view_ptr_t<Mob> 
 		int32_t hpRecovery = m_info->hpRecovery;
 		int32_t mpRecovery = m_info->mpRecovery;
 		Timer::Timer::create([this, hpRecovery, mpRecovery](const time_point_t &now) { this->naturalHeal(hpRecovery, mpRecovery); },
-			Timer::Id(Timer::Types::MobHealTimer, 0, 0),
+			Timer::Id(TimerType::MobHealTimer),
 			getTimers(), seconds_t(1), seconds_t(10));
 	}
 	if (m_info->removeAfter > 0) {
 		Timer::Timer::create([this](const time_point_t &now) { this->kill(); },
-			Timer::Id(Timer::Types::MobRemoveTimer, m_mapMobId, 0),
+			Timer::Id(TimerType::MobRemoveTimer, m_mapMobId),
 			getTimers(), seconds_t(m_info->removeAfter));
 	}
 }
@@ -207,14 +207,14 @@ auto Mob::addStatus(player_id_t playerId, vector_t<StatusInfo> &statusInfo) -> v
 			case StatusEffects::Mob::NinjaAmbush:
 				damage_t poisonDamage = info.val;
 				Timer::Timer::create([this, playerId, poisonDamage](const time_point_t &now) { this->applyDamage(playerId, poisonDamage, true); },
-					Timer::Id(Timer::Types::MobStatusTimer, cStatus, 1),
+					Timer::Id(TimerType::MobStatusTimer, cStatus, 1),
 					getTimers(), seconds_t(1), seconds_t(1));
 				break;
 		}
 
 		// We add some milliseconds to our times in order to allow poisons to not end one hit early
 		Timer::Timer::create([this, cStatus](const time_point_t &now) { this->removeStatus(cStatus, true); },
-			Timer::Id(Timer::Types::MobStatusTimer, cStatus, 0),
+			Timer::Id(TimerType::MobStatusTimer, cStatus),
 			getTimers(), milliseconds_t(info.time.count() * 1000 + 100));
 	}
 
@@ -250,11 +250,11 @@ auto Mob::removeStatus(int32_t status, bool fromTimer) -> void {
 				// Intentional fallthrough
 			case StatusEffects::Mob::Poison:
 				// Stop poison damage timer
-				getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 1));
+				getTimers()->removeTimer(Timer::Id(TimerType::MobStatusTimer, status, 1));
 				break;
 		}
 		if (!fromTimer) {
-			getTimers()->removeTimer(Timer::Id(Timer::Types::MobStatusTimer, status, 0));
+			getTimers()->removeTimer(Timer::Id(TimerType::MobStatusTimer, status));
 		}
 		m_status -= status;
 		m_statuses.erase(kvp);
@@ -292,7 +292,7 @@ auto Mob::getWeaponReflection() -> int32_t {
 	return getStatusValue(StatusEffects::Mob::WeaponDamageReflect);
 }
 
-auto Mob::setController(Player *control, bool spawn, Player *display) -> void {
+auto Mob::setController(Player *control, MobSpawnType spawn, Player *display) -> void {
 	endControl();
 
 	m_controller = control;

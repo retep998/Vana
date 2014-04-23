@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 auto PlayerActiveBuffs::addBuff(skill_id_t skill, const seconds_t &time) -> void {
 	if (time.count() > 0) {
 		// Only bother with timers when there is a time
-		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
+		Timer::Id id(TimerType::BuffTimer, skill);
 
 		if (GameLogicUtilities::isMobSkill(skill)) {
 			mob_skill_id_t mobSkill = static_cast<mob_skill_id_t>(skill);
@@ -53,7 +53,7 @@ auto PlayerActiveBuffs::addBuff(skill_id_t skill, const seconds_t &time) -> void
 
 auto PlayerActiveBuffs::removeBuff(skill_id_t skill, bool fromTimer) -> void {
 	if (!fromTimer) {
-		Timer::Id id(Timer::Types::BuffTimer, skill, 0);
+		Timer::Id id(TimerType::BuffTimer, skill);
 		m_player->getTimerContainer()->removeTimer(id);
 	}
 	removeAction(skill);
@@ -78,7 +78,7 @@ auto PlayerActiveBuffs::removeBuffs() -> void {
 }
 
 auto PlayerActiveBuffs::getBuffSecondsRemaining(skill_id_t skill) const -> seconds_t {
-	Timer::Id id(Timer::Types::BuffTimer, skill, 0);
+	Timer::Id id(TimerType::BuffTimer, skill);
 	return m_player->getTimerContainer()->getRemainingTime<seconds_t>(id);
 }
 
@@ -104,7 +104,7 @@ auto PlayerActiveBuffs::addAction(skill_id_t skill, Action act, int16_t value, c
 	runAct.act = act;
 	runAct.value = value;
 
-	Timer::Id id(Timer::Types::SkillActTimer, act, 0);
+	Timer::Id id(TimerType::SkillActTimer, act);
 	Timer::Timer::create(runAct, id, getActTimer(skill), seconds_t(0), time);
 }
 
@@ -362,7 +362,7 @@ auto PlayerActiveBuffs::checkBerserk(bool display) -> void {
 auto PlayerActiveBuffs::increaseEnergyChargeLevel(int8_t targets) -> void {
 	if (m_energyCharge != Stats::MaxEnergyChargeLevel && targets > 0) {
 		skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-		Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
+		Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed);
 		if (m_player->getTimerContainer()->isTimerRunning(id)) {
 			stopEnergyChargeTimer();
 		}
@@ -395,7 +395,7 @@ auto PlayerActiveBuffs::resetEnergyChargeLevel() -> void {
 auto PlayerActiveBuffs::startEnergyChargeTimer() -> void {
 	m_timeSeed = static_cast<uint32_t>(clock());
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
+	Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed); // Causes heap errors when it's a static number, but we need it for ID
 	Timer::Timer::create([this](const time_point_t &now) { this->decreaseEnergyChargeLevel(); },
 		id, m_player->getTimerContainer(), seconds_t(10));
 }
@@ -409,7 +409,7 @@ auto PlayerActiveBuffs::setEnergyChargeLevel(int16_t chargeLevel, bool startTime
 
 auto PlayerActiveBuffs::stopEnergyChargeTimer() -> void {
 	skill_id_t skillId = m_player->getSkills()->getEnergyCharge();
-	Timer::Id id(Timer::Types::BuffTimer, skillId, m_timeSeed);
+	Timer::Id id(TimerType::BuffTimer, skillId, m_timeSeed);
 	m_player->getTimerContainer()->removeTimer(id);
 }
 

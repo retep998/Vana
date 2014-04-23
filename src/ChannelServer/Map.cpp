@@ -62,7 +62,7 @@ Map::Map(ref_ptr_t<MapInfo> info, map_id_t id) :
 {
 	// Dynamic loading, start the map timer once the object is created
 	Timer::Timer::create([this](const time_point_t &now) { this->mapTick(now); },
-		Timer::Id(Timer::Types::MapTimer, id, 0),
+		Timer::Id(TimerType::MapTimer, id),
 		getTimers(), seconds_t(0), seconds_t(1));
 
 	Pos rightBottom = info->dimensions.rightBottom();
@@ -138,11 +138,11 @@ auto Map::addPortal(const PortalInfo &portal) -> void {
 
 auto Map::addTimeMob(ref_ptr_t<TimeMob> info) -> void {
 	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(false); },
-		Timer::Id(Timer::Types::MapTimer, getId(), 1),
+		Timer::Id(TimerType::MapTimer, getId(), 1),
 		getTimers(), TimeUtilities::getDistanceToNextOccurringSecondOfHour(0), hours_t(1));
 
 	Timer::Timer::create([this](const time_point_t &now) { this->timeMob(true); },
-		Timer::Id(Timer::Types::MapTimer, getId(), 2),
+		Timer::Id(TimerType::MapTimer, getId(), 2),
 		getTimers(), seconds_t(3)); // First check
 
 	m_timeMobInfo = info;
@@ -524,8 +524,8 @@ auto Map::spawnMob(mob_id_t mobId, const Pos &pos, foothold_id_t foothold, ref_p
 	}
 
 	m_mobs[id] = mob;
-	send(MobsPacket::spawnMob(mob, summonEffect, owner, (owner == nullptr)));
-	updateMobControl(mob, true);
+	send(MobsPacket::spawnMob(mob, summonEffect, owner, (owner == nullptr ? MobSpawnType::New : MobSpawnType::Existing)));
+	updateMobControl(mob, MobSpawnType::New);
 
 	if (Instance *instance = getInstance()) {
 		instance->mobSpawn(mobId, id, getId());
@@ -540,8 +540,8 @@ auto Map::spawnMob(int32_t spawnId, const MobSpawnInfo &info) -> ref_ptr_t<Mob> 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), info.id, noOwner, info.pos, spawnId, info.facesLeft, info.foothold, MobControlStatus::Normal);
 	m_mobs[id] = mob;
-	send(MobsPacket::spawnMob(mob, 0, nullptr, true));
-	updateMobControl(mob, true);
+	send(MobsPacket::spawnMob(mob, 0, nullptr, MobSpawnType::New));
+	updateMobControl(mob, MobSpawnType::New);
 
 	if (Instance *instance = getInstance()) {
 		instance->mobSpawn(info.id, id, getId());
@@ -556,7 +556,7 @@ auto Map::spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> 
 	ref_ptr_t<Mob> noOwner = nullptr;
 	auto mob = make_ref_ptr<Mob>(id, getId(), mobId, noOwner, pos, -1, false, foothold, MobControlStatus::None);
 	m_mobs[id] = mob;
-	updateMobControl(mob, true);
+	updateMobControl(mob, MobSpawnType::New);
 
 	if (Instance *instance = getInstance()) {
 		instance->mobSpawn(mobId, id, getId());
@@ -580,7 +580,7 @@ auto Map::updateMobControl(Player *player) -> void {
 	}
 }
 
-auto Map::updateMobControl(ref_ptr_t<Mob> mob, bool spawn, Player *display) -> void {
+auto Map::updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn, Player *display) -> void {
 	Player *newController = nullptr;
 	Player *oldController = mob->getController();
 	if (mob->getControlStatus() != MobControlStatus::None) {
@@ -595,7 +595,7 @@ auto Map::updateMobControl(ref_ptr_t<Mob> mob, bool spawn, Player *display) -> v
 auto Map::switchController(ref_ptr_t<Mob> mob, Player *newController) -> void {
 	Player *oldController = mob->getController();
 	mob->endControl();
-	mob->setController(newController, false, nullptr);
+	mob->setController(newController, MobSpawnType::Existing, nullptr);
 }
 
 auto Map::findController(ref_ptr_t<Mob> mob) -> Player * {
@@ -907,7 +907,7 @@ auto Map::addMist(Mist *mist) -> void {
 	}
 
 	Timer::Timer::create([this, mist](const time_point_t &now) { this->removeMist(mist); },
-		Timer::Id(Timer::Types::MistTimer, mist->getId(), 0),
+		Timer::Id(TimerType::MistTimer, mist->getId()),
 		getTimers(), seconds_t(mist->getTime()));
 
 	send(MapPacket::spawnMist(mist, false));
@@ -1121,7 +1121,7 @@ auto Map::setMapTimer(const seconds_t &timer) -> void {
 	send(MapPacket::showTimer(timer));
 	if (timer.count() > 0) {
 		Timer::Timer::create([this](const time_point_t &now) { this->setMapTimer(seconds_t(0)); },
-			Timer::Id(Timer::Types::MapTimer, getId(), 25),
+			Timer::Id(TimerType::MapTimer, getId(), 25),
 			getTimers(), timer);
 	}
 }
@@ -1169,10 +1169,10 @@ auto Map::showObjects(Player *player) -> void {
 	for (const auto &kvp : m_mobs) {
 		if (auto mob = kvp.second) {
 			if (mob->getControlStatus() == MobControlStatus::None) {
-				updateMobControl(mob, true, player);
+				updateMobControl(mob, MobSpawnType::New, player);
 			}
 			else {
-				player->send(MobsPacket::spawnMob(mob, 0, nullptr, false));
+				player->send(MobsPacket::spawnMob(mob, 0, nullptr, MobSpawnType::Existing));
 				updateMobControl(mob);
 			}
 		}
@@ -1232,7 +1232,7 @@ auto Map::send(const SplitPacketBuilder &builder, Player *sender) -> void {
 }
 
 auto Map::createWeather(Player *player, bool adminWeather, int32_t time, int32_t itemId, const string_t &message) -> bool {
-	Timer::Id timerId(Timer::Types::WeatherTimer, 0, 0); // Just to check if there's already a weather item running and adding a new one
+	Timer::Id timerId(TimerType::WeatherTimer); // Just to check if there's already a weather item running and adding a new one
 	if (getTimers()->isTimerRunning(timerId)) {
 		// Hacking
 		return false;

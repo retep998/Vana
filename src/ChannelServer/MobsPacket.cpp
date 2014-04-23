@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace MobsPacket {
 
-PACKET_IMPL(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, bool spawn) {
+PACKET_IMPL(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MOB_SHOW)
@@ -34,7 +34,7 @@ PACKET_IMPL(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> ow
 	return builder;
 }
 
-PACKET_IMPL(requestControl, ref_ptr_t<Mob> mob, bool spawn) {
+PACKET_IMPL(requestControl, ref_ptr_t<Mob> mob, MobSpawnType spawn) {
 	PacketBuilder builder;
 	builder
 		.add<header_t>(SMSG_MOB_CONTROL)
@@ -43,7 +43,7 @@ PACKET_IMPL(requestControl, ref_ptr_t<Mob> mob, bool spawn) {
 	return builder;
 }
 
-PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, bool spawn) {
+PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn) {
 	PacketBuilder builder;
 	builder
 		.add<map_object_t>(mob->getMapMobId())
@@ -88,7 +88,7 @@ PACKET_IMPL(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> o
 			.add<map_object_t>(owner->getMapMobId());
 	}
 	else {
-		builder.add<int8_t>(spawn ? -2 : -1);
+		builder.add<int8_t>(spawn == MobSpawnType::New ? -2 : -1);
 	}
 
 	builder

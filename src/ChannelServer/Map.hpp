@@ -178,7 +178,7 @@ private:
 	auto timeMob(bool firstLoad = true) -> void;
 	auto spawnShell(mob_id_t mobId, const Pos &pos, foothold_id_t foothold) -> ref_ptr_t<Mob>;
 	auto updateMobControl(Player *player) -> void;
-	auto updateMobControl(ref_ptr_t<Mob> mob, bool spawn = false, Player *display = nullptr) -> void;
+	auto updateMobControl(ref_ptr_t<Mob> mob, MobSpawnType spawn = MobSpawnType::Existing, Player *display = nullptr) -> void;
 	auto mapTick(const time_point_t &now) -> void;
 	auto getTimeMobId() const -> map_object_t { return m_timeMob; }
 	auto getTimeMob() const -> TimeMob * { return m_timeMobInfo.get(); }

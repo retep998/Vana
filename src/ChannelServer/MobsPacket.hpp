@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "MobConstants.hpp"
 #include "PacketBuilder.hpp"
 #include "Types.hpp"
 #include <vector>
@@ -27,9 +28,9 @@ struct Pos;
 struct StatusInfo;
 
 namespace MobsPacket {
-	PACKET(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, bool spawn = false);
-	PACKET(requestControl, ref_ptr_t<Mob> mob, bool spawn);
-	PACKET(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, bool spawn);
+	PACKET(spawnMob, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner = nullptr, MobSpawnType spawn = MobSpawnType::Existing);
+	PACKET(requestControl, ref_ptr_t<Mob> mob, MobSpawnType spawn);
+	PACKET(mobPacket, ref_ptr_t<Mob> mob, int8_t summonEffect, ref_ptr_t<Mob> owner, MobSpawnType spawn);
 	PACKET(endControlMob, map_object_t mapMobId);
 	PACKET(moveMobResponse, map_object_t mapMobId, int16_t moveId, bool skillPossible, int32_t mp, mob_skill_id_t skill, mob_skill_level_t level);
 	PACKET(moveMob, map_object_t mapMobId, bool skillPossible, int8_t rawAction, mob_skill_id_t skill, mob_skill_level_t level, int16_t option, unsigned char *buf, int32_t len);
